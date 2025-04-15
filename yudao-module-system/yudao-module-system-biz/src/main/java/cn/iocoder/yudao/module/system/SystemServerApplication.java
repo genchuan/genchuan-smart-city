@@ -30,12 +30,4 @@ public class SystemServerApplication {
         // 如果你碰到启动的问题，请认真阅读 https://cloud.iocoder.cn/quick-start/ 文章
         // 如果你碰到启动的问题，请认真阅读 https://cloud.iocoder.cn/quick-start/ 文章
     }
-    @Bean
-    public ApplicationRunner runner(DataSource dataSource) {
-        return args -> {
-            System.out.println("当前数据库连接URL: " + dataSource.getConnection().getMetaData().getURL());
-        };
-    }
-
-
 }
