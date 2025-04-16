@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
-@Schema(description = "管理后台 - 智慧城管分页 Request VO")
+@Schema(description = "管理后台 - 报警处置类分页 Request VO")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -24,21 +24,6 @@ public class AlarmHandlingCategoryPageReqVO extends PageParam {
 
     @Schema(description = "风险等级")
     private String riskLevel;
-
-    @Schema(description = "报警描述", example = "你猜")
-    private String alarmDescription;
-
-    @Schema(description = "涉及区域")
-    private String involvingRegions;
-
-    @Schema(description = "处置措施")
-    private String disposalMeasures;
-
-    @Schema(description = "处置结果")
-    private String disposalResults;
-
-    @Schema(description = "备注")
-    private String notes;
 
     @Schema(description = "创建时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)

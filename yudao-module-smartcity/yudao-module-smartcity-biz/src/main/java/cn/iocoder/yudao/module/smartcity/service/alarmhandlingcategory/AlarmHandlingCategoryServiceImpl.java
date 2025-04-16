@@ -18,9 +18,9 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.module.smartcity.enums.ErrorCodeConstants.*;
 
 /**
- * 智慧城管 Service 实现类
+ * 报警处置类 Service 实现类
  *
- * @author zcq
+ * @author 智慧城市运行管理服务平台
  */
 @Service
 @Validated

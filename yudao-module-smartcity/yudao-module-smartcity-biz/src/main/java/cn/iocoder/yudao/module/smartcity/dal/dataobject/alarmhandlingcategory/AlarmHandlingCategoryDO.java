@@ -9,9 +9,9 @@ import com.baomidou.mybatisplus.annotation.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 
 /**
- * 智慧城管 DO
+ * 报警处置类 DO
  *
- * @author zcq
+ * @author 智慧城市运行管理服务平台
  */
 @TableName("smartcity_alarm_handling_category")
 @KeySequence("smartcity_alarm_handling_category_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。

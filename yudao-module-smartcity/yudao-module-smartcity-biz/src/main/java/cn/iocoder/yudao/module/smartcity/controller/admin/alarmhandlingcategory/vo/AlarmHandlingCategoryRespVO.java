@@ -7,12 +7,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import com.alibaba.excel.annotation.*;
 
-@Schema(description = "管理后台 - 智慧城管 Response VO")
+@Schema(description = "管理后台 - 报警处置类 Response VO")
 @Data
 @ExcelIgnoreUnannotated
 public class AlarmHandlingCategoryRespVO {
 
-    @Schema(description = "ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "29726")
+    @Schema(description = "ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "24176")
     @ExcelProperty("ID")
     private Long id;
 
@@ -28,7 +28,7 @@ public class AlarmHandlingCategoryRespVO {
     @ExcelProperty("风险等级")
     private String riskLevel;
 
-    @Schema(description = "报警描述", example = "你猜")
+    @Schema(description = "报警描述", example = "你说的对")
     @ExcelProperty("报警描述")
     private String alarmDescription;
 

@@ -10,9 +10,9 @@ import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.smartcity.controller.admin.alarmhandlingcategory.vo.*;
 
 /**
- * 智慧城管 Mapper
+ * 报警处置类 Mapper
  *
- * @author zcq
+ * @author 智慧城市运行管理服务平台
  */
 @Mapper
 public interface AlarmHandlingCategoryMapper extends BaseMapperX<AlarmHandlingCategoryDO> {
@@ -20,13 +20,8 @@ public interface AlarmHandlingCategoryMapper extends BaseMapperX<AlarmHandlingCa
     default PageResult<AlarmHandlingCategoryDO> selectPage(AlarmHandlingCategoryPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<AlarmHandlingCategoryDO>()
                 .betweenIfPresent(AlarmHandlingCategoryDO::getTime, reqVO.getTime())
-                .eqIfPresent(AlarmHandlingCategoryDO::getAlarmSource, reqVO.getAlarmSource())
-                .eqIfPresent(AlarmHandlingCategoryDO::getRiskLevel, reqVO.getRiskLevel())
-                .eqIfPresent(AlarmHandlingCategoryDO::getAlarmDescription, reqVO.getAlarmDescription())
-                .eqIfPresent(AlarmHandlingCategoryDO::getInvolvingRegions, reqVO.getInvolvingRegions())
-                .eqIfPresent(AlarmHandlingCategoryDO::getDisposalMeasures, reqVO.getDisposalMeasures())
-                .eqIfPresent(AlarmHandlingCategoryDO::getDisposalResults, reqVO.getDisposalResults())
-                .eqIfPresent(AlarmHandlingCategoryDO::getNotes, reqVO.getNotes())
+                .likeIfPresent(AlarmHandlingCategoryDO::getAlarmSource, reqVO.getAlarmSource())
+                .likeIfPresent(AlarmHandlingCategoryDO::getRiskLevel, reqVO.getRiskLevel())
                 .betweenIfPresent(AlarmHandlingCategoryDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(AlarmHandlingCategoryDO::getId));
     }

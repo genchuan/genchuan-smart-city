@@ -7,11 +7,11 @@ import javax.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 智慧城管新增/修改 Request VO")
+@Schema(description = "管理后台 - 报警处置类新增/修改 Request VO")
 @Data
 public class AlarmHandlingCategorySaveReqVO {
 
-    @Schema(description = "ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "29726")
+    @Schema(description = "ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "24176")
     private Long id;
 
     @Schema(description = "报警时间")
@@ -23,7 +23,7 @@ public class AlarmHandlingCategorySaveReqVO {
     @Schema(description = "风险等级")
     private String riskLevel;
 
-    @Schema(description = "报警描述", example = "你猜")
+    @Schema(description = "报警描述", example = "你说的对")
     private String alarmDescription;
 
     @Schema(description = "涉及区域")
