@@ -5,6 +5,6 @@ ARG MODULE_NAME=yudao-gateway
 ARG JAR_PATH=yudao-gateway
 ENV TZ=Asia/Shanghai JAVA_OPTS="-Xms512m -Xmx512m"
 
-COPY ${JAR_PATH}/target/${MODULE_NAME}.jar ${MODULE_NAME}.jar
+COPY ${JAR_PATH}/target/${MODULE_NAME}.jar app.jar
 
-ENTRYPOINT ["java", "-jar", "${MODULE_NAME}.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
