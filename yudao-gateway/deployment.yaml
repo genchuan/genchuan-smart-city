@@ -17,10 +17,11 @@ spec:
     spec:
       containers:
       - name: yudao-gateway
-        image: harbor.genchuan.cn/sccsgl/yudao-gateway:laster  # 替换为你的Vue应用镜像
+        image: harbor.genchuan.cn/sccsgl/yudao-gateway:laster
+        imagePullPolicy: Always
         ports:
         - containerPort: 48080
-        imagePullPolicy: always
+
 ---
 apiVersion: v1
 kind: Service

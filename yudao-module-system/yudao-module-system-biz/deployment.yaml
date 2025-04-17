@@ -17,10 +17,11 @@ spec:
     spec:
       containers:
       - name: yudao-module-system-biz
-        image: harbor.genchuan.cn/sccsgl/yudao-module-system-biz:laster  # 替换为你的Vue应用镜像
+        image: harbor.genchuan.cn/sccsgl/yudao-module-system-biz:laster
+        imagePullPolicy: Always 
         ports:
         - containerPort: 48081
-        imagePullPolicy: always
+        
 ---
 apiVersion: v1
 kind: Service
