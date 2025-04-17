@@ -20,6 +20,7 @@ spec:
         image: harbor.genchuan.cn/sccsgl/yudao-module-infra-biz:laster  # 替换为你的Vue应用镜像
         ports:
         - containerPort: 48082
+        imagePullPolicy: always
 ---
 apiVersion: v1
 kind: Service
