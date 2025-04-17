@@ -7,4 +7,4 @@ ENV TZ=Asia/Shanghai JAVA_OPTS="-Xms512m -Xmx512m"
 
 COPY ${JAR_PATH}/target/${MODULE_NAME}.jar app.jar
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+CMD ["java", "-jar", "app.jar"]
