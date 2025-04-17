@@ -37,7 +37,7 @@
         </dependency>
         <dependency>
             <groupId>cn.iocoder.cloud</groupId>
-            <artifactId>yudao-module-smartcity</artifactId>
+            <artifactId>yudao-module-smartcity-api</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
