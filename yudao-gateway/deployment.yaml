@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yudao-gateway
+  namespace: test
+  labels:
+    app: yudao-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yudao-gateway
+  template:
+    metadata:
+      labels:
+        app: yudao-gateway
+    spec:
+      containers:
+      - name: yudao-gateway
+        image: harbor.genchuan.cn/sccsgl/yudao-gateway:laster  # 替换为你的Vue应用镜像
+        ports:
+        - containerPort: 48080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: yudao-gateway
+  namespace: test
+spec:
+  selector:
+    app: yudao-gateway
+  ports:
+    - protocol: TCP
+      port: 48080
+      targetPort: 48080
+  type: NodePort

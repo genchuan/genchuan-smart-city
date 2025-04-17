@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yudao-module-system-biz
+  namespace: test
+  labels:
+    app: yudao-module-system-biz
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yudao-module-system-biz
+  template:
+    metadata:
+      labels:
+        app: yudao-module-system-biz
+    spec:
+      containers:
+      - name: yudao-module-system-biz
+        image: harbor.genchuan.cn/sccsgl/yudao-module-system-biz:laster  # 替换为你的Vue应用镜像
+        ports:
+        - containerPort: 48081
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: yudao-module-system-biz
+  namespace: test
+spec:
+  selector:
+    app: yudao-module-system-biz
+  ports:
+    - protocol: TCP
+      port: 48081
+      targetPort: 48081
+  type: NodePort
