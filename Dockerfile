@@ -7,4 +7,4 @@ ENV TZ=Asia/Shanghai JAVA_OPTS="-Xms512m -Xmx512m"
 
 COPY ${JAR_PATH}/target/${MODULE_NAME}.jar ${MODULE_NAME}.jar
 
-ENTRYPOINT ["java", "${JAVA_OPTS} -Djava.security.egd=file:/dev/./urandom", "-jar", "${MODULE_NAME}.jar"]
+CMD java ${JAVA_OPTS} -Djava.security.egd=file:/dev/./urandom -jar ${MODULE_NAME}.jar
