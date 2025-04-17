@@ -126,10 +126,62 @@ public interface ErrorCodeConstants {
     ErrorCode INSPECTION_TASK_A_NOT_EXISTS = new ErrorCode(1_101_020, "巡查任务不存在");
 
     // ========== 巡查结果 1_101_021 ==========
-    ErrorCode INSPECTION_RESULTS_A_NOT_EXISTS = new ErrorCode(1_101_021, "巡查结果不存在");
+    ErrorCode INSPECTION_RESULTS_A_NOT_EXISTS = new ErrorCode(1_001_021, "巡查结果不存在");
 
-    // ========== 巡查分析统计 1_101_022 ==========
-    ErrorCode INSPECTION_STATISTICS_NOT_EXISTS = new ErrorCode(1_101_022, "巡查分析统计不存在");
+    // ========== 巡查分析统计 1_001_018 ==========
+    ErrorCode INSPECTION_STATISTICS_NOT_EXISTS = new ErrorCode(1_001_018, "巡查分析统计不存在");
+
+    // ========== 部件信息 1_001_019 ==========
+    ErrorCode COMPONENT_INFORMATION_NOT_EXISTS = new ErrorCode(1_001_019, "部件信息不存在");
+
+    // ========== 事件上报 1_001_020 ==========
+    ErrorCode EVENT_REPORTING_NOT_EXISTS = new ErrorCode(1_001_020, "事件上报不存在");
+
+    // ========== 事件处理 1_001_021 ==========
+    ErrorCode EVENT_PROCESSING_NOT_EXISTS = new ErrorCode(1_001_021, "事件处理不存在");
+
+    // ========== 事件统计分析 1_001_022 ==========
+    ErrorCode EVENT_STATISTICAL_ANALYSIS_NOT_EXISTS = new ErrorCode(1_001_022, "事件统计分析不存在");
+
+    // ========== 事件关联分析 1_001_023 ==========
+    ErrorCode EVENT_ANALYSIS_NOT_EXISTS = new ErrorCode(1_001_023, "事件关联分析不存在");
+
+    // ========== 市政公用 1_001_024 ==========
+    ErrorCode MUNICIPAL_PUBLIC_UTILITIES_NOT_EXISTS = new ErrorCode(1_001_024, "市政公用不存在");
+
+    // ========== 市容环卫 1_001_025 ==========
+    ErrorCode ENVIRONMENTAL_SANITATION_NOT_EXISTS = new ErrorCode(1_001_025, "市容环卫不存在");
+
+    // ========== 园林绿化 1_001_026 ==========
+    ErrorCode LANDSCAPING_NOT_EXISTS = new ErrorCode(1_001_026, "园林绿化不存在");
+
+    // ========== 城市管理执法 1_001_027 ==========
+    ErrorCode LAW_ENFORCEMENT_NOT_EXISTS = new ErrorCode(1_001_027, "城市管理执法不存在");
+
+    // ========== 故障检测与定位 1_101_023 ==========
+    ErrorCode DETECTION_LOCALIZATION_NOT_EXISTS = new ErrorCode(1_101_023, "故障检测与定位不存在");
+
+    // ========== 故障诊断和预警 1_101_024 ==========
+    ErrorCode DIAGNOSIS_WARNING_NOT_EXISTS = new ErrorCode(1_101_024, "故障诊断和预警不存在");
+
+    // ========== 执法人员管理 1_101_025 ==========
+    ErrorCode OF_LAW_ENFORCEMENT_PERSONNEL_NOT_EXISTS = new ErrorCode(1_101_025, "执法人员管理不存在");
+
+    // ========== 执法车辆管理 1_101_026 ==========
+    ErrorCode LAW_ENFORCEMENT_VEHICLE_NOT_EXISTS = new ErrorCode(1_101_026, "执法车辆管理不存在");
+
+    // ========== 执法公示 1_101_027 ==========
+    ErrorCode ENFORCEMENT_PUBLICITY_NOT_EXISTS = new ErrorCode(1_101_027, "执法公示不存在");
+
+    // ========== 执法监督 1_101_028 ==========
+    ErrorCode LAW_ENFORCEMENT_SUPERVISION_NOT_EXISTS = new ErrorCode(1_101_028, "执法监督不存在");
+
+    // ========== 事件列表 1_101_029 ==========
+    ErrorCode EVENT_LIST_NOT_EXISTS = new ErrorCode(1_101_029, "事件列表不存在");
+
+    // ========== 重点工作任务 1_101_030 ==========
+    ErrorCode KEY_WORK_TASKS_NOT_EXISTS = new ErrorCode(1_101_030, "重点工作任务不存在");
+
 
 
 

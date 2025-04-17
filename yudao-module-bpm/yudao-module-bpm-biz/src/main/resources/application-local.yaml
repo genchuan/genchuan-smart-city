@@ -65,7 +65,7 @@ spring:
 #          username: root
 #          password: 123456
           driver-class-name: dm.jdbc.driver.DmDriver
-          url: jdbc:dm://127.0.0.1:5236?schema=RUOYI_VUE_PRO # DM 连接的示例
+          url: jdbc:dm://192.168.8.6:5236?schema=RUOYI_VUE_PRO # DM 连接的示例
           username: SYSDBA
           password: Sysdba123
         #          username: sa # SQL Server 连接的示例
