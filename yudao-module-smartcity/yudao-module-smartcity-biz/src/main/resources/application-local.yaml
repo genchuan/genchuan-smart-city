@@ -2,7 +2,7 @@
 spring:
   cloud:
     nacos:
-      server-addr: 127.0.0.1:8848 # Nacos 服务器地址http://192.168.8.11:31591/
+      server-addr: 192.168.8.11:31591 # Nacos 服务器地址http://192.168.8.11:31591/
 #      username: # Nacos 账号
 #      password: # Nacos 密码
       discovery: # 【配置中心】配置项
@@ -66,8 +66,8 @@ spring:
 
   # Redis 配置。Redisson 默认的配置足够使用，一般不需要进行调优
   redis:
-    host: 127.0.0.1 # 地址
-    port: 6379 # 端口
+    host: 192.168.8.11 # 地址
+    port: 6380 # 端口
     database: 0 # 数据库索引
 #    password: 123456 # 密码，建议生产环境开启
 
