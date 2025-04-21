@@ -182,8 +182,23 @@ public interface ErrorCodeConstants {
     // ========== 重点工作任务 1_101_030 ==========
     ErrorCode KEY_WORK_TASKS_NOT_EXISTS = new ErrorCode(1_101_030, "重点工作任务不存在");
 
+    // ========== 停车场信息管理 1_101_031 ==========
+    ErrorCode PARKING_LOT_INFORMATION_NOT_EXISTS = new ErrorCode(1_101_031, "停车场信息管理不存在");
 
+    // ========== 停车收费管理 1_101_032 ==========
+    ErrorCode PARKING_FEE_NOT_EXISTS = new ErrorCode(1_101_032, "停车收费管理不存在");
 
+    // ========== 停车管理用户管理与服务 1_101_033 ==========
+    ErrorCode PARKING_NOT_EXISTS = new ErrorCode(1_101_033, "停车管理用户管理与服务不存在");
+
+    // ========== 违建基本信息 1_101_034 ==========
+    ErrorCode BASIC_ILLEGAL_NOT_EXISTS = new ErrorCode(1_101_034, "违建基本信息不存在");
+
+    // ========== 巡查计划管理 1_101_035 ==========
+    ErrorCode DEVELOPMENT_INSPECTION_PLAN_NOT_EXISTS = new ErrorCode(1_101_035, "巡查计划管理不存在");
+    
+    // ========== 违建上报 1_101_036 ==========
+    ErrorCode REPORT_OF_ILLEGAL_CONSTRUCTIONS_NOT_EXISTS = new ErrorCode(1_101_036, "违建上报不存在");
 
 
 
