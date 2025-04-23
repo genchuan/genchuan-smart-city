@@ -200,10 +200,15 @@ public interface ErrorCodeConstants {
     // ========== 违建上报 1_101_036 ==========
     ErrorCode REPORT_OF_ILLEGAL_CONSTRUCTIONS_NOT_EXISTS = new ErrorCode(1_101_036, "违建上报不存在");
 
+    // ========== 排水安全 1_101_037 ==========
+    ErrorCode DRAINAGE_SAFETY_NOT_EXISTS = new ErrorCode(1_101_037, "排水安全不存在");
 
+    // ========== 监测点位 1_101_038 ==========
+    ErrorCode POINT_INFO_NOT_EXISTS = new ErrorCode(1_101_038, "监测点位不存在");
 
+    // ========== 监测设备 1_101_039 ==========
+    ErrorCode MONITORING_DEVICE_NOT_EXISTS = new ErrorCode(1_101_039, "监测设备不存在");
 
-
-
-
+    // ========== 监测项规则设置 1_101_040 ==========
+    ErrorCode MONITORING_RULE_NOT_EXISTS = new ErrorCode(1_101_040, "监测项规则设置不存在");
 }
