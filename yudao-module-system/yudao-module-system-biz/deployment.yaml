@@ -21,7 +21,15 @@ spec:
         imagePullPolicy: Always 
         ports:
         - containerPort: 48081
-        
+        env:
+        - name: NACOS_SERVER_ADDR
+          value: 192.168.8.11:31591
+        - name: NACOS_NAMESPACE
+          value: dev
+        - name: NACOS_USERNAME
+          value: 
+        - name: NACOS_PASSWORD
+          value:
 ---
 apiVersion: v1
 kind: Service
