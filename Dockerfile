@@ -6,9 +6,10 @@ ARG JAR_PATH=yudao-gateway
 ENV TZ=Asia/Shanghai 
 ENV JAVA_OPTS="-Xms512m -Xmx512m"
 ENV NACOS_SERVER_ADDR=nacos-server:8848
-ENV NACOS_NAMESPACE=public
-ENV NACOS_GROUP=DEFAULT_GROUP
+ENV -=public
 
+ENV NACOS_USERNAME=
+ENV NACOS_PASSWORD=
 COPY ${JAR_PATH}/target/${MODULE_NAME}.jar app.jar
 
 # 使用 exec 形式传递所有参数
