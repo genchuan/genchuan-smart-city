@@ -18,7 +18,7 @@ variables:
 
 镜像构建:
   stage: 镜像构建
-  image: docker:latest
+  image: $MAVEN_IMAGE
   services:
     - docker:dind
   script:
