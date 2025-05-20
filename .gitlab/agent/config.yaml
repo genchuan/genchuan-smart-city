@@ -1,0 +1,6 @@
+user_access:
+  access_as:
+      agent: {} # for free
+      user: {} # for premium+
+  projects:
+      - id: genchuan/sc-ruoyi-cloud
