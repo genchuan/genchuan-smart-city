@@ -1,6 +1,9 @@
+# 必须添加 KAS 服务器地址（根据你的域名）
+kas:
+  address: wss://kas.gitlab.genchuan.cn  # 注意是 wss 协议
+
 user_access:
   access_as:
-      agent: {} # for free
-      user: {} # for premium+
+    agent: {}  # 启用 Agent 身份访问
   projects:
-      - id: genchuan/sc-ruoyi-cloud
+    - id: genchuan/sc-ruoyi-cloud  # 必须与项目路径完全一致
