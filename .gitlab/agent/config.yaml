@@ -1,6 +1,6 @@
 # 必须添加 KAS 服务器地址（根据你的域名）
 kas:
-  address: wss://kas.gitlab.genchuan.cn  # 注意是 wss 协议
+  address: ws://kas.gitlab.genchuan.cn  
 
 user_access:
   access_as:
