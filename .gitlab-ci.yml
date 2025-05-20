@@ -1,0 +1,48 @@
+stages:
+  - 代码拉取
+  - 代码编译
+  - 镜像构建
+
+variables:
+  DOCKER_REGISTRY: "harbor.genchuan.cn"
+  DOCKER_USERNAME: "guoyuanhong"
+  DOCKER_PASSWORD: "Gyh12345"
+  MAVEN_IMAGE: "harbor.genchuan.cn/library/maven:3.9.6-alpine-jdk17-docker"
+
+代码拉取:
+  stage: 代码拉取
+  script:
+    - git clone http://gitlab.genchuan.cn/genchuan/sc-ruoyi-cloud.git
+    - cd sc-ruoyi-cloud
+  only:
+    - master
+
+代码编译:
+  stage: 代码编译
+  image: $MAVEN_IMAGE
+  script:
+    - mvn clean package -Dmaven.test.skip=true
+  only:
+    - master
+
+镜像构建:
+  stage: 镜像构建
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
+    - |
+      declare -A ServerName=(
+        ["yudao-gateway"]="yudao-gateway"
+        ["yudao-module-bpm-biz"]="yudao-module-bpm/yudao-module-bpm-biz"
+        ["yudao-module-infra-biz"]="yudao-module-infra/yudao-module-infra-biz"
+        ["yudao-module-smartcity-biz"]="yudao-module-smartcity/yudao-module-smartcity-biz"
+        ["yudao-module-system-biz"]="yudao-module-system/yudao-module-system-biz"
+      )
+      for key in "${!ServerName[@]}"; do
+        docker build --build-arg MODULE_NAME=$key --build-arg JAR_PATH=${ServerName[$key]} -t $DOCKER_REGISTRY/sccsgl/$key:latest .
+        docker push $DOCKER_REGISTRY/sccsgl/$key:latest
+      done
+  only:
+    - master
