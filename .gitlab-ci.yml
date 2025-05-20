@@ -19,8 +19,6 @@ variables:
 镜像构建:
   stage: 镜像构建
   image: $MAVEN_IMAGE
-  services:
-    - docker:dind
   script:
     - echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
     - |
