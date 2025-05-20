@@ -15,6 +15,9 @@ variables:
     - mvn clean package -Dmaven.test.skip=true
   only:
     - master
+  artifacts:
+    paths:
+      - "​**​/target/*.jar"
 
 镜像构建:
   stage: 镜像构建
@@ -22,22 +25,28 @@ variables:
   script:
     - echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
     - |
-      declare -A ServerName=(
-        ["yudao-gateway"]="yudao-gateway"
-        ["yudao-module-bpm-biz"]="yudao-module-bpm/yudao-module-bpm-biz"
-        ["yudao-module-infra-biz"]="yudao-module-infra/yudao-module-infra-biz"
-        ["yudao-module-smartcity-biz"]="yudao-module-smartcity/yudao-module-smartcity-biz"
-        ["yudao-module-system-biz"]="yudao-module-system/yudao-module-system-biz"
-      )
-      for key in "${!ServerName[@]}"; do
-        docker build --build-arg MODULE_NAME=$key --build-arg JAR_PATH=${ServerName[$key]} -t $DOCKER_REGISTRY/sccsgl/$key:latest .
-        docker push $DOCKER_REGISTRY/sccsgl/$key:latest
+      # Alpine兼容的镜像构建方案
+      for module in "yudao-gateway" "yudao-module-bpm-biz" "yudao-module-infra-biz" "yudao-module-smartcity-biz" "yudao-module-system-biz"; do
+        case $module in
+          "yudao-gateway") jar_path="yudao-gateway" ;;
+          "yudao-module-bpm-biz") jar_path="yudao-module-bpm/yudao-module-bpm-biz" ;;
+          "yudao-module-infra-biz") jar_path="yudao-module-infra/yudao-module-infra-biz" ;;
+          "yudao-module-smartcity-biz") jar_path="yudao-module-smartcity/yudao-module-smartcity-biz" ;;
+          "yudao-module-system-biz") jar_path="yudao-module-system/yudao-module-system-biz" ;;
+        esac
+        
+        docker build \
+          --build-arg MODULE_NAME=$module \
+          --build-arg JAR_PATH=$jar_path \
+          -t $DOCKER_REGISTRY/sccsgl/$module:latest .
+          
+        docker push $DOCKER_REGISTRY/sccsgl/$module:latest
       done
   only:
     - master
   retry:
-    max: 2  # 最大重试次数
-    when:  # 重试条件
+    max: 2
+    when:
       - runner_system_failure
       - stuck_or_timeout_failure
       - unknown_failure
