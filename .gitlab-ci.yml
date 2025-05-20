@@ -37,3 +37,9 @@ variables:
       done
   only:
     - master
+  retry:
+    max: 2  # 最大重试次数
+    when:  # 重试条件
+      - runner_system_failure
+      - stuck_or_timeout_failure
+      - unknown_failure
