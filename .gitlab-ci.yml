@@ -1,5 +1,4 @@
 stages:
-  - 代码拉取
   - 代码编译
   - 镜像构建
 
@@ -8,14 +7,6 @@ variables:
   DOCKER_USERNAME: "guoyuanhong"
   DOCKER_PASSWORD: "Gyh12345"
   MAVEN_IMAGE: "harbor.genchuan.cn/library/maven:3.9.6-alpine-jdk17-docker"
-
-代码拉取:
-  stage: 代码拉取
-  script:
-    - git clone http://gitlab.genchuan.cn/genchuan/sc-ruoyi-cloud.git
-    - cd sc-ruoyi-cloud
-  only:
-    - master
 
 代码编译:
   stage: 代码编译
