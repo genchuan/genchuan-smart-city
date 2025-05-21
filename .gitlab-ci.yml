@@ -25,14 +25,10 @@ BuildAndPush:
           "yudao-module-system-biz") jar_path="yudao-module-system/yudao-module-system-biz" ;;
         esac
         
-        # 打印调试信息，确认 JAR 文件存在
-        echo "正在构建模块: $module"
-        ls -la
-        ls -la "$jar_path/target/" || echo "⚠️ 未找到 $jar_path/target/ 目录！"
-        
-        # 使用 BuildKit 构建 Docker 镜像
-        docker build --build-arg MODULE_NAME="$module" --build-arg JAR_PATH="$jar_path" -t "$DOCKER_REGISTRY/sccsgl/$module:latest" .  # 使用当前目录作为构建上下文
-        
+        docker build \
+          --build-arg MODULE_NAME="$module" \
+          --build-arg JAR_PATH="$jar_path" \
+          -t "$DOCKER_REGISTRY/sccsgl/$module:latest" .
         # 推送镜像到仓库
         docker push "$DOCKER_REGISTRY/sccsgl/$module:latest"
       done
