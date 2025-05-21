@@ -11,6 +11,8 @@ variables:
 BuildAndPush:
   stage: BuildAndPush
   image: $MAVEN_IMAGE
+  variables:
+    DOCKER_BUILDKIT: "0"
   script:
     - mvn clean package -Dmaven.test.skip=true
     - echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
