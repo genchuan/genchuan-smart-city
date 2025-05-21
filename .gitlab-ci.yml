@@ -7,21 +7,29 @@ variables:
   DOCKER_USERNAME: "guoyuanhong"
   DOCKER_PASSWORD: "Gyh12345"
   MAVEN_IMAGE: "harbor.genchuan.cn/library/maven:3.9.6-alpine-jdk17-docker"
+  DOCKER_BUILDKIT: "1"  # 启用 Docker BuildKit 提高构建速度
 
 代码编译:
   stage: 代码编译
   image: $MAVEN_IMAGE
   script:
     - mvn clean package -Dmaven.test.skip=true
+  artifacts:
+    paths:
+      - "​**​/target/*.jar"  # 确保所有模块的 JAR 文件都被缓存
+    expire_in: 1 hour  # 1 小时后自动清理
   only:
     - master
+
 镜像构建:
   stage: 镜像构建
   image: $MAVEN_IMAGE
+  dependencies:
+    - 代码编译  # 确保依赖的 JAR 文件被正确传递
   script:
     - echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
     - |
-      # Alpine兼容的镜像构建方案
+      # 遍历所有模块并构建 Docker 镜像
       for module in "yudao-gateway" "yudao-module-bpm-biz" "yudao-module-infra-biz" "yudao-module-smartcity-biz" "yudao-module-system-biz"; do
         case $module in
           "yudao-gateway") jar_path="yudao-gateway" ;;
@@ -31,12 +39,19 @@ variables:
           "yudao-module-system-biz") jar_path="yudao-module-system/yudao-module-system-biz" ;;
         esac
         
+        # 打印调试信息，确认 JAR 文件存在
+        echo "正在构建模块: $module"
+        ls -la "$jar_path/target/" || echo "⚠️ 未找到 $jar_path/target/ 目录！"
+        
+        # 使用 BuildKit 构建 Docker 镜像
         docker build \
-          --build-arg MODULE_NAME=$module \
-          --build-arg JAR_PATH=$jar_path \
-          -t $DOCKER_REGISTRY/sccsgl/$module:latest .
-          
-        docker push $DOCKER_REGISTRY/sccsgl/$module:latest
+          --build-arg MODULE_NAME="$module" \
+          --build-arg JAR_PATH="$jar_path" \
+          -t "$DOCKER_REGISTRY/sccsgl/$module:latest" \
+          .  # 使用当前目录作为构建上下文
+        
+        # 推送镜像到仓库
+        docker push "$DOCKER_REGISTRY/sccsgl/$module:latest"
       done
   only:
     - master
