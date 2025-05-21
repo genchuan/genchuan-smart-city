@@ -7,6 +7,7 @@ variables:
   DOCKER_PASSWORD: "Gyh12345"
   MAVEN_IMAGE: "harbor.genchuan.cn/library/maven:3.9.6-alpine-jdk17-docker"
   DOCKER_BUILDKIT: "1"  # 启用 Docker BuildKit 提高构建速度
+  POD_TAG: "prod"  # Podman 镜像标签
 
 BuildAndPush:
   stage: BuildAndPush
@@ -30,9 +31,9 @@ BuildAndPush:
         docker build \
           --build-arg MODULE_NAME="$module" \
           --build-arg JAR_PATH="$jar_path" \
-          -t "$DOCKER_REGISTRY/sccsgl/$module:latest" .
+          -t "$DOCKER_REGISTRY/sccsgl/$module:$POD_TAG" .
         # 推送镜像到仓库
-        docker push "$DOCKER_REGISTRY/sccsgl/$module:latest"
+        docker push "$DOCKER_REGISTRY/sccsgl/$module:$POD_TAG"
       done
 
   retry:
