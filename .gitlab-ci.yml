@@ -15,10 +15,6 @@ variables:
     - mvn clean package -Dmaven.test.skip=true
   only:
     - master
-  artifacts:
-    paths:
-      - "​**​/target/*.jar"
-
 镜像构建:
   stage: 镜像构建
   image: $MAVEN_IMAGE
