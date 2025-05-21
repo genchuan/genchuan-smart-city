@@ -41,6 +41,7 @@ variables:
         
         # 打印调试信息，确认 JAR 文件存在
         echo "正在构建模块: $module"
+        ls -la
         ls -la "$jar_path/target/" || echo "⚠️ 未找到 $jar_path/target/ 目录！"
         
         # 使用 BuildKit 构建 Docker 镜像
