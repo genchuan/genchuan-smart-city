@@ -1,7 +1,6 @@
 stages:
-  - 代码编译
-  - 镜像构建
-
+  - BuildAndPush
+  
 variables:
   DOCKER_REGISTRY: "harbor.genchuan.cn"
   DOCKER_USERNAME: "guoyuanhong"
