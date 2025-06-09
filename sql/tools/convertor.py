@@ -45,7 +45,7 @@ def load_and_clean(sql_file: str) -> str:
         ("b'1'", "'1'"),
     )
 
-    content = open(sql_file,'r', encoding='utf-8').read()
+    content = open(sql_file).read()
     for replace_pair in REPLACE_PAIR_LIST:
         content = content.replace(*replace_pair)
     content = re.sub(r"ENGINE.*COMMENT", "COMMENT", content)
@@ -820,7 +820,7 @@ def main():
     )
     args = parser.parse_args()
 
-    sql_file = pathlib.Path("../table_mysql.sql").resolve().as_posix()
+    sql_file = pathlib.Path("../mysql/ruoyi-vue-pro.sql").resolve().as_posix()
     convertor = None
     if args.type == "postgres":
         convertor = PostgreSQLConvertor(sql_file)

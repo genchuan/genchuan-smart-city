@@ -25,8 +25,8 @@ public class IotPluginCommonAutoConfiguration {
     @Bean
     public RestTemplate restTemplate(IotPluginCommonProperties properties) {
         return new RestTemplateBuilder()
-                .setConnectTimeout(properties.getUpstreamConnectTimeout())
-                .setReadTimeout(properties.getUpstreamReadTimeout())
+                .connectTimeout(properties.getUpstreamConnectTimeout())
+                .readTimeout(properties.getUpstreamReadTimeout())
                 .build();
     }
 
