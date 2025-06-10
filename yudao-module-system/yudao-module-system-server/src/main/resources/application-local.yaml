@@ -56,6 +56,7 @@ spring:
       primary: master
       datasource:
         master:
+          driver-class-name: dm.jdbc.driver.DmDriver
           url: jdbc:dm://192.168.8.15:5236?schema=RUOYI_VUE_PRO # DM 连接的示例
           username: SYSDBA
           password: Sysdba123
