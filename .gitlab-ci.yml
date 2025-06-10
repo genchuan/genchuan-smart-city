@@ -7,7 +7,7 @@ variables:
   DOCKER_PASSWORD: "Gyh12345"
   MAVEN_IMAGE: "harbor.genchuan.cn/library/maven:3.9.6-alpine-jdk17-docker"
   DOCKER_BUILDKIT: "1"  # 启用 Docker BuildKit 提高构建速度
-  POD_TAG: "prod"  # Podman 镜像标签
+  POD_TAG: "prod-jdk17"  # Podman 镜像标签
 
 BuildAndPush:
   stage: BuildAndPush
@@ -19,13 +19,21 @@ BuildAndPush:
     - echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
     - |
       # 遍历所有模块并构建 Docker 镜像
-      for module in "yudao-gateway" "yudao-module-bpm-biz" "yudao-module-infra-biz" "yudao-module-smartcity-biz" "yudao-module-system-biz"; do
+      for module in "yudao-gateway" "yudao-module-ai-server" "yudao-module-bpm-server" "yudao-module-crm-server" "yudao-module-erp-server" "yudao-module-infra-server" "yudao-module-member-server" "yudao-module-mp-server" "yudao-module-pay-server" "yudao-module-report-server" "yudao-module-smartcity-server" "yudao-module-system-server" "yudao-server" ; do
         case $module in
           "yudao-gateway") jar_path="yudao-gateway" ;;
-          "yudao-module-bpm-biz") jar_path="yudao-module-bpm/yudao-module-bpm-biz" ;;
-          "yudao-module-infra-biz") jar_path="yudao-module-infra/yudao-module-infra-biz" ;;
-          "yudao-module-smartcity-biz") jar_path="yudao-module-smartcity/yudao-module-smartcity-biz" ;;
-          "yudao-module-system-biz") jar_path="yudao-module-system/yudao-module-system-biz" ;;
+          "yudao-module-ai-server") jar_path="yudao-module-ai/yudao-module-ai-server" ;;
+          "yudao-module-bpm-server") jar_path="yudao-module-bpm/yudao-module-bpm-server" ;;
+          "yudao-module-crm-server") jar_path="yudao-module-crm/yudao-module-crm-server" ;;
+          "yudao-module-erp-server") jar_path="yudao-module-erp/yudao-module-erp-server" ;;
+          "yudao-module-infra-server") jar_path="yudao-module-infra/yudao-module-infra-server" ;;
+          "yudao-module-member-server") jar_path="yudao-module-member/yudao-module-member-server" ;;
+          "yudao-module-mp-server") jar_path="yudao-module-mp/yudao-module-mp-server" ;;
+          "yudao-module-pay-server") jar_path="yudao-module-pay/yudao-module-pay-server" ;;
+          "yudao-module-report-server") jar_path="yudao-module-report/yudao-module-report-server" ;;
+          "yudao-module-smartcity-server") jar_path="yudao-module-smartcity/yudao-module-smartcity-server" ;;
+          "yudao-module-system-server") jar_path="yudao-module-system/yudao-module-system-server" ;;
+          "yudao-server") jar_path="yudao-server" ;;
         esac
         
         docker build \
