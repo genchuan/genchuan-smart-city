@@ -14,7 +14,7 @@ services:
         restart: unless-stopped
         environment:
             TZ: Asia/Shanghai
-            MYSQL_ROOT_PASSWORD: 123456
+            MYSQL_ROOT_password: Cql@335533
             MYSQL_DATABASE: ruoyi-vue-pro
         ports:
             - "3306:3306"
@@ -34,7 +34,7 @@ services:
         restart: unless-stopped
         environment:
             POSTGRES_USER: root
-            POSTGRES_PASSWORD: 123456
+            POSTGRES_password: Cql@335533
             POSTGRES_DB: ruoyi-vue-pro
         ports:
             - "5432:5432"
@@ -112,7 +112,7 @@ services:
         restart: unless-stopped
         environment:
             DB_USER: root
-            DB_PASSWORD: 123456
+            DB_password: Cql@335533
         ports:
             - "54321:54321"
         volumes:
