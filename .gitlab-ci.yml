@@ -19,7 +19,7 @@ BuildAndPush:
     - echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
     - |
       # 遍历所有模块并构建 Docker 镜像
-      for module in "yudao-gateway" "yudao-module-ai-server" "yudao-module-bpm-server" "yudao-module-crm-server" "yudao-module-erp-server" "yudao-module-infra-server" "yudao-module-member-server" "yudao-module-mp-server" "yudao-module-pay-server" "yudao-module-report-server" "yudao-module-smartcity-server" "yudao-module-system-server" "yudao-server" ; do
+      for module in "yudao-gateway" "yudao-module-ai-server" "yudao-module-bpm-server" "yudao-module-crm-server" "yudao-module-erp-server" "yudao-module-infra-server" "yudao-module-member-server" "yudao-module-mp-server" "yudao-module-pay-server" "yudao-module-report-server" "yudao-module-smartcity-server" "yudao-module-system-server"; do
         case $module in
           "yudao-gateway") jar_path="yudao-gateway" ;;
           "yudao-module-ai-server") jar_path="yudao-module-ai/yudao-module-ai-server" ;;
@@ -33,7 +33,6 @@ BuildAndPush:
           "yudao-module-report-server") jar_path="yudao-module-report/yudao-module-report-server" ;;
           "yudao-module-smartcity-server") jar_path="yudao-module-smartcity/yudao-module-smartcity-server" ;;
           "yudao-module-system-server") jar_path="yudao-module-system/yudao-module-system-server" ;;
-          "yudao-server") jar_path="yudao-server" ;;
         esac
         
         docker build \
