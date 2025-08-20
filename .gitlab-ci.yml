@@ -7,7 +7,7 @@ variables:
   DOCKER_PASSWORD: "Gyh12345"
   MAVEN_IMAGE: "harbor.genchuan.cn/library/maven:3.9.6-alpine-jdk17-docker"
   DOCKER_BUILDKIT: "1"  # 启用 Docker BuildKit 提高构建速度
-  POD_TAG: "prod-jdk17"  # Podman 镜像标签
+  POD_TAG: "$CI_COMMIT_BRANCH"  # Podman 镜像标签
 
 BuildAndPush:
   stage: BuildAndPush
