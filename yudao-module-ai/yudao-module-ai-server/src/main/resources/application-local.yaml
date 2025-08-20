@@ -58,9 +58,12 @@ spring:
       primary: master
       datasource:
         master:
-          url: jdbc:dm://192.168.8.88:5236?schema=YUDAO_AI # DM 连接的示例
-          username: SYSDBA
-          password: Sysdba123
+          url: jdbc:mysql://127.0.0.1:3306/ruoyi-vue-pro?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true # MySQL Connector/J 8.X 连接的示例
+        username: root
+          password: Cql@335533
+          # url: jdbc:dm://192.168.8.88:5236?schema=YUDAO_AI # DM 连接的示例
+          # username: SYSDBA
+          # password: Sysdba123
 
   # Redis 配置。Redisson 默认的配置足够使用，一般不需要进行调优
   data:
