@@ -129,4 +129,4 @@ spring:
 
 # 芋道配置项，设置当前项目所有自定义的配置
 yudao:
-  demo: true # 开启演示模式
+  demo: false # 开启演示模式

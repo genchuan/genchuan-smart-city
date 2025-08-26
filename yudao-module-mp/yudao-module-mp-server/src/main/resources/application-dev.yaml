@@ -106,4 +106,4 @@ spring:
 
 # 芋道配置项，设置当前项目所有自定义的配置
 yudao:
-  demo: true # 关闭演示模式
+  demo: false # 关闭演示模式
