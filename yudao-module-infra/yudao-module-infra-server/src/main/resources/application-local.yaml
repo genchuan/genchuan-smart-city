@@ -7,12 +7,12 @@ spring:
       username: # Nacos 账号
       password: # Nacos 密码
       discovery: # 【配置中心】配置项
-        namespace: dev # 命名空间。这里使用 dev 开发环境
+        namespace:   # 命名空间。这里使用 dev 开发环境
         group: DEFAULT_GROUP # 使用的 Nacos 配置分组，默认为 DEFAULT_GROUP
         metadata:
           version: 1.0.0 # 服务实例的版本号，可用于灰度发布
       config: # 【注册中心】配置项
-        namespace: dev # 命名空间。这里使用 dev 开发环境
+        namespace:   # 命名空间。这里使用 dev 开发环境
         group: DEFAULT_GROUP # 使用的 Nacos 配置分组，默认为 DEFAULT_GROUP
 
 --- #################### 数据库相关配置 ####################
@@ -60,9 +60,14 @@ spring:
       primary: master
       datasource:
         master:
-          url: jdbc:dm://192.168.8.15:5236?schema=RUOYI_VUE_PRO # DM 连接的示例
-          username: SYSDBA
-          password: Sysdba123
+          url: jdbc:mysql://192.168.8.67:3306/ruoyi-vue-pro?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true # MySQL Connector/J 8.X 连接的示例
+          username: root
+          password: Cql@335533
+        slave: # 模拟从库，可根据自己需要修改 # 模拟从库，可根据自己需要修改
+          lazy: true # 开启懒加载，保证启动速度
+          url: jdbc:mysql://192.168.8.67:3306/ruoyi-vue-pro?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true # MySQL Connector/J 8.X 连接的示例
+          username: root
+          password: Cql@335533
 
   # Redis 配置。Redisson 默认的配置足够使用，一般不需要进行调优
   data:
