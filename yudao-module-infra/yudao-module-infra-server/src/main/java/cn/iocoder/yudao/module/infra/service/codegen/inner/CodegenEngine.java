@@ -523,14 +523,14 @@ public class CodegenEngine {
     }
 
     private static String javaModuleFilePath(String path, String module, String src) {
-        return "yudao-module-${table.moduleName}/" + // 顶级模块
-                "yudao-module-${table.moduleName}-" + module + "/" + // 子模块
+        return "gc-module-${table.moduleName}/" + // 顶级模块
+                "gc-module-${table.moduleName}-" + module + "/" + // 子模块
                 "src/" + src + "/java/${basePackage}/module/${table.moduleName}/" + path + ".java";
     }
 
     private static String mapperXmlFilePath() {
-        return "yudao-module-${table.moduleName}/" + // 顶级模块
-                "yudao-module-${table.moduleName}-server/" + // 子模块
+        return "gc-module-${table.moduleName}/" + // 顶级模块
+                "gc-module-${table.moduleName}-server/" + // 子模块
                 "src/main/resources/mapper/${table.businessName}/${table.className}Mapper.xml";
     }
 

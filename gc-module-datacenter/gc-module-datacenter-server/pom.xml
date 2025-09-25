@@ -4,20 +4,20 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>cn.iocoder.cloud</groupId>
-        <artifactId>yudao-module-system</artifactId>
-        <version>${revision}</version>
+        <artifactId>gc-module-datacenter</artifactId>
+        <version>${revision}</version> <!-- 1. 修改 version 为 ${revision} -->
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>yudao-module-system-server</artifactId>
-    <packaging>jar</packaging>
+    <packaging>jar</packaging> <!-- 2. 新增 packaging 为 jar -->
 
-    <name>${project.artifactId}</name>
-    <description>
-        system 模块下，我们放通用业务，支撑上层的核心业务。
-        例如说：用户、部门、权限、数据字典等等
+    <artifactId>gc-module-datacenter-server</artifactId>
+
+    <name>${project.artifactId}</name> <!-- 3. 新增 name 为 ${project.artifactId} -->
+    <description> <!-- 4. 新增 description 为该模块的描述 -->
+        demo 模块，主要实现 XXX、YYY、ZZZ 等功能。
     </description>
 
-    <dependencies>
+    <dependencies>  <!-- 5. 新增依赖，这里引入的都是比较常用的业务组件、技术组件 -->
         <!-- Spring Cloud 基础 -->
         <dependency>
             <groupId>cn.iocoder.cloud</groupId>
@@ -35,7 +35,11 @@
             <artifactId>yudao-module-infra-api</artifactId>
             <version>${revision}</version>
         </dependency>
-
+        <dependency>
+            <groupId>cn.iocoder.cloud</groupId>
+            <artifactId>gc-module-datacenter-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
         <!-- 业务组件 -->
         <dependency>
             <groupId>cn.iocoder.cloud</groupId>
@@ -45,12 +49,13 @@
             <groupId>cn.iocoder.cloud</groupId>
             <artifactId>yudao-spring-boot-starter-biz-tenant</artifactId>
         </dependency>
-        <dependency>
-            <groupId>cn.iocoder.cloud</groupId>
-            <artifactId>yudao-spring-boot-starter-biz-ip</artifactId>
-        </dependency>
 
         <!-- Web 相关 -->
+        <dependency>
+            <groupId>cn.iocoder.cloud</groupId>
+            <artifactId>yudao-spring-boot-starter-web</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>cn.iocoder.cloud</groupId>
             <artifactId>yudao-spring-boot-starter-security</artifactId>
@@ -97,17 +102,10 @@
             <artifactId>yudao-spring-boot-starter-mq</artifactId>
         </dependency>
 
-        <!-- 服务保障相关 TODO 芋艿：暂时去掉 -->
-<!--        <dependency>-->
-<!--            <groupId>cn.iocoder.cloud</groupId>-->
-<!--            <artifactId>yudao-spring-boot-starter-protection</artifactId>-->
-<!--        </dependency>-->
-
         <!-- Test 测试相关 -->
         <dependency>
             <groupId>cn.iocoder.cloud</groupId>
             <artifactId>yudao-spring-boot-starter-test</artifactId>
-            <scope>test</scope>
         </dependency>
 
         <!-- 工具类相关 -->
@@ -116,57 +114,17 @@
             <artifactId>yudao-spring-boot-starter-excel</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-mail</artifactId>
-        </dependency>
-
         <!-- 监控相关 -->
         <dependency>
             <groupId>cn.iocoder.cloud</groupId>
             <artifactId>yudao-spring-boot-starter-monitor</artifactId>
         </dependency>
-
-        <!-- 三方云服务相关 -->
         <dependency>
-            <groupId>me.zhyd.oauth</groupId>
-            <artifactId>JustAuth</artifactId> <!-- 社交登陆（例如说，个人微信、企业微信等等） -->
+            <groupId>cn.iocoder.cloud</groupId>
+            <artifactId>gc-module-datacenter-api</artifactId>
+            <version>2.5.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>com.xkcoding.justauth</groupId>
-            <artifactId>justauth-spring-boot-starter</artifactId>
-            <exclusions>
-                <!-- 移除，避免和项目里的 hutool-all 冲突 -->
-                <exclusion>
-                    <groupId>cn.hutool</groupId>
-                    <artifactId>hutool-core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.binarywang</groupId>
-            <artifactId>wx-java-mp-spring-boot-starter</artifactId> <!-- 微信登录（公众号） -->
-        </dependency>
-        <dependency>
-            <groupId>com.github.binarywang</groupId>
-            <artifactId>wx-java-miniapp-spring-boot-starter</artifactId>  <!-- 微信登录（小程序） -->
-        </dependency>
-
-        <dependency>
-            <groupId>com.anji-plus</groupId>
-            <artifactId>captcha-spring-boot-starter</artifactId> <!-- 验证码，一般用于登录使用 -->
-        </dependency>
-
-        <dependency>
-            <groupId>org.dromara.hutool</groupId>
-            <artifactId>hutool-extra</artifactId> <!-- 邮件 -->
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -177,7 +135,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring.boot.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -188,5 +145,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
