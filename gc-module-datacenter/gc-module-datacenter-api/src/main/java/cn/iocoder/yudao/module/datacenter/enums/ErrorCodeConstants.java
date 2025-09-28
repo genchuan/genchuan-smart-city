@@ -16,4 +16,7 @@ public interface ErrorCodeConstants {
     ErrorCode SCENE_CONFIG_NAME_DUPLICATE = new ErrorCode(100_005, "已经存在该场景名称的场景分类");
     ErrorCode SCENE_CONFIG_PARENT_IS_CHILD = new ErrorCode(100_006, "不能设置自己的子SceneConfig为父SceneConfig");
 
+    // ========== 预警信息 TODO 100_007 ==========
+    ErrorCode ALARM_INFORMATION_NOT_EXISTS = new ErrorCode(100_007, "预警信息不存在");
+
 }
