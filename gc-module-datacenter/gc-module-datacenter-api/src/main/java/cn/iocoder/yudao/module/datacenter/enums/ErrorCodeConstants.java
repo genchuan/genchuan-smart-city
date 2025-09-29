@@ -17,10 +17,16 @@ public interface ErrorCodeConstants {
     ErrorCode SCENE_CONFIG_PARENT_IS_CHILD = new ErrorCode(100_006, "不能设置自己的子SceneConfig为父SceneConfig");
     ErrorCode ALARM_LIST_NOT_EXISTS = new ErrorCode(100_106, "预警告警列不存在");
 
-    // ========== 预警信息 TODO 100_007 ==========
-    ErrorCode ALARM_INFORMATION_NOT_EXISTS = new ErrorCode(100_007, "预警信息不存在");
-
-    // ========== 预警信息 TODO 100_007 ==========
-    ErrorCode ALARM_INFORMATION_NOT_EXISTS = new ErrorCode(100_007, "预警信息不存在");
-
+    // ========== 巡查人员信息 108_001 ==========
+    ErrorCode INSPECTION_STAFF_NOT_EXISTS = new ErrorCode(108_001, "巡查人员信息不存在");
+    // ========== 人员区域分配 108_002 ==========
+    ErrorCode STAFF_AREA_ASSIGNMENT_NOT_EXISTS = new ErrorCode(108_002, "人员区域分配不存在");
+    // ========== 人员作业状态 108_003 ==========
+    ErrorCode STAFF_WORK_STATUS_NOT_EXISTS = new ErrorCode(108_003, "人员作业状态不存在");
+    // ========== 人员异常报警 108_004 ==========
+    ErrorCode STAFF_ALERT_NOT_EXISTS = new ErrorCode(108_004, "人员异常报警不存在");
+    // ========== 巡查路线 108_005 ==========
+    ErrorCode PATROL_ROUTE_NOT_EXISTS = new ErrorCode(108_005, "巡查路线不存在");
+    // ========== 路线版本 108_006 ==========
+    ErrorCode ROUTE_VERSION_NOT_EXISTS = new ErrorCode(108_006, "路线版本不存在");
 }
