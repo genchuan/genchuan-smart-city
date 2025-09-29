@@ -20,4 +20,7 @@ public interface ErrorCodeConstants {
     // ========== 预警信息 TODO 100_007 ==========
     ErrorCode ALARM_INFORMATION_NOT_EXISTS = new ErrorCode(100_007, "预警信息不存在");
 
+    // ========== 预警信息 TODO 100_007 ==========
+    ErrorCode ALARM_INFORMATION_NOT_EXISTS = new ErrorCode(100_007, "预警信息不存在");
+
 }
