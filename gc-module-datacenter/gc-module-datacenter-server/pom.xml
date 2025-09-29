@@ -16,8 +16,19 @@
     <description> <!-- 4. 新增 description 为该模块的描述 -->
         demo 模块，主要实现 XXX、YYY、ZZZ 等功能。
     </description>
-
+    <repositories>
+        <repository>
+            <id>thingsboard</id>
+            <url>https://repo.thingsboard.io/artifactory/libs-release-public</url>
+        </repository>
+    </repositories>
     <dependencies>  <!-- 5. 新增依赖，这里引入的都是比较常用的业务组件、技术组件 -->
+        <!-- Thingsboard依赖 -->
+        <dependency>
+            <groupId>org.thingsboard</groupId>
+            <artifactId>rest-client</artifactId>
+            <version>4.2.0</version>
+        </dependency>
         <!-- Spring Cloud 基础 -->
         <dependency>
             <groupId>cn.iocoder.cloud</groupId>

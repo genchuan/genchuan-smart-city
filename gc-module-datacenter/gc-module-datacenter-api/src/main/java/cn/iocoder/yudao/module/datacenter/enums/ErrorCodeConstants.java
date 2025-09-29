@@ -29,4 +29,6 @@ public interface ErrorCodeConstants {
     ErrorCode PATROL_ROUTE_NOT_EXISTS = new ErrorCode(108_005, "巡查路线不存在");
     // ========== 路线版本 108_006 ==========
     ErrorCode ROUTE_VERSION_NOT_EXISTS = new ErrorCode(108_006, "路线版本不存在");
+
+    ErrorCode DEVICE_NOT_EXISTS = new ErrorCode(108_007, "Thingsboard设备不存在");
 }

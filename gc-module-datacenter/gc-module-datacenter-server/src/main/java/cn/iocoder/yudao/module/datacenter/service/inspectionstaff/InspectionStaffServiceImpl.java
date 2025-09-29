@@ -2,7 +2,10 @@ package cn.iocoder.yudao.module.datacenter.service.inspectionstaff;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.system.api.dept.DeptApi;
+import cn.iocoder.yudao.module.system.api.dept.dto.DeptRespDTO;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -30,8 +33,8 @@ import static cn.iocoder.yudao.module.datacenter.enums.ErrorCodeConstants.*;
 @Service
 @Validated
 public class InspectionStaffServiceImpl implements InspectionStaffService {
-//    @Resource
-//    private DeptService deptService;
+    @Resource
+    private DeptApi deptApi;
 
     @Resource
     private InspectionStaffMapper inspectionStaffMapper;
@@ -71,68 +74,72 @@ public class InspectionStaffServiceImpl implements InspectionStaffService {
 
     @Override
     public InspectionStaffDO getInspectionStaff(Long id) {
-//        InspectionStaffDO staff = inspectionStaffMapper.selectById(id);
-//        if (staff != null && staff.getDeptId() != null) {
-//            DeptDO dept = deptService.getDept(staff.getDeptId());
-//            if (dept != null) {
-//                staff.setDeptName(dept.getName()); // 动态设置部门名称
-//            }
-//        }
-//        return staff;
-        return inspectionStaffMapper.selectById(id);
+        InspectionStaffDO staff = inspectionStaffMapper.selectById(id);
+        if (staff != null && staff.getDeptId() != null) {
+            // 通过DeptApi接口调用获取部门信息
+            DeptRespDTO dept = deptApi.getDept(staff.getDeptId()).getCheckedData();
+            if (dept != null) {
+                staff.setDeptName(dept.getName()); // 动态设置部门名称
+            }
+        }
+        return staff;
+//        return inspectionStaffMapper.selectById(id);
     }
 
     @Override
     public PageResult<InspectionStaffDO> getInspectionStaffPage(InspectionStaffPageReqVO pageReqVO) {
 //        Set<Long> deptIds = getDeptCondition(pageReqVO.getDeptId());
-        return inspectionStaffMapper.selectPage(pageReqVO);
-//        PageResult<InspectionStaffDO> pageResult = inspectionStaffMapper.selectPage(pageReqVO, getDeptCondition(pageReqVO.getDeptId()));
-//
-//        // 动态设置部门名称
-//        if (CollUtil.isNotEmpty(pageResult.getList())) {
-//            for (InspectionStaffDO staff : pageResult.getList()) {
-//                if (staff.getDeptId() != null) {
-//                    DeptDO dept = deptService.getDept(staff.getDeptId());
-//                    if (dept != null) {
-//                        staff.setDeptName(dept.getName()); // 动态设置部门名称
-//                    }
-//                }
-//            }
-//        }
-//
-//        return pageResult;
+//        return inspectionStaffMapper.selectPage(pageReqVO);
+        PageResult<InspectionStaffDO> pageResult = inspectionStaffMapper.selectPage(pageReqVO);
+
+        // 动态设置部门名称
+        if (CollUtil.isNotEmpty(pageResult.getList())) {
+            setDeptNamesForStaffList(pageResult.getList());
+        }
+
+        return pageResult;
     }
 
     @Override
     public List<InspectionStaffDO> getInspectionStaffList() {
         // 查询所有数据，按ID倒序排列
-        return inspectionStaffMapper.selectList(new LambdaQueryWrapperX<InspectionStaffDO>()
-                .orderByDesc(InspectionStaffDO::getId));
-//        List<InspectionStaffDO> list = inspectionStaffMapper.selectList(new LambdaQueryWrapperX<InspectionStaffDO>()
+//        return inspectionStaffMapper.selectList(new LambdaQueryWrapperX<InspectionStaffDO>()
 //                .orderByDesc(InspectionStaffDO::getId));
-//
-//        // 动态设置部门名称
-//        if (CollUtil.isNotEmpty(list)) {
-//            for (InspectionStaffDO staff : list) {
-//                if (staff.getDeptId() != null) {
-//                    DeptDO dept = deptService.getDept(staff.getDeptId());
-//                    if (dept != null) {
-//                        staff.setDeptName(dept.getName()); // 动态设置部门名称
-//                    }
-//                }
-//            }
-//        }
+        // 查询所有数据，按ID倒序排列
+        List<InspectionStaffDO> list = inspectionStaffMapper.selectList(new LambdaQueryWrapperX<InspectionStaffDO>()
+                .orderByDesc(InspectionStaffDO::getId));
 
-//        return list;
+        // 动态设置部门名称
+        if (CollUtil.isNotEmpty(list)) {
+            setDeptNamesForStaffList(list);
+        }
+
+        return list;
     }
 
-//    private Set<Long> getDeptCondition(Long deptId) {
-//        if (deptId == null) {
-//            return Collections.emptySet();
-//        }
-//        Set<Long> deptIds = convertSet(deptService.getChildDeptList(deptId), DeptDO::getId);
-//        deptIds.add(deptId); // 包括自身
-//        return deptIds;
-//    }
+    /**
+     * 为巡查人员列表批量设置部门名称
+     * @param staffList 巡查人员列表
+     */
+    private void setDeptNamesForStaffList(List<InspectionStaffDO> staffList) {
+        // 收集所有需要查询的部门ID
+        Set<Long> deptIds = CollectionUtils.convertSet(staffList,
+                staff -> staff.getDeptId() != null ? staff.getDeptId() : null);
+        deptIds.remove(null); // 移除null值
+
+        if (CollUtil.isEmpty(deptIds)) {
+            return;
+        }
+
+        // 批量查询部门信息
+        Map<Long, DeptRespDTO> deptMap = deptApi.getDeptMap(deptIds);
+
+        // 为每个巡查人员设置部门名称
+        for (InspectionStaffDO staff : staffList) {
+            if (staff.getDeptId() != null && deptMap.containsKey(staff.getDeptId())) {
+                staff.setDeptName(deptMap.get(staff.getDeptId()).getName());
+            }
+        }
+    }
 
 }
