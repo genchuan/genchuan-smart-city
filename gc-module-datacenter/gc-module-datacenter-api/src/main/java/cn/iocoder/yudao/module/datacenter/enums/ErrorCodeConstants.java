@@ -22,4 +22,10 @@ public interface ErrorCodeConstants {
     ErrorCode GEOCODING_ZONE_NOT_EXISTS = new ErrorCode(100_006, "地片与区片数据管理不存在");
     ErrorCode GEOCODING_STREET_NOT_EXISTS = new ErrorCode(100_007, "街巷数据管理不存在");
     ErrorCode GEOCODING_REGION_NOT_EXISTS = new ErrorCode(100_008, "区域数据管理不存在");
+
+    // ========== 事件类型管理 1002000000 ==========
+    ErrorCode EVENT_TYPE_NOT_EXISTS = new ErrorCode(1002000000, "事件类型不存在");
+    ErrorCode EVENT_TYPE_CODE_DUPLICATE = new ErrorCode(1002000001, "事件类型代码已存在");
+    ErrorCode EVENT_TYPE_EXISTS_CHILDREN = new ErrorCode(1002000002, "存在子事件类型，无法删除");
+    ErrorCode EVENT_TYPE_HAS_RELATED_EVENTS = new ErrorCode(1002000003, "存在关联的事件记录，无法删除");
 }
