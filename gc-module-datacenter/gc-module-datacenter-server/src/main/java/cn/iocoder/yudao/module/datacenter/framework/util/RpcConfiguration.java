@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.datacenter.framework.security.config;
+package cn.iocoder.yudao.module.datacenter.framework.util;
 
 import cn.iocoder.yudao.module.system.api.dept.DeptApi;
 import cn.iocoder.yudao.module.system.api.dept.PostApi;
