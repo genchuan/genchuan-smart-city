@@ -1,7 +1,9 @@
-package cn.iocoder.yudao.module.datacenter.service.eventtypemanagement;
+package cn.iocoder.yudao.module.datacenter.service.eventmanagement.eventtypemanagement;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.datacenter.controller.admin.eventtypemanagement.vo.*;
+import cn.iocoder.yudao.module.datacenter.controller.admin.eventmanagement.eventtypemanagement.vo.EventTypeManagementCreateReqVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.eventmanagement.eventtypemanagement.vo.EventTypeManagementPageReqVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.eventmanagement.eventtypemanagement.vo.EventTypeManagementUpdateReqVO;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.eventtypemanagement.EventTypeManagementDO;
 
 import javax.validation.Valid;

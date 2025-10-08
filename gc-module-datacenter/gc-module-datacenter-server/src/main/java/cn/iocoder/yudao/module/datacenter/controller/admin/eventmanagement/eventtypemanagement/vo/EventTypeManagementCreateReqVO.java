@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.datacenter.controller.admin.eventtypemanagement.vo;
+package cn.iocoder.yudao.module.datacenter.controller.admin.eventmanagement.eventtypemanagement.vo;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;

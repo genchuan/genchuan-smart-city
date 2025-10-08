@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.datacenter.dal.mysql.eventtypemanagement;
+package cn.iocoder.yudao.module.datacenter.dal.mysql.eventmanagement.eventtypemanagement;
 
 import java.util.*;
 

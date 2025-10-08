@@ -1,5 +1,6 @@
-package cn.iocoder.yudao.module.datacenter.controller.admin.eventtypemanagement;
+package cn.iocoder.yudao.module.datacenter.controller.admin.eventmanagement.eventtypemanagement;
 
+import cn.iocoder.yudao.module.datacenter.controller.admin.eventmanagement.eventtypemanagement.vo.*;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -11,9 +12,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 
-import cn.iocoder.yudao.module.datacenter.controller.admin.eventtypemanagement.vo.*;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.eventtypemanagement.EventTypeManagementDO;
-import cn.iocoder.yudao.module.datacenter.service.eventtypemanagement.EventTypeManagementService;
+import cn.iocoder.yudao.module.datacenter.service.eventmanagement.eventtypemanagement.EventTypeManagementService;
 
 import java.util.List;
 
