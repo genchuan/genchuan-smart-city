@@ -22,4 +22,18 @@ public interface ErrorCodeConstants {
     ErrorCode GEOCODING_ZONE_NOT_EXISTS = new ErrorCode(100_006, "地片与区片数据管理不存在");
     ErrorCode GEOCODING_STREET_NOT_EXISTS = new ErrorCode(100_007, "街巷数据管理不存在");
     ErrorCode GEOCODING_REGION_NOT_EXISTS = new ErrorCode(100_008, "区域数据管理不存在");
+    // ========== 事件类型管理 1002000000 ==========
+    ErrorCode EVENT_TYPE_NOT_EXISTS = new ErrorCode(1002000000, "事件类型不存在");
+    ErrorCode EVENT_TYPE_CODE_DUPLICATE = new ErrorCode(1002000001, "事件类型代码已存在");
+    ErrorCode EVENT_TYPE_EXISTS_CHILDREN = new ErrorCode(1002000002, "存在子事件类型，无法删除");
+    ErrorCode EVENT_TYPE_HAS_RELATED_EVENTS = new ErrorCode(1002000003, "存在关联的事件记录，无法删除");
+
+    // ========== 国家政策信息 1003000000 ==========
+    ErrorCode NATIONAL_POLICY_INFO_NOT_EXISTS = new ErrorCode(1003000000, "国家政策信息不存在");
+    ErrorCode NATIONAL_POLICY_INFO_NO_DUPLICATE = new ErrorCode(1003000001, "政策编号已存在");
+    ErrorCode NATIONAL_POLICY_INFO_TIME_INVALID = new ErrorCode(1003000002, "失效时间不能早于生效时间");
+    ErrorCode NATIONAL_POLICY_INFO_CANNOT_UPDATE = new ErrorCode(1003000003, "仅未生效状态的政策可以修改");
+    ErrorCode NATIONAL_POLICY_INFO_CANNOT_DELETE = new ErrorCode(1003000004, "仅未生效状态的政策可以删除");
+    ErrorCode NATIONAL_POLICY_INFO_FILE_NOT_EXISTS = new ErrorCode(1003000005, "政策文件不存在");
+    ErrorCode NATIONAL_POLICY_INFO_STATUS_INVALID = new ErrorCode(1003000006, "政策状态无效");
 }
