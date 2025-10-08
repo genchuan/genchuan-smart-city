@@ -66,4 +66,76 @@ CREATE TABLE `gc_national_policy_info` (
                                            PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='国家政策信息表';
 
-#
+#地方法规信息表
+CREATE TABLE `gc_local_regulation_info` (
+    -- 主键
+                                            `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+
+    -- 业务字段
+                                            `regulation_id` VARCHAR(32) COMMENT '法规ID，唯一编码，采用UUID',
+                                            `regulation_no` VARCHAR(50) COMMENT '法规编号，如"XX省人民政府令〔2025〕XX号"',
+                                            `regulation_name` VARCHAR(200) COMMENT '法规完整名称',
+                                            `regulation_type` VARCHAR(30) COMMENT '法规类型，政府规章/地方性法规/规范性文件',
+                                            `admin_code` VARCHAR(6) COMMENT '所属行政区划代码，符合GB/T 2260',
+                                            `admin_name` VARCHAR(50) COMMENT '所属行政区划名称',
+                                            `issue_dept` VARCHAR(100) COMMENT '发布单位，如"XX省人民政府""XX市人大常委会"',
+                                            `issue_time` DATETIME COMMENT '发布时间，格式：yyyy-MM-dd HH:mm:ss',
+                                            `effective_time` DATE COMMENT '生效时间，格式：yyyy-MM-dd',
+                                            `expire_time` DATE COMMENT '失效时间，格式：yyyy-MM-dd，永久有效则为空',
+                                            `revision_basis` VARCHAR(500) COMMENT '修订依据，如"根据《XX国家政策》修订"',
+                                            `related_national_policy_id` VARCHAR(32) COMMENT '关联依据的国家政策ID',
+                                            `regulation_file_path` VARCHAR(255) COMMENT 'PDF格式原文存储路径',
+                                            `regulation_abstract` VARCHAR(1000) COMMENT '法规核心内容摘要',
+                                            `regulation_status` VARCHAR(10) COMMENT '法规状态，未生效/有效/已修订/已废止',
+                                            `upload_user_id` VARCHAR(32) COMMENT '上传管理员账号',
+                                            `upload_time` DATETIME COMMENT '上传时间，格式：yyyy-MM-dd HH:mm:ss',
+                                            `update_user_id` VARCHAR(32) COMMENT '修改管理员账号',
+                                            `update_time` DATETIME COMMENT '更新时间，格式：yyyy-MM-dd HH:mm:ss',
+                                            `extend_category` VARCHAR(30) COMMENT '扩展分类字段，预留用于自定义标签',
+
+    -- 系统字段
+                                            `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                            `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                            `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                            `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                            `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                            `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+
+                                            PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='地方法规信息表';
+
+# 行业规范信息表
+CREATE TABLE `gc_industry_standard_info` (
+    -- 主键
+                                             `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+
+    -- 业务字段
+                                             `standard_id` VARCHAR(32) COMMENT '规范ID，唯一编码，采用UUID',
+                                             `standard_no` VARCHAR(50) COMMENT '规范编号，如"GB/T XXXXX-2025""CJ/T XXXXX-2025"',
+                                             `standard_name` VARCHAR(200) COMMENT '规范名称，如"智慧城市数据安全规范"',
+                                             `industry_field` VARCHAR(30) COMMENT '行业领域，数据安全/市政设施/交通管理/环境保护',
+                                             `issue_organization` VARCHAR(100) COMMENT '发布机构，如"国家市场监督管理总局""中国城市规划协会"',
+                                             `issue_time` DATETIME COMMENT '发布时间，格式：yyyy-MM-dd HH:mm:ss',
+                                             `implementation_time` DATE COMMENT '实施时间，格式：yyyy-MM-dd',
+                                             `replace_old_no` VARCHAR(50) COMMENT '替代旧规范号，如"替代GB/T XXXXX-2020"',
+                                             `standard_file_path` VARCHAR(255) COMMENT 'PDF格式原文路径',
+                                             `interpretation_file_path` VARCHAR(255) COMMENT '配套解读文件路径，多个用英文分号分隔',
+                                             `standard_abstract` VARCHAR(1000) COMMENT '核心内容摘要',
+                                             `standard_status` VARCHAR(10) COMMENT '规范状态，未实施/实施中/已替代/已废止',
+                                             `related_business_module` VARCHAR(100) COMMENT '关联业务模块，如"管理部件事项管理/监测部件事件管理"',
+                                             `upload_user_id` VARCHAR(32) COMMENT '上传管理员账号',
+                                             `upload_time` DATETIME COMMENT '上传时间，格式：yyyy-MM-dd HH:mm:ss',
+                                             `update_user_id` VARCHAR(32) COMMENT '修改管理员账号',
+                                             `update_time` DATETIME COMMENT '更新时间，格式：yyyy-MM-dd HH:mm:ss',
+                                             `extend_category` VARCHAR(30) COMMENT '扩展分类字段，预留用于自定义标签',
+
+    -- 系统字段
+                                             `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                             `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                             `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                             `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                             `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                             `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+
+                                             PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='行业规范信息表';
