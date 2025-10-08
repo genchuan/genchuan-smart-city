@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.datacenter.service.geocodinglayer;
 
+import cn.iocoder.yudao.module.datacenter.framework.util.UuidUtils;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -33,6 +34,7 @@ public class GeocodingLayerServiceImpl implements GeocodingLayerService {
     public Long createGeocodingLayer(GeocodingLayerSaveReqVO createReqVO) {
         // 插入
         GeocodingLayerDO geocodingLayer = BeanUtils.toBean(createReqVO, GeocodingLayerDO.class);
+        geocodingLayer.setLayerConfigId(UuidUtils.generateUUID());
         geocodingLayerMapper.insert(geocodingLayer);
         // 返回
         return geocodingLayer.getId();

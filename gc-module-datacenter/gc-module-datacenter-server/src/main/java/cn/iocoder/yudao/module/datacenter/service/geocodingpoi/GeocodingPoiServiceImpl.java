@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.datacenter.service.geocodingpoi;
 
+import cn.iocoder.yudao.module.datacenter.framework.util.UuidUtils;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -33,6 +34,7 @@ public class GeocodingPoiServiceImpl implements GeocodingPoiService {
     public Long createGeocodingPoi(GeocodingPoiSaveReqVO createReqVO) {
         // 插入
         GeocodingPoiDO geocodingPoi = BeanUtils.toBean(createReqVO, GeocodingPoiDO.class);
+        geocodingPoi.setPoiId(UuidUtils.generateUUID());
         geocodingPoiMapper.insert(geocodingPoi);
         // 返回
         return geocodingPoi.getId();

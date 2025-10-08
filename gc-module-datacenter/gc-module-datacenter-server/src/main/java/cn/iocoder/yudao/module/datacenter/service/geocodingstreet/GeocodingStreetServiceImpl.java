@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.datacenter.service.geocodingstreet;
 
+import cn.iocoder.yudao.module.datacenter.framework.util.UuidUtils;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -33,6 +34,7 @@ public class GeocodingStreetServiceImpl implements GeocodingStreetService {
     public Long createGeocodingStreet(GeocodingStreetSaveReqVO createReqVO) {
         // 插入
         GeocodingStreetDO geocodingStreet = BeanUtils.toBean(createReqVO, GeocodingStreetDO.class);
+        geocodingStreet.setStreetId(UuidUtils.generateUUID());
         geocodingStreetMapper.insert(geocodingStreet);
         // 返回
         return geocodingStreet.getId();

@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.datacenter.service.geocodinghouse;
 
+import cn.iocoder.yudao.module.datacenter.framework.util.UuidUtils;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -33,6 +34,7 @@ public class GeocodingHouseServiceImpl implements GeocodingHouseService {
     public Long createGeocodingHouse(GeocodingHouseSaveReqVO createReqVO) {
         // 插入
         GeocodingHouseDO geocodingHouse = BeanUtils.toBean(createReqVO, GeocodingHouseDO.class);
+        geocodingHouse.setHouseId(UuidUtils.generateUUID());
         geocodingHouseMapper.insert(geocodingHouse);
         // 返回
         return geocodingHouse.getId();

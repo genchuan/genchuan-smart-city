@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.datacenter.service.geocodingcoordinate;
 
+import cn.iocoder.yudao.module.datacenter.framework.util.UuidUtils;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -33,6 +34,7 @@ public class GeocodingCoordinateServiceImpl implements GeocodingCoordinateServic
     public Long createGeocodingCoordinate(GeocodingCoordinateSaveReqVO createReqVO) {
         // 插入
         GeocodingCoordinateDO geocodingCoordinate = BeanUtils.toBean(createReqVO, GeocodingCoordinateDO.class);
+        geocodingCoordinate.setCoordinateId(UuidUtils.generateUUID());
         geocodingCoordinateMapper.insert(geocodingCoordinate);
         // 返回
         return geocodingCoordinate.getId();

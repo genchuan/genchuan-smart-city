@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.datacenter.service.geocodingzone;
 
+import cn.iocoder.yudao.module.datacenter.framework.util.UuidUtils;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -33,6 +34,7 @@ public class GeocodingZoneServiceImpl implements GeocodingZoneService {
     public Long createGeocodingZone(GeocodingZoneSaveReqVO createReqVO) {
         // 插入
         GeocodingZoneDO geocodingZone = BeanUtils.toBean(createReqVO, GeocodingZoneDO.class);
+        geocodingZone.setZoneId(UuidUtils.generateUUID());
         geocodingZoneMapper.insert(geocodingZone);
         // 返回
         return geocodingZone.getId();
