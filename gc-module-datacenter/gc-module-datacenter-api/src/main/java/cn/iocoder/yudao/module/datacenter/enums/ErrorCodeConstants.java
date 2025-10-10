@@ -29,6 +29,14 @@ public interface ErrorCodeConstants {
     ErrorCode GEOCODING_DENSITY_NOT_EXISTS = new ErrorCode(100_014, "数据采集密度配置不存在");
     ErrorCode GEOCODING_ACCURACY_NOT_EXISTS = new ErrorCode(100_015, "位置精度标准配置不存在");
 
+    // =============================================================================================================
+    // ============================================== 网 格 管 理 ===================================================
+    // =============================================================================================================
+    ErrorCode GRID_COUNTY_NOT_EXISTS = new ErrorCode(100_101, "县级及以上行政区划配置不存在");
+    ErrorCode GRID_COMMUNITY_NOT_EXISTS = new ErrorCode(100_102, "社区（村）行政区划配置不存在");
+    ErrorCode GRID_STREET_NOT_EXISTS = new ErrorCode(100_103, "街道（镇、乡）行政区划配置不存在");
+
+
     // ========== 事件类型管理 1002000000 ==========
     ErrorCode EVENT_TYPE_NOT_EXISTS = new ErrorCode(1002000000, "事件类型不存在");
     ErrorCode EVENT_TYPE_CODE_DUPLICATE = new ErrorCode(1002000001, "事件类型代码已存在");
@@ -70,4 +78,10 @@ public interface ErrorCodeConstants {
 
     // ========== 监测部 1007000000 ==========
     ErrorCode COMPONENT_CATEGORY_NOT_EXISTS = new ErrorCode(1007000000, "监测部件分类不存在");
+
+    // ========== 管理部件 1008000000 ==========
+    ErrorCode MANAGED_COMPONENT_MAJOR_CONFIG_NOT_EXISTS = new ErrorCode(1008000000, "管理部件大类配置表不存在");
+    ErrorCode MANAGED_COMPONENT_MINOR_CONFIG_NOT_EXISTS = new ErrorCode(1008000001, "管理部件小类配置不存在");
+    ErrorCode MANAGED_MAJOR_MINOR_REL_NOT_EXISTS = new ErrorCode(1008000002, "管理部件大类小类关联不存在");
+    ErrorCode MANAGED_COMPONENT_INFO_NOT_EXISTS = new ErrorCode(1008000003, "管理部件信息不存在");
 }

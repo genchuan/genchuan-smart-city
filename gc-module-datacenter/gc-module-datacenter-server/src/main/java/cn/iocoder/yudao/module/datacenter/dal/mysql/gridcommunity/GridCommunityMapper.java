@@ -1,0 +1,39 @@
+package cn.iocoder.yudao.module.datacenter.dal.mysql.gridcommunity;
+
+import java.util.*;
+
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.module.datacenter.dal.dataobject.gridcommunity.GridCommunityDO;
+import org.apache.ibatis.annotations.Mapper;
+import cn.iocoder.yudao.module.datacenter.controller.admin.gridcommunity.vo.*;
+
+/**
+ * 社区（村）行政区划配置 Mapper
+ *
+ * @author zcq
+ */
+@Mapper
+public interface GridCommunityMapper extends BaseMapperX<GridCommunityDO> {
+
+    default PageResult<GridCommunityDO> selectPage(GridCommunityPageReqVO reqVO) {
+        return selectPage(reqVO, new LambdaQueryWrapperX<GridCommunityDO>()
+                .eqIfPresent(GridCommunityDO::getCommunityId, reqVO.getCommunityId())
+                .eqIfPresent(GridCommunityDO::getCommunityCode, reqVO.getCommunityCode())
+                .likeIfPresent(GridCommunityDO::getCommunityName, reqVO.getCommunityName())
+                .eqIfPresent(GridCommunityDO::getStreetId, reqVO.getStreetId())
+                .betweenIfPresent(GridCommunityDO::getEffectiveTime, reqVO.getEffectiveTime())
+                .betweenIfPresent(GridCommunityDO::getInvalidTime, reqVO.getInvalidTime())
+                .eqIfPresent(GridCommunityDO::getCommunityBoundary, reqVO.getCommunityBoundary())
+                .eqIfPresent(GridCommunityDO::getRemark, reqVO.getRemark())
+                .betweenIfPresent(GridCommunityDO::getCreateTime, reqVO.getCreateTime())
+                .orderByDesc(GridCommunityDO::getId));
+    }
+
+    default List<GridCommunityDO> selectList() {
+        return selectList(new LambdaQueryWrapperX<GridCommunityDO>()
+                .orderByDesc(GridCommunityDO::getId));
+    }
+
+}

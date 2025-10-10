@@ -1,5 +1,10 @@
 package cn.iocoder.yudao.module.datacenter.service.geocodingstat;
 
+import cn.iocoder.yudao.module.datacenter.dal.mysql.geocodinghouse.GeocodingHouseMapper;
+import cn.iocoder.yudao.module.datacenter.dal.mysql.geocodingpoi.GeocodingPoiMapper;
+import cn.iocoder.yudao.module.datacenter.dal.mysql.geocodingregion.GeocodingRegionMapper;
+import cn.iocoder.yudao.module.datacenter.dal.mysql.geocodingstreet.GeocodingStreetMapper;
+import cn.iocoder.yudao.module.datacenter.dal.mysql.geocodingzone.GeocodingZoneMapper;
 import cn.iocoder.yudao.module.datacenter.framework.util.UuidUtils;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -29,6 +34,86 @@ public class GeocodingStatServiceImpl implements GeocodingStatService {
 
     @Resource
     private GeocodingStatMapper geocodingStatMapper;
+
+    @Resource
+    private GeocodingHouseMapper geocodingHouseMapper;
+
+    @Resource
+    private GeocodingPoiMapper geocodingPoiMapper;
+
+    @Resource
+    private GeocodingRegionMapper geocodingRegionMapper;
+
+    @Resource
+    private GeocodingStreetMapper geocodingStreetMapper;
+
+    @Resource
+    private GeocodingZoneMapper geocodingZoneMapper;
+
+    @Override
+    public Map<String, Object> countAllTables() {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            // 统计门牌楼牌数据
+            Long houseCount = geocodingHouseMapper.selectCount(null);
+            result.put("houseCount", houseCount);
+
+            // 统计兴趣点数据
+            Long poiCount = geocodingPoiMapper.selectCount(null);
+            result.put("poiCount", poiCount);
+
+            // 统计区域数据
+            Long regionCount = geocodingRegionMapper.selectCount(null);
+            result.put("regionCount", regionCount);
+
+            // 统计街巷数据
+            Long streetCount = geocodingStreetMapper.selectCount(null);
+            result.put("streetCount", streetCount);
+
+            // 统计地片区片数据
+            Long zoneCount = geocodingZoneMapper.selectCount(null);
+            result.put("zoneCount", zoneCount);
+
+            // 计算总计
+            Long totalCount = houseCount + poiCount + regionCount + streetCount + zoneCount;
+            result.put("totalCount", totalCount);
+            result.put("success", true);
+            result.put("message", "统计完成");
+
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "统计失败：" + e.getMessage());
+        }
+
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> getStatisticsSummary() {
+        Map<String, Object> summary = countAllTables();
+
+        // 添加百分比信息
+        if (summary.get("success").equals(true)) {
+            Long total = (Long) summary.get("totalCount");
+            if (total > 0) {
+                summary.put("housePercentage",
+                        String.format("%.2f%%", ((Long) summary.get("houseCount") * 100.0 / total)));
+                summary.put("poiPercentage",
+                        String.format("%.2f%%", ((Long) summary.get("poiCount") * 100.0 / total)));
+                summary.put("regionPercentage",
+                        String.format("%.2f%%", ((Long) summary.get("regionCount") * 100.0 / total)));
+                summary.put("streetPercentage",
+                        String.format("%.2f%%", ((Long) summary.get("streetCount") * 100.0 / total)));
+                summary.put("zonePercentage",
+                        String.format("%.2f%%", ((Long) summary.get("zoneCount") * 100.0 / total)));
+            }
+        }
+        return summary;
+    }
+
+
+//    ================================以下方法都废弃===================================
 
     @Override
     public Long createGeocodingStat(GeocodingStatSaveReqVO createReqVO) {

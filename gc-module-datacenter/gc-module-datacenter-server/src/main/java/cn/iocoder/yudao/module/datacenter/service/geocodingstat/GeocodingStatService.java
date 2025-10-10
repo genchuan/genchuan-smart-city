@@ -15,6 +15,20 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 public interface GeocodingStatService {
 
     /**
+     * 按行政区域统计各类数据数量
+     *
+     * @return 统计结果
+     */
+    Map<String, Object> countAllTables();
+
+    /**
+     * 获取统计摘要信息
+     */
+    Map<String, Object> getStatisticsSummary();
+
+
+//    ================================以下方法都废弃===================================
+    /**
      * 创建基本地点数据统计报表
      *
      * @param createReqVO 创建信息

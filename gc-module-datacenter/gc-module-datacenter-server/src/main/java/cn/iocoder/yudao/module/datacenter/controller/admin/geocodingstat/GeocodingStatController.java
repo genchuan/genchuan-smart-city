@@ -38,6 +38,22 @@ public class GeocodingStatController {
     @Resource
     private GeocodingStatService geocodingStatService;
 
+    @GetMapping("/count-all")
+    @Operation(summary = "统计所有表的数据总量")
+    public CommonResult<Map<String, Object>> countAllTables() {
+        Map<String, Object> result = geocodingStatService.countAllTables();
+        return CommonResult.success(result);
+    }
+
+    @GetMapping("/summary")
+    @Operation(summary = "获取数据统计摘要")
+    public CommonResult<Map<String, Object>> getStatisticsSummary() {
+        Map<String, Object> summary = geocodingStatService.getStatisticsSummary();
+        return CommonResult.success(summary);
+    }
+
+
+
     @PostMapping("/create")
     @Operation(summary = "创建基本地点数据统计报表")
     @PreAuthorize("@ss.hasPermission('datacenter:geocoding-stat:create')")

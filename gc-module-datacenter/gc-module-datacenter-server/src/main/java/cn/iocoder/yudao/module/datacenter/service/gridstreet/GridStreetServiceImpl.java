@@ -1,0 +1,79 @@
+package cn.iocoder.yudao.module.datacenter.service.gridstreet;
+
+import org.springframework.stereotype.Service;
+import jakarta.annotation.Resource;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import cn.iocoder.yudao.module.datacenter.controller.admin.gridstreet.vo.*;
+import cn.iocoder.yudao.module.datacenter.dal.dataobject.gridstreet.GridStreetDO;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+
+import cn.iocoder.yudao.module.datacenter.dal.mysql.gridstreet.GridStreetMapper;
+
+import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.module.datacenter.enums.ErrorCodeConstants.*;
+
+/**
+ * 街道（镇、乡）行政区划配置 Service 实现类
+ *
+ * @author zcq
+ */
+@Service
+@Validated
+public class GridStreetServiceImpl implements GridStreetService {
+
+    @Resource
+    private GridStreetMapper gridStreetMapper;
+
+    @Override
+    public Long createGridStreet(GridStreetSaveReqVO createReqVO) {
+        // 插入
+        GridStreetDO gridStreet = BeanUtils.toBean(createReqVO, GridStreetDO.class);
+        gridStreetMapper.insert(gridStreet);
+        // 返回
+        return gridStreet.getId();
+    }
+
+    @Override
+    public void updateGridStreet(GridStreetSaveReqVO updateReqVO) {
+        // 校验存在
+        validateGridStreetExists(updateReqVO.getId());
+        // 更新
+        GridStreetDO updateObj = BeanUtils.toBean(updateReqVO, GridStreetDO.class);
+        gridStreetMapper.updateById(updateObj);
+    }
+
+    @Override
+    public void deleteGridStreet(Long id) {
+        // 校验存在
+        validateGridStreetExists(id);
+        // 删除
+        gridStreetMapper.deleteById(id);
+    }
+
+    private void validateGridStreetExists(Long id) {
+        if (gridStreetMapper.selectById(id) == null) {
+            throw exception(GRID_STREET_NOT_EXISTS);
+        }
+    }
+
+    @Override
+    public GridStreetDO getGridStreet(Long id) {
+        return gridStreetMapper.selectById(id);
+    }
+
+    @Override
+    public PageResult<GridStreetDO> getGridStreetPage(GridStreetPageReqVO pageReqVO) {
+        return gridStreetMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public List<GridStreetDO> getGridStreetList() {
+        return gridStreetMapper.selectList();
+    }
+
+}
