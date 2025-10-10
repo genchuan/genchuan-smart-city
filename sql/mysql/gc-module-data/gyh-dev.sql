@@ -139,3 +139,67 @@ CREATE TABLE `gc_industry_standard_info` (
 
                                              PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='行业规范信息表';
+
+# 政策解读信息表
+CREATE TABLE `gc_policy_interpretation_info` (
+    -- 主键
+                                                 `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+
+    -- 业务字段
+                                                 `interpretation_id` VARCHAR(32) COMMENT '解读ID，唯一编码，采用UUID',
+                                                 `interpretation_title` VARCHAR(200) COMMENT '解读标题',
+                                                 `related_policy_type` VARCHAR(10) COMMENT '关联政策类型，国家政策/地方法规',
+                                                 `related_policy_id` VARCHAR(32) COMMENT '关联国家政策ID或地方法规ID',
+                                                 `related_policy_name` VARCHAR(200) COMMENT '关联政策名称',
+                                                 `interpretation_content` TEXT COMMENT '富文本内容，含背景、条款解读、实施要求',
+                                                 `interpretation_type` VARCHAR(20) COMMENT '解读类型，官方解读/专家解读/实务解读',
+                                                 `issue_user_id` VARCHAR(32) COMMENT '发布解读的管理员账号',
+                                                 `issue_user_name` VARCHAR(40) COMMENT '发布人姓名',
+                                                 `issue_time` DATETIME COMMENT '发布时间，格式：yyyy-MM-dd HH:mm:ss',
+                                                 `interpretation_status` VARCHAR(10) COMMENT '解读状态，已发布/已下架',
+                                                 `off_shelf_reason` VARCHAR(500) COMMENT '下架原因',
+                                                 `update_user_id` VARCHAR(32) COMMENT '修改解读的管理员账号',
+                                                 `update_time` DATETIME COMMENT '更新时间，格式：yyyy-MM-dd HH:mm:ss',
+                                                 `extend_category` VARCHAR(30) COMMENT '扩展分类字段',
+
+    -- 系统字段
+                                                 `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                                 `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                                 `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                                 `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                                 `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                                 `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+
+                                                 PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='政策解读信息表';
+
+CREATE TABLE `gc_component_category` (
+    -- 主键
+                                         `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+
+    -- 业务字段
+                                         `category_id` CHAR(32) COMMENT '分类ID，UUID',
+                                         `parent_id` CHAR(32) COMMENT '父类ID，0表示大类',
+                                         `level` CHAR(1) COMMENT '层级：1-大类/2-中类/3-小类',
+                                         `code` CHAR(2) COMMENT '分类代码：01-99',
+                                         `name` VARCHAR(50) COMMENT '分类名称',
+                                         `description` VARCHAR(200) COMMENT '分类说明',
+                                         `status` CHAR(1) COMMENT '状态：1-启用/0-禁用',
+                                         `create_user` CHAR(32) COMMENT '创建人ID',
+                                         `create_time` DATETIME COMMENT '创建时间',
+                                         `update_user` CHAR(32) COMMENT '更新人ID',
+                                         `update_time` DATETIME COMMENT '更新时间',
+                                         `ext1` VARCHAR(50) COMMENT '扩展字段1',
+                                         `ext2` VARCHAR(50) COMMENT '扩展字段2',
+                                         `ext3` VARCHAR(50) COMMENT '扩展字段3',
+
+    -- 系统字段
+                                         `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                         `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                         `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                         `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                         `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                         `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+
+                                         PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='部件分类表';
