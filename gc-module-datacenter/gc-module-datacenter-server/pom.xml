@@ -142,6 +142,26 @@
             <version>2.5.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>1.2</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!--         工作流。默认注释，保证编译速度-->
+            <dependency>
+                <groupId>cn.iocoder.cloud</groupId>
+                <artifactId>yudao-module-bpm-server</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
     </dependencies>
 
     <build>
