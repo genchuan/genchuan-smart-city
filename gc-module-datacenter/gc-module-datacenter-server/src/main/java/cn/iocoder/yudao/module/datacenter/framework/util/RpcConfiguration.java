@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.datacenter.framework.util;
 
+import cn.iocoder.yudao.module.bpm.api.task.BpmProcessInstanceApi;
 import cn.iocoder.yudao.module.system.api.dept.DeptApi;
 import cn.iocoder.yudao.module.system.api.dept.PostApi;
 import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
@@ -13,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
 @EnableFeignClients(clients = {RoleApi.class, DeptApi.class, PostApi.class, AdminUserApi.class, SmsSendApi.class, DictDataApi.class,
-        PermissionApi.class})
+        PermissionApi.class, BpmProcessInstanceApi.class,})
 public class RpcConfiguration {
 
 
