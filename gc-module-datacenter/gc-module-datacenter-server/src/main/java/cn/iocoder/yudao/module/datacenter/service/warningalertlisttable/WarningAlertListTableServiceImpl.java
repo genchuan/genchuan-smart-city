@@ -1,8 +1,12 @@
 package cn.iocoder.yudao.module.datacenter.service.warningalertlisttable;
 
-import cn.hutool.core.date.DateUtil;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.module.bpm.api.task.BpmProcessInstanceApi;
 import cn.iocoder.yudao.module.bpm.api.task.dto.BpmProcessInstanceCreateReqDTO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.managedmattermajor.vo.ManagedMatterMajorPageReqVO;
+import cn.iocoder.yudao.module.datacenter.dal.dataobject.managedmattermajor.ManagedMatterMajorDO;
+import cn.iocoder.yudao.module.datacenter.enums.EventStatusEnum;
+import cn.iocoder.yudao.module.datacenter.service.managedmattermajor.ManagedMatterMajorService;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -22,8 +26,6 @@ import cn.iocoder.yudao.module.datacenter.dal.mysql.warningalertlisttable.Warnin
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.datacenter.enums.ErrorCodeConstants.WARNING_ALERT_LIST_TABLE_NOT_EXISTS;
 
-import java.util.*;
-
 /**
  * 预警告警列表 Service 实现类
  *
@@ -42,6 +44,8 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
     private BpmProcessInstanceApi processInstanceApi;
     @Resource
     private WarningAlertListTableMapper warningAlertListTableMapper;
+    @Resource
+    private ManagedMatterMajorService managedMatterMajorService;
 
     @Override
     public Long createWarningAlertListTable(WarningAlertListTableSaveReqVO createReqVO) {
@@ -186,16 +190,18 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
     public Long createWarningAlertListTable(Long id) {
         WarningAlertListTableDO warningAlertListTable = warningAlertListTableMapper.selectById(id);
 
-        // 准备流程变量
+        // todo 通过事件小类查找流程模型
+
+        ManagedMatterMajorDO managedMatterMajor =
+                managedMatterMajorService.getManagedMatterMajor(new ManagedMatterMajorPageReqVO().setMatterCode(warningAlertListTable.getWarningType()));
 
         // 创建流程实例
-        String processInstanceId = String.valueOf(processInstanceApi.createProcessInstance(Long.valueOf(1),
+        CommonResult<String> commonResult = processInstanceApi.createProcessInstance(Long.valueOf(1),
                 new BpmProcessInstanceCreateReqDTO()
-                        .setProcessDefinitionKey(PROCESS_KEY)
-                        .setBusinessKey(String.valueOf(warningAlertListTable.getId()))));
-
-
-        warningAlertListTableMapper.updateById(warningAlertListTable.setProcessInstanceId(processInstanceId));
+                        .setProcessDefinitionKey(managedMatterMajor.getExtCategory1())
+                        .setBusinessKey(String.valueOf(warningAlertListTable.getId())));
+        String processInstanceId = commonResult.getData();
+        warningAlertListTableMapper.updateById(warningAlertListTable.setProcessInstanceId(processInstanceId).setStatus(EventStatusEnum.PADDED.getStatus()));
         return warningAlertListTable.getId();
     }
 

@@ -87,6 +87,32 @@ public class GridCommunityController {
         return success(BeanUtils.toBean(list, GridCommunityRespVO.class));
     }
 
+    @GetMapping("/list-by-street")
+    @Operation(summary = "根据街道ID获取社区列表")
+    @Parameter(name = "streetId", description = "街道ID", required = true)
+    @PreAuthorize("@ss.hasPermission('datacenter:grid-community:query')")
+    public CommonResult<List<GridCommunityRespVO>> getGridCommunityListByStreetId(@RequestParam("streetId") String streetId) {
+        List<GridCommunityDO> list = gridCommunityService.getGridCommunityListByStreetId(streetId);
+        return success(BeanUtils.toBean(list, GridCommunityRespVO.class));
+    }
+
+    @GetMapping("/list-by-streets")
+    @Operation(summary = "根据街道ID列表批量获取社区列表")
+    @PreAuthorize("@ss.hasPermission('datacenter:grid-community:query')")
+    public CommonResult<List<GridCommunityRespVO>> getGridCommunityListByStreetIds(@RequestParam("streetIds") List<String> streetIds) {
+        List<GridCommunityDO> list = gridCommunityService.getGridCommunityListByStreetIds(streetIds);
+        return success(BeanUtils.toBean(list, GridCommunityRespVO.class));
+    }
+
+    @GetMapping("/list-by-name")
+    @Operation(summary = "根据社区名称模糊查询")
+    @Parameter(name = "communityName", description = "社区名称", required = true)
+    @PreAuthorize("@ss.hasPermission('datacenter:grid-community:query')")
+    public CommonResult<List<GridCommunityRespVO>> getGridCommunityListByName(@RequestParam("communityName") String communityName) {
+        List<GridCommunityDO> list = gridCommunityService.getGridCommunityListByName(communityName);
+        return success(BeanUtils.toBean(list, GridCommunityRespVO.class));
+    }
+
     @GetMapping("/export-excel")
     @Operation(summary = "导出社区（村）行政区划配置 Excel")
     @PreAuthorize("@ss.hasPermission('datacenter:grid-community:export')")

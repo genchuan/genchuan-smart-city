@@ -35,4 +35,16 @@ public interface GridStreetMapper extends BaseMapperX<GridStreetDO> {
         return selectList(new LambdaQueryWrapperX<GridStreetDO>()
                 .orderByDesc(GridStreetDO::getId));
     }
+
+    default List<GridStreetDO> selectListByCountyId(String countyAdminId) {
+        return selectList(new LambdaQueryWrapperX<GridStreetDO>()
+                .eq(GridStreetDO::getCountyAdminId, countyAdminId)
+                .orderByDesc(GridStreetDO::getId));
+    }
+
+    default List<GridStreetDO> selectListByLevel(Integer streetLevel) {
+        return selectList(new LambdaQueryWrapperX<GridStreetDO>()
+                .eq(GridStreetDO::getStreetLevel, streetLevel)
+                .orderByDesc(GridStreetDO::getId));
+    }
 }

@@ -36,4 +36,21 @@ public interface GridCommunityMapper extends BaseMapperX<GridCommunityDO> {
                 .orderByDesc(GridCommunityDO::getId));
     }
 
+    default List<GridCommunityDO> selectListByStreetId(String streetId) {
+        return selectList(new LambdaQueryWrapperX<GridCommunityDO>()
+                .eq(GridCommunityDO::getStreetId, streetId)
+                .orderByDesc(GridCommunityDO::getId));
+    }
+
+    default List<GridCommunityDO> selectListByStreetIds(List<String> streetIds) {
+        return selectList(new LambdaQueryWrapperX<GridCommunityDO>()
+                .in(GridCommunityDO::getStreetId, streetIds)
+                .orderByDesc(GridCommunityDO::getId));
+    }
+
+    default List<GridCommunityDO> selectListByName(String communityName) {
+        return selectList(new LambdaQueryWrapperX<GridCommunityDO>()
+                .like(GridCommunityDO::getCommunityName, communityName)
+                .orderByDesc(GridCommunityDO::getId));
+    }
 }

@@ -46,6 +46,7 @@ public interface WarningAlertListTableService {
      */
     WarningAlertListTableDO getWarningAlertListTable(Long id);
 
+
     /**
      * 获得预警告警列表分页
      *

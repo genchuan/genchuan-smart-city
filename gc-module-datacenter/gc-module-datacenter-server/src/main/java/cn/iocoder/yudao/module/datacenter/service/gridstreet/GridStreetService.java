@@ -58,4 +58,18 @@ public interface GridStreetService {
      * @return 街道（镇、乡）行政区划配置列表
      */
     List<GridStreetDO> getGridStreetList();
+
+    /**
+     * 根据县级行政区ID查询街道列表
+     * @param countyAdminId 县级行政区ID
+     * @return 街道列表
+     */
+    List<GridStreetDO> getGridStreetListByCountyId(String countyAdminId);
+
+    /**
+     * 根据街道级别查询列表
+     * @param streetLevel 街道级别(1-街道,2-镇,3-乡)
+     * @return 街道列表
+     */
+    List<GridStreetDO> getGridStreetListByLevel(Integer streetLevel);
 }

@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.datacenter.service.gridstreet;
 
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -74,6 +75,20 @@ public class GridStreetServiceImpl implements GridStreetService {
     @Override
     public List<GridStreetDO> getGridStreetList() {
         return gridStreetMapper.selectList();
+    }
+
+    @Override
+    public List<GridStreetDO> getGridStreetListByCountyId(String countyAdminId) {
+        return gridStreetMapper.selectList(new LambdaQueryWrapperX<GridStreetDO>()
+                .eq(GridStreetDO::getCountyAdminId, countyAdminId)
+                .orderByDesc(GridStreetDO::getId));
+    }
+
+    @Override
+    public List<GridStreetDO> getGridStreetListByLevel(Integer streetLevel) {
+        return gridStreetMapper.selectList(new LambdaQueryWrapperX<GridStreetDO>()
+                .eq(GridStreetDO::getStreetLevel, streetLevel)
+                .orderByDesc(GridStreetDO::getId));
     }
 
 }

@@ -58,4 +58,18 @@ public interface GridCountyService {
      * @return 所有县级及以上行政区划配置列表
      */
     List<GridCountyDO> getGridCountyList();
+
+    /**
+     * 根据上级行政区划ID查询下级行政区划列表
+     * @param parentAdminId 上级行政区划ID
+     * @return 下级行政区划列表
+     */
+    List<GridCountyDO> getGridCountyListByParentId(String parentAdminId);
+
+    /**
+     * 根据行政区划级别查询列表
+     * @param adminLevel 行政区划级别(1-省级,2-市级,3-县级)
+     * @return 行政区划列表
+     */
+    List<GridCountyDO> getGridCountyListByLevel(Integer adminLevel);
 }

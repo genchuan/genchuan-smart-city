@@ -87,17 +87,35 @@ public class GridStreetController {
         return success(BeanUtils.toBean(list, GridStreetRespVO.class));
     }
 
+    @GetMapping("/list-by-county")
+    @Operation(summary = "根据县级行政区ID查询街道列表")
+    @Parameter(name = "countyAdminId", description = "县级行政区ID", required = true)
+    @PreAuthorize("@ss.hasPermission('datacenter:grid-street:query')")
+    public CommonResult<List<GridStreetRespVO>> getGridStreetListByCountyId(@RequestParam("countyAdminId") String countyAdminId) {
+        List<GridStreetDO> list = gridStreetService.getGridStreetListByCountyId(countyAdminId);
+        return success(BeanUtils.toBean(list, GridStreetRespVO.class));
+    }
+
+    @GetMapping("/list-by-level")
+    @Operation(summary = "根据街道级别查询列表")
+    @Parameter(name = "streetLevel", description = "街道级别(1-街道,2-镇,3-乡)", required = true)
+    @PreAuthorize("@ss.hasPermission('datacenter:grid-street:query')")
+    public CommonResult<List<GridStreetRespVO>> getGridStreetListByLevel(@RequestParam("streetLevel") Integer streetLevel) {
+        List<GridStreetDO> list = gridStreetService.getGridStreetListByLevel(streetLevel);
+        return success(BeanUtils.toBean(list, GridStreetRespVO.class));
+    }
+
     @GetMapping("/export-excel")
     @Operation(summary = "导出街道（镇、乡）行政区划配置 Excel")
     @PreAuthorize("@ss.hasPermission('datacenter:grid-street:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportGridStreetExcel(@Valid GridStreetPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                      HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<GridStreetDO> list = gridStreetService.getGridStreetPage(pageReqVO).getList();
         // 导出 Excel
         ExcelUtils.write(response, "街道（镇、乡）行政区划配置.xls", "数据", GridStreetRespVO.class,
-                        BeanUtils.toBean(list, GridStreetRespVO.class));
+                BeanUtils.toBean(list, GridStreetRespVO.class));
     }
 
 }

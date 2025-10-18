@@ -35,4 +35,16 @@ public interface GridCountyMapper extends BaseMapperX<GridCountyDO> {
         return selectList(new LambdaQueryWrapperX<GridCountyDO>().orderByDesc(GridCountyDO::getId));
     }
 
+    default List<GridCountyDO> selectListByParentId(String parentAdminId) {
+        return selectList(new LambdaQueryWrapperX<GridCountyDO>()
+                .eq(GridCountyDO::getParentAdminId, parentAdminId)
+                .orderByDesc(GridCountyDO::getId));
+    }
+
+    default List<GridCountyDO> selectListByLevel(Integer adminLevel) {
+        return selectList(new LambdaQueryWrapperX<GridCountyDO>()
+                .eq(GridCountyDO::getAdminLevel, adminLevel)
+                .orderByDesc(GridCountyDO::getId));
+    }
+
 }
