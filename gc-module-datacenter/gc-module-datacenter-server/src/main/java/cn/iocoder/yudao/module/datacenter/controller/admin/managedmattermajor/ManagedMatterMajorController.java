@@ -37,7 +37,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 @Tag(name = "管理后台 - 管理事项分类表（含大类和小类）")
 @RestController
-@RequestMapping("/gc/managed-matter-major")
+@RequestMapping("/datacenter/managed-matter-major")
 @Validated
 public class ManagedMatterMajorController {
 
