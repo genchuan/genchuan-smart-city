@@ -100,4 +100,7 @@ public class WarningAlertListTablePageReqVO extends PageParam {
     @Schema(description = "是否升序", example = "asc")
     private String isAsc;
 
+    @Schema(description = "预警结果状态", example = "1")
+    private Integer status;
+
 }

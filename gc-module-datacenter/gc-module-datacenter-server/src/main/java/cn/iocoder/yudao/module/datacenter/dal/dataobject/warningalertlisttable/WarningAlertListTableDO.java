@@ -127,9 +127,9 @@ public class WarningAlertListTableDO extends BaseDO {
      */
     private String deviceId;
     /**
-     * 预警结果
+     * 预警状态
      */
-    private Byte status;
+    private Integer status;
 
     /**
      * 流程实例的编号

@@ -76,4 +76,19 @@ public class GridCommunityServiceImpl implements GridCommunityService {
         return gridCommunityMapper.selectList();
     }
 
+    @Override
+    public List<GridCommunityDO> getGridCommunityListByStreetId(String streetId) {
+        return gridCommunityMapper.selectListByStreetId(streetId);
+    }
+
+    @Override
+    public List<GridCommunityDO> getGridCommunityListByStreetIds(List<String> streetIds) {
+        return gridCommunityMapper.selectListByStreetIds(streetIds);
+    }
+
+    @Override
+    public List<GridCommunityDO> getGridCommunityListByName(String communityName) {
+        return gridCommunityMapper.selectListByName(communityName);
+    }
+
 }

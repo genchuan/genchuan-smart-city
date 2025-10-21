@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.datacenter.service.gridcounty;
 
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -74,6 +75,20 @@ public class GridCountyServiceImpl implements GridCountyService {
     @Override
     public List<GridCountyDO> getGridCountyList() {
         return gridCountyMapper.selectList();
+    }
+
+    @Override
+    public List<GridCountyDO> getGridCountyListByParentId(String parentAdminId) {
+        return gridCountyMapper.selectList(new LambdaQueryWrapperX<GridCountyDO>()
+                .eq(GridCountyDO::getParentAdminId, parentAdminId)
+                .orderByDesc(GridCountyDO::getId));
+    }
+
+    @Override
+    public List<GridCountyDO> getGridCountyListByLevel(Integer adminLevel) {
+        return gridCountyMapper.selectList(new LambdaQueryWrapperX<GridCountyDO>()
+                .eq(GridCountyDO::getAdminLevel, adminLevel)
+                .orderByDesc(GridCountyDO::getId));
     }
 
 }

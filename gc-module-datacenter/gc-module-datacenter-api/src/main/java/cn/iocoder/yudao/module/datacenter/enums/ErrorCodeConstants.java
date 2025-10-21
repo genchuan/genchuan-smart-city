@@ -37,6 +37,7 @@ public interface ErrorCodeConstants {
     ErrorCode GRID_STREET_NOT_EXISTS = new ErrorCode(100_103, "街道（镇、乡）行政区划配置不存在");
 
 
+
     // ========== 事件类型管理 1002000000 ==========
     ErrorCode EVENT_TYPE_NOT_EXISTS = new ErrorCode(1002000000, "事件类型不存在");
     ErrorCode EVENT_TYPE_CODE_DUPLICATE = new ErrorCode(1002000001, "事件类型代码已存在");
@@ -84,4 +85,13 @@ public interface ErrorCodeConstants {
     ErrorCode MANAGED_COMPONENT_MINOR_CONFIG_NOT_EXISTS = new ErrorCode(1008000001, "管理部件小类配置不存在");
     ErrorCode MANAGED_MAJOR_MINOR_REL_NOT_EXISTS = new ErrorCode(1008000002, "管理部件大类小类关联不存在");
     ErrorCode MANAGED_COMPONENT_INFO_NOT_EXISTS = new ErrorCode(1008000003, "管理部件信息不存在");
+
+
+    // ========== 风险预警信息列表 ==========
+    ErrorCode WARNING_ALERT_LIST_TABLE_NOT_EXISTS = new ErrorCode(100_103, "预警告警列表不存在");
+    ErrorCode IMPORT_DATA_ERROR = new ErrorCode(100_104, "导入数据错误：{}");
+
+    // ========== 管理事项分类表（含大类和小类） 100_105 ==========
+    ErrorCode MANAGED_MATTER_MAJOR_NOT_EXISTS = new ErrorCode(100_105, "管理事项分类表（含大类和小类）不存在");
+
 }

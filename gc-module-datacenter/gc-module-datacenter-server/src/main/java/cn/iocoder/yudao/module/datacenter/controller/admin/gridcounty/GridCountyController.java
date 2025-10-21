@@ -87,17 +87,35 @@ public class GridCountyController {
         return success(BeanUtils.toBean(list, GridCountyRespVO.class));
     }
 
+    @GetMapping("/list-by-parent")
+    @Operation(summary = "根据上级行政区划ID查询下级行政区划列表")
+    @Parameter(name = "parentAdminId", description = "上级行政区划ID", required = true)
+    @PreAuthorize("@ss.hasPermission('datacenter:grid-county:query')")
+    public CommonResult<List<GridCountyRespVO>> getGridCountyListByParentId(@RequestParam("parentAdminId") String parentAdminId) {
+        List<GridCountyDO> list = gridCountyService.getGridCountyListByParentId(parentAdminId);
+        return success(BeanUtils.toBean(list, GridCountyRespVO.class));
+    }
+
+    @GetMapping("/list-by-level")
+    @Operation(summary = "根据行政区划级别查询列表")
+    @Parameter(name = "adminLevel", description = "行政区划级别(1-省级,2-市级,3-县级)", required = true)
+    @PreAuthorize("@ss.hasPermission('datacenter:grid-county:query')")
+    public CommonResult<List<GridCountyRespVO>> getGridCountyListByLevel(@RequestParam("adminLevel") Integer adminLevel) {
+        List<GridCountyDO> list = gridCountyService.getGridCountyListByLevel(adminLevel);
+        return success(BeanUtils.toBean(list, GridCountyRespVO.class));
+    }
+
     @GetMapping("/export-excel")
     @Operation(summary = "导出县级及以上行政区划配置 Excel")
     @PreAuthorize("@ss.hasPermission('datacenter:grid-county:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportGridCountyExcel(@Valid GridCountyPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                      HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<GridCountyDO> list = gridCountyService.getGridCountyPage(pageReqVO).getList();
         // 导出 Excel
         ExcelUtils.write(response, "县级及以上行政区划配置.xls", "数据", GridCountyRespVO.class,
-                        BeanUtils.toBean(list, GridCountyRespVO.class));
+                BeanUtils.toBean(list, GridCountyRespVO.class));
     }
 
 }

@@ -58,4 +58,25 @@ public interface GridCommunityService {
      * @return 社区（村）行政区划配置列表
      */
     List<GridCommunityDO> getGridCommunityList();
+
+    /**
+     * 根据街道ID获取社区列表
+     * @param streetId 街道ID
+     * @return 社区列表
+     */
+    List<GridCommunityDO> getGridCommunityListByStreetId(String streetId);
+
+    /**
+     * 根据街道ID列表批量获取社区列表
+     * @param streetIds 街道ID列表
+     * @return 社区列表
+     */
+    List<GridCommunityDO> getGridCommunityListByStreetIds(List<String> streetIds);
+
+    /**
+     * 根据社区名称模糊查询
+     * @param communityName 社区名称
+     * @return 社区列表
+     */
+    List<GridCommunityDO> getGridCommunityListByName(String communityName);
 }

@@ -55,8 +55,8 @@ public class WarningAlertListTableController {
     @PostMapping("/created")
     @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:create')")
     @Operation(summary = "创建业务请求申请")
-    public CommonResult<Long> pand(@Valid @RequestBody WarningAlertListTableSaveReqVO createReqVO) {
-        return success(warningAlertListTableService.createWarningAlertListTable(createReqVO.getId()));
+    public CommonResult<Long> pand(@RequestParam("id") Long id) {
+        return success(warningAlertListTableService.createWarningAlertListTable(id));
     }
 
     @PutMapping("/update")
