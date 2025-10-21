@@ -136,4 +136,9 @@ public class WarningAlertListTableDO extends BaseDO {
      */
     private String processInstanceId;
 
+    /**
+     * 预警类型ID
+     */
+    private Long warningTypeId;
+
 }

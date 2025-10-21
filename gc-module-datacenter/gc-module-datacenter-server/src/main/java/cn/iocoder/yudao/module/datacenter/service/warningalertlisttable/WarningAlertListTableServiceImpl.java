@@ -3,7 +3,6 @@ package cn.iocoder.yudao.module.datacenter.service.warningalertlisttable;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.module.bpm.api.task.BpmProcessInstanceApi;
 import cn.iocoder.yudao.module.bpm.api.task.dto.BpmProcessInstanceCreateReqDTO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.managedmattermajor.vo.ManagedMatterMajorPageReqVO;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.managedmattermajor.ManagedMatterMajorDO;
 import cn.iocoder.yudao.module.datacenter.enums.EventStatusEnum;
 import cn.iocoder.yudao.module.datacenter.service.managedmattermajor.ManagedMatterMajorService;
@@ -193,12 +192,12 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
         // todo 通过事件小类查找流程模型
 
         ManagedMatterMajorDO managedMatterMajor =
-                managedMatterMajorService.getManagedMatterMajor(new ManagedMatterMajorPageReqVO().setMatterCode(warningAlertListTable.getWarningType()));
+                managedMatterMajorService.getManagedMatterMajor(Long.parseLong(warningAlertListTable.getWarningType()));
 
         // 创建流程实例
         CommonResult<String> commonResult = processInstanceApi.createProcessInstance(Long.valueOf(1),
                 new BpmProcessInstanceCreateReqDTO()
-                        .setProcessDefinitionKey(managedMatterMajor.getExtCategory1())
+                        .setProcessDefinitionKey(managedMatterMajor.getFlowInstanceId())
                         .setBusinessKey(String.valueOf(warningAlertListTable.getId())));
         String processInstanceId = commonResult.getData();
         warningAlertListTableMapper.updateById(warningAlertListTable.setProcessInstanceId(processInstanceId).setStatus(EventStatusEnum.PADDED.getStatus()));

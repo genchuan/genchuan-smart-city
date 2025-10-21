@@ -43,8 +43,8 @@ public class WarningAlertListTableSaveReqVO {
     @NotEmpty(message = "预警等级不能为空")
     private String warningLevel;
 
-    @Schema(description = "预警状态", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @NotEmpty(message = "预警状态不能为空")
+    @Schema(description = "预警状态")
+//    @NotEmpty(message = "预警状态不能为空")
     private String warningStatus;
 
     @Schema(description = "触发原因", requiredMode = Schema.RequiredMode.REQUIRED, example = "不好")
@@ -95,15 +95,18 @@ public class WarningAlertListTableSaveReqVO {
     @Schema(description = "扩展分类字段3")
     private String extendCategory3;
 
-    @Schema(description = "设备ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "9924")
-    @NotEmpty(message = "设备ID不能为空")
+    @Schema(description = "设备ID")
+//    @NotEmpty(message = "设备ID不能为空")
     private String deviceId;
 
-    @Schema(description = "预警结果", requiredMode = Schema.RequiredMode.REQUIRED, example = "ok")
-    @NotEmpty(message = "预警结果")
+    @Schema(description = "预警结果")
+    @NotNull(message = "预警结果")
     private Byte status;
 
-    @Schema(description = "流程实例的编号", requiredMode = Schema.RequiredMode.REQUIRED, example = "122")
-    @NotEmpty(message = "流程实例的编号")
+    @Schema(description = "流程实例的编号")
+//    @NotEmpty(message = "流程实例的编号")
     private String processInstanceId;
+
+    @Schema(description = "预警类型ID")
+    private Long warningTypeId;
 }

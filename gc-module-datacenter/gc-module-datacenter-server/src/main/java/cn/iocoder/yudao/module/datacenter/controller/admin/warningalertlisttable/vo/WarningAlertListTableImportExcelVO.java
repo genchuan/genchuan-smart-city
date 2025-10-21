@@ -79,6 +79,12 @@ public class WarningAlertListTableImportExcelVO {
 
     @ExcelProperty("设备ID")
     private String deviceId;
+
+    @ExcelProperty("流程实例的编号")
+    private String processInstanceId;
+
+    @ExcelProperty("预警类型ID")
+    private Long warningTypeId;
 }
 
 

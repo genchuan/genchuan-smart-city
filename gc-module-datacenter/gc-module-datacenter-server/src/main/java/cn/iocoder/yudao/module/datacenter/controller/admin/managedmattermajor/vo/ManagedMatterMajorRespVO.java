@@ -2,8 +2,7 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.managedmattermajor.v
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import java.util.*;
-import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDateTime;
 import com.alibaba.excel.annotation.*;
 
@@ -52,9 +51,9 @@ public class ManagedMatterMajorRespVO {
     @ExcelProperty("主管部门名称（仅小类使用）")
     private String deptName;
 
-    @Schema(description = "分类扩展字段1")
-    @ExcelProperty("分类扩展字段1")
-    private String extCategory1;
+    @Schema(description = "工作流模型标识")
+    @ExcelProperty("工作流模型标识")
+    private String flowInstanceId;
 
     @Schema(description = "分类扩展字段2")
     @ExcelProperty("分类扩展字段2")

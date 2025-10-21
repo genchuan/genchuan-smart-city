@@ -44,7 +44,7 @@ public class WarningAlertListTableRespVO {
     @ExcelProperty("预警等级")
     private String warningLevel;
 
-    @Schema(description = "预警状态", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @Schema(description = "预警状态")
     @ExcelProperty("预警状态")
     private String warningStatus;
 
@@ -112,7 +112,7 @@ public class WarningAlertListTableRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-    @Schema(description = "设备ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "9924")
+    @Schema(description = "设备ID")
     @ExcelProperty("设备ID")
     private String deviceId;
 
@@ -120,9 +120,12 @@ public class WarningAlertListTableRespVO {
     @ExcelProperty("预警结果")
     private Byte status;
 
-    @Schema(description = "流程实例的编号", requiredMode = Schema.RequiredMode.REQUIRED, example = "122")
+    @Schema(description = "流程实例的编号")
     @ExcelProperty("流程实例的编号")
     private String processInstanceId;
 
+    @Schema(description = "预警类型ID")
+    @ExcelProperty("预警类型ID")
+    private Long warningTypeId;
 
 }

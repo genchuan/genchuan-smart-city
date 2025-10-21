@@ -103,4 +103,10 @@ public class WarningAlertListTablePageReqVO extends PageParam {
     @Schema(description = "预警结果状态", example = "1")
     private Integer status;
 
+    @Schema(description = "流程实例的编号")
+    private String processInstanceId;
+
+    @Schema(description = "预警类型ID")
+    private Long warningTypeId;
+
 }

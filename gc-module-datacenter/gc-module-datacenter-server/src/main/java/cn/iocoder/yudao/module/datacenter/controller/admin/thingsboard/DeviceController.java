@@ -35,7 +35,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 @Tag(name = "管理后台 - 设备")
 @RestController
-@RequestMapping("/admin-api/device")
+@RequestMapping("/thingsboard/device")
 @Validated
 public class DeviceController {
 

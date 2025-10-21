@@ -8,8 +8,6 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.datacenter.controller.admin.managedmattermajor.vo.ManagedMatterMajorListReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.managedmattermajor.vo.ManagedMatterMajorPageReqVO;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.managedmattermajor.ManagedMatterMajorDO;
-import cn.iocoder.yudao.module.system.controller.admin.dept.vo.dept.DeptListReqVO;
-import cn.iocoder.yudao.module.system.dal.dataobject.dept.DeptDO;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -37,7 +35,7 @@ public interface ManagedMatterMajorMapper extends BaseMapperX<ManagedMatterMajor
                 .eqIfPresent(ManagedMatterMajorDO::getIsExtend, reqVO.getIsExtend())
                 .eqIfPresent(ManagedMatterMajorDO::getDeptCode, reqVO.getDeptCode())
                 .likeIfPresent(ManagedMatterMajorDO::getDeptName, reqVO.getDeptName())
-                .eqIfPresent(ManagedMatterMajorDO::getExtCategory1, reqVO.getExtCategory1())
+                .eqIfPresent(ManagedMatterMajorDO::getFlowInstanceId, reqVO.getFlowInstanceId())
                 .eqIfPresent(ManagedMatterMajorDO::getExtCategory2, reqVO.getExtCategory2())
                 .eqIfPresent(ManagedMatterMajorDO::getExtCommon1, reqVO.getExtCommon1())
                 .eqIfPresent(ManagedMatterMajorDO::getExtCommon2, reqVO.getExtCommon2())

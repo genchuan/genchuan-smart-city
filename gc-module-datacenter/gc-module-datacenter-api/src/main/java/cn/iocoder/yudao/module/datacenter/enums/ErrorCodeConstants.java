@@ -86,12 +86,44 @@ public interface ErrorCodeConstants {
     ErrorCode MANAGED_MAJOR_MINOR_REL_NOT_EXISTS = new ErrorCode(1008000002, "管理部件大类小类关联不存在");
     ErrorCode MANAGED_COMPONENT_INFO_NOT_EXISTS = new ErrorCode(1008000003, "管理部件信息不存在");
 
+    // ========== 管理事项分类表（含大类和小类） 100_105 ==========
+    ErrorCode MANAGED_MATTER_MAJOR_NOT_EXISTS = new ErrorCode(100_105, "管理事项分类表（含大类和小类）不存在");
 
     // ========== 风险预警信息列表 ==========
     ErrorCode WARNING_ALERT_LIST_TABLE_NOT_EXISTS = new ErrorCode(100_103, "预警告警列表不存在");
     ErrorCode IMPORT_DATA_ERROR = new ErrorCode(100_104, "导入数据错误：{}");
+    ErrorCode ALARM_RULE_NOT_EXISTS = new ErrorCode(100_105, "预警告警规则配置不存在");
+    ErrorCode ALARM_RULE_ALREADY_ENABLED = new ErrorCode(1003001001, "预警告警规则配置已启用");
+    ErrorCode ALARM_RULE_ALREADY_DISABLED = new ErrorCode(1003001002, "预警告警规则配置已禁用");
+    ErrorCode ALARM_RULE_DUPLICATE = new ErrorCode(1003001003, "同一对象范围和触发条件的规则已存在");
+    ErrorCode ALARM_RULE_THRESHOLD_INVALID = new ErrorCode(1003001004, "预警阈值上限必须大于下限");
+    ErrorCode ALARM_RULE_SCOPE_IMMUTABLE = new ErrorCode(1003001005, "关联对象范围不可修改");
 
-    // ========== 管理事项分类表（含大类和小类） 100_105 ==========
-    ErrorCode MANAGED_MATTER_MAJOR_NOT_EXISTS = new ErrorCode(100_105, "管理事项分类表（含大类和小类）不存在");
+    //====================================资产管理模块=========================================================================
+
+    // ========== 资产分类规则配置 200_101 ==========
+    ErrorCode ASSET_CATEGORY_RULE_NOT_EXISTS = new ErrorCode(200_101, "资产分类规则配置不存在");
+    ErrorCode ASSET_CATEGORY_RULE_EXITS_CHILDREN = new ErrorCode(200_102, "存在存在子资产分类规则配置，无法删除");
+    ErrorCode ASSET_CATEGORY_RULE_PARENT_NOT_EXITS = new ErrorCode(200_103,"父级资产分类规则配置不存在");
+    ErrorCode ASSET_CATEGORY_RULE_PARENT_ERROR = new ErrorCode(200_104, "不能设置自己为父资产分类规则配置");
+    ErrorCode ASSET_CATEGORY_RULE_NAME_DUPLICATE = new ErrorCode(200_105, "已经存在该名字的资产分类规则配置");
+    ErrorCode ASSET_CATEGORY_RULE_PARENT_IS_CHILD = new ErrorCode(200_106, "不能设置自己的子AssetCategoryRule为父AssetCategoryRule");
+
+    // ========== 资产属性规则配置 200_111 ==========
+    ErrorCode ASSET_ATTR_RULE_NOT_EXISTS = new ErrorCode(200_111, "资产属性规则配置不存在");
+    ErrorCode ASSET_ATTR_RULE_EXITS_CHILDREN = new ErrorCode(200_112, "存在存在子资产属性规则配置，无法删除");
+    ErrorCode ASSET_ATTR_RULE_PARENT_NOT_EXITS = new ErrorCode(200_113,"父级资产属性规则配置不存在");
+    ErrorCode ASSET_ATTR_RULE_PARENT_ERROR = new ErrorCode(200_114, "不能设置自己为父资产属性规则配置");
+    ErrorCode ASSET_ATTR_RULE_NAME_DUPLICATE = new ErrorCode(200_115, "已经存在该名字的资产属性规则配置");
+    ErrorCode ASSET_ATTR_RULE_PARENT_IS_CHILD = new ErrorCode(200_116, "不能设置自己的子AssetAttrRule为父AssetAttrRule");
+
+    // ========== 资产关联规则配置 200_121 ==========
+    ErrorCode ASSET_REL_RULE_NOT_EXISTS = new ErrorCode(200_121, "资产关联规则配置不存在");
+    ErrorCode ASSET_REL_RULE_EXITS_CHILDREN = new ErrorCode(200_122, "存在存在子资产关联规则配置，无法删除");
+    ErrorCode ASSET_REL_RULE_PARENT_NOT_EXITS = new ErrorCode(200_123,"父级资产关联规则配置不存在");
+    ErrorCode ASSET_REL_RULE_PARENT_ERROR = new ErrorCode(200_124, "不能设置自己为父资产关联规则配置");
+    ErrorCode ASSET_REL_RULE_NAME_DUPLICATE = new ErrorCode(200_125, "已经存在该名字的资产关联规则配置");
+    ErrorCode ASSET_REL_RULE_PARENT_IS_CHILD = new ErrorCode(200_126, "不能设置自己的子AssetRelRule为父AssetRelRule");
+
 
 }

@@ -78,7 +78,9 @@ public interface WarningAlertListTableMapper extends BaseMapperX<WarningAlertLis
                 .eqIfPresent(WarningAlertListTableDO::getExtendCategory2, reqVO.getExtendCategory2())
                 .eqIfPresent(WarningAlertListTableDO::getExtendCategory3, reqVO.getExtendCategory3())
                 .betweenIfPresent(WarningAlertListTableDO::getCreateTime, reqVO.getCreateTime())
-                .eqIfPresent(WarningAlertListTableDO::getDeviceId, reqVO.getDeviceId());
+                .eqIfPresent(WarningAlertListTableDO::getDeviceId, reqVO.getDeviceId())
+                .eqIfPresent(WarningAlertListTableDO::getProcessInstanceId,reqVO.getProcessInstanceId())
+                .eqIfPresent(WarningAlertListTableDO::getWarningTypeId,reqVO.getWarningTypeId());
     }
 //    default PageResult<WarningAlertListTableDO> selectPage(WarningAlertListTablePageReqVO reqVO) {
 //

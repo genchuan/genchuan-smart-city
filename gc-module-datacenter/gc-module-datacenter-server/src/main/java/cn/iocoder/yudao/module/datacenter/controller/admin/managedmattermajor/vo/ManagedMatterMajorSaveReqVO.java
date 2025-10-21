@@ -2,7 +2,6 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.managedmattermajor.v
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import java.util.*;
 import jakarta.validation.constraints.*;
 
 @Schema(description = "管理后台 - 管理事项分类表（含大类和小类）新增/修改 Request VO")
@@ -42,8 +41,8 @@ public class ManagedMatterMajorSaveReqVO {
     @Schema(description = "主管部门名称（仅小类使用）", example = "李四")
     private String deptName;
 
-    @Schema(description = "分类扩展字段1")
-    private String extCategory1;
+    @Schema(description = "工作流模型标识")
+    private String flowInstanceId;
 
     @Schema(description = "分类扩展字段2")
     private String extCategory2;

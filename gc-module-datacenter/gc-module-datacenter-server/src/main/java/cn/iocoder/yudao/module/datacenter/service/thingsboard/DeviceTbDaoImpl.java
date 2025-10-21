@@ -26,7 +26,7 @@ public class DeviceTbDaoImpl implements DeviceTbDao {
         client.login(username, password);
         PageData<Device> tenantDevices;
         PageLink pageLink = new PageLink(pageReqVO.getPageSize(),pageReqVO.getPageNo()-1);
-        tenantDevices = client.getTenantDevices("顺昌排口", pageLink);
+        tenantDevices = client.getTenantDevices("顺昌排口设备", pageLink);
         devicePageResult.setList(tenantDevices.getData());
         devicePageResult.setTotal(tenantDevices.getTotalElements());
         client.logout();
