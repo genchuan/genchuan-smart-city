@@ -9,6 +9,9 @@ import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.vo.Device
 import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import org.thingsboard.server.common.data.Device;
+import org.thingsboard.server.common.data.DeviceInfo;
+import org.thingsboard.server.common.data.id.EntityId;
+import org.thingsboard.server.common.data.kv.AttributeKvEntry;
 
 /**
  * 设备 Service 接口
@@ -52,7 +55,7 @@ public interface DeviceService {
      * @param id 编号
      * @return 设备
      */
-    DeviceDO getDevice(String id);
+    DeviceInfo getDevice(String id);
 
     /**
      * 获得设备分页
@@ -61,5 +64,7 @@ public interface DeviceService {
      * @return 设备分页
      */
     PageResult<Device> getDevicePage(DevicePageReqVO pageReqVO);
+
+    public List<AttributeKvEntry> getAttributeKvEntries(String id);
 
 }

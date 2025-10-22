@@ -98,6 +98,8 @@ public interface ErrorCodeConstants {
     ErrorCode ALARM_RULE_DUPLICATE = new ErrorCode(1003001003, "同一对象范围和触发条件的规则已存在");
     ErrorCode ALARM_RULE_THRESHOLD_INVALID = new ErrorCode(1003001004, "预警阈值上限必须大于下限");
     ErrorCode ALARM_RULE_SCOPE_IMMUTABLE = new ErrorCode(1003001005, "关联对象范围不可修改");
+    ErrorCode EARLY_WARN_REGION_NOT_EXISTS = new ErrorCode(1003001006, "按行政区划预警告警统计不存在");
+
 
     //====================================资产管理模块=========================================================================
 
@@ -125,5 +127,31 @@ public interface ErrorCodeConstants {
     ErrorCode ASSET_REL_RULE_NAME_DUPLICATE = new ErrorCode(200_125, "已经存在该名字的资产关联规则配置");
     ErrorCode ASSET_REL_RULE_PARENT_IS_CHILD = new ErrorCode(200_126, "不能设置自己的子AssetRelRule为父AssetRelRule");
 
+    //====================================资产操作模块=========================================================================
+    // ========== 资产分类管理 200_211 ==========
+    ErrorCode ASSET_CAT_MNG_NOT_EXISTS = new ErrorCode(200_211, "资产分类管理不存在");
+    ErrorCode ASSET_CAT_MNG_EXITS_CHILDREN = new ErrorCode(200_212, "存在存在子资产分类管理，无法删除");
+    ErrorCode ASSET_CAT_MNG_PARENT_NOT_EXITS = new ErrorCode(200_213,"父级资产分类管理不存在");
+    ErrorCode ASSET_CAT_MNG_PARENT_ERROR = new ErrorCode(200_214, "不能设置自己为父资产分类管理");
+    ErrorCode ASSET_CAT_MNG_NAME_DUPLICATE = new ErrorCode(200_215, "已经存在该名字的资产分类管理");
+    ErrorCode ASSET_CAT_MNG_PARENT_IS_CHILD = new ErrorCode(200_216, "不能设置自己的子AssetCatMng为父AssetCatMng");
 
+    // ========== 资产关联行政区划 200_221 ==========
+    ErrorCode ASSET_AREA_NOT_EXISTS = new ErrorCode(200_221, "资产关联行政区划不存在");
+    ErrorCode ASSET_AREA_EXITS_CHILDREN = new ErrorCode(200_222, "存在存在子资产关联行政区划，无法删除");
+    ErrorCode ASSET_AREA_PARENT_NOT_EXITS = new ErrorCode(200_223,"父级资产关联行政区划不存在");
+    ErrorCode ASSET_AREA_PARENT_ERROR = new ErrorCode(200_224, "不能设置自己为父资产关联行政区划");
+    ErrorCode ASSET_AREA_NAME_DUPLICATE = new ErrorCode(200_225, "已经存在该名字的资产关联行政区划");
+    ErrorCode ASSET_AREA_PARENT_IS_CHILD = new ErrorCode(200_226, "不能设置自己的子AssetArea为父AssetArea");
+
+    // ========== 资产关联网格 200_231 ==========
+    ErrorCode ASSET_GRID_NOT_EXISTS = new ErrorCode(200_231, "资产关联网格不存在");
+    // ========== 资产关联管理部件 200_241 ==========
+    ErrorCode ASSET_MNG_COMP_NOT_EXISTS = new ErrorCode(200_241, "资产关联管理部件不存在");
+
+    // ========== 资产关联应用场景 200_251 ==========
+    ErrorCode ASSET_APP_SCENE_NOT_EXISTS = new ErrorCode(200_251, "资产关联应用场景不存在");
+
+    // ========== 资产关联资产 200_261 ==========
+    ErrorCode ASSET_ASSET_NOT_EXISTS = new ErrorCode(200_261, "资产关联资产不存在");
 }

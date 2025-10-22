@@ -29,13 +29,15 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import org.thingsboard.server.common.data.Device;
+import org.thingsboard.server.common.data.DeviceInfo;
+import org.thingsboard.server.common.data.kv.AttributeKvEntry;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 
 @Tag(name = "管理后台 - 设备")
 @RestController
-@RequestMapping("/thingsboard/device")
+@RequestMapping("/datacenter/thingsboard/device")
 @Validated
 public class DeviceController {
 
@@ -79,9 +81,18 @@ public class DeviceController {
     @Operation(summary = "获得设备")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('device:device:query')")
-    public CommonResult<DeviceRespVO> getDevice(@RequestParam("id") String id) {
-        DeviceDO device = deviceService.getDevice(id);
-        return success(BeanUtils.toBean(device, DeviceRespVO.class));
+    public CommonResult<DeviceInfo> getDevice(@RequestParam("id") String id) {
+        DeviceInfo device = deviceService.getDevice(id);
+        return success(BeanUtils.toBean(device, DeviceInfo.class));
+    }
+
+    @GetMapping("/getAttr")
+    @Operation(summary = "获得设备属性")
+    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+    @PreAuthorize("@ss.hasPermission('device:device:query')")
+    public CommonResult<List<AttributeKvEntry>> getDeviceAttr(@RequestParam("id") String id) {
+        List<AttributeKvEntry> device = deviceService.getAttributeKvEntries(id);
+        return success(device);
     }
 
     @GetMapping("/page")

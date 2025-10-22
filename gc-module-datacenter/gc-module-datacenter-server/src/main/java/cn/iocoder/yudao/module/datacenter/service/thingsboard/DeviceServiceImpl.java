@@ -14,6 +14,9 @@ import java.util.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import org.thingsboard.server.common.data.Device;
+import org.thingsboard.server.common.data.DeviceInfo;
+import org.thingsboard.server.common.data.id.EntityId;
+import org.thingsboard.server.common.data.kv.AttributeKvEntry;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.datacenter.enums.ErrorCodeConstants.DEVICE_NOT_EXISTS;
@@ -74,14 +77,18 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public DeviceDO getDevice(String id) {
-        return deviceMapper.selectById(id);
+    public DeviceInfo getDevice(String id) {
+        return deviceTbDao.getDeviceInfoById(id);
     }
 
     @Override
     public PageResult<Device> getDevicePage(DevicePageReqVO pageReqVO) {
         return deviceTbDao.getDevicePage(pageReqVO);
-        //return deviceMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public List<AttributeKvEntry> getAttributeKvEntries(String id) {
+        return deviceTbDao.getAttributeKvEntries(id);
     }
 
 }
