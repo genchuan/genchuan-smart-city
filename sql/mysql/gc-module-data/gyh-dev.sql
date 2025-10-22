@@ -203,3 +203,124 @@ CREATE TABLE `gc_component_category` (
 
                                          PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='部件分类表';
+
+-- 管理部件表
+CREATE TABLE `gc_biz_mng_comp` (
+    -- 主键
+                                   `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    -- 业务字段
+                                   `mng_comp_id` CHAR(32) NOT NULL COMMENT '部件ID，唯一编码，UUID生成',
+                                   `comp_code` CHAR(16) NOT NULL COMMENT '部件标识码，格式6位行政码+2位大类码+3位小类码+5位顺序码，唯一',
+                                   `comp_name` VARCHAR(50) NOT NULL COMMENT '部件名称，关联小类名称+位置，如“XX路电力井盖”，关联管理部件小类表(gc_biz_mng_comp_minor)',
+                                   `minor_id` CHAR(32) NOT NULL COMMENT '关联管理部件小类ID，关联管理部件小类表(gc_biz_mng_comp_minor)',
+                                   `minor_name` VARCHAR(50) NOT NULL COMMENT '关联管理部件小类名称，与小类ID同步，不可改，关联管理部件小类表(gc_biz_mng_comp_minor)',
+                                   `dept_code` CHAR(18) NOT NULL COMMENT '主管部门代码，主管部门信用代码，关联部门信息表(sys_org)',
+                                   `dept_name` VARCHAR(60) NOT NULL COMMENT '主管部门名称，与部门代码同步，关联部门信息表(sys_org)',
+                                   `grid_id` CHAR(32) NOT NULL COMMENT '关联单元网格ID，关联网格信息表(biz_grid_info)',
+                                   `grid_name` VARCHAR(50) NOT NULL COMMENT '关联单元网格名称，与网格ID同步，关联网格信息表(biz_grid_info)',
+                                   `comp_status` CHAR(10) NOT NULL COMMENT '部件状态，如完好/破损/丢失/废弃，关联部件状态字典表(sys_dict_mng_comp_state)',
+                                   `init_date` DATE NOT NULL COMMENT '部件普查日期，格式YYYYMMDD',
+                                   `change_date` DATE COMMENT '状态/权属变更时更新日期，格式YYYYMMDD',
+                                   `data_source` VARCHAR(30) COMMENT '数据来源，如实测/人工上报/普查，关联数据来源字典表(sys_dict_data_source)',
+                                   `create_user` CHAR(32) NOT NULL COMMENT '录入人账号，关联用户信息表(sys_user)',
+                                   `create_time` DATETIME NOT NULL COMMENT '系统生成，格式yyyy - MM - dd HH:mm:ss',
+                                   `update_user` CHAR(32) COMMENT '修改人账号，关联用户信息表(sys_user)',
+                                   `update_time` DATETIME COMMENT '系统生成，格式yyyy - MM - dd HH:mm:ss',
+                                   `ext_cat1` VARCHAR(50) COMMENT '分类扩展字段1，预留，如“部件材质”',
+                                   `ext_cat2` VARCHAR(50) COMMENT '分类扩展字段2，预留，如“部件材质”',
+                                   `ext_common1` VARCHAR(100) COMMENT '通用扩展字段1，预留，如“安装时间”',
+                                   `ext_common2` VARCHAR(100) COMMENT '通用扩展字段2，预留，如“安装时间”',
+    -- 系统字段
+                                   `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                   `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                   `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                   `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                   `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                   `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+                                   PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理部件表';
+
+-- 管理部件空间数据表
+CREATE TABLE `gc_biz_mng_comp_spatial` (
+    -- 主键
+                                           `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    -- 业务字段
+                                           `mng_comp_spatial_id` CHAR(32) NOT NULL COMMENT '空间数据ID，唯一编码，UUID生成',
+                                           `mng_comp_id` CHAR(32) NOT NULL COMMENT '关联管理部件ID，一对一，关联管理部件表(gc_biz_mng_comp)',
+                                           `comp_name` VARCHAR(50) NOT NULL COMMENT '关联部件名称，与部件ID同步，不可改，关联管理部件表(gc_biz_mng_comp)',
+                                           `coord_system` VARCHAR(50) NOT NULL DEFAULT '2000国家大地坐标系' COMMENT '坐标系类型，固定，符合国标，2000国家大地坐标系',
+                                           `coord_x` DECIMAL(15, 2) NOT NULL COMMENT '坐标X，经度，保留2位小数，范围 - 180.00至180.00',
+                                           `coord_y` DECIMAL(15, 2) NOT NULL COMMENT '坐标Y，纬度，保留2位小数，范围 - 90.00至90.00',
+                                           `elevation` DECIMAL(10, 3) COMMENT '高程，可选，米，1985国家高程基准，保留3位小数',
+                                           `accuracy` DECIMAL(6, 2) NOT NULL COMMENT '定位精度，米，±0.5/±1.0/±10.0，定位精度等级对应的误差',
+                                           `accuracy_level` CHAR(1) NOT NULL COMMENT '定位精度等级，A/B/C，A类±0.5m、B类±1.0m、C类±10.0m',
+                                           `survey_unit` VARCHAR(100) COMMENT '测绘单位，测绘实施单位',
+    -- 系统字段
+                                           `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                           `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                           `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                           `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                           `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                           `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+                                           PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理部件空间数据表';
+
+-- 管理部件图示关联表
+CREATE TABLE `gc_rel_mng_comp_symbol` (
+    -- 主键
+                                          `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    -- 业务字段
+                                          `mng_comp_symbol_id` CHAR(32) NOT NULL COMMENT '关联ID，唯一编码，UUID生成',
+                                          `minor_id` CHAR(32) NOT NULL COMMENT '所属小类ID，关联管理部件小类ID，一个小类关联一个图示，关联管理部件小类表(gc_biz_mng_comp_minor)',
+                                          `minor_name` VARCHAR(50) NOT NULL COMMENT '所属小类名称，与小类ID同步，不可改，关联管理部件小类表(gc_biz_mng_comp_minor)',
+                                          `symbol_id` CHAR(32) NOT NULL COMMENT '图示ID，关联图示符号库ID，关联图示符号库表(gc_biz_mng_comp_symbol_lib)',
+                                          `symbol_name` VARCHAR(50) NOT NULL COMMENT '图示名称，如“上水井盖图示”，关联图示符号库表(gc_biz_mng_comp_symbol_lib)',
+                                          `symbol_path` VARCHAR(255) NOT NULL COMMENT '图示路径，如“/static/symbols/water_cover.png”，支持PNG/SVG，关联图示符号库表(gc_biz_mng_comp_symbol_lib)',
+    -- 系统字段
+                                          `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                          `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                          `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                          `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                          `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                          `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+                                          PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理部件图示关联表';
+-- 管理部件图示符号库表
+CREATE TABLE `gc_biz_mng_comp_symbol_lib` (
+    -- 主键
+                                              `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    -- 业务字段
+                                              `symbol_lib_id` CHAR(32) NOT NULL COMMENT '符号库ID，唯一编码，UUID生成',
+                                              `symbol_name` VARCHAR(50) COMMENT '符号名称',
+                                              `symbol_path` VARCHAR(255) COMMENT '符号路径',
+    -- 系统字段
+                                              `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                              `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                              `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                              `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                              `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                              `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+                                              PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理部件图示符号库表';
+
+CREATE TABLE `gc_biz_mng_comp_ext` (
+    -- 主键
+                                       `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    -- 业务字段
+                                       `mng_comp_ext_id` CHAR(32) NOT NULL COMMENT '扩展ID，唯一编码，UUID生成',
+                                       `major_id` CHAR(32) NOT NULL COMMENT '归属大类ID，无则归“其他”，关联管理部件大类ID，关联管理部件大类表(gc_biz_mng_comp_major)',
+                                       `major_name` VARCHAR(50) NOT NULL COMMENT '归属大类名称，与大类ID同步，关联管理部件大类表(gc_biz_mng_comp_major)',
+                                       `ext_minor_code` CHAR(3) NOT NULL COMMENT '扩展小类代码，080 - 999，倒排编码，避免冲突',
+                                       `ext_minor_name` VARCHAR(50) NOT NULL COMMENT '扩展小类名称，名称加“（自定义）”',
+                                       `ext_minor_desc` VARCHAR(255) NOT NULL COMMENT '扩展小类说明，描述用途，如“智能充电桩: 电动汽车充电设备”',
+                                       `suggest_dept_code` CHAR(18) COMMENT '建议主管部门代码，建议部门代码，关联部门信息表(sys_org)',
+                                       `suggest_dept_name` VARCHAR(60) COMMENT '建议主管部门名称，与部门代码同步，关联部门信息表(sys_org)',
+    -- 系统字段
+                                       `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                       `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                       `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                       `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                       `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                       `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+                                       PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理部件扩展管理部件配置表';
