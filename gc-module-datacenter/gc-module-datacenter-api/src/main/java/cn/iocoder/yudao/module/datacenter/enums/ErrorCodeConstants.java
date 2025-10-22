@@ -85,6 +85,11 @@ public interface ErrorCodeConstants {
     ErrorCode MANAGED_COMPONENT_MINOR_CONFIG_NOT_EXISTS = new ErrorCode(1008000001, "管理部件小类配置不存在");
     ErrorCode MANAGED_MAJOR_MINOR_REL_NOT_EXISTS = new ErrorCode(1008000002, "管理部件大类小类关联不存在");
     ErrorCode MANAGED_COMPONENT_INFO_NOT_EXISTS = new ErrorCode(1008000003, "管理部件信息不存在");
+    ErrorCode BIZ_MNG_COMP_NOT_EXISTS = new ErrorCode(1008000004, "管理部件信息管理不存在");
+    ErrorCode BIZ_MNG_COMP_SPATIAL_NOT_EXISTS = new ErrorCode(1008000005, "管理部件空间数据不存在");
+    ErrorCode REL_MNG_COMP_SYMBOL_NOT_EXISTS = new ErrorCode(1008000006, "管理部件图示关联不存在");
+    ErrorCode BIZ_MNG_COMP_SYMBOL_LIB_NOT_EXISTS = new ErrorCode(1008000007, "管理部件图示符号库不存在");
+    ErrorCode BIZ_MNG_COMP_EXT_NOT_EXISTS = new ErrorCode(1008000008, "管理部件扩展管理部件配置不存在");
 
     // ========== 管理事项分类表（含大类和小类） 100_105 ==========
     ErrorCode MANAGED_MATTER_MAJOR_NOT_EXISTS = new ErrorCode(100_105, "管理事项分类表（含大类和小类）不存在");
