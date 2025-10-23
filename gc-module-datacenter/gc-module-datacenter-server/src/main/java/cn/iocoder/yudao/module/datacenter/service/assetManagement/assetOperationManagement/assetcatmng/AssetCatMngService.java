@@ -2,8 +2,12 @@ package cn.iocoder.yudao.module.datacenter.service.assetManagement.assetOperatio
 
 import java.util.*;
 
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetcatmng.vo.AssetCatMngImportExcelVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetcatmng.vo.AssetCatMngImportRespVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetcatmng.vo.AssetCatMngListReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetcatmng.vo.AssetCatMngSaveReqVO;
+import cn.iocoder.yudao.module.system.controller.admin.user.vo.user.UserImportExcelVO;
+import cn.iocoder.yudao.module.system.controller.admin.user.vo.user.UserImportRespVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetOperationManagement.assetcatmng.AssetCatMngDO;
 
@@ -51,5 +55,14 @@ public interface AssetCatMngService {
      * @return 资产分类管理列表
      */
     List<AssetCatMngDO> getAssetCatMngList(AssetCatMngListReqVO listReqVO);
+
+    /**
+     * 导入资产分类管理
+     *
+     * @param importAssetCatMng 导入信息列表
+     * @param isUpdateSupport 是否支持更新已有数据
+     * @return 导入结果
+     */
+    AssetCatMngImportRespVO importAssetCatMngList(List<AssetCatMngImportExcelVO> importAssetCatMng, boolean isUpdateSupport);
 
 }

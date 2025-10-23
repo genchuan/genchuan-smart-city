@@ -1,9 +1,13 @@
 package cn.iocoder.yudao.module.datacenter.service.assetManagement.assetOperationManagement.assetcatmng;
 
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetcatmng.vo.AssetCatMngImportExcelVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetcatmng.vo.AssetCatMngImportRespVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetcatmng.vo.AssetCatMngListReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetcatmng.vo.AssetCatMngSaveReqVO;
+import cn.iocoder.yudao.module.system.controller.admin.user.vo.user.UserImportRespVO;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.*;
@@ -129,6 +133,20 @@ public class AssetCatMngServiceImpl implements AssetCatMngService {
     @Override
     public List<AssetCatMngDO> getAssetCatMngList(AssetCatMngListReqVO listReqVO) {
         return assetCatMngMapper.selectList(listReqVO);
+    }
+
+    /**
+     * 导入资产分类管理
+     * @param importAssetCatMng 导入信息列表
+     * @param isUpdateSupport 是否支持更新已有数据
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public AssetCatMngImportRespVO importAssetCatMngList(List<AssetCatMngImportExcelVO> importAssetCatMng, boolean isUpdateSupport) {
+        AssetCatMngImportRespVO respVO = AssetCatMngImportRespVO.builder().createAssetCatCodes(new ArrayList<>())
+                .updateAssetCatCodes(new ArrayList<>()).failureAssetCatCodes(new LinkedHashMap<>()).build();
+        return respVO;
     }
 
 }
