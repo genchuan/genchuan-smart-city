@@ -452,4 +452,65 @@ CREATE TABLE `gc_biz_mng_matter_ext` (
                                          `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
                                          PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理事项扩展管理事项配置表';
-
+-- 管理部件统计报表
+CREATE TABLE `stat_mng_comp` (
+    -- 主键
+                                 `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    -- 业务字段
+                                 `stat_mng_comp_id` CHAR(32) NOT NULL COMMENT '统计ID，唯一编码，UUID生成',
+                                 `stat_cycle` CHAR(10) NOT NULL COMMENT '统计周期，如年/季/月，格式:YYYY/YYYYQn/YYYYMM',
+                                 `stat_cycle_name` VARCHAR(20) NOT NULL COMMENT '统计周期名称，如“2025年9月”',
+                                 `area_code` CHAR(6) NOT NULL COMMENT '行政区划代码，符合GB/T 2260，关联行政区划表(sys_area)',
+                                 `area_name` VARCHAR(50) NOT NULL COMMENT '行政区划名称，与代码同步，关联行政区划表(sys_area)',
+                                 `comp_major_id` CHAR(32) NOT NULL COMMENT '部件大类ID，关联管理部件大类ID，关联管理部件大类表(biz_mng_comp_major)',
+                                 `comp_major_name` VARCHAR(50) NOT NULL COMMENT '部件大类名称，与大类ID同步，关联管理部件大类表(biz_mng_comp_major)',
+                                 `comp_minor_id` CHAR(32) COMMENT '部件小类ID，关联管理部件小类ID（钻取时必填），关联管理部件小类表(biz_mng_comp_minor)',
+                                 `comp_minor_name` VARCHAR(50) COMMENT '部件小类名称，与小类ID同步，关联管理部件小类表(biz_mng_comp_minor)',
+                                 `total_comp_count` INT COMMENT '部件总数，该维度下部件总数，关联管理部件表(biz_mng_comp)',
+                                 `normal_comp_count` INT COMMENT '完好部件数，状态为“完好”的数量，关联管理部件表(biz_mng_comp)',
+                                 `damaged_comp_count` INT COMMENT '破损部件数，状态为“破损”的数量，关联管理部件表(biz_mng_comp)',
+                                 `lost_comp_count` INT COMMENT '丢失部件数，状态为“丢失”的数量，关联管理部件表(biz_mng_comp)',
+                                 `discarded_comp_count` INT COMMENT '废弃部件数，状态为“废弃”的数量，关联管理部件表(biz_mng_comp)',
+                                 `new_comp_count` INT COMMENT '新增部件数，统计周期内新增数量，关联管理部件表(biz_mng_comp)',
+                                 `update_comp_count` INT COMMENT '更新部件数，统计周期内更新数量，关联管理部件表(biz_mng_comp)',
+    -- 系统字段
+                                 `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                 `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                 `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                 `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                 `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                 `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+                                 PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理部件统计表';
+-- 管理事项统计表
+CREATE TABLE `stat_mng_matter` (
+    -- 主键
+                                   `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    -- 业务字段
+                                   `stat_mng_matter_id` CHAR(32) NOT NULL COMMENT '统计ID，唯一编码，UUID生成',
+                                   `stat_cycle` CHAR(10) NOT NULL COMMENT '统计周期，如年/季/月，格式:YYYY/YYYYQn/YYYYMM',
+                                   `stat_cycle_name` VARCHAR(20) NOT NULL COMMENT '统计周期名称，如“2025年Q3”',
+                                   `area_code` CHAR(6) NOT NULL COMMENT '行政区划代码，符合GB/T 2260，关联行政区划表(sys_area)',
+                                   `area_name` VARCHAR(50) NOT NULL COMMENT '行政区划名称，与代码同步，关联行政区划表(sys_area)',
+                                   `matter_major_id` CHAR(32) NOT NULL COMMENT '事项大类ID，关联管理事项大类ID，关联管理事项大类表(biz_mng_matter_major)',
+                                   `matter_major_name` VARCHAR(50) NOT NULL COMMENT '事项大类名称，与大类ID同步，关联管理事项大类表(biz_mng_matter_major)',
+                                   `matter_minor_id` CHAR(32) COMMENT '事项小类ID，关联管理事项小类ID(钻取时必填)，关联管理事项小类表(biz_mng_matter_minor)',
+                                   `matter_minor_name` VARCHAR(50) COMMENT '事项小类名称，与小类ID同步，关联管理事项小类表(biz_mng_matter_minor)',
+                                   `dept_code` CHAR(18) COMMENT '处置部门代码，关联主管部门信用代码，关联部门信息表(sys_org)',
+                                   `dept_name` VARCHAR(60) COMMENT '处置部门名称，与部门代码同步，关联部门信息表(sys_org)',
+                                   `total_rpt_count` INT COMMENT '上报总数，统计周期内上报总数，关联管理事项表(biz_mng_matter)',
+                                   `pend_count` INT COMMENT '待处置数，状态为“待处置”的数量，关联管理事项表（biz_mng_matter）',
+                                   `handl_count` INT COMMENT '处置中数，状态为“处置中”的数量，关联管理事项表（biz_mng_matter）',
+                                   `completed_count` INT COMMENT '已办结数，状态为“已办结”的数量，关联管理事项表（biz_mng_matter）',
+                                   `rejected_count` INT COMMENT '已驳回数，状态为“已驳回”的数量，关联管理事项表（biz_mng_matter）',
+                                   `complete_rate` DECIMAL(5, 2) COMMENT '办结率，（已办结数/（上报总数 - 已驳回数））×100，关联管理事项表（biz_mng_matter）',
+                                   `avg_handle_endure` DECIMAL(10, 2) COMMENT '平均处置时长，已办结事项处置时长平均值，关联管理事项表（biz_mng_matter）',
+    -- 系统字段
+                                   `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                   `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                   `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                   `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                   `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                   `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+                                   PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理事项统计表';
