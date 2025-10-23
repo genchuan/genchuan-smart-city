@@ -324,3 +324,132 @@ CREATE TABLE `gc_biz_mng_comp_ext` (
                                        `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
                                        PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理部件扩展管理部件配置表';
+
+-- 管理事项大类表
+CREATE TABLE `gc_biz_mng_matter_major` (
+    -- 主键
+                                           `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    -- 业务字段
+                                           `mng_matter_major_id` CHAR(32) NOT NULL COMMENT '管理事项大类ID，唯一编码，UUID生成',
+                                           `matter_major_code` CHAR(2) NOT NULL COMMENT '大类代码，2位字符，01 - 99，顺序编排，同一系统唯一，符合GB/T 30428.2',
+                                           `matter_major_name` VARCHAR(50) NOT NULL COMMENT '大类名称，如市容环境/宣传广告等，国标名称，扩展大类加“（自定义）”',
+                                           `matter_major_desc` VARCHAR(255) COMMENT '大类说明，描述大类覆盖事项范围，如“宣传广告：含违规广告、招牌破损”',
+                                           `sort_num` INT COMMENT '排序序号，1 - 999，列表展示优先级，数值越小越靠前',
+                                           `enable_status` CHAR(1) NOT NULL DEFAULT '1' COMMENT '启用状态，1（启用）/0（禁用），默认1，禁用后关联小类同步禁用',
+                                           `create_user` CHAR(32) NOT NULL COMMENT '创建人，配置人账号，关联用户信息表(sys_user)',
+                                           `create_time` DATETIME NOT NULL COMMENT '创建时间，系统生成，格式yyyy - MM - dd HH:mm:ss',
+                                           `update_user` CHAR(32) COMMENT '更新人，修改人账号，关联用户信息表(sys_user)',
+                                           `update_time` DATETIME COMMENT '更新时间，系统生成，格式yyyy - MM - dd HH:mm:ss',
+    -- 系统字段
+                                           `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                           `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                           `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                           `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                           `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                           `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+                                           PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理事项大类表';
+
+-- 管理事项小类表
+CREATE TABLE `gc_biz_mng_matter_minor` (
+    -- 主键
+                                           `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    -- 业务字段
+                                           `mng_matter_minor_id` CHAR(32) NOT NULL COMMENT '管理事项小类ID，唯一编码，UUID生成',
+                                           `parent_major_id` CHAR(32) NOT NULL COMMENT '所属大类ID，关联管理事项大类ID，关联管理事项大类表(gc_biz_mng_matter_major)',
+                                           `parent_major_name` VARCHAR(50) NOT NULL COMMENT '所属大类名称，与所属大类ID同步，不可改，关联管理事项大类表(gc_biz_mng_matter_major)',
+                                           `matter_minor_code` CHAR(3) NOT NULL COMMENT '小类代码，3位字符，001 - 999，标准类001 - 079、扩展类080 - 999倒排，同一大类下唯一',
+                                           `matter_minor_name` VARCHAR(50) NOT NULL COMMENT '小类名称，如私搭乱建/垃圾乱堆乱放等，国标名，扩展类加“（自定义）”',
+                                           `matter_minor_desc` VARCHAR(255) COMMENT '小类说明，描述小类定义，如“私搭乱建：未经审批搭建”',
+                                           `dept_code` CHAR(18) NOT NULL COMMENT '主管部门代码，主管部门信用代码，关联部门信息表(sys_org)',
+                                           `dept_name` VARCHAR(60) NOT NULL COMMENT '主管部门名称，与主管部门代码同步，关联部门信息表(sys_org)',
+                                           `is_ext` CHAR(1) NOT NULL DEFAULT '0' COMMENT '是否扩展类，0（标准类）/1（扩展类），按代码自动判断',
+                                           `enable_status` CHAR(1) NOT NULL DEFAULT '1' COMMENT '启用状态，1（启用）/0（禁用），默认继承大类状态',
+                                           `create_user` CHAR(32) NOT NULL COMMENT '创建人，配置人账号，关联用户信息表(sys_user)',
+                                           `create_time` DATETIME NOT NULL COMMENT '创建时间，系统生成，格式yyyy - MM - dd HH:mm:ss',
+                                           `update_user` CHAR(32) COMMENT '更新人，修改人账号，关联用户信息表(sys_user)',
+                                           `update_time` DATETIME COMMENT '更新时间，系统生成，格式yyyy - MM - dd HH:mm:ss',
+    -- 系统字段
+                                           `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                           `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                           `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                           `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                           `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                           `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+                                           PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理事项小类表';
+
+-- 管理事项大小类关联表
+CREATE TABLE `gc_rel_mng_matter_maj_min` (
+    -- 主键
+                                             `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    -- 业务字段
+                                             `mng_matter_major_minor_id` CHAR(32) NOT NULL COMMENT '关联ID，唯一编码，UUID生成',
+                                             `major_id` CHAR(32) NOT NULL COMMENT '关联管理事项大类ID，关联管理事项大类表(gc_biz_mng_matter_major)',
+                                             `major_name` VARCHAR(50) NOT NULL COMMENT '关联管理事项大类名称，与大类ID同步，不可手动修改，关联管理事项大类表(gc_biz_mng_matter_major)',
+                                             `minor_id` CHAR(32) NOT NULL COMMENT '关联管理事项小类ID，关联管理事项小类表(gc_biz_mng_matter_minor)',
+                                             `minor_name` VARCHAR(50) NOT NULL COMMENT '关联管理事项小类名称，与小类ID同步，不可手动修改，关联管理事项小类表(gc_biz_mng_matter_minor)',
+                                             `rel_status` CHAR(1) NOT NULL DEFAULT '1' COMMENT '关联状态，1（有效）/0（无效），1表示正常关联，0表示已解除关联',
+    -- 系统字段
+                                             `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                             `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                             `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                             `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                             `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                             `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+                                             PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理事项大小类关联表';
+
+-- 管理事项信息表
+CREATE TABLE `gc_biz_mng_matter` (
+    -- 主键
+                                     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    -- 业务字段
+                                     `mng_matter_id` CHAR(32) NOT NULL COMMENT '事项ID，唯一编码，UUID生成',
+                                     `matter_code` CHAR(16) NOT NULL COMMENT '事项标识码，格式6位行政码+2位大类码+3位小类码+5位顺序码，唯一',
+                                     `matter_name` VARCHAR(50) NOT NULL COMMENT '事项名称，关联小类名称+位置，如“XX路私搭乱建”，关联管理事项小类表(gc_biz_mng_matter_minor)',
+                                     `minor_id` CHAR(32) NOT NULL COMMENT '关联管理事项小类ID，关联管理事项小类表(gc_biz_mng_matter_minor)',
+                                     `minor_name` VARCHAR(50) NOT NULL COMMENT '关联管理事项小类名称，与小类ID同步，不可修改，关联管理事项小类表(gc_biz_mng_matter_minor)',
+                                     `grid_id` CHAR(32) NOT NULL COMMENT '关联单元网格ID，关联网格信息表(biz_grid_info)',
+                                     `grid_name` VARCHAR(50) NOT NULL COMMENT '关联单元网格名称，与网格ID同步，关联网格信息表(biz_grid_info)',
+                                     `matter_status` CHAR(10) NOT NULL COMMENT '事项状态，如待处置/处置中/已办结/已驳回，关联问题状态字典表(sys_dict_problem_status)',
+                                     `matter_level` CHAR(10) COMMENT '事项等级，如一级/二级/三级，按影响范围判定',
+                                     `dept_code` CHAR(18) NOT NULL COMMENT '主管部门代码，关联主管部门信用代码，关联部门信息表(sys_org)',
+                                     `dept_name` VARCHAR(60) NOT NULL COMMENT '主管部门名称，与部门代码同步，关联部门信息表(sys_org)',
+                                     `incident_location` VARCHAR(100) COMMENT '事发位置，详细位置描述，如“XX路与XX路交叉口东北侧”',
+                                     `create_user` CHAR(32) NOT NULL COMMENT '录入人账号，关联用户信息表(sys_user)',
+                                     `create_time` DATETIME NOT NULL COMMENT '创建时间，系统生成，格式yyyy - MM - dd HH:mm:ss',
+                                     `update_user` CHAR(32) COMMENT '修改人账号，关联用户信息表(sys_user)',
+                                     `update_time` DATETIME COMMENT '修改时间，系统生成，格式yyyy - MM - dd HH:mm:ss',
+    -- 系统字段
+                                     `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                     `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                     `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                     `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                     `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                     `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+                                     PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理事项信息表';
+-- 管理事项 扩展管理事项配置表
+CREATE TABLE `gc_biz_mng_matter_ext` (
+    -- 主键
+                                         `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    -- 业务字段
+                                         `mng_matter_ext_id` CHAR(32) NOT NULL COMMENT '扩展ID，唯一编码，UUID生成',
+                                         `matter_major_id` CHAR(32) NOT NULL COMMENT '归属大类ID，无则归“其他管理事项”，关联管理事项大类ID，关联管理事项大类表(gc_biz_mng_matter_major)',
+                                         `matter_major_name` VARCHAR(50) NOT NULL COMMENT '归属大类名称，与大类ID同步，关联管理事项大类表(gc_biz_mng_matter_major)',
+                                         `ext_minor_code` CHAR(3) NOT NULL COMMENT '扩展小类代码，080 - 999，倒排编码，避免与标准类冲突',
+                                         `ext_minor_name` VARCHAR(50) NOT NULL COMMENT '扩展小类名称，名称加“(自定义)”，如“共享单车乱停放(自定义)”',
+                                         `ext_minor_desc` VARCHAR(255) NOT NULL COMMENT '扩展小类说明，描述用途，如“共享单车未停指定区域，影响市容”',
+                                         `suggest_dept_code` CHAR(18) COMMENT '建议主管部门代码，建议主管部门信用代码，关联部门信息表(sys_org)',
+                                         `suggest_dept_name` VARCHAR(60) COMMENT '建议主管部门名称，与部门代码同步，关联部门信息表(sys_org)',
+    -- 系统字段
+                                         `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                         `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                         `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                         `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                         `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                         `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+                                         PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理事项扩展管理事项配置表';
+
