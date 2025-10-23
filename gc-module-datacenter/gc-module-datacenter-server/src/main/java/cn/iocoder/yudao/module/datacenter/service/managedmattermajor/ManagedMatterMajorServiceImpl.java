@@ -3,19 +3,15 @@ package cn.iocoder.yudao.module.datacenter.service.managedmattermajor;
 
 import cn.iocoder.yudao.module.datacenter.controller.admin.managedmattermajor.vo.ManagedMatterMajorListReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.managedmattermajor.vo.ManagedMatterMajorPageReqVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.managedmattermajor.vo.ManagedMatterMajorRespVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.managedmattermajor.vo.ManagedMatterMajorSaveReqVO;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.managedmattermajor.ManagedMatterMajorDO;
 import cn.iocoder.yudao.module.datacenter.dal.mysql.managedmattermajor.ManagedMatterMajorMapper;
-import cn.iocoder.yudao.module.system.dal.dataobject.dept.DeptDO;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 
