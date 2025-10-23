@@ -99,6 +99,7 @@ public interface ErrorCodeConstants {
     ErrorCode REL_MNG_COMP_SYMBOL_NOT_EXISTS = new ErrorCode(1008000006, "管理部件图示关联不存在");
     ErrorCode BIZ_MNG_COMP_SYMBOL_LIB_NOT_EXISTS = new ErrorCode(1008000007, "管理部件图示符号库不存在");
     ErrorCode BIZ_MNG_COMP_EXT_NOT_EXISTS = new ErrorCode(1008000008, "管理部件扩展管理部件配置不存在");
+    ErrorCode MNG_COMP_NOT_EXISTS = new ErrorCode(1008000009, "管理部件统计不存在");
     // ========== 管理事项 1009000000 ==========
     ErrorCode MANAGED_MATTER_MAJOR_NOT_EXISTS = new ErrorCode(100_105, "管理事项分类表（含大类和小类）不存在");
     ErrorCode BIZ_MNG_MATTER_MAJOR_NOT_EXISTS = new ErrorCode(100900000, "管理事项大类不存在");
@@ -106,6 +107,7 @@ public interface ErrorCodeConstants {
     ErrorCode BIZ_MNG_MATTER_NOT_EXISTS = new ErrorCode(100900003, "管理事项信息不存在");
     ErrorCode REL_MNG_MATTER_MAJ_MIN_NOT_EXISTS = new ErrorCode(100900004, "管理事项大小类关联不存在");
     ErrorCode BIZ_MNG_MATTER_EXT_NOT_EXISTS = new ErrorCode(100900005, "管理事项扩展管理事项配置不存在");
+    ErrorCode MNG_MATTER_NOT_EXISTS = new ErrorCode(100900006, "管理事项统计不存在");
 
     // ========== 风险预警信息列表 ==========
     ErrorCode WARNING_ALERT_LIST_TABLE_NOT_EXISTS = new ErrorCode(100_103, "预警告警列表不存在");
