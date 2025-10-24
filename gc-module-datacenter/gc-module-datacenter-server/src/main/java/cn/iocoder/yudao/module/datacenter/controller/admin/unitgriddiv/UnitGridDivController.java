@@ -92,4 +92,52 @@ public class UnitGridDivController {
                         BeanUtils.toBean(list, UnitGridDivRespVO.class));
     }
 
+    @PostMapping("/validate-area")
+    @Operation(summary = "校验单元网格面积")
+    @PreAuthorize("@ss.hasPermission('datacenter:unit-grid-div:query')")
+    public CommonResult<Boolean> validateUnitGridArea(
+            @RequestParam("area") @NotNull(message = "面积不能为空") Integer area,
+            @RequestParam("commId") @NotEmpty(message = "社区ID不能为空") String commId) {
+        Boolean isValid = unitGridDivService.validateArea(area, commId);
+        return success(isValid);
+    }
+
+    @PostMapping("/validate-boundary")
+    @Operation(summary = "校验单元网格边界")
+    @PreAuthorize("@ss.hasPermission('datacenter:unit-grid-div:query')")
+    public CommonResult<UnitGridBoundaryValidateRespVO> validateUnitGridBoundary(
+            @Valid @RequestBody UnitGridBoundaryValidateReqVO validateReqVO) {
+        UnitGridBoundaryValidateRespVO result = unitGridDivService.validateBoundary(validateReqVO);
+        return success(result);
+    }
+
+    @PostMapping("/import-coordinates")
+    @Operation(summary = "导入坐标创建单元网格")
+    @PreAuthorize("@ss.hasPermission('datacenter:unit-grid-div:create')")
+    public CommonResult<Long> importUnitGridCoordinates(
+            @Valid @RequestBody UnitGridCoordinateImportReqVO importReqVO) {
+        Long id = unitGridDivService.importCoordinates(importReqVO);
+        return success(id);
+    }
+
+    @GetMapping("/list-by-comm")
+    @Operation(summary = "获取社区下的单元网格列表")
+    @Parameter(name = "commId", description = "社区ID", required = true)
+    @PreAuthorize("@ss.hasPermission('datacenter:unit-grid-div:query')")
+    public CommonResult<List<UnitGridSimpleRespVO>> getUnitGridsByComm(
+            @RequestParam("commId") String commId) {
+        List<UnitGridSimpleRespVO> list = unitGridDivService.getUnitGridsByComm(commId);
+        return success(list);
+    }
+
+    @GetMapping("/check-overlap")
+    @Operation(summary = "检查边界重叠")
+    @PreAuthorize("@ss.hasPermission('datacenter:unit-grid-div:query')")
+    public CommonResult<List<UnitGridSimpleRespVO>> checkBoundaryOverlap(
+            @RequestParam("boundaryCoords") @NotEmpty(message = "边界坐标不能为空") String boundaryCoords,
+            @RequestParam(value = "excludeId", required = false) Long excludeId) {
+        List<UnitGridSimpleRespVO> overlapGrids = unitGridDivService.checkBoundaryOverlap(boundaryCoords, excludeId);
+        return success(overlapGrids);
+    }
+
 }

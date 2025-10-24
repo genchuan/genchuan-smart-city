@@ -52,4 +52,47 @@ public interface UnitGridDivService {
      */
     PageResult<UnitGridDivDO> getUnitGridDivPage(UnitGridDivPageReqVO pageReqVO);
 
+    /**
+     * 校验单元网格面积
+     *
+     * @param area 面积
+     * @param commId 社区ID
+     * @return 是否通过校验
+     */
+    Boolean validateArea(Integer area, String commId);
+
+    /**
+     * 校验单元网格边界
+     *
+     * @param validateReqVO 边界校验请求
+     * @return 边界校验结果
+     */
+    UnitGridBoundaryValidateRespVO validateBoundary(UnitGridBoundaryValidateReqVO validateReqVO);
+
+    /**
+     * 导入坐标数据创建单元网格
+     *
+     * @param importReqVO 坐标导入请求
+     * @return 创建的单元网格ID
+     */
+    Long importCoordinates(UnitGridCoordinateImportReqVO importReqVO);
+
+    /**
+     * 获取指定社区下的单元网格列表
+     *
+     * @param commId 社区ID
+     * @return 单元网格简单信息列表
+     */
+    java.util.List<UnitGridSimpleRespVO> getUnitGridsByComm(String commId);
+
+    /**
+     * 校验边界是否与现有网格重叠
+     *
+     * @param boundaryCoords 边界坐标
+     * @param excludeId 排除的网格ID
+     * @return 重叠的网格信息
+     */
+    java.util.List<UnitGridSimpleRespVO> checkBoundaryOverlap(String boundaryCoords, Long excludeId);
+
+
 }

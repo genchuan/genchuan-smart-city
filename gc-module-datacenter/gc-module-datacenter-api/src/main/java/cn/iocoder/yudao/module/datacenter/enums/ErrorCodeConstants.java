@@ -43,8 +43,11 @@ public interface ErrorCodeConstants {
     ErrorCode AREA_EXISTS_CHILDREN = new ErrorCode(100_109, "存在子节点，无法删除");
     ErrorCode AREA_PARENT_IS_SELF = new ErrorCode(100_110, "父节点不能是自己");
     ErrorCode AREA_PARENT_IS_CHILD = new ErrorCode(100_111, "父节点不能是自己的子节点");
-
-
+    ErrorCode UNIT_GRID_DIV_BOUNDARY_INVALID = new ErrorCode(100_112, "单元网格边界校验不通过");
+    ErrorCode MNG_GRID_DIV_VALIDATION_FAILED = new ErrorCode(100400100, "单元网格不相邻");
+    ErrorCode MNG_GRID_DIV_CROSS_COMMUNITY = new ErrorCode(1003001002, "单元网格跨社区，无法集成");
+    ErrorCode MNG_GRID_DIV_NOT_ADJACENT = new ErrorCode(1003001003, "单元网格不相邻，无法集成");
+    ErrorCode MNG_GRID_DIV_UNIT_COUNT_INVALID = new ErrorCode(1003001004, "单元网格数量必须在1-5个之间");
 
 
 
@@ -155,23 +158,25 @@ public interface ErrorCodeConstants {
     ErrorCode ASSET_CAT_MNG_PARENT_ERROR = new ErrorCode(200_214, "不能设置自己为父资产分类管理");
     ErrorCode ASSET_CAT_MNG_NAME_DUPLICATE = new ErrorCode(200_215, "已经存在该名字的资产分类管理");
     ErrorCode ASSET_CAT_MNG_PARENT_IS_CHILD = new ErrorCode(200_216, "不能设置自己的子AssetCatMng为父AssetCatMng");
-
-    // ========== 资产关联行政区划 200_221 ==========
+    // ========= 资产关联行政区划 200_221 ==========
     ErrorCode ASSET_AREA_NOT_EXISTS = new ErrorCode(200_221, "资产关联行政区划不存在");
     ErrorCode ASSET_AREA_EXITS_CHILDREN = new ErrorCode(200_222, "存在存在子资产关联行政区划，无法删除");
     ErrorCode ASSET_AREA_PARENT_NOT_EXITS = new ErrorCode(200_223,"父级资产关联行政区划不存在");
     ErrorCode ASSET_AREA_PARENT_ERROR = new ErrorCode(200_224, "不能设置自己为父资产关联行政区划");
     ErrorCode ASSET_AREA_NAME_DUPLICATE = new ErrorCode(200_225, "已经存在该名字的资产关联行政区划");
     ErrorCode ASSET_AREA_PARENT_IS_CHILD = new ErrorCode(200_226, "不能设置自己的子AssetArea为父AssetArea");
-
     // ========== 资产关联网格 200_231 ==========
     ErrorCode ASSET_GRID_NOT_EXISTS = new ErrorCode(200_231, "资产关联网格不存在");
     // ========== 资产关联管理部件 200_241 ==========
     ErrorCode ASSET_MNG_COMP_NOT_EXISTS = new ErrorCode(200_241, "资产关联管理部件不存在");
-
     // ========== 资产关联应用场景 200_251 ==========
     ErrorCode ASSET_APP_SCENE_NOT_EXISTS = new ErrorCode(200_251, "资产关联应用场景不存在");
-
     // ========== 资产关联资产 200_261 ==========
     ErrorCode ASSET_ASSET_NOT_EXISTS = new ErrorCode(200_261, "资产关联资产不存在");
+    //====================================资产数据管理模块=====================================================
+    ErrorCode ASSET_SPATIAL_DATA_NOT_EXISTS = new ErrorCode(200_301, "资产空间数据不存在");
+    ErrorCode ASSET_SERVER_ATTR_CFG_NOT_EXISTS = new ErrorCode(200_311, "资产服务端属性配置不存在");
+    ErrorCode ASSET_CLIENT_ATTR_CFG_NOT_EXISTS = new ErrorCode(200_321, "资产客户端属性配置不存在");
+    ErrorCode ASSET_SHARE_ATTR_CFG_NOT_EXISTS = new ErrorCode(200_331, "资产共享属性配置不存在");
+    ErrorCode ASSET_DATA_QUAL_CK_NOT_EXISTS = new ErrorCode(200_341, "资产数据质量检查不存在");
 }

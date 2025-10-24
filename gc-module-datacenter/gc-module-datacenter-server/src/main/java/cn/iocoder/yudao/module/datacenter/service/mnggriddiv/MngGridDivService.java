@@ -52,4 +52,54 @@ public interface MngGridDivService {
      */
     PageResult<MngGridDivDO> getMngGridDivPage(MngGridDivPageReqVO pageReqVO);
 
+    /**
+     * 根据乡镇ID获取管理网格列表
+     *
+     * @param townStreetId 乡镇ID
+     * @return 管理网格列表
+     */
+    List<MngGridDivRespVO> getMngGridDivListByTown(String townStreetId);
+
+    /**
+     * 校验单元网格是否可以集成
+     *
+     * @param unitGridIds 单元网格ID列表
+     * @param townStreetId 乡镇ID
+     * @return 校验结果
+     */
+    MngGridValidateRespVO validateUnitGrids(List<String> unitGridIds, String townStreetId);
+
+    /**
+     * 计算管理网格面积
+     *
+     * @param unitGridIds 单元网格ID列表
+     * @return 总面积
+     */
+    Integer calculateArea(List<String> unitGridIds);
+
+    /**
+     * 批量导入单元网格创建管理网格
+     *
+     * @param importReqVO 导入请求
+     * @return 创建的管理网格ID
+     */
+    Long importUnitGrids(@Valid MngGridImportReqVO importReqVO);
+
+    /**
+     * 根据所含单元网格数量范围筛选
+     *
+     * @param townStreetId 乡镇ID
+     * @param minUnits 最小单元数
+     * @param maxUnits 最大单元数
+     * @return 管理网格列表
+     */
+    List<MngGridDivRespVO> getMngGridDivByUnitCount(String townStreetId, Integer minUnits, Integer maxUnits);
+
+    /**
+     * 获取单元网格详情列表
+     *
+     * @param unitGridIds 单元网格ID列表
+     * @return 单元网格详情列表
+     */
+    List<UnitGridSimpleInfo> getUnitGridDetails(List<String> unitGridIds);
 }
