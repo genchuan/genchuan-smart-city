@@ -50,7 +50,6 @@ public interface ErrorCodeConstants {
     ErrorCode MNG_GRID_DIV_UNIT_COUNT_INVALID = new ErrorCode(1003001004, "单元网格数量必须在1-5个之间");
 
 
-
     // ========== 事件类型管理 1002000000 ==========
     ErrorCode EVENT_TYPE_NOT_EXISTS = new ErrorCode(1002000000, "事件类型不存在");
     ErrorCode EVENT_TYPE_CODE_DUPLICATE = new ErrorCode(1002000001, "事件类型代码已存在");
@@ -90,9 +89,21 @@ public interface ErrorCodeConstants {
     ErrorCode POLICY_INTERPRETATION_INFO_CANNOT_DELETE = new ErrorCode(1006000003, "仅已下架状态的解读可以删除");
     ErrorCode POLICY_INTERPRETATION_INFO_POLICY_INVALID = new ErrorCode(1006000004, "关联政策无效");
 
-    // ========== 监测部 1007000000 ==========
+    // ========== 监测部件 1007000000 ==========
     ErrorCode COMPONENT_CATEGORY_NOT_EXISTS = new ErrorCode(1007000000, "监测部件分类不存在");
-
+    ErrorCode MON_COMP_DATA_CFG_NOT_EXISTS = new ErrorCode(1007000001, "监测部件数据配置不存在");
+    ErrorCode MON_COMP_INFO_NOT_EXISTS = new ErrorCode(1007000002, "监测部件信息不存在");
+    ErrorCode MON_COMP_EXT_NOT_EXISTS = new ErrorCode(1007000003, "监测部件扩展配置不存在");
+    ErrorCode MON_COMP_CAT_NOT_EXISTS = new ErrorCode(1007000004, "监测部件分类配置不存在");
+    ErrorCode MON_COMP_CODE_RULE_NOT_EXISTS = new ErrorCode(1007000005, "监测部件标识码规则不存在");
+    ErrorCode MON_COMP_RPT_NOT_EXISTS = new ErrorCode(1007000011, "监测部件统计报不存在");
+    // ========== 监测事项 1007000006 ==========
+    ErrorCode MON_EVT_CAT_NOT_EXISTS = new ErrorCode(1007000006, "监测事件分类配置不存在");
+    ErrorCode MON_EVT_INFO_NOT_EXISTS = new ErrorCode(1007000007, "监测事件信息不存在");
+    ErrorCode MON_EVT_EXT_NOT_EXISTS = new ErrorCode(1007000008, "扩展监测事件配置不存在");
+    ErrorCode MON_EVT_DATA_CFG_NOT_EXISTS = new ErrorCode(1007000009, "监测事件数据配置不存在");
+    ErrorCode MON_EVT_CODE_RULE_NOT_EXISTS = new ErrorCode(1007000010, "监测事件标识码规则不存在");
+    ErrorCode MON_EVT_RPT_NOT_EXISTS = new ErrorCode(1007000012, "监测事件统计报不存在");
     // ========== 管理部件 1008000000 ==========
     ErrorCode MANAGED_COMPONENT_MAJOR_CONFIG_NOT_EXISTS = new ErrorCode(1008000000, "管理部件大类配置表不存在");
     ErrorCode MANAGED_COMPONENT_MINOR_CONFIG_NOT_EXISTS = new ErrorCode(1008000001, "管理部件小类配置不存在");
@@ -122,7 +133,6 @@ public interface ErrorCodeConstants {
     ErrorCode ALARM_RULE_THRESHOLD_INVALID = new ErrorCode(1003001004, "预警阈值上限必须大于下限");
     ErrorCode ALARM_RULE_SCOPE_IMMUTABLE = new ErrorCode(1003001005, "关联对象范围不可修改");
     ErrorCode EARLY_WARN_REGION_NOT_EXISTS = new ErrorCode(1003001006, "按行政区划预警告警统计不存在");
-
 
     //====================================资产管理模块=========================================================================
 

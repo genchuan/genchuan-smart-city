@@ -514,3 +514,346 @@ CREATE TABLE `stat_mng_matter` (
                                    `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
                                    PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '管理事项统计表';
+--  监测部件分类配置表
+CREATE TABLE `sys_mon_comp_cat` (
+    -- 主键
+                                    `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    -- 业务字段
+                                    `mon_comp_cat_id` CHAR(32) NOT NULL COMMENT '分类ID，唯一编码，UUID生成',
+                                    `parent_cat_id` CHAR(32) NOT NULL COMMENT '父类ID，关联本表格“分类ID”，大类父类ID为“0”；监测部件分类配置表（sys_mon_comp_cat）',
+                                    `cat_level` CHAR(1) NOT NULL COMMENT '分类层级，标识分类所处层级，1对应大类、2对应中类、3对应小类',
+                                    `cat_code` CHAR(3) NOT NULL COMMENT '分类代码，大类/中类从01顺序编排，小类从001顺序编排，扩展类小类从080倒排',
+                                    `cat_name` VARCHAR(50) NOT NULL COMMENT '分类名称，参照GB/T XXXXX.6标准名称，扩展类标注“自定义”',
+                                    `cat_desc` VARCHAR(255) COMMENT '分类说明，描述分类包含的部件范围，如“燃气压力传感器：监测燃气管道压力的设备”',
+    -- 系统字段
+                                    `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                    `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                    `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                    `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                    `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                    `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+                                    PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '监测部件分类配置表';
+
+-- 监测部件标识码规则配置
+CREATE TABLE `sys_mon_comp_code_rule` (
+    -- 主键
+                                          `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    -- 业务字段
+                                          `code_rule_id` CHAR(32) NOT NULL COMMENT '规则ID，唯一编码，UUID生成',
+                                          `rule_name` VARCHAR(50) NOT NULL COMMENT '规则名称',
+                                          `rule_desc` VARCHAR(255) COMMENT '规则说明',
+                                          `code_format` VARCHAR(100) NOT NULL COMMENT '编码格式',
+    -- 系统字段
+                                          `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                          `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                          `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                          `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                          `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                          `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+                                          PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '监测部件标识码规则表';
+
+--监测部件数据配置表
+CREATE TABLE `sys_mon_comp_data_cfg` (
+    -- 主键
+                                         `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    -- 业务字段
+                                         `mon_comp_data_id` CHAR(32) NOT NULL COMMENT '配置ID，唯一编码，UUID生成',
+                                         `comp_cat_id` CHAR(32) NOT NULL COMMENT '部件分类ID，关联监测部件分类表小类ID；监测部件分类配置表(sys_mon_comp_cat)',
+                                         `comp_cat_name` VARCHAR(50) NOT NULL COMMENT '部件分类名称，与分类ID同步，自动填充；监测部件分类配置表(sys_mon_comp_cat)',
+                                         `data_type` CHAR(10) NOT NULL COMMENT '数据类型，标识数据类型，空间对应坐标等，属性对应字段信息',
+                                         `coord_system` VARCHAR(50) COMMENT '坐标系类型，条件必选(数据类型为空间数据时)，固定为2000国家大地坐标系，不可修改',
+                                         `accuracy_level` CHAR(1) COMMENT '定位精度级别，条件必选(数据类型为空间数据时)，A类(±0.5m)、B类(±1.0m)，参照GB/T XXXXX.6',
+                                         `elevation_datum` VARCHAR(50) COMMENT '高程基准，条件必选(数据类型为空间数据时)，固定为1985国家高程基准，不可修改',
+                                         `field_name` VARCHAR(50) COMMENT '字段名称，条件必选（数据类型为属性数据时），部件标识码/主管部门代码等',
+                                         `field_code` VARCHAR(50) COMMENT '字段代码，条件必选（数据类型为属性数据时），采用蛇形命名法，与数据库字段一致',
+    -- 系统字段
+                                         `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                         `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                         `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                         `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                         `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                         `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+                                         PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '监测部件数据配置表';
+
+-- 监测部件信息表
+CREATE TABLE `biz_mon_comp_info` (
+    -- 主键
+                                     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    -- 业务字段
+                                     `mon_comp_id` CHAR(32) NOT NULL COMMENT '部件ID，唯一编码，UUID生成',
+                                     `comp_code` CHAR(18) NOT NULL COMMENT '部件标识码，按18位规则生成，如110101010200100001；监测部件标识码规则表(sys_mon_comp_code_rule)',
+                                     `comp_name` VARCHAR(50) NOT NULL COMMENT '部件名称，关联分类名称，如“燃气压力传感器”；监测部件分类配置表(sys_mon_comp_cat)',
+                                     `comp_cat_id` CHAR(32) NOT NULL COMMENT '部件分类ID，关联监测部件分类表小类ID；监测部件分类配置表(sys_mon_comp_cat)',
+                                     `dept_code` CHAR(18) NOT NULL COMMENT '主管部门代码，主管部门统一社会信用代码；部门信息表(sys_org)',
+                                     `dept_name` VARCHAR(60) NOT NULL COMMENT '主管部门名称，与部门代码同步，自动填充；部门信息表(sys_org)',
+                                     `region_code` CHAR(6) NOT NULL COMMENT '所在行政区域代码，符合GB/T 2260，县级行政区域代码；行政区划表(sys_area)',
+                                     `region_name` VARCHAR(50) NOT NULL COMMENT '所在行政区域名称，与行政代码同步，自动填充；行政区划表(sys_area)',
+                                     `grid_id` CHAR(32) NOT NULL COMMENT '所在网格ID，关联单元网格ID；单元网格划分表(biz_unit_grid_div)',
+                                     `grid_name` VARCHAR(50) NOT NULL COMMENT '所在网格名称，与网格ID同步，自动填充；单元网格划分表(biz_unit_grid_div)',
+                                     `coord_x` DECIMAL(15, 2) NOT NULL COMMENT '坐标X，经度，2000国家大地坐标系',
+                                     `coord_y` DECIMAL(15, 2) NOT NULL COMMENT '坐标Y，纬度，2000国家大地坐标系',
+    -- 系统字段
+                                     `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                     `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                     `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                     `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                     `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                     `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+                                     PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '监测部件信息表';
+-- 扩展监测部件配置表
+CREATE TABLE `sys_mon_comp_ext` (
+    -- 主键
+                                    `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    -- 业务字段
+                                    `ext_id` CHAR(32) NOT NULL COMMENT '扩展配置ID，唯一编码，UUID生成',
+                                    `comp_id` CHAR(32) COMMENT '部件ID，关联监测部件信息表ID；监测部件信息表(biz_mon_comp_info)',
+                                    `ext_key` VARCHAR(50) COMMENT '扩展键',
+                                    `ext_value` VARCHAR(255) COMMENT '扩展值',
+    -- 系统字段
+                                    `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                    `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                    `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                    `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                    `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                    `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+                                    PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '扩展监测部件配置表';
+
+-- 监测事件分类配置表
+CREATE TABLE `sys_mon_evt_cat` (
+    -- 主键
+                                   `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    -- 业务字段
+                                   `mon_evt_cat_id` CHAR(32) NOT NULL COMMENT '分类ID，唯一编码，UUID生成',
+                                   `parent_evt_id` CHAR(32) NOT NULL COMMENT '父类ID，关联本表格“分类ID”，大类父类ID为“0”；监测事件分类配置表（sys_mon_evt_cat）',
+                                   `evt_cat_level` CHAR(1) NOT NULL COMMENT '分类层级，标识分类所处层级，1 (大类)/2 (中类)/3 (小类)',
+                                   `evt_cat_code` CHAR(3) NOT NULL COMMENT '分类代码，大类/中类从01顺序编排，小类从001顺序编排，扩展类小类从080倒排',
+                                   `evt_cat_name` VARCHAR(50) NOT NULL COMMENT '分类名称，参照GB/T XXXXX.6标准名称，扩展类标注 “自定义”',
+                                   `evt_cat_desc` VARCHAR(255) COMMENT '分类说明，描述事件范围，如“燃气泄漏：燃气从管道或设备泄漏的事件”',
+                                   `enable_status` CHAR(1) NOT NULL DEFAULT '1' COMMENT '启用状态，标识分类是否可用，默认1',
+                                   `create_user` CHAR(32) NOT NULL COMMENT '创建人，填写创建人账号，用户信息表(sys_user)',
+                                   `create_time` DATETIME NOT NULL COMMENT '创建时间，格式：yyyy-MM-dd HH:mm:ss，系统自动生成',
+                                   `update_user` CHAR(32) COMMENT '更新人，填写更新人账号，用户信息表(sys_user)',
+                                   `update_time` DATETIME COMMENT '更新时间，格式：yyyy-MM-dd HH:mm:ss，系统自动生成',
+                                   `ext_cat1` VARCHAR(50) COMMENT '分类扩展字段1，预留字段，用于存储分类额外属性（如“事件响应时效”）',
+                                   `ext_cat2` VARCHAR(50) COMMENT '分类扩展字段2，预留字段，用于存储分类额外属性（如“事件响应时效”）',
+                                   `ext_common1` VARCHAR(100) COMMENT '通用扩展字段1，预留通用字段，存储额外配置信息',
+                                   `ext_common2` VARCHAR(100) COMMENT '通用扩展字段2，预留通用字段，存储额外配置信息',
+    -- 系统字段
+                                   `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                   `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                   `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                   `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                   `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                   `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+                                   PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '监测事件分类配置表';
+
+-- 监测事件标识码规则表
+CREATE TABLE `sys_mon_evt_code_rule` (
+    -- 主键
+                                         `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    -- 业务字段
+                                         `mon_evt_rule_id` CHAR(32) NOT NULL COMMENT '规则ID，唯一编码，UUID生成',
+                                         `rule_name` VARCHAR(50) NOT NULL COMMENT '规则名称，如“监测事件18位标识码规则”',
+                                         `admin_code_len` INT NOT NULL COMMENT '行政代码位数，固定为6位，符合GB/T 2260',
+                                         `major_code_len` INT NOT NULL COMMENT '大类代码位数，固定为2位，关联事件分类表大类代码；监测事件分类配置表（sys_mon_evt_cat）',
+                                         `mid_code_len` INT NOT NULL COMMENT '中类代码位数，固定为2位，关联事件分类表中类代码；监测事件分类配置表（sys_mon_evt_cat）',
+                                         `minor_code_len` INT NOT NULL COMMENT '小类代码位数，固定为2位，关联事件分类表小类代码；监测事件分类配置表（sys_mon_evt_cat）',
+                                         `seq_code_len` INT NOT NULL COMMENT '顺序码位数，固定为6位，从000001顺序编排',
+                                         `seq_gen_rule` VARCHAR(100) NOT NULL COMMENT '顺序码生成规则，同一行政+小类下按上报时间递增，默认“同一县级行政区域+小类下按上报时间递增”',
+                                         `enable_status` CHAR(1) NOT NULL COMMENT '启用状态，同一时间仅一个规则启用，1（启用）/0（禁用）',
+                                         `create_user` CHAR(32) NOT NULL COMMENT '创建人，填写创建人账号，用户信息表(sys_user)',
+                                         `create_time` DATETIME NOT NULL COMMENT '创建时间，格式：yyyy-MM-dd HH:mm:ss，系统自动生成',
+                                         `update_user` CHAR(32) COMMENT '更新人，填写更新人账号，用户信息表(sys_user)',
+                                         `update_time` DATETIME COMMENT '更新时间，格式：yyyy-MM-dd HH:mm:ss，系统自动生成',
+    -- 系统字段
+                                         `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                         `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                         `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                         `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                         `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                         `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+                                         PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '监测事件标识码规则表';
+
+-- 监测事件数据配置表
+CREATE TABLE `sys_mon_evt_data_cfg` (
+    -- 主键
+                                        `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    -- 业务字段
+                                        `mon_evt_data_id` CHAR(32) NOT NULL COMMENT '配置ID，唯一编码，UUID生成',
+                                        `evt_cat_id` CHAR(32) NOT NULL COMMENT '事件分类ID，关联事件分类表小类ID，监测事件分类配置表(sys_mon_evt_cat)',
+                                        `evt_cat_name` VARCHAR(50) NOT NULL COMMENT '事件分类名称，与分类ID同步，自动填充，监测事件分类配置表(sys_mon_evt_cat)',
+                                        `field_name` VARCHAR(50) NOT NULL COMMENT '字段名称，属性字段名称，参照GB/T XXXXX.7',
+                                        `field_code` VARCHAR(50) NOT NULL COMMENT '字段代码，蛇形命名法，与数据库字段一致',
+                                        `field_type` VARCHAR(20) NOT NULL COMMENT '字段类型，char/varchar/int等，字段数据类型',
+                                        `field_length` VARCHAR(20) NOT NULL COMMENT '字段长度，18/32/10等，字段长度及精度',
+                                        `constraint_type` CHAR(10) NOT NULL COMMENT '约束条件，必选/可选，标识字段是否必选',
+                                        `value_range` VARCHAR(100) COMMENT '值域范围，字段允许值域，如“一级/二级/三级”',
+                                        `field_desc` VARCHAR(255) COMMENT '字段说明，字段填写说明，如“事发位置需含具体路名”',
+                                        `create_user` CHAR(32) NOT NULL COMMENT '创建人，填写创建人账号，用户信息表(sys_user)',
+                                        `create_time` DATETIME NOT NULL COMMENT '创建时间，格式：yyyy-MM-dd HH:mm:ss，系统自动生成',
+                                        `update_user` CHAR(32) COMMENT '更新人，填写更新人账号，用户信息表(sys_user)',
+                                        `update_time` DATETIME COMMENT '更新时间，格式：yyyy-MM-dd HH:mm:ss，系统自动生成',
+                                        `ext_cat1` VARCHAR(50) COMMENT '分类扩展字段1，预留字段，用于存储配置额外属性（如“字段校验规则”）',
+                                        `ext_cat2` VARCHAR(50) COMMENT '分类扩展字段2，预留字段，用于存储配置额外属性（如“字段校验规则”）',
+                                        `ext_common1` VARCHAR(100) COMMENT '通用扩展字段1，预留通用字段，存储额外配置信息',
+                                        `ext_common2` VARCHAR(100) COMMENT '通用扩展字段2，预留通用字段，存储额外配置信息',
+    -- 系统字段
+                                        `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                        `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                        `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                        `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                        `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                        `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+                                        PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '监测事件数据配置表';
+
+-- 监测事件信息表
+CREATE TABLE `biz_mon_evt_info` (
+    -- 主键
+                                    `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    -- 业务字段
+                                    `mon_evt_id` CHAR(32) NOT NULL COMMENT '事件ID，唯一编码，UUID生成',
+                                    `evt_code` CHAR(18) NOT NULL COMMENT '事件标识码，按18位规则生成，如110101020300200001；监测事件标识码规则表 (sys_mon_evt_code_rule)',
+                                    `evt_name` VARCHAR(50) NOT NULL COMMENT '事件名称，关联分类名称，如 “燃气泄漏事件”；监测事件分类配置表 (sys_mon_evt_cat)',
+                                    `evt_cat_id` CHAR(32) NOT NULL COMMENT '事件分类ID，关联事件分类表小类ID，监测事件分类配置表 (sys_mon_evt_cat)',
+                                    `rel_comp_id` CHAR(32) NOT NULL COMMENT '关联部件ID，关联监测部件信息表部件ID，监测部件信息表 (biz_mon_comp_info)',
+                                    `rel_comp_name` VARCHAR(50) NOT NULL COMMENT '关联部件名称，与部件ID同步，自动填充，监测部件信息表 (biz_mon_comp_info)',
+                                    `incident_pos` VARCHAR(100) NOT NULL COMMENT '事发位置，事件发生位置，如 “XX路与XX路交叉口”',
+                                    `incident_x` DECIMAL(15, 2) NOT NULL COMMENT '事发坐标X，经度，2000国家大地坐标系',
+                                    `incident_y` DECIMAL(15, 2) NOT NULL COMMENT '事发坐标Y，纬度，2000国家大地坐标系',
+                                    `evt_level` CHAR(10) NOT NULL COMMENT '事件等级，一级/二级/三级，事件严重程度，参照GB/T XXXXX.6',
+                                    `handle_status` CHAR(10) NOT NULL COMMENT '处置状态，待处置/处置中/已办结/已驳回，事件处置进度',
+    -- 系统字段
+                                    `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                    `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                    `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                    `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                    `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                    `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+                                    PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '监测事件信息表';
+
+-- 扩展监测事件配置表
+CREATE TABLE `sys_mon_evt_ext` (
+    -- 主键
+                                   `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    -- 业务字段
+                                   `mon_evt_ext_id` CHAR(32) NOT NULL COMMENT '扩展ID，唯一编码，UUID生成',
+                                   `ext_minor_code` CHAR(3) NOT NULL COMMENT '扩展小类代码，从080倒排',
+                                   `ext_minor_name` VARCHAR(50) NOT NULL COMMENT '扩展小类名称，如“智能充电桩过载事件”',
+                                   `parent_mid_id` CHAR(32) NOT NULL COMMENT '所属中类ID，关联事件分类表中类ID；监测事件分类配置表(sys_mon_evt_cat)',
+                                   `parent_mid_name` VARCHAR(50) NOT NULL COMMENT '所属中类名称，与中类ID同步，自动填充；监测事件分类配置表(sys_mon_evt_cat)',
+                                   `rel_comp_cat_id` CHAR(32) COMMENT '关联部件分类ID，关联部件分类表小类ID；监测部件分类配置表(sys_mon_comp_cat)',
+                                   `rel_comp_cat_name` VARCHAR(50) COMMENT '关联部件分类名称，与部件分类ID同步，自动填充；监测部件分类配置表(sys_mon_comp_cat)',
+                                   `ext_desc` VARCHAR(255) NOT NULL COMMENT '扩展说明，描述扩展小类用途，如“用于记录充电桩过载事件”',
+                                   `apply_reason` VARCHAR(255) NOT NULL COMMENT '申请原因，说明扩展必要性，如“现有分类无法覆盖充电桩过载场景”',
+    -- 系统字段
+                                   `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                   `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                   `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识',
+                                   `tenant_id` BIGINT DEFAULT 0 NOT NULL COMMENT '租户ID',
+                                   `create_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '系统创建时间',
+                                   `update_time_sys` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '系统更新时间',
+                                   PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '扩展监测事件配置表';
+
+CREATE TABLE `stat_mon_evt_rpt` (
+    -- 自增主键
+                                    `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '自增主键ID',
+    -- 统计ID
+                                    `stat_id` CHAR(32) NOT NULL COMMENT '唯一编码，采用UUID生成',
+    -- 统计周期
+                                    `stat_cycle` CHAR(10) NOT NULL COMMENT '统计周期类型，格式:“YYYY”“YYYYQn”“YYYYMM”',
+    -- 统计周期名称
+                                    `stat_cycle_name` VARCHAR(20) NOT NULL COMMENT '如“2025年09月”',
+    -- 行政区划代码
+                                    `region_code` CHAR(6) NOT NULL COMMENT '符合GB/T 2260，统计区域的行政区划代码',
+    -- 行政区划名称
+                                    `region_name` VARCHAR(50) NOT NULL COMMENT '与行政区划代码关联，自动同步名称',
+    -- 事件大类ID
+                                    `evt_major_id` CHAR(32) NOT NULL COMMENT '关联监测事件分类配置表的大类ID',
+    -- 事件大类名称
+                                    `evt_major_name` VARCHAR(50) NOT NULL COMMENT '与事件大类ID关联，自动同步名称',
+    -- 事件小类ID
+                                    `evt_minor_id` CHAR(32) COMMENT '关联监测事件分类配置表的小类ID（钻取时必填）',
+    -- 事件小类名称
+                                    `evt_minor_name` VARCHAR(50) COMMENT '与事件小类ID关联，自动同步名称',
+    -- 处置部门代码
+                                    `dept_code` CHAR(18) COMMENT '事件处置部门统一社会信用代码',
+    -- 处置部门名称
+                                    `dept_name` VARCHAR(60) COMMENT '与处置部门代码关联，自动同步名称',
+    -- 上报总数
+                                    `total_rpt_count` INT(10) NOT NULL COMMENT '统计周期内该维度下事件上报总数',
+    -- 待处置数
+                                    `pend_count` INT(10) NOT NULL COMMENT '状态为“待处置”的事件数量',
+    -- 处置中数
+                                    `handl_count` INT(10) NOT NULL COMMENT '状态为“处置中”的事件数量',
+    -- 已办结数
+                                    `completed_count` INT(10) NOT NULL COMMENT '状态为“已办结”的事件数量',
+    -- 已驳回数
+                                    `rejected_count` INT(10) NOT NULL COMMENT '状态为“已驳回”的事件数量',
+    -- 一级事件数
+                                    `level1_count` INT(10) NOT NULL COMMENT '事件等级为“一级”的数量',
+    -- 主键
+                                    PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '监测事件统计报表';
+
+CREATE TABLE `stat_mon_comp_rpt` (
+    -- 自增主键
+                                     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '自增主键ID',
+    -- 统计ID
+                                     `stat_id` CHAR(32) NOT NULL COMMENT '唯一编码，采用UUID生成',
+    -- 统计周期
+                                     `stat_cycle` CHAR(10) NOT NULL COMMENT '统计周期类型，格式:YYYY/YYYYQn/YYYYMM',
+    -- 统计周期名称
+                                     `stat_cycle_name` VARCHAR(20) NOT NULL COMMENT '统计周期的中文描述，如“2025年Q3”“2025年09月”',
+    -- 行政区划代码
+                                     `region_code` CHAR(6) NOT NULL COMMENT '符合GB/T 2260，统计区域的行政区划代码',
+    -- 行政区划名称
+                                     `region_name` VARCHAR(50) NOT NULL COMMENT '与行政区划代码关联，自动同步区域名称',
+    -- 部件大类ID
+                                     `comp_major_id` CHAR(32) NOT NULL COMMENT '关联监测部件分类配置表的大类ID',
+    -- 部件大类名称
+                                     `comp_major_name` VARCHAR(50) NOT NULL COMMENT '与部件大类ID关联，自动同步名称',
+    -- 部件小类ID
+                                     `comp_minor_id` CHAR(32) COMMENT '关联监测部件分类配置表的小类ID(钻取统计时必填)',
+    -- 部件小类名称
+                                     `comp_minor_name` VARCHAR(50) COMMENT '与部件小类ID关联，自动同步名称',
+    -- 部件总数
+                                     `total_comp_count` INT(10) NOT NULL COMMENT '该维度下监测部件总数量',
+    -- 正常部件数
+                                     `normal_comp_count` INT(10) NOT NULL COMMENT '状态为“正常”的部件数量',
+    -- 异常部件数
+                                     `abn_comp_count` INT(10) NOT NULL COMMENT '状态为“异常”的部件数量',
+    -- 维护部件数
+                                     `mnt_comp_count` INT(10) NOT NULL COMMENT '状态为“维护”的部件数量',
+    -- 废弃部件数
+                                     `discard_comp_count` INT(10) NOT NULL COMMENT '状态为“废弃”的部件数量',
+    -- 新增部件数
+                                     `new_comp_count` INT(10) COMMENT '统计周期内新增的部件数量（创建时间在周期内）',
+    -- 更新部件数
+                                     `update_comp_count` INT(10) COMMENT '统计周期内更新的部件数量（更新时间在周期内）',
+    -- 统计人
+                                     `stat_user` CHAR(32) NOT NULL COMMENT '生成报表的用户ID',
+    -- 统计时间
+                                     `stat_time` DATETIME NOT NULL COMMENT '报表生成时间，格式：yyyy-MM-dd HH:mm:ss',
+    -- 报表备注
+                                     `rpt_remark` VARCHAR(255) COMMENT '报表说明，如“统计范围：XX市建成区监测部件”',
+    -- 分类扩展字段1
+                                     `ext_cat1` VARCHAR(50) COMMENT '预留字段，存储统计额外维度（如“统计范围”）',
+    -- 分类扩展字段2
+                                     `ext_cat2` VARCHAR(50) COMMENT '预留字段，存储统计额外维度（如“统计范围”）',
+    -- 通用扩展字段1
+                                     `ext_common1` VARCHAR(100) COMMENT '预留通用字段，存储额外统计信息',
+    -- 通用扩展字段2
+                                     `ext_common2` VARCHAR(100) COMMENT '预留通用字段，存储额外统计信息',
+    -- 主键
+                                     PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '监测部件统计报表';
