@@ -12,27 +12,19 @@ import com.alibaba.excel.annotation.*;
 @ExcelIgnoreUnannotated
 public class AssetAreaRespVO {
 
-    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "16341")
+    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "12714")
     @ExcelProperty("主键ID")
     private Long id;
 
-    @Schema(description = "父级编号", requiredMode = Schema.RequiredMode.REQUIRED, example = "2893")
-    @ExcelProperty("父级编号")
-    private Long parentId;
-
-    @Schema(description = "名字", requiredMode = Schema.RequiredMode.REQUIRED, example = "芋艿")
-    @ExcelProperty("名字")
-    private String name;
-
-    @Schema(description = "关联ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1754")
+    @Schema(description = "关联ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "27104")
     @ExcelProperty("关联ID")
     private String assetRelRegionId;
 
-    @Schema(description = "关联资产ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "11850")
+    @Schema(description = "关联资产ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "30397")
     @ExcelProperty("关联资产ID")
     private String relAssetId;
 
-    @Schema(description = "关联资产名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "张三")
+    @Schema(description = "关联资产名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "王五")
     @ExcelProperty("关联资产名称")
     private String relAssetName;
 
@@ -40,7 +32,7 @@ public class AssetAreaRespVO {
     @ExcelProperty("行政区划代码")
     private String regionCode;
 
-    @Schema(description = "行政区划名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "李四")
+    @Schema(description = "行政区划名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "赵六")
     @ExcelProperty("行政区划名称")
     private String regionName;
 
@@ -84,8 +76,8 @@ public class AssetAreaRespVO {
     @ExcelProperty("通用扩展字段2")
     private String extCommon2;
 
-    @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("创建时间")
+    @Schema(description = "系统创建时间", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("系统创建时间")
     private LocalDateTime createTime;
 
 }

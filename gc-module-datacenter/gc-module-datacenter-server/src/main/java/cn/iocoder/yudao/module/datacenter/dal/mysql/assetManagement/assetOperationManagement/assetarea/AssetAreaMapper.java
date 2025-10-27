@@ -1,10 +1,9 @@
 package cn.iocoder.yudao.module.datacenter.dal.mysql.assetManagement.assetOperationManagement.assetarea;
 
-import java.util.*;
-
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetarea.vo.AssetAreaListReqVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetarea.vo.AssetAreaPageReqVO;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetOperationManagement.assetarea.AssetAreaDO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -16,12 +15,10 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface AssetAreaMapper extends BaseMapperX<AssetAreaDO> {
 
-    default List<AssetAreaDO> selectList(AssetAreaListReqVO reqVO) {
-        return selectList(new LambdaQueryWrapperX<AssetAreaDO>()
-                .eqIfPresent(AssetAreaDO::getParentId, reqVO.getParentId())
-                .likeIfPresent(AssetAreaDO::getName, reqVO.getName())
+    default PageResult<AssetAreaDO> selectPage(AssetAreaPageReqVO reqVO) {
+        return selectPage(reqVO, new LambdaQueryWrapperX<AssetAreaDO>()
                 .eqIfPresent(AssetAreaDO::getAssetRelRegionId, reqVO.getAssetRelRegionId())
-                .eqIfPresent(AssetAreaDO::getRelAssetId, reqVO.getRelAssetId())
+                .likeIfPresent(AssetAreaDO::getRelAssetId, reqVO.getRelAssetId())
                 .likeIfPresent(AssetAreaDO::getRelAssetName, reqVO.getRelAssetName())
                 .eqIfPresent(AssetAreaDO::getRegionCode, reqVO.getRegionCode())
                 .likeIfPresent(AssetAreaDO::getRegionName, reqVO.getRegionName())
@@ -37,14 +34,6 @@ public interface AssetAreaMapper extends BaseMapperX<AssetAreaDO> {
                 .eqIfPresent(AssetAreaDO::getExtCommon2, reqVO.getExtCommon2())
                 .betweenIfPresent(AssetAreaDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(AssetAreaDO::getId));
-    }
-
-	default AssetAreaDO selectByParentIdAndName(Long parentId, String name) {
-	    return selectOne(AssetAreaDO::getParentId, parentId, AssetAreaDO::getName, name);
-	}
-
-    default Long selectCountByParentId(Long parentId) {
-        return selectCount(AssetAreaDO::getParentId, parentId);
     }
 
 }

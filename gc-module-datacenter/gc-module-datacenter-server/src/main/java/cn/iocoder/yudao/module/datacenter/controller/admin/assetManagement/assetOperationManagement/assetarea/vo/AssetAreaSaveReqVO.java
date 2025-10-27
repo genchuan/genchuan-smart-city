@@ -11,26 +11,18 @@ import java.time.LocalDateTime;
 @Data
 public class AssetAreaSaveReqVO {
 
-    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "16341")
+    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "12714")
     private Long id;
 
-    @Schema(description = "父级编号", requiredMode = Schema.RequiredMode.REQUIRED, example = "2893")
-    @NotNull(message = "父级编号不能为空")
-    private Long parentId;
-
-    @Schema(description = "名字", requiredMode = Schema.RequiredMode.REQUIRED, example = "芋艿")
-    @NotEmpty(message = "名字不能为空")
-    private String name;
-
-    @Schema(description = "关联ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1754")
+    @Schema(description = "关联ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "27104")
     @NotEmpty(message = "关联ID不能为空")
     private String assetRelRegionId;
 
-    @Schema(description = "关联资产ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "11850")
+    @Schema(description = "关联资产ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "30397")
     @NotEmpty(message = "关联资产ID不能为空")
     private String relAssetId;
 
-    @Schema(description = "关联资产名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "张三")
+    @Schema(description = "关联资产名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "王五")
     @NotEmpty(message = "关联资产名称不能为空")
     private String relAssetName;
 
@@ -38,7 +30,7 @@ public class AssetAreaSaveReqVO {
     @NotEmpty(message = "行政区划代码不能为空")
     private String regionCode;
 
-    @Schema(description = "行政区划名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "李四")
+    @Schema(description = "行政区划名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "赵六")
     @NotEmpty(message = "行政区划名称不能为空")
     private String regionName;
 

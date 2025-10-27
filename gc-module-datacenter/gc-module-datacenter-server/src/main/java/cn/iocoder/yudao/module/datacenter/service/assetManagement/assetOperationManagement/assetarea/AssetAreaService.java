@@ -2,10 +2,13 @@ package cn.iocoder.yudao.module.datacenter.service.assetManagement.assetOperatio
 
 import java.util.*;
 
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetarea.vo.AssetAreaListReqVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetarea.vo.AssetAreaPageReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetarea.vo.AssetAreaSaveReqVO;
-import jakarta.validation.*;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetOperationManagement.assetarea.AssetAreaDO;
+import jakarta.validation.*;
+
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 资产关联行政区划 Service 接口
@@ -45,11 +48,11 @@ public interface AssetAreaService {
     AssetAreaDO getAssetArea(Long id);
 
     /**
-     * 获得资产关联行政区划列表
+     * 获得资产关联行政区划分页
      *
-     * @param listReqVO 查询条件
-     * @return 资产关联行政区划列表
+     * @param pageReqVO 分页查询
+     * @return 资产关联行政区划分页
      */
-    List<AssetAreaDO> getAssetAreaList(AssetAreaListReqVO listReqVO);
+    PageResult<AssetAreaDO> getAssetAreaPage(AssetAreaPageReqVO pageReqVO);
 
 }

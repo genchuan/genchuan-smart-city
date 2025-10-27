@@ -1,6 +1,6 @@
 package cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetarea;
 
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetarea.vo.AssetAreaListReqVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetarea.vo.AssetAreaPageReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetarea.vo.AssetAreaRespVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetarea.vo.AssetAreaSaveReqVO;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +16,8 @@ import jakarta.servlet.http.*;
 import java.util.*;
 import java.io.IOException;
 
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
@@ -25,7 +27,6 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetarea.vo.*;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetOperationManagement.assetarea.AssetAreaDO;
 import cn.iocoder.yudao.module.datacenter.service.assetManagement.assetOperationManagement.assetarea.AssetAreaService;
 
@@ -71,21 +72,22 @@ public class AssetAreaController {
         return success(BeanUtils.toBean(assetArea, AssetAreaRespVO.class));
     }
 
-    @GetMapping("/list")
-    @Operation(summary = "获得资产关联行政区划列表")
+    @GetMapping("/page")
+    @Operation(summary = "获得资产关联行政区划分页")
     @PreAuthorize("@ss.hasPermission('datacenter:asset-area:query')")
-    public CommonResult<List<AssetAreaRespVO>> getAssetAreaList(@Valid AssetAreaListReqVO listReqVO) {
-        List<AssetAreaDO> list = assetAreaService.getAssetAreaList(listReqVO);
-        return success(BeanUtils.toBean(list, AssetAreaRespVO.class));
+    public CommonResult<PageResult<AssetAreaRespVO>> getAssetAreaPage(@Valid AssetAreaPageReqVO pageReqVO) {
+        PageResult<AssetAreaDO> pageResult = assetAreaService.getAssetAreaPage(pageReqVO);
+        return success(BeanUtils.toBean(pageResult, AssetAreaRespVO.class));
     }
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出资产关联行政区划 Excel")
     @PreAuthorize("@ss.hasPermission('datacenter:asset-area:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportAssetAreaExcel(@Valid AssetAreaListReqVO listReqVO,
+    public void exportAssetAreaExcel(@Valid AssetAreaPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
-        List<AssetAreaDO> list = assetAreaService.getAssetAreaList(listReqVO);
+        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        List<AssetAreaDO> list = assetAreaService.getAssetAreaPage(pageReqVO).getList();
         // 导出 Excel
         ExcelUtils.write(response, "资产关联行政区划.xls", "数据", AssetAreaRespVO.class,
                         BeanUtils.toBean(list, AssetAreaRespVO.class));

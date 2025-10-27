@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetOperationManagement.assetarea;
+package cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetRuleAllocation.assetrelrulecfg;
 
 import lombok.*;
 import java.util.*;
@@ -10,19 +10,19 @@ import com.baomidou.mybatisplus.annotation.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 
 /**
- * 资产关联行政区划 DO
+ * 资产关联规则配置 DO
  *
  * @author 亘川智城
  */
-@TableName("rel_asset_area")
-@KeySequence("rel_asset_area_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。
+@TableName("biz_asset_rel_rule_cfg")
+@KeySequence("biz_asset_rel_rule_cfg_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AssetAreaDO extends BaseDO {
+public class AssetRelRuleCfgDO extends BaseDO {
 
     /**
      * 主键ID
@@ -30,41 +30,49 @@ public class AssetAreaDO extends BaseDO {
     @TableId
     private Long id;
     /**
-     * 关联ID
+     * 关联规则ID
      */
-    private String assetRelRegionId;
+    private String assetRelRuleId;
     /**
-     * 关联资产ID
+     * 关联资产分类ID
      */
-    private String relAssetId;
+    private String relAssetCatId;
     /**
-     * 关联资产名称
+     * 关联资产分类名称
      */
-    private String relAssetName;
+    private String relAssetCatName;
     /**
-     * 行政区划代码
+     * 关联对象类型
      */
-    private String regionCode;
+    private String relObjectType;
     /**
-     * 行政区划名称
+     * 关联对象名称
      */
-    private String regionName;
+    private String relObjectName;
     /**
-     * 行政区划级别
+     * 是否必选
      */
-    private String regionLevel;
+    private String isRequired;
     /**
-     * 关联时间
+     * 关联数量限制
      */
-    private LocalDateTime relTime;
+    private Integer relQuantityLimit;
     /**
-     * 操作人
+     * 关联对象来源表
      */
-    private String operUser;
+    private String relObjectSourceTable;
     /**
      * 关联说明
      */
     private String relDesc;
+    /**
+     * 创建人
+     */
+    private String createUser;
+    /**
+     * 创建时间
+     */
+    private LocalDateTime createdTime;
     /**
      * 更新人
      */
