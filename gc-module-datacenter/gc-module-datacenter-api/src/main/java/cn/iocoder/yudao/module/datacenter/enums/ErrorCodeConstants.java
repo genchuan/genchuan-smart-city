@@ -48,6 +48,14 @@ public interface ErrorCodeConstants {
     ErrorCode MNG_GRID_DIV_CROSS_COMMUNITY = new ErrorCode(1003001002, "单元网格跨社区，无法集成");
     ErrorCode MNG_GRID_DIV_NOT_ADJACENT = new ErrorCode(1003001003, "单元网格不相邻，无法集成");
     ErrorCode MNG_GRID_DIV_UNIT_COUNT_INVALID = new ErrorCode(1003001004, "单元网格数量必须在1-5个之间");
+    ErrorCode UNIT_GRID_CODE_NOT_EXISTS = new ErrorCode(100_113, "单元网格编码不存在");
+    ErrorCode EVAL_GRID_CODE_NOT_EXISTS = new ErrorCode(100_115, "评价网格编码不存在");
+    // 单元网格编码相关错误码
+    ErrorCode UNIT_GRID_CODE_ALREADY_EXISTS = new ErrorCode(100500, "单元网格编码已存在");
+    ErrorCode UNIT_GRID_NOT_EXISTS = new ErrorCode(100501, "单元网格不存在");
+    ErrorCode AREA_FULL_CODE_INVALID = new ErrorCode(100502, "行政区划代码无效");
+    ErrorCode UNIT_GRID_CODE_SEQ_OVERFLOW = new ErrorCode(100503, "顺序码已满，无法生成新的编码");
+    ErrorCode MNG_GRID_CODE_NOT_EXISTS = new ErrorCode(100_116, "管理网格编码不存在");
 
 
     // ========== 事件类型管理 1002000000 ==========
@@ -189,4 +197,22 @@ public interface ErrorCodeConstants {
     ErrorCode ASSET_CLIENT_ATTR_CFG_NOT_EXISTS = new ErrorCode(200_321, "资产客户端属性配置不存在");
     ErrorCode ASSET_SHARE_ATTR_CFG_NOT_EXISTS = new ErrorCode(200_331, "资产共享属性配置不存在");
     ErrorCode ASSET_DATA_QUAL_CK_NOT_EXISTS = new ErrorCode(200_341, "资产数据质量检查不存在");
+
+    //====================================资产管理模块=========================================================================
+
+    // ========== 资产分类规则配置 200_101 ==========
+    ErrorCode ASSET_CAT_RULE_CFG_NOT_EXISTS = new ErrorCode(200_101, "资产分类规则配置不存在");
+
+
+    // ========== 资产属性规则配置 200_111 ==========
+    ErrorCode ASSET_ATTR_RULE_CFG_NOT_EXISTS = new ErrorCode(200_111, "资产属性规则配置不存在");
+
+
+    // ========== 资产关联规则配置 200_121 ==========
+    ErrorCode ASSET_REL_RULE_CFG_NOT_EXISTS = new ErrorCode(200_121, "资产关联规则配置不存在");
+
+
+    //====================================资产统计报表模块=====================================================
+    ErrorCode ASSET_STATUS_RPT_NOT_EXISTS = new ErrorCode(200_401, "资产状态统计报表不存在");
+    ErrorCode ASSET_CAT_RPT_NOT_EXISTS = new ErrorCode(200_411, "资产分类统计报表不存在");
 }

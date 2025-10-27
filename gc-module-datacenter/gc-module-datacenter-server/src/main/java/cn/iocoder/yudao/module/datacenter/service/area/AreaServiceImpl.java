@@ -110,6 +110,15 @@ public class AreaServiceImpl implements AreaService {
         return buildAreaTree(allAreas, parentId);
     }
 
+    @Override
+    public AreaDO getAreaByCommId(String commId) {
+        AreaDO area = areaMapper.selectByCommId(commId);
+        if (area == null) {
+            throw exception(AREA_NOT_EXISTS);
+        }
+        return area;
+    }
+
     /**
      * 递归构建树形结构
      */

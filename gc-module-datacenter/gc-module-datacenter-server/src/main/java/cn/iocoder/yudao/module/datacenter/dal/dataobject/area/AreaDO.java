@@ -54,6 +54,10 @@ public class AreaDO extends BaseDO {
      */
     private String areaType;
     /**
+     * 社区ID（对应单元网格中的comm_id）
+     */
+    private String commId;
+    /**
      * 生效时间
      */
     private LocalDateTime effectiveTime;

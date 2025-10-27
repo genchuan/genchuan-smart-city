@@ -44,4 +44,13 @@ public interface AreaMapper extends BaseMapperX<AreaDO> {
                 .orderByAsc(AreaDO::getId));
     }
 
+    // 新增：根据社区ID查询行政区划
+    default AreaDO selectByCommId(String commId) {
+        return selectOne(new LambdaQueryWrapperX<AreaDO>()
+                .eq(AreaDO::getCommId, commId)
+                .eq(AreaDO::getLevel, 5) // 层级5表示社区
+                .last("LIMIT 1"));
+    }
+
+
 }

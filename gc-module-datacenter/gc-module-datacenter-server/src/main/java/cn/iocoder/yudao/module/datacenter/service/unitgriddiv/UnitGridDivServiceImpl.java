@@ -219,6 +219,11 @@ public class UnitGridDivServiceImpl implements UnitGridDivService {
         return overlapGrids;
     }
 
+    @Override
+    public UnitGridDivDO getUnitGridDivByGridId(String unitGridId) {
+        return unitGridDivMapper.selectOne(UnitGridDivDO::getUnitGridId, unitGridId);
+    }
+
     // ========== 私有方法 ==========
 
     /**

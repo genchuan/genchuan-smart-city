@@ -91,4 +91,12 @@ public interface AreaService {
      * @param parentId 父级ID
      */
     void validateParentValid(Long id, Long parentId);
+
+    /**
+     * 根据社区ID获取行政区划信息
+     *
+     * @param commId 社区ID
+     * @return 行政区划信息
+     */
+    AreaDO getAreaByCommId(String commId);
 }

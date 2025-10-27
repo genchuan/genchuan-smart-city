@@ -37,4 +37,25 @@ public interface EvalGridDivMapper extends BaseMapperX<EvalGridDivDO> {
                 .orderByDesc(EvalGridDivDO::getId));
     }
 
+
+    // 新增：查询所有数据的便捷方法
+    default List<EvalGridDivDO> selectList() {
+        return selectList(new LambdaQueryWrapperX<EvalGridDivDO>()
+                .orderByDesc(EvalGridDivDO::getId));
+    }
+
+    // 新增：根据乡镇查询
+    default List<EvalGridDivDO> selectListByTown(String townStreetId) {
+        return selectList(new LambdaQueryWrapperX<EvalGridDivDO>()
+                .eqIfPresent(EvalGridDivDO::getTownStreetId, townStreetId)
+                .orderByAsc(EvalGridDivDO::getEvalGridName));
+    }
+
+    // 新增：根据类型查询
+    default List<EvalGridDivDO> selectListByType(String gridType) {
+        return selectList(new LambdaQueryWrapperX<EvalGridDivDO>()
+                .eqIfPresent(EvalGridDivDO::getGridType, gridType)
+                .orderByAsc(EvalGridDivDO::getEvalGridName));
+    }
+
 }

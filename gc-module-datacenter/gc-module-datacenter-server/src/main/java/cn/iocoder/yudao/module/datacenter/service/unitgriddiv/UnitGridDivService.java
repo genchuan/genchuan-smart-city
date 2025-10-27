@@ -94,5 +94,12 @@ public interface UnitGridDivService {
      */
     java.util.List<UnitGridSimpleRespVO> checkBoundaryOverlap(String boundaryCoords, Long excludeId);
 
+    /**
+     * 根据单元网格ID获取单元网格信息
+     *
+     * @param unitGridId 单元网格ID
+     * @return 单元网格信息
+     */
+    UnitGridDivDO getUnitGridDivByGridId(String unitGridId);
 
 }

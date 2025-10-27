@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.datacenter.controller.admin.evalgriddiv;
 
+import cn.iocoder.yudao.module.datacenter.controller.admin.mnggriddiv.vo.MngGridSimpleRespVO;
+import cn.iocoder.yudao.module.datacenter.dal.mysql.evalgriddiv.EvalGridDivMapper;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -37,6 +39,8 @@ public class EvalGridDivController {
 
     @Resource
     private EvalGridDivService evalGridDivService;
+    @Resource
+    private EvalGridDivMapper evalGridDivMapper;
 
     @PostMapping("/create")
     @Operation(summary = "创建评价网格划分")
@@ -90,6 +94,101 @@ public class EvalGridDivController {
         // 导出 Excel
         ExcelUtils.write(response, "评价网格划分.xls", "数据", EvalGridDivRespVO.class,
                         BeanUtils.toBean(list, EvalGridDivRespVO.class));
+    }
+
+    @PostMapping("/validate")
+    @Operation(summary = "校验评价网格")
+    @PreAuthorize("@ss.hasPermission('datacenter:eval-grid-div:create')")
+    public CommonResult<EvalGridValidateRespVO> validateEvalGrid(
+            @RequestParam("townStreetId") String townStreetId,
+            @RequestParam("mngGridIds") List<String> mngGridIds) {
+        EvalGridValidateRespVO result = evalGridDivService.validateEvalGrid(townStreetId, mngGridIds);
+        return success(result);
+    }
+
+    @GetMapping("/mng-grid-list")
+    @Operation(summary = "获取乡镇下的管理网格列表")
+    @PreAuthorize("@ss.hasPermission('datacenter:eval-grid-div:query')")
+    public CommonResult<List<MngGridSimpleRespVO>> getMngGridListByTown(
+            @RequestParam("townStreetId") String townStreetId) {
+        List<MngGridSimpleRespVO> list = evalGridDivService.getMngGridListByTown(townStreetId);
+        return success(list);
+    }
+
+    @PostMapping("/calculate-area")
+    @Operation(summary = "计算评价网格面积")
+    @PreAuthorize("@ss.hasPermission('datacenter:eval-grid-div:create')")
+    public CommonResult<Integer> calculateEvalGridArea(
+            @RequestParam("mngGridIds") List<String> mngGridIds) {
+        Integer area = evalGridDivService.calculateEvalGridArea(mngGridIds);
+        return success(area);
+    }
+
+    @GetMapping("/distribution")
+    @Operation(summary = "获取评价网格类型分布")
+    @PreAuthorize("@ss.hasPermission('datacenter:eval-grid-div:query')")
+    public CommonResult<Map<String, Long>> getEvalGridDistribution() {
+        Map<String, Long> distribution = evalGridDivService.getEvalGridDistribution();
+        return success(distribution);
+    }
+
+    @GetMapping("/detail/{id}")
+    @Operation(summary = "获取评价网格详情")
+    @PreAuthorize("@ss.hasPermission('datacenter:eval-grid-div:query')")
+    public CommonResult<EvalGridDivDetailRespVO> getEvalGridDivDetail(@PathVariable("id") Long id) {
+        EvalGridDivDetailRespVO detail = evalGridDivService.getEvalGridDivDetail(id);
+        return success(detail);
+    }
+
+    @PutMapping("/update-type-batch")
+    @Operation(summary = "批量更新评价网格类型")
+    @PreAuthorize("@ss.hasPermission('datacenter:eval-grid-div:update')")
+    public CommonResult<Boolean> updateEvalGridTypeBatch(
+            @RequestParam("ids") List<Long> ids,
+            @RequestParam("gridType") String gridType) {
+        evalGridDivService.updateEvalGridTypeBatch(ids, gridType);
+        return success(true);
+    }
+
+    @PostMapping("/recommend-type")
+    @Operation(summary = "推荐评价网格类型")
+    @PreAuthorize("@ss.hasPermission('datacenter:eval-grid-div:query')")
+    public CommonResult<String> recommendGridType(
+            @RequestParam("townStreetId") String townStreetId,
+            @RequestParam("mngGridIds") List<String> mngGridIds) {
+        String recommendedType = evalGridDivService.recommendGridType(townStreetId, mngGridIds);
+        return success(recommendedType);
+    }
+
+
+    @PostMapping("/import-mng-grids")
+    @Operation(summary = "批量导入管理网格创建评价网格")
+    @PreAuthorize("@ss.hasPermission('datacenter:eval-grid-div:create')")
+    public CommonResult<Long> importMngGrids(
+            @Valid @RequestBody EvalGridImportReqVO importReqVO) {
+        // 先校验
+        EvalGridValidateRespVO validateResult = evalGridDivService.validateEvalGrid(
+                importReqVO.getTownStreetId(), importReqVO.getMngGridIds());
+
+        if (!validateResult.getValid()) {
+            throw new RuntimeException("评价网格校验失败: " + validateResult.getMessage());
+        }
+
+        // 创建评价网格
+        EvalGridDivSaveReqVO createReqVO = new EvalGridDivSaveReqVO();
+        createReqVO.setEvalGridId("EVAL_" + UUID.randomUUID().toString().replace("-", "").substring(0, 8));
+        createReqVO.setEvalGridName(importReqVO.getEvalGridName());
+        createReqVO.setTownStreetId(importReqVO.getTownStreetId());
+        createReqVO.setGridType(importReqVO.getGridType());
+        createReqVO.setIncludedMgIds(String.join(",", importReqVO.getMngGridIds()));
+        createReqVO.setArea(validateResult.getCalculatedArea());
+        createReqVO.setDivTime(java.time.LocalDateTime.now());
+        createReqVO.setRemark(importReqVO.getRemark());
+
+        EvalGridDivDO evalGridDiv = BeanUtils.toBean(createReqVO, EvalGridDivDO.class);
+        evalGridDivMapper.insert(evalGridDiv);
+
+        return success(evalGridDiv.getId());
     }
 
 }
