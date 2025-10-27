@@ -14,10 +14,10 @@ BuildAndPush:
   image: $MAVEN_IMAGE
   variables:
     DOCKER_BUILDKIT: "0"
-  rules: # 新增只有master分支才进行构建
-    - if: $CI_COMMIT_BRANCH == "master"
-      when: always
-    - when: never
+#  rules: # 新增只有master分支才进行构建
+#    - if: $CI_COMMIT_BRANCH == "master"
+#      when: always
+#    - when: never
   script:
     - mvn clean package -Dmaven.test.skip=true
     - echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
