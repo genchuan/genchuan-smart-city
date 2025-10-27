@@ -20,7 +20,6 @@ BuildAndPush:
 #    - when: never
   script:
     - mvn clean package -Dmaven.test.skip=true
-    - mv .dockerignore .dockerignore.bak
     - echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
     - |
       # 遍历所有模块并构建 Docker 镜像
