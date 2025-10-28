@@ -28,6 +28,7 @@
         <module>yudao-module-iot</module>
         <module>yudao-module-smartcity</module>
         <module>gc-module-datacenter</module>
+        <module>gc-module-industry</module>
     </modules>
 
     <name>${project.artifactId}</name>
