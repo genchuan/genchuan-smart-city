@@ -24,21 +24,11 @@ import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 @AllArgsConstructor
 public class AssetCatMngDO extends BaseDO {
 
-    public static final Long PARENT_ID_ROOT = 0L;
-
     /**
      * 主键ID
      */
     @TableId
     private Long id;
-    /**
-     * 父级编号
-     */
-    private Long parentId;
-    /**
-     * 名字
-     */
-    private String name;
     /**
      * 资产分类ID
      */

@@ -11,22 +11,14 @@ import java.time.LocalDateTime;
 @Data
 public class AssetCatMngSaveReqVO {
 
-    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "21063")
+    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "2024")
     private Long id;
 
-    @Schema(description = "父级编号", requiredMode = Schema.RequiredMode.REQUIRED, example = "28154")
-    @NotNull(message = "父级编号不能为空")
-    private Long parentId;
-
-    @Schema(description = "名字", requiredMode = Schema.RequiredMode.REQUIRED, example = "张三")
-    @NotEmpty(message = "名字不能为空")
-    private String name;
-
-    @Schema(description = "资产分类ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "20927")
+    @Schema(description = "资产分类ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "30359")
     @NotEmpty(message = "资产分类ID不能为空")
     private String assetCatId;
 
-    @Schema(description = "关联分类规则ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "29078")
+    @Schema(description = "关联分类规则ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "30418")
     @NotEmpty(message = "关联分类规则ID不能为空")
     private String relCatRuleId;
 
@@ -34,7 +26,7 @@ public class AssetCatMngSaveReqVO {
     @NotEmpty(message = "资产分类编码不能为空")
     private String assetCatCode;
 
-    @Schema(description = "资产分类名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "赵六")
+    @Schema(description = "资产分类名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "王五")
     @NotEmpty(message = "资产分类名称不能为空")
     private String assetCatName;
 
@@ -42,16 +34,16 @@ public class AssetCatMngSaveReqVO {
     @NotEmpty(message = "分类层级不能为空")
     private String catLevel;
 
-    @Schema(description = "上级分类ID", example = "987")
+    @Schema(description = "上级分类ID", example = "25267")
     private String parentCatId;
 
-    @Schema(description = "上级分类名称", example = "赵六")
+    @Schema(description = "上级分类名称", example = "王五")
     private String parentCatName;
 
     @Schema(description = "分类说明")
     private String catDesc;
 
-    @Schema(description = "启用状态", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @Schema(description = "启用状态", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
     @NotEmpty(message = "启用状态不能为空")
     private String enableStatus;
 

@@ -1,7 +1,8 @@
 package cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetcatmng;
 
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetcatmng.vo.*;
-import io.swagger.v3.oas.annotations.Parameters;
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetcatmng.vo.AssetCatMngPageReqVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetcatmng.vo.AssetCatMngRespVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetcatmng.vo.AssetCatMngSaveReqVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -15,6 +16,8 @@ import jakarta.servlet.http.*;
 import java.util.*;
 import java.io.IOException;
 
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
@@ -24,9 +27,9 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetcatmng.vo.*;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetOperationManagement.assetcatmng.AssetCatMngDO;
 import cn.iocoder.yudao.module.datacenter.service.assetManagement.assetOperationManagement.assetcatmng.AssetCatMngService;
-import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "管理后台 - 资产分类管理")
 @RestController
@@ -70,38 +73,25 @@ public class AssetCatMngController {
         return success(BeanUtils.toBean(assetCatMng, AssetCatMngRespVO.class));
     }
 
-    @GetMapping("/list")
-    @Operation(summary = "获得资产分类管理列表")
+    @GetMapping("/page")
+    @Operation(summary = "获得资产分类管理分页")
     @PreAuthorize("@ss.hasPermission('datacenter:asset-cat-mng:query')")
-    public CommonResult<List<AssetCatMngRespVO>> getAssetCatMngList(@Valid AssetCatMngListReqVO listReqVO) {
-        List<AssetCatMngDO> list = assetCatMngService.getAssetCatMngList(listReqVO);
-        return success(BeanUtils.toBean(list, AssetCatMngRespVO.class));
+    public CommonResult<PageResult<AssetCatMngRespVO>> getAssetCatMngPage(@Valid AssetCatMngPageReqVO pageReqVO) {
+        PageResult<AssetCatMngDO> pageResult = assetCatMngService.getAssetCatMngPage(pageReqVO);
+        return success(BeanUtils.toBean(pageResult, AssetCatMngRespVO.class));
     }
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出资产分类管理 Excel")
     @PreAuthorize("@ss.hasPermission('datacenter:asset-cat-mng:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportAssetCatMngExcel(@Valid AssetCatMngListReqVO listReqVO,
+    public void exportAssetCatMngExcel(@Valid AssetCatMngPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
-        List<AssetCatMngDO> list = assetCatMngService.getAssetCatMngList(listReqVO);
+        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        List<AssetCatMngDO> list = assetCatMngService.getAssetCatMngPage(pageReqVO).getList();
         // 导出 Excel
         ExcelUtils.write(response, "资产分类管理.xls", "数据", AssetCatMngRespVO.class,
                         BeanUtils.toBean(list, AssetCatMngRespVO.class));
-    }
-
-    //======================== Excel 导入 =====================//
-    @PostMapping("/import")
-    @Operation(summary = "导入资产分类管理 Excel")
-    @Parameters({
-            @Parameter(name = "file", description = "Excel 文件", required = true),
-            @Parameter(name = "updateSupport", description = "是否支持更新，默认为 false", example = "true")
-    })
-    @PreAuthorize("@ss.hasPermission('datacenter:asset-cat-mng:import')")
-    public CommonResult<AssetCatMngImportRespVO> importExcel(@RequestParam("file") MultipartFile file,
-                                                             @RequestParam(value = "updateSupport", required = false, defaultValue = "false") Boolean updateSupport) throws Exception {
-        List<AssetCatMngImportExcelVO> list = ExcelUtils.read(file, AssetCatMngImportExcelVO.class);
-        return success(assetCatMngService.importAssetCatMngList(list, updateSupport));
     }
 
 }

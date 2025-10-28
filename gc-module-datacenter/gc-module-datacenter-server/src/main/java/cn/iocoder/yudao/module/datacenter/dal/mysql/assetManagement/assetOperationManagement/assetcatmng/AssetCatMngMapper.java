@@ -1,10 +1,9 @@
 package cn.iocoder.yudao.module.datacenter.dal.mysql.assetManagement.assetOperationManagement.assetcatmng;
 
-import java.util.*;
-
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetcatmng.vo.AssetCatMngListReqVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetcatmng.vo.AssetCatMngPageReqVO;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetOperationManagement.assetcatmng.AssetCatMngDO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -16,13 +15,11 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface AssetCatMngMapper extends BaseMapperX<AssetCatMngDO> {
 
-    default List<AssetCatMngDO> selectList(AssetCatMngListReqVO reqVO) {
-        return selectList(new LambdaQueryWrapperX<AssetCatMngDO>()
-                .eqIfPresent(AssetCatMngDO::getParentId, reqVO.getParentId())
-                .likeIfPresent(AssetCatMngDO::getName, reqVO.getName())
+    default PageResult<AssetCatMngDO> selectPage(AssetCatMngPageReqVO reqVO) {
+        return selectPage(reqVO, new LambdaQueryWrapperX<AssetCatMngDO>()
                 .eqIfPresent(AssetCatMngDO::getAssetCatId, reqVO.getAssetCatId())
                 .eqIfPresent(AssetCatMngDO::getRelCatRuleId, reqVO.getRelCatRuleId())
-                .eqIfPresent(AssetCatMngDO::getAssetCatCode, reqVO.getAssetCatCode())
+                .likeIfPresent(AssetCatMngDO::getAssetCatCode, reqVO.getAssetCatCode())
                 .likeIfPresent(AssetCatMngDO::getAssetCatName, reqVO.getAssetCatName())
                 .eqIfPresent(AssetCatMngDO::getCatLevel, reqVO.getCatLevel())
                 .eqIfPresent(AssetCatMngDO::getParentCatId, reqVO.getParentCatId())
@@ -39,14 +36,6 @@ public interface AssetCatMngMapper extends BaseMapperX<AssetCatMngDO> {
                 .eqIfPresent(AssetCatMngDO::getExtCommon2, reqVO.getExtCommon2())
                 .betweenIfPresent(AssetCatMngDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(AssetCatMngDO::getId));
-    }
-
-	default AssetCatMngDO selectByParentIdAndName(Long parentId, String name) {
-	    return selectOne(AssetCatMngDO::getParentId, parentId, AssetCatMngDO::getName, name);
-	}
-
-    default Long selectCountByParentId(Long parentId) {
-        return selectCount(AssetCatMngDO::getParentId, parentId);
     }
 
 }

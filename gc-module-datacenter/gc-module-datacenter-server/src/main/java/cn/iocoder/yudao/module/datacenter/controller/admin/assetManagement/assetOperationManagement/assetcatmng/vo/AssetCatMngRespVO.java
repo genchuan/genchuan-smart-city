@@ -12,23 +12,15 @@ import com.alibaba.excel.annotation.*;
 @ExcelIgnoreUnannotated
 public class AssetCatMngRespVO {
 
-    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "21063")
+    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "2024")
     @ExcelProperty("主键ID")
     private Long id;
 
-    @Schema(description = "父级编号", requiredMode = Schema.RequiredMode.REQUIRED, example = "28154")
-    @ExcelProperty("父级编号")
-    private Long parentId;
-
-    @Schema(description = "名字", requiredMode = Schema.RequiredMode.REQUIRED, example = "张三")
-    @ExcelProperty("名字")
-    private String name;
-
-    @Schema(description = "资产分类ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "20927")
+    @Schema(description = "资产分类ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "30359")
     @ExcelProperty("资产分类ID")
     private String assetCatId;
 
-    @Schema(description = "关联分类规则ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "29078")
+    @Schema(description = "关联分类规则ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "30418")
     @ExcelProperty("关联分类规则ID")
     private String relCatRuleId;
 
@@ -36,7 +28,7 @@ public class AssetCatMngRespVO {
     @ExcelProperty("资产分类编码")
     private String assetCatCode;
 
-    @Schema(description = "资产分类名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "赵六")
+    @Schema(description = "资产分类名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "王五")
     @ExcelProperty("资产分类名称")
     private String assetCatName;
 
@@ -44,11 +36,11 @@ public class AssetCatMngRespVO {
     @ExcelProperty("分类层级")
     private String catLevel;
 
-    @Schema(description = "上级分类ID", example = "987")
+    @Schema(description = "上级分类ID", example = "25267")
     @ExcelProperty("上级分类ID")
     private String parentCatId;
 
-    @Schema(description = "上级分类名称", example = "赵六")
+    @Schema(description = "上级分类名称", example = "王五")
     @ExcelProperty("上级分类名称")
     private String parentCatName;
 
@@ -56,7 +48,7 @@ public class AssetCatMngRespVO {
     @ExcelProperty("分类说明")
     private String catDesc;
 
-    @Schema(description = "启用状态", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @Schema(description = "启用状态", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
     @ExcelProperty("启用状态")
     private String enableStatus;
 
@@ -92,8 +84,8 @@ public class AssetCatMngRespVO {
     @ExcelProperty("通用扩展字段2")
     private String extCommon2;
 
-    @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("创建时间")
+    @Schema(description = "系统创建时间", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("系统创建时间")
     private LocalDateTime createTime;
 
 }
