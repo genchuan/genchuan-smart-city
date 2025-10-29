@@ -4,46 +4,42 @@ import lombok.*;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import java.time.LocalDateTime;
 import org.springframework.format.annotation.DateTimeFormat;
+import java.time.LocalDateTime;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
-@Schema(description = "管理后台 - 资产分类管理列表 Request VO")
+@Schema(description = "管理后台 - 资产分类管理分页 Request VO")
 @Data
-public class AssetCatMngListReqVO {
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class AssetCatMngPageReqVO extends PageParam {
 
-    @Schema(description = "父级编号", example = "28154")
-    private Long parentId;
-
-    @Schema(description = "名字", example = "张三")
-    private String name;
-
-    @Schema(description = "资产分类ID", example = "20927")
+    @Schema(description = "资产分类ID", example = "30359")
     private String assetCatId;
 
-    @Schema(description = "关联分类规则ID", example = "29078")
+    @Schema(description = "关联分类规则ID", example = "30418")
     private String relCatRuleId;
 
     @Schema(description = "资产分类编码")
     private String assetCatCode;
 
-    @Schema(description = "资产分类名称", example = "赵六")
+    @Schema(description = "资产分类名称", example = "王五")
     private String assetCatName;
 
     @Schema(description = "分类层级")
     private String catLevel;
 
-    @Schema(description = "上级分类ID", example = "987")
+    @Schema(description = "上级分类ID", example = "25267")
     private String parentCatId;
 
-    @Schema(description = "上级分类名称", example = "赵六")
+    @Schema(description = "上级分类名称", example = "王五")
     private String parentCatName;
 
     @Schema(description = "分类说明")
     private String catDesc;
 
-    @Schema(description = "启用状态", example = "1")
+    @Schema(description = "启用状态", example = "2")
     private String enableStatus;
 
     @Schema(description = "创建人")
@@ -72,7 +68,7 @@ public class AssetCatMngListReqVO {
     @Schema(description = "通用扩展字段2")
     private String extCommon2;
 
-    @Schema(description = "创建时间")
+    @Schema(description = "系统创建时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
 
