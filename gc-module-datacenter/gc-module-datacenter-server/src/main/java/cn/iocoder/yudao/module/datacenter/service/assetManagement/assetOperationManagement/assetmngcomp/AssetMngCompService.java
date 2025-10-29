@@ -6,6 +6,8 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetOperationManagement.assetmngcomp.AssetMngCompDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 
+import java.util.List;
+
 /**
  * 资产关联管理部件 Service 接口
  *
@@ -50,5 +52,12 @@ public interface AssetMngCompService {
      * @return 资产关联管理部件分页
      */
     PageResult<AssetMngCompDO> getAssetMngCompPage(AssetMngCompPageReqVO pageReqVO);
+
+    /**
+     * 批量删除资产关联管理部件
+     *
+     * @param ids 编号列表
+     */
+    void deleteAssetMngCompBatch(List<Long> ids);
 
 }

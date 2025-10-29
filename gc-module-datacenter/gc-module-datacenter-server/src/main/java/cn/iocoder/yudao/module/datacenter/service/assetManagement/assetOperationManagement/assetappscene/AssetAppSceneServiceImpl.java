@@ -14,6 +14,8 @@ import static cn.iocoder.yudao.module.datacenter.enums.ErrorCodeConstants.*;
 
 import cn.iocoder.yudao.module.datacenter.dal.mysql.assetManagement.assetOperationManagement.assetappscene.AssetAppSceneMapper;
 
+import java.util.List;
+
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 
 /**
@@ -68,6 +70,21 @@ public class AssetAppSceneServiceImpl implements AssetAppSceneService {
     @Override
     public PageResult<AssetAppSceneDO> getAssetAppScenePage(AssetAppScenePageReqVO pageReqVO) {
         return assetAppSceneMapper.selectPage(pageReqVO);
+    }
+
+    /**
+     * 批量删除资产关联应用场景
+     *
+     * @param ids 编号列表
+     */
+    @Override
+    public void deleteAssetAppSceneBatch(List<Long> ids) {
+        // 校验存在
+        for (Long id : ids) {
+            validateAssetAppSceneExists(id);
+        }
+        // 批量删除
+        assetAppSceneMapper.deleteBatchIds(ids);
     }
 
 }

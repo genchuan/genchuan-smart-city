@@ -6,6 +6,8 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetOperationManagement.assetappscene.AssetAppSceneDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 
+import java.util.List;
+
 /**
  * 资产关联应用场景 Service 接口
  *
@@ -50,5 +52,12 @@ public interface AssetAppSceneService {
      * @return 资产关联应用场景分页
      */
     PageResult<AssetAppSceneDO> getAssetAppScenePage(AssetAppScenePageReqVO pageReqVO);
+
+    /**
+     * 批量删除资产关联应用场景
+     *
+     * @param ids 编号列表
+     */
+    void deleteAssetAppSceneBatch(List<Long> ids);
 
 }
