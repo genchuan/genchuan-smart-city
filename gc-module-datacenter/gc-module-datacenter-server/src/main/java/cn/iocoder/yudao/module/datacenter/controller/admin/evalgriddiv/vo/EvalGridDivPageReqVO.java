@@ -63,4 +63,11 @@ public class EvalGridDivPageReqVO extends PageParam {
     @Schema(description = "系统更新时间")
     private LocalDateTime updateTimeSys;
 
+    // 新增：排序字段配置
+    @Schema(description = "排序字段", example = "area")
+    private String sortField;
+
+    @Schema(description = "排序方向", example = "asc", allowableValues = {"asc", "desc"})
+    private String sortOrder;
+
 }

@@ -191,4 +191,25 @@ public class EvalGridDivController {
         return success(evalGridDiv.getId());
     }
 
+    @GetMapping("/list-by-mng-grid-count")
+    @Operation(summary = "根据管理网格数量范围获取评价网格列表")
+    @PreAuthorize("@ss.hasPermission('datacenter:eval-grid-div:query')")
+    public CommonResult<List<EvalGridDivRespVO>> getEvalGridDivByMngGridCount(
+            @RequestParam(value = "townStreetId", required = false) String townStreetId,
+            @RequestParam(value = "minMngGrids", required = false) Integer minMngGrids,
+            @RequestParam(value = "maxMngGrids", required = false) Integer maxMngGrids) {
+
+        List<EvalGridDivRespVO> result = evalGridDivService.getEvalGridDivByMngGridCount(townStreetId, minMngGrids, maxMngGrids);
+        return success(result);
+    }
+
+    @GetMapping("/page-with-boundary")
+    @Operation(summary = "获得评价网格划分分页（包含边界坐标）")
+    @PreAuthorize("@ss.hasPermission('datacenter:eval-grid-div:query')")
+    public CommonResult<PageResult<EvalGridDivRespVO>> getEvalGridDivPageWithBoundary(
+            @Valid EvalGridDivPageReqVO pageReqVO) {
+        PageResult<EvalGridDivRespVO> pageResult = evalGridDivService.getEvalGridDivPageWithBoundary(pageReqVO);
+        return success(pageResult);
+    }
+
 }

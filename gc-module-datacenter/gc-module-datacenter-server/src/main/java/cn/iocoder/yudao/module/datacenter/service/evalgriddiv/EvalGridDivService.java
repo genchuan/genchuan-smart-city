@@ -110,4 +110,17 @@ public interface EvalGridDivService {
      * @return 推荐的类型
      */
     String recommendGridType(String townStreetId, List<String> includedMgIds);
+
+    /**
+     * 根据管理网格数量范围获取评价网格列表
+     */
+    List<EvalGridDivRespVO> getEvalGridDivByMngGridCount(String townStreetId, Integer minMngGrids, Integer maxMngGrids);
+
+    /**
+     * 获得评价网格划分分页（包含边界坐标信息）
+     *
+     * @param pageReqVO 分页查询
+     * @return 评价网格划分分页（包含边界坐标）
+     */
+    PageResult<EvalGridDivRespVO> getEvalGridDivPageWithBoundary(EvalGridDivPageReqVO pageReqVO);
 }

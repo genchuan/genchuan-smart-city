@@ -50,7 +50,7 @@ public interface MngGridDivService {
      * @param pageReqVO 分页查询
      * @return 管理网格划分分页
      */
-    PageResult<MngGridDivDO> getMngGridDivPage(MngGridDivPageReqVO pageReqVO);
+    PageResult<MngGridDivRespVO> getMngGridDivPage(MngGridDivPageReqVO pageReqVO);
 
     /**
      * 根据乡镇ID获取管理网格列表
@@ -102,4 +102,5 @@ public interface MngGridDivService {
      * @return 单元网格详情列表
      */
     List<UnitGridSimpleInfo> getUnitGridDetails(List<String> unitGridIds);
+
 }

@@ -144,31 +144,6 @@ public interface ErrorCodeConstants {
 
     //====================================资产管理模块=========================================================================
 
-    // ========== 资产分类规则配置 200_101 ==========
-    ErrorCode ASSET_CATEGORY_RULE_NOT_EXISTS = new ErrorCode(200_101, "资产分类规则配置不存在");
-    ErrorCode ASSET_CATEGORY_RULE_EXITS_CHILDREN = new ErrorCode(200_102, "存在存在子资产分类规则配置，无法删除");
-    ErrorCode ASSET_CATEGORY_RULE_PARENT_NOT_EXITS = new ErrorCode(200_103,"父级资产分类规则配置不存在");
-    ErrorCode ASSET_CATEGORY_RULE_PARENT_ERROR = new ErrorCode(200_104, "不能设置自己为父资产分类规则配置");
-    ErrorCode ASSET_CATEGORY_RULE_NAME_DUPLICATE = new ErrorCode(200_105, "已经存在该名字的资产分类规则配置");
-    ErrorCode ASSET_CATEGORY_RULE_PARENT_IS_CHILD = new ErrorCode(200_106, "不能设置自己的子AssetCategoryRule为父AssetCategoryRule");
-
-    // ========== 资产属性规则配置 200_111 ==========
-    ErrorCode ASSET_ATTR_RULE_NOT_EXISTS = new ErrorCode(200_111, "资产属性规则配置不存在");
-    ErrorCode ASSET_ATTR_RULE_EXITS_CHILDREN = new ErrorCode(200_112, "存在存在子资产属性规则配置，无法删除");
-    ErrorCode ASSET_ATTR_RULE_PARENT_NOT_EXITS = new ErrorCode(200_113,"父级资产属性规则配置不存在");
-    ErrorCode ASSET_ATTR_RULE_PARENT_ERROR = new ErrorCode(200_114, "不能设置自己为父资产属性规则配置");
-    ErrorCode ASSET_ATTR_RULE_NAME_DUPLICATE = new ErrorCode(200_115, "已经存在该名字的资产属性规则配置");
-    ErrorCode ASSET_ATTR_RULE_PARENT_IS_CHILD = new ErrorCode(200_116, "不能设置自己的子AssetAttrRule为父AssetAttrRule");
-
-    // ========== 资产关联规则配置 200_121 ==========
-    ErrorCode ASSET_REL_RULE_NOT_EXISTS = new ErrorCode(200_121, "资产关联规则配置不存在");
-    ErrorCode ASSET_REL_RULE_EXITS_CHILDREN = new ErrorCode(200_122, "存在存在子资产关联规则配置，无法删除");
-    ErrorCode ASSET_REL_RULE_PARENT_NOT_EXITS = new ErrorCode(200_123,"父级资产关联规则配置不存在");
-    ErrorCode ASSET_REL_RULE_PARENT_ERROR = new ErrorCode(200_124, "不能设置自己为父资产关联规则配置");
-    ErrorCode ASSET_REL_RULE_NAME_DUPLICATE = new ErrorCode(200_125, "已经存在该名字的资产关联规则配置");
-    ErrorCode ASSET_REL_RULE_PARENT_IS_CHILD = new ErrorCode(200_126, "不能设置自己的子AssetRelRule为父AssetRelRule");
-
-    //====================================资产操作模块=========================================================================
     // ========== 资产分类管理 200_211 ==========
     ErrorCode ASSET_CAT_MNG_NOT_EXISTS = new ErrorCode(200_211, "资产分类管理不存在");
     ErrorCode ASSET_CAT_MNG_EXITS_CHILDREN = new ErrorCode(200_212, "存在存在子资产分类管理，无法删除");
@@ -215,4 +190,9 @@ public interface ErrorCodeConstants {
     //====================================资产统计报表模块=====================================================
     ErrorCode ASSET_STATUS_RPT_NOT_EXISTS = new ErrorCode(200_401, "资产状态统计报表不存在");
     ErrorCode ASSET_CAT_RPT_NOT_EXISTS = new ErrorCode(200_411, "资产分类统计报表不存在");
+
+    //=====================================资产管理导入模块=====================================================
+
+    ErrorCode ASSET_SPATIAL_DATA_IMPORT_LIST_IS_EMPTY = new ErrorCode(200_351, "导入资产空间数据列表不能为空");
+    ErrorCode ASSET_CAT_MNG_IMPORT_LIST_IS_EMPTY = new ErrorCode(200_217, "导入资产分类管理列表不能为空");
 }
