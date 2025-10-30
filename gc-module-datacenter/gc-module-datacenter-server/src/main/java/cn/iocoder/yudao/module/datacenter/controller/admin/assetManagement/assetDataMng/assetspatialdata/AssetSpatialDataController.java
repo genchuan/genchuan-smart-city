@@ -1,8 +1,7 @@
 package cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetspatialdata;
 
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetspatialdata.vo.AssetSpatialDataPageReqVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetspatialdata.vo.AssetSpatialDataRespVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetspatialdata.vo.AssetSpatialDataSaveReqVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetspatialdata.vo.*;
+import io.swagger.v3.oas.annotations.Parameters;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -13,6 +12,9 @@ import io.swagger.v3.oas.annotations.Operation;
 
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.io.IOException;
 
@@ -29,6 +31,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetDataMng.assetspatialdata.AssetSpatialDataDO;
 import cn.iocoder.yudao.module.datacenter.service.assetManagement.assetDataMng.assetspatialdata.AssetSpatialDataService;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "管理后台 - 资产空间数据")
 @RestController
@@ -91,6 +94,64 @@ public class AssetSpatialDataController {
         // 导出 Excel
         ExcelUtils.write(response, "资产空间数据.xls", "数据", AssetSpatialDataRespVO.class,
                         BeanUtils.toBean(list, AssetSpatialDataRespVO.class));
+    }
+    //======================== Excel 导入 =====================//
+    @PostMapping("/import")
+    @Operation(summary = "导入资产空间数据 Excel")
+    @Parameters({
+            @Parameter(name = "file", description = "Excel 文件", required = true),
+            @Parameter(name = "updateSupport", description = "是否支持更新，默认为 false", example = "true")
+    })
+    @PreAuthorize("@ss.hasPermission('datacenter:asset-spatial-data:import')")
+    public CommonResult<AssetSpatialDataImportRespVO> importExcel(@RequestParam("file") MultipartFile file,
+                                                                  @RequestParam(value = "updateSupport", required = false, defaultValue = "false") Boolean updateSupport) throws Exception {
+        List<AssetSpatialDataImportExcelVO> list = ExcelUtils.read(file, AssetSpatialDataImportExcelVO.class);
+        return success(assetSpatialDataService.importAssetSpatialDataList(list, updateSupport));
+    }
+
+    //======================== Excel 导入模板 =====================//
+    @GetMapping("/import-template")
+    @Operation(summary = "下载资产空间数据导入模板")
+    @PreAuthorize("@ss.hasPermission('datacenter:asset-spatial-data:import')")
+    @ApiAccessLog(operateType = EXPORT)
+    public void importTemplate(HttpServletResponse response) throws IOException {
+        // 创建模板数据，两条示例数据
+        List<AssetSpatialDataImportExcelVO> list = Arrays.asList(
+                AssetSpatialDataImportExcelVO.builder()
+                        .assetSpatialId("SPATIAL011")
+                        .relAssetId("ASSET001")
+                        .relAssetName("市政道路001")
+                        .coordSystemType("WGS84")
+                        .coordX(new BigDecimal("116.397428"))
+                        .coordY(new BigDecimal("39.90923"))
+                        .elevation(new BigDecimal("45.5"))
+                        .boundaryCoords("116.3974,39.9092;116.3975,39.9093;116.3976,39.9091")
+                        .spatialDataSource("GPS测量")
+                        .inputTime(LocalDateTime.now())
+                        .operUser("张三")
+                        .updateUser("张三")
+                        .updatedTime(LocalDateTime.now())
+                        .build(),
+                AssetSpatialDataImportExcelVO.builder()
+                        .assetSpatialId("SPATIAL022")
+                        .relAssetId("ASSET002")
+                        .relAssetName("桥梁设施002")
+                        .coordSystemType("GCJ02")
+                        .coordX(new BigDecimal("116.406605"))
+                        .coordY(new BigDecimal("39.921984"))
+                        .elevation(new BigDecimal("32.8"))
+                        .boundaryCoords("116.4066,39.9219;116.4067,39.9220;116.4068,39.9218")
+                        .spatialDataSource("人工录入")
+                        .inputTime(LocalDateTime.now())
+                        .operUser("李四")
+                        .updateUser("李四")
+                        .updatedTime(LocalDateTime.now())
+                        .build()
+        );
+
+        // 导出模板
+        ExcelUtils.write(response, "资产空间数据导入模板.xls", "空间数据",
+                AssetSpatialDataImportExcelVO.class, list);
     }
 
 }

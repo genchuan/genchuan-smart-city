@@ -18,6 +18,23 @@ import java.util.List;
 public interface AssetCatRuleCfgMapper extends BaseMapperX<AssetCatRuleCfgDO> {
 
     default PageResult<AssetCatRuleCfgDO> selectPage(AssetCatRuleCfgPageReqVO reqVO) {
+        // 构建完整的查询条件
+        LambdaQueryWrapperX<AssetCatRuleCfgDO> queryWrapper = new LambdaQueryWrapperX<>();
+        // 处理特殊排序逻辑
+        if ("createdTime".equals(reqVO.getOrderByColumn())) {
+            // 创建时间排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetCatRuleCfgDO::getCreatedTime);
+            return selectPage(reqVO, null, queryWrapper);
+        }else if ("assetDom".equals(reqVO.getOrderByColumn())) {
+            // 适用资产领域排序 - 使用自定义顺序：市政/交通/城管
+            String orderByClause = "FIELD(asset_dom, '市政', '交通', '城管')";
+            if ("desc".equals(reqVO.getIsAsc())) {
+                orderByClause += " DESC";
+            }
+            queryWrapper.last("ORDER BY " + orderByClause);
+            return selectPage(reqVO, null, queryWrapper);
+        }
+
         return selectPage(reqVO, new LambdaQueryWrapperX<AssetCatRuleCfgDO>()
                 .eqIfPresent(AssetCatRuleCfgDO::getAssetCatRuleId, reqVO.getAssetCatRuleId())
                 .likeIfPresent(AssetCatRuleCfgDO::getRuleName, reqVO.getRuleName())

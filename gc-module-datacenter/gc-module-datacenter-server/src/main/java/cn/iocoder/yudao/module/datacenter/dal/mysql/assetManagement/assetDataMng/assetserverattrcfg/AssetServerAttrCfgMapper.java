@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetserverattrcfg.vo.AssetServerAttrCfgPageReqVO;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetDataMng.assetserverattrcfg.AssetServerAttrCfgDO;
+
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -16,6 +17,14 @@ import org.apache.ibatis.annotations.Mapper;
 public interface AssetServerAttrCfgMapper extends BaseMapperX<AssetServerAttrCfgDO> {
 
     default PageResult<AssetServerAttrCfgDO> selectPage(AssetServerAttrCfgPageReqVO reqVO) {
+        // 构建完整的查询条件
+        LambdaQueryWrapperX<AssetServerAttrCfgDO> queryWrapper = new LambdaQueryWrapperX<>();
+        // 处理特殊排序逻辑
+        if ("lastCollectTime".equals(reqVO.getOrderByColumn())) {
+            // 创建时间排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetServerAttrCfgDO::getLastCollectTime);
+            return selectPage(reqVO, null, queryWrapper);
+        }
         return selectPage(reqVO, new LambdaQueryWrapperX<AssetServerAttrCfgDO>()
                 .eqIfPresent(AssetServerAttrCfgDO::getAssetServerAttrId, reqVO.getAssetServerAttrId())
                 .likeIfPresent(AssetServerAttrCfgDO::getRelAssetId, reqVO.getRelAssetId())

@@ -5,12 +5,10 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetasset.vo.AssetAssetPageReqVO;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetOperationManagement.assetasset.AssetAssetDO;
-import cn.iocoder.yudao.framework.common.pojo.SortingField;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.ArrayList;
-import java.util.List;
+
 
 /**
  * 资产关联资产 Mapper
@@ -21,24 +19,14 @@ import java.util.List;
 public interface AssetAssetMapper extends BaseMapperX<AssetAssetDO> {
 
     default PageResult<AssetAssetDO> selectPage(AssetAssetPageReqVO reqVO) {
-
-        // 第一步：统一构建完整的查询条件
-        //        /* ---------- 其它条件照旧 ---------- */
-        LambdaQueryWrapperX<AssetAssetDO> wrapper =
-                new LambdaQueryWrapperX<AssetAssetDO>()
-                        .eqIfPresent(AssetAssetDO::getAssetRelAssetId, reqVO.getAssetRelAssetId())
-                        .betweenIfPresent(AssetAssetDO::getRelTime, reqVO.getRelTime());
-        if ("updatedtime".equals(reqVO.getOrderByColumn())) {
-            // 直接按时间字段排序，不需要CASE转换
-            wrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetAssetDO::getUpdatedTime);
-            return selectPage(reqVO, null, wrapper);
+        // 构建完整的查询条件
+        LambdaQueryWrapperX<AssetAssetDO> queryWrapper = new LambdaQueryWrapperX<>();
+        // 处理特殊排序逻辑
+        if ("relTime".equals(reqVO.getOrderByColumn())) {
+            // 创建时间排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetAssetDO::getRelTime);
+            return selectPage(reqVO, null, queryWrapper);
         }
-        SortingField sortingField = new SortingField();
-        sortingField.setField(reqVO.getOrderByColumn());
-        sortingField.setOrder(reqVO.getIsAsc());
-        List<SortingField> sortingFields = new ArrayList<>();
-        sortingFields.add(sortingField);
-
         return selectPage(reqVO, new LambdaQueryWrapperX<AssetAssetDO>()
                 .eqIfPresent(AssetAssetDO::getAssetRelAssetId, reqVO.getAssetRelAssetId())
                 .likeIfPresent(AssetAssetDO::getSlaveAssetId, reqVO.getSlaveAssetId())

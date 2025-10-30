@@ -16,6 +16,14 @@ import org.apache.ibatis.annotations.Mapper;
 public interface AssetDataQualCkMapper extends BaseMapperX<AssetDataQualCkDO> {
 
     default PageResult<AssetDataQualCkDO> selectPage(AssetDataQualCkPageReqVO reqVO) {
+        // 构建完整的查询条件
+        LambdaQueryWrapperX<AssetDataQualCkDO> queryWrapper = new LambdaQueryWrapperX<>();
+        // 处理特殊排序逻辑
+        if ("ckTime".equals(reqVO.getOrderByColumn())) {
+            // 创建时间排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetDataQualCkDO::getCkTime);
+            return selectPage(reqVO, null, queryWrapper);
+        }
         return selectPage(reqVO, new LambdaQueryWrapperX<AssetDataQualCkDO>()
                 .eqIfPresent(AssetDataQualCkDO::getAssetDataQualId, reqVO.getAssetDataQualId())
                 .likeIfPresent(AssetDataQualCkDO::getRelAssetId, reqVO.getRelAssetId())

@@ -1,10 +1,14 @@
 package cn.iocoder.yudao.module.datacenter.service.assetManagement.assetDataMng.assetspatialdata;
 
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetspatialdata.vo.AssetSpatialDataImportExcelVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetspatialdata.vo.AssetSpatialDataImportRespVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetspatialdata.vo.AssetSpatialDataPageReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetspatialdata.vo.AssetSpatialDataSaveReqVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetDataMng.assetspatialdata.AssetSpatialDataDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+
+import java.util.List;
 
 /**
  * 资产空间数据 Service 接口
@@ -51,4 +55,11 @@ public interface AssetSpatialDataService {
      */
     PageResult<AssetSpatialDataDO> getAssetSpatialDataPage(AssetSpatialDataPageReqVO pageReqVO);
 
+    /**
+     * 导入资产空间数据信息
+     * @param importAssetSpatialData
+     * @param updateSupport
+     * @return
+     */
+    AssetSpatialDataImportRespVO importAssetSpatialDataList(List<AssetSpatialDataImportExcelVO> importAssetSpatialData, boolean updateSupport);
 }

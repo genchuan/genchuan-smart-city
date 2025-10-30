@@ -16,6 +16,14 @@ import org.apache.ibatis.annotations.Mapper;
 public interface AssetCatMngMapper extends BaseMapperX<AssetCatMngDO> {
 
     default PageResult<AssetCatMngDO> selectPage(AssetCatMngPageReqVO reqVO) {
+        // 构建完整的查询条件
+        LambdaQueryWrapperX<AssetCatMngDO> queryWrapper = new LambdaQueryWrapperX<>();
+        // 处理特殊排序逻辑
+        if ("createdTime".equals(reqVO.getOrderByColumn())) {
+            // 创建时间排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetCatMngDO::getCreatedTime);
+            return selectPage(reqVO, null, queryWrapper);
+        }
         return selectPage(reqVO, new LambdaQueryWrapperX<AssetCatMngDO>()
                 .eqIfPresent(AssetCatMngDO::getAssetCatId, reqVO.getAssetCatId())
                 .eqIfPresent(AssetCatMngDO::getRelCatRuleId, reqVO.getRelCatRuleId())

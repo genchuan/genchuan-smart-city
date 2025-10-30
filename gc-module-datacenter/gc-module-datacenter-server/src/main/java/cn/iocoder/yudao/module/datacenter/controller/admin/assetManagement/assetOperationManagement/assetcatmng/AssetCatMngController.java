@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.asse
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetcatmng.vo.AssetCatMngPageReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetcatmng.vo.AssetCatMngRespVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetcatmng.vo.AssetCatMngSaveReqVO;
+import io.swagger.v3.oas.annotations.Parameters;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -13,6 +14,8 @@ import io.swagger.v3.oas.annotations.Operation;
 
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
+
+import java.time.LocalDateTime;
 import java.util.*;
 import java.io.IOException;
 
@@ -30,6 +33,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetOperationManagement.assetcatmng.vo.*;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetOperationManagement.assetcatmng.AssetCatMngDO;
 import cn.iocoder.yudao.module.datacenter.service.assetManagement.assetOperationManagement.assetcatmng.AssetCatMngService;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "管理后台 - 资产分类管理")
 @RestController
@@ -92,6 +96,65 @@ public class AssetCatMngController {
         // 导出 Excel
         ExcelUtils.write(response, "资产分类管理.xls", "数据", AssetCatMngRespVO.class,
                         BeanUtils.toBean(list, AssetCatMngRespVO.class));
+    }
+
+    //======================== Excel 导入 =====================//
+    @PostMapping("/import")
+    @Operation(summary = "导入资产分类管理 Excel")
+    @Parameters({
+            @Parameter(name = "file", description = "Excel 文件", required = true),
+            @Parameter(name = "updateSupport", description = "是否支持更新，默认为 false", example = "true")
+    })
+    @PreAuthorize("@ss.hasPermission('datacenter:asset-cat-mng:import')")
+    public CommonResult<AssetCatMngImportRespVO> importExcel(@RequestParam("file") MultipartFile file,
+                                                             @RequestParam(value = "updateSupport", required = false, defaultValue = "false") Boolean updateSupport) throws Exception {
+        List<AssetCatMngImportExcelVO> list = ExcelUtils.read(file, AssetCatMngImportExcelVO.class);
+        return success(assetCatMngService.importAssetCatMngList(list, updateSupport));
+    }
+
+    //======================== Excel 导入模板 =====================//
+    @GetMapping("/import-template")
+    @Operation(summary = "下载资产分类管理导入模板")
+    @PreAuthorize("@ss.hasPermission('datacenter:asset-cat-mng:import')")
+    @ApiAccessLog(operateType = EXPORT)
+    public void importTemplate(HttpServletResponse response) throws IOException {
+        // 创建模板数据，使用正确的数据类型
+        List<AssetCatMngImportExcelVO> list = Arrays.asList(
+                AssetCatMngImportExcelVO.builder()
+                        .assetCatId("CAT001")
+                        .relCatRuleId("RULE001")
+                        .assetCatCode("01")
+                        .assetCatName("市政设施")
+                        .catLevel("1")  // 使用 Integer 类型
+                        .parentCatId("0")
+                        .parentCatName("无")
+                        .catDesc("市政相关设施分类")
+                        .enableStatus("1")  // 使用 Integer 类型
+                        .createUser("管理员")
+                        .createdTime(LocalDateTime.now())
+                        .updateUser("管理员")
+                        .updatedTime(LocalDateTime.now())
+                        .build(),
+                AssetCatMngImportExcelVO.builder()
+                        .assetCatId("CAT002")
+                        .relCatRuleId("RULE001")
+                        .assetCatCode("0101")
+                        .assetCatName("道路设施")
+                        .catLevel("1")  // 使用 Integer 类型
+                        .parentCatId("CAT001")
+                        .parentCatName("市政设施")
+                        .catDesc("道路相关设施")
+                        .enableStatus("1")  // 使用 Integer 类型
+                        .createUser("管理员")
+                        .createdTime(LocalDateTime.now())
+                        .updateUser("管理员")
+                        .updatedTime(LocalDateTime.now())
+                        .build()
+        );
+
+        // 导出模板
+        ExcelUtils.write(response, "资产分类管理导入模板.xls", "资产分类数据",
+                AssetCatMngImportExcelVO.class, list);
     }
 
 }
