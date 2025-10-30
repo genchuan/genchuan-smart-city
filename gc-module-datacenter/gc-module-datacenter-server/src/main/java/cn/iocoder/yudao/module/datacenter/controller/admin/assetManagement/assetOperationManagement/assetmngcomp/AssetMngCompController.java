@@ -93,4 +93,18 @@ public class AssetMngCompController {
                         BeanUtils.toBean(list, AssetMngCompRespVO.class));
     }
 
+    /**
+     * 批量删除资产关联管理部件
+     *
+     * @param ids 编号列表
+     */
+    @DeleteMapping("/delete-batch")
+    @Operation(summary = "批量删除资产关联管理部件")
+    @Parameter(name = "ids", description = "编号列表", required = true)
+    @PreAuthorize("@ss.hasPermission('datacenter:asset-mng-comp:delete')")
+    public CommonResult<Boolean> deleteAssetMngCompBatch(@RequestBody List<Long> ids) {
+        assetMngCompService.deleteAssetMngCompBatch(ids);
+        return success(true);
+    }
+
 }

@@ -1,7 +1,9 @@
 package cn.iocoder.yudao.module.datacenter.service.assetManagement.assetRuleAllocation.assetcatrulecfg;
 
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetRuleAllocation.assetcatrulecfg.vo.AssetCatRuleCfgPageReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetRuleAllocation.assetcatrulecfg.vo.AssetCatRuleCfgSaveReqVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetRuleAllocation.assetcatrulecfg.vo.AssetCatRuleCfgSimpleRespVO;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -11,6 +13,8 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.datacenter.dal.mysql.assetManagement.assetRuleAllocation.assetcatrulecfg.AssetCatRuleCfgMapper;
+
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.datacenter.enums.ErrorCodeConstants.*;
@@ -67,6 +71,23 @@ public class AssetCatRuleCfgServiceImpl implements AssetCatRuleCfgService {
     @Override
     public PageResult<AssetCatRuleCfgDO> getAssetCatRuleCfgPage(AssetCatRuleCfgPageReqVO pageReqVO) {
         return assetCatRuleCfgMapper.selectPage(pageReqVO);
+    }
+
+    /**
+     * 获取状态为启用（1）的资产分类规则名称及规则ID
+     *
+     * @return
+     */
+    @Override
+    public List<AssetCatRuleCfgSimpleRespVO> getEnabledAssetCatRuleList() {
+        // 查询状态为启用（1）的资产分类规则
+        List<AssetCatRuleCfgDO> enabledRules = assetCatRuleCfgMapper.selectList(
+                new LambdaQueryWrapperX<AssetCatRuleCfgDO>()
+                        .eq(AssetCatRuleCfgDO::getEnableStatus, "1") // 假设启用状态为 "1"
+                        .select(AssetCatRuleCfgDO::getAssetCatRuleId, AssetCatRuleCfgDO::getRuleName)
+        );
+
+        return BeanUtils.toBean(enabledRules, AssetCatRuleCfgSimpleRespVO.class);
     }
 
 }

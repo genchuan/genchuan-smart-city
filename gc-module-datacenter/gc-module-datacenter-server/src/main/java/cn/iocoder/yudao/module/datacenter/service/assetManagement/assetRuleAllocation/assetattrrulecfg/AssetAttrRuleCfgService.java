@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.datacenter.service.assetManagement.assetRuleAllocation.assetattrrulecfg;
 
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetRuleAllocation.assetattrrulecfg.vo.AssetAttrRuleCfgBatchUpdateReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetRuleAllocation.assetattrrulecfg.vo.AssetAttrRuleCfgPageReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetRuleAllocation.assetattrrulecfg.vo.AssetAttrRuleCfgSaveReqVO;
 import jakarta.validation.*;
@@ -50,5 +51,12 @@ public interface AssetAttrRuleCfgService {
      * @return 资产属性规则配置分页
      */
     PageResult<AssetAttrRuleCfgDO> getAssetAttrRuleCfgPage(AssetAttrRuleCfgPageReqVO pageReqVO);
+
+    /**
+     * 批量更新“是否必选”
+     *
+     * @param reqVO
+     */
+    void batchUpdateIsRequired(@Valid AssetAttrRuleCfgBatchUpdateReqVO reqVO);
 
 }

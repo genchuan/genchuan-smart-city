@@ -13,6 +13,8 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import static cn.iocoder.yudao.module.datacenter.enums.ErrorCodeConstants.*;
 import cn.iocoder.yudao.module.datacenter.dal.mysql.assetManagement.assetOperationManagement.assetmngcomp.AssetMngCompMapper;
 
+import java.util.List;
+
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 
 /**
@@ -67,6 +69,20 @@ public class AssetMngCompServiceImpl implements AssetMngCompService {
     @Override
     public PageResult<AssetMngCompDO> getAssetMngCompPage(AssetMngCompPageReqVO pageReqVO) {
         return assetMngCompMapper.selectPage(pageReqVO);
+    }
+
+    /**
+     * 批量删除资产关联管理部件
+     *
+     * @param ids 编号列表
+     */
+    @Override
+    public void deleteAssetMngCompBatch(List<Long> ids) {
+        for (Long id : ids) {
+            // 校验存在
+            validateAssetMngCompExists(id);
+        }
+        assetMngCompMapper.deleteBatchIds(ids);
     }
 
 }

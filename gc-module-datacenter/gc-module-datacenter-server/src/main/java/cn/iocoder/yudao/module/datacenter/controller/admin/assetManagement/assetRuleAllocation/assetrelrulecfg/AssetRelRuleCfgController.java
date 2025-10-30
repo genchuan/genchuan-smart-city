@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetRuleAllocation.assetrelrulecfg;
 
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetRuleAllocation.assetrelrulecfg.vo.AssetRelRuleCfgBatchUpdateReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetRuleAllocation.assetrelrulecfg.vo.AssetRelRuleCfgPageReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetRuleAllocation.assetrelrulecfg.vo.AssetRelRuleCfgRespVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetRuleAllocation.assetrelrulecfg.vo.AssetRelRuleCfgSaveReqVO;
@@ -91,6 +92,21 @@ public class AssetRelRuleCfgController {
         // 导出 Excel
         ExcelUtils.write(response, "资产关联规则配置.xls", "数据", AssetRelRuleCfgRespVO.class,
                         BeanUtils.toBean(list, AssetRelRuleCfgRespVO.class));
+    }
+
+    /**
+     * 批量设置‘是否必选’
+     *
+     * @param reqVO
+     * @return
+     */
+    @PutMapping("/batch-update-required")
+    @Operation(summary = "批量设置‘是否必选’")
+    @PreAuthorize("@ss.hasPermission('datacenter:asset-rel-rule-cfg:update')")
+    public CommonResult<Boolean> batchUpdateIsRequired(
+        @Valid @RequestBody AssetRelRuleCfgBatchUpdateReqVO reqVO){
+        assetRelRuleCfgService.batchUpdateIsRequired(reqVO);
+        return success(true);
     }
 
 }

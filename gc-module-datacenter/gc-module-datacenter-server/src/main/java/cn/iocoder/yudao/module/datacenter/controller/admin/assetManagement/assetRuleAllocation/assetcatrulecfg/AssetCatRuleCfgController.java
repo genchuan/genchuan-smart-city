@@ -30,6 +30,8 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetRuleAllocation.assetcatrulecfg.AssetCatRuleCfgDO;
 import cn.iocoder.yudao.module.datacenter.service.assetManagement.assetRuleAllocation.assetcatrulecfg.AssetCatRuleCfgService;
 
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetRuleAllocation.assetcatrulecfg.vo.*;
+
 @Tag(name = "管理后台 - 资产分类规则配置")
 @RestController
 @RequestMapping("/datacenter/asset-cat-rule-cfg")
@@ -91,6 +93,19 @@ public class AssetCatRuleCfgController {
         // 导出 Excel
         ExcelUtils.write(response, "资产分类规则配置.xls", "数据", AssetCatRuleCfgRespVO.class,
                         BeanUtils.toBean(list, AssetCatRuleCfgRespVO.class));
+    }
+
+    /**
+     * 获取启用的资产分类规则名称及ID
+     *
+     * @return
+     */
+    @GetMapping("/enabled-list")
+    @Operation(summary = "获取启用的资产分类规则列表（用于字典）")
+    @PreAuthorize("@ss.hasPermission('datacenter:asset-cat-rule-cfg:query')")
+    public CommonResult<List<AssetCatRuleCfgSimpleRespVO>> getEnabledAssetCatRuleList() {
+        List<AssetCatRuleCfgSimpleRespVO> list = assetCatRuleCfgService.getEnabledAssetCatRuleList();
+        return success(list);
     }
 
 }

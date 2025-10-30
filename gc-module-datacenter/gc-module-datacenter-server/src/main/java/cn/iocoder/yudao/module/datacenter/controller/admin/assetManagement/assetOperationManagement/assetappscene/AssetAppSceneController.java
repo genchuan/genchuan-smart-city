@@ -94,4 +94,18 @@ public class AssetAppSceneController {
                         BeanUtils.toBean(list, AssetAppSceneRespVO.class));
     }
 
+    /**
+     * 批量删除资产关联应用场景
+     *
+     * @param ids
+     * @return
+     */
+    @DeleteMapping("/delete-batch")
+    @Operation(summary = "批量删除资产关联应用场景")
+    @PreAuthorize("@ss.hasPermission('datacenter:asset-app-scene:delete')")
+    public CommonResult<Boolean> deleteAssetAppSceneBatch(@RequestBody List<Long> ids) {
+        assetAppSceneService.deleteAssetAppSceneBatch(ids);
+        return success(true);
+    }
+
 }

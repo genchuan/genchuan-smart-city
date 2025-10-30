@@ -1,7 +1,9 @@
 package cn.iocoder.yudao.module.datacenter.service.assetManagement.assetRuleAllocation.assetrelrulecfg;
 
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetRuleAllocation.assetrelrulecfg.vo.AssetRelRuleCfgBatchUpdateReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetRuleAllocation.assetrelrulecfg.vo.AssetRelRuleCfgPageReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetRuleAllocation.assetrelrulecfg.vo.AssetRelRuleCfgSaveReqVO;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -67,6 +69,28 @@ public class AssetRelRuleCfgServiceImpl implements AssetRelRuleCfgService {
     @Override
     public PageResult<AssetRelRuleCfgDO> getAssetRelRuleCfgPage(AssetRelRuleCfgPageReqVO pageReqVO) {
         return assetRelRuleCfgMapper.selectPage(pageReqVO);
+    }
+
+    /**
+     * 批量更新“是否必选”
+     *
+     * @param reqVO
+     */
+    @Override
+    public void batchUpdateIsRequired(AssetRelRuleCfgBatchUpdateReqVO reqVO) {
+        // 1. 校验存在
+        long exist = assetRelRuleCfgMapper.selectCount(
+                new LambdaQueryWrapper<AssetRelRuleCfgDO>()
+                        .in(AssetRelRuleCfgDO::getId, reqVO.getIds()));
+                if (exist != reqVO.getIds().size()){
+                    throw  exception(ASSET_REL_RULE_CFG_NOT_EXISTS);
+        }
+                // 2. 批量更新（mybatis-plus 内置方法）
+        AssetRelRuleCfgDO update = new AssetRelRuleCfgDO();
+                update.setIsRequired(String.valueOf(reqVO.getIsRequired()));
+                assetRelRuleCfgMapper.update(update,
+                        new LambdaQueryWrapper<AssetRelRuleCfgDO>()
+                                .in(AssetRelRuleCfgDO::getId, reqVO.getIds()));
     }
 
 }
