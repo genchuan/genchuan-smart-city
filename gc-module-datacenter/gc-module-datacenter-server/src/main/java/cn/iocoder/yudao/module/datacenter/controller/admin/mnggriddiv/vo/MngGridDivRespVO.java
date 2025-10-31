@@ -1,9 +1,9 @@
 package cn.iocoder.yudao.module.datacenter.controller.admin.mnggriddiv.vo;
 
+import cn.iocoder.yudao.module.datacenter.controller.admin.unitgriddiv.vo.UnitGridBoundaryInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import java.util.*;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import com.alibaba.excel.annotation.*;
 
@@ -71,5 +71,9 @@ public class MngGridDivRespVO {
     @Schema(description = "系统更新时间")
     @ExcelProperty("系统更新时间")
     private LocalDateTime updateTimeSys;
+
+    @Schema(description = "关联的单元网格边界坐标列表")
+    @ExcelIgnore
+    private List<UnitGridBoundaryInfo> boundaryCoords;
 
 }

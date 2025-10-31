@@ -76,4 +76,8 @@ public class EvalGridDivRespVO {
     @ExcelProperty("系统更新时间")
     private LocalDateTime updateTimeSys;
 
+    // 新增：边界坐标信息
+    @Schema(description = "边界坐标信息列表")
+    @ExcelIgnore
+    private List<EvalGridBoundaryInfo> boundaryCoords;
 }

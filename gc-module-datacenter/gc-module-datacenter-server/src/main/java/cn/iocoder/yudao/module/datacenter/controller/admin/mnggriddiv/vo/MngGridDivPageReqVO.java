@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.datacenter.controller.admin.mnggriddiv.vo;
 
 import lombok.*;
+
+import java.time.LocalDate;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
@@ -31,8 +33,8 @@ public class MngGridDivPageReqVO extends PageParam {
     private Integer area;
 
     @Schema(description = "划分时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDateTime[] divTime;
+//    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private String divTime;
 
     @Schema(description = "更新时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
@@ -59,5 +61,11 @@ public class MngGridDivPageReqVO extends PageParam {
 
     @Schema(description = "系统更新时间")
     private LocalDateTime updateTimeSys;
+
+    @Schema(description = "排序字段：area-面积")
+    private String sortField;
+
+    @Schema(description = "排序方向：asc-升序, desc-降序", example = "desc")
+    private String sortOrder;
 
 }

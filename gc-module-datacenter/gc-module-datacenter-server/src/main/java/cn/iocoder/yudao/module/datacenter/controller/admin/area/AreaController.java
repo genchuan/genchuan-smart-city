@@ -129,4 +129,12 @@ public class AreaController {
                 BeanUtils.toBean(list, AreaRespVO.class));
     }
 
+    @GetMapping("/dropdown")
+    @Operation(summary = "获得所有已生效的乡镇和社区数据")
+    @PreAuthorize("@ss.hasPermission('datacenter:area:query')")
+    public CommonResult<AreaDropdownRespVO> getAreaDropdownList() {
+        AreaDropdownRespVO dropdownData = areaService.getAreaDropdownList();
+        return success(dropdownData);
+    }
+
 }

@@ -1,10 +1,12 @@
 package cn.iocoder.yudao.module.datacenter.service.area;
 
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import cn.iocoder.yudao.module.datacenter.controller.admin.area.vo.*;
@@ -119,6 +121,26 @@ public class AreaServiceImpl implements AreaService {
         return area;
     }
 
+    @Override
+    public AreaDropdownRespVO getAreaDropdownList() {
+        LocalDateTime now = LocalDateTime.now();
+
+        // 查询所有已生效的乡镇和社区数据
+        List<AreaDO> effectiveAreas = areaMapper.selectList(new LambdaQueryWrapperX<AreaDO>()
+                .in(AreaDO::getLevel, 4, 5) // 只查询乡镇（4）和社区（5）
+                .le(AreaDO::getEffectiveTime, now) // 生效时间 <= 当前时间
+                .ge(AreaDO::getInvalidTime, now) // 失效时间 >= 当前时间
+                .or(wrapper -> wrapper.le(AreaDO::getEffectiveTime, now).isNull(AreaDO::getInvalidTime))
+                .orderByAsc(AreaDO::getParentId)
+                .orderByAsc(AreaDO::getId));
+
+        // 构建响应对象
+        AreaDropdownRespVO respVO = new AreaDropdownRespVO();
+        respVO.setTownList(buildTownWithCommunities(effectiveAreas));
+
+        return respVO;
+    }
+
     /**
      * 递归构建树形结构
      */
@@ -187,5 +209,42 @@ public class AreaServiceImpl implements AreaService {
         }
 
         return descendants;
+    }
+
+    /**
+     * 构建乡镇及其下属社区列表
+     */
+    private List<AreaDropdownRespVO.TownWithCommunitiesVO> buildTownWithCommunities(List<AreaDO> areas) {
+        // 按父级ID分组
+        Map<Long, List<AreaDO>> communitiesByTownId = areas.stream()
+                .filter(area -> area.getLevel() == 5) // 社区
+                .collect(Collectors.groupingBy(AreaDO::getParentId));
+
+        // 构建乡镇列表
+        return areas.stream()
+                .filter(area -> area.getLevel() == 4) // 乡镇
+                .map(town -> {
+                    AreaDropdownRespVO.TownWithCommunitiesVO townVO = new AreaDropdownRespVO.TownWithCommunitiesVO();
+                    townVO.setId(town.getId());
+                    townVO.setName(town.getName());
+                    townVO.setFullCode(town.getFullCode());
+
+                    // 添加下属社区
+                    List<AreaDropdownRespVO.CommunityVO> communities = communitiesByTownId
+                            .getOrDefault(town.getId(), Collections.emptyList())
+                            .stream()
+                            .map(community -> {
+                                AreaDropdownRespVO.CommunityVO communityVO = new AreaDropdownRespVO.CommunityVO();
+                                communityVO.setId(community.getId());
+                                communityVO.setName(community.getName());
+                                communityVO.setFullCode(community.getFullCode());
+                                return communityVO;
+                            })
+                            .collect(Collectors.toList());
+
+                    townVO.setChildren(communities);
+                    return townVO;
+                })
+                .collect(Collectors.toList());
     }
 }

@@ -3,7 +3,9 @@ package cn.iocoder.yudao.module.datacenter.service.evalgriddiv;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.datacenter.controller.admin.mnggriddiv.vo.MngGridSimpleRespVO;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.mnggriddiv.MngGridDivDO;
+import cn.iocoder.yudao.module.datacenter.dal.dataobject.unitgriddiv.UnitGridDivDO;
 import cn.iocoder.yudao.module.datacenter.dal.mysql.mnggriddiv.MngGridDivMapper;
+import cn.iocoder.yudao.module.datacenter.dal.mysql.unitgriddiv.UnitGridDivMapper;
 import cn.iocoder.yudao.module.datacenter.service.area.AreaService;
 import cn.iocoder.yudao.module.datacenter.service.mnggriddiv.MngGridDivService;
 import org.springframework.stereotype.Service;
@@ -43,6 +45,8 @@ public class EvalGridDivServiceImpl implements EvalGridDivService {
     private MngGridDivMapper mngGridDivMapper;
     @Resource
     private MngGridDivService mngGridDivService;
+    @Resource
+    private UnitGridDivMapper unitGridDivMapper;
 
     @Override
     public Long createEvalGridDiv(EvalGridDivSaveReqVO createReqVO) {
@@ -268,7 +272,64 @@ public class EvalGridDivServiceImpl implements EvalGridDivService {
         }
     }
 
-// ========== 私有方法 ==========
+    @Override
+    public List<EvalGridDivRespVO> getEvalGridDivByMngGridCount(String townStreetId, Integer minMngGrids, Integer maxMngGrids) {
+        // 查询所有评价网格
+        List<EvalGridDivDO> allEvalGrids = evalGridDivMapper.selectList(
+                new LambdaQueryWrapperX<EvalGridDivDO>()
+                        .eqIfPresent(EvalGridDivDO::getTownStreetId, townStreetId)
+        );
+
+        // 根据管理网格数量过滤
+        return allEvalGrids.stream()
+                .filter(evalGrid -> {
+                    if (evalGrid.getIncludedMgIds() == null) return false;
+
+                    int mngGridCount = evalGrid.getIncludedMgIds().split(",").length;
+                    boolean minValid = minMngGrids == null || mngGridCount >= minMngGrids;
+                    boolean maxValid = maxMngGrids == null || mngGridCount <= maxMngGrids;
+
+                    return minValid && maxValid;
+                })
+                .map(evalGrid -> BeanUtils.toBean(evalGrid, EvalGridDivRespVO.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public PageResult<EvalGridDivRespVO> getEvalGridDivPageWithBoundary(EvalGridDivPageReqVO pageReqVO) {
+        // 1. 查询评价网格分页数据
+        PageResult<EvalGridDivDO> pageResult = evalGridDivMapper.selectPage(pageReqVO);
+
+        if (pageResult.getList().isEmpty()) {
+            return new PageResult<>(Collections.emptyList(), pageResult.getTotal());
+        }
+
+        // 2. 获取所有评价网格ID
+        List<Long> evalGridIds = pageResult.getList().stream()
+                .map(EvalGridDivDO::getId)
+                .collect(Collectors.toList());
+
+        // 3. 批量查询边界坐标信息
+        Map<Long, List<EvalGridBoundaryInfo>> boundaryMap = getBoundaryCoordsByEvalGridIds(evalGridIds);
+
+        // 4. 组装返回结果
+        List<EvalGridDivRespVO> voList = pageResult.getList().stream()
+                .map(evalGrid -> {
+                    EvalGridDivRespVO respVO = BeanUtils.toBean(evalGrid, EvalGridDivRespVO.class);
+
+                    // 设置边界坐标信息
+                    List<EvalGridBoundaryInfo> boundaryInfos = boundaryMap.get(evalGrid.getId());
+                    respVO.setBoundaryCoords(boundaryInfos != null ? boundaryInfos : Collections.emptyList());
+
+                    return respVO;
+                })
+                .collect(Collectors.toList());
+
+        return new PageResult<>(voList, pageResult.getTotal());
+    }
+
+
+    // ========== 私有方法 ==========
 
     /**
      * 校验是否属于同一乡镇
@@ -316,6 +377,110 @@ public class EvalGridDivServiceImpl implements EvalGridDivService {
         }
 
         return conflictIds;
+    }
+
+    /**
+     * 根据评价网格ID列表获取边界坐标信息
+     */
+    private Map<Long, List<EvalGridBoundaryInfo>> getBoundaryCoordsByEvalGridIds(List<Long> evalGridIds) {
+        if (evalGridIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        // 查询评价网格数据
+        List<EvalGridDivDO> evalGrids = evalGridDivMapper.selectList(
+                new LambdaQueryWrapperX<EvalGridDivDO>()
+                        .in(EvalGridDivDO::getId, evalGridIds)
+                        .select(EvalGridDivDO::getId, EvalGridDivDO::getIncludedMgIds)
+        );
+
+        // 收集所有管理网格ID
+        Set<String> mngGridIds = new HashSet<>();
+        Map<Long, List<String>> evalGridMngMap = new HashMap<>();
+
+        for (EvalGridDivDO evalGrid : evalGrids) {
+            if (evalGrid.getIncludedMgIds() != null) {
+                List<String> mgIds = Arrays.asList(evalGrid.getIncludedMgIds().split(","));
+                evalGridMngMap.put(evalGrid.getId(), mgIds);
+                mngGridIds.addAll(mgIds);
+            }
+        }
+
+        if (mngGridIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        // 查询管理网格数据
+        List<MngGridDivDO> mngGrids = mngGridDivMapper.selectList(
+                new LambdaQueryWrapperX<MngGridDivDO>()
+                        .in(MngGridDivDO::getMngGridId, mngGridIds)
+                        .select(MngGridDivDO::getMngGridId, MngGridDivDO::getIncludedUnitIds)
+        );
+
+        // 收集所有单元网格ID
+        Set<String> unitGridIds = new HashSet<>();
+        Map<String, List<String>> mngGridUnitMap = new HashMap<>();
+
+        for (MngGridDivDO mngGrid : mngGrids) {
+            if (mngGrid.getIncludedUnitIds() != null) {
+                List<String> unitIds = Arrays.asList(mngGrid.getIncludedUnitIds().split(","));
+                mngGridUnitMap.put(mngGrid.getMngGridId(), unitIds);
+                unitGridIds.addAll(unitIds);
+            }
+        }
+
+        if (unitGridIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        // 查询单元网格边界坐标
+        List<UnitGridDivDO> unitGrids = unitGridDivMapper.selectList(
+                new LambdaQueryWrapperX<UnitGridDivDO>()
+                        .in(UnitGridDivDO::getUnitGridId, unitGridIds)
+                        .select(UnitGridDivDO::getUnitGridId, UnitGridDivDO::getBoundaryCoords)
+        );
+
+        // 创建单元网格ID到边界坐标的映射
+        Map<String, String> unitGridBoundaryMap = unitGrids.stream()
+                .collect(Collectors.toMap(
+                        UnitGridDivDO::getUnitGridId,
+                        UnitGridDivDO::getBoundaryCoords,
+                        (v1, v2) -> v1
+                ));
+
+        // 组装最终结果
+        Map<Long, List<EvalGridBoundaryInfo>> resultMap = new HashMap<>();
+
+        for (EvalGridDivDO evalGrid : evalGrids) {
+            List<String> mgIds = evalGridMngMap.get(evalGrid.getId());
+            if (mgIds == null) {
+                continue;
+            }
+
+            List<EvalGridBoundaryInfo> boundaryInfos = new ArrayList<>();
+
+            for (String mgId : mgIds) {
+                List<String> unitIds = mngGridUnitMap.get(mgId);
+                if (unitIds == null) {
+                    continue;
+                }
+
+                for (String unitId : unitIds) {
+                    String boundaryCoords = unitGridBoundaryMap.get(unitId);
+                    if (boundaryCoords != null) {
+                        EvalGridBoundaryInfo boundaryInfo = new EvalGridBoundaryInfo();
+                        boundaryInfo.setMngGridId(mgId);
+                        boundaryInfo.setUnitGridId(unitId);
+                        boundaryInfo.setBoundaryCoords(boundaryCoords);
+                        boundaryInfos.add(boundaryInfo);
+                    }
+                }
+            }
+
+            resultMap.put(evalGrid.getId(), boundaryInfos);
+        }
+
+        return resultMap;
     }
 
 }

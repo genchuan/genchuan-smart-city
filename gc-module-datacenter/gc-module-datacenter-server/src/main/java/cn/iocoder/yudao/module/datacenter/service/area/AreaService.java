@@ -99,4 +99,11 @@ public interface AreaService {
      * @return 行政区划信息
      */
     AreaDO getAreaByCommId(String commId);
+
+    /**
+     * 获得所有已生效的乡镇和社区数据
+     *
+     * @return 下拉列表数据
+     */
+    AreaDropdownRespVO getAreaDropdownList();
 }

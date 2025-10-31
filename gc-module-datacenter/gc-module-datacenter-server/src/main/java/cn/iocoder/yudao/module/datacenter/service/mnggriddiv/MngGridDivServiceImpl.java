@@ -1,7 +1,9 @@
 package cn.iocoder.yudao.module.datacenter.service.mnggriddiv;
 
+import cn.iocoder.yudao.module.datacenter.controller.admin.unitgriddiv.vo.UnitGridBoundaryInfo;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.unitgriddiv.UnitGridDivDO;
 import cn.iocoder.yudao.module.datacenter.dal.mysql.unitgriddiv.UnitGridDivMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -12,7 +14,6 @@ import java.util.stream.Collectors;
 import cn.iocoder.yudao.module.datacenter.controller.admin.mnggriddiv.vo.*;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.mnggriddiv.MngGridDivDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.datacenter.dal.mysql.mnggriddiv.MngGridDivMapper;
@@ -73,8 +74,70 @@ public class MngGridDivServiceImpl implements MngGridDivService {
     }
 
     @Override
-    public PageResult<MngGridDivDO> getMngGridDivPage(MngGridDivPageReqVO pageReqVO) {
-        return mngGridDivMapper.selectPage(pageReqVO);
+    public PageResult<MngGridDivRespVO> getMngGridDivPage(MngGridDivPageReqVO pageReqVO) {
+        // 查询管理网格数据
+        PageResult<MngGridDivDO> pageResult = mngGridDivMapper.selectPage(pageReqVO);
+
+        if (pageResult.getList().isEmpty()) {
+            return new PageResult<>(Collections.emptyList(), pageResult.getTotal());
+        }
+
+        // 处理边界坐标信息
+        List<MngGridDivRespVO> voList = pageResult.getList().stream()
+                .map(mngGrid -> {
+                    MngGridDivRespVO respVO = BeanUtils.toBean(mngGrid, MngGridDivRespVO.class);
+
+                    // 设置边界坐标信息
+                    if (StringUtils.isNotBlank(mngGrid.getIncludedUnitIds())) {
+                        List<UnitGridBoundaryInfo> boundaryInfos = getUnitGridBoundaries(mngGrid.getIncludedUnitIds());
+                        respVO.setBoundaryCoords(boundaryInfos);
+                    } else {
+                        respVO.setBoundaryCoords(Collections.emptyList());
+                    }
+
+                    return respVO;
+                })
+                .collect(Collectors.toList());
+
+        return new PageResult<>(voList, pageResult.getTotal());
+    }
+
+    /**
+     * 根据单元网格ID字符串获取边界坐标信息
+     */
+    private List<UnitGridBoundaryInfo> getUnitGridBoundaries(String includedUnitIds) {
+        if (StringUtils.isBlank(includedUnitIds)) {
+            return Collections.emptyList();
+        }
+
+        String[] unitGridIds = includedUnitIds.split(",");
+        List<String> unitGridIdList = Arrays.asList(unitGridIds);
+
+        // 查询单元网格边界信息
+        List<UnitGridDivDO> unitGrids = unitGridDivMapper.selectList(
+                new cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX<UnitGridDivDO>()
+                        .in(UnitGridDivDO::getUnitGridId, unitGridIdList)
+                        .select(UnitGridDivDO::getUnitGridId, UnitGridDivDO::getBoundaryCoords)
+        );
+
+        // 创建单元网格ID到边界坐标的映射
+        Map<String, String> unitGridBoundaryMap = unitGrids.stream()
+                .collect(Collectors.toMap(
+                        UnitGridDivDO::getUnitGridId,
+                        UnitGridDivDO::getBoundaryCoords,
+                        (v1, v2) -> v1
+                ));
+
+        // 构建边界信息列表，保持原始顺序
+        return Arrays.stream(unitGridIds)
+                .map(unitGridId -> {
+                    UnitGridBoundaryInfo info = new UnitGridBoundaryInfo();
+                    info.setUnitGridId(unitGridId);
+                    info.setBoundaryCoords(unitGridBoundaryMap.get(unitGridId));
+                    return info;
+                })
+                .filter(info -> info.getBoundaryCoords() != null)
+                .collect(Collectors.toList());
     }
 
     // ========== 新增接口方法实现 ==========
@@ -314,4 +377,5 @@ public class MngGridDivServiceImpl implements MngGridDivService {
 
         return conflictIds;
     }
+
 }

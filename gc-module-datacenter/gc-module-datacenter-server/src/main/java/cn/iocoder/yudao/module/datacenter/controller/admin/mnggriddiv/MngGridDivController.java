@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.datacenter.controller.admin.mnggriddiv;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -75,7 +76,24 @@ public class MngGridDivController {
     @Operation(summary = "获得管理网格划分分页")
     @PreAuthorize("@ss.hasPermission('datacenter:mng-grid-div:query')")
     public CommonResult<PageResult<MngGridDivRespVO>> getMngGridDivPage(@Valid MngGridDivPageReqVO pageReqVO) {
-        PageResult<MngGridDivDO> pageResult = mngGridDivService.getMngGridDivPage(pageReqVO);
+
+        // 处理排序逻辑（现在使用VO中的字段）
+        if (StringUtils.isNotBlank(pageReqVO.getSortField())) {
+            // 只支持预定义的排序字段，防止SQL注入
+            Set<String> allowedSortFields = Set.of("area", "createTime", "updateTime");
+            if (allowedSortFields.contains(pageReqVO.getSortField())) {
+                // 确保排序方向合法
+                if (!"asc".equals(pageReqVO.getSortOrder()) && !"desc".equals(pageReqVO.getSortOrder())) {
+                    pageReqVO.setSortOrder("desc"); // 默认降序
+                }
+            } else {
+                // 如果不是允许的排序字段，清空排序参数
+                pageReqVO.setSortField(null);
+                pageReqVO.setSortOrder(null);
+            }
+        }
+
+        PageResult<MngGridDivRespVO> pageResult = mngGridDivService.getMngGridDivPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, MngGridDivRespVO.class));
     }
 
@@ -86,7 +104,7 @@ public class MngGridDivController {
     public void exportMngGridDivExcel(@Valid MngGridDivPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<MngGridDivDO> list = mngGridDivService.getMngGridDivPage(pageReqVO).getList();
+        List<MngGridDivRespVO> list = mngGridDivService.getMngGridDivPage(pageReqVO).getList();
         // 导出 Excel
         ExcelUtils.write(response, "管理网格划分.xls", "数据", MngGridDivRespVO.class,
                         BeanUtils.toBean(list, MngGridDivRespVO.class));
@@ -147,47 +165,38 @@ public class MngGridDivController {
     @PreAuthorize("@ss.hasPermission('datacenter:mng-grid-div:query')")
     public CommonResult<List<MngGridSimpleRespVO>> getMngGridSimpleList(
             @RequestParam(value = "townStreetId", required = false) String townStreetId) {
-        List<MngGridDivDO> mngGridList;
+        List<MngGridDivRespVO> mngGridRespList;
 
         if (townStreetId != null && !townStreetId.isEmpty()) {
             // 查询指定乡镇下的管理网格
-            mngGridList = mngGridDivService.getMngGridDivListByTown(townStreetId).stream()
-                    .map(respVO -> {
-                        MngGridDivDO doObj = new MngGridDivDO();
-                        doObj.setId(respVO.getId());
-                        doObj.setMngGridId(respVO.getMngGridId());
-                        doObj.setMngGridName(respVO.getMngGridName());
-                        doObj.setTownStreetId(respVO.getTownStreetId());
-                        doObj.setIncludedUnitIds(respVO.getIncludedUnitIds());
-                        doObj.setArea(respVO.getArea());
-                        return doObj;
-                    })
-                    .collect(java.util.stream.Collectors.toList());
+            mngGridRespList = mngGridDivService.getMngGridDivListByTown(townStreetId);
         } else {
             // 查询所有管理网格
-            mngGridList = mngGridDivService.getMngGridDivPage(new MngGridDivPageReqVO()).getList();
+            MngGridDivPageReqVO pageReqVO = new MngGridDivPageReqVO();
+            pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE); // 设置不分页，获取所有数据
+            mngGridRespList = mngGridDivService.getMngGridDivPage(pageReqVO).getList();
         }
 
-        List<MngGridSimpleRespVO> simpleList = mngGridList.stream()
-                .map(mngGrid -> {
-                    MngGridSimpleRespVO respVO = new MngGridSimpleRespVO();
-                    respVO.setId(mngGrid.getId());
-                    respVO.setMngGridId(mngGrid.getMngGridId());
-                    respVO.setMngGridName(mngGrid.getMngGridName());
-                    respVO.setTownStreetId(mngGrid.getTownStreetId());
-                    respVO.setIncludedUnitIds(mngGrid.getIncludedUnitIds());
-                    respVO.setArea(mngGrid.getArea());
+        List<MngGridSimpleRespVO> simpleList = mngGridRespList.stream()
+                .map(respVO -> {
+                    MngGridSimpleRespVO simpleRespVO = new MngGridSimpleRespVO();
+                    simpleRespVO.setId(respVO.getId());
+                    simpleRespVO.setMngGridId(respVO.getMngGridId());
+                    simpleRespVO.setMngGridName(respVO.getMngGridName());
+                    simpleRespVO.setTownStreetId(respVO.getTownStreetId());
+                    simpleRespVO.setIncludedUnitIds(respVO.getIncludedUnitIds());
+                    simpleRespVO.setArea(respVO.getArea());
 
                     // 计算单元网格数量
-                    if (mngGrid.getIncludedUnitIds() != null) {
-                        int unitCount = mngGrid.getIncludedUnitIds().split(",").length;
-                        respVO.setUnitGridCount(unitCount);
+                    if (respVO.getIncludedUnitIds() != null) {
+                        int unitCount = respVO.getIncludedUnitIds().split(",").length;
+                        simpleRespVO.setUnitGridCount(unitCount);
                     }
 
                     // 获取网格员ID
-                    respVO.setStaffId(mngGrid.getExtCommon1());
+                    simpleRespVO.setStaffId(respVO.getExtCommon1());
 
-                    return respVO;
+                    return simpleRespVO;
                 })
                 .collect(java.util.stream.Collectors.toList());
 
@@ -253,5 +262,7 @@ public class MngGridDivController {
         mngGridDivService.updateMngGridDiv(updateReqVO);
         return success(true);
     }
+
+
 
 }
