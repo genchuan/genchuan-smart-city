@@ -1,10 +1,14 @@
 package cn.iocoder.yudao.module.datacenter.service.assetManagement.assetDataMng.assetshareattrcfg;
 
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetshareattrcfg.vo.AssetShareAttrCfgImportExcelVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetshareattrcfg.vo.AssetShareAttrCfgImportRespVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetshareattrcfg.vo.AssetShareAttrCfgPageReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetshareattrcfg.vo.AssetShareAttrCfgSaveReqVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetDataMng.assetshareattrcfg.AssetShareAttrCfgDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+
+import java.util.List;
 
 /**
  * 资产共享属性配置 Service 接口
@@ -51,4 +55,5 @@ public interface AssetShareAttrCfgService {
      */
     PageResult<AssetShareAttrCfgDO> getAssetShareAttrCfgPage(AssetShareAttrCfgPageReqVO pageReqVO);
 
+    AssetShareAttrCfgImportRespVO importExcel(List<AssetShareAttrCfgImportExcelVO> list, boolean updateSupport);
 }

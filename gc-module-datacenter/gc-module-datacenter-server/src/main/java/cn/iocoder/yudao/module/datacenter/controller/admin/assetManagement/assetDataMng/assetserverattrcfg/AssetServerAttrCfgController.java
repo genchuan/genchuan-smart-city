@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.asse
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetserverattrcfg.vo.AssetServerAttrCfgPageReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetserverattrcfg.vo.AssetServerAttrCfgRespVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetserverattrcfg.vo.AssetServerAttrCfgSaveReqVO;
+import io.swagger.v3.oas.annotations.Parameters;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -13,6 +14,8 @@ import io.swagger.v3.oas.annotations.Operation;
 
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
+
+import java.time.LocalDateTime;
 import java.util.*;
 import java.io.IOException;
 
@@ -31,6 +34,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetserverattrcfg.vo.*;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetDataMng.assetserverattrcfg.AssetServerAttrCfgDO;
 import cn.iocoder.yudao.module.datacenter.service.assetManagement.assetDataMng.assetserverattrcfg.AssetServerAttrCfgService;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "管理后台 - 资产服务端属性配置")
 @RestController
@@ -93,6 +97,64 @@ public class AssetServerAttrCfgController {
         // 导出 Excel
         ExcelUtils.write(response, "资产服务端属性配置.xls", "数据", AssetServerAttrCfgRespVO.class,
                         BeanUtils.toBean(list, AssetServerAttrCfgRespVO.class));
+    }
+
+    //======================== Excel 导入 =====================//
+    @PostMapping("/import")
+    @Operation(summary = "导入资产服务端属性配置 Excel")
+    @Parameters({
+            @Parameter(name = "file", description = "Excel 文件", required = true),
+            @Parameter(name = "updateSupport", description = "是否支持更新，默认为 false", example = "true")
+    })
+    @PreAuthorize("@ss.hasPermission('datacenter:asset-server-attr-cfg:import')")
+    public CommonResult<AssetServerAttrCfgImportRespVO> importExcel(@RequestParam("file") MultipartFile file,
+                                                                    @RequestParam(value = "updateSupport", required = false, defaultValue = "false") Boolean updateSupport) throws Exception{
+        List<AssetServerAttrCfgImportExcelVO> list = ExcelUtils.read(file, AssetServerAttrCfgImportExcelVO.class);
+        return success(assetServerAttrCfgService.importAssetServerAttrCfgList(list, updateSupport));
+    }
+    //======================== Excel 导入模板 =====================//
+    @GetMapping("/import-template")
+    @Operation(summary = "下载资产服务端属性配置导入模板")
+    @PreAuthorize("@ss.hasPermission('datacenter:asset-server-attr-cfg:import')")
+    @ApiAccessLog(operateType = EXPORT)
+    public void importTemplate(HttpServletResponse response) throws IOException {
+        // 创建模板数据，两条示例数据
+        List<AssetServerAttrCfgImportExcelVO> list = Arrays.asList(
+                AssetServerAttrCfgImportExcelVO.builder()
+                        .assetServerAttrId("SERVER_ATTR_001")
+                        .relAssetId("ASSET001")
+                        .relAssetName("服务器设备001")
+                        .attrName("CPU使用率")
+                        .attrCode("cpu_usage")
+                        .attrDataType("百分比")
+                        .attrValue("75.5")
+                        .collectFreq("1h")
+                        .lastCollectTime(LocalDateTime.now())
+                        .cfgTime(LocalDateTime.now())
+                        .operUser("张三")
+                        .updateUser("张三")
+                        .updatedTime(LocalDateTime.now())
+                        .build(),
+                AssetServerAttrCfgImportExcelVO.builder()
+                        .assetServerAttrId("SERVER_ATTR_002")
+                        .relAssetId("ASSET002")
+                        .relAssetName("网络设备002")
+                        .attrName("内存使用量")
+                        .attrCode("memory_usage")
+                        .attrDataType("MB")
+                        .attrValue("2048")
+                        .collectFreq("10min")
+                        .lastCollectTime(LocalDateTime.now())
+                        .cfgTime(LocalDateTime.now())
+                        .operUser("李四")
+                        .updateUser("李四")
+                        .updatedTime(LocalDateTime.now())
+                        .build()
+        );
+
+        // 导出模板
+        ExcelUtils.write(response, "资产服务端属性配置导入模板.xls", "服务端属性配置",
+                AssetServerAttrCfgImportExcelVO.class, list);
     }
 
 }

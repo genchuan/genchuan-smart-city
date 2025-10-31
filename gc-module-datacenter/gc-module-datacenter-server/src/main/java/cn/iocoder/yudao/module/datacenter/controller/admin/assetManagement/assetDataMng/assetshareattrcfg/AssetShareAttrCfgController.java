@@ -1,8 +1,7 @@
 package cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetshareattrcfg;
 
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetshareattrcfg.vo.AssetShareAttrCfgPageReqVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetshareattrcfg.vo.AssetShareAttrCfgRespVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetshareattrcfg.vo.AssetShareAttrCfgSaveReqVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetshareattrcfg.vo.*;
+import io.swagger.v3.oas.annotations.Parameters;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -13,6 +12,8 @@ import io.swagger.v3.oas.annotations.Operation;
 
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
+
+import java.time.LocalDateTime;
 import java.util.*;
 import java.io.IOException;
 
@@ -29,6 +30,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetDataMng.assetshareattrcfg.AssetShareAttrCfgDO;
 import cn.iocoder.yudao.module.datacenter.service.assetManagement.assetDataMng.assetshareattrcfg.AssetShareAttrCfgService;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "管理后台 - 资产共享属性配置")
 @RestController
@@ -91,6 +93,66 @@ public class AssetShareAttrCfgController {
         // 导出 Excel
         ExcelUtils.write(response, "资产共享属性配置.xls", "数据", AssetShareAttrCfgRespVO.class,
                         BeanUtils.toBean(list, AssetShareAttrCfgRespVO.class));
+    }
+    //======================== Excel 导入 =====================//
+    @PostMapping("/import")
+    @Operation(summary = "导入资产共享属性配置 Excel")
+    @Parameters({
+            @Parameter(name = "file", description = "Excel 文件", required = true),
+            @Parameter(name = "updateSupport", description = "是否支持更新，默认为 false", example = "true")
+    })
+    @PreAuthorize("@ss.hasPermission('datacenter:asset-share-attr-cfg:import')")
+    public CommonResult<AssetShareAttrCfgImportRespVO> importExcel(@RequestParam("file") MultipartFile file,
+                                                                   @RequestParam(value = "updateSupport", required = false, defaultValue = "false") Boolean updateSupport) throws Exception {
+        List<AssetShareAttrCfgImportExcelVO> list = ExcelUtils.read(file, AssetShareAttrCfgImportExcelVO.class);
+        return success(assetShareAttrCfgService.importExcel(list, updateSupport));
+    }
+
+    //======================== Excel 导入模板 =====================//
+    @GetMapping("/import-template")
+    @Operation(summary = "下载资产共享属性配置导入模板")
+    @PreAuthorize("@ss.hasPermission('datacenter:asset-share-attr-cfg:import')")
+    @ApiAccessLog(operateType = EXPORT)
+    public void importTemplate(HttpServletResponse response) throws IOException {
+        // 创建模板数据，两条示例数据
+        List<AssetShareAttrCfgImportExcelVO> list = Arrays.asList(
+                AssetShareAttrCfgImportExcelVO.builder()
+                        .assetShareAttrId("SHARE_ATTR_001")
+                        .relAssetId("ASSET001")
+                        .relAssetName("共享资产001")
+                        .attrName("文档权限")
+                        .attrCode("doc_permission")
+                        .attrValue("读写")
+                        .shareObjType("用户")
+                        .shareObjId("USER001")
+                        .shareObjName("张三")
+                        .sharePerm("读写")
+                        .cfgTime(LocalDateTime.now())
+                        .operUser("管理员")
+                        .updateUser("管理员")
+                        .updatedTime(LocalDateTime.now())
+                        .build(),
+                AssetShareAttrCfgImportExcelVO.builder()
+                        .assetShareAttrId("SHARE_ATTR_002")
+                        .relAssetId("ASSET002")
+                        .relAssetName("共享资产002")
+                        .attrName("数据访问")
+                        .attrCode("data_access")
+                        .attrValue("只读")
+                        .shareObjType("部门")
+                        .shareObjId("DEPT001")
+                        .shareObjName("技术部")
+                        .sharePerm("只读")
+                        .cfgTime(LocalDateTime.now())
+                        .operUser("李四")
+                        .updateUser("李四")
+                        .updatedTime(LocalDateTime.now())
+                        .build()
+        );
+
+        // 导出模板
+        ExcelUtils.write(response, "资产共享属性配置导入模板.xls", "共享属性配置",
+                AssetShareAttrCfgImportExcelVO.class, list);
     }
 
 }

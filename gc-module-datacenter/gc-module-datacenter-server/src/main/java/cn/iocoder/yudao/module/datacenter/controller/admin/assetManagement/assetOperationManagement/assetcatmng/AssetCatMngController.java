@@ -157,4 +157,16 @@ public class AssetCatMngController {
                 AssetCatMngImportExcelVO.class, list);
     }
 
+    /**
+     * 获取启用的资产分类列表
+     * @return
+     */
+    @GetMapping("/enabled-list")
+    @Operation(summary = "获取启用的资产分类列表")
+    @PreAuthorize("@ss.hasPermission('datacenter:asset-cat-mng:query')")
+    public CommonResult<List<AssetCategorySimpleVO>> getEnabledAssetCategories() {
+        List<AssetCategorySimpleVO> categories = assetCatMngService.getEnabledAssetCategories();
+        return success(categories);
+    }
+
 }

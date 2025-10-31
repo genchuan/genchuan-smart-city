@@ -1,10 +1,14 @@
 package cn.iocoder.yudao.module.datacenter.service.assetManagement.assetDataMng.assetclientattrcfg;
 
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetclientattrcfg.vo.AssetClientAttrCfgImportExcelVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetclientattrcfg.vo.AssetClientAttrCfgImportRespVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetclientattrcfg.vo.AssetClientAttrCfgPageReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetclientattrcfg.vo.AssetClientAttrCfgSaveReqVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetDataMng.assetclientattrcfg.AssetClientAttrCfgDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+
+import java.util.List;
 
 /**
  * 资产客户端属性配置 Service 接口
@@ -51,4 +55,5 @@ public interface AssetClientAttrCfgService {
      */
     PageResult<AssetClientAttrCfgDO> getAssetClientAttrCfgPage(AssetClientAttrCfgPageReqVO pageReqVO);
 
+    AssetClientAttrCfgImportRespVO importAssetClientAttrCfgList(List<AssetClientAttrCfgImportExcelVO> list, boolean updateSupport);
 }

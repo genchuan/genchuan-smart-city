@@ -16,6 +16,16 @@ import org.apache.ibatis.annotations.Mapper;
 public interface AssetCatRptMapper extends BaseMapperX<AssetCatRptDO> {
 
     default PageResult<AssetCatRptDO> selectPage(AssetCatRptPageReqVO reqVO) {
+
+        // 构建完整的查询条件
+        LambdaQueryWrapperX<AssetCatRptDO> queryWrapper = new LambdaQueryWrapperX<>();
+        // 处理特殊排序逻辑
+        if ("totalAssetCount".equals(reqVO.getOrderByColumn())) {
+            // 资产总数排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetCatRptDO::getTotalAssetCount);
+            return selectPage(reqVO, null, queryWrapper);
+        }
+
         return selectPage(reqVO, new LambdaQueryWrapperX<AssetCatRptDO>()
                 .eqIfPresent(AssetCatRptDO::getAssetCatStatId, reqVO.getAssetCatStatId())
                 .likeIfPresent(AssetCatRptDO::getStatCycle, reqVO.getStatCycle())

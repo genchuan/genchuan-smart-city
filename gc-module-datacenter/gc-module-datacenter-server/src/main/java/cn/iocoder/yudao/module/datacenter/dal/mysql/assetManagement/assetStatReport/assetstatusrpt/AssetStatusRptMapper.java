@@ -16,6 +16,15 @@ import org.apache.ibatis.annotations.Mapper;
 public interface AssetStatusRptMapper extends BaseMapperX<AssetStatusRptDO> {
 
     default PageResult<AssetStatusRptDO> selectPage(AssetStatusRptPageReqVO reqVO) {
+
+        // 构建完整的查询条件
+        LambdaQueryWrapperX<AssetStatusRptDO> queryWrapper = new LambdaQueryWrapperX<>();
+        if ("assetCount".equals(reqVO.getOrderByColumn())) {
+            // 资产数量排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetStatusRptDO::getAssetCount);
+            return selectPage(reqVO, null, queryWrapper);
+        }
+
         return selectPage(reqVO, new LambdaQueryWrapperX<AssetStatusRptDO>()
                 .eqIfPresent(AssetStatusRptDO::getAssetStatusStatId, reqVO.getAssetStatusStatId())
                 .eqIfPresent(AssetStatusRptDO::getStatCycle, reqVO.getStatCycle())

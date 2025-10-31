@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.asse
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetclientattrcfg.vo.AssetClientAttrCfgPageReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetclientattrcfg.vo.AssetClientAttrCfgRespVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetclientattrcfg.vo.AssetClientAttrCfgSaveReqVO;
+import io.swagger.v3.oas.annotations.Parameters;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -13,6 +14,8 @@ import io.swagger.v3.oas.annotations.Operation;
 
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
+
+import java.time.LocalDateTime;
 import java.util.*;
 import java.io.IOException;
 
@@ -30,6 +33,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetclientattrcfg.vo.*;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetDataMng.assetclientattrcfg.AssetClientAttrCfgDO;
 import cn.iocoder.yudao.module.datacenter.service.assetManagement.assetDataMng.assetclientattrcfg.AssetClientAttrCfgService;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "管理后台 - 资产客户端属性配置")
 @RestController
@@ -92,6 +96,64 @@ public class AssetClientAttrCfgController {
         // 导出 Excel
         ExcelUtils.write(response, "资产客户端属性配置.xls", "数据", AssetClientAttrCfgRespVO.class,
                         BeanUtils.toBean(list, AssetClientAttrCfgRespVO.class));
+    }
+
+    //======================== Excel 导入 =====================//
+    @PostMapping("/import")
+    @Operation(summary = "导入资产客户端属性配置 Excel")
+    @Parameters({
+            @Parameter(name = "file", description = "Excel 文件", required = true),
+            @Parameter(name = "updateSupport", description = "是否支持更新，默认为 false", example = "true")
+    })
+    @PreAuthorize("@ss.hasPermission('datacenter:asset-client-attr-cfg:import')")
+    public CommonResult<AssetClientAttrCfgImportRespVO> importExcel(@RequestParam("file") MultipartFile file,
+            @RequestParam(value = "updateSupport", required = false, defaultValue = "false") Boolean updateSupport) throws Exception {
+        List<AssetClientAttrCfgImportExcelVO> list = ExcelUtils.read(file, AssetClientAttrCfgImportExcelVO.class);
+        return success(assetClientAttrCfgService.importAssetClientAttrCfgList(list, updateSupport));
+    }
+    //======================== Excel 导入模板 =====================//
+    @GetMapping("/import-template")
+    @Operation(summary = "下载资产客户端属性配置导入模板")
+    @PreAuthorize("@ss.hasPermission('datacenter:asset-client-attr-cfg:import')")
+    @ApiAccessLog(operateType = EXPORT)
+    public void importTemplate(HttpServletResponse response) throws IOException {
+        // 创建模板数据，两条示例数据
+        List<AssetClientAttrCfgImportExcelVO> list = Arrays.asList(
+                AssetClientAttrCfgImportExcelVO.builder()
+                        .assetClientAttrId("CLIENT_ATTR_001")
+                        .relAssetId("ASSET001")
+                        .relAssetName("客户端设备001")
+                        .attrName("应用版本")
+                        .attrCode("app_version")
+                        .attrDataType("字符串")
+                        .attrValue("v2.1.0")
+                        .attrPurpose("版本监控")
+                        .clientIp("192.168.1.100")
+                        .cfgTime(LocalDateTime.now())
+                        .operUser("张三")
+                        .updateUser("张三")
+                        .updatedTime(LocalDateTime.now())
+                        .build(),
+                AssetClientAttrCfgImportExcelVO.builder()
+                        .assetClientAttrId("CLIENT_ATTR_002")
+                        .relAssetId("ASSET002")
+                        .relAssetName("移动终端002")
+                        .attrName("设备状态")
+                        .attrCode("device_status")
+                        .attrDataType("枚举")
+                        .attrValue("在线")
+                        .attrPurpose("状态监控")
+                        .clientIp("192.168.1.101")
+                        .cfgTime(LocalDateTime.now())
+                        .operUser("李四")
+                        .updateUser("李四")
+                        .updatedTime(LocalDateTime.now())
+                        .build()
+        );
+
+        // 导出模板
+        ExcelUtils.write(response, "资产客户端属性配置导入模板.xls", "客户端属性配置",
+                AssetClientAttrCfgImportExcelVO.class, list);
     }
 
 }
