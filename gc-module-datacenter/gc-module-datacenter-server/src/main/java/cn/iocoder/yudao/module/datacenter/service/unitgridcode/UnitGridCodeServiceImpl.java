@@ -119,9 +119,9 @@ public class UnitGridCodeServiceImpl implements UnitGridCodeService {
 
         // 2. 检查是否已存在编码
         UnitGridCodeDO existingCode = getByUnitGridId(unitGridId);
-        if (existingCode != null) {
-            throw exception(UNIT_GRID_CODE_ALREADY_EXISTS);
-        }
+//        if (existingCode != null) {
+//            throw exception(UNIT_GRID_CODE_ALREADY_EXISTS);
+//        }
 
         // 3. 获取行政区划代码（这里需要根据commId查询行政区划）
         String areaFullCode = getAreaFullCodeByCommId(unitGrid.getCommId());

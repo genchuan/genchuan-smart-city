@@ -56,7 +56,10 @@ public interface ErrorCodeConstants {
     ErrorCode AREA_FULL_CODE_INVALID = new ErrorCode(100502, "行政区划代码无效");
     ErrorCode UNIT_GRID_CODE_SEQ_OVERFLOW = new ErrorCode(100503, "顺序码已满，无法生成新的编码");
     ErrorCode MNG_GRID_CODE_NOT_EXISTS = new ErrorCode(100_116, "管理网格编码不存在");
-
+    // 管理网格编码错误码
+    ErrorCode MNG_GRID_NOT_EXISTS = new ErrorCode(1003002000, "管理网格不存在");
+    ErrorCode MNG_GRID_CODE_ALREADY_EXISTS = new ErrorCode(1003002001, "管理网格编码已存在");
+    ErrorCode MNG_GRID_CODE_SEQ_OVERFLOW = new ErrorCode(1003002003, "顺序码溢出");
 
     // ========== 事件类型管理 1002000000 ==========
     ErrorCode EVENT_TYPE_NOT_EXISTS = new ErrorCode(1002000000, "事件类型不存在");
@@ -195,4 +198,8 @@ public interface ErrorCodeConstants {
 
     ErrorCode ASSET_SPATIAL_DATA_IMPORT_LIST_IS_EMPTY = new ErrorCode(200_351, "导入资产空间数据列表不能为空");
     ErrorCode ASSET_CAT_MNG_IMPORT_LIST_IS_EMPTY = new ErrorCode(200_217, "导入资产分类管理列表不能为空");
+
+    ErrorCode ASSET_SERVER_ATTR_CFG_IMPORT_LIST_IS_EMPTY = new ErrorCode(200_361, "导入资产服务端属性配置列表不能为空");
+    ErrorCode ASSET_CLIENT_ATTR_CFG_IMPORT_LIST_IS_EMPTY = new ErrorCode(200_371, "导入资产客户端属性配置列表不能为空");
+    ErrorCode ASSET_SHARE_ATTR_CFG_IMPORT_LIST_IS_EMPTY = new ErrorCode(200_381, "导入资产共享属性配置列表不能为空");
 }

@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.evalgriddiv;
 
 import cn.iocoder.yudao.module.datacenter.controller.admin.mnggriddiv.vo.MngGridSimpleRespVO;
 import cn.iocoder.yudao.module.datacenter.dal.mysql.evalgriddiv.EvalGridDivMapper;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -96,14 +97,46 @@ public class EvalGridDivController {
                         BeanUtils.toBean(list, EvalGridDivRespVO.class));
     }
 
+//    @PostMapping("/validate")
+//    @Operation(summary = "校验评价网格")
+//    @PreAuthorize("@ss.hasPermission('datacenter:eval-grid-div:create')")
+//    public CommonResult<EvalGridValidateRespVO> validateEvalGrid(
+//            @RequestParam("townStreetId") String townStreetId,
+//            @RequestParam("mngGridIds") List<String> mngGridIds) {
+//        EvalGridValidateRespVO result = evalGridDivService.validateEvalGrid(townStreetId, mngGridIds);
+//        return success(result);
+//    }
+
     @PostMapping("/validate")
     @Operation(summary = "校验评价网格")
     @PreAuthorize("@ss.hasPermission('datacenter:eval-grid-div:create')")
     public CommonResult<EvalGridValidateRespVO> validateEvalGrid(
-            @RequestParam("townStreetId") String townStreetId,
-            @RequestParam("mngGridIds") List<String> mngGridIds) {
+            @RequestParam(value = "townStreetId", required = false) String townStreetId,
+            @RequestParam(value = "mngGridIds", required = false) List<String> mngGridIds,
+            @RequestBody(required = false) EvalGridValidateReqVO reqVO) {
+
+        // 如果通过 @RequestBody 传递参数
+        if (reqVO != null) {
+            townStreetId = reqVO.getTownStreetId();
+            mngGridIds = reqVO.getMngGridIds();
+        }
+
+        // 参数校验
+        if (townStreetId == null || townStreetId.trim().isEmpty()) {
+            throw new IllegalArgumentException("乡镇ID不能为空");
+        }
+        if (mngGridIds == null || mngGridIds.isEmpty()) {
+            throw new IllegalArgumentException("管理网格ID列表不能为空");
+        }
+
         EvalGridValidateRespVO result = evalGridDivService.validateEvalGrid(townStreetId, mngGridIds);
         return success(result);
+    }
+
+
+    // 辅助方法：获取第一个非空值
+    private <T> T getFirstNonNull(T first, T second) {
+        return first != null ? first : second;
     }
 
     @GetMapping("/mng-grid-list")

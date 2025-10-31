@@ -52,4 +52,53 @@ public interface MngGridCodeService {
      */
     PageResult<MngGridCodeDO> getMngGridCodePage(MngGridCodePageReqVO pageReqVO);
 
+
+    /**
+     * 根据管理网格ID自动生成编码
+     *
+     * @param mngGridId 管理网格ID
+     * @return 生成的编码ID
+     */
+    Long generateCodeByMngGrid(String mngGridId);
+
+    /**
+     * 校验编码唯一性
+     *
+     * @param mgGridCode 管理网格标识码
+     * @param excludeId 排除的ID
+     * @return 是否唯一
+     */
+    Boolean validateCodeUnique(String mgGridCode, Long excludeId);
+
+    /**
+     * 作废编码
+     *
+     * @param id 编码ID
+     * @param reason 作废原因
+     */
+    void invalidateCode(Long id, String reason);
+
+    /**
+     * 根据编码查询管理网格编码信息
+     *
+     * @param mgGridCode 管理网格编码
+     * @return 管理网格编码信息
+     */
+    MngGridCodeDO getByCode(String mgGridCode);
+
+    /**
+     * 根据管理网格ID查询编码信息
+     *
+     * @param mngGridId 管理网格ID
+     * @return 管理网格编码信息
+     */
+    MngGridCodeDO getByMngGridId(String mngGridId);
+
+    /**
+     * 根据行政区划代码查询编码列表
+     *
+     * @param areaFullCode 行政区划完整代码
+     * @return 编码列表
+     */
+    List<MngGridCodeDO> getListByArea(String areaFullCode);
 }

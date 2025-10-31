@@ -92,4 +92,60 @@ public class MngGridCodeController {
                         BeanUtils.toBean(list, MngGridCodeRespVO.class));
     }
 
+    @PostMapping("/generate-by-mng-grid")
+    @Operation(summary = "根据管理网格ID生成编码")
+    @PreAuthorize("@ss.hasPermission('datacenter:mng-grid-code:create')")
+    public CommonResult<Long> generateCodeByMngGrid(
+            @RequestParam("mngGridId") @NotEmpty(message = "管理网格ID不能为空") String mngGridId) {
+        Long id = mngGridCodeService.generateCodeByMngGrid(mngGridId);
+        return success(id);
+    }
+
+    @PostMapping("/validate-code-unique")
+    @Operation(summary = "校验编码唯一性")
+    @PreAuthorize("@ss.hasPermission('datacenter:mng-grid-code:query')")
+    public CommonResult<Boolean> validateCodeUnique(
+            @RequestParam("mgGridCode") @NotEmpty(message = "编码不能为空") String mgGridCode,
+            @RequestParam(value = "excludeId", required = false) Long excludeId) {
+        Boolean isUnique = mngGridCodeService.validateCodeUnique(mgGridCode, excludeId);
+        return success(isUnique);
+    }
+
+    @PutMapping("/invalidate")
+    @Operation(summary = "作废编码")
+    @PreAuthorize("@ss.hasPermission('datacenter:mng-grid-code:update')")
+    public CommonResult<Boolean> invalidateCode(
+            @RequestParam("id") @NotNull(message = "编码ID不能为空") Long id,
+            @RequestParam("reason") @NotEmpty(message = "作废原因不能为空") String reason) {
+        mngGridCodeService.invalidateCode(id, reason);
+        return success(true);
+    }
+
+    @GetMapping("/get-by-code")
+    @Operation(summary = "根据编码查询")
+    @Parameter(name = "mgGridCode", description = "管理网格编码", required = true)
+    @PreAuthorize("@ss.hasPermission('datacenter:mng-grid-code:query')")
+    public CommonResult<MngGridCodeRespVO> getByCode(@RequestParam("mgGridCode") String mgGridCode) {
+        MngGridCodeDO codeDO = mngGridCodeService.getByCode(mgGridCode);
+        return success(BeanUtils.toBean(codeDO, MngGridCodeRespVO.class));
+    }
+
+    @GetMapping("/get-by-mng-grid-id")
+    @Operation(summary = "根据管理网格ID查询")
+    @Parameter(name = "mngGridId", description = "管理网格ID", required = true)
+    @PreAuthorize("@ss.hasPermission('datacenter:mng-grid-code:query')")
+    public CommonResult<MngGridCodeRespVO> getByMngGridId(@RequestParam("mngGridId") String mngGridId) {
+        MngGridCodeDO mngGridCode = mngGridCodeService.getByMngGridId(mngGridId);
+        return success(BeanUtils.toBean(mngGridCode, MngGridCodeRespVO.class));
+    }
+
+    @GetMapping("/list-by-area")
+    @Operation(summary = "根据行政区划查询编码列表")
+    @Parameter(name = "areaFullCode", description = "行政区划完整代码", required = true)
+    @PreAuthorize("@ss.hasPermission('datacenter:mng-grid-code:query')")
+    public CommonResult<List<MngGridCodeRespVO>> getListByArea(@RequestParam("areaFullCode") String areaFullCode) {
+        List<MngGridCodeDO> list = mngGridCodeService.getListByArea(areaFullCode);
+        return success(BeanUtils.toBean(list, MngGridCodeRespVO.class));
+    }
+
 }
