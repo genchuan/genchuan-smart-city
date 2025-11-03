@@ -60,6 +60,24 @@ public interface ErrorCodeConstants {
     ErrorCode MNG_GRID_NOT_EXISTS = new ErrorCode(1003002000, "管理网格不存在");
     ErrorCode MNG_GRID_CODE_ALREADY_EXISTS = new ErrorCode(1003002001, "管理网格编码已存在");
     ErrorCode MNG_GRID_CODE_SEQ_OVERFLOW = new ErrorCode(1003002003, "顺序码溢出");
+    ErrorCode EXT_GRID_CODE_NOT_EXISTS = new ErrorCode(100_117, "扩展网格编码不存在");
+    ErrorCode GRID_CODE_ANNOTATE_NOT_EXISTS = new ErrorCode(100_118, "网格标识码注记配置不存在");
+    ErrorCode GRID_DATA_QUAL_CK_NOT_EXISTS = new ErrorCode(100_119, "网格数据质量检查不存在");
+    ErrorCode GRID_BOUNDARY_STYLE_NOT_EXISTS = new ErrorCode(100_120, "网格边界线样式配置不存在");
+    ErrorCode EVAL_GRID_ATTR_NOT_EXISTS = new ErrorCode(100_121, "评价网格属性不存在");
+    ErrorCode UNIT_GRID_ATTR_NOT_EXISTS = new ErrorCode(100_122, "单元网格属性不存在");
+    ErrorCode MNG_GRID_ATTR_NOT_EXISTS = new ErrorCode(100_123, "管理网格属性不存在");
+    ErrorCode GRID_SPATIAL_DATA_NOT_EXISTS = new ErrorCode(100_124, "网格空间数据不存在");
+    ErrorCode EVAL_GRID_RPT_NOT_EXISTS = new ErrorCode(100_125, "评价网格统计不存在");
+    ErrorCode UNIT_GRID_RPT_NOT_EXISTS = new ErrorCode(100_126, "单元网格统计不存在");
+    ErrorCode MNG_GRID_RPT_NOT_EXISTS = new ErrorCode(100_127, "管理网格统计不存在");
+    ErrorCode GRID_TOPIC_LAYER_NOT_EXISTS = new ErrorCode(100_128, "网格专题图层管理不存在");
+
+
+
+
+
+
 
     // ========== 事件类型管理 1002000000 ==========
     ErrorCode EVENT_TYPE_NOT_EXISTS = new ErrorCode(1002000000, "事件类型不存在");
@@ -202,4 +220,5 @@ public interface ErrorCodeConstants {
     ErrorCode ASSET_SERVER_ATTR_CFG_IMPORT_LIST_IS_EMPTY = new ErrorCode(200_361, "导入资产服务端属性配置列表不能为空");
     ErrorCode ASSET_CLIENT_ATTR_CFG_IMPORT_LIST_IS_EMPTY = new ErrorCode(200_371, "导入资产客户端属性配置列表不能为空");
     ErrorCode ASSET_SHARE_ATTR_CFG_IMPORT_LIST_IS_EMPTY = new ErrorCode(200_381, "导入资产共享属性配置列表不能为空");
+    ErrorCode ASSET_DATA_MNG_NOT_EXISTS = new ErrorCode(200_501, "资产数据管理不存在");
 }
