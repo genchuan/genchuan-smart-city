@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.emergency.dashboard.global.overview.EmergOverviewMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+<!--     TODO 表结构出来后还得改-->
+    <select id="getEmergOverview"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.emergency.dashboard.global.overview.vo.EmergOverviewRespVO">
+        SELECT
+        -- 应急事件总数
+        (SELECT IFNULL(SUM(total_rpt_count), 0)
+            FROM stat_mon_evt_rpt
+            <where>
+                <if test="statCycle != null and statCycle != ''">
+                    stat_cycle = #{statCycle}
+                </if>
+                <if test="shortCode != null and shortCode != ''">
+                    AND region_code = #{shortCode}
+                </if>
+            </where>
+        ) AS total_evt_count,
+
+        -- 在处置事件数
+        (SELECT IFNULL(SUM(handl_count), 0)
+            FROM stat_mon_evt_rpt
+            <where>
+                <if test="statCycle != null and statCycle != ''">
+                    stat_cycle = #{statCycle}
+                </if>
+                <if test="shortCode != null and shortCode != ''">
+                    AND region_code = #{shortCode}
+                </if>
+            </where>
+        ) AS handl_count,
+
+        -- 已办结事件数
+        (SELECT IFNULL(SUM(completed_count), 0)
+            FROM stat_mon_evt_rpt
+            <where>
+                <if test="statCycle != null and statCycle != ''">
+                    stat_cycle = #{statCycle}
+                </if>
+                <if test="shortCode != null and shortCode != ''">
+                    AND region_code = #{shortCode}
+                </if>
+            </where>
+        ) AS completed_count,
+
+        -- 应急资源总数
+        (SELECT IFNULL(SUM(stock_qty), 0)
+            FROM biz_emerg_res
+            <where>
+                <if test="shortCode != null and shortCode != ''">
+                    region_code = #{shortCode}
+                </if>
+                <if test="statCycle != null and statCycle != ''">
+                    AND stat_cycle = #{statCycle}
+                </if>
+            </where>
+        ) AS total_res_count,
+
+        -- 高风险隐患数
+        (SELECT IFNULL(COUNT(*), 0)
+            FROM biz_risk_hazard
+            <where>
+                <if test="shortCode != null and shortCode != ''">
+                    region_code = #{shortCode}
+                </if>
+                <if test="statCycle != null and statCycle != ''">
+                    AND stat_cycle = #{statCycle}
+                </if>
+            </where>
+        ) AS high_risk_count,
+
+        -- 行政区划覆盖数(仅下一级)
+        (SELECT IFNULL(COUNT(*), 0)
+            FROM sys_area
+            <where>
+                <if test="shortCode != null and shortCode != ''">
+                    parent_id = (SELECT id FROM sys_area WHERE short_code = #{shortCode})
+                </if>
+            </where>
+        ) AS region_cover_count
+    </select>
+
+
+
+</mapper>
