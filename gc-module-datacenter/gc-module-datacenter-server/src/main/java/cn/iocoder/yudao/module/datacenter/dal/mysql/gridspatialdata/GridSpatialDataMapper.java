@@ -32,6 +32,7 @@ public interface GridSpatialDataMapper extends BaseMapperX<GridSpatialDataDO> {
                 .eqIfPresent(GridSpatialDataDO::getExtCommon1, reqVO.getExtCommon1())
                 .eqIfPresent(GridSpatialDataDO::getExtCommon2, reqVO.getExtCommon2())
                 .betweenIfPresent(GridSpatialDataDO::getCreateTime, reqVO.getCreateTime())
+                .betweenIfPresent(GridSpatialDataDO::getUpdateTime, reqVO.getUpdateTime())
                 .orderByDesc(GridSpatialDataDO::getId));
     }
 

@@ -68,4 +68,7 @@ public class GridSpatialDataRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
+    @Schema(description = "更新时间")
+    @ExcelProperty("更新时间")
+    private LocalDateTime updateTime;
 }
