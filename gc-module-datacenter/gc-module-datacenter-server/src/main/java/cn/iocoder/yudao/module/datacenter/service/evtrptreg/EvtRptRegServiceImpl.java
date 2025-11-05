@@ -3,13 +3,13 @@ package cn.iocoder.yudao.module.datacenter.service.evtrptreg;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.*;
 import cn.iocoder.yudao.module.datacenter.controller.admin.evtrptreg.vo.*;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.evtrptreg.EvtRptRegDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.datacenter.dal.mysql.evtrptreg.EvtRptRegMapper;
