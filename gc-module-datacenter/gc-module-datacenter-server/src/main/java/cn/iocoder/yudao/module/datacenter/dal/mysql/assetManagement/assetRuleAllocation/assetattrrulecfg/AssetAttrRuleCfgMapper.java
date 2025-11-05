@@ -16,6 +16,19 @@ import org.apache.ibatis.annotations.Mapper;
 public interface AssetAttrRuleCfgMapper extends BaseMapperX<AssetAttrRuleCfgDO> {
 
     default PageResult<AssetAttrRuleCfgDO> selectPage(AssetAttrRuleCfgPageReqVO reqVO) {
+        // 构建完整的查询条件
+        LambdaQueryWrapperX<AssetAttrRuleCfgDO> queryWrapper = new LambdaQueryWrapperX<>();
+        // 处理特殊排序逻辑
+        if ("createdTime".equals(reqVO.getOrderByColumn())) {
+            // 创建时间排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetAttrRuleCfgDO::getCreatedTime);
+            return selectPage(reqVO, null, queryWrapper);
+        }else if ("updatedTime".equals(reqVO.getOrderByColumn())) {
+            // 重新时间排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetAttrRuleCfgDO::getUpdatedTime);
+            return selectPage(reqVO, null, queryWrapper);
+        }
+
         return selectPage(reqVO, new LambdaQueryWrapperX<AssetAttrRuleCfgDO>()
                 .eqIfPresent(AssetAttrRuleCfgDO::getAssetAttrRuleId, reqVO.getAssetAttrRuleId())
                 .eqIfPresent(AssetAttrRuleCfgDO::getRelAssetCatId, reqVO.getRelAssetCatId())

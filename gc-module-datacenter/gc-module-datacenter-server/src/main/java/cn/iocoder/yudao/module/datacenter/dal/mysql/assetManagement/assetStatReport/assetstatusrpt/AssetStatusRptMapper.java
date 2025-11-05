@@ -23,6 +23,22 @@ public interface AssetStatusRptMapper extends BaseMapperX<AssetStatusRptDO> {
             // 资产数量排序
             queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetStatusRptDO::getAssetCount);
             return selectPage(reqVO, null, queryWrapper);
+        }else if ("mntPriority".equals(reqVO.getOrderByColumn())) {
+            // 维护优先级
+            String orderByClause = "FIELD(mnt_priority, 'high', 'middle', 'low')";
+            if ("desc".equals(reqVO.getIsAsc())) {
+                orderByClause += " DESC";
+            }
+            queryWrapper.last("ORDER BY " + orderByClause);
+            return selectPage(reqVO, null, queryWrapper);
+        }else if ("assetRatio".equals(reqVO.getOrderByColumn())) {
+            // 统计占比排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetStatusRptDO::getAssetRatio);
+            return selectPage(reqVO, null, queryWrapper);
+        }else if ("statTime".equals(reqVO.getOrderByColumn())) {
+            // 统计时间排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetStatusRptDO::getStatTime);
+            return selectPage(reqVO, null, queryWrapper);
         }
 
         return selectPage(reqVO, new LambdaQueryWrapperX<AssetStatusRptDO>()
