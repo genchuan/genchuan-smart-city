@@ -3,9 +3,9 @@ package cn.iocoder.yudao.module.datacenter.service.warningalertlisttable;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.module.bpm.api.task.BpmProcessInstanceApi;
 import cn.iocoder.yudao.module.bpm.api.task.dto.BpmProcessInstanceCreateReqDTO;
-import cn.iocoder.yudao.module.datacenter.dal.dataobject.managedmattermajor.ManagedMatterMajorDO;
+import cn.iocoder.yudao.module.datacenter.dal.dataobject.mngmattercfg.managedmattermajor.ManagedMatterMajorDO;
 import cn.iocoder.yudao.module.datacenter.enums.EventStatusEnum;
-import cn.iocoder.yudao.module.datacenter.service.managedmattermajor.ManagedMatterMajorService;
+import cn.iocoder.yudao.module.datacenter.service.mngmattercfg.managedmattermajor.ManagedMatterMajorService;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -37,7 +37,6 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
     /**
      * 预警告警对应的流程定义
      */
-    public static final String PROCESS_KEY = "event_010101";
 
     @Resource
     private BpmProcessInstanceApi processInstanceApi;
@@ -113,8 +112,7 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
                 .failureAlertCodes(new LinkedHashMap<>())
                 .build();
         
-        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        
+
         java.util.concurrent.atomic.AtomicInteger processedRows = new java.util.concurrent.atomic.AtomicInteger(0);
         importList.forEach(vo -> {
             // 去除首尾空格，统一判空逻辑
@@ -195,7 +193,7 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
                 managedMatterMajorService.getManagedMatterMajor(Long.parseLong(warningAlertListTable.getWarningType()));
 
         // 创建流程实例
-        CommonResult<String> commonResult = processInstanceApi.createProcessInstance(Long.valueOf(1),
+        CommonResult<String> commonResult = processInstanceApi.createProcessInstance(1L,
                 new BpmProcessInstanceCreateReqDTO()
                         .setProcessDefinitionKey(managedMatterMajor.getFlowInstanceId())
                         .setBusinessKey(String.valueOf(warningAlertListTable.getId())));

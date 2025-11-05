@@ -24,6 +24,26 @@ public interface AssetCatRptMapper extends BaseMapperX<AssetCatRptDO> {
             // 资产总数排序
             queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetCatRptDO::getTotalAssetCount);
             return selectPage(reqVO, null, queryWrapper);
+        }else if ("enabledAssetCount".equals(reqVO.getOrderByColumn())) {
+            // 启用资产总数排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetCatRptDO::getEnabledAssetCount);
+            return selectPage(reqVO, null, queryWrapper);
+        }else if ("disabledAssetCount".equals(reqVO.getOrderByColumn())) {
+            // 禁用资产总数排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetCatRptDO::getDisabledAssetCount);
+            return selectPage(reqVO, null, queryWrapper);
+        }else if ("newAssetCount".equals(reqVO.getOrderByColumn())) {
+            // 新增资产总数排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetCatRptDO::getNewAssetCount);
+            return selectPage(reqVO, null, queryWrapper);
+        }else if ("updateAssetCount".equals(reqVO.getOrderByColumn())) {
+            // 更新资产总数排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetCatRptDO::getUpdateAssetCount);
+            return selectPage(reqVO, null, queryWrapper);
+        }else if ("statTime".equals(reqVO.getOrderByColumn())) {
+            // 统计时间排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetCatRptDO::getStatTime);
+            return selectPage(reqVO, null, queryWrapper);
         }
 
         return selectPage(reqVO, new LambdaQueryWrapperX<AssetCatRptDO>()
