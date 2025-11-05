@@ -45,20 +45,13 @@ public interface ErrorCodeConstants {
     ErrorCode AREA_PARENT_IS_CHILD = new ErrorCode(100_111, "父节点不能是自己的子节点");
     ErrorCode UNIT_GRID_DIV_BOUNDARY_INVALID = new ErrorCode(100_112, "单元网格边界校验不通过");
     ErrorCode MNG_GRID_DIV_VALIDATION_FAILED = new ErrorCode(100400100, "单元网格不相邻");
-    ErrorCode MNG_GRID_DIV_CROSS_COMMUNITY = new ErrorCode(1003001002, "单元网格跨社区，无法集成");
-    ErrorCode MNG_GRID_DIV_NOT_ADJACENT = new ErrorCode(1003001003, "单元网格不相邻，无法集成");
-    ErrorCode MNG_GRID_DIV_UNIT_COUNT_INVALID = new ErrorCode(1003001004, "单元网格数量必须在1-5个之间");
     ErrorCode UNIT_GRID_CODE_NOT_EXISTS = new ErrorCode(100_113, "单元网格编码不存在");
     ErrorCode EVAL_GRID_CODE_NOT_EXISTS = new ErrorCode(100_115, "评价网格编码不存在");
     // 单元网格编码相关错误码
-    ErrorCode UNIT_GRID_CODE_ALREADY_EXISTS = new ErrorCode(100500, "单元网格编码已存在");
     ErrorCode UNIT_GRID_NOT_EXISTS = new ErrorCode(100501, "单元网格不存在");
-    ErrorCode AREA_FULL_CODE_INVALID = new ErrorCode(100502, "行政区划代码无效");
     ErrorCode UNIT_GRID_CODE_SEQ_OVERFLOW = new ErrorCode(100503, "顺序码已满，无法生成新的编码");
     ErrorCode MNG_GRID_CODE_NOT_EXISTS = new ErrorCode(100_116, "管理网格编码不存在");
     // 管理网格编码错误码
-    ErrorCode MNG_GRID_NOT_EXISTS = new ErrorCode(1003002000, "管理网格不存在");
-    ErrorCode MNG_GRID_CODE_ALREADY_EXISTS = new ErrorCode(1003002001, "管理网格编码已存在");
     ErrorCode MNG_GRID_CODE_SEQ_OVERFLOW = new ErrorCode(1003002003, "顺序码溢出");
     ErrorCode EXT_GRID_CODE_NOT_EXISTS = new ErrorCode(100_117, "扩展网格编码不存在");
     ErrorCode GRID_CODE_ANNOTATE_NOT_EXISTS = new ErrorCode(100_118, "网格标识码注记配置不存在");
@@ -76,17 +69,10 @@ public interface ErrorCodeConstants {
     // ========== 事件类型管理 1002000000 ==========
     ErrorCode EVENT_TYPE_NOT_EXISTS = new ErrorCode(1002000000, "事件类型不存在");
     ErrorCode EVENT_TYPE_CODE_DUPLICATE = new ErrorCode(1002000001, "事件类型代码已存在");
-    ErrorCode EVENT_TYPE_EXISTS_CHILDREN = new ErrorCode(1002000002, "存在子事件类型，无法删除");
-    ErrorCode EVENT_TYPE_HAS_RELATED_EVENTS = new ErrorCode(1002000003, "存在关联的事件记录，无法删除");
 
     // ========== 国家政策信息 1003000000 ==========
     ErrorCode NATIONAL_POLICY_INFO_NOT_EXISTS = new ErrorCode(1003000000, "国家政策信息不存在");
     ErrorCode NATIONAL_POLICY_INFO_NO_DUPLICATE = new ErrorCode(1003000001, "政策编号已存在");
-    ErrorCode NATIONAL_POLICY_INFO_TIME_INVALID = new ErrorCode(1003000002, "失效时间不能早于生效时间");
-    ErrorCode NATIONAL_POLICY_INFO_CANNOT_UPDATE = new ErrorCode(1003000003, "仅未生效状态的政策可以修改");
-    ErrorCode NATIONAL_POLICY_INFO_CANNOT_DELETE = new ErrorCode(1003000004, "仅未生效状态的政策可以删除");
-    ErrorCode NATIONAL_POLICY_INFO_FILE_NOT_EXISTS = new ErrorCode(1003000005, "政策文件不存在");
-    ErrorCode NATIONAL_POLICY_INFO_STATUS_INVALID = new ErrorCode(1003000006, "政策状态无效");
 
     // ========== 地方法规信息 1004000000 ==========
     ErrorCode LOCAL_REGULATION_INFO_NOT_EXISTS = new ErrorCode(1004000000, "地方法规信息不存在");
@@ -94,8 +80,6 @@ public interface ErrorCodeConstants {
     ErrorCode LOCAL_REGULATION_INFO_TIME_INVALID = new ErrorCode(1004000002, "失效时间不能早于生效时间");
     ErrorCode LOCAL_REGULATION_INFO_CANNOT_UPDATE = new ErrorCode(1004000003, "仅未生效状态的法规可以修改");
     ErrorCode LOCAL_REGULATION_INFO_CANNOT_DELETE = new ErrorCode(1004000004, "仅未生效状态的法规可以删除");
-    ErrorCode LOCAL_REGULATION_INFO_FILE_NOT_EXISTS = new ErrorCode(1004000005, "法规文件不存在");
-    ErrorCode LOCAL_REGULATION_INFO_STATUS_INVALID = new ErrorCode(1004000006, "法规状态无效");
 
     // ========== 行业规范信息 1005000000 ==========
     ErrorCode INDUSTRY_STANDARD_INFO_NOT_EXISTS = new ErrorCode(1004000000, "行业规范信息不存在");
@@ -110,7 +94,6 @@ public interface ErrorCodeConstants {
     ErrorCode POLICY_INTERPRETATION_INFO_TITLE_DUPLICATE = new ErrorCode(1006000001, "解读标题已存在");
     ErrorCode POLICY_INTERPRETATION_INFO_CANNOT_UPDATE = new ErrorCode(1006000002, "仅已发布状态的解读可以修改");
     ErrorCode POLICY_INTERPRETATION_INFO_CANNOT_DELETE = new ErrorCode(1006000003, "仅已下架状态的解读可以删除");
-    ErrorCode POLICY_INTERPRETATION_INFO_POLICY_INVALID = new ErrorCode(1006000004, "关联政策无效");
 
     // ========== 监测部件 1007000000 ==========
     ErrorCode COMPONENT_CATEGORY_NOT_EXISTS = new ErrorCode(1007000000, "监测部件分类不存在");
@@ -151,7 +134,6 @@ public interface ErrorCodeConstants {
     ErrorCode EMER_PLAN_CAT_NOT_EXISTS = new ErrorCode(1010000002, "预案分类配置不存在");
     // ========== 风险预警信息列表 ==========
     ErrorCode WARNING_ALERT_LIST_TABLE_NOT_EXISTS = new ErrorCode(100_103, "预警告警列表不存在");
-    ErrorCode IMPORT_DATA_ERROR = new ErrorCode(100_104, "导入数据错误：{}");
     ErrorCode ALARM_RULE_NOT_EXISTS = new ErrorCode(100_105, "预警告警规则配置不存在");
     ErrorCode ALARM_RULE_ALREADY_ENABLED = new ErrorCode(1003001001, "预警告警规则配置已启用");
     ErrorCode ALARM_RULE_ALREADY_DISABLED = new ErrorCode(1003001002, "预警告警规则配置已禁用");
@@ -162,20 +144,8 @@ public interface ErrorCodeConstants {
 
     //====================================资产管理模块=========================================================================
 
-    // ========== 资产分类管理 200_211 ==========
-    ErrorCode ASSET_CAT_MNG_NOT_EXISTS = new ErrorCode(200_211, "资产分类管理不存在");
-    ErrorCode ASSET_CAT_MNG_EXITS_CHILDREN = new ErrorCode(200_212, "存在存在子资产分类管理，无法删除");
-    ErrorCode ASSET_CAT_MNG_PARENT_NOT_EXITS = new ErrorCode(200_213,"父级资产分类管理不存在");
-    ErrorCode ASSET_CAT_MNG_PARENT_ERROR = new ErrorCode(200_214, "不能设置自己为父资产分类管理");
-    ErrorCode ASSET_CAT_MNG_NAME_DUPLICATE = new ErrorCode(200_215, "已经存在该名字的资产分类管理");
-    ErrorCode ASSET_CAT_MNG_PARENT_IS_CHILD = new ErrorCode(200_216, "不能设置自己的子AssetCatMng为父AssetCatMng");
     // ========= 资产关联行政区划 200_221 ==========
     ErrorCode ASSET_AREA_NOT_EXISTS = new ErrorCode(200_221, "资产关联行政区划不存在");
-    ErrorCode ASSET_AREA_EXITS_CHILDREN = new ErrorCode(200_222, "存在存在子资产关联行政区划，无法删除");
-    ErrorCode ASSET_AREA_PARENT_NOT_EXITS = new ErrorCode(200_223,"父级资产关联行政区划不存在");
-    ErrorCode ASSET_AREA_PARENT_ERROR = new ErrorCode(200_224, "不能设置自己为父资产关联行政区划");
-    ErrorCode ASSET_AREA_NAME_DUPLICATE = new ErrorCode(200_225, "已经存在该名字的资产关联行政区划");
-    ErrorCode ASSET_AREA_PARENT_IS_CHILD = new ErrorCode(200_226, "不能设置自己的子AssetArea为父AssetArea");
     // ========== 资产关联网格 200_231 ==========
     ErrorCode ASSET_GRID_NOT_EXISTS = new ErrorCode(200_231, "资产关联网格不存在");
     // ========== 资产关联管理部件 200_241 ==========
@@ -218,4 +188,13 @@ public interface ErrorCodeConstants {
     ErrorCode ASSET_CLIENT_ATTR_CFG_IMPORT_LIST_IS_EMPTY = new ErrorCode(200_371, "导入资产客户端属性配置列表不能为空");
     ErrorCode ASSET_SHARE_ATTR_CFG_IMPORT_LIST_IS_EMPTY = new ErrorCode(200_381, "导入资产共享属性配置列表不能为空");
     ErrorCode ASSET_DATA_MNG_NOT_EXISTS = new ErrorCode(200_501, "资产数据管理不存在");
+
+    ErrorCode EVT_WO_NOT_EXISTS = new ErrorCode(1002000002, "事件工单不存在");
+    ErrorCode EVT_TYPE_CFG_NOT_EXISTS = new ErrorCode(1002000003, "事件类型配置不存在");
+    ErrorCode EVT_DISPOSAL_TRACK_NOT_EXISTS = new ErrorCode(1002000004, "事件处置跟踪不存在");
+    ErrorCode EVT_RPT_REG_NOT_EXISTS = new ErrorCode(1002000005, "事件接报登记不存在");
+    ErrorCode EVT_CLASSIFY_ALLOCATE_NOT_EXISTS = new ErrorCode(1002000006, "事件分级分拨不存在");
+    ErrorCode EVT_ARCH_NOT_EXISTS = new ErrorCode(1002000007, "事件办结归档不存在");
+    ErrorCode EVT_ANALYSIS_NOT_EXISTS = new ErrorCode(1002000008, "事件研判分析不存在");
+
 }
