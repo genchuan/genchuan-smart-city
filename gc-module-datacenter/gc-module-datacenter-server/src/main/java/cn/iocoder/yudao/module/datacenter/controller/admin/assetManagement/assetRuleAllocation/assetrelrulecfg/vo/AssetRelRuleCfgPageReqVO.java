@@ -1,7 +1,6 @@
 package cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetRuleAllocation.assetrelrulecfg.vo;
 
 import lombok.*;
-import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -72,4 +71,8 @@ public class AssetRelRuleCfgPageReqVO extends PageParam {
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
 
+    @Schema(description = "排序的字段，如：createdTime")
+    private String orderByColumn;
+    @Schema(description = "排序方式，asc升序、desc降序")
+    private String isAsc;
 }

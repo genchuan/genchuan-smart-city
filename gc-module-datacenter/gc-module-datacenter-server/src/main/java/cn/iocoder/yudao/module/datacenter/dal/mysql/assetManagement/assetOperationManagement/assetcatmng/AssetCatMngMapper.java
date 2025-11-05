@@ -23,6 +23,10 @@ public interface AssetCatMngMapper extends BaseMapperX<AssetCatMngDO> {
             // 创建时间排序
             queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetCatMngDO::getCreatedTime);
             return selectPage(reqVO, null, queryWrapper);
+        }else if ("updatedTime".equals(reqVO.getOrderByColumn())) {
+            // 重新时间排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetCatMngDO::getUpdatedTime);
+            return selectPage(reqVO, null, queryWrapper);
         }
         return selectPage(reqVO, new LambdaQueryWrapperX<AssetCatMngDO>()
                 .eqIfPresent(AssetCatMngDO::getAssetCatId, reqVO.getAssetCatId())
