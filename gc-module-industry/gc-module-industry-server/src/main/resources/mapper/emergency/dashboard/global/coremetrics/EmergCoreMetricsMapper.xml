@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.emergency.dashboard.global.coremetrics.EmergCoreMetricsMapper">
+
+    <select id="getEmergCoreMetrics"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.emergency.dashboard.global.coremetrics.vo.EmergCoreMetricsRespVO">
+        SELECT
+            --  应急事件办结率（stat_mon_evt_rpt），百分比的数值（但无％号），
+            -- 如果total_rpt_count为0，返回100
+            (
+                SELECT ROUND(
+                    CASE
+                        WHEN IFNULL(SUM(total_rpt_count),0) = 0 THEN 100
+                        ELSE IFNULL(SUM(completed_count),0) / IFNULL(SUM(total_rpt_count),1) * 100
+                    END,
+                    2
+                )
+                FROM stat_mon_evt_rpt
+                <where>
+                    <if test="regionCode != null and regionCode != ''">
+                        region_code = #{regionCode}
+                    </if>
+                    <if test="statCycle != null and statCycle != ''">
+                        AND stat_cycle = #{statCycle}
+                    </if>
+                </where>
+            ) AS completeRate,
+
+            --  预警准确率（stat_early_warn_region）
+            -- 用 已处理数（假设已处理说明预警准确） /总数
+            (
+                SELECT ROUND(
+                    CASE
+                        WHEN IFNULL(SUM(total_warn_count),0) = 0 THEN 100
+                        ELSE IFNULL(SUM(completed_count),0) / IFNULL(SUM(total_warn_count),1) * 100
+                    END,
+                    2
+                )
+                FROM stat_early_warn_region
+                <where>
+                    <if test="regionCode != null and regionCode != ''">
+                        region_code = #{regionCode}
+                    </if>
+                    <if test="statCycle != null and statCycle != ''">
+                        AND stat_cycle = #{statCycle}
+                    </if>
+                </where>
+            ) AS earlyWarnAccRate,
+
+            --  应急资源调用率（biz_emerg_res）
+            (
+                SELECT ROUND(
+                    CASE
+                        WHEN IFNULL(SUM(stock_qty),0) = 0 THEN 0
+                        ELSE IFNULL(SUM(dispatch_count),0) / IFNULL(SUM(stock_qty),1) * 100
+                    END,
+                    2
+                )
+                FROM biz_emerg_res
+                <where>
+                    <if test="regionCode != null and regionCode != ''">
+                        region_code = #{regionCode}
+                    </if>
+                    <if test="statCycle != null and statCycle != ''">
+                        AND stat_cycle = #{statCycle}
+                    </if>
+                </where>
+            ) AS resUseRate,
+
+            --  平均处置时长（stat_mon_evt_rpt）
+            (
+                SELECT ROUND(IFNULL(AVG(avg_handle_endure),0), 2)
+                FROM stat_mon_evt_rpt
+                <where>
+                    <if test="regionCode != null and regionCode != ''">
+                        region_code = #{regionCode}
+                    </if>
+                    <if test="statCycle != null and statCycle != ''">
+                        AND stat_cycle = #{statCycle}
+                    </if>
+                </where>
+            ) AS avgHandleEndure,
+
+            --  风险整改率（biz_risk_hazard）
+            (
+                SELECT ROUND(
+                CASE
+                    WHEN COUNT(1) = 0 THEN 100
+                    ELSE SUM(CASE WHEN warn_status IN ('2','3') THEN 1 ELSE 0 END) / COUNT(1) * 100
+                END,
+                2
+                )
+                FROM biz_risk_hazard
+                <where>
+                    <if test="regionCode != null and regionCode != ''">
+                        region_code = #{regionCode}
+                    </if>
+                    <if test="statCycleStartDate != null and statCycleStartDate != '' and statCycleEndDate != null and statCycleEndDate != ''">
+                        AND discover_time &gt;= #{statCycleStartDate}
+                        AND discover_time &lt; #{statCycleEndDate}
+                    </if>
+
+                </where>
+            ) AS riskRectifyRate
+
+    </select>
+
+</mapper>
