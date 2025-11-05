@@ -857,3 +857,71 @@ CREATE TABLE `stat_mon_comp_rpt` (
     -- 主键
                                      PRIMARY KEY (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '监测部件统计报表';
+
+CREATE TABLE `biz_evt_type_cfg` (
+    -- 自增主键
+                                    `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '自增主键ID',
+    -- 事件类型ID
+                                    `evt_type_id` CHAR(32) NOT NULL COMMENT '类型ID，唯一编码，UUID',
+    -- 父类型ID
+                                    `parent_type_id` CHAR(32) NOT NULL COMMENT '父类型ID，关联本表“事件类型ID”，大类父ID为“0”',
+    -- 类型层级
+                                    `type_level` CHAR(1) NOT NULL COMMENT '类型层级，1（大类）/2（小类）',
+    -- 类型编码
+                                    `type_code` CHAR(3) NOT NULL COMMENT '类型编码，001 - 999（大类01 - 99、小类001 - 999，扩展类080 - 999倒排），同一父类型下编码唯一',
+    -- 类型名称
+                                    `type_name` VARCHAR(50) NOT NULL COMMENT '类型名称，标准名称，扩展类加“（自定义）”',
+    -- 类型说明
+                                    `type_desc` VARCHAR(255) COMMENT '类型说明，描述类型范围，如“占道经营：商户违规占用道路经营”',
+    -- 所属区域代码
+                                    `region_code` CHAR(6) COMMENT '所属区域代码，关联行政区划表，限定区域适用',
+    -- 所属区域名称
+                                    `region_name` VARCHAR(50) COMMENT '所属区域名称，与区域代码同步',
+    -- 启用状态
+                                    `enable_status` CHAR(1) DEFAULT '1' COMMENT '启用状态，1（启用）/0（禁用），默认1',
+    -- 创建人
+                                    `create_user` CHAR(32) COMMENT '创建人，创建人账号，关联用户信息表(sys_user)',
+    -- 创建时间
+                                    `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间，格式yyyy - MM - dd HH:mm:ss，系统自动生成',
+    -- 更新人
+                                    `update_user` CHAR(32) COMMENT '更新人，更新人账号，关联用户信息表(sys_user)',
+    -- 更新时间
+                                    `update_time` DATETIME COMMENT '更新时间，格式yyyy - MM - dd HH:mm:ss，系统自动生成',
+    -- 分类扩展字段1
+                                    `ext_cat1` VARCHAR(50) COMMENT '分类扩展字段1，预留，如“处置时限”',
+    -- 分类扩展字段2
+                                    `ext_cat2` VARCHAR(50) COMMENT '分类扩展字段2，预留，如“处置时限”',
+    -- 通用扩展字段1
+                                    `ext_common1` VARCHAR(100) COMMENT '通用扩展字段1，预留，存储参考标准',
+    -- 通用扩展字段2
+                                    `ext_common2` VARCHAR(100) COMMENT '通用扩展字段2，预留，存储参考标准',
+                                    PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '事件类型配置表';
+
+CREATE TABLE `biz_evt_rpt_reg` (
+    -- 自增主键
+                                   `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '自增主键ID',
+    -- 接报ID
+                                   `rpt_id` CHAR(32) NOT NULL COMMENT '接报ID，唯一编码，UUID',
+    -- 事件编码
+                                   `evt_code` CHAR(18) NOT NULL COMMENT '事件编码，系统自动生成，格式“6位区域码+2位大类码+3位小类码+7位顺序码”',
+    -- 事件类型ID
+                                   `evt_type_id` CHAR(32) NOT NULL COMMENT '事件类型ID，关联事件类型配置表小类ID',
+    -- 事件类型名称
+                                   `evt_type_name` VARCHAR(50) NOT NULL COMMENT '事件类型名称，与类型ID同步',
+    -- 事发区域代码
+                                   `incident_region_code` CHAR(6) NOT NULL COMMENT '事发区域代码，关联行政区划表',
+    -- 事发区域名称
+                                   `incident_region_name` VARCHAR(50) NOT NULL COMMENT '事发区域名称，与区域代码同步',
+    -- 事发位置
+                                   `incident_location` VARCHAR(100) NOT NULL COMMENT '事发位置，详细位置，如“XX路与XX路交叉口东北侧”',
+    -- 事发坐标X
+                                   `incident_coord_x` DECIMAL(15, 2) COMMENT '事发坐标X，度，2000国家大地坐标系经度',
+    -- 事发坐标Y
+                                   `incident_coord_y` DECIMAL(15, 2) COMMENT '事发坐标Y，度，2000国家大地坐标系纬度',
+    -- 事件描述
+                                   `evt_desc` VARCHAR(500) NOT NULL COMMENT '事件描述，事件详情，如“商贩占用人行道售卖水果”',
+                                   PRIMARY KEY (`id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '事件接报登记表';
+
+
