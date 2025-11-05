@@ -73,12 +73,6 @@ public interface ErrorCodeConstants {
     ErrorCode MNG_GRID_RPT_NOT_EXISTS = new ErrorCode(100_127, "管理网格统计不存在");
     ErrorCode GRID_TOPIC_LAYER_NOT_EXISTS = new ErrorCode(100_128, "网格专题图层管理不存在");
 
-
-
-
-
-
-
     // ========== 事件类型管理 1002000000 ==========
     ErrorCode EVENT_TYPE_NOT_EXISTS = new ErrorCode(1002000000, "事件类型不存在");
     ErrorCode EVENT_TYPE_CODE_DUPLICATE = new ErrorCode(1002000001, "事件类型代码已存在");
@@ -152,6 +146,9 @@ public interface ErrorCodeConstants {
     ErrorCode BIZ_MNG_MATTER_EXT_NOT_EXISTS = new ErrorCode(100900005, "管理事项扩展管理事项配置不存在");
     ErrorCode MNG_MATTER_NOT_EXISTS = new ErrorCode(100900006, "管理事项统计不存在");
 
+    // ========== 预案库 1010000000 ==========
+    ErrorCode EMER_PLAN_LIB_NOT_EXISTS = new ErrorCode(1010000001, "预案库不存在");
+    ErrorCode EMER_PLAN_CAT_NOT_EXISTS = new ErrorCode(1010000002, "预案分类配置不存在");
     // ========== 风险预警信息列表 ==========
     ErrorCode WARNING_ALERT_LIST_TABLE_NOT_EXISTS = new ErrorCode(100_103, "预警告警列表不存在");
     ErrorCode IMPORT_DATA_ERROR = new ErrorCode(100_104, "导入数据错误：{}");
