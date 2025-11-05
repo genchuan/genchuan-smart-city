@@ -7,7 +7,6 @@ import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.asset
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetRuleAllocation.assetcatrulecfg.AssetCatRuleCfgDO;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
 
 /**
  * 资产分类规则配置 Mapper
@@ -33,6 +32,10 @@ public interface AssetCatRuleCfgMapper extends BaseMapperX<AssetCatRuleCfgDO> {
             }
             queryWrapper.last("ORDER BY " + orderByClause);
             return selectPage(reqVO, null, queryWrapper);
+        }else if ("updatedTime".equals(reqVO.getOrderByColumn())) {
+            // 重新时间排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetCatRuleCfgDO::getUpdatedTime);
+            return selectPage(reqVO, null, queryWrapper);
         }
 
         return selectPage(reqVO, new LambdaQueryWrapperX<AssetCatRuleCfgDO>()
@@ -56,15 +59,4 @@ public interface AssetCatRuleCfgMapper extends BaseMapperX<AssetCatRuleCfgDO> {
                 .orderByDesc(AssetCatRuleCfgDO::getId));
     }
 
-    /**
-     * 查询启用的资产分类规则列表（用于字典）
-     *
-     * @return 启用的资产分类规则列表
-     */
-    default List<AssetCatRuleCfgDO> selectEnabledList() {
-        return selectList(new LambdaQueryWrapperX<AssetCatRuleCfgDO>()
-                .eq(AssetCatRuleCfgDO::getEnableStatus, "1") // 状态为1表示启用
-                .select(AssetCatRuleCfgDO::getAssetCatRuleId, AssetCatRuleCfgDO::getRuleName) // 只查询ID和规则名称
-                .orderByAsc(AssetCatRuleCfgDO::getAssetCatRuleId)); // 按ID升序排列
-    }
 }

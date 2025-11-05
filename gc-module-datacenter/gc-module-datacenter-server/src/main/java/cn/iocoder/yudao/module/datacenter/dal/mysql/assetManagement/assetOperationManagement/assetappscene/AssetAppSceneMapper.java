@@ -16,6 +16,19 @@ import org.apache.ibatis.annotations.Mapper;
 public interface AssetAppSceneMapper extends BaseMapperX<AssetAppSceneDO> {
 
     default PageResult<AssetAppSceneDO> selectPage(AssetAppScenePageReqVO reqVO) {
+        // 构建完整的查询条件
+        LambdaQueryWrapperX<AssetAppSceneDO> queryWrapper = new LambdaQueryWrapperX<>();
+        // 处理特殊排序逻辑
+        if ("relTime".equals(reqVO.getOrderByColumn())) {
+            // 创建时间排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetAppSceneDO::getRelTime);
+            return selectPage(reqVO, null, queryWrapper);
+        }else if ("updatedTime".equals(reqVO.getOrderByColumn())) {
+            // 重新时间排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetAppSceneDO::getUpdatedTime);
+            return selectPage(reqVO, null, queryWrapper);
+        }
+
         return selectPage(reqVO, new LambdaQueryWrapperX<AssetAppSceneDO>()
                 .eqIfPresent(AssetAppSceneDO::getAssetRelAppSceneId, reqVO.getAssetRelAppSceneId())
                 .eqIfPresent(AssetAppSceneDO::getRelAssetId, reqVO.getRelAssetId())

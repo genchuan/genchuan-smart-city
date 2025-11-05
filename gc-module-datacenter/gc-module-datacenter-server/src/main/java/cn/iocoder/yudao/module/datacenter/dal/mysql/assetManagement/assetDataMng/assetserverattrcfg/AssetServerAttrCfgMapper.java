@@ -24,6 +24,14 @@ public interface AssetServerAttrCfgMapper extends BaseMapperX<AssetServerAttrCfg
             // 创建时间排序
             queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetServerAttrCfgDO::getLastCollectTime);
             return selectPage(reqVO, null, queryWrapper);
+        }else if ("cfgTime".equals(reqVO.getOrderByColumn())) {
+            // 排序时间排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetServerAttrCfgDO::getCfgTime);
+            return selectPage(reqVO, null, queryWrapper);
+        }else if ("updatedTime".equals(reqVO.getOrderByColumn())) {
+            // 排序时间排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetServerAttrCfgDO::getUpdatedTime);
+            return selectPage(reqVO, null, queryWrapper);
         }
         return selectPage(reqVO, new LambdaQueryWrapperX<AssetServerAttrCfgDO>()
                 .eqIfPresent(AssetServerAttrCfgDO::getAssetServerAttrId, reqVO.getAssetServerAttrId())

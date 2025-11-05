@@ -26,6 +26,10 @@ public interface AssetAssetMapper extends BaseMapperX<AssetAssetDO> {
             // 创建时间排序
             queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetAssetDO::getRelTime);
             return selectPage(reqVO, null, queryWrapper);
+        }else if ("updatedTime".equals(reqVO.getOrderByColumn())) {
+            // 创建时间排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetAssetDO::getUpdatedTime);
+            return selectPage(reqVO, null, queryWrapper);
         }
         return selectPage(reqVO, new LambdaQueryWrapperX<AssetAssetDO>()
                 .eqIfPresent(AssetAssetDO::getAssetRelAssetId, reqVO.getAssetRelAssetId())

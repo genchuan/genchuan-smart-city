@@ -20,8 +20,12 @@ public interface AssetDataQualCkMapper extends BaseMapperX<AssetDataQualCkDO> {
         LambdaQueryWrapperX<AssetDataQualCkDO> queryWrapper = new LambdaQueryWrapperX<>();
         // 处理特殊排序逻辑
         if ("ckTime".equals(reqVO.getOrderByColumn())) {
-            // 创建时间排序
+            // 检测时间排序
             queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetDataQualCkDO::getCkTime);
+            return selectPage(reqVO, null, queryWrapper);
+        }else if ("handleTime".equals(reqVO.getOrderByColumn())) {
+            // 处理时间排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetDataQualCkDO::getHandleTime);
             return selectPage(reqVO, null, queryWrapper);
         }
         return selectPage(reqVO, new LambdaQueryWrapperX<AssetDataQualCkDO>()

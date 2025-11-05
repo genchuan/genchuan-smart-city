@@ -16,6 +16,23 @@ import org.apache.ibatis.annotations.Mapper;
 public interface AssetRelRuleCfgMapper extends BaseMapperX<AssetRelRuleCfgDO> {
 
     default PageResult<AssetRelRuleCfgDO> selectPage(AssetRelRuleCfgPageReqVO reqVO) {
+        // 构建完整的查询条件
+        LambdaQueryWrapperX<AssetRelRuleCfgDO> queryWrapper = new LambdaQueryWrapperX<>();
+        // 处理特殊排序逻辑
+        if ("createdTime".equals(reqVO.getOrderByColumn())) {
+            // 创建时间排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetRelRuleCfgDO::getCreatedTime);
+            return selectPage(reqVO, null, queryWrapper);
+        }else if ("updatedTime".equals(reqVO.getOrderByColumn())) {
+            // 重新时间排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetRelRuleCfgDO::getUpdatedTime);
+            return selectPage(reqVO, null, queryWrapper);
+        }else if ("relQuantityLimit".equals(reqVO.getOrderByColumn())) {
+            // 重新时间排序
+            queryWrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), AssetRelRuleCfgDO::getRelQuantityLimit);
+            return selectPage(reqVO, null, queryWrapper);
+        }
+
         return selectPage(reqVO, new LambdaQueryWrapperX<AssetRelRuleCfgDO>()
                 .eqIfPresent(AssetRelRuleCfgDO::getAssetRelRuleId, reqVO.getAssetRelRuleId())
                 .eqIfPresent(AssetRelRuleCfgDO::getRelAssetCatId, reqVO.getRelAssetCatId())
