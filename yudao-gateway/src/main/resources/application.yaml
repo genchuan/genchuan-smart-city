@@ -199,13 +199,13 @@ spring:
         - id: datacenter-admin-api # 路由的编号
           uri: grayLb://datacenter-server
           predicates: # 断言，作为路由的匹配条件，对应 RouteDefinition 数组
-            - Path=/admin-api/datacenter/**
+            - Path=/admin-api/datacenter/***
           filters:
             - RewritePath=/admin-api/datacenter/v3/api-docs, /v3/api-docs # 配置，保证转发到 /v3/api-docs
         - id: datacenter-app-api # 路由的编号
           uri: grayLb://datacenter-server
           predicates: # 断言，作为路由的匹配条件，对应 RouteDefinition 数组
-            - Path=/app-api/datacenter/**
+            - Path=/app-api/datacenter/***
           filters:
             - RewritePath=/app-api/datacenter/v3/api-docs, /v3/api-docs
         ## industry-server 服务

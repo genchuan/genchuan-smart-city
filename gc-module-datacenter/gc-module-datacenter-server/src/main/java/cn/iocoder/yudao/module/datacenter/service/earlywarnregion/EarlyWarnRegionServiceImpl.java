@@ -1,9 +1,9 @@
 package cn.iocoder.yudao.module.datacenter.service.earlywarnregion;
 
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
-import cn.iocoder.yudao.module.datacenter.dal.dataobject.gridcounty.GridCountyDO;
+import cn.iocoder.yudao.module.datacenter.dal.dataobject.grid.area.gridcounty.GridCountyDO;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.warningalertlisttable.WarningAlertListTableDO;
-import cn.iocoder.yudao.module.datacenter.dal.mysql.gridcounty.GridCountyMapper;
+import cn.iocoder.yudao.module.datacenter.dal.mysql.grid.area.gridcounty.GridCountyMapper;
 import cn.iocoder.yudao.module.datacenter.dal.mysql.warningalertlisttable.WarningAlertListTableMapper;
 import com.alibaba.nacos.client.naming.utils.CollectionUtils;
 import org.springframework.stereotype.Service;
