@@ -183,12 +183,11 @@ public interface ErrorCodeConstants {
 
     ErrorCode ASSET_SPATIAL_DATA_IMPORT_LIST_IS_EMPTY = new ErrorCode(200_351, "导入资产空间数据列表不能为空");
     ErrorCode ASSET_CAT_MNG_IMPORT_LIST_IS_EMPTY = new ErrorCode(200_217, "导入资产分类管理列表不能为空");
-
+    ErrorCode ASSET_CAT_MNG_NOT_EXISTS = new ErrorCode(200_601,"资产分类管理不存在");
     ErrorCode ASSET_SERVER_ATTR_CFG_IMPORT_LIST_IS_EMPTY = new ErrorCode(200_361, "导入资产服务端属性配置列表不能为空");
     ErrorCode ASSET_CLIENT_ATTR_CFG_IMPORT_LIST_IS_EMPTY = new ErrorCode(200_371, "导入资产客户端属性配置列表不能为空");
     ErrorCode ASSET_SHARE_ATTR_CFG_IMPORT_LIST_IS_EMPTY = new ErrorCode(200_381, "导入资产共享属性配置列表不能为空");
     ErrorCode ASSET_DATA_MNG_NOT_EXISTS = new ErrorCode(200_501, "资产数据管理不存在");
-
     ErrorCode EVT_WO_NOT_EXISTS = new ErrorCode(1002000002, "事件工单不存在");
     ErrorCode EVT_TYPE_CFG_NOT_EXISTS = new ErrorCode(1002000003, "事件类型配置不存在");
     ErrorCode EVT_DISPOSAL_TRACK_NOT_EXISTS = new ErrorCode(1002000004, "事件处置跟踪不存在");
@@ -196,5 +195,42 @@ public interface ErrorCodeConstants {
     ErrorCode EVT_CLASSIFY_ALLOCATE_NOT_EXISTS = new ErrorCode(1002000006, "事件分级分拨不存在");
     ErrorCode EVT_ARCH_NOT_EXISTS = new ErrorCode(1002000007, "事件办结归档不存在");
     ErrorCode EVT_ANALYSIS_NOT_EXISTS = new ErrorCode(1002000008, "事件研判分析不存在");
+
+    // ========== 资源调度管理 TODO 补充编号 ==========
+    ErrorCode EMER_VEHICLE_INFO_NOT_EXISTS = new ErrorCode(1011000000, "救援车辆信息不存在");
+    ErrorCode EMER_MAT_INFO_NOT_EXISTS = new ErrorCode(1011000001, "应急物资信息不存在");
+    ErrorCode EMER_DEVICE_INFO_NOT_EXISTS = new ErrorCode(1011000002, "救援设备信息不存在");
+    ErrorCode EMER_TEAM_INFO_NOT_EXISTS = new ErrorCode(1011000003, "救援队伍信息不存在");
+    ErrorCode EMER_MAT_CAT_NOT_EXISTS = new ErrorCode(1011000004, "应急物资分类配置不存在");
+    ErrorCode EMER_TEAM_CAT_NOT_EXISTS  = new ErrorCode(1011000005, "救援队伍分类配置不存在");
+    ErrorCode EMER_VEHICLE_CAT_NOT_EXISTS = new ErrorCode(1011000006, "救援车辆分类配置不存在");
+    ErrorCode EMER_DEVICE_CAT_NOT_EXISTS = new ErrorCode(1011000007, "救援设备分类配置不存在");
+
+    //=====================================设备管理模块---100_30-----100_40============================================
+    ErrorCode DEVICE_INFO_NOT_EXISTS = new ErrorCode(100_300, "设备信息不存在");
+    ErrorCode DEVICE_CAT_RULE_NOT_EXISTS = new ErrorCode(100_301, "设备分类规则配置不存在");
+    ErrorCode DEVICE_ATTR_RULE_NOT_EXISTS = new ErrorCode(100_302, "设备属性规则配置不存在");
+    ErrorCode DEVICE_REL_RULE_NOT_EXISTS = new ErrorCode(100_303, "设备关联规则配置不存在");
+    ErrorCode DEVICE_CAT_MNG_NOT_EXISTS = new ErrorCode(100_304, "设备分类管理不存在");
+    ErrorCode DEVICE_ASSET_NOT_EXISTS = new ErrorCode(100_305, "设备关联资产不存在");
+    ErrorCode DEVICE_AREA_NOT_EXISTS = new ErrorCode(100_306, "设备关联行政区划不存在");
+    ErrorCode DEVICE_DEVICE_NOT_EXISTS = new ErrorCode(100_307, "设备关联设备不存在");
+    ErrorCode DEVICE_APP_SCENE_NOT_EXISTS = new ErrorCode(100_308, "设备关联应用场景不存在");
+    ErrorCode DEVICE_GRID_NOT_EXISTS = new ErrorCode(100_309, "设备关联网格不存在");
+    ErrorCode DEVICE_MON_COMP_NOT_EXISTS = new ErrorCode(100_310, "设备关联监测部件不存在");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

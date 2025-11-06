@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.iocoder.yudao.module.datacenter.dal.mysql.warningalertlisttable.WarningAlertListTableMapper">
+<mapper namespace="cn.iocoder.yudao.module.datacenter.dal.mysql.alarm.warningalertlisttable.WarningAlertListTableMapper">
 
     <!-- 预警等级分布统计（统一VO） -->
-    <select id="selectWarningLevelStatistics" resultType="cn.iocoder.yudao.module.datacenter.controller.admin.warningalertlisttable.vo.WarningAlertListTableStatisticsRespVO">
+    <select id="selectWarningLevelStatistics" resultType="cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlisttable.vo.WarningAlertListTableStatisticsRespVO">
         SELECT
             'LEVEL' AS categoryType,
             warning_level AS category,
@@ -43,7 +43,7 @@
     </select>
 
     <!-- 预警状态分布统计（统一VO） -->
-    <select id="selectWarningStatusStatistics" resultType="cn.iocoder.yudao.module.datacenter.controller.admin.warningalertlisttable.vo.WarningAlertListTableStatisticsRespVO">
+    <select id="selectWarningStatusStatistics" resultType="cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlisttable.vo.WarningAlertListTableStatisticsRespVO">
         SELECT
             'STATUS' AS categoryType,
             warning_status AS category,
