@@ -26,7 +26,7 @@
 
 ### 技术选型
 
-* Java 后端：`master` 分支为 JDK 8 + Spring Boot 2.7，`master-jdk17` 分支为 JDK 17/21 + Spring Boot 3.2
+* Java 后端：`master` JDK 17/21 + Spring Boot 3.2
 * 后端采用 Spring Cloud Alibaba 微服务架构，注册中心 + 配置中心 Nacos，定时任务 XXL-Job，服务保障 Sentinel，服务网关 Gateway，分布式事务 Seata
 * 数据库可使用 MySQL、Oracle、PostgreSQL、SQL Server、MariaDB、国产达梦 DM、TiDB 等，基于 MyBatis Plus、Redis + Redisson 操作
 * 消息队列可使用 Event、Redis、RabbitMQ、Kafka、RocketMQ 等
@@ -576,14 +576,33 @@ java -jar gc-module-industry-server.jar
 
 ## 十、联系方式
 
-* 开发团队：福建亘川科技有限公司
-- **小鹅通店铺地址**：[点击访问小鹅通店铺]( https://appa50w17034868.h5.xiaoeknow.com)
-* ![小鹅通二维码.png](images/%E5%B0%8F%E9%B9%85%E9%80%9A%E4%BA%8C%E7%BB%B4%E7%A0%81.png)
-* 文档咨询：参考`docs/``contact.md`获取联系方式
+### 开发团队
+**福建亘川科技有限公司**
 
-* 问题反馈：提交 Issue 至本仓库或发送邮件至 gengchuankeji@gengchuan.cn
+---
 
-* 公众号联系：
-![qrcode_for 公众号.jpg](images/qrcode_for%20%E5%85%AC%E4%BC%97%E5%8F%B7.jpg)
-* 企业微信开发者群群：
+### 小鹅通店铺
+- **店铺地址**：[点击访问小鹅通店铺](https://appa50w17034868.h5.xiaoeknow.com)
+- **店铺二维码**：  
+![小鹅通二维码.png](images/%E5%B0%8F%E9%B9%85%E9%80%9A%E4%BA%8C%E7%BB%B4%E7%A0%81.png)
+---
+
+### 文档咨询
+参考 [`docs/contact.md`](docs/contact.md) 获取联系方式
+
+---
+
+### 问题反馈
+- **提交 Issue** 至本仓库
+- **发送邮件** 至：`gengchuankeji@gengchuan.cn`
+
+---
+
+### 公众号联系
+**公众号二维码**：
+![公众号二维码.png](images/%E5%85%AC%E4%BC%97%E5%8F%B7%E4%BA%8C%E7%BB%B4%E7%A0%81.png)
+---
+
+### 企业微信开发者群
+**群二维码**：
 ![开发者群.jpg](images/%E5%BC%80%E5%8F%91%E8%80%85%E7%BE%A4.jpg)
