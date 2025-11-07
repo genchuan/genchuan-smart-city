@@ -577,11 +577,13 @@ java -jar gc-module-industry-server.jar
 ## 十、联系方式
 
 * 开发团队：福建亘川科技有限公司
-
+- **小鹅通店铺地址**：[点击访问小鹅通店铺]( https://appa50w17034868.h5.xiaoeknow.com)
+* ![小鹅通二维码.png](images/%E5%B0%8F%E9%B9%85%E9%80%9A%E4%BA%8C%E7%BB%B4%E7%A0%81.png)
 * 文档咨询：参考`docs/``contact.md`获取联系方式
 
 * 问题反馈：提交 Issue 至本仓库或发送邮件至 gengchuankeji@gengchuan.cn
 
-***
-
-**版本说明**：本文档对应项目 V0.0.7 版本，更新时间 2025 年 10 月，后续功能迭代将同步更新此文档。
+* 公众号联系：
+![qrcode_for 公众号.jpg](images/qrcode_for%20%E5%85%AC%E4%BC%97%E5%8F%B7.jpg)
+* 企业微信开发者群群：
+![开发者群.jpg](images/%E5%BC%80%E5%8F%91%E8%80%85%E7%BE%A4.jpg)
