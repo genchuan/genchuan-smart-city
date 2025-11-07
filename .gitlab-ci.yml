@@ -23,10 +23,10 @@ BuildAndPush:
     - echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
     - |
       # 遍历所有模块并构建 Docker 镜像
-      for module in "gc-module-datacenter" "yudao-gateway" "yudao-module-ai-server" "yudao-module-bpm-server" "yudao-module-crm-server" "yudao-module-erp-server" "yudao-module-infra-server" "yudao-module-member-server" "yudao-module-mp-server" "yudao-module-pay-server" "yudao-module-report-server" "yudao-module-smartcity-server" "yudao-module-product-server" "yudao-module-promotion-server" "yudao-module-statistics-server" "yudao-module-trade-server" "yudao-module-system-server"; do
+      for module in "gc-module-datacenter-server" "yudao-gateway" "yudao-module-ai-server" "yudao-module-bpm-server" "yudao-module-crm-server" "yudao-module-erp-server" "yudao-module-infra-server" "yudao-module-member-server" "yudao-module-mp-server" "yudao-module-pay-server" "yudao-module-report-server" "yudao-module-smartcity-server" "yudao-module-product-server" "yudao-module-promotion-server" "yudao-module-statistics-server" "yudao-module-trade-server" "yudao-module-system-server"; do
         case $module in
           "yudao-gateway") jar_path="yudao-gateway" ;;
-          "gc-module-datacenter") jar_path="gc-module-datacenter/gc-module-datacenter-server" ;;
+          "gc-module-datacenter-server") jar_path="gc-module-datacenter/gc-module-datacenter-server" ;;
           "yudao-module-ai-server") jar_path="yudao-module-ai/yudao-module-ai-server" ;;
           "yudao-module-bpm-server") jar_path="yudao-module-bpm/yudao-module-bpm-server" ;;
           "yudao-module-crm-server") jar_path="yudao-module-crm/yudao-module-crm-server" ;;
