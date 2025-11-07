@@ -23,24 +23,13 @@ BuildAndPush:
     - echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
     - |
       # 遍历所有模块并构建 Docker 镜像
-      for module in "gc-module-datacenter-server" "yudao-gateway" "yudao-module-ai-server" "yudao-module-bpm-server" "yudao-module-crm-server" "yudao-module-erp-server" "yudao-module-infra-server" "yudao-module-member-server" "yudao-module-mp-server" "yudao-module-pay-server" "yudao-module-report-server" "yudao-module-smartcity-server" "yudao-module-product-server" "yudao-module-promotion-server" "yudao-module-statistics-server" "yudao-module-trade-server" "yudao-module-system-server"; do
+      for module in "yudao-gateway" "gc-module-datacenter-server" "gc-module-industry-server" "yudao-module-bpm-server" "yudao-module-infra-server" "yudao-module-system-server"; do
         case $module in
           "yudao-gateway") jar_path="yudao-gateway" ;;
           "gc-module-datacenter-server") jar_path="gc-module-datacenter/gc-module-datacenter-server" ;;
-          "yudao-module-ai-server") jar_path="yudao-module-ai/yudao-module-ai-server" ;;
+          "gc-module-industry-server") jar_path="gc-module-industry/gc-module-industry-server" ;;
           "yudao-module-bpm-server") jar_path="yudao-module-bpm/yudao-module-bpm-server" ;;
-          "yudao-module-crm-server") jar_path="yudao-module-crm/yudao-module-crm-server" ;;
-          "yudao-module-erp-server") jar_path="yudao-module-erp/yudao-module-erp-server" ;;
           "yudao-module-infra-server") jar_path="yudao-module-infra/yudao-module-infra-server" ;;
-          "yudao-module-product-server") jar_path="yudao-module-mall/yudao-module-product-server" ;;
-          "yudao-module-promotion-server") jar_path="yudao-module-mall/yudao-module-promotion-server" ;;
-          "yudao-module-statistics-server") jar_path="yudao-module-mall/yudao-module-statistics-server" ;;
-          "yudao-module-trade-server") jar_path="yudao-module-mall/yudao-module-trade-server" ;;
-          "yudao-module-member-server") jar_path="yudao-module-member/yudao-module-member-server" ;;
-          "yudao-module-mp-server") jar_path="yudao-module-mp/yudao-module-mp-server" ;;
-          "yudao-module-pay-server") jar_path="yudao-module-pay/yudao-module-pay-server" ;;
-          "yudao-module-report-server") jar_path="yudao-module-report/yudao-module-report-server" ;;
-          "yudao-module-smartcity-server") jar_path="yudao-module-smartcity/yudao-module-smartcity-server" ;;
           "yudao-module-system-server") jar_path="yudao-module-system/yudao-module-system-server" ;;
         esac
         
