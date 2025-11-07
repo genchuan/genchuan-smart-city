@@ -1,0 +1,42 @@
+pipeline {
+  agent {
+    kubernetes {
+      inheritFrom 'maven'
+      containerTemplate {
+        name 'maven'
+        image 'maven:3.9.6-alpine-jdk17-docker'
+      }
+
+    }
+
+  }
+  stages {
+    stage('代码拉取') {
+      steps {
+        git(url: 'http://gitlab.genchuan.cn/genchuan/sc-ruoyi-cloud.git', credentialsId: 'gitlab-credentials', branch: 'master', changelog: true, poll: false)
+      }
+    }
+
+    stage('代码编译') {
+      steps {
+        container('maven') {
+          sh 'mvn clean package -Dmaven.test.skip=true'
+        }
+
+      }
+    }
+
+    stage('镜像构建') {
+      agent none
+      steps {
+        script {
+          def ServerName = ['yudao-gateway':'yudao-gateway', 'yudao-module-bpm-biz':'yudao-module-bpm/yudao-module-bpm-biz', 'yudao-module-infra-biz':'yudao-module-infra/yudao-module-infra-biz','yudao-module-smartcity-biz':'yudao-module-smartcity/yudao-module-smartcity-biz', 'yudao-module-system-biz':'yudao-module-system/yudao-module-system-biz' ]
+          sh "docker login harbor.genchuan.cn -uusername -ppassword"
+          ServerName.each{sh "docker build --build-arg MODULE_NAME=${it.key} --build-arg JAR_PATH=${it.value} -t harbor.genchuan.cn/sccsgl/${it.key}:laster . && docker push harbor.genchuan.cn/sccsgl/${it.key}:laster "}
+        }
+
+      }
+    }
+
+  }
+}
