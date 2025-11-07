@@ -352,11 +352,11 @@ java -jar gc-module-industry-server.jar
 
 一共有**四**类 Maven Module：
 
-| Maven Module         | 作用                         |
-| -------------------- | ---------------------------- |
-| `yudao-dependencies` | Maven 依赖版本管理           |
-| `yudao-framework`    | Java 框架拓展                |
-| gc-module-xxx`       | XXX 功能的 Module 模块       |
+| Maven Module         | 作用                 |
+|----------------------|--------------------|
+| `yudao-dependencies` | Maven 依赖版本管理       |
+| `yudao-framework`    | Java 框架拓展          |
+| gc-module-xxx`       | XXX 功能的 Module 模块  |
 | `yudao-server`       | 管理后台 + 用户 App 的服务端 |
 
 ### 1. yudao-dependencies
@@ -375,23 +375,23 @@ java -jar gc-module-industry-server.jar
 
 ① 技术组件：技术相关的组件封装，例如说 MyBatis、Redis 等等。
 
-| Maven Module                                    | 作用                                                         |
-| ----------------------------------------------- | ------------------------------------------------------------ |
-| `yudao-common`                                  | 定义基础 pojo 类、枚举、工具类等                             |
-| `yudao-spring-boot-starter-web`                 | Web 封装，提供全局异常、访问日志等                           |
-| `yudao-spring-boot-starter-websocket`           | WebSocket 封装，提供 Token 认证、WebSocket 集群广播、Message 监听 |
-| `yudao-spring-boot-starter-security`            | 认证授权，基于 Spring Security 实现                          |
-| `yudao-spring-boot-starter-mybatis`             | 数据库操作，基于 MyBatis Plus 实现                           |
-| `yudao-spring-boot-starter-redis`               | 缓存操作，基于 Spring Data Redis + Redisson 实现             |
-| `yudao-spring-boot-starter-mq`                  | 消息队列，基于 Redis 实现，支持集群消费和广播消费            |
-| `yudao-spring-boot-starter-job`                 | 定时任务，基于 Quartz 实现，支持集群模式                     |
-| `yudao-spring-boot-starter-protection`          | 服务保障，提供幂等、分布式锁、限流、熔断等功能               |
-| `yudao-spring-boot-starter-excel`               | Excel 导入导出，基于 EasyExcel 实现                          |
-| `yudao-spring-boot-starter-monitor`             | 服务监控，提供链路追踪、日志服务、指标收集等功能             |
-| `yudao-spring-boot-starter-test`                | 单元测试，基于 Junit + Mockito 实现                          |
+| Maven Module                               | 作用                                                    |
+|--------------------------------------------|-------------------------------------------------------|
+| `yudao-common`                             | 定义基础 pojo 类、枚举、工具类等                                   |
+| `yudao-spring-boot-starter-web`            | Web 封装，提供全局异常、访问日志等                                   |
+| `yudao-spring-boot-starter-websocket`      | WebSocket 封装，提供 Token 认证、WebSocket 集群广播、Message 监听    |
+| `yudao-spring-boot-starter-security`       | 认证授权，基于 Spring Security 实现                            |
+| `yudao-spring-boot-starter-mybatis`        | 数据库操作，基于 MyBatis Plus 实现                              |
+| `yudao-spring-boot-starter-redis`          | 缓存操作，基于 Spring Data Redis + Redisson 实现               |
+| `yudao-spring-boot-starter-mq`             | 消息队列，基于 Redis 实现，支持集群消费和广播消费                          |
+| `yudao-spring-boot-starter-job`            | 定时任务，基于 Quartz 实现，支持集群模式                              |
+| `yudao-spring-boot-starter-protection`     | 服务保障，提供幂等、分布式锁、限流、熔断等功能                               |
+| `yudao-spring-boot-starter-excel`          | Excel 导入导出，基于 EasyExcel 实现                            |
+| `yudao-spring-boot-starter-monitor`        | 服务监控，提供链路追踪、日志服务、指标收集等功能                              |
+| `yudao-spring-boot-starter-test`           | 单元测试，基于 Junit + Mockito 实现                            |
 | `yudao-spring-boot-starter-file` 【已合并】     | 文件客户端，支持将文件存储到 S3（MinIO、阿里云、腾讯云、七牛云）、本地、FTP、SFTP、数据库等 |
-| `yudao-spring-boot-starter-captcha` 【已合并】  | 验证码 Captcha，提供滑块验证码                               |
-| `yudao-spring-boot-starter-flowable` 【已合并】 | 工作流，基于 Flowable 实现                                   |
+| `yudao-spring-boot-starter-captcha` 【已合并】  | 验证码 Captcha，提供滑块验证码                                   |
+| `yudao-spring-boot-starter-flowable` 【已合并】 | 工作流，基于 Flowable 实现                                    |
 
 友情提示：
 
@@ -401,13 +401,13 @@ java -jar gc-module-industry-server.jar
 
 ② 业务组件：业务相关的组件封装，例如说数据字典、操作日志等等。如果是业务组件，名字会包含 `biz` 关键字。
 
-| Maven Module                                          | 作用                                       |
-| ----------------------------------------------------- | ------------------------------------------ |
-| `yudao-spring-boot-starter-biz-tenant`                | SaaS 多租户                                |
-| `yudao-spring-boot-starter-biz-data-permission`       | 数据权限                                   |
-| `yudao-spring-boot-starter-biz-operatelog` 【已合并】 | 操作日志                                   |
+| Maven Module                                     | 作用                    |
+|--------------------------------------------------|-----------------------|
+| `yudao-spring-boot-starter-biz-tenant`           | SaaS 多租户              |
+| `yudao-spring-boot-starter-biz-data-permission`  | 数据权限                  |
+| `yudao-spring-boot-starter-biz-operatelog` 【已合并】 | 操作日志                  |
 | `yudao-spring-boot-starter-biz-pay` 【已合并】        | 支付客户端，对接微信支付、支付宝等支付平台 |
-| `yudao-spring-boot-starter-biz-ip`                    | 地区 & IP 库                               |
+| `yudao-spring-boot-starter-biz-ip`               | 地区 & IP 库             |
 
 友情提示：
 
@@ -423,9 +423,9 @@ java -jar gc-module-industry-server.jar
 
 每个模块包含两个 Maven Module，分别是：
 
-| Maven Module              | 作用                               |
-| ------------------------- | ---------------------------------- |
-| `yudao-module-xxx-api`    | 提供给其它模块的 API 定义          |
+| Maven Module              | 作用                |
+|---------------------------|-------------------|
+| `yudao-module-xxx-api`    | 提供给其它模块的 API 定义   |
 | `yudao-module-xxx-server` | 模块的功能的具体实现（服务提供者） |
 
 ![](images/后端结构.png)
@@ -436,67 +436,67 @@ java -jar gc-module-industry-server.jar
 
 #### 3.2 Controller 包
 
-| 所在包             | 类                               | 作用                                                         | 示例                                  |
-| ------------------ | -------------------------------- | ------------------------------------------------------------ | ------------------------------------- |
-| `controller.admin` | Controller 类                    | 提供给管理后台的 RESTful API，默认以 `admin-api/` 作为前缀。 例如 `admin-api/system/auth/login` 登录接口 | AuthController                        |
-| `controller.admin` | VO 类                            | Admin Controller 接口的入参 ReqVO、出参 RespVO               | AuthLoginReqVO、AuthLoginRespVO       |
-| `controller.app`   | Controller 类，**以 App 为前缀** | 提供给用户 App 的 RESTful API，默认以 `app-api/` 作为前缀。 例如 `app-api/member/auth/login` 登录接口 | AppAuthController                     |
-| `controller.app`   | VO 类，**以 App 为前缀**         | App Controller 接口的入参 ReqVO、出参 RespVO                 | AppAuthLoginReqVO、AppAuthLoginRespVO |
-| `controller`       | `.http` 文件                     | [IDEA Http Client 插件 (opens new window)](https://www.iocoder.cn/Spring-Boot/IDEA-HTTP-Client/?yudao)，模拟请求 RESTful 接口 | AuthController.http                   |
+| 所在包                | 类                          | 作用                                                                                                                   | 示例                                   |
+|--------------------|----------------------------|----------------------------------------------------------------------------------------------------------------------|--------------------------------------|
+| `controller.admin` | Controller 类               | 提供给管理后台的 RESTful API，默认以 `admin-api/` 作为前缀。 例如 `admin-api/system/auth/login` 登录接口                                    | AuthController                       |
+| `controller.admin` | VO 类                       | Admin Controller 接口的入参 ReqVO、出参 RespVO                                                                               | AuthLoginReqVO、AuthLoginRespVO       |
+| `controller.app`   | Controller 类，**以 App 为前缀** | 提供给用户 App 的 RESTful API，默认以 `app-api/` 作为前缀。 例如 `app-api/member/auth/login` 登录接口                                     | AppAuthController                    |
+| `controller.app`   | VO 类，**以 App 为前缀**         | App Controller 接口的入参 ReqVO、出参 RespVO                                                                                 | AppAuthLoginReqVO、AppAuthLoginRespVO |
+| `controller`       | `.http` 文件                 | [IDEA Http Client 插件 (opens new window)](https://www.iocoder.cn/Spring-Boot/IDEA-HTTP-Client/?yudao)，模拟请求 RESTful 接口 | AuthController.http                  |
 
 ####  3.3 Service 包
 
-| 所在包    | 类             | 作用               | 示例                 |
-| --------- | -------------- | ------------------ | -------------------- |
-| `service` | Service 接口   | 业务逻辑的接口定义 | AdminUserService     |
-| `service` | ServiceImpl 类 | 业务逻辑的实现类   | AdminUserServiceImpl |
+| 所在包       | 类             | 作用        | 示例                   |
+|-----------|---------------|-----------|----------------------|
+| `service` | Service 接口    | 业务逻辑的接口定义 | AdminUserService     |
+| `service` | ServiceImpl 类 | 业务逻辑的实现类  | AdminUserServiceImpl |
 
 ####  3.4 DAL 包
 
-| 所在包           | 类          | 作用                                       | 示例                      |
-| ---------------- | ----------- | ------------------------------------------ | ------------------------- |
-| `dal`            | -           | Data Access Layer，数据访问层              |                           |
+| 所在包              | 类          | 作用                             | 示例                        |
+|------------------|------------|--------------------------------|---------------------------|
+| `dal`            | -          | Data Access Layer，数据访问层        |                           |
 | `dal.dataobject` | DO 类       | Data Object，映射数据库表、或者 Redis 对象 | AdminUserDO               |
-| `dal.mysql`      | Mapper 接口 | 数据库的操作                               | AdminUserMapper           |
-| `dal.redis`      | RedisDAO 类 | Redis 的操作                               | OAuth2AccessTokenRedisDAO |
+| `dal.mysql`      | Mapper 接口  | 数据库的操作                         | AdminUserMapper           |
+| `dal.redis`      | RedisDAO 类 | Redis 的操作                      | OAuth2AccessTokenRedisDAO |
 
 #### 3.5 API 包
 
-| 所在包 | 类         | 作用                                | 示例                                   |
-| ------ | ---------- | ----------------------------------- | -------------------------------------- |
-| `api`  | Api 接口   | 提供给其它模块的 API 接口           | AdminUserApi                           |
-| `api`  | ApiImpl 类 | 提供给其它模块的 API 实现类         | AdminUserApiImpl                       |
-| `api`  | DTO 类     | Api 接口的入参 ReqDTO、出参 RespDTO | AdminUserRespDTO、SocialUserBindReqDTO |
+| 所在包   | 类         | 作用                          | 示例                                    |
+|-------|-----------|-----------------------------|---------------------------------------|
+| `api` | Api 接口    | 提供给其它模块的 API 接口             | AdminUserApi                          |
+| `api` | ApiImpl 类 | 提供给其它模块的 API 实现类            | AdminUserApiImpl                      |
+| `api` | DTO 类     | Api 接口的入参 ReqDTO、出参 RespDTO | AdminUserRespDTO、SocialUserBindReqDTO |
 
 #### 3.6 MQ 包
 
-| 所在包        | 类          | 作用                    | 示例            |
-| ------------- | ----------- | ----------------------- | --------------- |
-| `mq`          | -           | Message Queue，消息队列 |                 |
-| `mq.message`  | Message 类  | 发送和消费的消息        | SmsSendMessage  |
-| `mq.producer` | Producer 类 | 消息的生产者            | SmsProducer     |
-| `mq.consumer` | Consumer 类 | 消息的消费者            | SmsSendConsumer |
+| 所在包           | 类          | 作用                 | 示例              |
+|---------------|------------|--------------------|-----------------|
+| `mq`          | -          | Message Queue，消息队列 |                 |
+| `mq.message`  | Message 类  | 发送和消费的消息           | SmsSendMessage  |
+| `mq.producer` | Producer 类 | 消息的生产者             | SmsProducer     |
+| `mq.consumer` | Consumer 类 | 消息的消费者             | SmsSendConsumer |
 
 #### 3.7 Job 包
 
-| 所在包 | 类     | 作用     | 示例    |
-| ------ | ------ | -------- | ------- |
-| `job`  | Job 类 | 定时任务 | DemoJob |
+| 所在包   | 类     | 作用   | 示例      |
+|-------|-------|------|---------|
+| `job` | Job 类 | 定时任务 | DemoJob |
 
 #### 3.8 Enum 包
 
-| 所在包  | 类                    | 作用           | 示例               |
-| ------- | --------------------- | -------------- | ------------------ |
-| `enums` | Enum 类               | 字段的枚举     | SocialTypeEnum     |
+| 所在包     | 类                    | 作用      | 示例                 |
+|---------|----------------------|---------|--------------------|
+| `enums` | Enum 类               | 字段的枚举   | SocialTypeEnum     |
 | `enums` | DictTypeConstants 类  | 数据字典的枚举 | DictTypeConstants  |
-| `enums` | ErrorCodeConstants 类 | 错误码的枚举   | ErrorCodeConstants |
+| `enums` | ErrorCodeConstants 类 | 错误码的枚举  | ErrorCodeConstants |
 
 #### 3.9 其它
 
-| 所在包      | 类           | 作用                             | 示例                      |
-| ----------- | ------------ | -------------------------------- | ------------------------- |
+| 所在包         | 类          | 作用                      | 示例                        |
+|-------------|------------|-------------------------|---------------------------|
 | `convert`   | Convert 接口 | DTO / VO / DO 等对象之间的转换器 | UserConvert               |
-| `framework` | -            | 模块自身的框架封装               | YudaoCaptchaConfiguration |
+| `framework` | -          | 模块自身的框架封装               | YudaoCaptchaConfiguration |
 
 ## 👾 前端结构
 
@@ -583,18 +583,17 @@ java -jar gc-module-industry-server.jar
 
 ### 小鹅通店铺
 - **店铺地址**：[点击访问小鹅通店铺](https://appa50w17034868.h5.xiaoeknow.com)
+
 - **店铺二维码**：  
 ![小鹅通二维码.png](images/%E5%B0%8F%E9%B9%85%E9%80%9A%E4%BA%8C%E7%BB%B4%E7%A0%81.png)
 ---
+### 官方网站
+- **网站地址**：[http://genchuan.cn](http://genchuan.cn/)
 
-### 文档咨询
-参考 [`docs/contact.md`](docs/contact.md) 获取联系方式
-
----
 
 ### 问题反馈
 - **提交 Issue** 至本仓库
-- **发送邮件** 至：`gengchuankeji@gengchuan.cn`
+- **发送邮件** 至：`genchuankeji@gengchuan.cn`
 
 ---
 
