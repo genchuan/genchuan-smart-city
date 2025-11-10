@@ -99,6 +99,14 @@ public class AssetServerAttrCfgController {
                         BeanUtils.toBean(list, AssetServerAttrCfgRespVO.class));
     }
 
+    @GetMapping("/list")
+    @Operation(summary = "获取资产客户端属性列表")
+    @PreAuthorize("@ss.hasPermission('datacenter:asset-client-attr-cfg:query')")
+    public CommonResult<List<AssetServerAttrCfgSimpleRespVO>> getAssetServerAttrList(){
+        List<AssetServerAttrCfgSimpleRespVO> list = assetServerAttrCfgService.getAssetServerAttrList();
+        return success(list);
+    }
+
     //======================== Excel 导入 =====================//
     @PostMapping("/import")
     @Operation(summary = "导入资产服务端属性配置 Excel")

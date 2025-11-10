@@ -76,7 +76,7 @@ public class AssetCatRuleCfgServiceImpl implements AssetCatRuleCfgService {
     /**
      * 获取状态为启用（1）的资产分类规则名称及规则ID
      *
-     * @return
+     * @return 状态为启用（1）的资产分类规则名称及规则ID
      */
     @Override
     public List<AssetCatRuleCfgSimpleRespVO> getEnabledAssetCatRuleList() {
@@ -88,6 +88,19 @@ public class AssetCatRuleCfgServiceImpl implements AssetCatRuleCfgService {
         );
 
         return BeanUtils.toBean(enabledRules, AssetCatRuleCfgSimpleRespVO.class);
+    }
+
+    @Override
+    public List<AssetCatRuleCfgSimpleRespVO> getAssetCatRuleList() {
+        // 查询资产分类规则列表
+        List<AssetCatRuleCfgDO> rules = assetCatRuleCfgMapper.selectList(
+                new LambdaQueryWrapperX<AssetCatRuleCfgDO>()
+                        .select(AssetCatRuleCfgDO::getAssetCatRuleId,
+                                AssetCatRuleCfgDO::getRuleName,
+                                AssetCatRuleCfgDO::getCodeGenLogic)
+        );
+
+        return BeanUtils.toBean(rules, AssetCatRuleCfgSimpleRespVO.class);
     }
 
 }

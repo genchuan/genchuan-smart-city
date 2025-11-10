@@ -2,10 +2,8 @@ package cn.iocoder.yudao.module.datacenter.service.assetManagement.assetDataMng.
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetserverattrcfg.vo.AssetServerAttrCfgImportExcelVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetserverattrcfg.vo.AssetServerAttrCfgImportRespVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetserverattrcfg.vo.AssetServerAttrCfgPageReqVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetserverattrcfg.vo.AssetServerAttrCfgSaveReqVO;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetserverattrcfg.vo.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -81,6 +79,25 @@ public class AssetServerAttrCfgServiceImpl implements AssetServerAttrCfgService 
     @Override
     public PageResult<AssetServerAttrCfgDO> getAssetServerAttrCfgPage(AssetServerAttrCfgPageReqVO pageReqVO) {
         return assetServerAttrCfgMapper.selectPage(pageReqVO);
+    }
+
+    /**
+     *
+     * @return 返回资产服务端属性配置列表数据
+     */
+    @Override
+    public List<AssetServerAttrCfgSimpleRespVO> getAssetServerAttrList() {
+        List<AssetServerAttrCfgDO> attrs = assetServerAttrCfgMapper.selectList(
+                new LambdaQueryWrapperX<AssetServerAttrCfgDO>()
+                        .select(AssetServerAttrCfgDO::getRelAssetId,
+                                AssetServerAttrCfgDO::getAttrName,
+                                AssetServerAttrCfgDO::getAttrCode,
+                                AssetServerAttrCfgDO::getAttrDataType,
+                                AssetServerAttrCfgDO::getAttrValue,
+                                AssetServerAttrCfgDO::getCollectFreq,
+                                AssetServerAttrCfgDO::getLastCollectTime)
+        );
+        return BeanUtils.toBean(attrs, AssetServerAttrCfgSimpleRespVO.class);
     }
 
     /**
@@ -169,6 +186,7 @@ public class AssetServerAttrCfgServiceImpl implements AssetServerAttrCfgService 
 
         return respVO;
     }
+
 
     /**
      * 从导入数据创建资产服务端属性配置

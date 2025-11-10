@@ -98,13 +98,26 @@ public class AssetCatRuleCfgController {
     /**
      * 获取启用的资产分类规则名称及ID
      *
-     * @return
+     * @return 启用的资产分类规则名称及ID
      */
     @GetMapping("/enabled-list")
     @Operation(summary = "获取启用的资产分类规则列表（用于字典）")
     @PreAuthorize("@ss.hasPermission('datacenter:asset-cat-rule-cfg:query')")
     public CommonResult<List<AssetCatRuleCfgSimpleRespVO>> getEnabledAssetCatRuleList() {
         List<AssetCatRuleCfgSimpleRespVO> list = assetCatRuleCfgService.getEnabledAssetCatRuleList();
+        return success(list);
+    }
+
+    /**
+     * 获取资产分类规则列表
+     *
+     * @return 获取资产分类规则列表
+     */
+    @GetMapping("/list")
+    @Operation(summary = "获取资产分类规则列表）")
+    @PreAuthorize("@ss.hasPermission('datacenter:asset-cat-rule-cfg:query')")
+    public CommonResult<List<AssetCatRuleCfgSimpleRespVO>> getAssetCatRuleList() {
+        List<AssetCatRuleCfgSimpleRespVO> list = assetCatRuleCfgService.getAssetCatRuleList();
         return success(list);
     }
 

@@ -82,7 +82,7 @@ public class AssetMngCompServiceImpl implements AssetMngCompService {
             // 校验存在
             validateAssetMngCompExists(id);
         }
-        assetMngCompMapper.deleteBatchIds(ids);
+        assetMngCompMapper.deleteByIds(ids);
     }
 
 }
