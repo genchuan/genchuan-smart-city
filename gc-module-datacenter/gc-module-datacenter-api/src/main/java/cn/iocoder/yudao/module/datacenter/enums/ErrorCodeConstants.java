@@ -219,7 +219,21 @@ public interface ErrorCodeConstants {
     ErrorCode DEVICE_GRID_NOT_EXISTS = new ErrorCode(100_309, "设备关联网格不存在");
     ErrorCode DEVICE_MON_COMP_NOT_EXISTS = new ErrorCode(100_310, "设备关联监测部件不存在");
 
-
+    // ========== 协同联动管理 1012000000 ==========
+    ErrorCode COOP_FLOW_CFG_NOT_EXISTS = new ErrorCode(1012000000, "联动流程配置不存在");
+    ErrorCode COOP_COMMAND_NOT_EXISTS = new ErrorCode(1012000001, "联动指令不存在");
+    ErrorCode COOP_UNIT_INFO_NOT_EXISTS = new ErrorCode(1012000002, "联动单位信息不存在");
+    // ========== 指挥调度中心 1013000000 ==========
+    ErrorCode CROSS_REGION_DISPATCH_NOT_EXISTS = new ErrorCode(1013000000, "跨域调度协调不存在");
+    ErrorCode DISPATCH_COMMAND_NOT_EXISTS = new ErrorCode(1013000001, "调度指令不存在");
+    ErrorCode DISPATCH_PLAN_NOT_EXISTS = new ErrorCode(1013000002, "调度方案不存在");
+    ErrorCode DISPATCH_EFFECT_FEEDBACK_NOT_EXISTS = new ErrorCode(1013000003, "调度效果反馈不存在");
+    ErrorCode TASK_OVERALL_MNG_NOT_EXISTS = new ErrorCode(1013000004, "任务统筹管理不存在");
+    ErrorCode PLAN_LAUNCH_RESP_NOT_EXISTS = new ErrorCode(1013000005, "预案启动响应不存在");
+    // ========== 复盘追溯管理 1014000000 ==========
+    ErrorCode EVT_PROCESS_TRACE_NOT_EXISTS = new ErrorCode(1014000000, "事件过程回溯不存在");
+    ErrorCode EXP_LIB_NOT_EXISTS = new ErrorCode(1014000001, "经验库不存在");
+    ErrorCode DISPOSAL_RESULT_EVAL_NOT_EXISTS = new ErrorCode(1014000002, "处置结果评估不存在");
 
 
 
