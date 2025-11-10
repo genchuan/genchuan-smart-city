@@ -218,6 +218,16 @@ public interface ErrorCodeConstants {
     ErrorCode DEVICE_APP_SCENE_NOT_EXISTS = new ErrorCode(100_308, "设备关联应用场景不存在");
     ErrorCode DEVICE_GRID_NOT_EXISTS = new ErrorCode(100_309, "设备关联网格不存在");
     ErrorCode DEVICE_MON_COMP_NOT_EXISTS = new ErrorCode(100_310, "设备关联监测部件不存在");
+    ErrorCode DEVICE_OPER_RPT_NOT_EXISTS = new ErrorCode(100_311, "设备运行状态统计不存在");
+    ErrorCode DEVICE_CAT_RPT_NOT_EXISTS = new ErrorCode(100_312, "设备分类统计不存在");
+    ErrorCode DEVICE_OFFLINE_ALERT_NOT_EXISTS = new ErrorCode(100_313, "设备离线预警不存在");
+    ErrorCode DEVICE_REAL_TIME_STATUS_NOT_EXISTS = new ErrorCode(100_314, "设备实时状态不存在");
+    ErrorCode DEVICE_SPATIAL_DATA_NOT_EXISTS = new ErrorCode(100_315, "设备空间数据不存在");
+    ErrorCode DEVICE_SHARE_ATTR_NOT_EXISTS = new ErrorCode(100_316, "设备共享属性配置不存在");
+    ErrorCode DEVICE_SERVER_ATTR_NOT_EXISTS = new ErrorCode(100_317, "设备服务器属性配置不存在");
+    ErrorCode DEVICE_DATA_QUAL_CK_NOT_EXISTS = new ErrorCode(100_318, "设备数据质量检查不存在");
+    ErrorCode DEVICE_CLIENT_ATTR_NOT_EXISTS = new ErrorCode(100_319, "设备客户端属性配置不存在");
+    ErrorCode DEVICE_TELEMETRY_DATA_NOT_EXISTS = new ErrorCode(100_320, "设备遥测数据不存在");
 
     // ========== 协同联动管理 1012000000 ==========
     ErrorCode COOP_FLOW_CFG_NOT_EXISTS = new ErrorCode(1012000000, "联动流程配置不存在");
