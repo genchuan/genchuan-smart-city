@@ -1,9 +1,3 @@
-![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
-
-![技术栈](https://img.shields.io/badge/Stack-KubeSphere%20%7C%20ThingsBoard%20%7C%20芋道-yellow.svg)
-
-![版本](https://img.shields.io/badge/Version-V6.0.0-green.svg)
-
 # 开源免费！开箱即用的智慧城市一网统管 AI 平台，开发者直接上手部署！
 
 还在为智慧城市项目踩技术选型坑、重复搭建架构、多领域适配难发愁？集成诺依框架、芋道源码、ThingsBoard 物联网平台、Flowable 流程引擎及 AI 大模型，下载代码即可免费搭建城市治理数字中枢，让开发效率直接翻倍！
