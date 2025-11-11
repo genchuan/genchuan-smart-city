@@ -2,20 +2,22 @@ package cn.iocoder.yudao.module.industry.controller.admin.emergency.dashboard.gl
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 应急核心指标 查询 Request VO")
 @Data
 public class EmergCoreMetricsQueryReqVO {
 
-        @Schema(description = "查询地区-省市县的 short_code")
-        private String regionCode;
+        @Schema(description = "查询地区-省市县三级shortCode码，6位",example = "110000")
+        private String regionShortCode;
 
-        @Schema(description = "查询周期，例如 YYYYMM 或 YYYY 或 YYYYQn")
-        private String statCycle;
+        @Schema(description = "统计开始时间（含）,yyyy-MM-dd HH:mm:ss", example = "2025-01-01 09:00:00")
+        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        private LocalDateTime startDate;
 
-        //统计周期起始日期，格式 yyyy-MM-dd",根据statCycle解析来的
-        private String statCycleStartDate;
-
-        //统计周期截止日期，格式 yyyy-MM-dd",根据statCycle解析来的
-        private String statCycleEndDate;
+        @Schema(description = "统计结束时间（含）,yyyy-MM-dd HH:mm:ss", example = "2025-11-01 23:59:59")
+        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        private LocalDateTime endDate;
 }
