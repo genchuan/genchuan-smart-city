@@ -13,4 +13,7 @@ public class AssetCategorySimpleVO {
 
     @Schema(description = "资产分类名称", example = "市政设施")
     private String assetCatName;
+
+    @Schema(description = "上级分类ID", example = "25267")
+    private String parentCatId;
 }

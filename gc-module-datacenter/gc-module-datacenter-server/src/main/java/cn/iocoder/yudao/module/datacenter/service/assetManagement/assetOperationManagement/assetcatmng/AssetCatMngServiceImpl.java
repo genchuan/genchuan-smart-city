@@ -80,6 +80,21 @@ public class AssetCatMngServiceImpl implements AssetCatMngService {
     }
 
     /**
+     *
+     * @return 资产分类列表数据
+     */
+    @Override
+    public List<AssetCategorySimpleVO> getAssetCatList() {
+        List<AssetCatMngDO> cats = assetCatMngMapper.selectList(
+                new LambdaQueryWrapperX<AssetCatMngDO>()
+                        .select(AssetCatMngDO::getAssetCatId,
+                                AssetCatMngDO::getAssetCatName,
+                                AssetCatMngDO::getParentCatId)
+        );
+        return BeanUtils.toBean(cats, AssetCategorySimpleVO.class);
+    }
+
+    /**
      * 导入资产分类管理
      * @param importAssetCatMng 导入信息列表
      * @param isUpdateSupport 是否支持更新已有数据
