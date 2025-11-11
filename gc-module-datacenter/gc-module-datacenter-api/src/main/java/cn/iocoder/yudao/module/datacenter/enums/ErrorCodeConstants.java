@@ -244,8 +244,16 @@ public interface ErrorCodeConstants {
     ErrorCode EVT_PROCESS_TRACE_NOT_EXISTS = new ErrorCode(1014000000, "事件过程回溯不存在");
     ErrorCode EXP_LIB_NOT_EXISTS = new ErrorCode(1014000001, "经验库不存在");
     ErrorCode DISPOSAL_RESULT_EVAL_NOT_EXISTS = new ErrorCode(1014000002, "处置结果评估不存在");
-
-
+    // ========== 分域分析研判 1015000000 ==========
+    ErrorCode ANALYSIS_GRID_NOT_EXISTS = new ErrorCode(1015000001, "按网格分域分析研判统计不存在");
+    ErrorCode ANALYSIS_MNG_COMP_NOT_EXISTS = new ErrorCode(1015000002, "按管理部件分析研判统计不存在");
+    ErrorCode ANALYSIS_ASSET_NOT_EXISTS = new ErrorCode(1015000003, "按资产分域分析研判统计不存在");
+    ErrorCode ANALYSIS_APP_SCENE_NOT_EXISTS = new ErrorCode(1015000004, "按应用场景分析研判统计不存在");
+    ErrorCode ANALYSIS_MON_EVT_NOT_EXISTS = new ErrorCode(1015000005, "按监测事件分析研判统计不存在");
+    ErrorCode ANALYSIS_MON_COMP_NOT_EXISTS = new ErrorCode(1015000006, "按监测部件分析研判统计不存在");
+    ErrorCode ANALYSIS_MNG_MATTER_NOT_EXISTS = new ErrorCode(1015000007, "按管理事项分析研判统计不存在");
+    ErrorCode ANALYSIS_REGION_NOT_EXISTS = new ErrorCode(1015000008, "按行政区划分析研判统计不存在");
+    ErrorCode ANALYSIS_DEVICE_NOT_EXISTS = new ErrorCode(1015000009, "按设备分域分析研判统计不存在");
 
 
 
