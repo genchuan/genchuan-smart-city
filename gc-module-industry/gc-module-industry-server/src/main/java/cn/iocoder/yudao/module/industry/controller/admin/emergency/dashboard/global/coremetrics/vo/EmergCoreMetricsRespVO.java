@@ -15,7 +15,6 @@ public class EmergCoreMetricsRespVO {
     @ExcelProperty("应急事件办结率")
     private BigDecimal completeRate;
 
-    //TODO 表结构缺少可用时间字段，暂时无法求出
     @Schema(description = "平均处置时长（avg_handle_endure），单位：小时，来源：stat_mon_evt_rpt表",
             requiredMode = Schema.RequiredMode.REQUIRED, example = "12.3")
     @ExcelProperty("平均处置时长")
