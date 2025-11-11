@@ -255,7 +255,19 @@ public interface ErrorCodeConstants {
     ErrorCode ANALYSIS_REGION_NOT_EXISTS = new ErrorCode(1015000008, "按行政区划分析研判统计不存在");
     ErrorCode ANALYSIS_DEVICE_NOT_EXISTS = new ErrorCode(1015000009, "按设备分域分析研判统计不存在");
 
-
+    //=====================================设备管理模块---100_40-----100_50============================================
+    ErrorCode BASIC_MON_PT_NOT_EXISTS = new ErrorCode(100_401, "基础监测点位不存在");
+    ErrorCode BASIC_MON_IDX_NOT_EXISTS = new ErrorCode(100_402, "基础监测指标不存在");
+    ErrorCode BASIC_MON_EVT_NOT_EXISTS = new ErrorCode(100_403, "基础监测事件不存在");
+    ErrorCode DOM_DIV_ADMIN_NOT_EXISTS = new ErrorCode(100_404, "行政区划分域不存在");
+    ErrorCode DOM_DIV_GRID_NOT_EXISTS = new ErrorCode(100_405, "网格分域不存在");
+    ErrorCode DOM_DIV_MNG_COMP_NOT_EXISTS = new ErrorCode(100_406, "管理部件分域不存在");
+    ErrorCode DOM_DIV_MNG_MATTER_NOT_EXISTS = new ErrorCode(100_407, "管理事项分域不存在");
+    ErrorCode DOM_DIV_MON_COMP_NOT_EXISTS = new ErrorCode(100_408, "监测部件分域不存在");
+    ErrorCode DOM_DIV_MON_EVT_NOT_EXISTS = new ErrorCode(100_409, "监测事件分域不存在");
+    ErrorCode DOM_DIV_APP_SCENE_NOT_EXISTS = new ErrorCode(100_410, "应用场景分域不存在");
+    ErrorCode DOM_DIV_ASSET_NOT_EXISTS = new ErrorCode(100_411, "资产分域不存在");
+    ErrorCode DOM_DIV_DEVICE_NOT_EXISTS = new ErrorCode(100_412, "设备分域不存在");
 
 
 
