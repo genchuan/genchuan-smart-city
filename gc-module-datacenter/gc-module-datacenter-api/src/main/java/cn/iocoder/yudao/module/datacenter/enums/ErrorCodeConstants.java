@@ -254,6 +254,7 @@ public interface ErrorCodeConstants {
     ErrorCode ANALYSIS_MNG_MATTER_NOT_EXISTS = new ErrorCode(1015000007, "按管理事项分析研判统计不存在");
     ErrorCode ANALYSIS_REGION_NOT_EXISTS = new ErrorCode(1015000008, "按行政区划分析研判统计不存在");
     ErrorCode ANALYSIS_DEVICE_NOT_EXISTS = new ErrorCode(1015000009, "按设备分域分析研判统计不存在");
+    ErrorCode EMER_RES_STATUS_NOT_EXISTS = new ErrorCode(1015000009, "资源状态统计不存在");
 
     //=====================================设备管理模块---100_40-----100_50============================================
     ErrorCode BASIC_MON_PT_NOT_EXISTS = new ErrorCode(100_401, "基础监测点位不存在");
@@ -268,6 +269,22 @@ public interface ErrorCodeConstants {
     ErrorCode DOM_DIV_APP_SCENE_NOT_EXISTS = new ErrorCode(100_410, "应用场景分域不存在");
     ErrorCode DOM_DIV_ASSET_NOT_EXISTS = new ErrorCode(100_411, "资产分域不存在");
     ErrorCode DOM_DIV_DEVICE_NOT_EXISTS = new ErrorCode(100_412, "设备分域不存在");
+    ErrorCode BASIC_MON_PT_RPT_NOT_EXISTS = new ErrorCode(100_413, "基础监测点位报表不存在");
+    ErrorCode BASIC_MON_EVT_RPT_NOT_EXISTS = new ErrorCode(100_414, "基础监测事件报表不存在");
+    ErrorCode BASIC_MON_IDX_RPT_NOT_EXISTS = new ErrorCode(100_415, "基础监测指标报表不存在");
+    ErrorCode DOM_ADMIN_MON_RPT_NOT_EXISTS = new ErrorCode(100_416, "行政区划分域监测报表不存在");
+    ErrorCode DOM_GRID_MON_RPT_NOT_EXISTS = new ErrorCode(100_417, "网格分域监测报表不存在");
+    ErrorCode DOM_MNG_MATTER_RPT_NOT_EXISTS = new ErrorCode(100_418, "管理事项分域监测报表不存在");
+    ErrorCode DOM_MON_COMP_MON_RPT_NOT_EXISTS = new ErrorCode(100_419, "监测部件分域监测报表不存在");
+    ErrorCode DOM_MON_EVT_MON_RPT_NOT_EXISTS = new ErrorCode(100_420, "监测事件分域监测报表不存在");
+    ErrorCode DOM_MNG_COMP_MON_RPT_NOT_EXISTS = new ErrorCode(100_421, "管理部件分域监测报表不存在");
+    ErrorCode DOM_ASSET_MON_RPT_NOT_EXISTS = new ErrorCode(100_422, "资产分域监测报表不存在");
+    ErrorCode DOM_APP_SCENE_MON_RPT_NOT_EXISTS = new ErrorCode(100_423, "应用场景分域监测报表不存在");
+    ErrorCode DOM_DEVICE_MON_RPT_NOT_EXISTS = new ErrorCode(100_424, "设备分域监测报表不存在");
+    ErrorCode MON_PT_SUMMARY_RPT_NOT_EXISTS = new ErrorCode(100_425, "监测点位汇总报表不存在");
+    ErrorCode TREND_ANALYSIS_RPT_NOT_EXISTS = new ErrorCode(100_426, "综合趋势分析报表不存在");
+    ErrorCode KEY_IDX_SUMMARY_RPT_NOT_EXISTS = new ErrorCode(100_427, "关键指标汇总报表不存在");
+    ErrorCode COMPARE_ANALYSIS_RPT_NOT_EXISTS = new ErrorCode(100_428, "综合对比分析报表不存在");
 
 
 
