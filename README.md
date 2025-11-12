@@ -329,7 +329,7 @@ java -jar gc-module-industry-server.jar
 | -------------------- | ---------------------------- |
 | `yudao-dependencies` | Maven 依赖版本管理           |
 | `yudao-framework`    | Java 框架拓展                |
-| gc-module-xxx`       | XXX 功能的 Module 模块       |
+| `gc-module-xxx`      | XXX 功能的 Module 模块       |
 | `yudao-server`       | 管理后台 + 用户 App 的服务端 |
 
 ### 1. yudao-dependencies
@@ -565,20 +565,10 @@ java -jar gc-module-industry-server.jar
 ### 亘川智城开发实战学院
 
 - **地址**：[点击访问亘川智城开发实战学院](https://appa50w17034868.h5.xiaoeknow.com)
-- **扫码加入我们**：
-
----
 
 ### 官方网站
 
 - **网站地址**：[http://genchuan.cn](http://genchuan.cn/)
-
-### 问题反馈
-
-- **提交 Issue** 至本仓库
-- **发送邮件** 至：`genchuankeji@gengchuan.cn`
-
----
 
 ### 公众号联系
 
