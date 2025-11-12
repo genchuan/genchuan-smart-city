@@ -329,7 +329,7 @@ java -jar gc-module-industry-server.jar
 | -------------------- | ---------------------------- |
 | `yudao-dependencies` | Maven 依赖版本管理           |
 | `yudao-framework`    | Java 框架拓展                |
-| `gc-module-xxx`      | XXX 功能的 Module 模块       |
+| gc-module-xxx`       | XXX 功能的 Module 模块       |
 | `yudao-server`       | 管理后台 + 用户 App 的服务端 |
 
 ### 1. yudao-dependencies
@@ -555,9 +555,3 @@ java -jar gc-module-industry-server.jar
 ## 九、许可证
 
 本项目开源版本采用**Apache License 2.0**，允许商业使用，但需保留版权声明。
-
-## 十、联系方式
-
-### 开发团队
-
-**福建亘川科技有限公司**
