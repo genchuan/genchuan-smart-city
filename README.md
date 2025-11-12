@@ -553,3 +553,9 @@ java -jar gc-module-industry-server.jar
 ## 九、许可证
 
 本项目开源版本采用**Apache License 2.0**，允许商业使用，但需保留版权声明。
+
+## 十、联系我们
+
+###亘川智城开发实战学院
+
+**地址**：[点击访问亘川智城开发实战学院](https://appa50w17034868.h5.xiaoeknow.com)
