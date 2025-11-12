@@ -1,10 +1,12 @@
 # 开源免费！开箱即用的智慧城市一网统管 AI 平台，开发者直接上手部署！
 
-还在为智慧城市项目踩技术选型坑、重复搭建架构、多领域适配难发愁？集成诺依框架、芋道源码、ThingsBoard 物联网平台、Flowable 流程引擎及 AI 大模型，下载代码即可免费搭建城市治理数字中枢，让开发效率直接翻倍！
-覆盖城管住建（城市运营管理服务平台）、水利水务、生态环保、交通运输、应急安全、卫生健康、教育管理、文体旅游、产业园区、智慧社区、数字乡村、市场监管、综合执法、营商服务、停车管理、物业管理等政府治理全领域核心应用场景，提供完整部署脚本、开发规范与二次开发手册，Apache License 2.0 授权允许商业使用。无论你是做技术学习、项目快速落地还是二次定制开发，这款开源项目都能帮你少走 80% 的弯路！
+做智慧城市项目，还在为技术选型踩坑、架构从零搭建、多领域适配棘手而头疼？这里集成诺依框架、芋道源码、ThingsBoard 物联网平台、Flowable 流程引擎及 AI 大模型，下载代码即可免费搭建城市治理数字中枢，让开发效率直接翻倍！
+
+覆盖城管住建（城市运行管理服务平台）、水利水务、生态环保、交通运输、应急安全、卫生健康、教育管理、文体旅游、产业园区、智慧社区、数字乡村、市场监管、综合执法、营商服务、停车管理、物业管理等政府治理全领域核心应用场景，以及电子商城、CRM、ERP等企业应用系统，提供完整部署脚本、开发规范与二次开发手册，Apache License 2.0 授权允许商业使用。无论你是做技术学习、项目快速落地还是二次定制开发，这款开源项目都能帮你少走一半的弯路！
 
 后端采用 Spring MVC 6 + Spring Security 6，数据层使用 MySQL/Redis + Druid + MyBatis Plus + Dynamic Datasource；服务治理与消息/事务/任务由 Nacos、RocketMQ、Sentinel、Seata、XXL-Job承载；监控与可观测性采用 Spring Boot Admin + SkyWalking，接口文档与开发提效用 Springdoc + Jackson + MapStruct + Lombok；流程编排由 Flowable 工作流引擎提供 BPMN/BPMN2 执行与扩展能力。
-前端采用 Vue 3 + Vite + Element Plus + TypeScript主流技术栈，基于组合式 API 与极速构建工具打造高效开发体验，集成 Pinia状态管理替代 Vuex、Vue Router实现路由控制
+
+前端采用 Vue 3 + Vite + Element Plus + TypeScript主流技术栈，基于组合式 API 与极速构建工具打造高效开发体验，集成 Pinia状态管理替代 Vuex、Vue Router实现路由控制。
 
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
 
