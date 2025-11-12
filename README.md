@@ -559,5 +559,3 @@ java -jar gc-module-industry-server.jar
 ## 十、联系我们
 
 ### 亘川智城开发实战学院
-
-**地址**：[点击访问亘川智城开发实战学院](https://appa50w17034868.h5.xiaoeknow.com)
