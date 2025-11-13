@@ -141,6 +141,33 @@ public interface ErrorCodeConstants {
     ErrorCode ALARM_RULE_THRESHOLD_INVALID = new ErrorCode(1003001004, "预警阈值上限必须大于下限");
     ErrorCode ALARM_RULE_SCOPE_IMMUTABLE = new ErrorCode(1003001005, "关联对象范围不可修改");
     ErrorCode EARLY_WARN_REGION_NOT_EXISTS = new ErrorCode(1003001006, "按行政区划预警告警统计不存在");
+    ErrorCode EARLY_WARN_DEVICE_NOT_EXISTS = new ErrorCode(100_106, "按设备分域预警告警统计不存在");
+    ErrorCode EARLY_WARN_MON_EVT_NOT_EXISTS = new ErrorCode(100_107, "按监测事件预警告警统计不存在");
+    ErrorCode EARLY_WARN_GRID_NOT_EXISTS = new ErrorCode(100_108, "按网格分域预警告警统计不存在");
+    ErrorCode EARLY_WARN_ASSET_NOT_EXISTS = new ErrorCode(100_109, "按资产分域预警告警统计不存在");
+    ErrorCode EARLY_WARN_APP_SCENE_NOT_EXISTS = new ErrorCode(100_110, "按应用场景预警告警统计不存在");
+    ErrorCode EARLY_WARN_MON_COMP_NOT_EXISTS = new ErrorCode(100_111, "按监测部件预警告警统计不存在");
+    ErrorCode EARLY_WARN_MATTER_NOT_EXISTS = new ErrorCode(100_112, "按管理事项预警告警统计不存在");
+    ErrorCode EARLY_WARN_MNG_COMP_NOT_EXISTS = new ErrorCode(100_113, "按管理部件预警告警统计不存在");
+    ErrorCode EARLY_WARN_DISPATCH_NOT_EXISTS = new ErrorCode(100_114, "预警告警派单不存在");
+    ErrorCode EARLY_WARN_HANDLE_EVAL_NOT_EXISTS = new ErrorCode(100_115, "预警告警处置评估不存在");
+    ErrorCode EARLY_WARN_HANDLE_TRACE_NOT_EXISTS = new ErrorCode(100_116, "预警告警处置跟踪不存在");
+    ErrorCode EARLY_WARN_RELEASE_NOT_EXISTS = new ErrorCode(100_117, "预警告警解除不存在");
+    ErrorCode EARLY_WARN_ARCH_NOT_EXISTS = new ErrorCode(100_118, "预警告警处置归档不存在");
+    ErrorCode RELATED_RISK_IDENT_NOT_EXISTS = new ErrorCode(100_119, "关联风险识别不存在");
+    ErrorCode RISK_PROPAGATE_CHAIN_NOT_EXISTS = new ErrorCode(100_120, "风险传播链不存在");
+    ErrorCode RISK_SOURCE_ARCH_NOT_EXISTS = new ErrorCode(100_121, "风险源档案不存在");
+    ErrorCode RISK_TRACE_PATH_NOT_EXISTS = new ErrorCode(100_121, "风险溯源路径不存在");
+    ErrorCode EARLY_WARN_CUSTOM_CFG_NOT_EXISTS = new ErrorCode(100_122, "预警告警自定义统计配置不存在");
+    ErrorCode EARLY_WARN_RISK_PRED_NOT_EXISTS = new ErrorCode(100_123, "预警告警风险趋势预测不存在");
+    ErrorCode EARLY_WARN_TIME_NOT_EXISTS = new ErrorCode(100_124, "预警告警时间维度统计不存在");
+    ErrorCode EARLY_WARN_AREA_NOT_EXISTS = new ErrorCode(100_125, "预警告警区域维度统计不存在");
+    ErrorCode EARLY_WARN_TYPE_NOT_EXISTS = new ErrorCode(100_126, "预警告警类型维度统计不存在");
+    ErrorCode EARLY_WARN_HANDLE_EFF_NOT_EXISTS = new ErrorCode(100_127, "预警告警处置效率统计不存在");
+    ErrorCode EARLY_WARN_LEVEL_NOT_EXISTS = new ErrorCode(100_128, "预警告警等级维度统计不存在");
+
+
+
 
     //====================================资产管理模块=========================================================================
 
@@ -255,6 +282,16 @@ public interface ErrorCodeConstants {
     ErrorCode ANALYSIS_REGION_NOT_EXISTS = new ErrorCode(1015000008, "按行政区划分析研判统计不存在");
     ErrorCode ANALYSIS_DEVICE_NOT_EXISTS = new ErrorCode(1015000009, "按设备分域分析研判统计不存在");
     ErrorCode EMER_RES_STATUS_NOT_EXISTS = new ErrorCode(1015000009, "资源状态统计不存在");
+    ErrorCode DECISION_SCHEME_NOT_EXISTS = new ErrorCode(1015000011, "决策方案生成不存在");
+    ErrorCode SCHEME_SIM_COMPARE_NOT_EXISTS = new ErrorCode(1015000012, "方案模拟对比统计不存在");
+    ErrorCode POL_COMPLIANCE_CK_NOT_EXISTS = new ErrorCode(1015000013, "政策合规校验不存在");
+    ErrorCode RES_MATCH_SCHEDULE_NOT_EXISTS = new ErrorCode(1015000014, "资源匹配调度不存在");
+    ErrorCode DECISION_EFFECT_EVAL_NOT_EXISTS = new ErrorCode(1015000015, "决策效果评估不存在");
+    ErrorCode DECISION_OPT_SUGG_NOT_EXISTS = new ErrorCode(1015000016, "决策优化建议不存在");
+    ErrorCode DECISION_EXEC_TRACK_NOT_EXISTS = new ErrorCode(1015000017, "决策执行跟踪不存在");
+    ErrorCode TYPICAL_SCENARIO_CASE_NOT_EXISTS = new ErrorCode(1015000018, "典型场景案例库不存在");
+    ErrorCode CUSTOM_RPT_CFG_NOT_EXISTS = new ErrorCode(1015000019, "自定义报表配置不存在");
+    ErrorCode SCREEN_TEMPLATE_MNG_NOT_EXISTS = new ErrorCode(1015000020, "大屏模板管理不存在");
 
     //=====================================设备管理模块---100_40-----100_50============================================
     ErrorCode BASIC_MON_PT_NOT_EXISTS = new ErrorCode(100_401, "基础监测点位不存在");
