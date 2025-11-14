@@ -15,14 +15,6 @@ import java.util.List;
 @Mapper
 public interface LawForceViewMapper {
 
-        /**
-         * 查询执法力量分布视图
-         *
-         * @param lawForceViewQueryReqVO 查询参数
-         * @return LawForceViewRespVO 结果
-         */
-        LawForceViewRespVO getLawForceView(LawForceViewQueryReqVO lawForceViewQueryReqVO);
-
         List<LawForceStaffLocVO> selectStaffLoc(@Param("regionShortCode") String regionShortCode);
 
         List<LawForceVehicleLocVO> selectVehicleLoc(@Param("regionShortCode") String regionShortCode);
