@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class PassengerFlowServerImpl implements PassengerFlowServer {
+public class PassengerFlowServiceImpl implements PassengerFlowService {
 
     private final PassengerFlowMapper passengerFlowMapper;
 

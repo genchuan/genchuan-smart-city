@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.industry.service.culturesportstourism.dpzl.passe
 import cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.passengerflow.vo.PassengerFlowQueryReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.passengerflow.vo.PassengerFlowRespVO;
 
-public interface PassengerFlowServer {
+public interface PassengerFlowService {
 
     /**
      * 获取文旅客流总览数据

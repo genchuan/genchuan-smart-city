@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.d
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.passengerflow.vo.PassengerFlowQueryReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.passengerflow.vo.PassengerFlowRespVO;
-import cn.iocoder.yudao.module.industry.service.culturesportstourism.dpzl.passengerflow.PassengerFlowServer;
+import cn.iocoder.yudao.module.industry.service.culturesportstourism.dpzl.passengerflow.PassengerFlowService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -19,17 +19,17 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class PassengerFlowController {
 
-    private final PassengerFlowServer passengerFlowServer;
+    private final PassengerFlowService passengerFlowService;
 
     @GetMapping("/overview")
     @Operation(summary = "获取文旅客流总览数据")
     public CommonResult<PassengerFlowRespVO> getOverview(@Valid PassengerFlowQueryReqVO queryVO) {
-        return CommonResult.success(passengerFlowServer.getPassengerFlowOverview(queryVO));
+        return CommonResult.success(passengerFlowService.getPassengerFlowOverview(queryVO));
     }
 
     @GetMapping("/regions")
     @Operation(summary = "获取区域筛选列表")
     public CommonResult<Object> getRegions() {
-        return CommonResult.success(passengerFlowServer.getRegionOptions());
+        return CommonResult.success(passengerFlowService.getRegionOptions());
     }
 }

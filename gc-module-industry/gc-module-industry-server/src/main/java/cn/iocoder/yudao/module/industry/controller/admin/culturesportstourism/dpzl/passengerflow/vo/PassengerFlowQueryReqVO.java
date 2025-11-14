@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-@Schema(description = "管理后台 - 1.1.3.文旅客流总览视图查询参数")
+@Schema(description = "管理后台 - 文旅客流总览视图查询参数")
 public class PassengerFlowQueryReqVO {
 
     @Schema(description = "日期类型（today-今日 yesterday-昨日 weekend-周末）", example = "today")

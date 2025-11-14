@@ -9,7 +9,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class DataMapServerImpl implements DataMapServer {
+public class DataMapServiceImpl implements DataMapService {
 
     private final DataMapMapper dataMapMapper;
 

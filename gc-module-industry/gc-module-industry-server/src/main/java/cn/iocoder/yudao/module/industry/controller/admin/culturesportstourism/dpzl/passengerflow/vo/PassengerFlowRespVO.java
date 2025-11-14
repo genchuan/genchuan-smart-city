@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-@Schema(description = "管理后台 - 1.1.3.文旅客流总览视图 Response VO")
+@Schema(description = "管理后台 - 文旅客流总览视图 Response VO")
 public class PassengerFlowRespVO {
 
     @Schema(description = "实时客流总量", example = "12580")
