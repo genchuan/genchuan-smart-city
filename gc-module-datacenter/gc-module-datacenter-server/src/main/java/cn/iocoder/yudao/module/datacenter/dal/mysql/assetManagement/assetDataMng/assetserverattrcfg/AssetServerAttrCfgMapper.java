@@ -8,6 +8,7 @@ import cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetDa
 
 import org.apache.ibatis.annotations.Mapper;
 
+
 /**
  * 资产服务端属性配置 Mapper
  *

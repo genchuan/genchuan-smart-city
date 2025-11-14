@@ -23,11 +23,7 @@ public class EmergCoreMetricsServiceImpl implements EmergCoreMetricsService {
 
     @Override
     public EmergCoreMetricsRespVO getEmergCoreMetrics(EmergCoreMetricsQueryReqVO emergCoreMetricsQueryReqVO) {
-        if (StatCycleUtil.isNotEmpty(emergCoreMetricsQueryReqVO.getStatCycle())){
-            String[] statCycleRange= StatCycleUtil.parseStatCycle(emergCoreMetricsQueryReqVO.getStatCycle());
-            emergCoreMetricsQueryReqVO.setStatCycleStartDate(statCycleRange[0]);
-            emergCoreMetricsQueryReqVO.setStatCycleEndDate(statCycleRange[1]);
-        }
+
 
         return emergCoreMetricsMapper.getEmergCoreMetrics(emergCoreMetricsQueryReqVO);
     }

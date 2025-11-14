@@ -1,6 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.emergency.dashboard.global.coremetrics.EmergCoreMetricsMapper">
+    <!--
+        按省/市/县三级行政区划筛选的通用 SQL 片段。
+        参数说明：
+          - searchAreaCode : 前端传入的行政区划码（6位），用于搜索和判断省/市/县级。
+          - areaColumn : 数据表中的行政区划编码字段(6位)（例如 dist_region、region_code 等）。
+        使用方式：
+                    <include refid="likeByAreaLevel">
+                        <property name="areaColumn" value="LEFT(dist_region,6)"/>
+                        <property name="searchAreaCode" value="#{regionShortCode}"/>
+                    </include>
+    -->
+    <!-- 按省/市/县三级行政区划筛选的通用 SQL 片段 -->
+    <sql id="likeByAreaLevel">
+        <choose>
+            <when test="regionShortCode != null and regionShortCode.endsWith('0000')">
+                ${areaColumn} LIKE CONCAT(LEFT(${searchAreaCode},2),'%')
+            </when>
+            <when test="regionShortCode != null and regionShortCode.endsWith('00') and !regionShortCode.endsWith('0000')">
+                ${areaColumn} LIKE CONCAT(LEFT(${searchAreaCode},4),'%')
+            </when>
+            <otherwise>
+                ${areaColumn} = ${searchAreaCode}
+            </otherwise>
+        </choose>
+    </sql>
 
     <select id="getEmergCoreMetrics"
             resultType="cn.iocoder.yudao.module.industry.controller.admin.emergency.dashboard.global.coremetrics.vo.EmergCoreMetricsRespVO">
@@ -10,18 +35,21 @@
             (
                 SELECT ROUND(
                     CASE
-                        WHEN IFNULL(SUM(total_rpt_count),0) = 0 THEN 100
-                        ELSE IFNULL(SUM(completed_count),0) / IFNULL(SUM(total_rpt_count),1) * 100
+                        WHEN IFNULL(count(complete_rate),0) = 0 THEN 100
+                        ELSE IFNULL(SUM(complete_rate),0) / IFNULL(count(complete_rate),1)
                     END,
                     2
                 )
                 FROM stat_mon_evt_rpt
                 <where>
-                    <if test="regionCode != null and regionCode != ''">
-                        region_code = #{regionCode}
+                    <if test="regionShortCode != null and regionShortCode != ''">
+                        region_code = #{regionShortCode}
                     </if>
-                    <if test="statCycle != null and statCycle != ''">
-                        AND stat_cycle = #{statCycle}
+                    <if test="startDate != null">
+                        AND stat_time &gt;= #{startDate}
+                    </if>
+                    <if test="endDate != null">
+                        AND stat_time &lt;= #{endDate}
                     </if>
                 </where>
             ) AS completeRate,
@@ -38,12 +66,17 @@
                 )
                 FROM stat_early_warn_region
                 <where>
-                    <if test="regionCode != null and regionCode != ''">
-                        region_code = #{regionCode}
+                    <if test="regionShortCode != null and regionShortCode != ''">
+                        region_code = #{regionShortCode}
                     </if>
-                    <if test="statCycle != null and statCycle != ''">
-                        AND stat_cycle = #{statCycle}
+
+                    <if test="startDate != null">
+                        AND stat_time &gt;= #{startDate}
                     </if>
+                    <if test="endDate != null">
+                        AND stat_time &lt;= #{endDate}
+                    </if>
+
                 </where>
             ) AS earlyWarnAccRate,
 
@@ -51,18 +84,19 @@
             (
                 SELECT ROUND(
                     CASE
-                        WHEN IFNULL(SUM(stock_qty),0) = 0 THEN 0
-                        ELSE IFNULL(SUM(dispatch_count),0) / IFNULL(SUM(stock_qty),1) * 100
+                        WHEN IFNULL(SUM(total_qty),0) = 0 THEN 0
+                        ELSE IFNULL(SUM(dispatch_qty),0) / IFNULL(SUM(total_qty),1) * 100
                     END,
                     2
                 )
                 FROM biz_emerg_res
                 <where>
-                    <if test="regionCode != null and regionCode != ''">
-                        region_code = #{regionCode}
-                    </if>
-                    <if test="statCycle != null and statCycle != ''">
-                        AND stat_cycle = #{statCycle}
+                    <if test="regionShortCode != null and regionShortCode != ''">
+                        AND
+                        <include refid="likeByAreaLevel">
+                            <property name="areaColumn" value="LEFT(dist_region,6)"/>
+                            <property name="searchAreaCode" value="#{regionShortCode}"/>
+                        </include>
                     </if>
                 </where>
             ) AS resUseRate,
@@ -72,12 +106,17 @@
                 SELECT ROUND(IFNULL(AVG(avg_handle_endure),0), 2)
                 FROM stat_mon_evt_rpt
                 <where>
-                    <if test="regionCode != null and regionCode != ''">
-                        region_code = #{regionCode}
+                    <if test="regionShortCode != null and regionShortCode != ''">
+                        region_code = #{regionShortCode}
                     </if>
-                    <if test="statCycle != null and statCycle != ''">
-                        AND stat_cycle = #{statCycle}
+
+                    <if test="startDate != null">
+                        AND stat_time &gt;= #{startDate}
                     </if>
+                    <if test="endDate != null">
+                        AND stat_time &lt;= #{endDate}
+                    </if>
+
                 </where>
             ) AS avgHandleEndure,
 
@@ -92,17 +131,26 @@
                 )
                 FROM biz_risk_hazard
                 <where>
-                    <if test="regionCode != null and regionCode != ''">
-                        region_code = #{regionCode}
+                    <if test="regionShortCode != null and regionShortCode != ''">
+                        AND
+                        <include refid="likeByAreaLevel">
+                            <property name="areaColumn" value="LEFT(region_full_code,6)"/>
+                            <property name="searchAreaCode" value="#{regionShortCode}"/>
+                        </include>
                     </if>
-                    <if test="statCycleStartDate != null and statCycleStartDate != '' and statCycleEndDate != null and statCycleEndDate != ''">
-                        AND discover_time &gt;= #{statCycleStartDate}
-                        AND discover_time &lt; #{statCycleEndDate}
+
+                    <if test="startDate != null">
+                        AND discover_time &gt;= #{startDate}
                     </if>
+                    <if test="endDate != null">
+                        AND discover_time &lt;= #{endDate}
+                    </if>
+
 
                 </where>
             ) AS riskRectifyRate
 
     </select>
+
 
 </mapper>

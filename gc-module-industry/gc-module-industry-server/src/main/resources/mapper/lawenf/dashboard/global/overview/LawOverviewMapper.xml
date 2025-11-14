@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.lawenf.dashboard.global.overview.LawOverviewMapper">
+
+    <!--
+    按省/市/县三级行政区划筛选的通用 SQL 片段。
+    参数说明：
+      - searchAreaCode : 前端传入的行政区划码（6位），用于搜索和判断省/市/县级。
+      - areaColumn : 数据表中的行政区划编码字段(6位)（例如 dist_region、region_code 等）。
+    使用方式：
+                <include refid="likeByAreaLevel">
+                    <property name="areaColumn" value="LEFT(dist_region,6)"/>
+                    <property name="searchAreaCode" value="#{regionShortCode}"/>
+                </include>
+-->
+    <!-- 按省/市/县三级行政区划筛选的通用 SQL 片段 -->
+    <sql id="likeByAreaLevel">
+        <choose>
+            <when test="regionShortCode != null and regionShortCode.endsWith('0000')">
+                ${areaColumn} LIKE CONCAT(LEFT(${searchAreaCode},2),'%')
+            </when>
+            <when test="regionShortCode != null and regionShortCode.endsWith('00') and !regionShortCode.endsWith('0000')">
+                ${areaColumn} LIKE CONCAT(LEFT(${searchAreaCode},4),'%')
+            </when>
+            <otherwise>
+                ${areaColumn} = ${searchAreaCode}
+            </otherwise>
+        </choose>
+    </sql>
+
+    <select id="getLawOverview"
+            parameterType="map"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.overview.vo.LawOverviewRespVO">
+
+        SELECT
+            -- 1. 执法案件总数
+            IFNULL(SUM(c.total_case_count), 0) AS totalCaseCount,
+            -- 2. 今日新增案件数
+            IFNULL(SUM(c.new_case_today), 0) AS newCaseToday,
+            -- 3. 案件办结率
+            IFNULL(AVG(c.case_complete_rate), 0) AS caseCompleteRate,
+
+            -- 4. 执法人员总数
+            (SELECT COUNT(1)
+            FROM biz_law_enf_staff u
+            <where>
+                <if test="regionShortCode != null and regionShortCode != ''">
+                    AND
+                    <include refid="likeByAreaLevel">
+                        <property name="areaColumn" value="LEFT(u.region_full_code,6)"/>
+                        <property name="searchAreaCode" value="#{regionShortCode}"/>
+                    </include>
+                </if>
+            </where>
+            ) AS totalStaffCount,
+
+            -- 5. 执法设备在线数
+            (SELECT IFNULL(SUM(d.online_status), 0)
+            FROM biz_law_enf_device d
+            <where>
+                d.is_delete = 0
+                <if test="regionShortCode != null and regionShortCode != ''">
+                    AND
+                    <include refid="likeByAreaLevel">
+                        <property name="areaColumn" value="LEFT(d.region_full_code,6)"/>
+                        <property name="searchAreaCode" value="#{regionShortCode}"/>
+                    </include>
+                </if>
+            </where>
+            ) AS onlineDeviceCount
+
+        FROM stat_law_enf_case c
+        <where>
+            <if test="regionShortCode != null and regionShortCode != ''">
+                and c.region_short_code = #{regionShortCode}
+            </if>
+            <if test="startDate != null">
+                AND c.stat_time &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND c.stat_time &lt;= #{endDate}
+            </if>
+        </where>
+
+    </select>
+
+</mapper>

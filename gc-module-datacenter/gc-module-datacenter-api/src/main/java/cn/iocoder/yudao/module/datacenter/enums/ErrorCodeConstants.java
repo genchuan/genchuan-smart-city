@@ -218,12 +218,84 @@ public interface ErrorCodeConstants {
     ErrorCode DEVICE_APP_SCENE_NOT_EXISTS = new ErrorCode(100_308, "设备关联应用场景不存在");
     ErrorCode DEVICE_GRID_NOT_EXISTS = new ErrorCode(100_309, "设备关联网格不存在");
     ErrorCode DEVICE_MON_COMP_NOT_EXISTS = new ErrorCode(100_310, "设备关联监测部件不存在");
+    ErrorCode DEVICE_OPER_RPT_NOT_EXISTS = new ErrorCode(100_311, "设备运行状态统计不存在");
+    ErrorCode DEVICE_CAT_RPT_NOT_EXISTS = new ErrorCode(100_312, "设备分类统计不存在");
+    ErrorCode DEVICE_OFFLINE_ALERT_NOT_EXISTS = new ErrorCode(100_313, "设备离线预警不存在");
+    ErrorCode DEVICE_REAL_TIME_STATUS_NOT_EXISTS = new ErrorCode(100_314, "设备实时状态不存在");
+    ErrorCode DEVICE_SPATIAL_DATA_NOT_EXISTS = new ErrorCode(100_315, "设备空间数据不存在");
+    ErrorCode DEVICE_SHARE_ATTR_NOT_EXISTS = new ErrorCode(100_316, "设备共享属性配置不存在");
+    ErrorCode DEVICE_SERVER_ATTR_NOT_EXISTS = new ErrorCode(100_317, "设备服务器属性配置不存在");
+    ErrorCode DEVICE_DATA_QUAL_CK_NOT_EXISTS = new ErrorCode(100_318, "设备数据质量检查不存在");
+    ErrorCode DEVICE_CLIENT_ATTR_NOT_EXISTS = new ErrorCode(100_319, "设备客户端属性配置不存在");
+    ErrorCode DEVICE_TELEMETRY_DATA_NOT_EXISTS = new ErrorCode(100_320, "设备遥测数据不存在");
 
+    // ========== 协同联动管理 1012000000 ==========
+    ErrorCode COOP_FLOW_CFG_NOT_EXISTS = new ErrorCode(1012000000, "联动流程配置不存在");
+    ErrorCode COOP_COMMAND_NOT_EXISTS = new ErrorCode(1012000001, "联动指令不存在");
+    ErrorCode COOP_UNIT_INFO_NOT_EXISTS = new ErrorCode(1012000002, "联动单位信息不存在");
+    // ========== 指挥调度中心 1013000000 ==========
+    ErrorCode CROSS_REGION_DISPATCH_NOT_EXISTS = new ErrorCode(1013000000, "跨域调度协调不存在");
+    ErrorCode DISPATCH_COMMAND_NOT_EXISTS = new ErrorCode(1013000001, "调度指令不存在");
+    ErrorCode DISPATCH_PLAN_NOT_EXISTS = new ErrorCode(1013000002, "调度方案不存在");
+    ErrorCode DISPATCH_EFFECT_FEEDBACK_NOT_EXISTS = new ErrorCode(1013000003, "调度效果反馈不存在");
+    ErrorCode TASK_OVERALL_MNG_NOT_EXISTS = new ErrorCode(1013000004, "任务统筹管理不存在");
+    ErrorCode PLAN_LAUNCH_RESP_NOT_EXISTS = new ErrorCode(1013000005, "预案启动响应不存在");
+    // ========== 复盘追溯管理 1014000000 ==========
+    ErrorCode EVT_PROCESS_TRACE_NOT_EXISTS = new ErrorCode(1014000000, "事件过程回溯不存在");
+    ErrorCode EXP_LIB_NOT_EXISTS = new ErrorCode(1014000001, "经验库不存在");
+    ErrorCode DISPOSAL_RESULT_EVAL_NOT_EXISTS = new ErrorCode(1014000002, "处置结果评估不存在");
+    // ========== 分析决策 1015000000 ==========
+    ErrorCode ANALYSIS_GRID_NOT_EXISTS = new ErrorCode(1015000001, "按网格分域分析研判统计不存在");
+    ErrorCode ANALYSIS_MNG_COMP_NOT_EXISTS = new ErrorCode(1015000002, "按管理部件分析研判统计不存在");
+    ErrorCode ANALYSIS_ASSET_NOT_EXISTS = new ErrorCode(1015000003, "按资产分域分析研判统计不存在");
+    ErrorCode ANALYSIS_APP_SCENE_NOT_EXISTS = new ErrorCode(1015000004, "按应用场景分析研判统计不存在");
+    ErrorCode ANALYSIS_MON_EVT_NOT_EXISTS = new ErrorCode(1015000005, "按监测事件分析研判统计不存在");
+    ErrorCode ANALYSIS_MON_COMP_NOT_EXISTS = new ErrorCode(1015000006, "按监测部件分析研判统计不存在");
+    ErrorCode ANALYSIS_MNG_MATTER_NOT_EXISTS = new ErrorCode(1015000007, "按管理事项分析研判统计不存在");
+    ErrorCode ANALYSIS_REGION_NOT_EXISTS = new ErrorCode(1015000008, "按行政区划分析研判统计不存在");
+    ErrorCode ANALYSIS_DEVICE_NOT_EXISTS = new ErrorCode(1015000009, "按设备分域分析研判统计不存在");
+    ErrorCode EMER_RES_STATUS_NOT_EXISTS = new ErrorCode(1015000010, "资源状态统计不存在");
 
+    ErrorCode DECISION_SCHEME_NOT_EXISTS = new ErrorCode(1015000011, "决策方案生成不存在");
+    ErrorCode SCHEME_SIM_COMPARE_NOT_EXISTS = new ErrorCode(1015000012, "方案模拟对比统计不存在");
+    ErrorCode POL_COMPLIANCE_CK_NOT_EXISTS = new ErrorCode(1015000013, "政策合规校验不存在");
+    ErrorCode RES_MATCH_SCHEDULE_NOT_EXISTS = new ErrorCode(1015000014, "资源匹配调度不存在");
+    ErrorCode DECISION_EFFECT_EVAL_NOT_EXISTS = new ErrorCode(1015000015, "决策效果评估不存在");
+    ErrorCode DECISION_OPT_SUGG_NOT_EXISTS = new ErrorCode(1015000016, "决策优化建议不存在");
+    ErrorCode DECISION_EXEC_TRACK_NOT_EXISTS = new ErrorCode(1015000017, "决策执行跟踪不存在");
+    ErrorCode TYPICAL_SCENARIO_CASE_NOT_EXISTS = new ErrorCode(1015000018, "典型场景案例库不存在");
+    ErrorCode CUSTOM_RPT_CFG_NOT_EXISTS = new ErrorCode(1015000019, "自定义报表配置不存在");
+    ErrorCode SCREEN_TEMPLATE_MNG_NOT_EXISTS = new ErrorCode(1015000020, "大屏模板管理不存在");
 
-
-
-
+    //=====================================设备管理模块---100_40-----100_50============================================
+    ErrorCode BASIC_MON_PT_NOT_EXISTS = new ErrorCode(100_401, "基础监测点位不存在");
+    ErrorCode BASIC_MON_IDX_NOT_EXISTS = new ErrorCode(100_402, "基础监测指标不存在");
+    ErrorCode BASIC_MON_EVT_NOT_EXISTS = new ErrorCode(100_403, "基础监测事件不存在");
+    ErrorCode DOM_DIV_ADMIN_NOT_EXISTS = new ErrorCode(100_404, "行政区划分域不存在");
+    ErrorCode DOM_DIV_GRID_NOT_EXISTS = new ErrorCode(100_405, "网格分域不存在");
+    ErrorCode DOM_DIV_MNG_COMP_NOT_EXISTS = new ErrorCode(100_406, "管理部件分域不存在");
+    ErrorCode DOM_DIV_MNG_MATTER_NOT_EXISTS = new ErrorCode(100_407, "管理事项分域不存在");
+    ErrorCode DOM_DIV_MON_COMP_NOT_EXISTS = new ErrorCode(100_408, "监测部件分域不存在");
+    ErrorCode DOM_DIV_MON_EVT_NOT_EXISTS = new ErrorCode(100_409, "监测事件分域不存在");
+    ErrorCode DOM_DIV_APP_SCENE_NOT_EXISTS = new ErrorCode(100_410, "应用场景分域不存在");
+    ErrorCode DOM_DIV_ASSET_NOT_EXISTS = new ErrorCode(100_411, "资产分域不存在");
+    ErrorCode DOM_DIV_DEVICE_NOT_EXISTS = new ErrorCode(100_412, "设备分域不存在");
+    ErrorCode BASIC_MON_PT_RPT_NOT_EXISTS = new ErrorCode(100_413, "基础监测点位报表不存在");
+    ErrorCode BASIC_MON_EVT_RPT_NOT_EXISTS = new ErrorCode(100_414, "基础监测事件报表不存在");
+    ErrorCode BASIC_MON_IDX_RPT_NOT_EXISTS = new ErrorCode(100_415, "基础监测指标报表不存在");
+    ErrorCode DOM_ADMIN_MON_RPT_NOT_EXISTS = new ErrorCode(100_416, "行政区划分域监测报表不存在");
+    ErrorCode DOM_GRID_MON_RPT_NOT_EXISTS = new ErrorCode(100_417, "网格分域监测报表不存在");
+    ErrorCode DOM_MNG_MATTER_RPT_NOT_EXISTS = new ErrorCode(100_418, "管理事项分域监测报表不存在");
+    ErrorCode DOM_MON_COMP_MON_RPT_NOT_EXISTS = new ErrorCode(100_419, "监测部件分域监测报表不存在");
+    ErrorCode DOM_MON_EVT_MON_RPT_NOT_EXISTS = new ErrorCode(100_420, "监测事件分域监测报表不存在");
+    ErrorCode DOM_MNG_COMP_MON_RPT_NOT_EXISTS = new ErrorCode(100_421, "管理部件分域监测报表不存在");
+    ErrorCode DOM_ASSET_MON_RPT_NOT_EXISTS = new ErrorCode(100_422, "资产分域监测报表不存在");
+    ErrorCode DOM_APP_SCENE_MON_RPT_NOT_EXISTS = new ErrorCode(100_423, "应用场景分域监测报表不存在");
+    ErrorCode DOM_DEVICE_MON_RPT_NOT_EXISTS = new ErrorCode(100_424, "设备分域监测报表不存在");
+    ErrorCode MON_PT_SUMMARY_RPT_NOT_EXISTS = new ErrorCode(100_425, "监测点位汇总报表不存在");
+    ErrorCode TREND_ANALYSIS_RPT_NOT_EXISTS = new ErrorCode(100_426, "综合趋势分析报表不存在");
+    ErrorCode KEY_IDX_SUMMARY_RPT_NOT_EXISTS = new ErrorCode(100_427, "关键指标汇总报表不存在");
+    ErrorCode COMPARE_ANALYSIS_RPT_NOT_EXISTS = new ErrorCode(100_428, "综合对比分析报表不存在");
 
 
 

@@ -2,10 +2,7 @@ package cn.iocoder.yudao.module.datacenter.service.assetManagement.assetDataMng.
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetclientattrcfg.vo.AssetClientAttrCfgImportExcelVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetclientattrcfg.vo.AssetClientAttrCfgImportRespVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetclientattrcfg.vo.AssetClientAttrCfgPageReqVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetclientattrcfg.vo.AssetClientAttrCfgSaveReqVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetclientattrcfg.vo.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -82,6 +79,19 @@ public class AssetClientAttrCfgServiceImpl implements AssetClientAttrCfgService 
     public PageResult<AssetClientAttrCfgDO> getAssetClientAttrCfgPage(AssetClientAttrCfgPageReqVO pageReqVO) {
         return assetClientAttrCfgMapper.selectPage(pageReqVO);
     }
+
+    @Override
+    public List<AssetClientAttrCfgSimpleRespVO> getAssetClientAttrList() {
+        List<AssetClientAttrCfgDO> attrs = assetClientAttrCfgMapper.selectList(
+                new LambdaQueryWrapper<AssetClientAttrCfgDO>()
+                        .select(AssetClientAttrCfgDO::getRelAssetId,
+                                AssetClientAttrCfgDO::getAttrName,
+                                AssetClientAttrCfgDO::getAttrDataType,
+                                AssetClientAttrCfgDO::getAttrValue)
+        );
+        return BeanUtils.toBean(attrs,AssetClientAttrCfgSimpleRespVO.class);
+    }
+
 
     /**
      * 导入资产客户端属性配置
@@ -172,6 +182,7 @@ public class AssetClientAttrCfgServiceImpl implements AssetClientAttrCfgService 
 
         return respVO;
     }
+
 
     /**
      * 从导入数据创建资产客户端属性配置

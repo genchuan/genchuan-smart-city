@@ -6,7 +6,6 @@ import lombok.Data;
 
 @Schema(description = "管理后台 - 应急全域数据概览 Response VO")
 @Data
-//TODO：1.totalEvtCount与数据库有异；2.其余totalResCount、highRiskCount源自的表现在尚未建立
 public class EmergOverviewRespVO {
 
     @Schema(description = "应急事件总数", requiredMode = Schema.RequiredMode.REQUIRED, example = "120")
@@ -29,7 +28,7 @@ public class EmergOverviewRespVO {
     @ExcelProperty("高风险隐患数")
     private Integer highRiskCount;
 
-    @Schema(description = "行政区划覆盖数", requiredMode = Schema.RequiredMode.REQUIRED, example = "12")
+    @Schema(description = "行政区划覆盖数（当前行政区等级下一级别全部的总数，不包括当前行政区等级）", requiredMode = Schema.RequiredMode.REQUIRED, example = "12")
     @ExcelProperty("行政区划覆盖数")
     private Integer regionCoverCount;
 }

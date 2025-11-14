@@ -84,7 +84,7 @@ public class AssetAppSceneServiceImpl implements AssetAppSceneService {
             validateAssetAppSceneExists(id);
         }
         // 批量删除
-        assetAppSceneMapper.deleteBatchIds(ids);
+        assetAppSceneMapper.deleteByIds(ids);
     }
 
 }

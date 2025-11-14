@@ -68,4 +68,9 @@ public interface AssetCatMngService {
      */
     List<AssetCategorySimpleVO> getEnabledAssetCategories();
 
+    /**
+     *
+     * @return 资产分类列表
+     */
+    List<AssetCategorySimpleVO> getAssetCatList();
 }

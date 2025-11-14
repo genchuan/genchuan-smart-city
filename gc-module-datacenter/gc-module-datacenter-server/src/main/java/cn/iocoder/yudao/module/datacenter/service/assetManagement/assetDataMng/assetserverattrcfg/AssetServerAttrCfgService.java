@@ -1,9 +1,6 @@
 package cn.iocoder.yudao.module.datacenter.service.assetManagement.assetDataMng.assetserverattrcfg;
 
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetserverattrcfg.vo.AssetServerAttrCfgImportExcelVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetserverattrcfg.vo.AssetServerAttrCfgImportRespVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetserverattrcfg.vo.AssetServerAttrCfgPageReqVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetserverattrcfg.vo.AssetServerAttrCfgSaveReqVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.assetManagement.assetDataMng.assetserverattrcfg.vo.*;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.assetManagement.assetDataMng.assetserverattrcfg.AssetServerAttrCfgDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -56,4 +53,6 @@ public interface AssetServerAttrCfgService {
     PageResult<AssetServerAttrCfgDO> getAssetServerAttrCfgPage(AssetServerAttrCfgPageReqVO pageReqVO);
 
     AssetServerAttrCfgImportRespVO importAssetServerAttrCfgList(List<AssetServerAttrCfgImportExcelVO> list, boolean updateSupport);
+
+    List<AssetServerAttrCfgSimpleRespVO> getAssetServerAttrList();
 }

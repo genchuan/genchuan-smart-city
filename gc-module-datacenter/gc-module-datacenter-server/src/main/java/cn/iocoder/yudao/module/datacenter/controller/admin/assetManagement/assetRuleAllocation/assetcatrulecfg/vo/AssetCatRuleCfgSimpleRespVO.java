@@ -8,10 +8,13 @@ import lombok.Data;
 @Data
 public class AssetCatRuleCfgSimpleRespVO {
 
-    @Schema(description = "分类规则ID", required = true, example = "1024")
+    @Schema(description = "分类规则ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1024")
     private String assetCatRuleId;
 
-    @Schema(description = "规则名称", required = true, example = "固定资产分类规则")
+    @Schema(description = "规则名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "固定资产分类规则")
     private String ruleName;
+
+    @Schema(description = "编码生成逻辑", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String codeGenLogic;
 
 }

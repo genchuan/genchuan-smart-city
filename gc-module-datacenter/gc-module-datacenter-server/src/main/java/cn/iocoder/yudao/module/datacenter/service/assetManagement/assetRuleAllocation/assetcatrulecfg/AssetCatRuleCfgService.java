@@ -61,4 +61,5 @@ public interface AssetCatRuleCfgService {
      */
     List<AssetCatRuleCfgSimpleRespVO> getEnabledAssetCatRuleList();
 
+    List<AssetCatRuleCfgSimpleRespVO> getAssetCatRuleList();
 }
