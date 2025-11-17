@@ -568,8 +568,5 @@ java -jar gc-module-industry-server.jar
 地址： http://cloud.genchuan.cn
 账号密码：请加入我们进群获取
 
-### 亘川智城开发实战学院
-
-**地址**：[点击访问亘川智城开发实战学院](https://appa50w17034868.h5.xiaoeknow.com)
 
 
