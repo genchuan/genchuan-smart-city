@@ -557,8 +557,6 @@ java -jar gc-module-industry-server.jar
 本项目开源版本采用**Apache License 2.0**，允许商业使用，但需保留版权声明。
 
 
-
-
 ## 十、联系我们
 
 ### 官网地址
