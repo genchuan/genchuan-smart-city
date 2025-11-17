@@ -565,12 +565,6 @@ java -jar gc-module-industry-server.jar
 
 **点击跳转**：http://genchuan.cn
 
-### 微信群
-
-扫码加入我们把：
-
-![](images/开发者群.jpg)
-
 ### 演示平台
 
 地址： http://cloud.genchuan.cn
@@ -580,7 +574,4 @@ java -jar gc-module-industry-server.jar
 
 **地址**：[点击访问亘川智城开发实战学院](https://appa50w17034868.h5.xiaoeknow.com)
 
-### 公众号
 
-扫码即可关注我们：
-![](images/公众号二维码.png)
