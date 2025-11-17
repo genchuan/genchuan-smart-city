@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.culturesportstourism.dpzl.resourcedistr.ResourceDistrMapper">
+
+    <select id="getTypeDistributions" resultType="cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.resourcedistr.vo.ResourceDistrRespVO$ResourceTypeDistribution">
+        SELECT
+        sm.minor_name AS catName,
+        sasr.total_scene_count AS totalSceneCount
+        FROM stat_app_scene_rpt sasr
+        LEFT JOIN sys_app_scene_minor sm ON sasr.minor_code = sm.minor_code
+        <where>
+            <if test="query.minorCode != null and query.minorCode != ''">
+                AND sm.minor_code = #{query.minorCode}
+            </if>
+            <if test="query.regionCode != null and query.regionCode != ''">
+                AND sasr.region_code = #{query.regionCode}
+            </if>
+        </where>
+        GROUP BY sm.minor_name
+        ORDER BY totalSceneCount DESC
+    </select>
+
+    <select id="getDensityData" resultType="cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.resourcedistr.vo.ResourceDistrRespVO$ResourceDensity">
+        SELECT
+        coord_x AS coordX,
+        coord_y AS coordY,
+        count AS count
+        FROM gc_biz_mng_comp_spatial  -- 修正表名
+        <where>
+            <if test="query.minorCode != null and query.minorCode != ''">
+                AND minor_code = #{query.minorCode}
+            </if>
+            <if test="query.sceneStatus != null">
+                AND EXISTS (
+                SELECT 1 FROM biz_mng_comp_info bmci
+                WHERE bmci.id = gc_biz_mng_comp_spatial.comp_id
+                )
+            </if>
+            <if test="query.regionCode != null and query.regionCode != ''">
+                AND region_code = #{query.regionCode}
+            </if>
+        </where>
+        GROUP BY coord_x, coord_y
+    </select>
+
+    <select id="getStatusRatio" resultType="cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.resourcedistr.vo.ResourceDistrRespVO$ResourceStatusRatio">
+        SELECT
+        normal_comp_count AS normalCompCount,
+        disabled_scene_count AS disabledSceneCount
+        FROM stat_app_scene_rpt
+        <where>
+            <if test="query.minorCode != null and query.minorCode != ''">
+                AND minor_code = #{query.minorCode}
+            </if>
+            <if test="query.regionCode != null and query.regionCode != ''">
+                AND region_code = #{query.regionCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="getTopResources" resultType="cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.resourcedistr.vo.ResourceDistrRespVO$TopResource">
+        SELECT
+        c.comp_name AS compName,
+        c.count
+        FROM biz_mng_comp_info c
+        <where>
+            <if test="query.minorCode != null and query.minorCode != ''">
+                AND c.minor_code = #{query.minorCode}
+            </if>
+            <if test="query.regionCode != null and query.regionCode != ''">
+                AND c.region_code = #{query.regionCode}
+            </if>
+        </where>
+        ORDER BY c.hot_value DESC
+        LIMIT 5
+    </select>
+
+    <select id="getResourceTypes" resultType="cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.resourcedistr.vo.ResourceDistrRespVO$ResourceType">
+        SELECT
+            minor_code AS minorCode,
+            minor_name AS minorName
+        FROM sys_app_scene_minor
+    </select>
+</mapper>
