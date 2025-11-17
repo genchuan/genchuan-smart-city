@@ -323,6 +323,55 @@ public interface ErrorCodeConstants {
     ErrorCode KEY_IDX_SUMMARY_RPT_NOT_EXISTS = new ErrorCode(100_427, "关键指标汇总报表不存在");
     ErrorCode COMPARE_ANALYSIS_RPT_NOT_EXISTS = new ErrorCode(100_428, "综合对比分析报表不存在");
 
+    // ========== 业务指导 10017000000 ==========
+    ErrorCode NATIONAL_POL_NOT_EXISTS = new ErrorCode(1001700001, "国家政策信息不存在");
+    ErrorCode LOCAL_REGULATION_NOT_EXISTS = new ErrorCode(1001700002, "地方法规信息不存在");
+    ErrorCode INDUSTRY_STD_NOT_EXISTS = new ErrorCode(1001700003, "行业规范信息不存在");
+    ErrorCode POL_INTERPRETATION_NOT_EXISTS = new ErrorCode(1001700004, "政策解读信息不存在");
+    ErrorCode DOMESTIC_DYNAMIC_NOT_EXISTS = new ErrorCode(1001700005, "国内行业动态不存在");
+    ErrorCode INTERNATIONAL_DYNAMIC_NOT_EXISTS = new ErrorCode(1001700006, "国际行业动态不存在");
+    ErrorCode LOCAL_DYNAMIC_NOT_EXISTS = new ErrorCode(1001700007, "本地行业动态不存在");
+    ErrorCode PROCESS_EXEC_STD_NOT_EXISTS = new ErrorCode(1001700008, "流程执行规范不存在");
+    ErrorCode SPEC_BUSINESS_STD_NOT_EXISTS = new ErrorCode(1001700009, "专项业务标准不存在");
+    ErrorCode FAQ_NOT_EXISTS = new ErrorCode(1001700010, "常见问题解答不存在");
+    ErrorCode TRAIN_MAT_NOT_EXISTS = new ErrorCode(1001700011, "培训资料不存在");
+    ErrorCode SPEC_BUSINESS_GUIDE_NOT_EXISTS = new ErrorCode(1001700012, "专项业务指南不存在");
+    ErrorCode SYSTEM_FUNCTION_GUIDE_NOT_EXISTS = new ErrorCode(1001700013, "系统功能指南不存在");
+    ErrorCode GENERAL_OPER_GUIDE_NOT_EXISTS = new ErrorCode(1001700014, "通用操作指南不存在");
+    ErrorCode INDUSTRY_TYPICAL_EXP_NOT_EXISTS = new ErrorCode(1001700015, "行业典型经验不存在");
+    ErrorCode CROSS_DOM_EXP_NOT_EXISTS = new ErrorCode(1001700016, "跨域经验交流不存在");
+    ErrorCode LOCAL_LEVEL_EXP_NOT_EXISTS = new ErrorCode(1001700017, "本级经验分享不存在");
+    // ========== 公众服务 10018000000 ==========
+    ErrorCode PUBLIC_SVC_INFO_NOT_EXISTS = new ErrorCode(1001800001, "服务信息发布不存在");
+    ErrorCode PUBLIC_POL_INTERPRET_NOT_EXISTS = new ErrorCode(1001800002, "政策解读发布不存在");
+    ErrorCode PUBLIC_NOTICE_NOT_EXISTS = new ErrorCode(1001800003, "通知公告发布不存在");
+    ErrorCode PUBLIC_SNAP_SHOT_NOT_EXISTS = new ErrorCode(1001800004, "随手拍数据不存在");
+    ErrorCode PUBLIC_CONSULTATION_NOT_EXISTS = new ErrorCode(1001800005, "咨询建议不存在");
+    ErrorCode PUBLIC_COMPLAIN_NOT_EXISTS = new ErrorCode(1001800006, "投诉举报不存在");
+    ErrorCode PUBLIC_HOTLINE_LINK_NOT_EXISTS = new ErrorCode(1001800007, "热线对接不存在");
+    ErrorCode PUBLIC_ONLINE_INTERVIEW_NOT_EXISTS = new ErrorCode(1001800008, "在线访谈不存在");
+    ErrorCode PUBLIC_OPINION_COLLECT_NOT_EXISTS = new ErrorCode(1001800009, "民意征集不存在");
+    ErrorCode PUBLIC_FEEDBACK_NOT_EXISTS = new ErrorCode(1001800010, "意见反馈不存在");
+    ErrorCode PUBLIC_AI_SVC_NOT_EXISTS = new ErrorCode(1001800011, "智能客服知识库不存在");
+
+    //=====================================监督检查模块---100_50-----100_60============================================
+    ErrorCode INSPECT_PERSON_INFO_NOT_EXISTS = new ErrorCode(100_501, "巡查巡检人员信息不存在");
+    ErrorCode INSPECT_ROUTE_INFO_NOT_EXISTS = new ErrorCode(100_502, "巡查巡检路线信息不存在");
+    ErrorCode INSPECT_DEVICE_INFO_NOT_EXISTS = new ErrorCode(100_503, "巡查巡检设备信息不存在");
+    ErrorCode INSPECT_STD_INFO_NOT_EXISTS = new ErrorCode(100_504, "巡查巡检标准信息不存在");
+    ErrorCode INSPECT_DAILY_PLAN_NOT_EXISTS = new ErrorCode(100_505, "日常巡查计划信息不存在");
+    ErrorCode INSPECT_EMER_PLAN_NOT_EXISTS = new ErrorCode(100_506, "应急巡查计划信息不存在");
+    ErrorCode INSPECT_SPEC_PLAN_NOT_EXISTS = new ErrorCode(100_507, "专项巡查计划信息不存在");
+    ErrorCode INSPECT_TASK_ALLOCATE_REC_NOT_EXISTS = new ErrorCode(100_508, "巡查巡检任务分配记录不存在");
+    ErrorCode INSPECT_TASK_TRACK_NOT_EXISTS = new ErrorCode(100_509, "巡查巡检任务跟踪不存在");
+    ErrorCode INSPECT_DAILY_EXEC_REC_NOT_EXISTS = new ErrorCode(100_510, "日常巡查执行记录不存在");
+    ErrorCode INSPECT_SPEC_EXEC_REC_NOT_EXISTS = new ErrorCode(100_511, "专项巡查执行记录不存在");
+    ErrorCode INSPECT_EMER_EXEC_REC_NOT_EXISTS = new ErrorCode(100_512, "应急巡查执行记录不存在");
+    ErrorCode INSPECT_PROBLEM_RPT_NOT_EXISTS = new ErrorCode(100_513, "巡查巡检问题上报记录不存在");
+    ErrorCode INSPECT_PROBLEM_LEVEL_REC_NOT_EXISTS = new ErrorCode(100_514, "巡查巡检问题分级记录不存在");
+    ErrorCode INSPECT_RECTIFY_TASK_NOT_EXISTS = new ErrorCode(100_515, "巡查巡检整改任务派发不存在");
+    ErrorCode INSPECT_RECTIFY_TRACK_NOT_EXISTS = new ErrorCode(100_516, "巡查巡检整改进度跟踪视图不存在");
+    ErrorCode INSPECT_RECTIFY_ACCEPT_NOT_EXISTS = new ErrorCode(100_517, "巡查巡检整改结果验收不存在");
 
 
 
