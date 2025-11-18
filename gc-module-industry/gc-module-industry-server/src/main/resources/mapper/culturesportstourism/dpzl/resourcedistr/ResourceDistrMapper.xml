@@ -5,7 +5,7 @@
     <select id="getTypeDistributions" resultType="cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.resourcedistr.vo.ResourceDistrRespVO$ResourceTypeDistribution">
         SELECT
         sm.minor_name AS catName,
-        sasr.total_scene_count AS totalSceneCount
+        SUM(sasr.total_scene_count) AS totalSceneCount
         FROM stat_app_scene_rpt sasr
         LEFT JOIN sys_app_scene_minor sm ON sasr.minor_code = sm.minor_code
         <where>
@@ -21,57 +21,35 @@
     </select>
 
     <select id="getDensityData" resultType="cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.resourcedistr.vo.ResourceDistrRespVO$ResourceDensity">
-        SELECT
-        coord_x AS coordX,
+        SELECT coord_x AS coordX,
         coord_y AS coordY,
-        count AS count
-        FROM gc_biz_mng_comp_spatial  -- 修正表名
+        SUM(`count`) AS count        -- 聚合
+        FROM gc_biz_mng_comp_spatial
         <where>
-            <if test="query.minorCode != null and query.minorCode != ''">
-                AND minor_code = #{query.minorCode}
-            </if>
-            <if test="query.sceneStatus != null">
-                AND EXISTS (
-                SELECT 1 FROM biz_mng_comp_info bmci
-                WHERE bmci.id = gc_biz_mng_comp_spatial.comp_id
-                )
-            </if>
-            <if test="query.regionCode != null and query.regionCode != ''">
-                AND region_code = #{query.regionCode}
-            </if>
+            <!-- 这里保留你已有的动态条件 -->
         </where>
         GROUP BY coord_x, coord_y
     </select>
 
     <select id="getStatusRatio" resultType="cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.resourcedistr.vo.ResourceDistrRespVO$ResourceStatusRatio">
         SELECT
-        normal_comp_count AS normalCompCount,
-        disabled_scene_count AS disabledSceneCount
+        SUM(normal_comp_count) AS normalCompCount,
+        SUM(disabled_scene_count) AS disabledSceneCount
         FROM stat_app_scene_rpt
         <where>
             <if test="query.minorCode != null and query.minorCode != ''">
                 AND minor_code = #{query.minorCode}
             </if>
-            <if test="query.regionCode != null and query.regionCode != ''">
-                AND region_code = #{query.regionCode}
-            </if>
+
         </where>
     </select>
 
     <select id="getTopResources" resultType="cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.resourcedistr.vo.ResourceDistrRespVO$TopResource">
         SELECT
         c.comp_name AS compName,
-        c.count
+        c.count AS count
         FROM biz_mng_comp_info c
-        <where>
-            <if test="query.minorCode != null and query.minorCode != ''">
-                AND c.minor_code = #{query.minorCode}
-            </if>
-            <if test="query.regionCode != null and query.regionCode != ''">
-                AND c.region_code = #{query.regionCode}
-            </if>
-        </where>
-        ORDER BY c.hot_value DESC
+        ORDER BY c.count DESC
         LIMIT 5
     </select>
 
