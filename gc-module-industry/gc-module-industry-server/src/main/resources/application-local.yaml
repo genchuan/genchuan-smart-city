@@ -6,7 +6,7 @@ spring:
       #      username: # Nacos 账号
       #      password: # Nacos 密码
       discovery: # 【配置中心】配置项
-        namespace: Gyh-dev # 命名空间。这里使用 dev 开发环境   #TODO
+        namespace: dev # 命名空间。这里使用 dev 开发环境   #TODO
         group: DEFAULT_GROUP # 使用的 Nacos 配置分组，默认为 DEFAULT_GROUP
         #        ip: 127.0.0.1 # 明确指定IP
         #        port: 48081        # 确保服务端口未被占用

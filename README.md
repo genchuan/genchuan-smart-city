@@ -43,13 +43,13 @@
 平台采用五层架构设计，各层职责单一、单向依赖（上层依赖下层，下层不依赖上层），确保松耦合与高扩展性：
 
 
-| 架构层级      | 核心职责                                                | 关键模块 / 组件                                                                        |
-| ------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| 1. 后台支撑层 | 提供技术底座，保障稳定运行、安全防护、数据衔接          | 系统管理（用户 / 角色 / 菜单）、数据汇聚、数据交换、集群监控、安全管理（WAF / 堡垒机） |
-| 2. 数据中枢层 | 核心流程闭环，解决 “怎么管”，跨域通用                 | 地理编码、网格管理、资产管理、设备管理、预警告警、指挥协调、综合评价、AI 赋能          |
-| 3. 业务领域层 | 横向覆盖场景，解决 “管什么”，行业特化                 | 城管住建、水利水务、生态环保、交通运输、应急安全、卫生健康等 17 大领域                 |
-| 4. 企业应用层 | 支撑国企运营，补充政企协同数据                          | 商城系统、CRM 系统、ERP 系统                                                           |
-| 5. 大屏总览层 | 可视化展示，适配指挥中心场景，支持 “总览 + 分域” 查看 | 城市全局总览、领域专属大屏（如城管住建大屏、水利水务大屏）                             |
+| 架构层级     | 核心职责                           | 关键模块 / 组件                                         |
+|----------|--------------------------------|---------------------------------------------------|
+| 1. 后台支撑层 | 提供技术底座，保障稳定运行、安全防护、数据衔接        | 系统管理（用户 / 角色 / 菜单）、数据汇聚、数据交换、集群监控、安全管理（WAF / 堡垒机） |
+| 2. 数据中枢层 | 核心流程闭环，解决 “怎么管”，跨域通用           | 地理编码、网格管理、资产管理、设备管理、预警告警、指挥协调、综合评价、AI 赋能          |
+| 3. 业务领域层 | 横向覆盖场景，解决 “管什么”，行业特化           | 城管住建、水利水务、生态环保、交通运输、应急安全、卫生健康等 17 大领域             |
+| 4. 企业应用层 | 支撑国企运营，补充政企协同数据                | 商城系统、CRM 系统、ERP 系统                                |
+| 5. 大屏总览层 | 可视化展示，适配指挥中心场景，支持 “总览 + 分域” 查看 | 城市全局总览、领域专属大屏（如城管住建大屏、水利水务大屏）                     |
 
 ### 平台架构图
 
@@ -86,25 +86,25 @@
 覆盖 17 大核心领域，每个领域含 “监测 - 监管 - 处置 - 评价” 全流程功能，典型领域如下：
 
 
-| 领域         | 核心功能                                                                                |
-| ------------ | --------------------------------------------------------------------------------------- |
-| 城管住建     | 市政设施监测（道路 / 桥梁 / 燃气管网）、市容秩序监管、违建管理、建筑工地扬尘 / 噪声监测 |
-| 水利水务     | 水资源监测、河湖水质 / 水位监测、供水漏损监测、排水防涝、农村饮水安全监测               |
-| 生态环保     | 空气质量监测（PM2.5/PM10）、水环境质量、噪声污染、固废危废追踪                          |
-| 交通运输     | 交通设施监测、道路拥堵监测、公交 / 轨道交通运营、危险品运输监管                         |
-| 应急安全     | 重点区域监测、重大危险源监管、应急资源调度、灾害监测（气象 / 地质 / 洪涝）              |
-| 卫生健康     | 健康服务管理、健康监测、应急响应、服务评价等                                            |
-| 教育管理     | 教育数据与指标管理、校园安全监测、不同阶段教育管理、服务与安全管理、疫情预警等          |
-| 文体旅游     | 文旅资源与设施监测、运营管理、活动与服务质量监管、安全预警等                            |
-| 产业园区     | 园区企业与安全监测、监管、应急管理、企业及公共服务等                                    |
-| 智慧社区     | 社区基础与人口管理、设施与安全监管、社区服务等                                          |
-| 数字乡村     | 乡村数据与设施监测、生产与环境管理、治理与民生服务、电商与文化建设、金融服务等          |
-| 市场监管     | 企业相关监测与监管                                                                      |
-| 综合执法     | 执法监测、执法监管、执法处置、执法评价等                                                |
-| 营商服务     | 营商环境监测、服务监管、问题处置、服务评价等                                            |
-| 停车管理     |                                                                                         |
-| 物业管理     | 物业设施监测、物业管理监管、问题处置、服务评价等                                        |
-| 国有企业管理 | 商城系统、CRM系统、ERP系统等                                                            |
+| 领域     | 核心功能                                             |
+|--------|--------------------------------------------------|
+| 城管住建   | 市政设施监测（道路 / 桥梁 / 燃气管网）、市容秩序监管、违建管理、建筑工地扬尘 / 噪声监测 |
+| 水利水务   | 水资源监测、河湖水质 / 水位监测、供水漏损监测、排水防涝、农村饮水安全监测           |
+| 生态环保   | 空气质量监测（PM2.5/PM10）、水环境质量、噪声污染、固废危废追踪             |
+| 交通运输   | 交通设施监测、道路拥堵监测、公交 / 轨道交通运营、危险品运输监管                |
+| 应急安全   | 重点区域监测、重大危险源监管、应急资源调度、灾害监测（气象 / 地质 / 洪涝）         |
+| 卫生健康   | 健康服务管理、健康监测、应急响应、服务评价等                           |
+| 教育管理   | 教育数据与指标管理、校园安全监测、不同阶段教育管理、服务与安全管理、疫情预警等          |
+| 文体旅游   | 文旅资源与设施监测、运营管理、活动与服务质量监管、安全预警等                   |
+| 产业园区   | 园区企业与安全监测、监管、应急管理、企业及公共服务等                       |
+| 智慧社区   | 社区基础与人口管理、设施与安全监管、社区服务等                          |
+| 数字乡村   | 乡村数据与设施监测、生产与环境管理、治理与民生服务、电商与文化建设、金融服务等          |
+| 市场监管   | 企业相关监测与监管                                        |
+| 综合执法   | 执法监测、执法监管、执法处置、执法评价等                             |
+| 营商服务   | 营商环境监测、服务监管、问题处置、服务评价等                           |
+| 停车管理   |                                                  |
+| 物业管理   | 物业设施监测、物业管理监管、问题处置、服务评价等                         |
+| 国有企业管理 | 商城系统、CRM系统、ERP系统等                                |
 
 ### 3.3 大屏总览（可视化）
 
@@ -140,16 +140,16 @@
 ### 4.1 核心技术栈
 
 
-| 类别       | 技术 / 组件              | 版本        | 用途说明                                   |
-| ---------- | ------------------------ | ----------- | ------------------------------------------ |
-| 容器平台   | KubeSphere               | v4.1.2      | 集群管理、应用部署、运维监控               |
-| 物联网平台 | ThingsBoard CE           | 最新稳定版  | 设备接入、遥测数据管理、告警规则配置       |
-| 开发框架   | 芋道源码（Ruoyi-Vue）    | 最新稳定版  | 后台管理、表单组件、权限控制               |
-| 流程引擎   | Flowable                 | 6.x         | 工单流程、审批流程（如预警派单、评价审核） |
-| 数据库     | MySQL/PostgresSQL        | 8.0+/14+    | 业务数据存储（按分层前缀命名）             |
-| 存储       | OpenEBS+Ceph             | 最新稳定版  | 本地存储（OpenEBS）+ 共享存储（Ceph）      |
-| 前端可视化 | ECharts/Leaflet          | 5.x/1.9.x   | 大屏图表、GIS 地图（区域 / 设施定位）      |
-| AI 大模型  | 豆包 / 通义千问 / OpenAI | 最新 API 版 | 智能识别、决策辅助、客服问答               |
+| 类别     | 技术 / 组件            | 版本        | 用途说明                      |
+|--------|--------------------|-----------|---------------------------|
+| 容器平台   | KubeSphere         | v4.1.2    | 集群管理、应用部署、运维监控            |
+| 物联网平台  | ThingsBoard CE     | 最新稳定版     | 设备接入、遥测数据管理、告警规则配置        |
+| 开发框架   | 芋道源码（Ruoyi-Vue）    | 最新稳定版     | 后台管理、表单组件、权限控制            |
+| 流程引擎   | Flowable           | 6.x       | 工单流程、审批流程（如预警派单、评价审核）     |
+| 数据库    | MySQL/PostgresSQL  | 8.0+/14+  | 业务数据存储（按分层前缀命名）           |
+| 存储     | OpenEBS+Ceph       | 最新稳定版     | 本地存储（OpenEBS）+ 共享存储（Ceph） |
+| 前端可视化  | ECharts/Leaflet    | 5.x/1.9.x | 大屏图表、GIS 地图（区域 / 设施定位）    |
+| AI 大模型 | 豆包 / 通义千问 / OpenAI | 最新 API 版  | 智能识别、决策辅助、客服问答            |
 
 ### 4.2 数据库设计规范
 
@@ -324,12 +324,11 @@ java -jar gc-module-industry-server.jar
 
 一共有**四**类 Maven Module：
 
-
-| Maven Module         | 作用                         |
-| -------------------- | ---------------------------- |
-| `yudao-dependencies` | Maven 依赖版本管理           |
-| `yudao-framework`    | Java 框架拓展                |
-| gc-module-xxx`       | XXX 功能的 Module 模块       |
+| Maven Module         | 作用                 |
+|----------------------|--------------------|
+| `yudao-dependencies` | Maven 依赖版本管理       |
+| `yudao-framework`    | Java 框架拓展          |
+| gc-module-xxx`       | XXX 功能的 Module 模块  |
 | `yudao-server`       | 管理后台 + 用户 App 的服务端 |
 
 ### 1. yudao-dependencies
@@ -348,24 +347,23 @@ java -jar gc-module-industry-server.jar
 
 ① 技术组件：技术相关的组件封装，例如说 MyBatis、Redis 等等。
 
-
-| Maven Module                                    | 作用                                                                                        |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `yudao-common`                                  | 定义基础 pojo 类、枚举、工具类等                                                            |
-| `yudao-spring-boot-starter-web`                 | Web 封装，提供全局异常、访问日志等                                                          |
-| `yudao-spring-boot-starter-websocket`           | WebSocket 封装，提供 Token 认证、WebSocket 集群广播、Message 监听                           |
-| `yudao-spring-boot-starter-security`            | 认证授权，基于 Spring Security 实现                                                         |
-| `yudao-spring-boot-starter-mybatis`             | 数据库操作，基于 MyBatis Plus 实现                                                          |
-| `yudao-spring-boot-starter-redis`               | 缓存操作，基于 Spring Data Redis + Redisson 实现                                            |
-| `yudao-spring-boot-starter-mq`                  | 消息队列，基于 Redis 实现，支持集群消费和广播消费                                           |
-| `yudao-spring-boot-starter-job`                 | 定时任务，基于 Quartz 实现，支持集群模式                                                    |
-| `yudao-spring-boot-starter-protection`          | 服务保障，提供幂等、分布式锁、限流、熔断等功能                                              |
-| `yudao-spring-boot-starter-excel`               | Excel 导入导出，基于 EasyExcel 实现                                                         |
-| `yudao-spring-boot-starter-monitor`             | 服务监控，提供链路追踪、日志服务、指标收集等功能                                            |
-| `yudao-spring-boot-starter-test`                | 单元测试，基于 Junit + Mockito 实现                                                         |
+| Maven Module                               | 作用                                                    |
+|--------------------------------------------|-------------------------------------------------------|
+| `yudao-common`                             | 定义基础 pojo 类、枚举、工具类等                                   |
+| `yudao-spring-boot-starter-web`            | Web 封装，提供全局异常、访问日志等                                   |
+| `yudao-spring-boot-starter-websocket`      | WebSocket 封装，提供 Token 认证、WebSocket 集群广播、Message 监听    |
+| `yudao-spring-boot-starter-security`       | 认证授权，基于 Spring Security 实现                            |
+| `yudao-spring-boot-starter-mybatis`        | 数据库操作，基于 MyBatis Plus 实现                              |
+| `yudao-spring-boot-starter-redis`          | 缓存操作，基于 Spring Data Redis + Redisson 实现               |
+| `yudao-spring-boot-starter-mq`             | 消息队列，基于 Redis 实现，支持集群消费和广播消费                          |
+| `yudao-spring-boot-starter-job`            | 定时任务，基于 Quartz 实现，支持集群模式                              |
+| `yudao-spring-boot-starter-protection`     | 服务保障，提供幂等、分布式锁、限流、熔断等功能                               |
+| `yudao-spring-boot-starter-excel`          | Excel 导入导出，基于 EasyExcel 实现                            |
+| `yudao-spring-boot-starter-monitor`        | 服务监控，提供链路追踪、日志服务、指标收集等功能                              |
+| `yudao-spring-boot-starter-test`           | 单元测试，基于 Junit + Mockito 实现                            |
 | `yudao-spring-boot-starter-file` 【已合并】     | 文件客户端，支持将文件存储到 S3（MinIO、阿里云、腾讯云、七牛云）、本地、FTP、SFTP、数据库等 |
-| `yudao-spring-boot-starter-captcha` 【已合并】  | 验证码 Captcha，提供滑块验证码                                                              |
-| `yudao-spring-boot-starter-flowable` 【已合并】 | 工作流，基于 Flowable 实现                                                                  |
+| `yudao-spring-boot-starter-captcha` 【已合并】  | 验证码 Captcha，提供滑块验证码                                   |
+| `yudao-spring-boot-starter-flowable` 【已合并】 | 工作流，基于 Flowable 实现                                    |
 
 友情提示：
 
@@ -375,14 +373,13 @@ java -jar gc-module-industry-server.jar
 
 ② 业务组件：业务相关的组件封装，例如说数据字典、操作日志等等。如果是业务组件，名字会包含 `biz` 关键字。
 
-
-| Maven Module                                          | 作用                                       |
-| ----------------------------------------------------- | ------------------------------------------ |
-| `yudao-spring-boot-starter-biz-tenant`                | SaaS 多租户                                |
-| `yudao-spring-boot-starter-biz-data-permission`       | 数据权限                                   |
-| `yudao-spring-boot-starter-biz-operatelog` 【已合并】 | 操作日志                                   |
+| Maven Module                                     | 作用                    |
+|--------------------------------------------------|-----------------------|
+| `yudao-spring-boot-starter-biz-tenant`           | SaaS 多租户              |
+| `yudao-spring-boot-starter-biz-data-permission`  | 数据权限                  |
+| `yudao-spring-boot-starter-biz-operatelog` 【已合并】 | 操作日志                  |
 | `yudao-spring-boot-starter-biz-pay` 【已合并】        | 支付客户端，对接微信支付、支付宝等支付平台 |
-| `yudao-spring-boot-starter-biz-ip`                    | 地区 & IP 库                               |
+| `yudao-spring-boot-starter-biz-ip`               | 地区 & IP 库             |
 
 友情提示：
 
@@ -398,10 +395,9 @@ java -jar gc-module-industry-server.jar
 
 每个模块包含两个 Maven Module，分别是：
 
-
-| Maven Module              | 作用                               |
-| ------------------------- | ---------------------------------- |
-| `yudao-module-xxx-api`    | 提供给其它模块的 API 定义          |
+| Maven Module              | 作用                |
+|---------------------------|-------------------|
+| `yudao-module-xxx-api`    | 提供给其它模块的 API 定义   |
 | `yudao-module-xxx-server` | 模块的功能的具体实现（服务提供者） |
 
 ![](images/后端结构.png)
@@ -412,75 +408,70 @@ java -jar gc-module-industry-server.jar
 
 #### 3.2 Controller 包
 
-
-| 所在包             | 类                               | 作用                                                                                                                          | 示例                                  |
-| ------------------ | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| `controller.admin` | Controller 类                    | 提供给管理后台的 RESTful API，默认以`admin-api/` 作为前缀。 例如 `admin-api/system/auth/login` 登录接口                       | AuthController                        |
-| `controller.admin` | VO 类                            | Admin Controller 接口的入参 ReqVO、出参 RespVO                                                                                | AuthLoginReqVO、AuthLoginRespVO       |
-| `controller.app`   | Controller 类，**以 App 为前缀** | 提供给用户 App 的 RESTful API，默认以`app-api/` 作为前缀。 例如 `app-api/member/auth/login` 登录接口                          | AppAuthController                     |
-| `controller.app`   | VO 类，**以 App 为前缀**         | App Controller 接口的入参 ReqVO、出参 RespVO                                                                                  | AppAuthLoginReqVO、AppAuthLoginRespVO |
-| `controller`       | `.http` 文件                     | [IDEA Http Client 插件 (opens new window)](https://www.iocoder.cn/Spring-Boot/IDEA-HTTP-Client/?yudao)，模拟请求 RESTful 接口 | AuthController.http                   |
+| 所在包                | 类                          | 作用                                                                                                                   | 示例                                   |
+|--------------------|----------------------------|----------------------------------------------------------------------------------------------------------------------|--------------------------------------|
+| `controller.admin` | Controller 类               | 提供给管理后台的 RESTful API，默认以`admin-api/` 作为前缀。 例如 `admin-api/system/auth/login` 登录接口                                     | AuthController                       |
+| `controller.admin` | VO 类                       | Admin Controller 接口的入参 ReqVO、出参 RespVO                                                                               | AuthLoginReqVO、AuthLoginRespVO       |
+| `controller.app`   | Controller 类，**以 App 为前缀** | 提供给用户 App 的 RESTful API，默认以`app-api/` 作为前缀。 例如 `app-api/member/auth/login` 登录接口                                      | AppAuthController                    |
+| `controller.app`   | VO 类，**以 App 为前缀**         | App Controller 接口的入参 ReqVO、出参 RespVO                                                                                 | AppAuthLoginReqVO、AppAuthLoginRespVO |
+| `controller`       | `.http` 文件                 | [IDEA Http Client 插件 (opens new window)](https://www.iocoder.cn/Spring-Boot/IDEA-HTTP-Client/?yudao)，模拟请求 RESTful 接口 | AuthController.http                  |
 
 #### 3.3 Service 包
 
-
-| 所在包    | 类             | 作用               | 示例                 |
-| --------- | -------------- | ------------------ | -------------------- |
-| `service` | Service 接口   | 业务逻辑的接口定义 | AdminUserService     |
-| `service` | ServiceImpl 类 | 业务逻辑的实现类   | AdminUserServiceImpl |
+| 所在包       | 类             | 作用        | 示例                   |
+|-----------|---------------|-----------|----------------------|
+| `service` | Service 接口    | 业务逻辑的接口定义 | AdminUserService     |
+| `service` | ServiceImpl 类 | 业务逻辑的实现类  | AdminUserServiceImpl |
 
 #### 3.4 DAL 包
 
-
-| 所在包           | 类          | 作用                                       | 示例                      |
-| ---------------- | ----------- | ------------------------------------------ | ------------------------- |
-| `dal`            | -           | Data Access Layer，数据访问层              |                           |
+| 所在包              | 类          | 作用                             | 示例                        |
+|------------------|------------|--------------------------------|---------------------------|
+| `dal`            | -          | Data Access Layer，数据访问层        |                           |
 | `dal.dataobject` | DO 类       | Data Object，映射数据库表、或者 Redis 对象 | AdminUserDO               |
-| `dal.mysql`      | Mapper 接口 | 数据库的操作                               | AdminUserMapper           |
-| `dal.redis`      | RedisDAO 类 | Redis 的操作                               | OAuth2AccessTokenRedisDAO |
+| `dal.mysql`      | Mapper 接口  | 数据库的操作                         | AdminUserMapper           |
+| `dal.redis`      | RedisDAO 类 | Redis 的操作                      | OAuth2AccessTokenRedisDAO |
 
 #### 3.5 API 包
 
-
-| 所在包 | 类         | 作用                                | 示例                                   |
-| ------ | ---------- | ----------------------------------- | -------------------------------------- |
-| `api`  | Api 接口   | 提供给其它模块的 API 接口           | AdminUserApi                           |
-| `api`  | ApiImpl 类 | 提供给其它模块的 API 实现类         | AdminUserApiImpl                       |
-| `api`  | DTO 类     | Api 接口的入参 ReqDTO、出参 RespDTO | AdminUserRespDTO、SocialUserBindReqDTO |
+| 所在包   | 类         | 作用                          | 示例                                    |
+|-------|-----------|-----------------------------|---------------------------------------|
+| `api` | Api 接口    | 提供给其它模块的 API 接口             | AdminUserApi                          |
+| `api` | ApiImpl 类 | 提供给其它模块的 API 实现类            | AdminUserApiImpl                      |
+| `api` | DTO 类     | Api 接口的入参 ReqDTO、出参 RespDTO | AdminUserRespDTO、SocialUserBindReqDTO |
 
 #### 3.6 MQ 包
 
-
-| 所在包        | 类          | 作用                    | 示例            |
-| ------------- | ----------- | ----------------------- | --------------- |
-| `mq`          | -           | Message Queue，消息队列 |                 |
-| `mq.message`  | Message 类  | 发送和消费的消息        | SmsSendMessage  |
-| `mq.producer` | Producer 类 | 消息的生产者            | SmsProducer     |
-| `mq.consumer` | Consumer 类 | 消息的消费者            | SmsSendConsumer |
+| 所在包           | 类          | 作用                 | 示例              |
+|---------------|------------|--------------------|-----------------|
+| `mq`          | -          | Message Queue，消息队列 |                 |
+| `mq.message`  | Message 类  | 发送和消费的消息           | SmsSendMessage  |
+| `mq.producer` | Producer 类 | 消息的生产者             | SmsProducer     |
+| `mq.consumer` | Consumer 类 | 消息的消费者             | SmsSendConsumer |
 
 #### 3.7 Job 包
 
 
-| 所在包 | 类     | 作用     | 示例    |
-| ------ | ------ | -------- | ------- |
-| `job`  | Job 类 | 定时任务 | DemoJob |
+| 所在包   | 类     | 作用   | 示例      |
+|-------|-------|------|---------|
+| `job` | Job 类 | 定时任务 | DemoJob |
 
 #### 3.8 Enum 包
 
 
-| 所在包  | 类                    | 作用           | 示例               |
-| ------- | --------------------- | -------------- | ------------------ |
-| `enums` | Enum 类               | 字段的枚举     | SocialTypeEnum     |
+| 所在包     | 类                    | 作用      | 示例                 |
+|---------|----------------------|---------|--------------------|
+| `enums` | Enum 类               | 字段的枚举   | SocialTypeEnum     |
 | `enums` | DictTypeConstants 类  | 数据字典的枚举 | DictTypeConstants  |
-| `enums` | ErrorCodeConstants 类 | 错误码的枚举   | ErrorCodeConstants |
+| `enums` | ErrorCodeConstants 类 | 错误码的枚举  | ErrorCodeConstants |
 
 #### 3.9 其它
 
 
-| 所在包      | 类           | 作用                             | 示例                      |
-| ----------- | ------------ | -------------------------------- | ------------------------- |
+| 所在包         | 类          | 作用                      | 示例                        |
+|-------------|------------|-------------------------|---------------------------|
 | `convert`   | Convert 接口 | DTO / VO / DO 等对象之间的转换器 | UserConvert               |
-| `framework` | -            | 模块自身的框架封装               | YudaoCaptchaConfiguration |
+| `framework` | -          | 模块自身的框架封装               | YudaoCaptchaConfiguration |
 
 ## 👾 前端结构
 
@@ -566,7 +557,15 @@ java -jar gc-module-industry-server.jar
 ### 演示平台
 
 地址： http://cloud.genchuan.cn
-账号密码：请加入我们进群获取
+账号密码：请联系我们获取 微信号：gengchuankeji
 
+### 技术支持与服务
+如需商业支持与定制开发服务，请联系：
+* 邮箱：genchuankeji@genchuan.cn
+* 电话：17859855988
+* 公众号：亘川科技
+* 微信号：gengchuankeji
+* 官网：http://genchuan.cn
+* 免责声明：本项目开源版本仅供学习与参考，商业使用请遵守许可证要求。
 
 
