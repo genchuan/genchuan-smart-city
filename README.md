@@ -547,25 +547,27 @@ java -jar gc-module-industry-server.jar
 
 本项目开源版本采用**Apache License 2.0**，允许商业使用，但需保留版权声明。
 
-
 ## 十、联系我们
 
-### 官网地址
+### 亘川智城官网
 
 **点击跳转**：http://genchuan.cn
 
-### 演示平台
+### 企业微信客服
+扫描下方二维码，联系我们，获取技术支持与服务。
+![客服小何.png](images/%E5%AE%A2%E6%9C%8D%E5%B0%8F%E4%BD%95.png)
 
-地址： http://cloud.genchuan.cn
-账号密码：请联系我们获取 微信号：gengchuankeji
+### 亘川智城SaaS平台
 
-### 技术支持与服务
-如需商业支持与定制开发服务，请联系：
-* 邮箱：genchuankeji@genchuan.cn
-* 电话：17859855988
-* 公众号：亘川科技
-* 微信号：gengchuankeji
-* 官网：http://genchuan.cn
-* 免责声明：本项目开源版本仅供学习与参考，商业使用请遵守许可证要求。
+地址：http://cloud.genchuan.cn 
+账号密码：请联系我们获取吧
+
+### 公众号
+亘川科技
+![qrcode_for 公众号.jpg](images/qrcode_for%20%E5%85%AC%E4%BC%97%E5%8F%B7.jpg)
+
+
+
+
 
 
