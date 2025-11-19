@@ -555,6 +555,7 @@ java -jar gc-module-industry-server.jar
 
 ### 企业微信客服
 扫描下方二维码，联系我们，获取技术支持与服务。
+
 ![客服小何.png](images/%E5%AE%A2%E6%9C%8D%E5%B0%8F%E4%BD%95.png)
 
 ### 亘川智城SaaS平台
@@ -564,6 +565,7 @@ java -jar gc-module-industry-server.jar
 
 ### 公众号
 亘川科技
+
 ![qrcode_for 公众号.jpg](images/qrcode_for%20%E5%85%AC%E4%BC%97%E5%8F%B7.jpg)
 
 
