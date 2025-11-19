@@ -2,18 +2,18 @@
 spring:
   cloud:
     nacos:
-      server-addr: 192.168.8.6:8848 # Nacos 服务器地址http://192.168.8.11:31591/
+      server-addr: 192.168.8.11:8848 # Nacos 服务器地址http://192.168.8.11:31591/
       #      username: # Nacos 账号
       #      password: # Nacos 密码
       discovery: # 【配置中心】配置项
-        namespace: Gyh-dev # 命名空间。这里使用 dev 开发环境
+        namespace: dev # 命名空间。这里使用 dev 开发环境
         group: DEFAULT_GROUP # 使用的 Nacos 配置分组，默认为 DEFAULT_GROUP
         #        ip: 127.0.0.1 # 明确指定IP
         #        port: 48081        # 确保服务端口未被占用
         metadata:
           version: 1.0.0 # 服务实例的版本号，可用于灰度发布
       config: # 【注册中心】配置项
-        namespace: Gyh-dev # 命名空间。这里使用 dev 开发环境
+        namespace: dev # 命名空间。这里使用 dev 开发环境
         group: DEFAULT_GROUP # 使用的 Nacos 配置分组，默认为 DEFAULT_GROUP
 
 --- #################### 数据库相关配置 ####################
@@ -71,7 +71,7 @@ spring:
   # Redis 配置。Redisson 默认的配置足够使用，一般不需要进行调优
   data:
     redis:
-      host: 192.168.8.67 # 地址
+      host: 127.0.0.1 # 地址
       port: 6379 # 端口
       database: 0 # 数据库索引
 #    password: 123456 # 密码，建议生产环境开启
@@ -105,8 +105,8 @@ xxl:
 
 # Lock4j 配置项
 lock4j:
-  acquire-timeout: 3000 # 获取分布式锁超时时间，默认为 3000 毫秒
-  expire: 30000 # 分布式锁的超时时间，默认为 30 毫秒
+  acquire-timeout: 6000 # 获取分布式锁超时时间，默认为 3000 毫秒
+  expire: 60000 # 分布式锁的超时时间，默认为 30 毫秒
 
 --- #################### 监控相关配置 ####################
 
@@ -207,3 +207,7 @@ justauth:
     prefix: 'social_auth_state:' # 缓存前缀，目前只对 Redis 缓存生效，默认 JUSTAUTH::STATE::
     timeout: 24h # 超时时长，目前只对 Redis 缓存生效，默认 3 分钟
 
+thingsboard:
+  url: http://112.47.127.21:81/
+  username: test@gc.com
+  password: Hr.12345

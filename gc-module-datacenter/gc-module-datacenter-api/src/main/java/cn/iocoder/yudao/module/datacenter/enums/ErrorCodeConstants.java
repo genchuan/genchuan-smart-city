@@ -372,6 +372,23 @@ public interface ErrorCodeConstants {
     ErrorCode INSPECT_RECTIFY_TASK_NOT_EXISTS = new ErrorCode(100_515, "巡查巡检整改任务派发不存在");
     ErrorCode INSPECT_RECTIFY_TRACK_NOT_EXISTS = new ErrorCode(100_516, "巡查巡检整改进度跟踪视图不存在");
     ErrorCode INSPECT_RECTIFY_ACCEPT_NOT_EXISTS = new ErrorCode(100_517, "巡查巡检整改结果验收不存在");
+    ErrorCode INSPECT_SUPV_TASK_NOT_EXISTS = new ErrorCode(100_518, "巡查巡检重点督办任务不存在");
+    ErrorCode INSPECT_SUPV_FEEDBACK_NOT_EXISTS = new ErrorCode(100_519, "巡查巡检督办结果反馈不存在");
+    ErrorCode INSPECT_SUPV_TRACK_VIEW_NOT_EXISTS = new ErrorCode(100_520, "巡查巡检督办进度跟踪视图不存在");
+    ErrorCode INSPECT_DAILY_REVIEW_NOT_EXISTS = new ErrorCode(100_521, "巡查巡检日常结果复核不存在");
+    ErrorCode INSPECT_SPEC_REVIEW_NOT_EXISTS = new ErrorCode(100_522, "巡查巡检专项结果复核不存在");
+    ErrorCode INSPECT_RECTIFY_REVIEW_NOT_EXISTS = new ErrorCode(100_523, "巡查巡检整改结果复核不存在");
+    ErrorCode INSPECT_RESULT_PUBLIC_NOT_EXISTS = new ErrorCode(100_524, "巡查巡检结果公示不存在");
+    ErrorCode INSPECT_RESULT_EVAL_NOT_EXISTS = new ErrorCode(100_525, "巡查巡检结果评估不存在");
+    ErrorCode INSPECT_RESULT_FEEDBACK_NOT_EXISTS = new ErrorCode(100_526, "巡查巡检结果反馈不存在");
+    ErrorCode INSPECT_REC_ARCH_NOT_EXISTS = new ErrorCode(100_527, "巡查巡检记录档案不存在");
+    ErrorCode INSPECT_ACCEPT_ARCH_NOT_EXISTS = new ErrorCode(100_528, "巡查巡检验收档案不存在");
+    ErrorCode INSPECT_RECTIFY_ARCH_NOT_EXISTS = new ErrorCode(100_529, "巡查巡检整改档案不存在");
+    ErrorCode INSPECT_LEDGER_ARCH_NOT_EXISTS = new ErrorCode(100_530, "巡查巡检台账档案不存在");
+    ErrorCode INSPECT_AREA_RPT_NOT_EXISTS = new ErrorCode(100_531, "巡查巡检区域统计不存在");
+    ErrorCode INSPECT_EFFICACY_RPT_NOT_EXISTS = new ErrorCode(100_532, "巡查巡检效率统计不存在");
+    ErrorCode INSPECT_TYPE_RPT_NOT_EXISTS = new ErrorCode(100_533, "巡查巡检类型统计不存在");
+    ErrorCode INSPECT_CYCLE_RPT_NOT_EXISTS = new ErrorCode(100_534, "巡查巡检周期统计不存在");
 
 
 
