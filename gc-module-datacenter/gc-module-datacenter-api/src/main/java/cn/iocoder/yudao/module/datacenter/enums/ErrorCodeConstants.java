@@ -390,9 +390,38 @@ public interface ErrorCodeConstants {
     ErrorCode INSPECT_TYPE_RPT_NOT_EXISTS = new ErrorCode(100_533, "巡查巡检类型统计不存在");
     ErrorCode INSPECT_CYCLE_RPT_NOT_EXISTS = new ErrorCode(100_534, "巡查巡检周期统计不存在");
 
-
-
-
+    //=====================================综合评价模块---100_60-----100_70============================================
+    ErrorCode EVAL_OBJECT_NOT_EXISTS = new ErrorCode(100_601, "评价对象管理不存在");
+    ErrorCode EVAL_SUBJECT_NOT_EXISTS = new ErrorCode(100_602, "评价主体管理不存在");
+    ErrorCode EVAL_IDX_CAT_NOT_EXISTS = new ErrorCode(100_603, "指标分类管理不存在");
+    ErrorCode EVAL_IDX_ITEM_NOT_EXISTS = new ErrorCode(100_604, "指标项管理不存在");
+    ErrorCode EVAL_IDX_WEIGHT_NOT_EXISTS = new ErrorCode(100_605, "指标权重管理不存在");
+    ErrorCode EVAL_IDX_SYSTEM_NOT_EXISTS = new ErrorCode(100_606, "指标体系管理不存在");
+    ErrorCode EVAL_RULE_CAT_NOT_EXISTS = new ErrorCode(100_607, "规则分类管理不存在");
+    ErrorCode EVAL_RULE_ITEM_NOT_EXISTS = new ErrorCode(100_608, "规则项管理不存在");
+    ErrorCode EVAL_VETO_RULE_NOT_EXISTS = new ErrorCode(100_609, "否决项规则管理不存在");
+    ErrorCode EVAL_STD_CAT_NOT_EXISTS = new ErrorCode(100_610, "标准分类管理不存在");
+    ErrorCode EVAL_STD_ITEM_NOT_EXISTS = new ErrorCode(100_611, "标准项管理不存在");
+    ErrorCode EVAL_TASK_TEMPLATE_NOT_EXISTS = new ErrorCode(100_612, "任务模板管理不存在");
+    ErrorCode EVAL_TASK_NOT_EXISTS = new ErrorCode(100_613, "任务管理不存在");
+    ErrorCode EVAL_REAL_TIME_DATA_NOT_EXISTS = new ErrorCode(100_614, "实时监测数据接入不存在");
+    ErrorCode EVAL_PLATFORM_RPT_DATA_NOT_EXISTS = new ErrorCode(100_615, "平台上报数据不存在");
+    ErrorCode EVAL_QUESTIONNAIRE_NOT_EXISTS = new ErrorCode(100_616, "问卷调查管理不存在");
+    ErrorCode EVAL_INSPECT_PLAN_NOT_EXISTS = new ErrorCode(100_617, "考察计划管理不存在");
+    ErrorCode EVAL_INSPECT_REC_NOT_EXISTS = new ErrorCode(100_618, "考察记录数据不存在");
+    ErrorCode EVAL_RESULT_AUDIT_NOT_EXISTS = new ErrorCode(100_619, "结果审核不存在");
+    ErrorCode EVAL_RESULT_PUBLIC_NOT_EXISTS = new ErrorCode(100_620, "结果公示不存在");
+    ErrorCode EVAL_RESULT_ARCH_NOT_EXISTS = new ErrorCode(100_621, "结果存档管理不存在");
+    ErrorCode EVAL_APPEAL_NOT_EXISTS = new ErrorCode(100_622, "申诉管理不存在");
+    ErrorCode EVAL_REVIEW_NOT_EXISTS = new ErrorCode(100_623, "复核办理不存在");
+    ErrorCode EVAL_REVIEW_FEEDBACK_NOT_EXISTS = new ErrorCode(100_624, "复核结果反馈不存在");
+    ErrorCode EVAL_RESULT_RPT_NOT_EXISTS = new ErrorCode(100_625, "结果报表管理不存在");
+    ErrorCode EVAL_RESULT_ANALYSIS_NOT_EXISTS = new ErrorCode(100_626, "评价结果分析不存在");
+    ErrorCode EVAL_RESULT_PUSH_NOT_EXISTS = new ErrorCode(100_627, "结果关联推送不存在");
+    ErrorCode EVAL_RESULT_SYSTEM_DOCK_NOT_EXISTS = new ErrorCode(100_628, "结果系统对接不存在");
+    ErrorCode EVAL_RPT_NOT_EXISTS = new ErrorCode(100_629, "评价报告不存在");
+    ErrorCode EVAL_RPT_TEMPLATE_NOT_EXISTS = new ErrorCode(100_630, "报告模板配置不存在");
+    ErrorCode EVAL_RPT_ARCH_NOT_EXISTS = new ErrorCode(100_631, "报告归档导出不存在");
 
 
 

@@ -38,7 +38,7 @@ spring:
 server:
   port: 58082
   tomcat:
-    connection-timeout: 60000
+    connection-timeout: 120000
     keep-alive-timeout: 30000
     max-keep-alive-requests: 100
     max-threads: 200
