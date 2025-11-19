@@ -16,7 +16,7 @@ public class AssetDataMngSaveReqVO {
     private Long id;
 
     @Schema(description = "资产数据ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1418")
-    @NotEmpty(message = "资产数据ID不能为空")
+//    @NotEmpty(message = "资产数据ID不能为空")
     private String assetDataId;
 
     @Schema(description = "关联资产分类ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "15050")

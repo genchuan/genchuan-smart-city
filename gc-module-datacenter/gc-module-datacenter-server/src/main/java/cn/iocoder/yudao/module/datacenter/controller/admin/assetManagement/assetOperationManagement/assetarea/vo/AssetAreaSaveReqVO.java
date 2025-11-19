@@ -15,7 +15,7 @@ public class AssetAreaSaveReqVO {
     private Long id;
 
     @Schema(description = "关联ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "27104")
-    @NotEmpty(message = "关联ID不能为空")
+//    @NotEmpty(message = "关联ID不能为空")
     private String assetRelRegionId;
 
     @Schema(description = "关联资产ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "30397")

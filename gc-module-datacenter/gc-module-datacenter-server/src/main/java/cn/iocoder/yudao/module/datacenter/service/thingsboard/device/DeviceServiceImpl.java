@@ -1,11 +1,11 @@
-package cn.iocoder.yudao.module.datacenter.service.thingsboard;
+package cn.iocoder.yudao.module.datacenter.service.thingsboard.device;
 
 
-import cn.iocoder.yudao.module.datacenter.dal.mysql.thingsboard.DeviceMapper;
-import cn.iocoder.yudao.module.datacenter.service.thingsboard.Dao.DeviceTbDao;
-import cn.iocoder.yudao.module.datacenter.dal.dataobject.thingsboard.DeviceDO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.vo.DevicePageReqVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.vo.DeviceSaveReqVO;
+import cn.iocoder.yudao.module.datacenter.dal.mysql.thingsboard.device.DeviceMapper;
+import cn.iocoder.yudao.module.datacenter.service.thingsboard.device.Dao.DeviceTbDao;
+import cn.iocoder.yudao.module.datacenter.dal.dataobject.thingsboard.device.DeviceDO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DevicePageReqVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DeviceSaveReqVO;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -15,7 +15,6 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import org.thingsboard.server.common.data.Device;
 import org.thingsboard.server.common.data.DeviceInfo;
-import org.thingsboard.server.common.data.id.EntityId;
 import org.thingsboard.server.common.data.kv.AttributeKvEntry;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;

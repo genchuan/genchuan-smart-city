@@ -170,6 +170,8 @@ public interface ErrorCodeConstants {
 
 
     //====================================资产管理模块=========================================================================
+    // Asset 相关错误码
+    ErrorCode ASSET_NOT_EXISTS = new ErrorCode(2001001, "资产不存在");
 
     // ========= 资产关联行政区划 200_221 ==========
     ErrorCode ASSET_AREA_NOT_EXISTS = new ErrorCode(200_221, "资产关联行政区划不存在");
