@@ -89,7 +89,8 @@ public class AssetCatMngServiceImpl implements AssetCatMngService {
                 new LambdaQueryWrapperX<AssetCatMngDO>()
                         .select(AssetCatMngDO::getAssetCatId,
                                 AssetCatMngDO::getAssetCatName,
-                                AssetCatMngDO::getParentCatId)
+                                AssetCatMngDO::getParentCatId,
+                                AssetCatMngDO::getCatLevel)
         );
         return BeanUtils.toBean(cats, AssetCategorySimpleVO.class);
     }
@@ -191,7 +192,9 @@ public class AssetCatMngServiceImpl implements AssetCatMngService {
         List<AssetCatMngDO> categoryList = assetCatMngMapper.selectList(
                 new LambdaQueryWrapperX<AssetCatMngDO>()
                         .eq(AssetCatMngDO::getEnableStatus, "1")
-                        .select(AssetCatMngDO::getAssetCatId, AssetCatMngDO::getAssetCatName)
+                        .select(AssetCatMngDO::getAssetCatId,
+                                AssetCatMngDO::getAssetCatName,
+                                AssetCatMngDO::getCatLevel)
                         .orderByAsc(AssetCatMngDO::getAssetCatId)
         );
 
@@ -200,6 +203,7 @@ public class AssetCatMngServiceImpl implements AssetCatMngService {
             AssetCategorySimpleVO vo = new AssetCategorySimpleVO();
             vo.setAssetCatId(category.getAssetCatId());
             vo.setAssetCatName(category.getAssetCatName());
+            vo.setCatLevel(category.getCatLevel());
             return vo;
         }).collect(Collectors.toList());
     }
