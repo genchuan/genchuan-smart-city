@@ -1,11 +1,10 @@
-package cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard;
+package cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device;
 
 
-import cn.iocoder.yudao.module.datacenter.service.thingsboard.DeviceService;
-import cn.iocoder.yudao.module.datacenter.dal.dataobject.thingsboard.DeviceDO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.vo.DevicePageReqVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.vo.DeviceRespVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.vo.DeviceSaveReqVO;
+import cn.iocoder.yudao.module.datacenter.service.thingsboard.device.DeviceService;
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DevicePageReqVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DeviceRespVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DeviceSaveReqVO;
 import org.springframework.web.bind.annotation.*;
         import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;

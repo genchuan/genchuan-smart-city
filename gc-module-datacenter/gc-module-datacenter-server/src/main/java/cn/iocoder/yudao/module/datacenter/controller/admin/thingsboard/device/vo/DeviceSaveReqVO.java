@@ -1,10 +1,9 @@
-package cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.vo;
+package cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-        import java.util.*;
-        import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.*;
 
 @Schema(description = "管理后台 - 设备新增/修改 Request VO")
 @Data

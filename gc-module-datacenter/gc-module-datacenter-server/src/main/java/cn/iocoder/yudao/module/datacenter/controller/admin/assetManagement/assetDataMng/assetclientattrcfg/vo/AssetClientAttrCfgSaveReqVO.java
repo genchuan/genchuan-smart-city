@@ -15,7 +15,7 @@ public class AssetClientAttrCfgSaveReqVO {
     private Long id;
 
     @Schema(description = "客户端属性ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "29413")
-    @NotEmpty(message = "客户端属性ID不能为空")
+//    @NotEmpty(message = "客户端属性ID不能为空")
     private String assetClientAttrId;
 
     @Schema(description = "关联资产ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "30407")

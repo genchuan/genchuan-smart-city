@@ -16,7 +16,7 @@ public class AssetSpatialDataSaveReqVO {
     private Long id;
 
     @Schema(description = "空间数据ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "16354")
-    @NotEmpty(message = "空间数据ID不能为空")
+//    @NotEmpty(message = "空间数据ID不能为空")
     private String assetSpatialId;
 
     @Schema(description = "关联资产ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "5840")

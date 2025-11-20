@@ -1,11 +1,11 @@
-package cn.iocoder.yudao.module.datacenter.dal.mysql.thingsboard;
+package cn.iocoder.yudao.module.datacenter.dal.mysql.thingsboard.device;
 
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
-import cn.iocoder.yudao.module.datacenter.dal.dataobject.thingsboard.DeviceDO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.vo.DevicePageReqVO;
+import cn.iocoder.yudao.module.datacenter.dal.dataobject.thingsboard.device.DeviceDO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DevicePageReqVO;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

@@ -15,7 +15,7 @@ public class AssetServerAttrCfgSaveReqVO {
     private Long id;
 
     @Schema(description = "服务端属性ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "6917")
-    @NotEmpty(message = "服务端属性ID不能为空")
+//    @NotEmpty(message = "服务端属性ID不能为空")
     private String assetServerAttrId;
 
     @Schema(description = "关联资产ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "4342")

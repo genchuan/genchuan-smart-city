@@ -15,7 +15,7 @@ public class AssetRelRuleCfgSaveReqVO {
     private Long id;
 
     @Schema(description = "关联规则ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "710")
-    @NotEmpty(message = "关联规则ID不能为空")
+//    @NotEmpty(message = "关联规则ID不能为空")
     private String assetRelRuleId;
 
     @Schema(description = "关联资产分类ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "8418")

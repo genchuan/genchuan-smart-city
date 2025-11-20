@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.datacenter.dal.dataobject.thingsboard;
+package cn.iocoder.yudao.module.datacenter.dal.dataobject.thingsboard.device;
 
 
 import lombok.*;
