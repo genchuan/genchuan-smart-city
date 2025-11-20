@@ -35,11 +35,11 @@ public class TrendAnalysisRptPageReqVO extends PageParam {
 
     @Schema(description = "起始时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] startTime;
+    private LocalDateTime[] startTime;
 
     @Schema(description = "结束时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] endTime;
+    private LocalDateTime[] endTime;
 
     @Schema(description = "周期1标识")
     private String cycle1Label;

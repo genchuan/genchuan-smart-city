@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.businessstandard.spe
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
@@ -32,7 +32,7 @@ public class SpecBusinessStdPageReqVO extends PageParam {
 
     @Schema(description = "生效时间，格式：YYYYMMDD")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] effectiveTime;
+    private LocalDateTime[] effectiveTime;
 
     @Schema(description = "标准核心条款（支持富文本，如“事件处置需在24小时内完成”）")
     private String stdClause;

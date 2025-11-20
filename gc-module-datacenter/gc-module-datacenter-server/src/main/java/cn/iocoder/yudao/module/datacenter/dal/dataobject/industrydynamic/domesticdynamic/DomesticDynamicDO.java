@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 import com.baomidou.mybatisplus.annotation.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 /**
  * 国内行业动态 DO
@@ -47,7 +47,7 @@ public class DomesticDynamicDO extends BaseDO {
     /**
      * 发布时间，格式：YYYYMMDD
      */
-    private LocalDate releaseTime;
+    private LocalDateTime releaseTime;
     /**
      * 动态详细内容（支持富文本）
      */

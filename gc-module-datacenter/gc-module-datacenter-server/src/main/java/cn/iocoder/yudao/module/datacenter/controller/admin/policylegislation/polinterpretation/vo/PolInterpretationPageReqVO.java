@@ -2,7 +2,7 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.policylegislation.po
 
 import lombok.*;
 
-import java.time.LocalDate;
+
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
@@ -43,7 +43,7 @@ public class PolInterpretationPageReqVO extends PageParam {
 
     @Schema(description = "解读时间，格式：YYYYMMDD")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] interpretationTime;
+    private LocalDateTime[] interpretationTime;
 
     @Schema(description = "解读状态：已发布/未发布，标识解读是否公开", example = "2")
     private String interpretationStatus;

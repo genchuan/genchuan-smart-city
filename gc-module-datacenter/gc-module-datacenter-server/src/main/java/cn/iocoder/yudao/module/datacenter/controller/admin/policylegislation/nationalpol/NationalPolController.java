@@ -1,8 +1,6 @@
 package cn.iocoder.yudao.module.datacenter.controller.admin.policylegislation.nationalpol;
 
-import cn.iocoder.yudao.module.datacenter.controller.admin.policylegislation.nationalpol.vo.NationalPolPageReqVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.policylegislation.nationalpol.vo.NationalPolRespVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.policylegislation.nationalpol.vo.NationalPolSaveReqVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.policylegislation.nationalpol.vo.*;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;

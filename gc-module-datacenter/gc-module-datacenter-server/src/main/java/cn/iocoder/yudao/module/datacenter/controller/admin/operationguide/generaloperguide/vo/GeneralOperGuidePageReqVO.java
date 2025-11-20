@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.operationguide.gener
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
@@ -35,7 +35,7 @@ public class GeneralOperGuidePageReqVO extends PageParam {
 
     @Schema(description = "生效时间，格式：YYYYMMDD")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] effectiveTime;
+    private LocalDateTime[] effectiveTime;
 
     @Schema(description = "指南附件ID，关联附件ID（如操作视频），文件存储表（sys_file_storage）", example = "28872")
     private String guideAttachId;

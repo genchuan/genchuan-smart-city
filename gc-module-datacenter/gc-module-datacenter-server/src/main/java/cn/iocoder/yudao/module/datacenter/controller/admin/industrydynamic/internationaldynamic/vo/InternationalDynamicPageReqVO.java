@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.industrydynamic.inte
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
@@ -32,7 +32,7 @@ public class InternationalDynamicPageReqVO extends PageParam {
 
     @Schema(description = "发布时间，格式：YYYYMMDD")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] releaseTime;
+    private LocalDateTime[] releaseTime;
 
     @Schema(description = "动态详细内容（中文，支持富文本）")
     private String dynamicDetail;

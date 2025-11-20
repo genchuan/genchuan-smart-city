@@ -52,7 +52,7 @@ public class InspectPersonInfoPageReqVO extends PageParam {
 
     @Schema(description = "入职日期")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] entryDate;
+    private LocalDateTime[] entryDate;
 
     @Schema(description = "创建人")
     private String createUser;

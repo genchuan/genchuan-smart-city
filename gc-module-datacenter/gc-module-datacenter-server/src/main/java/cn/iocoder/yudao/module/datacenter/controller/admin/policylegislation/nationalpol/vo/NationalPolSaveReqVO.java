@@ -3,8 +3,6 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.policylegislation.na
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
-import java.time.LocalDate;
-
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
@@ -37,10 +35,10 @@ public class NationalPolSaveReqVO {
 
     @Schema(description = "发布时间，格式：YYYYMMDD，政策发布日期", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "发布时间，格式：YYYYMMDD，政策发布日期不能为空")
-    private LocalDate issueTime;
+    private LocalDateTime issueTime;
 
     @Schema(description = "实施时间，格式：YYYYMMDD，政策实施日期（未明确则为空）")
-    private LocalDate implementTime;
+    private LocalDateTime implementTime;
 
     @Schema(description = "政策文件ID，关联文件存储表的文件ID，文件存储表（sys_file_storage）", requiredMode = Schema.RequiredMode.REQUIRED, example = "7780")
     @NotEmpty(message = "政策文件ID，关联文件存储表的文件ID，文件存储表（sys_file_storage）不能为空")

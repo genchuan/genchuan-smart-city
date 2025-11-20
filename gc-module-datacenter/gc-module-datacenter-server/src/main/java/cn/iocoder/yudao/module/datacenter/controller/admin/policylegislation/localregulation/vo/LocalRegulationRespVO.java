@@ -3,8 +3,6 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.policylegislation.lo
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
-import org.joda.time.LocalDate;
-
 import java.time.LocalDateTime;
 import com.alibaba.excel.annotation.*;
 
@@ -47,11 +45,11 @@ public class LocalRegulationRespVO {
 
     @Schema(description = "发布时间，格式：YYYYMMDD", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("发布时间，格式：YYYYMMDD")
-    private LocalDate issueTime;
+    private LocalDateTime issueTime;
 
     @Schema(description = "实施时间，格式：YYYYMMDD，可为空")
     @ExcelProperty("实施时间，格式：YYYYMMDD，可为空")
-    private LocalDate implementTime;
+    private LocalDateTime implementTime;
 
     @Schema(description = "法规文件ID，关联文件存储表的文件ID，文件存储表（sys_file_storage）", requiredMode = Schema.RequiredMode.REQUIRED, example = "10560")
     @ExcelProperty("法规文件ID，关联文件存储表的文件ID，文件存储表（sys_file_storage）")

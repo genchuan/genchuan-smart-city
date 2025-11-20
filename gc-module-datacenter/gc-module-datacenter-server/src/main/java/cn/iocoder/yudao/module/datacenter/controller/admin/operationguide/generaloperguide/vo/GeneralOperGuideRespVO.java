@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.operationguide.gener
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import java.time.LocalDateTime;
 import com.alibaba.excel.annotation.*;
@@ -43,7 +43,7 @@ public class GeneralOperGuideRespVO {
 
     @Schema(description = "生效时间，格式：YYYYMMDD", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("生效时间，格式：YYYYMMDD")
-    private LocalDate effectiveTime;
+    private LocalDateTime effectiveTime;
 
     @Schema(description = "指南附件ID，关联附件ID（如操作视频），文件存储表（sys_file_storage）", example = "28872")
     @ExcelProperty("指南附件ID，关联附件ID（如操作视频），文件存储表（sys_file_storage）")

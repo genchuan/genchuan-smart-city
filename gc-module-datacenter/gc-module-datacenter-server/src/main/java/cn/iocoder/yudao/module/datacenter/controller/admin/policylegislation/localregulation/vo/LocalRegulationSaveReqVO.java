@@ -3,8 +3,6 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.policylegislation.lo
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import jakarta.validation.constraints.*;
-import org.joda.time.LocalDate;
-
 import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 地方法规信息新增/修改 Request VO")
@@ -43,10 +41,10 @@ public class LocalRegulationSaveReqVO {
 
     @Schema(description = "发布时间，格式：YYYYMMDD", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "发布时间，格式：YYYYMMDD不能为空")
-    private LocalDate issueTime;
+    private LocalDateTime issueTime;
 
     @Schema(description = "实施时间，格式：YYYYMMDD，可为空")
-    private LocalDate implementTime;
+    private LocalDateTime implementTime;
 
     @Schema(description = "法规文件ID，关联文件存储表的文件ID，文件存储表（sys_file_storage）", requiredMode = Schema.RequiredMode.REQUIRED, example = "10560")
     @NotEmpty(message = "法规文件ID，关联文件存储表的文件ID，文件存储表（sys_file_storage）不能为空")

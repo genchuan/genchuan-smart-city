@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.policylegislation.in
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import jakarta.validation.constraints.*;
-import org.joda.time.LocalDate;
+
 
 import java.time.LocalDateTime;
 
@@ -39,7 +39,7 @@ public class IndustryStdSaveReqVO {
 
     @Schema(description = "发布时间，格式：YYYYMMDD", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "发布时间，格式：YYYYMMDD不能为空")
-    private LocalDate issueTime;
+    private LocalDateTime issueTime;
 
     @Schema(description = "规范文件ID，关联文件存储表的文件ID，文件存储表（sys_file_storage）", requiredMode = Schema.RequiredMode.REQUIRED, example = "1567")
     @NotEmpty(message = "规范文件ID，关联文件存储表的文件ID，文件存储表（sys_file_storage）不能为空")
