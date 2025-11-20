@@ -18,7 +18,8 @@
             available_qty AS availableQty,
             storage_loc AS storageLoc,
             mngr_name AS mngrName,
-            stock_status AS stockStatus
+            stock_status AS stockStatus,
+            update_time as updateTime
         FROM biz_emerg_res
         WHERE 1=1
 

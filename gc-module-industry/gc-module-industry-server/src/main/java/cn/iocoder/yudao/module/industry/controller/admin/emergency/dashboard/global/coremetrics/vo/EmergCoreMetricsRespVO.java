@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 应急核心指标 Response VO")
 @Data
@@ -34,4 +35,9 @@ public class EmergCoreMetricsRespVO {
             requiredMode = Schema.RequiredMode.REQUIRED, example = "88.8")
     @ExcelProperty("风险整改率")
     private BigDecimal riskRectifyRate;
+
+
+    @Schema(description = "数据更新时间", requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "2025-11-19 10:00:00")
+    @ExcelProperty("数据更新时间")
+    private LocalDateTime updateTime;
 }

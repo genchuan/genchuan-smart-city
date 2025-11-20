@@ -7,13 +7,13 @@
           - searchAreaCode : 前端传入的行政区划码（6位），用于搜索和判断省/市/县级。
           - areaColumn : 数据表中的行政区划编码字段(6位)（例如 dist_region、region_code 等）。
         使用方式：
-                    <include refid="likeByAreaLevel">
+                    <include refid="likeByRegionShortCode">
                         <property name="areaColumn" value="LEFT(dist_region,6)"/>
                         <property name="searchAreaCode" value="#{regionShortCode}"/>
                     </include>
     -->
     <!-- 按省/市/县三级行政区划筛选的通用 SQL 片段 -->
-    <sql id="likeByAreaLevel">
+    <sql id="likeByRegionShortCode">
         <choose>
             <when test="regionShortCode != null and regionShortCode.endsWith('0000')">
                 ${areaColumn} LIKE CONCAT(LEFT(${searchAreaCode},2),'%')
@@ -30,126 +30,192 @@
     <select id="getEmergCoreMetrics"
             resultType="cn.iocoder.yudao.module.industry.controller.admin.emergency.dashboard.global.coremetrics.vo.EmergCoreMetricsRespVO">
         SELECT
-            --  应急事件办结率（stat_mon_evt_rpt），百分比的数值（但无％号），
-            -- 如果total_rpt_count为0，返回100
-            (
-                SELECT ROUND(
-                    CASE
-                        WHEN IFNULL(count(complete_rate),0) = 0 THEN 100
-                        ELSE IFNULL(SUM(complete_rate),0) / IFNULL(count(complete_rate),1)
-                    END,
-                    2
-                )
-                FROM stat_mon_evt_rpt
-                <where>
-                    <if test="regionShortCode != null and regionShortCode != ''">
-                        region_code = #{regionShortCode}
-                    </if>
-                    <if test="startDate != null">
-                        AND stat_time &gt;= #{startDate}
-                    </if>
-                    <if test="endDate != null">
-                        AND stat_time &lt;= #{endDate}
-                    </if>
-                </where>
-            ) AS completeRate,
+        --  应急事件办结率（stat_mon_evt_rpt），百分比的数值（但无％号），
+        -- 如果total_rpt_count为0，返回100
+        (
+        SELECT ROUND(
+        CASE
+        WHEN IFNULL(count(complete_rate),0) = 0 THEN 100
+        ELSE IFNULL(SUM(complete_rate),0) / IFNULL(count(complete_rate),1)
+        END,
+        2
+        )
+        FROM stat_mon_evt_rpt
+        <where>
+            <if test="regionShortCode != null and regionShortCode != ''">
+                region_code = #{regionShortCode}
+            </if>
+            <if test="startTime != null">
+                AND stat_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND stat_time &lt;= #{endTime}
+            </if>
+        </where>
+        ) AS completeRate,
 
-            --  预警准确率（stat_early_warn_region）
-            -- 用 已处理数（假设已处理说明预警准确） /总数
-            (
-                SELECT ROUND(
-                    CASE
-                        WHEN IFNULL(SUM(total_warn_count),0) = 0 THEN 100
-                        ELSE IFNULL(SUM(completed_count),0) / IFNULL(SUM(total_warn_count),1) * 100
-                    END,
-                    2
-                )
-                FROM stat_early_warn_region
-                <where>
-                    <if test="regionShortCode != null and regionShortCode != ''">
-                        region_code = #{regionShortCode}
-                    </if>
+        --  预警准确率（stat_early_warn_region）
+        -- 用 已处理数（假设已处理说明预警准确） /总数
+        (
+        SELECT ROUND(
+        CASE
+        WHEN IFNULL(SUM(total_warn_count),0) = 0 THEN 100
+        ELSE IFNULL(SUM(completed_count),0) / IFNULL(SUM(total_warn_count),1) * 100
+        END,
+        2
+        )
+        FROM stat_early_warn_region
+        <where>
+            <if test="regionShortCode != null and regionShortCode != ''">
+                region_code = #{regionShortCode}
+            </if>
 
-                    <if test="startDate != null">
-                        AND stat_time &gt;= #{startDate}
-                    </if>
-                    <if test="endDate != null">
-                        AND stat_time &lt;= #{endDate}
-                    </if>
+            <if test="startTime != null">
+                AND stat_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND stat_time &lt;= #{endTime}
+            </if>
 
-                </where>
-            ) AS earlyWarnAccRate,
+        </where>
+        ) AS earlyWarnAccRate,
 
-            --  应急资源调用率（biz_emerg_res）
-            (
-                SELECT ROUND(
-                    CASE
-                        WHEN IFNULL(SUM(total_qty),0) = 0 THEN 0
-                        ELSE IFNULL(SUM(dispatch_qty),0) / IFNULL(SUM(total_qty),1) * 100
-                    END,
-                    2
-                )
-                FROM biz_emerg_res
-                <where>
-                    <if test="regionShortCode != null and regionShortCode != ''">
-                        AND
-                        <include refid="likeByAreaLevel">
-                            <property name="areaColumn" value="LEFT(dist_region,6)"/>
-                            <property name="searchAreaCode" value="#{regionShortCode}"/>
-                        </include>
-                    </if>
-                </where>
-            ) AS resUseRate,
+        --  应急资源调用率（biz_emerg_res）
+        (
+        SELECT ROUND(
+        CASE
+        WHEN IFNULL(SUM(total_qty),0) = 0 THEN 0
+        ELSE IFNULL(SUM(dispatch_qty),0) / IFNULL(SUM(total_qty),1) * 100
+        END,
+        2
+        )
+        FROM biz_emerg_res
+        <where>
+            <if test="regionShortCode != null and regionShortCode != ''">
+                AND
+                <include refid="likeByRegionShortCode">
+                    <property name="areaColumn" value="LEFT(dist_region,6)"/>
+                    <property name="searchAreaCode" value="#{regionShortCode}"/>
+                </include>
+            </if>
+        </where>
+        ) AS resUseRate,
 
-            --  平均处置时长（stat_mon_evt_rpt）
-            (
-                SELECT ROUND(IFNULL(AVG(avg_handle_endure),0), 2)
-                FROM stat_mon_evt_rpt
-                <where>
-                    <if test="regionShortCode != null and regionShortCode != ''">
-                        region_code = #{regionShortCode}
-                    </if>
+        --  平均处置时长（stat_mon_evt_rpt）
+        (
+        SELECT ROUND(IFNULL(AVG(avg_handle_endure),0), 2)
+        FROM stat_mon_evt_rpt
+        <where>
+            <if test="regionShortCode != null and regionShortCode != ''">
+                region_code = #{regionShortCode}
+            </if>
 
-                    <if test="startDate != null">
-                        AND stat_time &gt;= #{startDate}
-                    </if>
-                    <if test="endDate != null">
-                        AND stat_time &lt;= #{endDate}
-                    </if>
+            <if test="startTime != null">
+                AND stat_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND stat_time &lt;= #{endTime}
+            </if>
 
-                </where>
-            ) AS avgHandleEndure,
+        </where>
+        ) AS avgHandleEndure,
 
-            --  风险整改率（biz_risk_hazard）
-            (
-                SELECT ROUND(
-                CASE
-                    WHEN COUNT(1) = 0 THEN 100
-                    ELSE SUM(CASE WHEN warn_status IN ('2','3') THEN 1 ELSE 0 END) / COUNT(1) * 100
-                END,
-                2
-                )
-                FROM biz_risk_hazard
-                <where>
-                    <if test="regionShortCode != null and regionShortCode != ''">
-                        AND
-                        <include refid="likeByAreaLevel">
-                            <property name="areaColumn" value="LEFT(region_full_code,6)"/>
-                            <property name="searchAreaCode" value="#{regionShortCode}"/>
-                        </include>
-                    </if>
+        --  风险整改率（biz_risk_hazard）
+        (
+        SELECT ROUND(
+        CASE
+        WHEN COUNT(1) = 0 THEN 100
+        ELSE SUM(CASE WHEN warn_status IN ('2','3') THEN 1 ELSE 0 END) / COUNT(1) * 100
+        END,
+        2
+        )
+        FROM biz_risk_hazard
+        <where>
+            <if test="regionShortCode != null and regionShortCode != ''">
+                AND
+                <include refid="likeByRegionShortCode">
+                    <property name="areaColumn" value="LEFT(region_full_code,6)"/>
+                    <property name="searchAreaCode" value="#{regionShortCode}"/>
+                </include>
+            </if>
 
-                    <if test="startDate != null">
-                        AND discover_time &gt;= #{startDate}
-                    </if>
-                    <if test="endDate != null">
-                        AND discover_time &lt;= #{endDate}
-                    </if>
+            <if test="startTime != null">
+                AND discover_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND discover_time &lt;= #{endTime}
+            </if>
 
 
-                </where>
-            ) AS riskRectifyRate
+        </where>
+        ) AS riskRectifyRate
 
+    </select>
+
+
+    <select id="getEmergCoreMetricsUpdateTime" resultType="java.time.LocalDateTime">
+        <!--
+            获取应急核心指标的最新更新时间（updateTime）
+            逻辑说明：
+                1. 每个子查询取各模块的最大时间：
+                    - stat_mon_evt_rpt.stat_time         → 应急事件模块
+                    - stat_early_warn_region.stat_time  → 预警模块
+                    - biz_emerg_res.update_time          → 应急资源模块
+                    - biz_risk_hazard.discover_time     → 风险隐患模块
+                2. 使用 GREATEST() 取四个最大值作为整体 updateTime。
+                3. 如果某个模块没有数据，则对应 MAX() 返回 NULL。
+                4. 如果所有模块都没有数据，GREATEST 返回 NULL。
+                5. MyBatis 返回结果为 LocalDateTime，可在 Service 层做 null 处理。
+        -->
+        SELECT GREATEST(
+        <!-- ① 应急事件模块最大统计时间 -->
+        (SELECT MAX(stat_time)
+        FROM stat_mon_evt_rpt
+        <where>
+            <if test="regionShortCode != null and regionShortCode != ''">
+                region_code = #{regionShortCode}
+            </if>
+            <if test="startTime != null">AND stat_time &gt;= #{startTime}</if>
+            <if test="endTime != null">AND stat_time &lt;= #{endTime}</if>
+        </where>),
+
+        <!-- ② 预警模块最大统计时间 -->
+        (SELECT MAX(stat_time)
+        FROM stat_early_warn_region
+        <where>
+            <if test="regionShortCode != null and regionShortCode != ''">
+                region_code = #{regionShortCode}
+            </if>
+            <if test="startTime != null">AND stat_time &gt;= #{startTime}</if>
+            <if test="endTime != null">AND stat_time &lt;= #{endTime}</if>
+        </where>),
+
+        <!-- ③ 应急资源模块最大更新时间 -->
+        (SELECT MAX(update_time)
+        FROM biz_emerg_res
+        <where>
+            <if test="regionShortCode != null and regionShortCode != ''">
+                <include refid="likeByRegionShortCode">
+                    <property name="areaColumn" value="LEFT(dist_region,6)"/>
+                    <property name="searchAreaCode" value="#{regionShortCode}"/>
+                </include>
+            </if>
+        </where>),
+
+        <!-- ④ 风险隐患模块最大发现时间 -->
+        (SELECT MAX(discover_time)
+        FROM biz_risk_hazard
+        <where>
+            <if test="regionShortCode != null and regionShortCode != ''">
+                <include refid="likeByRegionShortCode">
+                    <property name="areaColumn" value="LEFT(region_full_code,6)"/>
+                    <property name="searchAreaCode" value="#{regionShortCode}"/>
+                </include>
+            </if>
+            <if test="startTime != null">AND discover_time &gt;= #{startTime}</if>
+            <if test="endTime != null">AND discover_time &lt;= #{endTime}</if>
+        </where>)
+        ) AS updateTime
     </select>
 
 

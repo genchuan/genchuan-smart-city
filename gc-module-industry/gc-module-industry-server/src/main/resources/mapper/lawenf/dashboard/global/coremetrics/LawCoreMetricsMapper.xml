@@ -9,8 +9,8 @@
                 select ifnull(avg(avg_case_handle_time),0)
                 from stat_law_enf_case
                 <where>
-                    <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.TimeSqlMapper.statTimeSearch">
-                        <property name="stat_time_col" value="stat_time"/>
+                    <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.TimeSqlMapper.searchByStartTimeEndTime">
+                        <property name="search_time_col" value="stat_time"/>
                     </include>
                 </where>
 
@@ -20,8 +20,8 @@
                 select ifnull(avg(repeat_rpt_rate),0)
                 from stat_law_enf_case
                 <where>
-                    <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.TimeSqlMapper.statTimeSearch">
-                        <property name="stat_time_col" value="stat_time"/>
+                    <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.TimeSqlMapper.searchByStartTimeEndTime">
+                        <property name="search_time_col" value="stat_time"/>
                     </include>
                 </where>
             ) as repeat_rpt_rate,
@@ -30,8 +30,8 @@
                 select ifnull(avg(law_compliance_rate),0)
                 from stat_law_enf_std
                 <where>
-                    <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.TimeSqlMapper.statTimeSearch">
-                        <property name="stat_time_col" value="stat_time"/>
+                    <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.TimeSqlMapper.searchByStartTimeEndTime">
+                        <property name="search_time_col" value="stat_time"/>
                     </include>
                 </where>
             ) as law_compliance_rate,
@@ -40,8 +40,8 @@
                 select ifnull(avg(cross_dept_coop_rate),0)
                 from stat_law_enf_coop
                 <where>
-                    <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.TimeSqlMapper.statTimeSearch">
-                        <property name="stat_time_col" value="stat_time"/>
+                    <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.TimeSqlMapper.searchByStartTimeEndTime">
+                        <property name="search_time_col" value="stat_time"/>
                     </include>
                 </where>
             ) as cross_dept_coop_rate
