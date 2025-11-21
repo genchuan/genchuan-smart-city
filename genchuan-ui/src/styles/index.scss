@@ -1,0 +1,140 @@
+@use './var.css';
+@use './FormCreate/index.scss';
+@use './theme.scss';
+@use 'element-plus/theme-chalk/dark/css-vars.css';
+
+.reset-margin [class*='el-icon'] + span {
+  margin-left: 2px !important;
+}
+
+// 解决抽屉弹出时，body宽度变化的问题
+.el-popup-parent--hidden {
+  width: 100% !important;
+}
+
+// 解决表格内容超过表格总宽度后，横向滚动条前端顶不到表格边缘的问题
+.el-scrollbar__bar {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* nprogress 适配 element-plus 的主题色 */
+#nprogress {
+  & .bar {
+    background-color: var(--el-color-primary) !important;
+  }
+
+  & .peg {
+    box-shadow: 0 0 10px var(--el-color-primary),
+    0 0 5px var(--el-color-primary) !important;
+  }
+
+  & .spinner-icon {
+    border-top-color: var(--el-color-primary);
+    border-left-color: var(--el-color-primary);
+  }
+}
+
+//导航最外层css
+.cc-menu-outermost {
+  //padding-top: 50px !important;
+  //height: 100% !important;
+}
+
+//导航级数添加class
+.cc-menu-last-css1 {
+  padding-left: 10px !important;
+  height: auto !important;
+  line-height: 42px !important;
+
+  & > .el-sub-menu__title {
+    padding-left: 0 !important;
+  }
+
+  .el-sub-menu__title {
+    height: 42px !important;
+  }
+}
+//2级导航
+.cc-menu-last-css2 {
+  padding-left: 0px !important;
+  height: auto !important;
+  line-height: 42px !important;
+  & > .v-menu__title, & > .el-sub-menu__title {
+    padding-left: 35px !important;
+  }
+}
+//3级导航
+.cc-menu-last-css3 {
+  padding-left: 0px !important;
+  height: auto !important;
+  line-height: 42px !important;
+
+  & > .v-menu__title, & > .el-sub-menu__title {
+    padding-left: 45px !important;
+  }
+}
+//4级导航
+.cc-menu-last-css4 {
+  padding-left: 0px !important;
+  height: auto !important;
+  line-height: 42px !important;
+
+  & > .v-menu__title, & > .el-sub-menu__title {
+    padding-left: 55px !important;
+  }
+}
+//5级导航
+.cc-menu-last-css5 {
+  padding-left: 0px !important;
+  height: auto !important;
+  line-height: 42px !important;
+
+  & > .v-menu__title, & > .el-sub-menu__title {
+    padding-left: 65px !important;
+  }
+}
+
+//css 里面的span
+//因为有图标所以有这class  记住2级等菜单不能用图标
+.cc-menu-one {
+
+}
+
+//css 里面的span
+//没有图标添加这个class
+.cc-menu-two {
+
+}
+
+//logo
+.cc-logo-css {
+  .text-16px {
+    font-size: 15px;
+  }
+
+  .ml-\[10px\], .ml-10px {
+    margin-left: 0;
+  }
+
+  //position: absolute;
+  //top: 0;
+  //height: 50px;
+  //z-index: 9999999;
+  //background: #fff;
+  //width:300px;
+  //.text-\[var\(--logo-title-text-color\)\]{
+  //  color: #000;
+  //}
+
+}
+
+
+.common-Width100 {
+  width: 100% !important;
+}
+
+
+.aa{
+display: block;
+}

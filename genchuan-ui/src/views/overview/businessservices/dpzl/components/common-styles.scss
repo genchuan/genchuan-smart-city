@@ -1,0 +1,548 @@
+
+// 上部布局
+.top-layout {
+  display: flex;
+  gap: 15px;
+  height: 40%;
+}
+
+
+.panel-header {
+  height: 30px;
+  line-height: 40px;
+  padding: 0 20px;
+  border-bottom: 1px solid rgba(0, 204, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h2 {
+    margin: 0;
+    font-size: 16px;
+    color: #00ccff;
+    font-weight: 500;
+  }
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+  margin-right: 15px;
+  color: #9fbdff;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.panel-body {
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  padding: 15px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+// 四个半角框样式
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1.5vh;
+  height: 1.5vh;
+  border-top: 0.5vh solid #02a6b5;
+  border-left: 0.5vh solid #02a6b5;
+}
+
+.panel::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 1.5vh;
+  height: 1.5vh;
+  border-top: 0.5vh solid #02a6b5;
+  border-right: 0.5vh solid #02a6b5;
+}
+
+.panel-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1vh;
+}
+
+.panel-footer::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 1.5vh;
+  height: 1.5vh;
+  border-bottom: 0.5vh solid #02a6b5;
+  border-left: 0.5vh solid #02a6b5;
+}
+
+.panel-footer::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 1.5vh;
+  height: 1.5vh;
+  border-bottom: 0.5vh solid #02a6b5;
+  border-right: 0.5vh solid #02a6b5;
+}
+
+// 全屏按钮
+.panel-fullscreen-btn {
+  cursor: pointer;
+  transition: transform 0.2s;
+  padding: 5px;
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  z-index: 1000;
+
+  &:hover {
+    transform: scale(1.1);
+    background: rgba(0, 30, 60, 0.8);
+  }
+}
+
+// 核心指标面板
+.core-indicators-panel {
+  flex: 1;
+  height: 100%;
+}
+
+// 指标卡片
+.indicator-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  height: auto;
+  padding-top: 10px;
+  margin-bottom: 15px;
+}
+
+.indicator-card {
+  flex: 0 0 calc(48%);
+  background: rgba(0, 30, 60, 0.6);
+  border-radius: 8px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 1px solid transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 204, 255, 0.3);
+  }
+
+  &.normal {
+    border-color: #13ce66;
+    .indicator-value { color: #13ce66; }
+  }
+
+  &.warning {
+    border-color: #ff4949;
+    background: rgba(100, 0, 0, 0.3);
+    .indicator-value { color: #ff4949; }
+  }
+}
+
+.indicator-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #90ffc4;
+}
+
+.indicator-value {
+  font-size: 28px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.indicator-unit {
+  font-size: 16px;
+  margin-left: 5px;
+}
+
+.indicator-compliance {
+  font-size: 14px;
+  color: #ccc;
+  margin: 5px 0;
+
+  .compliance-value {
+    color: #00ccff;
+    font-weight: 500;
+  }
+}
+
+.indicator-yoy {
+  font-size: 14px;
+  margin-top: 5px;
+
+  &.positive { color: #13ce66; }
+  &.negative { color: #ff4949; }
+}
+
+// 企业资源分布面板
+.pollutant-distribution-panel {
+  flex: 1;
+  height: 100%;
+}
+
+// 企业列表
+.enterprise-list h3, .pending-items h3 {
+  font-size: 16px;
+  color: #00ccff;
+  margin: 15px 0 10px 0;
+  text-align: left;
+}
+
+// 图表容器
+.charts-container2 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  height: 100%;
+  margin-bottom: 15px;
+  margin-top: 30px;
+
+  .chart-item2, .chart-item3 {
+    flex: 0 0 calc(50% - 20px);
+    position: relative;
+
+    h3 {
+      font-size: 14px;
+      color: #f6b5ff;
+      margin: 10px 0 0 0;
+      text-align: center;
+    }
+  }
+
+  .chart-item3 {
+    height: 260px !important;
+    border-left: 0.5vh solid #02a6b5;
+  }
+}
+
+// 概览统计项
+.overview-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 10px;
+  height: auto;
+}
+
+.overview-stat-item {
+  flex: 0 0 calc(25% - 20px);
+  background: rgba(201, 183, 220, 0.4);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid rgba(0, 204, 255, 0.2);
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 10px rgba(0, 204, 255, 0.2);
+  }
+}
+
+.stat-title {
+  font-size: 16px;
+  color: #00ccff;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.stat-rate {
+  font-size: 14px;
+  padding: 3px 0;
+
+  &.normal { color: #13ce66; }
+  &.warning { color: #ff7d00; }
+  &.danger { color: #ff4949; }
+  &.positive { color: #13ce66; }
+}
+
+// 概览图表容器
+.charts-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  height: auto;
+  margin-bottom: 15px;
+
+  .chart-item, .chart-item2, .chart-item3 {
+    flex: 0 0 calc(33% - 15px);
+    position: relative;
+  }
+
+  .chart-item2, .chart-item3 {
+    border-left: 0.5vh solid #02a6b5;
+  }
+}
+
+// 服务事项面板
+.pollutant-stats-panel {
+  flex: 1;
+  overflow-y: auto;
+}
+
+// 统计卡片网格
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.stat-card {
+  background: rgba(232, 255, 211, 0.5);
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  border: 1px solid transparent;
+
+  &.warning {
+    border-color: #ff4949;
+    background: rgba(100, 0, 0, 0.3);
+  }
+
+  &:hover {
+    transform: translateY(5px);
+    box-shadow: 0 0 10px rgba(0, 204, 255, 0.2);
+  }
+
+  .stat-title {
+    font-size: 16px;
+    color: #ffeeb3;
+    margin-bottom: 5px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 5px;
+  }
+
+  .stat-sub {
+    font-size: 12px;
+    color: #ccc;
+  }
+}
+
+// 服务事项图表容器
+.charts-container3 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  height: 50%;
+  margin-bottom: 15px;
+
+  .chart-item2, .chart-item3 {
+    flex: 0 0 calc(50% - 20px);
+    position: relative;
+
+    h3 {
+      font-size: 14px;
+      color: #f6b5ff;
+      margin: 10px 0 0 0;
+      text-align: center;
+    }
+  }
+
+  .chart-item3 {
+    border-left: 0.5vh solid #02a6b5;
+  }
+}
+
+// 内容布局
+.content-layout {
+  display: flex;
+  flex: 1;
+  gap: 15px;
+}
+
+.left-column, .right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  flex: 1;
+}
+
+// 弹窗样式
+::v-deep .el-dialog {
+  background-color: rgba(0, 20, 40);
+  border: 1px solid rgba(0, 204, 255, 0.3);
+
+  .el-dialog__header {
+    border-bottom: 1px solid rgba(0, 204, 255, 0.2);
+    .el-dialog__title { color: #00ccff; }
+  }
+
+  .el-dialog__footer {
+    border-top: 1px solid rgba(0, 204, 255, 0.1);
+  }
+}
+
+// 详情区域
+.detail-section {
+  margin-bottom: 20px;
+
+  h3 {
+    font-size: 17px;
+    color: #e39aff;
+    margin: 10px 0 10px 0;
+    padding-bottom: 5px;
+  }
+}
+
+.indicator-detail, .region-detail, .pollutant-detail, .report-content {
+  max-height: 550px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.chart-container {
+  width: 100%;
+  height: 300px !important;
+  margin-top: 10px;
+  border-radius: 4px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+// 滚动条美化
+::v-deep .indicator-detail::-webkit-scrollbar,
+::v-deep .region-detail::-webkit-scrollbar,
+::v-deep .pollutant-detail::-webkit-scrollbar,
+::v-deep .report-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+::v-deep .indicator-detail::-webkit-scrollbar-thumb,
+::v-deep .region-detail::-webkit-scrollbar-thumb,
+::v-deep .pollutant-detail::-webkit-scrollbar-thumb,
+::v-deep .report-content::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 204, 255, 0.3);
+  border-radius: 3px;
+}
+
+::v-deep .indicator-detail::-webkit-scrollbar-track,
+::v-deep .region-detail::-webkit-scrollbar-track,
+::v-deep .pollutant-detail::-webkit-scrollbar-track,
+::v-deep .report-content::-webkit-scrollbar-track {
+  background-color: rgba(0, 30, 60, 0.5);
+}
+
+.current-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #00ccff;
+}
+
+// 报告表格
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+
+  th, td {
+    border: 1px solid rgba(0, 204, 255, 0.2);
+    padding: 8px 10px;
+    text-align: left;
+  }
+
+  th {
+    background-color: rgba(0, 30, 60, 0.5);
+    color: #00ccff;
+  }
+}
+
+// 表格样式
+::v-deep .el-table {
+  background-color: rgba(0, 30, 60, 0.3);
+  border-color: rgba(0, 204, 255, 0.2);
+
+  th {
+    background-color: rgba(0, 123, 161, 0.5);
+    color: rgb(255, 253, 223);
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    border-color: rgba(0, 204, 255, 0.2);
+  }
+
+  td {
+    background-color: rgb(0, 48, 96);
+    border-color: rgba(0, 204, 255, 0.1);
+    color: #999;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .el-table__empty-text { color: #999; }
+}
+
+// 表单样式
+::v-deep .el-input__inner,
+::v-deep .el-select__inner,
+::v-deep .el-textarea__inner {
+  background-color: rgba(0, 30, 60, 0.2);
+  border-color: rgba(0, 204, 255, 0.3);
+  color: #999;
+  font-size: 14px;
+
+  &::placeholder { color: #999; }
+}
+
+::v-deep .el-form-item__label { color: #ccc; }
+
+::v-deep .el-tag--danger {
+  background-color: rgba(255, 73, 73, 0.5);
+  border-color: rgba(255, 73, 73, 0.8);
+}
+
+::v-deep .el-tag--success {
+  background-color: rgba(19, 206, 102, 0.5);
+  border-color: rgba(19, 206, 102, 0.8);
+}
+
+::v-deep .el-tag--warning {
+  background-color: rgba(255, 153, 0, 0.5);
+  border-color: rgba(255, 153, 0, 0.8);
+}
+
+// 响应式调整
+@media (max-width: 1600px) {
+  .indicator-value { font-size: 24px; }
+  .pollutant-distribution-panel .el-table { font-size: 13px; }
+  .pollutant-distribution-panel th { font-size: 14px; }
+}
+
+@media (max-width: 1200px) {
+  .pollutant-distribution-panel .el-table-column {
+    &[label="企业名称"], &[label="申请企业"] { width: 130px !important; }
+  }
+}

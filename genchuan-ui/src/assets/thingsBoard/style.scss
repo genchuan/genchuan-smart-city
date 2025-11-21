@@ -1,0 +1,282 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+html, body {
+  background: #fff;
+  color: #081333;
+  font: {
+    family: "微软雅黑", "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+    size: 14px;
+  };
+  height: 100%;
+}
+
+#app {
+  height: 100%;
+}
+
+img {
+  border: 0;
+  vertical-align: top;
+}
+
+ul, ol, li {
+  list-style: none;
+}
+
+h1, h2, h3, h4, h5, h6, b {
+  font-weight: normal;
+}
+
+i, em {
+  font-style: normal;
+}
+
+a {
+  text-decoration: none;
+  outline: none;
+  color: #303133;
+}
+
+.cc-main {
+  min-height: calc(100vh - 90px);
+  background: #ebf2ff;
+  padding: 8px;
+  box-sizing: border-box;
+
+  div {
+    box-sizing: border-box;
+  }
+
+  &-content {
+    min-height: calc(100vh - 102px);
+    background: #fff;
+    border-radius: 12px;
+    padding: 8px;
+  }
+}
+
+//Title 样式
+.cc-title-css {
+  @include flex($justify: space-between);
+  //margin: 15px;
+  background: #e9f4ff;
+  height: 52px;
+  padding: 12px;
+  border-radius: 8px;
+
+  .left {
+    @include flex();
+
+    &-icon {
+      color: #2d8dfe;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    span {
+      color: #5e5e5e;
+      font-weight: 600;
+      margin-left: 8px;
+      font-size: 15px;
+      padding-bottom: 2px;
+    }
+  }
+}
+
+//thingsBoard 自己写的页面才用到
+.thingsBoard-body-class .thingsBoard-layout-css {
+  padding: 0 !important;
+}
+
+//搜索样式
+.cc-search-css {
+  padding: 12px;
+  border-bottom: 1px solid #ebeef5;
+  margin-bottom: 12px;
+}
+
+//表格样式
+.cc-table-css{
+  .table-active{
+    cursor: pointer;
+    color: #409eff;
+  }
+}
+.cc-table-css-page {
+  position: fixed;
+  bottom: 15px;
+  width: calc(100% - 230px);
+  text-align: right;
+
+  .el-pagination {
+    justify-content: flex-end;
+  }
+}
+
+//CcDrawer样式
+.cc-drawer-css-main >div{
+  width: 70% !important;
+  top: 0 !important;
+  bottom: auto !important;
+  left: auto !important;
+  right:0 !important;
+  height: 100vh;
+  .action-button{
+    width: 70%;
+  }
+}
+.cc-drawer-css-mainNo>div{
+  width: 100% !important;
+  .action-button{
+    width: 100%;
+  }
+}
+
+
+.cc-drawer-css {
+  border-radius: 12px 0 0 12px;
+
+  .icon-fullscreen{
+    margin-right: 15px;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  .el-drawer__header {
+    background-color: #fff;
+    border-bottom: 1px solid #e6e9f0;
+    padding: 12px 20px;
+    margin-bottom: 0px;
+
+    .el-drawer__title {
+      color: #081333;
+      font-size: 16px;
+    }
+  }
+
+  .el-drawer__body {
+    padding: 0;
+  }
+
+  //内容
+  .drawer-content {
+    padding: 8px 20px 75px;
+  }
+
+  //查看
+  .see-content {
+    ul {
+      @include flex($wrap: wrap);
+
+      li {
+        @include flex();
+        width: 50%;
+        flex: 0 0 auto;
+        color: #081333;
+        font-size: 14px;
+        padding: 8px;
+
+        & > span {
+          width: 140px;
+          flex: 0 0 auto;
+          text-align: right;
+          color: #515a6e;
+        }
+      }
+    }
+
+    //省市区下拉
+    .see-cascader-css {
+      .el-input.is-disabled .el-input__wrapper {
+        background: none;
+        padding: 0;
+        box-shadow: none;
+      }
+
+      .el-input__inner {
+        height: auto;
+        line-height: normal;
+      }
+
+      .el-input.is-disabled .el-input__inner {
+        color: #606266;
+        -webkit-text-fill-color: #606266;
+      }
+
+      .el-input__suffix {
+        display: none;
+      }
+    }
+  }
+
+  //编辑
+  .edit-content {
+    &-form {
+      @include flex($wrap: wrap);
+
+      &-li {
+        @include flex();
+        width: 50%;
+        flex: 0 0 auto;
+        color: #081333;
+        font-size: 14px;
+        padding: 8px 0;
+        margin-bottom: 0;
+
+        .el-form-item__label {
+          //width: 140px;
+          color: #515a6e;
+          padding-right: 0;
+          font-weight: normal;
+        }
+      }
+    }
+  }
+
+  //操作按钮
+  .action-button {
+    position: fixed;
+    bottom: 0px;
+    border-top: 1px solid #dedede;
+    text-align: center;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background: #fff;
+    z-index: 9999;
+
+    .el-button + .el-button {
+      margin-left: 20px;
+    }
+
+    .el-button {
+      width: 250px;
+      height: 38px;
+    }
+  }
+
+}
+
+.width33 {
+  width: calc(100% / 3) !important;
+}
+
+.width50 {
+  width: 50% !important;
+}
+
+.width100 {
+  width: 100% !important;
+}
+
+.copy-css {
+  cursor: pointer;
+  color: #409eff;
+}
+
+
+
+
+

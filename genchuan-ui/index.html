@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <link rel="icon" href="/favicon2222.ico?v=12"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta
+            name="keywords"
+            content="亘川管理系统 基于 vue3 + CompositionAPI + typescript + vite3 + element plus 的后台开源免费管理系统！"
+    />
+    <meta
+            name="description"
+            content="亘川管理系统 基于 vue3 + CompositionAPI + typescript + vite3 + element plus 的后台开源免费管理系统！"
+    />
+    <title>%VITE_APP_TITLE%</title>
+    <!--<script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.6/libs/cn/index.js"></script>-->
+    <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.10/libs/cn/index.js"></script>
+</head>
+<body>
+<div id="app">
+    <style>
+        .app-loading {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background: #f0f2f5;
+        }
+
+        .app-loading .app-loading-wrap {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            display: flex;
+            -webkit-transform: translate3d(-50%, -50%, 0);
+            transform: translate3d(-50%, -50%, 0);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .app-loading .app-loading-title {
+            margin-bottom: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .app-loading .app-loading-logo {
+            width: 100px;
+            margin: 0 auto 15px auto;
+        }
+
+        .app-loading .app-loading-item {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 60px;
+            vertical-align: middle;
+            border-radius: 50%;
+        }
+
+        .app-loading .app-loading-outter {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 4px solid #2d8cf0;
+            border-bottom: 0;
+            border-left-color: transparent;
+            border-radius: 50%;
+            animation: loader-outter 1s cubic-bezier(0.42, 0.61, 0.58, 0.41) infinite;
+        }
+
+        .app-loading .app-loading-inner {
+            position: absolute;
+            top: calc(50% - 20px);
+            left: calc(50% - 20px);
+            width: 40px;
+            height: 40px;
+            border: 4px solid #87bdff;
+            border-right: 0;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: loader-inner 1s cubic-bezier(0.42, 0.61, 0.58, 0.41) infinite;
+        }
+
+        @-webkit-keyframes loader-outter {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes loader-outter {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+
+        @-webkit-keyframes loader-inner {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(-360deg);
+                transform: rotate(-360deg);
+            }
+        }
+
+        @keyframes loader-inner {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(-360deg);
+                transform: rotate(-360deg);
+            }
+        }
+    </style>
+    <div class="app-loading">
+        <div class="app-loading-wrap">
+            <div class="app-loading-title">
+                <img src="/logo.gif" class="app-loading-logo" alt="Logo" style="display: none"/>
+                <div class="app-loading-title">%VITE_APP_TITLE%</div>
+            </div>
+            <div class="app-loading-item">
+                <div class="app-loading-outter"></div>
+                <div class="app-loading-inner"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>
+<script>
+    const img = document.querySelector('.app-loading-logo');
+
+    // if (! % VITE_LOGO_SHOW %) {
+    if (!import.meta.env.VITE_LOGO_SHOW) {
+        img.style.display = 'none';
+    } else {
+        img.style.display = 'block';
+    }
+</script>
+<script>
+    new CozeWebSDK.WebChatClient({
+        config: {bot_id: '7519678747293892634',},
+        componentProps: {title: 'Coze',},
+        auth: {
+            type: 'token', token: 'pat_7Xa66rT4xjj4EnLKeDuV1rYGSVAY4mHPIialjvuoF4ei3A9ioYgZlGwTLE3qKj9q', onRefreshToken: function () {
+                return 'pat_7Xa66rT4xjj4EnLKeDuV1rYGSVAY4mHPIialjvuoF4ei3A9ioYgZlGwTLE3qKj9q'
+            }
+        }
+    });
+
+    // new CozeWebSDK.WebChatClient({
+    //     config: {
+    //         bot_id: '7507446480823730195',
+    //     },
+    //     componentProps: {
+    //         title: 'Coze',
+    //     },
+    //     auth: {
+    //         type: 'token',
+    //         token: 'pat_hXihVoOBKAf0cOYXAkniihE4vZKSgKeD6gn9WfzsXYNtfXZsaAgkipb8i2LMNQRe',
+    //         onRefreshToken: function () {
+    //             return 'pat_hXihVoOBKAf0cOYXAkniihE4vZKSgKeD6gn9WfzsXYNtfXZsaAgkipb8i2LMNQRe'
+    //         }
+    //     }
+    // });
+
+
+    setInterval(() => {
+        // 改外面logo
+        const element = document.querySelector('.semi-image-preview-group');
+        if (element) {
+            if (!element.firstChild || element.textContent.trim() === '') {
+                const element2 = document.querySelector('.cc-kouzi-ai-css');
+                if (element2) {
+                    element2.style.display = 'block';
+                }
+
+            }
+            // 查找下一个相邻的 div
+            let nextElement = element.nextElementSibling;
+            while (nextElement) {
+                if (nextElement.tagName === 'DIV') {
+                    // class 是 ab1ac9d9bab12da47298 添加bottom 这样就不会挡住图标
+                    const elements = document.getElementsByClassName('ab1ac9d9bab12da47298');
+                    Array.from(elements).forEach(element => {
+                        // 设置样式，!important需要通过setProperty并指定优先级
+                        element.style.setProperty('bottom', '60px', 'important');
+                    });
+
+            /*    .ab1ac9d9bab12da47298{
+                        position: fixed;
+                        bottom: 60px !important;
+                    }*/
+
+                    // 找到 div 后，查找其中的 img 元素
+                    const img = nextElement.querySelector('img');
+                    if (img) {
+                        img.src = '/logo.gif'; // 修改 src 属性
+                        // console.log('已修改 img src 为:', img.src);
+                        const element2 = document.querySelector('.cc-kouzi-ai-css');
+                        if (element2) {
+                            element2.style.display = 'none';
+                        }
+
+                    } else {
+                        // console.log('相邻 div 中未找到 img 元素');
+                    }
+                    break;
+                } else {
+                    // console.log(333)
+
+                }
+                nextElement = nextElement.nextElementSibling;
+            }
+        } else {
+            console.log('未找到匹配的元素');
+        }
+    }, 50)
+</script>

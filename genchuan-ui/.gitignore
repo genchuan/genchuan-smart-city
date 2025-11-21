@@ -1,0 +1,13 @@
+node_modules
+.DS_Store
+dist
+dist-ssr
+/dist*
+pnpm-debug
+auto-*.d.ts
+.idea
+.history
+package-lock.yaml
+pnpm-lock.yaml
+.vscode
+.env.local
