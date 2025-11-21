@@ -16,4 +16,7 @@ public class AssetCategorySimpleVO {
 
     @Schema(description = "上级分类ID", example = "25267")
     private String parentCatId;
+
+    @Schema(description = "分类层级", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String catLevel;
 }

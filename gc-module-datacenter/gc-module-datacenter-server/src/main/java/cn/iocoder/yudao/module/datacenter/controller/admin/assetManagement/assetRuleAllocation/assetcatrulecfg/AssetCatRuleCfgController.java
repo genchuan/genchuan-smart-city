@@ -114,7 +114,7 @@ public class AssetCatRuleCfgController {
      * @return 获取资产分类规则列表
      */
     @GetMapping("/list")
-    @Operation(summary = "获取资产分类规则列表）")
+    @Operation(summary = "获取资产分类规则列表")
     @PreAuthorize("@ss.hasPermission('datacenter:asset-cat-rule-cfg:query')")
     public CommonResult<List<AssetCatRuleCfgSimpleRespVO>> getAssetCatRuleList() {
         List<AssetCatRuleCfgSimpleRespVO> list = assetCatRuleCfgService.getAssetCatRuleList();

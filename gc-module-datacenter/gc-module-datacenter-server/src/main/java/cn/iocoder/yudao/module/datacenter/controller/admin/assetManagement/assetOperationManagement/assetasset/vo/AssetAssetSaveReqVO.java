@@ -15,7 +15,7 @@ public class AssetAssetSaveReqVO {
     private Long id;
 
     @Schema(description = "关联ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "2409")
-    @NotEmpty(message = "关联ID不能为空")
+//    @NotEmpty(message = "关联ID不能为空")
     private String assetRelAssetId;
 
     @Schema(description = "从资产ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "25474")

@@ -15,7 +15,7 @@ public class AssetShareAttrCfgSaveReqVO {
     private Long id;
 
     @Schema(description = "共享属性ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "11393")
-    @NotEmpty(message = "共享属性ID不能为空")
+//    @NotEmpty(message = "共享属性ID不能为空")
     private String assetShareAttrId;
 
     @Schema(description = "关联资产ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "23228")

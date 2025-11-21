@@ -15,7 +15,7 @@ public class AssetGridSaveReqVO {
     private Long id;
 
     @Schema(description = "关联ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "12371")
-    @NotEmpty(message = "关联ID不能为空")
+//    @NotEmpty(message = "关联ID不能为空")
     private String assetRelGridId;
 
     @Schema(description = "关联资产ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "21267")

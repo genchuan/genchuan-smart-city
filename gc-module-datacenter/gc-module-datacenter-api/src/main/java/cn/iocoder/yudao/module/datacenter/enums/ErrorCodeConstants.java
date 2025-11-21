@@ -141,8 +141,37 @@ public interface ErrorCodeConstants {
     ErrorCode ALARM_RULE_THRESHOLD_INVALID = new ErrorCode(1003001004, "预警阈值上限必须大于下限");
     ErrorCode ALARM_RULE_SCOPE_IMMUTABLE = new ErrorCode(1003001005, "关联对象范围不可修改");
     ErrorCode EARLY_WARN_REGION_NOT_EXISTS = new ErrorCode(1003001006, "按行政区划预警告警统计不存在");
+    ErrorCode EARLY_WARN_DEVICE_NOT_EXISTS = new ErrorCode(100_106, "按设备分域预警告警统计不存在");
+    ErrorCode EARLY_WARN_MON_EVT_NOT_EXISTS = new ErrorCode(100_107, "按监测事件预警告警统计不存在");
+    ErrorCode EARLY_WARN_GRID_NOT_EXISTS = new ErrorCode(100_108, "按网格分域预警告警统计不存在");
+    ErrorCode EARLY_WARN_ASSET_NOT_EXISTS = new ErrorCode(100_109, "按资产分域预警告警统计不存在");
+    ErrorCode EARLY_WARN_APP_SCENE_NOT_EXISTS = new ErrorCode(100_110, "按应用场景预警告警统计不存在");
+    ErrorCode EARLY_WARN_MON_COMP_NOT_EXISTS = new ErrorCode(100_111, "按监测部件预警告警统计不存在");
+    ErrorCode EARLY_WARN_MATTER_NOT_EXISTS = new ErrorCode(100_112, "按管理事项预警告警统计不存在");
+    ErrorCode EARLY_WARN_MNG_COMP_NOT_EXISTS = new ErrorCode(100_113, "按管理部件预警告警统计不存在");
+    ErrorCode EARLY_WARN_DISPATCH_NOT_EXISTS = new ErrorCode(100_114, "预警告警派单不存在");
+    ErrorCode EARLY_WARN_HANDLE_EVAL_NOT_EXISTS = new ErrorCode(100_115, "预警告警处置评估不存在");
+    ErrorCode EARLY_WARN_HANDLE_TRACE_NOT_EXISTS = new ErrorCode(100_116, "预警告警处置跟踪不存在");
+    ErrorCode EARLY_WARN_RELEASE_NOT_EXISTS = new ErrorCode(100_117, "预警告警解除不存在");
+    ErrorCode EARLY_WARN_ARCH_NOT_EXISTS = new ErrorCode(100_118, "预警告警处置归档不存在");
+    ErrorCode RELATED_RISK_IDENT_NOT_EXISTS = new ErrorCode(100_119, "关联风险识别不存在");
+    ErrorCode RISK_PROPAGATE_CHAIN_NOT_EXISTS = new ErrorCode(100_120, "风险传播链不存在");
+    ErrorCode RISK_SOURCE_ARCH_NOT_EXISTS = new ErrorCode(100_121, "风险源档案不存在");
+    ErrorCode RISK_TRACE_PATH_NOT_EXISTS = new ErrorCode(100_121, "风险溯源路径不存在");
+    ErrorCode EARLY_WARN_CUSTOM_CFG_NOT_EXISTS = new ErrorCode(100_122, "预警告警自定义统计配置不存在");
+    ErrorCode EARLY_WARN_RISK_PRED_NOT_EXISTS = new ErrorCode(100_123, "预警告警风险趋势预测不存在");
+    ErrorCode EARLY_WARN_TIME_NOT_EXISTS = new ErrorCode(100_124, "预警告警时间维度统计不存在");
+    ErrorCode EARLY_WARN_AREA_NOT_EXISTS = new ErrorCode(100_125, "预警告警区域维度统计不存在");
+    ErrorCode EARLY_WARN_TYPE_NOT_EXISTS = new ErrorCode(100_126, "预警告警类型维度统计不存在");
+    ErrorCode EARLY_WARN_HANDLE_EFF_NOT_EXISTS = new ErrorCode(100_127, "预警告警处置效率统计不存在");
+    ErrorCode EARLY_WARN_LEVEL_NOT_EXISTS = new ErrorCode(100_128, "预警告警等级维度统计不存在");
+
+
+
 
     //====================================资产管理模块=========================================================================
+    // Asset 相关错误码
+    ErrorCode ASSET_NOT_EXISTS = new ErrorCode(2001001, "资产不存在");
 
     // ========= 资产关联行政区划 200_221 ==========
     ErrorCode ASSET_AREA_NOT_EXISTS = new ErrorCode(200_221, "资产关联行政区划不存在");
@@ -244,7 +273,7 @@ public interface ErrorCodeConstants {
     ErrorCode EVT_PROCESS_TRACE_NOT_EXISTS = new ErrorCode(1014000000, "事件过程回溯不存在");
     ErrorCode EXP_LIB_NOT_EXISTS = new ErrorCode(1014000001, "经验库不存在");
     ErrorCode DISPOSAL_RESULT_EVAL_NOT_EXISTS = new ErrorCode(1014000002, "处置结果评估不存在");
-    // ========== 分析决策 1015000000 ==========
+    // ========== 分域分析研判 1015000000 ==========
     ErrorCode ANALYSIS_GRID_NOT_EXISTS = new ErrorCode(1015000001, "按网格分域分析研判统计不存在");
     ErrorCode ANALYSIS_MNG_COMP_NOT_EXISTS = new ErrorCode(1015000002, "按管理部件分析研判统计不存在");
     ErrorCode ANALYSIS_ASSET_NOT_EXISTS = new ErrorCode(1015000003, "按资产分域分析研判统计不存在");
@@ -254,8 +283,7 @@ public interface ErrorCodeConstants {
     ErrorCode ANALYSIS_MNG_MATTER_NOT_EXISTS = new ErrorCode(1015000007, "按管理事项分析研判统计不存在");
     ErrorCode ANALYSIS_REGION_NOT_EXISTS = new ErrorCode(1015000008, "按行政区划分析研判统计不存在");
     ErrorCode ANALYSIS_DEVICE_NOT_EXISTS = new ErrorCode(1015000009, "按设备分域分析研判统计不存在");
-    ErrorCode EMER_RES_STATUS_NOT_EXISTS = new ErrorCode(1015000010, "资源状态统计不存在");
-
+    ErrorCode EMER_RES_STATUS_NOT_EXISTS = new ErrorCode(1015000009, "资源状态统计不存在");
     ErrorCode DECISION_SCHEME_NOT_EXISTS = new ErrorCode(1015000011, "决策方案生成不存在");
     ErrorCode SCHEME_SIM_COMPARE_NOT_EXISTS = new ErrorCode(1015000012, "方案模拟对比统计不存在");
     ErrorCode POL_COMPLIANCE_CK_NOT_EXISTS = new ErrorCode(1015000013, "政策合规校验不存在");
@@ -297,10 +325,105 @@ public interface ErrorCodeConstants {
     ErrorCode KEY_IDX_SUMMARY_RPT_NOT_EXISTS = new ErrorCode(100_427, "关键指标汇总报表不存在");
     ErrorCode COMPARE_ANALYSIS_RPT_NOT_EXISTS = new ErrorCode(100_428, "综合对比分析报表不存在");
 
+    // ========== 业务指导 10017000000 ==========
+    ErrorCode NATIONAL_POL_NOT_EXISTS = new ErrorCode(1001700001, "国家政策信息不存在");
+    ErrorCode LOCAL_REGULATION_NOT_EXISTS = new ErrorCode(1001700002, "地方法规信息不存在");
+    ErrorCode INDUSTRY_STD_NOT_EXISTS = new ErrorCode(1001700003, "行业规范信息不存在");
+    ErrorCode POL_INTERPRETATION_NOT_EXISTS = new ErrorCode(1001700004, "政策解读信息不存在");
+    ErrorCode DOMESTIC_DYNAMIC_NOT_EXISTS = new ErrorCode(1001700005, "国内行业动态不存在");
+    ErrorCode INTERNATIONAL_DYNAMIC_NOT_EXISTS = new ErrorCode(1001700006, "国际行业动态不存在");
+    ErrorCode LOCAL_DYNAMIC_NOT_EXISTS = new ErrorCode(1001700007, "本地行业动态不存在");
+    ErrorCode PROCESS_EXEC_STD_NOT_EXISTS = new ErrorCode(1001700008, "流程执行规范不存在");
+    ErrorCode SPEC_BUSINESS_STD_NOT_EXISTS = new ErrorCode(1001700009, "专项业务标准不存在");
+    ErrorCode FAQ_NOT_EXISTS = new ErrorCode(1001700010, "常见问题解答不存在");
+    ErrorCode TRAIN_MAT_NOT_EXISTS = new ErrorCode(1001700011, "培训资料不存在");
+    ErrorCode SPEC_BUSINESS_GUIDE_NOT_EXISTS = new ErrorCode(1001700012, "专项业务指南不存在");
+    ErrorCode SYSTEM_FUNCTION_GUIDE_NOT_EXISTS = new ErrorCode(1001700013, "系统功能指南不存在");
+    ErrorCode GENERAL_OPER_GUIDE_NOT_EXISTS = new ErrorCode(1001700014, "通用操作指南不存在");
+    ErrorCode INDUSTRY_TYPICAL_EXP_NOT_EXISTS = new ErrorCode(1001700015, "行业典型经验不存在");
+    ErrorCode CROSS_DOM_EXP_NOT_EXISTS = new ErrorCode(1001700016, "跨域经验交流不存在");
+    ErrorCode LOCAL_LEVEL_EXP_NOT_EXISTS = new ErrorCode(1001700017, "本级经验分享不存在");
+    // ========== 公众服务 10018000000 ==========
+    ErrorCode PUBLIC_SVC_INFO_NOT_EXISTS = new ErrorCode(1001800001, "服务信息发布不存在");
+    ErrorCode PUBLIC_POL_INTERPRET_NOT_EXISTS = new ErrorCode(1001800002, "政策解读发布不存在");
+    ErrorCode PUBLIC_NOTICE_NOT_EXISTS = new ErrorCode(1001800003, "通知公告发布不存在");
+    ErrorCode PUBLIC_SNAP_SHOT_NOT_EXISTS = new ErrorCode(1001800004, "随手拍数据不存在");
+    ErrorCode PUBLIC_CONSULTATION_NOT_EXISTS = new ErrorCode(1001800005, "咨询建议不存在");
+    ErrorCode PUBLIC_COMPLAIN_NOT_EXISTS = new ErrorCode(1001800006, "投诉举报不存在");
+    ErrorCode PUBLIC_HOTLINE_LINK_NOT_EXISTS = new ErrorCode(1001800007, "热线对接不存在");
+    ErrorCode PUBLIC_ONLINE_INTERVIEW_NOT_EXISTS = new ErrorCode(1001800008, "在线访谈不存在");
+    ErrorCode PUBLIC_OPINION_COLLECT_NOT_EXISTS = new ErrorCode(1001800009, "民意征集不存在");
+    ErrorCode PUBLIC_FEEDBACK_NOT_EXISTS = new ErrorCode(1001800010, "意见反馈不存在");
+    ErrorCode PUBLIC_AI_SVC_NOT_EXISTS = new ErrorCode(1001800011, "智能客服知识库不存在");
 
+    //=====================================监督检查模块---100_50-----100_60============================================
+    ErrorCode INSPECT_PERSON_INFO_NOT_EXISTS = new ErrorCode(100_501, "巡查巡检人员信息不存在");
+    ErrorCode INSPECT_ROUTE_INFO_NOT_EXISTS = new ErrorCode(100_502, "巡查巡检路线信息不存在");
+    ErrorCode INSPECT_DEVICE_INFO_NOT_EXISTS = new ErrorCode(100_503, "巡查巡检设备信息不存在");
+    ErrorCode INSPECT_STD_INFO_NOT_EXISTS = new ErrorCode(100_504, "巡查巡检标准信息不存在");
+    ErrorCode INSPECT_DAILY_PLAN_NOT_EXISTS = new ErrorCode(100_505, "日常巡查计划信息不存在");
+    ErrorCode INSPECT_EMER_PLAN_NOT_EXISTS = new ErrorCode(100_506, "应急巡查计划信息不存在");
+    ErrorCode INSPECT_SPEC_PLAN_NOT_EXISTS = new ErrorCode(100_507, "专项巡查计划信息不存在");
+    ErrorCode INSPECT_TASK_ALLOCATE_REC_NOT_EXISTS = new ErrorCode(100_508, "巡查巡检任务分配记录不存在");
+    ErrorCode INSPECT_TASK_TRACK_NOT_EXISTS = new ErrorCode(100_509, "巡查巡检任务跟踪不存在");
+    ErrorCode INSPECT_DAILY_EXEC_REC_NOT_EXISTS = new ErrorCode(100_510, "日常巡查执行记录不存在");
+    ErrorCode INSPECT_SPEC_EXEC_REC_NOT_EXISTS = new ErrorCode(100_511, "专项巡查执行记录不存在");
+    ErrorCode INSPECT_EMER_EXEC_REC_NOT_EXISTS = new ErrorCode(100_512, "应急巡查执行记录不存在");
+    ErrorCode INSPECT_PROBLEM_RPT_NOT_EXISTS = new ErrorCode(100_513, "巡查巡检问题上报记录不存在");
+    ErrorCode INSPECT_PROBLEM_LEVEL_REC_NOT_EXISTS = new ErrorCode(100_514, "巡查巡检问题分级记录不存在");
+    ErrorCode INSPECT_RECTIFY_TASK_NOT_EXISTS = new ErrorCode(100_515, "巡查巡检整改任务派发不存在");
+    ErrorCode INSPECT_RECTIFY_TRACK_NOT_EXISTS = new ErrorCode(100_516, "巡查巡检整改进度跟踪视图不存在");
+    ErrorCode INSPECT_RECTIFY_ACCEPT_NOT_EXISTS = new ErrorCode(100_517, "巡查巡检整改结果验收不存在");
+    ErrorCode INSPECT_SUPV_TASK_NOT_EXISTS = new ErrorCode(100_518, "巡查巡检重点督办任务不存在");
+    ErrorCode INSPECT_SUPV_FEEDBACK_NOT_EXISTS = new ErrorCode(100_519, "巡查巡检督办结果反馈不存在");
+    ErrorCode INSPECT_SUPV_TRACK_VIEW_NOT_EXISTS = new ErrorCode(100_520, "巡查巡检督办进度跟踪视图不存在");
+    ErrorCode INSPECT_DAILY_REVIEW_NOT_EXISTS = new ErrorCode(100_521, "巡查巡检日常结果复核不存在");
+    ErrorCode INSPECT_SPEC_REVIEW_NOT_EXISTS = new ErrorCode(100_522, "巡查巡检专项结果复核不存在");
+    ErrorCode INSPECT_RECTIFY_REVIEW_NOT_EXISTS = new ErrorCode(100_523, "巡查巡检整改结果复核不存在");
+    ErrorCode INSPECT_RESULT_PUBLIC_NOT_EXISTS = new ErrorCode(100_524, "巡查巡检结果公示不存在");
+    ErrorCode INSPECT_RESULT_EVAL_NOT_EXISTS = new ErrorCode(100_525, "巡查巡检结果评估不存在");
+    ErrorCode INSPECT_RESULT_FEEDBACK_NOT_EXISTS = new ErrorCode(100_526, "巡查巡检结果反馈不存在");
+    ErrorCode INSPECT_REC_ARCH_NOT_EXISTS = new ErrorCode(100_527, "巡查巡检记录档案不存在");
+    ErrorCode INSPECT_ACCEPT_ARCH_NOT_EXISTS = new ErrorCode(100_528, "巡查巡检验收档案不存在");
+    ErrorCode INSPECT_RECTIFY_ARCH_NOT_EXISTS = new ErrorCode(100_529, "巡查巡检整改档案不存在");
+    ErrorCode INSPECT_LEDGER_ARCH_NOT_EXISTS = new ErrorCode(100_530, "巡查巡检台账档案不存在");
+    ErrorCode INSPECT_AREA_RPT_NOT_EXISTS = new ErrorCode(100_531, "巡查巡检区域统计不存在");
+    ErrorCode INSPECT_EFFICACY_RPT_NOT_EXISTS = new ErrorCode(100_532, "巡查巡检效率统计不存在");
+    ErrorCode INSPECT_TYPE_RPT_NOT_EXISTS = new ErrorCode(100_533, "巡查巡检类型统计不存在");
+    ErrorCode INSPECT_CYCLE_RPT_NOT_EXISTS = new ErrorCode(100_534, "巡查巡检周期统计不存在");
 
-
-
+    //=====================================综合评价模块---100_60-----100_70============================================
+    ErrorCode EVAL_OBJECT_NOT_EXISTS = new ErrorCode(100_601, "评价对象管理不存在");
+    ErrorCode EVAL_SUBJECT_NOT_EXISTS = new ErrorCode(100_602, "评价主体管理不存在");
+    ErrorCode EVAL_IDX_CAT_NOT_EXISTS = new ErrorCode(100_603, "指标分类管理不存在");
+    ErrorCode EVAL_IDX_ITEM_NOT_EXISTS = new ErrorCode(100_604, "指标项管理不存在");
+    ErrorCode EVAL_IDX_WEIGHT_NOT_EXISTS = new ErrorCode(100_605, "指标权重管理不存在");
+    ErrorCode EVAL_IDX_SYSTEM_NOT_EXISTS = new ErrorCode(100_606, "指标体系管理不存在");
+    ErrorCode EVAL_RULE_CAT_NOT_EXISTS = new ErrorCode(100_607, "规则分类管理不存在");
+    ErrorCode EVAL_RULE_ITEM_NOT_EXISTS = new ErrorCode(100_608, "规则项管理不存在");
+    ErrorCode EVAL_VETO_RULE_NOT_EXISTS = new ErrorCode(100_609, "否决项规则管理不存在");
+    ErrorCode EVAL_STD_CAT_NOT_EXISTS = new ErrorCode(100_610, "标准分类管理不存在");
+    ErrorCode EVAL_STD_ITEM_NOT_EXISTS = new ErrorCode(100_611, "标准项管理不存在");
+    ErrorCode EVAL_TASK_TEMPLATE_NOT_EXISTS = new ErrorCode(100_612, "任务模板管理不存在");
+    ErrorCode EVAL_TASK_NOT_EXISTS = new ErrorCode(100_613, "任务管理不存在");
+    ErrorCode EVAL_REAL_TIME_DATA_NOT_EXISTS = new ErrorCode(100_614, "实时监测数据接入不存在");
+    ErrorCode EVAL_PLATFORM_RPT_DATA_NOT_EXISTS = new ErrorCode(100_615, "平台上报数据不存在");
+    ErrorCode EVAL_QUESTIONNAIRE_NOT_EXISTS = new ErrorCode(100_616, "问卷调查管理不存在");
+    ErrorCode EVAL_INSPECT_PLAN_NOT_EXISTS = new ErrorCode(100_617, "考察计划管理不存在");
+    ErrorCode EVAL_INSPECT_REC_NOT_EXISTS = new ErrorCode(100_618, "考察记录数据不存在");
+    ErrorCode EVAL_RESULT_AUDIT_NOT_EXISTS = new ErrorCode(100_619, "结果审核不存在");
+    ErrorCode EVAL_RESULT_PUBLIC_NOT_EXISTS = new ErrorCode(100_620, "结果公示不存在");
+    ErrorCode EVAL_RESULT_ARCH_NOT_EXISTS = new ErrorCode(100_621, "结果存档管理不存在");
+    ErrorCode EVAL_APPEAL_NOT_EXISTS = new ErrorCode(100_622, "申诉管理不存在");
+    ErrorCode EVAL_REVIEW_NOT_EXISTS = new ErrorCode(100_623, "复核办理不存在");
+    ErrorCode EVAL_REVIEW_FEEDBACK_NOT_EXISTS = new ErrorCode(100_624, "复核结果反馈不存在");
+    ErrorCode EVAL_RESULT_RPT_NOT_EXISTS = new ErrorCode(100_625, "结果报表管理不存在");
+    ErrorCode EVAL_RESULT_ANALYSIS_NOT_EXISTS = new ErrorCode(100_626, "评价结果分析不存在");
+    ErrorCode EVAL_RESULT_PUSH_NOT_EXISTS = new ErrorCode(100_627, "结果关联推送不存在");
+    ErrorCode EVAL_RESULT_SYSTEM_DOCK_NOT_EXISTS = new ErrorCode(100_628, "结果系统对接不存在");
+    ErrorCode EVAL_RPT_NOT_EXISTS = new ErrorCode(100_629, "评价报告不存在");
+    ErrorCode EVAL_RPT_TEMPLATE_NOT_EXISTS = new ErrorCode(100_630, "报告模板配置不存在");
+    ErrorCode EVAL_RPT_ARCH_NOT_EXISTS = new ErrorCode(100_631, "报告归档导出不存在");
 
 
 

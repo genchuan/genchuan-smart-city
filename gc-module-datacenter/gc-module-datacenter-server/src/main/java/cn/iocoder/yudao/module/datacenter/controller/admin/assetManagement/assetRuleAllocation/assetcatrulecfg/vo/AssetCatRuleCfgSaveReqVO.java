@@ -15,7 +15,6 @@ public class AssetCatRuleCfgSaveReqVO {
     private Long id;
 
     @Schema(description = "分类规则ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "32430")
-    @NotEmpty(message = "分类规则ID不能为空")
     private String assetCatRuleId;
 
     @Schema(description = "规则名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "李四")
