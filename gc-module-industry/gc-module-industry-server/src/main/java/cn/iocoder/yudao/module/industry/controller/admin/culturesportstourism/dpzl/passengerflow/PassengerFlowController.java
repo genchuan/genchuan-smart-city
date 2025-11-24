@@ -15,13 +15,13 @@ import javax.validation.Valid;
 
 @Tag(name = "管理后台 - 文旅客流总览视图")
 @RestController
-@RequestMapping("/industry/passenger-flow")
+@RequestMapping("/industry/culture-tourism-passenger-flow")
 @RequiredArgsConstructor
 public class PassengerFlowController {
 
     private final PassengerFlowService passengerFlowService;
 
-    @GetMapping("/overview")
+    @GetMapping("/get")
     @Operation(summary = "获取文旅客流总览数据")
     public CommonResult<PassengerFlowRespVO> getOverview(@Valid PassengerFlowQueryReqVO queryVO) {
         return CommonResult.success(passengerFlowService.getPassengerFlowOverview(queryVO));

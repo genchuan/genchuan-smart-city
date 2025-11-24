@@ -15,14 +15,14 @@ import cn.iocoder.yudao.module.industry.service.culturesportstourism.dpzl.resour
 
 @Tag(name = "管理后台 - 文旅资源分布")
 @RestController
-@RequestMapping("/industry/resource-distr")
+@RequestMapping("/industry/culture-tourism-resource-distr")
 @Validated
 public class ResourceDistrController {
 
     @Resource
     private ResourceDistrService resourceDistrService;
 
-    @GetMapping("/get-distribution")
+    @GetMapping("/get")
     @Operation(summary = "获取文旅资源分布数据")
     public CommonResult<ResourceDistrRespVO> getResourceDistribution(ResourceDistrQueryReqVO queryVO) {
         return CommonResult.success(resourceDistrService.getResourceDistribution(queryVO));

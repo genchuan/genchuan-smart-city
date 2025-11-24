@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.datacenter.service.thingsboard.asset;
 
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.asset.vo.AssetSimpleRespVO;
 import cn.iocoder.yudao.module.datacenter.dal.mysql.thingsboard.asset.AssetMapper;
 import cn.iocoder.yudao.module.datacenter.service.thingsboard.asset.Dao.AssetTbDao;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.thingsboard.asset.AssetDO;
@@ -10,6 +11,8 @@ import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import org.thingsboard.server.common.data.asset.Asset;
@@ -80,6 +83,30 @@ public class AssetServiceImpl implements AssetService {
     @Override
     public PageResult<Asset> getAssetPage(AssetPageReqVO pageReqVO) {
         return assetTbDao.getAssetPage(pageReqVO);
+    }
+
+    /**
+     *
+     * @return 资产ID及名称
+     */
+    @Override
+    public List<AssetSimpleRespVO> getAssetList() {
+        // 从 ThingsBoard 获取资产列表
+        PageResult<Asset> assetPageResult = assetTbDao.getAssetPage(new AssetPageReqVO());
+
+        if (assetPageResult == null || assetPageResult.getList() == null) {
+            return Collections.emptyList();
+        }
+
+        // 转换为简单响应VO
+        return assetPageResult.getList().stream()
+                .map(asset -> {
+                    AssetSimpleRespVO vo = new AssetSimpleRespVO();
+                    vo.setId(asset.getId().toString());
+                    vo.setName(asset.getName());
+                    return vo;
+                })
+                .collect(Collectors.toList());
     }
 
 }

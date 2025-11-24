@@ -4,6 +4,8 @@ import lombok.*;
 import com.baomidou.mybatisplus.annotation.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 
+import java.math.BigInteger;
+
 /**
  * 资产 DO
  *
@@ -69,5 +71,10 @@ public class AssetDO extends BaseDO {
      * 版本
      */
     private Long version;
+
+    /**
+     * 创建时间
+     */
+    private BigInteger createdTime;
 
 }
