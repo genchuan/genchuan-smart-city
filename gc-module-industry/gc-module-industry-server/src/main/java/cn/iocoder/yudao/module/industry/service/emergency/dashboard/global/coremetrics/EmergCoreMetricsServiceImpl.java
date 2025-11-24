@@ -26,7 +26,7 @@ public class EmergCoreMetricsServiceImpl implements EmergCoreMetricsService {
 
 
         EmergCoreMetricsRespVO respVO= emergCoreMetricsMapper.getEmergCoreMetrics(emergCoreMetricsQueryReqVO);
-        respVO.setUpdateTime(emergCoreMetricsMapper.getEmergCoreMetricsUpdateTime(emergCoreMetricsQueryReqVO));
+//        respVO.setUpdateTime(emergCoreMetricsMapper.getEmergCoreMetricsUpdateTime(emergCoreMetricsQueryReqVO));
         return respVO;
     }
 

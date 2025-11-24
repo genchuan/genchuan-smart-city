@@ -41,7 +41,14 @@
         res.total_res_count,
         risk.high_risk_count,
         area.region_cover_count,
-        GREATEST(evt.max_stat_time, res.max_res_time, risk.max_discover_time) AS update_time
+        NULLIF(
+        GREATEST(
+                IFNULL(evt.max_stat_time, '0001-01-01'),
+                IFNULL(res.max_res_time, '0001-01-01'),
+                IFNULL(risk.max_discover_time, '0001-01-01')
+            ),
+            '0001-01-01'
+        ) AS update_time
         FROM
         -- 应急事件统计
         (SELECT
