@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
-@Tag(name = "管理后台 - 营商服务大屏总览数据概览")
+@Tag(name = "管理后台 - 营商服务数据概览")
 @RestController
 @RequestMapping("/industry/business-services-data-overview")
 @Validated
