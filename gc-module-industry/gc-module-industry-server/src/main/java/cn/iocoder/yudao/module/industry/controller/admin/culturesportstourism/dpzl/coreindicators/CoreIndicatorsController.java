@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 
 @RestController
-@RequestMapping("/industry/culture-sports-tourism")
+@RequestMapping("/industry/culture-tourism-core-indicators")
 @Tag(name = "管理后台 - 文旅核心指标")
 public class CoreIndicatorsController {
 
     @Resource
     private CoreIndicatorsService coreIndicatorsService;
 
-    @GetMapping("/core-indicators")
+    @GetMapping("/get")
     @Operation(summary = "获取文旅核心指标数据")
     public CommonResult<CoreIndicatorsRespVO> getCoreIndicators(
             @Valid CoreIndicatorsQueryReqVO queryVO) {  // 添加 @Valid 注解

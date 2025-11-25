@@ -63,7 +63,7 @@ public class PolInterpretationDO extends BaseDO {
     /**
      * 解读时间，格式：YYYYMMDD
      */
-    private LocalDate interpretationTime;
+    private LocalDateTime interpretationTime;
     /**
      * 解读状态：已发布/未发布，标识解读是否公开
      */

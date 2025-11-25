@@ -1,8 +1,8 @@
-package cn.iocoder.yudao.module.datacenter.service.thingsboard;
+package cn.iocoder.yudao.module.datacenter.service.thingsboard.device;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.vo.DevicePageReqVO;
-import cn.iocoder.yudao.module.datacenter.service.thingsboard.Dao.DeviceTbDao;
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DevicePageReqVO;
+import cn.iocoder.yudao.module.datacenter.service.thingsboard.device.Dao.DeviceTbDao;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.thingsboard.rest.client.RestClient;
@@ -11,7 +11,6 @@ import org.thingsboard.server.common.data.DeviceInfo;
 import org.thingsboard.server.common.data.alarm.Alarm;
 import org.thingsboard.server.common.data.alarm.AlarmInfo;
 import org.thingsboard.server.common.data.id.DeviceId;
-import org.thingsboard.server.common.data.id.EntityId;
 import org.thingsboard.server.common.data.kv.AttributeKvEntry;
 import org.thingsboard.server.common.data.page.PageData;
 import org.thingsboard.server.common.data.page.PageLink;

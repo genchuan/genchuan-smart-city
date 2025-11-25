@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.businessstandard.spe
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import java.time.LocalDateTime;
 import com.alibaba.excel.annotation.*;
@@ -39,7 +39,7 @@ public class SpecBusinessStdRespVO {
 
     @Schema(description = "生效时间，格式：YYYYMMDD", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("生效时间，格式：YYYYMMDD")
-    private LocalDate effectiveTime;
+    private LocalDateTime effectiveTime;
 
     @Schema(description = "标准核心条款（支持富文本，如“事件处置需在24小时内完成”）", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("标准核心条款（支持富文本，如“事件处置需在24小时内完成”）")

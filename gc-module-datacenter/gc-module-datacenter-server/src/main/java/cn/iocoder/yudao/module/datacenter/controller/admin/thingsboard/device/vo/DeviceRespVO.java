@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.vo;
+package cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo;
 
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;

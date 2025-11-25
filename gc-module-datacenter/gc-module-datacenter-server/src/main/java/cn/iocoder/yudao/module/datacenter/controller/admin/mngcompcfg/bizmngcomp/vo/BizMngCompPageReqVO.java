@@ -49,11 +49,11 @@ public class BizMngCompPageReqVO extends PageParam {
 
     @Schema(description = "部件普查日期，格式YYYYMMDD")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] initDate;
+    private LocalDateTime[] initDate;
 
     @Schema(description = "状态/权属变更时更新日期，格式YYYYMMDD")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] changeDate;
+    private LocalDateTime[] changeDate;
 
     @Schema(description = "数据来源，如实测/人工上报/普查，关联数据来源字典表(sys_dict_data_source)")
     private String dataSource;

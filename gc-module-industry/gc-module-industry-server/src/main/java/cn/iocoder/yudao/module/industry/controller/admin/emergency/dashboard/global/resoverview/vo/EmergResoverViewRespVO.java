@@ -4,6 +4,8 @@ import com.alibaba.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Schema(description = "管理后台 - 应急资源总览 Response VO")
 @Data
 public class EmergResoverViewRespVO {
@@ -39,4 +41,8 @@ public class EmergResoverViewRespVO {
     @Schema(description = "库存状态，充足/紧张/短缺", requiredMode = Schema.RequiredMode.REQUIRED, example = "充足")
     @ExcelProperty("库存状态")
     private String stockStatus;
+
+    @Schema(description = "数据更新时间", requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "2025-11-19 10:00:00")
+    @ExcelProperty("数据更新时间")
+    private LocalDateTime updateTime;
 }

@@ -3,7 +3,6 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.policylegislation.po
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
-import org.joda.time.LocalDate;
 
 import java.time.LocalDateTime;
 import com.alibaba.excel.annotation.*;
@@ -51,7 +50,7 @@ public class PolInterpretationRespVO {
 
     @Schema(description = "解读时间，格式：YYYYMMDD", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("解读时间，格式：YYYYMMDD")
-    private LocalDate interpretationTime;
+    private LocalDateTime interpretationTime;
 
     @Schema(description = "解读状态：已发布/未发布，标识解读是否公开", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
     @ExcelProperty("解读状态：已发布/未发布，标识解读是否公开")

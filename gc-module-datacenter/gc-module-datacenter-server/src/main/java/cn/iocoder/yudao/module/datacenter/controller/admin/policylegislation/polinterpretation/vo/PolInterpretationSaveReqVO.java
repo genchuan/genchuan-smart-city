@@ -3,7 +3,6 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.policylegislation.po
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import jakarta.validation.constraints.*;
-import org.joda.time.LocalDate;
 
 import java.time.LocalDateTime;
 
@@ -48,7 +47,7 @@ public class PolInterpretationSaveReqVO {
 
     @Schema(description = "解读时间，格式：YYYYMMDD", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "解读时间，格式：YYYYMMDD不能为空")
-    private LocalDate interpretationTime;
+    private LocalDateTime interpretationTime;
 
     @Schema(description = "解读状态：已发布/未发布，标识解读是否公开", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
     @NotEmpty(message = "解读状态：已发布/未发布，标识解读是否公开不能为空")

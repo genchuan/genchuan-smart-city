@@ -49,11 +49,11 @@ public class InspectSpecPlanPageReqVO extends PageParam {
 
     @Schema(description = "执行开始日期")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] executeStartDate;
+    private LocalDateTime[] executeStartDate;
 
     @Schema(description = "执行结束日期")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] executeEndDate;
+    private LocalDateTime[] executeEndDate;
 
     @Schema(description = "每日执行时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)

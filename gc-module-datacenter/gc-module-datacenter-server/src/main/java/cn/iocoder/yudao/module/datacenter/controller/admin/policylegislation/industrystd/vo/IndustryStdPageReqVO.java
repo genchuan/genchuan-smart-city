@@ -3,7 +3,6 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.policylegislation.in
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
@@ -35,7 +34,7 @@ public class IndustryStdPageReqVO extends PageParam {
 
     @Schema(description = "发布时间，格式：YYYYMMDD")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] issueTime;
+    private LocalDateTime[] issueTime;
 
     @Schema(description = "规范文件ID，关联文件存储表的文件ID，文件存储表（sys_file_storage）", example = "1567")
     private String stdFileId;

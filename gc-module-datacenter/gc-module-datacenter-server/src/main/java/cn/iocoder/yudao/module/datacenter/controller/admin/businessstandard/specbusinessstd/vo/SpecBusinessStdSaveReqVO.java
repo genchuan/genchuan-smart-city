@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.businessstandard.spe
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import jakarta.validation.constraints.*;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import java.time.LocalDateTime;
 
@@ -36,7 +36,7 @@ public class SpecBusinessStdSaveReqVO {
 
     @Schema(description = "生效时间，格式：YYYYMMDD", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "生效时间，格式：YYYYMMDD不能为空")
-    private LocalDate effectiveTime;
+    private LocalDateTime effectiveTime;
 
     @Schema(description = "标准核心条款（支持富文本，如“事件处置需在24小时内完成”）", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotEmpty(message = "标准核心条款（支持富文本，如“事件处置需在24小时内完成”）不能为空")

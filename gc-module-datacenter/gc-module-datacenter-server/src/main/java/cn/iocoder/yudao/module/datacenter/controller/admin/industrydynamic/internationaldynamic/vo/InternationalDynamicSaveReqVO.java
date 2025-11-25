@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.industrydynamic.inte
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import jakarta.validation.constraints.*;
-import org.joda.time.LocalDate;
+import java.time.LocalDate;
 
 import java.time.LocalDateTime;
 
@@ -35,7 +35,7 @@ public class InternationalDynamicSaveReqVO {
 
     @Schema(description = "发布时间，格式：YYYYMMDD", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "发布时间，格式：YYYYMMDD不能为空")
-    private LocalDate releaseTime;
+    private LocalDateTime releaseTime;
 
     @Schema(description = "动态详细内容（中文，支持富文本）", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotEmpty(message = "动态详细内容（中文，支持富文本）不能为空")

@@ -6,35 +6,56 @@
     <select id="selectTotalSceneCount" resultType="java.lang.Integer">
         SELECT SUM(total_scene_count)
         FROM stat_app_scene_rpt
-        WHERE stat_cycle = #{timeCycle}
+        <where>
+            <if test="timeCycle != null">
+                stat_cycle = #{timeCycle}
+            </if>
+        </where>
     </select>
 
     <!-- 查询当日客流峰值 -->
     <select id="selectMaxCount" resultType="java.lang.Integer">
         SELECT MAX(max_count)
         FROM stat_mon_evt_rpt
-        WHERE stat_cycle = #{timeCycle}
+        <where>
+            <if test="timeCycle != null">
+                stat_cycle = #{timeCycle}
+            </if>
+        </where>
     </select>
 
     <!-- 查询投诉办结率 -->
     <select id="selectCompleteRate" resultType="java.lang.Double">
         SELECT AVG(complete_rate)
         FROM stat_mng_matter_rpt
-        WHERE stat_cycle = #{timeCycle}
+        <where>
+            <if test="timeCycle != null">
+                stat_cycle = #{timeCycle}
+            </if>
+        </where>
     </select>
 
     <!-- 查询设施完好率 -->
     <select id="selectFacilityGoodRate" resultType="java.lang.Double">
         SELECT SUM(normal_comp_count) / SUM(total_comp_count) * 100
         FROM stat_mon_comp_rpt
-        WHERE stat_cycle = #{timeCycle}
-          AND total_comp_count > 0
+        <where>
+            total_comp_count > 0
+            <if test="timeCycle != null">
+                AND stat_cycle = #{timeCycle}
+            </if>
+        </where>
     </select>
 
     <!-- 查询活动开展数 -->
     <select id="selectNewSceneCount" resultType="java.lang.Integer">
         SELECT SUM(new_scene_count)
         FROM stat_app_scene_rpt
-        WHERE stat_cycle = #{timeCycle}
+        <where>
+            <if test="timeCycle != null">
+                stat_cycle = #{timeCycle}
+            </if>
+        </where>
     </select>
+
 </mapper>

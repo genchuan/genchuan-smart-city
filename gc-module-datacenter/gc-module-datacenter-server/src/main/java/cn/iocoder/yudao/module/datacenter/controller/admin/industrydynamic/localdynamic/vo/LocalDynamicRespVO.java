@@ -3,7 +3,6 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.industrydynamic.loca
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
-import org.joda.time.LocalDate;
 
 import java.time.LocalDateTime;
 import com.alibaba.excel.annotation.*;
@@ -39,7 +38,7 @@ public class LocalDynamicRespVO {
 
     @Schema(description = "发布时间，格式：YYYYMMDD", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("发布时间，格式：YYYYMMDD")
-    private LocalDate releaseTime;
+    private LocalDateTime releaseTime;
 
     @Schema(description = "动态详细内容（支持富文本）", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("动态详细内容（支持富文本）")

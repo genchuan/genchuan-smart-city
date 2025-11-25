@@ -15,7 +15,7 @@ public class AssetDataQualCkSaveReqVO {
     private Long id;
 
     @Schema(description = "质量检查ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "31677")
-    @NotEmpty(message = "质量检查ID不能为空")
+//    @NotEmpty(message = "质量检查ID不能为空")
     private String assetDataQualId;
 
     @Schema(description = "关联资产ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "9910")

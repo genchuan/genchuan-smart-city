@@ -2,9 +2,6 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.policylegislation.na
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-
-import org.joda.time.LocalDate;
-
 import java.time.LocalDateTime;
 import com.alibaba.excel.annotation.*;
 
@@ -37,13 +34,13 @@ public class NationalPolRespVO {
     @ExcelProperty("发布部门名称，与发布部门代码同步，部门信息表（sys_org）")
     private String issueDeptName;
 
-    @Schema(description = "发布时间，格式：YYYYMMDD，政策发布日期", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "发布时间")
     @ExcelProperty("发布时间，格式：YYYYMMDD，政策发布日期")
-    private LocalDate issueTime;
+    private LocalDateTime issueTime;
 
     @Schema(description = "实施时间，格式：YYYYMMDD，政策实施日期（未明确则为空）")
     @ExcelProperty("实施时间，格式：YYYYMMDD，政策实施日期（未明确则为空）")
-    private LocalDate implementTime;
+    private LocalDateTime implementTime;
 
     @Schema(description = "政策文件ID，关联文件存储表的文件ID，文件存储表（sys_file_storage）", requiredMode = Schema.RequiredMode.REQUIRED, example = "7780")
     @ExcelProperty("政策文件ID，关联文件存储表的文件ID，文件存储表（sys_file_storage）")

@@ -3,7 +3,6 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.policylegislation.in
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.alibaba.excel.annotation.*;
 
@@ -42,7 +41,7 @@ public class IndustryStdRespVO {
 
     @Schema(description = "发布时间，格式：YYYYMMDD", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("发布时间，格式：YYYYMMDD")
-    private LocalDate issueTime;
+    private LocalDateTime issueTime;
 
     @Schema(description = "规范文件ID，关联文件存储表的文件ID，文件存储表（sys_file_storage）", requiredMode = Schema.RequiredMode.REQUIRED, example = "1567")
     @ExcelProperty("规范文件ID，关联文件存储表的文件ID，文件存储表（sys_file_storage）")

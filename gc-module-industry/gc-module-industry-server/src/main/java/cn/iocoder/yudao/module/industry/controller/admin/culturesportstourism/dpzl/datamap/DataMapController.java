@@ -15,13 +15,13 @@ import java.util.List;
 
 @Tag(name = "管理后台 - 文旅数据地图")
 @RestController
-@RequestMapping("/industry/datamap")
+@RequestMapping("/industry/culture-tourism-data-map")
 @RequiredArgsConstructor
 public class DataMapController {
 
     private final DataMapService dataMapService;
 
-    @GetMapping("/query")
+    @GetMapping("/get")
     @Operation(summary = "查询文旅数据地图信息")
     public CommonResult<List<DataMapRespVO>> queryDataMap(DataMapQueryReqVO queryVO) {
         return CommonResult.success(dataMapService.getDataMapInfo(queryVO));

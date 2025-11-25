@@ -15,7 +15,7 @@ public class AssetCatRptSaveReqVO {
     private Long id;
 
     @Schema(description = "统计ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "10923")
-    @NotEmpty(message = "统计ID不能为空")
+//    @NotEmpty(message = "统计ID不能为空")
     private String assetCatStatId;
 
     @Schema(description = "统计周期", requiredMode = Schema.RequiredMode.REQUIRED)

@@ -67,11 +67,11 @@ public class InspectDailyPlanPageReqVO extends PageParam {
 
     @Schema(description = "开始日期")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] startDate;
+    private LocalDateTime[] startDate;
 
     @Schema(description = "结束日期")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] endDate;
+    private LocalDateTime[] endDate;
 
     @Schema(description = "创建人")
     private String createUser;

@@ -11,8 +11,8 @@
                 caseType      - 按案件类型筛选（对应字段 case_type），如 "违法建设"
                 caseSource    - 按案件来源筛选（对应字段 case_source），如 "热线举报"
                 progressStage - 按办理进度阶段筛选（对应字段 progress_stage），如 "调查取证"
-                startDate     - 起始时间筛选（对应字段 stat_time），包含该日期
-                endDate       - 结束时间筛选（对应字段 stat_time），包含该日期
+                startTime     - 起始时间筛选（对应字段 stat_time），包含该日期
+                endTime       - 结束时间筛选（对应字段 stat_time），包含该日期
             使用方式：
                 在具体查询中通过 <include refid="lawCaseViewFilter"/> 引用
                 可用于按案件类型/来源/进度分布及超期未办结案件总数统计
@@ -30,11 +30,11 @@
         <if test="progressStage != null and progressStage != ''">
             AND progress_stage = #{progressStage}
         </if>
-        <if test="startDate != null">
-            AND stat_time &gt;= #{startDate}
+        <if test="startTime != null">
+            AND stat_time &gt;= #{startTime}
         </if>
-        <if test="endDate != null">
-            AND stat_time &lt;= #{endDate}
+        <if test="endTime != null">
+            AND stat_time &lt;= #{endTime}
         </if>
     </sql>
 

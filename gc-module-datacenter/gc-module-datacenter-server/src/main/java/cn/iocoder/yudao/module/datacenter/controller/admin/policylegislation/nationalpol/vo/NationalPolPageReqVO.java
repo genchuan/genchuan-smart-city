@@ -1,9 +1,6 @@
 package cn.iocoder.yudao.module.datacenter.controller.admin.policylegislation.nationalpol.vo;
 
 import lombok.*;
-
-import java.time.LocalDate;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -34,11 +31,11 @@ public class NationalPolPageReqVO extends PageParam {
 
     @Schema(description = "发布时间，格式：YYYYMMDD，政策发布日期")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] issueTime;
+    private LocalDateTime[] issueTime;
 
     @Schema(description = "实施时间，格式：YYYYMMDD，政策实施日期（未明确则为空）")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] implementTime;
+    private LocalDateTime[] implementTime;
 
     @Schema(description = "政策文件ID，关联文件存储表的文件ID，文件存储表（sys_file_storage）", example = "7780")
     private String polFileId;

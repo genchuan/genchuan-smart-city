@@ -22,7 +22,7 @@
             <where>
                 <if test="regionShortCode != null and regionShortCode != ''">
                     AND
-                    <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.AreaSqlMapper.likeByAreaLevel">
+                    <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.AreaSqlMapper.likeByRegionShortCode">
                         <property name="areaColumn" value="LEFT(u.region_full_code,6)"/>
                     </include>
                 </if>
@@ -36,7 +36,7 @@
                 d.is_delete = 0
                 <if test="regionShortCode != null and regionShortCode != ''">
                     AND
-                    <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.AreaSqlMapper.likeByAreaLevel">
+                    <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.AreaSqlMapper.likeByRegionShortCode">
                         <property name="areaColumn" value="LEFT(d.region_full_code,6)"/>
                     </include>
                 </if>
@@ -48,11 +48,11 @@
             <if test="regionShortCode != null and regionShortCode != ''">
                 and c.region_short_code = #{regionShortCode}
             </if>
-            <if test="startDate != null">
-                AND c.stat_time &gt;= #{startDate}
+            <if test="startTime != null">
+                AND c.stat_time &gt;= #{startTime}
             </if>
-            <if test="endDate != null">
-                AND c.stat_time &lt;= #{endDate}
+            <if test="endTime != null">
+                AND c.stat_time &lt;= #{endTime}
             </if>
         </where>
 

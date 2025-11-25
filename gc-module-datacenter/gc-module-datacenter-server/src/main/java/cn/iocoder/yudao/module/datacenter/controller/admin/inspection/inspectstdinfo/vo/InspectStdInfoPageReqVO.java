@@ -49,11 +49,11 @@ public class InspectStdInfoPageReqVO extends PageParam {
 
     @Schema(description = "生效时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] effectiveTime;
+    private LocalDateTime[] effectiveTime;
 
     @Schema(description = "失效时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] expireTime;
+    private LocalDateTime[] expireTime;
 
     @Schema(description = "创建人")
     private String createUser;

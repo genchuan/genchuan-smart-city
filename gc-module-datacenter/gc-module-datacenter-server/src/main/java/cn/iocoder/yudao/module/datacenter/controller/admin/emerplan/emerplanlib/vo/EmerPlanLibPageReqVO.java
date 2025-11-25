@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
@@ -41,11 +43,11 @@ public class EmerPlanLibPageReqVO extends PageParam {
 
     @Schema(description = "生效时间，格式YYYYMMDD，预案生效日期", example = "20251101")
     @JsonFormat(pattern = "yyyyMMdd")   // 仅当请求体以字符串"20251101"传入时需要
-    private LocalDate[] effectiveTime;
+    private LocalDateTime[] effectiveTime;
 
     @Schema(description = "失效时间，格式YYYYMMDD，预案失效日期", example = "20251130")
     @JsonFormat(pattern = "yyyyMMdd")   // 同上
-    private LocalDate[] expireTime;
+    private LocalDateTime[] expireTime;
 
     @Schema(description = "预案文档路径，PDF格式预案存储路径")
     private String planDocPath;

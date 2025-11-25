@@ -9,8 +9,9 @@
         c.cat_name AS compCatName,
         r.total_rpt_count AS totalRptCount,
         i.run_status AS runStatus,
-        e.incident_x AS incidentX,
-        e.incident_y AS incidentY
+        <!-- 当 e 表无匹配时返回 NULL -->
+        IFNULL(e.incident_x, NULL)  AS incidentX,
+        IFNULL(e.incident_y, NULL)  AS incidentY
         FROM
         gc_biz_mng_comp_spatial s
         LEFT JOIN biz_mon_comp_info i ON s.mng_comp_id = i.mon_comp_id

@@ -2,8 +2,7 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.device.deviceinfo.vo
 
 import lombok.*;
 
-import java.time.LocalDate;
-import java.util.*;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import java.math.BigDecimal;
@@ -41,15 +40,15 @@ public class DeviceInfoPageReqVO extends PageParam {
 
     @Schema(description = "生产日期")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] productionDate;
+    private LocalDateTime[] productionDate;
 
     @Schema(description = "采购日期")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] purchaseDate;
+    private LocalDateTime[] purchaseDate;
 
     @Schema(description = "安装日期")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] installDate;
+    private LocalDateTime[] installDate;
 
     @Schema(description = "质保期（月）")
     private Integer warrantyPeriod;

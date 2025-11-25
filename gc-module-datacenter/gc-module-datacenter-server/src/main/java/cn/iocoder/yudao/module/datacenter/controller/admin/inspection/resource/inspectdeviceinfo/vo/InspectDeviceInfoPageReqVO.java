@@ -52,11 +52,11 @@ public class InspectDeviceInfoPageReqVO extends PageParam {
 
     @Schema(description = "安装时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] installTime;
+    private LocalDateTime[] installTime;
 
     @Schema(description = "保修截止时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDate[] warrantyEndTime;
+    private LocalDateTime[] warrantyEndTime;
 
     @Schema(description = "创建人")
     private String createUser;
