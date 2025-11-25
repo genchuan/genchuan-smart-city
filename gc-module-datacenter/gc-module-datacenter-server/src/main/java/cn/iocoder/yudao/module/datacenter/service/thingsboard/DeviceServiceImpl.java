@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.datacenter.service.thingsboard;
 
 
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.vo.AlarmRespVO;
 import cn.iocoder.yudao.module.datacenter.dal.mysql.thingsboard.DeviceMapper;
 import cn.iocoder.yudao.module.datacenter.service.thingsboard.Dao.DeviceTbDao;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.thingsboard.DeviceDO;
@@ -15,8 +16,11 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import org.thingsboard.server.common.data.Device;
 import org.thingsboard.server.common.data.DeviceInfo;
+import org.thingsboard.server.common.data.alarm.AlarmInfo;
 import org.thingsboard.server.common.data.id.EntityId;
 import org.thingsboard.server.common.data.kv.AttributeKvEntry;
+import org.thingsboard.server.common.data.page.PageData;
+import org.thingsboard.server.common.data.page.TimePageLink;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.datacenter.enums.ErrorCodeConstants.DEVICE_NOT_EXISTS;
@@ -91,4 +95,19 @@ public class DeviceServiceImpl implements DeviceService {
         return deviceTbDao.getAttributeKvEntries(id);
     }
 
+    @Override
+    public PageResult<AlarmRespVO> getAlarmPage(Integer pageSize, Integer page) {
+        TimePageLink pageLink = new TimePageLink(pageSize, page);
+        PageData<AlarmInfo> alarmPageData = deviceTbDao.getAlarms(pageLink);
+
+        if (alarmPageData == null) {
+            return new PageResult<>(new ArrayList<>(), 0L);
+        }
+
+        // 手动转换：将AlarmInfo列表转换为AlarmRespVO列表
+        List<AlarmRespVO> alarmRespVOList = BeanUtils.toBean(alarmPageData.getData(), AlarmRespVO.class);
+
+        // 创建PageResult对象
+        return new PageResult<>(alarmRespVOList, alarmPageData.getTotalElements());
+    }
 }

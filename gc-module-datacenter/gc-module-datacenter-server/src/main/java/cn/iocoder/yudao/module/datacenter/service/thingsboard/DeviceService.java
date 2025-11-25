@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.datacenter.service.thingsboard;
 
 import java.util.*;
 
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.vo.AlarmRespVO;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.thingsboard.DeviceDO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.vo.DevicePageReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.vo.DeviceSaveReqVO;
@@ -10,8 +11,11 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import org.thingsboard.server.common.data.Device;
 import org.thingsboard.server.common.data.DeviceInfo;
+import org.thingsboard.server.common.data.alarm.AlarmInfo;
 import org.thingsboard.server.common.data.id.EntityId;
 import org.thingsboard.server.common.data.kv.AttributeKvEntry;
+import org.thingsboard.server.common.data.page.PageData;
+import org.thingsboard.server.common.data.page.TimePageLink;
 
 /**
  * 设备 Service 接口
@@ -67,4 +71,8 @@ public interface DeviceService {
 
     public List<AttributeKvEntry> getAttributeKvEntries(String id);
 
+    /**
+     * 获取告警列表（带分页）
+     */
+    PageResult<AlarmRespVO> getAlarmPage(Integer pageSize, Integer page);
 }

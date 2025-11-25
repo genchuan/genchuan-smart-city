@@ -8,12 +8,16 @@ import org.springframework.stereotype.Service;
 import org.thingsboard.rest.client.RestClient;
 import org.thingsboard.server.common.data.Device;
 import org.thingsboard.server.common.data.DeviceInfo;
+import org.thingsboard.server.common.data.alarm.Alarm;
+import org.thingsboard.server.common.data.alarm.AlarmInfo;
 import org.thingsboard.server.common.data.id.DeviceId;
 import org.thingsboard.server.common.data.id.EntityId;
 import org.thingsboard.server.common.data.kv.AttributeKvEntry;
 import org.thingsboard.server.common.data.page.PageData;
 import org.thingsboard.server.common.data.page.PageLink;
+import org.thingsboard.server.common.data.page.TimePageLink;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -91,7 +95,6 @@ public class DeviceTbDaoImpl implements DeviceTbDao {
         client.login(username, password);
         List<AttributeKvEntry> attributeKvEntryList =
                 client.getAttributeKvEntries(DeviceId.fromString(id), client.getAttributeKeys(DeviceId.fromString(id)));
-
         try{
             if (!attributeKvEntryList.isEmpty()) {
                 return attributeKvEntryList;
@@ -102,4 +105,17 @@ public class DeviceTbDaoImpl implements DeviceTbDao {
             client.close();
         }
     }
+
+    @Override
+    public PageData<AlarmInfo> getAlarms(TimePageLink pageLink) {
+        RestClient client = new RestClient(url);
+        try {
+            client.login(username, password);
+            return client.getAlarms(null, null, null, pageLink, true);
+        } finally {
+            client.logout();
+            client.close();
+        }
+    }
+
 }

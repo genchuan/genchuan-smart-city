@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard;
 
 
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.vo.AlarmRespVO;
 import cn.iocoder.yudao.module.datacenter.service.thingsboard.DeviceService;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.thingsboard.DeviceDO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.vo.DevicePageReqVO;
@@ -30,7 +31,11 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import org.thingsboard.server.common.data.Device;
 import org.thingsboard.server.common.data.DeviceInfo;
+import org.thingsboard.server.common.data.alarm.AlarmInfo;
 import org.thingsboard.server.common.data.kv.AttributeKvEntry;
+import org.thingsboard.server.common.data.page.PageData;
+import org.thingsboard.server.common.data.page.PageLink;
+import org.thingsboard.server.common.data.page.TimePageLink;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
@@ -101,6 +106,17 @@ public class DeviceController {
     public CommonResult<PageResult<DeviceRespVO>> getDevicePage(@Valid DevicePageReqVO pageReqVO) {
         PageResult<Device> pageResult = deviceService.getDevicePage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, DeviceRespVO.class));
+    }
+
+    @GetMapping("/alarm-page")
+    @Operation(summary = "获得告警分页")
+    @PreAuthorize("@ss.hasPermission('device:alarm:query')")
+    public CommonResult<PageResult<AlarmRespVO>> getAlarmPage(
+            @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
+            @RequestParam(value = "page", defaultValue = "0") Integer page) {
+
+        PageResult<AlarmRespVO> pageResult = deviceService.getAlarmPage(pageSize, page);
+        return success(pageResult);
     }
 
     @GetMapping("/export-excel")
