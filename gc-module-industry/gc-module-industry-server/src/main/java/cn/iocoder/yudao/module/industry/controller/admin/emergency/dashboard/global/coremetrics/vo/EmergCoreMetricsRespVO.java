@@ -5,7 +5,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Schema(description = "管理后台 - 应急核心指标 Response VO")
 @Data
@@ -52,6 +54,10 @@ public class EmergCoreMetricsRespVO {
         @Schema(description = "数据更新时间", requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "2025-11-19 10:00:00")
         @ExcelProperty("数据更新时间")
         private LocalDateTime updateTime;
+
+        @Schema(description = "近七天趋势")
+        @ExcelProperty("近七天趋势")
+        private List<TimeValuePoint> trendList;
     }
 
     @Data
@@ -71,6 +77,10 @@ public class EmergCoreMetricsRespVO {
         @Schema(description = "数据更新时间", requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "2025-11-19 10:00:00")
         @ExcelProperty("数据更新时间")
         private LocalDateTime updateTime;
+
+        @Schema(description = "近七天趋势")
+        @ExcelProperty("近七天趋势")
+        private List<TimeValuePoint> trendList;
     }
 
     @Data
@@ -91,6 +101,10 @@ public class EmergCoreMetricsRespVO {
         @Schema(description = "数据更新时间", requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "2025-11-19 10:00:00")
         @ExcelProperty("数据更新时间")
         private LocalDateTime updateTime;
+
+        @Schema(description = "近七天趋势")
+        @ExcelProperty("近七天趋势")
+        private List<TimeValuePoint> trendList;
     }
 
     @Data
@@ -111,7 +125,12 @@ public class EmergCoreMetricsRespVO {
         @Schema(description = "数据更新时间", requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "2025-11-19 10:00:00")
         @ExcelProperty("数据更新时间")
         private LocalDateTime updateTime;
+
+        @Schema(description = "近七天趋势")
+        @ExcelProperty("近七天趋势")
+        private List<TimeValuePoint> trendList;
     }
+
 
 
 }

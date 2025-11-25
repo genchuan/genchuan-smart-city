@@ -211,13 +211,14 @@
                 warn_status = '2' 或 '3' 视为已整改
                 无数据 → 返回 100
         -->
-        ROUND(
-        CASE
-        WHEN COUNT(1) = 0 THEN 0
-        ELSE SUM(CASE WHEN warn_status IN ('2','3') THEN 1 END) / COUNT(1) * 100
-        END
-        ,2) AS risk_rectify_rate,
-        -- 已整改数
+            ifnull(
+                ROUND(
+                CASE
+                WHEN COUNT(1) = 0 THEN 0
+                ELSE SUM(CASE WHEN warn_status IN ('2','3') THEN 1 END) / COUNT(1) * 100
+                END
+                ,2)
+            ,0) AS risk_rectify_rate,   -- 已整改数
         SUM(CASE WHEN warn_status IN ('2','3') THEN 1 ELSE 0 END) AS risk_rectified_count,
         -- 总隐患数
         COUNT(1) AS risk_total_count,
@@ -240,6 +241,162 @@
         ) AS risk
 
     </select>
+
+    <!--    获取-应急事件办结率信息-->
+    <select id="getEmergEventCompleteRate"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.emergency.dashboard.global.coremetrics.vo.EmergCoreMetricsRespVO$EmergEventCompleteRate">
+        SELECT
+        <!--
+            应急事件办结率：
+                如果没有数据 → 返回 100（认为全部办结）
+                否则：SUM(complete_rate) / COUNT(complete_rate)
+        -->
+        ROUND(
+        CASE
+        WHEN COUNT(complete_rate) = 0 THEN 0
+        ELSE SUM(complete_rate) / COUNT(complete_rate)
+        END
+        ,2) AS rate,
+        -- 已办结事件数
+        IFNULL(SUM(completed_count),0) AS completedCount,
+        -- 总事件数（= COUNT(1)）
+        IFNULL(SUM(total_rpt_count),0) AS totalCount,
+        -- 平均处置时长（分钟）
+        ROUND(IFNULL(AVG(avg_handle_endure),0),2) AS avgHandleEndure,
+        -- 最新统计时间
+        MAX(stat_time) AS updateTime
+        FROM stat_mon_evt_rpt
+        <where>
+            <!-- 区域筛选（县级精确匹配） -->
+            <if test="regionShortCode != null and regionShortCode != ''">
+                region_code = #{regionShortCode}
+            </if>
+            <!-- 时间范围 -->
+            <if test="startTime != null">AND stat_time &gt;= #{startTime}</if>
+            <if test="endTime != null">AND stat_time &lt;= #{endTime}</if>
+        </where>
+    </select>
+
+    <!--    获取-应急事件办结率信息-趋势列表-->
+    <select id="getEmergEventCompleteRateTrendList"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.emergency.dashboard.global.coremetrics.vo.TimeValuePoint">
+        SELECT
+        <!--
+            应急事件办结率：
+                如果没有数据 → 返回 100（认为全部办结）
+                否则：SUM(complete_rate) / COUNT(complete_rate)
+        -->
+        ROUND(
+        CASE
+        WHEN COUNT(complete_rate) = 0 THEN 0
+        ELSE SUM(complete_rate) / COUNT(complete_rate)
+        END
+        ,2) AS value,
+        DATE(stat_time) AS date  <!-- 使用 DATE 函数，只保留日期 -->
+        FROM stat_mon_evt_rpt
+        <where>
+            <!-- 区域筛选（县级精确匹配） -->
+            <if test="regionShortCode != null and regionShortCode != ''">
+                region_code = #{regionShortCode}
+            </if>
+            <!-- 时间范围 -->
+            <if test="startTime != null">AND stat_time &gt;= #{startTime}</if>
+            <if test="endTime != null">AND stat_time &lt;= #{endTime}</if>
+        </where>
+        GROUP BY DATE(stat_time)
+        ORDER BY DATE(stat_time)
+    </select>
+
+    <!--    获取-预警准确率-趋势列表-->
+    <select id="getEarlyWarnAccRateTrendList"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.emergency.dashboard.global.coremetrics.vo.TimeValuePoint">
+        <!-- ② 预警模块（预警准确率） -->
+        SELECT
+        <!--
+            预警准确率：
+                completed_count：已处理预警（视为准确）
+                total_warn_count：预警总数
+                无数据 → 返回 100
+        -->
+        ROUND(
+        CASE
+        WHEN SUM(total_warn_count) = 0 THEN 0
+        ELSE SUM(completed_count) / SUM(total_warn_count) * 100
+        END
+        ,2) AS value,
+        DATE(stat_time) AS date  <!-- 使用 DATE 函数，只保留日期 -->
+        FROM stat_early_warn_region
+        <where>
+            <!-- 区域筛选（县级） -->
+            <if test="regionShortCode != null and regionShortCode != ''">
+                region_code = #{regionShortCode}
+            </if>
+            <!-- 时间范围 -->
+            <if test="startTime != null">AND stat_time &gt;= #{startTime}</if>
+            <if test="endTime != null">AND stat_time &lt;= #{endTime}</if>
+        </where>
+        GROUP BY DATE(stat_time)
+        ORDER BY DATE(stat_time)
+    </select>
+    <!--    获取-资源调用率-趋势列表-->
+    <select id="getResUseRateTrendList"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.emergency.dashboard.global.coremetrics.vo.TimeValuePoint">
+        SELECT
+        ROUND(
+        CASE
+        WHEN SUM(total_qty) = 0 THEN 0
+        ELSE SUM(dispatch_qty) / SUM(total_qty) * 100
+        END
+        ,2) AS value,
+        DATE(update_time) AS date <!-- 使用 DATE 函数，只保留日期 -->
+        FROM biz_emerg_res
+        <where>
+            <!-- 区域筛选：三级行政区划 -->
+            <if test="regionShortCode != null and regionShortCode != ''">
+                AND
+                <include refid="likeByAreaLevel">
+                    <property name="areaColumn" value="LEFT(dist_region,6)"/>
+                    <property name="searchAreaCode" value="#{regionShortCode}"/>
+                </include>
+            </if>
+            <!-- 时间范围 -->
+            <if test="startTime != null">AND update_time &gt;= #{startTime}</if>
+            <if test="endTime != null">AND update_time &lt;= #{endTime}</if>
+        </where>
+        GROUP BY DATE(update_time)
+        ORDER BY DATE(update_time)
+    </select>
+    <!--    获取-风险整改率-趋势列表-->
+    <select id="getRiskRectifyRateTrendList"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.emergency.dashboard.global.coremetrics.vo.TimeValuePoint">
+        SELECT
+            ifnull(
+                ROUND(
+                CASE
+                WHEN COUNT(1) = 0 THEN 0
+                ELSE SUM(CASE WHEN warn_status IN ('2','3') THEN 1 END) / COUNT(1) * 100
+                END
+                ,2)
+            ,0) AS value,
+        DATE(discover_time) AS date <!-- 使用 DATE 函数，只保留日期 -->
+        FROM biz_risk_hazard
+        <where>
+            <!-- 区域筛选：三级行政区划 -->
+            <if test="regionShortCode != null and regionShortCode != ''">
+                AND
+                <include refid="likeByAreaLevel">
+                    <property name="areaColumn" value="LEFT(region_full_code,6)"/>
+                    <property name="searchAreaCode" value="#{regionShortCode}"/>
+                </include>
+            </if>
+            <!-- 时间范围 -->
+            <if test="startTime != null">AND discover_time &gt;= #{startTime}</if>
+            <if test="endTime != null">AND discover_time &lt;= #{endTime}</if>
+        </where>
+        GROUP BY DATE(discover_time)
+        ORDER BY DATE(discover_time)
+    </select>
+
 
 </mapper>
 

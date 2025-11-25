@@ -18,4 +18,5 @@ public interface EmergCoreMetricsService {
          * @return 查询结果
          */
         EmergCoreMetricsRespVO getEmergCoreMetrics(EmergCoreMetricsQueryReqVO emergCoreMetricsQueryReqVO);
+//        EmergCoreMetricsRespVO getEmergCoreMetrics2(EmergCoreMetricsQueryReqVO emergCoreMetricsQueryReqVO);
 }

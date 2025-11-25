@@ -22,6 +22,16 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 public class EmergCoreMetricsController {
     @Resource
     private EmergCoreMetricsService emergCoreMetricsService;
+//    @GetMapping("/list")
+//    @Operation(summary = "获得应急核心指标")
+//    @PreAuthorize("@ss.hasPermission('industry:emerg-core-metrics:query')")
+//    public CommonResult<EmergCoreMetricsRespVO> getEmergCoreMetrics(
+//            @Valid EmergCoreMetricsQueryReqVO emergCoreMetricsQueryReqVO
+//    ) {
+//        EmergCoreMetricsRespVO emergCoreMetricsRespVO = emergCoreMetricsService.getEmergCoreMetrics(emergCoreMetricsQueryReqVO);
+//        return success(emergCoreMetricsRespVO);
+//    }
+
     @GetMapping("/list")
     @Operation(summary = "获得应急核心指标")
     @PreAuthorize("@ss.hasPermission('industry:emerg-core-metrics:query')")
