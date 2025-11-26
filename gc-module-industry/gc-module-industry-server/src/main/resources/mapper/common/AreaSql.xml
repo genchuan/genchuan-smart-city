@@ -35,4 +35,51 @@
         </choose>
     </sql>
 
+
+    <!--
+    按12位地区码行政区划筛选的通用 SQL 片段。
+    注意事项：
+        1. 该通用 SQL 片段仅供现有代码兼容使用，请勿在新代码中新增引用
+        2. regionFullCode : 名称要一致。前端传入的行政区划码（12位），用于搜索和判断省/市/县级/街道/社区。
+    参数说明：
+      - areaColumn : 数据表中的行政区划编码字段(6位或12位都行，编码必须是完整的、末位不为 0)（例如 dist_region、region_code 等）。
+    使用方式：
+        <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.AreaSqlMapper.likeByRegionFullCode">
+            <property name="areaColumn" value="region_full_code"/>
+        </include>
+    -->
+    <!-- 按省/市/县/街道/社区五级行政区划筛选的通用 SQL 片段 -->
+    <sql id="likeByRegionFullCode">
+        <choose>
+            <!-- 省级 -->
+            <when test="regionFullCode != null and regionFullCode != '' and regionFullCode.length() == 12
+             and regionFullCode.endsWith('0000000000')">
+                ${areaColumn} LIKE CONCAT(LEFT(#{regionFullCode}, 2), '%')
+            </when>
+            <!-- 市级 -->
+            <when test="regionFullCode != null and regionFullCode != '' and regionFullCode.length() == 12
+             and regionFullCode.endsWith('00000000') ">
+                ${areaColumn} LIKE CONCAT(LEFT(#{regionFullCode}, 4), '%')
+            </when>
+            <!-- 县级 -->
+            <when test="regionFullCode != null and regionFullCode != '' and regionFullCode.length() == 12
+             and regionFullCode.endsWith('000000') ">
+                ${areaColumn} LIKE CONCAT(LEFT(#{regionFullCode}, 6), '%')
+            </when>
+            <!-- 街道级 -->
+            <when test="regionFullCode != null and regionFullCode != '' and regionFullCode.length() == 12
+             and regionFullCode.endsWith('000') ">
+                ${areaColumn} LIKE CONCAT(LEFT(#{regionFullCode}, 9), '%')
+            </when>
+            <!-- 社区级 -->
+            <when test="regionFullCode != null and regionFullCode != '' and regionFullCode.length() == 12">
+                ${areaColumn} LIKE CONCAT(LEFT(#{regionFullCode}, 12), '%')
+            </when>
+            <!-- 新增：地区码为空时不加条件，返回全量 -->
+            <otherwise>
+                1=1
+            </otherwise>
+        </choose>
+    </sql>
+
 </mapper>

@@ -55,6 +55,10 @@ public class EmergCoreMetricsRespVO {
         @ExcelProperty("数据更新时间")
         private LocalDateTime updateTime;
 
+        @Schema(description = "异常预警阈值，低于此值标红", requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "40")
+        @ExcelProperty("异常预警阈值")
+        private BigDecimal warningThreshold=new BigDecimal("40");
+
         @Schema(description = "近七天趋势")
         @ExcelProperty("近七天趋势")
         private List<TimeValuePoint> trendList;
@@ -77,6 +81,10 @@ public class EmergCoreMetricsRespVO {
         @Schema(description = "数据更新时间", requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "2025-11-19 10:00:00")
         @ExcelProperty("数据更新时间")
         private LocalDateTime updateTime;
+
+        @Schema(description = "异常预警阈值，低于此值标红", requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "40")
+        @ExcelProperty("异常预警阈值")
+        private BigDecimal warningThreshold=new BigDecimal("40");
 
         @Schema(description = "近七天趋势")
         @ExcelProperty("近七天趋势")
@@ -102,6 +110,10 @@ public class EmergCoreMetricsRespVO {
         @ExcelProperty("数据更新时间")
         private LocalDateTime updateTime;
 
+        @Schema(description = "异常预警阈值，低于此值标红", requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "40")
+        @ExcelProperty("异常预警阈值")
+        private BigDecimal warningThreshold=new BigDecimal("40");
+
         @Schema(description = "近七天趋势")
         @ExcelProperty("近七天趋势")
         private List<TimeValuePoint> trendList;
@@ -125,6 +137,10 @@ public class EmergCoreMetricsRespVO {
         @Schema(description = "数据更新时间", requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "2025-11-19 10:00:00")
         @ExcelProperty("数据更新时间")
         private LocalDateTime updateTime;
+
+        @Schema(description = "异常预警阈值，低于此值标红", requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "40")
+        @ExcelProperty("异常预警阈值")
+        private BigDecimal warningThreshold=new BigDecimal("40");
 
         @Schema(description = "近七天趋势")
         @ExcelProperty("近七天趋势")
