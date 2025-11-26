@@ -81,74 +81,13 @@ public interface WarningAlertListTableMapper extends BaseMapperX<WarningAlertLis
                 .betweenIfPresent(WarningAlertListTableDO::getCreateTime, reqVO.getCreateTime())
                 .eqIfPresent(WarningAlertListTableDO::getDeviceId, reqVO.getDeviceId())
                 .eqIfPresent(WarningAlertListTableDO::getProcessInstanceId,reqVO.getProcessInstanceId())
-                .eqIfPresent(WarningAlertListTableDO::getWarningTypeId,reqVO.getWarningTypeId());
+                .eqIfPresent(WarningAlertListTableDO::getWarningTypeId,reqVO.getWarningTypeId())
+                .eqIfPresent(WarningAlertListTableDO::getRegionCode, reqVO.getRegionCode())
+                .eqIfPresent(WarningAlertListTableDO::getRegionName, reqVO.getRegionName())
+                .eqIfPresent(WarningAlertListTableDO::getGridId, reqVO.getGridId())
+                .eqIfPresent(WarningAlertListTableDO::getGridName, reqVO.getGridName())
+                .eqIfPresent(WarningAlertListTableDO::getAddress, reqVO.getAddress());
     }
-//    default PageResult<WarningAlertListTableDO> selectPage(WarningAlertListTablePageReqVO reqVO) {
-//
-//        /* ---------- 其它条件照旧 ---------- */
-//        LambdaQueryWrapperX<WarningAlertListTableDO> wrapper =
-//                new LambdaQueryWrapperX<WarningAlertListTableDO>()
-//                        .eqIfPresent(WarningAlertListTableDO::getAlertCode, reqVO.getAlertCode())
-//                        // … 其余条件
-//                        .eqIfPresent(WarningAlertListTableDO::getDeviceId, reqVO.getDeviceId());
-//
-//        /* ---------- 预警等级自定义排序 ---------- */
-//        if ("warningLevel".equals(reqVO.getOrderByColumn())) {
-//            String caseSql = "CASE warning_level " +
-//                    "WHEN 'emergency' THEN 4 " +
-//                    "WHEN 'important' THEN 3 " +
-//                    "WHEN 'general'   THEN 1 " +
-////                    "WHEN 'secondary' THEN 4 " +
-//                    "ELSE 99 END " + reqVO.getIsAsc();   // asc / desc
-//            // 原样拼到 SQL 最后
-//            wrapper.last("ORDER BY " + caseSql);
-//            return selectPage(reqVO, null, wrapper);
-//        }
-//        else if ("triggertime".equals(reqVO.getOrderByColumn())) {
-//            // 直接按时间字段排序，不需要CASE转换
-//            wrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), WarningAlertListTableDO::getTriggerTime);
-//            return selectPage(reqVO, null, wrapper);
-//        }
-//        else if ("requiredcompletetime".equals(reqVO.getOrderByColumn())) {
-//            // 直接按时间字段排序，不需要CASE转换
-//            wrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), WarningAlertListTableDO::getRequiredCompleteTime);
-//            return selectPage(reqVO, null, wrapper);
-//        }
-//
-//        SortingField sortingField = new SortingField();
-//        sortingField.setField(reqVO.getOrderByColumn());
-//        sortingField.setOrder(reqVO.getIsAsc());
-//        List<SortingField> sortingFields = new ArrayList<>();
-//        sortingFields.add(sortingField);
-//        return selectPage(reqVO, sortingFields,new LambdaQueryWrapperX<WarningAlertListTableDO>()
-//                .eqIfPresent(WarningAlertListTableDO::getAlertCode, reqVO.getAlertCode())
-//                .eqIfPresent(WarningAlertListTableDO::getRelatedObjectType, reqVO.getRelatedObjectType())
-//                .eqIfPresent(WarningAlertListTableDO::getRelatedObjectId, reqVO.getRelatedObjectId())
-//                .likeIfPresent(WarningAlertListTableDO::getRelatedObjectName, reqVO.getRelatedObjectName())
-//                .eqIfPresent(WarningAlertListTableDO::getWarningField, reqVO.getWarningField())
-//                .eqIfPresent(WarningAlertListTableDO::getWarningType, reqVO.getWarningType())
-//                .eqIfPresent(WarningAlertListTableDO::getWarningLevel, reqVO.getWarningLevel())
-//                .eqIfPresent(WarningAlertListTableDO::getWarningStatus, reqVO.getWarningStatus())
-//                .eqIfPresent(WarningAlertListTableDO::getTriggerReason, reqVO.getTriggerReason())
-//                .eqIfPresent(WarningAlertListTableDO::getRelatedEventCode, reqVO.getRelatedEventCode())
-//                .eqIfPresent(WarningAlertListTableDO::getDispatchDepartment, reqVO.getDispatchDepartment())
-//                .eqIfPresent(WarningAlertListTableDO::getResponsiblePerson, reqVO.getResponsiblePerson())
-//                .eqIfPresent(WarningAlertListTableDO::getResponsiblePersonPhone, reqVO.getResponsiblePersonPhone())
-//                .betweenIfPresent(WarningAlertListTableDO::getTriggerTime, reqVO.getTriggerTime())
-//                .betweenIfPresent(WarningAlertListTableDO::getRequiredCompleteTime, reqVO.getRequiredCompleteTime())
-//                .eqIfPresent(WarningAlertListTableDO::getDisposalProgressDesc, reqVO.getDisposalProgressDesc())
-//                .eqIfPresent(WarningAlertListTableDO::getDisposalAttachmentPath, reqVO.getDisposalAttachmentPath())
-//                .eqIfPresent(WarningAlertListTableDO::getReviewOpinion, reqVO.getReviewOpinion())
-//                .eqIfPresent(WarningAlertListTableDO::getReviewer, reqVO.getReviewer())
-//                .betweenIfPresent(WarningAlertListTableDO::getReviewTime, reqVO.getReviewTime())
-//                .eqIfPresent(WarningAlertListTableDO::getExtendCategory1, reqVO.getExtendCategory1())
-//                .eqIfPresent(WarningAlertListTableDO::getExtendCategory2, reqVO.getExtendCategory2())
-//                .eqIfPresent(WarningAlertListTableDO::getExtendCategory3, reqVO.getExtendCategory3())
-//                .betweenIfPresent(WarningAlertListTableDO::getCreateTime, reqVO.getCreateTime())
-//                .eqIfPresent(WarningAlertListTableDO::getWarningStatus, reqVO.getWarningStatus())
-//                .eqIfPresent(WarningAlertListTableDO::getDeviceId, reqVO.getDeviceId()));
-//    }
-
 
     List<WarningAlertListTableStatisticsRespVO> selectWarningLevelStatistics();
 
@@ -159,5 +98,22 @@ public interface WarningAlertListTableMapper extends BaseMapperX<WarningAlertLis
                 .eq(WarningAlertListTableDO::getAlertCode, alertCode));
     }
 
+    /**
+     * 根据告警编号查询预警告警记录
+     */
+    default WarningAlertListTableDO selectByAlertCode(String alertCode) {
+        return selectOne(new LambdaQueryWrapperX<WarningAlertListTableDO>()
+                .eq(WarningAlertListTableDO::getAlertCode, alertCode));
+    }
+
+    /**
+     * 批量插入预警告警记录
+     */
+    int insertBatch(List<WarningAlertListTableDO> list);
+
+    /**
+     * 批量更新预警告警记录
+     */
+    int updateBatch(List<WarningAlertListTableDO> list);
 
 }

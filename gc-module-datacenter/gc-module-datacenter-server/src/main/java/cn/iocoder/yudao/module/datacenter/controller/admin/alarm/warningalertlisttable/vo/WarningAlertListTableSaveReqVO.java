@@ -15,40 +15,39 @@ public class WarningAlertListTableSaveReqVO {
     @Schema(description = "预警ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "3855")
     private Long id;
 
-    @Schema(description = "告警编号", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotEmpty(message = "告警编号不能为空")
+    @Schema(description = "告警编号")
+//    @NotEmpty(message = "告警编号不能为空") requiredMode = Schema.RequiredMode.REQUIRED
     private String alertCode;
 
-    @Schema(description = "关联对象类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @NotEmpty(message = "关联对象类型不能为空")
+    @Schema(description = "关联对象类型")
+//    @NotEmpty(message = "关联对象类型不能为空")
     private String relatedObjectType;
 
-    @Schema(description = "关联对象ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "20469")
-    @NotEmpty(message = "关联对象ID不能为空")
+    @Schema(description = "关联对象ID")
+//    @NotEmpty(message = "关联对象ID不能为空")
     private String relatedObjectId;
 
-    @Schema(description = "关联对象名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "张三")
-    @NotEmpty(message = "关联对象名称不能为空")
+    @Schema(description = "关联对象名称")
+//    @NotEmpty(message = "关联对象名称不能为空")
     private String relatedObjectName;
 
-    @Schema(description = "预警领域", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotEmpty(message = "预警领域不能为空")
+    @Schema(description = "预警领域")
+//    @NotEmpty(message = "预警领域不能为空")
     private String warningField;
 
-    @Schema(description = "预警类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @NotEmpty(message = "预警类型不能为空")
+    @Schema(description = "预警类型")
+//    @NotEmpty(message = "预警类型不能为空")
     private String warningType;
 
-    @Schema(description = "预警等级", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotEmpty(message = "预警等级不能为空")
+    @Schema(description = "预警等级")
+//    @NotEmpty(message = "预警等级不能为空")
     private String warningLevel;
 
     @Schema(description = "预警状态")
-//    @NotEmpty(message = "预警状态不能为空")
     private String warningStatus;
 
-    @Schema(description = "触发原因", requiredMode = Schema.RequiredMode.REQUIRED, example = "不好")
-    @NotEmpty(message = "触发原因不能为空")
+    @Schema(description = "触发原因")
+//    @NotEmpty(message = "触发原因不能为空")
     private String triggerReason;
 
     @Schema(description = "关联事件编号")
@@ -63,12 +62,12 @@ public class WarningAlertListTableSaveReqVO {
     @Schema(description = "责任人电话")
     private String responsiblePersonPhone;
 
-    @Schema(description = "触发时间", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "触发时间不能为空")
+    @Schema(description = "触发时间")
+//    @NotNull(message = "触发时间不能为空")
     private LocalDateTime triggerTime;
 
-    @Schema(description = "要求完成时间", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "要求完成时间不能为空")
+    @Schema(description = "要求完成时间")
+//    @NotNull(message = "要求完成时间不能为空")
     private LocalDateTime requiredCompleteTime;
 
     @Schema(description = "处置进展描述")
@@ -109,4 +108,25 @@ public class WarningAlertListTableSaveReqVO {
 
     @Schema(description = "预警类型ID")
     private Long warningTypeId;
+
+    @Schema(description = "区域编码")
+    private String regionCode;
+
+    @Schema(description = "区域名称")
+    private String regionName;
+
+    @Schema(description = "网格ID")
+    private String gridId;
+
+    @Schema(description = "网格名称")
+    private String gridName;
+
+    @Schema(description = "地址")
+    private String address;
+
+    @Schema(description = "经度", example = "116.397128")
+    private String longitude;
+
+    @Schema(description = "纬度", example = "39.916527")
+    private String latitude;
 }

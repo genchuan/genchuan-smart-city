@@ -109,4 +109,25 @@ public class WarningAlertListTablePageReqVO extends PageParam {
     @Schema(description = "预警类型ID")
     private Long warningTypeId;
 
+    @Schema(description = "区域编码")
+    private String regionCode;
+
+    @Schema(description = "区域名称")
+    private String regionName;
+
+    @Schema(description = "网格ID")
+    private String gridId;
+
+    @Schema(description = "网格名称")
+    private String gridName;
+
+    @Schema(description = "地址")
+    private String address;
+
+    @Schema(description = "经度")
+    private String longitude;
+
+    @Schema(description = "纬度")
+    private String latitude;
+
 }

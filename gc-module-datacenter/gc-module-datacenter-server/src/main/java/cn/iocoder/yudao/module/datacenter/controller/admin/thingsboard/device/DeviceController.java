@@ -1,12 +1,11 @@
-package cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard;
+package cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device;
 
 
-import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.vo.AlarmRespVO;
-import cn.iocoder.yudao.module.datacenter.service.thingsboard.DeviceService;
-import cn.iocoder.yudao.module.datacenter.dal.dataobject.thingsboard.DeviceDO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.vo.DevicePageReqVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.vo.DeviceRespVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.vo.DeviceSaveReqVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.AlarmRespVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DevicePageReqVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DeviceRespVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DeviceSaveReqVO;
+import cn.iocoder.yudao.module.datacenter.service.thingsboard.device.DeviceService;
 import org.springframework.web.bind.annotation.*;
         import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -31,11 +30,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import org.thingsboard.server.common.data.Device;
 import org.thingsboard.server.common.data.DeviceInfo;
-import org.thingsboard.server.common.data.alarm.AlarmInfo;
 import org.thingsboard.server.common.data.kv.AttributeKvEntry;
-import org.thingsboard.server.common.data.page.PageData;
-import org.thingsboard.server.common.data.page.PageLink;
-import org.thingsboard.server.common.data.page.TimePageLink;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 

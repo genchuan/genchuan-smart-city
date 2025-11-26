@@ -76,60 +76,6 @@ public class WarningAlertListTableController {
         return success(true);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @GetMapping("/get")
     @Operation(summary = "获得预警告警列表")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
@@ -506,6 +452,13 @@ public class WarningAlertListTableController {
                 setExtendCategory2("西城区");
                 setExtendCategory3("北区");
                 setDeviceId("abcdef123478");
+                setRegionCode("110101");
+                setRegionName("东城区");
+                setGridId("GRID001");
+                setGridName("王府井网格");
+                setAddress("北京市东城区王府井大街100号");
+                setLongitude("116.397128");
+                setLatitude("39.916527");
             }},
             new WarningAlertListTableImportExcelVO() {{ // 重要预警示例
                 setAlertCode("ALERT20256174");
@@ -532,6 +485,13 @@ public class WarningAlertListTableController {
                 setExtendCategory2("西城区");
                 setExtendCategory3("北区");
                 setDeviceId("abcdef12777");
+                setRegionCode("110101");
+                setRegionName("东城区");
+                setGridId("GRID001");
+                setGridName("王府井网格");
+                setAddress("北京市东城区王府井大街100号");
+                setLongitude("116.397128");
+                setLatitude("39.916527");
             }},
             new WarningAlertListTableImportExcelVO() {{ // 一般预警示例
                 setAlertCode("ALERT202510099");
@@ -558,6 +518,13 @@ public class WarningAlertListTableController {
                 setExtendCategory2("西城区");
                 setExtendCategory3("北区");
                 setDeviceId("abcdef12784");
+                setRegionCode("110101");
+                setRegionName("东城区");
+                setGridId("GRID001");
+                setGridName("王府井网格");
+                setAddress("北京市东城区王府井大街100号");
+                setLongitude("116.397128");
+                setLatitude("39.916527");
             }}
         );
         
@@ -747,5 +714,14 @@ public class WarningAlertListTableController {
         }
     }
 
+    @PostMapping("/sync-all-alarms")
+    @Operation(summary = "一键同步所有ThingsBoard告警到预警告警列表")
+    @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:sync')")
+    public CommonResult<WarningAlertListTableSyncRespVO> syncAllAlarmsFromThingsBoard(
+            @RequestParam(value = "overwrite", defaultValue = "false") Boolean overwrite) {
+
+        WarningAlertListTableSyncRespVO result = warningAlertListTableService.syncAllAlarmsFromThingsBoard(overwrite);
+        return success(result);
+    }
 
 }

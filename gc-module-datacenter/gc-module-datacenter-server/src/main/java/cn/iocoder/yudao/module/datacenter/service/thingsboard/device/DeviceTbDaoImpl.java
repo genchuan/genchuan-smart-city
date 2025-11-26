@@ -3,8 +3,14 @@ package cn.iocoder.yudao.module.datacenter.service.thingsboard.device;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DevicePageReqVO;
 import cn.iocoder.yudao.module.datacenter.service.thingsboard.device.Dao.DeviceTbDao;
+import com.alibaba.nacos.shaded.io.grpc.netty.shaded.io.netty.handler.codec.http.HttpHeaders;
+import com.alibaba.nacos.shaded.io.grpc.netty.shaded.io.netty.handler.codec.http.HttpMethod;
+import org.apache.hc.core5.http.HttpEntity;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.thingsboard.rest.client.RestClient;
 import org.thingsboard.server.common.data.Device;
 import org.thingsboard.server.common.data.DeviceInfo;
@@ -16,9 +22,8 @@ import org.thingsboard.server.common.data.page.PageData;
 import org.thingsboard.server.common.data.page.PageLink;
 import org.thingsboard.server.common.data.page.TimePageLink;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import javax.annotation.Resource;
+import java.util.*;
 
 @Service
 public class DeviceTbDaoImpl implements DeviceTbDao {
@@ -28,6 +33,9 @@ public class DeviceTbDaoImpl implements DeviceTbDao {
     private String username;
     @Value("${thingsboard.password:test}")
     private String password;
+
+    @Resource
+    private RestTemplate restTemplate;
 
     @Override
     public PageResult<Device> getDevicePage(DevicePageReqVO pageReqVO) {
@@ -91,15 +99,19 @@ public class DeviceTbDaoImpl implements DeviceTbDao {
     @Override
     public List<AttributeKvEntry> getAttributeKvEntries(String id) {
         RestClient client = new RestClient(url);
-        client.login(username, password);
-        List<AttributeKvEntry> attributeKvEntryList =
-                client.getAttributeKvEntries(DeviceId.fromString(id), client.getAttributeKeys(DeviceId.fromString(id)));
-        try{
-            if (!attributeKvEntryList.isEmpty()) {
-                return attributeKvEntryList;
+        try {
+            client.login(username, password);
+            List<String> attributeKeys = client.getAttributeKeys(DeviceId.fromString(id));
+
+            if (attributeKeys == null || attributeKeys.isEmpty()) {
+                return new ArrayList<>();
             }
-            return null;
-        }finally {
+
+            List<AttributeKvEntry> attributeKvEntryList =
+                    client.getAttributeKvEntries(DeviceId.fromString(id), attributeKeys);
+
+            return attributeKvEntryList != null ? attributeKvEntryList : new ArrayList<>();
+        } finally {
             client.logout();
             client.close();
         }
@@ -110,11 +122,42 @@ public class DeviceTbDaoImpl implements DeviceTbDao {
         RestClient client = new RestClient(url);
         try {
             client.login(username, password);
-            return client.getAlarms(null, null, null, pageLink, true);
+            return getAllAlarms(pageLink, client);            // 调用 /api/alarms
         } finally {
             client.logout();
             client.close();
         }
     }
+
+    private PageData<AlarmInfo> getAllAlarms(TimePageLink pageLink, RestClient client) {
+        try {
+            // 获取认证token
+            String token = client.getToken();
+
+            // 构建请求URL
+            String alarmsUrl = url + "api/alarms?pageSize=" + pageLink.getPageSize() + "&page=" + pageLink.getPage();
+
+            // 创建请求头
+            org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+            headers.set("X-Authorization", "Bearer " + token);
+            headers.set("Content-Type", "application/json");
+
+            // 创建请求实体
+            org.springframework.http.HttpEntity<String> entity = new org.springframework.http.HttpEntity<>(headers);
+
+            // 发送请求
+            org.springframework.http.ResponseEntity<PageData<AlarmInfo>> response = restTemplate.exchange(
+                    alarmsUrl,
+                    org.springframework.http.HttpMethod.GET,
+                    entity,
+                    new org.springframework.core.ParameterizedTypeReference<PageData<AlarmInfo>>() {}
+            );
+
+            return response.getBody();
+        } catch (Exception e) {
+            throw new RuntimeException("获取告警列表失败", e);
+        }
+    }
+
 
 }

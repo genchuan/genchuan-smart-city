@@ -79,4 +79,12 @@ public interface WarningAlertListTableService {
     Long createWarningAlertListTable(@Valid Long id);
 
 
+    /**
+     * 同步ThingsBoard告警到预警告警列表
+     *
+     * @param overwrite 是否覆盖已存在的记录
+     * @return 同步结果
+     */
+    WarningAlertListTableSyncRespVO syncAllAlarmsFromThingsBoard(Boolean overwrite);
+
 }

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.iocoder.yudao.module.datacenter.dal.mysql.alarm.warningalertlisttable.WarningAlertListTableMapper">
-
     <!-- 预警等级分布统计（统一VO） -->
     <select id="selectWarningLevelStatistics" resultType="cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlisttable.vo.WarningAlertListTableStatisticsRespVO">
         SELECT
@@ -61,6 +60,53 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <!-- 批量插入 -->
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO gc_warning_alert_list_table (
+        alert_code, related_object_type, related_object_id, related_object_name,
+        warning_type_id, warning_field, warning_type, warning_level, warning_status,
+        status, trigger_reason, device_id, trigger_time, required_complete_time,
+        region_code, region_name, address, longitude, latitude,
+        creator, updater, tenant_id, deleted
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.alertCode}, #{item.relatedObjectType}, #{item.relatedObjectId}, #{item.relatedObjectName},
+            #{item.warningTypeId}, #{item.warningField}, #{item.warningType}, #{item.warningLevel}, #{item.warningStatus},
+            #{item.status}, #{item.triggerReason}, #{item.deviceId}, #{item.triggerTime}, #{item.requiredCompleteTime},
+            #{item.regionCode}, #{item.regionName}, #{item.address}, #{item.longitude}, #{item.latitude},
+            #{item.creator}, #{item.updater}, 1 , 0
+            )
+        </foreach>
+    </insert>
 
+    <!-- 批量更新 -->
+    <update id="updateBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE gc_warning_alert_list_table
+            SET
+            related_object_type = #{item.relatedObjectType},
+            related_object_id = #{item.relatedObjectId},
+            related_object_name = #{item.relatedObjectName},
+            warning_type_id = #{item.warningTypeId},
+            warning_field = #{item.warningField},
+            warning_type = #{item.warningType},
+            warning_level = #{item.warningLevel},
+            warning_status = #{item.warningStatus},
+            status = #{item.status},
+            trigger_reason = #{item.triggerReason},
+            device_id = #{item.deviceId},
+            trigger_time = #{item.triggerTime},
+            required_complete_time = #{item.requiredCompleteTime},
+            region_code = #{item.regionCode},
+            region_name = #{item.regionName},
+            address = #{item.address},
+            longitude = #{item.longitude},
+            latitude = #{item.latitude},
+            updater = #{item.updater},
+            update_time = #{item.updateTime}
+            WHERE id = #{item.id}
+        </foreach>
+    </update>
 
 </mapper>

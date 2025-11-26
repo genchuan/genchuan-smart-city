@@ -1,7 +1,7 @@
-package cn.iocoder.yudao.module.datacenter.service.thingsboard.Dao;
+package cn.iocoder.yudao.module.datacenter.service.thingsboard.device.Dao;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.vo.DevicePageReqVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DevicePageReqVO;
 import org.thingsboard.server.common.data.Device;
 import org.thingsboard.server.common.data.DeviceInfo;
 import org.thingsboard.server.common.data.alarm.Alarm;
