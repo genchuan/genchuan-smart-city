@@ -1,20 +1,8 @@
 **严肃声明：现在、未来都不会有商业版本，所有代码全部开源!！**
 
-**「我喜欢写代码，乐此不疲」**  
-**「我喜欢做开源，以此为乐」**
-
-我 🐶 在上海艰苦奋斗，早中晚在 top3 大厂认真搬砖，夜里为开源做贡献。
-
-如果这个项目让你有所收获，记得 Star 关注哦，这对我是非常不错的鼓励与支持。
-
 ## 🐶 新手必读 
 
 * nodejs > 16.18.0 && pnpm > 8.6.0 (强制使用pnpm)
-* 演示地址【Vue3 + element-plus】：<http://dashboard-vue3.yudao.iocoder.cn>
-* 演示地址【Vue3 + vben(ant-design-vue)】：<http://dashboard-vben.yudao.iocoder.cn>
-* 演示地址【Vue2 + element-ui】：<http://dashboard.yudao.iocoder.cn>
-* 启动文档：<https://doc.iocoder.cn/quick-start/>
-* 视频教程：<https://doc.iocoder.cn/video/>
 
 ## 🐯 平台简介
 
@@ -23,8 +11,6 @@
 * 采用 [vue-element-plus-admin](https://gitee.com/kailong110120130/vue-element-plus-admin) 实现
 * 改换 saas，自动引入等功能
 * 使用 Element Plus 免费开源的中后台模版，具备如下特性：
-
-![首页](public/home.png)
 
 * **最新技术栈**：使用 Vue3、Vite4 等前端前沿技术开发
 * **TypeScript**: 应用程序级 JavaScript 的语言
@@ -64,18 +50,6 @@
 | Prettier                      | 代码格式化               |
 | ESLint                        | 脚本代码检查              |
 | DotENV                        | env 文件高亮            |
-
-## 🔥 后端架构
-
-支持 Spring Boot、Spring Cloud 两种架构：
-
-① Spring Boot 单体架构：<https://doc.iocoder.cn>
-
-![架构图](/.image/common/ruoyi-vue-pro-architecture.png)
-
-② Spring Cloud 微服务架构：<https://cloud.iocoder.cn>
-
-![架构图](/.image/common/yudao-cloud-architecture.png)
 
 ## 内置功能
 
