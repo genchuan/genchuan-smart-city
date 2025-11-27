@@ -1,8 +1,12 @@
 package cn.iocoder.yudao.module.system.service.permission;
 
 import cn.iocoder.yudao.framework.common.biz.system.permission.dto.DeptDataPermissionRespDTO;
+import cn.iocoder.yudao.module.system.controller.admin.permission.vo.menu.MenuDetailRespVO;
+import cn.iocoder.yudao.module.system.controller.admin.permission.vo.menu.MenuSimpleRespVO;
+import cn.iocoder.yudao.module.system.controller.admin.permission.vo.menu.MenuTreeRespVO;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import static java.util.Collections.singleton;
@@ -74,6 +78,22 @@ public interface PermissionService {
      * @return 菜单编号集合
      */
     Set<Long> getRoleMenuListByRoleId(Collection<Long> roleIds);
+
+    /**
+     * 获得角色拥有的菜单详细信息（包含菜单编号、名称等完整信息）
+     *
+     * @param roleId 角色编号
+     * @return 菜单信息集合
+     */
+    Set<MenuDetailRespVO> getRoleMenuInfoListByRoleId(Long roleId);
+
+    /**
+     * 获得角色拥有的菜单树形结构
+     *
+     * @param roleId 角色编号
+     * @return 菜单树形结构
+     */
+    List<MenuTreeRespVO> getRoleMenuTreeByRoleId(Long roleId);
 
     /**
      * 获得拥有指定菜单的角色编号数组，从缓存中获取

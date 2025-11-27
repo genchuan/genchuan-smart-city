@@ -73,7 +73,7 @@ public class ManagedMatterMajorController {
 
     @GetMapping("/list")
     @Operation(summary = "获得管理事项分类表（含大类和小类）")
-    @PreAuthorize("@ss.hasPermission('gc:managed-matter-major:query')")
+//    @PreAuthorize("@ss.hasPermission('gc:managed-matter-major:query')")
     public CommonResult<List<ManagedMatterMajorDO>> getManagedMatterMajorPage(@Valid ManagedMatterMajorListReqVO ReqVO) {
         List<ManagedMatterMajorDO> list = managedMatterMajorService.getManagedMatterMajorList(ReqVO);
         return success(BeanUtils.toBean(list, ManagedMatterMajorDO.class));
