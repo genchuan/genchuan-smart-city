@@ -18,11 +18,11 @@ import javax.annotation.Resource;
 public class BusiResDistriController {
 
     @Resource
-    private BusiResDistriService BusiResDistriService;
+    private BusiResDistriService busiResDistriService;
 
     @GetMapping("/get")
     @Operation(summary = "获取资源分布数据")
     public BusiResDistriRespVO list(@Valid BusiResDistriQueryReqVO req) {
-        return BusiResDistriService.getDistribution(req);
+        return busiResDistriService.getDistribution(req);
     }
 }
