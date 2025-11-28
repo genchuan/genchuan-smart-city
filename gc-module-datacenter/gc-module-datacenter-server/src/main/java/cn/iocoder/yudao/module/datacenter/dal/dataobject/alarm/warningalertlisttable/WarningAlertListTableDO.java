@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.datacenter.dal.dataobject.alarm.warningalertlisttable;
 
 import lombok.*;
+
+import java.math.BigDecimal;
 import java.util.*;
 import java.time.LocalDateTime;
 import java.time.LocalDateTime;
@@ -141,4 +143,38 @@ public class WarningAlertListTableDO extends BaseDO {
      */
     private Long warningTypeId;
 
+    /**
+     * 区域编码
+     */
+    private String regionCode;
+
+    /**
+     * 区域名称
+     */
+    private String regionName;
+
+    /**
+     * 网格ID
+     */
+    private String gridId;
+
+    /**
+     * 网格名称
+     */
+    private String gridName;
+
+    /**
+     * 地址
+     */
+    private String address;
+
+    /**
+     * 经度
+     */
+    private String longitude;
+
+    /**
+     * 纬度
+     */
+    private String latitude;
 }

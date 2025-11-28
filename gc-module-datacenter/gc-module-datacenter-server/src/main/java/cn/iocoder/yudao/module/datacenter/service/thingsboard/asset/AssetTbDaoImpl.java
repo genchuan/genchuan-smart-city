@@ -33,7 +33,7 @@ public class AssetTbDaoImpl implements AssetTbDao {
         client.login(username, password);
 
         PageLink pageLink = new PageLink(pageReqVO.getPageSize(), pageReqVO.getPageNo() - 1);
-        PageData<Asset> tenantAssets = client.getTenantAssets(pageLink,"数字乡村");
+        PageData<Asset> tenantAssets = client.getTenantAssets(pageLink,"顺昌排口");
 
         assetPageResult.setList(tenantAssets.getData());
         assetPageResult.setTotal(tenantAssets.getTotalElements());

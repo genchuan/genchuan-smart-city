@@ -85,6 +85,27 @@ public class WarningAlertListTableImportExcelVO {
 
     @ExcelProperty("预警类型ID")
     private Long warningTypeId;
+
+    @ExcelProperty("区域编码")
+    private String regionCode;
+
+    @ExcelProperty("区域名称")
+    private String regionName;
+
+    @ExcelProperty("网格ID")
+    private String gridId;
+
+    @ExcelProperty("网格名称")
+    private String gridName;
+
+    @ExcelProperty("地址")
+    private String address;
+
+    @ExcelProperty("经度")
+    private String longitude;  // Excel中通常用字符串格式
+
+    @ExcelProperty("纬度")
+    private String latitude;
 }
 
 

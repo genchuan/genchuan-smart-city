@@ -12,35 +12,35 @@ import com.alibaba.excel.annotation.*;
 @ExcelIgnoreUnannotated
 public class WarningAlertListTableRespVO {
 
-    @Schema(description = "预警ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "3855")
+    @Schema(description = "预警ID", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("预警ID")
     private Long id;
 
-    @Schema(description = "告警编号", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "告警编号")
     @ExcelProperty("告警编号")
     private String alertCode;
 
-    @Schema(description = "关联对象类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
+    @Schema(description = "关联对象类型")
     @ExcelProperty("关联对象类型")
     private String relatedObjectType;
 
-    @Schema(description = "关联对象ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "20469")
+    @Schema(description = "关联对象ID")
     @ExcelProperty("关联对象ID")
     private String relatedObjectId;
 
-    @Schema(description = "关联对象名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "张三")
+    @Schema(description = "关联对象名称")
     @ExcelProperty("关联对象名称")
     private String relatedObjectName;
 
-    @Schema(description = "预警领域", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "预警领域")
     @ExcelProperty("预警领域")
     private String warningField;
 
-    @Schema(description = "预警类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @Schema(description = "预警类型")
     @ExcelProperty("预警类型")
     private String warningType;
 
-    @Schema(description = "预警等级", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "预警等级")
     @ExcelProperty("预警等级")
     private String warningLevel;
 
@@ -48,7 +48,7 @@ public class WarningAlertListTableRespVO {
     @ExcelProperty("预警状态")
     private String warningStatus;
 
-    @Schema(description = "触发原因", requiredMode = Schema.RequiredMode.REQUIRED, example = "不好")
+    @Schema(description = "触发原因")
     @ExcelProperty("触发原因")
     private String triggerReason;
 
@@ -68,11 +68,11 @@ public class WarningAlertListTableRespVO {
     @ExcelProperty("责任人电话")
     private String responsiblePersonPhone;
 
-    @Schema(description = "触发时间", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "触发时间")
     @ExcelProperty("触发时间")
     private LocalDateTime triggerTime;
 
-    @Schema(description = "要求完成时间", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "要求完成时间")
     @ExcelProperty("要求完成时间")
     private LocalDateTime requiredCompleteTime;
 
@@ -108,7 +108,7 @@ public class WarningAlertListTableRespVO {
     @ExcelProperty("扩展分类字段3")
     private String extendCategory3;
 
-    @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "创建时间")
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
@@ -116,7 +116,7 @@ public class WarningAlertListTableRespVO {
     @ExcelProperty("设备ID")
     private String deviceId;
 
-    @Schema(description = "预警结果", requiredMode = Schema.RequiredMode.REQUIRED, example = "ok")
+    @Schema(description = "预警结果")
     @ExcelProperty("预警结果")
     private Byte status;
 
@@ -128,4 +128,31 @@ public class WarningAlertListTableRespVO {
     @ExcelProperty("预警类型ID")
     private Long warningTypeId;
 
+    @Schema(description = "区域编码")
+    @ExcelProperty("区域编码")
+    private String regionCode;
+
+    @Schema(description = "区域名称")
+    @ExcelProperty("区域名称")
+    private String regionName;
+
+    @Schema(description = "网格ID")
+    @ExcelProperty("网格ID")
+    private String gridId;
+
+    @Schema(description = "网格名称")
+    @ExcelProperty("网格名称")
+    private String gridName;
+
+    @Schema(description = "地址")
+    @ExcelProperty("地址")
+    private String address;
+
+    @Schema(description = "经度")
+    @ExcelProperty("经度")
+    private String longitude;
+
+    @Schema(description = "纬度")
+    @ExcelProperty("纬度")
+    private String latitude;
 }

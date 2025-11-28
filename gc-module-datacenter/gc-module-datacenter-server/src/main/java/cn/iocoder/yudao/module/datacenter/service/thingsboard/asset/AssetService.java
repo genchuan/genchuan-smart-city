@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.datacenter.service.thingsboard.asset;
 import java.util.*;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.asset.vo.AssetPageReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.asset.vo.AssetSaveReqVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.asset.vo.AssetSimpleRespVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import org.thingsboard.server.common.data.asset.Asset;
@@ -60,4 +61,9 @@ public interface AssetService {
      */
     PageResult<Asset> getAssetPage(AssetPageReqVO pageReqVO);
 
+    /**
+     *
+     * @return 资产简单数据
+     */
+    List<AssetSimpleRespVO> getAssetList();
 }

@@ -1,10 +1,11 @@
 package cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device;
 
 
-import cn.iocoder.yudao.module.datacenter.service.thingsboard.device.DeviceService;
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.AlarmRespVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DevicePageReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DeviceRespVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DeviceSaveReqVO;
+import cn.iocoder.yudao.module.datacenter.service.thingsboard.device.DeviceService;
 import org.springframework.web.bind.annotation.*;
         import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -100,6 +101,17 @@ public class DeviceController {
     public CommonResult<PageResult<DeviceRespVO>> getDevicePage(@Valid DevicePageReqVO pageReqVO) {
         PageResult<Device> pageResult = deviceService.getDevicePage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, DeviceRespVO.class));
+    }
+
+    @GetMapping("/alarm-page")
+    @Operation(summary = "获得告警分页")
+    @PreAuthorize("@ss.hasPermission('device:alarm:query')")
+    public CommonResult<PageResult<AlarmRespVO>> getAlarmPage(
+            @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
+            @RequestParam(value = "page", defaultValue = "0") Integer page) {
+
+        PageResult<AlarmRespVO> pageResult = deviceService.getAlarmPage(pageSize, page);
+        return success(pageResult);
     }
 
     @GetMapping("/export-excel")

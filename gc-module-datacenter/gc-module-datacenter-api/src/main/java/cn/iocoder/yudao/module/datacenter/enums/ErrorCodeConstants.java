@@ -110,6 +110,8 @@ public interface ErrorCodeConstants {
     ErrorCode MON_EVT_DATA_CFG_NOT_EXISTS = new ErrorCode(1007000009, "监测事件数据配置不存在");
     ErrorCode MON_EVT_CODE_RULE_NOT_EXISTS = new ErrorCode(1007000010, "监测事件标识码规则不存在");
     ErrorCode MON_EVT_RPT_NOT_EXISTS = new ErrorCode(1007000012, "监测事件统计报不存在");
+    ErrorCode EVENT_DISPOSITION_NOT_EXISTS = new ErrorCode(1007000013, "监测事件关联处置不存在");
+
     // ========== 管理部件 1008000000 ==========
     ErrorCode MANAGED_COMPONENT_MAJOR_CONFIG_NOT_EXISTS = new ErrorCode(1008000000, "管理部件大类配置表不存在");
     ErrorCode MANAGED_COMPONENT_MINOR_CONFIG_NOT_EXISTS = new ErrorCode(1008000001, "管理部件小类配置不存在");

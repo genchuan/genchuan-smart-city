@@ -51,8 +51,12 @@ public class AssetRespVO {
     @ExcelProperty("版本")
     private Long version;
 
+    @Schema(description = "系统创建时间")
+    @ExcelProperty("系统创建时间")
+    private LocalDateTime createTime;
+
     @Schema(description = "创建时间")
     @ExcelProperty("创建时间")
-    private LocalDateTime createTime;
+    private LocalDateTime createdTime;
 
 }

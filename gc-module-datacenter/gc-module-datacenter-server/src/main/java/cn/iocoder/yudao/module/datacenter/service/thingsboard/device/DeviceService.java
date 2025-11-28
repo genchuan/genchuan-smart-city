@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.datacenter.service.thingsboard.device;
 
 import java.util.*;
 
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.AlarmRespVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DevicePageReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DeviceSaveReqVO;
 import jakarta.validation.*;
@@ -65,4 +66,8 @@ public interface DeviceService {
 
     public List<AttributeKvEntry> getAttributeKvEntries(String id);
 
+    /**
+     * 获取告警列表（带分页）
+     */
+    PageResult<AlarmRespVO> getAlarmPage(Integer pageSize, Integer page);
 }

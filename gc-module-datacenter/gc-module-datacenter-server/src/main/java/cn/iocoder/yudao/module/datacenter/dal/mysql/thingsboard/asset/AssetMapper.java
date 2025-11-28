@@ -27,6 +27,7 @@ public interface AssetMapper extends BaseMapperX<AssetDO> {
                 .eqIfPresent(AssetDO::getExternalId, reqVO.getExternalId())
                 .eqIfPresent(AssetDO::getVersion, reqVO.getVersion())
                 .betweenIfPresent(AssetDO::getCreateTime, reqVO.getCreateTime())
+                .betweenIfPresent(AssetDO::getCreatedTime, reqVO.getCreatedTime())
                 .orderByDesc(AssetDO::getId));
     }
 

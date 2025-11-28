@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.asset;
 
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.asset.vo.AssetSimpleRespVO;
 import cn.iocoder.yudao.module.datacenter.service.thingsboard.asset.AssetService;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.asset.vo.AssetPageReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.asset.vo.AssetRespVO;
@@ -101,6 +102,16 @@ public class AssetController {
         // 导出 Excel
         ExcelUtils.write(response, "资产.xls", "数据", AssetRespVO.class,
                 BeanUtils.toBean(list, AssetRespVO.class));
+    }
+    /**
+     * 获取资产简单信息
+     */
+    @GetMapping("/list")
+    @Operation(summary = "获取资产简单信息列表")
+    @PreAuthorize("@ss.hasPermission('datacenter:asset:query')")
+    public CommonResult<List<AssetSimpleRespVO>> getAssetList(){
+        List<AssetSimpleRespVO> list = assetService.getAssetList();
+        return success(list);
     }
 
 }

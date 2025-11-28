@@ -96,6 +96,26 @@ public class AssetCatMngServiceImpl implements AssetCatMngService {
     }
 
     /**
+     *
+     * @return 启用的资产分类列表
+     */
+    @Override
+    public List<AssetCategorySimpleVO> getEnabledAssetCategories() {
+        // 查询启用状态为1的资产分类
+        List<AssetCatMngDO> categoryList = assetCatMngMapper.selectList(
+                new LambdaQueryWrapperX<AssetCatMngDO>()
+                        .eq(AssetCatMngDO::getEnableStatus, "1")
+                        .select(AssetCatMngDO::getAssetCatId,
+                                AssetCatMngDO::getAssetCatName,
+                                AssetCatMngDO::getParentCatId,
+                                AssetCatMngDO::getCatLevel)
+                        .orderByAsc(AssetCatMngDO::getAssetCatId)
+        );
+
+        return BeanUtils.toBean(categoryList, AssetCategorySimpleVO.class);
+    }
+
+    /**
      * 导入资产分类管理
      * @param importAssetCatMng 导入信息列表
      * @param isUpdateSupport 是否支持更新已有数据
@@ -181,32 +201,6 @@ public class AssetCatMngServiceImpl implements AssetCatMngService {
         return respVO;
     }
 
-    /**
-     * 获取启用的资产分类列表
-     *
-     * @return 启用的资产分类列表
-     */
-    @Override
-    public List<AssetCategorySimpleVO> getEnabledAssetCategories() {
-        // 查询启用状态为1的资产分类
-        List<AssetCatMngDO> categoryList = assetCatMngMapper.selectList(
-                new LambdaQueryWrapperX<AssetCatMngDO>()
-                        .eq(AssetCatMngDO::getEnableStatus, "1")
-                        .select(AssetCatMngDO::getAssetCatId,
-                                AssetCatMngDO::getAssetCatName,
-                                AssetCatMngDO::getCatLevel)
-                        .orderByAsc(AssetCatMngDO::getAssetCatId)
-        );
-
-        // 转换为VO
-        return categoryList.stream().map(category -> {
-            AssetCategorySimpleVO vo = new AssetCategorySimpleVO();
-            vo.setAssetCatId(category.getAssetCatId());
-            vo.setAssetCatName(category.getAssetCatName());
-            vo.setCatLevel(category.getCatLevel());
-            return vo;
-        }).collect(Collectors.toList());
-    }
 
     /**
      * 从导入数据创建资产分类
