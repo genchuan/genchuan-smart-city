@@ -30,10 +30,8 @@
     <resultMap id="EmergCoreMetricsMap"
                type="cn.iocoder.yudao.module.industry.controller.admin.emergency.dashboard.global.coremetrics.vo.EmergCoreMetricsRespVO">
 
-        <!-- 普通字段 -->
-        <result property="avgHandleEndure" column="avg_handle_endure"/>
 
-        <!-- ① 应急事件模块（办结率、平均处置时长） -->
+        <!-- ① -1:应急事件模块-办结率 -->
         <association property="emergEventCompleteRate"
                      javaType="cn.iocoder.yudao.module.industry.controller.admin.emergency.dashboard.global.coremetrics.vo.EmergCoreMetricsRespVO$EmergEventCompleteRate">
             <result property="rate" column="emergEventCompleteRate_rate"/>
@@ -42,6 +40,12 @@
             <result property="updateTime" column="emergEventCompleteRate_updateTime"/>
         </association>
 
+        <!-- ① -2:应急事件模块-平均处置时长 -->
+        <association property="avgHandleEndure"
+                     javaType="cn.iocoder.yudao.module.industry.controller.admin.emergency.dashboard.global.coremetrics.vo.EmergCoreMetricsRespVO$AvgHandleEndure">
+            <result property="avgHandleDuration" column="avgHandleEndure_avgHandleDuration"/>
+            <result property="updateTime" column="avgHandleEndure_updateTime"/>
+        </association>
         <!-- ② 预警模块（预警准确率） -->
         <association property="earlyWarnAccRate"
                      javaType="cn.iocoder.yudao.module.industry.controller.admin.emergency.dashboard.global.coremetrics.vo.EmergCoreMetricsRespVO$EarlyWarnAccRate">
@@ -75,12 +79,15 @@
     <select id="getEmergCoreMetrics"
             resultMap="EmergCoreMetricsMap">
         SELECT
-        -- ① 应急事件模块（办结率）
+        -- ①-1: 应急事件模块（办结率）
         IFNULL(evt.emerg_event_rate, 0) AS emergEventCompleteRate_rate,
         IFNULL(evt.emerg_event_completed_count, 0) AS emergEventCompleteRate_completedCount,
         IFNULL(evt.emerg_event_total_count, 0) AS emergEventCompleteRate_totalCount,
         evt.max_stat_time as emergEventCompleteRate_updateTime,
 
+        -- ①-2: 应急事件模块（平均处置时长）
+        ifnull(evt.avg_handle_endure,0) as avgHandleEndure_avgHandleDuration,
+        evt.max_stat_time as avgHandleEndure_updateTime,
         -- ② 预警模块（预警准确率）
         IFNULL(warn.early_warn_rate, 0) AS earlyWarnAccRate_rate,
         IFNULL(warn.early_warn_completed_count, 0) AS earlyWarnAccRate_completedCount,

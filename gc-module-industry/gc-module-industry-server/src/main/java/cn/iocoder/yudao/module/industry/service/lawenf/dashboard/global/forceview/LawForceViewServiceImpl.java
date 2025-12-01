@@ -24,10 +24,15 @@ public class LawForceViewServiceImpl implements LawForceViewService {
     @Override
     public LawForceViewRespVO getLawForceView(LawForceViewQueryReqVO lawForceViewQueryReqVO) {
         LawForceViewRespVO respVO = new LawForceViewRespVO();
+
         respVO.setStaffLocList(lawForceViewMapper.selectStaffLoc(lawForceViewQueryReqVO.getRegionShortCode()));
+        respVO.setStaffLocListCount(respVO.getStaffLocList().size());
+
         respVO.setVehicleLocList(lawForceViewMapper.selectVehicleLoc(lawForceViewQueryReqVO.getRegionShortCode()));
+        respVO.setVehicleLocListCount(respVO.getVehicleLocList().size());
+
         respVO.setStationLocList(lawForceViewMapper.selectStationLoc(lawForceViewQueryReqVO.getRegionShortCode()));
-        respVO.setRegionStaffCount(lawForceViewMapper.selectRegionStaffCount(lawForceViewQueryReqVO.getRegionShortCode()));
+        respVO.setStationLocListCount(respVO.getStaffLocList().size());
         return respVO;
     }
 }

@@ -13,7 +13,6 @@
                         <property name="search_time_col" value="stat_time"/>
                     </include>
                 </where>
-
             )as avg_case_handle_time,
 
             (

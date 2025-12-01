@@ -29,10 +29,10 @@ public class EmergCoreMetricsRespVO {
     @ExcelProperty("风险整改率")
     private RiskRectifyRate riskRectifyRate;
 
-    @Schema(description = "平均处置时长（avg_handle_endure），单位：小时，来源：stat_mon_evt_rpt表",
-            requiredMode = Schema.RequiredMode.REQUIRED, example = "12.3")
+    @Schema(description = "平均处置时长",
+            requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("平均处置时长")
-    private BigDecimal avgHandleEndure;
+    private AvgHandleEndure avgHandleEndure;
 
 
 
@@ -146,6 +146,22 @@ public class EmergCoreMetricsRespVO {
         @ExcelProperty("近七天趋势")
         private List<TimeValuePoint> trendList;
     }
+    @Data
+    public static class AvgHandleEndure {
+
+        @Schema(description = "平均处置时长", example = "5")
+        @ExcelProperty("平均处置时长")
+        private BigDecimal avgHandleDuration;
+
+        @Schema(description = "数据更新时间", requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "2025-11-19 10:00:00")
+        @ExcelProperty("数据更新时间")
+        private LocalDateTime updateTime;
+
+        @Schema(description = "异常预警阈值，低于此值标红", requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "40")
+        @ExcelProperty("异常预警阈值")
+        private BigDecimal warningThreshold=new BigDecimal("40");
+    }
+
 
 
 
