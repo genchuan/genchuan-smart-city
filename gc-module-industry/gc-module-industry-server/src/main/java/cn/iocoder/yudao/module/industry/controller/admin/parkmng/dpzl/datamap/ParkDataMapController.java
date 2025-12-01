@@ -15,7 +15,7 @@ import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
-@Tag(name = "管理后台 - 停车数据地图")
+@Tag(name = "管理后台 - 停车管理数据地图")
 @RestController
 @RequestMapping("/industry/park-mng-data-map")
 @Validated

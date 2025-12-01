@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.parkmng.dpzl.resourcedistribution.ParkResDistriMapper">
+
+    <resultMap id="ParkResDistriResultMap" type="cn.iocoder.yudao.module.industry.controller.admin.parkmng.dpzl.resourcedistribution.vo.ParkResDistriRespVO">
+        <id column="id" property="id" />
+        <result column="region_code" property="regionCode" />
+        <result column="region_name" property="regionName" />
+        <result column="stat_cycle" property="statCycle" />
+        <result column="stat_time" property="statTime" />
+        <result column="pub_park_count" property="pubParkCount" />
+        <result column="road_park_count" property="roadParkCount" />
+        <result column="pub_total_space" property="pubTotalSpace" />
+        <result column="road_total_space" property="roadTotalSpace" />
+        <result column="res_ratio" property="resRatio" />
+    </resultMap>
+
+    <sql id="selectParkResDistriSql">
+        SELECT
+            spr.id,
+            spr.region_code,
+            sa.region_name as region_name,
+            spr.stat_cycle,
+            spr.stat_time,
+            spr.pub_park_count,
+            spr.road_park_count,
+            spr.pub_total_space,
+            spr.road_total_space,
+            spr.res_ratio
+        FROM stat_park_res spr
+                 LEFT JOIN sys_area sa ON spr.region_code = sa.region_code
+        WHERE spr.deleted = 0
+    </sql>
+
+    <!-- 查询停车资源分布列表 -->
+    <select id="selectParkResDistriList" parameterType="cn.iocoder.yudao.module.industry.controller.admin.parkmng.dpzl.resourcedistribution.vo.ParkResDistriQueryReqVO" resultMap="ParkResDistriResultMap">
+        <include refid="selectParkResDistriSql"/>
+        <if test="statCycle != null and statCycle != ''">
+            AND spr.stat_cycle = #{statCycle}
+        </if>
+        <if test="regionCode != null and regionCode != ''">
+            AND spr.region_code = #{regionCode}
+        </if>
+        <if test="statTime != null">
+            AND spr.stat_time BETWEEN #{statTime[0]} AND #{statTime[1]}
+        </if>
+        ORDER BY spr.stat_time DESC, spr.region_code
+    </select>
+
+
+</mapper>
