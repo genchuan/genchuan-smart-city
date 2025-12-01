@@ -130,4 +130,15 @@ public class WarningAlertListTablePageReqVO extends PageParam {
     @Schema(description = "纬度")
     private String latitude;
 
+    @Schema(description = "事件描述")
+    private String eventDescription;
+
+    @Schema(description = "现场照片")
+    private String scenePhotos;
+
+    @Schema(description = "上传人姓名")
+    private String uploaderName;
+
+    @Schema(description = "上传人电话")
+    private String uploaderPhone;
 }

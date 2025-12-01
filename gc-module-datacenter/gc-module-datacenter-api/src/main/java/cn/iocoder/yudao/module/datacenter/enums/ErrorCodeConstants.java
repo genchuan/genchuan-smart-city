@@ -428,6 +428,9 @@ public interface ErrorCodeConstants {
     ErrorCode EVAL_RPT_ARCH_NOT_EXISTS = new ErrorCode(100_631, "报告归档导出不存在");
 
 
+//    应用场景分类
+    ErrorCode APP_SCENE_CATEGORY_NOT_EXISTS = new ErrorCode(199_001, "应用场景分类配置不存在");
+
 
 
 }

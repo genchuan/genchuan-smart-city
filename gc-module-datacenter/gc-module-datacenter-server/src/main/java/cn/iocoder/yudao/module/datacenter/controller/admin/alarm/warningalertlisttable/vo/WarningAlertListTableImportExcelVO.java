@@ -106,6 +106,18 @@ public class WarningAlertListTableImportExcelVO {
 
     @ExcelProperty("纬度")
     private String latitude;
+
+    @ExcelProperty("事件描述")
+    private String eventDescription;
+
+    @ExcelProperty("现场照片路径")
+    private String scenePhotos;
+
+    @ExcelProperty("上传人姓名")
+    private String uploaderName;
+
+    @ExcelProperty("上传人电话")
+    private String uploaderPhone;
 }
 
 

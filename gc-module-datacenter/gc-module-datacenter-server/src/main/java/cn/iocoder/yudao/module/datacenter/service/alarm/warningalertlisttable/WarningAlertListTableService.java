@@ -87,4 +87,19 @@ public interface WarningAlertListTableService {
      */
     WarningAlertListTableSyncRespVO syncAllAlarmsFromThingsBoard(Boolean overwrite);
 
+
+    /**
+     * 上传现场照片(Base64)
+     */
+    Map<String, Object> uploadScenePhotosBase64(ScenePhotosUploadReqVO uploadReqVO);
+
+    /**
+     * 获取现场照片列表
+     */
+    List<String> getScenePhotos(Long alertId);
+
+    /**
+     * 删除现场照片
+     */
+    boolean deleteScenePhoto(Long alertId, Integer photoIndex);
 }

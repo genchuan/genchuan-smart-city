@@ -8,6 +8,7 @@ import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DeviceAttributeRespVO;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.mngmattercfg.managedmattermajor.ManagedMatterMajorDO;
 import cn.iocoder.yudao.module.datacenter.enums.EventStatusEnum;
+import cn.iocoder.yudao.module.datacenter.framework.util.ImageBase64Utils;
 import cn.iocoder.yudao.module.datacenter.service.mngmattercfg.managedmattermajor.ManagedMatterMajorService;
 import cn.iocoder.yudao.module.datacenter.service.thingsboard.device.DeviceService;
 import org.springframework.stereotype.Service;
@@ -245,6 +246,122 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
                     .updateCount(0)
                     .build();
         }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Map<String, Object> uploadScenePhotosBase64(ScenePhotosUploadReqVO uploadReqVO) {
+        // 验证预警记录存在
+        WarningAlertListTableDO alert = warningAlertListTableMapper.selectById(uploadReqVO.getAlertId());
+        if (alert == null) {
+            throw exception(WARNING_ALERT_LIST_TABLE_NOT_EXISTS);
+        }
+
+        // 验证图片数据
+        if (uploadReqVO.getBase64Images() == null || uploadReqVO.getBase64Images().isEmpty()) {
+            throw new IllegalArgumentException("图片数据不能为空");
+        }
+
+        // 验证总大小
+        ImageBase64Utils.validateTotalSize(uploadReqVO.getBase64Images());
+
+        List<String> processedImages = new ArrayList<>();
+        int successCount = 0;
+        int failCount = 0;
+
+        for (String base64Image : uploadReqVO.getBase64Images()) {
+            try {
+                // 验证Base64格式
+                if (!ImageBase64Utils.isValidBase64Image(base64Image)) {
+                    failCount++;
+                    continue;
+                }
+
+                String processedImage = base64Image;
+
+                // 压缩图片
+                if (Boolean.TRUE.equals(uploadReqVO.getCompress())) {
+                    processedImage = ImageBase64Utils.compressBase64Image(base64Image,
+                            uploadReqVO.getCompressQuality());
+                }
+
+                processedImages.add(processedImage);
+                successCount++;
+
+            } catch (Exception e) {
+                failCount++;
+                // 记录失败日志，但不中断整个流程
+                System.err.println("图片处理失败: " + e.getMessage());
+            }
+        }
+
+        if (processedImages.isEmpty()) {
+            throw new IllegalArgumentException("所有图片处理失败，请检查图片格式");
+        }
+
+        // 获取现有的图片
+        List<String> existingPhotos = new ArrayList<>();
+        if (alert.getScenePhotos() != null) {
+            existingPhotos = ImageBase64Utils.listStringToImages(alert.getScenePhotos());
+        }
+
+        // 合并图片列表
+        existingPhotos.addAll(processedImages);
+
+        // 更新数据库
+        alert.setScenePhotos(ImageBase64Utils.imagesToListString(existingPhotos));
+        warningAlertListTableMapper.updateById(alert);
+
+        // 返回结果
+        Map<String, Object> result = new HashMap<>();
+        result.put("alertId", uploadReqVO.getAlertId());
+        result.put("successCount", successCount);
+        result.put("failCount", failCount);
+        result.put("totalPhotos", existingPhotos.size());
+        result.put("processedImages", processedImages);
+
+        return result;
+    }
+
+    @Override
+    public List<String> getScenePhotos(Long alertId) {
+        WarningAlertListTableDO alert = warningAlertListTableMapper.selectById(alertId);
+        if (alert == null) {
+            throw exception(WARNING_ALERT_LIST_TABLE_NOT_EXISTS);
+        }
+
+        if (alert.getScenePhotos() == null) {
+            return new ArrayList<>();
+        }
+
+        return ImageBase64Utils.listStringToImages(alert.getScenePhotos());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean deleteScenePhoto(Long alertId, Integer photoIndex) {
+        WarningAlertListTableDO alert = warningAlertListTableMapper.selectById(alertId);
+        if (alert == null) {
+            throw exception(WARNING_ALERT_LIST_TABLE_NOT_EXISTS);
+        }
+
+        if (alert.getScenePhotos() == null) {
+            return true;
+        }
+
+        List<String> photos = ImageBase64Utils.listStringToImages(alert.getScenePhotos());
+
+        if (photoIndex < 0 || photoIndex >= photos.size()) {
+            throw new IllegalArgumentException("图片索引超出范围");
+        }
+
+        photos.remove(photoIndex.intValue());
+
+        // 更新数据库
+        alert.setScenePhotos(ImageBase64Utils.imagesToListString(photos));
+        warningAlertListTableMapper.updateById(alert);
+
+        return true;
     }
 
     private static boolean isEmpty(String s) {

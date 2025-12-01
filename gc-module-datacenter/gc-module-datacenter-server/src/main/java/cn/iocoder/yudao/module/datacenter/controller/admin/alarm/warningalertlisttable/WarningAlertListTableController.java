@@ -14,6 +14,9 @@ import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.io.IOException;
 import java.io.BufferedReader;
@@ -722,6 +725,47 @@ public class WarningAlertListTableController {
 
         WarningAlertListTableSyncRespVO result = warningAlertListTableService.syncAllAlarmsFromThingsBoard(overwrite);
         return success(result);
+    }
+
+    @PostMapping("/upload-scene-photos-base64")
+    @Operation(summary = "上传现场照片(Base64)")
+    @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:update')")
+    public CommonResult<Map<String, Object>> uploadScenePhotosBase64(
+            @Valid @RequestBody ScenePhotosUploadReqVO uploadReqVO) {
+
+        try {
+            Map<String, Object> result = warningAlertListTableService.uploadScenePhotosBase64(uploadReqVO);
+            return success(result);
+        } catch (Exception e) {
+            return CommonResult.error(500, "图片上传失败: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/get-scene-photos/{alertId}")
+    @Operation(summary = "获取现场照片列表")
+    @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:query')")
+    public CommonResult<List<String>> getScenePhotos(@PathVariable("alertId") Long alertId) {
+        try {
+            List<String> photos = warningAlertListTableService.getScenePhotos(alertId);
+            return success(photos);
+        } catch (Exception e) {
+            return CommonResult.error(500, "获取图片失败: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/delete-scene-photo-base64")
+    @Operation(summary = "删除现场照片(Base64)")
+    @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:update')")
+    public CommonResult<Boolean> deleteScenePhotoBase64(
+            @RequestParam("alertId") Long alertId,
+            @RequestParam("photoIndex") Integer photoIndex) {
+
+        try {
+            boolean result = warningAlertListTableService.deleteScenePhoto(alertId, photoIndex);
+            return success(result);
+        } catch (Exception e) {
+            return CommonResult.error(500, "删除图片失败: " + e.getMessage());
+        }
     }
 
 }
