@@ -5,7 +5,7 @@
     <!-- ============================= -->
     <!-- 1. 门诊诊疗人次 - 当前值 -->
     <!-- ============================= -->
-    <select id="selectOutpatientVolume"  >
+    <select id="selectOutpatientVolume"  resultType="java.math.BigDecimal">
         SELECT outpatient_volume
         FROM stat_health_svc_metric
         order by stat_time
