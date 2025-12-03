@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.health.dashboard.global.medinst.MedInstMapper">
+
+    <!-- 1. 医疗机构分类数量统计 -->
+    <select id="selectInstSortCount"
+            parameterType="cn.iocoder.yudao.module.industry.controller.admin.health.dashboard.global.medinst.vo.MedInstQueryReqVO"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.health.dashboard.global.medinst.vo.MedInstRespVO$InstSortCountVO">
+        SELECT
+        COUNT(*)                 AS totalInst,
+        SUM(CASE WHEN o.type = 0 THEN 1 ELSE 0 END) AS generalHospitalCount,
+        SUM(CASE WHEN o.type = 1 THEN 1 ELSE 0 END) AS specializedHospitalCount,
+        SUM(CASE WHEN o.type = 2 THEN 1 ELSE 0 END) AS communityHealthCount
+        FROM sys_health_medical_org o
+        LEFT JOIN (
+            -- 获取每个医疗机构的最新服务记录
+            SELECT
+            med_org_id,
+            bed_count,
+            treat_volume,
+            bed_utilization_rate,
+            ROW_NUMBER() OVER (PARTITION BY med_org_id ORDER BY stat_time DESC) as rn
+            FROM biz_health_org_svc
+        ) s ON o.id = s.med_org_id AND s.rn = 1
+        <where>
+            <if test="instType != null">
+                AND o.type = #{instType}
+            </if>
+            <if test="treatVolumeMin != null">
+                AND s.treat_volume >= #{treatVolumeMin}
+            </if>
+        </where>
+    </select>
+
+    <!-- 2. 地图机构列表（含坐标、床位、接诊量） -->
+    <select id="selectInstList"
+            parameterType="cn.iocoder.yudao.module.industry.controller.admin.health.dashboard.global.medinst.vo.MedInstQueryReqVO"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.health.dashboard.global.medinst.vo.MedInstRespVO$InstDetailVO">
+
+        SELECT
+        o.id as orgId,
+        o.type               AS type,
+        s.bed_count               AS bedCount,
+        s.treat_volume            AS treatVolume,
+        o.coord_x                 AS coordX,
+        o.coord_y                 AS coordY,
+        s.bed_utilization_rate AS bedUsageRate
+        FROM sys_health_medical_org o
+        LEFT JOIN (
+        -- 获取每个医疗机构的最新服务记录
+        SELECT
+        med_org_id,
+        bed_count,
+        treat_volume,
+        bed_utilization_rate,
+        ROW_NUMBER() OVER (PARTITION BY med_org_id ORDER BY stat_time DESC) as rn
+        FROM biz_health_org_svc
+        ) s ON o.id = s.med_org_id AND s.rn = 1
+        <where>
+            <if test="instType != null">
+                AND o.type = #{instType}
+            </if>
+            <if test="treatVolumeMin != null">
+                AND s.treat_volume >= #{treatVolumeMin}
+            </if>
+        </where>
+    </select>
+
+    <!-- 3. TOP5（接诊量倒序） -->
+    <select id="selectInstTop5"
+            parameterType="cn.iocoder.yudao.module.industry.controller.admin.health.dashboard.global.medinst.vo.MedInstQueryReqVO"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.health.dashboard.global.medinst.vo.MedInstRespVO$InstDetailVO">
+
+        SELECT
+            o.id as orgId,
+            o.type               AS type,
+            s.bed_count               AS bedCount,
+            s.treat_volume            AS treatVolume,
+            o.coord_x                 AS coordX,
+            o.coord_y                 AS coordY,
+            s.bed_utilization_rate AS bedUsageRate
+        FROM sys_health_medical_org o
+        LEFT JOIN (
+        -- 获取每个医疗机构的最新服务记录
+        SELECT
+        med_org_id,
+        bed_count,
+        treat_volume,
+        bed_utilization_rate,
+        ROW_NUMBER() OVER (PARTITION BY med_org_id ORDER BY stat_time DESC) as rn
+        FROM biz_health_org_svc
+        ) s ON o.id = s.med_org_id AND s.rn = 1
+        <where>
+            <if test="instType != null">
+                AND o.type = #{instType}
+            </if>
+            <if test="treatVolumeMin != null">
+                AND s.treat_volume >= #{treatVolumeMin}
+            </if>
+        </where>
+        ORDER BY s.treat_volume DESC
+        LIMIT 5
+    </select>
+
+    <!-- 4. 点击机构 → 查询接诊趋势（近7天） -->
+    <select id="selectInstTreatTrend"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.health.dashboard.global.medinst.vo.TreatTrendVO">
+
+        SELECT
+            DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL nums.n DAY), '%Y-%m-%d') AS date,
+            COALESCE(s.treat_volume, 0) AS treatVolume
+        FROM (
+                 SELECT 0 AS n UNION ALL
+                 SELECT 1 UNION ALL
+                 SELECT 2 UNION ALL
+                 SELECT 3 UNION ALL
+                 SELECT 4 UNION ALL
+                 SELECT 5 UNION ALL
+                 SELECT 6
+             ) nums
+                 LEFT JOIN biz_health_org_svc s
+                           ON DATE(s.stat_time) = DATE_SUB(CURDATE(), INTERVAL nums.n DAY)
+                               AND s.med_org_id = #{orgId}
+        ORDER BY date
+    </select>
+
+
+
+</mapper>

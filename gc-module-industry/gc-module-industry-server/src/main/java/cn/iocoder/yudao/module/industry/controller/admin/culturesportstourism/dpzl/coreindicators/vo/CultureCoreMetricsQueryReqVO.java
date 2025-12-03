@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Schema(description = "管理后台 - 文旅核心指标查询 Request VO")
 public class CultureCoreMetricsQueryReqVO {
 
-    @Schema(description = "时间周期筛选（today/yesterday/recent7/recent30）", example = "today")
+    @Schema(description = "时间周期筛选（today/yesterday/recent7/recent30）", example = "recent7")
     private String timeCycle;
 
     @Schema(hidden = true)

@@ -34,5 +34,15 @@ public class LawCoreMetricsController {
         return success(lawCoreMetricsRespVO);
     }
 
+    @GetMapping("/get2")
+    @Operation(summary = "获得执法核心指标2")
+    @PreAuthorize("@ss.hasPermission('industry:law-core-metrics:query')")
+    public CommonResult<LawCoreMetricsRespVO> getLawCoreMetrics2(
+            @Valid LawCoreMetricsQueryReqVO lawCoreMetricsQueryReqVO
+    ) {
+        LawCoreMetricsRespVO lawCoreMetricsRespVO = lawCoreMetricsService.getLawCoreMetrics2(lawCoreMetricsQueryReqVO);
+        return success(lawCoreMetricsRespVO);
+    }
+
 
 }

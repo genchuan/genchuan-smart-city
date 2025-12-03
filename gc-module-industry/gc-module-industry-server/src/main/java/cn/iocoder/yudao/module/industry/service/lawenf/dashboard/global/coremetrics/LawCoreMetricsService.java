@@ -18,4 +18,12 @@ public interface LawCoreMetricsService {
          * @return 查询结果
          */
         LawCoreMetricsRespVO getLawCoreMetrics(LawCoreMetricsQueryReqVO lawCoreMetricsQueryReqVO);
+
+        /**
+         * 查询执法核心指标
+         *
+         * @param lawCoreMetricsQueryReqVO 查询条件
+         * @return 查询结果
+         */
+        LawCoreMetricsRespVO getLawCoreMetrics2(LawCoreMetricsQueryReqVO lawCoreMetricsQueryReqVO);
 }

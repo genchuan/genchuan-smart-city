@@ -17,6 +17,16 @@
         <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.TimeSqlMapper.searchByStartTimeEndTime">
             <property name="search_time_col" value="stat_time"/>
         </include>
+    原始呈现：
+    <if test="startTime != null and endTime != null">
+        AND stat_time BETWEEN #{startTime} AND #{endTime}
+    </if>
+    <if test="startTime != null and endTime == null">
+        AND stat_time &gt;= #{startTime}
+    </if>
+    <if test="startTime == null and endTime != null">
+        AND stat_time &lt;= #{endTime}
+    </if>
 -->
     <sql id="searchByStartTimeEndTime">
             <choose>

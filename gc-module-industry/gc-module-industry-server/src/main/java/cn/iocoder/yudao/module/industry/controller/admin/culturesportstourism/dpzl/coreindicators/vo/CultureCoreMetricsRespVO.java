@@ -2,6 +2,8 @@ package cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.d
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -12,9 +14,9 @@ public class CultureCoreMetricsRespVO {
     @Schema(description = "单个核心指标数据")
     public static class CoreMetricVO {
         @Schema(description = "指标值", example = "90")
-        private Number value;
+        private BigDecimal value;
 
-        @Schema(description = "指标更新时间")
+        @Schema(description = "指标更新时间",example = "1764604800000")
         private LocalDateTime updateTime;
 
         @Schema(description = "告警状态，0-正常，1-提醒，2-预警", example = "0")
