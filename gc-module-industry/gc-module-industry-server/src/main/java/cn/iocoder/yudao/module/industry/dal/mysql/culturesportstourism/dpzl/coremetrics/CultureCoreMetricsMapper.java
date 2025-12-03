@@ -1,43 +1,20 @@
 package cn.iocoder.yudao.module.industry.dal.mysql.culturesportstourism.dpzl.coremetrics;
 
+import cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.coreindicators.vo.CultureCoreMetricsQueryReqVO;
+import cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.coreindicators.vo.CultureCoreMetricsRespVO.CoreMetricVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface CultureCoreMetricsMapper {
 
-    /**
-     * 查询文旅资源总数
-     * @param timeCycle 时间周期
-     * @return 总数
-     */
-    Integer selectTotalSceneCount(@Param("timeCycle") String timeCycle);
+    CoreMetricVO selectTotalSceneCount(CultureCoreMetricsQueryReqVO reqVO);
 
-    /**
-     * 查询当日客流峰值
-     * @param timeCycle 时间周期
-     * @return 峰值
-     */
-    Integer selectMaxCount(@Param("timeCycle") String timeCycle);
+    CoreMetricVO selectMaxCount(CultureCoreMetricsQueryReqVO reqVO);
 
-    /**
-     * 查询投诉办结率
-     * @param timeCycle 时间周期
-     * @return 办结率(%)
-     */
-    Double selectCompleteRate(@Param("timeCycle") String timeCycle);
+    CoreMetricVO selectCompleteRate(CultureCoreMetricsQueryReqVO reqVO);
 
-    /**
-     * 查询设施完好率
-     * @param timeCycle 时间周期
-     * @return 完好率(%)
-     */
-    Double selectFacilityGoodRate(@Param("timeCycle") String timeCycle);
+    CoreMetricVO selectFacilityGoodRate(CultureCoreMetricsQueryReqVO reqVO);
 
-    /**
-     * 查询活动开展数
-     * @param timeCycle 时间周期
-     * @return 活动数
-     */
-    Integer selectNewSceneCount(@Param("timeCycle") String timeCycle);
+    CoreMetricVO selectNewSceneCount(CultureCoreMetricsQueryReqVO reqVO);
 }

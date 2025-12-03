@@ -2,38 +2,40 @@ package cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.d
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import java.time.LocalDateTime;
 
 @Data
 @Schema(description = "管理后台 - 文旅核心指标 Response VO")
 public class CultureCoreMetricsRespVO {
 
-    @Schema(description = "文旅资源总数", example = "1250")
-    private Integer totalSceneCount;
+    @Data
+    @Schema(description = "单个核心指标数据")
+    public static class CoreMetricVO {
+        @Schema(description = "指标值", example = "90")
+        private Number value;
 
-    @Schema(description = "文旅资源总数环比变化(%)", example = "5.2")
-    private Double totalSceneCountRate;
+        @Schema(description = "指标更新时间")
+        private LocalDateTime updateTime;
 
-    @Schema(description = "当日客流峰值", example = "3280")
-    private Integer maxCount;
+        @Schema(description = "告警状态，0-正常，1-提醒，2-预警", example = "0")
+        private Integer warnStatus;
 
-    @Schema(description = "当日客流峰值环比变化(%)", example = "-3.1")
-    private Double maxCountRate;
+        @Schema(description = "统计周期，如 今日 / 昨日 / 近7天 / 近30天", example = "today/yesterday/recent7/recent30")
+        private String timeCycle;
+    }
 
-    @Schema(description = "投诉办结率(%)", example = "85.5")
-    private Double completeRate;
+    @Schema(description = "文旅资源总数")
+    private CoreMetricVO totalSceneCount;
 
-    @Schema(description = "投诉办结率环比变化(%)", example = "2.0")
-    private Double completeRateRate;
+    @Schema(description = "当日客流峰值")
+    private CoreMetricVO maxCount;
 
-    @Schema(description = "设施完好率(%)", example = "92.0")
-    private Double facilityGoodRate;
+    @Schema(description = "投诉办结率(%)")
+    private CoreMetricVO completeRate;
 
-    @Schema(description = "设施完好率环比变化(%)", example = "-1.5")
-    private Double facilityGoodRateRate;
+    @Schema(description = "设施完好率(%)")
+    private CoreMetricVO facilityGoodRate;
 
-    @Schema(description = "活动开展数", example = "28")
-    private Integer newSceneCount;
-
-    @Schema(description = "活动开展数环比变化(%)", example = "10.3")
-    private Double newSceneCountRate;
+    @Schema(description = "活动开展数")
+    private CoreMetricVO newSceneCount;
 }

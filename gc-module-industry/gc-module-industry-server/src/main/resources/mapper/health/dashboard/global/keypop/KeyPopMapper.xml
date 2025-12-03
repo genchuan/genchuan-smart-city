@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.health.dashboard.global.keypop.KeyPopMapper">
+
+    <!-- ============================
+         左侧卡片：基础人群统计
+         来源表：biz_health_key_pop
+         统计逻辑：
+           - 老年人：type = 0
+           - 慢性病患者：type = 1
+           - 孕产妇：type = 2
+           - 高风险人群：risk_level = 1
+    ============================ -->
+    <select id="selectKeyPopSummary"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.health.dashboard.global.keypop.vo.KeyPopRespVO">
+        SELECT
+            -- 老年人数量
+            SUM(type = 0) AS elderlyCount,
+
+            -- 慢性病患者数量
+            SUM(type = 1) AS chronicPatientCount,
+
+            -- 孕产妇数量
+            SUM(type = 2) AS maternalCount,
+
+            -- 高风险人群数量
+            SUM(risk_level = 1) AS highRiskCount
+        FROM biz_health_key_pop
+    </select>
+
+
+    <!-- ============================
+         左侧卡片：随访率
+         来源：stat_health_public_metric
+     ============================ -->
+    <select id="selectFollowRate"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.health.dashboard.global.keypop.vo.KeyPopRespVO">
+        SELECT
+            key_pop_follow_rate AS keyPopFollowRate
+        FROM stat_health_public_metric
+        ORDER BY stat_time DESC
+        LIMIT 1
+    </select>
+
+    <!-- ============================
+         中间地图：社区分布数据
+         来源：biz_health_key_pop
+     ============================ -->
+    <select id="selectCommunityKeyPopList"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.health.dashboard.global.keypop.vo.KeyPopRespVO$CommunityKeyPop">
+
+        SELECT
+        a.name AS communityName,
+        SUM(p.type = 0) AS elderlyCount,
+        SUM(p.type = 1) AS chronicPatientCount,
+        SUM(p.type = 2) AS maternalCount,
+        SUM(p.type = 3) AS highRiskCount,
+        MAX(p.update_time) AS updateTime
+        FROM biz_health_key_pop p
+        left join sys_area a on p.region_full_code = a.full_code
+        WHERE 1=1
+
+        <!-- 按人群类型筛选 -->
+        <if test="peopleType != null and peopleType != '' ">
+            AND p.type = #{peopleType}
+        </if>
+
+        <!-- 按社区的地区码筛选 -->
+        <if test="regionFullCode != null and regionFullCode != ''">
+            AND p.region_full_code = #{regionFullCode}
+        </if>
+
+        group by p.region_full_code,a.name
+    </select>
+
+    <!-- ============================
+         右侧列表：高风险人群
+         来源：biz_health_key_pop
+     ============================ -->
+    <select id="selectHighRiskPersonList"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.health.dashboard.global.keypop.vo.KeyPopRespVO$HighRiskPerson">
+
+        SELECT
+        p.name,
+        p.age,
+        p.type AS riskType,
+        a.name AS communityName
+        FROM biz_health_key_pop p
+        left join sys_area a on a.full_code=p.region_full_code
+        WHERE risk_level = 1
+
+        <if test="peopleType != null and peopleType != '' and peopleType != 'all'">
+            AND p.type = #{peopleType}
+        </if>
+
+        <!-- 按社区的地区码筛选 -->
+        <if test="regionFullCode != null and regionFullCode != ''">
+            AND p.region_full_code = #{regionFullCode}
+        </if>
+
+        ORDER BY p.update_time DESC
+    </select>
+
+</mapper>
