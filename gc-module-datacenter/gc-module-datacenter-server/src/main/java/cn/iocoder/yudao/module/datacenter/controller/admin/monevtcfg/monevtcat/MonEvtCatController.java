@@ -67,7 +67,7 @@ public class MonEvtCatController {
     @GetMapping("/get")
     @Operation(summary = "获得监测事件分类配置")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('datacenter:mon-evt-cat:query')")
+//    @PreAuthorize("@ss.hasPermission('datacenter:mon-evt-cat:query')")
     public CommonResult<MonEvtCatRespVO> getMonEvtCat(@RequestParam("id") Long id) {
         MonEvtCatDO monEvtCat = monEvtCatService.getMonEvtCat(id);
         return success(BeanUtils.toBean(monEvtCat, MonEvtCatRespVO.class));
@@ -75,7 +75,7 @@ public class MonEvtCatController {
 
     @GetMapping("/page")
     @Operation(summary = "获得监测事件分类配置分页")
-    @PreAuthorize("@ss.hasPermission('datacenter:mon-evt-cat:query')")
+//    @PreAuthorize("@ss.hasPermission('datacenter:mon-evt-cat:query')")
     public CommonResult<PageResult<MonEvtCatRespVO>> getMonEvtCatPage(@Valid MonEvtCatPageReqVO pageReqVO) {
         PageResult<MonEvtCatDO> pageResult = monEvtCatService.getMonEvtCatPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, MonEvtCatRespVO.class));
