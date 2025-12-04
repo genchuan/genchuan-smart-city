@@ -126,7 +126,7 @@ public class WarningAlertListTableRespVO {
 
     @Schema(description = "预警类型ID")
     @ExcelProperty("预警类型ID")
-    private Long warningTypeId;
+    private String warningTypeId;
 
     @Schema(description = "区域编码")
     @ExcelProperty("区域编码")
@@ -171,4 +171,8 @@ public class WarningAlertListTableRespVO {
     @Schema(description = "上传人电话")
     @ExcelProperty("上传人电话")
     private String uploaderPhone;
+
+    @Schema(description = "标题")
+    @ExcelProperty("标题")
+    private String title;
 }

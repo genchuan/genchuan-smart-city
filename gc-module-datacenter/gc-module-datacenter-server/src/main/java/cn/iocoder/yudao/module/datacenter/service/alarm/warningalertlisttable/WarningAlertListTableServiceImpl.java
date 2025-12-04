@@ -6,9 +6,12 @@ import cn.iocoder.yudao.module.bpm.api.task.dto.BpmProcessInstanceCreateReqDTO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlisttable.vo.*;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.AlarmRespVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DeviceAttributeRespVO;
+import cn.iocoder.yudao.module.datacenter.dal.dataobject.eventdisposition.EventDispositionDO;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.mngmattercfg.managedmattermajor.ManagedMatterMajorDO;
 import cn.iocoder.yudao.module.datacenter.enums.EventStatusEnum;
 import cn.iocoder.yudao.module.datacenter.framework.util.ImageBase64Utils;
+import cn.iocoder.yudao.module.datacenter.service.appscenecategory.AppSceneCategoryService;
+import cn.iocoder.yudao.module.datacenter.service.eventdisposition.EventDispositionService;
 import cn.iocoder.yudao.module.datacenter.service.mngmattercfg.managedmattermajor.ManagedMatterMajorService;
 import cn.iocoder.yudao.module.datacenter.service.thingsboard.device.DeviceService;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,7 @@ import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -28,6 +32,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.datacenter.dal.mysql.alarm.warningalertlisttable.WarningAlertListTableMapper;
+import org.springframework.web.multipart.MultipartFile;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.datacenter.enums.ErrorCodeConstants.WARNING_ALERT_LIST_TABLE_NOT_EXISTS;
@@ -50,10 +55,36 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
     @Resource
     private WarningAlertListTableMapper warningAlertListTableMapper;
     @Resource
-    private ManagedMatterMajorService managedMatterMajorService;
+    private EventDispositionService eventDispositionService;
 
     @Resource
     private DeviceService deviceService;
+
+//    @Override
+//    @Transactional(rollbackFor = Exception.class)
+//    public Long createWarningAlertListTable(WarningAlertListTableSaveReqVO createReqVO) {
+//        // 插入预警记录
+//        WarningAlertListTableDO warningAlertListTable = BeanUtils.toBean(createReqVO, WarningAlertListTableDO.class);
+//
+//        // 处理图片数据 - 直接使用前端传递的Base64数据
+//        if (createReqVO.getImages() != null && !createReqVO.getImages().isEmpty()) {
+//            // 验证图片数据
+//            List<String> validImages = new ArrayList<>();
+//            for (String image : createReqVO.getImages()) {
+//                if (ImageBase64Utils.isValidBase64Image(image)) {
+//                    validImages.add(image);
+//                }
+//            }
+//
+//            if (!validImages.isEmpty()) {
+//                String scenePhotos = ImageBase64Utils.imagesToListString(validImages);
+//                warningAlertListTable.setScenePhotos(scenePhotos);
+//            }
+//        }
+//
+//        warningAlertListTableMapper.insert(warningAlertListTable);
+//        return warningAlertListTable.getId();
+//    }
 
     @Override
     public Long createWarningAlertListTable(WarningAlertListTableSaveReqVO createReqVO) {
@@ -197,18 +228,45 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
     public Long createWarningAlertListTable(Long id) {
         WarningAlertListTableDO warningAlertListTable = warningAlertListTableMapper.selectById(id);
 
-        // todo 通过事件小类查找流程模型
+        // todo 通过事件关联处置表查找流程模型
+        // 通过预警类型ID查询事件关联处置表，获取流程模型ID
+        String warningTypeId = warningAlertListTable.getWarningTypeId();
 
-        ManagedMatterMajorDO managedMatterMajor =
-                managedMatterMajorService.getManagedMatterMajor(Long.parseLong(warningAlertListTable.getWarningType()));
+        if (warningTypeId == null || warningTypeId.trim().isEmpty()) {
+            throw new IllegalArgumentException("预警类型ID不能为空");
+        }
 
-        // 创建流程实例
+        // 查询事件关联处置配置
+        EventDispositionDO eventDisposition = eventDispositionService.getEventDispositionByEventTypeId(warningTypeId);
+        if (eventDisposition == null) {
+            throw new IllegalArgumentException("未找到对应的事件关联处置配置，预警类型ID：" + warningTypeId);
+        }
+
+        if (eventDisposition.getProcessModelId() == null || eventDisposition.getProcessModelId().trim().isEmpty()) {
+            throw new IllegalArgumentException("事件关联处置配置中流程模型ID为空，事件类型ID：" + warningTypeId);
+        }
+
+
+//        ManagedMatterMajorDO managedMatterMajor = appSceneCategoryService.getAppSceneCategoryPage(warningAlertListTable.getWarningTypeId());
+//                managedMatterMajorService.getManagedMatterMajor(Long.parseLong(warningAlertListTable.getWarningType()));
+
+// 创建流程实例
         CommonResult<String> commonResult = processInstanceApi.createProcessInstance(1L,
                 new BpmProcessInstanceCreateReqDTO()
-                        .setProcessDefinitionKey(managedMatterMajor.getFlowInstanceId())
+                        .setProcessDefinitionKey(eventDisposition.getProcessModelId())
                         .setBusinessKey(String.valueOf(warningAlertListTable.getId())));
+
+        if (!commonResult.isSuccess()) {
+            throw new RuntimeException("创建流程实例失败: " + commonResult.getMsg());
+        }
+
         String processInstanceId = commonResult.getData();
-        warningAlertListTableMapper.updateById(warningAlertListTable.setProcessInstanceId(processInstanceId).setStatus(EventStatusEnum.PADDED.getStatus()));
+
+        // 更新预警记录
+        warningAlertListTable.setProcessInstanceId(processInstanceId);
+        warningAlertListTable.setStatus(EventStatusEnum.PADDED.getStatus());
+        warningAlertListTableMapper.updateById(warningAlertListTable);
+
         return warningAlertListTable.getId();
     }
 
@@ -249,79 +307,77 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Map<String, Object> uploadScenePhotosBase64(ScenePhotosUploadReqVO uploadReqVO) {
-        // 验证预警记录存在
-        WarningAlertListTableDO alert = warningAlertListTableMapper.selectById(uploadReqVO.getAlertId());
-        if (alert == null) {
-            throw exception(WARNING_ALERT_LIST_TABLE_NOT_EXISTS);
-        }
-
-        // 验证图片数据
-        if (uploadReqVO.getBase64Images() == null || uploadReqVO.getBase64Images().isEmpty()) {
-            throw new IllegalArgumentException("图片数据不能为空");
-        }
-
-        // 验证总大小
-        ImageBase64Utils.validateTotalSize(uploadReqVO.getBase64Images());
-
+    public Map<String, Object> uploadScenePhotosBase64(List<MultipartFile> file) {
+        Map<String, Object> result = new HashMap<>();
         List<String> processedImages = new ArrayList<>();
+        List<String> failReasons = new ArrayList<>();
         int successCount = 0;
         int failCount = 0;
 
-        for (String base64Image : uploadReqVO.getBase64Images()) {
+        for (int i = 0; i < file.size(); i++) {
+            MultipartFile files = file.get(i);
             try {
-                // 验证Base64格式
-                if (!ImageBase64Utils.isValidBase64Image(base64Image)) {
+                // 1. 验证文件是否为空
+                if (file.isEmpty()) {
                     failCount++;
+                    failReasons.add("第" + (i + 1) + "张图片为空");
                     continue;
                 }
 
-                String processedImage = base64Image;
-
-                // 压缩图片
-                if (Boolean.TRUE.equals(uploadReqVO.getCompress())) {
-                    processedImage = ImageBase64Utils.compressBase64Image(base64Image,
-                            uploadReqVO.getCompressQuality());
+                // 2. 验证文件类型
+                String mimeType = files.getContentType();
+                if (mimeType == null || !mimeType.startsWith("image/")) {
+                    failCount++;
+                    failReasons.add("第" + (i + 1) + "张图片类型不支持，当前类型: " + mimeType);
+                    continue;
                 }
 
-                processedImages.add(processedImage);
+                // 3. 验证文件大小（限制为2MB）
+                if (files.getSize() > 2 * 1024 * 1024) {
+                    failCount++;
+                    failReasons.add("第" + (i + 1) + "张图片大小超过2MB限制");
+                    continue;
+                }
+
+                // 4. 转换为Base64
+                byte[] fileBytes = files.getBytes();
+                String base64Data = java.util.Base64.getEncoder().encodeToString(fileBytes);
+                String base64String = "data:" + mimeType + ";base64," + base64Data;
+
+                // 5. 验证Base64格式
+                if (!ImageBase64Utils.isValidBase64Image(base64String)) {
+                    failCount++;
+                    failReasons.add("第" + (i + 1) + "张图片Base64格式无效");
+                    continue;
+                }
+
+                processedImages.add(base64String);
                 successCount++;
 
             } catch (Exception e) {
                 failCount++;
-                // 记录失败日志，但不中断整个流程
+                failReasons.add("第" + (i + 1) + "张图片处理失败: " + e.getMessage());
                 System.err.println("图片处理失败: " + e.getMessage());
             }
         }
 
-        if (processedImages.isEmpty()) {
-            throw new IllegalArgumentException("所有图片处理失败，请检查图片格式");
-        }
-
-        // 获取现有的图片
-        List<String> existingPhotos = new ArrayList<>();
-        if (alert.getScenePhotos() != null) {
-            existingPhotos = ImageBase64Utils.listStringToImages(alert.getScenePhotos());
-        }
-
-        // 合并图片列表
-        existingPhotos.addAll(processedImages);
-
-        // 更新数据库
-        alert.setScenePhotos(ImageBase64Utils.imagesToListString(existingPhotos));
-        warningAlertListTableMapper.updateById(alert);
-
         // 返回结果
-        Map<String, Object> result = new HashMap<>();
-        result.put("alertId", uploadReqVO.getAlertId());
         result.put("successCount", successCount);
         result.put("failCount", failCount);
-        result.put("totalPhotos", existingPhotos.size());
+        result.put("totalImages", file.size());
         result.put("processedImages", processedImages);
+
+        if (!failReasons.isEmpty()) {
+            result.put("failReasons", failReasons);
+        }
+
+        if (processedImages.isEmpty()) {
+            throw new IllegalArgumentException("所有图片处理失败，请检查图片格式。失败原因: " + String.join("; ", failReasons));
+        }
 
         return result;
     }
+
 
     @Override
     public List<String> getScenePhotos(Long alertId) {
@@ -364,6 +420,81 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
         return true;
     }
 
+
+    /**
+     * 将MultipartFile转换为Base64并处理
+     */
+    private List<String> convertMultipartFilesToBase64(List<MultipartFile> files, Boolean compress, Float compressQuality) {
+        List<String> base64List = new ArrayList<>();
+
+        for (MultipartFile file : files) {
+            if (!file.isEmpty()) {
+                try {
+                    String base64 = convertToBase64(file);
+
+                    // 如果需要压缩
+                    if (Boolean.TRUE.equals(compress)) {
+                        base64 = ImageBase64Utils.compressBase64Image(base64, compressQuality);
+                    }
+
+                    base64List.add(base64);
+                } catch (Exception e) {
+                    System.err.println("文件转换失败: " + file.getOriginalFilename() + ", 错误: " + e.getMessage());
+                    throw new IllegalArgumentException("文件 " + file.getOriginalFilename() + " 处理失败: " + e.getMessage());
+                }
+            }
+        }
+
+        return base64List;
+    }
+
+    /**
+     * 处理已有的Base64图片
+     */
+    private List<String> processBase64Images(List<String> base64Images, Boolean compress, Float compressQuality) {
+        List<String> processedList = new ArrayList<>();
+
+        for (String base64Image : base64Images) {
+            try {
+                // 验证Base64格式
+                if (!ImageBase64Utils.isValidBase64Image(base64Image)) {
+                    throw new IllegalArgumentException("Base64图片格式无效");
+                }
+
+                String processedImage = base64Image;
+
+                // 如果需要压缩
+                if (Boolean.TRUE.equals(compress)) {
+                    processedImage = ImageBase64Utils.compressBase64Image(base64Image, compressQuality);
+                }
+
+                processedList.add(processedImage);
+            } catch (Exception e) {
+                System.err.println("Base64图片处理失败: " + e.getMessage());
+                throw new IllegalArgumentException("Base64图片处理失败: " + e.getMessage());
+            }
+        }
+
+        return processedList;
+    }
+
+    /**
+     * 单个文件转换为Base64
+     */
+    private String convertToBase64(MultipartFile file) throws IOException {
+        String mimeType = file.getContentType();
+        if (mimeType == null || !mimeType.startsWith("image/")) {
+            throw new IllegalArgumentException("文件类型必须是图片，当前类型: " + mimeType);
+        }
+
+        byte[] fileBytes = file.getBytes();
+        String base64Data = java.util.Base64.getEncoder().encodeToString(fileBytes);
+
+        // 根据MIME类型构建完整的Base64字符串
+        String imageType = mimeType.substring(6); // 去掉"image/"
+        return "data:image/" + imageType + ";base64," + base64Data;
+    }
+
     private static boolean isEmpty(String s) {
         return s == null || s.isEmpty();
     }
@@ -398,6 +529,7 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
                 && isEmpty(vo.getGridId())
                 && isEmpty(vo.getGridName())
                 && isEmpty(vo.getAddress())
+                && isEmpty(vo.getTitle())
                 && isEmpty(vo.getLongitude())
                 && isEmpty(vo.getLatitude());
     }
@@ -430,6 +562,7 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
         vo.setRegionCode(trimOrNull(vo.getRegionCode()));
         vo.setRegionName(trimOrNull(vo.getRegionName()));
         vo.setGridId(trimOrNull(vo.getGridId()));
+        vo.setTitle(trimOrNull(vo.getTitle()));
         vo.setGridName(trimOrNull(vo.getGridName()));
         vo.setAddress(trimOrNull(vo.getAddress()));
         vo.setLongitude(trimOrNull(vo.getLongitude()));
@@ -524,11 +657,7 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
                     warningAlert.setRegionCode(attr.getValueAsString());
                     break;
                 case "warning_type_id":
-                    try {
-                        warningAlert.setWarningTypeId(Long.parseLong(attr.getValueAsString()));
-                    } catch (NumberFormatException e) {
-                        // 忽略转换错误
-                    }
+                    warningAlert.setWarningTypeId(attr.getValueAsString());
                     break;
                 case "longitude":
                     warningAlert.setLongitude(attr.getValueAsString());

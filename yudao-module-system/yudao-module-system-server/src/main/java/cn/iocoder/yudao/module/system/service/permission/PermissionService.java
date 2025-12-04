@@ -96,6 +96,14 @@ public interface PermissionService {
     List<MenuTreeRespVO> getRoleMenuTreeByRoleId(Long roleId);
 
     /**
+     * 获得角色拥有的菜单树形结构（根据角色标识）
+     *
+     * @param roleCode 角色标识
+     * @return 菜单树形结构
+     */
+    List<MenuTreeRespVO> getRoleMenuTreeByRoleCode(String roleCode);
+
+    /**
      * 获得拥有指定菜单的角色编号数组，从缓存中获取
      *
      * @param menuId 菜单编号

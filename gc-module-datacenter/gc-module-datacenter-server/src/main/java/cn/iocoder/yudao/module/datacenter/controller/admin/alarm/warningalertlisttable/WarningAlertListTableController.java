@@ -2,6 +2,11 @@ package cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertli
 
 import cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlisttable.vo.*;
 import io.swagger.v3.oas.annotations.Parameters;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -49,12 +54,26 @@ public class WarningAlertListTableController {
     @Resource
     private WarningAlertListTableService warningAlertListTableService;
 
+
     @PostMapping("/create")
     @Operation(summary = "创建预警告警列表")
     @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:create')")
     public CommonResult<Long> createWarningAlertListTable(@Valid @RequestBody WarningAlertListTableSaveReqVO createReqVO) {
         return success(warningAlertListTableService.createWarningAlertListTable(createReqVO));
     }
+
+//    @PostMapping("/create")
+//    @Operation(summary = "创建预警告警列表")
+//    @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:create')")
+//    public CommonResult<Long> createWarningAlertListTable(@Valid @RequestBody WarningAlertListTableSaveReqVO createReqVO) {
+//        try {
+//            // 直接调用服务方法，服务方法内部会处理图片数据
+//            return success(warningAlertListTableService.createWarningAlertListTable(createReqVO));
+//        } catch (Exception e) {
+//            return CommonResult.error(500, "创建预警告警失败: " + e.getMessage());
+//        }
+//    }
+
     @PostMapping("/created")
     @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:create')")
     @Operation(summary = "创建业务请求申请")
@@ -495,6 +514,7 @@ public class WarningAlertListTableController {
                 setAddress("北京市东城区王府井大街100号");
                 setLongitude("116.397128");
                 setLatitude("39.916527");
+                setTitle("垃圾箱满溢预警");
             }},
             new WarningAlertListTableImportExcelVO() {{ // 一般预警示例
                 setAlertCode("ALERT202510099");
@@ -528,6 +548,7 @@ public class WarningAlertListTableController {
                 setAddress("北京市东城区王府井大街100号");
                 setLongitude("116.397128");
                 setLatitude("39.916527");
+                setTitle("垃圾箱满溢预警");
             }}
         );
         
@@ -727,17 +748,21 @@ public class WarningAlertListTableController {
         return success(result);
     }
 
-    @PostMapping("/upload-scene-photos-base64")
-    @Operation(summary = "上传现场照片(Base64)")
+    @PostMapping(value = "/upload-scene-photos-base64", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "验证并处理现场照片(文件转Base64)")
     @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:update')")
     public CommonResult<Map<String, Object>> uploadScenePhotosBase64(
-            @Valid @RequestBody ScenePhotosUploadReqVO uploadReqVO) {
+            @RequestParam("file") List<MultipartFile> file) {
 
         try {
-            Map<String, Object> result = warningAlertListTableService.uploadScenePhotosBase64(uploadReqVO);
+            if (file == null || file.isEmpty()) {
+                return CommonResult.error(400, "上传文件不能为空");
+            }
+
+            Map<String, Object> result = warningAlertListTableService.uploadScenePhotosBase64(file);
             return success(result);
         } catch (Exception e) {
-            return CommonResult.error(500, "图片上传失败: " + e.getMessage());
+            return CommonResult.error(500, "图片处理失败: " + e.getMessage());
         }
     }
 

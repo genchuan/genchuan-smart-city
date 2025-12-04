@@ -101,7 +101,8 @@ public interface WarningAlertListTableMapper extends BaseMapperX<WarningAlertLis
                 .eqIfPresent(WarningAlertListTableDO::getEventDescription, reqVO.getEventDescription())
                 .eqIfPresent(WarningAlertListTableDO::getScenePhotos, reqVO.getScenePhotos())
                 .eqIfPresent(WarningAlertListTableDO::getUploaderName, reqVO.getUploaderName())
-                .eqIfPresent(WarningAlertListTableDO::getUploaderPhone, reqVO.getUploaderPhone());
+                .eqIfPresent(WarningAlertListTableDO::getUploaderPhone, reqVO.getUploaderPhone())
+                .likeIfPresent(WarningAlertListTableDO::getTitle, reqVO.getTitle());
     }
 
     List<WarningAlertListTableStatisticsRespVO> selectWarningLevelStatistics();

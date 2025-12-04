@@ -141,7 +141,7 @@ public class WarningAlertListTableDO extends BaseDO {
     /**
      * 预警类型ID
      */
-    private Long warningTypeId;
+    private String warningTypeId;
 
     /**
      * 区域编码
@@ -198,4 +198,9 @@ public class WarningAlertListTableDO extends BaseDO {
      * 上传人电话
      */
     private String uploaderPhone;
+
+    /**
+     * 标题
+     */
+    private String title;
 }

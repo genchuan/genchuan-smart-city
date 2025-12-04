@@ -84,7 +84,7 @@ public class WarningAlertListTableImportExcelVO {
     private String processInstanceId;
 
     @ExcelProperty("预警类型ID")
-    private Long warningTypeId;
+    private String warningTypeId;
 
     @ExcelProperty("区域编码")
     private String regionCode;
@@ -118,6 +118,9 @@ public class WarningAlertListTableImportExcelVO {
 
     @ExcelProperty("上传人电话")
     private String uploaderPhone;
+
+    @ExcelProperty("标题")
+    private String title;
 }
 
 

@@ -99,4 +99,12 @@ public class PermissionController {
         return success(permissionService.getRoleMenuTreeByRoleId(roleId));
     }
 
+    @Operation(summary = "获得角色拥有的菜单树形结构（根据角色标识）")
+    @Parameter(name = "roleCode", description = "角色标识", required = true)
+    @GetMapping("/list-role-menu-tree-by-code")
+    @PreAuthorize("@ss.hasPermission('system:permission:assign-role-menu')")
+    public CommonResult<List<MenuTreeRespVO>> getRoleMenuTreeByRoleCode(@RequestParam("roleCode") String roleCode) {
+        return success(permissionService.getRoleMenuTreeByRoleCode(roleCode));
+    }
+
 }

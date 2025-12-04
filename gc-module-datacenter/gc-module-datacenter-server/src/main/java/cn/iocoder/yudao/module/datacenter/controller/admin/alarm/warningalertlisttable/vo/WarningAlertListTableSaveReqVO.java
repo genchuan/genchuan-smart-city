@@ -107,7 +107,7 @@ public class WarningAlertListTableSaveReqVO {
     private String processInstanceId;
 
     @Schema(description = "预警类型ID")
-    private Long warningTypeId;
+    private String warningTypeId;
 
     @Schema(description = "区域编码")
     private String regionCode;
@@ -141,4 +141,8 @@ public class WarningAlertListTableSaveReqVO {
 
     @Schema(description = "上传人电话")
     private String uploaderPhone;
+
+    @Schema(description = "标题")
+    private String title;
+
 }

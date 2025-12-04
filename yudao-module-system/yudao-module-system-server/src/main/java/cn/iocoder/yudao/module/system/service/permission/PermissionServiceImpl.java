@@ -246,6 +246,19 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
+    public List<MenuTreeRespVO> getRoleMenuTreeByRoleCode(String roleCode) {
+        // 根据角色标识获取角色信息
+        RoleDO role = roleService.getRoleByCode(roleCode);
+        if (role == null) {
+            log.warn("[getRoleMenuTreeByRoleCode][角色标识({})不存在]", roleCode);
+            return Collections.emptyList();
+        }
+
+        // 使用已有的根据角色ID查询的方法
+        return getRoleMenuTreeByRoleId(role.getId());
+    }
+
+    @Override
     @Cacheable(value = RedisKeyConstants.MENU_ROLE_ID_LIST, key = "#menuId")
     public Set<Long> getMenuRoleIdListByMenuIdFromCache(Long menuId) {
         return convertSet(roleMenuMapper.selectListByMenuId(menuId), RoleMenuDO::getRoleId);
