@@ -24,16 +24,6 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 public class LawCoreMetricsController {
     @Resource
     private LawCoreMetricsService lawCoreMetricsService;
-    @GetMapping("/get")
-    @Operation(summary = "获得执法核心指标")
-    @PreAuthorize("@ss.hasPermission('industry:law-core-metrics:query')")
-    public CommonResult<LawCoreMetricsRespVO> getLawCoreMetrics(
-            @Valid LawCoreMetricsQueryReqVO lawCoreMetricsQueryReqVO
-    ) {
-        LawCoreMetricsRespVO lawCoreMetricsRespVO = lawCoreMetricsService.getLawCoreMetrics(lawCoreMetricsQueryReqVO);
-        return success(lawCoreMetricsRespVO);
-    }
-
     @GetMapping("/get2")
     @Operation(summary = "获得执法核心指标2")
     @PreAuthorize("@ss.hasPermission('industry:law-core-metrics:query')")
@@ -41,6 +31,16 @@ public class LawCoreMetricsController {
             @Valid LawCoreMetricsQueryReqVO lawCoreMetricsQueryReqVO
     ) {
         LawCoreMetricsRespVO lawCoreMetricsRespVO = lawCoreMetricsService.getLawCoreMetrics2(lawCoreMetricsQueryReqVO);
+        return success(lawCoreMetricsRespVO);
+    }
+
+    @GetMapping("/get")
+    @Operation(summary = "获得执法核心指标")
+    @PreAuthorize("@ss.hasPermission('industry:law-core-metrics:query')")
+    public CommonResult<LawCoreMetricsRespVO> getLawCoreMetrics(
+            @Valid LawCoreMetricsQueryReqVO lawCoreMetricsQueryReqVO
+    ) {
+        LawCoreMetricsRespVO lawCoreMetricsRespVO = lawCoreMetricsService.getLawCoreMetrics(lawCoreMetricsQueryReqVO);
         return success(lawCoreMetricsRespVO);
     }
 

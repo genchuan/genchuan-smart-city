@@ -19,7 +19,7 @@ public class CoreMetricVO {
     @Schema(description = "告警状态，0-正常，1-预警", example = "0")
     private Integer warnStatus;
 
-    @Schema(description = "近七天趋势图", example = "0")
+    @Schema(description = "近七天趋势图")
     private List<TreatTrendVO> treatTrendVOList;
 
 }

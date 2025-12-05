@@ -34,12 +34,12 @@ public class LawCoreMetricsServiceImpl implements LawCoreMetricsService {
     private LawCoreMetricsMapper lawCoreMetricsMapper;
 
     @Override
-    public LawCoreMetricsRespVO getLawCoreMetrics(LawCoreMetricsQueryReqVO lawCoreMetricsQueryReqVO) {
-            return lawCoreMetricsMapper.getLawCoreMetrics(lawCoreMetricsQueryReqVO);
+    public LawCoreMetricsRespVO getLawCoreMetrics2(LawCoreMetricsQueryReqVO lawCoreMetricsQueryReqVO) {
+            return lawCoreMetricsMapper.getLawCoreMetrics2(lawCoreMetricsQueryReqVO);
     }
 
     @Override
-    public LawCoreMetricsRespVO getLawCoreMetrics2(LawCoreMetricsQueryReqVO lawCoreMetricsQueryReqVO) {
+    public LawCoreMetricsRespVO getLawCoreMetrics(LawCoreMetricsQueryReqVO lawCoreMetricsQueryReqVO) {
 //        //指标预警阈值
 //        BigDecimal avgCaseHandleTimeWarningThreshold=new BigDecimal(100);
 //
