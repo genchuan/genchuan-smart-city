@@ -23,7 +23,7 @@ public interface LawCoreMetricsMapper {
          * @param lawCoreMetricsQueryReqVO 查询参数
          * @return LawCoreMetricsRespVO 结果
          */
-        LawCoreMetricsRespVO getLawCoreMetrics(LawCoreMetricsQueryReqVO lawCoreMetricsQueryReqVO);
+        LawCoreMetricsRespVO getLawCoreMetrics2(LawCoreMetricsQueryReqVO lawCoreMetricsQueryReqVO);
 
 //        LawCoreMetricsRespVO getLawCoreMetrics2(LawCoreMetricsQueryReqVO lawCoreMetricsQueryReqVO);
 
