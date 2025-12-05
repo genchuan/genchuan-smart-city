@@ -426,6 +426,7 @@ public interface ErrorCodeConstants {
     ErrorCode EVAL_RPT_NOT_EXISTS = new ErrorCode(100_629, "评价报告不存在");
     ErrorCode EVAL_RPT_TEMPLATE_NOT_EXISTS = new ErrorCode(100_630, "报告模板配置不存在");
     ErrorCode EVAL_RPT_ARCH_NOT_EXISTS = new ErrorCode(100_631, "报告归档导出不存在");
+    ErrorCode INSPECTION_STATISTICS_NOT_EXISTS = new ErrorCode(100_632, "环卫考核统计结果不存在");
 
 
 //    应用场景分类

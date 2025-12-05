@@ -4,13 +4,17 @@ import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.module.bpm.api.task.BpmProcessInstanceApi;
 import cn.iocoder.yudao.module.bpm.api.task.dto.BpmProcessInstanceCreateReqDTO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlisttable.vo.*;
+import cn.iocoder.yudao.module.datacenter.controller.admin.evaluate.inspectionstatistics.vo.InspectionStatisticsPageReqVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.evaluate.inspectionstatistics.vo.InspectionStatisticsSaveReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.AlarmRespVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DeviceAttributeRespVO;
+import cn.iocoder.yudao.module.datacenter.dal.dataobject.evaluate.inspectionstatistics.InspectionStatisticsDO;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.eventdisposition.EventDispositionDO;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.mngmattercfg.managedmattermajor.ManagedMatterMajorDO;
 import cn.iocoder.yudao.module.datacenter.enums.EventStatusEnum;
 import cn.iocoder.yudao.module.datacenter.framework.util.ImageBase64Utils;
 import cn.iocoder.yudao.module.datacenter.service.appscenecategory.AppSceneCategoryService;
+import cn.iocoder.yudao.module.datacenter.service.evaluate.inspectionstatistics.InspectionStatisticsService;
 import cn.iocoder.yudao.module.datacenter.service.eventdisposition.EventDispositionService;
 import cn.iocoder.yudao.module.datacenter.service.mngmattercfg.managedmattermajor.ManagedMatterMajorService;
 import cn.iocoder.yudao.module.datacenter.service.thingsboard.device.DeviceService;
@@ -20,6 +24,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -56,35 +61,10 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
     private WarningAlertListTableMapper warningAlertListTableMapper;
     @Resource
     private EventDispositionService eventDispositionService;
-
     @Resource
     private DeviceService deviceService;
-
-//    @Override
-//    @Transactional(rollbackFor = Exception.class)
-//    public Long createWarningAlertListTable(WarningAlertListTableSaveReqVO createReqVO) {
-//        // 插入预警记录
-//        WarningAlertListTableDO warningAlertListTable = BeanUtils.toBean(createReqVO, WarningAlertListTableDO.class);
-//
-//        // 处理图片数据 - 直接使用前端传递的Base64数据
-//        if (createReqVO.getImages() != null && !createReqVO.getImages().isEmpty()) {
-//            // 验证图片数据
-//            List<String> validImages = new ArrayList<>();
-//            for (String image : createReqVO.getImages()) {
-//                if (ImageBase64Utils.isValidBase64Image(image)) {
-//                    validImages.add(image);
-//                }
-//            }
-//
-//            if (!validImages.isEmpty()) {
-//                String scenePhotos = ImageBase64Utils.imagesToListString(validImages);
-//                warningAlertListTable.setScenePhotos(scenePhotos);
-//            }
-//        }
-//
-//        warningAlertListTableMapper.insert(warningAlertListTable);
-//        return warningAlertListTable.getId();
-//    }
+    @Resource
+    private InspectionStatisticsService inspectionStatisticsService;
 
     @Override
     public Long createWarningAlertListTable(WarningAlertListTableSaveReqVO createReqVO) {
@@ -92,6 +72,9 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
         // 插入
         WarningAlertListTableDO warningAlertListTable = BeanUtils.toBean(createReqVO, WarningAlertListTableDO.class);
         warningAlertListTableMapper.insert(warningAlertListTable);
+
+        // 新增：更新环卫考核统计结果
+        updateInspectionStatisticsAfterAlertCreation();
 
         // 返回
         return warningAlertListTable.getId();
@@ -830,6 +813,86 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
     private LocalDateTime convertTimestampToLocalDateTime(Long timestamp) {
         if (timestamp == null) return null;
         return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());
+    }
+
+    /**
+     * 创建告警后更新环卫考核统计结果
+     */
+    private void updateInspectionStatisticsAfterAlertCreation() {
+        try {
+            // 1. 获取环卫考核统计结果的分页数据
+            InspectionStatisticsPageReqVO pageReqVO = new InspectionStatisticsPageReqVO();
+            pageReqVO.setPageSize(100); // 限制查询数量
+            PageResult<InspectionStatisticsDO> pageResult = inspectionStatisticsService.getInspectionStatisticsPage(pageReqVO);
+
+            if (pageResult == null || pageResult.getList() == null || pageResult.getList().isEmpty()) {
+                System.out.println("环卫考核统计结果为空，跳过更新");
+                return;
+            }
+
+            // 2. 随机选择一条记录进行更新
+            List<InspectionStatisticsDO> statisticsList = pageResult.getList();
+            Random random = new Random();
+            InspectionStatisticsDO randomRecord = statisticsList.get(random.nextInt(statisticsList.size()));
+
+            // 3. 创建更新请求VO
+            InspectionStatisticsSaveReqVO updateReqVO = new InspectionStatisticsSaveReqVO();
+            updateReqVO.setId(randomRecord.getId());
+            updateReqVO.setInspectionDate(randomRecord.getInspectionDate());
+            updateReqVO.setAreaType(randomRecord.getAreaType());
+            updateReqVO.setAreaName(randomRecord.getAreaName());
+            updateReqVO.setTotalScore(randomRecord.getTotalScore());
+            updateReqVO.setMaxScore(randomRecord.getMaxScore());
+            updateReqVO.setWeight(randomRecord.getWeight());
+
+            // 样本数加1
+            Integer newSampleCount = (randomRecord.getSampleCount() != null ? randomRecord.getSampleCount() : 0) + 1;
+            updateReqVO.setSampleCount(newSampleCount);
+
+            // 重新计算最终得分（模拟计算逻辑）
+            updateReqVO.setScoreWeighted(calculateNewScoreWeighted(randomRecord, newSampleCount));
+
+            updateReqVO.setInspectionStatus(randomRecord.getInspectionStatus());
+
+            // 4. 调用更新接口
+            inspectionStatisticsService.updateInspectionStatistics(updateReqVO);
+
+            System.out.println("成功更新环卫考核统计记录，ID: " + randomRecord.getId() +
+                    ", 新样本数: " + newSampleCount);
+
+        } catch (Exception e) {
+            // 记录错误但不影响主流程
+            System.err.println("更新环卫考核统计结果失败: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 模拟重新计算最终得分
+     */
+    private BigDecimal calculateNewScoreWeighted(InspectionStatisticsDO record, Integer newSampleCount) {
+        if (record.getTotalScore() == null || record.getMaxScore() == null ||
+                record.getWeight() == null || record.getMaxScore().compareTo(BigDecimal.ZERO) == 0) {
+            // 如果缺少必要字段，返回原值或默认值
+            return record.getScoreWeighted() != null ? record.getScoreWeighted() : BigDecimal.ZERO;
+        }
+
+        try {
+            // 模拟计算逻辑：最终得分 = (总得分 / 满分) * 权重 * 100
+            BigDecimal scoreRatio = record.getTotalScore().divide(record.getMaxScore(), 4, BigDecimal.ROUND_HALF_UP);
+            BigDecimal weightedScore = scoreRatio.multiply(record.getWeight()).multiply(new BigDecimal("100"));
+
+            // 添加一些随机波动模拟真实场景（±5%）
+            Random random = new Random();
+            double fluctuation = (random.nextDouble() * 0.1) - 0.05; // -5% 到 +5%
+            BigDecimal fluctuationFactor = BigDecimal.ONE.add(BigDecimal.valueOf(fluctuation));
+
+            return weightedScore.multiply(fluctuationFactor).setScale(2, BigDecimal.ROUND_HALF_UP);
+
+        } catch (Exception e) {
+            System.err.println("计算最终得分失败: " + e.getMessage());
+            return record.getScoreWeighted() != null ? record.getScoreWeighted() : BigDecimal.ZERO;
+        }
     }
 
 
