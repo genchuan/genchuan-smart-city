@@ -39,6 +39,11 @@ public class AppSceneCategoryTreeRespVO {
     @Schema(description = "子节点列表")
     private List<AppSceneCategoryTreeRespVO> children;
 
+    @Schema(description = "关联的菜单编号")
+    private String menuIds;
+
     @Schema(description = "创建时间")
     private LocalDateTime createTime;
+
+
 }

@@ -79,4 +79,6 @@ public class AppSceneCategoryPageReqVO extends PageParam {
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
 
+    @Schema(description = "关联的菜单编号")
+    private String menuIds;
 }

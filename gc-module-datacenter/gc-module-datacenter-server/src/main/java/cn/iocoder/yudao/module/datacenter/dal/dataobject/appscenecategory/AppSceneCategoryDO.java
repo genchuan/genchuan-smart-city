@@ -115,4 +115,9 @@ public class AppSceneCategoryDO extends BaseDO {
      */
     @TableField(exist = false) // 表示该字段不是数据库表中的列
     private List<AppSceneCategoryDO> children;
+
+    /**
+     * 关联的菜单编号
+     */
+    private String menuIds;
 }

@@ -40,6 +40,7 @@ public interface AppSceneCategoryMapper extends BaseMapperX<AppSceneCategoryDO> 
                 .eqIfPresent(AppSceneCategoryDO::getExtCommon1, reqVO.getExtCommon1())
                 .eqIfPresent(AppSceneCategoryDO::getExtCommon2, reqVO.getExtCommon2())
                 .betweenIfPresent(AppSceneCategoryDO::getCreateTime, reqVO.getCreateTime())
+                .eqIfPresent(AppSceneCategoryDO::getMenuIds, reqVO.getMenuIds())
                 .orderByDesc(AppSceneCategoryDO::getId));
     }
 

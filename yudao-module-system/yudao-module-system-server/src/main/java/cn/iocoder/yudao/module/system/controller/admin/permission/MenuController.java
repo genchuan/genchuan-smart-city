@@ -91,4 +91,13 @@ public class MenuController {
         return success(menuTree);
     }
 
+    @PostMapping("/tree-by-ids")
+    @Operation(summary = "根据菜单编号列表获取菜单树形结构", description = "根据菜单编号列表获取完整的菜单树形结构，自动过滤掉按钮类型的菜单")
+    @PreAuthorize("@ss.hasPermission('system:menu:query')")
+    public CommonResult<List<MenuTreeRespVO>> getMenuTreeByIds(@RequestBody @Valid MenuTreeByIdsReqVO reqVO) {
+        List<MenuDO> menuList = menuService.getMenuListByIds(reqVO.getMenuIds());
+        List<MenuTreeRespVO> menuTree = MenuTreeUtil.buildMenuTreeByIds(menuList);
+        return success(menuTree);
+    }
+
 }

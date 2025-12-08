@@ -76,4 +76,6 @@ public class AppSceneCategorySaveReqVO {
     @Schema(description = "通用扩展字段2")
     private String extCommon2;
 
+    @Schema(description = "关联的菜单编号")
+    private String menuIds;
 }

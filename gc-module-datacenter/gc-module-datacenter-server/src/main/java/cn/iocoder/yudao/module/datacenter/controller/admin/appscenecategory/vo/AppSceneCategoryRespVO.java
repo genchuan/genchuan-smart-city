@@ -100,4 +100,7 @@ public class AppSceneCategoryRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
+    @Schema(description = "关联的菜单编号")
+    @ExcelProperty("关联的菜单编号")
+    private String menuIds;
 }
