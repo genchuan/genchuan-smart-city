@@ -14,11 +14,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 @Tag(name = "管理后台 - 市政设施专题-故障设施空间数据")
 @RestController
-@RequestMapping("/industry/flt-site")
+@RequestMapping("/industry/muni-fac/flt-site")
 @Validated
 public class FltSiteController {
     @Resource
@@ -26,11 +28,11 @@ public class FltSiteController {
 
     @GetMapping("/get")
     @Operation(summary = "获得市政设施专题-故障设施空间数据")
-    @PreAuthorize("@ss.hasPermission('industry:flt-site:query')")
-    public CommonResult<FltSiteRespVO> getFltSite(
+    @PreAuthorize("@ss.hasPermission('industry:muni-fac-flt-site:query')")
+    public CommonResult<List<FltSiteRespVO>> getFltSite(
             @Valid FltSiteQueryReqVO fltSiteQueryReqVO
     ) {
-        FltSiteRespVO fltSiteRespVO = fltSiteService.getFltSite(fltSiteQueryReqVO);
-        return success(fltSiteRespVO);
+        List<FltSiteRespVO> fltSiteRespVOList = fltSiteService.getFltSite(fltSiteQueryReqVO);
+        return success(fltSiteRespVOList);
     }
 }

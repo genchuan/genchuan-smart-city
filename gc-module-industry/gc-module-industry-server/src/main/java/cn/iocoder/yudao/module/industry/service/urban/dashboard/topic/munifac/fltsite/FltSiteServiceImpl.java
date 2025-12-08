@@ -8,6 +8,8 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.List;
+
 /**
  * 市政设施专题-故障设施空间数据 Service 实现类
  * <p>
@@ -31,8 +33,7 @@ public class FltSiteServiceImpl implements FltSiteService {
      * @return FltSiteRespVO 查询结果 VO 对象
      */
     @Override
-    public FltSiteRespVO getFltSite(FltSiteQueryReqVO fltSiteQueryReqVO) {
-        // 调用 Mapper 方法查询数据库并返回结果
+    public List<FltSiteRespVO> getFltSite(FltSiteQueryReqVO fltSiteQueryReqVO) {
         return fltSiteMapper.getFltSite(fltSiteQueryReqVO);
     }
 }

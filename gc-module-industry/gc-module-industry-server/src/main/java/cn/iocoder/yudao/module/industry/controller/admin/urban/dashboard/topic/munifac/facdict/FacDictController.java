@@ -14,11 +14,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 @Tag(name = "管理后台 - 市政设施专题-设施类型字典")
 @RestController
-@RequestMapping("/industry/fac-dict")
+@RequestMapping("/industry/muni-fac/fac-dict")
 @Validated
 public class FacDictController {
     @Resource
@@ -26,11 +28,11 @@ public class FacDictController {
 
     @GetMapping("/get")
     @Operation(summary = "获得市政设施专题-设施类型字典")
-    @PreAuthorize("@ss.hasPermission('industry:fac-dict:query')")
-    public CommonResult<FacDictRespVO> getFacDict(
+    @PreAuthorize("@ss.hasPermission('industry:muni-fac-fac-dict:query')")
+    public CommonResult<List<FacDictRespVO>> getFacDict(
             @Valid FacDictQueryReqVO facDictQueryReqVO
     ) {
-        FacDictRespVO facDictRespVO = facDictService.getFacDict(facDictQueryReqVO);
-        return success(facDictRespVO);
+        List<FacDictRespVO> facDictRespVOList = facDictService.getFacDict(facDictQueryReqVO);
+        return success(facDictRespVOList);
     }
 }

@@ -4,6 +4,8 @@ import cn.iocoder.yudao.module.industry.controller.admin.urban.dashboard.topic.m
 import cn.iocoder.yudao.module.industry.controller.admin.urban.dashboard.topic.munifac.fltsite.vo.FltSiteRespVO;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * 市政设施专题-故障设施空间数据 Mapper
  *
@@ -17,6 +19,9 @@ public interface FltSiteMapper {
      * @param fltSiteQueryReqVO 查询参数
      * @return FltSiteRespVO 结果
      */
-    FltSiteRespVO getFltSite(FltSiteQueryReqVO fltSiteQueryReqVO);
+    List<FltSiteRespVO> getFltSite(FltSiteQueryReqVO fltSiteQueryReqVO);
+
+
+
 
 }

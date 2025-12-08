@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    市政设施专题-派发工单 Mapper XML
+    功能说明：
+    1. 定义数据库访问的 SQL 语句
+    2. namespace 对应 Mapper 接口全路径
+    3. select 语句的 resultType 对应查询返回的 VO 类
+-->
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.urban.dashboard.topic.munifac.workorder.WorkOrderMapper">
+
+
+    <!--
+        查询市政设施专题-派发工单的方法
+        id: 对应 Mapper 接口的方法名
+        resultType: 查询结果映射到的 VO 类
+        参数通过 Mapper 接口传入
+    -->
+    <select id="getWorkOrder"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.urban.dashboard.topic.munifac.workorder.vo.WorkOrderRespVO">
+
+    </select>
+
+    <!--
+        根据 mng_comp_id 查询 biz_mng_comp 表中对应的设施信息
+        返回 Map，key 为列名，value 为对应值
+        使用示例：
+        Map<String, Object> compMap = workOrderMapper.selectCompInfoByMngCompId("MF-001");
+        compMap.get("comp_name") -> 获取设施名称
+    -->
+    <select id="selectCompInfoByMngCompId" resultType="java.util.Map" parameterType="string">
+        SELECT
+            mng_comp_id,
+            comp_name,
+            dept_code
+        FROM
+            biz_mng_comp
+        WHERE
+            mng_comp_id = #{mngCompId}
+          AND deleted = 0
+        limit 1
+    </select>
+
+    <!--
+        插入工单到 biz_wo 表
+        参数是 Map<String, Object>
+        key 对应列名，例如：wo_code、mng_comp_id、comp_name、status、dept_code
+        使用 useGeneratedKeys 回填自增主键 id 到 Map
+    -->
+    <insert id="insertByMap" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO biz_wo (
+            wo_code,
+            mng_comp_id,
+            comp_name,
+            status,
+            dept_code,
+            create_time,
+            update_time
+        ) VALUES (
+                     #{wo_code},
+                     #{mng_comp_id},
+                     #{comp_name},
+                     #{status},
+                     #{dept_code},
+                     NOW(),
+                     NOW()
+                 )
+    </insert>
+
+</mapper>

@@ -8,6 +8,8 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.List;
+
 /**
  * 市政设施专题-设施类型字典 Service 实现类
  * <p>
@@ -31,7 +33,7 @@ public class FacDictServiceImpl implements FacDictService {
      * @return FacDictRespVO 查询结果 VO 对象
      */
     @Override
-    public FacDictRespVO getFacDict(FacDictQueryReqVO facDictQueryReqVO) {
+    public List<FacDictRespVO> getFacDict(FacDictQueryReqVO facDictQueryReqVO) {
         // 调用 Mapper 方法查询数据库并返回结果
         return facDictMapper.getFacDict(facDictQueryReqVO);
     }
