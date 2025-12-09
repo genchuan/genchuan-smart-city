@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlisttable;
 
 import cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlisttable.vo.*;
+import cn.iocoder.yudao.module.datacenter.dal.mysql.alarm.warningalertlisttable.WarningAlertListTableMapper;
 import io.swagger.v3.oas.annotations.Parameters;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -53,7 +54,6 @@ public class WarningAlertListTableController {
 
     @Resource
     private WarningAlertListTableService warningAlertListTableService;
-
 
     @PostMapping("/create")
     @Operation(summary = "创建预警告警列表")
@@ -130,16 +130,33 @@ public class WarningAlertListTableController {
 
     @GetMapping("/level-statistics")
     @Operation(summary = "获取预警等级分布统计")
-    @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:query')")
+//    @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:query')")
     public CommonResult<List<WarningAlertListTableStatisticsRespVO>> getWarningLevelStatistics() {
         return success(warningAlertListTableService.getWarningLevelStatistics());
     }
 
     @GetMapping("/status-statistics")
     @Operation(summary = "获取预警状态分布统计")
-    @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:query')")
+//    @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:query')")
     public CommonResult<List<WarningAlertListTableStatisticsRespVO>> getWarningStatusStatistics() {
         return success(warningAlertListTableService.getWarningStatusStatistics());
+    }
+
+    @GetMapping("/responsible-person-statistics")
+    @Operation(summary = "获取责任人告警统计")
+//    @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:query')")
+    public CommonResult<List<ResponsiblePersonStatisticsRespVO>> getResponsiblePersonStatistics() {
+        List<ResponsiblePersonStatisticsRespVO> statistics = warningAlertListTableService.getResponsiblePersonStatistics();
+        return success(statistics);
+    }
+
+    @PostMapping("/responsible-person-level-statistics")
+    @Operation(summary = "获取责任人预警等级统计")
+//    @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:query')")
+    public CommonResult<List<ResponsiblePersonLevelStatisticsRespVO>> getResponsiblePersonLevelStatistics(
+            @Valid @RequestBody ResponsiblePersonLevelStatisticsReqVO reqVO) {
+        List<ResponsiblePersonLevelStatisticsRespVO> statistics = warningAlertListTableService.getResponsiblePersonLevelStatistics(reqVO);
+        return success(statistics);
     }
 
     @PostMapping("/import")

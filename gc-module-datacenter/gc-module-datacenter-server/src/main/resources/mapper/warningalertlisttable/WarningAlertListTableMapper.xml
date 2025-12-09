@@ -109,4 +109,48 @@
         </foreach>
     </update>
 
+    <select id="selectResponsiblePersonStatistics" resultType="cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlisttable.vo.ResponsiblePersonStatisticsRespVO">
+        SELECT
+            responsible_person as name,
+            COUNT(*) as value
+        FROM gc_warning_alert_list_table
+        WHERE responsible_person IS NOT NULL
+          AND responsible_person != ''
+        GROUP BY responsible_person
+        ORDER BY value DESC
+    </select>
+
+    <select id="selectResponsiblePersonLevelStatistics" resultType="cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlisttable.vo.ResponsiblePersonLevelStatisticsRespVO">
+        SELECT
+        CASE
+        WHEN warning_level = 'emergency' THEN '紧急'
+        WHEN warning_level = 'important' THEN '重要'
+        WHEN warning_level = 'general' THEN '一般'
+        ELSE warning_level
+        END as name,
+        COUNT(*) as value
+        FROM gc_warning_alert_list_table
+        <where>
+            responsible_person = #{responsiblePerson}
+            AND deleted = b'0'
+<!--            <if test="startTime != null">-->
+<!--                AND trigger_time >= #{startTime}-->
+<!--            </if>-->
+<!--            <if test="endTime != null">-->
+<!--                AND trigger_time <= #{endTime}-->
+<!--            </if>-->
+<!--            <if test="warningStatus != null and warningStatus != ''">-->
+<!--                AND warning_status = #{warningStatus}-->
+<!--            </if>-->
+        </where>
+        GROUP BY warning_level
+        ORDER BY
+        CASE
+        WHEN warning_level = 'emergency' THEN 1
+        WHEN warning_level = 'important' THEN 2
+        WHEN warning_level = 'general' THEN 3
+        ELSE 4
+        END
+    </select>
+
 </mapper>

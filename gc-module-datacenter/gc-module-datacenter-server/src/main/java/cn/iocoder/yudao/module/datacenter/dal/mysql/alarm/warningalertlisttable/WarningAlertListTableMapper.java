@@ -1,11 +1,14 @@
 package cn.iocoder.yudao.module.datacenter.dal.mysql.alarm.warningalertlisttable;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.SortingField;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlisttable.vo.ResponsiblePersonLevelStatisticsRespVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlisttable.vo.ResponsiblePersonStatisticsRespVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlisttable.vo.WarningAlertListTablePageReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlisttable.vo.WarningAlertListTableStatisticsRespVO;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.alarm.warningalertlisttable.WarningAlertListTableDO;
@@ -132,4 +135,16 @@ public interface WarningAlertListTableMapper extends BaseMapperX<WarningAlertLis
      */
     int updateBatch(List<WarningAlertListTableDO> list);
 
+    /**
+     * 获取责任人告警统计
+     */
+    List<ResponsiblePersonStatisticsRespVO> selectResponsiblePersonStatistics();
+
+    /**
+     * 获取责任人预警等级统计
+     */
+    List<ResponsiblePersonLevelStatisticsRespVO> selectResponsiblePersonLevelStatistics(String responsiblePerson,
+                                                                                        LocalDateTime startTime,
+                                                                                        LocalDateTime endTime,
+                                                                                        String warningStatus);
 }

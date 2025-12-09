@@ -81,7 +81,7 @@ public class AppSceneCategoryController {
 
     @GetMapping("/tree")
     @Operation(summary = "获得应用场景分类配置树形结构")
-    @PreAuthorize("@ss.hasPermission('datacenter:app-scene-category:query')")
+//    @PreAuthorize("@ss.hasPermission('datacenter:app-scene-category:query')")
     public CommonResult<List<AppSceneCategoryTreeRespVO>> getAppSceneCategoryTree() {
         List<AppSceneCategoryDO> tree = appSceneCategoryService.getAppSceneCategoryTree();
         return success(BeanUtils.toBean(tree, AppSceneCategoryTreeRespVO.class));

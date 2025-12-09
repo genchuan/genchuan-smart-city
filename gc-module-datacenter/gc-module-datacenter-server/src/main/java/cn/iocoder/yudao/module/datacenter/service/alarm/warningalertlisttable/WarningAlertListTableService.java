@@ -103,4 +103,14 @@ public interface WarningAlertListTableService {
      * 删除现场照片
      */
     boolean deleteScenePhoto(Long alertId, Integer photoIndex);
+
+    /**
+     * 获取责任人告警统计
+     */
+    List<ResponsiblePersonStatisticsRespVO> getResponsiblePersonStatistics();
+
+    /**
+     * 获取责任人预警等级统计
+     */
+    List<ResponsiblePersonLevelStatisticsRespVO> getResponsiblePersonLevelStatistics(ResponsiblePersonLevelStatisticsReqVO reqVO);
 }

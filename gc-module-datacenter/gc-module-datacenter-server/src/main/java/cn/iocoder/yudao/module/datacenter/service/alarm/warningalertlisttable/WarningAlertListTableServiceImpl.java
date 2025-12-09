@@ -403,6 +403,59 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
         return true;
     }
 
+    @Override
+    public List<ResponsiblePersonStatisticsRespVO> getResponsiblePersonStatistics() {
+        return warningAlertListTableMapper.selectResponsiblePersonStatistics();
+    }
+
+    @Override
+    public List<ResponsiblePersonLevelStatisticsRespVO> getResponsiblePersonLevelStatistics(ResponsiblePersonLevelStatisticsReqVO reqVO) {
+        // 验证责任人参数
+        if (reqVO.getResponsiblePerson() == null || reqVO.getResponsiblePerson().trim().isEmpty()) {
+            throw new IllegalArgumentException("责任人姓名不能为空");
+        }
+
+        List<ResponsiblePersonLevelStatisticsRespVO> result = warningAlertListTableMapper.selectResponsiblePersonLevelStatistics(
+                reqVO.getResponsiblePerson(),
+                reqVO.getStartTime(),
+                reqVO.getEndTime(),
+                reqVO.getWarningStatus()
+        );
+
+        // 确保所有预警等级都有数据（即使数量为0）
+        return ensureAllLevelsPresent(result);
+    }
+
+    /**
+     * 确保返回所有预警等级，没有数据的等级数量为0
+     */
+    private List<ResponsiblePersonLevelStatisticsRespVO> ensureAllLevelsPresent(List<ResponsiblePersonLevelStatisticsRespVO> statistics) {
+        Map<String, ResponsiblePersonLevelStatisticsRespVO> levelMap = new HashMap<>();
+
+        // 将查询结果放入Map，使用name作为key
+        for (ResponsiblePersonLevelStatisticsRespVO stat : statistics) {
+            levelMap.put(stat.getName(), stat);
+        }
+
+        // 定义所有可能的预警等级（中文名称）
+        String[] allLevels = {"紧急", "重要", "一般"};
+
+        List<ResponsiblePersonLevelStatisticsRespVO> result = new ArrayList<>();
+        for (String levelName : allLevels) {
+            if (levelMap.containsKey(levelName)) {
+                result.add(levelMap.get(levelName));
+            } else {
+                // 创建默认的统计对象（数量为0）
+                ResponsiblePersonLevelStatisticsRespVO defaultStat = new ResponsiblePersonLevelStatisticsRespVO();
+                defaultStat.setName(levelName);
+                defaultStat.setValue(0);
+                result.add(defaultStat);
+            }
+        }
+
+        return result;
+    }
+
 
     /**
      * 将MultipartFile转换为Base64并处理
