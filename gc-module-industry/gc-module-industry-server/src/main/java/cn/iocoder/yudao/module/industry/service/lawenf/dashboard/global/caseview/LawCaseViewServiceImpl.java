@@ -41,4 +41,23 @@ public class LawCaseViewServiceImpl implements LawCaseViewService {
 
         return respVO;
     }
+
+    @Override
+    public List<String> getLawCaseViewTypeList() {
+        //直接req放空的，没关系
+        LawCaseViewQueryReqVO reqVO = new LawCaseViewQueryReqVO();
+
+        // 调用已有 Mapper 查询案件类型及数量
+        List<LawCaseViewRespVO.CaseTypeCount> typeList = lawCaseViewMapper.selectCaseTypeCount(reqVO);
+
+        // 提取案件类型字段，返回 List<String>
+        if (typeList == null || typeList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return typeList.stream()
+                .map(LawCaseViewRespVO.CaseTypeCount::getCaseType)
+                .distinct() // 去重，防止重复
+                .toList();
+    }
 }

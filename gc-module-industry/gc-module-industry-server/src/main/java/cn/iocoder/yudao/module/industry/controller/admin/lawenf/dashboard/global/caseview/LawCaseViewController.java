@@ -14,6 +14,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 
@@ -34,5 +36,12 @@ public class LawCaseViewController {
         return success(lawCaseViewRespVO);
     }
 
+    @GetMapping("/get-case-type")
+    @Operation(summary = "获得执法案件 案件类型分类 列表")
+    @PreAuthorize("@ss.hasPermission('industry:law-case-view-type:query')")
+    public CommonResult<List<String>> getLawCaseViewTypeList() {
+        List<String> typeList = lawCaseViewService.getLawCaseViewTypeList();
+        return success(typeList);
+    }
 
 }

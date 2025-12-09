@@ -4,6 +4,8 @@ package cn.iocoder.yudao.module.industry.service.lawenf.dashboard.global.casevie
 import cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.caseview.vo.LawCaseViewQueryReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.caseview.vo.LawCaseViewRespVO;
 
+import java.util.List;
+
 /**
  * 执法案件总览 Service 接口
  *
@@ -18,4 +20,6 @@ public interface LawCaseViewService {
          * @return 查询结果
          */
         LawCaseViewRespVO getLawCaseView(LawCaseViewQueryReqVO lawCaseViewQueryReqVO);
+
+        List<String> getLawCaseViewTypeList();
 }
