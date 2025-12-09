@@ -60,7 +60,7 @@ public class BpmProcessInstanceController {
 
     @GetMapping("/my-page")
     @Operation(summary = "获得我的实例分页列表", description = "在【我的流程】菜单中，进行调用")
-    @PreAuthorize("@ss.hasPermission('bpm:process-instance:query')")
+    // @PreAuthorize("@ss.hasPermission('bpm:process-instance:query')")
     public CommonResult<PageResult<BpmProcessInstanceRespVO>> getProcessInstanceMyPage(
             @Valid BpmProcessInstancePageReqVO pageReqVO) {
         PageResult<HistoricProcessInstance> pageResult = processInstanceService.getProcessInstancePage(
@@ -90,7 +90,7 @@ public class BpmProcessInstanceController {
 
     @GetMapping("/manager-page")
     @Operation(summary = "获得管理流程实例的分页列表", description = "在【流程实例】菜单中，进行调用")
-    @PreAuthorize("@ss.hasPermission('bpm:process-instance:manager-query')")
+    // @PreAuthorize("@ss.hasPermission('bpm:process-instance:manager-query')")
     public CommonResult<PageResult<BpmProcessInstanceRespVO>> getProcessInstanceManagerPage(
             @Valid BpmProcessInstancePageReqVO pageReqVO) {
         PageResult<HistoricProcessInstance> pageResult = processInstanceService.getProcessInstancePage(
@@ -119,7 +119,7 @@ public class BpmProcessInstanceController {
 
     @PostMapping("/create")
     @Operation(summary = "新建流程实例")
-    @PreAuthorize("@ss.hasPermission('bpm:process-instance:query')")
+    // @PreAuthorize("@ss.hasPermission('bpm:process-instance:query')")
     public CommonResult<String> createProcessInstance(@Valid @RequestBody BpmProcessInstanceCreateReqVO createReqVO) {
         return success(processInstanceService.createProcessInstance(getLoginUserId(), createReqVO));
     }
@@ -127,7 +127,7 @@ public class BpmProcessInstanceController {
     @GetMapping("/get")
     @Operation(summary = "获得指定流程实例", description = "在【流程详细】界面中，进行调用")
     @Parameter(name = "id", description = "流程实例的编号", required = true)
-    @PreAuthorize("@ss.hasPermission('bpm:process-instance:query')")
+    // @PreAuthorize("@ss.hasPermission('bpm:process-instance:query')")
     public CommonResult<BpmProcessInstanceRespVO> getProcessInstance(@RequestParam("id") String id) {
         HistoricProcessInstance processInstance = processInstanceService.getHistoricProcessInstance(id);
         if (processInstance == null) {
@@ -150,7 +150,7 @@ public class BpmProcessInstanceController {
 
     @DeleteMapping("/cancel-by-start-user")
     @Operation(summary = "用户取消流程实例", description = "取消发起的流程")
-    @PreAuthorize("@ss.hasPermission('bpm:process-instance:cancel')")
+    // @PreAuthorize("@ss.hasPermission('bpm:process-instance:cancel')")
     public CommonResult<Boolean> cancelProcessInstanceByStartUser(
             @Valid @RequestBody BpmProcessInstanceCancelReqVO cancelReqVO) {
         processInstanceService.cancelProcessInstanceByStartUser(getLoginUserId(), cancelReqVO);
@@ -159,7 +159,7 @@ public class BpmProcessInstanceController {
 
     @DeleteMapping("/cancel-by-admin")
     @Operation(summary = "管理员取消流程实例", description = "管理员撤回流程")
-    @PreAuthorize("@ss.hasPermission('bpm:process-instance:cancel-by-admin')")
+    // @PreAuthorize("@ss.hasPermission('bpm:process-instance:cancel-by-admin')")
     public CommonResult<Boolean> cancelProcessInstanceByManager(
             @Valid @RequestBody BpmProcessInstanceCancelReqVO cancelReqVO) {
         processInstanceService.cancelProcessInstanceByAdmin(getLoginUserId(), cancelReqVO);
@@ -169,7 +169,7 @@ public class BpmProcessInstanceController {
     @GetMapping("/get-approval-detail")
     @Operation(summary = "获得审批详情")
     @Parameter(name = "id", description = "流程实例的编号", required = true)
-    @PreAuthorize("@ss.hasPermission('bpm:process-instance:query')")
+    // @PreAuthorize("@ss.hasPermission('bpm:process-instance:query')")
     @SuppressWarnings("unchecked")
     public CommonResult<BpmApprovalDetailRespVO> getApprovalDetail(@Valid BpmApprovalDetailReqVO reqVO) {
         if (StrUtil.isNotEmpty(reqVO.getProcessVariablesStr())) {
@@ -180,7 +180,7 @@ public class BpmProcessInstanceController {
 
     @GetMapping("/get-next-approval-nodes")
     @Operation(summary = "获取下一个执行的流程节点")
-    @PreAuthorize("@ss.hasPermission('bpm:process-instance:query')")
+    // @PreAuthorize("@ss.hasPermission('bpm:process-instance:query')")
     @SuppressWarnings("unchecked")
     public CommonResult<List<BpmApprovalDetailRespVO.ActivityNode>> getNextApprovalNodes(@Valid BpmApprovalDetailReqVO reqVO) {
         if (StrUtil.isNotEmpty(reqVO.getProcessVariablesStr())) {

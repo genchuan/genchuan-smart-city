@@ -24,7 +24,7 @@ public class BpmTaskStatisticsController {
 
     @GetMapping("/process-name-pie")
     @Operation(summary = "获取流程名称统计饼图数据")
-    @PreAuthorize("@ss.hasPermission('bpm:task-statistics:query')")
+    // @PreAuthorize("@ss.hasPermission('bpm:task-statistics:query')")
     public CommonResult<BpmProcessNameStatisticsRespVO> getProcessNamePieData() {
         return success(taskStatisticsService.getProcessNamePieData());
     }
