@@ -1,7 +1,7 @@
 package cn.iocoder.yudao.module.industry.dal.mysql.urban.dashboard.topic.munifac.urbancomp;
 
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
-import cn.iocoder.yudao.module.industry.controller.admin.urban.dashboard.topic.munifac.urbancomp.vo.UrbanCompDO;
+import cn.iocoder.yudao.module.industry.dal.dataobject.urban.dashboard.topic.munifac.urbancomp.UrbanCompDO;
 import cn.iocoder.yudao.module.industry.controller.admin.urban.dashboard.topic.munifac.urbancomp.vo.UrbanCompQueryReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.urban.dashboard.topic.munifac.urbancomp.vo.UrbanCompRespVO;
 import org.apache.ibatis.annotations.Mapper;

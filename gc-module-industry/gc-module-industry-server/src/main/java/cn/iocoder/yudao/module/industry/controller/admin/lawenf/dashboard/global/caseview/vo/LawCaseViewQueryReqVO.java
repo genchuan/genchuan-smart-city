@@ -10,13 +10,18 @@ import java.time.LocalDateTime;
 public class LawCaseViewQueryReqVO {
 
 
-        @Schema(description = "统计开始时间（含）,yyyy-MM-dd HH:mm:ss", example = "2025-01-01 09:00:00")
+        //        @Schema(description = "统计开始时间（含）,yyyy-MM-dd HH:mm:ss", example = "2025-01-01 09:00:00")
+        @Schema(hidden = true)
         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime startTime;
 
-        @Schema(description = "统计结束时间（含）,yyyy-MM-dd HH:mm:ss", example = "2025-11-01 23:59:59")
+        //        @Schema(description = "统计结束时间（含）,yyyy-MM-dd HH:mm:ss", example = "2025-11-01 23:59:59")
+        @Schema(hidden = true)
         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime endTime;
+
+        @Schema(description = "统计时间范围,本日/本周/本月", example = "today/week/month")
+        private String timeRange;
 
         @Schema(description = "案件类型。",
                 example = "违法建设")

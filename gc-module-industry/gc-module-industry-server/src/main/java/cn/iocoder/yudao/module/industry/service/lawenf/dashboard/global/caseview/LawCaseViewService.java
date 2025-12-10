@@ -21,5 +21,17 @@ public interface LawCaseViewService {
          */
         LawCaseViewRespVO getLawCaseView(LawCaseViewQueryReqVO lawCaseViewQueryReqVO);
 
+        /**
+         * 查询执法案件的案件类型列表
+         * 主要用于前端筛选条件或下拉项展示
+         */
         List<String> getLawCaseViewTypeList();
+
+
+        /**
+         * 查询执法案件的案件来源列表
+         * 用于前端筛选条件或统计展示
+         */
+        List<String> getLawCaseViewSourceList();
+
 }

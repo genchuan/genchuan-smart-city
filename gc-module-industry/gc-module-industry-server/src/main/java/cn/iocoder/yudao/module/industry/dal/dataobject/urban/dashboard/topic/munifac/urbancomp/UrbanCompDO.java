@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.industry.controller.admin.urban.dashboard.topic.munifac.urbancomp.vo;
+package cn.iocoder.yudao.module.industry.dal.dataobject.urban.dashboard.topic.munifac.urbancomp;
 
 import lombok.*;
 import java.time.LocalDate;

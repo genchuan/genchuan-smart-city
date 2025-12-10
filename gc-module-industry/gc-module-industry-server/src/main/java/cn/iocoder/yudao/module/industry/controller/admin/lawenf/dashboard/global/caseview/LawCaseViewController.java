@@ -36,12 +36,34 @@ public class LawCaseViewController {
         return success(lawCaseViewRespVO);
     }
 
+    /**
+     * 获取执法案件的案件类型分类列表
+     * 用于前端下拉展示或筛选条件
+     */
     @GetMapping("/get-case-type")
-    @Operation(summary = "获得执法案件 案件类型分类 列表")
+    @Operation(summary = "获得执法案件的案件类型分类列表")
     @PreAuthorize("@ss.hasPermission('industry:law-case-view-type:query')")
     public CommonResult<List<String>> getLawCaseViewTypeList() {
+        // 从业务层获取案件类型列表
         List<String> typeList = lawCaseViewService.getLawCaseViewTypeList();
+        // 返回统一响应结果
         return success(typeList);
     }
+
+
+    /**
+     * 获取执法案件的案件来源列表
+     * 用于前端筛选条件或统计展示
+     */
+    @GetMapping("/get-case-source")
+    @Operation(summary = "获得执法案件 案件类型来源 列表")
+    @PreAuthorize("@ss.hasPermission('industry:law-case-view-source:query')")
+    public CommonResult<List<String>> getLawCaseViewSourceList() {
+        // 从业务层获取案件来源列表
+        List<String> sourceList = lawCaseViewService.getLawCaseViewSourceList();
+        // 返回统一响应结果
+        return success(sourceList);
+    }
+
 
 }

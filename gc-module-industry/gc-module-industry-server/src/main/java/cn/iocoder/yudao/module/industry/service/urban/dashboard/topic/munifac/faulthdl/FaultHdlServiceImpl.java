@@ -5,7 +5,7 @@ import cn.iocoder.yudao.module.industry.controller.admin.urban.dashboard.topic.m
 import cn.iocoder.yudao.module.industry.controller.admin.urban.dashboard.topic.munifac.faulthdl.vo.FaultHdlRespVO;
 
 import cn.iocoder.yudao.module.industry.controller.admin.urban.dashboard.topic.munifac.faulthdl.vo.FaultHdlUpdateReqVO;
-import cn.iocoder.yudao.module.industry.controller.admin.urban.dashboard.topic.munifac.urbancomp.vo.UrbanCompDO;
+import cn.iocoder.yudao.module.industry.dal.dataobject.urban.dashboard.topic.munifac.urbancomp.UrbanCompDO;
 import cn.iocoder.yudao.module.industry.dal.mysql.urban.dashboard.topic.munifac.faulthdl.FaultHdlMapper;
 import cn.iocoder.yudao.module.industry.dal.mysql.urban.dashboard.topic.munifac.urbancomp.UrbanCompMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
