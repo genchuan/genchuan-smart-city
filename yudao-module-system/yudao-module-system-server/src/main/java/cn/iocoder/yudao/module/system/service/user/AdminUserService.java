@@ -207,4 +207,12 @@ public interface AdminUserService {
      */
     boolean isPasswordMatch(String rawPassword, String encodedPassword);
 
+    /**
+     * 更新用户头像
+     *
+     * @param id 用户编号
+     * @param avatarUrl 头像URL
+     */
+    void updateUserAvatar(Long id, String avatarUrl);
+
 }

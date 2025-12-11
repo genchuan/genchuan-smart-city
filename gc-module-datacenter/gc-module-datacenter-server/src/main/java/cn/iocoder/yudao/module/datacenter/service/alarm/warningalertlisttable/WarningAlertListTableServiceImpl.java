@@ -13,6 +13,7 @@ import cn.iocoder.yudao.module.datacenter.dal.dataobject.eventdisposition.EventD
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.mngmattercfg.managedmattermajor.ManagedMatterMajorDO;
 import cn.iocoder.yudao.module.datacenter.enums.EventStatusEnum;
 import cn.iocoder.yudao.module.datacenter.framework.util.ImageBase64Utils;
+import cn.iocoder.yudao.module.datacenter.framework.util.UuidUtils;
 import cn.iocoder.yudao.module.datacenter.service.appscenecategory.AppSceneCategoryService;
 import cn.iocoder.yudao.module.datacenter.service.evaluate.inspectionstatistics.InspectionStatisticsService;
 import cn.iocoder.yudao.module.datacenter.service.eventdisposition.EventDispositionService;
@@ -71,8 +72,11 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
 
         // 插入
         WarningAlertListTableDO warningAlertListTable = BeanUtils.toBean(createReqVO, WarningAlertListTableDO.class);
-        warningAlertListTableMapper.insert(warningAlertListTable);
 
+        //自动生成预警编码
+//        warningAlertListTable.setAlertCode(UuidUtils.generateUUID());
+
+        warningAlertListTableMapper.insert(warningAlertListTable);
         // 新增：更新环卫考核统计结果
         updateInspectionStatisticsAfterAlertCreation();
 
