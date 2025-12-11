@@ -185,3 +185,9 @@ yudao:
     end-code: 9999 # 这里配置 9999 的原因是，测试方便。
 
 debug: false
+
+minio:
+  endpoint: http://192.168.8.68:9000
+  access-key: minioadmin
+  access-secret: minioadmin123
+  bucket: shunchang
