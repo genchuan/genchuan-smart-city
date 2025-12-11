@@ -9,14 +9,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import cn.iocoder.yudao.module.industry.dal.dataobject.universalscene.UniversalSceneDO;
+import cn.iocoder.yudao.module.industry.dal.dataobject.universal.dashboard.scene.base.UniversalSceneDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 
@@ -60,8 +58,7 @@ public class UniversalSceneServiceImpl implements UniversalSceneService {
                 throw exception(new ErrorCode(400, "二级场景的 level 必须为 2"));
             }
         }
-
-// 4. 场景名称禁止重复
+        // 4. 场景名称禁止重复
         LambdaQueryWrapper<UniversalSceneDO> labelWrapper = new LambdaQueryWrapper<>();
         labelWrapper.eq(UniversalSceneDO::getLabel, createReqVO.getLabel());
         Long labelCount = universalSceneMapper.selectCount(labelWrapper);
@@ -69,14 +66,13 @@ public class UniversalSceneServiceImpl implements UniversalSceneService {
             throw exception(new ErrorCode(400, "场景名称已存在"));
         }
 
-// 5. 场景值禁止重复
+        // 5. 场景值禁止重复
         LambdaQueryWrapper<UniversalSceneDO> valueWrapper = new LambdaQueryWrapper<>();
         valueWrapper.eq(UniversalSceneDO::getValue, createReqVO.getValue());
         Long valueCount = universalSceneMapper.selectCount(valueWrapper);
         if (valueCount > 0) {
             throw exception(new ErrorCode(400, "场景值已存在"));
         }
-
 
         // 插入
         UniversalSceneDO universalScene = BeanUtils.toBean(createReqVO, UniversalSceneDO.class);

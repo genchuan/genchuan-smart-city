@@ -3,9 +3,8 @@ package cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.sc
 import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.base.vo.UniversalScenePageReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.base.vo.UniversalSceneRespVO;
 import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.base.vo.UniversalSceneSaveReqVO;
-import cn.iocoder.yudao.module.industry.dal.dataobject.universalscene.UniversalSceneDO;
+import cn.iocoder.yudao.module.industry.dal.dataobject.universal.dashboard.scene.base.UniversalSceneDO;
 import cn.iocoder.yudao.module.industry.service.universal.dashboard.scene.base.UniversalSceneService;
-import org.apache.coyote.BadRequestException;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -14,7 +13,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 
-import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import java.util.*;

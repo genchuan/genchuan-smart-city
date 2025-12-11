@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.industry.dal.dataobject.universalscene;
+package cn.iocoder.yudao.module.industry.dal.dataobject.universal.dashboard.scene.base;
 
 import lombok.*;
 import java.util.*;

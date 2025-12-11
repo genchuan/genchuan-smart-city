@@ -7,9 +7,8 @@ import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.sce
 import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.base.vo.UniversalSceneSaveReqVO;
 import jakarta.validation.*;
 
-import cn.iocoder.yudao.module.industry.dal.dataobject.universalscene.UniversalSceneDO;
+import cn.iocoder.yudao.module.industry.dal.dataobject.universal.dashboard.scene.base.UniversalSceneDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 通用场景表，一级和二级场景 Service 接口

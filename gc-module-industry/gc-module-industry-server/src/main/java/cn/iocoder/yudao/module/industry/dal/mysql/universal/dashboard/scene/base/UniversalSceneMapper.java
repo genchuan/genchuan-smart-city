@@ -1,12 +1,10 @@
 package cn.iocoder.yudao.module.industry.dal.mysql.universal.dashboard.scene.base;
 
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.base.vo.UniversalScenePageReqVO;
-import cn.iocoder.yudao.module.industry.dal.dataobject.universalscene.UniversalSceneDO;
+import cn.iocoder.yudao.module.industry.dal.dataobject.universal.dashboard.scene.base.UniversalSceneDO;
 import org.apache.ibatis.annotations.Mapper;
 
 
