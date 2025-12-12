@@ -15,11 +15,11 @@ public class SceneFieldSaveReqVO {
 
     @Schema(description = "所属的场景", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @NotEmpty(message = "所属的场景")
-    private String sceneId;
+    private String sceneCode;
 
     @Schema(description = "唯一字段标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @NotEmpty(message = "唯一字段标识不能为空")
-    private String fieldId;
+    private String fieldCode;
 
     @Schema(description = "字段名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "设施名称")
     @NotEmpty(message = "字段名称不能为空")

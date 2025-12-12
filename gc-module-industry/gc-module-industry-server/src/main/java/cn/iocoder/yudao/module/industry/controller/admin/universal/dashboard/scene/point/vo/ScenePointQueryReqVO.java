@@ -21,7 +21,7 @@ public class ScenePointQueryReqVO {
 //    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 //    private LocalDateTime endTime;
 
-    @Schema(description = "场景id", example = "1")
-    private Long sceneId;
+    @Schema(description = "场景唯一标识码", example = "1")
+    private String sceneCode;
 
 }

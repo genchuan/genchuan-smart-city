@@ -21,8 +21,8 @@ public interface SceneFieldMapper extends BaseMapperX<SceneFieldDO> {
 
     default PageResult<SceneFieldDO> selectPage(SceneFieldPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<SceneFieldDO>()
-                .eqIfPresent(SceneFieldDO::getSceneId, reqVO.getSceneId())
-                .eqIfPresent(SceneFieldDO::getFieldId, reqVO.getFieldId())
+                .eqIfPresent(SceneFieldDO::getSceneCode, reqVO.getSceneCode())
+                .eqIfPresent(SceneFieldDO::getFieldCode, reqVO.getFieldCode())
                 .eqIfPresent(SceneFieldDO::getLabel, reqVO.getLabel())
                 .eqIfPresent(SceneFieldDO::getType, reqVO.getType())
                 .orderByDesc(SceneFieldDO::getId));

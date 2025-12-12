@@ -24,7 +24,7 @@ public class ScenePointRespVO {
     // 点位名称
     @Schema(description = "点位名称", example = "某某设备点位")
     @ExcelProperty("点位名称")
-    private String compName;
+    private String pointName;
 
     //专属字段列表
     @Schema(description = "专属字段列表")

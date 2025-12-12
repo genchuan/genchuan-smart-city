@@ -15,7 +15,7 @@ public class UniversalSceneSaveReqVO {
     @Schema(hidden = true)
 //    @Schema(description = "场景唯一标识", requiredMode = Schema.RequiredMode.REQUIRED)
 //    @NotEmpty(message = "场景唯一标识不能为空")
-    private String sceneId;
+    private String sceneCode;
 
     @Schema(description = "父级ID，0表示一级场景", requiredMode = Schema.RequiredMode.REQUIRED, example = "0")
     @NotNull(message = "父级ID，不能为空")

@@ -30,7 +30,7 @@ public class UniversalSceneDO extends BaseDO {
     /**
      * 场景唯一标识
      */
-    private String sceneId;
+    private String sceneCode;
     /**
      * 父级ID，0表示一级场景
      */

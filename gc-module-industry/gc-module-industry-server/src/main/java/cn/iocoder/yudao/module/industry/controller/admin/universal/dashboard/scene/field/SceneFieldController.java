@@ -42,10 +42,10 @@ public class SceneFieldController {
 
     @GetMapping("/listFiledBySceneId")
     @Operation(summary = "获得场景字段列表-通过所属场景id")
-    @Parameter(name = "sceneId", description = "所属场景id", required = true, example = "1")
+    @Parameter(name = "sceneCode", description = "所属场景唯一标识", required = true, example = "1")
     @PreAuthorize("@ss.hasPermission('industry:scene-field-list-scene:query')")
-    public CommonResult<List<SceneFieldRespVO>> listFiledBySceneId(@RequestParam Long sceneId) {
-        List<SceneFieldRespVO> sceneFieldList = sceneFieldService.listFiledBySceneId(sceneId);
+    public CommonResult<List<SceneFieldRespVO>> listFiledBySceneId(@RequestParam String sceneCode) {
+        List<SceneFieldRespVO> sceneFieldList = sceneFieldService.listFiledBySceneId(sceneCode);
         return success(BeanUtils.toBean(sceneFieldList, SceneFieldRespVO.class));
     }
 

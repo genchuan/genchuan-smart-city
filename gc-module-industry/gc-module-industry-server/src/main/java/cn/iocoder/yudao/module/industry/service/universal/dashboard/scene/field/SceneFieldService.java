@@ -56,5 +56,5 @@ public interface SceneFieldService {
      */
     PageResult<SceneFieldDO> getSceneFieldPage(SceneFieldPageReqVO pageReqVO);
 
-    List<SceneFieldRespVO> listFiledBySceneId(Long sceneId);
+    List<SceneFieldRespVO> listFiledBySceneId(String sceneCode);
 }

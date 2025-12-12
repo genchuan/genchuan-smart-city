@@ -16,7 +16,7 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 public class UniversalScenePageReqVO extends PageParam {
 
     @Schema(description = "场景唯一标识", example = "9162")
-    private String sceneId;
+    private String sceneCode;
 
     @Schema(description = "父级ID，0表示一级场景", example = "26486")
     private Long parentId;

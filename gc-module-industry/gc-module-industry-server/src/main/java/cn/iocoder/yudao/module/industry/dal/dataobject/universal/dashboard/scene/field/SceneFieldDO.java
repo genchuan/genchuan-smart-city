@@ -30,11 +30,11 @@ public class SceneFieldDO extends BaseDO {
     /**
      * 场景标识
      */
-    private String sceneId;
+    private String sceneCode;
     /**
      * 字段标识
      */
-    private String fieldId;
+    private String fieldCode;
     /**
      * 字段名称
      */

@@ -18,6 +18,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 public interface UniversalSceneService {
 
     /**
+     * 树形数据：优先调用模块A获取数据
+     */
+    List<UniversalSceneRespVO> listTreeByParentId();
+    /**
      * 创建通用场景表，一级和二级场景
      *
      * @param createReqVO 创建信息
@@ -42,10 +46,10 @@ public interface UniversalSceneService {
     /**
      * 获得通用场景表，一级和二级场景
      *
-     * @param id 编号
+     * @param parentId 编号
      * @return 通用场景表，一级和二级场景
      */
-    List<UniversalSceneRespVO> listByParentId(Long id);
+    List<UniversalSceneRespVO> listByParentId(Long parentId);
 
     /**
      * 获得通用场景表，一级和二级场景
@@ -62,5 +66,4 @@ public interface UniversalSceneService {
      * @return 通用场景表，一级和二级场景分页
      */
     PageResult<UniversalSceneDO> getUniversalScenePage(UniversalScenePageReqVO pageReqVO);
-
 }

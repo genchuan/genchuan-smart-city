@@ -14,10 +14,7 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -53,8 +50,8 @@ public class ScenePointServiceImpl implements ScenePointService {
     @Override
     public ScenePointRespVO getScenePoint(ScenePointQueryReqVO scenePointQueryReqVO) {
 
-        Long sceneId = scenePointQueryReqVO.getSceneId();
-        if (sceneId == null) {
+        String sceneCode = scenePointQueryReqVO.getSceneCode();
+        if (sceneCode == null) {
             throw exception(new ErrorCode(400, "场景ID不能为空"));
         }
 
@@ -62,7 +59,7 @@ public class ScenePointServiceImpl implements ScenePointService {
         // 1. 获取该场景的“专属字段名称列表”exclusiveFieldNameList
         // ================================
 
-        List<SceneFieldRespVO> SceneFieldList = sceneFieldService.listFiledBySceneId(sceneId);
+        List<SceneFieldRespVO> SceneFieldList = sceneFieldService.listFiledBySceneId(sceneCode);
         // 将 SceneFieldList 中每个对象的 label 字段提取出来，组成新的字符串列表List<String> exclusiveFieldNameList
         List<String> exclusiveFieldNameList = SceneFieldList.stream()
                 .map(SceneFieldRespVO::getLabel)  // 提取 label 字段
@@ -91,7 +88,7 @@ public class ScenePointServiceImpl implements ScenePointService {
         // 将bizData该字段名的值赋值给 ExclusiveField 的 value
         // ================================
         // 将 mapper 查询结果（Map 结构：字段名 → 字段值）
-        List<Object> bizDataList = scenePointDispService.getScenePointDataBySceneId(sceneId);
+        List<Object> bizDataList = scenePointDispService.getScenePointDataBySceneId(sceneCode);
         ObjectMapper objectMapper = new ObjectMapper();
 
         // 转成 List<Map<String,Object>>
@@ -106,7 +103,7 @@ public class ScenePointServiceImpl implements ScenePointService {
 
         // 将 bizData 中的值注入到 ExclusiveField.value
         for (ExclusiveField ef : exclusiveFieldList) {
-            String key = ef.getName(); // 专属字段名 = field_id
+            String key = ef.getName(); // 专属字段名
 
             if (bizDataMapList.get(0).containsKey(key)) {
                 ef.setValue(bizDataMapList.get(0).get(key)); // 给 value 赋实际业务数据值
@@ -124,7 +121,7 @@ public class ScenePointServiceImpl implements ScenePointService {
         // 通用字段赋值（lat、lng、compName）
         respVO.setLat(convertDouble(bizDataMapList.get(0).get("lat")));
         respVO.setLng(convertDouble(bizDataMapList.get(0).get("lng")));
-        respVO.setCompName((String) bizDataMapList.get(0).get("comp_name"));
+        respVO.setPointName((String) bizDataMapList.get(0).get("comp_name"));
 
         // 设置专属字段列表
         respVO.setExclusiveFieldList(exclusiveFieldList);
@@ -134,9 +131,11 @@ public class ScenePointServiceImpl implements ScenePointService {
 
     @Override
     public List<ScenePointRespVO> listScenePointBySceneId(ScenePointQueryReqVO scenePointQueryReqVO) {
+        // 定义通用字段集合
+        Set<String> commonFields = new HashSet<>(Arrays.asList("lat", "lng", "pointName"));
 
-        Long sceneId = scenePointQueryReqVO.getSceneId();
-        if (sceneId == null) {
+        String sceneCode = scenePointQueryReqVO.getSceneCode();
+        if (sceneCode == null) {
             throw exception(new ErrorCode(400, "场景ID不能为空"));
         }
 
@@ -144,7 +143,7 @@ public class ScenePointServiceImpl implements ScenePointService {
         // 1. 获取该场景的“专属字段名称列表”exclusiveFieldNameList
         // ================================
 
-        List<SceneFieldRespVO> SceneFieldList = sceneFieldService.listFiledBySceneId(sceneId);
+        List<SceneFieldRespVO> SceneFieldList = sceneFieldService.listFiledBySceneId(sceneCode);
         // 将 SceneFieldList 中每个对象的 label 字段提取出来，组成新的字符串列表List<String> exclusiveFieldNameList
         List<String> exclusiveFieldNameList = SceneFieldList.stream()
                 .map(SceneFieldRespVO::getLabel)  // 提取 label 字段
@@ -155,7 +154,7 @@ public class ScenePointServiceImpl implements ScenePointService {
         }
 
         // 2. 获取业务点位数据列表List<Object> bizDataList
-        List<Object> bizDataList = scenePointDispService.getScenePointDataBySceneId(sceneId);
+        List<Object> bizDataList = scenePointDispService.getScenePointDataBySceneId(sceneCode);
         if (bizDataList == null || bizDataList.isEmpty()) {
             throw exception(new ErrorCode(404, "点位数据不存在"));
         }
@@ -171,16 +170,19 @@ public class ScenePointServiceImpl implements ScenePointService {
             List<ExclusiveField> exclusiveFieldList = new ArrayList<>();
             for (String fieldName : exclusiveFieldNameList) {
                 ExclusiveField ef = new ExclusiveField();
-                ef.setName(fieldName);
-                ef.setValue(bizData.getOrDefault(fieldName, null));
-                exclusiveFieldList.add(ef);
+                //仅设置非通用字段
+                if (!commonFields.contains(fieldName)){
+                    ef.setName(fieldName);
+                    ef.setValue(bizData.getOrDefault(fieldName, null));
+                    exclusiveFieldList.add(ef);
+                }
             }
 
-            // 3.2 构造 ScenePointRespVO
+            // 3.2 构造 ScenePointRespVO 和 配置通用字段
             ScenePointRespVO respVO = new ScenePointRespVO();
             respVO.setLat(convertDouble(bizData.get("lat")));
             respVO.setLng(convertDouble(bizData.get("lng")));
-            respVO.setCompName((String) bizData.get("comp_name"));
+            respVO.setPointName((String) bizData.get("pointName"));
             respVO.setExclusiveFieldList(exclusiveFieldList);
 
             respList.add(respVO);

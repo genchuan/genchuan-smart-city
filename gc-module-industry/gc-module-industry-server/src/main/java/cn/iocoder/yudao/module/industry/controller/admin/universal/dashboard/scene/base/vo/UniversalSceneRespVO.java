@@ -18,7 +18,7 @@ public class UniversalSceneRespVO {
 
     @Schema(description = "场景唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "9162")
     @ExcelProperty("场景唯一标识")
-    private String sceneId;
+    private String sceneCode;
 
     @Schema(description = "父级ID，0表示一级场景", requiredMode = Schema.RequiredMode.REQUIRED, example = "26486")
     @ExcelProperty("父级ID，0表示一级场景")
@@ -59,5 +59,9 @@ public class UniversalSceneRespVO {
     @Schema(description = "通用扩展字段2")
     @ExcelProperty("通用扩展字段2")
     private String extCommon2;
+
+    @Schema(description = "子场景列表")
+    @ExcelIgnore
+    private List<UniversalSceneRespVO> children;
 
 }

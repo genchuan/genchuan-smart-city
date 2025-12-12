@@ -16,10 +16,10 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 public class SceneFieldPageReqVO extends PageParam {
 
     @Schema(description = "所属场景id", example = "5430")
-    private String sceneId;
+    private String sceneCode;
 
     @Schema(description = "唯一字段标识", example = "23799")
-    private String fieldId;
+    private String fieldCode;
 
     @Schema(description = "字段名称", example = "设施名称")
     private String label;

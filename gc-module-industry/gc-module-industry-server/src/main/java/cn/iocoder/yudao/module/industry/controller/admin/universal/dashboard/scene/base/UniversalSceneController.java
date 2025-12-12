@@ -31,7 +31,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 
 
-@Tag(name = "管理后台 - 通用场景")
+@Tag(name = "管理后台 - 场景管理")
 @RestController
 @RequestMapping("/industry/universal-scene")
 @Validated
@@ -39,6 +39,12 @@ public class UniversalSceneController {
 
     @Resource
     private UniversalSceneService universalSceneService;
+
+    @GetMapping("/tree")
+    @Operation(summary = "获取树形通用场景")
+    public CommonResult<List<UniversalSceneRespVO>> getSceneTree() {
+        return CommonResult.success(universalSceneService.listTreeByParentId());
+    }
 
     /**
      * 创建通用场景
@@ -71,10 +77,10 @@ public class UniversalSceneController {
     //通过父id获取全部的子场景（父id为0获取全部一级场景）
     @GetMapping("/listByParentId")
     @Operation(summary = "通过父id获取全部的子场景（父id为0获取全部一级场景）")
-    @Parameter(name = "id", description = "编号", required = true, example = "0")
+    @Parameter(name = "parentId", description = "父id", required = true, example = "0")
     @PreAuthorize("@ss.hasPermission('industry:universal-scene-children:list')")
-    public CommonResult<List<UniversalSceneRespVO>> listByParentId(@RequestParam("id") Long id) {
-        List<UniversalSceneRespVO> chilrenList = universalSceneService.listByParentId(id);
+    public CommonResult<List<UniversalSceneRespVO>> listByParentId(@RequestParam Long parentId) {
+        List<UniversalSceneRespVO> chilrenList = universalSceneService.listByParentId(parentId);
         return success(BeanUtils.toBean(chilrenList, UniversalSceneRespVO.class));
     }
 

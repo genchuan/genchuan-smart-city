@@ -18,7 +18,7 @@ public interface UniversalSceneMapper extends BaseMapperX<UniversalSceneDO> {
 
     default PageResult<UniversalSceneDO> selectPage(UniversalScenePageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<UniversalSceneDO>()
-                .eqIfPresent(UniversalSceneDO::getSceneId, reqVO.getSceneId())
+                .eqIfPresent(UniversalSceneDO::getSceneCode, reqVO.getSceneCode())
                 .eqIfPresent(UniversalSceneDO::getParentId, reqVO.getParentId())
                 .eqIfPresent(UniversalSceneDO::getLevel, reqVO.getLevel())
                 .eqIfPresent(UniversalSceneDO::getDescription, reqVO.getDescription())
