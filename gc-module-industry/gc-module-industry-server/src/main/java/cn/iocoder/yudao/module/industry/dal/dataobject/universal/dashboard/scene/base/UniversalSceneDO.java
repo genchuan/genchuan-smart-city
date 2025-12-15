@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.industry.dal.dataobject.universalscene;
+package cn.iocoder.yudao.module.industry.dal.dataobject.universal.dashboard.scene.base;
 
 import lombok.*;
 import java.util.*;
@@ -30,7 +30,7 @@ public class UniversalSceneDO extends BaseDO {
     /**
      * 场景唯一标识
      */
-    private String sceneId;
+    private String sceneCode;
     /**
      * 父级ID，0表示一级场景
      */

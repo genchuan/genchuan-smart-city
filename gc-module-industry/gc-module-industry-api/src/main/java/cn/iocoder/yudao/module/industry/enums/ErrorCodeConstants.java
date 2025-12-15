@@ -11,6 +11,9 @@ public interface ErrorCodeConstants {
     ErrorCode MNG_COMP_NOT_EXISTS = new ErrorCode(100_001, "找不到管理部件");
 
     // ========== 通用场景表，一级和二级场景  ==========
-    ErrorCode UNIVERSAL_SCENE_NOT_EXISTS = new ErrorCode(200_001, "通用场景表，一级和二级场景不存在");
+    ErrorCode UNIVERSAL_SCENE_NOT_EXISTS = new ErrorCode(500_001, "通用场景表，一级和二级场景不存在");
+
+    // ========== 场景字段   ==========
+    ErrorCode SCENE_FIELD_NOT_EXISTS = new ErrorCode(500_002, "场景字段不存在");
 
 }

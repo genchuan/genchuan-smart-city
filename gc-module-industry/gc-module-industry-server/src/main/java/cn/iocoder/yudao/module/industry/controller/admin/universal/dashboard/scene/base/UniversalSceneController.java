@@ -3,9 +3,8 @@ package cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.sc
 import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.base.vo.UniversalScenePageReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.base.vo.UniversalSceneRespVO;
 import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.base.vo.UniversalSceneSaveReqVO;
-import cn.iocoder.yudao.module.industry.dal.dataobject.universalscene.UniversalSceneDO;
+import cn.iocoder.yudao.module.industry.dal.dataobject.universal.dashboard.scene.base.UniversalSceneDO;
 import cn.iocoder.yudao.module.industry.service.universal.dashboard.scene.base.UniversalSceneService;
-import org.apache.coyote.BadRequestException;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -14,7 +13,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 
-import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import java.util.*;
@@ -33,7 +31,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 
 
-@Tag(name = "管理后台 - 通用场景")
+@Tag(name = "管理后台 - 场景管理")
 @RestController
 @RequestMapping("/industry/universal-scene")
 @Validated
@@ -41,6 +39,12 @@ public class UniversalSceneController {
 
     @Resource
     private UniversalSceneService universalSceneService;
+
+    @GetMapping("/tree")
+    @Operation(summary = "获取树形通用场景")
+    public CommonResult<List<UniversalSceneRespVO>> getSceneTree() {
+        return CommonResult.success(universalSceneService.listTreeByParentId());
+    }
 
     /**
      * 创建通用场景
@@ -73,10 +77,10 @@ public class UniversalSceneController {
     //通过父id获取全部的子场景（父id为0获取全部一级场景）
     @GetMapping("/listByParentId")
     @Operation(summary = "通过父id获取全部的子场景（父id为0获取全部一级场景）")
-    @Parameter(name = "id", description = "编号", required = true, example = "0")
+    @Parameter(name = "parentId", description = "父id", required = true, example = "0")
     @PreAuthorize("@ss.hasPermission('industry:universal-scene-children:list')")
-    public CommonResult<List<UniversalSceneRespVO>> listByParentId(@RequestParam("id") Long id) {
-        List<UniversalSceneRespVO> chilrenList = universalSceneService.listByParentId(id);
+    public CommonResult<List<UniversalSceneRespVO>> listByParentId(@RequestParam Long parentId) {
+        List<UniversalSceneRespVO> chilrenList = universalSceneService.listByParentId(parentId);
         return success(BeanUtils.toBean(chilrenList, UniversalSceneRespVO.class));
     }
 

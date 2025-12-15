@@ -7,9 +7,8 @@ import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.sce
 import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.base.vo.UniversalSceneSaveReqVO;
 import jakarta.validation.*;
 
-import cn.iocoder.yudao.module.industry.dal.dataobject.universalscene.UniversalSceneDO;
+import cn.iocoder.yudao.module.industry.dal.dataobject.universal.dashboard.scene.base.UniversalSceneDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 通用场景表，一级和二级场景 Service 接口
@@ -18,6 +17,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
  */
 public interface UniversalSceneService {
 
+    /**
+     * 树形数据：优先调用模块A获取数据
+     */
+    List<UniversalSceneRespVO> listTreeByParentId();
     /**
      * 创建通用场景表，一级和二级场景
      *
@@ -43,10 +46,10 @@ public interface UniversalSceneService {
     /**
      * 获得通用场景表，一级和二级场景
      *
-     * @param id 编号
+     * @param parentId 编号
      * @return 通用场景表，一级和二级场景
      */
-    List<UniversalSceneRespVO> listByParentId(Long id);
+    List<UniversalSceneRespVO> listByParentId(Long parentId);
 
     /**
      * 获得通用场景表，一级和二级场景
@@ -63,5 +66,4 @@ public interface UniversalSceneService {
      * @return 通用场景表，一级和二级场景分页
      */
     PageResult<UniversalSceneDO> getUniversalScenePage(UniversalScenePageReqVO pageReqVO);
-
 }

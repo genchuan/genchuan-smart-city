@@ -1,6 +1,11 @@
 package cn.iocoder.yudao.module.industry.service.universal.dashboard.scene.base;
 
 import cn.iocoder.yudao.framework.common.exception.ErrorCode;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.module.datacenter.controller.admin.appscenecategory.vo.AppSceneCategoryTreeRespVO;
+import cn.iocoder.yudao.module.datacenter.dal.dataobject.appscenecategory.AppSceneCategoryDO;
+import cn.iocoder.yudao.module.datacenter.service.appscenecategory.AppSceneCategoryService;
+import cn.iocoder.yudao.module.industry.client.datacenter.AppSceneCategoryFeignClient;
 import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.base.vo.UniversalScenePageReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.base.vo.UniversalSceneRespVO;
 import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.base.vo.UniversalSceneSaveReqVO;
@@ -9,14 +14,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import cn.iocoder.yudao.module.industry.dal.dataobject.universalscene.UniversalSceneDO;
+import cn.iocoder.yudao.module.industry.dal.dataobject.universal.dashboard.scene.base.UniversalSceneDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 
@@ -35,12 +38,57 @@ public class UniversalSceneServiceImpl implements UniversalSceneService {
 
     @Resource
     private UniversalSceneMapper universalSceneMapper;
+    @Resource
+    private AppSceneCategoryFeignClient appSceneCategoryFeignClient;
+
+    @Override
+    public List<UniversalSceneRespVO> listTreeByParentId() {
+        try {
+            // 调用模块A获取原始树
+            CommonResult<List<AppSceneCategoryTreeRespVO>> result =
+                    appSceneCategoryFeignClient.getAppSceneCategoryTree();
+
+            System.out.println("Feign 调用结果: " + result);
+            System.out.println("状态码: " + result.getCode());
+            System.out.println("消息: " + result.getMsg());
+
+            List<AppSceneCategoryTreeRespVO> tree = result.getData();
+
+            if (tree == null) {
+                System.out.println("Data 为 null!");
+                tree = new ArrayList<>();
+            }
+
+            // 转换成模块B的格式
+            List<UniversalSceneRespVO> respList = tree.stream()
+                    .map(this::convert)
+                    .collect(Collectors.toList());
+
+            return respList;
+        } catch (Exception e) {
+            System.out.println("Feign 调用异常: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    // 转换方法
+    private UniversalSceneRespVO convert(AppSceneCategoryTreeRespVO vo) {
+        UniversalSceneRespVO resp = new UniversalSceneRespVO();
+        resp.setLabel(vo.getSceneCatName());
+        resp.setValue(vo.getSceneCatCode());
+        resp.setChildren(vo.getChildren() == null ? null :
+                vo.getChildren().stream().map(this::convert).collect(Collectors.toList()));
+        return resp;
+    }
+
+
 
     @Override
     public Long createUniversalScene(UniversalSceneSaveReqVO createReqVO) {
         // 1. 自动生成 sceneId，使用 UUID
-        if (createReqVO.getSceneId() == null || createReqVO.getSceneId().isEmpty()) {
-            createReqVO.setSceneId(UUID.randomUUID().toString().replace("-", ""));
+        if (createReqVO.getSceneCode() == null || createReqVO.getSceneCode().isEmpty()) {
+            createReqVO.setSceneCode(UUID.randomUUID().toString().replace("-", ""));
         }
 
         // 2. 如果父级 ID 不为 0，校验父场景是否存在
@@ -60,8 +108,7 @@ public class UniversalSceneServiceImpl implements UniversalSceneService {
                 throw exception(new ErrorCode(400, "二级场景的 level 必须为 2"));
             }
         }
-
-// 4. 场景名称禁止重复
+        // 4. 场景名称禁止重复
         LambdaQueryWrapper<UniversalSceneDO> labelWrapper = new LambdaQueryWrapper<>();
         labelWrapper.eq(UniversalSceneDO::getLabel, createReqVO.getLabel());
         Long labelCount = universalSceneMapper.selectCount(labelWrapper);
@@ -69,14 +116,13 @@ public class UniversalSceneServiceImpl implements UniversalSceneService {
             throw exception(new ErrorCode(400, "场景名称已存在"));
         }
 
-// 5. 场景值禁止重复
+        // 5. 场景值禁止重复
         LambdaQueryWrapper<UniversalSceneDO> valueWrapper = new LambdaQueryWrapper<>();
         valueWrapper.eq(UniversalSceneDO::getValue, createReqVO.getValue());
         Long valueCount = universalSceneMapper.selectCount(valueWrapper);
         if (valueCount > 0) {
             throw exception(new ErrorCode(400, "场景值已存在"));
         }
-
 
         // 插入
         UniversalSceneDO universalScene = BeanUtils.toBean(createReqVO, UniversalSceneDO.class);
@@ -110,22 +156,17 @@ public class UniversalSceneServiceImpl implements UniversalSceneService {
     }
 
     @Override
-    public List<UniversalSceneRespVO> listByParentId(Long id) {
+    public List<UniversalSceneRespVO> listByParentId(Long parentId) {
         // 1. 查询数据库
         LambdaQueryWrapper<UniversalSceneDO> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(UniversalSceneDO::getParentId, id)
+        queryWrapper.eq(UniversalSceneDO::getParentId, parentId)
                 .orderByAsc(UniversalSceneDO::getId);
         List<UniversalSceneDO> sceneList = universalSceneMapper.selectList(queryWrapper);
 
         // 2. 转换 DO -> VO
         return sceneList.stream().map(scene -> {
             UniversalSceneRespVO vo = new UniversalSceneRespVO();
-            // 手动拷贝字段
-            vo.setId(scene.getId());
-            vo.setLabel(scene.getLabel());
-            vo.setValue(scene.getValue());
-            vo.setSceneId(scene.getSceneId());
-            vo.setDescription(scene.getDescription());
+            BeanUtils.copyProperties(scene, vo); // 一次性拷贝同名字段
             return vo;
         }).collect(Collectors.toList());
     }
