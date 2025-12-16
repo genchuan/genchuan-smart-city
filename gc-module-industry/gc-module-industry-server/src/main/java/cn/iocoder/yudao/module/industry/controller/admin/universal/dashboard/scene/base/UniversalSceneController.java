@@ -31,7 +31,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 
 
-@Tag(name = "管理后台 - 场景管理")
+@Tag(name = "管理后台 - 场景大屏1-场景列表")
 @RestController
 @RequestMapping("/industry/universal-scene")
 @Validated
@@ -40,11 +40,18 @@ public class UniversalSceneController {
     @Resource
     private UniversalSceneService universalSceneService;
 
-    @GetMapping("/tree")
-    @Operation(summary = "获取树形通用场景")
-    public CommonResult<List<UniversalSceneRespVO>> getSceneTree() {
-        return CommonResult.success(universalSceneService.listTreeByParentId());
+//    @GetMapping("/tree")
+//    @Operation(summary = "获取树形通用场景")
+//    public CommonResult<List<UniversalSceneRespVO>> getSceneTree() {
+//        return CommonResult.success(universalSceneService.listTreeByParentId());
+//    }
+    @GetMapping("/list")
+    @Operation(summary = "1.获取场景列表接口")
+    public CommonResult<List<UniversalSceneRespVO>> getSceneList() {
+        List<UniversalSceneRespVO> list = universalSceneService.listTreeByParentId();
+        return CommonResult.success(list);
     }
+
 
     /**
      * 创建通用场景

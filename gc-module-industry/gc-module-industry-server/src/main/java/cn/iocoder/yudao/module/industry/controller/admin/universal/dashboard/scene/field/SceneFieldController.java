@@ -1,10 +1,12 @@
 package cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.field;
 
+import cn.iocoder.yudao.framework.common.exception.ErrorCode;
 import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.field.vo.SceneFieldPageReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.field.vo.SceneFieldRespVO;
 import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.field.vo.SceneFieldSaveReqVO;
 import cn.iocoder.yudao.module.industry.dal.dataobject.universal.dashboard.scene.field.SceneFieldDO;
 import cn.iocoder.yudao.module.industry.service.universal.dashboard.scene.field.SceneFieldService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -22,16 +24,18 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+
+import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
+import static cn.iocoder.yudao.module.industry.enums.ErrorCodeConstants.SCENE_MAP_CONFIG_NOT_EXISTS;
 
 
-
-@Tag(name = "管理后台 - 场景字段")
+@Tag(name = "管理后台 - 场景大屏2-场景字段")
 @RestController
 @RequestMapping("/industry/scene-field")
 @Validated
@@ -40,11 +44,14 @@ public class SceneFieldController {
     @Resource
     private SceneFieldService sceneFieldService;
 
-    @GetMapping("/listFiledBySceneId")
-    @Operation(summary = "获得场景字段列表-通过所属场景id")
-    @Parameter(name = "sceneCode", description = "所属场景唯一标识", required = true, example = "1")
+    @GetMapping("/listFiledBySceneId/{sceneKey}")
+    @Operation(summary = "2. 获取场景字段列表接口")
     @PreAuthorize("@ss.hasPermission('industry:scene-field-list-scene:query')")
-    public CommonResult<List<SceneFieldRespVO>> listFiledBySceneId(@RequestParam String sceneCode) {
+    public CommonResult<List<SceneFieldRespVO>> listFiledBySceneId(@PathVariable String sceneKey) {
+        if (StringUtils.isBlank(sceneKey)) {
+            throw exception(new ErrorCode(400, "sceneKey不能为空"));
+        }
+        String sceneCode=sceneKey;
         List<SceneFieldRespVO> sceneFieldList = sceneFieldService.listFiledBySceneId(sceneCode);
         return success(BeanUtils.toBean(sceneFieldList, SceneFieldRespVO.class));
     }

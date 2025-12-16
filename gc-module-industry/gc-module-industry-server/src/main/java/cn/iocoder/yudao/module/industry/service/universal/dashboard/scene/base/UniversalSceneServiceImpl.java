@@ -41,46 +41,73 @@ public class UniversalSceneServiceImpl implements UniversalSceneService {
     @Resource
     private AppSceneCategoryFeignClient appSceneCategoryFeignClient;
 
+//    @Override
+//    public List<UniversalSceneRespVO> listTreeByParentId() {
+//        try {
+//            // 调用模块A获取原始树
+//            CommonResult<List<AppSceneCategoryTreeRespVO>> result =
+//                    appSceneCategoryFeignClient.getAppSceneCategoryTree();
+//
+//            System.out.println("Feign 调用结果: " + result);
+//            System.out.println("状态码: " + result.getCode());
+//            System.out.println("消息: " + result.getMsg());
+//
+//            List<AppSceneCategoryTreeRespVO> tree = result.getData();
+//
+//            if (tree == null) {
+//                System.out.println("Data 为 null!");
+//                tree = new ArrayList<>();
+//            }
+//
+//            // 转换成模块B的格式
+//            List<UniversalSceneRespVO> respList = tree.stream()
+//                    .map(this::convert)
+//                    .collect(Collectors.toList());
+//
+//            return respList;
+//        } catch (Exception e) {
+//            System.out.println("Feign 调用异常: " + e.getMessage());
+//            e.printStackTrace();
+//            return new ArrayList<>();
+//        }
+//    }
+//
+//    // 转换方法
+//    private UniversalSceneRespVO convert(AppSceneCategoryTreeRespVO vo) {
+//        UniversalSceneRespVO resp = new UniversalSceneRespVO();
+//        resp.setLabel(vo.getSceneCatName());
+//        resp.setValue(vo.getSceneCatCode());
+//        resp.setChildren(vo.getChildren() == null ? null :
+//                vo.getChildren().stream().map(this::convert).collect(Collectors.toList()));
+//        return resp;
+//    }
+
     @Override
     public List<UniversalSceneRespVO> listTreeByParentId() {
         try {
-            // 调用模块A获取原始树
             CommonResult<List<AppSceneCategoryTreeRespVO>> result =
                     appSceneCategoryFeignClient.getAppSceneCategoryTree();
-
-            System.out.println("Feign 调用结果: " + result);
-            System.out.println("状态码: " + result.getCode());
-            System.out.println("消息: " + result.getMsg());
-
             List<AppSceneCategoryTreeRespVO> tree = result.getData();
-
-            if (tree == null) {
-                System.out.println("Data 为 null!");
-                tree = new ArrayList<>();
-            }
-
-            // 转换成模块B的格式
-            List<UniversalSceneRespVO> respList = tree.stream()
-                    .map(this::convert)
-                    .collect(Collectors.toList());
-
-            return respList;
+            if (tree == null) tree = new ArrayList<>();
+            // 转换成接口文档字段
+            return tree.stream().map(this::convert).collect(Collectors.toList());
         } catch (Exception e) {
-            System.out.println("Feign 调用异常: " + e.getMessage());
             e.printStackTrace();
             return new ArrayList<>();
         }
     }
 
-    // 转换方法
+    // 转换方法，映射 value/label/children/desc
     private UniversalSceneRespVO convert(AppSceneCategoryTreeRespVO vo) {
         UniversalSceneRespVO resp = new UniversalSceneRespVO();
-        resp.setLabel(vo.getSceneCatName());
-        resp.setValue(vo.getSceneCatCode());
-        resp.setChildren(vo.getChildren() == null ? null :
+        resp.setValue(vo.getSceneCatCode());           // 文档 value
+        resp.setLabel(vo.getSceneCatName());           // 文档 label
+        resp.setDesc(vo.getSceneCatDesc());            // 文档 desc
+        resp.setChildren(vo.getChildren() == null ? new ArrayList<>() :
                 vo.getChildren().stream().map(this::convert).collect(Collectors.toList()));
         return resp;
     }
+
 
 
 

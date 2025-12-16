@@ -28,4 +28,22 @@ public interface SceneFieldMapper extends BaseMapperX<SceneFieldDO> {
                 .orderByDesc(SceneFieldDO::getId));
     }
 
+    /**
+     * 根据 sceneCode 查询场景字段列表
+     */
+    default List<SceneFieldDO> selectBySceneCode(String sceneCode) {
+        return selectList(new LambdaQueryWrapperX<SceneFieldDO>()
+                .eq(SceneFieldDO::getSceneCode, sceneCode)
+                .orderByAsc(SceneFieldDO::getId));
+    }
+
+
+
+    /**
+     * 根据 sceneCode 删除场景字段
+     */
+    default void deleteBySceneCode(String sceneCode) {
+        delete(new LambdaQueryWrapperX<SceneFieldDO>()
+                .eq(SceneFieldDO::getSceneCode, sceneCode));
+    }
 }

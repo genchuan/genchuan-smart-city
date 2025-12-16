@@ -136,7 +136,7 @@ public class SceneFieldServiceImpl implements SceneFieldService {
             SceneFieldRespVO vo = new SceneFieldRespVO();
             vo.setId(item.getId());
             vo.setSceneCode(item.getSceneCode());
-            vo.setFieldCode(item.getFieldCode());
+            vo.setKey(item.getFieldCode());
             vo.setLabel(item.getLabel());
             vo.setType(item.getType());
             vo.setCreateTime(item.getCreateTime());

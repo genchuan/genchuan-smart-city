@@ -44,4 +44,20 @@ public interface SceneMapConfigMapper extends BaseMapperX<SceneMapConfigDO> {
                 .orderByDesc(SceneMapConfigDO::getId));
     }
 
+    /**
+     * 根据 sceneCode 查询场景地图整体配置（唯一一条）
+     */
+    default SceneMapConfigDO selectBySceneCode(String sceneCode) {
+        return selectOne(new LambdaQueryWrapperX<SceneMapConfigDO>()
+                .eq(SceneMapConfigDO::getSceneCode, sceneCode)
+                .last("limit 1"));
+    }
+
+    /**
+     * 根据 sceneCode 删除场景地图整体配置
+     */
+    default void deleteBySceneCode(String sceneCode) {
+        delete(new LambdaQueryWrapperX<SceneMapConfigDO>()
+                .eq(SceneMapConfigDO::getSceneCode, sceneCode));
+    }
 }

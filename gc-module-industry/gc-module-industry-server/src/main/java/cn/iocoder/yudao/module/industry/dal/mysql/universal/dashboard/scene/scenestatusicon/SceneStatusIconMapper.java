@@ -34,4 +34,20 @@ public interface SceneStatusIconMapper extends BaseMapperX<SceneStatusIconDO> {
                 .orderByDesc(SceneStatusIconDO::getId));
     }
 
+    /**
+     * 根据 sceneCode 查询状态字段图标配置
+     */
+    default List<SceneStatusIconDO> selectBySceneCode(String sceneCode) {
+        return selectList(new LambdaQueryWrapperX<SceneStatusIconDO>()
+                .eq(SceneStatusIconDO::getSceneCode, sceneCode)
+                .orderByAsc(SceneStatusIconDO::getId));
+    }
+
+    /**
+     * 根据 sceneCode 删除状态字段图标配置
+     */
+    default void deleteBySceneCode(String sceneCode) {
+        delete(new LambdaQueryWrapperX<SceneStatusIconDO>()
+                .eq(SceneStatusIconDO::getSceneCode, sceneCode));
+    }
 }

@@ -10,15 +10,9 @@ import java.time.LocalDateTime;
 @Data
 public class SceneConfigQueryReqVO {
 
-    @Schema(description = "查询地区-省市县三级shortCode码，6位", example = "110000")
-    private String regionShortCode;
+//    @Schema(description = "查询场景码", example = "0101")
+    @Schema(hidden = true)
+    private String sceneKey;    //对应sceneCode
 
-    @Schema(description = "统计开始时间（含）,yyyy-MM-dd HH:mm:ss", example = "2025-01-01 09:00:00")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime startTime;
-
-    @Schema(description = "统计结束时间（含）,yyyy-MM-dd HH:mm:ss", example = "2025-11-01 23:59:59")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime endTime;
 
 }

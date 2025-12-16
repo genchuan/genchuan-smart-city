@@ -39,6 +39,11 @@ public class SceneFieldDO extends BaseDO {
      * 字段名称
      */
     private String label;
+
+    /**
+     * 是否选择（1/0）
+     */
+    private Integer isSelected;
     /**
      * 字段类型：normal/status/coord
      */

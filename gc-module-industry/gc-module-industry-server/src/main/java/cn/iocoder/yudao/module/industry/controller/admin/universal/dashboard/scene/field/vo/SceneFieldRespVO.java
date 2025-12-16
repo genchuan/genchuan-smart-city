@@ -21,9 +21,13 @@ public class SceneFieldRespVO {
     @ExcelProperty("所属场景id")
     private String sceneCode;
 
+//    @Schema(description = "唯一字段标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "23799")
+//    @ExcelProperty("唯一字段标识")
+//    private String fieldCode;
+
     @Schema(description = "唯一字段标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "23799")
     @ExcelProperty("唯一字段标识")
-    private String fieldCode;
+    private String key;
 
     @Schema(description = "字段名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "设施名称")
     @ExcelProperty("字段名称")

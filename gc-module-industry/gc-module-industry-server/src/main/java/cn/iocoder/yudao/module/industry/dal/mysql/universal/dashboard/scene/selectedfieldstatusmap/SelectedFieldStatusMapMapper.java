@@ -33,4 +33,20 @@ public interface SelectedFieldStatusMapMapper extends BaseMapperX<SelectedFieldS
                 .orderByDesc(SelectedFieldStatusMapDO::getId));
     }
 
+    /**
+     * 根据 sceneCode 查询字段状态映射
+     */
+    default List<SelectedFieldStatusMapDO> selectBySceneCode(String sceneCode) {
+        return selectList(new LambdaQueryWrapperX<SelectedFieldStatusMapDO>()
+                .eq(SelectedFieldStatusMapDO::getSceneCode, sceneCode)
+                .orderByAsc(SelectedFieldStatusMapDO::getId));
+    }
+
+    /**
+     * 根据 sceneCode 删除字段状态映射
+     */
+    default void deleteBySceneCode(String sceneCode) {
+        delete(new LambdaQueryWrapperX<SelectedFieldStatusMapDO>()
+                .eq(SelectedFieldStatusMapDO::getSceneCode, sceneCode));
+    }
 }

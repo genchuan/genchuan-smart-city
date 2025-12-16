@@ -4,6 +4,7 @@ import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.sce
 import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.point.vo.ScenePointRespVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 场景点位数据 Service 接口
@@ -17,7 +18,9 @@ public interface ScenePointService {
      * @param scenePointQueryReqVO 查询条件
      * @return 查询结果
      */
-    ScenePointRespVO getScenePoint(ScenePointQueryReqVO scenePointQueryReqVO);
+//    ScenePointRespVO getScenePoint(ScenePointQueryReqVO scenePointQueryReqVO);
 
     List<ScenePointRespVO> listScenePointBySceneId(ScenePointQueryReqVO scenePointQueryReqVO);
+
+    List<Map<String, Object>> listScenePointBySceneIdMap(ScenePointQueryReqVO queryVO);
 }
