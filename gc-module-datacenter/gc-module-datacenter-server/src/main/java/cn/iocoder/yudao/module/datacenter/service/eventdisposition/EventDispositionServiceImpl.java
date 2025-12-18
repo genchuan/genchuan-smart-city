@@ -76,4 +76,9 @@ public class EventDispositionServiceImpl implements EventDispositionService {
         return eventDispositionMapper.selectOne(EventDispositionDO::getEventTypeId, eventTypeId);
     }
 
+    @Override
+    public EventDispositionDO getEventDispositionByEventTypeIdAndDivisionCode(String eventTypeId, String divisionCode) {
+        return eventDispositionMapper.selectByEventTypeIdAndDivisionCode(eventTypeId, divisionCode);
+    }
+
 }

@@ -218,13 +218,14 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
         // todo 通过事件关联处置表查找流程模型
         // 通过预警类型ID查询事件关联处置表，获取流程模型ID
         String warningTypeId = warningAlertListTable.getWarningTypeId();
+        String divisionCode = warningAlertListTable.getRegionCode(); // 获取行政区划编码
 
         if (warningTypeId == null || warningTypeId.trim().isEmpty()) {
             throw new IllegalArgumentException("预警类型ID不能为空");
         }
 
-        // 查询事件关联处置配置
-        EventDispositionDO eventDisposition = eventDispositionService.getEventDispositionByEventTypeId(warningTypeId);
+        // 查询事件关联处置配置（根据事件类型ID和行政区划编码）
+        EventDispositionDO eventDisposition = eventDispositionService.getEventDispositionByEventTypeIdAndDivisionCode(warningTypeId, divisionCode);
         if (eventDisposition == null) {
             throw new IllegalArgumentException("未找到对应的事件关联处置配置，预警类型ID：" + warningTypeId);
         }
@@ -233,11 +234,7 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
             throw new IllegalArgumentException("事件关联处置配置中流程模型ID为空，事件类型ID：" + warningTypeId);
         }
 
-
-//        ManagedMatterMajorDO managedMatterMajor = appSceneCategoryService.getAppSceneCategoryPage(warningAlertListTable.getWarningTypeId());
-//                managedMatterMajorService.getManagedMatterMajor(Long.parseLong(warningAlertListTable.getWarningType()));
-
-// 创建流程实例
+        // 创建流程实例
         CommonResult<String> commonResult = processInstanceApi.createProcessInstance(1L,
                 new BpmProcessInstanceCreateReqDTO()
                         .setProcessDefinitionKey(eventDisposition.getProcessModelId())

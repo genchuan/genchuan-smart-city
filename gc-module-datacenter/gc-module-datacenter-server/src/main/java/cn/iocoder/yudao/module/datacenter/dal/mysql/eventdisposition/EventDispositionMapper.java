@@ -33,6 +33,11 @@ public interface EventDispositionMapper extends BaseMapperX<EventDispositionDO> 
                 .orderByDesc(EventDispositionDO::getId));
     }
 
+    default EventDispositionDO selectByEventTypeIdAndDivisionCode(String eventTypeId, String divisionCode) {
+        return selectOne(new LambdaQueryWrapperX<EventDispositionDO>()
+                .eq(EventDispositionDO::getEventTypeId, eventTypeId)
+                .eq(EventDispositionDO::getDivisionCode, divisionCode));
+    }
 
     default EventDispositionDO selectByEventTypeId(String eventTypeId) {
         return selectOne(EventDispositionDO::getEventTypeId, eventTypeId);
