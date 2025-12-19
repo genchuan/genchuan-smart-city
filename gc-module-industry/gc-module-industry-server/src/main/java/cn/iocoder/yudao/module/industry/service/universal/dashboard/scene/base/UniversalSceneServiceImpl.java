@@ -5,7 +5,7 @@ import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.module.datacenter.controller.admin.appscenecategory.vo.AppSceneCategoryTreeRespVO;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.appscenecategory.AppSceneCategoryDO;
 import cn.iocoder.yudao.module.datacenter.service.appscenecategory.AppSceneCategoryService;
-import cn.iocoder.yudao.module.industry.client.datacenter.AppSceneCategoryFeignClient;
+//import cn.iocoder.yudao.module.industry.client.datacenter.AppSceneCategoryFeignClient;
 import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.base.vo.UniversalScenePageReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.base.vo.UniversalSceneRespVO;
 import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.base.vo.UniversalSceneSaveReqVO;
@@ -38,8 +38,8 @@ public class UniversalSceneServiceImpl implements UniversalSceneService {
 
     @Resource
     private UniversalSceneMapper universalSceneMapper;
-    @Resource
-    private AppSceneCategoryFeignClient appSceneCategoryFeignClient;
+//    @Resource
+//    private AppSceneCategoryFeignClient appSceneCategoryFeignClient;
 
 //    @Override
 //    public List<UniversalSceneRespVO> listTreeByParentId() {
@@ -85,12 +85,14 @@ public class UniversalSceneServiceImpl implements UniversalSceneService {
     @Override
     public List<UniversalSceneRespVO> listTreeByParentId() {
         try {
-            CommonResult<List<AppSceneCategoryTreeRespVO>> result =
-                    appSceneCategoryFeignClient.getAppSceneCategoryTree();
-            List<AppSceneCategoryTreeRespVO> tree = result.getData();
-            if (tree == null) tree = new ArrayList<>();
-            // 转换成接口文档字段
-            return tree.stream().map(this::convert).collect(Collectors.toList());
+            //TODO 待改
+            return new ArrayList<>();
+//            CommonResult<List<AppSceneCategoryTreeRespVO>> result =
+//                    appSceneCategoryFeignClient.getAppSceneCategoryTree();
+//            List<AppSceneCategoryTreeRespVO> tree = result.getData();
+//            if (tree == null) tree = new ArrayList<>();
+//            // 转换成接口文档字段
+//            return tree.stream().map(this::convert).collect(Collectors.toList());
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
