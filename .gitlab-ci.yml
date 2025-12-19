@@ -32,12 +32,10 @@ BuildAndPush:
           "yudao-module-system-server") jar_path="yudao-module-system/yudao-module-system-server" ;;
           "yudao-module-iot-biz") jar_path="yudao-module-iot/yudao-module-iot-biz" ;;
         esac
-#        "gc-module-industry-server" "gc-module-industry-server") jar_path="gc-module-industry/gc-module-industry-server" ;;
         docker build \
           --build-arg MODULE_NAME="$module" \
           --build-arg JAR_PATH="$jar_path" \
           -t "$DOCKER_REGISTRY/sccsgl/$module:$POD_TAG" .
-        # 推送镜像到仓库
         docker push "$DOCKER_REGISTRY/sccsgl/$module:$POD_TAG"
       done
 
