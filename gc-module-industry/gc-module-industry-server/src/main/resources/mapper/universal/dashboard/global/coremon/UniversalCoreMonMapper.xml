@@ -21,41 +21,8 @@
             resultType="cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.global.coremon.vo.UniversalCoreMonRespVO"
             parameterType="cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.global.coremon.vo.UniversalCoreMonQueryReqVO">
 
-        SELECT
-        c.mng_comp_id AS mngCompId,
-        c.comp_name AS compName,
-        g.status,
-        g.abnormal_coord AS abnormalCoord,
-        g.warn_time AS warnTime,
-        g.fault_code AS faultCode,
-        w.wo_status AS woStatus,
-        d.device_id AS deviceId
-        FROM biz_mng_comp c
-        LEFT JOIN gen_gas_pipe_mon g ON c.mng_comp_id = g.comp_id
-        LEFT JOIN biz_gas_repair_wo w ON g.warn_id = w.warn_id
-        LEFT JOIN sys_mon_device d ON c.mng_comp_id = d.comp_id
-        WHERE 1=1
-        <if test="regionShortCode != null and regionShortCode != ''">
-            AND c.dept_code LIKE CONCAT(#{regionShortCode}, '%')
-        </if>
-        <if test="startTime != null">
-            AND g.warn_time &gt;= #{startTime}
-        </if>
-        <if test="endTime != null">
-            AND g.warn_time &lt;= #{endTime}
-        </if>
-        <if test="facilityType != null and facilityType != ''">
-            AND c.comp_name LIKE CONCAT('%', #{facilityType}, '%')
-        </if>
-        <if test="warnLevel != null and warnLevel != ''">
-            AND g.warn_level = #{warnLevel}
-        </if>
-        <if test="faultType != null and faultType != ''">
-            AND g.fault_type = #{faultType}
-        </if>
-        <if test="woStatus != null and woStatus != ''">
-            AND w.wo_status = #{woStatus}
-        </if>
+
+
     </select>
 
 
