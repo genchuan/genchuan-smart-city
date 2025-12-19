@@ -428,10 +428,11 @@ public interface ErrorCodeConstants {
     ErrorCode EVAL_RPT_ARCH_NOT_EXISTS = new ErrorCode(100_631, "报告归档导出不存在");
     ErrorCode INSPECTION_STATISTICS_NOT_EXISTS = new ErrorCode(100_632, "环卫考核统计结果不存在");
 
-
 //    应用场景分类
     ErrorCode APP_SCENE_CATEGORY_NOT_EXISTS = new ErrorCode(199_001, "应用场景分类配置不存在");
 
+    // ========== 系统首页快捷菜单配置==========
+    ErrorCode HOME_QUICK_MENU_NOT_EXISTS = new ErrorCode(199_002, "系统首页快捷菜单配置不存在");
 
 
 }
