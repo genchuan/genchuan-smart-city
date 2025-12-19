@@ -99,16 +99,16 @@ public class UniversalSceneServiceImpl implements UniversalSceneService {
         }
     }
 
-    // 转换方法，映射 value/label/children/desc
-    private UniversalSceneRespVO convert(AppSceneCategoryTreeRespVO vo) {
-        UniversalSceneRespVO resp = new UniversalSceneRespVO();
-        resp.setValue(vo.getSceneCatCode());           // 文档 value
-        resp.setLabel(vo.getSceneCatName());           // 文档 label
-        resp.setDesc(vo.getSceneCatDesc());            // 文档 desc
-        resp.setChildren(vo.getChildren() == null ? new ArrayList<>() :
-                vo.getChildren().stream().map(this::convert).collect(Collectors.toList()));
-        return resp;
-    }
+//    // 转换方法，映射 value/label/children/desc
+//    private UniversalSceneRespVO convert(AppSceneCategoryTreeRespVO vo) {
+//        UniversalSceneRespVO resp = new UniversalSceneRespVO();
+//        resp.setValue(vo.getSceneCatCode());           // 文档 value
+//        resp.setLabel(vo.getSceneCatName());           // 文档 label
+//        resp.setDesc(vo.getSceneCatDesc());            // 文档 desc
+//        resp.setChildren(vo.getChildren() == null ? new ArrayList<>() :
+//                vo.getChildren().stream().map(this::convert).collect(Collectors.toList()));
+//        return resp;
+//    }
 
 
 
