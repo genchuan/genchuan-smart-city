@@ -2,9 +2,9 @@ package cn.iocoder.yudao.module.industry.service.universal.dashboard.scene.base;
 
 import cn.iocoder.yudao.framework.common.exception.ErrorCode;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
-import cn.iocoder.yudao.module.datacenter.controller.admin.appscenecategory.vo.AppSceneCategoryTreeRespVO;
-import cn.iocoder.yudao.module.datacenter.dal.dataobject.appscenecategory.AppSceneCategoryDO;
-import cn.iocoder.yudao.module.datacenter.service.appscenecategory.AppSceneCategoryService;
+//import cn.iocoder.yudao.module.datacenter.controller.admin.appscenecategory.vo.AppSceneCategoryTreeRespVO;
+//import cn.iocoder.yudao.module.datacenter.dal.dataobject.appscenecategory.AppSceneCategoryDO;
+//import cn.iocoder.yudao.module.datacenter.service.appscenecategory.AppSceneCategoryService;
 //import cn.iocoder.yudao.module.industry.client.datacenter.AppSceneCategoryFeignClient;
 import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.base.vo.UniversalScenePageReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.base.vo.UniversalSceneRespVO;
