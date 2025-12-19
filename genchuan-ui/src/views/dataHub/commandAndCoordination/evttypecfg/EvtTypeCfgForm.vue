@@ -11,14 +11,7 @@
         <el-input v-model="formData.evtTypeId" placeholder="请输入类型ID" />
       </el-form-item>
       <el-form-item label="父类型ID" prop="parentTypeId">
-        <el-tree-select
-          v-model="formData.parentTypeId"
-          :data="evtTypeCfgTree"
-          :props="{...defaultProps, label: 'typeName'}"
-          check-strictly
-          default-expand-all
-          placeholder="请选择父类型ID"
-        />
+        <el-input v-model="formData.parentTypeId" placeholder="请输入父类型ID" />
       </el-form-item>
       <el-form-item label="类型层级" prop="typeLevel">
         <el-input v-model="formData.typeLevel" placeholder="请输入类型层级" />
@@ -70,7 +63,6 @@
 </template>
 <script setup lang="ts">
 import { EvtTypeCfgApi, EvtTypeCfgVO } from '@/api/dataHub/commandAndCoordination/evttypecfg'
-import { defaultProps, handleTree } from '@/utils/tree'
 
 /** 事件类型配置 表单 */
 defineOptions({ name: 'EvtTypeCfgForm' })
@@ -108,7 +100,6 @@ const formRules = reactive({
   typeName: [{ required: true, message: '类型名称不能为空', trigger: 'blur' }],
 })
 const formRef = ref() // 表单 Ref
-const evtTypeCfgTree = ref() // 树形结构
 
 /** 打开弹窗 */
 const open = async (type: string, id?: number) => {
@@ -125,7 +116,6 @@ const open = async (type: string, id?: number) => {
       formLoading.value = false
     }
   }
-  await getEvtTypeCfgTree()
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
@@ -174,14 +164,5 @@ const resetForm = () => {
     extCommon2: undefined,
   }
   formRef.value?.resetFields()
-}
-
-/** 获得事件类型配置树 */
-const getEvtTypeCfgTree = async () => {
-  evtTypeCfgTree.value = []
-  const data = await EvtTypeCfgApi.getEvtTypeCfgList()
-  const root: Tree = { id: 0, name: '顶级事件类型配置', children: [] }
-  root.children = handleTree(data, 'id', 'parentTypeId')
-  evtTypeCfgTree.value.push(root)
 }
 </script>

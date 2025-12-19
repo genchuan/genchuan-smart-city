@@ -100,6 +100,14 @@
         <div class="bottom_left" style="min-width: 2vw;">
           <!-- 近期预警信息 -->
           <div class="panel warnings-panel" ref="warningsPanel">
+            <div class="panel-header">
+              <h2>近期预警信息</h2>
+              <div class="header-actions">
+                <button class="panel-fullscreen-btn" @click="togglePanelFullscreen('warningsPanel')">
+                  <el-icon color="#00ccff" size="16"><FullScreen/></el-icon>
+                </button>
+              </div>
+            </div>
             <div class="panel-body">
               <!-- 自定义滚动列表 -->
               <div class="warning-scroll-container">

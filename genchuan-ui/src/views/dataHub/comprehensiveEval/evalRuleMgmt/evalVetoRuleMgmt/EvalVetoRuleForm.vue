@@ -1,5 +1,5 @@
 <template>
-  <Dialog :title="dialogTitle" v-model="dialogVisible" width="850px">
+  <Dialog :title="dialogTitle" v-model="dialogVisible" width="600px">
     <el-form
       ref="formRef"
       :model="formData"
@@ -8,111 +8,121 @@
       v-loading="formLoading"
       class="p-4 bg-gray-50 rounded-lg"
     >
-      <el-row :gutter="20">
-        <!-- 第一列 -->
-        <el-col :span="12">
-          <el-form-item label="否决项名称" prop="vetoRuleName">
-            <el-input
-              v-model="formData.vetoRuleName"
-              placeholder="请输入否决项名称"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="否决项编码" prop="vetoRuleCode">
-            <el-input
-              v-model="formData.vetoRuleCode"
-              placeholder="请输入否决项编码"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="适用对象类型" prop="applyObjectType">
-            <el-select
-              v-model="formData.applyObjectType"
-              placeholder="请选择适用对象类型"
-              class="w-full rounded-md"
-            >
-              <el-option label="请选择字典生成" value="" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="关联指标项ID" prop="idxItemId">
-            <el-input
-              v-model="formData.idxItemId"
-              placeholder="请输入关联指标项ID"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="关联指标项名称" prop="idxItemName">
-            <el-input
-              v-model="formData.idxItemName"
-              placeholder="请输入关联指标项名称"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="指标阈值" prop="idxThreshold">
-            <el-input
-              v-model="formData.idxThreshold"
-              placeholder="请输入指标阈值"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-        </el-col>
+      <!-- 基本信息组 -->
+      <div class="form-group">
+        <h3 class="group-title">基本信息</h3>
+        <el-form-item label="否决项名称" prop="vetoRuleName">
+          <el-input
+            v-model="formData.vetoRuleName"
+            placeholder="请输入否决项名称"
+            class="w-full rounded-md"
+          />
+        </el-form-item>
+        <el-form-item label="否决项编码" prop="vetoRuleCode">
+          <el-input
+            v-model="formData.vetoRuleCode"
+            placeholder="请输入否决项编码"
+            class="w-full rounded-md"
+          />
+        </el-form-item>
+        <el-form-item label="适用对象类型" prop="applyObjectType">
+          <el-select
+            v-model="formData.applyObjectType"
+            placeholder="请选择适用对象类型"
+            class="w-full rounded-md"
+          >
+            <el-option label="请选择字典生成" value="" />
+          </el-select>
+        </el-form-item>
+      </div>
 
-        <!-- 第二列 -->
-        <el-col :span="12">
-          <el-form-item label="否决条件" prop="vetoCondition">
-            <el-input
-              v-model="formData.vetoCondition"
-              placeholder="请输入否决条件"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="生效周期" prop="validCycle">
-            <el-input
-              v-model="formData.validCycle"
-              placeholder="请输入生效周期"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="否决结果" prop="vetoResult">
-            <el-input
-              v-model="formData.vetoResult"
-              placeholder="请输入否决结果"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="否决描述" prop="vetoDesc">
-            <el-input
-              v-model="formData.vetoDesc"
-              placeholder="请输入否决描述"
-              type="textarea"
-              :rows="3"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="启用状态" prop="enableStatus">
-            <el-radio-group v-model="formData.enableStatus" class="radio-group">
-              <el-radio value="ENABLED">启用</el-radio>
-              <el-radio value="Disabled">禁用</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="创建人(业务)" prop="createUserBiz">
-            <el-input
-              v-model="formData.createUserBiz"
-              placeholder="请输入创建人(业务)"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="创建时间(业务)" prop="createTimeBiz">
-            <el-date-picker
-              v-model="formData.createTimeBiz"
-              type="date"
-              value-format="x"
-              placeholder="选择创建时间(业务)"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-        </el-col>
-      </el-row>
+      <!-- 指标信息组 -->
+      <div class="form-group">
+        <h3 class="group-title">指标信息</h3>
+        <el-form-item label="关联指标项ID" prop="idxItemId">
+          <el-input
+            v-model="formData.idxItemId"
+            placeholder="请输入关联指标项ID"
+            class="w-full rounded-md"
+          />
+        </el-form-item>
+        <el-form-item label="关联指标项名称" prop="idxItemName">
+          <el-input
+            v-model="formData.idxItemName"
+            placeholder="请输入关联指标项名称"
+            class="w-full rounded-md"
+          />
+        </el-form-item>
+        <el-form-item label="指标阈值" prop="idxThreshold">
+          <el-input
+            v-model="formData.idxThreshold"
+            placeholder="请输入指标阈值"
+            class="w-full rounded-md"
+          />
+        </el-form-item>
+      </div>
+
+      <!-- 规则信息组 -->
+      <div class="form-group">
+        <h3 class="group-title">规则信息</h3>
+        <el-form-item label="否决条件" prop="vetoCondition">
+          <el-input
+            v-model="formData.vetoCondition"
+            placeholder="请输入否决条件"
+            class="w-full rounded-md"
+          />
+        </el-form-item>
+        <el-form-item label="生效周期" prop="validCycle">
+          <el-input
+            v-model="formData.validCycle"
+            placeholder="请输入生效周期"
+            class="w-full rounded-md"
+          />
+        </el-form-item>
+        <el-form-item label="否决结果" prop="vetoResult">
+          <el-input
+            v-model="formData.vetoResult"
+            placeholder="请输入否决结果"
+            class="w-full rounded-md"
+          />
+        </el-form-item>
+        <el-form-item label="否决描述" prop="vetoDesc">
+          <el-input
+            v-model="formData.vetoDesc"
+            placeholder="请输入否决描述"
+            type="textarea"
+            :rows="3"
+            class="w-full rounded-md"
+          />
+        </el-form-item>
+      </div>
+
+      <!-- 状态与创建信息组 -->
+      <div class="form-group">
+        <h3 class="group-title">状态与创建信息</h3>
+        <el-form-item label="启用状态" prop="enableStatus">
+          <el-radio-group v-model="formData.enableStatus" class="radio-group">
+            <el-radio value="ENABLED">启用</el-radio>
+            <el-radio value="Disabled">禁用</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="创建人(业务)" prop="createUserBiz">
+          <el-input
+            v-model="formData.createUserBiz"
+            placeholder="请输入创建人(业务)"
+            class="w-full rounded-md"
+          />
+        </el-form-item>
+        <el-form-item label="创建时间(业务)" prop="createTimeBiz">
+          <el-date-picker
+            v-model="formData.createTimeBiz"
+            type="date"
+            value-format="x"
+            placeholder="选择创建时间(业务)"
+            class="w-full rounded-md"
+          />
+        </el-form-item>
+      </div>
     </el-form>
 
     <template #footer>
@@ -265,6 +275,8 @@ const resetForm = () => {
 
 .el-dialog__body {
   padding: 16px 24px;
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
 .el-form-item {
@@ -284,5 +296,27 @@ const resetForm = () => {
 
 :deep(.el-date-editor .el-input__wrapper) {
   height: auto;
+}
+
+/* 表单分组样式 */
+.form-group {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.form-group:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.group-title {
+  margin-bottom: 16px;
+  padding-left: 4px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1f2329;
+  border-left: 3px solid #409eff;
 }
 </style>

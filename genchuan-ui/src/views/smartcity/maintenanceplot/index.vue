@@ -6,9 +6,8 @@
       :model="queryParams"
       ref="queryFormRef"
       :inline="true"
-      label-width="68px"
     >
-      <el-form-item label="地块名称" prop="plotName">
+      <el-form-item label="地块名称" prop="plotName" label-width="120px">
         <el-input
           v-model="queryParams.plotName"
           placeholder="请输入地块名称"
@@ -38,7 +37,7 @@
           class="!w-220px"
         />
       </el-form-item>
-      <el-form-item>
+      <el-form-item style="margin-left: 50px">
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
         <el-button
@@ -72,21 +71,30 @@
       <el-table-column label="地块面积" align="center" prop="acreage" />
       <!--<el-table-column label="纬度" align="center" prop="latitude" />-->
       <!--<el-table-column label="经度" align="center" prop="longitude" />-->
-      <!--<el-table-column label="绿化类型" align="center" prop="greeningType" />-->
-      <!--<el-table-column-->
-      <!--  label="上次养护的日期"-->
-      <!--  align="center"-->
-      <!--  prop="lastMaintenanceDate"-->
-      <!--  :formatter="dateFormatter"-->
-      <!--  width="180px"-->
-      <!--/>-->
-      <!--<el-table-column-->
-      <!--  label="下次养护的计划日期"-->
-      <!--  align="center"-->
-      <!--  prop="nextMaintenanceDate"-->
-      <!--  :formatter="dateFormatter"-->
-      <!--  width="180px"-->
-      <!--/>-->
+      <el-table-column label="绿化类型" align="center">
+        <template #default="scope">
+          <template v-if="scope.row.greeningType === 'pureArbor'">纯乔木绿化</template>
+          <template v-else-if="scope.row.greeningType === 'pureShrub'">纯灌木绿化</template>
+          <template v-else-if="scope.row.greeningType === 'pureGroundcover'">纯地被/草坪绿化</template>
+          <template v-else-if="scope.row.greeningType === 'arborShrubMixed'">乔灌混合绿化</template>
+          <template v-else-if="scope.row.greeningType === 'arborShrubGrassMixed'">乔灌草混合绿化</template>
+          <template v-else-if="scope.row.greeningType === 'aquatic'">水生绿化</template>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="上次养护的日期"
+        align="center"
+        prop="lastMaintenanceDate"
+        :formatter="dateFormatter"
+        width="180px"
+      />
+      <el-table-column
+        label="下次养护的计划日期"
+        align="center"
+        prop="nextMaintenanceDate"
+        :formatter="dateFormatter"
+        width="180px"
+      />
       <el-table-column
         label="创建时间"
         align="center"

@@ -6,15 +6,14 @@
       :model="queryParams"
       ref="queryFormRef"
       :inline="true"
-      label-width="68px"
     >
-      <el-form-item label="任务编号" prop="taskNumber">
+      <el-form-item label="任务编号" prop="taskNumber" label-width="100px">
         <el-input
           v-model="queryParams.taskNumber"
           placeholder="请输入任务编号"
           clearable
           @keyup.enter="handleQuery"
-          class="!w-240px"
+          class="!w-200px"
         />
       </el-form-item>
       <el-form-item label="任务名称" prop="task">
@@ -41,79 +40,9 @@
           placeholder="请输入养护人员"
           clearable
           @keyup.enter="handleQuery"
-          class="!w-240px"
+          class="!w-140px"
         />
       </el-form-item>
-      <!--<el-form-item label="任务开始时间" prop="taskStartTime">-->
-      <!--  <el-date-picker-->
-      <!--    v-model="queryParams.taskStartTime"-->
-      <!--    value-format="YYYY-MM-DD HH:mm:ss"-->
-      <!--    type="daterange"-->
-      <!--    start-placeholder="开始日期"-->
-      <!--    end-placeholder="结束日期"-->
-      <!--    :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"-->
-      <!--    class="!w-220px"-->
-      <!--  />-->
-      <!--</el-form-item>-->
-      <!--<el-form-item label="任务结束时间" prop="taskEndTime">-->
-      <!--  <el-date-picker-->
-      <!--    v-model="queryParams.taskEndTime"-->
-      <!--    value-format="YYYY-MM-DD HH:mm:ss"-->
-      <!--    type="daterange"-->
-      <!--    start-placeholder="开始日期"-->
-      <!--    end-placeholder="结束日期"-->
-      <!--    :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"-->
-      <!--    class="!w-220px"-->
-      <!--  />-->
-      <!--</el-form-item>-->
-      <!--<el-form-item label="所需工具" prop="requiredTools">-->
-      <!--  <el-input-->
-      <!--    v-model="queryParams.requiredTools"-->
-      <!--    placeholder="请输入所需工具"-->
-      <!--    clearable-->
-      <!--    @keyup.enter="handleQuery"-->
-      <!--    class="!w-240px"-->
-      <!--  />-->
-      <!--</el-form-item>-->
-      <!--<el-form-item label="所需材料" prop="requiredMaterials">-->
-      <!--  <el-input-->
-      <!--    v-model="queryParams.requiredMaterials"-->
-      <!--    placeholder="请输入所需材料"-->
-      <!--    clearable-->
-      <!--    @keyup.enter="handleQuery"-->
-      <!--    class="!w-240px"-->
-      <!--  />-->
-      <!--</el-form-item>-->
-      <!--<el-form-item label="任务优先级" prop="taskPriority">-->
-      <!--  <el-input-->
-      <!--    v-model="queryParams.taskPriority"-->
-      <!--    placeholder="请输入任务优先级"-->
-      <!--    clearable-->
-      <!--    @keyup.enter="handleQuery"-->
-      <!--    class="!w-240px"-->
-      <!--  />-->
-      <!--</el-form-item>-->
-      <!--<el-form-item label="任务状态" prop="status">-->
-      <!--  <el-select-->
-      <!--    v-model="queryParams.status"-->
-      <!--    placeholder="请选择任务状态"-->
-      <!--    clearable-->
-      <!--    class="!w-240px"-->
-      <!--  >-->
-      <!--    <el-option label="请选择字典生成" value="" />-->
-      <!--  </el-select>-->
-      <!--</el-form-item>-->
-      <!--<el-form-item label="创建时间" prop="createTime">-->
-      <!--  <el-date-picker-->
-      <!--    v-model="queryParams.createTime"-->
-      <!--    value-format="YYYY-MM-DD HH:mm:ss"-->
-      <!--    type="daterange"-->
-      <!--    start-placeholder="开始日期"-->
-      <!--    end-placeholder="结束日期"-->
-      <!--    :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"-->
-      <!--    class="!w-220px"-->
-      <!--  />-->
-      <!--</el-form-item>-->
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
@@ -142,7 +71,7 @@
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
       <!--<el-table-column label="主键" align="center" prop="id" />-->
-      <el-table-column label="任务编号" align="center" prop="taskNumber" />
+      <el-table-column label="任务编号" align="center" prop="taskNumber" width="180px" />
       <el-table-column label="任务名称" align="center" prop="task" />
       <el-table-column label="养护地块" align="center" prop="maintainTheLandParcel" />
       <el-table-column label="养护人员" align="center" prop="maintenancePersonnel" />

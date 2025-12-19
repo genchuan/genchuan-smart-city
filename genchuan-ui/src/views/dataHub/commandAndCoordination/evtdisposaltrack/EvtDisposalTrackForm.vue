@@ -15,7 +15,7 @@
       </el-form-item>
       <el-form-item label="处置状态" prop="handleStatus">
         <el-radio-group v-model="formData.handleStatus">
-          <el-radio value="1">请选择字典生成</el-radio>
+          <el-radio value="1">已完成</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="当前处置节点" prop="currentNode">

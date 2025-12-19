@@ -4,7 +4,7 @@
       ref="formRef"
       :model="formData"
       :rules="formRules"
-      label-width="200px"
+      label-width="250px"
       v-loading="formLoading"
     >
       <el-form-item label="统计ID" prop="statMngCompId">

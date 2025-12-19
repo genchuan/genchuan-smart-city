@@ -6,9 +6,8 @@
       :model="queryParams"
       ref="queryFormRef"
       :inline="true"
-      label-width="68px"
     >
-      <el-form-item label="所属领域" prop="isArea">
+      <el-form-item label="所属领域" prop="isArea" label-width="100px">
         <el-input
           v-model="queryParams.isArea"
           placeholder="请输入所属领域"
@@ -23,10 +22,17 @@
           placeholder="请选择问题类型"
           clearable
           class="!w-240px"
+          @change="handleQuery"
         >
-          <el-option label="请选择字典生成" value="" />
+        <el-option label="系统操作类" value="systemOperation" />
+        <el-option label="现场实操类" value="onSiteOperation" />
+        <el-option label="流程管理类" value="processManagement" />
+        <el-option label="资源需求类" value="resourceRequirement" />
+        <el-option label="政策咨询类" value="policyConsultation" />
+        <el-option label="其他问题" value="other" />
         </el-select>
       </el-form-item>
+
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
@@ -56,7 +62,17 @@
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
       <el-table-column label="主键" align="center" prop="id" />
       <el-table-column label="所属领域" align="center" prop="isArea" />
-      <el-table-column label="问题类型" align="center" prop="questionType" />
+      <el-table-column label="问题类型" align="center">
+        <template #default="scope">
+          <template v-if="scope.row.questionType === 'systemOperation'">系统操作类</template>
+          <template v-else-if="scope.row.questionType === 'onSiteOperation'">现场实操类</template>
+          <template v-else-if="scope.row.questionType === 'processManagement'">流程管理类</template>
+          <template v-else-if="scope.row.questionType === 'resourceRequirement'">资源需求类</template>
+          <template v-else-if="scope.row.questionType === 'policyConsultation'">政策咨询类</template>
+          <template v-else-if="scope.row.questionType === 'other'">其他问题</template>
+          <template v-else>未分类</template>
+        </template>
+      </el-table-column>
       <el-table-column label="紧急程度" align="center" prop="urgency" />
       <el-table-column label="涉及主体" align="center" prop="involvingTheSubject" />
       <el-table-column

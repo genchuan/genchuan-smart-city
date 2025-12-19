@@ -8,111 +8,155 @@
       v-loading="formLoading"
       class="p-4 bg-gray-50 rounded-lg"
     >
-      <el-row :gutter="20">
-        <!-- 第一列 -->
-        <el-col :span="12">
-          <el-form-item label="模板名称" prop="taskTemplateName">
-            <el-input
-              v-model="formData.taskTemplateName"
-              placeholder="请输入模板名称"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="模板编码" prop="taskTemplateCode">
-            <el-input
-              v-model="formData.taskTemplateCode"
-              placeholder="请输入模板编码"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="适用对象类型" prop="applyObjectType">
-            <el-select
-              v-model="formData.applyObjectType"
-              placeholder="请选择适用对象类型"
-              class="w-full rounded-md"
-            >
-              <el-option label="请选择字典生成" value="" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="关联指标体系ID" prop="idxSystemId">
-            <el-input
-              v-model="formData.idxSystemId"
-              placeholder="请输入关联指标体系ID"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="关联指标体系名称" prop="idxSystemName">
-            <el-input
-              v-model="formData.idxSystemName"
-              placeholder="请输入关联指标体系名称"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-        </el-col>
+      <!-- 基础信息组 -->
+      <div class="form-group">
+        <h3 class="group-title">基础信息</h3>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="模板名称" prop="taskTemplateName">
+              <el-input
+                v-model="formData.taskTemplateName"
+                placeholder="请输入模板名称"
+                class="w-full rounded-md"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="模板编码" prop="taskTemplateCode">
+              <el-input
+                v-model="formData.taskTemplateCode"
+                placeholder="请输入模板编码"
+                class="w-full rounded-md"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="适用对象类型" prop="applyObjectType">
+              <el-select
+                v-model="formData.applyObjectType"
+                placeholder="请选择适用对象类型"
+                class="w-full rounded-md"
+              >
+                <el-option label="请选择字典生成" value="" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="模板描述" prop="templateDesc">
+              <el-input
+                v-model="formData.templateDesc"
+                placeholder="请输入模板描述"
+                type="textarea"
+                :rows="3"
+                class="w-full rounded-md"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </div>
 
-        <!-- 第二列 -->
-        <el-col :span="12">
-          <el-form-item label="关联评价主体ID" prop="evalSubjectId">
-            <el-input
-              v-model="formData.evalSubjectId"
-              placeholder="请输入关联评价主体ID"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="关联评价主体名称" prop="evalSubjectName">
-            <el-input
-              v-model="formData.evalSubjectName"
-              placeholder="请输入关联评价主体名称"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="任务周期" prop="taskCycle">
-            <el-input
-              v-model="formData.taskCycle"
-              placeholder="请输入任务周期"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="自定义周期" prop="customCycle">
-            <el-input
-              v-model="formData.customCycle"
-              placeholder="请输入自定义周期"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="模板描述" prop="templateDesc">
-            <el-input
-              v-model="formData.templateDesc"
-              placeholder="请输入模板描述"
-              type="textarea"
-              :rows="3"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="启用状态" prop="enableStatus">
-            <el-radio-group v-model="formData.enableStatus" class="radio-group">
-              <el-radio value="ENABLED">启用</el-radio>
-              <el-radio value="Disabled">禁用</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="创建人(业务)" prop="createUserBiz">
-            <el-input
-              v-model="formData.createUserBiz"
-              placeholder="请输入创建人(业务)"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="创建时间(业务)" prop="createTimeBiz">
-            <el-date-picker
-              v-model="formData.createTimeBiz"
-              type="date"
-              value-format="x"
-              placeholder="选择创建时间(业务)"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-        </el-col>
-      </el-row>
+      <!-- 关联信息组 -->
+      <div class="form-group">
+        <h3 class="group-title">关联信息</h3>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="关联指标体系ID" prop="idxSystemId">
+              <el-input
+                v-model="formData.idxSystemId"
+                placeholder="请输入关联指标体系ID"
+                class="w-full rounded-md"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="关联指标体系名称" prop="idxSystemName">
+              <el-input
+                v-model="formData.idxSystemName"
+                placeholder="请输入关联指标体系名称"
+                class="w-full rounded-md"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="关联评价主体ID" prop="evalSubjectId">
+              <el-input
+                v-model="formData.evalSubjectId"
+                placeholder="请输入关联评价主体ID"
+                class="w-full rounded-md"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="关联评价主体名称" prop="evalSubjectName">
+              <el-input
+                v-model="formData.evalSubjectName"
+                placeholder="请输入关联评价主体名称"
+                class="w-full rounded-md"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </div>
+
+      <!-- 周期设置组 -->
+      <div class="form-group">
+        <h3 class="group-title">周期设置</h3>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="任务周期" prop="taskCycle">
+              <el-input
+                v-model="formData.taskCycle"
+                placeholder="请输入任务周期"
+                class="w-full rounded-md"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="自定义周期" prop="customCycle">
+              <el-input
+                v-model="formData.customCycle"
+                placeholder="请输入自定义周期"
+                class="w-full rounded-md"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </div>
+
+      <!-- 状态与创建信息组 -->
+      <div class="form-group">
+        <h3 class="group-title">状态与创建信息</h3>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="启用状态" prop="enableStatus">
+              <el-radio-group v-model="formData.enableStatus" class="radio-group">
+                <el-radio value="ENABLED">启用</el-radio>
+                <el-radio value="Disabled">禁用</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="创建人(业务)" prop="createUserBiz">
+              <el-input
+                v-model="formData.createUserBiz"
+                placeholder="请输入创建人(业务)"
+                class="w-full rounded-md"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="创建时间(业务)" prop="createTimeBiz">
+              <el-date-picker
+                v-model="formData.createTimeBiz"
+                type="date"
+                value-format="x"
+                placeholder="选择创建时间(业务)"
+                class="w-full rounded-md"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </div>
     </el-form>
 
     <template #footer>
@@ -267,6 +311,8 @@ const resetForm = () => {
 
 .el-dialog__body {
   padding: 16px 24px;
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
 .el-form-item {
@@ -286,5 +332,27 @@ const resetForm = () => {
 
 :deep(.el-date-editor .el-input__wrapper) {
   height: auto;
+}
+
+/* 分组样式 */
+.form-group {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.form-group:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.group-title {
+  margin-bottom: 16px;
+  padding-left: 4px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1f2329;
+  border-left: 3px solid #409eff;
 }
 </style>

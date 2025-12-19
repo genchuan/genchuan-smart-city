@@ -170,9 +170,9 @@ const open = async (type: string, id?: number, parentId?: number) => {
       formData.value = await MenuApi.getMenu(id)
 
       // 自己增删改查添加 这个会组件地址自己变
-     /* if(JSON.parse(import.meta.env.VITE_DEV)){
-        formData.value.component='smartcity/XXXXXX/index'
-      }*/
+      /* if(JSON.parse(import.meta.env.VITE_DEV)){
+         formData.value.component='smartcity/XXXXXX/index'
+       }*/
 
     } finally {
       formLoading.value = false

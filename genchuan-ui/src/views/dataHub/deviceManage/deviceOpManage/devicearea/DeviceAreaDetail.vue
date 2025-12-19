@@ -172,7 +172,6 @@ const formatDate = (val: any) => {
 <style scoped>
 .detail-container {
   padding: 20px;
-  background-color: #f5f7fa;
   min-height: calc(100% - 60px);
 }
 

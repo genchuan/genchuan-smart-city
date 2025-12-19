@@ -114,9 +114,9 @@
       <el-table-column label="关联人" align="center" prop="relUser" width="100" />
       <el-table-column label="关联状态" align="center" prop="relStatus" width="100">
         <template #default="scope">
-          <span :class="scope.row.relStatus === '1' ? 'status-active' : 'status-inactive'">
+          <el-tag :type="scope.row.relStatus === '1' ? 'success' : 'info'">
             {{ scope.row.relStatus === '1' ? '已关联' : '未关联' }}
-          </span>
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column
@@ -296,21 +296,5 @@ onMounted(() => {
 .pagination {
   margin-top: 15px;
   text-align: right;
-}
-
-.status-active {
-  color: #4cd964;
-  background-color: rgba(76, 217, 100, 0.1);
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-}
-
-.status-inactive {
-  color: #ff3b30;
-  background-color: rgba(255, 59, 48, 0.1);
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 12px;
 }
 </style>

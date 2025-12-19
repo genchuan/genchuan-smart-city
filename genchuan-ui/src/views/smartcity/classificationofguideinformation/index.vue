@@ -6,9 +6,8 @@
       :model="queryParams"
       ref="queryFormRef"
       :inline="true"
-      label-width="68px"
     >
-      <el-form-item label="适用领域" prop="applications">
+      <el-form-item label="适用领域" prop="applications" label-width="100px">
         <el-input
           v-model="queryParams.applications"
           placeholder="请输入适用领域"
@@ -26,18 +25,18 @@
           class="!w-240px"
         />
       </el-form-item>
-      <!--<el-form-item label="创建时间" prop="createTime">-->
-      <!--  <el-date-picker-->
-      <!--    v-model="queryParams.createTime"-->
-      <!--    value-format="YYYY-MM-DD HH:mm:ss"-->
-      <!--    type="daterange"-->
-      <!--    start-placeholder="开始日期"-->
-      <!--    end-placeholder="结束日期"-->
-      <!--    :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"-->
-      <!--    class="!w-220px"-->
-      <!--  />-->
-      <!--</el-form-item>-->
-      <el-form-item>
+      <el-form-item label="创建时间" prop="createTime">
+        <el-date-picker
+          v-model="queryParams.createTime"
+          value-format="YYYY-MM-DD HH:mm:ss"
+          type="daterange"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
+          class="!w-220px"
+        />
+      </el-form-item>
+      <el-form-item style="margin-left: 80px">
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
         <el-button
@@ -64,7 +63,7 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column label="主键" align="center" prop="id" />
+      <el-table-column label="主键" align="center" prop="id" min-width="50px" />
       <el-table-column label="适用领域" align="center" prop="applications" />
       <el-table-column label="应用场景" align="center" prop="applicationScenarios" />
       <el-table-column label="受众群体" align="center" prop="targetAudience" />

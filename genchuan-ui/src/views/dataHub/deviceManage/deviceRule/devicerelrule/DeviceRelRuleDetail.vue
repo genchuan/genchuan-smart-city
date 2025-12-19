@@ -111,30 +111,29 @@
           </div>
         </div>
       </el-card>
-
-      <!-- 扩展信息卡片 -->
-      <el-card class="info-card ext-info-card">
-        <div class="card-header">扩展信息</div>
-        <div class="grid-content">
-          <div class="info-item">
-            <span class="label">分类扩展字段1：</span>
-            <span class="value">{{ formData.extCat1 || '-' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">分类扩展字段2：</span>
-            <span class="value">{{ formData.extCat2 || '-' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">通用扩展字段1：</span>
-            <span class="value">{{ formData.extCommon1 || '-' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">通用扩展字段2：</span>
-            <span class="value">{{ formData.extCommon2 || '-' }}</span>
-          </div>
-        </div>
-      </el-card>
     </div>
+    <!-- 扩展信息卡片 -->
+    <el-card class="info-card ext-info-card">
+      <div class="card-header">扩展信息</div>
+      <div class="grid-content">
+        <div class="info-item">
+          <span class="label">分类扩展字段1：</span>
+          <span class="value">{{ formData.extCat1 || '-' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">分类扩展字段2：</span>
+          <span class="value">{{ formData.extCat2 || '-' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">通用扩展字段1：</span>
+          <span class="value">{{ formData.extCommon1 || '-' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">通用扩展字段2：</span>
+          <span class="value">{{ formData.extCommon2 || '-' }}</span>
+        </div>
+      </div>
+    </el-card>
   </el-drawer>
 </template>
 

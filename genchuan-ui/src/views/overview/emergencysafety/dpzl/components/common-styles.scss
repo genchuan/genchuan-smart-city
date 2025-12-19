@@ -128,68 +128,91 @@
   z-index: 99999;
 }
 
+// 应急全域数据概览
+.overview-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8vw; // 微调间距增强呼吸感
+  height: auto;
+  padding: 1vw 0.5vw;
+  align-items: center;
+  justify-content: center;
+}
+
+.overview-stat-item {
+  flex: 0 0 8vw;
+  height: 18vh;
+  background: linear-gradient(
+                  135deg,
+                  rgba(180, 45, 45, 0.8) 0%,
+                  rgba(201, 75, 75, 0.6) 50%,
+                  rgba(150, 30, 30, 0.7) 100%
+  );
+  border-radius: 12px; // 更圆润的边角
+  padding: 2vh 0.8vw; // 微调内边距
+  margin-top: 0.3vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  // 立体边框：渐变边框 + 细微描边
+  border: 1px solid transparent;
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+  box-shadow:
+          0 4px 12px rgba(0, 0, 0, 0.3), // 外阴影增强立体
+          inset 0 1px 0 rgba(255, 255, 255, 0.15), // 内高光
+          inset 0 -1px 0 rgba(0, 0, 0, 0.2); // 内阴影
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); // 顺滑过渡
+
+  &:hover {
+    transform: translateY(-2px) scale(1.02); // 上移+轻微放大
+    // hover 时渐变提亮
+    background: linear-gradient(
+                    135deg,
+                    rgba(190, 55, 55, 0.9) 0%,
+                    rgba(211, 85, 85, 0.7) 50%,
+                    rgba(160, 40, 40, 0.8) 100%
+    );
+  }
+
+  .stat-title {
+    font-size: 0.84vw;
+    color: #ffddd5;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); // 文字阴影增强层次
+    text-align: center; // 居中对齐
+    letter-spacing: 0.05vw; // 细微字间距
+  }
+
+  .stat-value {
+    font-size: 1.8vw;
+    font-weight: 700;
+    color: #dfcbf3;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    line-height: 1.2; // 行高优化
+  }
+
+  .stat-unit {
+    font-size: 1vw;
+    color: #bbb8b8;
+    text-align: right;
+    margin-right: 1vw;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    opacity: 0.9; // 轻微透明增强层次
+  }
+}
+
 // 应急核心指标
 .core-indicators-panel {
   flex: 0.6;
   height: 100%;
 }
 
-.overview-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6vw;
-  padding-top: 2vh;
-  height: auto;
-  align-items: center;
-  justify-content: center;
-}
-
-.overview-stat-item {
-  flex: 0 0 9.2vw;
-  height: 10vw;
-  background: rgba(0, 30, 60, 0.6);
-  border-radius: 8px;
-  padding: 2vh 0;
-  margin-top: 0.6vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border: 1px solid rgba(0, 204, 255, 0.2);
-}
-
-.stat-title {
-  font-size: 1vw;
-  color: #00ccff;
-}
-
-.stat-value {
-  font-size: 1.4vw;
-  font-weight: bold;
-  color: #fff;
-}
-
-.stat-rate {
-  font-size: 0.8vw;
-  padding: 3px 0;
-
-  &.normal {
-    color: #13ce66;
-  }
-
-  &.warning {
-    color: #ff7d00;
-  }
-
-  &.danger {
-    color: #ff4949;
-  }
-}
-
 .indicator-cards {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5vw;
-  height: 20vh;
+  height: 100%;
   padding-top: 1vw;
   overflow-y: auto;
   justify-content: center;
@@ -197,9 +220,9 @@
 
 // 指标卡片
 .indicator-card1 {
-  flex: 0 0 14vw;
-  background: rgba(0, 30, 60, 0.6);
-  border-radius: 8px;
+  flex: 0 0 12vw;
+  background: rgba(0, 204, 255, 0.2);
+  border-radius: 30%;
   padding: 2vh 0.8vw;
   cursor: pointer;
   transition: all 0.3s;
@@ -207,34 +230,17 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  box-shadow: 0 0 3vw rgba(255, 174, 0, 0.2);
 
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 204, 255, 0.3);
-  }
-
-  &.normal {
-    border-color: #13ce66;
-
-    .indicator-value {
-      color: #13ce66;
-    }
-  }
-
-  &.warning {
-    border-color: #ff4949;
-    background: rgba(100, 0, 0, 0.3);
-
-    .indicator-value {
-      color: #ff4949;
-    }
   }
 }
 
 .indicator-card2 {
-  flex: 0 0 9.2vw;
-  background: rgba(0, 30, 60, 0.6);
-  border-radius: 8px;
+  flex: 0 0 8vw;
+  background: rgba(0, 204, 255, 0.2);
+  border-radius: 20%;
   padding: 2vh 0.2vw;
   cursor: pointer;
   transition: all 0.3s;
@@ -242,31 +248,15 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  box-shadow: 0 0 2vw rgba(255, 174, 0, 0.2);
 
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 204, 255, 0.3);
-  }
-
-  &.normal {
-    border-color: #13ce66;
-
-    .indicator-value {
-      color: #13ce66;
-    }
-  }
-
-  &.warning {
-    border-color: #ff4949;
-    background: rgba(100, 0, 0, 0.3);
-
-    .indicator-value {
-      color: #ff4949;
-    }
   }
 }
 
 .indicator-title {
+  margin-top: 3vh;
   font-size: 1.1vw;
   font-weight: bold;
   color: #ffae90;
@@ -275,30 +265,46 @@
   text-overflow: ellipsis;
 }
 
-.indicator-value {
-  font-size: 1.3vw;
-  font-weight: bold;
-  margin: 0.8vh 0;
+.indicator-compliance1 {
+  margin-bottom: 3vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+
+  .compliance-text {
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    font-size: 1.6vw;
+    font-weight: bold;
+    color: #fff;
+
+    .indicator-unit {
+      font-size: 1vw;
+    }
+  }
 }
 
-.indicator-unit {
-  font-size: 1.2vw;
-  margin-left: 5px;
-}
+.indicator-compliance2 {
+  margin-bottom: 3vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
 
-.indicator-threshold {
-  font-size: 0.7vw;
-  color: #ccc;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+  .compliance-text {
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    font-size: 1.6vw;
+    font-weight: bold;
+    color: #fff;
 
-.indicator-time {
-  font-size: 0.6vw;
-  color: #999;
-  text-align: right;
-  margin-top: 5px;
+    .indicator-unit {
+      font-size: 1vw;
+    }
+  }
 }
 
 // 表格样式
@@ -381,17 +387,17 @@
 
 // 状态标签样式
 :deep(.el-tag) {
-  &.el-tag--success {
+  &.el-tag--充足 {
     background-color: rgba(46, 184, 97, 0.2);
     border-color: rgba(46, 184, 97, 0.5);
     color: #2eb861;
   }
-  &.el-tag--warning {
+  &.el-tag--紧张 {
     background-color: rgba(250, 173, 20, 0.2);
     border-color: rgba(250, 173, 20, 0.5);
     color: #fad514;
   }
-  &.el-tag--danger {
+  &.el-tag--短缺 {
     background-color: rgba(235, 87, 87, 0.2);
     border-color: rgba(235, 87, 87, 0.5);
     color: #eb5757;
@@ -447,7 +453,7 @@
 .current-value {
   font-size: 20px;
   font-weight: bold;
-  color: #00ccff;
+  color: #9a0808;
 }
 
 .warning-handle-section {
@@ -529,22 +535,22 @@ dv-scroll-board {
 // 近期异常信息列表
 ::v-deep .dv-scroll-board .header {
   font-size: 0.9vw;
-  color: #ff4d4f;
+  color: #da8f3b;
   font-weight: bold;
-  background: rgba(255, 77, 79, 0.2) !important;
-  border-bottom: 1px solid rgba(255, 77, 79, 0.4) !important;
+  background: rgba(255, 77, 79, 0.6) !important;
+  border-bottom: 1px solid rgba(255, 77, 79, 0.7) !important;
 }
 
 ::v-deep .dv-scroll-board .row-item {
   font-size: 0.8vw;
   color: #ff7a45;
-  background: rgba(255, 122, 69, 0.15) !important;
-  border-bottom: 1px dashed rgba(255, 122, 69, 0.3) !important;
+  background: rgba(255, 122, 69, 0.45) !important;
+  border-bottom: 1px dashed rgba(255, 122, 69, 0.6) !important;
   transition: all 0.2s;
 }
 
 ::v-deep .dv-scroll-board .row-item:hover {
-  background: rgba(255, 77, 79, 0.25) !important;
+  background: rgba(255, 77, 79, 0.55) !important;
   color: #ff4d4f;
   transform: translateX(3px);
 }
@@ -556,4 +562,18 @@ dv-scroll-board {
 
 :deep(.el-tag) {
   font-size: 0.7vw;
+}
+
+:deep(.el-button--small.el-button--primary) {
+  font-size: 0.7vw;
+  padding: 0.3vw 0.8vw;
+  min-width: 5vw;
+  max-width: 8vw;
+  height: auto;
+  line-height: 1.2;
+  border-radius: 0.3vw;
+}
+
+:deep(.el-button--small.el-button--primary:hover) {
+  padding: 0.35vw 0.85vw;
 }

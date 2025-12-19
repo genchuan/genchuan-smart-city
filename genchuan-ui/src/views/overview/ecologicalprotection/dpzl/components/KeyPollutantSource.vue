@@ -148,10 +148,10 @@
             <el-table-column prop="last_monitor" label="最近监测时间" />
             <el-table-column label="操作" min-width="88vw">
               <template #default="scope">
-                <el-button size="small" type="text" @click="showPollutantDetail(scope.row)">详情</el-button>
+                <el-button size="small" link @click="showPollutantDetail(scope.row)">详情</el-button>
                 <el-button
                   size="small"
-                  type="text"
+                  link
                   @click="handleSupervision(scope.row)"
                   v-if="scope.row.overstandard === '1'"
                 >

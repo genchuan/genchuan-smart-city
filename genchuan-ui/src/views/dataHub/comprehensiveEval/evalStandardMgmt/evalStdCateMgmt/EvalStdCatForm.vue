@@ -1,5 +1,5 @@
 <template>
-  <Dialog :title="dialogTitle" v-model="dialogVisible" width="800px">
+  <Dialog :title="dialogTitle" v-model="dialogVisible" width="600px">
     <el-form
       ref="formRef"
       :model="formData"
@@ -8,74 +8,76 @@
       v-loading="formLoading"
       class="p-4 bg-gray-50 rounded-lg"
     >
-      <el-row :gutter="20">
-        <!-- 第一列 -->
-        <el-col :span="12">
-          <el-form-item label="标准分类名称" prop="stdCatName">
-            <el-input
-              v-model="formData.stdCatName"
-              placeholder="请输入标准分类名称"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="分类编码" prop="stdCatCode">
-            <el-input
-              v-model="formData.stdCatCode"
-              placeholder="请输入分类编码"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="适用指标体系ID" prop="idxSystemId">
-            <el-input
-              v-model="formData.idxSystemId"
-              placeholder="请输入适用指标体系ID"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="适用指标体系名称" prop="idxSystemName">
-            <el-input
-              v-model="formData.idxSystemName"
-              placeholder="请输入适用指标体系名称"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-        </el-col>
+      <!-- 标准分类名称 -->
+      <el-form-item label="标准分类名称" prop="stdCatName">
+        <el-input
+          v-model="formData.stdCatName"
+          placeholder="请输入标准分类名称"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
 
-        <!-- 第二列 -->
-        <el-col :span="12">
-          <el-form-item label="分类描述" prop="catDesc">
-            <el-input
-              v-model="formData.catDesc"
-              placeholder="请输入分类描述"
-              type="textarea"
-              :rows="3"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="启用状态" prop="enableStatus">
-            <el-radio-group v-model="formData.enableStatus" class="radio-group">
-              <el-radio value="ENABLED">启用</el-radio>
-              <el-radio value="Disabled">禁用</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="创建人(业务)" prop="createUserBiz">
-            <el-input
-              v-model="formData.createUserBiz"
-              placeholder="请输入创建人(业务)"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="创建时间(业务)" prop="createTimeBiz">
-            <el-date-picker
-              v-model="formData.createTimeBiz"
-              type="date"
-              value-format="x"
-              placeholder="选择创建时间(业务)"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-        </el-col>
-      </el-row>
+      <!-- 分类编码 -->
+      <el-form-item label="分类编码" prop="stdCatCode">
+        <el-input
+          v-model="formData.stdCatCode"
+          placeholder="请输入分类编码"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
+
+      <!-- 适用指标体系ID -->
+      <el-form-item label="适用指标体系ID" prop="idxSystemId">
+        <el-input v-model="formData.idxSystemId" placeholder="请输入ID" class="w-full rounded-md" />
+      </el-form-item>
+
+      <!-- 适用指标体系名称 -->
+      <el-form-item label="适用指标体系名称" prop="idxSystemName">
+        <el-input
+          v-model="formData.idxSystemName"
+          placeholder="请输入名称"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
+
+      <!-- 分类描述 -->
+      <el-form-item label="分类描述" prop="catDesc">
+        <el-input
+          v-model="formData.catDesc"
+          placeholder="请输入分类描述"
+          type="textarea"
+          :rows="3"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
+
+      <!-- 启用状态 -->
+      <el-form-item label="启用状态" prop="enableStatus">
+        <el-radio-group v-model="formData.enableStatus" class="radio-group">
+          <el-radio value="ENABLED">启用</el-radio>
+          <el-radio value="Disabled">禁用</el-radio>
+        </el-radio-group>
+      </el-form-item>
+
+      <!-- 创建人(业务) - 单独一行 -->
+      <el-form-item label="创建人(业务)" prop="createUserBiz">
+        <el-input
+          v-model="formData.createUserBiz"
+          placeholder="请输入创建人"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
+
+      <!-- 创建时间(业务) - 单独一行 -->
+      <el-form-item label="创建时间(业务)" prop="createTimeBiz">
+        <el-date-picker
+          v-model="formData.createTimeBiz"
+          type="date"
+          value-format="x"
+          placeholder="选择时间"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
     </el-form>
 
     <template #footer>
@@ -100,7 +102,7 @@ const dialogTitle = ref('') // 弹窗的标题
 const formLoading = ref(false) // 表单的加载中
 const formType = ref('') // 表单的类型：create - 新增；update - 修改
 
-// 简化表单数据，隐藏不必要字段
+// 表单数据
 const formData = ref({
   id: undefined,
   stdCatName: undefined,
@@ -113,7 +115,7 @@ const formData = ref({
   createTimeBiz: undefined
 })
 
-// 保留核心必填项校验
+// 表单校验规则
 const formRules = reactive({
   stdCatName: [{ required: true, message: '标准分类名称不能为空', trigger: 'blur' }],
   stdCatCode: [{ required: true, message: '分类编码不能为空', trigger: 'blur' }],
@@ -140,7 +142,6 @@ const open = async (type: string, id?: number) => {
       const res = await EvalStdCatApi.getEvalStdCat(id)
       formData.value = {
         ...res,
-        // 只保留需要展示的字段
         catDesc: res.catDesc || ''
       }
     } finally {
@@ -215,10 +216,12 @@ const resetForm = () => {
 
 .el-dialog__body {
   padding: 16px 24px;
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
 .el-form-item {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .el-textarea {
@@ -234,5 +237,11 @@ const resetForm = () => {
 
 :deep(.el-date-editor .el-input__wrapper) {
   height: auto;
+}
+
+/* 确保标签右对齐且宽度一致 */
+:deep(.el-form-item__label) {
+  text-align: right !important;
+  padding-right: 12px !important;
 }
 </style>

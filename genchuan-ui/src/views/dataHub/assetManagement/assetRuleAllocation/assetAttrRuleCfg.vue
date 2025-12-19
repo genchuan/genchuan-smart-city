@@ -2,13 +2,20 @@
   <ContentWrap>
     <!-- 搜索工作栏 -->
     <el-form class="-mb-15px" :model="queryParams" ref="queryFormRef" :inline="true" label-width="68px">
-
-      <el-form-item label="关联资产分类名称" prop="relAssetCatName">
-        <el-select v-model="queryParams.relAssetCatName" placeholder="请选择关联资产分类名称" clearable filterable
-          class="!w-240px">
-          <el-option v-for="op in catMaps.options" :key="op.value" :label="op.label" :value="op.label" />
-        </el-select>
+      <!-- 修改关联资产分类名称搜索为树形选择 -->
+      <el-form-item label="关联资产分类" prop="relAssetCatId">
+        <el-tree-select
+          v-model="queryParams.relAssetCatId"
+          :data="assetCatTree"
+          :props="treeProps"
+          check-strictly
+          placeholder="请选择资产分类"
+          clearable
+          filterable
+          class="!w-240px"
+        />
       </el-form-item>
+      
       <el-form-item label="属性名称" prop="assetAttrName">
         <el-input v-model="queryParams.assetAttrName" placeholder="请输入属性名称" clearable @keyup.enter="handleQuery"
           class="!w-240px" />
@@ -43,7 +50,6 @@
         <el-button type="warning" plain :disabled="batchIds.length === 0" @click="handleBatchSetRequired(0)">
           批量设为可选
         </el-button>
-
       </el-form-item>
     </el-form>
   </ContentWrap>
@@ -52,7 +58,7 @@
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true"
       @selection-change="handleSelectionChange" @sort-change="handleSortChange">
-      <el-table-column type="selection" width="55" align="center" /><!-- 选择框 -->
+      <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="主键ID" align="center" prop="id" />
       <el-table-column label="属性规则ID" align="center" prop="assetAttrRuleId" />
       <el-table-column label="关联资产分类ID" align="center" prop="relAssetCatId" />
@@ -70,7 +76,6 @@
       <el-table-column label="更新人" align="center" prop="updateUser" />
       <el-table-column label="更新时间" align="center" prop="updatedTime" :formatter="dateFormatter" width="180px"
         sortable="custom" :sort-orders="['ascending', 'descending']" />
-
 
       <el-table-column label="操作" align="center" min-width="220px">
         <template #default="scope">
@@ -96,17 +101,26 @@
   <!-- 表单弹窗：添加/修改 -->
   <Dialog :title="dialogTitle" v-model="dialogVisible">
     <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px" v-loading="formLoading">
-
-      <!-- 关联资产名称（带双向映射） -->
-      <el-form-item label="关联资产名称" prop="relAssetName">
-        <el-select v-model="formData.relAssetCatName" placeholder="请选择关联资产名称" clearable @change="onCatNameChange">
-          <el-option v-for="op in catMaps.options" :key="op.value" :label="op.label" :value="op.label" />
-        </el-select>
+      <!-- 关联资产分类名称（树形选择） -->
+      <el-form-item label="关联资产分类ID" prop="relAssetCatId">
+        <el-tree-select
+          v-model="formData.relAssetCatId"
+          :data="assetCatTree"
+          :props="treeProps"
+          check-strictly
+          default-expand-all
+          placeholder="请选择资产分类ID"
+          @change="onTreeSelectChange"
+        />
       </el-form-item>
 
-      <!-- 关联资产 ID （可手动输入，也可回显） -->
-      <el-form-item label="关联资产ID" prop="relAssetId">
-        <el-input v-model="formData.relAssetCatId" placeholder="系统自动带出或手动输入" clearable @change="onCatIdInput" />
+      <!-- 关联资产分类名称显示（只读） -->
+      <el-form-item label="分类资产分类名称" prop="relAssetCatName">
+        <el-input 
+          v-model="formData.relAssetCatName" 
+          placeholder="自动显示分类名称" 
+          readonly 
+        />
       </el-form-item>
 
       <el-form-item label="属性名称" prop="assetAttrName">
@@ -148,7 +162,6 @@
       <el-form-item label="更新时间" prop="updatedTime">
         <el-date-picker v-model="formData.updatedTime" type="date" value-format="x" placeholder="选择更新时间" />
       </el-form-item>
-
     </el-form>
     <template #footer>
       <el-button @click="submitForm" type="primary" :disabled="formLoading">确 定</el-button>
@@ -156,8 +169,8 @@
     </template>
   </Dialog>
 
-<!-- 抽屉组件 -->
- <assetAttrRuleCfgDrawer v-model="detailDrawerVisible" :id="selectedDetailId" />
+  <!-- 抽屉组件 -->
+  <assetAttrRuleCfgDrawer v-model="detailDrawerVisible" :id="selectedDetailId" />
 </template>
 
 <script setup lang="ts">
@@ -179,7 +192,7 @@ const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
   assetAttrRuleId: undefined,
-  relAssetCatId: undefined,
+  relAssetCatId: undefined, // 修改为ID搜索
   relAssetCatName: undefined,
   assetAttrName: undefined,
   assetAttrCode: undefined,
@@ -232,8 +245,7 @@ const formData = ref({
 })
 const formRules = reactive({
   assetAttrRuleId: [{ required: true, message: '属性规则ID不能为空', trigger: 'blur' }],
-  relAssetCatId: [{ required: true, message: '关联资产分类ID不能为空', trigger: 'blur' }],
-  relAssetCatName: [{ required: true, message: '关联资产分类名称不能为空', trigger: 'change' }],
+  relAssetCatId: [{ required: true, message: '关联资产分类不能为空', trigger: 'change' }], // 修改触发方式
   assetAttrName: [{ required: true, message: '属性名称不能为空', trigger: 'blur' }],
   assetAttrCode: [{ required: true, message: '属性代码不能为空', trigger: 'blur' }],
   attrDataType: [{ required: true, message: '属性数据类型不能为空', trigger: 'change' }],
@@ -254,8 +266,6 @@ const openDetailDrawer = (id: number) => {
 
 // 所有选项集合
 const OptionsAll = ref({
-  // 关联资产分类名称
-  relAssetCatNameOptions: [] as Array<{ label: string; value: string }>,
   // 属性数据类型
   attrDataTypeOptions: [
     { label: '字符串', value: 'varchar' },
@@ -270,7 +280,35 @@ const OptionsAll = ref({
   ],
 })
 
-import { getCatMaps } from '@/api/dataHub/assetManagement/assetOperationManagement/assetCatMng'
+import { getCatMaps, AssetCatMngApi } from '@/api/dataHub/assetManagement/assetOperationManagement/assetCatMng'
+import { defaultProps, handleTree } from '@/utils/tree'
+
+// 树形结构相关
+const assetCatTree = ref<any[]>([]) // 树形结构数据
+const treeProps = { // 树形选择器配置
+  value: 'assetCatId',
+  label: 'assetCatName',
+  children: 'children'
+}
+
+/** 获得分类树 */
+const getAssetCatTree = async () => {
+  try {
+    const data = await AssetCatMngApi.getEnabledAssetCatMngList()
+    // 构建树形结构，添加顶级节点
+    const root: any = { 
+      assetCatId: '0', 
+      assetCatName: '顶级分类', 
+      children: [] 
+    }
+    root.children = handleTree(data, 'assetCatId', 'parentCatId')
+    assetCatTree.value = [root]
+  } catch (error) {
+    console.error('获取资产分类树失败:', error)
+    assetCatTree.value = []
+  }
+}
+
 /* 资产分类映射 & 下拉选项 */
 const catMaps = reactive({
   name2Id: {} as Record<string, string>,
@@ -284,14 +322,16 @@ const loadCatMaps = async () => {
   Object.assign(catMaps, maps)
 }
 
-/* 双向赋值函数 */
-const onCatNameChange = (name: string) => {
-  formData.value.relAssetCatId= catMaps.name2Id[name] ?? undefined
+/* 树形选择变化事件 */
+const onTreeSelectChange = (selectedId: string) => {
+  if (selectedId) {
+    // 根据选择的ID设置对应的分类名称
+    formData.value.relAssetCatName = catMaps.id2Name[selectedId] || undefined
+  } else {
+    // 清空选择时，同时清空名称
+    formData.value.relAssetCatName = undefined
+  }
 }
-const onCatIdInput = (id: string) => {
-  formData.value.relAssetCatName = catMaps.id2Name[id] ?? undefined
-}
-
 
 /** 查询列表 */
 const getList = async () => {
@@ -327,10 +367,19 @@ const openForm = async (type: string, id?: number) => {
   if (id) {
     formLoading.value = true
     try {
-      formData.value = await AssetAttrRuleCfgApi.getAssetAttrRuleCfg(id)
+      const response = await AssetAttrRuleCfgApi.getAssetAttrRuleCfg(id)
+      formData.value = response
+      // 设置分类名称显示
+      if (response.relAssetCatId) {
+        formData.value.relAssetCatName = catMaps.id2Name[response.relAssetCatId] || undefined
+      }
     } finally {
       formLoading.value = false
     }
+  }
+  // 确保树形数据已加载
+  if (assetCatTree.value.length === 0) {
+    await getAssetCatTree()
   }
 }
 
@@ -412,7 +461,6 @@ const handleExport = async () => {
 }
 
 // 批量选择的 ID 列表
-/* ----- 批量相关 ----- */
 const batchIds = ref<number[]>([])
 
 // 复选框变化
@@ -457,5 +505,6 @@ const handleSortChange = (sort: { prop: string; order: string }) => {
 onMounted(() => {
   getList()
   loadCatMaps()   // 加载关联资产分类名称字典
+  getAssetCatTree() // 加载树形数据
 })
 </script>

@@ -111,10 +111,15 @@
         </el-select>
       </el-form-item>
 
-
       <el-form-item>
-        <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
-        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
+        <el-button @click="handleQuery">
+          <Icon icon="ep:search" class="mr-5px" />
+          搜索
+        </el-button>
+        <el-button @click="resetQuery">
+          <Icon icon="ep:refresh" class="mr-5px" />
+          重置
+        </el-button>
         <!--        <el-button-->
         <!--          type="primary"-->
         <!--          plain-->
@@ -129,7 +134,8 @@
           @click="openForm('create')"
           v-hasPermi="['datacenter:warning-alert-list-table:create']"
         >
-          <Icon icon="ep:plus" class="mr-5px" /> 新增
+          <Icon icon="ep:plus" class="mr-5px" />
+          新增
         </el-button>
         <el-button
           type="success"
@@ -138,8 +144,22 @@
           :loading="exportLoading"
           v-hasPermi="['datacenter:warning-alert-list-table:export']"
         >
-          <Icon icon="ep:download" class="mr-5px" /> 导出
+          <Icon icon="ep:download" class="mr-5px" />
+          导出
         </el-button>
+        <!--表格字段是否显示-->
+        <el-dropdown trigger="click" :hide-on-click="false" style="padding-left: 12px">
+          <el-button circle :icon="Menu" />
+          <template #dropdown>
+            <el-dropdown-menu>
+              <template v-for="item in tableColumns" :key="item.visible">
+                <el-dropdown-item>
+                  <el-checkbox v-model="item.visible" :label="item.label" />
+                </el-dropdown-item>
+              </template>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </el-form-item>
     </el-form>
   </ContentWrap>
@@ -155,10 +175,18 @@
       @row-click="(row) => handleOpenDetail(row.id)"
       :row-class-name="tableRowClassName"
     >
-      <el-table-column label="预警ID" align="center" prop="id" />
+      <el-table-column
+        label="预警ID"
+        align="center"
+        prop="id"
+        v-if="tableColumnShow('预警ID')"
+        :show-overflow-tooltip="true"
+      />
       <el-table-column
         label="告警编号"
         align="center"
+        v-if="tableColumnShow('告警编号')"
+        :show-overflow-tooltip="true"
       >
         <template #default="scope">
           <span
@@ -172,10 +200,34 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="关联对象类型" align="center" prop="relatedObjectType" />
-      <el-table-column label="关联对象名称" align="center" prop="relatedObjectName" />
-      <el-table-column label="预警领域" align="center" prop="warningField" />
-      <el-table-column label="预警类型" align="center" prop="warningType" />
+      <el-table-column
+        label="关联对象类型"
+        align="center"
+        prop="relatedObjectType"
+        v-if="tableColumnShow('关联对象类型')"
+        :show-overflow-tooltip="true"
+      />
+      <el-table-column
+        label="关联对象名称"
+        align="center"
+        prop="relatedObjectName"
+        v-if="tableColumnShow('关联对象名称')"
+        :show-overflow-tooltip="true"
+      />
+      <el-table-column
+        label="预警领域"
+        align="center"
+        prop="warningField"
+        v-if="tableColumnShow('预警领域')"
+        :show-overflow-tooltip="true"
+      />
+      <el-table-column
+        label="预警类型"
+        align="center"
+        prop="warningType"
+        v-if="tableColumnShow('预警类型')"
+        :show-overflow-tooltip="true"
+      />
 
       <!-- 预警等级列 -->
       <el-table-column
@@ -183,14 +235,26 @@
         align="center"
         prop="warningLevel"
         sortable="custom"
+        v-if="tableColumnShow('预警等级')"
+        :show-overflow-tooltip="true"
       >
         <template #default="scope">
           <el-tag
-            :type="scope.row.warningLevel === 'emergency' ? 'danger' :
-                   scope.row.warningLevel === 'important' ? 'warning' : 'info'"
+            :type="
+              scope.row.warningLevel === 'emergency'
+                ? 'danger'
+                : scope.row.warningLevel === 'important'
+                  ? 'warning'
+                  : 'info'
+            "
           >
-            {{ scope.row.warningLevel === 'emergency' ? '紧急' :
-            scope.row.warningLevel === 'important' ? '重要' : '一般' }}
+            {{
+              scope.row.warningLevel === 'emergency'
+                ? '紧急'
+                : scope.row.warningLevel === 'important'
+                  ? '重要'
+                  : '一般'
+            }}
           </el-tag>
         </template>
       </el-table-column>
@@ -200,19 +264,80 @@
         label="预警状态"
         align="center"
         prop="status"
+        v-if="tableColumnShow('预警状态')"
+        :show-overflow-tooltip="true"
       >
         <template #default="scope">
-          <el-tag
-            :type="scope.row.status === 0 ? 'info' :'success' "
-          >
-            {{ scope.row.status === 0 ? '待派单' : '已派单'}}
+          <el-tag :type="scope.row.status === 0 ? 'info' : 'success'">
+            {{ scope.row.status === 0 ? '待派单' : '已派单' }}
           </el-tag>
         </template>
       </el-table-column>
 
-      <el-table-column label="触发原因" align="center" prop="triggerReason" />
-      <el-table-column label="派发部门" align="center" prop="dispatchDepartment" />
-      <el-table-column label="责任人" align="center" prop="responsiblePerson" />
+      <el-table-column
+        label="触发原因"
+        align="center"
+        prop="triggerReason"
+        v-if="tableColumnShow('触发原因')"
+        :show-overflow-tooltip="true"
+      />
+      <el-table-column
+        label="派发部门"
+        align="center"
+        prop="dispatchDepartment"
+        v-if="tableColumnShow('派发部门')"
+        :show-overflow-tooltip="true"
+      />
+      <el-table-column
+        label="责任人"
+        align="center"
+        prop="responsiblePerson"
+        v-if="tableColumnShow('责任人')"
+        :show-overflow-tooltip="true"
+      />
+      <el-table-column
+        label="行政区划编码"
+        align="center"
+        prop="regionCode"
+        v-if="tableColumnShow('行政区划编码')"
+        :show-overflow-tooltip="true"
+      />
+      <el-table-column
+        label="所在行政区划名称"
+        align="center"
+        prop="regionName"
+        v-if="tableColumnShow('所在行政区划名称')"
+        :show-overflow-tooltip="true"
+      />
+      <el-table-column
+        label="所在网格ID"
+        align="center"
+        prop="gridId"
+        v-if="tableColumnShow('所在网格ID')"
+        :show-overflow-tooltip="true"
+      />
+      <el-table-column
+        label="所在网格名称"
+        align="center"
+        prop="gridName"
+        v-if="tableColumnShow('所在网格名称')"
+        :show-overflow-tooltip="true"
+      />
+      <el-table-column
+        label="事件发生地址"
+        align="center"
+        prop="address"
+        v-if="tableColumnShow('事件发生地址')"
+        :show-overflow-tooltip="true"
+      />
+      <el-table-column
+        label="经度"
+        align="center"
+        prop="longitude"
+        v-if="tableColumnShow('经度')"
+        :show-overflow-tooltip="true"
+      />
+      <el-table-column label="纬度" align="center" prop="latitude" v-if="tableColumnShow('纬度')" />
       <el-table-column
         label="触发时间"
         align="center"
@@ -220,6 +345,8 @@
         :formatter="dateFormatter"
         width="180px"
         sortable="custom"
+        v-if="tableColumnShow('触发时间')"
+        :show-overflow-tooltip="true"
       />
       <el-table-column
         label="要求完成时间"
@@ -228,12 +355,14 @@
         :formatter="dateFormatter"
         width="180px"
         sortable="custom"
+        v-if="tableColumnShow('要求完成时间')"
+        :show-overflow-tooltip="true"
       />
 
-      <el-table-column label="操作" align="center" min-width="220px">
+      <el-table-column label="操作" align="center" min-width="220px" fixed="right">
         <template #default="scope">
           <!-- 待派单状态操作 -->
-          <template v-if="scope.row.status === 0 ">
+          <template v-if="scope.row.status === 0">
             <el-button
               link
               type="primary"
@@ -258,6 +387,7 @@
             type="primary"
             @click.stop="openForm('update', scope.row.id)"
             v-hasPermi="['datacenter:warning-alert-list-table:update']"
+            v-if="scope.row.relatedObjectType !== 'DEVICE'"
           >
             修改
           </el-button>
@@ -302,6 +432,7 @@
 import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
 import { WarningAlertListTableApi, WarningAlertListTableVO } from '@/api/dataHub/warningAlarm/list'
+import { MonEvtCatApi } from '@/api/dataHub/monitorCompEventMgr/monitorEvtConfigMgr/monevtcat'
 import WarningAlertListTableForm from './WarningAlertListTableForm.vue'
 import WarningDetailDrawer from './components/WarningDetailDrawer.vue'
 // import DispatchOrderForm from './components/DispatchOrderForm.vue'
@@ -312,6 +443,7 @@ import ExportOptionsForm from './components/ExportOptionsForm.vue'
 // import ImportForm from './components/ImportForm.vue'
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
+import { Menu } from '@element-plus/icons-vue'
 // import DeleteReasonForm from './components/DeleteReasonForm.vue'
 defineOptions({ name: 'WarningAlertListTable' })
 
@@ -334,7 +466,7 @@ const list = ref<WarningAlertListTableVO[]>([])
 const total = ref(0)
 const exportLoading = ref(false)
 const isDrawerFullscreen = ref(false)
-const currentRowId = ref<number | null>(null)  // 仅用于行高亮
+const currentRowId = ref<number | null>(null) // 仅用于行高亮
 /** 用户数据接口类型 */
 interface UserItem {
   id: number
@@ -348,11 +480,6 @@ const userList = ref<UserItem[]>([])
 /** 获取用户列表 */
 const getUserList = async () => {
   const res = await WarningAlertListTableApi.getSimpleUserList()
-  // if (res.code === 0 && Array.isArray(res.data)) {
-  //   userList.value = res
-  // } else {
-  //   userList.value = []
-  // }
   userList.value = res
 }
 
@@ -363,6 +490,37 @@ const warningFieldOptions = ref([
   { label: '视频监控', value: 'field3' }
 ])
 
+//表格字段太多,控制表格列显隐
+//table 列显隐信息
+const tableColumns = ref([
+  { label: '预警ID', visible: true },
+  { label: '告警编号', visible: true },
+  { label: '关联对象类型', visible: true },
+  { label: '关联对象名称', visible: true },
+  { label: '预警领域', visible: true },
+  { label: '预警类型', visible: true },
+  { label: '预警状态', visible: true },
+  { label: '触发原因', visible: true },
+  { label: '派发部门', visible: true },
+  { label: '责任人', visible: true },
+  { label: '行政区划编码', visible: false },
+  { label: '所在行政区划名称', visible: false },
+  { label: '所在网格ID', visible: false },
+  { label: '所在网格名称', visible: false },
+  { label: '事件发生地址', visible: false },
+  { label: '经度', visible: false },
+  { label: '纬度', visible: false },
+  { label: '触发时间', visible: true },
+  { label: '要求完成时间', visible: true }
+])
+//table 列是否显示
+const tableColumnShow = (label) => {
+  for (let i = 0; i < tableColumns.value.length; i++) {
+    if (tableColumns.value[i].label === label) {
+      return tableColumns.value[i].visible
+    }
+  }
+}
 /** ====================== 预警类型树选择 ====================== */
 const warningTypeTree = ref<any[]>([])
 const warningTypeLoading = ref(false)
@@ -371,11 +529,13 @@ const warningTypeLoading = ref(false)
 function buildTreeSelectData(list: any[]) {
   const map = new Map()
   const tree: any[] = []
-  list.forEach(item => map.set(item.id, { value: item.id, label: item.matterName, children: [] }))
-  list.forEach(item => {
+  list.forEach((item) =>
+    map.set(item.id, { value: item.evtCatCode, label: item.evtCatName, children: [] })
+  )
+  list.forEach((item) => {
     const node = map.get(item.id)
-    if (item.parentId && item.parentId !== '0') {
-      const parent = map.get(Number(item.parentId))
+    if (item.parentEvtId && item.parentEvtId !== '0') {
+      const parent = map.get(Number(item.parentEvtId))
       if (parent) parent.children.push(node)
     } else {
       tree.push(node)
@@ -388,8 +548,8 @@ function buildTreeSelectData(list: any[]) {
 const loadWarningTypeTree = async () => {
   warningTypeLoading.value = true
   try {
-    const res = await WarningAlertListTableApi.getWarningTypeTree()
-    warningTypeTree.value = buildTreeSelectData(res)
+    const res = await MonEvtCatApi.getMonEvtCatPage({ pageNo: 1, pageSize: 100 })
+    warningTypeTree.value = buildTreeSelectData(res.list)
   } finally {
     warningTypeLoading.value = false
   }
@@ -413,7 +573,6 @@ function findLabelById(nodes: any[], id: number): string | undefined {
   }
 }
 
-
 /** ====================== 派发部门树 ====================== */
 const deptTree = ref<any[]>([])
 const deptLoading = ref(false)
@@ -421,8 +580,8 @@ const deptLoading = ref(false)
 function buildDeptTree(list: any[]) {
   const map = new Map()
   const tree: any[] = []
-  list.forEach(item => map.set(item.id, { value: item.id, label: item.name, children: [] }))
-  list.forEach(item => {
+  list.forEach((item) => map.set(item.id, { value: item.id, label: item.name, children: [] }))
+  list.forEach((item) => {
     const node = map.get(item.id)
     if (item.parentId && item.parentId !== 0) {
       const parent = map.get(item.parentId)
@@ -453,11 +612,9 @@ const handleDeptChange = (val: number) => {
 /** 根据用户ID查找用户昵称（用于列表与回显） */
 function findUserNicknameById(id: string | number | undefined): string | undefined {
   if (!id) return undefined
-  const user = userList.value.find(u => String(u.id) === String(id))
+  const user = userList.value.find((u) => String(u.id) === String(id))
   return user ? user.nickname : undefined
 }
-
-
 
 const queryFormRef = ref()
 
@@ -473,18 +630,17 @@ const queryParams = reactive({
   warningStatus: undefined,
   dispatchDepartment: undefined,
   orderByColumn: '', // 初始无排序
-  isAsc: '' ,// 初始无排序
-  status:undefined,
-  responsiblePerson:undefined
+  isAsc: '', // 初始无排序
+  status: undefined,
+  responsiblePerson: undefined
 })
-
 
 /** 查询列表 */
 const getList = async () => {
   loading.value = true
   try {
     const data = await WarningAlertListTableApi.getWarningAlertListTablePage(queryParams)
-    list.value = data.list.map(item => {
+    list.value = data.list.map((item) => {
       //  部门名称映射
       const deptNode = findLabelById(deptTree.value, Number(item.dispatchDepartment))
 
@@ -518,7 +674,7 @@ const resetQuery = () => {
 }
 
 /** 排序变化处理 */
-const handleSortChange = (sort: { column: any, prop: string, order: string }) => {
+const handleSortChange = (sort: { column: any; prop: string; order: string }) => {
   if (sort.prop && sort.order) {
     queryParams.orderByColumn = sort.prop
     queryParams.isAsc = sort.order === 'ascending' ? 'asc' : 'desc'
@@ -534,13 +690,15 @@ const openForm = (type: string, id?: number) => {
   formRef.value.open(type, id)
 }
 
-/** 行点击打开详情（核心方法） */
+/** 行点击打开详情 */
 const handleOpenDetail = async (id: number) => {
   try {
     // 直接加载新数据并打开抽屉，不判断抽屉是否已打开
     const detailData = await WarningAlertListTableApi.getWarningAlertListTable(id)
+    //对抽屉数据赋值前将责任人映射传入
+    detailData.responsiblePerson = findUserNicknameById(detailData.responsiblePerson)
     detailDrawerRef.value.open(detailData)
-    currentRowId.value = id  // 记录当前行ID用于高亮
+    currentRowId.value = id // 记录当前行ID用于高亮
   } catch (error) {
     message.error('获取预警详情失败，请重试')
   }
@@ -560,11 +718,11 @@ const tableRowClassName = ({ row }: { row: WarningAlertListTableVO }) => {
 /** 派单操作,触发流程 */
 const handleDispatch = async (row: WarningAlertListTableVO) => {
   try {
-    await WarningAlertListTableApi.dispatchWarningAlertListTable(row.id);
-    ElMessage.success('派单成功');
-    getList()
+    await WarningAlertListTableApi.dispatchWarningAlertListTable(row.id)
+    ElMessage.success('派单成功')
+    await getList()
   } catch (error) {
-    ElMessage.error('派单失败，请重试');
+    ElMessage.error('派单失败，请重试')
   }
 }
 
@@ -583,16 +741,18 @@ const handleDispatch = async (row: WarningAlertListTableVO) => {
 //   reviewFormRef.value.open(row)
 // }
 
-
-/** 确认删除 */
+/** 删除按钮操作 */
 const handleDelete = async (id: number) => {
   try {
+    // 删除的二次确认
+    await message.delConfirm()
+    // 发起删除
     await WarningAlertListTableApi.deleteWarningAlertListTable(id)
     message.success(t('common.delSuccess'))
+    // 刷新列表
     await getList()
   } catch {}
 }
-
 /** 导入操作 */
 // const handleImport = () => {
 //   importFormRef.value.open()
@@ -621,11 +781,13 @@ const confirmExport = async (fields: string[], format: string) => {
   }
 }
 
-
 /** 判断是否超时 */
 const isOverdue = (row: WarningAlertListTableVO) => {
-  if (!row.requiredCompleteTime || !row.warningStatus ||
-    ['completed', 'rejected'].includes(row.warningStatus)) {
+  if (
+    !row.requiredCompleteTime ||
+    !row.warningStatus ||
+    ['completed', 'rejected'].includes(row.warningStatus)
+  ) {
     return false
   }
 

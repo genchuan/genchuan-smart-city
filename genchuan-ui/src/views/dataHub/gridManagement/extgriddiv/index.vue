@@ -8,7 +8,6 @@
       :inline="true"
       label-width="100px"
     >
-
       <el-form-item label="申请时间" prop="applyTime">
         <el-date-picker
           v-model="queryParams.applyTime"
@@ -30,24 +29,22 @@
         />
       </el-form-item>
 
-
       <el-form-item>
-        <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
-        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
-        <el-button
-          type="primary"
-          plain
-          @click="openForm('create')"
-        >
-          <Icon icon="ep:plus" class="mr-5px" /> 新增
+        <el-button @click="handleQuery">
+          <Icon icon="ep:search" class="mr-5px" />
+          搜索
         </el-button>
-        <el-button
-          type="success"
-          plain
-          @click="handleExport"
-          :loading="exportLoading"
-        >
-          <Icon icon="ep:download" class="mr-5px" /> 导出
+        <el-button @click="resetQuery">
+          <Icon icon="ep:refresh" class="mr-5px" />
+          重置
+        </el-button>
+        <el-button type="primary" plain @click="openForm('create')">
+          <Icon icon="ep:plus" class="mr-5px" />
+          新增
+        </el-button>
+        <el-button type="success" plain @click="handleExport" :loading="exportLoading">
+          <Icon icon="ep:download" class="mr-5px" />
+          导出
         </el-button>
       </el-form-item>
     </el-form>
@@ -56,7 +53,7 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-<!--      <el-table-column label="主键ID" align="center" prop="id" />-->
+      <!--      <el-table-column label="主键ID" align="center" prop="id" />-->
       <el-table-column label="ID" align="center" prop="extGridId" />
       <el-table-column label="名称" align="center" prop="extGridName" />
       <el-table-column label="类型" align="center" prop="extType" />
@@ -83,8 +80,8 @@
         width="180px"
       />
       <el-table-column label="审核意见" align="center" prop="auditOpinion" />
-<!--      <el-table-column label="分类扩展字段1" align="center" prop="extCat1" />-->
-<!--      <el-table-column label="分类扩展字段2" align="center" prop="extCat2" />-->
+      <!--      <el-table-column label="分类扩展字段1" align="center" prop="extCat1" />-->
+      <!--      <el-table-column label="分类扩展字段2" align="center" prop="extCat2" />-->
       <el-table-column
         label="创建时间"
         align="center"
@@ -94,27 +91,11 @@
       />
       <el-table-column label="操作" align="center" min-width="180px" fixed="right">
         <template #default="scope">
-          <el-button
-            link
-            type="primary"
-            @click="openForm('update', scope.row.id)"
-          >
+          <el-button link type="primary" @click="openDetail(scope.row)"> 详情 </el-button>
+          <el-button link type="primary" @click="openForm('update', scope.row.id)">
             编辑
           </el-button>
-          <el-button
-            link
-            type="primary"
-            @click="openDetail(scope.row)"
-          >
-            详情
-          </el-button>
-          <el-button
-            link
-            type="danger"
-            @click="handleDelete(scope.row.id)"
-          >
-            删除
-          </el-button>
+          <el-button link type="danger" @click="handleDelete(scope.row.id)"> 删除 </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -129,7 +110,7 @@
 
   <!-- 表单弹窗：添加/修改 -->
   <ExtGridDivForm ref="formRef" @success="getList" />
-  <ExtGridDivDetail ref="detailDrawerRef"/>
+  <ExtGridDivDetail ref="detailDrawerRef" />
 </template>
 
 <script setup lang="ts">
@@ -167,7 +148,7 @@ const queryParams = reactive({
   auditOpinion: undefined,
   extCat1: undefined,
   extCat2: undefined,
-  createTime: [],
+  createTime: []
 })
 const queryFormRef = ref() // 搜索的表单
 const exportLoading = ref(false) // 导出的加载中

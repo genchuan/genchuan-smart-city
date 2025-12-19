@@ -229,7 +229,7 @@ const OptionsAll = ref({
  
 })
 
-import { getDataMaps } from '@/api/dataHub/thingsboard/asset.ts'
+import { getDataMaps } from '@/api/dataHub/thingsboard/asset'
 /* 资产分类映射 & 下拉选项 */
 const dataMaps = reactive({
     name2Id: {} as Record<string, string>,

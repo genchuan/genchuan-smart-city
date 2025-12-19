@@ -113,9 +113,9 @@
       <el-table-column label="关联人" align="center" prop="relUser" width="100" />
       <el-table-column label="关联状态" align="center" prop="relStatus" width="100">
         <template #default="scope">
-          <span :class="scope.row.relStatus === '1' ? 'status-active' : 'status-inactive'">
+          <el-tag :type="scope.row.relStatus === '1' ? 'success' : 'info'">
             {{ scope.row.relStatus === '1' ? '已关联' : '未关联' }}
-          </span>
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" min-width="180px">

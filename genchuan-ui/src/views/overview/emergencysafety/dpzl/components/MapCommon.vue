@@ -1,9 +1,7 @@
 <template>
   <div class="map-container">
-    <!-- 地图容器 -->
     <div :id="idName" class="map-common-css"></div>
 
-    <!-- 图例：风险等级（高/中/低） -->
     <div class="legend">
       <div class="legend-items">
         <div class="legend-item">
@@ -25,7 +23,7 @@
 
 <script setup>
 import {onMounted, defineProps, ref, onUnmounted, watch} from 'vue';
-import { dateFormatter } from '@/utils/formatTime'
+import {dateFormatter} from '@/utils/formatTime'
 import markerGreen from '@/assets/chart/images/marker-green.png';
 import markerRed from '@/assets/chart/images/risk-high.png';
 import markerGray from '@/assets/chart/images/risk-low.png';
@@ -36,7 +34,7 @@ const props = defineProps({
     type: String,
     default: 'chinaEcharts',
   },
-  geometriesArray: { // 接收风险分布数据（字段为驼峰式）
+  geometriesArray: { // 接收风险分布数据
     type: Array,
     default: () => []
   }
@@ -46,10 +44,25 @@ const mapInstance = ref(null);
 const infoWindow = ref(null);
 const markerLayer = ref(null);
 
+const handleMarkerClick = (e) => {
+  const {properties, position} = e.geometry;
+  if (properties && position && infoWindow.value) {
+    infoWindow.value.setContent(getTooltipContent(properties));
+    infoWindow.value.setPosition(position);
+    infoWindow.value.open();
+  }
+};
+
+const handleInfoWindowClose = () => {
+  if (infoWindow.value) {
+    infoWindow.value.close();
+  }
+};
+
 const initMap = () => {
   const callbackName = `initMap_${props.idName}`;
   const script = document.createElement('script');
-  script.src = `https://map.qq.com/api/gljs?v=1.exp&key=OHCBZ-7BPC3-J7E3H-OA62K-Y3ZFZ-JQBPD&callback=${callbackName}`;
+  script.src = `https://map.qq.com/api/gljs?v=1.exp&key=QTQBZ-F3RWW-JJJRV-YNPA5-ZIKDK-3SBNO&callback=${callbackName}`;
   script.async = true;
 
   window[callbackName] = () => {
@@ -60,9 +73,8 @@ const initMap = () => {
   document.head.appendChild(script);
 };
 
-// 信息窗内容：按“：”对齐优化，保留风险等级颜色
+// 信息窗内容
 const getTooltipContent = (properties) => {
-  // 对齐核心样式：统一复用Flex布局方案
   const labelStyle = 'width: 90px; text-align: right; font-weight: bold; margin-right: 6px; flex-shrink: 0;';
   const valueStyle = 'flex: 1; text-align: left; word-break: break-all;';
   const rowStyle = 'display: flex; align-items: center; margin: 6px 0;';
@@ -70,12 +82,10 @@ const getTooltipContent = (properties) => {
   return `
     <div style="padding: 10px; font-size: 14px; color: #333; background: white; border: 1px solid #ccc; min-width: 300px; border-radius: 4px;">
       <div style="margin-bottom: 8px; font-weight: bold; color: #1E90FF; border-bottom: 1px solid #eee; padding-bottom: 4px; text-align: center;">风险隐患信息</div>
-
       <div style="${rowStyle}">
         <span style="${labelStyle}">隐患ID：</span>
         <span style="${valueStyle}">${properties.hazardId || '未知'}</span>
       </div>
-
       <div style="${rowStyle}">
         <span style="${labelStyle}">风险等级：</span>
         <span style="${valueStyle}; color: ${
@@ -85,27 +95,22 @@ const getTooltipContent = (properties) => {
           ${properties.riskLevel || '未知'}
         </span>
       </div>
-
       <div style="${rowStyle}">
         <span style="${labelStyle}">风险类型：</span>
         <span style="${valueStyle}">${properties.hazardType || '未知'}</span>
       </div>
-
       <div style="${rowStyle}">
         <span style="${labelStyle}">所在网格：</span>
         <span style="${valueStyle}">${properties.gridName || '未知'}</span>
       </div>
-
       <div style="${rowStyle}">
         <span style="${labelStyle}">所在区域：</span>
         <span style="${valueStyle}">${properties.regionName || '未知'}</span>
       </div>
-
       <div style="${rowStyle}">
         <span style="${labelStyle}">发现时间：</span>
         <span style="${valueStyle}">${dateFormatter(null, null, properties.discoverTime) || '未知'}</span>
       </div>
-
       <div style="${rowStyle}">
         <span style="${labelStyle}">坐标：</span>
         <span style="${valueStyle}">(${properties.coordX.toFixed(6)}, ${properties.coordY.toFixed(6)})</span>
@@ -114,28 +119,28 @@ const getTooltipContent = (properties) => {
   `;
 };
 
-// 标记点样式：根据风险等级（riskLevel）匹配
+// 标记点样式
 const getMarkerStyles = () => {
   return {
-    'level-高': new TMap.MarkerStyle({ // 高风险-红色
+    'level-高': new TMap.MarkerStyle({
       width: 34,
       height: 34,
       anchor: {x: 15, y: 30},
       src: markerRed
     }),
-    'level-中': new TMap.MarkerStyle({ // 中风险-绿色
+    'level-中': new TMap.MarkerStyle({
       width: 34,
       height: 34,
       anchor: {x: 15, y: 30},
       src: markerBlue
     }),
-    'level-低': new TMap.MarkerStyle({ // 低风险-灰色
+    'level-低': new TMap.MarkerStyle({
       width: 34,
       height: 34,
       anchor: {x: 15, y: 30},
       src: markerGray
     }),
-    'default': new TMap.MarkerStyle({ // 默认-蓝色
+    'default': new TMap.MarkerStyle({
       width: 34,
       height: 34,
       anchor: {x: 15, y: 30},
@@ -148,8 +153,13 @@ const getMarkerStyles = () => {
 const createMarkerLayer = (data) => {
   // 先销毁旧标注层（避免重复）
   if (markerLayer.value) {
-    markerLayer.value.off('click');
-    markerLayer.value.destroy();
+    try {
+      // 传入与on绑定的命名函数
+      markerLayer.value.off('click', handleMarkerClick);
+      markerLayer.value.destroy();
+    } catch (error) {
+      console.warn('销毁风险标记层失败：', error);
+    }
     markerLayer.value = null;
   }
 
@@ -167,8 +177,8 @@ const createMarkerLayer = (data) => {
         position: new TMap.LatLng(item.coordX, item.coordY),
         properties: {
           hazardId: item.hazardId,
-          riskLevel: item.riskLevel, // 风险等级（高/中/低）
-          hazardType: item.hazardType, // 风险类型（如消防安全等）
+          riskLevel: item.riskLevel,
+          hazardType: item.hazardType,
           gridName: item.gridName,
           regionName: item.regionName,
           discoverTime: item.discoverTime,
@@ -182,19 +192,11 @@ const createMarkerLayer = (data) => {
   if (geometriesData.length > 0) {
     markerLayer.value = new TMap.MultiMarker({
       map: mapInstance.value,
-      styles: getMarkerStyles(), // 使用风险等级对应的样式
+      styles: getMarkerStyles(),
       geometries: geometriesData
     });
 
-    // 绑定点击事件
-    markerLayer.value.on('click', (e) => {
-      const {properties, position} = e.geometry;
-      if (properties && position && infoWindow.value) {
-        infoWindow.value.setContent(getTooltipContent(properties));
-        infoWindow.value.setPosition(position);
-        infoWindow.value.open();
-      }
-    });
+    markerLayer.value.on('click', handleMarkerClick);
   }
 };
 
@@ -217,9 +219,8 @@ const mapCallback = () => {
     visible: false
   });
 
-  infoWindow.value.on('close', () => infoWindow.value.close());
+  infoWindow.value.on('close', handleInfoWindowClose);
 
-  // 初始化时创建标注层
   createMarkerLayer(props.geometriesArray);
 };
 
@@ -240,12 +241,20 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (markerLayer.value) {
-    markerLayer.value.off('click');
-    markerLayer.value.destroy();
+    try {
+      markerLayer.value.off('click', handleMarkerClick);
+      markerLayer.value.destroy();
+    } catch (error) {
+      console.warn('卸载时销毁风险标记层失败：', error);
+    }
   }
   if (infoWindow.value) {
-    infoWindow.value.off('close');
-    infoWindow.value.destroy();
+    try {
+      infoWindow.value.off('close', handleInfoWindowClose);
+      infoWindow.value.destroy();
+    } catch (error) {
+      console.warn('卸载时销毁风险信息窗失败：', error);
+    }
   }
   if (mapInstance.value) {
     mapInstance.value.destroy();

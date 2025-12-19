@@ -2,60 +2,85 @@
   <div class="cc-main">
     <div class="cc-main-content">
       <!--title-->
-      <div class="cc-title-css">
-        <div class="left">
-          <el-icon class="left-icon">
-            <Tickets/>
-          </el-icon>
-          <!--标题名称-->
-          <span>{{ titleConfig.name }}</span>
-        </div>
-        <!--右边的按钮-->
-        <div class="right">
-          <el-button type="primary" plain :icon="Plus" @click="addClick(titleConfig.addButName)" v-hasPermi="['baseConfiguration:coordinateSystemConfiguration:create']">
-            {{ titleConfig.addButName }}
-          </el-button>
-        </div>
-      </div>
+
       <!--搜索内容字段-->
       <div class="cc-search-css" ref="searchRef">
         <el-form
-            class="-mb-15px"
-            :model="searchForm"
-            ref="searchFormRef"
-            :inline="true"
-            label-width="85px"
+          class="-mb-15px"
+          :model="searchForm"
+          ref="searchFormRef"
+          :inline="true"
+          label-width="85px"
         >
           <el-form-item label="坐标系名称" prop="coordinateName">
-            <el-input v-model="searchForm.coordinateName" placeholder="请输入坐标系名称" clearable class="!w-240px" @change="searchClick"/>
+            <el-input
+              v-model="searchForm.coordinateName"
+              placeholder="请输入坐标系名称"
+              clearable
+              class="!w-240px"
+              @change="searchClick"
+            />
           </el-form-item>
           <el-form-item label="启用状态" prop="enableStatus">
-            <el-select v-model="searchForm.enableStatus" placeholder="请选择启用状态" class="!w-240px" clearable @change="searchClick">
-              <el-option v-for="(item,key) in OptionsAll.enableStatusOptions" :key="key" :label="item.label" :value="item.value"/>
+            <el-select
+              v-model="searchForm.enableStatus"
+              placeholder="请选择启用状态"
+              class="!w-240px"
+              clearable
+              @change="searchClick"
+            >
+              <el-option
+                v-for="(item, key) in OptionsAll.enableStatusOptions"
+                :key="key"
+                :label="item.label"
+                :value="item.value"
+              />
             </el-select>
           </el-form-item>
           <el-form-item label="配置人" prop="configUser">
-            <el-select v-model="searchForm.configUser" placeholder="请选择配置人" class="!w-240px" clearable @change="searchClick">
-              <el-option v-for="item in userOptions" :key="item.id" :label="item.nickname" :value="item.id"/>
+            <el-select
+              v-model="searchForm.configUser"
+              placeholder="请选择配置人"
+              class="!w-240px"
+              clearable
+              @change="searchClick"
+            >
+              <el-option
+                v-for="item in userOptions"
+                :key="item.id"
+                :label="item.nickname"
+                :value="item.id"
+              />
             </el-select>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="searchClick">
-              <Icon icon="ep:search" class="mr-5px"/>
+              <Icon icon="ep:search" class="mr-5px" />
               搜索
             </el-button>
             <el-button @click="searchResetClick">
-              <Icon icon="ep:refresh" class="mr-5px"/>
+              <Icon icon="ep:refresh" class="mr-5px" />
               重置
             </el-button>
+
+            <el-button
+              type="primary"
+              plain
+              :icon="Plus"
+              @click="addClick(titleConfig.addButName)"
+              v-hasPermi="['baseConfiguration:coordinateSystemConfiguration:create']"
+            >
+              {{ titleConfig.addButName }}
+            </el-button>
+
             <!--表格字段是否显示-->
             <el-dropdown trigger="click" :hide-on-click="false" style="padding-left: 12px">
-              <el-button circle :icon="Menu"/>
+              <el-button circle :icon="Menu" />
               <template #dropdown>
                 <el-dropdown-menu>
                   <template v-for="item in tableColumns" :key="item.visible">
                     <el-dropdown-item>
-                      <el-checkbox v-model="item.visible" :label="item.label"/>
+                      <el-checkbox v-model="item.visible" :label="item.label" />
                     </el-dropdown-item>
                   </template>
                 </el-dropdown-menu>
@@ -67,114 +92,274 @@
       <!--table-->
       <div class="cc-table-css">
         <el-table
-            ref="tableRef"
-            :data="tableData"
-            border
-            style="width: 100%"
-            :header-cell-style="getHeaderCellStyle"
-            v-loading="tableConfig.loading"
-            :max-height="tableConfig.height"
+          ref="tableRef"
+          :data="tableData"
+          border
+          style="width: 100%"
+          :header-cell-style="getHeaderCellStyle"
+          v-loading="tableConfig.loading"
+          :max-height="tableConfig.height"
         >
-          <el-table-column label="序号" type="index" width="55" align="center" fixed="left"/>
-          <el-table-column label="坐标系名称" min-width="150" align="center" prop="coordinateName" :show-overflow-tooltip="true" v-if="tableColumnShow('坐标系名称')">
+          <el-table-column label="序号" type="index" width="55" align="center" fixed="left" />
+          <el-table-column
+            label="坐标系名称"
+            min-width="150"
+            align="center"
+            prop="coordinateName"
+            :show-overflow-tooltip="true"
+            v-if="tableColumnShow('坐标系名称')"
+          >
             <template #default="scope">
-              <div @click="tableOneClick(scope.row)" class="table-active">{{ scope.row.coordinateName }}</div>
+              <div @click="tableOneClick(scope.row)" class="table-active"
+                >{{ scope.row.coordinateName }}
+              </div>
             </template>
           </el-table-column>
-          <el-table-column label="启用状态" min-width="150" align="center" :show-overflow-tooltip="true" v-if="tableColumnShow('启用状态')">
+          <el-table-column
+            label="启用状态"
+            min-width="150"
+            align="center"
+            :show-overflow-tooltip="true"
+            v-if="tableColumnShow('启用状态')"
+          >
             <template #default="scope">
               {{ handleTypeOptions(scope.row.enableStatus, OptionsAll.enableStatusOptions) }}
             </template>
           </el-table-column>
-          <el-table-column label="配置人" min-width="150" align="center" :show-overflow-tooltip="true" v-if="tableColumnShow('配置人')">
+          <el-table-column
+            label="配置人"
+            min-width="150"
+            align="center"
+            :show-overflow-tooltip="true"
+            v-if="tableColumnShow('配置人')"
+          >
             <template #default="scope">
               {{ handleTypeOptions(scope.row.configUser, userOptions, 2) }}
             </template>
           </el-table-column>
-          <el-table-column label="配置时间" min-width="150" align="center" :formatter="dateFormatter2" prop="configTime" :show-overflow-tooltip="true" v-if="tableColumnShow('配置时间')"/>
-          <el-table-column label="备注" min-width="150" align="center" prop="remark" :show-overflow-tooltip="true" v-if="tableColumnShow('备注')"/>
+          <el-table-column
+            label="配置时间"
+            min-width="150"
+            align="center"
+            :formatter="dateFormatter2"
+            prop="configTime"
+            :show-overflow-tooltip="true"
+            v-if="tableColumnShow('配置时间')"
+          />
+          <el-table-column
+            label="备注"
+            min-width="150"
+            align="center"
+            prop="remark"
+            :show-overflow-tooltip="true"
+            v-if="tableColumnShow('备注')"
+          />
           <el-table-column width="300" fixed="right" label="操作" align="center">
             <template #default="scope">
-              <el-button type="success" :icon="View" :plain="true" @click="queryClick(scope.row)" v-hasPermi="['baseConfiguration:coordinateSystemConfiguration:query']">详细</el-button>
-              <el-button type="primary" :icon="EditPen" :plain="true" @click="editClick(scope.row)" v-hasPermi="['baseConfiguration:coordinateSystemConfiguration:update']">编辑</el-button>
-              <el-button type="danger" :icon="Delete" :plain="true" @click="delClick(scope.row)" v-hasPermi="['baseConfiguration:coordinateSystemConfiguration:delete']">删除</el-button>
+              <el-button
+                type="success"
+                :icon="View"
+                :plain="true"
+                @click="queryClick(scope.row)"
+                v-hasPermi="['baseConfiguration:coordinateSystemConfiguration:query']"
+                >详细
+              </el-button>
+              <el-button
+                type="primary"
+                :icon="EditPen"
+                :plain="true"
+                @click="editClick(scope.row)"
+                v-hasPermi="['baseConfiguration:coordinateSystemConfiguration:update']"
+                >编辑
+              </el-button>
+              <el-button
+                type="danger"
+                :icon="Delete"
+                :plain="true"
+                @click="delClick(scope.row)"
+                v-hasPermi="['baseConfiguration:coordinateSystemConfiguration:delete']"
+                >删除
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
         <!--分页-->
         <div class="cc-table-css-page">
           <el-pagination
-              @size-change="pageSizeChange"
-              @current-change="pageCurrentChange"
-              :page-size="tableConfig.pageSize"
-              :page-sizes="[10, 20, 50, 100, 500, 1000]"
-              layout="total,sizes, prev, pager, next, jumper"
-              :current-page="tableConfig.currentPage"
-              :total="tableConfig.total"
+            @size-change="pageSizeChange"
+            @current-change="pageCurrentChange"
+            :page-size="tableConfig.pageSize"
+            :page-sizes="[10, 20, 50, 100, 500, 1000]"
+            layout="total,sizes, prev, pager, next, jumper"
+            :current-page="tableConfig.currentPage"
+            :total="tableConfig.total"
           />
         </div>
       </div>
       <!--抽屉-->
-      <div :class="[drawerConfig.fullscreenType?'cc-drawer-css-mainNo':'cc-drawer-css-main']">
-        <el-drawer :title="drawerConfig.title" v-model="drawerConfig.isDrawer" direction="rtl" :modal="false" class="cc-drawer-css" size="100%">
+      <div :class="[drawerConfig.fullscreenType ? 'cc-drawer-css-mainNo' : 'cc-drawer-css-main']">
+        <el-drawer
+          :title="drawerConfig.title"
+          v-model="drawerConfig.isDrawer"
+          direction="rtl"
+          :modal="false"
+          class="cc-drawer-css"
+          size="100%"
+        >
           <!--头部配置-->
           <template #header>
             <span>{{ drawerConfig.title }}</span>
-            <el-icon color="#409efc" class="icon-fullscreen" @click="drawerConfig.fullscreenType=!drawerConfig.fullscreenType">
+            <el-icon
+              color="#409efc"
+              class="icon-fullscreen"
+              @click="drawerConfig.fullscreenType = !drawerConfig.fullscreenType"
+            >
               <FullScreen />
             </el-icon>
           </template>
           <div class="drawer-content">
             <!--tabs选项-->
             <el-tabs v-model="drawerConfig.active" class="content-top-tabs" @tab-click="tabsClick">
-              <el-tab-pane label="基础信息" name="1" v-if="drawerConfig.type == 'add'"/>
+              <el-tab-pane label="基础信息" name="1" v-if="drawerConfig.type == 'add'" />
               <template v-if="drawerConfig.type == 'query'">
-                <el-tab-pane v-for="item in drawerConfig.tabsList" :key="item.value" :label="item.label" :name="item.name"/>
+                <el-tab-pane
+                  v-for="item in drawerConfig.tabsList"
+                  :key="item.value"
+                  :label="item.label"
+                  :name="item.name"
+                />
               </template>
             </el-tabs>
             <!--基础信息相关内容-->
-            <template v-if="drawerConfig.active==1">
+            <template v-if="drawerConfig.active == 1">
               <!--查看 li添加class width100 width50 width33 就可以一列 二列 三列-->
-              <div class="see-content" v-loading="drawerConfig.loading" v-if="drawerConfig.type === 'query'">
+              <div
+                class="see-content"
+                v-loading="drawerConfig.loading"
+                v-if="drawerConfig.type === 'query'"
+              >
                 <ul>
                   <li class="width50"><span>坐标系名称：</span>{{ queryData.coordinateName }}</li>
-                  <li class="width50"><span>启用状态：</span>{{ handleTypeOptions(queryData.enableStatus, OptionsAll.enableStatusOptions) }}</li>
-                  <li class="width50"><span>启用状态：</span>{{ handleTypeOptions(queryData.enableStatus, OptionsAll.enableStatusOptions) }}</li>
-                  <li class="width50"><span>配置人：</span>{{ handleTypeOptions(queryData.configUser, userOptions, 2) }}</li>
-                  <li class="width50"><span>配置时间：</span>{{ formatDate(queryData.configTime, 'YYYY-MM-DD') }}</li>
+                  <li class="width50"
+                    ><span>启用状态：</span
+                    >{{ handleTypeOptions(queryData.enableStatus, OptionsAll.enableStatusOptions) }}
+                  </li>
+                  <li class="width50"
+                    ><span>启用状态：</span
+                    >{{ handleTypeOptions(queryData.enableStatus, OptionsAll.enableStatusOptions) }}
+                  </li>
+                  <li class="width50"
+                    ><span>配置人：</span
+                    >{{ handleTypeOptions(queryData.configUser, userOptions, 2) }}
+                  </li>
+                  <li class="width50"
+                    ><span>配置时间：</span>{{ formatDate(queryData.configTime, 'YYYY-MM-DD') }}
+                  </li>
                   <li class="width50"><span>备注：</span>{{ queryData.remark }}</li>
                 </ul>
               </div>
               <!--编辑 edit-content-form-li 里面添加 width100 width50 width33 就可以一列 二列 三列-->
               <div class="edit-content" v-loading="drawerConfig.loading" v-else>
-                <el-form :model="formData" ref="drawerFromRef" class="edit-content-form" label-width="140px">
-                  <el-form-item label="坐标系名称：" prop="coordinateName" class="edit-content-form-li width50" :rules="[]">
-                    <el-input placeholder="请输入坐标系名称" v-model="formData.coordinateName" clearable/>
+                <el-form
+                  :model="formData"
+                  ref="drawerFromRef"
+                  class="edit-content-form"
+                  label-width="140px"
+                >
+                  <el-form-item
+                    label="坐标系名称："
+                    prop="coordinateName"
+                    class="edit-content-form-li width50"
+                    :rules="[]"
+                  >
+                    <el-input
+                      placeholder="请输入坐标系名称"
+                      v-model="formData.coordinateName"
+                      clearable
+                    />
                   </el-form-item>
-                  <el-form-item label="启用状态：" prop="enableStatus" class="edit-content-form-li width50" :rules="[]">
-                    <el-select placeholder="请选择启用状态" v-model="formData.enableStatus" filterable clearable>
-                      <el-option v-for="item in OptionsAll.enableStatusOptions" :key="item.value" :label="item.label" :value="item.value"/>
+                  <el-form-item
+                    label="启用状态："
+                    prop="enableStatus"
+                    class="edit-content-form-li width50"
+                    :rules="[]"
+                  >
+                    <el-select
+                      placeholder="请选择启用状态"
+                      v-model="formData.enableStatus"
+                      filterable
+                      clearable
+                    >
+                      <el-option
+                        v-for="item in OptionsAll.enableStatusOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
                     </el-select>
                   </el-form-item>
-                  <el-form-item label="配置人：" prop="configUser" class="edit-content-form-li width50" :rules="[]">
-                    <el-select placeholder="请选择配置人" v-model="formData.configUser" filterable clearable>
-                      <el-option v-for="item in userOptions" :key="item.id" :label="item.nickname" :value="item.id"/>
+                  <el-form-item
+                    label="配置人："
+                    prop="configUser"
+                    class="edit-content-form-li width50"
+                    :rules="[]"
+                  >
+                    <el-select
+                      placeholder="请选择配置人"
+                      v-model="formData.configUser"
+                      filterable
+                      clearable
+                    >
+                      <el-option
+                        v-for="item in userOptions"
+                        :key="item.id"
+                        :label="item.nickname"
+                        :value="item.id"
+                      />
                     </el-select>
                   </el-form-item>
-                  <el-form-item label="配置时间：" prop="configTime" class="edit-content-form-li width50" :rules="[]">
-                    <el-date-picker class="width100" v-model="formData.configTime" type="date" placeholder="请选择配置时间" format="YYYY-MM-DD" value-format="x"/>
+                  <el-form-item
+                    label="配置时间："
+                    prop="configTime"
+                    class="edit-content-form-li width50"
+                    :rules="[]"
+                  >
+                    <el-date-picker
+                      class="width100"
+                      v-model="formData.configTime"
+                      type="date"
+                      placeholder="请选择配置时间"
+                      format="YYYY-MM-DD"
+                      value-format="x"
+                    />
                   </el-form-item>
-                  <el-form-item label="备注：" prop="remark" class="edit-content-form-li width100" :rules="[]">
-                    <el-input placeholder="请输入备注" v-model="formData.remark" type="textarea" :autosize="{ minRows: 2, maxRows: 6}" clearable/>
+                  <el-form-item
+                    label="备注："
+                    prop="remark"
+                    class="edit-content-form-li width100"
+                    :rules="[]"
+                  >
+                    <el-input
+                      placeholder="请输入备注"
+                      v-model="formData.remark"
+                      type="textarea"
+                      :autosize="{ minRows: 2, maxRows: 6 }"
+                      clearable
+                    />
                   </el-form-item>
                 </el-form>
               </div>
             </template>
           </div>
           <!--新增的时候-->
-          <div class="action-button" v-if="['add', 'edit'].includes(drawerConfig.type) && !drawerConfig.loading">
+          <div
+            class="action-button"
+            v-if="['add', 'edit'].includes(drawerConfig.type) && !drawerConfig.loading"
+          >
             <el-button :icon="Close" @click="drawerConfig.isDrawer = false">取 消</el-button>
-            <el-button type="primary" :icon="Check" @click="drawerSubmitForm(drawerFromRef)">保 存</el-button>
+            <el-button type="primary" :icon="Check" @click="drawerSubmitForm(drawerFromRef)"
+              >保 存
+            </el-button>
           </div>
         </el-drawer>
       </div>
@@ -182,15 +367,24 @@
   </div>
 </template>
 <script lang="ts" setup>
-import {ref, reactive, onMounted} from 'vue'
-import {Tickets, Plus, EditPen, Delete, View, Menu, Close, Check,FullScreen} from '@element-plus/icons-vue'
-import {handleTypeOptions} from '@/utils/thingsBoardUtils'
-import {handleTree} from "@/utils/tree";
-import {dateFormatter, dateFormatter2, formatDate} from '@/utils/formatTime'
+import { ref, reactive, onMounted } from 'vue'
+import {
+  Tickets,
+  Plus,
+  EditPen,
+  Delete,
+  View,
+  Menu,
+  Close,
+  Check,
+  FullScreen
+} from '@element-plus/icons-vue'
+import { handleTypeOptions } from '@/utils/thingsBoardUtils'
+import { handleTree } from '@/utils/tree'
+import { dateFormatter, dateFormatter2, formatDate } from '@/utils/formatTime'
 import * as DeptApi from '@/api/system/dept' // 部门树形结构
 import * as UserApi from '@/api/system/user' //用户列表
-import * as coordinateSystemConfigurationApi from "@/api/dataHub/geocoding/baseConfiguration/coordinateSystemConfiguration";
-
+import * as coordinateSystemConfigurationApi from '@/api/dataHub/geocoding/baseConfiguration/coordinateSystemConfiguration'
 
 const deptList = ref<Tree[]>([]) //部门属性数据
 
@@ -207,21 +401,21 @@ const defaultProps = {
 }
 // 所有选项集合
 const OptionsAll = ref({
-// 启用状态
+  // 启用状态
   enableStatusOptions: [
-    {label: '启用', value: 1},
-    {label: '禁用', value: 2}
-  ],
+    { label: '启用', value: 1 },
+    { label: '禁用', value: 2 }
+  ]
 })
 // 接口下拉选项
 const OptionsAllInit = async () => {
-  const res = await UserApi.getSimpleUserList();
-  userOptions.value = res.map(item => ({
+  const res = await UserApi.getSimpleUserList()
+  userOptions.value = res.map((item) => ({
     id: item.id.toString(),
     nickname: item.nickname,
     deptId: item.deptId,
     deptName: item.deptName
-  }));
+  }))
 }
 // title配置
 const titleConfig = ref({
@@ -230,12 +424,12 @@ const titleConfig = ref({
 })
 // 搜索 字段
 const initSearchForm = {
-  coordinateName: '',// 坐标系名称
-  enableStatus: '',// 启用状态
-  configUser: '',// 配置人
+  coordinateName: '', // 坐标系名称
+  enableStatus: '', // 启用状态
+  configUser: '' // 配置人
 }
 // 搜索初始化数据
-const searchForm = ref({...initSearchForm})
+const searchForm = ref({ ...initSearchForm })
 // 搜索 点击
 const searchClick = () => {
   tableConfig.value.currentPage = 1
@@ -243,7 +437,7 @@ const searchClick = () => {
 }
 //搜索 重置
 const searchResetClick = () => {
-  searchForm.value = {...initSearchForm}
+  searchForm.value = { ...initSearchForm }
   tableConfig.value.currentPage = 1
   tableInitData()
 }
@@ -253,9 +447,9 @@ const tableInitData = async () => {
   try {
     let params = {
       pageSize: tableConfig.value.pageSize,
-      pageNo: tableConfig.value.currentPage,
+      pageNo: tableConfig.value.currentPage
     }
-    const merged = {...params, ...searchForm.value}
+    const merged = { ...params, ...searchForm.value }
     const res = await coordinateSystemConfigurationApi.listPage(merged)
     tableData.value = res.list
     tableConfig.value.total = res.total
@@ -269,14 +463,14 @@ const tableInitData = async () => {
 // 表单字段
 const initFormData = {
   id: '',
-  coordinateName: '',// 坐标系名称
-  enableStatus: 1,// 启用状态
-  configUser: '',// 配置人
-  configTime: '',// 配置时间
-  remark: '',// 备注
+  coordinateName: '', // 坐标系名称
+  enableStatus: 1, // 启用状态
+  configUser: '', // 配置人
+  configTime: '', // 配置时间
+  remark: '' // 备注
 }
 // 表单初始化数据
-const formData = ref({...initFormData})
+const formData = ref({ ...initFormData })
 //表单保存
 const drawerFromRef = ref<FormInstance>()
 const drawerSubmitForm = async (formEl: FormInstance | undefined) => {
@@ -308,10 +502,10 @@ const tableOneClick = (row) => {
   switch (drawerConfig.value.type) {
     case 'query':
       queryClick(row)
-      break;
+      break
     case 'edit':
       editClick(row)
-      break;
+      break
     default:
       queryClick(row)
   }
@@ -319,9 +513,9 @@ const tableOneClick = (row) => {
 // 点击详细按钮
 const queryData = ref({})
 const queryClick = async (row) => {
-  drawerConfig.value.active = '1';
+  drawerConfig.value.active = '1'
   let copyRow = JSON.parse(JSON.stringify(row))
-  queryData.value = copyRow;
+  queryData.value = copyRow
 
   drawerConfig.value.isDrawer = true
   drawerConfig.value.loading = false
@@ -330,7 +524,7 @@ const queryClick = async (row) => {
 }
 // 点击编辑按钮
 const editClick = async (row) => {
-  drawerConfig.value.active = '1';
+  drawerConfig.value.active = '1'
   let copyRow = JSON.parse(JSON.stringify(row))
   formData.value = copyRow
   drawerConfig.value.isDrawer = true
@@ -340,40 +534,36 @@ const editClick = async (row) => {
 }
 // 点击删除按钮
 const delClick = (row) => {
-  ElMessageBox.confirm(
-      '请注意：确认后，所有相关数据将不可恢复。',
-      `确定要删除吗？`,
-      {
-        confirmButtonText: '确 定',
-        cancelButtonText: '取 消',
-        type: 'warning'
+  ElMessageBox.confirm('请注意：确认后，所有相关数据将不可恢复。', `确定要删除吗？`, {
+    confirmButtonText: '确 定',
+    cancelButtonText: '取 消',
+    type: 'warning'
+  })
+    .then(async () => {
+      try {
+        await coordinateSystemConfigurationApi.delData(row.id)
+        await tableInitData()
+        ElMessage({
+          type: 'success',
+          message: '删除成功'
+        })
+      } catch (error) {
+        // 处理错误
+        console.log(error)
       }
-  )
-      .then(async () => {
-        try {
-          await coordinateSystemConfigurationApi.delData(row.id)
-          await tableInitData()
-          ElMessage({
-            type: 'success',
-            message: '删除成功'
-          })
-        } catch (error) {
-          // 处理错误
-          console.log(error)
-        }
-      })
-      .catch(() => {
-        console.log('取消删除')
-      })
+    })
+    .catch(() => {
+      console.log('取消删除')
+    })
 }
 // title点击新增
 const addClick = async () => {
-  formData.value = {...initFormData}
+  formData.value = { ...initFormData }
   drawerConfig.value.isDrawer = true
   drawerConfig.value.loading = false
   drawerConfig.value.type = 'add'
   drawerConfig.value.title = '新增坐标系'
-  drawerConfig.value.active = '1';
+  drawerConfig.value.active = '1'
 }
 //drawer 配置
 const drawerConfig = ref({
@@ -382,11 +572,11 @@ const drawerConfig = ref({
   title: '抽屉标题', //标题名称
   type: 'add', //add新增 edit编辑 query详细
   active: '1', //当前选择了哪个
- fullscreenType:false,// 是否全屏显示
+  fullscreenType: false, // 是否全屏显示
   // tabs轮动
   tabsList: [
-    {label: '基础信息', name: '1'},
-    {label: '预留', name: '2'}
+    { label: '基础信息', name: '1' },
+    { label: '预留', name: '2' }
   ]
 })
 //drawer tabs 点击切换
@@ -398,11 +588,11 @@ const tabsClick = (tab) => {
 
 //table 列显隐信息
 const tableColumns = ref([
-  {label: "坐标系名称", visible: true},
-  {label: "启用状态", visible: true},
-  {label: "配置人", visible: true},
-  {label: "配置时间", visible: true},
-  {label: "备注", visible: true},
+  { label: '坐标系名称', visible: true },
+  { label: '启用状态', visible: true },
+  { label: '配置人', visible: true },
+  { label: '配置时间', visible: true },
+  { label: '备注', visible: true }
 ])
 // table表格数据
 const tableData = ref([])
@@ -465,11 +655,11 @@ const removeClassFromBody = () => {
 // 挂载完毕
 onMounted(async () => {
   console.log('挂载完毕2')
-  deptList.value = handleTree(await DeptApi.getSimpleDeptList()); // 部门树形
+  deptList.value = handleTree(await DeptApi.getSimpleDeptList()) // 部门树形
   addClassToBody() //给body加class控制样式
   getTableHeight() //给table获取高度
   await tableInitData() //数据初始化
-  await OptionsAllInit();
+  await OptionsAllInit()
 })
 // 在组件卸载时移除 class
 onUnmounted(() => {

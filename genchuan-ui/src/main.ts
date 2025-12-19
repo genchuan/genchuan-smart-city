@@ -36,6 +36,8 @@ import {createApp} from 'vue'
 
 import App from './App.vue'
 
+import 'uno.css'
+
 import './permission'
 
 import '@/plugins/tongji' // 百度统计

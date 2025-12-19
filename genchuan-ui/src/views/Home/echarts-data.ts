@@ -73,7 +73,7 @@ export const lineOptions: EChartsOption = {
 
 export const pieOptions: EChartsOption = {
   title: {
-    text: '项目事件',
+    text: '任务统计',
     left: 'center'
   },
   tooltip: {
@@ -110,7 +110,7 @@ export const pieOptions: EChartsOption = {
 
 export const barOptions: EChartsOption = {
   title: {
-    text: '事件统计',
+    text: '预警统计',
     left: 'center'
   },
   tooltip: {

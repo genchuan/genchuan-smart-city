@@ -28,10 +28,19 @@ const props = defineProps({
     type: Number,
     default: 30
   },
-  // 新增：允许父组件控制基础字号比例（可选）
+  // 允许父组件控制基础字号比例（可选）
   baseFontScale: {
     type: Number,
     default: 1
+  },
+  // 新增：允许父组件自定义渐变透明度（可选）
+  gradientStartOpacity: {
+    type: String,
+    default: '80' // 渐变起始透明度（16进制，80=50%）
+  },
+  gradientEndOpacity: {
+    type: String,
+    default: 'F0' // 渐变结束透明度（16进制，F0=94%）
   }
 });
 
@@ -56,12 +65,12 @@ const initChart = () => {
   // 创建新实例
   chartInstance = echarts.init(chartRef.value);
 
-  // 设置图表配置（包含自适应字号）
+  // 设置图表配置（包含自适应字号+渐变色）
   const option = getChartOption();
   chartInstance.setOption(option);
 };
 
-// 生成图表配置项（带自适应字号）
+// 生成图表配置项（带自适应字号+渐变色）
 const getChartOption = () => {
   // 计算各元素自适应字号（基于vw）
   const legendFontSize = vwToPx(0.7); // 图例文字
@@ -70,6 +79,14 @@ const getChartOption = () => {
   const xAxisNameFontSize = vwToPx(0.7); // X轴名称
   const yAxisNameFontSize = vwToPx(0.7); // Y轴名称
   const tooltipFontSize = vwToPx(0.65); // 提示框文字
+
+  // 基础颜色数组（与原有颜色一致，用于生成渐变）
+  const baseColors = [
+    '#13ce66',
+    '#ff7d00',
+    '#ff4949',
+    '#722ed1'
+  ];
 
   return {
     backgroundColor: 'transparent',
@@ -118,7 +135,7 @@ const getChartOption = () => {
         interval: 0,
         fontSize: xAxisLabelFontSize // X轴标签自适应
       },
-      name: props.xAxisName || '', // 补充X轴名称支持（与文件1对齐）
+      name: props.xAxisName || '', // 支持X轴名称传递
       nameTextStyle: {
         color: '#ccc',
         fontSize: xAxisNameFontSize // X轴名称自适应
@@ -156,13 +173,27 @@ const getChartOption = () => {
       }
     },
     series: props.data.series.map((item, index) => {
-      const colors = [
-        '#00ccff',
-        '#13ce66',
-        '#ff7d00',
-        '#ff4949',
-        '#722ed1'
-      ];
+      // 当前系列的基础颜色（循环使用baseColors）
+      const currentBaseColor = baseColors[index % baseColors.length];
+
+      // 生成垂直渐变色（从下到上）
+      const normalGradient = new echarts.graphic.LinearGradient(
+        0, 1, // 渐变起始点：柱子底部（x=0, y=1）
+        0, 0, // 渐变结束点：柱子顶部（x=0, y=0）
+        [
+          { offset: 0, color: `${currentBaseColor}${props.gradientStartOpacity}` }, // 底部颜色（带透明度）
+          { offset: 1, color: `${currentBaseColor}${props.gradientEndOpacity}` }  // 顶部颜色（带透明度）
+        ]
+      );
+
+      // 生成hover时的渐变色（更亮）
+      const hoverGradient = new echarts.graphic.LinearGradient(
+        0, 1, 0, 0,
+        [
+          { offset: 0, color: `${currentBaseColor}A0` }, // 底部（透明度63%）
+          { offset: 1, color: currentBaseColor }        // 顶部（完全不透明）
+        ]
+      );
 
       return {
         name: item.name,
@@ -170,13 +201,14 @@ const getChartOption = () => {
         data: item.data,
         barMaxWidth: props.barMaxWidth,
         itemStyle: {
-          color: colors[index % colors.length],
-          borderRadius: [4, 4, 0, 0]
+          color: normalGradient, // 应用正常状态渐变色
+          borderRadius: [4, 4, 0, 0] // 顶部圆角，底部直角
         },
         emphasis: {
           itemStyle: {
+            color: hoverGradient, // 应用hover状态渐变色
             borderColor: '#fff',
-            borderWidth: 1
+            borderWidth: 1 // hover时添加白色边框，增强交互感
           }
         }
       };
@@ -192,7 +224,7 @@ watch(
       chartInstance.setOption(getChartOption());
     }
   },
-  {deep: true}
+  { deep: true }
 );
 
 // 窗口大小变化时更新字体大小并刷新图表
@@ -209,18 +241,18 @@ const handleResize = () => {
 
   chartInstance.setOption({
     tooltip: {
-      textStyle: {fontSize: tooltipFontSize}
+      textStyle: { fontSize: tooltipFontSize }
     },
     legend: {
-      textStyle: {fontSize: legendFontSize}
+      textStyle: { fontSize: legendFontSize }
     },
     xAxis: {
-      axisLabel: {fontSize: xAxisLabelFontSize},
-      nameTextStyle: {fontSize: xAxisNameFontSize}
+      axisLabel: { fontSize: xAxisLabelFontSize },
+      nameTextStyle: { fontSize: xAxisNameFontSize }
     },
     yAxis: {
-      axisLabel: {fontSize: yAxisLabelFontSize},
-      nameTextStyle: {fontSize: yAxisNameFontSize}
+      axisLabel: { fontSize: yAxisLabelFontSize },
+      nameTextStyle: { fontSize: yAxisNameFontSize }
     }
   });
 
@@ -228,12 +260,22 @@ const handleResize = () => {
   chartInstance.resize();
 };
 
-// 监听基础字号比例变化（可选功能）
+// 监听基础字号比例变化
 watch(
   () => props.baseFontScale,
   () => {
     if (chartInstance) {
       handleResize();
+    }
+  }
+);
+
+// 监听渐变透明度配置变化（可选功能）
+watch(
+  [() => props.gradientStartOpacity, () => props.gradientEndOpacity],
+  () => {
+    if (chartInstance) {
+      chartInstance.setOption(getChartOption());
     }
   }
 );

@@ -8,78 +8,115 @@
       v-loading="formLoading"
       class="p-4 bg-gray-50 rounded-lg"
     >
-      <el-row :gutter="20">
-        <!-- 第一列 -->
-        <el-col :span="12">
-          <el-form-item label="指标分类名称" prop="idxCatName">
-            <el-input
-              v-model="formData.idxCatName"
-              placeholder="请输入指标分类名称"
-              class="rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="分类编码" prop="catCode">
-            <el-input v-model="formData.catCode" placeholder="请输入分类编码" class="rounded-md" />
-          </el-form-item>
-          <el-form-item label="所属指标体系ID" prop="idxSystemId">
-            <el-input
-              v-model="formData.idxSystemId"
-              placeholder="请输入所属指标体系ID"
-              class="rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="所属指标体系名称" prop="idxSystemName">
-            <el-input
-              v-model="formData.idxSystemName"
-              placeholder="请输入所属指标体系名称"
-              class="rounded-md"
-            />
-          </el-form-item>
-        </el-col>
+      <!-- 基础信息分组 -->
+      <div class="form-group">
+        <h3 class="group-title">基础信息</h3>
+        <el-row :gutter="20" class="form-row">
+          <el-col :span="12">
+            <el-form-item label="指标分类名称" prop="idxCatName">
+              <el-input
+                v-model="formData.idxCatName"
+                placeholder="请输入指标分类名称"
+                class="rounded-md"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="分类编码" prop="catCode">
+              <el-input
+                v-model="formData.catCode"
+                placeholder="请输入分类编码"
+                class="rounded-md"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" class="form-row">
+          <el-col :span="12">
+            <el-form-item label="所属指标体系ID" prop="idxSystemId">
+              <el-input
+                v-model="formData.idxSystemId"
+                placeholder="请输入所属指标体系ID"
+                class="rounded-md"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="所属指标体系名称" prop="idxSystemName">
+              <el-input
+                v-model="formData.idxSystemName"
+                placeholder="请输入所属指标体系名称"
+                class="rounded-md"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </div>
 
-        <!-- 第二列 -->
-        <el-col :span="12">
-          <el-form-item label="排序序号" prop="sortNum">
-            <el-input
-              v-model="formData.sortNum"
-              placeholder="请输入排序序号"
-              type="number"
-              class="rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="分类描述" prop="catDesc">
-            <el-input
-              v-model="formData.catDesc"
-              placeholder="请输入分类描述"
-              type="textarea"
-              :rows="3"
-              class="rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="启用状态" prop="enableStatus">
-            <el-radio-group v-model="formData.enableStatus" class="radio-group">
-              <el-radio value="ENABLED">启用</el-radio>
-              <el-radio value="Disabled">禁用</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="创建人(业务)" prop="createUserBiz">
-            <el-input
-              v-model="formData.createUserBiz"
-              placeholder="请输入创建人(业务)"
-              class="rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="创建时间(业务)" prop="createTimeBiz">
-            <el-date-picker
-              v-model="formData.createTimeBiz"
-              type="date"
-              value-format="x"
-              placeholder="选择创建时间(业务)"
-              class="rounded-md"
-            />
-          </el-form-item>
-        </el-col>
-      </el-row>
+      <!-- 配置信息分组 -->
+      <div class="form-group">
+        <h3 class="group-title">配置信息</h3>
+        <el-row :gutter="20" class="form-row">
+          <el-col :span="12">
+            <el-form-item label="排序序号" prop="sortNum">
+              <el-input
+                v-model="formData.sortNum"
+                placeholder="请输入排序序号"
+                type="number"
+                class="rounded-md"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="启用状态" prop="enableStatus">
+              <el-radio-group v-model="formData.enableStatus" class="radio-group">
+                <el-radio value="ENABLED">启用</el-radio>
+                <el-radio value="Disabled">禁用</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" class="form-row">
+          <el-col :span="24">
+            <el-form-item label="分类描述" prop="catDesc">
+              <el-input
+                v-model="formData.catDesc"
+                placeholder="请输入分类描述"
+                type="textarea"
+                :rows="3"
+                class="rounded-md"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </div>
+
+      <!-- 业务信息分组 -->
+      <div class="form-group">
+        <h3 class="group-title">业务信息</h3>
+        <el-row :gutter="20" class="form-row">
+          <el-col :span="12">
+            <el-form-item label="创建人(业务)" prop="createUserBiz">
+              <el-input
+                v-model="formData.createUserBiz"
+                placeholder="请输入创建人(业务)"
+                class="rounded-md"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="创建时间(业务)" prop="createTimeBiz">
+              <el-date-picker
+                v-model="formData.createTimeBiz"
+                type="date"
+                value-format="x"
+                placeholder="选择创建时间(业务)"
+                class="rounded-md"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </div>
     </el-form>
 
     <template #footer>
@@ -223,6 +260,7 @@ const resetForm = () => {
 .radio-group {
   display: flex;
   align-items: center;
+  gap: 16px;
 }
 
 .el-dialog__body {
@@ -235,5 +273,27 @@ const resetForm = () => {
 
 .el-textarea {
   resize: none;
+}
+
+/* 分组样式 */
+.form-group {
+  margin-bottom: 24px;
+  padding: 16px;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  background-color: #fff;
+}
+
+.group-title {
+  margin: 0 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 16px;
+  color: #1f2329;
+  font-weight: 500;
+}
+
+.form-row {
+  margin-bottom: 8px;
 }
 </style>

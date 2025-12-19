@@ -555,3 +555,17 @@ chart-line, chart-bar, dv-scroll-board {
 :deep(.el-tag) {
   font-size: 0.7vw;
 }
+
+:deep(.el-button--small.el-button--primary) {
+  font-size: 0.7vw;
+  padding: 0.3vw 0.8vw;
+  min-width: 5vw;
+  max-width: 8vw;
+  height: auto;
+  line-height: 1.2;
+  border-radius: 0.3vw;
+}
+
+:deep(.el-button--small.el-button--primary:hover) {
+  padding: 0.35vw 0.85vw;
+}

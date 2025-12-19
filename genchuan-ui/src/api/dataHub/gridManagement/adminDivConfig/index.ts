@@ -1,7 +1,6 @@
 import request from '@/config/axios'
 
-
-// 统一行政区划配置表（树形结构） VO
+// 统一行政区划配置表 VO
 export interface AreaVO {
   id: number // 主键ID
   parentId: number // 上级行政区划ID（0表示根节点）
@@ -14,8 +13,8 @@ export interface AreaVO {
   invalidTime: Date // 失效时间
   boundary: string // 社区边界坐标（2000坐标系）
   remark: string // 备注
-  extCat1: string // 分类扩展字段1
-  extCat2: string // 分类扩展字段2
+  extCat1: string // 分类扩展字段1 存放应用场景分类代码sceneCatCode
+  extCat2: string // 分类扩展字段2 存放应用场景分类名称sceneCatName
   extCommon1: string // 通用扩展字段1
   extCommon2: string // 通用扩展字段2
 }
@@ -67,10 +66,7 @@ export const AreaApi = {
     return await request.post({ url: `/datacenter/area/import`, params })
   },
 
-
-
-  getTakeEffect:async()=> {
-    return await request.get({ url: `/datacenter/area/dropdown`})
+  getTakeEffect: async () => {
+    return await request.get({ url: `/datacenter/area/dropdown` })
   }
-
 }

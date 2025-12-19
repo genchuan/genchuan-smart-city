@@ -59,7 +59,7 @@ const remainingRouter: AppRouteRecordRaw[] = [
     children: [
       {
         path: 'index',
-        component: () => import('@/views/Home/Index.vue'),
+        component: () => import('@/views/Home/indexNew.vue'),
         name: 'Index',
         meta: {
           title: t('router.home'),
@@ -92,6 +92,14 @@ const remainingRouter: AppRouteRecordRaw[] = [
     ]*/
   },
   {
+    path: '/overview/dpzl',
+    name: 'dpzl',
+    meta: {
+      hidden: true,
+    },
+    component: () => import('@/views/overview/dpzl/index.vue'),
+  },
+  {
     path: '/overview/urbanmanagement/dpzl',
     name: 'UrbanManagement',
     meta: {
@@ -99,6 +107,39 @@ const remainingRouter: AppRouteRecordRaw[] = [
     },
     component: () => import('@/views/overview/urbanmanagement/dpzl/index.vue'),
   },
+  {
+    path: '/overview/municipalfacility/dpzl',
+    name: 'MunicipalFacility',
+    meta: {
+      hidden: true,
+    },
+    component: () => import('@/views/overview/urbanmanagement/dpzl/components/MunicipalFacility.vue')
+  },
+  {
+    path: '/overview/cityscapeorder/dpzl',
+    name: 'CityscapeOrder',
+    meta: {
+      hidden: true,
+    },
+    component: () => import('@/views/overview/urbanmanagement/dpzl/components/CityscapeOrder.vue')
+  },
+  {
+    path: '/overview/environsanitation/dpzl',
+    name: 'EnvironSanitation',
+    meta: {
+      hidden: true,
+    },
+    component: () => import('@/views/overview/urbanmanagement/dpzl/components/EnvironSanitation.vue')
+  },
+  {
+    path: '/overview/gardengreening/dpzl',
+    name: 'GardenGreening',
+    meta: {
+      hidden: true,
+    },
+    component: () => import('@/views/overview/urbanmanagement/dpzl/components/GardenGreening.vue')
+  },
+
   {
     path: '/overview/waterresourceswateraffairs/dpzl',
     name: 'WaterResourcesWaterAffairs',
@@ -164,6 +205,38 @@ const remainingRouter: AppRouteRecordRaw[] = [
     component: () => import('@/views/overview/transportation/dpzl/index.vue')
   },
   {
+    path: '/overview/trafficefficiency/dpzl',
+    name: 'TrafficEfficiency',
+    meta: {
+      hidden: true,
+    },
+    component: () => import('@/views/overview/transportation/dpzl/components/TrafficEfficiency.vue')
+  },
+  {
+    path: '/overview/accidentwarning/dpzl',
+    name: 'AccidentWarning',
+    meta: {
+      hidden: true,
+    },
+    component: () => import('@/views/overview/transportation/dpzl/components/AccidentWarning.vue')
+  },
+  {
+    path: '/overview/servicequality/dpzl',
+    name: 'ServiceQuality',
+    meta: {
+      hidden: true,
+    },
+    component: () => import('@/views/overview/transportation/dpzl/components/ServiceQuality.vue')
+  },
+  {
+    path: '/overview/disposalefficiency/dpzl',
+    name: 'DisposalEfficiency',
+    meta: {
+      hidden: true,
+    },
+    component: () => import('@/views/overview/transportation/dpzl/components/DisposalEfficiency.vue')
+  },
+  {
     path: '/overview/emergencysafety/dpzl',
     name: 'EmergencySafety',
     meta: {
@@ -171,6 +244,39 @@ const remainingRouter: AppRouteRecordRaw[] = [
     },
     component: () => import('@/views/overview/emergencysafety/dpzl/index.vue')
   },
+  {
+    path: '/overview/eventdisposaltracking/dpzl',
+    name: 'EventDisposalTracking',
+    meta: {
+      hidden: true,
+    },
+    component: () => import('@/views/overview/emergencysafety/dpzl/components/EventDisposalTracking.vue')
+  },
+  {
+    path: '/overview/emergencydisposalprogress/dpzl',
+    name: 'EmergencyDisposalProgress',
+    meta: {
+      hidden: true,
+    },
+    component: () => import('@/views/overview/emergencysafety/dpzl/components/EmergencyDisposalProgress.vue')
+  },
+  {
+    path: '/overview/resourcedistribution/dpzl',
+    name: 'ResourceDistribution',
+    meta: {
+      hidden: true,
+    },
+    component: () => import('@/views/overview/emergencysafety/dpzl/components/ResourceDistribution.vue')
+  },
+  {
+    path: '/overview/accidenthazardwarning/dpzl',
+    name: 'AccidentHazardWarning',
+    meta: {
+      hidden: true,
+    },
+    component: () => import('@/views/overview/emergencysafety/dpzl/components/AccidentHazardWarning.vue')
+  },
+
   {
     path: '/overview/hygienehealth/dpzl',
     name: 'HygieneHealth',
@@ -196,6 +302,39 @@ const remainingRouter: AppRouteRecordRaw[] = [
     component: () => import('@/views/overview/culturesportstourism/dpzl/index.vue'),
   },
   {
+    path: '/overview/tourismscenicspot/dpzl',
+    name: 'TourismScenicSpot',
+    meta: {
+      hidden: true,
+    },
+    component: () => import('@/views/overview/culturesportstourism/dpzl/components/TourismScenicSpot.vue')
+  },
+  {
+    path: '/overview/tourismactivity/dpzl',
+    name: 'TourismActivity',
+    meta: {
+      hidden: true,
+    },
+    component: () => import('@/views/overview/culturesportstourism/dpzl/components/TourismActivity.vue')
+  },
+  {
+    path: '/overview/tourismvenue/dpzl',
+    name: 'TourismVenue',
+    meta: {
+      hidden: true,
+    },
+    component: () => import('@/views/overview/culturesportstourism/dpzl/components/TourismVenue.vue')
+  },
+  {
+    path: '/overview/tourismresource/dpzl',
+    name: 'TourismResource',
+    meta: {
+      hidden: true,
+    },
+    component: () => import('@/views/overview/culturesportstourism/dpzl/components/TourismResource.vue')
+  },
+
+  {
     path: '/overview/smartcommunity/dpzl',
     name: 'SmartCommunity',
     meta: {
@@ -219,6 +358,14 @@ const remainingRouter: AppRouteRecordRaw[] = [
     },
     component: () => import('@/views/overview/educationmanagement/dpzl/index.vue')
   },
+  {
+    path: '/overview/marketregulation/dpzl',
+    name: ' MarketRegulation',
+    meta: {
+      hidden: true,
+    },
+    component: () => import('@/views/overview/marketregulation/dpzl/index.vue')
+  },
   // {
   //   path: '/overview/digitalvillage/dpzl',
   //   name: 'DigitalVillage',
@@ -235,6 +382,126 @@ const remainingRouter: AppRouteRecordRaw[] = [
   //   },
   //   component: () => import('@/views/overview/marketsupervision/dpzl/index.vue')
   // },
+  // 在remainingRouter数组中添加以下路由配置（可插入到合适位置，如/user路由附近）
+  //todo 首页工作台快速跳转路由配置
+  {
+    path: '/my-todo',
+    component: Layout,
+    name: 'MyTodo',
+    meta: {
+      hidden: true,
+      icon: 'fa:tasks',
+      title: '我的待办'
+    },
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/bpm/task/todo/index.vue'),
+        name: 'MyTodoIndex',
+        meta: {
+          hidden: true,
+          canTo: true,
+          icon: 'fa:tasks',
+          title: '我的待办'
+        }
+      }
+    ]
+  },
+  {
+    path: '/my-warning',
+    component: Layout,
+    name: 'MyWarning',
+    meta: {
+      hidden: true,
+      icon: 'ep:alarm-clock',
+      title: '我的预警'
+    },
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/dataHub/warningAlarm/list/index.vue'),
+        name: 'MyWarningIndex',
+        meta: {
+          hidden: true,
+          canTo: true,
+          icon: 'ep:alarm-clock',
+          title: '我的预警'
+        }
+      }
+    ]
+  },
+  {
+    path: '/my-task',
+    component: Layout,
+    name: 'MyTask',
+    meta: {
+      hidden: true,
+      icon: 'fa-solid:tasks',
+      title: '我的任务'
+    },
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/bpm/task/manager/index.vue'),
+        name: 'MyTaskIndex',
+        meta: {
+          hidden: true,
+          canTo: true,
+          icon: 'fa-solid:tasks',
+          title: '我的任务'
+        }
+      }
+    ]
+  },
+  {
+    path: '/message-center',
+    component: Layout,
+    name: 'MessageCenter',
+    meta: {
+      hidden: true,
+      icon: 'ep:message',
+      title: '消息中心'
+    },
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/genchuan/messageCenter/index.vue'),
+        name: 'MessageCenterIndex',
+        meta: {
+          hidden: true,
+          canTo: true,
+          icon: 'ep:message',
+          title: '消息中心'
+        }
+      }
+    ]
+  },
+  {
+    path: '/process-detail',
+    component: Layout,
+    name: 'ProcessDetail',
+    meta: {
+      hidden: true,
+      title: '流程详情'
+    },
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/bpm/processInstance/detail/index.vue'),
+        name: 'ProcessDetailIndex',
+        props: (route) => ({
+          id: route.query.id as string,
+          taskId: route.query.taskId as string,
+          activityId: route.query.activityId as string
+        }),
+        meta: {
+          hidden: true,
+          canTo: true,
+          title: '流程详情'
+        }
+      }
+    ]
+  },
   {
     path: '/user',
     component: Layout,
@@ -464,6 +731,27 @@ const remainingRouter: AppRouteRecordRaw[] = [
         path: 'process-instance/detail1',
         component: () => import('@/views/bpm/processInstance/detail/index1.vue'),
         name: 'BpmProcessInstanceDetail1',
+        meta: {
+          noCache: true,
+          hidden: true,
+          canTo: true,
+          title: '流程详情',
+          activeMenu: '/bpm/task/my' ///tB/a/test66  这个是菜单要哪个active高亮
+        },
+        props: (route) => ({
+          id: route.query.id,
+          taskId: route.query.taskId,
+          activityId: route.query.activityId,
+          thingsBoardId:route.query.thingsBoardId
+        })
+      },
+
+
+      //警告列表事件 关联使用
+      {
+        path: 'process-instance/detail3',
+        component: () => import('@/views/bpm/processInstance/detail/index3.vue'),
+        name: 'BpmProcessInstanceDetail3',
         meta: {
           noCache: true,
           hidden: true,
@@ -987,27 +1275,6 @@ const remainingRouter: AppRouteRecordRaw[] = [
         component: () => import('@/views/iot/plugin/detail/index.vue')
       },
       //todo配置预警告警列表路由 便于其他页面设置跳转到此页面
-      {
-        path: '/data-hub',
-        component: Layout,
-        name: 'DataHub',
-        meta: { hidden: true },
-        children: [
-          {
-            path: 'warning-alarm/list',
-            component: () => import('@/views/dataHub/warningAlarm/list/index.vue'),
-            name: 'WarningAlertListTable',
-            meta: {
-              title: '预警告警列表',
-              icon: 'ep:warning',
-              noCache: true,
-              hidden: true,
-              canTo: true,
-              activeMenu: '/data-hub/warning-alarm/list'
-            }
-          }
-        ]
-      },
 
 
     ]

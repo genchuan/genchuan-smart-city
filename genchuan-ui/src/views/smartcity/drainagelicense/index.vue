@@ -6,9 +6,8 @@
       :model="queryParams"
       ref="queryFormRef"
       :inline="true"
-      label-width="100px"
     >
-      <el-form-item label="许可证编号" prop="licenseNo">
+      <el-form-item label="许可证编号" prop="licenseNo" label-width="120px">
         <el-input
           v-model="queryParams.licenseNo"
           placeholder="请输入许可证编号"
@@ -41,7 +40,7 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item>
+      <el-form-item style="margin-left: 60px">
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
         <el-button
@@ -68,8 +67,8 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column label="ID" align="center" prop="id" />
-      <el-table-column label="许可证编号" align="center" prop="licenseNo" />
+      <el-table-column label="ID" align="center" prop="id" min-width="30px"/>
+      <el-table-column label="许可证编号" align="center" prop="licenseNo" width="240px" />
       <el-table-column
         label="有效期开始日期"
         align="center"
@@ -89,7 +88,7 @@
           <dict-tag :type="DICT_TYPE.SM_DRAINAGE_TYPE" :value="scope.row.drainageType" />
         </template>
       </el-table-column>
-      <el-table-column label="审批单位" align="center" prop="approvalUnit" />
+      <el-table-column label="审批单位" align="center" prop="approvalUnit" width="240px" />
       <el-table-column label="状态" align="center" prop="licenseStatus">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.CRM_AUDIT_STATUS" :value="scope.row.licenseStatus" />

@@ -10,9 +10,19 @@
       <el-form-item label="所属领域" prop="isArea">
         <el-input v-model="formData.isArea" placeholder="请输入所属领域" />
       </el-form-item>
-      <el-form-item label="问题类型" prop="questionType">
-        <el-select v-model="formData.questionType" placeholder="请选择问题类型">
-          <el-option label="请选择字典生成" value="" />
+      <el-form-item label="问题类型" prop="questionType" label-width="100px">
+        <el-select
+          v-model="formData.questionType"
+          placeholder="请选择问题类型"
+          clearable
+          style="width: 100%"
+        >
+          <el-option label="系统操作类" value="systemOperation" />
+          <el-option label="现场实操类" value="onSiteOperation" />
+          <el-option label="流程管理类" value="processManagement" />
+          <el-option label="资源需求类" value="resourceRequirement" />
+          <el-option label="政策咨询类" value="policyConsultation" />
+          <el-option label="其他问题" value="other" />
         </el-select>
       </el-form-item>
       <el-form-item label="紧急程度" prop="urgency">

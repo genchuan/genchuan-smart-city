@@ -21,7 +21,8 @@ const collapse = computed(() => appStore.getCollapse)
 
 // logo 是否显示
 const VITE_LOGO_SHOW=JSON.parse(import.meta.env.VITE_LOGO_SHOW);
-
+//标题动态控制内容
+const VITE_APP_TITLE = import.meta.env.VITE_APP_TITLE;
 onMounted(() => {
   if (unref(collapse)) show.value = false
 })
@@ -74,6 +75,7 @@ watch(
         class="h-[calc(var(--logo-height)-20px)] w-[calc(var(--logo-height)-20px)]"
         src="@/assets/imgs/logo.png"
         style="margin-right: 12px"
+        v-if="VITE_LOGO_SHOW"
       />
       <div
         v-if="show"
@@ -86,8 +88,8 @@ watch(
           }
         ]"
       >
-        <!--{{ title }}-->
-        亘川智城一网统管
+        {{ VITE_APP_TITLE }}
+<!--        亘川智城一网统管-->
       </div>
     </router-link>
   </div>

@@ -14,7 +14,8 @@
       </div>
       <!--第三块-->
       <div class="three bg">
-        <div class="title">排水防涝事件清单</div>
+        <!--<div class="title">排水防涝事件清单</div>-->
+        <div class="title">积水点监测/防涝事件</div>
         <dv-scroll-board
           :config="leftData.CCDvScrollBoardConfig"
           style="padding: 15px 25px 25px;  height: calc(100% - 35px - 40px);"

@@ -8,13 +8,25 @@
       v-loading="formLoading"
     >
       <el-form-item label="样式ID" prop="styleId">
-        <el-input v-model="formData.styleId" placeholder="请输入样式ID" />
+        <el-input
+          v-model="formData.styleId"
+          placeholder="请输入样式ID"
+          :disabled="formType === 'update'"
+        />
       </el-form-item>
       <el-form-item label="比例尺" prop="scale">
-        <el-input v-model="formData.scale" placeholder="请输入比例尺" />
+        <el-input
+          v-model="formData.scale"
+          placeholder="请输入比例尺"
+          :disabled="formType === 'update'"
+        />
       </el-form-item>
       <el-form-item label="网格类型" prop="gridType">
-        <el-input v-model="formData.gridType" placeholder="请输入网格类型" />
+        <el-input
+          v-model="formData.gridType"
+          placeholder="请输入网格类型"
+          :disabled="formType === 'update'"
+        />
       </el-form-item>
       <el-form-item label="线宽(mm)" prop="lineWidth">
         <el-input v-model="formData.lineWidth" placeholder="请输入线宽(mm)" />
@@ -30,7 +42,10 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import { GridBoundaryStyleApi, GridBoundaryStyleVO } from '@/api/dataHub/gridManagement/gridDiagramManage/gridboundarystyle'
+import {
+  GridBoundaryStyleApi,
+  GridBoundaryStyleVO
+} from '@/api/dataHub/gridManagement/gridDiagramManage/gridboundarystyle'
 
 const dialogVisible = ref(false)
 const dialogTitle = ref('')

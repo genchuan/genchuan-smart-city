@@ -13,6 +13,7 @@
         <div class="news-main">
           <!--:src="article.picUrl"-->
           <div class="news-content">
+            <!--:src="article.picUrl"-->
             <el-image
               :src="article.thumbUrl"
               class="material-img"

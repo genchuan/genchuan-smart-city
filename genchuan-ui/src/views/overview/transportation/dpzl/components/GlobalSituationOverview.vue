@@ -7,12 +7,6 @@
           <div class="panel-header">
             <h2>交通资源分布视图</h2>
             <div class="header-actions">
-              <el-select v-model="resourceTypeFilter" placeholder="资源类型" size="small" popper-append-to-body="false">
-                <el-option label="全部" value="" />
-                <el-option label="道路" value="1" />
-                <el-option label="公交站" value="2" />
-                <el-option label="枢纽" value="3" />
-              </el-select>
               <el-select v-model="areaFilter" placeholder="区域" size="small" popper-append-to-body="false">
                 <el-option label="全部" value="" />
                 <el-option label="东山区" value="东山区" />
@@ -93,7 +87,6 @@
 
             <div class="table-actions">
               <el-button size="small" type="primary" @click="exportResourceData">导出数据</el-button>
-              <el-button size="small" @click="refreshResourceStats">刷新统计</el-button>
             </div>
           </div>
           <div class="panel-footer"></div>
@@ -117,17 +110,20 @@
             <div class="panel-header">
               <h2>交通流量总览</h2>
               <div class="header-actions">
-                <el-select v-model="flowObjTypeFilter" placeholder="对象类型" size="small" popper-append-to-body="false">
+                <el-select v-model="flowObjTypeFilter" placeholder="对象类型" size="small" style="width: 6vw;" popper-append-to-body="false">
                   <el-option label="全部" value="" />
                   <el-option label="路段" value="1" />
                   <el-option label="枢纽" value="2" />
                 </el-select>
-                <el-select v-model="flowStatusFilter" placeholder="流量状态" size="small" popper-append-to-body="false">
+                <el-select v-model="flowStatusFilter" placeholder="流量状态" size="small" style="width: 6vw;" popper-append-to-body="false">
                   <el-option label="全部" value="" />
                   <el-option label="正常" value="0" />
                   <el-option label="接近饱和" value="1" />
                   <el-option label="超饱和" value="2" />
                 </el-select>
+                <el-button size="small" type="primary" @click="toggleView">
+                  {{ currentView === 'flowTable' ? '显示路段流量TOP10' : '显示交通流量列表' }}
+                </el-button>
                 <button class="panel-fullscreen-btn" @click="togglePanelFullscreen('trafficFlowPanel')">
                   <el-icon color="#00ccff" size="16"><FullScreen/></el-icon>
                 </button>
@@ -135,6 +131,7 @@
             </div>
             <div class="panel-body">
               <el-table
+                v-if="currentView === 'flowTable'"
                 :data="filteredTrafficFlow"
                 border
                 size="small"
@@ -183,9 +180,31 @@
                 </el-table-column>
               </el-table>
 
-              <div class="table-actions">
-                <el-button size="small" type="primary" @click="exportFlowData">导出数据</el-button>
-                <el-button size="small" @click="showFlowTrends">流量趋势</el-button>
+              <div v-else class="top10-container">
+                <div class="top10-list">
+                  <div
+                    v-for="item in top10Roads"
+                    :key="item.flow_id"
+                    class="top10-item"
+                    @click="showFlowDetail(item)"
+                  >
+                    <!-- 排名 -->
+                    <div class="top10-rank" :class="getRankClass(item.rank)">
+                      {{ item.rank }}
+                    </div>
+                    <!-- 路段信息 -->
+                    <div class="top10-info">
+                      <div class="top10-name">{{ item.monitor_obj_name }}</div>
+                      <div class="top10-meta">
+                        <span>当前流量：{{ item.vehicle_flow }} 辆/小时</span>
+                        <span>容量：{{ item.saturation_value }} 辆/小时</span>
+                        <span :class="getOverRateClass(item.overRate)">
+                          超容率：{{ item.overRate.toFixed(1) }}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="panel-footer"></div>
@@ -197,21 +216,81 @@
           <!-- 核心指标卡片 -->
           <div class="panel-body">
             <div class="indicator-cards">
+              <!-- 通行效率卡片（蓝色渐变） -->
               <div
-                v-for="(indicatorGroup, index) in coreIndicators"
-                :key="index"
+                v-if="coreIndicators[0]"
                 class="indicator-card"
-                :class="getGroupStatusClass(indicatorGroup)"
-                @click="showIndicatorDetail(indicatorGroup)"
+                :class="['card-traffic', getGroupStatusClass(coreIndicators[0])]"
+                @click="jumpToTrafficEfficiency()"
+                :key="0"
               >
-                <div class="indicator-title">{{ indicatorGroup.name }}</div>
-                <!-- 子指标列表 -->
+                <div class="indicator-title">{{ coreIndicators[0].name }}</div>
                 <div class="sub-indicators">
-                  <div v-for="sub in indicatorGroup.indicators" :key="sub.code" class="sub-indicator-item">
+                  <div v-for="sub in coreIndicators[0].indicators" :key="sub.code" class="sub-indicator-item">
                     <div class="sub-indicator-value">
-                      {{ sub.name }}：
+                      {{ sub.name }}
                       <br/>
-                      {{ sub.value }}{{ sub.unit }}
+                      {{ sub.value }} {{ sub.unit }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 事故预警卡片（橙色渐变） -->
+              <div
+                v-if="coreIndicators[1]"
+                class="indicator-card"
+                :class="['card-accident', getGroupStatusClass(coreIndicators[1])]"
+                @click="jumpToAccidentWarning()"
+                :key="1"
+              >
+                <div class="indicator-title">{{ coreIndicators[1].name }}</div>
+                <div class="sub-indicators">
+                  <div v-for="sub in coreIndicators[1].indicators" :key="sub.code" class="sub-indicator-item">
+                    <div class="sub-indicator-value">
+                      {{ sub.name }}
+                      <br/>
+                      {{ sub.value }} {{ sub.unit }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 服务质量卡片（紫色渐变） -->
+              <div
+                v-if="coreIndicators[2]"
+                class="indicator-card"
+                :class="['card-service', getGroupStatusClass(coreIndicators[2])]"
+                @click="jumpToServiceQuality()"
+                :key="2"
+              >
+                <div class="indicator-title">{{ coreIndicators[2].name }}</div>
+                <div class="sub-indicators">
+                  <div v-for="sub in coreIndicators[2].indicators" :key="sub.code" class="sub-indicator-item">
+                    <div class="sub-indicator-value">
+                      {{ sub.name }}
+                      <br/>
+                      {{ sub.value }} {{ sub.unit }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 应急处置卡片（红色渐变） -->
+              <div
+                v-if="coreIndicators[3]"
+                class="indicator-card"
+                :class="['card-disposal', getGroupStatusClass(coreIndicators[3])]"
+                @click="jumpToDisposalEfficiency()"
+                :key="3"
+              >
+                <div class="indicator-title">{{ coreIndicators[3].name }}</div>
+                <div class="sub-indicators">
+                  <div v-for="sub in coreIndicators[3].indicators" :key="sub.code" class="sub-indicator-item">
+                    <div class="sub-indicator-value">
+                      {{ sub.name }}
+                      <br/>
+                      {{ sub.value }} {{ sub.unit }}
                     </div>
                   </div>
                 </div>
@@ -234,16 +313,12 @@
                     :value="indicator.type"
                   />
                 </el-select>
-                <button class="panel-fullscreen-btn" @click="toggleFullscreen('indicatorTrendPanel')">
-                  <el-icon color="#00ccff" size="16">
-                    <FullScreen/>
-                  </el-icon>
-                </button>
               </div>
             </div>
             <div class="panel-body">
               <div class="chart-container">
                 <ChartBar
+                  :key="trendKey"
                   :data="indicatorTrendData"
                   :yAxisName="'数值'"
                 />
@@ -257,6 +332,11 @@
           <div class="panel" ref="warningsPanel" style="height: 100%">
             <div class="panel-header">
               <h2>近期异常信息</h2>
+              <div class="header-actions">
+                <button class="panel-fullscreen-btn" @click="togglePanelFullscreen('warningsPanel')">
+                  <el-icon color="#00ccff" size="16"><FullScreen/></el-icon>
+                </button>
+              </div>
             </div>
             <div class="panel-body">
               <dv-scroll-board
@@ -270,70 +350,6 @@
       </div>
     </div>
 
-    <!-- 地图资源详情弹窗 -->
-    <el-dialog
-      v-model="resourceOnMapDetailVisible"
-      :title="currentMapResource?.resource_name || '资源详情'"
-      width="600px"
-    >
-      <div class="resource-detail">
-        <div class="detail-section">
-          <h3>基础信息</h3>
-          <el-descriptions column=1 border>
-            <el-descriptions-item label="资源ID">{{ currentMapResource?.resource_id }}</el-descriptions-item>
-            <el-descriptions-item label="资源类型">
-              {{ currentMapResource?.resource_type === '1' ? '道路' :
-              currentMapResource?.resource_type === '2' ? '公交' : '枢纽' }}
-            </el-descriptions-item>
-            <el-descriptions-item label="位置">{{ currentMapResource?.resource_pos }}</el-descriptions-item>
-            <el-descriptions-item label="经纬度">
-              {{ currentMapResource?.longitude }}, {{ currentMapResource?.latitude }}
-            </el-descriptions-item>
-            <el-descriptions-item label="扩展信息">
-              {{ currentMapResource?.ext1 }} | {{ currentMapResource?.ext2 }}
-            </el-descriptions-item>
-          </el-descriptions>
-        </div>
-
-        <div class="detail-section">
-          <h3>运行状态</h3>
-          <el-descriptions column=1 border>
-            <el-descriptions-item label="实时状态">
-              <el-tag :type="currentMapResource?.real_time_status === '1' ? 'danger' : 'success'">
-                {{ currentMapResource?.real_time_status === '1' ? '异常' : '正常' }}
-              </el-tag>
-            </el-descriptions-item>
-            <el-descriptions-item label="状态描述">{{ currentMapResource?.status_desc }}</el-descriptions-item>
-            <el-descriptions-item label="异常处置ID" v-if="currentMapResource?.abnormal_handle_id">
-              {{ currentMapResource?.abnormal_handle_id }}
-            </el-descriptions-item>
-            <el-descriptions-item label="创建时间">{{ currentMapResource?.create_time }}</el-descriptions-item>
-          </el-descriptions>
-        </div>
-
-        <template v-if="currentMapResource?.real_time_status === '1'">
-          <div class="handle-section">
-            <h3>异常处置</h3>
-            <el-form>
-              <el-form-item label="处置内容" required>
-                <el-input type="textarea" v-model="handleContent" rows="3" />
-              </el-form-item>
-            </el-form>
-          </div>
-        </template>
-      </div>
-      <template #footer>
-        <el-button @click="resourceOnMapDetailVisible = false">关闭</el-button>
-        <el-button
-          type="primary"
-          @click="handleResourceAbnormal"
-          v-if="currentMapResource?.real_time_status === '1'"
-        >
-          处理异常
-        </el-button>
-      </template>
-    </el-dialog>
-
     <!-- 核心指标详情弹窗（修改为指标组弹窗） -->
     <el-dialog
       v-model="indicatorDetailVisible"
@@ -343,12 +359,20 @@
       <div class="indicator-detail">
         <div class="detail-section">
           <h3>指标信息</h3>
-          <el-descriptions column=2 border>
+          <el-descriptions column=1 border>
             <template v-for="sub in currentIndicatorGroup.indicators" :key="sub.code">
               <el-descriptions-item :label="sub.name">
                 <div class="sub-indicator-detail">
+                  <!-- 原有：当前值 + 目标值 + 状态 -->
                   <span class="current-value">{{ sub.value }}{{ sub.unit }}</span>
                   <span class="target-value">目标: {{ sub.target }}{{ sub.unit }}</span>
+                  <!-- 新增：同比变化 -->
+                  <span
+                    class="year-on-year"
+                    :class="sub.yearOnYear > 0 ? 'increase' : 'decrease'"
+                  >
+                {{ sub.yearOnYear > 0 ? '同比 ↑' : '同比 ↓' }}{{ Math.abs(sub.yearOnYear).toFixed(1) }}%
+              </span>
                   <el-tag :type="sub.status === '1' ? 'danger' : 'success'" class="status-tag">
                     {{ sub.status === '1' ? '异常' : '正常' }}
                   </el-tag>
@@ -477,16 +501,6 @@
             <el-descriptions-item label="资源密度">{{ currentResource?.ext2 }}</el-descriptions-item>
           </el-descriptions>
         </div>
-
-        <div class="detail-section">
-          <h3>资源分布趋势</h3>
-          <div class="chart-container">
-            <ChartLine
-              :data="resourceTrendData"
-              :yAxisName="'数量'"
-            />
-          </div>
-        </div>
       </div>
       <template #footer>
         <el-button @click="resourceDetailVisible = false">关闭</el-button>
@@ -582,11 +596,10 @@ import {
   fetchTrafficFlowOverview,
   fetchWarningScrollData,
   handleAbnormal,
-  refreshTrafficData,
   configureIndicatorTarget,
   fetchIndicatorHistory,
   fetchFlowTrend,
-  fetchResourceTrend
+  fetchIndicatorTrend
 } from '@/api/overview/transportation/GlobalSituationOverview.js';
 
 const geometriesArray = ref([]);
@@ -594,8 +607,13 @@ const geometriesArray = ref([]);
 // 头部区域相关数据和方法
 const currentTime = ref('');
 
-// 获取当前组件实例，用于访问ref
+// 获取当前组件实例（用于访问ref）
 const instance = getCurrentInstance();
+
+import { useRouter } from 'vue-router'; // 导入路由钩子
+
+const router = useRouter(); // 初始化路由实例
+
 // 面板全屏切换功能
 const toggleFullscreen = (panelRefName) => {
   if (!screenFull.isEnabled) {
@@ -780,44 +798,17 @@ const abnormalResources = computed(() => {
 // 资源分布详情弹窗
 const resourceDetailVisible = ref(false);
 const currentResource = ref(null);
-const resourceTrendData = ref({
-  xAxis: [],
-  series: []
-});
 
 // 显示资源分布详情
-const showResourceDetail = async (resource) => {
+const showResourceDetail = (resource) => {
   currentResource.value = {...resource};
-  await generateResourceTrendData(resource.dist_id);
   resourceDetailVisible.value = true;
-};
-
-// 资源分布趋势数据
-const generateResourceTrendData = async (distId) => {
-  try {
-    const data = await fetchResourceTrend(distId);
-    resourceTrendData.value = data;
-  } catch (error) {
-    console.error('获取资源分布趋势数据失败:', error);
-  }
 };
 
 // 导出资源分布数据
 const exportResourceData = () => {
   console.log('导出资源分布数据', filteredResources.value);
   ElMessage.success('资源分布数据导出成功');
-};
-
-// 刷新资源统计
-const refreshResourceStats = async () => {
-  try {
-    await refreshTrafficData('distribution');
-    const newData = await fetchResourceDistribution();
-    resourceDistribution.value = newData;
-    ElMessage.success('资源统计已刷新');
-  } catch (error) {
-    ElMessage.error('刷新失败: ' + (error.message || '未知错误'));
-  }
 };
 
 // 获取资源类型名称
@@ -843,6 +834,22 @@ const getAbnormalRateColor = (rate) => {
 
 // 交通核心指标相关数据（修改为指标组）
 const coreIndicators = ref([]);
+
+const jumpToTrafficEfficiency = () => {
+  router.push('/overview/trafficefficiency/dpzl');
+};
+
+const jumpToAccidentWarning = () => {
+  router.push('/overview/accidentwarning/dpzl');
+};
+
+const jumpToServiceQuality = () => {
+  router.push('/overview/servicequality/dpzl');
+};
+
+const jumpToDisposalEfficiency = () => {
+  router.push('/overview/disposalefficiency/dpzl');
+};
 
 // 当前选中的指标组
 const currentIndicatorGroup = ref(null);
@@ -971,34 +978,21 @@ const indicatorTrendData = ref({
   series: []
 });
 
+const trendKey = ref(0);
+
 // 切换趋势图指标组
-const changeTrendIndicator = (type) => {
+const changeTrendIndicator = async (type) => {
   if (!type) return;
   const group = coreIndicators.value.find(g => g.type === type);
   if (!group) return;
 
-  // 生成过去12个月的趋势数据（取每个子指标的最新值）
-  const xAxis = [];
-  const series = group.indicators.map(sub => ({
-    name: sub.name,
-    data: []
-  }));
-
-  const now = new Date();
-  for (let i = 11; i >= 0; i--) {
-    const month = new Date(now);
-    month.setMonth(now.getMonth() - i);
-    xAxis.push(`${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, '0')}`);
-
-    // 为每个子指标生成月度数据
-    group.indicators.forEach((sub, index) => {
-      const baseValue = sub.value;
-      const fluctuation = (Math.random() - 0.5) * (sub.code === 'accident_count' ? 2 : 5);
-      series[index].data.push(parseFloat((baseValue + fluctuation).toFixed(2)));
-    });
-  }
+  const { xAxis, series } = await fetchIndicatorTrend(group.indicators);
 
   indicatorTrendData.value = { xAxis, series };
+  setTimeout(() => {
+    indicatorTrendData.value = { xAxis: [...xAxis], series: [...series] };
+    trendKey.value++;
+  }, 20);
 };
 
 const togglePanelFullscreen = (panelRefName) => {
@@ -1056,6 +1050,53 @@ const exportFlowData = () => {
 const showFlowTrends = () => {
   ElMessage.info('流量趋势分析功能待实现');
 };
+
+
+// 1. 添加视图切换状态（默认显示交通流量表格）
+const currentView = ref('flowTable'); // flowTable=表格视图，top10Flow=TOP10视图
+
+// 2. 视图切换方法
+const toggleView = () => {
+  currentView.value = currentView.value === 'flowTable' ? 'top10Flow' : 'flowTable';
+};
+
+// 3. 计算TOP10路段数据（筛选路段+排序+超容率计算）
+const top10Roads = computed(() => {
+  return [...trafficFlowOverview.value]
+    // 只筛选「路段类型」（monitor_obj_type=1）
+    .filter(flow => flow.monitor_obj_type === '1')
+    // 按实时流量降序排序
+    .sort((a, b) => (b.vehicle_flow || 0) - (a.vehicle_flow || 0))
+    // 取前10条
+    .slice(0, 10)
+    // 补充排名和超容率
+    .map((item, index) => ({
+      ...item,
+      rank: index + 1, // 排名（1-10）
+      // 超容率 = (当前流量 / 饱和值) * 100%（避免除数为0）
+      overRate: item.saturation_value > 0
+        ? (item.vehicle_flow / item.saturation_value) * 100
+        : 0
+    }));
+});
+
+// 4. 辅助方法：排名样式（1-3名特殊颜色，4-10名统一颜色）
+const getRankClass = (rank) => {
+  switch (rank) {
+    case 1: return 'rank-first'; // 金色
+    case 2: return 'rank-second'; // 银色
+    case 3: return 'rank-third'; // 铜色
+    default: return 'rank-other'; // 蓝色
+  }
+};
+
+// 5. 辅助方法：超容率颜色（正常/接近饱和/超容）
+const getOverRateClass = (rate) => {
+  if (rate > 100) return 'danger'; // 超容（红色）
+  if (rate > 80) return 'warning'; // 接近饱和（橙色）
+  return 'normal'; // 正常（绿色）
+};
+
 
 // 异常信息滚动配置
 const warningScrollConfig = ref({

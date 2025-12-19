@@ -56,22 +56,21 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
-        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
-        <el-button
-          type="primary"
-          plain
-          @click="openForm('create')"
-        >
-          <Icon icon="ep:plus" class="mr-5px" /> 新增
+        <el-button @click="handleQuery">
+          <Icon icon="ep:search" class="mr-5px" />
+          搜索
         </el-button>
-        <el-button
-          type="success"
-          plain
-          @click="handleExport"
-          :loading="exportLoading"
-        >
-          <Icon icon="ep:download" class="mr-5px" /> 导出
+        <el-button @click="resetQuery">
+          <Icon icon="ep:refresh" class="mr-5px" />
+          重置
+        </el-button>
+        <el-button type="primary" plain @click="openForm('create')">
+          <Icon icon="ep:plus" class="mr-5px" />
+          新增
+        </el-button>
+        <el-button type="success" plain @click="handleExport" :loading="exportLoading">
+          <Icon icon="ep:download" class="mr-5px" />
+          导出
         </el-button>
       </el-form-item>
     </el-form>
@@ -89,12 +88,18 @@
       <el-table-column label="主键ID" align="center" prop="id" width="80" />
       <el-table-column label="统计周期" align="center" prop="statCycle" />
       <el-table-column label="统计周期名称" align="center" prop="statCycleName" />
-      <el-table-column label="行政区划" align="center" >
+      <el-table-column label="行政区划" align="center">
         <template #default="scope">{{ scope.row.regionName }}({{ scope.row.regionCode }})</template>
       </el-table-column>
       <el-table-column label="网格类型" align="center" prop="gridType">
         <template #default="scope">
-          <span :class="{'type-a': scope.row.gridType === 'A', 'type-b': scope.row.gridType === 'B', 'type-c': scope.row.gridType === 'C'}">
+          <span
+            :class="{
+              'type-a': scope.row.gridType === 'A',
+              'type-b': scope.row.gridType === 'B',
+              'type-c': scope.row.gridType === 'C'
+            }"
+          >
             {{ scope.row.gridType }}
           </span>
         </template>
@@ -112,27 +117,11 @@
       />
       <el-table-column label="操作" align="center" min-width="160px">
         <template #default="scope">
-          <el-button
-            link
-            type="primary"
-            @click="openDetail(scope.row)"
-          >
-            查看
-          </el-button>
-          <el-button
-            link
-            type="primary"
-            @click="openForm('update', scope.row.id)"
-          >
+          <el-button link type="primary" @click="openDetail(scope.row)"> 详情 </el-button>
+          <el-button link type="primary" @click="openForm('update', scope.row.id)">
             编辑
           </el-button>
-          <el-button
-            link
-            type="danger"
-            @click="handleDelete(scope.row.id)"
-          >
-            删除
-          </el-button>
+          <el-button link type="danger" @click="handleDelete(scope.row.id)"> 删除 </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -156,7 +145,10 @@
 <script setup lang="ts">
 import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
-import { EvalGridRptApi, EvalGridRptVO } from '@/api/dataHub/gridManagement/gridStatReport/evalgridrpt'
+import {
+  EvalGridRptApi,
+  EvalGridRptVO
+} from '@/api/dataHub/gridManagement/gridStatReport/evalgridrpt'
 import EvalGridRptForm from './EvalGridRptForm.vue'
 import EvalGridRptDetail from './EvalGridRptDetail.vue'
 
@@ -193,7 +185,7 @@ const queryParams = reactive({
   extCat2: undefined,
   extCommon1: undefined,
   extCommon2: undefined,
-  createTime: [],
+  createTime: []
 })
 const queryFormRef = ref() // 搜索的表单
 const exportLoading = ref(false) // 导出的加载中

@@ -1,0 +1,662 @@
+// 公共样式文件 - 市监主题专用
+
+// 基础变量定义（便于统一维护）
+$primary-color: #3B82F6;
+$success-color: #10B981;
+$warning-color: #F59E0B;
+$danger-color: #EF4444;
+$dark-bg: #0F172A;
+$card-bg: rgba(30, 41, 59, 0.8);
+$border-color: rgba(59, 130, 246, 0.2);
+$text-light: #94A3B8;
+$text-normal: #E2E8F0;
+$text-white: #FFFFFF;
+
+// 提取重复的滚动条样式为 mixin
+@mixin custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(59, 130, 246, 0.3);
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: rgba(15, 23, 42, 0.5);
+  }
+}
+
+// 提取重复的图表容器样式
+@mixin chart-container-base {
+  position: relative;
+  box-sizing: border-box;
+  h3 {
+    font-size: 14px;
+    color: $text-normal;
+    margin: 10px 0 0 0;
+    text-align: center;
+  }
+}
+
+// 提取重复的统计卡片样式
+@mixin stat-card-base {
+  border-radius: 8px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  box-sizing: border-box;
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+  }
+}
+
+// 全局态势总览页面容器
+.global-situation-overview {
+  width: 100%;
+  height: 100%;
+  background-color: $dark-bg;
+  padding: 15px;
+  box-sizing: border-box;
+  color: $text-normal;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+// 顶部核心指标区
+.top-core-indicators {
+  width: 100%;
+  height: 150px;
+  box-sizing: border-box;
+}
+
+// 筛选工具栏
+.filter-toolbar {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+// 主要内容区
+.main-content {
+  display: flex;
+  flex: 1;
+  gap: 15px;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  .left-content {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .right-content {
+    flex: 1;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+}
+
+// 面板基础样式
+.panel {
+  position: relative;
+  height: 100%;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  box-sizing: border-box;
+  overflow: hidden;
+  background-color: $card-bg;
+
+  // 四个半角框样式
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1.5vh;
+    height: 1.5vh;
+    border-top: 0.3vh solid $primary-color;
+    border-left: 0.3vh solid $primary-color;
+    z-index: 1;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 1.5vh;
+    height: 1.5vh;
+    border-top: 0.3vh solid $primary-color;
+    border-right: 0.3vh solid $primary-color;
+    z-index: 1;
+  }
+}
+
+.panel-header {
+  height: 40px;
+  line-height: 40px;
+  padding: 0 20px;
+  border-bottom: 1px solid $border-color;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+
+  h2 {
+    margin: 0;
+    font-size: 16px;
+    color: $primary-color;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .el-icon {
+      font-size: 18px;
+    }
+  }
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+  margin-right: 15px;
+
+  .el-select, .el-button, .el-checkbox-group {
+    &:not(:last-child) {
+      margin-right: 5px;
+    }
+  }
+
+  .el-button .el-icon {
+    margin-right: 4px;
+  }
+}
+
+.panel-body {
+  width: 100%;
+  flex: 1;
+  padding: 15px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  @include custom-scrollbar;
+}
+
+.panel-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1vh;
+
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 1.5vh;
+    height: 1.5vh;
+    border-bottom: 0.3vh solid $primary-color;
+    border-left: 0.3vh solid $primary-color;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 1.5vh;
+    height: 1.5vh;
+    border-bottom: 0.3vh solid $primary-color;
+    border-right: 0.3vh solid $primary-color;
+  }
+}
+
+// 全屏按钮
+.panel-fullscreen-btn {
+  cursor: pointer;
+  transition: transform 0.2s;
+  padding: 5px;
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  z-index: 1000;
+  color: $text-light;
+
+  &:hover {
+    transform: scale(1.1);
+    background: rgba(59, 130, 246, 0.2);
+    color: $primary-color;
+  }
+}
+
+// 地图容器修复
+.map-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: rgba(15, 23, 42, 0.5);
+
+  // 确保地图canvas正确显示
+  canvas {
+    display: block;
+    outline: none;
+  }
+
+  // 腾讯地图控件样式修复
+  :deep(.tmap-controls) {
+    button {
+      background-color: rgba(30, 41, 59, 0.9) !important;
+      border: 1px solid $border-color !important;
+      color: $text-normal !important;
+
+      &:hover {
+        background-color: rgba(59, 130, 246, 0.3) !important;
+      }
+    }
+  }
+
+  .map-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(15, 23, 42, 0.95);
+    z-index: 1000;
+
+    .loading-icon {
+      font-size: 40px;
+      color: $primary-color;
+      margin-bottom: 15px;
+      animation: spin 2s linear infinite;
+    }
+
+    p {
+      color: $text-normal;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+  }
+
+  .map-stats-card {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background-color: rgba(15, 23, 42, 0.95);
+    border-radius: 8px;
+    padding: 15px;
+    z-index: 100;
+    border: 1px solid $border-color;
+    min-width: 300px;
+
+    h3 {
+      font-size: 14px;
+      color: $primary-color;
+      margin: 0 0 12px 0;
+      text-align: left;
+      border-bottom: 1px solid $border-color;
+      padding-bottom: 8px;
+    }
+
+    .map-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      .stat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .stat-label {
+          color: $text-light;
+          font-size: 13px;
+        }
+
+        .stat-value {
+          color: $text-normal;
+          font-size: 14px;
+          font-weight: 500;
+
+          &.danger-text {
+            color: $danger-color;
+            font-weight: bold;
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// 水平布局的概览统计项
+.overview-stats-horizontal {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  height: 100%;
+  padding: 10px 0;
+  box-sizing: border-box;
+
+  .overview-stat-item {
+    flex: 1;
+    background: $card-bg;
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px solid $border-color;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+      z-index: 10;
+    }
+
+    &.warning {
+      border-color: $danger-color;
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .stat-content {
+      text-align: center;
+      z-index: 2;
+      position: relative;
+    }
+
+    .stat-title {
+      font-size: 14px;
+      color: $text-light;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .stat-value-container {
+      margin: 8px 0;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: bold;
+      color: $text-white;
+
+      &.warning-text {
+        color: $danger-color;
+      }
+    }
+
+    .stat-unit {
+      font-size: 16px;
+      margin-left: 4px;
+      color: $text-light;
+    }
+
+    .stat-rate {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+
+      &.positive {
+        color: $success-color;
+      }
+
+      &.normal {
+        color: $text-light;
+      }
+
+      &.danger {
+        color: $danger-color;
+      }
+
+      &.warning {
+        color: $warning-color;
+      }
+    }
+  }
+}
+
+// 案件总览内容区
+.case-overview-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 15px;
+
+  .case-status-chart {
+    height: 200px;
+    width: 100%;
+  }
+
+  .case-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .case-list {
+    flex: 1;
+    overflow: auto;
+    @include custom-scrollbar;
+  }
+}
+
+// 监管对象分布内容区
+.supv-obj-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 15px;
+
+  .supv-obj-chart {
+    height: 250px;
+    width: 100%;
+  }
+
+  .supv-obj-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+}
+
+// 统计项样式
+.stat-item {
+  flex: 1;
+  min-width: calc(33.33% - 10px);
+  display: flex;
+  align-items: center;
+
+  .stat-label {
+    color: $text-light;
+    width: 90px;
+    font-size: 14px;
+  }
+
+  .stat-value {
+    color: $text-normal;
+    font-size: 16px;
+    font-weight: 500;
+    flex: 1;
+  }
+
+  &.warning {
+    .stat-value {
+      color: $danger-color;
+    }
+  }
+}
+
+// 统计卡片样式
+.stat-card {
+  @include stat-card-base;
+  background: rgba(30, 41, 59, 0.6);
+  text-align: center;
+  border: 1px solid $border-color;
+
+  &.warning {
+    border-color: $danger-color;
+    background: rgba(239, 68, 68, 0.1);
+  }
+
+  .stat-title {
+    font-size: 14px;
+    color: $text-light;
+    margin-bottom: 5px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: $text-white;
+  }
+}
+
+// 详情区域样式
+.detail-section {
+  margin-bottom: 20px;
+
+  h3 {
+    font-size: 16px;
+    color: $primary-color;
+    margin: 10px 0 10px 0;
+    padding-bottom: 5px;
+    border-bottom: 1px dashed $border-color;
+  }
+}
+
+.info-item {
+  display: flex;
+  margin-bottom: 12px;
+
+  .info-label {
+    color: $text-light;
+    width: 100px;
+    flex-shrink: 0;
+  }
+
+  .info-value {
+    color: $text-normal;
+    flex: 1;
+  }
+}
+
+.case-detail-content, .stat-detail-content {
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 10px;
+  box-sizing: border-box;
+  @include custom-scrollbar;
+}
+
+.stat-detail-value {
+  font-size: 36px;
+  font-weight: bold;
+  color: $primary-color;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.stat-detail-trend {
+  margin-bottom: 20px;
+}
+
+.stat-detail-analysis {
+  background-color: rgba(59, 130, 246, 0.1);
+  padding: 15px;
+  border-radius: 6px;
+
+  p {
+    margin: 0;
+    line-height: 1.6;
+  }
+}
+
+.case-description {
+  padding: 10px;
+  background-color: rgba(15, 23, 42, 0.5);
+  border-radius: 6px;
+  line-height: 1.6;
+}
+
+// 导出进度样式
+.export-progress {
+  padding: 20px 0;
+
+  .export-message {
+    text-align: center;
+    margin-top: 15px;
+    color: $text-light;
+  }
+}
+
+.danger-text {
+  color: $danger-color !important;
+}
+
+// 响应式调整
+@media (max-width: 1600px) {
+  .map-stats-card {
+    min-width: 250px;
+    padding: 12px;
+
+    .stat-item {
+      .stat-label {
+        font-size: 12px;
+      }
+
+      .stat-value {
+        font-size: 13px;
+      }
+    }
+  }
+
+  .overview-stat-item .stat-value {
+    font-size: 24px;
+  }
+
+  .supv-obj-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .case-stats {
+    grid-template-columns: 1fr;
+  }
+}

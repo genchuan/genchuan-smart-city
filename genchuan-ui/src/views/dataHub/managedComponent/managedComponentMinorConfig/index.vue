@@ -1,479 +1,817 @@
 <template>
-  <ContentWrap>
-    <!-- 🔍 搜索栏 -->
-    <el-form
-      class="-mb-1px"
-      :model="queryParams"
-      ref="queryFormRef"
-      :inline="true"
-      label-width="130px"
-    >
-      <el-form-item label="大类ID">
-        <el-input
-          v-model="queryParams.majorId"
-          placeholder="请输入大类ID"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
+  <div class="managed-component-minor-page">
+    <!-- 搜索区域 -->
+    <ContentWrap class="search-container">
+      <div class="search-content">
+        <el-form
+          class="search-form"
+          :model="queryParams"
+          ref="queryFormRef"
+          :inline="true"
+          label-width="100px"
+        >
+          <div class="form-row">
+            <el-form-item label="小类ID" prop="minorId">
+              <el-input
+                v-model="queryParams.minorId"
+                placeholder="请输入小类ID"
+                clearable
+                @keyup.enter="handleQuery"
+                class="!w-160px"
+              />
+            </el-form-item>
+
+            <el-form-item label="关联的大类ID" prop="majorId">
+              <el-input
+                v-model="queryParams.majorId"
+                placeholder="请输入关联的大类ID"
+                clearable
+                @keyup.enter="handleQuery"
+                class="!w-160px"
+              />
+            </el-form-item>
+
+            <el-form-item label="小类名称" prop="minorName">
+              <el-input
+                v-model="queryParams.minorName"
+                placeholder="请输入小类名称"
+                clearable
+                @keyup.enter="handleQuery"
+                class="!w-160px"
+              />
+            </el-form-item>
+
+            <el-form-item label="小类代码" prop="minorCode">
+              <el-input
+                v-model="queryParams.minorCode"
+                placeholder="请输入小类代码"
+                clearable
+                @keyup.enter="handleQuery"
+                class="!w-160px"
+              />
+            </el-form-item>
+
+            <el-form-item label="是否扩展类" prop="isExtend">
+              <el-select
+                v-model="queryParams.isExtend"
+                placeholder="请选择是否扩展类"
+                clearable
+                class="!w-160px"
+              >
+                <el-option label="是" value="1" />
+                <el-option label="否" value="0" />
+              </el-select>
+            </el-form-item>
+
+            <!-- 按钮组与搜索字段同行 -->
+            <div class="search-buttons-group">
+              <el-button type="primary" @click="handleQuery">
+                <Icon icon="ep:search" class="mr-1" /> 搜索
+              </el-button>
+              <el-button @click="resetQuery">
+                <Icon icon="ep:refresh" class="mr-1" /> 重置
+              </el-button>
+              <el-button
+                type="primary"
+                plain
+                @click="openForm('create')"
+                v-hasPermi="['datacenter:managed-component-minor-config:create']"
+              >
+                <Icon icon="ep:plus" class="mr-1" /> 新增
+              </el-button>
+              <el-button
+                type="success"
+                plain
+                @click="handleExport"
+                :loading="exportLoading"
+                v-hasPermi="['datacenter:managed-component-minor-config:export']"
+              >
+                <Icon icon="ep:download" class="mr-1" /> 导出
+              </el-button>
+            </div>
+          </div>
+        </el-form>
+      </div>
+    </ContentWrap>
+
+    <!-- 数据列表 -->
+    <ContentWrap class="list-container">
+      <el-table
+        v-loading="loading"
+        :data="list"
+        :stripe="true"
+        :show-overflow-tooltip="true"
+        class="list-table"
+        :header-cell-style="{
+          'background-color': '#f5f7fa',
+          'font-weight': '600',
+          'color': '#606266',
+          'padding': '12px 8px',
+          'white-space': 'nowrap'
+        }"
+        :cell-style="{
+          'vertical-align': 'middle',
+          'padding': '8px'
+        }"
+      >
+        <el-table-column label="主键ID" align="center" prop="id" width="100" />
+        <el-table-column label="小类ID" align="center" prop="minorId" min-width="140" />
+        <el-table-column label="关联的大类ID" align="center" prop="majorId" min-width="140" />
+        <el-table-column label="小类代码" align="center" prop="minorCode" min-width="140" />
+        <el-table-column label="小类名称" align="center" prop="minorName" min-width="160" />
+        <el-table-column label="是否扩展类" align="center" prop="isExtend" width="120">
+          <template #default="scope">
+            <el-tag :type="scope.row.isExtend === '1' ? 'success' : 'info'">
+              {{ scope.row.isExtend === '1' ? '是' : '否' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="创建时间"
+          align="center"
+          prop="createTime"
+          :formatter="dateFormatter"
+          width="180"
         />
-      </el-form-item>
-
-      <el-form-item label="小类名称/代码">
-        <el-input
-          v-model="queryParams.keyword"
-          placeholder="请输入小类名称或代码"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
+        <el-table-column
+          label="系统更新时间"
+          align="center"
+          prop="updateTimeSys"
+          :formatter="dateFormatter"
+          width="180"
         />
-      </el-form-item>
-
-      <el-form-item>
-        <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
-        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
-
-        <el-button type="primary" plain @click="openForm('create')">
-          <Icon icon="ep:plus" class="mr-5px" /> 新增
-        </el-button>
-
-        <el-upload
-          :show-file-list="false"
-          :before-upload="handleImport"
-          accept=".xlsx, .xls"
+        <!-- 操作列 -->
+        <el-table-column
+          label="操作"
+          align="center"
+          width="180"
+          fixed="right"
         >
-          <el-button type="warning" plain>
-            <Icon icon="ep:upload" class="mr-5px" /> 导入
-          </el-button>
-        </el-upload>
+          <template #default="scope">
+            <div class="operation-btn-group">
+              <el-button
+                link
+                type="primary"
+                size="small"
+                @click="openDetail(scope.row)"
+                v-hasPermi="['datacenter:managed-component-minor-config:detail']"
+                class="operation-btn"
+              >
+                详情
+              </el-button>
+              <el-button
+                link
+                type="primary"
+                size="small"
+                @click="openForm('update', scope.row.id)"
+                v-hasPermi="['datacenter:managed-component-minor-config:update']"
+                class="operation-btn"
+              >
+                编辑
+              </el-button>
+              <el-button
+                link
+                type="danger"
+                size="small"
+                @click="handleDelete(scope.row.id)"
+                v-hasPermi="['datacenter:managed-component-minor-config:delete']"
+                class="operation-btn"
+              >
+                删除
+              </el-button>
+            </div>
+          </template>
+        </el-table-column>
+      </el-table>
 
-        <el-button type="success" plain @click="handleExport" :loading="exportLoading">
-          <Icon icon="ep:download" class="mr-5px" /> 导出
-        </el-button>
-      </el-form-item>
-    </el-form>
-  </ContentWrap>
-
-  <!-- 📋 列表 -->
-  <ContentWrap>
-    <el-table v-loading="loading" :data="list" stripe show-overflow-tooltip>
-      <el-table-column label="小类ID" prop="minorId" align="center">
-        <template #default="scope">
-          <span
-            class="text-blue-500 cursor-pointer hover:underline"
-            @click="openDetail(scope.row)"
-          >
-            {{ scope.row.minorId }}
-          </span>
-        </template>
-      </el-table-column>
-<!--      <el-table-column label="大类ID" prop="majorId" align="center" />-->
-      <el-table-column label="小类代码" prop="minorCode" align="center" />
-      <el-table-column label="小类名称" prop="minorName" align="center" />
-      <el-table-column label="小类说明" prop="minorDesc" align="center" />
-      <el-table-column label="主管部门" align="center">
-        <template #default="scope">{{ scope.row.deptName }} ({{ scope.row.deptCode }})</template>
-      </el-table-column>
-      <el-table-column label="是否扩展类" align="center">
-        <template #default="scope">
-          <el-tag :type="scope.row.isExtend === '1' ? 'success' : 'info'">
-            {{ scope.row.isExtend === '1' ? '是' : '否' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="创建人" prop="createUser" align="center" />
-      <el-table-column label="创建时间" prop="createTime" align="center" width="160" />
-      <el-table-column label="操作" align="center" width="220">
-        <template #default="scope">
-          <el-button link type="primary" @click="openForm('update', scope.row)">编辑</el-button>
-          <el-button link type="info" @click="openDetail(scope.row)">详情</el-button>
-          <el-button link type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <!-- 分页 -->
-    <Pagination
-      :total="total"
-      v-model:page="queryParams.pageNo"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getList"
-    />
-  </ContentWrap>
-
-  <!-- ✏️ 弹窗表单（修改核心：下拉框+联动） -->
-  <el-dialog v-model="dialogVisible" :title="dialogTitle" width="600px">
-    <el-form
-      :model="formData"
-      ref="formRef"
-      label-width="100px"
-      :rules="formRules"
-    >
-      <!-- 1. 大类ID：下拉选择 -->
-<!--      <el-form-item label="大类ID" prop="majorId">-->
-<!--        <el-select-->
-<!--          v-model="formData.majorId"-->
-<!--          placeholder="请选择大类ID"-->
-<!--          class="!w-240px"-->
-<!--        >-->
-<!--          <el-option-->
-<!--            v-for="item in majorOptions"-->
-<!--            :key="item.id"-->
-<!--            :label="`${item.id}（${item.desc}）`"-->
-<!--            :value="item.id"-->
-<!--          />-->
-<!--        </el-select>-->
-<!--      </el-form-item>-->
-
-      <!-- 2. 小类代码：下拉选择（联动小类名称） -->
-      <el-form-item label="小类代码" prop="minorCode">
-        <el-select
-          v-model="formData.minorCode"
-          placeholder="请选择小类代码"
-          class="!w-240px"
-          @change="handleMinorCodeChange"
-        >
-          <el-option
-            v-for="item in minorOptions"
-            :key="item.code"
-            :label="`${item.code}（${item.name}）`"
-            :value="item.code"
+      <!-- 分页 - 居中显示 -->
+      <div class="pagination-container">
+        <div class="pagination-content">
+          <div class="page-info">
+            共 <span class="text-primary font-medium">{{ total }}</span> 条
+          </div>
+          <Pagination
+            :total="total"
+            v-model:page="queryParams.pageNo"
+            v-model:limit="queryParams.pageSize"
+            @pagination="getList"
+            layout="sizes, prev, pager, next, jumper"
+            :page-sizes="[10, 20, 50, 100]"
           />
-        </el-select>
-      </el-form-item>
-
-      <!-- 3. 小类名称：联动填充（禁用下拉，避免手动修改） -->
-      <el-form-item label="小类名称" prop="minorName">
-        <el-select
-          v-model="formData.minorName"
-          placeholder="请先选择小类代码"
-          class="!w-240px"
-          disabled
-        >
-          <el-option
-            v-for="item in minorOptions"
-            :key="item.name"
-            :label="item.name"
-            :value="item.name"
-          />
-        </el-select>
-      </el-form-item>
-
-      <el-form-item label="小类说明" prop="minorDesc">
-        <el-input v-model="formData.minorDesc" placeholder="请输入小类说明" class="!w-240px" />
-      </el-form-item>
-
-      <!-- 4. 部门代码：下拉选择（联动部门名称） -->
-      <el-form-item label="部门代码" prop="deptCode">
-        <el-select
-          v-model="formData.deptCode"
-          placeholder="请选择部门代码"
-          class="!w-240px"
-          @change="handleDeptCodeChange"
-        >
-          <el-option
-            v-for="item in deptOptions"
-            :key="item.code"
-            :label="`${item.code}（${item.name}）`"
-            :value="item.code"
-          />
-        </el-select>
-      </el-form-item>
-
-      <!-- 5. 部门名称：联动填充（禁用下拉，确保一致性） -->
-      <el-form-item label="部门名称" prop="deptName">
-        <el-select
-          v-model="formData.deptName"
-          placeholder="请先选择部门代码"
-          class="!w-240px"
-          disabled
-        >
-          <el-option
-            v-for="item in deptOptions"
-            :key="item.name"
-            :label="item.name"
-            :value="item.name"
-          />
-        </el-select>
-      </el-form-item>
-
-      <!-- 6. 是否扩展：优化下拉选项文案 -->
-      <el-form-item label="是否扩展" prop="isExtend">
-        <el-select v-model="formData.isExtend" placeholder="请选择是否扩展" class="!w-240px">
-          <el-option label="是（支持扩展字段配置）" value="1" />
-          <el-option label="否（固定字段结构）" value="0" />
-        </el-select>
-      </el-form-item>
-
-      <el-form-item label="扩展字段1" prop="extField1">
-        <el-input v-model="formData.extField1" placeholder="请输入扩展字段1" class="!w-240px" />
-      </el-form-item>
-    </el-form>
-    <template #footer>
-      <el-button @click="dialogVisible = false">取消</el-button>
-      <el-button type="primary" @click="submitForm">保存</el-button>
-    </template>
-  </el-dialog>
-
-  <!-- 🧾 伪抽屉详情页 -->
-  <transition name="slide-left">
-    <div
-      v-if="showDetail"
-      class="fixed top-0 right-0 h-full bg-white shadow-lg border-l border-gray-200 z-40"
-      style="width: 75%; overflow-y: auto;"
-      @keyup.esc="closeDetail"
-      tabindex="0"
-    >
-      <div class="p-6">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold text-gray-700">
-            小类详情：{{ detailData.minorName || detailData.minorId }}
-          </h2>
-          <el-button link type="danger" @click="closeDetail">关闭</el-button>
         </div>
+      </div>
+    </ContentWrap>
 
-        <el-descriptions :column="2" border>
-          <el-descriptions-item label="小类ID">{{ detailData.minorId }}</el-descriptions-item>
-          <el-descriptions-item label="大类ID">{{ detailData.majorId }}</el-descriptions-item>
-          <el-descriptions-item label="小类代码">{{ detailData.minorCode }}</el-descriptions-item>
-          <el-descriptions-item label="小类名称">{{ detailData.minorName }}</el-descriptions-item>
-          <el-descriptions-item label="小类说明" :span="2">{{ detailData.minorDesc }}</el-descriptions-item>
-          <el-descriptions-item label="部门代码">{{ detailData.deptCode }}</el-descriptions-item>
-          <el-descriptions-item label="部门名称">{{ detailData.deptName }}</el-descriptions-item>
-          <el-descriptions-item label="是否扩展">
-            {{ detailData.isExtend === '1' ? '是' : '否' }}
+    <!-- 详情抽屉 -->
+    <div
+      v-if="isDetailShow"
+      class="detail-mask"
+      @click="closeDetail"
+    ></div>
+    <div
+      v-if="isDetailShow"
+      class="detail-drawer"
+      :class="{ 'full-screen': isFullScreen }"
+      @click.stop
+    >
+      <div class="detail-header flex justify-between items-center p-4 border-b">
+        <h3 class="text-lg font-semibold">数据详情</h3>
+        <div class="detail-header-btns">
+          <el-tooltip
+            :content="isFullScreen ? '退出全屏' : '全屏显示'"
+            placement="bottom"
+          >
+            <el-button
+              text
+              size="small"
+              @click="toggleFullScreen"
+              class="fullscreen-btn"
+            >
+              <!-- 减号放大镜图标（退出全屏） -->
+              <svg
+                v-if="isFullScreen"
+                class="zoom-out-icon"
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <!-- 放大镜圆形部分 -->
+                <circle cx="11" cy="11" r="8" />
+                <!-- 放大镜手柄 -->
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <!-- 减号 -->
+                <line x1="8" y1="11" x2="14" y2="11" />
+              </svg>
+              <!-- 加号放大镜图标（进入全屏） -->
+              <svg
+                v-else
+                class="zoom-in-icon"
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <!-- 放大镜圆形部分 -->
+                <circle cx="11" cy="11" r="8" />
+                <!-- 放大镜手柄 -->
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <!-- 加号横线 -->
+                <line x1="11" y1="8" x2="11" y2="14" />
+                <!-- 加号竖线 -->
+                <line x1="8" y1="11" x2="14" y2="11" />
+              </svg>
+            </el-button>
+          </el-tooltip>
+          <el-tooltip content="关闭" placement="bottom">
+            <el-button
+              text
+              size="small"
+              @click="closeDetail"
+              class="close-btn"
+            >
+              <Icon icon="ep:close" />
+            </el-button>
+          </el-tooltip>
+        </div>
+      </div>
+
+      <div class="detail-content p-6">
+        <el-descriptions
+          title=""
+          :column="1"
+          border
+          :label-style="{ 'width': '120px', 'font-weight': '500', 'text-align': 'left' }"
+          :content-style="{ 'flex': '1', 'text-align': 'left' }"
+        >
+          <el-descriptions-item label="主键ID">{{ selectedRow?.id || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="小类ID">{{ selectedRow?.minorId || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="关联的大类ID">{{ selectedRow?.majorId || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="小类代码">{{ selectedRow?.minorCode || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="小类名称">{{ selectedRow?.minorName || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="小类说明">{{ selectedRow?.minorDesc || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="主管部门统一社会信用代码">{{ selectedRow?.deptCode || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="主管部门全称">{{ selectedRow?.deptName || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="是否扩展类">
+            <el-tag :type="selectedRow?.isExtend === '1' ? 'success' : 'info'">
+              {{ selectedRow?.isExtend === '1' ? '是' : '否' }}
+            </el-tag>
           </el-descriptions-item>
-          <el-descriptions-item label="创建人">{{ detailData.createUser }}</el-descriptions-item>
-          <el-descriptions-item label="创建时间">{{ detailData.createTime }}</el-descriptions-item>
-          <el-descriptions-item label="扩展字段1" :span="2">{{ detailData.extField1 }}</el-descriptions-item>
+          <el-descriptions-item label="创建人ID">{{ selectedRow?.createUser || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="创建时间">{{ dateFormatter(selectedRow?.createTime) || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="更新人ID">{{ selectedRow?.updateUser || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="扩展字段1">{{ selectedRow?.extField1 || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="系统创建时间">{{ dateFormatter(selectedRow?.createTimeSys) || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="系统更新时间">{{ dateFormatter(selectedRow?.updateTimeSys) || '-' }}</el-descriptions-item>
         </el-descriptions>
       </div>
     </div>
-  </transition>
+
+    <!-- 表单弹窗：添加/修改 -->
+    <ManagedComponentMinorConfigForm ref="formRef" @success="getList" />
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
-import { ElMessage, ElMessageBox, ElForm } from 'element-plus'
-import * as XLSX from 'xlsx'
-import { saveAs } from 'file-saver'
+import { ref, reactive, nextTick, onMounted, onUnmounted } from 'vue'
+import { dateFormatter } from '@/utils/formatTime'
+import download from '@/utils/download'
+import { ManagedComponentMinorConfigApi, ManagedComponentMinorConfigVO } from '@/api/dataHub/managedComponent/managedcomponentminorconfig'
+import ManagedComponentMinorConfigForm from './ManagedComponentMinorConfigForm.vue'
 
-// === 1. 新增：下拉框选项数据（可根据实际业务扩展） ===
-// 大类选项（含ID和描述，方便识别）
-const majorOptions = ref([
-  { id: 'MAJOR001', desc: '机械部件大类' },
-  { id: 'MAJOR002', desc: '电气部件大类' },
-  { id: 'MAJOR003', desc: '液压系统大类' },
-  { id: 'MAJOR004', desc: '安全设备大类' }
-])
+/** 管理部件小类配置 列表 */
+defineOptions({ name: 'ManagedComponentMinorConfig' })
 
-// 小类选项（代码+名称，用于联动）
-const minorOptions = ref([
-  { code: 'ELEC_001', name: '电气设备' },
-  { code: 'ELEC_002', name: '电气配件' },
-  { code: 'MECH_001', name: '机械设备' },
-  { code: 'MECH_002', name: '机械配件' },
-  { code: 'SAFE_001', name: '安全设备' },
-  { code: 'SAFE_002', name: '防护用品' }
-])
+const message = useMessage() // 消息弹窗
+const { t } = useI18n() // 国际化
 
-// 部门选项（代码+名称，用于联动）
-const deptOptions = ref([
-  { code: 'DEPT_ENG', name: '工程部' },
-  { code: 'DEPT_SAFE', name: '安全部' },
-  { code: 'DEPT_MAINT', name: '维护部' },
-  { code: 'DEPT_PUR', name: '采购部' }
-])
+const loading = ref(true) // 列表的加载中
+const list = ref<ManagedComponentMinorConfigVO[]>([]) // 列表的数据
+const total = ref(0) // 列表的总页数
+const exportLoading = ref(false) // 导出的加载中
 
-// === 2. 新增：表单验证规则（适配下拉框） ===
-const formRules = reactive({
-  majorId: [{ required: true, message: '请选择大类ID', trigger: 'change' }],
-  minorCode: [{ required: true, message: '请选择小类代码', trigger: 'change' }],
-  minorName: [{ required: true, message: '小类名称不能为空', trigger: 'change' }],
-  deptCode: [{ required: true, message: '请选择部门代码', trigger: 'change' }],
-  deptName: [{ required: true, message: '部门名称不能为空', trigger: 'change' }],
-  isExtend: [{ required: true, message: '请选择是否扩展', trigger: 'change' }],
-  minorDesc: [{ required: false, message: '请输入小类说明', trigger: 'blur' }],
-  extField1: [{ required: false, message: '请输入扩展字段1', trigger: 'blur' }]
-})
+// 详情伪抽屉相关变量
+const isDetailShow = ref(false)
+const selectedRow = ref<ManagedComponentMinorConfigVO | null>(null)
+const isFullScreen = ref(false)
 
-// === 模拟数据源 ===
-const mockData = ref<any[]>([
-  { id: 1, minorId: 'MINOR001', majorId: 'MAJOR001', minorCode: 'ELEC_001', minorName: '电气设备', minorDesc: '变压器、开关柜', deptCode: 'DEPT_ENG', deptName: '工程部', isExtend: '0', createUser: 'admin', createTime: '2024-01-15', updateUser: 'admin', extField1: '' },
-  { id: 2, minorId: 'MINOR002', majorId: 'MAJOR002', minorCode: 'SAFE_001', minorName: '安全设备', minorDesc: '消防设备', deptCode: 'DEPT_SAFE', deptName: '安全部', isExtend: '1', createUser: 'admin', createTime: '2024-02-01', updateUser: 'admin', extField1: '' }
-])
-
-// === 状态 ===
-const loading = ref(false)
-const exportLoading = ref(false)
-const list = ref<any[]>([])
-const total = ref(0)
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
-  majorId: '',
-  keyword: ''
+  minorId: undefined,
+  majorId: undefined,
+  minorCode: undefined,
+  minorName: undefined,
+  isExtend: undefined,
 })
+const queryFormRef = ref() // 搜索的表单
+const formRef = ref() // 表单弹窗
 
-// === 表单弹窗 ===
-const dialogVisible = ref(false)
-const dialogTitle = ref('新增')
-const formData = reactive<any>({ isExtend: '0' }) // 默认“否”
-const formRef = ref<InstanceType<typeof ElForm>>()
-
-/** === 获取列表 === */
-const getList = () => {
-  loading.value = true
-  let data = [...mockData.value]
-
-  if (queryParams.majorId)
-    data = data.filter(d => d.majorId.includes(queryParams.majorId))
-
-  if (queryParams.keyword)
-    data = data.filter(d =>
-      d.minorName.includes(queryParams.keyword) || d.minorCode.includes(queryParams.keyword)
-    )
-
-  total.value = data.length
-  const start = (queryParams.pageNo - 1) * queryParams.pageSize
-  list.value = data.slice(start, start + queryParams.pageSize)
-  loading.value = false
+/** 打开详情伪抽屉 */
+const openDetail = (row: ManagedComponentMinorConfigVO) => {
+  selectedRow.value = row
+  isDetailShow.value = true
+  isFullScreen.value = false
+  document.body.style.overflow = 'hidden'
 }
 
-/** === 搜索 & 重置 === */
-const handleQuery = () => { queryParams.pageNo = 1; getList() }
-const resetQuery = () => { queryParams.majorId = ''; queryParams.keyword = ''; handleQuery() }
-
-// === 新增：下拉框联动方法 ===
-/** 选择小类代码后，自动填充小类名称 */
-const handleMinorCodeChange = (code: string) => {
-  const matchedMinor = minorOptions.value.find(item => item.code === code)
-  formData.minorName = matchedMinor ? matchedMinor.name : ''
+/** 关闭详情伪抽屉 */
+const closeDetail = () => {
+  isDetailShow.value = false
+  selectedRow.value = null
+  isFullScreen.value = false
+  document.body.style.overflow = ''
 }
 
-/** 选择部门代码后，自动填充部门名称 */
-const handleDeptCodeChange = (code: string) => {
-  const matchedDept = deptOptions.value.find(item => item.code === code)
-  formData.deptName = matchedDept ? matchedDept.name : ''
-}
-
-/** === 新增 / 编辑（优化：回显时触发联动） === */
-const openForm = (type: string, row?: any) => {
-  dialogTitle.value = type === 'create' ? '新增小类' : '编辑小类'
-  // 重置表单+赋值
-  formRef.value?.resetFields()
-  Object.assign(formData, row || {
-    id: Date.now(),
-    isExtend: '0',
-    createUser: 'admin',
-    createTime: new Date().toISOString().slice(0,10)
+/** 切换全屏/缩小 */
+const toggleFullScreen = () => {
+  isFullScreen.value = !isFullScreen.value
+  nextTick(() => {
+    const iconEl = document.querySelector('.fullscreen-btn')
+    if (iconEl) {
+      iconEl.classList.add('btn-fade')
+      setTimeout(() => iconEl.classList.remove('btn-fade'), 300)
+    }
   })
-  // 编辑回显时触发联动（确保名称与代码一致）
-  if (row) {
-    handleMinorCodeChange(row.minorCode)
-    handleDeptCodeChange(row.deptCode)
-  }
-  dialogVisible.value = true
 }
 
-/** === 提交表单（优化：添加表单验证） === */
-const submitForm = async () => {
-  if (!formRef.value) return
+/** 查询列表 */
+const getList = async () => {
+  loading.value = true
   try {
-    // 先执行表单验证
-    await formRef.value.validate()
-    // 验证通过后保存数据
-    const index = mockData.value.findIndex(d => d.id === formData.id)
-    if (index > -1) mockData.value[index] = { ...formData }
-    else mockData.value.push({ ...formData })
-
-    ElMessage.success('保存成功')
-    dialogVisible.value = false
-    getList()
-  } catch (error) {
-    // 验证失败不提交
-    ElMessage.warning('请完善必填项信息')
+    const data = await ManagedComponentMinorConfigApi.getManagedComponentMinorConfigPage(queryParams)
+    list.value = data.list
+    total.value = data.total
+  } finally {
+    loading.value = false
   }
 }
 
-/** === 删除 === */
-const handleDelete = async (id: number) => {
-  await ElMessageBox.confirm('确定删除该条数据吗？', '提示', { type: 'warning' })
-  mockData.value = mockData.value.filter(i => i.id !== id)
-  ElMessage.success('删除成功')
+/** 搜索按钮操作 */
+const handleQuery = () => {
+  queryParams.pageNo = 1
   getList()
 }
 
-/** === 导出 Excel === */
-const handleExport = () => {
-  exportLoading.value = true
-  const sheet = XLSX.utils.json_to_sheet(list.value)
-  const wb = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(wb, sheet, '小类配置')
-  const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' })
-  saveAs(new Blob([wbout], { type: 'application/octet-stream' }), '小类配置数据.xlsx')
-  ElMessage.success('导出成功')
-  exportLoading.value = false
+/** 重置按钮操作 */
+const resetQuery = () => {
+  queryFormRef.value?.resetFields()
+  handleQuery()
 }
 
-/** === 导入 Excel === */
-const handleImport = (file: File) => {
-  const reader = new FileReader()
-  reader.onload = (e: any) => {
-    const workbook = XLSX.read(e.target.result, { type: 'binary' })
-    const sheet = workbook.Sheets[workbook.SheetNames[0]]
-    const imported = XLSX.utils.sheet_to_json(sheet)
-    imported.forEach((item: any) => {
-      if (!item.id) item.id = Date.now() + Math.random()
-      // 导入时补全联动字段（避免名称为空）
-      const matchedMinor = minorOptions.value.find(m => m.code === item.minorCode)
-      const matchedDept = deptOptions.value.find(d => d.code === item.deptCode)
-      if (matchedMinor) item.minorName = matchedMinor.name
-      if (matchedDept) item.deptName = matchedDept.name
-      mockData.value.push(item)
-    })
-    ElMessage.success(`成功导入 ${imported.length} 条数据`)
-    getList()
+/** 添加/修改操作 */
+const openForm = (type: string, id?: number) => {
+  formRef.value.open(type, id)
+}
+
+/** 删除按钮操作 */
+const handleDelete = async (id: number) => {
+  try {
+    // 删除的二次确认
+    await message.delConfirm()
+    // 发起删除
+    await ManagedComponentMinorConfigApi.deleteManagedComponentMinorConfig(id)
+    message.success(t('common.delSuccess'))
+    // 刷新列表
+    await getList()
+  } catch {}
+}
+
+/** 导出按钮操作 */
+const handleExport = async () => {
+  try {
+    // 导出的二次确认
+    await message.exportConfirm()
+    // 发起导出
+    exportLoading.value = true
+    const data = await ManagedComponentMinorConfigApi.exportManagedComponentMinorConfig(queryParams)
+    download.excel(data, '管理部件小类配置.xls')
+  } catch {
+  } finally {
+    exportLoading.value = false
   }
-  reader.readAsBinaryString(file)
-  return false
 }
 
-/** === 伪抽屉详情 === */
-const showDetail = ref(false)
-const detailData = reactive<any>({})
-
-const openDetail = (row: any) => {
-  Object.assign(detailData, row)
-  showDetail.value = true
-  setTimeout(() => {
-    const drawer = document.querySelector('.fixed.right-0') as HTMLElement
-    drawer?.focus()
-  }, 50)
-}
-
-const closeDetail = () => { showDetail.value = false }
-
+/** 初始化 **/
 onMounted(() => {
   getList()
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeDetail()
-  })
 })
-onBeforeUnmount(() => {
-  window.removeEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeDetail()
-  })
+
+onUnmounted(() => {
+  document.body.style.overflow = ''
+  isFullScreen.value = false
 })
 </script>
 
-<style scoped>
-.slide-left-enter-active,
-.slide-left-leave-active {
-  transition: all 0.3s ease;
+<style scoped lang="scss">
+.managed-component-minor-page {
+  padding: 8px;
+  height: 100vh;
+  box-sizing: border-box;
+  background-color: #f9fafb;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 }
-.slide-left-enter-from,
-.slide-left-leave-to {
-  transform: translateX(100%);
-  opacity: 0;
+
+/* 搜索栏样式 - 更紧凑 */
+.search-container {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 12px 16px;
+  flex-shrink: 0;
+}
+
+.search-content {
+  width: 100%;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+}
+
+.search-form {
+  width: 100%;
+}
+
+.search-form ::v-deep(.el-form-item) {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.search-form ::v-deep(.el-form-item__label) {
+  font-size: 13px;
+  color: #333;
+  text-align: right;
+  padding-right: 6px;
+}
+
+/* 按钮组与搜索字段同行 */
+.search-buttons-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* 列表区域样式 */
+.list-container {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.list-table {
+  flex: 1;
+  overflow: auto;
+
+  /* 禁止列拖动 */
+  ::v-deep(.el-table) {
+    table-layout: fixed;
+    border: none;
+  }
+
+  /* 去掉表格边框 */
+  ::v-deep(.el-table__header),
+  ::v-deep(.el-table__body),
+  ::v-deep(.el-table__row) {
+    border: none;
+  }
+
+  ::v-deep(.el-table th),
+  ::v-deep(.el-table td) {
+    border: none;
+  }
+
+  /* 添加行分隔线 */
+  ::v-deep(.el-table__row) {
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  /* 禁止列宽调整 */
+  ::v-deep(.el-table__header-wrapper .el-table__header) {
+    .el-table__column-resize-proxy {
+      display: none !important;
+    }
+  }
+
+  /* 隐藏列拖动指示器 */
+  ::v-deep(.el-table .caret-wrapper) {
+    cursor: default !important;
+  }
+
+  ::v-deep(.el-table__body tr:hover > td) {
+    background-color: #f0f9ff !important;
+  }
+
+  ::v-deep(.el-table__row--striped > td) {
+    background-color: #fafafa !important;
+  }
+
+  ::v-deep(.el-table__fixed-right) {
+    z-index: 10;
+    background-color: #fff !important;
+  }
+}
+
+/* 操作按钮组 - 紧凑排列 */
+.operation-btn-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.operation-btn {
+  padding: 2px 6px !important;
+  font-size: 12px !important;
+  min-width: auto !important;
+  height: 24px !important;
+}
+
+/* 分页样式 - 居中显示 */
+.pagination-container {
+  padding: 12px 0;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pagination-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.page-info {
+  color: #606266;
+  font-size: 14px;
+}
+
+/* 伪抽屉核心样式 */
+.detail-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  transition: opacity 0.3s ease;
+}
+
+.detail-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: calc(100% / 3);
+  height: 100vh;
+  background-color: #fff;
+  box-shadow: -2px 0 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: width 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  transform: translateX(0);
+  overflow: hidden;
+}
+
+.detail-drawer.full-screen {
+  width: 100%;
+  box-shadow: none;
+}
+
+/* 抽屉头部 */
+.detail-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #eee;
+  position: relative;
+  z-index: 1001;
+}
+
+.detail-header-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 全屏按钮样式 - 无背景 */
+.fullscreen-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background-color: transparent;
+  color: #606266;
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: #409eff;
+    background-color: rgba(64, 158, 255, 0.1);
+    transform: scale(1.05);
+  }
+}
+
+/* 关闭按钮样式 - 无背景 */
+.close-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background-color: transparent;
+  color: #606266;
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: #f56c6c;
+    background-color: rgba(245, 108, 108, 0.1);
+    transform: scale(1.05);
+  }
+}
+
+/* 按钮动画 */
+.btn-fade {
+  animation: btnFade 0.3s ease;
+}
+
+@keyframes btnFade {
+  0% { opacity: 0.5; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* 抽屉内容区域 */
+.detail-content {
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+
+/* 详情描述组件样式 - 全部左对齐 */
+::v-deep(.el-descriptions) {
+  --el-descriptions-item-padding: 16px 12px;
+}
+
+::v-deep(.el-descriptions__border .el-descriptions-item) {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+::v-deep(.el-descriptions__label) {
+  text-align: left !important;
+  color: #666;
+  justify-content: flex-start !important;
+}
+
+::v-deep(.el-descriptions__content) {
+  text-align: left !important;
+  color: #333;
+  word-break: break-all;
+  justify-content: flex-start !important;
+}
+
+::v-deep(.el-descriptions__cell) {
+  text-align: left !important;
+  justify-content: flex-start !important;
+}
+
+/* 响应式适配 */
+@media (max-width: 1440px) {
+  .search-buttons-group {
+    min-width: auto;
+  }
+
+  ::v-deep(.el-button) {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .detail-drawer {
+    width: 40%;
+  }
+}
+
+@media (max-width: 1200px) {
+  .search-form .el-input,
+  .search-form .el-select {
+    width: 140px !important;
+  }
+
+  .detail-drawer {
+    width: 50%;
+  }
+}
+
+@media (max-width: 992px) {
+  .form-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .search-buttons-group {
+    width: 100%;
+    justify-content: flex-start;
+    margin-left: 0;
+    margin-top: 8px;
+  }
+
+  .detail-drawer {
+    width: 70%;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-buttons-group {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .detail-drawer {
+    width: 100%;
+  }
+
+  .operation-btn-group {
+    flex-wrap: wrap;
+  }
+
+  .pagination-content {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* 滚动条优化 */
+::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f5f5f5;
+  border-radius: 3px;
 }
 </style>

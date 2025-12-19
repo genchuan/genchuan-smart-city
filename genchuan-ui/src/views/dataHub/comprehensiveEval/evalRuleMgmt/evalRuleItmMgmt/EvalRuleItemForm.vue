@@ -1,119 +1,127 @@
 <template>
-  <Dialog :title="dialogTitle" v-model="dialogVisible" width="850px">
+  <Dialog :title="dialogTitle" v-model="dialogVisible" width="600px">
     <el-form
       ref="formRef"
       :model="formData"
       :rules="formRules"
-      label-width="130px"
+      label-width="140px"
       v-loading="formLoading"
       class="p-4 bg-gray-50 rounded-lg"
     >
-      <el-row :gutter="20">
-        <!-- 第一列 -->
-        <el-col :span="12">
-          <el-form-item label="规则项名称" prop="ruleItemName">
-            <el-input
-              v-model="formData.ruleItemName"
-              placeholder="请输入规则项名称"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="规则项编码" prop="ruleItemCode">
-            <el-input
-              v-model="formData.ruleItemCode"
-              placeholder="请输入规则项编码"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="所属规则分类ID" prop="ruleCatId">
-            <el-input
-              v-model="formData.ruleCatId"
-              placeholder="请输入所属规则分类ID"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="所属规则分类名称" prop="ruleCatName">
-            <el-input
-              v-model="formData.ruleCatName"
-              placeholder="请输入所属规则分类名称"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="关联指标项ID" prop="idxItemId">
-            <el-input
-              v-model="formData.idxItemId"
-              placeholder="请输入关联指标项ID"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="关联指标项名称" prop="idxItemName">
-            <el-input
-              v-model="formData.idxItemName"
-              placeholder="请输入关联指标项名称"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-        </el-col>
+      <!-- 基础信息区域 -->
+      <el-form-item label="规则项名称" prop="ruleItemName">
+        <el-input
+          v-model="formData.ruleItemName"
+          placeholder="请输入规则项名称"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
 
-        <!-- 第二列 -->
-        <el-col :span="12">
-          <el-form-item label="评分逻辑" prop="scoreLogic">
-            <el-input
-              v-model="formData.scoreLogic"
-              placeholder="请输入评分逻辑"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="满分值" prop="fullScore">
-            <el-input
-              v-model="formData.fullScore"
-              placeholder="请输入满分值"
-              type="number"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="规则类型" prop="ruleType">
-            <el-select
-              v-model="formData.ruleType"
-              placeholder="请选择规则类型"
-              class="w-full rounded-md"
-            >
-              <el-option label="请选择字典生成" value="" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="规则描述" prop="ruleDesc">
-            <el-input
-              v-model="formData.ruleDesc"
-              placeholder="请输入规则描述"
-              type="textarea"
-              :rows="3"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="启用状态" prop="enableStatus">
-            <el-radio-group v-model="formData.enableStatus" class="radio-group">
-              <el-radio value="ENABLED">启用</el-radio>
-              <el-radio value="Disabled">禁用</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="创建人" prop="createUser">
-            <el-input
-              v-model="formData.createUser"
-              placeholder="请输入创建人"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="创建时间" prop="createTimeSys">
-            <el-date-picker
-              v-model="formData.createTimeSys"
-              type="date"
-              value-format="x"
-              placeholder="选择创建时间"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-        </el-col>
-      </el-row>
+      <el-form-item label="规则项编码" prop="ruleItemCode">
+        <el-input
+          v-model="formData.ruleItemCode"
+          placeholder="请输入规则项编码"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
+
+      <!-- 分类信息区域 -->
+      <el-form-item label="所属规则分类ID" prop="ruleCatId">
+        <el-input
+          v-model="formData.ruleCatId"
+          placeholder="请输入所属规则分类ID"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
+
+      <el-form-item label="所属规则分类名称" prop="ruleCatName">
+        <el-input
+          v-model="formData.ruleCatName"
+          placeholder="请输入所属规则分类名称"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
+
+      <!-- 指标关联区域 -->
+      <el-form-item label="关联指标项ID" prop="idxItemId">
+        <el-input
+          v-model="formData.idxItemId"
+          placeholder="请输入关联指标项ID"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
+
+      <el-form-item label="关联指标项名称" prop="idxItemName">
+        <el-input
+          v-model="formData.idxItemName"
+          placeholder="请输入关联指标项名称"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
+
+      <!-- 规则配置区域 -->
+      <el-form-item label="规则类型" prop="ruleType">
+        <el-select
+          v-model="formData.ruleType"
+          placeholder="请选择规则类型"
+          class="w-full rounded-md"
+        >
+          <el-option label="请选择字典生成" value="" />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="满分值" prop="fullScore">
+        <el-input
+          v-model="formData.fullScore"
+          placeholder="请输入满分值"
+          type="number"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
+
+      <el-form-item label="评分逻辑" prop="scoreLogic">
+        <el-input
+          v-model="formData.scoreLogic"
+          placeholder="请输入评分逻辑"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
+
+      <el-form-item label="规则描述" prop="ruleDesc">
+        <el-input
+          v-model="formData.ruleDesc"
+          placeholder="请输入规则描述"
+          type="textarea"
+          :rows="3"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
+
+      <!-- 状态与创建信息区域 -->
+      <el-form-item label="启用状态" prop="enableStatus">
+        <el-radio-group v-model="formData.enableStatus" class="radio-group">
+          <el-radio value="ENABLED">启用</el-radio>
+          <el-radio value="Disabled">禁用</el-radio>
+        </el-radio-group>
+      </el-form-item>
+
+      <el-form-item label="创建人" prop="createUser">
+        <el-input
+          v-model="formData.createUser"
+          placeholder="请输入创建人"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
+
+      <el-form-item label="创建时间" prop="createTimeSys">
+        <el-date-picker
+          v-model="formData.createTimeSys"
+          type="date"
+          value-format="x"
+          placeholder="选择创建时间"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
     </el-form>
 
     <template #footer>
@@ -272,10 +280,12 @@ const resetForm = () => {
 
 .el-dialog__body {
   padding: 16px 24px;
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
 .el-form-item {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .el-textarea {

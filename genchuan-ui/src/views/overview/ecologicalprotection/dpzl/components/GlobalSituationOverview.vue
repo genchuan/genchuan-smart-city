@@ -33,7 +33,7 @@
                 <div class="indicator-actions">
                   <el-button
                     size="small"
-                    type="text"
+                    link
                     class="action-btn trend-btn"
                     @click.stop="showIndicatorTrend(indicator)"
                   >
@@ -41,7 +41,7 @@
                   </el-button>
                   <el-button
                     size="small"
-                    type="text"
+                    link
                     class="action-btn abnormal-btn"
                     @click.stop="showIndicatorAbnormal(indicator)"
                     :disabled="!indicator.abnormal_reason"
@@ -83,9 +83,9 @@
                     :percentage="indicator.compliance_rate"
                     type="circle"
                     :stroke-width="circleStrokeWidth"
-                  :stroke-linecap="'round'"
-                  :color="getComplianceColor(indicator.compliance_rate)"
-                  :width="circleWidth"
+                    :stroke-linecap="'round'"
+                    :color="getComplianceColor(indicator.compliance_rate)"
+                    :width="circleWidth"
                   >
                   <template #default>
                     <span class="compliance-text">{{ indicator.compliance_rate }}%</span>
@@ -98,7 +98,7 @@
                 <div class="indicator-actions">
                   <el-button
                     size="small"
-                    type="text"
+                    link
                     class="action-btn trend-btn"
                     @click.stop="showIndicatorTrend(indicator)"
                   >
@@ -106,7 +106,7 @@
                   </el-button>
                   <el-button
                     size="small"
-                    type="text"
+                    link
                     class="action-btn abnormal-btn"
                     @click.stop="showIndicatorAbnormal(indicator)"
                     :disabled="!indicator.abnormal_reason"
@@ -250,7 +250,7 @@
                   <template #default="scope">
                     <el-button
                       size="small"
-                      type="text"
+                      link
                       @click="showPollutantDetail(scope.row)"
                     >
                       详情

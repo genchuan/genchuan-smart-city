@@ -14,7 +14,7 @@
           placeholder="请输入车牌号"
           clearable
           @keyup.enter="handleQuery"
-          class="!w-240px"
+          class="!w-200px"
         />
       </el-form-item>
       <el-form-item label="车辆品牌" prop="vehicleBrand">
@@ -23,7 +23,7 @@
           placeholder="请输入车辆品牌"
           clearable
           @keyup.enter="handleQuery"
-          class="!w-240px"
+          class="!w-200px"
         />
       </el-form-item>
       <el-form-item label="车辆型号" prop="model">
@@ -32,7 +32,7 @@
           placeholder="请输入车辆型号"
           clearable
           @keyup.enter="handleQuery"
-          class="!w-240px"
+          class="!w-200px"
         />
       </el-form-item>
       <el-form-item label="车辆颜色" prop="vehicleColor">
@@ -41,10 +41,10 @@
           placeholder="请输入车辆颜色"
           clearable
           @keyup.enter="handleQuery"
-          class="!w-240px"
+          class="!w-200px"
         />
       </el-form-item>
-      <el-form-item>
+      <el-form-item style="margin-left: 30px">
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
         <el-button
@@ -89,7 +89,20 @@
       <el-table-column label="所属执法部门" min-width="110" align="center" prop="belongingDepartment" />
       <el-table-column label="使用性质" align="center" prop="natureOfUse" />
       <el-table-column label="车辆用途" align="center" prop="vehicleUsage" />
-      <!--<el-table-column label="车辆状态" align="center" prop="vehicleStatus" />-->
+      <el-table-column label="车辆状态" align="center" width="150px">
+        <template #default="scope">
+          <!-- 与执法车辆状态单选框保持一致，值与显示名称对应 -->
+          <template v-if="scope.row.vehicleStatus === 'standby'">执法待命</template>
+          <template v-else-if="scope.row.vehicleStatus === 'onDuty'">执行任务中</template>
+          <template v-else-if="scope.row.vehicleStatus === 'refueling'">加油/充电中</template>
+          <template v-else-if="scope.row.vehicleStatus === 'maintenance'">维修中</template>
+          <template v-else-if="scope.row.vehicleStatus === 'service'">定期保养</template>
+          <template v-else-if="scope.row.vehicleStatus === 'impounded'">暂扣/封存</template>
+          <template v-else-if="scope.row.vehicleStatus === 'outOfService'">停用报废</template>
+          <!-- 兜底：若出现未定义状态，显示原始值避免空白 -->
+          <template v-else>{{ scope.row.vehicleStatus }}</template>
+        </template>
+      </el-table-column>
       <el-table-column
         label="年检到期日期"
         align="center"

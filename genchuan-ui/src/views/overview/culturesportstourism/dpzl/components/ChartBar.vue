@@ -5,41 +5,69 @@
 <script setup>
 import { ref, watch, onMounted, onUnmounted } from 'vue';
 import * as echarts from 'echarts';
+import { useRouter } from 'vue-router';
 
 // 接收父组件传递的参数
 const props = defineProps({
-  // 图表数据格式: { xAxis: [], series: [{ name: '', data: [] }] }
   data: {
     type: Object,
     required: true,
     default: () => ({ xAxis: [], series: [] })
   },
-  // x轴名称
-  xAxisName: {
+  xAxisName: { type: String, default: '' },
+  yAxisName: { type: String, default: '' },
+  height: { type: String, default: '100%' },
+  baseFontScale: { type: Number, default: 1 },
+  // 第一个柱子跳转路径（原配置）
+  jumpPath1: {
     type: String,
-    default: ''
+    default: '/overview/tourismscenicspot/dpzl'
   },
-  // y轴名称
-  yAxisName: {
+  // 新增：第二个柱子跳转路径（场馆页面）
+  jumpPath2: {
     type: String,
-    default: ''
+    default: '/overview/tourismvenue/dpzl'
   },
-  // 图表高度
-  height: {
+  // 第三个柱子跳转路径（原新增配置，变量名调整为jumpPath3避免混淆）
+  jumpPath3: {
     type: String,
-    default: '100%'
+    default: '/overview/tourismactivity/dpzl'
   },
-  // 新增：基础字体缩放比例
-  baseFontScale: {
-    type: Number,
-    default: 1
-  }
+  targetBarName: { type: String, default: '景区资源数量' }
 });
 
 const chartContainer = ref(null);
 let chartInstance = null;
+const router = useRouter();
 
-// 计算 vw 对应的 px 值（结合基础缩放比例）
+// 第一个柱子跳转函数（原有）
+const jumpToTourismScenicSpot = () => {
+  try {
+    router.push(props.jumpPath1);
+  } catch (error) {
+    console.error('跳转景区资源页面失败：', error);
+  }
+};
+
+// 新增：第二个柱子跳转函数（场馆页面）
+const jumpToTourismVenue = () => {
+  try {
+    router.push(props.jumpPath2); // 使用props中的跳转路径，更灵活
+  } catch (error) {
+    console.error('跳转旅游场馆页面失败：', error);
+  }
+};
+
+// 第三个柱子跳转函数（原新增，函数名调整更语义化）
+const jumpToTourismActivity = () => {
+  try {
+    router.push(props.jumpPath3);
+  } catch (error) {
+    console.error('跳转旅游活动页面失败：', error);
+  }
+};
+
+// 计算 vw 对应的 px 值
 const vwToPx = (vw) => {
   return window.innerWidth * (vw / 100) * props.baseFontScale;
 };
@@ -48,106 +76,89 @@ const vwToPx = (vw) => {
 const initChart = () => {
   if (!chartContainer.value) return;
 
-  // 销毁已有实例
   if (chartInstance) {
     chartInstance.dispose();
   }
 
-  // 计算自适应字号
-  const tooltipFontSize = vwToPx(0.65); // 提示框文字
-  const axisLabelFontSize = vwToPx(0.6); // 坐标轴标签
-  const axisNameFontSize = vwToPx(0.7); // 坐标轴名称
+  const tooltipFontSize = vwToPx(0.65);
+  const axisLabelFontSize = vwToPx(0.6);
+  const axisNameFontSize = vwToPx(0.7);
 
-  // 创建新实例
   chartInstance = echarts.init(chartContainer.value);
 
-  // 设置图表配置
   const option = {
-    backgroundColor: 'transparent', // 透明背景，适配父组件深色主题
+    backgroundColor: 'transparent',
     tooltip: {
       trigger: 'axis',
-      axisPointer: {type: 'shadow'},
-      backgroundColor: 'rgba(0, 30, 60, 0.8)', // 深色 tooltip
+      axisPointer: { type: 'shadow' },
+      backgroundColor: 'rgba(0, 30, 60, 0.8)',
       borderColor: 'rgba(0, 204, 255, 0.3)',
-      textStyle: {
-        color: '#fff',
-        fontSize: tooltipFontSize // 提示框文字自适应
-      }
+      textStyle: { color: '#fff', fontSize: tooltipFontSize }
     },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true
-    },
+    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
     xAxis: {
       type: 'category',
       data: props.data.xAxis,
       name: props.xAxisName,
-      nameTextStyle: {
-        color: '#ccc',
-        fontSize: axisNameFontSize // x轴名称自适应
-      },
-      axisLine: {lineStyle: {color: 'rgba(0, 204, 255, 0.3)'}}, // 轴线颜色
-      axisLabel: {
-        color: '#ccc',
-        fontSize: axisLabelFontSize // x轴标签自适应
-      },
-      splitLine: {show: false} // 取消网格线
+      nameTextStyle: { color: '#ccc', fontSize: axisNameFontSize },
+      axisLine: { lineStyle: { color: 'rgba(0, 204, 255, 0.3)' } },
+      axisLabel: { color: '#ccc', fontSize: axisLabelFontSize },
+      splitLine: { show: false }
     },
     yAxis: {
       type: 'value',
       name: props.yAxisName,
-      nameTextStyle: {
-        color: '#ccc',
-        fontSize: axisNameFontSize // y轴名称自适应
-      },
-      axisLine: {lineStyle: {color: 'rgba(0, 204, 255, 0.3)'}},
-      axisLabel: {
-        color: '#ccc',
-        fontSize: axisLabelFontSize // y轴标签自适应
-      },
-      splitLine: {lineStyle: {color: 'rgba(0, 204, 255, 0.1)'}} // 浅色网格线
+      nameTextStyle: { color: '#ccc', fontSize: axisNameFontSize },
+      axisLine: { lineStyle: { color: 'rgba(0, 204, 255, 0.3)' } },
+      axisLabel: { color: '#ccc', fontSize: axisLabelFontSize },
+      splitLine: { lineStyle: { color: 'rgba(0, 204, 255, 0.1)' } }
     },
     series: props.data.series.map(series => ({
       ...series,
       type: 'bar',
-      barWidth: '60%', // 柱宽
+      barWidth: '60%',
       emphasis: {
-        itemStyle: {
-          shadowBlur: 10,
-          shadowColor: 'rgba(0, 204, 255, 0.5)' // 高亮时的阴影
-        }
+        itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0, 204, 255, 0.5)' }
       }
     }))
   };
 
   chartInstance.setOption(option);
+
+  // 绑定点击事件：区分不同柱子跳转
+  chartInstance.on('click', (params) => {
+    // 第一个柱子（dataIndex=0）
+    if (params.dataIndex === 0) {
+      jumpToTourismScenicSpot();
+    }
+    // 新增：第二个柱子（dataIndex=1）→ 跳转场馆页面
+    else if (params.dataIndex === 1) {
+      jumpToTourismVenue();
+    }
+    // 第三个柱子（dataIndex=2）→ 跳转活动页面（原逻辑）
+    else if (params.dataIndex === 2) {
+      jumpToTourismActivity();
+    }
+    // 可扩展：其他柱子的跳转逻辑
+    // else if (params.dataIndex === N) { ... }
+  });
 };
 
-// 监听数据及缩放比例变化，重新渲染图表
+// 监听数据变化重渲染
 watch(
   () => [props.data, props.baseFontScale],
-  () => {
-    initChart();
-  },
-  {deep: true}
+  () => initChart(),
+  { deep: true }
 );
 
-// 监听容器大小变化，更新字体并自适应图表
+// 窗口resize适配
 const handleResize = () => {
   if (!chartInstance) return;
-
-  // 重新计算自适应字号
   const tooltipFontSize = vwToPx(0.65);
   const axisLabelFontSize = vwToPx(0.6);
   const axisNameFontSize = vwToPx(0.7);
-
-  // 更新文本配置
   chartInstance.setOption({
-    tooltip: {
-      textStyle: {fontSize: tooltipFontSize}
-    },
+    tooltip: {textStyle: {fontSize: tooltipFontSize}},
     xAxis: {
       nameTextStyle: {fontSize: axisNameFontSize},
       axisLabel: {fontSize: axisLabelFontSize}
@@ -157,7 +168,6 @@ const handleResize = () => {
       axisLabel: {fontSize: axisLabelFontSize}
     }
   });
-
   chartInstance.resize();
 };
 
@@ -169,7 +179,8 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize);
   if (chartInstance) {
-    chartInstance.dispose(); // 销毁实例，释放资源
+    chartInstance.off('click'); // 解绑点击事件
+    chartInstance.dispose();
     chartInstance = null;
   }
 });
@@ -178,6 +189,6 @@ onUnmounted(() => {
 <style scoped>
 .chart-bar-container {
   width: 100%;
-  height: v-bind(height); /* 使用v-bind绑定父组件传递的高度 */
+  height: v-bind(height);
 }
 </style>

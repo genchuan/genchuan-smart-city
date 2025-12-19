@@ -57,23 +57,21 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
-        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
-        <el-button
-          type="primary"
-          plain
-          @click="openForm('create')"
-
-        >
-          <Icon icon="ep:plus" class="mr-5px" /> 新增
+        <el-button @click="handleQuery">
+          <Icon icon="ep:search" class="mr-5px" />
+          搜索
         </el-button>
-        <el-button
-          type="success"
-          plain
-          @click="handleExport"
-          :loading="exportLoading"
-        >
-          <Icon icon="ep:download" class="mr-5px" /> 导出
+        <el-button @click="resetQuery">
+          <Icon icon="ep:refresh" class="mr-5px" />
+          重置
+        </el-button>
+        <el-button type="primary" plain @click="openForm('create')">
+          <Icon icon="ep:plus" class="mr-5px" />
+          新增
+        </el-button>
+        <el-button type="success" plain @click="handleExport" :loading="exportLoading">
+          <Icon icon="ep:download" class="mr-5px" />
+          导出
         </el-button>
       </el-form-item>
     </el-form>
@@ -117,27 +115,11 @@
       />
       <el-table-column label="操作" align="center" min-width="120px">
         <template #default="scope">
-          <el-button
-            link
-            type="primary"
-            @click="openForm('update', scope.row.id)"
-          >
+          <el-button link type="primary" @click="openDetail(scope.row)"> 详情 </el-button>
+          <el-button link type="primary" @click="openForm('update', scope.row.id)">
             编辑
           </el-button>
-          <el-button
-            link
-            type="primary"
-            @click="openDetail(scope.row)"
-          >
-            详情
-          </el-button>
-          <el-button
-            link
-            type="danger"
-            @click="handleDelete(scope.row.id)"
-          >
-            删除
-          </el-button>
+          <el-button link type="danger" @click="handleDelete(scope.row.id)"> 删除 </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -158,14 +140,17 @@
   <UnitGridRptDetail
     :visible="detailVisible"
     :detail-data="currentDetailData"
-    @update:visible="(visible) => detailVisible = visible"
+    @update:visible="(visible) => (detailVisible = visible)"
   />
 </template>
 
 <script setup lang="ts">
 import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
-import { UnitGridRptApi, UnitGridRptVO } from '@/api/dataHub/gridManagement/gridStatReport/unitgridrpt'
+import {
+  UnitGridRptApi,
+  UnitGridRptVO
+} from '@/api/dataHub/gridManagement/gridStatReport/unitgridrpt'
 import UnitGridRptForm from './UnitGridRptForm.vue'
 import UnitGridRptDetail from './UnitGridRptDetail.vue'
 
@@ -202,7 +187,7 @@ const queryParams = reactive({
   extCat2: undefined,
   extCommon1: undefined,
   extCommon2: undefined,
-  createTime: [],
+  createTime: []
 })
 const queryFormRef = ref() // 搜索的表单
 const exportLoading = ref(false) // 导出的加载中

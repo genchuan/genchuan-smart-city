@@ -1,6 +1,12 @@
 <template>
   <Dialog :title="dialogTitle" v-model="dialogVisible" width="720px">
-    <el-form ref="formRef" :model="formData" :rules="formRules" label-width="120px" v-loading="formLoading">
+    <el-form
+      ref="formRef"
+      :model="formData"
+      :rules="formRules"
+      label-width="120px"
+      v-loading="formLoading"
+    >
       <el-form-item label="图层ID" prop="layerId">
         <el-input v-model="formData.layerId" placeholder="请输入图层ID" />
       </el-form-item>
@@ -10,13 +16,21 @@
       </el-form-item>
 
       <el-form-item label="网格类型" prop="gridType">
-        <el-select v-model="formData.gridType" placeholder="请选择网格类型" @change="onGridOrScaleChange">
+        <el-select
+          v-model="formData.gridType"
+          placeholder="请选择网格类型"
+          @change="onGridOrScaleChange"
+        >
           <el-option v-for="g in gridTypeOptions" :key="g" :label="g" :value="g" />
         </el-select>
       </el-form-item>
 
       <el-form-item label="比例尺" prop="scale">
-        <el-select v-model="formData.scale" placeholder="请选择比例尺" @change="onGridOrScaleChange">
+        <el-select
+          v-model="formData.scale"
+          placeholder="请选择比例尺"
+          @change="onGridOrScaleChange"
+        >
           <el-option v-for="s in scaleOptions" :key="s" :label="s" :value="s" />
         </el-select>
       </el-form-item>
@@ -48,6 +62,10 @@
         <el-input v-model="formData.extCommon1" placeholder="请输入通用扩展字段1" />
       </el-form-item>
 
+      <el-form-item label="创建人" prop="createUserId">
+        <el-input v-model="formData.createUserId" placeholder="请输入创建人" />
+      </el-form-item>
+
       <el-form-item label="备注" prop="remark">
         <el-input v-model="formData.remark" placeholder="请输入备注" />
       </el-form-item>
@@ -62,7 +80,10 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch } from 'vue'
-import { GridTopicLayerApi, GridTopicLayerVO } from '@/api/dataHub/gridManagement/gridDiagramManage/gridtopiclayer'
+import {
+  GridTopicLayerApi,
+  GridTopicLayerVO
+} from '@/api/dataHub/gridManagement/gridDiagramManage/gridtopiclayer'
 
 defineOptions({ name: 'GridTopicLayerForm' })
 const message = useMessage()
@@ -81,7 +102,7 @@ const formRef = ref()
 const displaySwitch = ref(true)
 const formData = reactive<Partial<GridTopicLayerVO>>({
   displayStatus: '1',
-  layerWo: 10,
+  layerWo: 10
 })
 
 watch(displaySwitch, (v) => (formData.displayStatus = v ? '1' : '0'))
@@ -89,7 +110,7 @@ watch(displaySwitch, (v) => (formData.displayStatus = v ? '1' : '0'))
 const formRules = reactive({
   layerName: [{ required: true, message: '图层名称不能为空', trigger: 'blur' }],
   gridType: [{ required: true, message: '网格类型不能为空', trigger: 'change' }],
-  scale: [{ required: true, message: '比例尺不能为空', trigger: 'change' }],
+  scale: [{ required: true, message: '比例尺不能为空', trigger: 'change' }]
 })
 
 /** 打开弹窗 */
@@ -175,7 +196,7 @@ const resetForm = () => {
     extCat1: undefined,
     extCat2: undefined,
     extCommon1: undefined,
-    extCommon2: undefined,
+    extCommon2: undefined
   })
   displaySwitch.value = true
 }

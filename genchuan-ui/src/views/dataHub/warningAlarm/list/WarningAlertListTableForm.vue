@@ -22,7 +22,7 @@
         >
           <el-option label="设备" value="device" />
           <el-option label="部件" value="part" />
-          <el-option label="网格" value="grid" />
+          <el-option label="行政区划" value="area" />
         </el-select>
       </el-form-item>
 
@@ -65,31 +65,26 @@
           style="width: 100%"
           @change="handlePartSelectChange"
         >
-          <el-option
-            v-for="item in partList"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
-          />
+          <el-option v-for="item in partList" :key="item.id" :label="item.name" :value="item.id" />
         </el-select>
       </el-form-item>
 
-      <!-- ✅ 修正后的关联网格（树形选择） -->
+      <!-- 关联行政区划 -->
       <el-form-item
-        v-if="formData.relatedObjectType === 'grid'"
-        label="关联网格"
+        v-if="formData.relatedObjectType === 'area'"
+        label="关联行政区划"
         prop="relatedObjectId"
       >
         <el-tree-select
-          v-model="selectedGridId"
-          :data="gridTree"
+          v-model="selectedAreaId"
+          :data="areaTree"
           filterable
           clearable
-          placeholder="请选择网格"
-          :loading="gridLoading"
+          placeholder="请选择行政区划"
+          :loading="areaLoading"
           style="width: 100%"
-          :props="{ value: 'adminDivisionId', label: 'adminName', children: 'children' }"
-          @change="handleGridTreeChange"
+          :props="{ value: 'fullCode', label: 'name', children: 'children' }"
+          @change="handleAreaTreeChange"
         />
       </el-form-item>
 
@@ -180,7 +175,6 @@
         </el-select>
       </el-form-item>
 
-
       <el-form-item label="责任人电话" prop="responsiblePersonPhone">
         <el-input v-model="formData.responsiblePersonPhone" placeholder="请输入责任人电话" />
       </el-form-item>
@@ -247,6 +241,8 @@
 <script setup lang="ts">
 import { WarningAlertListTableApi, WarningAlertListTableVO } from '@/api/dataHub/warningAlarm/list'
 import { ref, reactive, nextTick } from 'vue'
+import { MonEvtCatApi } from '@/api/dataHub/monitorCompEventMgr/monitorEvtConfigMgr/monevtcat'
+import { AreaApi } from '@/api/dataHub/gridManagement/adminDivConfig'
 
 defineOptions({ name: 'WarningAlertListTableForm' })
 const { t } = useI18n()
@@ -269,29 +265,29 @@ const formRules = reactive({
   requiredCompleteTime: [{ required: true, message: '要求完成时间不能为空', trigger: 'blur' }],
   warningField: [{ required: true, message: '预警领域不能为空', trigger: 'blur' }],
   status: [{ required: true, message: '预警状态不能为空', trigger: 'change' }],
-  triggerReason:[{ required: true, message: '触发原因不能为空', trigger: 'blur' }]
+  triggerReason: [{ required: true, message: '触发原因不能为空', trigger: 'blur' }]
 })
 
-/** ========== 设备、部件、网格数据加载 ========== */
+/** ========== 设备、部件、行政区划数据加载 ========== */
 const deviceList = ref<any[]>([])
 const partList = ref<any[]>([])
-const gridTree = ref<any[]>([])
+const areaTree = ref<any[]>([])
 const deviceLoading = ref(false)
 const partLoading = ref(false)
-const gridLoading = ref(false)
+const areaLoading = ref(false)
 const selectedDeviceId = ref<number | null>(null)
 const selectedPartId = ref<number | null>(null)
-const selectedGridId = ref<string | null>(null)
+const selectedAreaId = ref<string | null>(null)
 
 const handleRelatedTypeChange = async (val: string) => {
   if (val === 'device') await getDeviceList()
   if (val === 'part') await getPartList()
-  if (val === 'grid') await getGridTree()
+  if (val === 'area') await getAreaTree()
   formData.value.relatedObjectId = undefined
   formData.value.relatedObjectName = undefined
   selectedDeviceId.value = null
   selectedPartId.value = null
-  selectedGridId.value = null
+  selectedAreaId.value = null
 }
 
 /** 获取设备列表 */
@@ -316,29 +312,29 @@ const getPartList = async () => {
   }
 }
 
-/** 获取网格树结构 */
-const getGridTree = async () => {
-  gridLoading.value = true
+/** 获取行政区划树结构 */
+const getAreaTree = async () => {
+  areaLoading.value = true
   try {
-    const res = await WarningAlertListTableApi.getGridTree({ pageNo: 1, pageSize: 10 })
+    const res = await AreaApi.getAreaPage({ pageNo: 1, pageSize: 100 })
     const list = res.list || []
-    gridTree.value = buildGridTree(list)
+    areaTree.value = buildAreaTree(list)
   } finally {
-    gridLoading.value = false
+    areaLoading.value = false
   }
 }
 
-/** 构建网格树结构 */
-function buildGridTree(list: any[]) {
+/** 构建行政区划树结构 */
+function buildAreaTree(list: any[]) {
   const map = new Map()
   const tree: any[] = []
-  list.forEach(item => {
-    map.set(item.adminDivisionId, { ...item, children: [] })
+  list.forEach((item) => {
+    map.set(item.id, { ...item, children: [] })
   })
-  list.forEach(item => {
-    const node = map.get(item.adminDivisionId)
-    if (item.parentAdminId) {
-      const parent = map.get(item.parentAdminId)
+  list.forEach((item) => {
+    const node = map.get(item.id)
+    if (item.parentId) {
+      const parent = map.get(item.parentId)
       if (parent) parent.children.push(node)
       else tree.push(node)
     } else {
@@ -348,20 +344,20 @@ function buildGridTree(list: any[]) {
   return tree
 }
 
-/** 选中网格节点 */
-const handleGridTreeChange = (id: string) => {
-  const node = findGridNodeById(gridTree.value, id)
+/** 选中行政区划节点 */
+const handleAreaTreeChange = (code: string) => {
+  const node = findAreaNodeByCode(areaTree.value, code)
   if (node) {
-    formData.value.relatedObjectId = node.adminDivisionId
-    formData.value.relatedObjectName = node.adminName
+    formData.value.relatedObjectId = node.fullCode
+    formData.value.relatedObjectName = node.name
   }
 }
 
-function findGridNodeById(list: any[], id: string): any | null {
+function findAreaNodeByCode(list: any[], code: string): any | null {
   for (const item of list) {
-    if (item.adminDivisionId === id) return item
+    if (item.fullCode === code) return item
     if (item.children) {
-      const res = findGridNodeById(item.children, id)
+      const res = findAreaNodeByCode(item.children, code)
       if (res) return res
     }
   }
@@ -370,7 +366,7 @@ function findGridNodeById(list: any[], id: string): any | null {
 
 /** 设备或部件选中 */
 const handleDeviceSelectChange = (val: number) => {
-  const selected = deviceList.value.find(d => d.id === val)
+  const selected = deviceList.value.find((d) => d.id === val)
   if (selected) {
     formData.value.relatedObjectId = selected.id
     formData.value.relatedObjectName = selected.name
@@ -378,7 +374,7 @@ const handleDeviceSelectChange = (val: number) => {
 }
 
 const handlePartSelectChange = (val: number) => {
-  const selected = partList.value.find(p => p.id === val)
+  const selected = partList.value.find((p) => p.id === val)
   if (selected) {
     formData.value.relatedObjectId = selected.id
     formData.value.relatedObjectName = selected.name
@@ -388,11 +384,14 @@ const handlePartSelectChange = (val: number) => {
 /** ========== 预警类型树加载与选择 ========== */
 const warningTypeTree = ref<any[]>([])
 const treeLoading = ref(false)
+
 function buildTreeSelectData(list: any[]) {
   const map = new Map()
   const tree: any[] = []
-  list.forEach(item => map.set(item.id, { value: item.id, label: item.matterName, children: [] }))
-  list.forEach(item => {
+  list.forEach((item) =>
+    map.set(item.id, { value: item.matterCode, label: item.matterName, children: [] })
+  )
+  list.forEach((item) => {
     const node = map.get(item.id)
     if (item.parentId && item.parentId !== '0') {
       const parent = map.get(Number(item.parentId))
@@ -404,15 +403,15 @@ function buildTreeSelectData(list: any[]) {
 
 const handleWarningTypeChange = (val: number) => {
   formData.value.warningTypeId = val
-  const label = findLabelById(warningTypeTree.value, val)
+  const label = findLabelByCode(warningTypeTree.value, val)
   formData.value.warningType = label
 }
 
-function findLabelById(nodes: any[], id: number): string | undefined {
+function findLabelByCode(nodes: any[], code: number): string | undefined {
   for (const n of nodes) {
-    if (n.value === id) return n.label
+    if (n.value === code) return n.label
     if (n.children) {
-      const label = findLabelById(n.children, id)
+      const label = findLabelByCode(n.children, code)
       if (label) return label
     }
   }
@@ -424,6 +423,7 @@ function formatStatus(status: any): number {
   if (status === 1 || status === '1') return 1
   return -1
 }
+
 /** ========== 派发部门树形下拉 ========== */
 const deptTree = ref<any[]>([])
 const deptLoading = ref(false)
@@ -432,10 +432,10 @@ const deptLoading = ref(false)
 function buildDeptTree(list: any[]) {
   const map = new Map()
   const tree: any[] = []
-  list.forEach(item => {
+  list.forEach((item) => {
     map.set(item.id, { value: item.id, label: item.name, children: [] })
   })
-  list.forEach(item => {
+  list.forEach((item) => {
     const node = map.get(item.id)
     if (item.parentId && item.parentId !== 0) {
       const parent = map.get(item.parentId)
@@ -496,10 +496,9 @@ const getUserList = async () => {
 
 /** 根据用户ID查找昵称 */
 function findUserNicknameById(id: number | string): string | undefined {
-  const u = userList.value.find(item => item.id === Number(id))
+  const u = userList.value.find((item) => item.id === Number(id))
   return u?.nickname
 }
-
 
 /** 打开弹窗逻辑（含预警状态回显） */
 const loadWarningTypeTree = async (preLabel?: string) => {
@@ -508,20 +507,20 @@ const loadWarningTypeTree = async (preLabel?: string) => {
     const res = await WarningAlertListTableApi.getWarningTypeTree()
     warningTypeTree.value = buildTreeSelectData(res)
     if (preLabel) {
-      const id = findIdByLabel(warningTypeTree.value, preLabel)
-      if (id) formData.value.warningTypeId = id
+      const code = findCodeByLabel(warningTypeTree.value, preLabel)
+      if (code) formData.value.warningTypeId = code
     }
   } finally {
     treeLoading.value = false
   }
 }
 
-function findIdByLabel(nodes: any[], label: string): number | undefined {
+function findCodeByLabel(nodes: any[], label: string): number | undefined {
   for (const n of nodes) {
     if (n.label === label) return n.value
     if (n.children) {
-      const id = findIdByLabel(n.children, label)
-      if (id) return id
+      const code = findCodeByLabel(n.children, label)
+      if (code) return code
     }
   }
 }
@@ -550,7 +549,7 @@ const open = async (type: 'create' | 'update', id?: number) => {
       if (data.responsiblePerson) {
         const nickname = findUserNicknameById(data.responsiblePerson)
         if (nickname) {
-          formData.value.responsiblePerson = data.responsiblePerson
+          formData.value.responsiblePerson = nickname
         }
       }
 
@@ -559,9 +558,9 @@ const open = async (type: 'create' | 'update', id?: number) => {
         formData.value.dispatchDepartment = node.value
       }
 
-      if (data.relatedObjectType === 'grid') {
-        await getGridTree()
-        selectedGridId.value = data.relatedObjectId
+      if (data.relatedObjectType === 'area') {
+        await getAreaTree()
+        selectedAreaId.value = data.relatedObjectId
       } else if (data.relatedObjectType === 'device') {
         await getDeviceList()
         selectedDeviceId.value = data.relatedObjectId
@@ -603,7 +602,7 @@ const resetForm = () => {
   formData.value = {}
   selectedDeviceId.value = null
   selectedPartId.value = null
-  selectedGridId.value = null
+  selectedAreaId.value = null
   formRef.value?.resetFields()
 }
 

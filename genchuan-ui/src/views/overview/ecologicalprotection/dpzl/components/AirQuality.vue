@@ -110,7 +110,7 @@
             </el-table-column>
             <el-table-column label="操作">
               <template #default="scope">
-                <el-button size="small" type="text" @click="showStationDetail(scope.row.station_id)">
+                <el-button size="small" link @click="showStationDetail(scope.row.station_id)">
                   详情
                 </el-button>
               </template>

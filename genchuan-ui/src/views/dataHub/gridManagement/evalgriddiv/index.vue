@@ -3,7 +3,12 @@
     <!-- 查询条件区 -->
     <el-form :inline="true" :model="queryParams" class="mb-3 flex-wrap">
       <el-form-item label="评价网格名称">
-        <el-input v-model="queryParams.evalGridName" placeholder="请输入评价网格名称" clearable class="!w-220px" />
+        <el-input
+          v-model="queryParams.evalGridName"
+          placeholder="请输入评价网格名称"
+          clearable
+          class="!w-220px"
+        />
       </el-form-item>
 
       <el-form-item label="乡镇">
@@ -25,36 +30,42 @@
 
       <el-form-item label="划分时间">
         <el-date-picker
-            v-model="queryParams.divTime"
-            type="datetime"
-            placeholder="请选择划分时间"
-            value-format="YYYY-MM-DD HH:mm:ss"
-            class="!w-240px"
+          v-model="queryParams.divTime"
+          type="datetime"
+          placeholder="请选择划分时间"
+          value-format="YYYY-MM-DD HH:mm:ss"
+          class="!w-240px"
         />
       </el-form-item>
 
       <el-form-item>
         <el-button type="primary" plain @click="handleQuery">查询</el-button>
         <el-button plain @click="resetQuery">重置</el-button>
+        <el-button type="primary" plain @click="openFormDialog()">新增网格</el-button>
+        <el-button type="success" plain @click="handleExport" :loading="exportLoading"
+          >导出
+        </el-button>
       </el-form-item>
     </el-form>
 
     <!-- 操作按钮区 -->
-    <div class="mb-4 flex justify-end space-x-2">
-      <el-button type="primary" plain @click="openFormDialog()">新增网格</el-button>
-      <el-button type="success" plain @click="handleExport" :loading="exportLoading" >导出</el-button>
-    </div>
+    <!--    <div class="mb-4 flex justify-end space-x-2">-->
+    <!--      <el-button type="primary" plain @click="openFormDialog()">新增网格</el-button>-->
+    <!--      <el-button type="success" plain @click="handleExport" :loading="exportLoading"-->
+    <!--        >导出-->
+    <!--      </el-button>-->
+    <!--    </div>-->
 
     <!-- 数据表格区域 -->
     <div class="table-container">
       <el-table
-          v-loading="loading"
-          :data="tableData"
-          stripe
-          border
-          height="calc(100vh - 360px)"
-          style="width: 100%; table-layout: fixed"
-          @sort-change="handleSortChange"
+        v-loading="loading"
+        :data="tableData"
+        stripe
+        border
+        height="calc(100vh - 360px)"
+        style="width: 100%; table-layout: fixed"
+        @sort-change="handleSortChange"
       >
         <el-table-column prop="evalGridName" label="网格名称" min-width="160" />
         <el-table-column prop="townStreetId" label="所属乡镇" width="150" />
@@ -63,8 +74,8 @@
         <el-table-column prop="divTime" label="划分时间" width="200" :formatter="dateFormatter" />
         <el-table-column label="操作" width="220" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" link @click="openFormDialog(row.id)">编辑</el-button>
             <el-button type="primary" link @click="openDetail(row.id)">详情</el-button>
+            <el-button type="primary" link @click="openFormDialog(row.id)">编辑</el-button>
             <el-button type="danger" link @click="handleDelete(row.id)">删除</el-button>
           </template>
         </el-table-column>
@@ -72,31 +83,35 @@
     </div>
 
     <!-- 分页 -->
-    <div class="pagination-container">
-      <el-pagination
-          v-model:current-page="queryParams.pageNo"
-          v-model:page-size="queryParams.pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="loadData"
-          @current-change="loadData"
-      />
-    </div>
+    <!--    <div class="pagination-container">-->
+    <!--      <el-pagination-->
+    <!--          v-model:current-page="queryParams.pageNo"-->
+    <!--          v-model:page-size="queryParams.pageSize"-->
+    <!--          :page-sizes="[10, 20, 50, 100]"-->
+    <!--          layout="total, sizes, prev, pager, next, jumper"-->
+    <!--          :total="total"-->
+    <!--          @size-change="loadData"-->
+    <!--          @current-change="loadData"-->
+    <!--      />-->
+    <!--    </div>-->
+
+    <!-- 分页 -->
+    <Pagination
+      v-model:page="queryParams.pageNo"
+      v-model:limit="queryParams.pageSize"
+      :total="total"
+      @pagination="loadData"
+    />
 
     <!-- 弹窗组件 -->
     <EvalGridDivForm
-        v-if="formVisible"
-        v-model:visible="formVisible"
-        :id="currentId"
-        :key="currentId"
-        @refresh="loadData"
+      v-if="formVisible"
+      v-model:visible="formVisible"
+      :id="currentId"
+      :key="currentId"
+      @refresh="loadData"
     />
-    <EvalGridDetail
-        v-if="detailVisible"
-        v-model:visible="detailVisible"
-        :id="detailId"
-    />
+    <EvalGridDetail v-if="detailVisible" v-model:visible="detailVisible" :id="detailId" />
   </ContentWrap>
 </template>
 

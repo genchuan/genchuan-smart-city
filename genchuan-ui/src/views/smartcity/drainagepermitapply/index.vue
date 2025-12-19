@@ -6,9 +6,8 @@
       :model="queryParams"
       ref="queryFormRef"
       :inline="true"
-      label-width="100px"
     >
-      <el-form-item label="申请编号" prop="applyNo">
+      <el-form-item label="申请编号" prop="applyNo" label-width="120px">
         <el-input
           v-model="queryParams.applyNo"
           placeholder="请输入申请编号"
@@ -23,7 +22,7 @@
           placeholder="请输入排水户名称"
           clearable
           @keyup.enter="handleQuery"
-          class="!w-240px"
+          class="!w-280px"
         />
       </el-form-item>
       <el-form-item label="申请状态" prop="applyStatus">
@@ -41,18 +40,18 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="创建时间" prop="createTime">
-        <el-date-picker
-          v-model="queryParams.createTime"
-          value-format="YYYY-MM-DD HH:mm:ss"
-          type="daterange"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
-          class="!w-220px"
-        />
-      </el-form-item>
-      <el-form-item>
+<!--      <el-form-item label="创建时间" prop="createTime">-->
+<!--        <el-date-picker-->
+<!--          v-model="queryParams.createTime"-->
+<!--          value-format="YYYY-MM-DD HH:mm:ss"-->
+<!--          type="daterange"-->
+<!--          start-placeholder="开始日期"-->
+<!--          end-placeholder="结束日期"-->
+<!--          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"-->
+<!--          class="!w-220px"-->
+<!--        />-->
+<!--      </el-form-item>-->
+      <el-form-item style="margin-left: 50px">
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
         <el-button
@@ -79,8 +78,8 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column label="ID" align="center" prop="id" />
-      <el-table-column label="申请编号" align="center" prop="applyNo" />
+      <el-table-column label="ID" align="center" prop="id" min-width="30px" />
+      <el-table-column label="申请编号" align="center" prop="applyNo" width="180px" />
       <el-table-column label="排水户名称" align="center" prop="userName" />
       <el-table-column label="排水水质检测报告文件" align="center" prop="waterQualityReport" />
       <el-table-column label="日均排水量（吨）" align="center" prop="dailyDrainage" />
@@ -97,7 +96,7 @@
         align="center"
         prop="approveTime"
         :formatter="dateFormatter2"
-        width="180px"
+        width="120px"
       />
       <el-table-column label="审核意见" align="center" prop="approveComment" />
       <el-table-column

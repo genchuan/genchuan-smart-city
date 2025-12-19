@@ -11,14 +11,14 @@
         />
       </el-form-item>
 
-<!--      <el-form-item label="社区ID">-->
-<!--        <el-input-->
-<!--          v-model="queryParams.commId"-->
-<!--          placeholder="请输入社区ID"-->
-<!--          clearable-->
-<!--          class="!w-200px"-->
-<!--        />-->
-<!--      </el-form-item>-->
+      <!--      <el-form-item label="社区ID">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.commId"-->
+      <!--          placeholder="请输入社区ID"-->
+      <!--          clearable-->
+      <!--          class="!w-200px"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
 
       <el-form-item label="所属社区">
         <el-tree-select
@@ -35,55 +35,47 @@
         />
       </el-form-item>
 
-
       <el-form-item>
         <el-button type="primary" plain @click="handleQuery">查询</el-button>
         <el-button plain @click="resetQuery">重置</el-button>
+        <el-button type="primary" plain @click="handleAdd">新增网格</el-button>
+        <el-button type="info" plain @click="handleImport">批量导入</el-button>
+        <el-button type="warning" plain @click="handleCheckOverlap">检查边界重叠</el-button>
+        <el-button type="success" plain :loading="exportLoading" @click="handleExport">
+          导出
+        </el-button>
       </el-form-item>
     </el-form>
 
     <!-- 操作按钮区 -->
-    <div class="mb-4 flex justify-end space-x-2">
-      <el-button type="primary" plain @click="handleAdd">新增网格</el-button>
-      <el-button type="info" plain @click="handleImport">批量导入</el-button>
-      <el-button type="warning" plain @click="handleCheckOverlap">检查边界重叠</el-button>
-      <el-button
-        type="success"
-        plain
-        :loading="exportLoading"
-        @click="handleExport"
-      >
-        导出
-      </el-button>
+    <!--    <div class="mb-4 flex justify-end space-x-2">-->
+    <!--      <el-button type="primary" plain @click="handleAdd">新增网格</el-button>-->
+    <!--      <el-button type="info" plain @click="handleImport">批量导入</el-button>-->
+    <!--      <el-button type="warning" plain @click="handleCheckOverlap">检查边界重叠</el-button>-->
+    <!--      <el-button type="success" plain :loading="exportLoading" @click="handleExport">-->
+    <!--        导出-->
+    <!--      </el-button>-->
+    <!--    </div>-->
+
+    <!-- 数据表格 -->
+    <div class="table-container">
+      <GridTable
+        :loading="loading"
+        :data="tableData"
+        @edit="handleEdit"
+        @view="handleView"
+        @delete="handleDelete"
+        @import="handleImport"
+      />
     </div>
 
-    <!-- 表格与分页容器 -->
-    <div class="table-pagination-wrapper">
-      <!-- 数据表格 -->
-      <div class="table-container">
-        <GridTable
-          :loading="loading"
-          :data="tableData"
-          @edit="handleEdit"
-          @view="handleView"
-          @delete="handleDelete"
-          @import="handleImport"
-        />
-      </div>
-
-      <!-- 分页 -->
-      <div class="fixed-pagination">
-        <el-pagination
-          v-model:current-page="queryParams.pageNo"
-          v-model:page-size="queryParams.pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="loadData"
-          @current-change="loadData"
-        />
-      </div>
-    </div>
+    <!-- 分页 -->
+    <Pagination
+      v-model:page="queryParams.pageNo"
+      v-model:limit="queryParams.pageSize"
+      :total="total"
+      @pagination="loadData"
+    />
 
     <!-- 弹窗/抽屉组件 -->
     <GridFormDialog ref="formDialogRef" @success="loadData" />
@@ -97,7 +89,10 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import download from '@/utils/download'
-import { UnitGridDivApi, type UnitGridDivVO } from '@/api/dataHub/gridManagement/divideConfig/unitgriddiv'
+import {
+  UnitGridDivApi,
+  type UnitGridDivVO
+} from '@/api/dataHub/gridManagement/divideConfig/unitgriddiv'
 import { AreaApi } from '@/api/dataHub/gridManagement/adminDivConfig'
 
 import GridTable from './components/GridTable.vue'
@@ -141,8 +136,6 @@ const loadData = async () => {
   }
 }
 
-
-
 //社区下拉查询
 const commList = ref<any[]>([])
 const treeProps = {
@@ -156,11 +149,7 @@ const loadCommList = async () => {
   try {
     const res = await AreaApi.getTakeEffect()
     commList.value =
-      res?.data?.communityList ??
-      res?.data?.townList ??
-      res?.communityList ??
-      res?.townList ??
-      []
+      res?.data?.communityList ?? res?.data?.townList ?? res?.communityList ?? res?.townList ?? []
   } catch (err) {
     console.error(err)
     ElMessage.error('社区数据加载失败')
@@ -237,7 +226,6 @@ onMounted(() => {
   loadCommList()
   loadData()
 })
-
 </script>
 
 <style scoped>
@@ -245,47 +233,36 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 16px;
-  box-sizing: border-box;
 }
 
-/* 表格与分页容器 - 关键定位容器 */
-.table-pagination-wrapper {
-  position: relative;
+.table-container {
   flex: 1;
-  min-height: 300px; /* 确保容器有最小高度 */
+  overflow: auto;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
 }
 
-/* 表格容器 - 留出分页空间 */
-.table-container {
-  height: 100%;
-  padding-bottom: 60px; /* 为分页预留空间 */
-  overflow-y: auto;
-  box-sizing: border-box;
+.el-table {
+  width: 100%;
+  font-size: 14px;
+  word-break: break-all;
+  table-layout: fixed !important;
 }
 
-/* 固定分页样式 - 关键定位 */
-.fixed-pagination {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: auto;
-  padding: 12px 16px;
-  background-color: #fff;
-  border-top: 1px solid #e5e7eb;
-  box-sizing: border-box;
-  z-index: 10; /* 确保在表格上方显示 */
+.el-table th,
+.el-table td {
+  text-align: center;
+  white-space: normal !important;
+  word-wrap: break-word;
+  padding: 10px 6px;
 }
 
 .mb-3 {
-  margin-bottom: 12px;
+  margin-bottom: 0;
 }
+
 .mb-4 {
   margin-bottom: 16px;
 }
 </style>
-

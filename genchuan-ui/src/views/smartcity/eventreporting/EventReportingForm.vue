@@ -13,11 +13,12 @@
       <el-form-item label="事件名称" prop="eventName">
         <el-input v-model="formData.eventName" placeholder="请输入事件名称" />
       </el-form-item>
-      <!--<el-form-item label="事件类型" prop="eventType">-->
-      <!--  <el-select v-model="formData.eventType" placeholder="请选择事件类型">-->
-      <!--    <el-option label="请选择字典生成" value="" />-->
-      <!--  </el-select>-->
-      <!--</el-form-item>-->
+      <el-form-item label="事件类型" prop="eventType">
+        <el-input v-model="formData.eventType" placeholder="请输入事件类型" />
+        <!--<el-select v-model="formData.eventType" placeholder="请选择事件类型">-->
+        <!--  <el-option label="请选择事件类型" value="" />-->
+        <!--</el-select>-->
+      </el-form-item>
       <el-form-item label="事件描述" prop="eventDescription">
         <el-input v-model="formData.eventDescription" type="textarea" placeholder="请输入事件描述" />
       </el-form-item>

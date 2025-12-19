@@ -8,42 +8,13 @@
             <div class="panel-header">
               <h2>文旅资源分布</h2>
               <div class="header-actions">
-                <el-select v-model="resourceTypeFilter" placeholder="资源类型" size="small" @change="updateChartsData">
-                  <el-option label="全部" value="" />
-                  <el-option label="景区" value="景区" />
-                  <el-option label="场馆" value="场馆" />
-                  <el-option label="文物点" value="文物点" />
-                </el-select>
-                <el-select v-model="resourceStatusFilter" placeholder="资源状态" size="small" @change="updateChartsData">
-                  <el-option label="全部" value="" />
-                  <el-option label="正常" value="0" />
-                  <el-option label="异常" value="1" />
-                </el-select>
-                <el-button size="small" type="primary" @click="toggleView">
-                  {{ currentView === 'charts' ? '显示TOP3' : '显示统计图' }}
+                <el-button type="success" round size="small" @click="toggleView">
+                  {{ currentView === 'charts' ? '显示TOP5' : '显示统计图' }}
                 </el-button>
+                <el-button type="success" round size="small" @click="showAllResources">查看全部资源</el-button>
               </div>
             </div>
             <div class="panel-body">
-              <div class="resource-stats">
-                <div class="resource-stat-item">
-                  <div class="stat-number">{{ totalResources }}</div>
-                  <div class="stat-label">资源总数</div>
-                </div>
-                <div class="resource-stat-item">
-                  <div class="stat-number">{{ normalResources }}</div>
-                  <div class="stat-label">正常资源</div>
-                </div>
-                <div class="resource-stat-item">
-                  <div class="stat-number">{{ abnormalResources }}</div>
-                  <div class="stat-label">异常资源</div>
-                </div>
-                <div class="resource-stat-item">
-                  <div class="stat-number">{{ warningResources }}</div>
-                  <div class="stat-label">预警资源</div>
-                </div>
-              </div>
-
               <!-- 图表组合：类型分布柱状图 + 状态占比饼图 -->
               <div class="charts-container" v-if="currentView === 'charts'">
                 <div class="chart-item">
@@ -64,31 +35,26 @@
                 </div>
               </div>
 
-              <!-- 重点资源TOP3列表 -->
-              <div class="top3-container" v-else>
-                <h4>重点资源TOP3</h4>
-                <div class="top3-list">
+              <!-- 重点资源TOP5列表 -->
+              <div class="top5-container" v-else>
+                <h4>重点资源TOP5</h4>
+                <div class="top5-list">
                   <div
-                    v-for="(item, index) in top3Resources"
+                    v-for="(item, index) in top5Resources"
                     :key="item.resource_id"
-                    class="top3-item"
+                    class="top5-item"
                     @click="showResourceDetail(item)"
                   >
-                    <div class="top3-rank">{{ index + 1 }}</div>
-                    <div class="top3-info">
-                      <div class="top3-name">{{ item.resource_name }}</div>
-                      <div class="top3-meta">
+                    <div class="top5-rank">{{ index + 1 }}</div>
+                    <div class="top5-info">
+                      <div class="top5-name">{{ item.resource_name }}</div>
+                      <div class="top5-meta">
                         <span>类型：{{ item.resource_type }}</span>
                         <span>国家等级：{{ item.ext1 || '未评级' }}</span>
-                        <span :class="item.warn_status === '1' ? 'warning' : 'normal'">
-                            {{ item.warn_status === '1' ? '已预警' : '正常' }}
-                          </span>
+                        <span class="hot-degree">热度：<span class="red-hot">{{ item.hot_degree }}</span></span>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="top3-actions">
-                  <el-button size="small" @click="showAllResources">查看全部资源</el-button>
                 </div>
               </div>
             </div>
@@ -111,13 +77,13 @@
             <div class="panel-header">
               <h2>文旅客流总览</h2>
               <div class="header-actions">
-                <el-select v-model="flowAreaTypeFilter" placeholder="区域类型" size="small">
+                <el-select v-model="flowAreaTypeFilter" placeholder="区域类型" style="width: 5vw" size="small">
                   <el-option label="全部" value="" />
                   <el-option label="景区" value="景区" />
                   <el-option label="商圈" value="商圈" />
-                  <el-option label="活动点" value="活动点" />
+                  <el-option label="活动" value="活动" />
                 </el-select>
-                <el-select v-model="flowWarnFilter" placeholder="预警状态" size="small">
+                <el-select v-model="flowWarnFilter" placeholder="预警状态" style="width: 5vw" size="small">
                   <el-option label="全部" value="" />
                   <el-option label="无预警" value="0" />
                   <el-option label="已预警" value="1" />
@@ -171,11 +137,15 @@
       <div class="bottom">
         <div class="bottom_left" style="min-width: 2vw;">
           <!-- 近期预警信息 -->
-          <div class="panel warnings-panel">
+          <div class="panel warnings-panel" ref="warningsPanel">
             <div class="panel-header">
               <h2>近期预警信息</h2>
               <div class="header-actions">
-                <el-button size="small" @click="refreshWarnings">刷新</el-button>
+                <button class="panel-fullscreen-btn" @click="toggleFullscreen('warningsPanel')">
+                  <el-icon color="#00ccff" size="16">
+                    <FullScreen/>
+                  </el-icon>
+                </button>
               </div>
             </div>
             <div class="panel-body">
@@ -190,29 +160,88 @@
             <div class="panel-header">
               <h2>文旅核心指标</h2>
               <div class="header-actions">
-                <el-select v-model="indicatorTimeRange" placeholder="选择时间范围" size="small">
+                <el-select v-model="indicatorTimeRange" placeholder="选择时间范围" style="width: 8vw" size="small">
                   <el-option label="今日" value="today" />
                   <el-option label="本周" value="week" />
                   <el-option label="本月" value="month" />
                 </el-select>
-                <el-button size="small" @click="refreshIndicators">刷新</el-button>
               </div>
             </div>
             <div class="panel-body">
               <div class="indicator-cards">
                 <div
-                  v-for="indicator in coreIndicators"
-                  :key="indicator.index_id"
-                  :class="['indicator-card', indicator.warn_status === '1' ? 'warning' : 'normal']"
-                  @click="showIndicatorDetail(indicator)"
+                  :class="['indicator-card', getIndicatorStatusClass((coreIndicators[0] || {}).warn_status)]"
+                  @click="showIndicatorDetail(coreIndicators[0])"
                 >
                   <div class="indicator-title">
-                    {{ indicator.index_type }}
+                    {{ (coreIndicators[0] || {}).index_type }}
                     <br/>
-                    （{{ getIndicatorUnit(indicator.index_type) }}）
+                    （{{ getIndicatorUnit((coreIndicators[0] || {}).index_type) }}）
                   </div>
                   <div class="indicator-value">
-                    {{ indicator.stat_value }}
+                    <span :data-value="(coreIndicators[0] || {}).stat_value" class="number-animate">
+                      {{ (coreIndicators[0] || {}).stat_value }}
+                    </span>
+                  </div>
+                </div>
+                <div
+                  :class="['indicator-card', getIndicatorStatusClass((coreIndicators[1] || {}).warn_status)]"
+                  @click="showIndicatorDetail(coreIndicators[1])"
+                >
+                  <div class="indicator-title">
+                    {{ (coreIndicators[1] || {}).index_type }}
+                    <br/>
+                    （{{ getIndicatorUnit((coreIndicators[1] || {}).index_type) }}）
+                  </div>
+                  <div class="indicator-value">
+                    <span :data-value="(coreIndicators[1] || {}).stat_value" class="number-animate">
+                      {{ (coreIndicators[1] || {}).stat_value }}
+                    </span>
+                  </div>
+                </div>
+                <div
+                  :class="['indicator-card', getIndicatorStatusClass((coreIndicators[2] || {}).warn_status)]"
+                  @click="showIndicatorDetail(coreIndicators[2])"
+                >
+                  <div class="indicator-title">
+                    {{ (coreIndicators[2] || {}).index_type }}
+                    <br/>
+                    （{{ getIndicatorUnit((coreIndicators[2] || {}).index_type) }}）
+                  </div>
+                  <div class="indicator-value">
+                    <span :data-value="(coreIndicators[2] || {}).stat_value" class="number-animate">
+                      {{ (coreIndicators[2] || {}).stat_value }}
+                    </span>
+                  </div>
+                </div>
+                <div
+                  :class="['indicator-card', getIndicatorStatusClass((coreIndicators[3] || {}).warn_status)]"
+                  @click="showIndicatorDetail(coreIndicators[3])"
+                >
+                  <div class="indicator-title">
+                    {{ (coreIndicators[3] || {}).index_type }}
+                    <br/>
+                    （{{ getIndicatorUnit((coreIndicators[3] || {}).index_type) }}）
+                  </div>
+                  <div class="indicator-value">
+                    <span :data-value="(coreIndicators[3] || {}).stat_value" class="number-animate">
+                      {{ (coreIndicators[3] || {}).stat_value }}
+                    </span>
+                  </div>
+                </div>
+                <div
+                  :class="['indicator-card', getIndicatorStatusClass((coreIndicators[4] || {}).warn_status)]"
+                  @click="showIndicatorDetail(coreIndicators[4])"
+                >
+                  <div class="indicator-title">
+                    {{ (coreIndicators[4] || {}).index_type }}
+                    <br/>
+                    （{{ getIndicatorUnit((coreIndicators[4] || {}).index_type) }}）
+                  </div>
+                  <div class="indicator-value">
+                    <span :data-value="(coreIndicators[4] || {}).stat_value" class="number-animate">
+                      {{ (coreIndicators[4] || {}).stat_value }}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -365,21 +394,12 @@
               {{ currentIndicator?.benchmark_value }}{{ getIndicatorUnit(currentIndicator?.index_type) }}
             </el-descriptions-item>
             <el-descriptions-item label="预警状态">
-              <el-tag :type="currentIndicator?.warn_status === '1' ? 'danger' : 'success'">
-                {{ currentIndicator?.warn_status === '1' ? '已预警' : '无预警' }}
+              <el-tag :type="getIndicatorStatusTagType(currentIndicator?.warn_status)">
+                {{ getIndicatorStatusText(currentIndicator?.warn_status) }}
               </el-tag>
             </el-descriptions-item>
             <el-descriptions-item label="统计时间">{{ currentIndicator?.create_time }}</el-descriptions-item>
-            <el-descriptions-item label="数据来源">{{ currentIndicator?.ext2 }}</el-descriptions-item>
-            <el-descriptions-item label="统计维度">{{ currentIndicator?.ext1 }}</el-descriptions-item>
           </el-descriptions>
-        </div>
-
-        <div class="detail-section">
-          <h3>30天趋势</h3>
-          <div class="chart-container">
-            <ChartLine :data="indicatorHistoryData" :yAxisName="getIndicatorUnit(currentIndicator?.index_type)" />
-          </div>
         </div>
       </div>
       <template #footer>
@@ -429,7 +449,7 @@
         <div class="detail-section">
           <h3>24小时客流趋势</h3>
           <div class="chart-container">
-            <ChartLine :data="flowTrendData" :yAxisName="'人数'" />
+            <ChartLine3 :data="flowTrendData" :yAxisName="'人数'" />
           </div>
         </div>
       </div>
@@ -482,7 +502,6 @@
         </div>
         <template v-if="currentResource?.warn_status === '1'">
           <div class="handle-section">
-            <h3>预警处置</h3>
             <el-form>
               <el-form-item label="检修措施" required>
                 <el-input type="textarea" v-model="maintainMeasure" rows="3" />
@@ -561,6 +580,7 @@ import {
 import screenFull from 'screenfull';
 import { FullScreen } from "@element-plus/icons-vue";
 import ChartLine from './ChartLine.vue';
+import ChartLine3 from './ChartLine3.vue';
 import ChartBar from './ChartBar.vue';
 import ChartPie from './ChartPie.vue';
 // 导入腾讯地图组件
@@ -570,6 +590,8 @@ import MapCommon from './MapCommon.vue';
 import {
   fetchCulturalTourismGeometries,
   fetchResourceDistribution,
+  fetchResourceTypeDistribution,
+  fetchResourceStatusDistribution,
   fetchCoreIndicators,
   fetchTouristFlowOverview,
   handleWarning,
@@ -580,13 +602,12 @@ import {
   fetchResourceStatusTrend,
   fetchFlowHourlyTrend
 } from '@/api/overview/culturesportstourism/GlobalSituationOverview.js';
+import {useRouter} from "vue-router";
 
 const geometriesArray = ref([]);
-
 const currentTime = ref('');
-
-// 获取当前组件实例
 const instance = getCurrentInstance();
+const router = useRouter();
 
 // 时间格式化
 const formatTime = (date) => {
@@ -662,6 +683,8 @@ const handleMapResourceWarning = async () => {
 };
 
 // 文旅资源分布相关数据
+const resourceTypeData = ref([]); // 类型分布
+const resourceStatusData = ref([]); // 状态占比
 const resourceDistribution = ref([]);
 const resourceTypeFilter = ref('');
 const resourceStatusFilter = ref('');
@@ -679,6 +702,9 @@ const normalResources = computed(() => filteredResources.value.filter(item => it
 const abnormalResources = computed(() => filteredResources.value.filter(item => item.resource_status === '1').length);
 const warningResources = computed(() => filteredResources.value.filter(item => item.warn_status === '1').length);
 
+// 路由跳转方法
+const jumpToTourismResourceEmergency = () => router.push('/overview/tourismresourceemergency/dpzl');
+
 // 国家资源等级权重映射
 const nationalLevelWeights = {
   '5A景区': 5,
@@ -693,17 +719,20 @@ const nationalLevelWeights = {
   default: 2
 };
 
-// 重点资源TOP3
-const top3Resources = computed(() => {
+// 重点资源TOP5
+const top5Resources = computed(() => {
   return [...filteredResources.value]
     .sort((a, b) => {
+      // 核心：按热度降序（优先级最高）
+      if (a.hot_degree !== b.hot_degree) return b.hot_degree - a.hot_degree;
+      // 兜底：原国家等级排序（热度相同时生效）
       const weightA = nationalLevelWeights[a.ext1] || nationalLevelWeights.default;
       const weightB = nationalLevelWeights[b.ext1] || nationalLevelWeights.default;
       if (weightA !== weightB) return weightB - weightA;
       if (a.warn_status !== b.warn_status) return a.warn_status - b.warn_status;
       return a.resource_status - b.resource_status;
     })
-    .slice(0, 3);
+    .slice(0, 5);
 });
 
 // 全部资源弹窗控制
@@ -724,25 +753,20 @@ const statusDistributionData = ref([]);
 
 // 计算图表数据
 const calculateChartsData = () => {
-  const filtered = filteredResources.value;
-
   // 资源类型分布（柱状图）
-  const typeCountMap = {};
-  filtered.forEach(item => {
-    const type = item.resource_type;
-    typeCountMap[type] = (typeCountMap[type] || 0) + 1;
-  });
+  const typeXAxis = resourceTypeData.value.map(item => item.type);
+  const typeSeriesData = resourceTypeData.value.map(item => item.count);
   typeDistributionData.value = {
-    xAxis: Object.keys(typeCountMap),
+    xAxis: typeXAxis,
     series: [{
       name: '资源数量',
-      data: Object.values(typeCountMap),
+      data: typeSeriesData,
       itemStyle: {
         color: function (params) {
           const colors = {
-            '景区': 'rgba(75,141,0,0.9)',
-            '场馆': 'rgba(0,81,122,0.9)',
-            '文物点': 'rgba(119,63,0,0.9)'
+            '景区': '#ff7d00',
+            '场馆': '#13ce66',
+            '活动': '#ffd100'
           };
           return colors[params.name] || '#722ed1';
         }
@@ -751,23 +775,15 @@ const calculateChartsData = () => {
   };
 
   // 资源状态占比（饼图）
-  const total = filtered.length;
-  const normal = filtered.filter(item => item.resource_status === '0').length;
-  const abnormal = total - normal;
-  statusDistributionData.value = [
-    {
-      状态: '正常',
-      数量: normal,
-      占比: total > 0 ? `${(normal / total * 100).toFixed(1)}%` : '0%',
-      itemStyle: {color: 'rgba(79,255,157,0.8)'}
-    },
-    {
-      状态: '异常',
-      数量: abnormal,
-      占比: total > 0 ? `${(abnormal / total * 100).toFixed(1)}%` : '0%',
-      itemStyle: {color: 'rgba(255,82,82,0.8)'}
+  const total = resourceStatusData.value.reduce((sum, item) => sum + item.count, 0);
+  statusDistributionData.value = resourceStatusData.value.map(item => ({
+    状态: item.status === '0' ? '正常' : '异常',
+    数量: item.count,
+    占比: total > 0 ? `${(item.count / total * 100).toFixed(1)}%` : '0%',
+    itemStyle: {
+      color: item.status === '0' ? 'rgba(51,164,234,0.8)' : 'rgba(255,82,82,0.8)'
     }
-  ];
+  }));
 };
 
 // 筛选条件变化时更新图表
@@ -840,6 +856,74 @@ const indicatorTimeRange = ref('today');
 const indicatorDetailVisible = ref(false);
 const currentIndicator = ref(null);
 const indicatorHistoryData = ref({xAxis: [], series: []});
+
+// 数字增长动画核心函数
+const animateValue = (element, start, end, duration) => {
+  let startTimestamp = null;
+  // 判断原始指标是否为整数（控制小数位数）
+  const isInteger = Number.isInteger(end);
+
+  const step = (timestamp) => {
+    if (!startTimestamp) startTimestamp = timestamp;
+    // 计算动画进度（0-1）
+    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+    // 计算当前应显示的数值
+    const currentValue = progress * (end - start) + start;
+
+    // 格式化显示：整数无小数，小数保留1位
+    element.textContent = isInteger
+      ? currentValue.toFixed(0)
+      : currentValue.toFixed(1);
+
+    // 未完成则继续帧动画
+    if (progress < 1) {
+      window.requestAnimationFrame(step);
+    }
+  };
+  window.requestAnimationFrame(step);
+};
+
+const initNumberAnimations = () => {
+  // 等待DOM渲染完成后执行
+  nextTick(() => {
+    // 匹配所有带数字动画的元素（.number-animate类）
+    const elements = document.querySelectorAll('.number-animate');
+    elements.forEach(el => {
+      // 从data-value属性获取目标值
+      const value = parseFloat(el.getAttribute('data-value'));
+      // 启动动画：从0到目标值，时长1500ms
+      animateValue(el, 0, value, 1500);
+    });
+  });
+};
+
+const getIndicatorStatusClass = (status) => {
+  switch (status) {
+    case '0': return 'normal'; // 正常（无闪烁）
+    case '1': return 'remind blink-animation'; // 提醒（带闪烁）
+    case '2': return 'warning blink-animation'; // 预警（带闪烁）
+    default: return ''; // 未知状态（无样式）
+  }
+};
+
+const getIndicatorStatusTagType = (status) => {
+  switch (status) {
+    case '0': return 'success';
+    case '1': return 'warning';
+    case '2': return 'danger';
+    default: return 'info';
+  }
+};
+
+const getIndicatorStatusText = (status) => {
+  switch (status) {
+    case '0': return '正常';
+    case '1': return '提醒';
+    case '2': return '预警';
+    default: return '未知';
+  }
+};
+
 const showIndicatorDetail = async (indicator) => {
   currentIndicator.value = {...indicator};
   await generateIndicatorHistoryData(indicator.index_id);
@@ -854,19 +938,7 @@ const generateIndicatorHistoryData = async (indicatorId) => {
     ElMessage.error('加载趋势数据失败');
   }
 };
-const refreshIndicators = async () => {
-  try {
-    await refreshCulturalData('indicators');
-    const newData = await fetchCoreIndicators(indicatorTimeRange.value);
-    coreIndicators.value = newData;
-    if (trendIndicatorId.value) {
-      changeTrendIndicator(trendIndicatorId.value);
-    }
-    ElMessage.success('指标数据已刷新');
-  } catch (error) {
-    ElMessage.error('刷新失败: ' + (error.message || '未知错误'));
-  }
-};
+
 const getIndicatorUnit = (type) => {
   switch (type) {
     case '文旅资源总数':
@@ -1125,18 +1197,37 @@ onMounted(() => {
   // 初始化
   const initData = async () => {
     try {
-      const [geometriesData, resources, indicators, flowData] = await Promise.all([
+      const [
+        geometriesData,
+        resources,
+        typeDistData, // 类型分布
+        statusDistData, // 状态占比
+        indicators,
+        flowData
+      ] = await Promise.all([
         fetchCulturalTourismGeometries(),
         fetchResourceDistribution(),
+        fetchResourceTypeDistribution(),
+        fetchResourceStatusDistribution(),
         fetchCoreIndicators('today'),
         fetchTouristFlowOverview()
       ]);
+
+      // 赋值原有数据
       geometriesArray.value = geometriesData;
       resourceDistribution.value = resources;
       coreIndicators.value = indicators;
       touristFlowOverview.value = flowData;
+
+      // 赋值新增的类型/状态数据
+      resourceTypeData.value = typeDistData;
+      resourceStatusData.value = statusDistData;
+
+      // 刷新预警、计算图表、初始化动画
       refreshWarnings();
       calculateChartsData();
+      initNumberAnimations();
+
       if (coreIndicators.value.length > 0) {
         trendIndicatorId.value = coreIndicators.value[0].index_id;
         changeTrendIndicator(trendIndicatorId.value);

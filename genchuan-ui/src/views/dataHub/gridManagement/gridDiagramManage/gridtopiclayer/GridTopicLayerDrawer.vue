@@ -17,7 +17,10 @@
     </template>
 
     <div class="p-4 grid grid-cols-3 gap-4">
-      <div class="col-span-1 p-4 rounded-lg shadow-sm" style="background: linear-gradient(135deg,#fef3f3,#fff)">
+      <div
+        class="col-span-1 p-4 rounded-lg shadow-sm"
+        style="background: linear-gradient(135deg, #fef3f3, #fff)"
+      >
         <h3 class="font-semibold mb-3">基础信息</h3>
         <div class="text-sm"><strong>图层ID：</strong>{{ data.layerId }}</div>
         <div class="text-sm"><strong>图层名称：</strong>{{ data.layerName }}</div>
@@ -25,14 +28,20 @@
         <div class="text-sm"><strong>比例尺：</strong>{{ data.scale }}</div>
       </div>
 
-      <div class="col-span-1 p-4 rounded-lg shadow-sm" style="background: linear-gradient(135deg,#f3fbff,#fff)">
+      <div
+        class="col-span-1 p-4 rounded-lg shadow-sm"
+        style="background: linear-gradient(135deg, #f3fbff, #fff)"
+      >
         <h3 class="font-semibold mb-3">样式配置</h3>
         <div class="text-sm"><strong>边界样式：</strong>{{ data.boundaryStyleId || '—' }}</div>
         <div class="text-sm"><strong>注记样式：</strong>{{ data.annotateStyleId || '—' }}</div>
         <div class="text-sm"><strong>透明度：</strong>{{ data.extCommon1 || '默认' }}</div>
       </div>
 
-      <div class="col-span-1 p-4 rounded-lg shadow-sm" style="background: linear-gradient(135deg,#f7fff3,#fff)">
+      <div
+        class="col-span-1 p-4 rounded-lg shadow-sm"
+        style="background: linear-gradient(135deg, #f7fff3, #fff)"
+      >
         <h3 class="font-semibold mb-3">显示 & 顺序</h3>
         <div class="text-sm">
           <strong>显示状态：</strong>
@@ -43,7 +52,7 @@
         <div class="text-sm"><strong>创建人：</strong>{{ data.createUserId }}</div>
       </div>
 
-      <div class="col-span-3 mt-2 p-4 rounded-lg shadow-sm" style="background:#fff;">
+      <div class="col-span-3 mt-2 p-4 rounded-lg shadow-sm" style="background: #fff">
         <h3 class="font-semibold mb-3">备注</h3>
         <div class="text-sm text-gray-600">{{ data.remark || '暂无备注' }}</div>
       </div>
@@ -76,7 +85,7 @@ const size = ref('75%') // ✅ 修复：定义默认尺寸
 const data = reactive<Partial<GridTopicLayerVO>>({
   id: 0,
   layerWo: 10,
-  displayStatus: '0',
+  displayStatus: '0'
 })
 
 const emit = defineEmits(['edit']) // ✅ 修复：用于父组件监听编辑事件

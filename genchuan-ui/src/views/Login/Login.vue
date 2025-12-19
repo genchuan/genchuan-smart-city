@@ -9,33 +9,59 @@
       >
         <!-- 左上角的 logo + 系统标题 -->
         <div class="relative flex items-center text-white">
-          <img alt="" class="mr-10px h-48px w-48px" src="@/assets/imgs/logo.png" v-if="VITE_LOGO_SHOW" />
-          <span class="text-20px font-bold">{{ underlineToHump(appStore.getTitle) }}</span>
+          <img
+            alt=""
+            class="mr-10px h-48px w-48px"
+            src="@/assets/imgs/logo.png"
+            v-if="VITE_LOGO_SHOW"
+          />
+          <span class="text-20px font-bold" v-if="VITE_LOGO_SHOW">{{
+            underlineToHump(appStore.getTitle)
+          }}</span>
         </div>
-        <!-- 左边的背景图 + 欢迎语 -->
-        <div class="h-[calc(100%-60px)] flex items-center justify-center">
+        <!-- 左边的背景图 + 欢迎语（修改后：图片在下，文字在上居中） -->
+        <div class="h-[calc(100%-60px)] flex flex-col items-center justify-center">
           <TransitionGroup
             appear
             enter-active-class="animate__animated animate__bounceInLeft"
             tag="div"
+            class="flex flex-col items-center"
           >
-            <img key="1" alt="" class="w-350px" src="@/assets/svgs/login-box-bg.svg" />
-            <div key="2" class="text-3xl text-white" v-if="VITE_LOGO_SHOW">{{ t('login.welcome') }}</div>
-            <div key="3" class="mt-5 text-14px font-normal text-white" v-if="VITE_LOGO_SHOW">
+            <img key="1" alt="" class="w-350px mt-10" src="@/assets/svgs/login-box-bg.svg" />
+            <div key="2" class="text-3xl text-white text-center">{{ t('login.welcome') }}</div>
+            <div key="3" class="mt-5 text-14px font-normal text-white text-center max-w-2xl">
               {{ t('login.message') }}
             </div>
-
-            <div key="4" style="position: fixed; bottom:15px; display: flex; align-items: center; font-size: 14px; font-weight: normal; color: white;" v-if="VITE_LOGO_SHOW">
-              <img alt="" style="margin-right: 10px; height: 80px; width: 80px;" src="@/assets/imgs/kefu.png" />
-              <img alt="" style="margin-right: 10px; height: 80px; width: 80px;" src="@/assets/imgs/gongzhonghao.png" />
+            <div
+              key="4"
+              style="
+                position: fixed;
+                bottom: 15px;
+                display: flex;
+                align-items: center;
+                font-size: 14px;
+                font-weight: normal;
+                color: white;
+              "
+              v-if="VITE_LOGO_SHOW"
+            >
+              <img
+                alt=""
+                style="margin-right: 10px; height: 80px; width: 80px"
+                src="@/assets/imgs/kefu.png"
+              />
+              <img
+                alt=""
+                style="margin-right: 10px; height: 80px; width: 80px"
+                src="@/assets/imgs/gongzhonghao.png"
+              />
               <div>
                 <p>福建亘川科技有限公司</p>
                 <p>地址： 福建省泉州市丰泽区星光耀广场18幢1611-1612单元</p>
-                <p>电话： 17859895988  </p>
+                <p>电话： 17859895988 </p>
                 <p>邮箱： 990267803@qq.com</p>
               </div>
             </div>
-
           </TransitionGroup>
         </div>
       </div>
@@ -45,11 +71,16 @@
         <!-- 右上角的主题、语言选择 -->
         <div
           class="flex items-center justify-between at-2xl:justify-end at-xl:justify-end"
-          style="color: var(--el-text-color-primary);"
+          style="color: var(--el-text-color-primary)"
         >
           <div class="flex items-center at-2xl:hidden at-xl:hidden">
-            <img alt="" class="mr-10px h-48px w-48px" src="@/assets/imgs/logo.png" v-if="VITE_LOGO_SHOW" />
-            <span class="text-20px font-bold" >{{ underlineToHump(appStore.getTitle) }}</span>
+            <img
+              alt=""
+              class="mr-10px h-48px w-48px"
+              src="@/assets/imgs/logo.png"
+              v-if="VITE_LOGO_SHOW"
+            />
+            <span class="text-20px font-bold">{{ underlineToHump(appStore.getTitle) }}</span>
           </div>
           <div class="flex items-center justify-end space-x-10px h-48px">
             <ThemeSwitch />
@@ -63,8 +94,6 @@
           >
             <!--三方登录-->
             <SSOLoginVue class="m-auto h-auto p-20px lt-xl:(rounded-3xl light:bg-white)" />
-
-
             <!-- 账号登录 -->
             <LoginForm class="m-auto h-auto p-20px lt-xl:(rounded-3xl light:bg-white)" />
             <!-- 手机登录
@@ -85,29 +114,22 @@
 </template>
 <script lang="ts" setup>
 import { underlineToHump } from '@/utils'
-
 import { useDesign } from '@/hooks/web/useDesign'
 import { useAppStore } from '@/store/modules/app'
 import { ThemeSwitch } from '@/layout/components/ThemeSwitch'
 import { LocaleDropdown } from '@/layout/components/LocaleDropdown'
-
 // import { LoginForm, MobileForm, QrCodeForm, RegisterForm, SSOLoginVue, ForgetPasswordForm } from './components'
 import { LoginForm, SSOLoginVue } from './components'
 // logo 是否显示
-const VITE_LOGO_SHOW=JSON.parse(import.meta.env.VITE_LOGO_SHOW);
-
-
+const VITE_LOGO_SHOW = JSON.parse(import.meta.env.VITE_LOGO_SHOW)
 defineOptions({ name: 'Login' })
-
 const { t } = useI18n()
 const appStore = useAppStore()
 const { getPrefixCls } = useDesign()
 const prefixCls = getPrefixCls('login')
 </script>
-
 <style lang="scss" scoped>
 $prefix-cls: #{$namespace}-login;
-
 .#{$prefix-cls} {
   overflow: auto;
 
@@ -127,7 +149,6 @@ $prefix-cls: #{$namespace}-login;
   }
 }
 </style>
-
 <style lang="scss">
 .dark .login-form {
   .el-divider__text {

@@ -4,7 +4,7 @@
       ref="formRef"
       :model="formData"
       :rules="formRules"
-      label-width="100px"
+      label-width="200px"
       v-loading="formLoading"
     >
       <el-form-item label="建议ID" prop="optSuggId">

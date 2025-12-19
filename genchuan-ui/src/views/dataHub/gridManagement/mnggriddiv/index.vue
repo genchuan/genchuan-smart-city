@@ -3,17 +3,22 @@
     <!-- 查询条件区 -->
     <el-form :inline="true" :model="queryParams" class="mb-3 flex-wrap">
       <el-form-item label="网格名称">
-        <el-input v-model="queryParams.name" placeholder="请输入网格名称" clearable class="!w-240px" />
+        <el-input
+          v-model="queryParams.name"
+          placeholder="请输入网格名称"
+          clearable
+          class="!w-240px"
+        />
       </el-form-item>
 
-<!--      <el-form-item label="所属乡镇ID">-->
-<!--        <el-input-->
-<!--            v-model="queryParams.townStreetId"-->
-<!--            placeholder="请输入乡镇ID"-->
-<!--            clearable-->
-<!--            class="!w-160px"-->
-<!--        />-->
-<!--      </el-form-item>-->
+      <!--      <el-form-item label="所属乡镇ID">-->
+      <!--        <el-input-->
+      <!--            v-model="queryParams.townStreetId"-->
+      <!--            placeholder="请输入乡镇ID"-->
+      <!--            clearable-->
+      <!--            class="!w-160px"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
 
       <el-form-item label="所属乡镇">
         <el-tree-select
@@ -41,41 +46,52 @@
 
       <el-form-item label="划分时间">
         <el-date-picker
-            v-model="queryParams.divTime"
-            type="datetime"
-            placeholder="请选择划分时间"
-            value-format="YYYY-MM-DD HH:mm:ss"
-            class="!w-240px"
+          v-model="queryParams.divTime"
+          type="datetime"
+          placeholder="请选择划分时间"
+          value-format="YYYY-MM-DD HH:mm:ss"
+          class="!w-240px"
         />
       </el-form-item>
 
       <el-form-item>
         <el-button type="primary" plain @click="handleQuery">查询</el-button>
         <el-button plain @click="resetQuery">重置</el-button>
+        <el-button type="primary" plain @click="openFormDialog()">新增网格</el-button>
+        <el-button type="info" plain @click="handleImport">
+          <Icon icon="ep:document-add" class="mr-5px" />
+          批量导入单元网格
+        </el-button>
+        <el-button type="success" plain @click="handleExport" :loading="exportLoading">
+          <Icon icon="ep:download" class="mr-5px" />
+          导出
+        </el-button>
       </el-form-item>
     </el-form>
 
     <!-- 操作按钮区 -->
-    <div class="mb-4 flex justify-end space-x-2">
-      <el-button type="primary" plain @click="openFormDialog()">新增网格</el-button>
-      <el-button type="info" plain @click="handleImport">
-        <Icon icon="ep:document-add" class="mr-5px" /> 批量导入单元网格
-      </el-button>
-      <el-button type="success" plain @click="handleExport" :loading="exportLoading">
-        <Icon icon="ep:download" class="mr-5px" /> 导出
-      </el-button>
-    </div>
+    <!--    <div class="mb-4 flex justify-end space-x-2">-->
+    <!--      <el-button type="primary" plain @click="openFormDialog()">新增网格</el-button>-->
+    <!--      <el-button type="info" plain @click="handleImport">-->
+    <!--        <Icon icon="ep:document-add" class="mr-5px" />-->
+    <!--        批量导入单元网格-->
+    <!--      </el-button>-->
+    <!--      <el-button type="success" plain @click="handleExport" :loading="exportLoading">-->
+    <!--        <Icon icon="ep:download" class="mr-5px" />-->
+    <!--        导出-->
+    <!--      </el-button>-->
+    <!--    </div>-->
 
     <!-- 数据表格 -->
     <div class="table-container">
       <el-table
-          v-loading="loading"
-          :data="tableData"
-          stripe
-          border
-          height="calc(100vh - 350px)"
-          style="width: 100%; table-layout: fixed"
-          @sort-change="handleSortChange"
+        v-loading="loading"
+        :data="tableData"
+        stripe
+        border
+        height="calc(100vh - 350px)"
+        style="width: 100%; table-layout: fixed"
+        @sort-change="handleSortChange"
       >
         <el-table-column prop="mngGridName" label="管理网格名称" min-width="150" />
         <el-table-column prop="townStreetId" label="所属乡镇" width="160" />
@@ -85,7 +101,7 @@
         <el-table-column fixed="right" label="操作" width="240">
           <template #default="{ row }">
             <el-button link type="primary" @click="openDetail(row)">详情</el-button>
-            <el-button link type="success" @click="openFormDialog(row)">编辑</el-button>
+            <el-button link type="primary" @click="openFormDialog(row)">编辑</el-button>
             <el-button link type="danger" @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
@@ -94,10 +110,10 @@
 
     <!-- 分页 -->
     <Pagination
-        v-model:page="queryParams.pageNo"
-        v-model:limit="queryParams.pageSize"
-        :total="total"
-        @pagination="loadData"
+      v-model:page="queryParams.pageNo"
+      v-model:limit="queryParams.pageSize"
+      :total="total"
+      @pagination="loadData"
     />
 
     <!-- 弹窗 -->
@@ -150,7 +166,7 @@ const loadData = async () => {
   try {
     if (queryParams.value.unitRange) {
       const { minUnits, maxUnits } = parseUnitRange(queryParams.value.unitRange)
-      const townStreetIds = [...new Set(tableData.value.map(d => d.townStreetId))]
+      const townStreetIds = [...new Set(tableData.value.map((d) => d.townStreetId))]
       if (townStreetIds.length === 0) {
         tableData.value = []
         total.value = 0
@@ -193,11 +209,7 @@ const loadTownList = async () => {
   try {
     const res = await AreaApi.getTakeEffect()
     townList.value =
-      res?.data?.communityList ??
-      res?.data?.townList ??
-      res?.communityList ??
-      res?.townList ??
-      []
+      res?.data?.communityList ?? res?.data?.townList ?? res?.communityList ?? res?.townList ?? []
   } catch (err) {
     console.error(err)
     ElMessage.error('乡镇数据加载失败')
@@ -231,7 +243,8 @@ const resetQuery = () => {
 const handleSortChange = ({ prop, order }: any) => {
   if (prop === 'area') {
     queryParams.value.sortField = prop
-    queryParams.value.sortOrder = order === 'ascending' ? 'asc' : order === 'descending' ? 'desc' : ''
+    queryParams.value.sortOrder =
+      order === 'ascending' ? 'asc' : order === 'descending' ? 'desc' : ''
     loadData()
   }
 }
@@ -243,12 +256,12 @@ const openFormDialog = (row?: MngGridDivVO) => {
 
 const handleDelete = (row: MngGridDivVO) => {
   ElMessageBox.confirm('确定要删除该管理网格吗？', '提示', { type: 'warning' })
-      .then(async () => {
-        await MngGridDivApi.deleteMngGridDiv(row.id)
-        ElMessage.success('删除成功')
-        await loadData()
-      })
-      .catch(() => {})
+    .then(async () => {
+      await MngGridDivApi.deleteMngGridDiv(row.id)
+      ElMessage.success('删除成功')
+      await loadData()
+    })
+    .catch(() => {})
 }
 
 const openDetail = (row: MngGridDivVO) => {

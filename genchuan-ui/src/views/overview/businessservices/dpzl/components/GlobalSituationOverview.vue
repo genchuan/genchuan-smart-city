@@ -2,7 +2,7 @@
   <div class="page-container">
     <div class="mainbox">
       <div class="top">
-        <div class="top_left">
+        <div class="top_left" style="min-width: 2vw;">
           <!-- 营商核心指标 -->
           <div class="panel core-indicators-panel" ref="coreIndicatorsPanel">
             <div class="panel-body">
@@ -19,9 +19,6 @@
                     {{ indicator.real_value }}
                     <span class="indicator-unit">{{ indicator.unit }}</span>
                   </div>
-                  <div class="indicator-compliance">
-                    达标率：<span class="compliance-value">{{ indicator.compliance_rate }}%</span>
-                  </div>
                   <div class="indicator-yoy" :class="indicator.year_on_year >= 0 ? 'positive' : 'negative'">
                     同比：{{ indicator.year_on_year >= 0 ? '+' : '' }}{{ indicator.year_on_year }}%
                   </div>
@@ -31,7 +28,7 @@
             <div class="panel-footer"></div>
           </div>
         </div>
-        <div class="panel top_middle" ref="map">
+        <div class="panel top_middle" style="min-width: 3vw;" ref="map">
           <div class="header-actions">
             <p>全域企业分布地图</p>
             <button class="panel-fullscreen-btn" @click="togglePanelFullscreen('map')">
@@ -41,7 +38,7 @@
           <map-common idName="chinaEcharts" :geometriesArray="geometriesArray"/>
           <div class="panel-footer"></div>
         </div>
-        <div class="top_right">
+        <div class="top_right" style="min-width: 2vw;">
           <!-- 企业资源分布视图 -->
           <div class="panel pollutant-distribution-panel" ref="pollutantDistributionPanel">
             <div class="panel-header">
@@ -50,42 +47,27 @@
                 <el-button size="small" type="primary" @click="toggleFacilityView">
                   {{ currentFacilityView === 'chart' ? '显示列表' : '显示饼图' }}
                 </el-button>
-                <!-- 企业规模筛选 -->
-                <el-select v-model="enterpriseScaleFilter" placeholder="企业规模" size="small">
-                  <el-option label="全部" value="" />
-                  <el-option label="大型" value="大型" />
-                  <el-option label="中型" value="中型" />
-                  <el-option label="小型" value="小型" />
-                </el-select>
-                <!-- 行业筛选 -->
-                <el-select v-model="enterpriseIndustryFilter" placeholder="所属行业" size="small">
-                  <el-option label="全部" value="" />
-                  <el-option label="制造业" value="制造业" />
-                  <el-option label="服务业" value="服务业" />
-                  <el-option label="信息技术" value="信息技术" />
-                  <el-option label="金融业" value="金融业" />
-                </el-select>
                 <el-button size="small" type="primary" @click="exportOverviewData">导出数据</el-button>
               </div>
             </div>
             <div class="panel-body">
               <!-- 行业/规模分布图表 -->
               <div class="charts-container2" v-if="currentFacilityView === 'chart'">
-                <div class="chart-item2">
+                <div class="chart-item1">
                   <ChartPie2 :data="industryDistributionData" :title="'行业企业分布'" />
                 </div>
-                <div class="chart-item3">
+                <div class="chart-item2">
                   <ChartPie3 :data="scaleDistributionData" :title="'企业规模分布'" />
                 </div>
               </div>
 
               <!-- 重点企业列表 -->
-              <div class="enterprise-list" v-else>
+              <div v-else>
                 <el-table
                   :data="filteredEnterprises"
                   border
                   size="small"
-                  style="width: 100%; height: 250px"
+                  style="width: 100%; height: 36vh"
                   @row-click="showEnterpriseDetail"
                 >
                   <el-table-column prop="ent_name" label="企业名称" width="200px" />
@@ -105,14 +87,14 @@
         </div>
       </div>
       <div class="bottom">
-        <div class="bottom_left">
+        <div class="bottom_left" style="min-width: 2vw;">
           <!-- 营商全域数据概览 -->
           <div class="panel" ref="regionPatternPanel">
             <div class="panel-header">
               <h2>营商全域数据概览</h2>
               <div class="header-actions">
                 <!-- 时间范围筛选 -->
-                <el-select v-model="overviewTimeRange" placeholder="时间范围" size="small">
+                <el-select v-model="overviewTimeRange" placeholder="时间范围" size="small" style="width: 6vw;">
                   <el-option label="今日" value="today" />
                   <el-option label="本周" value="week" />
                   <el-option label="本月" value="month" />
@@ -123,7 +105,7 @@
                 </button>
               </div>
             </div>
-            <div class="panel-body map-wrapper">
+            <div class="panel-body">
               <!-- 概览统计项 -->
               <div class="overview-stats">
                 <div class="overview-stat-item">
@@ -184,7 +166,7 @@
             <div class="panel-footer"></div>
           </div>
         </div>
-        <div class="panel bottom_right">
+        <div class="panel bottom_right" style="min-width: 2vw;">
           <!-- 服务事项总览 -->
           <div class="pollutant-stats-panel" ref="pollutantStatsPanel">
             <div class="panel-header">
@@ -226,7 +208,7 @@
 
               <!-- 图表区域 -->
               <div class="charts-container3" v-if="currentFacilityView2 === 'chart'">
-                <div class="chart-item2">
+                <div class="chart-item1">
                   <ChartBar
                     :xAxis="serviceOverview?.type_distribution?.map(item => item.type_name) || []"
                     :series="[{name: '数量', data: serviceOverview?.type_distribution?.map(item => item.count) || []}]"
@@ -234,7 +216,7 @@
                     :title="'事项类型分布'"
                   />
                 </div>
-                <div class="chart-item3">
+                <div class="chart-item2">
                   <ChartBar2
                     :xAxis="serviceOverview?.region_rate_data?.map(item => item.region_name) || []"
                     :series="[{name: '办结率(%)', data: serviceOverview?.region_rate_data?.map(item => item.rate) || []}]"
@@ -246,12 +228,12 @@
               </div>
 
               <!-- 待办事项列表 -->
-              <div class="pending-items" v-else>
+              <div v-else>
                 <el-table
                   :data="serviceOverview?.pending_items || []"
                   border
                   size="small"
-                  style="width: 100%; height: 200px; margin-top: 10px"
+                  style="width: 100%; height: 26vh"
                 >
                   <el-table-column prop="item_name" label="事项名称" />
                   <el-table-column prop="apply_ent" label="申请企业" width="180px" />
@@ -912,21 +894,15 @@ onMounted(() => {
 
 // 页面容器
 .page-container {
-  width: 1920px;
+  width: 100%;
   height: 100vh;
   overflow-x: auto;
   overflow-y: hidden;
   background: url("@/assets/chart/images/bg.jpg") no-repeat;
-  background-size: cover;
-  background-position: center;
+  background-size: 100% 100%;
   color: #fff;
-  padding: 0 20px;
+  padding: 0 1vw;
   box-sizing: border-box;
-  position: relative;
-
-  ::-webkit-scrollbar {
-    height: 0;
-  }
 }
 
 // 主体内容盒子
@@ -934,10 +910,10 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   margin: 0 auto;
-  padding: 15px 0;
-  height: calc(100% - 90px); // 减去预留头部高度
+  padding: 0.6vw 0;
+  height: 90vh;
   box-sizing: border-box;
-  gap: 15px;
+  gap: 0.6vw;
 }
 
 // 公共面板样式
@@ -946,12 +922,14 @@ onMounted(() => {
   height: 100%;
   border: 0.2vh solid rgba(25, 186, 139, 0.17);
   background: url("@/assets/chart/images/line(1).png") rgba(255, 255, 255, .04);
-  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .top {
   display: flex;
-  gap: 20px;
+  gap: 0.6vw;
   height: 50%;
 }
 
@@ -969,8 +947,8 @@ onMounted(() => {
 
 .bottom {
   display: flex;
-  gap: 20px;
-  height: 46%;
+  gap: 0.6vw;
+  height: 50%;
 }
 
 .bottom_left {
@@ -979,7 +957,6 @@ onMounted(() => {
 
 .bottom_right {
   flex: 1;
-  min-width: 800px;
 }
 
 </style>

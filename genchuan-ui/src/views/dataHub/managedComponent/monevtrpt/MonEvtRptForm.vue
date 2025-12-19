@@ -4,7 +4,7 @@
       ref="formRef"
       :model="formData"
       :rules="formRules"
-      label-width="200px"
+      label-width="250px"
       v-loading="formLoading"
     >
       <el-form-item label="唯一编码" prop="statId">
@@ -28,8 +28,8 @@
       <el-form-item label="与事件大类ID关联" prop="evtMajorName">
         <el-input v-model="formData.evtMajorName" placeholder="请输入与事件大类ID关联" />
       </el-form-item>
-      <el-form-item label="关联监测事件分类配置表的小类ID（钻取时必填）" prop="evtMinorId">
-        <el-input v-model="formData.evtMinorId" placeholder="请输入关联监测事件分类配置表的小类ID（钻取时必填）" />
+      <el-form-item label="关联监测事件分类配置表的小类ID" prop="evtMinorId">
+        <el-input v-model="formData.evtMinorId" placeholder="请输入关联监测事件分类配置表的小类ID" />
       </el-form-item>
       <el-form-item label="与事件小类ID关联" prop="evtMinorName">
         <el-input v-model="formData.evtMinorName" placeholder="请输入与事件小类ID关联" />

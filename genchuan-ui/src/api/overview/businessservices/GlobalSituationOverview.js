@@ -201,66 +201,6 @@ export const fetchEnterpriseGeometries = async () => {
         industry: "文化传媒",
         establish_time: "2020-02-28",
         address: "工业园区创意大厦1205室"
-      },
-      {
-        coord_x: 26.798237,
-        coord_y: 117.833777,
-        ent_id: "ENT007",
-        ent_name: "中联建设工程有限公司",
-        scale: "大型",
-        industry: "建筑工程",
-        establish_time: "2003-12-05",
-        address: "新城区建设大道58号"
-      },
-      {
-        coord_x: 26.765237,
-        coord_y: 117.755114,
-        ent_name: "康泰医药连锁",
-        ent_id: "ENT008",
-        scale: "中型",
-        industry: "医药健康",
-        establish_time: "2012-06-17",
-        address: "东城区健康路12号"
-      },
-      {
-        coord_x: 26.822237,
-        coord_y: 117.790114,
-        ent_id: "ENT009",
-        ent_name: "星辰咖啡书屋",
-        scale: "小型",
-        industry: "餐饮服务",
-        establish_time: "2021-04-30",
-        address: "滨江新区文化街8号"
-      },
-      {
-        coord_x: 26.745237,
-        coord_y: 117.678114,
-        ent_id: "ENT010",
-        ent_name: "华茂纺织集团",
-        scale: "大型",
-        industry: "轻工业",
-        establish_time: "1998-08-22",
-        address: "南郊区纺织园区E路10号"
-      },
-      {
-        coord_x: 26.805237,
-        coord_y: 117.733777,
-        ent_id: "ENT011",
-        ent_name: "智联人力资源公司",
-        scale: "中型",
-        industry: "服务业",
-        establish_time: "2016-10-15",
-        address: "中心城区商务大厦25层"
-      },
-      {
-        coord_x: 26.772237,
-        coord_y: 117.699114,
-        ent_id: "ENT012",
-        ent_name: "阳光花店",
-        scale: "小型",
-        industry: "零售业",
-        establish_time: "2019-03-08",
-        address: "老城区幸福路5号"
       }
     ];
   }

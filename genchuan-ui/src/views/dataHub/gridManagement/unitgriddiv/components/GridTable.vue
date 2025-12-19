@@ -4,8 +4,8 @@
     :loading="loading"
     stripe
     border
-    style="width: 100%; table-layout: fixed;"
-    height="100%"
+    style="width: 100%; table-layout: fixed"
+    height="calc(100vh - 350px)"
   >
     <el-table-column prop="unitGridName" label="网格名称" min-width="160" />
     <el-table-column prop="commId" label="社区ID" width="120" />
@@ -16,8 +16,8 @@
 
     <el-table-column fixed="right" label="操作" width="280">
       <template #default="{ row }">
-        <el-button link type="primary" @click="$emit('view', row)">查看</el-button>
-        <el-button link type="success" @click="$emit('edit', row)">编辑</el-button>
+        <el-button link type="primary" @click="$emit('view', row)">详情</el-button>
+        <el-button link type="primary" @click="$emit('edit', row)">编辑</el-button>
         <el-button link type="danger" @click="$emit('delete', row)">删除</el-button>
         <el-button link type="warning" @click="validateArea(row)">校验面积</el-button>
       </template>
@@ -54,6 +54,7 @@ const validateArea = async (row: any) => {
   word-break: break-all;
   table-layout: fixed !important;
 }
+
 .el-table th,
 .el-table td {
   text-align: center;
@@ -62,4 +63,3 @@ const validateArea = async (row: any) => {
   padding: 10px 6px;
 }
 </style>
-

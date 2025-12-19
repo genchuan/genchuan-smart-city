@@ -4,7 +4,7 @@
       ref="formRef"
       :model="formData"
       :rules="formRules"
-      label-width="200px"
+      label-width="250px"
       v-loading="formLoading"
     >
       <el-form-item label="唯一编码" prop="statId">
@@ -25,14 +25,14 @@
       <el-form-item label="关联监测部件分类配置表的大类ID" prop="compMajorId">
         <el-input v-model="formData.compMajorId" placeholder="请输入关联监测部件分类配置表的大类ID" />
       </el-form-item>
-      <el-form-item label="与部件大类ID关联，自动同步名称" prop="compMajorName">
+      <el-form-item label="与部件大类ID关联" prop="compMajorName">
         <el-input v-model="formData.compMajorName" placeholder="请输入与部件大类ID关联" />
       </el-form-item>
-      <el-form-item label="关联监测部件分类配置表的小类ID(钻取统计时必填)" prop="compMinorId">
-        <el-input v-model="formData.compMinorId" placeholder="请输入关联监测部件分类配置表的小类ID(钻取统计时必填)" />
+      <el-form-item label="关联监测部件分类配置表的小类ID" prop="compMinorId">
+        <el-input v-model="formData.compMinorId" placeholder="请输入关联监测部件分类配置表的小类ID" />
       </el-form-item>
       <el-form-item label="与部件小类ID关联，自动同步名称" prop="compMinorName">
-        <el-input v-model="formData.compMinorName" placeholder="请输入与部件小类ID关联，自动同步名称" />
+        <el-input v-model="formData.compMinorName" placeholder="请输入与部件小类ID关联" />
       </el-form-item>
       <el-form-item label="该维度下监测部件总数量" prop="totalCompCount">
         <el-input v-model="formData.totalCompCount" placeholder="请输入该维度下监测部件总数量" />
@@ -49,27 +49,27 @@
       <el-form-item label="状态为“废弃”的部件数量" prop="discardCompCount">
         <el-input v-model="formData.discardCompCount" placeholder="请输入状态为“废弃”的部件数量" />
       </el-form-item>
-      <el-form-item label="统计周期内新增的部件数量（创建时间在周期内）" prop="newCompCount">
-        <el-input v-model="formData.newCompCount" placeholder="请输入统计周期内新增的部件数量（创建时间在周期内）" />
+      <el-form-item label="统计周期内新增的部件数量" prop="newCompCount">
+        <el-input v-model="formData.newCompCount" placeholder="请输入统计周期内新增的部件数量" />
       </el-form-item>
-      <el-form-item label="统计周期内更新的部件数量（更新时间在周期内）" prop="updateCompCount">
-        <el-input v-model="formData.updateCompCount" placeholder="请输入统计周期内更新的部件数量（更新时间在周期内）" />
+      <el-form-item label="统计周期内更新的部件数量" prop="updateCompCount">
+        <el-input v-model="formData.updateCompCount" placeholder="请输入统计周期内更新的部件数量" />
       </el-form-item>
       <el-form-item label="生成报表的用户ID" prop="statUser">
         <el-input v-model="formData.statUser" placeholder="请输入生成报表的用户ID" />
       </el-form-item>
-      <el-form-item label="报表生成时间，格式：yyyy-MM-dd HH:mm:ss" prop="statTime">
+      <el-form-item label="报表生成时间" prop="statTime">
         <el-date-picker
           v-model="formData.statTime"
           type="date"
           value-format="x"
-          placeholder="选择报表生成时间，格式：yyyy-MM-dd HH:mm:ss"
+          placeholder="选择报表生成时间"
         />
       </el-form-item>
       <el-form-item label="报表说明" prop="rptRemark">
         <el-input v-model="formData.rptRemark" placeholder="请输入报表说明" />
       </el-form-item>
-      <el-form-item label="预留字段，存储统计额外维度（如“统计范围”）" prop="extCat1">
+      <el-form-item label="预留字段" prop="extCat1">
         <el-input v-model="formData.extCat1" placeholder="请输入预留字段" />
       </el-form-item>
       <el-form-item label="预留字段" prop="extCat2">

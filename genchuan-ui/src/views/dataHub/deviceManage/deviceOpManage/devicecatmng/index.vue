@@ -144,7 +144,7 @@
             <el-table-column label="操作" align="center" min-width="180px">
               <template #default="scope">
                 <el-button link type="primary" @click="openDetail(scope.row)" class="mr-2">
-                  查看
+                  详情
                 </el-button>
                 <el-button
                   link

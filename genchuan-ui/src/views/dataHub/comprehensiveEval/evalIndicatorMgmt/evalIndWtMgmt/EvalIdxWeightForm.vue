@@ -1,5 +1,5 @@
 <template>
-  <Dialog :title="dialogTitle" v-model="dialogVisible" width="800px">
+  <Dialog :title="dialogTitle" v-model="dialogVisible" width="600px">
     <el-form
       ref="formRef"
       :model="formData"
@@ -8,9 +8,9 @@
       v-loading="formLoading"
       class="p-4 bg-gray-50 rounded-lg"
     >
+      <!-- 采用单列布局，通过栅格系统确保整齐对齐 -->
       <el-row :gutter="20">
-        <!-- 第一列 -->
-        <el-col :span="12">
+        <el-col :span="24">
           <el-form-item label="所属指标体系ID" prop="idxSystemId">
             <el-input
               v-model="formData.idxSystemId"
@@ -18,6 +18,9 @@
               class="rounded-md"
             />
           </el-form-item>
+        </el-col>
+
+        <el-col :span="24">
           <el-form-item label="所属指标体系名称" prop="idxSystemName">
             <el-input
               v-model="formData.idxSystemName"
@@ -25,6 +28,9 @@
               class="rounded-md"
             />
           </el-form-item>
+        </el-col>
+
+        <el-col :span="24">
           <el-form-item label="权重类型" prop="weightType">
             <el-select
               v-model="formData.weightType"
@@ -34,20 +40,15 @@
               <el-option label="请选择字典生成" value="" />
             </el-select>
           </el-form-item>
+        </el-col>
+
+        <el-col :span="24">
           <el-form-item label="关联ID" prop="relateId">
             <el-input v-model="formData.relateId" placeholder="请输入关联ID" class="rounded-md" />
           </el-form-item>
-          <el-form-item label="创建人(业务)" prop="createUserBiz">
-            <el-input
-              v-model="formData.createUserBiz"
-              placeholder="请输入创建人(业务)"
-              class="rounded-md"
-            />
-          </el-form-item>
         </el-col>
 
-        <!-- 第二列 -->
-        <el-col :span="12">
+        <el-col :span="24">
           <el-form-item label="关联名称" prop="relateName">
             <el-input
               v-model="formData.relateName"
@@ -55,6 +56,9 @@
               class="rounded-md"
             />
           </el-form-item>
+        </el-col>
+
+        <el-col :span="24">
           <el-form-item label="权重值(%)" prop="weightValue">
             <el-input
               v-model="formData.weightValue"
@@ -65,6 +69,9 @@
               class="rounded-md"
             />
           </el-form-item>
+        </el-col>
+
+        <el-col :span="24">
           <el-form-item label="权重说明" prop="weightDesc">
             <el-input
               v-model="formData.weightDesc"
@@ -74,7 +81,19 @@
               class="rounded-md"
             />
           </el-form-item>
+        </el-col>
 
+        <el-col :span="24">
+          <el-form-item label="创建人(业务)" prop="createUserBiz">
+            <el-input
+              v-model="formData.createUserBiz"
+              placeholder="请输入创建人(业务)"
+              class="rounded-md"
+            />
+          </el-form-item>
+        </el-col>
+
+        <el-col :span="24">
           <el-form-item label="创建时间(业务)" prop="createTimeBiz">
             <el-date-picker
               v-model="formData.createTimeBiz"
@@ -220,14 +239,17 @@ const resetForm = () => {
   --el-input-bg-color: #fff;
   --el-input-border-color: #e4e7ed;
   --el-input-hover-border-color: #409eff;
+  width: 100%;
 }
 
 .el-dialog__body {
   padding: 16px 24px;
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
 .el-form-item {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .el-textarea {

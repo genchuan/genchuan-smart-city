@@ -17,7 +17,7 @@
         <el-input v-model="formData.parentMajorName" placeholder="请输入所属大类名称" />
       </el-form-item>
       <el-form-item label="小类代码" prop="matterMinorCode">
-        <el-input v-model="formData.matterMinorCode" placeholder="请输入小类代码，3位字符" />
+        <el-input v-model="formData.matterMinorCode" placeholder="请输入小类代码" />
       </el-form-item>
       <el-form-item label="小类名称" prop="matterMinorName">
         <el-input v-model="formData.matterMinorName" placeholder="请输入小类名称" />
@@ -31,7 +31,7 @@
       <el-form-item label="主管部门名称" prop="deptName">
         <el-input v-model="formData.deptName" placeholder="请输入主管部门名称" />
       </el-form-item>
-      <el-form-item label="是否扩展类1/0" prop="isExt">
+      <el-form-item label="是否扩展类" prop="isExt">
         <el-input v-model="formData.isExt" placeholder="请输入是否扩展类" />
       </el-form-item>
       <el-form-item label="启用状态" prop="enableStatus">
@@ -96,19 +96,19 @@ const formData = ref({
   createUser: undefined,
   updateUser: undefined,
   createTimeSys: undefined,
-  updateTimeSys: undefined,
+  updateTimeSys: undefined
 })
 const formRules = reactive({
-  mngMatterMinorId: [{ required: true, message: '管理事项小类ID', trigger: 'blur' }],
-  parentMajorId: [{ required: true, message: '所属大类ID', trigger: 'blur' }],
-  parentMajorName: [{ required: true, message: '所属大类名称', trigger: 'blur' }],
-  matterMinorCode: [{ required: true, message: '小类代码', trigger: 'blur' }],
-  matterMinorName: [{ required: true, message: '小类名称', trigger: 'blur' }],
-  deptCode: [{ required: true, message: '主管部门代码', trigger: 'blur' }],
-  deptName: [{ required: true, message: '主管部门名称', trigger: 'blur' }],
-  isExt: [{ required: true, message: '是否扩展类', trigger: 'blur' }],
-  enableStatus: [{ required: true, message: '启用状态，1（启用）/0（禁用）', trigger: 'blur' }],
-  createUser: [{ required: true, message: '创建人', trigger: 'blur' }],
+  mngMatterMinorId: [{ required: true, message: '管理事项小类ID不能为空', trigger: 'blur' }],
+  parentMajorId: [{ required: true, message: '所属大类ID不能为空', trigger: 'blur' }],
+  parentMajorName: [{ required: true, message: '所属大类名称不能为空', trigger: 'blur' }],
+  matterMinorCode: [{ required: true, message: '小类代码不能为空', trigger: 'blur' }],
+  matterMinorName: [{ required: true, message: '小类名称不能为空', trigger: 'blur' }],
+  deptCode: [{ required: true, message: '主管部门代码不能为空', trigger: 'blur' }],
+  deptName: [{ required: true, message: '主管部门名称不能为空', trigger: 'blur' }],
+  isExt: [{ required: true, message: '是否扩展类不能为空', trigger: 'blur' }],
+  enableStatus: [{ required: true, message: '启用状态不能为空', trigger: 'blur' }],
+  createUser: [{ required: true, message: '创建人不能为空', trigger: 'blur' }]
 })
 const formRef = ref() // 表单 Ref
 
@@ -171,7 +171,7 @@ const resetForm = () => {
     createUser: undefined,
     updateUser: undefined,
     createTimeSys: undefined,
-    updateTimeSys: undefined,
+    updateTimeSys: undefined
   }
   formRef.value?.resetFields()
 }

@@ -75,7 +75,7 @@ const getChartOption = () => {
       data: props.data.series.map(item => item.name),
       top: 0,
       textStyle: {
-        color: '#ccc'
+        color: '#666'
       }
     },
     grid: {
@@ -85,7 +85,7 @@ const getChartOption = () => {
       containLabel: true,
       show: props.showGrid,
       lineStyle: {
-        color: 'rgba(255, 255, 255, 0.1)'
+        color: 'rgba(0, 204, 255, 0.1)'
       }
     },
     xAxis: {
@@ -94,11 +94,11 @@ const getChartOption = () => {
       data: props.data.xAxis,
       axisLine: {
         lineStyle: {
-          color: 'rgba(255, 255, 255, 0.3)'
+          color: 'rgba(0, 204, 255, 0.3)'
         }
       },
       axisLabel: {
-        color: '#ccc',
+        color: '#666',
         rotate: 30,
         interval: 0
       },
@@ -110,15 +110,15 @@ const getChartOption = () => {
       type: 'value',
       name: props.yAxisName,
       nameTextStyle: {
-        color: '#ccc'
+        color: '#666'
       },
       axisLine: {
         lineStyle: {
-          color: 'rgba(255, 255, 255, 0.3)'
+          color: 'rgba(0, 204, 255, 0.3)'
         }
       },
       axisLabel: {
-        color: '#ccc',
+        color: '#666',
         formatter: function (value) {
           // 如果是百分比，添加%符号
           if (props.yAxisName.includes('%')) {
@@ -129,7 +129,7 @@ const getChartOption = () => {
       },
       splitLine: {
         lineStyle: {
-          color: 'rgba(255, 255, 255, 0.1)'
+          color: 'rgba(0, 204, 255, 0.1)'
         }
       }
     },

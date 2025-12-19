@@ -1,436 +1,804 @@
 <template>
-  <div class="managed-major-minor-rel">
-    <!-- 查询工具栏：包含排序选择器 -->
-    <div class="toolbar">
-      <el-select
-        v-model="filters.major_id"
-        placeholder="选择大类"
-        clearable
-        size="medium"
-        style="width: 220px"
+  <div class="managed-major-minor-rel-page">
+    <!-- 搜索区域 -->
+    <ContentWrap class="search-container">
+      <div class="search-content">
+        <el-form
+          class="search-form"
+          :model="queryParams"
+          ref="queryFormRef"
+          :inline="true"
+          label-width="100px"
+        >
+          <div class="form-row">
+            <el-form-item label="关联ID" prop="relId">
+              <el-input
+                v-model="queryParams.relId"
+                placeholder="请输入关联ID"
+                clearable
+                @keyup.enter="handleQuery"
+                class="!w-160px"
+              />
+            </el-form-item>
+
+            <el-form-item label="关联的大类ID" prop="majorId">
+              <el-input
+                v-model="queryParams.majorId"
+                placeholder="请输入关联的大类ID"
+                clearable
+                @keyup.enter="handleQuery"
+                class="!w-160px"
+              />
+            </el-form-item>
+
+            <el-form-item label="关联的小类ID" prop="minorId">
+              <el-input
+                v-model="queryParams.minorId"
+                placeholder="请输入关联的小类ID"
+                clearable
+                @keyup.enter="handleQuery"
+                class="!w-160px"
+              />
+            </el-form-item>
+
+            <el-form-item label="关联状态" prop="relStatus">
+              <el-select
+                v-model="queryParams.relStatus"
+                placeholder="请选择关联状态"
+                clearable
+                class="!w-160px"
+              >
+                <el-option label="有效" value="1" />
+                <el-option label="无效" value="0" />
+              </el-select>
+            </el-form-item>
+
+            <!-- 按钮组与搜索字段同行 -->
+            <div class="search-buttons-group">
+              <el-button type="primary" @click="handleQuery">
+                <Icon icon="ep:search" class="mr-1" /> 搜索
+              </el-button>
+              <el-button @click="resetQuery">
+                <Icon icon="ep:refresh" class="mr-1" /> 重置
+              </el-button>
+              <el-button
+                type="primary"
+                plain
+                @click="openForm('create')"
+                v-hasPermi="['datacenter:managed-major-minor-rel:create']"
+              >
+                <Icon icon="ep:plus" class="mr-1" /> 新增
+              </el-button>
+              <el-button
+                type="success"
+                plain
+                @click="handleExport"
+                :loading="exportLoading"
+                v-hasPermi="['datacenter:managed-major-minor-rel:export']"
+              >
+                <Icon icon="ep:download" class="mr-1" /> 导出
+              </el-button>
+            </div>
+          </div>
+        </el-form>
+      </div>
+    </ContentWrap>
+
+    <!-- 数据列表 -->
+    <ContentWrap class="list-container">
+      <el-table
+        v-loading="loading"
+        :data="list"
+        :stripe="true"
+        :show-overflow-tooltip="true"
+        class="list-table"
+        :header-cell-style="{
+          'background-color': '#f5f7fa',
+          'font-weight': '600',
+          'color': '#606266',
+          'padding': '12px 8px',
+          'white-space': 'nowrap'
+        }"
+        :cell-style="{
+          'vertical-align': 'middle',
+          'padding': '8px'
+        }"
       >
-        <el-option v-for="item in majorList" :key="item.id" :label="item.name" :value="item.id" />
-      </el-select>
+        <el-table-column label="主键ID" align="center" prop="id" width="100" />
+        <el-table-column label="关联ID" align="center" prop="relId" min-width="180" />
+        <el-table-column label="关联的大类ID" align="center" prop="majorId" min-width="140" />
+        <el-table-column label="关联的小类ID" align="center" prop="minorId" min-width="140" />
+        <el-table-column label="关联状态" align="center" prop="relStatus" width="120">
+          <template #default="scope">
+            <el-tag :type="scope.row.relStatus === '1' ? 'success' : 'danger'">
+              {{ scope.row.relStatus === '1' ? '有效' : '无效' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="关联时间"
+          align="center"
+          prop="relTime"
+          :formatter="dateFormatter"
+          width="180"
+        />
+        <el-table-column
+          label="解除关联时间"
+          align="center"
+          prop="unrelTime"
+          :formatter="dateFormatter"
+          width="180"
+        />
+        <el-table-column
+          label="系统更新时间"
+          align="center"
+          prop="updateTimeSys"
+          :formatter="dateFormatter"
+          width="180"
+        />
+        <!-- 操作列 -->
+        <el-table-column
+          label="操作"
+          align="center"
+          width="180"
+          fixed="right"
+        >
+          <template #default="scope">
+            <div class="operation-btn-group">
+              <el-button
+                link
+                type="primary"
+                size="small"
+                @click="openDetail(scope.row)"
+                v-hasPermi="['datacenter:managed-major-minor-rel:detail']"
+                class="operation-btn"
+              >
+                详情
+              </el-button>
+              <el-button
+                link
+                type="primary"
+                size="small"
+                @click="openForm('update', scope.row.id)"
+                v-hasPermi="['datacenter:managed-major-minor-rel:update']"
+                class="operation-btn"
+              >
+                编辑
+              </el-button>
+              <el-button
+                link
+                type="danger"
+                size="small"
+                @click="handleDelete(scope.row.id)"
+                v-hasPermi="['datacenter:managed-major-minor-rel:delete']"
+                class="operation-btn"
+              >
+                删除
+              </el-button>
+            </div>
+          </template>
+        </el-table-column>
+      </el-table>
 
-      <el-select
-        v-model="filters.rel_status"
-        placeholder="关联状态"
-        clearable
-        size="medium"
-        style="width: 180px"
-      >
-        <el-option label="有效" :value="1" />
-        <el-option label="无效" :value="0" />
-      </el-select>
-
-      <!-- 排序规则选择器：默认关联时间降序 -->
-      <el-select
-        v-model="filters.sortRule"
-        placeholder="排序规则"
-        size="medium"
-        style="width: 220px"
-      >
-        <el-option label="关联时间（最新优先）" :value="1" />
-        <el-option label="解除关联时间（最新优先）" :value="2" />
-      </el-select>
-
-      <el-button type="primary" size="medium" @click="handleQuery">查询</el-button>
-      <el-button type="success" size="medium" @click="handleExport">导出</el-button>
-      <el-button type="primary" size="medium" @click="handleAdd">新增</el-button>
-    </div>
-
-    <!-- 数据表格：新增“解除时间”列 -->
-    <el-table :data="tableData" style="width: 100%" stripe>
-      <el-table-column prop="major_name" label="大类名称" width="180" />
-      <el-table-column prop="minor_name" label="小类名称" width="180" />
-      <el-table-column prop="rel_status" label="关联状态" width="120">
-        <template #default="scope">
-          <el-tag :type="scope.row.rel_status === 1 ? 'success' : 'info'">
-            {{ scope.row.rel_status === 1 ? '有效' : '无效' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="rel_time" label="关联时间" width="200" />
-      <el-table-column prop="unrel_time" label="解除时间" width="200" />
-      <el-table-column prop="operate_user" label="操作人" width="120" />
-      <el-table-column prop="remark" label="备注" />
-      <el-table-column label="操作" width="220">
-        <template #default="scope">
-          <el-button
-            v-if="scope.row.rel_status === 1"
-            size="small"
-            type="danger"
-            @click="handleUnrel(scope.row)"
-          >
-            解除关联
-          </el-button>
-          <el-button
-            v-else
-            size="small"
-            type="primary"
-            @click="handleRelink(scope.row)"
-          >
-            重新关联
-          </el-button>
-          <el-button size="small" type="info" @click="openDetailDrawer(scope.row)">
-            查看
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <!-- 分页 -->
-    <el-pagination
-      v-model:current-page="pagination.page"
-      v-model:page-size="pagination.pageSize"
-      :total="pagination.total"
-      layout="total, sizes, prev, pager, next, jumper"
-      @current-change="handlePageChange"
-      @size-change="handlePageSizeChange"
-      style="margin-top: 20px; text-align: right"
-    />
+      <!-- 分页 - 居中显示 -->
+      <div class="pagination-container">
+        <div class="pagination-content">
+          <div class="page-info">
+            共 <span class="text-primary font-medium">{{ total }}</span> 条
+          </div>
+          <Pagination
+            :total="total"
+            v-model:page="queryParams.pageNo"
+            v-model:limit="queryParams.pageSize"
+            @pagination="getList"
+            layout="sizes, prev, pager, next, jumper"
+            :page-sizes="[10, 20, 50, 100]"
+          />
+        </div>
+      </div>
+    </ContentWrap>
 
     <!-- 详情抽屉 -->
-    <el-drawer
-      v-model="detailVisible"
-      title="关联详情"
-      direction="rtl"
-      size="40%"
-      :with-header="true"
-      :close-on-click-modal="true"
+    <div
+      v-if="isDetailShow"
+      class="detail-mask"
+      @click="closeDetail"
+    ></div>
+    <div
+      v-if="isDetailShow"
+      class="detail-drawer"
+      :class="{ 'full-screen': isFullScreen }"
+      @click.stop
     >
-      <el-descriptions :column="1" border>
-        <el-descriptions-item label="大类名称">{{ detailData.major_name || '—' }}</el-descriptions-item>
-        <el-descriptions-item label="小类名称">{{ detailData.minor_name || '—' }}</el-descriptions-item>
-        <el-descriptions-item label="关联状态">{{ detailData.rel_status === 1 ? '有效' : detailData.rel_status === 0 ? '无效' : '—' }}</el-descriptions-item>
-        <el-descriptions-item label="关联时间">{{ detailData.rel_time || '—' }}</el-descriptions-item>
-        <el-descriptions-item label="解除时间">{{ detailData.unrel_time || '—' }}</el-descriptions-item>
-        <el-descriptions-item label="操作人">{{ detailData.operate_user || '—' }}</el-descriptions-item>
-        <el-descriptions-item label="备注">{{ detailData.remark || '—' }}</el-descriptions-item>
-      </el-descriptions>
-    </el-drawer>
-
-    <!-- 新增关联抽屉 -->
-    <el-drawer
-      v-model="addVisible"
-      title="新增大类小类关联"
-      direction="rtl"
-      size="40%"
-      :with-header="true"
-      :close-on-click-modal="true"
-    >
-      <el-form :model="addForm" label-width="120px" style="margin-top: 20px;" :rules="addRules" ref="addFormRef">
-        <el-form-item label="选择大类" prop="major_id">
-          <el-select
-            v-model="addForm.major_id"
-            placeholder="请选择大类"
-            style="width: 100%"
-            clearable
+      <div class="detail-header flex justify-between items-center p-4 border-b">
+        <h3 class="text-lg font-semibold">数据详情</h3>
+        <div class="detail-header-btns">
+          <el-tooltip
+            :content="isFullScreen ? '退出全屏' : '全屏显示'"
+            placement="bottom"
           >
-            <el-option v-for="item in majorList" :key="item.id" :label="item.name" :value="item.id" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="小类名称" prop="minor_name">
-          <el-input
-            v-model="addForm.minor_name"
-            placeholder="请输入小类名称"
-            maxlength="50"
-            show-word-limit
-          />
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input
-            v-model="addForm.remark"
-            placeholder="可选：输入关联备注信息"
-            type="textarea"
-            rows="3"
-            maxlength="200"
-            show-word-limit
-          />
-        </el-form-item>
-        <el-form-item style="text-align: right; margin-top: 30px;">
-          <el-button @click="addVisible.value = false">取消</el-button>
-          <el-button type="primary" @click="handleAddSubmit">提交新增</el-button>
-        </el-form-item>
-      </el-form>
-    </el-drawer>
+            <el-button
+              text
+              size="small"
+              @click="toggleFullScreen"
+              class="fullscreen-btn"
+            >
+              <!-- 减号放大镜图标（退出全屏） -->
+              <svg
+                v-if="isFullScreen"
+                class="zoom-out-icon"
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <line x1="8" y1="11" x2="14" y2="11" />
+              </svg>
+              <!-- 加号放大镜图标（进入全屏） -->
+              <svg
+                v-else
+                class="zoom-in-icon"
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <line x1="11" y1="8" x2="11" y2="14" />
+                <line x1="8" y1="11" x2="14" y2="11" />
+              </svg>
+            </el-button>
+          </el-tooltip>
+          <el-tooltip content="关闭" placement="bottom">
+            <el-button
+              text
+              size="small"
+              @click="closeDetail"
+              class="close-btn"
+            >
+              <Icon icon="ep:close" />
+            </el-button>
+          </el-tooltip>
+        </div>
+      </div>
+
+      <div class="detail-content p-6">
+        <el-descriptions
+          title=""
+          :column="1"
+          border
+          :label-style="{ 'width': '120px', 'font-weight': '500', 'text-align': 'left' }"
+          :content-style="{ 'flex': '1', 'text-align': 'left' }"
+        >
+          <el-descriptions-item label="主键ID">{{ selectedRow?.id || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="关联ID">{{ selectedRow?.relId || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="关联的大类ID">{{ selectedRow?.majorId || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="关联的小类ID">{{ selectedRow?.minorId || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="关联状态">
+            <el-tag :type="selectedRow?.relStatus === '1' ? 'success' : 'danger'">
+              {{ selectedRow?.relStatus === '1' ? '有效' : '无效' }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="关联时间">{{ dateFormatter(selectedRow?.relTime) || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="解除关联时间">{{ dateFormatter(selectedRow?.unrelTime) || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="操作人ID">{{ selectedRow?.operateUser || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="备注信息">{{ selectedRow?.remark || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="扩展字段1">{{ selectedRow?.extField1 || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="扩展字段2">{{ selectedRow?.extField2 || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="扩展字段3">{{ selectedRow?.extField3 || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="系统创建时间">{{ dateFormatter(selectedRow?.createTimeSys) || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="系统更新时间">{{ dateFormatter(selectedRow?.updateTimeSys) || '-' }}</el-descriptions-item>
+        </el-descriptions>
+      </div>
+    </div>
+
+    <!-- 表单弹窗：添加/修改 -->
+    <ManagedMajorMinorRelForm ref="formRef" @success="getList" />
   </div>
 </template>
 
-<script setup>
-import { ref, reactive, onMounted, getCurrentInstance } from 'vue'
-import { ElMessage, ElForm } from 'element-plus'
-import * as XLSX from 'xlsx'
-import { saveAs } from 'file-saver'
+<script setup lang="ts">
+import { ref, reactive, nextTick, onMounted, onUnmounted } from 'vue'
+import { dateFormatter } from '@/utils/formatTime'
+import download from '@/utils/download'
+import { ManagedMajorMinorRelApi, ManagedMajorMinorRelVO } from '@/api/dataHub/managedComponent/managedmajorminorrel'
+import ManagedMajorMinorRelForm from './ManagedMajorMinorRelForm.vue'
 
-// 表单引用（用于新增表单校验）
-const { proxy } = getCurrentInstance()
-const addFormRef = ref(null)
+/** 管理部件大类小类关联 列表 */
+defineOptions({ name: 'ManagedMajorMinorRel' })
 
-// 筛选条件：新增sortRule（1=关联时间降序，2=解除关联时间降序）
-const filters = reactive({
-  major_id: '',
-  rel_status: '',
-  sortRule: 1 // 默认按“关联时间降序”
-})
+const message = useMessage() // 消息弹窗
+const { t } = useI18n() // 国际化
 
-// 数据源与表格数据
-const allData = ref([])
-const tableData = ref([])
-const majorList = ref([])
+const loading = ref(true) // 列表的加载中
+const list = ref<ManagedMajorMinorRelVO[]>([]) // 列表的数据
+const total = ref(0) // 列表的总页数
+const exportLoading = ref(false) // 导出的加载中
 
-// 分页配置
-const pagination = reactive({
-  page: 1,
+// 详情伪抽屉相关变量
+const isDetailShow = ref(false)
+const selectedRow = ref<ManagedMajorMinorRelVO | null>(null)
+const isFullScreen = ref(false)
+
+const queryParams = reactive({
+  pageNo: 1,
   pageSize: 10,
-  total: 0
+  relId: undefined,
+  majorId: undefined,
+  minorId: undefined,
+  relStatus: undefined,
 })
+const queryFormRef = ref() // 搜索的表单
+const formRef = ref() // 表单弹窗
 
-// 详情抽屉配置
-const detailVisible = ref(false)
-const detailData = reactive({})
-
-// 新增抽屉配置
-const addVisible = ref(false)
-const addForm = reactive({
-  major_id: '',
-  minor_name: '',
-  remark: ''
-})
-
-// 新增表单校验规则
-const addRules = reactive({
-  major_id: [
-    { required: true, message: '请选择大类', trigger: 'change' }
-  ],
-  minor_name: [
-    { required: true, message: '请输入小类名称', trigger: 'blur' },
-    { min: 2, max: 50, message: '小类名称长度需在2-50字符之间', trigger: 'blur' }
-  ]
-})
-
-// 加载大类列表（模拟）
-const loadMajorList = () => {
-  majorList.value = [
-    { id: 'major_001', name: '电机系统' },
-    { id: 'major_002', name: '电控系统' },
-    { id: 'major_003', name: '传动系统' },
-    { id: 'major_004', name: '制动系统' },
-    { id: 'major_005', name: '液压系统' },
-    { id: 'major_006', name: '冷却系统' },
-    { id: 'major_007', name: '燃油系统' },
-    { id: 'major_008', name: '照明系统' },
-    { id: 'major_009', name: '车身电子' },
-    { id: 'major_010', name: '安全系统' }
-  ]
+/** 打开详情伪抽屉 */
+const openDetail = (row: ManagedMajorMinorRelVO) => {
+  selectedRow.value = row
+  isDetailShow.value = true
+  isFullScreen.value = false
+  document.body.style.overflow = 'hidden'
 }
 
-// 加载初始数据（模拟：补全数据，包含不同解除时间的无效条目）
-const loadAllData = () => {
-  allData.value = [
-    { major_id: 'major_001', major_name: '电机系统', minor_name: '电机轴承', rel_status: 1, rel_time: '2025-10-12 09:15:00', operate_user: 'admin', remark: '初始化关联', unrel_time: '' },
-    { major_id: 'major_002', major_name: '电控系统', minor_name: '传感模块', rel_status: 0, rel_time: '2025-09-01 15:00:00', operate_user: 'system', remark: '调整归属', unrel_time: '2025-10-10 11:30:00' },
-    { major_id: 'major_003', major_name: '传动系统', minor_name: '离合组件', rel_status: 1, rel_time: '2025-08-18 10:00:00', operate_user: 'admin', remark: '系统自动关联', unrel_time: '' },
-    { major_id: 'major_004', major_name: '制动系统', minor_name: '刹车片', rel_status: 1, rel_time: '2025-10-01 14:00:00', operate_user: 'admin', remark: '', unrel_time: '' },
-    { major_id: 'major_005', major_name: '液压系统', minor_name: '油泵', rel_status: 0, rel_time: '2025-09-15 10:30:00', operate_user: 'system', remark: '手动调整', unrel_time: '2025-10-15 09:20:00' },
-    { major_id: 'major_006', major_name: '冷却系统', minor_name: '散热器', rel_status: 1, rel_time: '2025-08-22 11:20:00', operate_user: 'admin', remark: '', unrel_time: '' },
-    { major_id: 'major_007', major_name: '燃油系统', minor_name: '燃油泵', rel_status: 1, rel_time: '2025-07-10 09:50:00', operate_user: 'admin', remark: '自动生成', unrel_time: '' },
-    { major_id: 'major_008', major_name: '照明系统', minor_name: 'LED大灯', rel_status: 0, rel_time: '2025-06-05 15:10:00', operate_user: 'system', remark: '替换型号', unrel_time: '2025-10-08 16:40:00' },
-    { major_id: 'major_009', major_name: '车身电子', minor_name: '车窗控制模块', rel_status: 1, rel_time: '2025-05-12 10:00:00', operate_user: 'admin', remark: '', unrel_time: '' },
-    { major_id: 'major_010', major_name: '安全系统', minor_name: '安全气囊', rel_status: 0, rel_time: '2025-04-20 14:40:00', operate_user: 'admin', remark: '召回更换', unrel_time: '2025-10-12 13:15:00' },
-    { major_id: 'major_001', major_name: '电机系统', minor_name: '电机定子', rel_status: 1, rel_time: '2025-10-14 08:30:00', operate_user: 'admin', remark: '新增配件', unrel_time: '' },
-    { major_id: 'major_002', major_name: '电控系统', minor_name: 'ECU模块', rel_status: 0, rel_time: '2025-09-20 11:00:00', operate_user: 'system', remark: '版本迭代', unrel_time: '2025-10-14 10:50:00' }
-  ]
+/** 关闭详情伪抽屉 */
+const closeDetail = () => {
+  isDetailShow.value = false
+  selectedRow.value = null
+  isFullScreen.value = false
+  document.body.style.overflow = ''
 }
 
-// 核心：查询+筛选+排序逻辑
+/** 切换全屏/缩小 */
+const toggleFullScreen = () => {
+  isFullScreen.value = !isFullScreen.value
+  nextTick(() => {
+    const iconEl = document.querySelector('.fullscreen-btn')
+    if (iconEl) {
+      iconEl.classList.add('btn-fade')
+      setTimeout(() => iconEl.classList.remove('btn-fade'), 300)
+    }
+  })
+}
+
+/** 查询列表 */
+const getList = async () => {
+  loading.value = true
+  try {
+    const data = await ManagedMajorMinorRelApi.getManagedMajorMinorRelPage(queryParams)
+    list.value = data.list
+    total.value = data.total
+  } finally {
+    loading.value = false
+  }
+}
+
+/** 搜索按钮操作 */
 const handleQuery = () => {
-  let result = [...allData.value]
-
-  // 1. 筛选逻辑（大类+关联状态）
-  if (filters.major_id) {
-    result = result.filter(item => item.major_id === filters.major_id)
-  }
-  if (filters.rel_status !== '' && filters.rel_status !== null && filters.rel_status !== undefined) {
-    result = result.filter(item => item.rel_status === filters.rel_status)
-  }
-
-  // 2. 排序逻辑（根据选择的规则排序）
-  result.sort((a, b) => {
-    // 规则1：关联时间降序（最新的关联时间排在前面）
-    if (filters.sortRule === 1) {
-      return new Date(b.rel_time) - new Date(a.rel_time)
-    }
-    // 规则2：解除关联时间降序（有解除时间的优先，且最新的排在前面）
-    else if (filters.sortRule === 2) {
-      // 处理“无解除时间”的情况（有效状态），默认排在后面
-      if (!a.unrel_time) return 1
-      if (!b.unrel_time) return -1
-      // 有解除时间的，按时间降序
-      return new Date(b.unrel_time) - new Date(a.unrel_time)
-    }
-    return 0
-  })
-
-  // 3. 分页逻辑（基于排序后的结果）
-  pagination.total = result.length
-  const start = (pagination.page - 1) * pagination.pageSize
-  const end = start + pagination.pageSize
-  tableData.value = result.slice(start, end)
-
-  // 无数据提示
-  if (!result.length) {
-    ElMessage.info('未查询到符合条件的记录')
-  }
+  queryParams.pageNo = 1
+  getList()
 }
 
-// 分页切换（联动查询）
-const handlePageChange = (page) => {
-  pagination.page = page
+/** 重置按钮操作 */
+const resetQuery = () => {
+  queryFormRef.value?.resetFields()
   handleQuery()
 }
 
-// 每页条数切换（重置页码+联动查询）
-const handlePageSizeChange = (size) => {
-  pagination.pageSize = size
-  pagination.page = 1 // 切换每页条数时，默认回到第一页
-  handleQuery()
+/** 添加/修改操作 */
+const openForm = (type: string, id?: number) => {
+  formRef.value.open(type, id)
 }
 
-// 导出功能（基于当前筛选+排序后的表格数据）
-const handleExport = () => {
-  if (!tableData.value.length) {
-    ElMessage.warning('暂无可导出数据')
-    return
+/** 删除按钮操作 */
+const handleDelete = async (id: number) => {
+  try {
+    // 删除的二次确认
+    await message.delConfirm()
+    // 发起删除
+    await ManagedMajorMinorRelApi.deleteManagedMajorMinorRel(id)
+    message.success(t('common.delSuccess'))
+    // 刷新列表
+    await getList()
+  } catch {}
+}
+
+/** 导出按钮操作 */
+const handleExport = async () => {
+  try {
+    // 导出的二次确认
+    await message.exportConfirm()
+    // 发起导出
+    exportLoading.value = true
+    const data = await ManagedMajorMinorRelApi.exportManagedMajorMinorRel(queryParams)
+    download.excel(data, '管理部件大类小类关联.xls')
+  } catch {
+  } finally {
+    exportLoading.value = false
   }
-
-  // 格式化导出数据（包含解除时间）
-  const exportData = tableData.value.map(item => ({
-    '大类名称': item.major_name,
-    '小类名称': item.minor_name,
-    '关联状态': item.rel_status === 1 ? '有效' : '无效',
-    '关联时间': item.rel_time,
-    '解除时间': item.unrel_time || '—',
-    '操作人': item.operate_user,
-    '备注': item.remark || ''
-  }))
-
-  // 生成Excel并下载
-  const worksheet = XLSX.utils.json_to_sheet(exportData)
-  const workbook = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(workbook, worksheet, '大类小类关联记录')
-  const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
-  saveAs(
-    new Blob([wbout], { type: 'application/octet-stream' }),
-    `管理部件大类小类关联记录_${new Date().toLocaleDateString()}.xlsx`
-  )
-
-  ElMessage.success('导出成功')
 }
 
-// 解除关联（更新解除时间，排序会自动联动）
-const handleUnrel = (row) => {
-  const targetItem = allData.value.find(
-    item => item.major_id === row.major_id && item.minor_name === row.minor_name
-  )
-  if (targetItem) {
-    targetItem.rel_status = 0
-    targetItem.remark = '手动解除关联'
-    targetItem.unrel_time = new Date().toLocaleString() // 记录当前解除时间
-    targetItem.operate_user = 'admin'
-  }
-
-  handleQuery() // 重新查询，触发排序更新
-  ElMessage.success(`小类「${row.minor_name}」已解除关联`)
-}
-
-// 重新关联（清空解除时间，排序会自动联动）
-const handleRelink = (row) => {
-  const targetItem = allData.value.find(
-    item => item.major_id === row.major_id && item.minor_name === row.minor_name
-  )
-  if (targetItem) {
-    targetItem.rel_status = 1
-    targetItem.remark = '手动重新关联'
-    targetItem.unrel_time = '' // 清空解除时间
-    targetItem.rel_time = new Date().toLocaleString() // 更新关联时间
-    targetItem.operate_user = 'admin'
-  }
-
-  handleQuery() // 重新查询，触发排序更新
-  ElMessage.success(`已重新关联小类「${row.minor_name}」`)
-}
-
-// 打开详情抽屉
-const openDetailDrawer = (row) => {
-  Object.assign(detailData, JSON.parse(JSON.stringify(row))) // 深拷贝避免修改源数据
-  detailVisible.value = true
-}
-
-// 打开新增抽屉（重置表单）
-const handleAdd = () => {
-  addForm.major_id = ''
-  addForm.minor_name = ''
-  addForm.remark = ''
-  if (addFormRef.value) {
-    addFormRef.value.clearValidate()
-  }
-  addVisible.value = true
-}
-
-// 提交新增（新增后自动排序）
-const handleAddSubmit = () => {
-  proxy.$refs.addFormRef.validate((isValid) => {
-    if (!isValid) return
-
-    // 避免重复添加（同一大类下小类名称唯一）
-    const isDuplicate = allData.value.some(
-      item => item.major_id === addForm.major_id && item.minor_name === addForm.minor_name
-    )
-    if (isDuplicate) {
-      ElMessage.warning(`当前大类下已存在「${addForm.minor_name}」小类，请勿重复添加`)
-      return
-    }
-
-    // 生成新增数据
-    const newRelItem = {
-      major_id: addForm.major_id,
-      major_name: majorList.value.find(item => item.id === addForm.major_id).name,
-      minor_name: addForm.minor_name,
-      rel_status: 1, // 新增默认有效
-      rel_time: new Date().toLocaleString(), // 当前关联时间
-      operate_user: 'admin',
-      remark: addForm.remark || '',
-      unrel_time: '' // 初始无解除时间
-    }
-
-    allData.value.unshift(newRelItem)
-    handleQuery() // 重新查询，触发排序
-    addVisible.value = false
-    ElMessage.success('新增大类小类关联成功')
-  })
-}
-
-// 初始化加载（数据+大类+默认查询排序）
+/** 初始化 **/
 onMounted(() => {
-  loadMajorList()
-  loadAllData()
-  handleQuery()
+  getList()
+})
+
+onUnmounted(() => {
+  document.body.style.overflow = ''
+  isFullScreen.value = false
 })
 </script>
 
-<style scoped>
-.managed-major-minor-rel {
-  padding: 20px;
-  background-color: #fff;
-  min-height: calc(100vh - 40px);
+<style scoped lang="scss">
+.managed-major-minor-rel-page {
+  padding: 8px;
+  height: 100vh;
+  box-sizing: border-box;
+  background-color: #f9fafb;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 }
 
-.toolbar {
-  margin-bottom: 20px;
+/* 搜索栏样式 - 更紧凑 */
+.search-container {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 12px 16px;
+  flex-shrink: 0;
+}
+
+.search-content {
+  width: 100%;
+}
+
+.form-row {
   display: flex;
-  gap: 15px;
-  align-items: center;
   flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+}
+
+.search-form {
+  width: 100%;
+}
+
+.search-form ::v-deep(.el-form-item) {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.search-form ::v-deep(.el-form-item__label) {
+  font-size: 13px;
+  color: #333;
+  text-align: right;
+  padding-right: 6px;
+}
+
+/* 按钮组与搜索字段同行 */
+.search-buttons-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* 列表区域样式 */
+.list-container {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.list-table {
+  flex: 1;
+  overflow: auto;
+
+  /* 禁止列拖动 */
+  ::v-deep(.el-table) {
+    table-layout: fixed;
+    border: none;
+  }
+
+  /* 去掉表格边框 */
+  ::v-deep(.el-table__header),
+  ::v-deep(.el-table__body),
+  ::v-deep(.el-table__row) {
+    border: none;
+  }
+
+  ::v-deep(.el-table th),
+  ::v-deep(.el-table td) {
+    border: none;
+  }
+
+  /* 添加行分隔线 */
+  ::v-deep(.el-table__row) {
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  /* 禁止列宽调整 */
+  ::v-deep(.el-table__header-wrapper .el-table__header) {
+    .el-table__column-resize-proxy {
+      display: none !important;
+    }
+  }
+
+  /* 隐藏列拖动指示器 */
+  ::v-deep(.el-table .caret-wrapper) {
+    cursor: default !important;
+  }
+
+  ::v-deep(.el-table__body tr:hover > td) {
+    background-color: #f0f9ff !important;
+  }
+
+  ::v-deep(.el-table__row--striped > td) {
+    background-color: #fafafa !important;
+  }
+
+  ::v-deep(.el-table__fixed-right) {
+    z-index: 10;
+    background-color: #fff !important;
+  }
+}
+
+/* 操作按钮组 - 紧凑排列 */
+.operation-btn-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.operation-btn {
+  padding: 2px 6px !important;
+  font-size: 12px !important;
+  min-width: auto !important;
+  height: 24px !important;
+}
+
+/* 分页样式 - 居中显示 */
+.pagination-container {
+  padding: 12px 0;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pagination-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.page-info {
+  color: #606266;
+  font-size: 14px;
+}
+
+/* 伪抽屉核心样式 */
+.detail-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  transition: opacity 0.3s ease;
+}
+
+.detail-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: calc(100% / 3);
+  height: 100vh;
+  background-color: #fff;
+  box-shadow: -2px 0 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: width 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  transform: translateX(0);
+  overflow: hidden;
+}
+
+.detail-drawer.full-screen {
+  width: 100%;
+  box-shadow: none;
+}
+
+/* 抽屉头部 */
+.detail-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #eee;
+  position: relative;
+  z-index: 1001;
+}
+
+.detail-header-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 全屏按钮样式 - 无背景 */
+.fullscreen-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background-color: transparent;
+  color: #606266;
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: #409eff;
+    background-color: rgba(64, 158, 255, 0.1);
+    transform: scale(1.05);
+  }
+}
+
+/* 关闭按钮样式 - 无背景 */
+.close-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background-color: transparent;
+  color: #606266;
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: #f56c6c;
+    background-color: rgba(245, 108, 108, 0.1);
+    transform: scale(1.05);
+  }
+}
+
+/* 按钮动画 */
+.btn-fade {
+  animation: btnFade 0.3s ease;
+}
+
+@keyframes btnFade {
+  0% { opacity: 0.5; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* 抽屉内容区域 */
+.detail-content {
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+
+/* 详情描述组件样式 - 全部左对齐 */
+::v-deep(.el-descriptions) {
+  --el-descriptions-item-padding: 16px 12px;
+}
+
+::v-deep(.el-descriptions__border .el-descriptions-item) {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+::v-deep(.el-descriptions__label) {
+  text-align: left !important;
+  color: #666;
+  justify-content: flex-start !important;
+}
+
+::v-deep(.el-descriptions__content) {
+  text-align: left !important;
+  color: #333;
+  word-break: break-all;
+  justify-content: flex-start !important;
+}
+
+::v-deep(.el-descriptions__cell) {
+  text-align: left !important;
+  justify-content: flex-start !important;
+}
+
+/* 响应式适配 */
+@media (max-width: 1440px) {
+  .search-buttons-group {
+    min-width: auto;
+  }
+
+  ::v-deep(.el-button) {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .detail-drawer {
+    width: 40%;
+  }
+}
+
+@media (max-width: 1200px) {
+  .search-form .el-input,
+  .search-form .el-select {
+    width: 140px !important;
+  }
+
+  .detail-drawer {
+    width: 50%;
+  }
+}
+
+@media (max-width: 992px) {
+  .form-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .search-buttons-group {
+    width: 100%;
+    justify-content: flex-start;
+    margin-left: 0;
+    margin-top: 8px;
+  }
+
+  .detail-drawer {
+    width: 70%;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-buttons-group {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .detail-drawer {
+    width: 100%;
+  }
+
+  .operation-btn-group {
+    flex-wrap: wrap;
+  }
+
+  .pagination-content {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* 滚动条优化 */
+::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f5f5f5;
+  border-radius: 3px;
 }
 </style>

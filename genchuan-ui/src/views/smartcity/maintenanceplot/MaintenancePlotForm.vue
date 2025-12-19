@@ -4,7 +4,7 @@
       ref="formRef"
       :model="formData"
       :rules="formRules"
-      label-width="100px"
+      label-width="140px"
       v-loading="formLoading"
     >
       <el-form-item label="地块名称" prop="plotName">
@@ -25,29 +25,34 @@
       <!--<el-form-item label="经度" prop="longitude">-->
       <!--  <el-input v-model="formData.longitude" placeholder="请输入经度" />-->
       <!--</el-form-item>-->
-      <!--<el-form-item label="绿化类型" prop="greeningType">-->
-      <!--  <el-select v-model="formData.greeningType" placeholder="请选择绿化类型">-->
-      <!--    <el-option label="请选择字典生成" value="" />-->
-      <!--  </el-select>-->
-      <!--</el-form-item>-->
-      <!--<el-form-item label="上次养护日期" prop="lastMaintenanceDate">-->
-      <!--  <el-date-picker-->
-      <!--    v-model="formData.lastMaintenanceDate"-->
-      <!--    type="date"-->
-      <!--    value-format="x"-->
-      <!--    placeholder="选择上次养护日期"-->
-      <!--    class="common-Width100"-->
-      <!--  />-->
-      <!--</el-form-item>-->
-      <!--<el-form-item label="下次养护计划日期" prop="nextMaintenanceDate">-->
-      <!--  <el-date-picker-->
-      <!--    v-model="formData.nextMaintenanceDate"-->
-      <!--    type="date"-->
-      <!--    value-format="x"-->
-      <!--    placeholder="选择下次养护计划日期"-->
-      <!--    class="common-Width100"-->
-      <!--  />-->
-      <!--</el-form-item>-->
+      <el-form-item label="绿化类型" prop="greeningType">
+        <el-select v-model="formData.greeningType" placeholder="请选择绿化类型" clearable style="width: 100%">
+          <el-option label="纯乔木绿化" value="pureArbor" />
+          <el-option label="纯灌木绿化" value="pureShrub" />
+          <el-option label="纯地被/草坪绿化" value="pureGroundcover" />
+          <el-option label="乔灌混合绿化" value="arborShrubMixed" />
+          <el-option label="乔灌草混合绿化" value="arborShrubGrassMixed" />
+          <el-option label="水生绿化" value="aquatic" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="上次养护日期" prop="lastMaintenanceDate">
+        <el-date-picker
+          v-model="formData.lastMaintenanceDate"
+          type="date"
+          value-format="x"
+          placeholder="选择上次养护日期"
+          class="common-Width100"
+        />
+      </el-form-item>
+      <el-form-item label="下次养护计划日期" prop="nextMaintenanceDate">
+        <el-date-picker
+          v-model="formData.nextMaintenanceDate"
+          type="date"
+          value-format="x"
+          placeholder="选择下次养护计划日期"
+          class="common-Width100"
+        />
+      </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="submitForm" type="primary" :disabled="formLoading">确 定</el-button>

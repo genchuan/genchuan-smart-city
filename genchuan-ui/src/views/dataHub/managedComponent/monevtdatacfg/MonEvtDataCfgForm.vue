@@ -24,7 +24,7 @@
       </el-form-item>
       <el-form-item label="字段类型" prop="fieldType">
         <el-select v-model="formData.fieldType" placeholder="请选择字段类型">
-          <el-option label="请选择字典生成" value="" />
+          <el-option label="请选择字典生成" value="1" />
         </el-select>
       </el-form-item>
       <el-form-item label="字段长度" prop="fieldLength">
@@ -32,7 +32,7 @@
       </el-form-item>
       <el-form-item label="约束条件" prop="constraintType">
         <el-select v-model="formData.constraintType" placeholder="请选择约束条件">
-          <el-option label="请选择字典生成" value="" />
+          <el-option label="请选择字典生成" value="1" />
         </el-select>
       </el-form-item>
       <el-form-item label="值域范围" prop="valueRange">

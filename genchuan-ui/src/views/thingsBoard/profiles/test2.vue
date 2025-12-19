@@ -85,6 +85,13 @@
             </template>
           </el-table-column>
 
+          <el-table-column label="附件地址" min-width="150" align="center" v-if="tableColumnShow('附件地址')">
+            <template #default="scope">
+              {{ tableFieldShow('attachmentUrl', scope.row.field) }}
+            </template>
+          </el-table-column>
+
+
           <el-table-column width="300" fixed="right" label="操作" align="center">
             <template #default="scope">
               <el-button type="success" :icon="View" :plain="true" @click="queryClick(scope.row)" v-hasPermi="['profiles:test2:query']">详细</el-button>
@@ -138,7 +145,21 @@
               <li class="width50"><span>道路分类代码：</span>{{ handleTypeOptions(tableFieldShow('道路分类代码', queryData.field), optionsLisi.道路分类代码Options) }}</li>
               <li class="width50"><span>我是文本框：</span>{{ tableFieldShow('我是文本框', queryData.field) }}</li>
               <li class="width50"><span>我是单选框：</span>{{ handleTypeOptions(tableFieldShow('我是单选框', queryData.field), optionsLisi.我是单选框Options) }}</li>
-
+              <li class="width100"><span>附件地址：</span>
+                <div>
+                  <div v-for="(item,key) in queryData.attachmentUrl" :key="key" style="margin-top: 8px">{{item}}
+                    <el-link
+                      :href="item"
+                      :underline="false"
+                      download
+                      target="_blank"
+                      type="primary"
+                  >
+                    下载
+                  </el-link>
+                  </div>
+                </div>
+              </li>
             </ul>
           </div>
 
@@ -167,7 +188,9 @@
                   <el-radio v-for="item in optionsLisi.我是单选框Options" :key="item.value" :value="item.value">{{ item.label }}</el-radio>
                 </el-radio-group>
               </el-form-item>
-
+              <el-form-item label="附件地址"  prop="field.attachmentUrl" class="edit-content-form-li width100" :rules="[]">
+                <UploadFile v-model="formData.field.attachmentUrl" />
+              </el-form-item>
             </el-form>
           </div>
         </div>
@@ -226,7 +249,7 @@ const initFormData = {
     道路分类代码: '',//道路分类代码
     我是文本框: '',//我是文本框
     我是单选框: '',//我是单选框
-
+    attachmentUrl:undefined,//图片上传
   }
 }
 
@@ -258,6 +281,7 @@ const drawerSubmitForm = async (formEl: FormInstance | undefined) => {
   });
   if (valid) {
     try {
+      formData.value.field.attachmentUrl=formData.value.field.attachmentUrl.toString()
       let res = await assetsEdit(formData.value);
       await assetsEditField(res.id.id, formData.value.field)
       if (drawerConfig.value.type === 'add') {
@@ -282,7 +306,11 @@ const drawerSubmitForm = async (formEl: FormInstance | undefined) => {
 const queryData = ref({})
 const queryClick = async (row) => {
   queryData.value = row;
-  console.log(row)
+ let attachmentUrlres= tableFieldShow('attachmentUrl', queryData.value.field)
+  if(attachmentUrlres.length){
+    queryData.value.attachmentUrl=attachmentUrlres.split(',');
+  }
+  console.log(queryData.value.attachmentUrl)
   drawerConfig.value.isDrawer = true;
   drawerConfig.value.loading = false;
   drawerConfig.value.type = 'query';
@@ -298,6 +326,7 @@ const editClick = async (row) => {
   formData.value.field.道路分类代码 = tableFieldShow('道路分类代码', row.field);//道路分类代码
   formData.value.field.我是文本框 = tableFieldShow('我是文本框', row.field);//我是文本框
   formData.value.field.我是单选框 = tableFieldShow('我是单选框', row.field);//我是单选框
+  formData.value.field.attachmentUrl = tableFieldShow('attachmentUrl', row.field);//附件地址
 
   drawerConfig.value.isDrawer = true;
   drawerConfig.value.loading = false;
@@ -392,6 +421,7 @@ const tableColumns = ref([
   {label: '道路分类代码', visible: true},
   {label: '我是文本框', visible: true},
   {label: '我是单选框', visible: true},
+  {label: '附件地址', visible: true},
 
 ])
 // table表格数据

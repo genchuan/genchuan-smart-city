@@ -6,9 +6,8 @@
       :model="queryParams"
       ref="queryFormRef"
       :inline="true"
-      label-width="68px"
     >
-      <el-form-item label="点位编号" prop="pointNumber">
+      <el-form-item label="点位编号" prop="pointNumber" label-width="100px">
         <el-input
           v-model="queryParams.pointNumber"
           placeholder="请输入点位编号"
@@ -37,7 +36,7 @@
           class="!w-220px"
         />
       </el-form-item>
-      <el-form-item>
+      <el-form-item style="margin-left: 60px">
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
 
@@ -65,7 +64,7 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column label="主键" align="center" prop="id" />
+      <el-table-column label="主键" align="center" prop="id" min-width="50px" />
       <el-table-column label="点位编号" align="center" prop="pointNumber" />
       <el-table-column label="点位名称" align="center" prop="pointName" />
       <el-table-column label="点位类型" align="center" prop="pointType" />

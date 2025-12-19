@@ -114,7 +114,7 @@ const initChart = () => {
         label: {
           show: props.activeIndex === -1,
           position: 'outside',
-          formatter: '{b}: {d}%', // 显示名称和百分比
+          formatter: '{d}%', // 显示名称和百分比
           color: '#e0e0e0',
           fontSize: labelFontSize, // 标签文字自适应
           lineHeight: vwToPx(0.8) // 行高也自适应

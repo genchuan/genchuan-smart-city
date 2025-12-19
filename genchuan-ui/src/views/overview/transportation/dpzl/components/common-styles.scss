@@ -156,61 +156,83 @@
   flex: 1;
 }
 
-// 核心指标卡片样式
+// 核心指标卡片容器
 .indicator-cards {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: 0.2vw;
-  padding-top: 1vw;
+  gap: 0.8vw;
+  padding: 0.5vw 0;
 }
 
+// 基础卡片样式（去掉遮挡渐变的叠加层）
 .indicator-card {
-  background-color: rgba(193, 211, 180, 0.4);
-  border: 1px solid rgba(25, 186, 139, 0.3);
-  height: 16vh;
-  border-radius: 4px;
-  padding: 0.4vw;
+  height: 20vh;
+  border-radius: 8px;
+  padding: 0.6vw;
   cursor: pointer;
   transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid transparent;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+  // 删掉原来的 ::before 叠加层（之前遮挡了渐变）
+  .indicator-title, .sub-indicators {
+    position: relative;
+    z-index: 1;
+  }
 
   &:hover {
-    box-shadow: 0 0 10px rgba(25, 186, 139, 0.5);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    border-color: rgba(255, 255, 255, 0.3);
   }
 
   .indicator-title {
     font-size: 0.7vw;
-    font-weight: bold;
-    margin-bottom: 1vw;
-    color: #00ccff;
+    font-weight: 600;
+    margin-bottom: 3vh;
+    color: #90ffc4;
+    text-align: center;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   }
 
   .sub-indicators {
     display: flex;
     flex-direction: column;
-    gap: 0.5vw;
+    gap: 0.6vw;
+    text-align: center;
   }
 
   .sub-indicator-item {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+  }
 
-    .sub-indicator-value {
-      font-size: 0.8vw;
-      font-weight: bold;
-      color: #e0e0e0;
-    }
+  .sub-indicator-value {
+    font-size: 0.9vw;
+    font-weight: 700;
+    color: #f0f9ff;
+    line-height: 1.3;
   }
 }
 
-// 指标组状态样式
-.indicator-card.normal {
-  border-color: rgba(25, 186, 139, 0.5);
-}
+// 1. 通行效率（明显蓝色渐变：浅蓝 → 深蓝）
+.card-traffic.normal { background: linear-gradient(135deg, rgba(0, 168, 255, 0.3) 30%, #00528a 100%); }
+.card-traffic.danger { background: linear-gradient(135deg, #ff4d4d 30%, #00528a 100%); border-top-color: #ff4d4d; }
 
-.indicator-card.danger {
-  border-color: rgba(255, 77, 77, 0.5);
-}
+// 2. 事故预警（明显橙色渐变：浅橙 → 深橙）
+.card-accident.normal { background: linear-gradient(135deg, rgba(255, 153, 0, 0.3) 30%, #8a4400 100%); }
+.card-accident.danger { background: linear-gradient(135deg, #ff4d4d 30%, #8a4400 100%); border-top-color: #ff4d4d; }
+
+// 3. 服务质量（明显紫色渐变：浅紫 → 深紫）
+.card-service.normal { background: linear-gradient(135deg, rgba(139, 92, 246, 0.3) 30%, #4a2394 100%); }
+.card-service.danger { background: linear-gradient(135deg, #ff4d4d 30%, #4a2394 100%); border-top-color: #ff4d4d; }
+
+// 4. 应急处置（明显红色渐变：浅红 → 深红）
+.card-disposal.normal { background: linear-gradient(135deg, rgba(255, 107, 107, 0.3) 30%, #8a2323 100%); }
+.card-disposal.danger { background: linear-gradient(135deg, #ff3333 30%, #8a2323 100%); border-top-color: #ff3333; }
 
 // 指标详情弹窗样式
 .sub-indicator-detail {
@@ -220,12 +242,12 @@
 
   .current-value {
     font-weight: bold;
-    color: #fff;
+    color: #d3771a;
   }
 
   .target-value {
-    color: #aaa;
-    font-size: 0.9em;
+    color: #666;
+    font-size: 0.7vw;
   }
 
   .status-tag {
@@ -244,35 +266,35 @@
 .resource-stats {
   display: flex;
   justify-content: space-around;
-  margin-bottom: 15px;
-  gap: 10px;
+  margin-bottom: 1vh;
+  gap: 1vw;
 }
 
 .resource-stat-item {
   flex: 1;
   background: rgba(0, 30, 60, 0.5);
   border-radius: 4px;
-  padding: 10px 5px;
+  padding: 1vh 0.5vw;
   text-align: center;
 
   .stat-number {
-    font-size: 20px;
+    font-size: 1.2vw;
     font-weight: bold;
     color: #00ccff;
   }
 
   .stat-label {
-    font-size: 12px;
+    font-size: 0.8vw;
     color: #ccc;
-    margin-top: 5px;
+    margin-top: 0.5vh;
   }
 }
 
 // 饼图容器样式
 .resource-pie-chart {
   width: 100%;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin-top: 1vh;
+  margin-bottom: 2vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -288,6 +310,121 @@
   width: 100%;
   height: 100%;
   min-height: 180px;
+}
+
+// TOP10路段列表样式
+.top10-container {
+  padding: 1vh 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  h4 {
+    font-size: 0.8vw;
+    color: #00ccff;
+    margin: 0 0 0.6vw 0;
+  }
+
+  .top10-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3vw;
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 0.5vw;
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 30, 60, 0.3);
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 204, 255, 0.6);
+      border-radius: 3px;
+    }
+    scroll-behavior: smooth;
+  }
+
+  .top10-item {
+    display: flex;
+    align-items: center;
+    padding: 1.2vh 1.5vw;
+    background: rgba(0, 30, 60, 0.5);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background: rgba(0, 50, 80, 0.7);
+    }
+  }
+
+  .top10-rank {
+    width: 1.2vw;
+    height: 2.6vh;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 1vw;
+
+    // 1-3名特殊颜色
+    &.rank-first {
+      background: #ffd700; // 金色
+      color: #333; // 深色文字
+    }
+    &.rank-second {
+      background: #c0c0c0; // 银色
+      color: #333;
+    }
+    &.rank-third {
+      background: #cd7f32; // 铜色
+      color: #fff;
+    }
+    &.rank-other {
+      background: #00ccff; // 蓝色
+      color: #fff;
+    }
+  }
+
+  .top10-info {
+    flex: 1;
+
+    .top10-name {
+      font-weight: 500;
+      margin-bottom: 5px;
+      font-size: 0.8vw;
+    }
+
+    .top10-meta {
+      font-size: 0.7vw;
+      color: #ccc;
+      display: flex;
+      gap: 1.2vw;
+      flex-wrap: wrap;
+
+      // 超容率颜色（保留你的设计）
+      .normal {
+        color: #13ce66; // 正常（绿色）
+      }
+      .warning {
+        color: #ff7d00; // 接近饱和（橙色）
+      }
+      .danger {
+        color: #ff4949; // 超容（红色）
+      }
+    }
+  }
+}
+
+.traffic-flow-panel .panel-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 1vw;
 }
 
 // 表格操作区
@@ -314,6 +451,48 @@
     margin-bottom: 10px;
     padding-bottom: 5px;
     border-bottom: 1px solid rgba(0, 204, 255, 0.2);
+  }
+}
+
+.indicator-detail {
+  .sub-indicator-detail {
+    display: flex;
+    align-items: center;
+    gap: 15px; // 增加间距，避免拥挤
+    flex-wrap: wrap; // 适配小屏幕换行
+
+    // 同比变化样式
+    .year-on-year {
+      font-size: 0.8vw;
+      padding: 0.2vw 0.4vw;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+    // 增长-绿色
+    .year-on-year.increase {
+      color: #13ce66;
+      background: rgba(19, 206, 102, 0.2);
+    }
+    // 下降-红色
+    .year-on-year.decrease {
+      color: #ff4949;
+      background: rgba(255, 73, 73, 0.2);
+    }
+
+    // 调整原有元素间距，适配新增的同比
+    .current-value {
+      font-weight: bold;
+      color: #d3771a;
+      min-width: 80px;
+    }
+    .target-value {
+      color: #666;
+      font-size: 0.7vw;
+      min-width: 100px;
+    }
+    .status-tag {
+      margin-left: auto;
+    }
   }
 }
 
@@ -444,57 +623,6 @@ dv-scroll-board {
   box-sizing: border-box;
 }
 
-// Element Plus 组件样式覆盖
-::v-deep .el-dialog {
-  background-color: rgba(0, 20, 40);
-  border: 1px solid rgba(0, 204, 255, 0.3);
-
-  .el-dialog__header {
-    border-bottom: 1px solid rgba(0, 204, 255, 0.2);
-
-    .el-dialog__title {
-      color: #00ccff;
-    }
-  }
-
-  .el-dialog__footer {
-    border-top: 1px solid rgba(0, 204, 255, 0.1);
-  }
-}
-
-::v-deep .el-descriptions {
-  background-color: #999;
-
-  .el-descriptions__label {
-    color: #999;
-    font-weight: normal;
-  }
-
-  .el-descriptions__content {
-    color: #999;
-  }
-}
-
-::v-deep .el-input__inner,
-::v-deep .el-select__inner,
-::v-deep .el-textarea__inner {
-  background-color: rgba(0, 30, 60, 0.5);
-  border-color: rgba(0, 204, 255, 0.3);
-  color: #fff;
-
-  &::placeholder {
-    color: #999;
-  }
-}
-
-::v-deep .el-progress__stroke {
-  transition: width 0.6s ease !important;
-}
-
-::v-deep .el-form-item__label {
-  color: #ccc;
-}
-
 // 近期异常信息列表
 ::v-deep .dv-scroll-board .header {
   font-size: 0.9vw;
@@ -518,6 +646,27 @@ dv-scroll-board {
   transform: translateX(3px);
 }
 
+@keyframes blink {
+  0% {
+    border-color: rgba(255, 77, 77, 0.5);
+    background-color: rgba(211, 180, 180, 0.4);
+  }
+  50% {
+    border-color: rgba(255, 77, 77, 1); // 红色加深
+    background-color: rgba(211, 180, 180, 0.6); // 背景加深
+  }
+  100% {
+    border-color: rgba(255, 77, 77, 0.5);
+    background-color: rgba(211, 180, 180, 0.4);
+  }
+}
+
+// 异常指标卡片添加闪烁动画
+.indicator-card.danger {
+  border-color: rgba(255, 77, 77, 0.5);
+  animation: blink 2s infinite; // 2秒一次闪烁，无限循环
+}
+
 // 调整字体大小
 :deep(.el-button--text.el-button--small) {
   font-size: 0.7vw;
@@ -525,4 +674,18 @@ dv-scroll-board {
 
 :deep(.el-tag) {
   font-size: 0.7vw;
+}
+
+:deep(.el-button--small.el-button--primary) {
+  font-size: 0.7vw;
+  padding: 0.3vw 0.8vw;
+  min-width: 5vw;
+  max-width: 8vw;
+  height: auto;
+  line-height: 1.2;
+  border-radius: 0.3vw;
+}
+
+:deep(.el-button--small.el-button--primary:hover) {
+  padding: 0.35vw 0.85vw;
 }

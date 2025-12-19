@@ -17,7 +17,15 @@ export interface MenuVO {
   alwaysShow?: boolean
   createTime: Date
 }
+// 新增：菜单编号列表请求参数接口
+export interface MenuTreeByIdsReqVO {
+  menuIds: number[] // 菜单编号列表（int64类型对应TS的number）
+}
 
+// 新增：根据菜单编号列表获取菜单树形结构
+export const getMenuTreeByIds = (data: MenuTreeByIdsReqVO) => {
+  return request.post({ url: '/system/menu/tree-by-ids', data })
+}
 // 查询菜单（精简）列表
 export const getSimpleMenusList = () => {
   return request.get({ url: '/system/menu/simple-list' })
@@ -47,3 +55,5 @@ export const updateMenu = (data: MenuVO) => {
 export const deleteMenu = (id: number) => {
   return request.delete({ url: '/system/menu/delete?id=' + id })
 }
+
+

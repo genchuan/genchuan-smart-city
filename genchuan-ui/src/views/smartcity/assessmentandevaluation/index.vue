@@ -6,9 +6,8 @@
       :model="queryParams"
       ref="queryFormRef"
       :inline="true"
-      label-width="68px"
     >
-      <el-form-item label="养护人员" prop="maintenancePersonnelNumber">
+      <el-form-item label="养护人员" prop="maintenancePersonnelNumber" label-width="100px">
         <el-input
           v-model="queryParams.maintenancePersonnelNumber"
           placeholder="请输入养护人员编号"
@@ -35,54 +34,7 @@
           class="!w-240px"
         />
       </el-form-item>
-      <!--<el-form-item label="考核得分" prop="assessmentScore">-->
-      <!--  <el-input-->
-      <!--    v-model="queryParams.assessmentScore"-->
-      <!--    placeholder="请输入考核得分"-->
-      <!--    clearable-->
-      <!--    @keyup.enter="handleQuery"-->
-      <!--    class="!w-240px"-->
-      <!--  />-->
-      <!--</el-form-item>-->
-      <!--<el-form-item label="考核等级" prop="assessmentLevel">-->
-      <!--  <el-input-->
-      <!--    v-model="queryParams.assessmentLevel"-->
-      <!--    placeholder="请输入考核等级"-->
-      <!--    clearable-->
-      <!--    @keyup.enter="handleQuery"-->
-      <!--    class="!w-240px"-->
-      <!--  />-->
-      <!--</el-form-item>-->
-      <!--<el-form-item label="评价意见" prop="evaluationOpinion">-->
-      <!--  <el-input-->
-      <!--    v-model="queryParams.evaluationOpinion"-->
-      <!--    placeholder="请输入评价意见"-->
-      <!--    clearable-->
-      <!--    @keyup.enter="handleQuery"-->
-      <!--    class="!w-240px"-->
-      <!--  />-->
-      <!--</el-form-item>-->
-      <!--<el-form-item label="改进建议" prop="improvementSuggestions">-->
-      <!--  <el-input-->
-      <!--    v-model="queryParams.improvementSuggestions"-->
-      <!--    placeholder="请输入改进建议"-->
-      <!--    clearable-->
-      <!--    @keyup.enter="handleQuery"-->
-      <!--    class="!w-240px"-->
-      <!--  />-->
-      <!--</el-form-item>-->
-      <!--<el-form-item label="创建时间" prop="createTime">-->
-      <!--  <el-date-picker-->
-      <!--    v-model="queryParams.createTime"-->
-      <!--    value-format="YYYY-MM-DD HH:mm:ss"-->
-      <!--    type="daterange"-->
-      <!--    start-placeholder="开始日期"-->
-      <!--    end-placeholder="结束日期"-->
-      <!--    :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"-->
-      <!--    class="!w-220px"-->
-      <!--  />-->
-      <!--</el-form-item>-->
-      <el-form-item>
+      <el-form-item style="margin-left: 60px">
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
         <el-button
@@ -109,7 +61,7 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column label="主键" align="center" prop="id" />
+      <el-table-column label="主键" align="center" prop="id" min-width="50px" />
       <el-table-column label="养护人员编号" align="center" prop="maintenancePersonnelNumber" />
       <el-table-column label="养护任务编号" align="center" prop="maintenanceTaskNumber" />
       <el-table-column label="考核周期" align="center" prop="assessmentCycle" />

@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { onMounted, defineProps, ref, onUnmounted, watch } from 'vue';
+import {onMounted, defineProps, ref, onUnmounted, watch} from 'vue';
 import markerGreen from '@/assets/chart/images/normal.png';
 import markerYellow from '@/assets/chart/images/maintain.png';
 import markerRed from '@/assets/chart/images/abnormal.png';
@@ -35,7 +35,7 @@ const props = defineProps({
     type: String,
     default: 'chinaEcharts',
   },
-  geometriesArray: { // 接收交通设备数据
+  geometriesArray: {
     type: Array,
     default: () => []
   }
@@ -44,12 +44,27 @@ const props = defineProps({
 const mapInstance = ref(null);
 const infoWindow = ref(null);
 const markerLayer = ref(null);
-const mapInitialized = ref(false); // 新增：跟踪地图初始化状态
+const mapInitialized = ref(false);
+
+const handleMarkerClick = (e) => {
+  const {properties, position} = e.geometry;
+  if (properties && position && infoWindow.value) {
+    infoWindow.value.setContent(getTooltipContent(properties));
+    infoWindow.value.setPosition(position);
+    infoWindow.value.open();
+  }
+};
+
+const handleInfoWindowClose = () => {
+  if (infoWindow.value) {
+    infoWindow.value.close();
+  }
+};
 
 const initMap = () => {
   const callbackName = `initMap_${props.idName}`;
   const script = document.createElement('script');
-  script.src = `https://map.qq.com/api/gljs?v=1.exp&key=OHCBZ-7BPC3-J7E3H-OA62K-Y3ZFZ-JQBPD&callback=${callbackName}`;
+  script.src = `https://map.qq.com/api/gljs?v=1.exp&key=QTQBZ-F3RWW-JJJRV-YNPA5-ZIKDK-3SBNO&callback=${callbackName}`;
   script.async = true;
 
   window[callbackName] = () => {
@@ -60,12 +75,14 @@ const initMap = () => {
   document.head.appendChild(script);
 };
 
-// 新增：提取标记创建逻辑为独立函数，便于数据更新时复用
 const createMarkers = (map) => {
-  // 先销毁已有标记层，避免重复渲染
   if (markerLayer.value) {
-    markerLayer.value.off('click');
-    markerLayer.value.destroy();
+    try {
+      markerLayer.value.off('click', handleMarkerClick);
+      markerLayer.value.destroy();
+    } catch (error) {
+      console.warn('销毁标记层失败：', error);
+    }
     markerLayer.value = null;
   }
 
@@ -75,14 +92,14 @@ const createMarkers = (map) => {
       if (item && typeof item.coord_x === 'number' && typeof item.coord_y === 'number') {
         geometriesData.push({
           id: `marker-${index}`,
-          styleId: item.run_status ? `status-${item.run_status}` : 'default', // 按交通设备状态关联样式
-          position: new TMap.LatLng(item.coord_x, item.coord_y), // 交通设备坐标
+          styleId: item.run_status ? `status-${item.run_status}` : 'default',
+          position: new TMap.LatLng(item.coord_x, item.coord_y),
           properties: {
-            equip_id: item.equip_id, // 交通设备ID
-            equip_name: item.equip_name, // 交通设备名称
+            equip_id: item.equip_id,
+            equip_name: item.equip_name,
             coord_x: item.coord_x,
             coord_y: item.coord_y,
-            run_status: item.run_status // 交通设备状态（正常/异常/维护）
+            run_status: item.run_status
           }
         });
       }
@@ -96,21 +113,12 @@ const createMarkers = (map) => {
       geometries: geometriesData
     });
 
-    // 标记点点击事件：显示交通设备信息
-    markerLayer.value.on('click', (e) => {
-      const { properties, position } = e.geometry;
-      if (properties && position && infoWindow.value) {
-        infoWindow.value.setContent(getTooltipContent(properties));
-        infoWindow.value.setPosition(position);
-        infoWindow.value.open();
-      }
-    });
+    markerLayer.value.on('click', handleMarkerClick);
   }
 };
 
-// 信息窗内容：按“：”对齐优化，保留状态颜色
+// 信息窗内容
 const getTooltipContent = (properties) => {
-  // 对齐核心样式：与其他地图信息窗口保持一致
   const labelStyle = 'width: 80px; text-align: right; font-weight: bold; margin-right: 6px; flex-shrink: 0;';
   const valueStyle = 'flex: 1; text-align: left; word-break: break-all;';
   const rowStyle = 'display: flex; align-items: center; margin: 6px 0;';
@@ -118,22 +126,18 @@ const getTooltipContent = (properties) => {
   return `
     <div style="padding: 10px; font-size: 14px; color: #333; background: white; border: 1px solid #ccc; min-width: 260px; border-radius: 4px;">
       <div style="margin-bottom: 8px; font-weight: bold; color: #1E90FF; border-bottom: 1px solid #eee; padding-bottom: 4px; text-align: center;">交通设备信息</div>
-
       <div style="${rowStyle}">
         <span style="${labelStyle}">设备ID：</span>
         <span style="${valueStyle}">${properties.equip_id || '未知'}</span>
       </div>
-
       <div style="${rowStyle}">
         <span style="${labelStyle}">名称：</span>
         <span style="${valueStyle}">${properties.equip_name || '未知'}</span>
       </div>
-
       <div style="${rowStyle}">
         <span style="${labelStyle}">坐标：</span>
         <span style="${valueStyle}">(${properties.coord_x.toFixed(6)}, ${properties.coord_y.toFixed(6)})</span>
       </div>
-
       <div style="${rowStyle}">
         <span style="${labelStyle}">状态：</span>
         <span style="${valueStyle}; color: ${
@@ -153,25 +157,25 @@ const getMarkerStyles = () => {
     'status-正常': new TMap.MarkerStyle({
       width: 34,
       height: 34,
-      anchor: { x: 15, y: 30 },
+      anchor: {x: 15, y: 30},
       src: markerGreen
     }),
     'status-异常': new TMap.MarkerStyle({
       width: 34,
       height: 34,
-      anchor: { x: 15, y: 30 },
+      anchor: {x: 15, y: 30},
       src: markerRed
     }),
     'status-维护': new TMap.MarkerStyle({
       width: 34,
       height: 34,
-      anchor: { x: 15, y: 30 },
+      anchor: {x: 15, y: 30},
       src: markerYellow
     }),
     'default': new TMap.MarkerStyle({
       width: 34,
       height: 34,
-      anchor: { x: 15, y: 30 },
+      anchor: {x: 15, y: 30},
       src: markerGray
     })
   };
@@ -193,11 +197,11 @@ const mapCallback = () => {
     map: map,
     position: new TMap.LatLng(0, 0),
     content: '',
-    offset: {x: 0, y: -60},
+    offset: {x: 0, y: -40},
     visible: false
   });
 
-  infoWindow.value.on('close', () => infoWindow.value.close());
+  infoWindow.value.on('close', handleInfoWindowClose);
 
   // 初始化时创建标记
   if (props.geometriesArray.length > 0) {
@@ -205,11 +209,10 @@ const mapCallback = () => {
   }
 };
 
-// 新增：监听数据变化，重新渲染标记
+// 监听数据变化，重新渲染标记
 watch(
   () => props.geometriesArray,
   (newVal) => {
-    // 确保地图已初始化且数据有效
     if (mapInitialized.value && Array.isArray(newVal) && newVal.length > 0) {
       createMarkers(mapInstance.value);
     }
@@ -223,12 +226,20 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (markerLayer.value) {
-    markerLayer.value.off('click');
-    markerLayer.value.destroy();
+    try {
+      markerLayer.value.off('click', handleMarkerClick);
+      markerLayer.value.destroy();
+    } catch (error) {
+      console.warn('卸载时销毁标记层失败：', error);
+    }
   }
   if (infoWindow.value) {
-    infoWindow.value.off('close');
-    infoWindow.value.destroy();
+    try {
+      infoWindow.value.off('close', handleInfoWindowClose);
+      infoWindow.value.destroy();
+    } catch (error) {
+      console.warn('卸载时销毁信息窗失败：', error);
+    }
   }
   if (mapInstance.value) {
     mapInstance.value.destroy();

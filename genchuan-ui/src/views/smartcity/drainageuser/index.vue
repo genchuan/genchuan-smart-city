@@ -6,9 +6,8 @@
       :model="queryParams"
       ref="queryFormRef"
       :inline="true"
-      label-width="150px"
     >
-      <el-form-item label="统一社会信用代码" prop="creditCode">
+      <el-form-item label="统一社会信用代码" prop="creditCode" label-width="150px">
         <el-input
           v-model="queryParams.creditCode"
           placeholder="请输入统一社会信用代码"
@@ -41,7 +40,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item>
+      <el-form-item style="margin-left: 50px">
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
         <el-button
@@ -68,9 +67,9 @@
   <!-- 列表 -->
   <ContentWrap>
     <el-table v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
-      <el-table-column label="ID" align="center" prop="id" />
-      <el-table-column label="统一社会信用代码" align="center" prop="creditCode" />
-      <el-table-column label="排水户名称" align="center" prop="userName" />
+      <el-table-column label="ID" align="center" prop="id" min-width="30px"/>
+      <el-table-column label="统一社会信用代码" align="center" prop="creditCode" width="200px"/>
+      <el-table-column label="排水户名称" align="center" prop="userName" width="220px" />
       <el-table-column label="行业类别" align="center" prop="industryType">
         <template #default="scope">
           <dict-tag :type="DICT_TYPE.SM_INDUSTRY_CATEGORY" :value="scope.row.industryType" />

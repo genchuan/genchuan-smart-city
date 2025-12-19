@@ -7,7 +7,7 @@
   >
     <template #header>
       <div class="flex justify-between items-center w-full px-2">
-        <span class="text-lg font-bold text-gray-800">网格边界样式配置</span>
+        <span class="text-lg font-bold text-gray-800">网格标识码注记详情</span>
         <el-button type="primary" link @click="isFullscreen = !isFullscreen">
           <Icon :icon="isFullscreen ? 'ep:zoom-out' : 'ep:zoom-in'" />
           {{ isFullscreen ? '退出全屏' : '全屏' }}
@@ -15,38 +15,104 @@
       </div>
     </template>
 
-    <div class="flex gap-4">
-      <div class="w-1/2">
-        <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px" class="p-4">
-          <el-form-item label="比例尺" prop="scale">
-            <el-select v-model="formData.scale" placeholder="选择比例尺">
-              <el-option v-for="item in scaleList" :key="item.value" :label="item.label" :value="item.value" />
-            </el-select>
-          </el-form-item>
+    <div class="p-4">
+      <!-- Grid布局：两列 -->
+      <div class="grid grid-cols-2 gap-6">
+        <!-- 左侧：基本信息卡片 -->
+        <div class="flex flex-col gap-4">
+          <!-- 基础信息卡片 -->
+          <el-card
+            class="hover:shadow-lg transition-shadow duration-300"
+            header="基础信息"
+            :header-style="{ background: '#e8f4f8', color: '#2d3748', fontWeight: '600' }"
+          >
+            <div class="space-y-3 text-gray-700">
+              <div class="flex justify-between">
+                <span>主键ID：</span>
+                <span class="text-blue-600 font-bold">{{ formData.id || '-' }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span>注记ID：</span>
+                <span class="text-blue-600 font-bold">{{ formData.annotateId || '-' }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span>比例尺：</span>
+                <span class="text-blue-600 font-bold">{{ formData.scale || '-' }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span>网格类型：</span>
+                <span class="text-blue-600 font-bold">
+                  {{ gridTypeMap[formData.gridType] || formData.gridType || '-' }}
+                </span>
+              </div>
+            </div>
+          </el-card>
 
-          <el-form-item label="网格类型" prop="gridType">
-            <el-select v-model="formData.gridType" placeholder="选择网格类型">
-              <el-option v-for="item in gridTypeList" :key="item.value" :label="item.label" :value="item.value" />
-            </el-select>
-          </el-form-item>
+          <!-- 样式信息卡片 -->
+          <el-card
+            class="hover:shadow-lg transition-shadow duration-300"
+            header="样式配置"
+            :header-style="{ background: '#f0f8fb', color: '#2d3748', fontWeight: '600' }"
+          >
+            <div class="space-y-3 text-gray-700">
+              <div class="flex justify-between">
+                <span>字高：</span>
+                <span class="text-blue-600 font-bold">{{ formData.fontHeight || '-' }} mm</span>
+              </div>
+              <div class="flex justify-between">
+                <span>字型：</span>
+                <span class="text-blue-600 font-bold">{{ formData.fontType || '正等线体' }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span>颜色(CMYK)：</span>
+                <span class="text-pink-600 font-bold">
+                  C{{ formData.colorC || 0 }}% M{{ formData.colorM || 100 }}% Y{{
+                    formData.colorY || 0
+                  }}% K{{ formData.colorK || 0 }}%
+                </span>
+              </div>
+            </div>
+          </el-card>
 
-          <el-form-item label="线宽" prop="lineWidth">
-            <el-slider v-model="formData.lineWidth" :min="1" :max="10" show-input />
-          </el-form-item>
+          <!-- 其他信息卡片 -->
+          <el-card
+            class="hover:shadow-lg transition-shadow duration-300"
+            header="其他信息"
+            :header-style="{ background: '#f5fafe', color: '#2d3748', fontWeight: '600' }"
+          >
+            <div class="space-y-3 text-gray-700">
+              <div class="flex justify-between">
+                <span>创建人：</span>
+                <span>{{ formData.createUserId || '-' }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span>创建时间：</span>
+                <span>{{ formatDate(formData.createTime) }}</span>
+              </div>
+              <div class="flex flex-col">
+                <span>备注：</span>
+                <span class="mt-1 text-gray-600">{{ formData.remark || '-' }}</span>
+              </div>
+            </div>
+          </el-card>
+        </div>
 
-          <el-form-item label="颜色" prop="color">
-            <el-color-picker v-model="formData.color" show-alpha />
-          </el-form-item>
-
-          <div class="text-center mt-6">
-            <el-button type="primary" @click="handleSubmit">保存</el-button>
-            <el-button @click="visible = false">取消</el-button>
-          </div>
-        </el-form>
-      </div>
-
-      <div class="w-1/2 h-[70vh]">
-        <AnnotateMapPreview :styleData="formData" />
+        <!-- 右侧：地图预览 -->
+        <el-card
+          class="hover:shadow-lg transition-shadow duration-300 h-full"
+          header="注记效果预览"
+          :header-style="{ background: '#fef7fb', color: '#2d3748', fontWeight: '600' }"
+        >
+          <AnnotateMapPreview
+            :style-data="{
+              scale: formData.scale,
+              fontHeight: formData.fontHeight,
+              fontType: formData.fontType || '正等线体',
+              color: `rgb(255,0,255)`, // 品红色RGB
+              colorCMYK: `C${formData.colorC || 0}% M${formData.colorM || 100}% Y${formData.colorY || 0}% K${formData.colorK || 0}%`
+            }"
+          />
+        </el-card>
       </div>
     </div>
   </el-drawer>
@@ -59,63 +125,57 @@ import { GridCodeAnnotateVO } from '@/api/dataHub/gridManagement/gridDiagramMana
 
 const visible = ref(false)
 const isFullscreen = ref(false)
+const formData = ref<GridCodeAnnotateVO>({})
 
-const formRef = ref()
-const formData = ref({
-  scale: '',
-  gridType: '',
-  lineWidth: 2,  // 默认线宽
-  color: 'rgba(0,150,255,0.6)'  // 默认颜色
-})
-
-const formRules = {
-  scale: [{ required: true, message: '请选择比例尺', trigger: 'change' }],
-  gridType: [{ required: true, message: '请选择网格类型', trigger: 'change' }]
+// 网格类型映射
+const gridTypeMap = {
+  UNIT_GRID: '单元网格',
+  MANAGE_GRID: '管理网格',
+  EVAL_GRID: '评价网格'
 }
 
-const scaleList = [
-  { label: '1:500', value: '1:500' },
-  { label: '1:1000', value: '1:1000' },
-  { label: '1:5000', value: '1:5000' }
-]
-
-const gridTypeList = [
-  { label: '管理网格', value: 'mng' },
-  { label: '评价网格', value: 'eval' }
-]
+// 时间格式化
+const formatDate = (val: any) => (val ? new Date(val).toLocaleDateString() : '-')
 
 // 打开抽屉并传递数据
 const open = (row: GridCodeAnnotateVO) => {
-  // 转换数据，确保数据符合 formData 结构
-  formData.value = {
-    scale: row.scale || '',
-    gridType: row.gridType || '',
-    lineWidth: 2,  // 如果没有该字段，给定默认值
-    color: row.colorC && row.colorM && row.colorY && row.colorK
-      ? `cmyk(${row.colorC}, ${row.colorM}, ${row.colorY}, ${row.colorK})`
-      : 'rgba(0,150,255,0.6)' // 默认颜色
-  }
-  visible.value = true  // 打开抽屉
+  formData.value = { ...row }
+  visible.value = true
 }
-
 defineExpose({ open })
 
-const handleSubmit = () => {
-  formRef.value.validate((valid: boolean) => {
-    if (valid) {
-      console.log('保存样式:', formData.value)
-      visible.value = false
-    }
-  })
-}
-
-watch(formData, () => {
-  // 实时更新地图样式
-}, { deep: true })
+watch(
+  () => formData.value,
+  () => {
+    // 实时更新预览数据
+  },
+  { deep: true }
+)
 </script>
 
 <style scoped>
 .grid-style-drawer {
-  overflow: hidden;
+  overflow: auto;
+}
+
+/* 马克龙浅色配色 + 卡片hover效果 */
+.el-card {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.grid-cols-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.hover\:shadow-lg:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.space-y-3 > div {
+  padding: 4px 0;
 }
 </style>

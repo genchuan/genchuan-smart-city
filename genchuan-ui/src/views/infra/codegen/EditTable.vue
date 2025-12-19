@@ -77,7 +77,7 @@ const submitForm = async () => {
 /** 关闭按钮 */
 const close = () => {
   delView(unref(currentRoute))
-  push('/infra/codegen')
+  push('/backgroundSupport/infra/codegen')
 }
 
 /** 初始化 */

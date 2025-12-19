@@ -9,7 +9,7 @@ export interface WarningAlertListTableVO {
   relatedObjectName: string // 关联对象名称
   warningField: string // 预警领域
   warningType: string // 预警类型
-  warningTypeId:number
+  warningTypeId: number
   warningLevel: string // 预警等级
   warningStatus: string // 预警状态
   triggerReason: string // 触发原因
@@ -25,8 +25,15 @@ export interface WarningAlertListTableVO {
   reviewer: string // 审核人
   reviewTime: Date // 审核时间
   deviceId: string // 设备ID
-  status:number//增加流程事件状态字段 同步流程事件状态
-  processInstanceId:string //增加流程实例id字段 关联流程实例id
+  status: number //增加流程事件状态字段 同步流程事件状态
+  processInstanceId: string //增加流程实例id字段 关联流程实例id
+  regionCode: string //行政区划编码
+  regionName: string //所在行政区划名称
+  gridId: string //所在网格ID
+  gridName: string //所在网格名称
+  address: string //事件发生地址
+  longitude: string //经度
+  latitude: string //纬度
 }
 
 // 预警告警列表 API
@@ -58,42 +65,47 @@ export const WarningAlertListTableApi = {
 
   // 导出预警告警列表 Excel
   exportWarningAlertListTable: async (params) => {
-    return await request.download({ url: `/datacenter/warning-alert-list-table/export-excel`, params })
+    return await request.download({
+      url: `/datacenter/warning-alert-list-table/export-excel`,
+      params
+    })
   },
-//   importWarningAlertListTable: async (params) => {
-//   return await request.post({ url: `/datacenter/warning-alert-list-table/import`, params })
-// },
+  //   importWarningAlertListTable: async (params) => {
+  //   return await request.post({ url: `/datacenter/warning-alert-list-table/import`, params })
+  // },
   //
   // 下载用户导入模板
   importAlarmWarningTemplate: async () => {
-    return await request.download({ url: `/datacenter/warning-alert-list-table/get-import-template`})
+    return await request.download({
+      url: `/datacenter/warning-alert-list-table/get-import-template`
+    })
   },
   //发起流程
-  dispatchWarningAlertListTable:async (id:number) => {
-    return await request.post({ url: `/datacenter/warning-alert-list-table/created?id=`+id})
+  dispatchWarningAlertListTable: async (id: number) => {
+    return await request.post({ url: `/datacenter/warning-alert-list-table/created?id=` + id })
   },
-  //预警类型树形级联选择接口调用封装
-  getWarningTypeTree:async () => {
-    return await request.get({ url: `/datacenter/managed-matter-major/list`})
+  //预警类型管理部件树形级联选择接口调用封装
+  getWarningTypeTree: async () => {
+    return await request.get({ url: `/datacenter/managed-matter-major/list` })
+  },
+
+  getDeviceList: async (params: any) => {
+    return await request.get({ url: `/datacenter/thingsboard/device/page`, params })
   },
   //
-  getDeviceList:async(params: any)=> {
-    return await request.get({ url: `/datacenter/thingsboard/device/page`,params})
-  },
-  //
-  getGridTree:async(params: any)=> {
-    return await request.get({ url: `/datacenter/grid-county/page`,params})
+  getGridTree: async (params: any) => {
+    return await request.get({ url: `/datacenter/grid-county/page`, params })
   },
   //todo 获取部件列表接口
-  getPartList:async(params: any)=> {
-    return await request.get({ url: `/admin-api/component/page`,params})
+  getPartList: async (params: any) => {
+    return await request.get({ url: `/admin-api/component/page`, params })
   },
   //获取部门树形下拉列表
-  getDeptTree:async()=> {
-    return await request.get({ url: `/system/dept/list-all-simple`})
+  getDeptTree: async () => {
+    return await request.get({ url: `/system/dept/list-all-simple` })
   },
   //获取用户下拉列表
-  getSimpleUserList:async()=> {
-    return await request.get({ url: `/system/user/list-all-simple`})
-  },
+  getSimpleUserList: async () => {
+    return await request.get({ url: `/system/user/list-all-simple` })
+  }
 }

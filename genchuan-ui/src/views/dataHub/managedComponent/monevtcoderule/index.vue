@@ -1,378 +1,305 @@
 <template>
-  <ContentWrap>
-    <!-- 搜索工作栏 -->
-    <el-card class="search-card" shadow="never">
-      <template #header>
-        <div class="card-header">
-          <span class="card-title">查询条件</span>
-          <el-button
-            type="text"
-            @click="toggleSearchForm"
-            class="toggle-btn"
-          >
-            {{ showFullSearch ? '简化搜索' : '展开搜索' }}
-            <Icon :icon="showFullSearch ? 'ep:arrow-up' : 'ep:arrow-down'" class="ml-2" />
-          </el-button>
-        </div>
-      </template>
-      <el-form
-        class="search-form"
-        :model="queryParams"
-        ref="queryFormRef"
-        :inline="true"
-        label-width="120px"
-      >
-        <!-- 基础信息 -->
-        <div class="form-section">
-          <div class="section-title">基础信息</div>
+  <div class="mon-evt-code-rule-page">
+    <!-- 搜索区域 -->
+    <ContentWrap class="search-container">
+      <div class="search-content">
+        <el-form
+          class="search-form"
+          :model="queryParams"
+          ref="queryFormRef"
+          :inline="true"
+          label-width="100px"
+        >
           <div class="form-row">
+            <!-- 核心搜索字段 -->
             <el-form-item label="规则ID" prop="monEvtRuleId">
               <el-input
                 v-model="queryParams.monEvtRuleId"
                 placeholder="请输入规则ID"
                 clearable
                 @keyup.enter="handleQuery"
-                class="!w-200px"
+                class="!w-160px"
               />
             </el-form-item>
+
             <el-form-item label="规则名称" prop="ruleName">
               <el-input
                 v-model="queryParams.ruleName"
                 placeholder="请输入规则名称"
                 clearable
                 @keyup.enter="handleQuery"
-                class="!w-200px"
+                class="!w-160px"
               />
             </el-form-item>
+
             <el-form-item label="启用状态" prop="enableStatus">
               <el-select
                 v-model="queryParams.enableStatus"
                 placeholder="请选择启用状态"
                 clearable
-                class="!w-200px"
+                class="!w-160px"
               >
-                <el-option label="全部" value="" />
                 <el-option label="启用" value="1" />
                 <el-option label="禁用" value="0" />
               </el-select>
             </el-form-item>
-          </div>
-        </div>
 
-        <!-- 代码位数配置 -->
-        <div class="form-section" v-show="showFullSearch">
-          <div class="section-title">代码位数配置</div>
-          <div class="code-length-config">
-            <div class="form-row">
-              <el-form-item label="行政代码位数" prop="adminCodeLen">
-                <el-input-number
-                  v-model="queryParams.adminCodeLen"
-                  placeholder="行政代码位数"
-                  :min="0"
-                  :max="10"
-                  controls-position="right"
-                  class="!w-200px"
-                />
-              </el-form-item>
-              <el-form-item label="大类代码位数" prop="majorCodeLen">
-                <el-input-number
-                  v-model="queryParams.majorCodeLen"
-                  placeholder="大类代码位数"
-                  :min="0"
-                  :max="10"
-                  controls-position="right"
-                  class="!w-200px"
-                />
-              </el-form-item>
-              <el-form-item label="中类代码位数" prop="midCodeLen">
-                <el-input-number
-                  v-model="queryParams.midCodeLen"
-                  placeholder="中类代码位数"
-                  :min="0"
-                  :max="10"
-                  controls-position="right"
-                  class="!w-200px"
-                />
-              </el-form-item>
-            </div>
-            <div class="form-row">
-              <el-form-item label="小类代码位数" prop="minorCodeLen">
-                <el-input-number
-                  v-model="queryParams.minorCodeLen"
-                  placeholder="小类代码位数"
-                  :min="0"
-                  :max="10"
-                  controls-position="right"
-                  class="!w-200px"
-                />
-              </el-form-item>
-              <el-form-item label="顺序码位数" prop="seqCodeLen">
-                <el-input-number
-                  v-model="queryParams.seqCodeLen"
-                  placeholder="顺序码位数"
-                  :min="0"
-                  :max="10"
-                  controls-position="right"
-                  class="!w-200px"
-                />
-              </el-form-item>
-            </div>
-            <div class="form-row">
-              <el-form-item label="顺序码生成规则" prop="seqGenRule">
-                <el-input
-                  v-model="queryParams.seqGenRule"
-                  placeholder="请输入顺序码生成规则"
-                  clearable
-                  @keyup.enter="handleQuery"
-                  class="!w-480px"
-                />
-              </el-form-item>
-            </div>
-          </div>
-        </div>
-
-        <!-- 操作记录 -->
-        <div class="form-section" v-show="showFullSearch">
-          <div class="section-title">操作记录</div>
-          <div class="form-row">
-            <el-form-item label="创建人" prop="createUser">
-              <el-input
-                v-model="queryParams.createUser"
-                placeholder="请输入创建人"
-                clearable
-                @keyup.enter="handleQuery"
-                class="!w-200px"
-              />
-            </el-form-item>
             <el-form-item label="创建时间" prop="createTime">
               <el-date-picker
                 v-model="queryParams.createTime"
                 value-format="YYYY-MM-DD HH:mm:ss"
                 type="daterange"
-                range-separator="至"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
                 :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
-                class="!w-240px"
+                class="!w-220px"
               />
             </el-form-item>
-            <el-form-item label="更新人" prop="updateUser">
-              <el-input
-                v-model="queryParams.updateUser"
-                placeholder="请输入更新人"
-                clearable
-                @keyup.enter="handleQuery"
-                class="!w-200px"
-              />
-            </el-form-item>
+
+            <!-- 按钮组 - 超出自动换行 -->
+            <div class="search-buttons-group">
+              <el-button type="primary" @click="handleQuery">
+                <Icon icon="ep:search" class="mr-1" /> 搜索
+              </el-button>
+              <el-button @click="resetQuery">
+                <Icon icon="ep:refresh" class="mr-1" /> 重置
+              </el-button>
+              <el-button
+                type="primary"
+                plain
+                @click="openForm('create')"
+                v-hasPermi="['datacenter:mon-evt-code-rule:create']"
+              >
+                <Icon icon="ep:plus" class="mr-1" /> 新增
+              </el-button>
+              <el-button
+                type="success"
+                plain
+                @click="handleExport"
+                :loading="exportLoading"
+                v-hasPermi="['datacenter:mon-evt-code-rule:export']"
+              >
+                <Icon icon="ep:download" class="mr-1" /> 导出
+              </el-button>
+            </div>
           </div>
-        </div>
+        </el-form>
+      </div>
+    </ContentWrap>
 
-        <!-- 系统时间 -->
-        <div class="form-section" v-show="showFullSearch">
-          <div class="section-title">系统时间</div>
-          <div class="form-row">
-            <el-form-item label="系统创建时间" prop="createTimeSys">
-              <el-date-picker
-                v-model="queryParams.createTimeSys"
-                value-format="YYYY-MM-DD"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                clearable
-                class="!w-240px"
-              />
-            </el-form-item>
-            <el-form-item label="系统更新时间" prop="updateTimeSys">
-              <el-date-picker
-                v-model="queryParams.updateTimeSys"
-                value-format="YYYY-MM-DD"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                clearable
-                class="!w-240px"
-              />
-            </el-form-item>
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <el-button type="primary" @click="handleQuery">
-            <Icon icon="ep:search" class="mr-5px" /> 搜索
-          </el-button>
-          <el-button @click="resetQuery">
-            <Icon icon="ep:refresh" class="mr-5px" /> 重置
-          </el-button>
-          <el-button
-            type="success"
-            @click="openForm('create')"
-            v-hasPermi="['datacenter:mon-evt-code-rule:create']"
-          >
-            <Icon icon="ep:plus" class="mr-5px" /> 新增
-          </el-button>
-          <el-button
-            type="warning"
-            @click="handleExport"
-            :loading="exportLoading"
-            v-hasPermi="['datacenter:mon-evt-code-rule:export']"
-          >
-            <Icon icon="ep:download" class="mr-5px" /> 导出
-          </el-button>
-        </div>
-      </el-form>
-    </el-card>
-  </ContentWrap>
-
-  <!-- 列表 -->
-  <ContentWrap>
-    <el-card class="table-card" shadow="never">
-      <template #header>
-        <div class="card-header">
-          <span class="card-title">监测事件标识码规则列表</span>
-          <div class="table-info">
-            共 <span class="info-highlight">{{ total }}</span> 条记录
-          </div>
-        </div>
-      </template>
-
+    <!-- 数据列表 -->
+    <ContentWrap class="list-container">
       <el-table
         v-loading="loading"
         :data="list"
         :stripe="true"
         :show-overflow-tooltip="true"
-        style="width: 100%"
+        class="list-table"
         :header-cell-style="{
-          background: '#f5f7fa',
-          color: '#606266',
-          fontWeight: '600'
+          'background-color': '#f5f7fa',
+          'font-weight': '600',
+          'color': '#606266',
+          'padding': '12px 8px',
+          'white-space': 'nowrap'
         }"
-        @sort-change="handleSortChange"
+        :cell-style="{
+          'vertical-align': 'middle',
+          'padding': '8px'
+        }"
       >
-        <el-table-column label="ID" align="center" prop="id" width="70" sortable="custom" />
-        <el-table-column label="规则ID" align="center" prop="monEvtRuleId" width="100" sortable="custom" />
-        <el-table-column label="规则名称" align="center" prop="ruleName" min-width="150" show-overflow-tooltip />
-        <el-table-column label="代码位数配置" align="center" width="180">
+        <!-- 核心列表字段，设置宽度确保表头不换行 -->
+        <el-table-column label="主键ID" align="center" prop="id" width="100" />
+        <el-table-column label="规则ID" align="center" prop="monEvtRuleId" min-width="140" />
+        <el-table-column label="规则名称" align="center" prop="ruleName" min-width="180" />
+        <el-table-column label="启用状态" align="center" prop="enableStatus" width="100">
           <template #default="scope">
-            <el-popover
-              placement="left"
-              title="代码位数配置详情"
-              :width="280"
-              trigger="click"
-            >
-              <template #reference>
-                <el-button link type="primary" size="small">查看配置</el-button>
-              </template>
-              <div class="code-config-detail">
-                <div class="config-item">
-                  <span class="config-label">行政代码:</span>
-                  <span class="config-value">{{ scope.row.adminCodeLen || 0 }} 位</span>
-                </div>
-                <div class="config-item">
-                  <span class="config-label">大类代码:</span>
-                  <span class="config-value">{{ scope.row.majorCodeLen || 0 }} 位</span>
-                </div>
-                <div class="config-item">
-                  <span class="config-label">中类代码:</span>
-                  <span class="config-value">{{ scope.row.midCodeLen || 0 }} 位</span>
-                </div>
-                <div class="config-item">
-                  <span class="config-label">小类代码:</span>
-                  <span class="config-value">{{ scope.row.minorCodeLen || 0 }} 位</span>
-                </div>
-                <div class="config-item">
-                  <span class="config-label">顺序码:</span>
-                  <span class="config-value">{{ scope.row.seqCodeLen || 0 }} 位</span>
-                </div>
-                <div v-if="scope.row.seqGenRule" class="config-item full-width">
-                  <span class="config-label">生成规则:</span>
-                  <span class="config-value rule-desc">{{ scope.row.seqGenRule }}</span>
-                </div>
-                <div class="total-length">
-                  总长度: <span class="total-number">{{ calculateTotalLength(scope.row) }}</span> 位
-                </div>
-              </div>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column label="启用状态" align="center" width="90">
-          <template #default="scope">
-            <el-tag
-              :type="scope.row.enableStatus === '1' ? 'success' : 'danger'"
-              size="small"
-            >
+            <el-tag :type="scope.row.enableStatus === '1' ? 'success' : 'danger'">
               {{ scope.row.enableStatus === '1' ? '启用' : '禁用' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="创建信息" align="center" width="160">
+        <el-table-column label="创建人" align="center" prop="createUser" min-width="120" />
+        <el-table-column
+          label="创建时间"
+          align="center"
+          prop="createTime"
+          :formatter="dateFormatter"
+          width="180"
+        />
+
+        <!-- 操作列 - 固定右侧，添加详情按钮 -->
+        <el-table-column
+          label="操作"
+          align="center"
+          width="200"
+          fixed="right"
+        >
           <template #default="scope">
-            <div class="user-info">
-              <div class="user-name">{{ scope.row.createUser || '-' }}</div>
-              <div class="create-time">{{ dateFormatter(scope.row, scope.column, scope.row.createTime) }}</div>
+            <div class="operation-btn-group">
+              <el-button
+                link
+                type="primary"
+                size="small"
+                @click="openDetail(scope.row)"
+                v-hasPermi="['datacenter:mon-evt-code-rule:detail']"
+                class="operation-btn"
+              >
+                详情
+              </el-button>
+              <el-button
+                link
+                type="primary"
+                size="small"
+                @click="openForm('update', scope.row.id)"
+                v-hasPermi="['datacenter:mon-evt-code-rule:update']"
+                class="operation-btn"
+              >
+                编辑
+              </el-button>
+              <el-button
+                link
+                type="danger"
+                size="small"
+                @click="handleDelete(scope.row.id)"
+                v-hasPermi="['datacenter:mon-evt-code-rule:delete']"
+                class="operation-btn"
+              >
+                删除
+              </el-button>
             </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="更新人" align="center" prop="updateUser" width="100" />
-        <el-table-column
-          label="系统创建时间"
-          align="center"
-          prop="createTimeSys"
-          :formatter="dateFormatter"
-          width="160"
-          sortable="custom"
-        />
-        <el-table-column
-          label="系统更新时间"
-          align="center"
-          prop="updateTimeSys"
-          :formatter="dateFormatter"
-          width="160"
-          sortable="custom"
-        />
-        <el-table-column label="操作" align="center" width="120" fixed="right">
-          <template #default="scope">
-            <el-button
-              size="small"
-              type="primary"
-              link
-              @click="openForm('update', scope.row.id)"
-              v-hasPermi="['datacenter:mon-evt-code-rule:update']"
-            >
-              编辑
-            </el-button>
-            <el-button
-              size="small"
-              type="danger"
-              link
-              @click="handleDelete(scope.row.id)"
-              v-hasPermi="['datacenter:mon-evt-code-rule:delete']"
-            >
-              删除
-            </el-button>
           </template>
         </el-table-column>
       </el-table>
 
-      <!-- 分页 -->
-      <div class="pagination-wrapper">
-        <Pagination
-          :total="total"
-          v-model:page="queryParams.pageNo"
-          v-model:limit="queryParams.pageSize"
-          @pagination="getList"
-        />
+      <!-- 分页 - 居中显示 -->
+      <div class="pagination-container">
+        <div class="pagination-content">
+          <div class="page-info">
+            共 <span class="text-primary font-medium">{{ total }}</span> 条
+          </div>
+          <Pagination
+            :total="total"
+            v-model:page="queryParams.pageNo"
+            v-model:limit="queryParams.pageSize"
+            @pagination="getList"
+            layout="sizes, prev, pager, next, jumper"
+            :page-sizes="[10, 20, 50, 100]"
+          />
+        </div>
       </div>
-    </el-card>
-  </ContentWrap>
+    </ContentWrap>
 
-  <!-- 表单弹窗：添加/修改 -->
-  <MonEvtCodeRuleForm ref="formRef" @success="getList" />
+    <!-- 详情伪抽屉 -->
+    <div
+      v-if="isDetailShow"
+      class="detail-mask"
+      @click="closeDetail"
+    ></div>
+    <div
+      v-if="isDetailShow"
+      class="detail-drawer"
+      :class="{ 'full-screen': isFullScreen }"
+      @click.stop
+    >
+      <div class="detail-header flex justify-between items-center p-4 border-b">
+        <h3 class="text-lg font-semibold">监测事件标识码规则详情</h3>
+        <div class="detail-header-btns">
+          <el-tooltip
+            :content="isFullScreen ? '退出全屏' : '全屏显示'"
+            placement="bottom"
+          >
+            <el-button
+              text
+              size="small"
+              @click="toggleFullScreen"
+              class="fullscreen-btn"
+            >
+              <svg
+                v-if="isFullScreen"
+                class="zoom-out-icon"
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <line x1="8" y1="11" x2="14" y2="11" />
+              </svg>
+              <svg
+                v-else
+                class="zoom-in-icon"
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <line x1="11" y1="8" x2="11" y2="14" />
+                <line x1="8" y1="11" x2="14" y2="11" />
+              </svg>
+            </el-button>
+          </el-tooltip>
+          <el-tooltip content="关闭" placement="bottom">
+            <el-button
+              text
+              size="small"
+              @click="closeDetail"
+              class="close-btn"
+            >
+              <Icon icon="ep:close" />
+            </el-button>
+          </el-tooltip>
+        </div>
+      </div>
+
+      <div class="detail-content p-6">
+        <el-descriptions
+          title=""
+          :column="1"
+          border
+          :label-style="{ 'width': '140px', 'font-weight': '500', 'text-align': 'left' }"
+          :content-style="{ 'flex': '1', 'text-align': 'left' }"
+        >
+          <el-descriptions-item label="主键ID">{{ selectedRow?.id || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="规则ID">{{ selectedRow?.monEvtRuleId || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="规则名称">{{ selectedRow?.ruleName || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="行政代码位数">{{ selectedRow?.adminCodeLen || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="大类代码位数">{{ selectedRow?.majorCodeLen || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="中类代码位数">{{ selectedRow?.midCodeLen || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="小类代码位数">{{ selectedRow?.minorCodeLen || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="顺序码位数">{{ selectedRow?.seqCodeLen || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="顺序码生成规则">{{ selectedRow?.seqGenRule || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="启用状态">
+            <el-tag :type="selectedRow?.enableStatus === '1' ? 'success' : 'danger'" size="small">
+              {{ selectedRow?.enableStatus === '1' ? '启用' : '禁用' }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="创建人">{{ selectedRow?.createUser || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="创建时间">{{ selectedRow?.createTime ? dateFormatter(selectedRow.createTime) : '-' }}</el-descriptions-item>
+          <el-descriptions-item label="更新人">{{ selectedRow?.updateUser || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="系统创建时间">{{ selectedRow?.createTimeSys ? dateFormatter(selectedRow.createTimeSys) : '-' }}</el-descriptions-item>
+          <el-descriptions-item label="系统更新时间">{{ selectedRow?.updateTimeSys ? dateFormatter(selectedRow.updateTimeSys) : '-' }}</el-descriptions-item>
+        </el-descriptions>
+      </div>
+    </div>
+
+    <!-- 表单弹窗：添加/修改 -->
+    <MonEvtCodeRuleForm ref="formRef" @success="getList" />
+  </div>
 </template>
 
 <script setup lang="ts">
+import { ref, reactive, nextTick, onMounted, onUnmounted } from 'vue'
 import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
 import { MonEvtCodeRuleApi, MonEvtCodeRuleVO } from '@/api/dataHub/managedComponent/monevtcoderule'
@@ -384,42 +311,55 @@ defineOptions({ name: 'MonEvtCodeRule' })
 const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
 
+// 列表基础变量
 const loading = ref(true) // 列表的加载中
 const list = ref<MonEvtCodeRuleVO[]>([]) // 列表的数据
 const total = ref(0) // 列表的总页数
-const showFullSearch = ref(false) // 是否显示完整搜索表单
+const exportLoading = ref(false) // 导出的加载中
 
+// 详情伪抽屉相关变量
+const isDetailShow = ref(false)
+const selectedRow = ref<MonEvtCodeRuleVO | null>(null)
+const isFullScreen = ref(false)
+
+// 精简后的查询参数（只保留核心字段）
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
   monEvtRuleId: undefined,
   ruleName: undefined,
-  adminCodeLen: undefined,
-  majorCodeLen: undefined,
-  midCodeLen: undefined,
-  minorCodeLen: undefined,
-  seqCodeLen: undefined,
-  seqGenRule: undefined,
   enableStatus: undefined,
-  createUser: undefined,
-  createTime: [],
-  updateUser: undefined,
-  createTimeSys: [],
-  updateTimeSys: [],
-  sortField: undefined,
-  sortOrder: undefined,
+  createTime: [] as string[]
 })
 const queryFormRef = ref() // 搜索的表单
-const exportLoading = ref(false) // 导出的加载中
+const formRef = ref() // 表单弹窗
 
-/** 计算代码总长度 */
-const calculateTotalLength = (row: any) => {
-  const admin = Number(row.adminCodeLen) || 0
-  const major = Number(row.majorCodeLen) || 0
-  const mid = Number(row.midCodeLen) || 0
-  const minor = Number(row.minorCodeLen) || 0
-  const seq = Number(row.seqCodeLen) || 0
-  return admin + major + mid + minor + seq
+/** 打开详情伪抽屉 */
+const openDetail = (row: MonEvtCodeRuleVO) => {
+  selectedRow.value = row
+  isDetailShow.value = true
+  isFullScreen.value = false
+  document.body.style.overflow = 'hidden'
+}
+
+/** 关闭详情伪抽屉 */
+const closeDetail = () => {
+  isDetailShow.value = false
+  selectedRow.value = null
+  isFullScreen.value = false
+  document.body.style.overflow = ''
+}
+
+/** 切换全屏/缩小 */
+const toggleFullScreen = () => {
+  isFullScreen.value = !isFullScreen.value
+  nextTick(() => {
+    const iconEl = document.querySelector('.fullscreen-btn')
+    if (iconEl) {
+      iconEl.classList.add('btn-fade')
+      setTimeout(() => iconEl.classList.remove('btn-fade'), 300)
+    }
+  })
 }
 
 /** 查询列表 */
@@ -442,12 +382,13 @@ const handleQuery = () => {
 
 /** 重置按钮操作 */
 const resetQuery = () => {
-  queryFormRef.value.resetFields()
+  queryFormRef.value?.resetFields()
+  // 重置日期范围等特殊字段
+  queryParams.createTime = []
   handleQuery()
 }
 
 /** 添加/修改操作 */
-const formRef = ref()
 const openForm = (type: string, id?: number) => {
   formRef.value.open(type, id)
 }
@@ -480,204 +421,317 @@ const handleExport = async () => {
   }
 }
 
-/** 切换搜索表单显示 */
-const toggleSearchForm = () => {
-  showFullSearch.value = !showFullSearch.value
-}
-
-/** 排序处理 */
-const handleSortChange = (column: any) => {
-  if (column.prop) {
-    queryParams.sortField = column.prop
-    queryParams.sortOrder = column.order === 'ascending' ? 'asc' :
-      column.order === 'descending' ? 'desc' : undefined
-  } else {
-    queryParams.sortField = undefined
-    queryParams.sortOrder = undefined
-  }
-  getList()
-}
-
 /** 初始化 **/
 onMounted(() => {
   getList()
 })
+
+/** 页面卸载时恢复body滚动 */
+onUnmounted(() => {
+  document.body.style.overflow = ''
+  isFullScreen.value = false
+})
 </script>
 
-<style scoped>
-.search-card {
-  margin-bottom: 16px;
-  border-radius: 8px;
-}
-
-.table-card {
-  border-radius: 8px;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.card-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #303133;
-}
-
-.toggle-btn {
-  color: #409eff;
-  font-size: 13px;
-}
-
-.table-info {
-  font-size: 14px;
-  color: #606266;
-}
-
-.info-highlight {
-  color: #409eff;
-  font-weight: 600;
-}
-
-.search-form {
+<style scoped lang="scss">
+.mon-evt-code-rule-page {
+  padding: 8px;
+  height: 100vh;
+  box-sizing: border-box;
+  background-color: #f9fafb;
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1px;
 }
 
-.form-section {
-  border: 1px solid #ebeef5;
-  border-radius: 6px;
-  padding: 16px;
-  background: #fafbfc;
+/* 搜索栏样式 - 统一模板风格 */
+.search-container {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 12px 16px;
+  flex-shrink: 0;
 }
 
-.section-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #409eff;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px dashed #e1e4e8;
+.search-content {
+  width: 100%;
 }
 
 .form-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
 }
 
-.code-length-config {
+.search-form {
+  width: 100%;
+}
+
+.search-form ::v-deep(.el-form-item) {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.search-form ::v-deep(.el-form-item__label) {
+  font-size: 13px;
+  color: #333;
+  text-align: right;
+  padding-right: 6px;
+}
+
+/* 搜索按钮组 - 超出自动换行 */
+.search-buttons-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+  white-space: nowrap;
+
+  @media (max-width: 992px) {
+    width: 100%;
+    justify-content: flex-start;
+    margin-left: 0;
+    margin-top: 8px;
+  }
+}
+
+/* 列表区域样式 */
+.list-container {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 16px;
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  min-height: 0;
+  overflow: hidden;
 }
 
-.form-actions {
+.list-table {
+  flex: 1;
+  overflow: auto;
+
+  /* 确保表头不换行，表格布局优化 */
+  ::v-deep(.el-table) {
+    table-layout: fixed;
+    border: none;
+  }
+
+  ::v-deep(.el-table__header),
+  ::v-deep(.el-table__body),
+  ::v-deep(.el-table__row) {
+    border: none;
+  }
+
+  ::v-deep(.el-table th),
+  ::v-deep(.el-table td) {
+    border: none;
+    white-space: nowrap;
+  }
+
+  /* 行分隔线 */
+  ::v-deep(.el-table__row) {
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  /* 悬停效果 */
+  ::v-deep(.el-table__body tr:hover > td) {
+    background-color: #f0f9ff !important;
+  }
+
+  /* 斑马纹 */
+  ::v-deep(.el-table__row--striped > td) {
+    background-color: #fafafa !important;
+  }
+
+  /* 固定列样式 */
+  ::v-deep(.el-table__fixed-right) {
+    z-index: 10;
+    background-color: #fff !important;
+  }
+}
+
+/* 操作按钮组 - 紧凑排列 */
+.operation-btn-group {
   display: flex;
   justify-content: center;
-  gap: 12px;
-  padding-top: 16px;
-  border-top: 1px solid #ebeef5;
-}
-
-.pagination-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #ebeef5;
-}
-
-/* 表格内容样式 */
-.user-info {
-  line-height: 1.4;
-  font-size: 12px;
-}
-
-.user-name {
-  font-weight: 500;
-  color: #303133;
-}
-
-.create-time {
-  color: #909399;
-  margin-top: 2px;
-}
-
-.code-config-detail {
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-.config-item {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  padding-bottom: 4px;
-  border-bottom: 1px dashed #f0f0f0;
-}
-
-.config-item.full-width {
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.config-label {
-  font-weight: 500;
-  color: #606266;
-  min-width: 80px;
-}
-
-.config-value {
-  color: #303133;
-  font-weight: 500;
-}
-
-.rule-desc {
-  color: #e6a23c;
-  background: #fdf6ec;
-  padding: 4px 8px;
-  border-radius: 4px;
-  margin-top: 4px;
-  font-size: 12px;
-  word-break: break-all;
-}
-
-.total-length {
-  text-align: center;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 2px solid #409eff;
-  font-weight: 600;
-  color: #409eff;
-}
-
-.total-number {
-  font-size: 16px;
-  color: #f56c6c;
-}
-
-:deep(.el-card__header) {
-  padding: 12px 20px;
-  border-bottom: 1px solid #ebeef5;
-}
-
-:deep(.el-table .cell) {
-  padding: 8px 12px;
-}
-
-:deep(.el-table th) {
-  font-weight: 600;
-}
-
-:deep(.el-table .el-table__row:hover) {
-  background-color: #f5f7fa;
-}
-
-:deep(.el-input-number) {
+  align-items: center;
+  gap: 4px;
+  flex-wrap: nowrap;
   width: 100%;
+}
+
+.operation-btn {
+  padding: 2px 6px !important;
+  font-size: 12px !important;
+  min-width: auto !important;
+  height: 24px !important;
+}
+
+/* 分页样式 - 居中显示 */
+.pagination-container {
+  padding: 12px 0;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pagination-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+.page-info {
+  color: #606266;
+  font-size: 14px;
+}
+
+/* 伪抽屉核心样式 */
+.detail-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  transition: opacity 0.3s ease;
+}
+
+.detail-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: calc(100% / 3);
+  height: 100vh;
+  background-color: #fff;
+  box-shadow: -2px 0 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: width 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  transform: translateX(0);
+  overflow: hidden;
+
+  @media (max-width: 1440px) {
+    width: 40%;
+  }
+
+  @media (max-width: 1200px) {
+    width: 50%;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+}
+
+.detail-drawer.full-screen {
+  width: 100%;
+  box-shadow: none;
+}
+
+/* 抽屉头部 */
+.detail-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #eee;
+  position: relative;
+  z-index: 1001;
+}
+
+.detail-header-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 全屏/关闭按钮样式 */
+.fullscreen-btn,
+.close-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background-color: transparent;
+  color: #606266;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.fullscreen-btn:hover {
+  color: #409eff;
+  background-color: rgba(64, 158, 255, 0.1);
+}
+
+.close-btn:hover {
+  color: #f56c6c;
+  background-color: rgba(245, 108, 108, 0.1);
+}
+
+/* 按钮动画 */
+.btn-fade {
+  animation: btnFade 0.3s ease;
+}
+
+@keyframes btnFade {
+  0% { opacity: 0.5; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* 抽屉内容区域 */
+.detail-content {
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+
+/* 详情描述组件样式 */
+::v-deep(.el-descriptions) {
+  --el-descriptions-item-padding: 16px 12px;
+}
+
+::v-deep(.el-descriptions__border .el-descriptions-item) {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+::v-deep(.el-descriptions__label) {
+  text-align: left !important;
+  color: #666;
+  justify-content: flex-start !important;
+}
+
+::v-deep(.el-descriptions__content) {
+  text-align: left !important;
+  color: #333;
+  word-break: break-all;
+  justify-content: flex-start !important;
+}
+
+/* 滚动条优化 */
+::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f5f5f5;
+  border-radius: 3px;
 }
 </style>

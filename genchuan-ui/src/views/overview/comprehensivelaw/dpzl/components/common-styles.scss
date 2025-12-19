@@ -1,5 +1,4 @@
 // 公共样式文件 - 执法主题专用
-
 // 基础变量定义（便于统一维护）
 $primary-color: #00ccff;
 $success-color: #13ce66;
@@ -8,7 +7,7 @@ $danger-color: #ff4949;
 $dark-bg: #0f172a;
 $card-bg: rgba(30, 41, 59, 0.8);
 $border-color: rgba(0, 204, 255, 0.2);
-$text-light: #94a3b8;
+$text-light: rgba(222, 225, 234, 0.95);
 $text-normal: #e2e8f0;
 $text-white: #ffffff;
 
@@ -80,10 +79,30 @@ $text-white: #ffffff;
     .panel {
       width: 100%;
       min-width: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
 
       .panel-body {
         width: 100%;
         min-width: 0;
+        flex: 1;
+        overflow: auto;
+        @include custom-scrollbar;
+        padding: 15px;
+        box-sizing: border-box;
+
+        // 网格布局滚动支持
+        .indicator-cards-grid {
+          min-height: min-content;
+          height: auto;
+
+          // 确保网格项正确布局
+          .indicator-card-enhanced {
+            flex-shrink: 0;
+            min-height: 120px;
+          }
+        }
 
         .overview-stats-single-row {
           width: 100%;
@@ -310,6 +329,19 @@ $text-white: #ffffff;
 .core-indicators-panel {
   flex: 1;
   height: 100%;
+
+  .panel-body {
+    // 确保内容区域有明确的高度计算
+    height: calc(100% - 40px); // 减去头部高度
+    box-sizing: border-box;
+    overflow: auto;
+    @include custom-scrollbar;
+
+    // 确保网格布局在滚动时正常工作
+    .indicator-cards-grid {
+      min-height: min-content;
+    }
+  }
 }
 
 // 指标卡片容器
@@ -378,14 +410,6 @@ $text-white: #ffffff;
       color: $primary-color;
       font-weight: 500;
     }
-  }
-
-  .indicator-yoy {
-    font-size: 14px;
-    margin-top: 5px;
-
-    &.positive { color: $success-color; }
-    &.negative { color: $danger-color; }
   }
 }
 // 列表标题样式
@@ -953,6 +977,10 @@ $text-white: #ffffff;
   height: 100%;
   padding: 10px 0;
   box-sizing: border-box;
+
+  // 滚动条支持
+  overflow-y: auto;
+  @include custom-scrollbar;
 }
 
 // 核心指标卡片样式
@@ -980,7 +1008,7 @@ $text-white: #ffffff;
 
   &.warning {
     border-color: $danger-color;
-    background: rgba(239, 68, 68, 0.05);
+    background: rgba(237, 240, 248, 0.95);
   }
 
   .indicator-header {
@@ -1059,31 +1087,39 @@ $text-white: #ffffff;
     }
   }
 
-  .indicator-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
+  // 警告边框和脉冲效果样式
+  .warning-border {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 2px solid $danger-color;
+    border-radius: 8px;
+    animation: warningBlink 1s infinite;
+    pointer-events: none;
+    z-index: 1;
+  }
 
-    .indicator-yoy {
-      font-size: 12px;
-      font-weight: 500;
-      padding: 2px 8px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.8);
+  .pulse-effect {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 8px;
+    animation: pulse 2s infinite;
+    pointer-events: none;
+    z-index: 1;
 
-      &.positive {
-        color: $success-color;
-      }
-
-      &.negative {
-        color: $danger-color;
-      }
+    &.normal {
+      border: 1px solid rgba(34, 197, 94, 0.5);
+      box-shadow: 0 0 15px rgba(34, 197, 94, 0.5);
     }
 
-    .indicator-update {
-      font-size: 10px;
-      color: $text-light;
+    &.warning {
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
     }
   }
 }
@@ -1130,6 +1166,7 @@ $text-white: #ffffff;
   max-width: 300px;
 }
 
+// 力量统计卡片
 .force-stats-cards {
   display: flex;
   flex-direction: column;
@@ -1407,7 +1444,7 @@ $text-white: #ffffff;
     .stat-value {
       font-size: 24px;
       font-weight: bold;
-      color: #333;
+      color: #ede3e3;
       margin-bottom: 2px;
 
       &.warning-text {
@@ -1418,22 +1455,6 @@ $text-white: #ffffff;
     .stat-sub {
       font-size: 12px;
       color: #888;
-    }
-  }
-
-  .stat-trend {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 12px;
-    font-weight: 500;
-
-    &.positive {
-      color: #10B981;
-    }
-
-    &.negative {
-      color: $danger-color;
     }
   }
 }
@@ -2364,84 +2385,6 @@ $text-white: #ffffff;
     }
   }
 }
-// 在 common-styles.scss 中添加以下样式
-
-// 执法核心指标面板滚动条样式
-.core-indicators-panel {
-  .panel-body {
-    overflow: auto;
-    @include custom-scrollbar;
-
-    // 确保网格布局在滚动时正常工作
-    .indicator-cards-grid {
-      min-height: min-content;
-    }
-  }
-}
-
-// 执法全域数据面板滚动条样式
-.top_right {
-  .panel {
-    .panel-body {
-      // 添加滚动条支持
-      overflow: auto;
-      @include custom-scrollbar;
-
-      // 确保内容区域有足够空间
-      padding: 15px;
-      box-sizing: border-box;
-
-      // 网格布局滚动支持
-      .indicator-cards-grid {
-        min-height: min-content;
-        height: auto;
-
-        // 确保网格项正确布局
-        .indicator-card-enhanced {
-          flex-shrink: 0;
-          min-height: 120px;
-        }
-      }
-    }
-  }
-}
-
-// 响应式调整 - 确保滚动条在不同屏幕尺寸下正常显示
-@media (max-width: 1600px) {
-  .top_right {
-    .panel {
-      .panel-body {
-        padding: 12px;
-
-        .indicator-cards-grid {
-          gap: 10px;
-
-          .indicator-card-enhanced {
-            min-height: 110px;
-          }
-        }
-      }
-    }
-  }
-}
-
-@media (max-width: 1400px) {
-  .top_right {
-    .panel {
-      .panel-body {
-        padding: 10px;
-
-        .indicator-cards-grid {
-          gap: 8px;
-
-          .indicator-card-enhanced {
-            min-height: 100px;
-          }
-        }
-      }
-    }
-  }
-}
 
 // 确保滚动条不会影响布局
 .core-indicators-panel,
@@ -2551,4 +2494,829 @@ $text-white: #ffffff;
 .empty-state + .panel-body {
   // 空状态时隐藏滚动条
   overflow: hidden !important;
+}
+
+// ========== 科技感表格样式 ==========
+.tech-table-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9));
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+          0 10px 30px rgba(0, 0, 0, 0.3),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1),
+          0 0 0 1px rgba(0, 204, 255, 0.1);
+  border: 1px solid rgba(0, 204, 255, 0.2);
+
+  // 网格背景
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+            linear-gradient(rgba(0, 204, 255, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 204, 255, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  // 发光边框效果
+  &::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 14px;
+    background: linear-gradient(45deg,
+            rgba(0, 204, 255, 0.3),
+            rgba(0, 123, 255, 0.2),
+            rgba(0, 204, 255, 0.3));
+    z-index: -1;
+    filter: blur(4px);
+    animation: borderGlow 3s ease-in-out infinite;
+  }
+}
+
+@keyframes borderGlow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+}
+
+.tech-table-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  background: linear-gradient(90deg,
+          rgba(0, 123, 255, 0.2),
+          rgba(0, 204, 255, 0.15),
+          rgba(0, 123, 255, 0.2));
+  border-bottom: 1px solid rgba(0, 204, 255, 0.3);
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 2;
+
+  .tech-header-cell {
+    padding: 16px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    color: $primary-color;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+    position: relative;
+    text-shadow: 0 0 10px rgba(0, 204, 255, 0.5);
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: 0;
+      transform: translateY(-50%);
+      width: 1px;
+      height: 60%;
+      background: linear-gradient(to bottom,
+              transparent,
+              rgba(0, 204, 255, 0.5),
+              transparent);
+    }
+
+    &:last-child::after {
+      display: none;
+    }
+  }
+}
+
+.tech-table-body {
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+  z-index: 1;
+
+  @include custom-scrollbar;
+
+  // 增强滚动条样式
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 30, 60, 0.3);
+    border-radius: 4px;
+    margin: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg,
+            $primary-color,
+            rgba(0, 123, 255, 0.8));
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    &:hover {
+      background: linear-gradient(45deg,
+              lighten($primary-color, 10%),
+              lighten(rgba(0, 123, 255, 0.8), 10%));
+    }
+  }
+}
+
+.tech-table-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  min-height: 60px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  border-bottom: 1px solid rgba(0, 204, 255, 0.1);
+
+  // 悬停效果
+  &:hover {
+    background: linear-gradient(90deg,
+            rgba(0, 204, 255, 0.05),
+            rgba(0, 123, 255, 0.03),
+            rgba(0, 204, 255, 0.05));
+    transform: translateX(5px);
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(to bottom,
+              $primary-color,
+              rgba(0, 123, 255, 0.8));
+    }
+  }
+
+  // 行背景色
+  &.tech-row-even {
+    background: rgba(15, 23, 42, 0.5);
+  }
+
+  &.tech-row-odd {
+    background: rgba(30, 41, 59, 0.5);
+  }
+}
+
+.tech-table-cell {
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  .cell-content {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  // 单元格分隔线
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 70%;
+    background: linear-gradient(to bottom,
+            transparent,
+            rgba(0, 204, 255, 0.2),
+            transparent);
+  }
+
+  &:last-child::after {
+    display: none;
+  }
+}
+
+// 数据流动效果样式
+.score-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+
+  .score-progress {
+    width: 60px;
+    height: 60px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.9);
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow:
+            inset 0 0 20px rgba(0, 0, 0, 0.5),
+            0 0 30px rgba(0, 0, 0, 0.3);
+
+    // 数据流轨道
+    &::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      box-sizing: border-box;
+    }
+
+    // 数据流基础环
+    .data-flow-ring {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      box-sizing: border-box;
+
+      // 根据分数设置进度
+      &::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        border-top: 2px solid var(--score-color, $primary-color);
+        border-right: 2px solid var(--score-color, $primary-color);
+        animation: dataFlowRing 3s linear infinite;
+        filter: drop-shadow(0 0 5px var(--score-color, $primary-color));
+      }
+    }
+
+    // 数据粒子环
+    .data-particle-ring {
+      position: absolute;
+      width: calc(100% + 4px);
+      height: calc(100% + 4px);
+      border-radius: 50%;
+      animation: particleRing 4s linear infinite;
+
+      .data-particle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: var(--score-color, $primary-color);
+        top: -2px;
+        left: 50%;
+        transform: translateX(-50%);
+        box-shadow: 0 0 8px var(--score-color, $primary-color);
+        opacity: 0;
+      }
+
+      // 创建多个粒子
+      @for $i from 1 through 8 {
+        .data-particle:nth-child(#{$i}) {
+          animation: particleFlow 3s linear infinite;
+          animation-delay: #{$i * 0.4}s;
+        }
+      }
+    }
+
+    // 数据流节点
+    .data-node {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--score-color, $primary-color);
+      top: -3px;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: nodeFlow 2s ease-in-out infinite alternate;
+      box-shadow: 0 0 10px var(--score-color, $primary-color);
+      z-index: 2;
+    }
+
+    // 内层数据流
+    .inner-data-flow {
+      position: absolute;
+      width: 80%;
+      height: 80%;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      animation: innerFlow 6s linear infinite reverse;
+
+      &::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 1px solid transparent;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        border-right: 1px solid rgba(255, 255, 255, 0.3);
+        animation: innerFlow 4s linear infinite;
+      }
+    }
+
+    // 分数值显示
+    .score-value {
+      position: relative;
+      z-index: 3;
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--score-color, $primary-color);
+      text-shadow:
+              0 0 10px currentColor,
+              0 0 20px currentColor;
+      animation: valuePulse 2s ease-in-out infinite;
+    }
+
+    // 发光背景
+    .flow-glow {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: radial-gradient(
+                      circle at center,
+                      rgba(255, 255, 255, 0.1) 0%,
+                      transparent 70%
+      );
+      filter: blur(5px);
+      animation: glowPulse 3s ease-in-out infinite;
+      opacity: 0.5;
+    }
+  }
+}
+
+// ========== 数据流动动画 ==========
+
+// 数据流环动画
+@keyframes dataFlowRing {
+  0% {
+    transform: rotate(0deg);
+    border-top-color: var(--score-color, $primary-color);
+    border-right-color: var(--score-color, $primary-color);
+    filter: drop-shadow(0 0 5px var(--score-color, $primary-color));
+  }
+  25% {
+    border-top-color: lighten($primary-color, 20%);
+    border-right-color: lighten($primary-color, 20%);
+    filter: drop-shadow(0 0 8px lighten($primary-color, 20%));
+  }
+  50% {
+    transform: rotate(180deg);
+    border-top-color: darken($primary-color, 10%);
+    border-right-color: darken($primary-color, 10%);
+    filter: drop-shadow(0 0 5px darken($primary-color, 10%));
+  }
+  75% {
+    border-top-color: lighten($primary-color, 10%);
+    border-right-color: lighten($primary-color, 10%);
+    filter: drop-shadow(0 0 8px lighten($primary-color, 10%));
+  }
+  100% {
+    transform: rotate(360deg);
+    border-top-color: var(--score-color, $primary-color);
+    border-right-color: var(--score-color, $primary-color);
+    filter: drop-shadow(0 0 5px var(--score-color, $primary-color));
+  }
+}
+
+// 粒子环动画
+@keyframes particleRing {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// 粒子流动动画
+@keyframes particleFlow {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.5);
+  }
+  10% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  90% {
+    opacity: 0.8;
+    transform: translateX(-50%) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) rotate(360deg) scale(0.5);
+  }
+}
+
+// 节点流动动画
+@keyframes nodeFlow {
+  0% {
+    transform: translateX(-50%) scale(1);
+    box-shadow: 0 0 5px var(--score-color, $primary-color);
+  }
+  100% {
+    transform: translateX(-50%) scale(1.3);
+    box-shadow: 0 0 15px var(--score-color, $primary-color);
+  }
+}
+
+// 内层流动动画
+@keyframes innerFlow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// 数值脉冲动画
+@keyframes valuePulse {
+  0%, 100% {
+    transform: scale(1);
+    text-shadow:
+            0 0 10px currentColor,
+            0 0 20px currentColor;
+  }
+  50% {
+    transform: scale(1.05);
+    text-shadow:
+            0 0 15px currentColor,
+            0 0 30px currentColor;
+  }
+}
+
+// 发光脉冲动画
+@keyframes glowPulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+}
+
+.area-name {
+  font-size: 15px;
+  color: $text-white;
+  font-weight: 500;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.score-tag {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+
+  &.excellent {
+    color: #10B981;
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  &.good {
+    color: #3B82F6;
+    background: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.3);
+  }
+
+  &.average {
+    color: #F59E0B;
+    background: rgba(245, 158, 11, 0.1);
+    border-color: rgba(245, 158, 11, 0.3);
+  }
+
+  &.poor {
+    color: #EF4444;
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+}
+
+.tech-action-btn {
+  padding: 8px 16px;
+  background: linear-gradient(45deg,
+          rgba(0, 204, 255, 0.2),
+          rgba(0, 123, 255, 0.1));
+  border: 1px solid rgba(0, 204, 255, 0.4);
+  border-radius: 6px;
+  color: $primary-color;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.2),
+            transparent);
+    transition: left 0.5s ease;
+  }
+
+  &:hover {
+    background: linear-gradient(45deg,
+            rgba(0, 204, 255, 0.3),
+            rgba(0, 123, 255, 0.2));
+    border-color: $primary-color;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 204, 255, 0.3);
+
+    &::before {
+      left: 100%;
+    }
+  }
+
+  .btn-text {
+    position: relative;
+    z-index: 1;
+  }
+
+  .el-icon {
+    font-size: 14px;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover .el-icon {
+    transform: translateX(3px);
+  }
+}
+
+.weight-badge {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-block;
+  min-width: 60px;
+  text-align: center;
+
+  &.weight-high {
+    background: linear-gradient(45deg, #3B82F6, #1D4ED8);
+    color: white;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  }
+
+  &.weight-medium {
+    background: linear-gradient(45deg, #10B981, #059669);
+    color: white;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  }
+
+  &.weight-low {
+    background: linear-gradient(45deg, #F59E0B, #D97706);
+    color: white;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+  }
+
+  &.weight-none {
+    background: rgba(255, 255, 255, 0.1);
+    color: $text-light;
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+  }
+}
+
+.orientation-text {
+  font-size: 14px;
+  color: $text-white;
+  line-height: 1.4;
+  text-align: center;
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+.no-action-text {
+  color: $text-light;
+  font-style: italic;
+  font-size: 14px;
+}
+
+.tech-table-footer {
+  padding: 15px 20px;
+  background: linear-gradient(90deg,
+          rgba(0, 30, 60, 0.5),
+          rgba(0, 20, 40, 0.5));
+  border-top: 1px solid rgba(0, 204, 255, 0.2);
+  position: relative;
+
+  .footer-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+
+    .grid-line {
+      flex: 1;
+      height: 2px;
+      background: linear-gradient(90deg,
+              transparent,
+              rgba(0, 204, 255, 0.5),
+              transparent);
+    }
+  }
+
+  .footer-glow {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+            transparent,
+            $primary-color,
+            transparent);
+    filter: blur(1px);
+    animation: glowMove 2s linear infinite;
+  }
+}
+
+@keyframes glowMove {
+  0% { opacity: 0; transform: translateX(-100%); }
+  50% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(100%); }
+}
+
+// 弹窗中的科技感表格
+.tech-dialog {
+  .el-dialog {
+    background: linear-gradient(145deg,
+            rgba(15, 23, 42, 0.95),
+            rgba(30, 41, 59, 0.95));
+    border: 1px solid rgba(0, 204, 255, 0.3);
+    box-shadow:
+            0 20px 60px rgba(0, 0, 0, 0.4),
+            0 0 0 1px rgba(0, 204, 255, 0.1);
+
+    .el-dialog__header {
+      background: linear-gradient(90deg,
+              rgba(0, 123, 255, 0.2),
+              rgba(0, 204, 255, 0.15));
+      border-bottom: 1px solid rgba(0, 204, 255, 0.3);
+
+      .el-dialog__title {
+        background: linear-gradient(90deg, $primary-color, #3B82F6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 600;
+        font-size: 18px;
+      }
+    }
+
+    .el-dialog__body {
+      padding: 0;
+      max-height: 70vh;
+      overflow: hidden;
+      color: $text-light;
+
+      .tech-table-container {
+        height: 100%;
+        border-radius: 0;
+
+        .tech-table-header {
+          grid-template-columns: 1fr 1fr 1fr 1fr;
+        }
+
+        .tech-table-row {
+          grid-template-columns: 1fr 1fr 1fr 1fr;
+        }
+
+        .tech-table-body {
+          max-height: calc(70vh - 80px);
+        }
+      }
+    }
+  }
+}
+
+// 得分样式辅助函数
+:root {
+  --score-color: #00ccff;
+  --score-percent: 50;
+}
+
+// 响应式调整
+@media (max-width: 1600px) {
+  .tech-table-header .tech-header-cell {
+    padding: 14px 16px;
+    font-size: 14px;
+  }
+
+  .tech-table-cell {
+    padding: 10px 16px;
+  }
+
+  .score-container {
+    .score-progress {
+      width: 50px;
+      height: 50px;
+
+      .score-value {
+        font-size: 16px;
+      }
+
+      .data-particle {
+        width: 3px;
+        height: 3px;
+      }
+
+      .data-node {
+        width: 5px;
+        height: 5px;
+      }
+    }
+  }
+
+  .tech-action-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 1400px) {
+  .tech-table-header .tech-header-cell {
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+
+  .tech-table-cell {
+    padding: 8px 14px;
+  }
+
+  .area-name {
+    font-size: 14px;
+  }
+
+  .score-container {
+    .score-progress {
+      width: 45px;
+      height: 45px;
+
+      .score-value {
+        font-size: 14px;
+      }
+    }
+  }
+
+  .score-tag {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+
+  .tech-action-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+}
+
+// 确保核心指标面板正确显示科技感表格
+.core-indicators-panel {
+  .panel-body {
+    padding: 0;
+
+    .tech-table-container {
+      height: 100%;
+      min-height: 300px;
+    }
+  }
+}
+
+// 弹窗表格优化
+.tech-dialog .el-dialog {
+  .tech-table-container {
+    .tech-table-body {
+      @include custom-scrollbar;
+    }
+  }
 }

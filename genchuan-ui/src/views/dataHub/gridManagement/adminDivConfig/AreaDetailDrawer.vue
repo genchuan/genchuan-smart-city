@@ -1,26 +1,24 @@
 <template>
   <el-drawer
     v-model="visible"
-    size="75%"
-    title="行政区划详情"
-    :destroy-on-close="true"
+    :size="isFullscreen ? '100%' : '75%'"
+    direction="rtl"
+    :append-to-body="true"
+    class="detail-drawer"
   >
+    <!-- 抽屉头部 -->
     <template #header>
-      <div class="drawer-header">
-        <span class="text-lg font-bold">行政区划详情</span>
-        <el-button link type="primary" @click="handleRefresh">
-          <Icon icon="ep:refresh" class="mr-5px" /> 刷新
+      <div class="flex justify-between items-center w-full px-2">
+        <span class="text-lg font-bold text-gray-800">行政区划详情</span>
+        <el-button type="primary" link @click="isFullscreen = !isFullscreen">
+          <Icon :icon="isFullscreen ? 'ep:zoom-out' : 'ep:zoom-in'" />
+          {{ isFullscreen ? '退出全屏' : '全屏' }}
         </el-button>
       </div>
     </template>
 
     <el-scrollbar height="calc(100vh - 150px)">
-      <el-descriptions
-        :column="2"
-        border
-        size="default"
-        class="detail-desc"
-      >
+      <el-descriptions :column="2" border size="default" class="detail-desc">
         <el-descriptions-item label="主键ID">
           {{ detail?.id ?? '-' }}
         </el-descriptions-item>
@@ -84,6 +82,7 @@ import { AreaApi, AreaVO } from '@/api/dataHub/gridManagement/adminDivConfig'
 import { formatDate } from '@/utils/formatTime'
 import { ElMessage } from 'element-plus'
 
+const isFullscreen = ref(false) // 全屏状态
 /** 组件参数与状态 */
 const props = defineProps<{
   modelValue: boolean
@@ -96,7 +95,6 @@ const formatDateDisplay = (val?: string | Date) => {
   if (!val) return '-'
   return formatDate(new Date(val), 'YYYY-MM-DD HH:mm:ss')
 }
-
 
 const emits = defineEmits(['update:modelValue'])
 

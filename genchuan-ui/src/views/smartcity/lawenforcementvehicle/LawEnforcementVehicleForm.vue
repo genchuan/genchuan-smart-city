@@ -52,11 +52,17 @@
       <el-form-item label="车辆用途" prop="vehicleUsage">
         <el-input v-model="formData.vehicleUsage" placeholder="请输入车辆用途" />
       </el-form-item>
-      <!--<el-form-item label="车辆状态" prop="vehicleStatus">-->
-      <!--  <el-radio-group v-model="formData.vehicleStatus">-->
-      <!--    <el-radio value="1">请选择字典生成</el-radio>-->
-      <!--  </el-radio-group>-->
-      <!--</el-form-item>-->
+      <el-form-item label="车辆状态" prop="vehicleStatus">
+        <el-radio-group v-model="formData.vehicleStatus">
+          <el-radio label="onDuty">执行任务中</el-radio>
+          <el-radio label="standby">执法待命</el-radio>
+          <el-radio label="maintenance">维修中</el-radio>
+          <el-radio label="service">定期保养</el-radio>
+          <el-radio label="impounded">暂扣/封存</el-radio>
+          <el-radio label="outOfService">停用报废</el-radio>
+          <el-radio label="refueling">加油/充电中</el-radio>
+        </el-radio-group>
+      </el-form-item>
       <el-form-item label="年检到期日期" prop="annualInspectionDate">
         <el-date-picker
           v-model="formData.annualInspectionDate"
@@ -144,27 +150,7 @@ const formData = ref({
   refuelingRecord: undefined,
   violationRecords: undefined
 })
-const formRules = reactive({
-  vehicleColor: [{ required: true, message: '车辆颜色不能为空', trigger: 'blur' }],
-  vin: [{ required: true, message: '车架号不能为空', trigger: 'blur' }],
-  engineNo: [{ required: true, message: '发动机号不能为空', trigger: 'blur' }],
-  purchaseTime: [{ required: true, message: '购置时间不能为空', trigger: 'blur' }],
-  registrationDate: [{ required: true, message: '登记注册日期不能为空', trigger: 'blur' }],
-  belongingDepartment: [{ required: true, message: '所属执法部门不能为空', trigger: 'blur' }],
-  natureOfUse: [{ required: true, message: '使用性质不能为空', trigger: 'blur' }],
-  vehicleUsage: [{ required: true, message: '车辆用途不能为空', trigger: 'blur' }],
-  vehicleStatus: [{ required: true, message: '车辆状态不能为空', trigger: 'blur' }],
-  annualInspectionDate: [{ required: true, message: '年检到期日期不能为空', trigger: 'blur' }],
-  insuranceDeadline: [{ required: true, message: '保险截止日期不能为空', trigger: 'blur' }],
-  typesOfInsurance: [{ required: true, message: '保险类型不能为空', trigger: 'blur' }],
-  driverName: [{ required: true, message: '驾驶员姓名不能为空', trigger: 'blur' }],
-  driverContactInformation: [{ required: true, message: '驾驶员联系方式不能为空', trigger: 'blur' }],
-  mileage: [{ required: true, message: '行驶里程不能为空', trigger: 'blur' }],
-  maintenanceRecord: [{ required: true, message: '维修记录不能为空', trigger: 'blur' }],
-  maintenanceRecords: [{ required: true, message: '保养记录不能为空', trigger: 'blur' }],
-  refuelingRecord: [{ required: true, message: '加油记录不能为空', trigger: 'blur' }],
-  violationRecords: [{ required: true, message: '违章记录不能为空', trigger: 'blur' }]
-})
+const formRules = reactive({})
 const formRef = ref() // 表单 Ref
 
 /** 打开弹窗 */

@@ -308,27 +308,13 @@ const refreshMenu = async () => {
 
 // 自己增删改查添加
 const cchandleClick2 = async (id,rowData) => {
-  let component = rowData.component;
-  let peramsArray = component.split('/');
-
-  //用到芋道自己生成代码的时候使用 开始
-  // let params1=peramsArray[0];
-  // let params2=rowData.componentName
-  // let params=`${params1}:${params2}`
-  //用到芋道自己生成代码的时候使用 结束
-
-
-  //自己写的生成代码的时候使用 开始
+  let path = rowData.path;
+  let peramsArray = path.split('/');
   let params1=peramsArray[0];
-  let params2=peramsArray[1]
-  let params=`${params1}:${params2}`
-  //自己写的生成代码的时候使用 结束
-
-
   let dataList = [
     {
       "name": "添加",
-      "permission": `${params}:create`,
+      "permission": `datacenter:${params1}:create`,
       "sort": 1,
       "parentId": id,
       "type": 3,
@@ -342,7 +328,7 @@ const cchandleClick2 = async (id,rowData) => {
       "alwaysShow": true
     }, {
       "name": "修改",
-      "permission": `${params}:update`,
+      "permission": `datacenter:${params1}:update`,
       "sort": 2,
       "parentId": id,
       "type": 3,
@@ -356,7 +342,7 @@ const cchandleClick2 = async (id,rowData) => {
       "alwaysShow": true
     }, {
       "name": "删除",
-      "permission": `${params}:delete`,
+      "permission": `datacenter:${params1}:delete`,
       "sort": 3,
       "parentId": id,
       "type": 3,
@@ -370,7 +356,7 @@ const cchandleClick2 = async (id,rowData) => {
       "alwaysShow": true
     }, {
       "name": "导出",
-      "permission": `${params}:export`,
+      "permission": `datacenter:${params1}:export`,
       "sort": 4,
       "parentId": id,
       "type": 3,
@@ -384,7 +370,7 @@ const cchandleClick2 = async (id,rowData) => {
       "alwaysShow": true
     },{
       "name": "查看",
-      "permission": `${params}:query`,
+      "permission": `datacenter:${params1}:query`,
       "sort": 5,
       "parentId": id,
       "type": 3,

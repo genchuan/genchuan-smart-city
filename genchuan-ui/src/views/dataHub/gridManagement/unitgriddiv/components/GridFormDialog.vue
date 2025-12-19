@@ -38,9 +38,9 @@
           <el-input v-model="form.unitGridName" placeholder="请输入网格名称" />
         </el-form-item>
 
-<!--        <el-form-item label="所属社区ID" prop="commId">-->
-<!--          <el-input v-model="form.commId" placeholder="请输入社区ID" />-->
-<!--        </el-form-item>-->
+        <!--        <el-form-item label="所属社区ID" prop="commId">-->
+        <!--          <el-input v-model="form.commId" placeholder="请输入社区ID" />-->
+        <!--        </el-form-item>-->
 
         <el-form-item label="所属社区" prop="commId">
           <el-tree-select

@@ -1,6 +1,5 @@
 <template>
   <div class="map-container">
-    <!-- 地图容器 -->
     <div :id="idName" class="map-common-css"></div>
 
     <div class="legend">
@@ -41,7 +40,6 @@
 
 <script setup>
 import { onMounted, defineProps, ref, onUnmounted, defineExpose, watch } from 'vue';
-// 导入图标
 import markerFactory from '@/assets/chart/images/factory.png';
 import markerOffice from '@/assets/chart/images/office.png';
 import markerDormitory from '@/assets/chart/images/dormitory.png';
@@ -82,14 +80,85 @@ const layerVisible = ref({
 const mapInstance = ref(null);
 const infoWindow = ref(null);
 
-// 新增：重置图层（销毁旧图层）
+// 信息窗关闭回调
+const handleInfoWindowClose = () => {
+  if (infoWindow.value) {
+    infoWindow.value.close();
+  }
+};
+
+// 区域图层点击回调（通过闭包传递zoneType）
+const createZoneClickHandler = (zoneType) => {
+  return (e) => handleZoneClick(e, zoneType);
+};
+
+// 建筑点击回调
+const handleBuildingClickWrapper = (e) => {
+  handleBuildingClick(e);
+};
+
+// 道路点击回调
+const handleRoadClickWrapper = (e) => {
+  handleRoadClick(e);
+};
+
+// 停车场点击回调
+const handleParkingClickWrapper = (e) => {
+  handleParkingClick(e);
+};
+
+// 存储区域图层的点击处理器（用于off时匹配引用）
+const zoneClickHandlers = ref({
+  industrial: null,
+  commercial: null,
+  residential: null
+});
+
+// 重置图层（销毁旧图层）
 const resetLayers = () => {
-  Object.values(layers.value).forEach(layer => {
-    if (layer) {
-      layer.off('click');
-      layer.destroy();
+  // 销毁区域图层（需匹配zoneClickHandlers的引用）
+  Object.keys(zoneClickHandlers.value).forEach(zoneType => {
+    const layer = layers.value[zoneType];
+    const handler = zoneClickHandlers.value[zoneType];
+    if (layer && handler) {
+      try {
+        layer.off('click', handler);
+      } catch (error) {
+        console.warn(`销毁${zoneType}区域图层事件失败：`, error);
+      }
     }
   });
+
+  // 销毁其他图层
+  const otherLayers = ['building', 'road', 'parking'];
+  otherLayers.forEach(layerType => {
+    const layer = layers.value[layerType];
+    let handler = null;
+    if (layerType === 'building') handler = handleBuildingClickWrapper;
+    if (layerType === 'road') handler = handleRoadClickWrapper;
+    if (layerType === 'parking') handler = handleParkingClickWrapper;
+
+    if (layer && handler) {
+      try {
+        layer.off('click', handler);
+      } catch (error) {
+        console.warn(`销毁${layerType}图层事件失败：`, error);
+      }
+    }
+  });
+
+  // 销毁所有图层实例
+  Object.values(layers.value).forEach(layer => {
+    if (layer) {
+      try {
+        layer.destroy();
+      } catch (error) {
+        console.warn('销毁图层实例失败：', error);
+      }
+    }
+  });
+
+  // 重置状态
   layers.value = {
     industrial: null,
     commercial: null,
@@ -98,13 +167,18 @@ const resetLayers = () => {
     road: null,
     parking: null
   };
+  zoneClickHandlers.value = {
+    industrial: null,
+    commercial: null,
+    residential: null
+  };
 };
 
 // 初始化地图
 const initMap = () => {
   const callbackName = `initMap_${props.idName}`;
   const script = document.createElement('script');
-  script.src = `https://map.qq.com/api/gljs?v=1.exp&key=OHCBZ-7BPC3-J7E3H-OA62K-Y3ZFZ-JQBPD&callback=${callbackName}`;
+  script.src = `https://map.qq.com/api/gljs?v=1.exp&key=QTQBZ-F3RWW-JJJRV-YNPA5-ZIKDK-3SBNO&callback=${callbackName}`;
   script.async = true;
 
   window[callbackName] = () => {
@@ -137,32 +211,43 @@ const mapCallback = () => {
     visible: false
   });
 
-  infoWindow.value.on('close', () => infoWindow.value.close());
+  // 绑定信息窗关闭事件
+  infoWindow.value.on('close', handleInfoWindowClose);
 
-  // 初始创建图层（如果已有数据）
+  // 初始创建图层
   if (props.geometriesArray.length > 0) {
     createZoneLayers(map);
     createBuildingLayer(map);
     createRoadLayer(map);
     createParkingLayer(map);
+    // 绑定图层点击事件
+    bindLayerClickEvents();
   }
+};
 
-  // 绑定点击事件
-  Object.keys(layers.value).forEach(layerType => {
-    if (layers.value[layerType]) {
-      layers.value[layerType].on('click', (e) => {
-        if (layerType === 'building') {
-          handleBuildingClick(e);
-        } else if (layerType === 'road') {
-          handleRoadClick(e);
-        } else if (layerType === 'parking') {
-          handleParkingClick(e);
-        } else {
-          handleZoneClick(e, layerType);
-        }
-      });
+// 绑定所有图层点击事件
+const bindLayerClickEvents = () => {
+  // 绑定区域图层点击事件
+  Object.keys(zoneClickHandlers.value).forEach(zoneType => {
+    const layer = layers.value[zoneType];
+    if (layer && !zoneClickHandlers.value[zoneType]) {
+      // 创建带zoneType参数的处理器（闭包保存参数）
+      const handler = createZoneClickHandler(zoneType);
+      zoneClickHandlers.value[zoneType] = handler;
+      layer.on('click', handler);
     }
   });
+
+  // 绑定其他图层点击事件
+  if (layers.value.building) {
+    layers.value.building.on('click', handleBuildingClickWrapper);
+  }
+  if (layers.value.road) {
+    layers.value.road.on('click', handleRoadClickWrapper);
+  }
+  if (layers.value.parking) {
+    layers.value.parking.on('click', handleParkingClickWrapper);
+  }
 };
 
 // 创建区域图层
@@ -244,7 +329,6 @@ const createZoneLayers = (map) => {
   });
 };
 
-// 创建建筑标记图层
 const createBuildingLayer = (map) => {
   const buildingData = [];
   props.geometriesArray.forEach((item, index) => {
@@ -282,7 +366,6 @@ const createBuildingLayer = (map) => {
   }
 };
 
-// 建筑标记样式
 const getBuildingStyles = () => {
   return {
     'factory': new TMap.MarkerStyle({
@@ -312,7 +395,6 @@ const getBuildingStyles = () => {
   };
 };
 
-// 创建道路图层
 const createRoadLayer = (map) => {
   const roadData = props.geometriesArray
     .filter(item => item.type === 'road')
@@ -337,7 +419,6 @@ const createRoadLayer = (map) => {
   }
 };
 
-// 创建停车场图层
 const createParkingLayer = (map) => {
   const parkingData = props.geometriesArray
     .filter(item => item.type === 'parking')
@@ -365,14 +446,13 @@ const createParkingLayer = (map) => {
   }
 };
 
-// 区域点击事件 - 按：对齐修改
+// 区域点击事件
 const handleZoneClick = (e, zoneType) => {
   if (e.geometry) {
     const props = e.geometry.properties;
     const content = `
       <div style="padding: 8px 12px; font-size: 14px; color: #333; background: white; border: 1px solid #ccc; width: 280px;">
         <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #1E90FF; text-align: center; border-bottom: 1px solid #eee; padding-bottom: 8px;">${props.name}</h3>
-        <!-- 对齐核心：使用flex布局，标签固定宽度并右对齐 -->
         <div style="display: flex; align-items: center; margin: 6px 0;">
           <span style="width: 80px; text-align: right; font-weight: bold; margin-right: 6px;">区域类型：</span>
           <span style="flex: 1; text-align: left;">${props.name}</span>
@@ -393,7 +473,7 @@ const handleZoneClick = (e, zoneType) => {
   }
 };
 
-// 建筑点击事件 - 按：对齐修改（核心修改）
+// 建筑点击事件
 const getTooltipContent = (properties) => {
   const formatPoints = (points) => {
     return points?.length
@@ -467,7 +547,7 @@ const handleBuildingClick = (e) => {
   }
 };
 
-// 道路点击事件 - 按：对齐修改
+// 道路点击事件
 const handleRoadClick = (e) => {
   if (e.geometry) {
     const props = e.geometry.properties;
@@ -497,7 +577,7 @@ const handleRoadClick = (e) => {
   }
 };
 
-// 停车场点击事件 - 按：对齐修改
+// 停车场点击事件
 const handleParkingClick = (e) => {
   if (e.geometry) {
     const props = e.geometry.properties;
@@ -543,7 +623,7 @@ const toggleLayer = (type) => {
 // 暴露图层控制方法
 defineExpose({ toggleLayer });
 
-// 新增：监听geometriesArray变化，重新渲染图层
+// 监听geometriesArray变化，重新渲染图层
 watch(
   () => props.geometriesArray,
   (newVal) => {
@@ -553,22 +633,7 @@ watch(
       createBuildingLayer(mapInstance.value);
       createRoadLayer(mapInstance.value);
       createParkingLayer(mapInstance.value);
-      // 重新绑定点击事件
-      Object.keys(layers.value).forEach(layerType => {
-        if (layers.value[layerType]) {
-          layers.value[layerType].on('click', (e) => {
-            if (layerType === 'building') {
-              handleBuildingClick(e);
-            } else if (layerType === 'road') {
-              handleRoadClick(e);
-            } else if (layerType === 'parking') {
-              handleParkingClick(e);
-            } else {
-              handleZoneClick(e, layerType);
-            }
-          });
-        }
-      });
+      bindLayerClickEvents(); // 重新绑定点击事件
     }
   },
   { deep: true }
@@ -579,14 +644,27 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  Object.values(layers.value).forEach(layer => {
-    if (layer) {
-      layer.off('click');
-      layer.destroy();
+  // 先移除所有事件，再销毁实例
+  resetLayers();
+
+  // 销毁信息窗
+  if (infoWindow.value) {
+    try {
+      infoWindow.value.off('close', handleInfoWindowClose);
+      infoWindow.value.destroy();
+    } catch (error) {
+      console.warn('卸载时销毁信息窗失败：', error);
     }
-  });
-  if (infoWindow.value) infoWindow.value.destroy();
-  if (mapInstance.value) mapInstance.value.destroy();
+  }
+
+  // 销毁地图
+  if (mapInstance.value) {
+    try {
+      mapInstance.value.destroy();
+    } catch (error) {
+      console.warn('卸载时销毁地图失败：', error);
+    }
+  }
 });
 </script>
 

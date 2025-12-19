@@ -6,7 +6,6 @@
       :model="queryParams"
       ref="queryFormRef"
       :inline="true"
-      label-width="68px"
     >
       <el-form-item label="机构名称" prop="institutionName">
         <el-input

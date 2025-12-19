@@ -10,7 +10,12 @@
     >
       <!-- 搜索条件（网格类型+指标名称） -->
       <el-form-item label="评价网格类型" prop="gridType">
-        <el-select v-model="queryParams.gridType" placeholder="请选择类型" clearable class="!w-240px">
+        <el-select
+          v-model="queryParams.gridType"
+          placeholder="请选择类型"
+          clearable
+          class="!w-240px"
+        >
           <el-option v-for="type in gridTypes" :key="type" :label="type" :value="type" />
         </el-select>
       </el-form-item>
@@ -28,7 +33,9 @@
       <el-form-item>
         <el-button @click="handleQuery">搜索</el-button>
         <el-button @click="resetQuery">重置</el-button>
-        <el-button type="success" plain @click="handleExport" :loading="exportLoading">导出</el-button>
+        <el-button type="success" plain @click="handleExport" :loading="exportLoading"
+          >导出</el-button
+        >
         <el-button type="warning" plain @click="openBatchAssign">批量关联指标</el-button>
       </el-form-item>
     </el-form>
@@ -60,8 +67,8 @@
       <el-table-column label="关联评价指标名称" align="center" prop="idxName" />
       <el-table-column label="操作" align="center" min-width="180px">
         <template #default="scope">
+          <el-button link type="primary" @click="openDetail(scope.row)">详情</el-button>
           <el-button link type="primary" @click="openForm(scope.row.id)">编辑</el-button>
-          <el-button link type="success" @click="openDetail(scope.row)">详情</el-button>
           <el-button link type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
@@ -99,15 +106,15 @@
   </el-dialog>
 
   <!-- 详情抽屉 -->
-  <EvalGridAttrDetailDrawer
-    v-model="detailDrawerVisible"
-    :record="detailRecord"
-  />
+  <EvalGridAttrDetailDrawer v-model="detailDrawerVisible" :record="detailRecord" />
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed } from 'vue'
-import { EvalGridAttrApi, EvalGridAttrVO } from '@/api/dataHub/gridManagement/gridDataManage/evalgridattr'
+import {
+  EvalGridAttrApi,
+  EvalGridAttrVO
+} from '@/api/dataHub/gridManagement/gridDataManage/evalgridattr'
 import EvalGridAttrForm from './EvalGridAttrForm.vue'
 import EvalGridAttrDetailDrawer from './EvalGridAttrDetailDrawer.vue'
 import { useMessage } from '@/hooks/web/useMessage'
@@ -148,7 +155,7 @@ const batchForm = reactive<{ gridType: string; idxId?: number }>({
 
 const filteredIndicators = computed(() => {
   const type = batchForm.gridType || ''
-  return indicators.filter(i => i.type === type)
+  return indicators.filter((i) => i.type === type)
 })
 
 // 详情抽屉
@@ -225,9 +232,9 @@ const handleBatchAssign = () => {
     message.warning('请选择指标')
     return
   }
-  selectedRows.value.forEach(row => {
+  selectedRows.value.forEach((row) => {
     row.idxId = batchForm.idxId
-    const indicator = indicators.find(i => i.id === batchForm.idxId)
+    const indicator = indicators.find((i) => i.id === batchForm.idxId)
     row.idxName = indicator?.name || ''
   })
   message.success('批量关联成功')

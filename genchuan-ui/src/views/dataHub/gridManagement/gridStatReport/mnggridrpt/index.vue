@@ -56,22 +56,21 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button @click="handleQuery" class="search-btn"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
-        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
-        <el-button
-          type="primary"
-          plain
-          @click="openForm('create')"
-        >
-          <Icon icon="ep:plus" class="mr-5px" /> 新增
+        <el-button @click="handleQuery" class="search-btn">
+          <Icon icon="ep:search" class="mr-5px" />
+          搜索
         </el-button>
-        <el-button
-          type="success"
-          plain
-          @click="handleExport"
-          :loading="exportLoading"
-        >
-          <Icon icon="ep:download" class="mr-5px" /> 导出
+        <el-button @click="resetQuery">
+          <Icon icon="ep:refresh" class="mr-5px" />
+          重置
+        </el-button>
+        <el-button type="primary" plain @click="openForm('create')">
+          <Icon icon="ep:plus" class="mr-5px" />
+          新增
+        </el-button>
+        <el-button type="success" plain @click="handleExport" :loading="exportLoading">
+          <Icon icon="ep:download" class="mr-5px" />
+          导出
         </el-button>
       </el-form-item>
     </el-form>
@@ -104,27 +103,11 @@
       <el-table-column label="统计人" align="center" prop="statUserId" width="200" />
       <el-table-column label="操作" align="center" min-width="180px">
         <template #default="scope">
-          <el-button
-            link
-            type="primary"
-            @click="openDetail(scope.row)"
-          >
-            查看
-          </el-button>
-          <el-button
-            link
-            type="primary"
-            @click="openForm('update', scope.row.id)"
-          >
+          <el-button link type="primary" @click="openDetail(scope.row)"> 详情 </el-button>
+          <el-button link type="primary" @click="openForm('update', scope.row.id)">
             编辑
           </el-button>
-          <el-button
-            link
-            type="danger"
-            @click="handleDelete(scope.row.id)"
-          >
-            删除
-          </el-button>
+          <el-button link type="danger" @click="handleDelete(scope.row.id)"> 删除 </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -185,7 +168,7 @@ const queryParams = reactive({
   extCat2: undefined,
   extCommon1: undefined,
   extCommon2: undefined,
-  createTime: [],
+  createTime: []
 })
 const queryFormRef = ref() // 搜索的表单
 const exportLoading = ref(false) // 导出的加载中
@@ -261,8 +244,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
-
 .search-input {
   width: 220px !important;
   margin-right: 10px;

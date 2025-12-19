@@ -1,0 +1,134 @@
+@use "@/assets/thingsBoard/mixin.scss" as *;
+
+html {
+  font-size: 1vw; /* 1rem = 视口宽度的 1% */
+}
+
+.custom-body-class .cc-iframe {
+  padding: 0px !important;
+}
+
+.layout-border__right:after {
+  background-color: #000000;
+}
+
+.custom-body-class .thingsBoard-dashboard-css {
+  //padding: 0px !important;
+}
+
+.thingsBoard-dashboard-css {
+  /*  background: url("../images/bg.jpg") no-repeat;
+    background-size: 100% 100%;*/
+  width: 100% !important;
+  padding: 10px !important;
+  height: calc(100vh - 85px);
+  background: #f5f7f9;
+}
+
+.thingsBoard-dashboard-css .content-one {
+  height: 50%;
+  width: 100%;
+  @include flex();
+
+  //图标和字样式
+  .icon-font-css {
+    height: calc(100% / 3 - 8px);
+    width: 100%;
+    margin-bottom: 8px;
+    font-size: 1.5rem;
+    box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, .2), 0px 4px 5px 0px rgba(0, 0, 0, .14), 0px 1px 10px 0px rgba(0, 0, 0, .12);
+    @include flex();
+
+    .content1 {
+      padding: 12px;
+      flex: 1;
+      @include flex($justify: space-between);
+
+      .s1 {
+        @include flex($align: flex-start);
+
+        img {
+          height: 2.5rem;
+          margin-right: 16px;
+        }
+      }
+
+      .s2 {
+        @include flex();
+
+        img {
+          height: 1.5rem;
+          margin-left: 16px;
+        }
+      }
+    }
+  }
+
+  .left {
+    //flex: 0 0 auto;
+    width: 25%;
+    height: 100%;
+    @include flex($direction: column);
+  }
+
+  .center {
+    //flex: 0 0 auto;
+    width: 50%;
+    height: 100%;
+    padding: 0 12px;
+    @include flex($direction: column);
+    //标题
+    .dashboard-title-css {
+      flex: 0 0 auto;
+      height: 3.5rem;
+      width: 100%;
+      line-height: 3.5rem;
+      background: #fff;
+      border-radius: 0.2rem;
+      text-align: center;
+      font-size: 1.2rem;
+      margin: 0 8px 8px;
+      box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, .2), 0px 4px 5px 0px rgba(0, 0, 0, .14), 0px 1px 10px 0px rgba(0, 0, 0, .12);
+    }
+
+    //地图
+    .dashboard-map-css {
+      background: #0eafff;
+      flex: 1;
+      width: 100%;
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+      box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, .2), 0px 4px 5px 0px rgba(0, 0, 0, .14), 0px 1px 10px 0px rgba(0, 0, 0, .12);
+    }
+  }
+
+  .right {
+    //flex: 0 0 auto;
+    width: 25%;
+    height: 100%;
+    @include flex($direction: column);
+  }
+}
+
+.content-two {
+  height: 25%;
+  width: 100%;
+  @include flex();
+  //监督检查
+  .dashboard-supervision-and-inspection-css {
+    background: #fff;
+    text-align: center;
+    margin:8px;
+    width: calc(100% / 3 - 16px);
+    height: calc(100% - 16px);
+    box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, .2), 0px 4px 5px 0px rgba(0, 0, 0, .14), 0px 1px 10px 0px rgba(0, 0, 0, .12);
+  }
+}
+
+.content-three {
+  height: 25%;
+  width: 100%;
+  background: #b7c9f5;
+  @include flex();
+}
+

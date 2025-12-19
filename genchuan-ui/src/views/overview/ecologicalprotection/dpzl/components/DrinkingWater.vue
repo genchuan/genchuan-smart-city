@@ -142,7 +142,7 @@
             <el-table-column prop="last_check" label="最近检测时间" />
             <el-table-column label="操作">
               <template #default="scope">
-                <el-button size="small" type="text" @click="showSourceDetail(scope.row)">详情</el-button>
+                <el-button size="small" link @click="showSourceDetail(scope.row)">详情</el-button>
               </template>
             </el-table-column>
           </el-table>

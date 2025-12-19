@@ -43,10 +43,17 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="handleQuery"><Icon icon="ep:search" /> 搜索</el-button>
-        <el-button @click="resetQuery"><Icon icon="ep:refresh" /> 重置</el-button>
+        <el-button type="primary" @click="handleQuery">
+          <Icon icon="ep:search" />
+          搜索
+        </el-button>
+        <el-button @click="resetQuery">
+          <Icon icon="ep:refresh" />
+          重置
+        </el-button>
         <el-button type="success" plain @click="handleExport" :loading="exportLoading">
-          <Icon icon="ep:download" /> 导出
+          <Icon icon="ep:download" />
+          导出
         </el-button>
       </el-form-item>
     </el-form>
@@ -61,7 +68,8 @@
         :disabled="multipleSelection.length === 0"
         @click="openBatchAssignDialog"
       >
-        <Icon icon="ep:user" /> 批量分配网格员
+        <Icon icon="ep:user" />
+        批量分配网格员
       </el-button>
     </div>
 
@@ -88,7 +96,7 @@
       <el-table-column label="操作" align="center" width="180">
         <template #default="scope">
           <el-button link type="primary" @click="openDetail(scope.row)">详情</el-button>
-          <el-button link type="success" @click="openForm('update', scope.row.id)">编辑</el-button>
+          <el-button link type="primary" @click="openForm('update', scope.row.id)">编辑</el-button>
           <el-button link type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
@@ -120,7 +128,10 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
-import { MngGridAttrApi, MngGridAttrVO } from '@/api/dataHub/gridManagement/gridDataManage/mnggridattr'
+import {
+  MngGridAttrApi,
+  MngGridAttrVO
+} from '@/api/dataHub/gridManagement/gridDataManage/mnggridattr'
 import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
 import MngGridAttrForm from './MngGridAttrForm.vue'
@@ -139,7 +150,7 @@ const queryParams = reactive({
   mgGridCode: '',
   gridUserName: '',
   stopFlag: '',
-  initTime: [],
+  initTime: []
 })
 
 const getList = async () => {
@@ -208,7 +219,7 @@ const selectedUser = ref('')
 const mockUsers = [
   { id: 'U001', name: '张三' },
   { id: 'U002', name: '李四' },
-  { id: 'U003', name: '王五' },
+  { id: 'U003', name: '王五' }
 ]
 const openBatchAssignDialog = () => {
   selectedUser.value = ''

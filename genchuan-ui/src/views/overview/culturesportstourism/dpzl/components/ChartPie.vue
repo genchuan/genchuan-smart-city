@@ -5,10 +5,15 @@
 <script setup>
 import { ref, watch, onMounted, onUnmounted } from 'vue';
 import * as echarts from 'echarts';
+// 1. 导入路由（关键）
+import { useRouter } from 'vue-router';
+
+// 初始化路由实例
+const router = useRouter();
 
 // 接收父组件传递的参数
 const props = defineProps({
-  // 图表数据格式: [{ name: '', value: '', itemStyle: {} }, ...]
+  // 图表数据格式: [{ name: '', value: '', itemStyle: {}, path: '' }, ...]
   data: {
     type: Array,
     required: true,
@@ -33,6 +38,11 @@ const props = defineProps({
   baseFontScale: {
     type: Number,
     default: 1
+  },
+  // 新增：可选 - 默认跳转路径（如果数据中没有自定义path）
+  defaultPath: {
+    type: String,
+    default: '/overview/tourismresource/dpzl'
   }
 });
 
@@ -42,6 +52,18 @@ let chartInstance = null;
 // 计算 vw 对应的 px 值（结合基础缩放比例）
 const vwToPx = (vw) => {
   return window.innerWidth * (vw / 100) * props.baseFontScale;
+};
+
+// 2. 定义跳转函数（支持动态路径）
+const jumpToTourismResource = (path) => {
+  // 优先使用点击项的自定义路径，没有则用默认路径
+  const targetPath = path || props.defaultPath;
+  router.push(targetPath).catch(err => {
+    // 捕获路由跳转异常（如重复跳转同一路由）
+    if (!err.message.includes('Avoided redundant navigation')) {
+      console.error('路由跳转失败:', err);
+    }
+  });
 };
 
 // 初始化图表
@@ -65,7 +87,8 @@ const initChart = () => {
   const formattedData = props.data.map(item => ({
     name: item[props.nameField],
     value: item[props.valueField],
-    itemStyle: item.itemStyle || {} // 支持自定义颜色
+    itemStyle: item.itemStyle || {}, // 支持自定义颜色
+    path: item.path || '' // 保留自定义跳转路径
   }));
 
   // 设置图表配置
@@ -124,6 +147,16 @@ const initChart = () => {
   };
 
   chartInstance.setOption(option);
+
+  // 3. 绑定饼图点击事件（关键）
+  chartInstance.on('click', (params) => {
+    // params.data 是当前点击的饼图项数据（包含我们自定义的path）
+    const clickItemPath = params.data.path;
+    // 执行跳转
+    jumpToTourismResource(clickItemPath);
+    // 可选：打印日志，方便调试
+    console.log('点击饼图项:', params.name, '跳转路径:', clickItemPath || props.defaultPath);
+  });
 };
 
 // 监听数据及缩放比例变化，重新渲染图表
@@ -174,6 +207,8 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize);
   if (chartInstance) {
+    // 4. 移除事件监听（避免内存泄漏）
+    chartInstance.off('click');
     chartInstance.dispose();
     chartInstance = null;
   }

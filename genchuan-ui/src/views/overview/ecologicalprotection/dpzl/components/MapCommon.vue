@@ -1,6 +1,6 @@
 <template>
   <div class="map-container">
-    <!-- 图层控制面板（左上角两行两列布局） -->
+    <!-- 图层控制面板 -->
     <div class="control-panel">
       <div class="control-group">
         <button
@@ -85,7 +85,6 @@ const props = defineProps({
   }
 });
 
-// 图层实例（Vue响应式对象）
 const layers = ref({
   ecoFunction: null,
   ecoRedLine: null,
@@ -93,7 +92,6 @@ const layers = ref({
   pollutionSource: null
 });
 
-// 图层显示状态（Vue响应式状态）
 const layerVisible = ref({
   ecoFunction: true,
   ecoRedLine: true,
@@ -103,14 +101,28 @@ const layerVisible = ref({
 
 const mapInstance = ref(null);
 const infoWindow = ref(null);
-// 标记地图是否已初始化
 const mapInitialized = ref(false);
 
-// 初始化地图
 const initMap = () => {
   const callbackName = `initMap_${props.idName}`;
+
+  const existingScript = document.querySelector(`script[src*="map.qq.com/api/gljs"]`);
+  if (existingScript) {
+    if (window.TMap) {
+      mapCallback();
+    } else {
+      const checkTMap = setInterval(() => {
+        if (window.TMap) {
+          clearInterval(checkTMap);
+          mapCallback();
+        }
+      }, 100);
+    }
+    return;
+  }
+
   const script = document.createElement('script');
-  script.src = `https://map.qq.com/api/gljs?v=1.exp&key=OHCBZ-7BPC3-J7E3H-OA62K-Y3ZFZ-JQBPD&callback=${callbackName}`;
+  script.src = `https://map.qq.com/api/gljs?v=1.exp&key=QTQBZ-F3RWW-JJJRV-YNPA5-ZIKDK-3SBNO&callback=${callbackName}`;
   script.async = true;
 
   window[callbackName] = () => {
@@ -121,21 +133,18 @@ const initMap = () => {
   document.head.appendChild(script);
 };
 
-// 地图初始化回调
 const mapCallback = () => {
   const mapContainer = document.getElementById(props.idName);
   if (!mapContainer) return;
 
-  // 创建地图实例（绑定到响应式变量）
   const map = new TMap.Map(mapContainer, {
     center: new TMap.LatLng(26.793227, 117.810114),
     zoom: 10,
     mapStyleId: 'style1'
   });
   mapInstance.value = map;
-  mapInitialized.value = true; // 标记地图已初始化
+  mapInitialized.value = true;
 
-  // 初始化信息窗口
   infoWindow.value = new TMap.InfoWindow({
     map: map,
     position: new TMap.LatLng(0, 0),
@@ -144,18 +153,14 @@ const mapCallback = () => {
     visible: false
   });
 
-  // 如果已有数据，直接创建图层
   if (props.geometriesArray.length > 0) {
     createLayersFromData(map);
   }
 };
 
-// 创建图层（抽离为独立方法，方便数据更新时调用）
 const createLayersFromData = (map) => {
-  // 先销毁旧图层（避免重复创建）
   destroyLayers();
 
-  // 1. 行政区划图层（最底层）
   const adminDivisionGeometries = props.geometriesArray
     .filter(item => item.type === 'adminDivision')
     .map((item, index) => ({
@@ -180,7 +185,6 @@ const createLayersFromData = (map) => {
     geometries: adminDivisionGeometries
   });
 
-  // 2. 生态功能区图层
   const ecoFunctionGeometries = props.geometriesArray
     .filter(item => item.type === 'ecoFunction')
     .map((item, index) => ({
@@ -217,7 +221,6 @@ const createLayersFromData = (map) => {
     geometries: ecoFunctionGeometries
   });
 
-  // 3. 生态红线图层
   const ecoRedLineGeometries = props.geometriesArray
     .filter(item => item.type === 'ecoRedLine')
     .map((item, index) => ({
@@ -243,7 +246,6 @@ const createLayersFromData = (map) => {
     geometries: ecoRedLineGeometries
   });
 
-  // 4. 污染源图层（最上层）
   const pollutionGeometries = props.geometriesArray
     .filter(item => item.type === 'pollutionSource')
     .map((item, index) => ({
@@ -281,28 +283,40 @@ const createLayersFromData = (map) => {
     geometries: pollutionGeometries
   });
 
-  // 重新绑定点击事件
   bindLayerEvents();
 };
 
-// 绑定图层点击事件
 const bindLayerEvents = () => {
+  // 生态功能区绑定 handleEcoClick
   if (layers.value.ecoFunction) {
     layers.value.ecoFunction.on('click', handleEcoClick);
   }
+  // 污染源绑定 handlePollutionClick
   if (layers.value.pollutionSource) {
     layers.value.pollutionSource.on('click', handlePollutionClick);
   }
 };
 
-// 销毁现有图层
 const destroyLayers = () => {
-  Object.values(layers.value).forEach(layer => {
+  const eventBindMap = {
+    ecoFunction: ['click', handleEcoClick],
+    pollutionSource: ['click', handlePollutionClick]
+  };
+
+  Object.entries(layers.value).forEach(([layerType, layer]) => {
     if (layer) {
-      layer.off('click'); // 移除事件监听
-      layer.destroy(); // 销毁图层实例
+      try {
+        if (eventBindMap[layerType]) {
+          const [eventName, callback] = eventBindMap[layerType];
+          layer.off(eventName, callback);
+        }
+      } catch (error) {
+        console.warn(`移除${layerType}图层事件失败：`, error);
+      }
+      layer.destroy();
     }
   });
+
   layers.value = {
     ecoFunction: null,
     ecoRedLine: null,
@@ -311,11 +325,9 @@ const destroyLayers = () => {
   };
 };
 
-// 生态功能区点击事件（按“：”对齐优化）
 const handleEcoClick = (evt) => {
   if (evt.geometry) {
     const props = evt.geometry.properties;
-    // 统一对齐样式
     const labelStyle = 'width: 100px; text-align: right; font-weight: bold; margin-right: 6px; flex-shrink: 0;';
     const valueStyle = 'flex: 1; text-align: left; word-break: break-all;';
     const rowStyle = 'display: flex; align-items: flex-start; margin: 6px 0;';
@@ -323,31 +335,11 @@ const handleEcoClick = (evt) => {
     const content = `
       <div style="padding: 10px 12px; font-size: 14px; color: #333; background: white; border: 1px solid #ccc; min-width: 280px; border-radius: 4px;">
         <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #1E90FF; text-align: center; border-bottom: 1px solid #eee; padding-bottom: 4px;">${props.name}</h3>
-
-        <div style="${rowStyle}">
-          <span style="${labelStyle}">类型：</span>
-          <span style="${valueStyle}">${getEcoTypeName(props.subType)}</span>
-        </div>
-
-        <div style="${rowStyle}">
-          <span style="${labelStyle}">面积：</span>
-          <span style="${valueStyle}">${props.area}</span>
-        </div>
-
-        <div style="${rowStyle}">
-          <span style="${labelStyle}">保护级别：</span>
-          <span style="${valueStyle}">${props.level || '未知'}</span>
-        </div>
-
-        <div style="${rowStyle}">
-          <span style="${labelStyle}">主要物种：</span>
-          <span style="${valueStyle}">${props.species || '未知'}</span>
-        </div>
-
-        <div style="${rowStyle}">
-          <span style="${labelStyle}">建立时间：</span>
-          <span style="${valueStyle}">${props.establishYear || '未知'}</span>
-        </div>
+        <div style="${rowStyle}"><span style="${labelStyle}">类型：</span><span style="${valueStyle}">${getEcoTypeName(props.subType)}</span></div>
+        <div style="${rowStyle}"><span style="${labelStyle}">面积：</span><span style="${valueStyle}">${props.area}</span></div>
+        <div style="${rowStyle}"><span style="${labelStyle}">保护级别：</span><span style="${valueStyle}">${props.level || '未知'}</span></div>
+        <div style="${rowStyle}"><span style="${labelStyle}">主要物种：</span><span style="${valueStyle}">${props.species || '未知'}</span></div>
+        <div style="${rowStyle}"><span style="${labelStyle}">建立时间：</span><span style="${valueStyle}">${props.establishYear || '未知'}</span></div>
       </div>
     `;
     infoWindow.value.setContent(content);
@@ -356,11 +348,9 @@ const handleEcoClick = (evt) => {
   }
 };
 
-// 污染源点击事件（按“：”对齐优化）
 const handlePollutionClick = (evt) => {
   if (evt.geometry) {
     const props = evt.geometry.properties;
-    // 统一对齐样式
     const labelStyle = 'width: 100px; text-align: right; font-weight: bold; margin-right: 6px; flex-shrink: 0;';
     const valueStyle = 'flex: 1; text-align: left; word-break: break-all;';
     const rowStyle = 'display: flex; align-items: flex-start; margin: 6px 0;';
@@ -368,31 +358,11 @@ const handlePollutionClick = (evt) => {
     const content = `
       <div style="padding: 10px 12px; font-size: 14px; color: #333; background: white; border: 1px solid #ccc; min-width: 280px; border-radius: 4px;">
         <h3 style="margin: 0 0 8px 0; font-size: 16px; color: #1E90FF; text-align: center; border-bottom: 1px solid #eee; padding-bottom: 4px;">${props.name}</h3>
-
-        <div style="${rowStyle}">
-          <span style="${labelStyle}">污染级别：</span>
-          <span style="${valueStyle}">${getPollutionLevelName(props.subType)}</span>
-        </div>
-
-        <div style="${rowStyle}">
-          <span style="${labelStyle}">污染类型：</span>
-          <span style="${valueStyle}">${props.pollutionType || '未知'}</span>
-        </div>
-
-        <div style="${rowStyle}">
-          <span style="${labelStyle}">主要污染物：</span>
-          <span style="${valueStyle}">${props.pollutants || '未知'}</span>
-        </div>
-
-        <div style="${rowStyle}">
-          <span style="${labelStyle}">日均排放量：</span>
-          <span style="${valueStyle}">${props.emission || '未知'}</span>
-        </div>
-
-        <div style="${rowStyle}">
-          <span style="${labelStyle}">区域面积：</span>
-          <span style="${valueStyle}">${props.area || '未知'}</span>
-        </div>
+        <div style="${rowStyle}"><span style="${labelStyle}">污染级别：</span><span style="${valueStyle}">${getPollutionLevelName(props.subType)}</span></div>
+        <div style="${rowStyle}"><span style="${labelStyle}">污染类型：</span><span style="${valueStyle}">${props.pollutionType || '未知'}</span></div>
+        <div style="${rowStyle}"><span style="${labelStyle}">主要污染物：</span><span style="${valueStyle}">${props.pollutants || '未知'}</span></div>
+        <div style="${rowStyle}"><span style="${labelStyle}">日均排放量：</span><span style="${valueStyle}">${props.emission || '未知'}</span></div>
+        <div style="${rowStyle}"><span style="${labelStyle}">区域面积：</span><span style="${valueStyle}">${props.area || '未知'}</span></div>
       </div>
     `;
     infoWindow.value.setContent(content);
@@ -403,20 +373,12 @@ const handlePollutionClick = (evt) => {
 
 // 类型转换
 const getEcoTypeName = (subType) => {
-  const map = {
-    'natureReserve': '自然保护区',
-    'wetland': '湿地',
-    'woodland': '林地'
-  };
+  const map = {'natureReserve': '自然保护区', 'wetland': '湿地', 'woodland': '林地'};
   return map[subType] || subType;
 };
 
 const getPollutionLevelName = (subType) => {
-  const map = {
-    'low': '低污染',
-    'medium': '中污染',
-    'high': '高污染'
-  };
+  const map = {'low': '低污染', 'medium': '中污染', 'high': '高污染'};
   return map[subType] || subType;
 };
 
@@ -429,22 +391,19 @@ const toggleLayer = (type) => {
   }
 };
 
-// 监听geometriesArray变化（核心修改：处理异步数据）
+// 监听geometriesArray变化
 watch(
   () => props.geometriesArray,
   (newVal) => {
-    // 只有当地图已初始化且数据有效时，才重建图层
     if (mapInitialized.value && newVal.length > 0) {
       createLayersFromData(mapInstance.value);
     }
   },
-  { deep: true } // 深度监听数组内容变化
+  {deep: true}
 );
 
 // 暴露方法
-defineExpose({
-  toggleLayer
-});
+defineExpose({toggleLayer});
 
 onMounted(() => {
   initMap();
@@ -480,7 +439,7 @@ onUnmounted(() => {
   padding: 15px;
   border-radius: 10px;
   background: rgba(0, 0, 0, 0.5);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   display: grid;
   grid-template-columns: 1fr;
   grid-gap: 15px;
@@ -547,13 +506,30 @@ onUnmounted(() => {
   height: 16px;
   margin-right: 6px;
   border-radius: 3px;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.nature-reserve { background: rgba(2, 79, 25, 0.6); }
-.wetland { background: rgba(135, 206, 235, 0.6); }
-.woodland { background: rgba(50, 205, 50, 0.6); }
-.high-risk { background: rgba(139, 0, 0, 0.7); }
-.medium-risk { background: rgba(220, 20, 60, 0.6); }
-.low-risk { background: rgba(255, 160, 160, 0.6); }
+.nature-reserve {
+  background: rgba(2, 79, 25, 0.6);
+}
+
+.wetland {
+  background: rgba(135, 206, 235, 0.6);
+}
+
+.woodland {
+  background: rgba(50, 205, 50, 0.6);
+}
+
+.high-risk {
+  background: rgba(139, 0, 0, 0.7);
+}
+
+.medium-risk {
+  background: rgba(220, 20, 60, 0.6);
+}
+
+.low-risk {
+  background: rgba(255, 160, 160, 0.6);
+}
 </style>

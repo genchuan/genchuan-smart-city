@@ -9,78 +9,67 @@
     </div>
 
     <div class="mainbox">
+      <!-- 顶部区域：考核指标 + 执法力量分布 + 全域数据 -->
       <div class="top">
-        <!-- 左侧：执法核心指标 -->
+        <!-- 左侧：考核目标及分数表 -->
         <div class="top_left">
           <div class="panel core-indicators-panel" ref="coreIndicatorsPanel">
             <div class="panel-header">
-              <h2><el-icon><TrendCharts /></el-icon> 执法核心指标</h2>
-              <div class="header-actions">
-                <el-select v-model="lawDomainFilter" placeholder="执法领域" size="small"
-                           @change="handleLawDomainChange">
-                  <el-option label="全部" value="" />
-                  <el-option label="市容执法" value="市容执法" />
-                  <el-option label="市场监管" value="市场监管" />
-                  <el-option label="环境保护" value="环境保护" />
-                </el-select>
-                <el-select v-model="indicatorTimeRange" placeholder="时间周期" size="small"
-                           @change="handleIndicatorTimeRangeChange">
-                  <el-option label="近7日" value="7days" />
-                  <el-option label="近30日" value="30days" />
-                </el-select>
-                <button class="panel-fullscreen-btn" @click="togglePanelFullscreen(coreIndicatorsPanel)">
-                  <el-icon color="#00ccff" size="16"><FullScreen /></el-icon>
-                </button>
-              </div>
+              <h2><el-icon><TrendCharts /></el-icon> 考核得分</h2>
             </div>
             <div class="panel-body">
-              <div v-if="filteredIndicators.length === 0" class="empty-state">
-                <el-icon class="empty-icon"><DataBoard /></el-icon>
-                <div class="empty-text">暂无指标数据</div>
-              </div>
-              <div v-else class="indicator-cards-grid">
-                <div v-for="indicator in filteredIndicators" :key="indicator.indicator_id"
-                     :class="['indicator-card-enhanced', indicator.warn_status === '1' ? 'warning' : 'normal']"
-                     @click="showIndicatorDetail(indicator)">
-                  <div class="indicator-header">
-                    <div class="indicator-title">{{ indicator.indicator_name }}</div>
-                    <div class="indicator-status">
-                      <el-icon v-if="indicator.warn_status === '1'" color="#EF4444" class="warning-icon">
-                        <Warning />
-                      </el-icon>
-                      <el-icon v-else color="#22C55E" class="normal-icon">
-                        <CircleCheck />
-                      </el-icon>
-                    </div>
-                  </div>
-                  <div class="indicator-main">
-                    <div class="indicator-value-section">
-                      <div class="indicator-value">
-                        <span class="animated-value" :data-value="indicator.real_value">
-                          {{ indicator.real_value }}
-                        </span>
-                        <span class="indicator-unit">{{ indicator.unit }}</span>
-                      </div>
-                      <div class="indicator-compliance">
-                        达标率: <span class="compliance-value">{{ indicator.compliance_rate }}%</span>
+              <!-- 科技感表格 -->
+              <div class="tech-table-container">
+                <div class="tech-table-header">
+                  <div class="tech-header-cell">考核目标</div>
+                  <div class="tech-header-cell">考核分数</div>
+                  <div class="tech-header-cell">操作</div>
+                </div>
+                <div class="tech-table-body">
+                  <div
+                    v-for="(row, index) in table1Data"
+                    :key="row.id"
+                    class="tech-table-row"
+                    :class="{ 'tech-row-even': index % 2 === 0, 'tech-row-odd': index % 2 !== 0 }"
+                  >
+                    <div class="tech-table-cell" :title="row.area">
+                      <div class="cell-content">
+                        <div class="area-name">{{ row.area }}</div>
                       </div>
                     </div>
-                    <div class="indicator-trend-section">
-                      <div class="mini-chart-container">
-                        <div class="mini-chart" :id="'miniChart-' + indicator.indicator_id"></div>
+                    <div class="tech-table-cell">
+                      <div class="cell-content">
+                        <div class="score-container">
+                          <div class="score-progress" :style="getScoreStyle(row.score)">
+                            <div class="score-value">{{ row.score }}</div>
+                          </div>
+                          <div class="score-tag" :class="getScoreTagClass(row.score)">
+                            {{ getScoreTag(row.score) }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="tech-table-cell">
+                      <div class="cell-content">
+                        <button
+                          class="tech-action-btn"
+                          @click="handleTable1Detail(row)"
+                        >
+                          <span class="btn-text">查看明细</span>
+                          <el-icon><TrendCharts /></el-icon>
+                        </button>
                       </div>
                     </div>
                   </div>
-                  <div class="indicator-footer">
-                    <div class="indicator-yoy" :class="indicator.year_on_year >= 0 ? 'positive' : 'negative'">
-                      同比: {{ indicator.year_on_year >= 0 ? '+' : '' }}{{ indicator.year_on_year }}%
-                    </div>
-                    <div class="indicator-update">
-                      {{ formatUpdateTime(indicator.update_time) }}
-                    </div>
+                </div>
+                <!-- 表格底部装饰 -->
+                <div class="tech-table-footer">
+                  <div class="footer-grid">
+                    <div class="grid-line"></div>
+                    <div class="grid-line"></div>
+                    <div class="grid-line"></div>
                   </div>
-                  <div v-if="indicator.warn_status === '1'" class="warning-border"></div>
-                  <div class="pulse-effect" :class="indicator.warn_status === '1' ? 'warning' : 'normal'"></div>
+                  <div class="footer-glow"></div>
                 </div>
               </div>
             </div>
@@ -94,20 +83,6 @@
             <div class="panel-header">
               <h2><el-icon><MapLocation /></el-icon> 执法力量分布视图</h2>
               <div class="header-actions">
-                <el-select v-model="forceTypeFilter" placeholder="力量类型" size="small"
-                           @change="handleForceTypeChange">
-                  <el-option label="全部" value="" />
-                  <el-option label="执法人员" value="staff" />
-                  <el-option label="执法车辆" value="vehicle" />
-                  <el-option label="执法站点" value="station" />
-                </el-select>
-                <el-select v-model="lawTeamFilter" placeholder="执法中队" size="small"
-                           @change="handleLawTeamChange">
-                  <el-option label="全部" value="" />
-                  <el-option label="一中队" value="team1" />
-                  <el-option label="二中队" value="team2" />
-                  <el-option label="三中队" value="team3" />
-                </el-select>
                 <el-button size="small" type="primary" @click="refreshForceDistribution">
                   <el-icon><Refresh /></el-icon>刷新
                 </el-button>
@@ -118,8 +93,12 @@
             </div>
             <div class="panel-body map-container">
               <div class="map-wrapper">
-                <MapCommon idName="chinaEcharts" :geometriesArray="filteredForceGeometries"
-                           @marker-click="handleMarkerClick" style="height:100%" />
+                <MapCommon
+                  idName="chinaEcharts"
+                  :geometriesArray="filteredForceGeometries"
+                  @marker-click="handleMarkerClick"
+                  style="height:100%"
+                />
               </div>
               <div class="force-stats-overlay">
                 <div class="force-stats-cards">
@@ -151,20 +130,6 @@
                     <div class="stat-trend normal"><el-icon><Minus /></el-icon></div>
                   </div>
                 </div>
-                <div class="region-force-distribution">
-                  <h4>区域力量分布</h4>
-                  <div class="region-list">
-                    <div v-for="region in regionForceDistribution" :key="region.region_name" class="region-item"
-                         @click="handleRegionClick(region.region_name)">
-                      <div class="region-name">{{ region.region_name }}</div>
-                      <div class="region-stats">
-                        <span class="stat-badge staff">{{ region.staff_count }}人</span>
-                        <span class="stat-badge vehicle">{{ region.vehicle_count }}车</span>
-                        <span class="stat-badge station">{{ region.station_count }}站</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
             <div class="panel-footer"></div>
@@ -177,16 +142,26 @@
             <div class="panel-header">
               <h2><el-icon><DataAnalysis /></el-icon> 执法全域数据</h2>
               <div class="header-actions compact-actions">
-                <el-select v-model="overviewTimeRange" placeholder="时间范围" size="small" class="compact-filter"
-                           @change="handleTimeRangeChange">
+                <el-select
+                  v-model="overviewTimeRange"
+                  placeholder="时间范围"
+                  size="small"
+                  class="compact-filter"
+                  @change="handleTimeRangeChange"
+                >
                   <el-option label="今日" value="today" />
                   <el-option label="本周" value="week" />
                   <el-option label="本月" value="month" />
                 </el-select>
 
-                <!-- 行政区划筛选框 - 调整为与左侧一致的样式 -->
-                <el-select v-model="areaFilter" placeholder="行政区划" size="small" class="compact-filter"
-                           @change="handleAreaChange">
+                <!-- 行政区划筛选 -->
+                <el-select
+                  v-model="areaFilter"
+                  placeholder="行政区划"
+                  size="small"
+                  class="compact-filter"
+                  @change="handleAreaChange"
+                >
                   <el-option label="全部" value="" />
                   <el-option label="鼓楼区" value="gulou" />
                   <el-option label="台江区" value="taijiang" />
@@ -201,13 +176,19 @@
               </div>
             </div>
             <div class="panel-body" style="flex: 1; overflow: hidden; padding: 0;">
-              <!-- 统一为网格卡片 -->
               <div class="indicator-cards-grid">
-                <div v-for="stat in lawOverviewStats" :key="stat.id"
-                     :class="['indicator-card-enhanced', stat.warning ? 'warning' : 'normal', stat.id === 3 ? 'white-bg' : '']"
-                     @click="showStatDetail(stat)" @mouseenter="showTooltip(stat.calculation)"
-                     @mouseleave="hideTooltip">
-
+                <div
+                  v-for="stat in lawOverviewStats"
+                  :key="stat.id"
+                  :class="[
+                    'indicator-card-enhanced',
+                    stat.warning ? 'warning' : 'normal',
+                    stat.id === 3 ? 'white-bg' : ''
+                  ]"
+                  @click="showStatDetail(stat)"
+                  @mouseenter="showTooltip(stat.calculation)"
+                  @mouseleave="hideTooltip"
+                >
                   <div class="indicator-header">
                     <div class="indicator-title">{{ stat.title }}</div>
                     <div class="indicator-status">
@@ -226,18 +207,10 @@
                         <span class="animated-value" :data-value="stat.value">{{ stat.value }}</span>
                         <span class="indicator-unit">{{ stat.unit }}</span>
                       </div>
-                      <div class="indicator-compliance">
-                        趋势: <span class="compliance-value">{{ stat.rateText }}</span>
-                      </div>
                     </div>
                   </div>
 
-                  <div class="indicator-footer">
-                    <div class="indicator-yoy" :class="stat.rate >= 0 ? 'positive' : 'negative'">
-                      同比: {{ stat.rate >= 0 ? '+' : '' }}{{ stat.rate }}%
-                    </div>
-                  </div>
-
+                  <div class="indicator-footer"></div>
                   <div v-if="stat.hasPulse" class="pulse-effect" :class="stat.warning ? 'warning' : 'normal'"></div>
                 </div>
               </div>
@@ -247,68 +220,76 @@
         </div>
       </div>
 
-      <!-- 底部：执法案件总览 -->
+      <!-- 底部区域：执法案件总览 -->
       <div class="bottom">
         <div class="bottom_left">
           <div class="panel case-overview-panel" ref="caseOverviewPanel">
             <div class="panel-header">
               <h2>
-                <el-icon>
-                  <List />
-                </el-icon>
+                <el-icon><List /></el-icon>
                 执法案件总览
               </h2>
               <div class="header-actions">
-                <el-select v-model="caseTypeFilter" placeholder="案件类型" size="small"
-                           @change="handleCaseTypeChange">
+                <el-select
+                  v-model="caseTypeFilter"
+                  placeholder="案件类型"
+                  size="small"
+                  @change="handleCaseTypeChange"
+                >
                   <el-option label="全部" value="" />
                   <el-option label="市容类" value="市容类" />
                   <el-option label="市场类" value="市场类" />
                   <el-option label="环保类" value="环保类" />
                   <el-option label="安全类" value="安全类" />
                 </el-select>
-                <el-select v-model="handleDeptFilter" placeholder="办理部门" size="small"
-                           @change="handleHandleDeptChange">
+
+                <el-select
+                  v-model="handleDeptFilter"
+                  placeholder="办理部门"
+                  size="small"
+                  @change="handleHandleDeptChange"
+                >
                   <el-option label="全部" value="" />
                   <el-option label="市容执法局" value="市容执法局" />
                   <el-option label="市场监管局" value="市场监管局" />
                   <el-option label="环保局" value="环保局" />
                   <el-option label="安监局" value="安监局" />
                 </el-select>
-                <el-select v-model="caseTimeRange" placeholder="时间周期" size="small"
-                           @change="handleCaseTimeRangeChange">
+
+                <el-select
+                  v-model="caseTimeRange"
+                  placeholder="时间周期"
+                  size="small"
+                  @change="handleCaseTimeRangeChange"
+                >
                   <el-option label="今日" value="today" />
                   <el-option label="本周" value="week" />
                   <el-option label="本月" value="month" />
                 </el-select>
+
                 <el-button size="small" type="primary" @click="exportCaseData">
-                  <el-icon>
-                    <Download />
-                  </el-icon>导出
+                  <el-icon><Download /></el-icon>导出
                 </el-button>
-                <el-button size="small" type="primary" @click="showCaseList">
-                  <el-icon>
-                    <Menu />
-                  </el-icon>案件列表
-                </el-button>
+
                 <button class="panel-fullscreen-btn" @click="togglePanelFullscreen(caseOverviewPanel)">
-                  <el-icon color="#00ccff" size="16">
-                    <FullScreen />
-                  </el-icon>
+                  <el-icon color="#00ccff" size="16"><FullScreen /></el-icon>
                 </button>
               </div>
             </div>
+
             <div class="panel-body">
               <!-- 超期案件预警条 -->
-              <div class="overdue-warning-section" v-if="caseOverview && caseOverview.overdue_case_count > 0">
+              <div class="overdue-warning-section" v-if="caseOverview?.overdue_case_count > 0">
                 <div class="overdue-warning-bar">
                   <div class="warning-content">
-                    <el-icon color="#EF4444" size="16">
-                      <Warning />
-                    </el-icon>
+                    <el-icon color="#EF4444" size="16"><Warning /></el-icon>
                     <span class="warning-text">超期未办结案件：{{ caseOverview.overdue_case_count }}件</span>
-                    <span class="overdue-top3" @mouseenter="showOverdueTooltip"
-                          @mouseleave="hideOverdueTooltip" @click="showOverdueCases">
+                    <span
+                      class="overdue-top3"
+                      @mouseenter="showOverdueTooltip"
+                      @mouseleave="hideOverdueTooltip"
+                      @click="showOverdueCases"
+                    >
                       TOP3: {{ getOverdueTop3() }}
                     </span>
                     <el-button size="small" type="danger" text @click="handleUrgeOverdue">催办</el-button>
@@ -316,6 +297,7 @@
                 </div>
               </div>
 
+              <!-- 案件图表容器 -->
               <div class="case-charts-container">
                 <!-- 区域案件分布 -->
                 <div class="chart-section">
@@ -324,10 +306,16 @@
                     <el-button size="small" text @click="handleChartAction('region', 'drill')">下钻</el-button>
                   </div>
                   <div class="chart-container">
-                    <ChartBar :xAxis="regionCaseXAxis" :series="regionCaseSeries" unit="件" :title="''"
-                              height="100%" />
+                    <ChartBar
+                      :xAxis="regionCaseXAxis"
+                      :series="regionCaseSeries"
+                      unit="件"
+                      :title="''"
+                      height="100%"
+                    />
                   </div>
                 </div>
+
                 <!-- 案件类型分布 -->
                 <div class="chart-section">
                   <div class="chart-header">
@@ -338,6 +326,7 @@
                     <ChartPie3 :data="caseTypePieData" :title="''" height="100%" />
                   </div>
                 </div>
+
                 <!-- 案件来源分布 -->
                 <div class="chart-section">
                   <div class="chart-header">
@@ -356,12 +345,16 @@
                     <el-button size="small" text @click="handleChartAction('progress', 'drill')">下钻</el-button>
                   </div>
                   <div class="chart-container">
-                    <ChartBar :xAxis="progressXAxis" :series="progressSeries" unit="件" :title="''"
-                              height="100%" />
+                    <ChartBar
+                      :xAxis="progressXAxis"
+                      :series="progressSeries"
+                      unit="件"
+                      :title="''"
+                      height="100%"
+                    />
                   </div>
                 </div>
               </div>
-
             </div>
             <div class="panel-footer"></div>
           </div>
@@ -369,8 +362,115 @@
       </div>
     </div>
 
+    <!-- 弹窗区域 -->
+    <!-- 表2弹窗：场所类型评分表 -->
+    <el-dialog v-model="table2Visible" title="场所类型评分表" width="900px" class="tech-dialog">
+      <div class="tech-table-container">
+        <div class="tech-table-header">
+          <div class="tech-header-cell">场所类型</div>
+          <div class="tech-header-cell">得分</div>
+          <div class="tech-header-cell">权重</div>
+          <div class="tech-header-cell">操作</div>
+        </div>
+        <div class="tech-table-body">
+          <div
+            v-for="(row, index) in table2Data"
+            :key="row.id"
+            class="tech-table-row"
+            :class="{ 'tech-row-even': index % 2 === 0, 'tech-row-odd': index % 2 !== 0 }"
+          >
+            <div class="tech-table-cell" :title="row.type">
+              <div class="cell-content">
+                <div class="type-name">{{ row.type }}</div>
+              </div>
+            </div>
+            <div class="tech-table-cell">
+              <div class="cell-content">
+                <div class="score-container">
+                  <div class="score-progress" :style="getScoreStyle(row.score)">
+                    <div class="score-value">{{ row.score }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="tech-table-cell">
+              <div class="cell-content">
+                <div class="weight-badge" :class="getWeightClass(row.weight)">
+                  {{ row.weight }}
+                </div>
+              </div>
+            </div>
+            <div class="tech-table-cell">
+              <div class="cell-content">
+                <button
+                  v-if="row.weight !== '-'"
+                  class="tech-action-btn"
+                  @click="handleTable2Detail(row)"
+                >
+                  <span class="btn-text">查看明细</span>
+                  <el-icon><TrendCharts /></el-icon>
+                </button>
+                <span v-else class="no-action-text">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
+
+    <!-- 表3弹窗：指标类型评分表 -->
+    <el-dialog v-model="table3Visible" title="指标类型评分表" width="900px" class="tech-dialog">
+      <div class="tech-table-container">
+        <div class="tech-table-header">
+          <div class="tech-header-cell">指标类型</div>
+          <div class="tech-header-cell">指标导向</div>
+          <div class="tech-header-cell">得分</div>
+          <div class="tech-header-cell">权重</div>
+        </div>
+        <div class="tech-table-body">
+          <div
+            v-for="(row, index) in table3Data"
+            :key="row.id"
+            class="tech-table-row"
+            :class="{ 'tech-row-even': index % 2 === 0, 'tech-row-odd': index % 2 !== 0 }"
+          >
+            <div class="tech-table-cell" :title="row.indicatorType">
+              <div class="cell-content">
+                <div class="type-name">{{ row.indicatorType }}</div>
+              </div>
+            </div>
+            <div class="tech-table-cell" :title="row.orientation">
+              <div class="cell-content">
+                <div class="orientation-text">{{ row.orientation }}</div>
+              </div>
+            </div>
+            <div class="tech-table-cell">
+              <div class="cell-content">
+                <div class="score-container">
+                  <div class="score-progress" :style="getScoreStyle(row.score)">
+                    <div class="score-value">{{ row.score }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="tech-table-cell">
+              <div class="cell-content">
+                <div class="weight-badge" :class="getWeightClass(row.weight)">
+                  {{ row.weight }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
+
     <!-- 指标详情弹窗 -->
-    <el-dialog v-model="indicatorDetailVisible" :title="currentIndicator?.indicator_name || '指标详情'" width="700px">
+    <el-dialog
+      v-model="indicatorDetailVisible"
+      :title="currentIndicator?.indicator_name || '指标详情'"
+      width="700px"
+    >
       <div class="indicator-detail">
         <div class="detail-section">
           <h3>指标信息</h3>
@@ -387,8 +487,12 @@
               </el-tag>
             </el-descriptions-item>
             <el-descriptions-item label="异常原因" v-if="currentIndicator?.warn_status === '1'">
-              <el-input type="textarea" v-model="currentIndicator.abnormal_reason" rows="3"
-                        @change="handleReasonChange" />
+              <el-input
+                type="textarea"
+                v-model="currentIndicator.abnormal_reason"
+                rows="3"
+                @change="handleReasonChange"
+              />
             </el-descriptions-item>
             <el-descriptions-item label="更新时间">{{ currentIndicator?.update_time }}</el-descriptions-item>
             <el-descriptions-item label="数据来源">{{ currentIndicator?.ext1 }}</el-descriptions-item>
@@ -397,8 +501,12 @@
         <div class="detail-section">
           <h3>近7天趋势</h3>
           <div class="chart-container">
-            <ChartLine3 :xAxis="indicatorTrendData.xAxis" :series="indicatorTrendData.series"
-                        :unit="currentIndicator?.unit" :title="currentIndicator?.indicator_name" />
+            <ChartLine3
+              :xAxis="indicatorTrendData.xAxis"
+              :series="indicatorTrendData.series"
+              :unit="currentIndicator?.unit"
+              :title="currentIndicator?.indicator_name"
+            />
           </div>
         </div>
       </div>
@@ -418,8 +526,10 @@
           <el-input-number v-model="indicatorConfigForm.threshold_min" :min="0" />
         </el-form-item>
         <el-form-item label="最大值">
-          <el-input-number v-model="indicatorConfigForm.threshold_max"
-                           :min="indicatorConfigForm.threshold_min" />
+          <el-input-number
+            v-model="indicatorConfigForm.threshold_max"
+            :min="indicatorConfigForm.threshold_min"
+          />
         </el-form-item>
         <el-form-item label="单位">
           <el-input v-model="indicatorConfigForm.unit" />
@@ -430,20 +540,19 @@
         <el-button type="primary" @click="saveIndicatorConfig">保存</el-button>
       </template>
     </el-dialog>
+
     <!-- 统计项详情弹窗 -->
-    <el-dialog v-model="statDetailVisible" :title="currentStatDetail?.title || '统计详情'" width="600px">
+    <el-dialog
+      v-model="statDetailVisible"
+      :title="currentStatDetail?.title || '统计详情'"
+      width="600px"
+    >
       <div class="stat-detail-content" v-if="currentStatDetail">
         <el-descriptions :column="1" border>
           <el-descriptions-item label="统计项">{{ currentStatDetail.title }}</el-descriptions-item>
           <el-descriptions-item label="当前值">
             <span class="current-value">{{ currentStatDetail.value }}{{ currentStatDetail.unit }}</span>
           </el-descriptions-item>
-          <el-descriptions-item label="变化趋势">
-            <span :class="getRateClass(currentStatDetail.rate)">
-              {{ currentStatDetail.rateText }}
-            </span>
-          </el-descriptions-item>
-          <el-descriptions-item label="计算方式">{{ currentStatDetail.calculation }}</el-descriptions-item>
           <el-descriptions-item label="状态">
             <el-tag :type="currentStatDetail.warning ? 'danger' : 'success'">
               {{ currentStatDetail.warning ? '预警' : '正常' }}
@@ -459,8 +568,13 @@
         <el-button @click="statDetailVisible = false">关闭</el-button>
       </template>
     </el-dialog>
+
     <!-- 标记点详情弹窗 -->
-    <el-dialog v-model="markerDetailVisible" :title="currentMarkerDetail?.title || '标记点详情'" width="500px">
+    <el-dialog
+      v-model="markerDetailVisible"
+      :title="currentMarkerDetail?.title || '标记点详情'"
+      width="500px"
+    >
       <div class="marker-detail-content" v-if="currentMarkerDetail">
         <el-descriptions :column="1" border>
           <el-descriptions-item label="名称">{{ currentMarkerDetail.title }}</el-descriptions-item>
@@ -508,8 +622,12 @@
         <div class="marker-actions" v-if="currentMarkerDetail.dataType === 'staff'">
           <h3>今日任务</h3>
           <el-timeline>
-            <el-timeline-item v-for="(task, index) in getTodayTasks(currentMarkerDetail)" :key="index"
-                              :timestamp="task.time" :type="task.type">
+            <el-timeline-item
+              v-for="(task, index) in getTodayTasks(currentMarkerDetail)"
+              :key="index"
+              :timestamp="task.time"
+              :type="task.type"
+            >
               {{ task.content }}
             </el-timeline-item>
           </el-timeline>
@@ -517,12 +635,18 @@
       </div>
       <template #footer>
         <el-button @click="markerDetailVisible = false">关闭</el-button>
-        <el-button type="primary" @click="handleMarkerOperation('contact')"
-                   v-if="currentMarkerDetail?.dataType === 'staff'">
+        <el-button
+          type="primary"
+          @click="handleMarkerOperation('contact')"
+          v-if="currentMarkerDetail?.dataType === 'staff'"
+        >
           联系执法人员
         </el-button>
-        <el-button type="primary" @click="handleMarkerOperation('dispatch')"
-                   v-if="currentMarkerDetail?.dataType === 'vehicle'">
+        <el-button
+          type="primary"
+          @click="handleMarkerOperation('dispatch')"
+          v-if="currentMarkerDetail?.dataType === 'vehicle'"
+        >
           调度车辆
         </el-button>
         <el-button type="primary" @click="handleMarkerOperation('navigate')">
@@ -530,18 +654,13 @@
         </el-button>
       </template>
     </el-dialog>
-    <!-- 工具提示 -->
-    <el-tooltip v-model="tooltipVisible" :content="tooltipContent" placement="top" manual />
-    <!-- 超期案件提示 -->
-    <el-tooltip v-model="overdueTooltipVisible" placement="top" content="超期案件TOP3提示" manual>
-      <div class="overdue-tooltip-content" v-if="overdueTooltipVisible">
-        <div v-for="caseItem in overdueTop3Cases" :key="caseItem.case_id" class="overdue-case-item">
-          <span>案件{{ caseItem.case_id }} - 超期{{ caseItem.overdue_days }}天</span>
-        </div>
-      </div>
-    </el-tooltip>
+
     <!-- 分析报告弹窗 -->
-    <el-dialog v-model="reportVisible" :title="currentReport?.title || '分析报告'" width="800px">
+    <el-dialog
+      v-model="reportVisible"
+      :title="currentReport?.title || '分析报告'"
+      width="800px"
+    >
       <div class="report-content" v-if="currentReport">
         <el-descriptions column="1" border>
           <el-descriptions-item label="统计时间">{{ currentReport.stat_time }}</el-descriptions-item>
@@ -556,6 +675,7 @@
         <el-button @click="reportVisible = false">关闭</el-button>
       </template>
     </el-dialog>
+
     <!-- 案件列表弹窗 -->
     <el-dialog v-model="caseListVisible" title="案件列表" width="900px">
       <div class="case-list-content">
@@ -583,9 +703,15 @@
         <el-button @click="caseListVisible = false">关闭</el-button>
       </template>
     </el-dialog>
+
     <!-- 案件详情弹窗 -->
-    <el-dialog v-model="caseDetailVisible" :title="currentCaseDetail?.case_title || '案件详情'" width="1200px">
+    <el-dialog
+      v-model="caseDetailVisible"
+      :title="currentCaseDetail?.case_title || '案件详情'"
+      width="1200px"
+    >
       <div class="case-detail-content" v-if="currentCaseDetail">
+        <!-- 基本信息 -->
         <div class="detail-section">
           <h3>基本信息</h3>
           <div class="info-grid">
@@ -669,7 +795,7 @@
         </div>
 
         <!-- 相关当事人 -->
-        <div class="detail-section" v-if="currentCaseDetail.involved_parties && currentCaseDetail.involved_parties.length > 0">
+        <div class="detail-section" v-if="currentCaseDetail.involved_parties?.length > 0">
           <h3>相关当事人</h3>
           <el-table :data="currentCaseDetail.involved_parties" border style="width: 100%">
             <el-table-column prop="name" label="姓名" width="100" />
@@ -684,7 +810,7 @@
         </div>
 
         <!-- 证据材料 -->
-        <div class="detail-section" v-if="currentCaseDetail.evidence_materials && currentCaseDetail.evidence_materials.length > 0">
+        <div class="detail-section" v-if="currentCaseDetail.evidence_materials?.length > 0">
           <h3>证据材料</h3>
           <el-table :data="currentCaseDetail.evidence_materials" border style="width: 100%">
             <el-table-column prop="type" label="类型" width="100" />
@@ -704,7 +830,7 @@
         </div>
 
         <!-- 办理记录 -->
-        <div class="detail-section" v-if="currentCaseDetail.progress_records && currentCaseDetail.progress_records.length > 0">
+        <div class="detail-section" v-if="currentCaseDetail.progress_records?.length > 0">
           <h3>办理记录</h3>
           <el-timeline>
             <el-timeline-item
@@ -720,7 +846,7 @@
                   <span class="operator"> - {{ record.operator || '系统' }}</span>
                 </div>
                 <p class="action-description">{{ record.description || '暂无描述' }}</p>
-                <div v-if="record.attachments && record.attachments.length > 0" class="attachments">
+                <div v-if="record.attachments?.length > 0" class="attachments">
                   <el-tag
                     v-for="attachment in record.attachments"
                     :key="attachment"
@@ -741,7 +867,7 @@
         </div>
 
         <!-- 下一步行动 -->
-        <div class="detail-section" v-if="currentCaseDetail.next_actions && currentCaseDetail.next_actions.length > 0">
+        <div class="detail-section" v-if="currentCaseDetail.next_actions?.length > 0">
           <h3>下一步行动</h3>
           <el-table :data="currentCaseDetail.next_actions" border style="width: 100%">
             <el-table-column prop="action" label="行动内容" />
@@ -790,11 +916,12 @@
           <p>暂无统计信息</p>
         </div>
       </div>
-
       <template #footer>
         <el-button @click="caseDetailVisible = false">关闭</el-button>
       </template>
     </el-dialog>
+
+    <!-- 图表下钻弹窗 -->
     <!-- 案件类型下钻 -->
     <el-dialog v-model="chartDrillVisible.type" title="案件类型分布详情" width="800px">
       <div class="chart-drill-content">
@@ -841,6 +968,7 @@
         </div>
       </div>
     </el-dialog>
+
     <!-- 区域分布下钻 -->
     <el-dialog v-model="chartDrillVisible.region" title="区域案件分布详情" width="900px">
       <div class="chart-drill-content">
@@ -882,6 +1010,7 @@
         </el-table>
       </div>
     </el-dialog>
+
     <!-- 来源分布下钻 -->
     <el-dialog v-model="chartDrillVisible.source" title="案件来源分布详情" width="700px">
       <div class="chart-drill-content">
@@ -911,6 +1040,7 @@
         </div>
       </div>
     </el-dialog>
+
     <!-- 办理进度下钻弹窗 -->
     <el-dialog v-model="chartDrillVisible.progress" title="案件办理进度详情" width="800px">
       <div class="chart-drill-content">
@@ -921,7 +1051,6 @@
           </el-button>
         </div>
 
-        <!-- 简化的表格，移除异常内容 -->
         <el-table :data="chartDrillData.progress" border style="width: 100%">
           <el-table-column prop="progress_stage" label="办理阶段" width="100" />
           <el-table-column prop="case_count" label="案件数量" width="100" />
@@ -954,9 +1083,15 @@
         </el-table>
       </div>
     </el-dialog>
+
     <!-- 导出进度弹窗 -->
-    <el-dialog v-model="exportProgressVisible" title="数据导出" width="400px" :close-on-click-modal="false"
-               :show-close="false">
+    <el-dialog
+      v-model="exportProgressVisible"
+      title="数据导出"
+      width="400px"
+      :close-on-click-modal="false"
+      :show-close="false"
+    >
       <div class="export-progress">
         <el-progress :percentage="exportProgress" :status="exportStatus" :stroke-width="8" />
         <p class="progress-text">{{ exportMessage }}</p>
@@ -973,6 +1108,17 @@
         </el-button>
       </template>
     </el-dialog>
+
+    <!-- 工具提示 -->
+    <el-tooltip v-model="tooltipVisible" :content="tooltipContent" placement="top" manual />
+    <!-- 超期案件提示 -->
+    <el-tooltip v-model="overdueTooltipVisible" placement="top" content="超期案件TOP3提示" manual>
+      <div class="overdue-tooltip-content" v-if="overdueTooltipVisible">
+        <div v-for="caseItem in overdueTop3Cases" :key="caseItem.case_id" class="overdue-case-item">
+          <span>案件{{ caseItem.case_id }} - 超期{{ caseItem.overdue_days }}天</span>
+        </div>
+      </div>
+    </el-tooltip>
   </div>
 </template>
 
@@ -1002,7 +1148,6 @@ import ChartPie3 from './ChartPie3.vue';
 // 导入API方法
 import {
   fetchLawGlobalOverview,
-  fetchLawCoreIndicators,
   fetchLawForceDistribution,
   fetchCaseOverview,
   exportData,
@@ -1011,7 +1156,10 @@ import {
   viewReport,
   fetchRealTimeLocations,
   filterCases,
-  fetchCaseDetail
+  fetchCaseDetail,
+  fetchAssessmentTargets,
+  fetchPlaceTypeScores,
+  fetchIndicatorScores
 } from '@/api/overview/comprehensivelaw/GlobalSituationOverview.js';
 
 // 路由实例
@@ -1059,6 +1207,16 @@ const caseDetailVisible = ref(false);
 const statDetailVisible = ref(false);
 const caseStatDetailVisible = ref(false);
 const markerDetailVisible = ref(false);
+// 新增弹窗控制变量
+const table2Visible = ref(false);
+const table3Visible = ref(false);
+const currentTable2Data = ref({});
+const currentTable3Data = ref({});
+
+// 初始化数据
+const table1Data = ref([]);
+const table2Data = ref([]);
+const table3Data = ref([]);
 
 // 图表下钻弹窗控制
 const chartDrillVisible = ref({
@@ -1145,6 +1303,7 @@ const areaOptions = ref([
   }
 ]);
 
+// ==================== 计算属性 ====================
 // 计算属性 - 修复可选链操作符问题
 const filteredIndicators = computed(() => {
   let filtered = coreIndicators.value;
@@ -1231,7 +1390,152 @@ const recentTrendData = computed(() => {
   };
 });
 
-// 方法定义
+// 案件图表数据计算属性
+const caseTypePieData = computed(() => {
+  if (!caseOverview.value || !caseOverview.value.type_distribution) {
+    return { legend: [], series: [] };
+  }
+  return {
+    legend: caseOverview.value.type_distribution.map(item => item.case_type),
+    series: [{
+      name: '案件数量',
+      data: caseOverview.value.type_distribution.map(item => ({
+        value: item.case_count,
+        name: item.case_type,
+        itemStyle: { color: item.color || getDefaultColor(item.case_type) }
+      }))
+    }]
+  };
+});
+
+const regionCaseXAxis = computed(() => {
+  if (!caseOverview.value || !caseOverview.value.region_distribution) {
+    return ['高新区', '经开区', '城东区', '城西区', '城南区', '城北区'];
+  }
+  return caseOverview.value.region_distribution.map(item => item.region_name);
+});
+
+const regionCaseSeries = computed(() => {
+  if (!caseOverview.value || !caseOverview.value.region_distribution) {
+    return [{
+      name: '案件数量',
+      type: 'bar',
+      data: [320, 280, 210, 180, 150, 116]
+    }];
+  }
+  return [{
+    name: '案件数量',
+    type: 'bar',
+    data: caseOverview.value.region_distribution.map(item => item.case_count),
+    itemStyle: {
+      color: '#3B82F6'
+    }
+  }];
+});
+
+const progressXAxis = computed(() => {
+  if (!caseOverview.value || !caseOverview.value.progress_distribution) {
+    return ['受理', '调查', '处理', '办结'];
+  }
+  return caseOverview.value.progress_distribution.map(item => item.progress_stage);
+});
+
+const progressSeries = computed(() => {
+  if (!caseOverview.value || !caseOverview.value.progress_distribution) {
+    return [{
+      name: '案件数量',
+      type: 'bar',
+      data: [156, 234, 345, 521]
+    }];
+  }
+  return [{
+    name: '案件数量',
+    type: 'bar',
+    data: caseOverview.value.progress_distribution.map(item => item.case_count),
+    itemStyle: {
+      color: '#10B981'
+    }
+  }];
+});
+
+// ==================== 方法定义 ====================
+// 加载考核目标数据
+const loadAssessmentTargets = async () => {
+  table1Data.value = await fetchAssessmentTargets();
+};
+
+// 处理表1查看明细
+const handleTable1Detail = async (row) => {
+  currentTable2Data.value = { ...row };
+  // 根据目标ID获取场所类型数据
+  table2Data.value = await fetchPlaceTypeScores(row.id);
+  table2Visible.value = true;
+};
+
+// 处理表2查看明细
+const handleTable2Detail = async (row) => {
+  currentTable3Data.value = { ...row };
+  // 根据场所ID获取指标类型数据
+  table3Data.value = await fetchIndicatorScores(row.id);
+  table3Visible.value = true;
+};
+
+// 获取得分样式
+const getScoreStyle = (score) => {
+  const percent = Math.min(score, 100);
+  let color = '#00ccff';
+
+  if (score >= 90) color = '#10B981';
+  else if (score >= 80) color = '#3B82F6';
+  else if (score >= 70) color = '#F59E0B';
+  else if (score >= 60) color = '#EF4444';
+  else color = '#DC2626';
+
+  return {
+    '--score-color': color,
+    '--score-percent': percent
+  };
+};
+
+// 获取得分标签
+const getScoreTag = (score) => {
+  if (score >= 90) return '优秀';
+  if (score >= 80) return '良好';
+  if (score >= 70) return '中等';
+  if (score >= 60) return '及格';
+  return '不及格';
+};
+
+// 获取得分标签样式
+const getScoreTagClass = (score) => {
+  if (score >= 90) return 'excellent';
+  if (score >= 80) return 'good';
+  if (score >= 70) return 'average';
+  if (score >= 60) return 'poor';
+  return 'poor';
+};
+
+// 获取权重样式
+const getWeightClass = (weight) => {
+  if (weight === '-') return 'weight-none';
+  const numWeight = parseFloat(weight);
+  if (numWeight >= 15) return 'weight-high';
+  if (numWeight >= 5) return 'weight-medium';
+  return 'weight-low';
+};
+
+const getDefaultColor = (type) => {
+  const colorMap = {
+    '市容执法': '#3B82F6',
+    '市场监管': '#10B981',
+    '环境保护': '#F59E0B',
+    '安全生产': '#EF4444',
+    '其他': '#8B5CF6'
+  };
+  return colorMap[type] || '#6B7280';
+};
+
+// ==================== 事件处理函数 ====================
 const handleLawDomainChange = () => {
   refreshCoreIndicators();
 };
@@ -1268,7 +1572,7 @@ const handleCaseTimeRangeChange = () => {
   refreshCaseOverview();
 };
 
-// 数据刷新函数
+// ==================== 数据刷新函数 ====================
 const refreshData = async () => {
   loading.value = true;
   try {
@@ -1321,9 +1625,12 @@ const refreshForceDistribution = async () => {
     };
 
     const forceData = await fetchLawForceDistribution(params);
+
+    // 直接使用转换后的数据
     lawForceGeometries.value = forceData.geometries || [];
     lawForceStats.value = forceData.stats || {};
     regionForceDistribution.value = forceData.region_force_distribution || [];
+
   } catch (error) {
     console.error('力量分布刷新失败:', error);
   }
@@ -1348,6 +1655,8 @@ const refreshCaseOverview = async () => {
     console.error('案件总览刷新失败:', error);
   }
 };
+
+// ==================== 其他功能方法 ====================
 // 全屏功能
 const togglePanelFullscreen = (panelElement) => {
   if (!screenFull.isEnabled) {
@@ -1838,85 +2147,6 @@ const handleUrgeOverdue = () => {
   }
 };
 
-// 案件图表数据计算属性
-const caseTypePieData = computed(() => {
-  if (!caseOverview.value || !caseOverview.value.type_distribution) {
-    return { legend: [], series: [] };
-  }
-  return {
-    legend: caseOverview.value.type_distribution.map(item => item.case_type),
-    series: [{
-      name: '案件数量',
-      data: caseOverview.value.type_distribution.map(item => ({
-        value: item.case_count,
-        name: item.case_type,
-        itemStyle: { color: item.color || getDefaultColor(item.case_type) }
-      }))
-    }]
-  };
-});
-
-const regionCaseXAxis = computed(() => {
-  if (!caseOverview.value || !caseOverview.value.region_distribution) {
-    return ['高新区', '经开区', '城东区', '城西区', '城南区', '城北区'];
-  }
-  return caseOverview.value.region_distribution.map(item => item.region_name);
-});
-
-const regionCaseSeries = computed(() => {
-  if (!caseOverview.value || !caseOverview.value.region_distribution) {
-    return [{
-      name: '案件数量',
-      type: 'bar',
-      data: [320, 280, 210, 180, 150, 116]
-    }];
-  }
-  return [{
-    name: '案件数量',
-    type: 'bar',
-    data: caseOverview.value.region_distribution.map(item => item.case_count),
-    itemStyle: {
-      color: '#3B82F6'
-    }
-  }];
-});
-
-const progressXAxis = computed(() => {
-  if (!caseOverview.value || !caseOverview.value.progress_distribution) {
-    return ['受理', '调查', '处理', '办结'];
-  }
-  return caseOverview.value.progress_distribution.map(item => item.progress_stage);
-});
-
-const progressSeries = computed(() => {
-  if (!caseOverview.value || !caseOverview.value.progress_distribution) {
-    return [{
-      name: '案件数量',
-      type: 'bar',
-      data: [156, 234, 345, 521]
-    }];
-  }
-  return [{
-    name: '案件数量',
-    type: 'bar',
-    data: caseOverview.value.progress_distribution.map(item => item.case_count),
-    itemStyle: {
-      color: '#10B981'
-    }
-  }];
-});
-
-const getDefaultColor = (type) => {
-  const colorMap = {
-    '市容执法': '#3B82F6',
-    '市场监管': '#10B981',
-    '环境保护': '#F59E0B',
-    '安全生产': '#EF4444',
-    '其他': '#8B5CF6'
-  };
-  return colorMap[type] || '#6B7280';
-};
-
 // 导出案件数据
 const exportCaseData = async () => {
   exportProgressVisible.value = true;
@@ -1988,6 +2218,7 @@ const viewCaseDetail = async (caseId) => {
     ElMessage.error('获取案件详情失败: ' + (error.message || '未知错误'));
   }
 };
+
 // 查看证据
 const viewEvidence = (evidence) => {
   ElMessage.info(`查看证据: ${evidence.name}`);
@@ -2340,8 +2571,9 @@ const loadFilteredCasesByProgress = async (progressStage) => {
   }
 };
 
-// 生命周期
+// ==================== 生命周期 ====================
 onMounted(() => {
+  loadAssessmentTargets();
   refreshData();
   initMiniCharts();
   initValueAnimations();
@@ -2440,44 +2672,38 @@ onMounted(() => {
     .panel {
       width: 100%;
       min-width: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
 
       .panel-body {
         width: 100%;
         min-width: 0;
+        flex: 1;
+        overflow: auto;
+        padding: 0;
+        box-sizing: border-box;
 
-        .overview-stats-single-row {
-          width: 100%;
-          min-width: 0;
-          flex-wrap: nowrap; /* 防止换行 */
+        // 网格布局容器有滚动条
+        .indicator-cards-grid {
+          height: 100%;
+          overflow-y: auto;
+          padding: 15px;
+          box-sizing: border-box;
 
-          .overview-stat-item.single-row-item {
-            min-width: 0;
-            flex: 1;
+          // 应用自定义滚动条样式
+          &::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+          }
 
-            .stat-content.single-row-content {
-              min-width: 0;
-              width: 100%;
+          &::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 204, 255, 0.3);
+            border-radius: 3px;
+          }
 
-              .stat-title {
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                font-size: 14px; /* 减小字体 */
-              }
-
-              .stat-value-container .stat-value {
-                font-size: 24px; /* 减小数值字体 */
-
-                .stat-unit {
-                  font-size: 14px; /* 减小单位字体 */
-                }
-              }
-
-              .stat-rate {
-                font-size: 12px; /* 减小比率字体 */
-                padding: 4px 8px;
-              }
-            }
+          &::-webkit-scrollbar-track {
+            background-color: rgba(0, 30, 60, 0.5);
           }
         }
       }
@@ -2597,26 +2823,8 @@ onMounted(() => {
   .top_right {
     .panel {
       .panel-body {
-        .overview-stats-single-row {
-          .overview-stat-item.single-row-item {
-            .stat-content.single-row-content {
-              .stat-title {
-                font-size: 13px;
-              }
-
-              .stat-value-container .stat-value {
-                font-size: 22px;
-
-                .stat-unit {
-                  font-size: 13px;
-                }
-              }
-
-              .stat-rate {
-                font-size: 11px;
-              }
-            }
-          }
+        .indicator-cards-grid {
+          padding: 12px;
         }
       }
     }
@@ -2638,26 +2846,11 @@ onMounted(() => {
 
       .panel {
         .panel-body {
-          .overview-stats-single-row {
-            .overview-stat-item.single-row-item {
-              .stat-content.single-row-content {
-                .stat-title {
-                  font-size: 12px;
-                }
+          .indicator-cards-grid {
+            padding: 10px;
 
-                .stat-value-container .stat-value {
-                  font-size: 20px;
-
-                  .stat-unit {
-                    font-size: 12px;
-                  }
-                }
-
-                .stat-rate {
-                  font-size: 10px;
-                  padding: 3px 6px;
-                }
-              }
+            .indicator-card-enhanced {
+              min-height: 110px;
             }
           }
         }
@@ -2689,34 +2882,11 @@ onMounted(() => {
 
       // 在超小屏幕上考虑换行显示统计项
       .panel-body {
-        .overview-stats-single-row {
-          flex-wrap: wrap;
-          height: auto;
-          min-height: 140px;
+        .indicator-cards-grid {
+          padding: 8px;
 
-          .overview-stat-item.single-row-item {
-            flex: 0 0 calc(50% - 5px);
-            min-height: 65px;
-
-            .stat-content.single-row-content {
-              .stat-title {
-                font-size: 11px;
-                margin-bottom: 4px;
-              }
-
-              .stat-value-container .stat-value {
-                font-size: 18px;
-
-                .stat-unit {
-                  font-size: 11px;
-                }
-              }
-
-              .stat-rate {
-                font-size: 9px;
-                padding: 2px 4px;
-              }
-            }
+          .indicator-card-enhanced {
+            min-height: 100px;
           }
         }
       }
@@ -2889,21 +3059,6 @@ onMounted(() => {
 
   &::-webkit-scrollbar-track {
     background-color: rgba(0, 30, 60, 0.5);
-  }
-}
-
-// 确保右侧面板高度正确
-.top_right {
-  .panel {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-
-    .panel-body {
-      flex: 1;
-      overflow: hidden;
-      padding: 0; // 移除内边距，由内部容器控制
-    }
   }
 }
 
@@ -3126,12 +3281,6 @@ onMounted(() => {
   max-width: 280px;
 }
 
-// 区域力量分布样式优化
-.region-force-distribution {
-  max-height: 180px;
-  overflow-y: auto;
-}
-
 // 案件图表容器样式优化
 .case-charts-container {
   display: grid;
@@ -3153,6 +3302,7 @@ onMounted(() => {
     }
   }
 }
+
 // 案件详情样式修复
 .case-detail-content {
   max-height: 70vh;
@@ -3308,8 +3458,8 @@ onMounted(() => {
 // 修复弹窗背景色
 :deep(.el-dialog) {
   .el-dialog__body {
-    background: #f5f7fa;
-    color: #333;
+    background: #f0f0f0;
+    color: rgba(199, 206, 223, 0.95);
   }
 }
 
@@ -3325,7 +3475,6 @@ onMounted(() => {
     color: #333 !important;
   }
 }
-// 在 GlobalSituationOverview.vue 的 style 部分添加
 
 // 确保核心指标面板正确显示滚动条
 .core-indicators-panel {
@@ -3387,5 +3536,59 @@ onMounted(() => {
       padding-right: 2px; // 滚动条显示时减少内边距
     }
   }
+}
+
+// 确保网格布局容器滚动条在内容超出时显示
+.indicator-cards-grid {
+  // 当内容超过容器高度时显示滚动条
+  overflow-y: auto;
+  max-height: 100%;
+
+  // 平滑滚动
+  scroll-behavior: smooth;
+
+  // 滚动条样式增强
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 204, 255, 0.5);
+  }
+
+  // 滚动条轨道样式
+  &::-webkit-scrollbar-track:hover {
+    background-color: rgba(0, 30, 60, 0.7);
+  }
+}
+
+// 滚动条悬停效果增强
+.top_right .panel .panel-body .indicator-cards-grid:hover {
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 204, 255, 0.5);
+  }
+}
+
+// 滚动时防止卡片被裁剪
+.indicator-card-enhanced {
+  // 防止卡片在滚动时被裁剪
+  flex-shrink: 0;
+
+  // 确保悬停效果在滚动时正常工作
+  position: relative;
+  z-index: 1;
+}
+
+// 加载状态下的滚动条处理
+.loading .indicator-cards-grid {
+  // 加载时禁用滚动
+  overflow: hidden !important;
+
+  // 加载时隐藏滚动条
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// 空状态下的滚动条处理
+.empty-state + .indicator-cards-grid {
+  // 空状态时隐藏滚动条
+  overflow: hidden !important;
 }
 </style>

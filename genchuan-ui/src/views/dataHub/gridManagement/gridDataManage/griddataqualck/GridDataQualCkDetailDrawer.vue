@@ -20,30 +20,36 @@
       <!-- 基本信息 -->
       <el-card shadow="hover">
         <div class="section-header bg-blue-100 text-blue-700">基本信息</div>
-        <p><b>网格编码：</b>{{ record?.gridCode || '-' }}</p>
-        <p><b>网格类型：</b>{{ record?.gridType || '-' }}</p>
-        <p><b>检查项：</b>{{ record?.ckItem || '-' }}</p>
-        <p>
-          <b>检查结果：</b>
-          <el-tag :type="record?.ckResult === 'pass' ? 'success' : 'danger'">
-            {{ record?.ckResult === 'pass' ? '合格' : '不合格' }}
-          </el-tag>
-        </p>
+        <div class="mt-3 space-y-2">
+          <p><b>网格编码：</b>{{ record?.gridCode || '-' }}</p>
+          <p><b>网格类型：</b>{{ record?.gridType || '-' }}</p>
+          <p><b>检查项：</b>{{ record?.ckItem || '-' }}</p>
+          <p>
+            <b>检查结果：</b>
+            <el-tag :type="record?.ckResult === 'PASS' ? 'success' : 'danger'">
+              {{ record?.ckResult === 'PASS' ? '合格' : '不合格' }}
+            </el-tag>
+          </p>
+        </div>
       </el-card>
 
       <!-- 整改信息 -->
       <el-card shadow="hover">
         <div class="section-header bg-green-100 text-green-700">整改信息</div>
-        <p><b>整改状态：</b>{{ rectifyStatusMap[record?.rectifyStatus || '0'] }}</p>
-        <p><b>整改人员：</b>{{ record?.rectifyUserId || '-' }}</p>
-        <p><b>整改时间：</b>{{ formatDate(record?.rectifyTime) }}</p>
-        <p><b>整改建议：</b>{{ record?.rectifySugg || '-' }}</p>
+        <div class="mt-3 space-y-2">
+          <p><b>整改状态：</b>{{ rectifyStatusMap[record?.rectifyStatus || '0'] }}</p>
+          <p><b>整改人员：</b>{{ record?.rectifyUserId || '-' }}</p>
+          <p><b>整改时间：</b>{{ formatDate(record?.rectifyTime) }}</p>
+          <p><b>整改建议：</b>{{ record?.rectifySugg || '-' }}</p>
+        </div>
       </el-card>
 
       <!-- 错误描述 -->
       <el-card shadow="hover" class="col-span-2">
         <div class="section-header bg-yellow-100 text-yellow-700">错误描述</div>
-        <p>{{ record?.errorDesc || '无错误' }}</p>
+        <div class="mt-3 space-y-2">
+          <p>{{ record?.errorDesc || '无错误' }}</p>
+        </div>
       </el-card>
     </div>
   </el-drawer>
@@ -71,9 +77,9 @@ const isFullscreen = ref(false)
 
 /** 整改状态映射 */
 const rectifyStatusMap: Record<string, string> = {
-  'COMPLETED': '已整改',
-  'PENDING': '待处理',
-  'IN_PROGRESS': '整改中'
+  COMPLETED: '已整改',
+  PENDING: '待处理',
+  IN_PROGRESS: '整改中'
 }
 // 日期格式化
 const formatDate = (val: string | Date | undefined) => {

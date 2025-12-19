@@ -12,7 +12,7 @@
       </el-form-item>
       <el-form-item label="关联政策类型" prop="relatedPolType">
         <el-select v-model="formData.relatedPolType" placeholder="请选择关联政策类型">
-          <el-option label="请选择字典生成" value="" />
+          <el-option label="请选择字典生成" value="1" />
         </el-select>
       </el-form-item>
       <el-form-item label="关联政策ID" prop="relatedPolId">

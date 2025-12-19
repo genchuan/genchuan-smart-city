@@ -50,10 +50,12 @@
 
       <el-form-item>
         <el-button type="primary" @click="handleQuery">
-          <Icon icon="ep:search" class="mr-5px" /> 查询
+          <Icon icon="ep:search" class="mr-5px" />
+          查询
         </el-button>
         <el-button @click="resetQuery">
-          <Icon icon="ep:refresh" class="mr-5px" /> 重置
+          <Icon icon="ep:refresh" class="mr-5px" />
+          重置
         </el-button>
         <el-button
           type="success"
@@ -62,7 +64,8 @@
           :loading="exportLoading"
           v-hasPermi="['datacenter:unit-grid-attr:export']"
         >
-          <Icon icon="ep:download" class="mr-5px" /> 导出
+          <Icon icon="ep:download" class="mr-5px" />
+          导出
         </el-button>
       </el-form-item>
     </el-form>
@@ -80,8 +83,20 @@
     >
       <el-table-column label="单元网格编码" align="center" prop="unitGridCode" width="160" />
       <el-table-column label="面积(m²)" align="center" prop="area" width="120" />
-      <el-table-column label="初始时间" align="center" prop="initTime" :formatter="dateFormatter" width="150" />
-      <el-table-column label="终止时间" align="center" prop="endTime" :formatter="dateFormatter" width="150" />
+      <el-table-column
+        label="初始时间"
+        align="center"
+        prop="initTime"
+        :formatter="dateFormatter"
+        width="150"
+      />
+      <el-table-column
+        label="终止时间"
+        align="center"
+        prop="endTime"
+        :formatter="dateFormatter"
+        width="150"
+      />
       <el-table-column label="状态" align="center" width="100">
         <template #default="{ row }">
           <el-tag :type="row.endTime ? 'danger' : 'success'">
@@ -92,8 +107,8 @@
       <el-table-column label="备注" align="center" prop="remark" min-width="160" />
       <el-table-column label="操作" align="center" min-width="120">
         <template #default="scope">
-          <el-button link type="primary" @click="openForm('update', scope.row.id)">编辑</el-button>
           <el-button link type="primary" @click="openDetail(scope.row)">详情</el-button>
+          <el-button link type="primary" @click="openForm('update', scope.row.id)">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -116,7 +131,10 @@
 <script setup lang="ts">
 import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
-import { UnitGridAttrApi, UnitGridAttrVO } from '@/api/dataHub/gridManagement/gridDataManage/unitgridattr'
+import {
+  UnitGridAttrApi,
+  UnitGridAttrVO
+} from '@/api/dataHub/gridManagement/gridDataManage/unitgridattr'
 import UnitGridAttrForm from './UnitGridAttrForm.vue'
 import UnitGridAttrDetailDrawer from './UnitGridAttrDetailDrawer.vue'
 
@@ -133,7 +151,7 @@ const queryParams = reactive({
   unitGridCode: '',
   initTime: [],
   endTime: [],
-  stopFlag: '',
+  stopFlag: ''
 })
 
 const queryFormRef = ref()
@@ -143,7 +161,7 @@ const getList = async () => {
   try {
     const data = await UnitGridAttrApi.getUnitGridAttrPage({
       ...queryParams,
-      orderBy: 'initTime desc',
+      orderBy: 'initTime desc'
     })
     list.value = data.list
     total.value = data.total

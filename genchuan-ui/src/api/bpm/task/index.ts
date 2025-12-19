@@ -111,3 +111,7 @@ export const myTodoTask = async (processInstanceId: string) => {
 export const getChildrenTaskList = async (id: string) => {
   return await request.get({ url: '/bpm/task/list-by-parent-task-id?parentTaskId=' + id })
 }
+//获取全部任务流程名称类型 统计数据
+export const taskStatistics = async () => {
+  return await request.get({ url: '/bpm/task-statistics/process-name-pie'})
+}

@@ -20,7 +20,7 @@
 
       <el-form-item label="比例尺" prop="scale">
         <el-select v-model="queryParams.scale" clearable placeholder="全部" class="!w-240px">
-          <el-option label="1:500" value="1:500" />
+          <el-option label="1:5000" value="1:5000" />
           <el-option label="1:1000" value="1:1000" />
           <el-option label="1:2000" value="1:2000" />
           <el-option label="自定义" value="custom" />
@@ -29,9 +29,9 @@
 
       <el-form-item label="网格类型" prop="gridType">
         <el-select v-model="queryParams.gridType" clearable placeholder="全部" class="!w-240px">
-          <el-option label="单元网格" value="unit" />
-          <el-option label="管理网格" value="mng" />
-          <el-option label="评价网格" value="eval" />
+          <el-option label="单元网格" value="UNIT_GRID" />
+          <el-option label="管理网格" value="MANAGE_GRID" />
+          <el-option label="评价网格" value="EVAL_GRID" />
         </el-select>
       </el-form-item>
 
@@ -46,13 +46,21 @@
       </el-form-item>
 
       <el-form-item>
-        <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
-        <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
+        <el-button @click="handleQuery">
+          <Icon icon="ep:search" class="mr-5px" />
+          搜索
+        </el-button>
+        <el-button @click="resetQuery">
+          <Icon icon="ep:refresh" class="mr-5px" />
+          重置
+        </el-button>
         <el-button type="primary" plain @click="openForm('create')">
-          <Icon icon="ep:plus" class="mr-5px" /> 新增
+          <Icon icon="ep:plus" class="mr-5px" />
+          新增
         </el-button>
         <el-button type="success" plain @click="handleExport" :loading="exportLoading">
-          <Icon icon="ep:download" class="mr-5px" /> 导出
+          <Icon icon="ep:download" class="mr-5px" />
+          导出
         </el-button>
       </el-form-item>
     </el-form>
@@ -82,7 +90,7 @@
         <template #default="{ row }">
           <el-button link type="primary" @click="openForm('update', row.id)">编辑</el-button>
           <el-button link type="success" @click="openDetailDrawer(row)">预览注记</el-button>
-<!--          <el-button link type="success" @click="previewAnnotate(row)">预览注记</el-button>-->
+          <!--          <el-button link type="success" @click="previewAnnotate(row)">预览注记</el-button>-->
           <el-button link type="danger" @click="handleDelete(row.id)">删除</el-button>
         </template>
       </el-table-column>
@@ -108,10 +116,15 @@
 import { ref, reactive, onMounted, nextTick } from 'vue'
 import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
-import { GridCodeAnnotateApi, GridCodeAnnotateVO } from '@/api/dataHub/gridManagement/gridDiagramManage/gridcodeannotate'
+import { ElMessage } from 'element-plus'
+import {
+  GridCodeAnnotateApi,
+  GridCodeAnnotateVO
+} from '@/api/dataHub/gridManagement/gridDiagramManage/gridcodeannotate'
 import GridCodeAnnotateForm from './GridCodeAnnotateForm.vue'
 import GridCodeAnnotateDetailDrawer from './GridCodeAnnotateDetailDrawer.vue'
 
+const message = useMessage()
 const loading = ref(true)
 const list = ref<GridCodeAnnotateVO[]>([])
 const total = ref(0)
@@ -178,9 +191,11 @@ const openForm = async (type: string, id?: number) => {
 
 const handleDelete = async (id: number) => {
   try {
+    // 删除的二次确认
+    await message.delConfirm()
     await GridCodeAnnotateApi.deleteGridCodeAnnotate(id)
     ElMessage.success('删除成功')
-    getList()
+    await getList()
   } catch {}
 }
 
@@ -209,8 +224,7 @@ const onRestartGis = () => {
   ElMessage.info('GIS 重启请求已发送（演示）')
 }
 
-const formatCMYK = (row: any) =>
-  `C${row.colorC}% M${row.colorM}% Y${row.colorY}% K${row.colorK}%`
+const formatCMYK = (row: any) => `C${row.colorC}% M${row.colorM}% Y${row.colorY}% K${row.colorK}%`
 
 const parseScaleNumber = (scale?: string) => {
   if (!scale) return 0

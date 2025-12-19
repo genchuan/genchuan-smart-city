@@ -1,5 +1,5 @@
 <template>
-  <Dialog :title="dialogTitle" v-model="dialogVisible" width="800px">
+  <Dialog :title="dialogTitle" v-model="dialogVisible" width="600px">
     <el-form
       ref="formRef"
       :model="formData"
@@ -8,58 +8,59 @@
       v-loading="formLoading"
       class="p-4 bg-gray-50 rounded-lg"
     >
-      <el-row :gutter="20">
-        <!-- 第一列 -->
-        <el-col :span="12">
-          <el-form-item label="指标体系名称" prop="idxSystemName">
-            <el-input
-              v-model="formData.idxSystemName"
-              placeholder="请输入指标体系名称"
-              class="rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="体系编码" prop="systemCode">
-            <el-input
-              v-model="formData.systemCode"
-              placeholder="请输入体系编码"
-              class="rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="适用对象类型" prop="applyObjectType">
-            <el-select
-              v-model="formData.applyObjectType"
-              placeholder="请选择适用对象类型"
-              class="rounded-md"
-            >
-              <el-option label="请选择字典生成" value="" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="体系版本" prop="systemVersion">
-            <el-input
-              v-model="formData.systemVersion"
-              placeholder="请输入体系版本"
-              class="rounded-md"
-            />
-          </el-form-item>
-        </el-col>
+      <!-- 基础信息区域 -->
+      <el-form-item label="指标体系名称" prop="idxSystemName">
+        <el-input
+          v-model="formData.idxSystemName"
+          placeholder="请输入指标体系名称"
+          class="rounded-md"
+        />
+      </el-form-item>
 
-        <!-- 第二列 -->
+      <el-form-item label="体系编码" prop="systemCode">
+        <el-input v-model="formData.systemCode" placeholder="请输入体系编码" class="rounded-md" />
+      </el-form-item>
+
+      <el-form-item label="适用对象类型" prop="applyObjectType">
+        <el-select
+          v-model="formData.applyObjectType"
+          placeholder="请选择适用对象类型"
+          class="rounded-md"
+        >
+          <el-option label="请选择字典生成" value="" />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="体系版本" prop="systemVersion">
+        <el-input
+          v-model="formData.systemVersion"
+          placeholder="请输入体系版本"
+          class="rounded-md"
+        />
+      </el-form-item>
+
+      <!-- 描述信息区域 -->
+      <el-form-item label="体系描述" prop="systemDesc">
+        <el-input
+          v-model="formData.systemDesc"
+          placeholder="请输入体系描述"
+          type="textarea"
+          :rows="3"
+          class="rounded-md"
+        />
+      </el-form-item>
+
+      <!-- 状态与创建信息区域 -->
+      <el-row :gutter="20" class="mt-2">
         <el-col :span="12">
-          <el-form-item label="体系描述" prop="systemDesc">
-            <el-input
-              v-model="formData.systemDesc"
-              placeholder="请输入体系描述"
-              type="textarea"
-              :rows="3"
-              class="rounded-md"
-            />
-          </el-form-item>
           <el-form-item label="启用状态" prop="enableStatus">
             <el-radio-group v-model="formData.enableStatus" class="radio-group">
               <el-radio value="ENABLED">启用</el-radio>
               <el-radio value="Disabled">禁用</el-radio>
             </el-radio-group>
           </el-form-item>
+        </el-col>
+        <el-col :span="12">
           <el-form-item label="创建人(业务)" prop="createUserBiz">
             <el-input
               v-model="formData.createUserBiz"
@@ -67,17 +68,18 @@
               class="rounded-md"
             />
           </el-form-item>
-          <el-form-item label="创建时间(业务)" prop="createTimeBiz">
-            <el-date-picker
-              v-model="formData.createTimeBiz"
-              type="date"
-              value-format="x"
-              placeholder="选择创建时间(业务)"
-              class="rounded-md"
-            />
-          </el-form-item>
         </el-col>
       </el-row>
+
+      <el-form-item label="创建时间(业务)" prop="createTimeBiz">
+        <el-date-picker
+          v-model="formData.createTimeBiz"
+          type="date"
+          value-format="x"
+          placeholder="选择创建时间(业务)"
+          class="rounded-md"
+        />
+      </el-form-item>
     </el-form>
 
     <template #footer>
@@ -88,6 +90,7 @@
 </template>
 
 <script setup lang="ts">
+// 脚本部分保持不变
 import {
   EvalIdxSystemApi,
   EvalIdxSystemVO
@@ -210,6 +213,7 @@ const resetForm = () => {
 .radio-group {
   display: flex;
   align-items: center;
+  gap: 16px;
 }
 
 .el-dialog__body {

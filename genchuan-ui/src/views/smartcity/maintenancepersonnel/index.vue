@@ -6,9 +6,8 @@
       :model="queryParams"
       ref="queryFormRef"
       :inline="true"
-      label-width="68px"
     >
-      <el-form-item label="人员编号" prop="personnelId">
+      <el-form-item label="人员编号" prop="personnelId" label-width="100px">
         <el-input
           v-model="queryParams.personnelId"
           placeholder="请输入人员编号"
@@ -37,7 +36,7 @@
           class="!w-220px"
         />
       </el-form-item>
-      <el-form-item>
+      <el-form-item style="margin-left: 60px">
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
         <el-button

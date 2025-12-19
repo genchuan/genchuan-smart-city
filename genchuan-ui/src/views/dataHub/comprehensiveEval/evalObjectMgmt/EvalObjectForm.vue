@@ -1,5 +1,5 @@
 <template>
-  <Dialog :title="dialogTitle" v-model="dialogVisible" width="800px">
+  <Dialog :title="dialogTitle" v-model="dialogVisible" width="700px">
     <el-form
       ref="formRef"
       :model="formData"
@@ -8,45 +8,54 @@
       v-loading="formLoading"
       class="p-4 bg-gray-50 rounded-lg"
     >
-      <el-row :gutter="20">
-        <!-- 第一列 -->
+      <!-- 基础信息区域 -->
+      <el-form-item label="评价对象名称" prop="evalObjectName">
+        <el-input
+          v-model="formData.evalObjectName"
+          placeholder="请输入评价对象名称"
+          class="rounded-md"
+        />
+      </el-form-item>
+
+      <el-form-item label="对象编码" prop="objectCode">
+        <el-input v-model="formData.objectCode" placeholder="请输入对象编码" class="rounded-md" />
+      </el-form-item>
+
+      <!-- 行政区划信息行 -->
+      <el-row :gutter="20" class="mb-4">
         <el-col :span="12">
-          <el-form-item label="评价对象名称" prop="evalObjectName">
-            <el-input
-              v-model="formData.evalObjectName"
-              placeholder="请输入评价对象名称"
-              class="rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="对象编码" prop="objectCode">
-            <el-input
-              v-model="formData.objectCode"
-              placeholder="请输入对象编码"
-              class="rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="所属行政区划代码" prop="regionCode">
+          <el-form-item label="所属行政区划代码" prop="regionCode" class="no-label">
             <el-input
               v-model="formData.regionCode"
-              placeholder="请输入所属行政区划代码"
+              placeholder="请输入行政区划代码"
               class="rounded-md"
             />
           </el-form-item>
-          <el-form-item label="所属行政区划名称" prop="regionName">
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="所属行政区划名称" prop="regionName" class="no-label">
             <el-input
               v-model="formData.regionName"
-              placeholder="请输入所属行政区划名称"
+              placeholder="请输入行政区划名称"
               class="rounded-md"
             />
           </el-form-item>
-          <el-form-item label="关联网格名称" prop="gridName">
+        </el-col>
+      </el-row>
+
+      <!-- 关联信息行 -->
+      <el-row :gutter="20" class="mb-4">
+        <el-col :span="12">
+          <el-form-item label="关联网格名称" prop="gridName" class="no-label">
             <el-input
               v-model="formData.gridName"
               placeholder="请输入关联网格名称"
               class="rounded-md"
             />
           </el-form-item>
-          <el-form-item label="关联部门名称" prop="deptName">
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="关联部门名称" prop="deptName" class="no-label">
             <el-input
               v-model="formData.deptName"
               placeholder="请输入关联部门名称"
@@ -54,37 +63,50 @@
             />
           </el-form-item>
         </el-col>
+      </el-row>
 
-        <!-- 第二列 -->
+      <!-- 负责人信息行 -->
+      <el-row :gutter="20" class="mb-4">
         <el-col :span="12">
-          <el-form-item label="负责人姓名" prop="leaderName">
+          <el-form-item label="负责人姓名" prop="leaderName" class="no-label">
             <el-input
               v-model="formData.leaderName"
               placeholder="请输入负责人姓名"
               class="rounded-md"
             />
           </el-form-item>
-          <el-form-item label="负责人联系方式" prop="leaderContact">
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="负责人联系方式" prop="leaderContact" class="no-label">
             <el-input
               v-model="formData.leaderContact"
               placeholder="请输入负责人联系方式"
               class="rounded-md"
             />
           </el-form-item>
-          <el-form-item label="对象状态" prop="objectStatus">
-            <el-radio-group v-model="formData.objectStatus" class="radio-group">
-              <el-radio value="ENABLED">正常</el-radio>
-              <el-radio value="Disabled">异常</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="创建人(业务)" prop="createUserBiz">
+        </el-col>
+      </el-row>
+
+      <el-form-item label="对象状态" prop="objectStatus">
+        <el-radio-group v-model="formData.objectStatus" class="radio-group">
+          <el-radio value="ENABLED">正常</el-radio>
+          <el-radio value="Disabled">异常</el-radio>
+        </el-radio-group>
+      </el-form-item>
+
+      <!-- 创建信息行 -->
+      <el-row :gutter="20" class="mb-4">
+        <el-col :span="12">
+          <el-form-item label="创建人(业务)" prop="createUserBiz" class="no-label">
             <el-input
               v-model="formData.createUserBiz"
               placeholder="请输入创建人(业务)"
               class="rounded-md"
             />
           </el-form-item>
-          <el-form-item label="创建时间(业务)" prop="createTimeBiz">
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="创建时间(业务)" prop="createTimeBiz" class="no-label">
             <el-date-picker
               v-model="formData.createTimeBiz"
               type="date"
@@ -232,13 +254,26 @@ const resetForm = () => {
 .radio-group {
   display: flex;
   align-items: center;
+  gap: 16px;
 }
 
 .el-dialog__body {
   padding: 16px 24px;
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
 .el-form-item {
   margin-bottom: 20px;
+}
+
+/* 移除行内项目的标签样式 */
+.no-label .el-form-item__label {
+  display: none;
+}
+
+/* 调整行内表单项的底部边距 */
+.el-row .el-form-item {
+  margin-bottom: 0;
 }
 </style>

@@ -77,7 +77,7 @@
       <el-table-column label="主键" align="center" prop="id" />
       <el-table-column label="事件编号" align="center" prop="eventNumber" />
       <el-table-column label="事件名称" align="center" prop="eventName" />
-      <!--<el-table-column label="事件类型" align="center" prop="eventType" />-->
+      <el-table-column label="事件类型" align="center" prop="eventType" />
       <el-table-column label="事件描述" align="center" prop="eventDescription" />
       <el-table-column
         label="发生时间"

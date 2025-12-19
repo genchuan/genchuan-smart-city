@@ -1,30 +1,15 @@
 <template>
-  <ContentWrap>
-    <!-- 搜索工作栏 -->
-    <el-card class="search-card" shadow="never">
-      <template #header>
-        <div class="card-header">
-          <span class="card-title">查询条件</span>
-          <el-button
-            type="text"
-            @click="toggleSearchForm"
-            class="toggle-btn"
-          >
-            {{ showFullSearch ? '简化搜索' : '展开搜索' }}
-            <Icon :icon="showFullSearch ? 'ep:arrow-up' : 'ep:arrow-down'" class="ml-2" />
-          </el-button>
-        </div>
-      </template>
-      <el-form
-        class="search-form"
-        :model="queryParams"
-        ref="queryFormRef"
-        :inline="true"
-        label-width="140px"
-      >
-        <!-- 基础信息 -->
-        <div class="form-section">
-          <div class="section-title">基础信息</div>
+  <div class="mon-comp-rpt-page">
+    <!-- 搜索区域 -->
+    <ContentWrap class="search-container">
+      <div class="search-content">
+        <el-form
+          class="search-form"
+          :model="queryParams"
+          ref="queryFormRef"
+          :inline="true"
+          label-width="100px"
+        >
           <div class="form-row">
             <el-form-item label="唯一编码" prop="statId">
               <el-input
@@ -32,542 +17,308 @@
                 placeholder="请输入唯一编码"
                 clearable
                 @keyup.enter="handleQuery"
-                class="!w-200px"
+                class="!w-160px"
               />
             </el-form-item>
+
             <el-form-item label="统计周期类型" prop="statCycle">
-              <el-select
-                v-model="queryParams.statCycle"
-                placeholder="请选择统计周期类型"
-                clearable
-                class="!w-200px"
-              >
-                <el-option label="全部" value="" />
-                <el-option label="日" value="day" />
-                <el-option label="周" value="week" />
-                <el-option label="月" value="month" />
-                <el-option label="季" value="quarter" />
-                <el-option label="年" value="year" />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="统计周期描述" prop="statCycleName">
               <el-input
-                v-model="queryParams.statCycleName"
-                placeholder="请输入统计周期描述"
+                v-model="queryParams.statCycle"
+                placeholder="请输入统计周期类型"
                 clearable
                 @keyup.enter="handleQuery"
-                class="!w-200px"
+                class="!w-160px"
               />
             </el-form-item>
-          </div>
-        </div>
 
-        <!-- 区域维度 -->
-        <div class="form-section" v-show="showFullSearch">
-          <div class="section-title">区域维度</div>
-          <div class="form-row">
             <el-form-item label="行政区划代码" prop="regionCode">
               <el-input
                 v-model="queryParams.regionCode"
                 placeholder="请输入行政区划代码"
                 clearable
                 @keyup.enter="handleQuery"
-                class="!w-200px"
+                class="!w-160px"
               />
             </el-form-item>
-            <el-form-item label="区域名称" prop="regionName">
-              <el-input
-                v-model="queryParams.regionName"
-                placeholder="请输入区域名称"
-                clearable
-                @keyup.enter="handleQuery"
-                class="!w-200px"
-              />
-            </el-form-item>
-          </div>
-        </div>
 
-        <!-- 部件分类维度 -->
-        <div class="form-section" v-show="showFullSearch">
-          <div class="section-title">部件分类维度</div>
-          <div class="form-row">
             <el-form-item label="部件大类ID" prop="compMajorId">
               <el-input
                 v-model="queryParams.compMajorId"
                 placeholder="请输入部件大类ID"
                 clearable
                 @keyup.enter="handleQuery"
-                class="!w-200px"
+                class="!w-160px"
               />
             </el-form-item>
-            <el-form-item label="部件大类名称" prop="compMajorName">
-              <el-input
-                v-model="queryParams.compMajorName"
-                placeholder="请输入部件大类名称"
-                clearable
-                @keyup.enter="handleQuery"
-                class="!w-200px"
-              />
-            </el-form-item>
-            <el-form-item label="部件小类ID" prop="compMinorId">
-              <el-input
-                v-model="queryParams.compMinorId"
-                placeholder="请输入部件小类ID"
-                clearable
-                @keyup.enter="handleQuery"
-                class="!w-200px"
-              />
-            </el-form-item>
-            <el-form-item label="部件小类名称" prop="compMinorName">
-              <el-input
-                v-model="queryParams.compMinorName"
-                placeholder="请输入部件小类名称"
-                clearable
-                @keyup.enter="handleQuery"
-                class="!w-200px"
-              />
-            </el-form-item>
-          </div>
-        </div>
 
-        <!-- 数量统计 -->
-        <div class="form-section" v-show="showFullSearch">
-          <div class="section-title">数量统计</div>
-          <div class="form-row">
-            <el-form-item label="总数量" prop="totalCompCount">
-              <el-input-number
-                v-model="queryParams.totalCompCount"
-                placeholder="总数量"
-                :min="0"
-                controls-position="right"
-                class="!w-200px"
-              />
-            </el-form-item>
-            <el-form-item label="正常数量" prop="normalCompCount">
-              <el-input-number
-                v-model="queryParams.normalCompCount"
-                placeholder="正常数量"
-                :min="0"
-                controls-position="right"
-                class="!w-200px"
-              />
-            </el-form-item>
-            <el-form-item label="异常数量" prop="abnCompCount">
-              <el-input-number
-                v-model="queryParams.abnCompCount"
-                placeholder="异常数量"
-                :min="0"
-                controls-position="right"
-                class="!w-200px"
-              />
-            </el-form-item>
-          </div>
-          <div class="form-row">
-            <el-form-item label="维护数量" prop="mntCompCount">
-              <el-input-number
-                v-model="queryParams.mntCompCount"
-                placeholder="维护数量"
-                :min="0"
-                controls-position="right"
-                class="!w-200px"
-              />
-            </el-form-item>
-            <el-form-item label="废弃数量" prop="discardCompCount">
-              <el-input-number
-                v-model="queryParams.discardCompCount"
-                placeholder="废弃数量"
-                :min="0"
-                controls-position="right"
-                class="!w-200px"
-              />
-            </el-form-item>
-            <el-form-item label="新增数量" prop="newCompCount">
-              <el-input-number
-                v-model="queryParams.newCompCount"
-                placeholder="新增数量"
-                :min="0"
-                controls-position="right"
-                class="!w-200px"
-              />
-            </el-form-item>
-            <el-form-item label="更新数量" prop="updateCompCount">
-              <el-input-number
-                v-model="queryParams.updateCompCount"
-                placeholder="更新数量"
-                :min="0"
-                controls-position="right"
-                class="!w-200px"
-              />
-            </el-form-item>
-          </div>
-        </div>
-
-        <!-- 其他信息 -->
-        <div class="form-section" v-show="showFullSearch">
-          <div class="section-title">其他信息</div>
-          <div class="form-row">
-            <el-form-item label="生成用户ID" prop="statUser">
-              <el-input
-                v-model="queryParams.statUser"
-                placeholder="请输入生成用户ID"
-                clearable
-                @keyup.enter="handleQuery"
-                class="!w-200px"
-              />
-            </el-form-item>
             <el-form-item label="报表生成时间" prop="statTime">
               <el-date-picker
                 v-model="queryParams.statTime"
                 value-format="YYYY-MM-DD HH:mm:ss"
                 type="daterange"
-                range-separator="至"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
                 :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
-                class="!w-240px"
+                class="!w-220px"
               />
             </el-form-item>
-          </div>
-          <div class="form-row">
-            <el-form-item label="报表说明" prop="rptRemark">
-              <el-input
-                v-model="queryParams.rptRemark"
-                placeholder="请输入报表说明"
-                clearable
-                @keyup.enter="handleQuery"
-                class="!w-480px"
-              />
-            </el-form-item>
-          </div>
-        </div>
 
-        <!-- 扩展字段 -->
-        <div class="form-section" v-show="showFullSearch">
-          <div class="section-title">扩展字段</div>
-          <div class="form-row">
-            <el-form-item label="扩展字段1" prop="extCat1">
-              <el-input
-                v-model="queryParams.extCat1"
-                placeholder="请输入扩展字段1"
-                clearable
-                @keyup.enter="handleQuery"
-                class="!w-200px"
-              />
-            </el-form-item>
-            <el-form-item label="扩展字段2" prop="extCat2">
-              <el-input
-                v-model="queryParams.extCat2"
-                placeholder="请输入扩展字段2"
-                clearable
-                @keyup.enter="handleQuery"
-                class="!w-200px"
-              />
-            </el-form-item>
-            <el-form-item label="通用扩展1" prop="extCommon1">
-              <el-input
-                v-model="queryParams.extCommon1"
-                placeholder="请输入通用扩展1"
-                clearable
-                @keyup.enter="handleQuery"
-                class="!w-200px"
-              />
-            </el-form-item>
-            <el-form-item label="通用扩展2" prop="extCommon2">
-              <el-input
-                v-model="queryParams.extCommon2"
-                placeholder="请输入通用扩展2"
-                clearable
-                @keyup.enter="handleQuery"
-                class="!w-200px"
-              />
-            </el-form-item>
+            <!-- 按钮组与搜索字段同行 -->
+            <div class="search-buttons-group">
+              <el-button type="primary" @click="handleQuery">
+                <Icon icon="ep:search" class="mr-1" /> 搜索
+              </el-button>
+              <el-button @click="resetQuery">
+                <Icon icon="ep:refresh" class="mr-1" /> 重置
+              </el-button>
+              <el-button
+                type="primary"
+                plain
+                @click="openForm('create')"
+                v-hasPermi="['datacenter:mon-comp-rpt:create']"
+              >
+                <Icon icon="ep:plus" class="mr-1" /> 新增
+              </el-button>
+              <el-button
+                type="success"
+                plain
+                @click="handleExport"
+                :loading="exportLoading"
+                v-hasPermi="['datacenter:mon-comp-rpt:export']"
+              >
+                <Icon icon="ep:download" class="mr-1" /> 导出
+              </el-button>
+            </div>
           </div>
-        </div>
+        </el-form>
+      </div>
+    </ContentWrap>
 
-        <div class="form-actions">
-          <el-button type="primary" @click="handleQuery">
-            <Icon icon="ep:search" class="mr-5px" /> 搜索
-          </el-button>
-          <el-button @click="resetQuery">
-            <Icon icon="ep:refresh" class="mr-5px" /> 重置
-          </el-button>
-          <el-button
-            type="success"
-            @click="openForm('create')"
-            v-hasPermi="['datacenter:mon-comp-rpt:create']"
-          >
-            <Icon icon="ep:plus" class="mr-5px" /> 新增
-          </el-button>
-          <el-button
-            type="warning"
-            @click="handleExport"
-            :loading="exportLoading"
-            v-hasPermi="['datacenter:mon-comp-rpt:export']"
-          >
-            <Icon icon="ep:download" class="mr-5px" /> 导出
-          </el-button>
-        </div>
-      </el-form>
-    </el-card>
-  </ContentWrap>
-
-  <!-- 列表 -->
-  <ContentWrap>
-    <el-card class="table-card" shadow="never">
-      <template #header>
-        <div class="card-header">
-          <span class="card-title">监测部件统计报表列表</span>
-          <div class="table-info">
-            共 <span class="info-highlight">{{ total }}</span> 条记录
-          </div>
-        </div>
-      </template>
-
+    <!-- 数据列表 -->
+    <ContentWrap class="list-container">
       <el-table
         v-loading="loading"
         :data="list"
         :stripe="true"
         :show-overflow-tooltip="true"
-        style="width: 100%"
+        class="list-table"
         :header-cell-style="{
-          background: '#f5f7fa',
-          color: '#606266',
-          fontWeight: '600'
+          'background-color': '#f5f7fa',
+          'font-weight': '600',
+          'color': '#606266',
+          'padding': '12px 8px',
+          'white-space': 'nowrap'
         }"
-        @sort-change="handleSortChange"
+        :cell-style="{
+          'vertical-align': 'middle',
+          'padding': '8px'
+        }"
       >
-        <el-table-column label="ID" align="center" prop="id" width="70" sortable="custom" />
-        <el-table-column label="唯一编码" align="center" prop="statId" width="120" sortable="custom" />
-        <el-table-column label="统计周期" align="center" width="140">
+        <el-table-column label="主键ID" align="center" prop="id" width="100" />
+        <el-table-column label="唯一编码" align="center" prop="statId" min-width="140" />
+        <el-table-column label="统计周期类型" align="center" prop="statCycle" min-width="140" />
+        <el-table-column label="统计周期描述" align="center" prop="statCycleName" min-width="160" />
+        <el-table-column label="行政区划代码" align="center" prop="regionCode" min-width="140" />
+        <el-table-column label="区域名称" align="center" prop="regionName" min-width="140" />
+        <el-table-column label="部件大类" align="center" prop="compMajorName" min-width="140" />
+        <el-table-column label="部件小类" align="center" prop="compMinorName" min-width="140" />
+        <el-table-column label="总数量" align="center" prop="totalCompCount" width="100" />
+        <el-table-column label="正常数量" align="center" prop="normalCompCount" width="100" />
+        <el-table-column label="异常数量" align="center" prop="abnCompCount" width="100" />
+        <el-table-column
+          label="报表生成时间"
+          align="center"
+          prop="statTime"
+          :formatter="dateFormatter"
+          width="180"
+        />
+        <!-- 操作列 -->
+        <el-table-column
+          label="操作"
+          align="center"
+          width="180"
+          fixed="right"
+        >
           <template #default="scope">
-            <div class="stat-cycle">
-              <div class="cycle-type">{{ scope.row.statCycle }}</div>
-              <div class="cycle-name">{{ scope.row.statCycleName }}</div>
+            <div class="operation-btn-group">
+              <el-button
+                link
+                type="primary"
+                size="small"
+                @click="openDetail(scope.row)"
+                v-hasPermi="['datacenter:mon-comp-rpt:detail']"
+                class="operation-btn"
+              >
+                详情
+              </el-button>
+              <el-button
+                link
+                type="primary"
+                size="small"
+                @click="openForm('update', scope.row.id)"
+                v-hasPermi="['datacenter:mon-comp-rpt:update']"
+                class="operation-btn"
+              >
+                编辑
+              </el-button>
+              <el-button
+                link
+                type="danger"
+                size="small"
+                @click="handleDelete(scope.row.id)"
+                v-hasPermi="['datacenter:mon-comp-rpt:delete']"
+                class="operation-btn"
+              >
+                删除
+              </el-button>
             </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="区域维度" align="center" width="160">
-          <template #default="scope">
-            <div class="region-info">
-              <div class="region-code">{{ scope.row.regionCode }}</div>
-              <div class="region-name">{{ scope.row.regionName }}</div>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="部件分类" align="center" width="180">
-          <template #default="scope">
-            <el-popover
-              placement="left"
-              title="部件分类信息"
-              :width="280"
-              trigger="click"
-            >
-              <template #reference>
-                <el-button link type="primary" size="small">查看分类</el-button>
-              </template>
-              <div class="component-category">
-                <div class="category-item">
-                  <span class="category-label">部件大类:</span>
-                  <div class="category-detail">
-                    <span class="major-id">ID: {{ scope.row.compMajorId }}</span>
-                    <span class="major-name">{{ scope.row.compMajorName }}</span>
-                  </div>
-                </div>
-                <div v-if="scope.row.compMinorId" class="category-item">
-                  <span class="category-label">部件小类:</span>
-                  <div class="category-detail">
-                    <span class="minor-id">ID: {{ scope.row.compMinorId }}</span>
-                    <span class="minor-name">{{ scope.row.compMinorName }}</span>
-                  </div>
-                </div>
-                <div v-else class="category-item">
-                  <span class="category-label">部件小类:</span>
-                  <span class="no-minor">无小类信息</span>
-                </div>
-              </div>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column label="数量统计" align="center" width="220">
-          <template #default="scope">
-            <el-popover
-              placement="left"
-              title="详细数量统计"
-              :width="320"
-              trigger="click"
-            >
-              <template #reference>
-                <div class="count-summary">
-                  <div class="total-count">总计: {{ scope.row.totalCompCount || 0 }}</div>
-                  <div class="status-counts">
-                    <el-tag size="small" type="success">{{ scope.row.normalCompCount || 0 }}正常</el-tag>
-                    <el-tag size="small" type="danger">{{ scope.row.abnCompCount || 0 }}异常</el-tag>
-                  </div>
-                </div>
-              </template>
-              <div class="count-detail">
-                <div class="count-item">
-                  <span class="count-label">总数量:</span>
-                  <span class="count-value total">{{ scope.row.totalCompCount || 0 }}</span>
-                </div>
-                <div class="count-row">
-                  <div class="count-cell">
-                    <span class="count-label">正常:</span>
-                    <span class="count-value normal">{{ scope.row.normalCompCount || 0 }}</span>
-                  </div>
-                  <div class="count-cell">
-                    <span class="count-label">异常:</span>
-                    <span class="count-value abnormal">{{ scope.row.abnCompCount || 0 }}</span>
-                  </div>
-                </div>
-                <div class="count-row">
-                  <div class="count-cell">
-                    <span class="count-label">维护:</span>
-                    <span class="count-value maintenance">{{ scope.row.mntCompCount || 0 }}</span>
-                  </div>
-                  <div class="count-cell">
-                    <span class="count-label">废弃:</span>
-                    <span class="count-value discard">{{ scope.row.discardCompCount || 0 }}</span>
-                  </div>
-                </div>
-                <div class="count-row">
-                  <div class="count-cell">
-                    <span class="count-label">新增:</span>
-                    <span class="count-value new">{{ scope.row.newCompCount || 0 }}</span>
-                  </div>
-                  <div class="count-cell">
-                    <span class="count-label">更新:</span>
-                    <span class="count-value update">{{ scope.row.updateCompCount || 0 }}</span>
-                  </div>
-                </div>
-                <div class="count-chart">
-                  <div class="chart-bar" v-if="scope.row.totalCompCount > 0">
-                    <div
-                      class="bar-segment normal"
-                      :style="{ width: calculatePercentage(scope.row.normalCompCount, scope.row.totalCompCount) }"
-                      :title="`正常: ${scope.row.normalCompCount || 0}`"
-                    ></div>
-                    <div
-                      class="bar-segment abnormal"
-                      :style="{ width: calculatePercentage(scope.row.abnCompCount, scope.row.totalCompCount) }"
-                      :title="`异常: ${scope.row.abnCompCount || 0}`"
-                    ></div>
-                    <div
-                      class="bar-segment maintenance"
-                      :style="{ width: calculatePercentage(scope.row.mntCompCount, scope.row.totalCompCount) }"
-                      :title="`维护: ${scope.row.mntCompCount || 0}`"
-                    ></div>
-                    <div
-                      class="bar-segment discard"
-                      :style="{ width: calculatePercentage(scope.row.discardCompCount, scope.row.totalCompCount) }"
-                      :title="`废弃: ${scope.row.discardCompCount || 0}`"
-                    ></div>
-                  </div>
-                  <div v-else class="no-data-chart">无数据</div>
-                </div>
-              </div>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column label="生成信息" align="center" width="160">
-          <template #default="scope">
-            <div class="generate-info">
-              <div class="generate-user">用户: {{ scope.row.statUser || '系统' }}</div>
-              <div class="generate-time">{{ dateFormatter(scope.row, scope.column, scope.row.statTime) }}</div>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="报表说明" align="center" min-width="180" show-overflow-tooltip>
-          <template #default="scope">
-            <span v-if="scope.row.rptRemark" class="remark-text">{{ scope.row.rptRemark }}</span>
-            <span v-else class="no-remark">无说明</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="扩展字段" align="center" width="100">
-          <template #default="scope">
-            <el-popover
-              placement="left"
-              title="扩展字段信息"
-              :width="280"
-              trigger="click"
-            >
-              <template #reference>
-                <el-button link type="primary" size="small">查看</el-button>
-              </template>
-              <div class="ext-fields">
-                <div v-if="scope.row.extCat1" class="ext-field">
-                  <span class="field-label">扩展字段1:</span>
-                  <span class="field-value">{{ scope.row.extCat1 }}</span>
-                </div>
-                <div v-if="scope.row.extCat2" class="ext-field">
-                  <span class="field-label">扩展字段2:</span>
-                  <span class="field-value">{{ scope.row.extCat2 }}</span>
-                </div>
-                <div v-if="scope.row.extCommon1" class="ext-field">
-                  <span class="field-label">通用扩展1:</span>
-                  <span class="field-value">{{ scope.row.extCommon1 }}</span>
-                </div>
-                <div v-if="scope.row.extCommon2" class="ext-field">
-                  <span class="field-label">通用扩展2:</span>
-                  <span class="field-value">{{ scope.row.extCommon2 }}</span>
-                </div>
-                <div v-if="!scope.row.extCat1 && !scope.row.extCat2 && !scope.row.extCommon1 && !scope.row.extCommon2" class="no-ext">
-                  无扩展字段数据
-                </div>
-              </div>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" align="center" width="140" fixed="right">
-          <template #default="scope">
-            <el-button
-              size="small"
-              type="primary"
-              link
-              @click="openForm('update', scope.row.id)"
-              v-hasPermi="['datacenter:mon-comp-rpt:update']"
-            >
-              编辑
-            </el-button>
-            <el-button
-              size="small"
-              type="danger"
-              link
-              @click="handleDelete(scope.row.id)"
-              v-hasPermi="['datacenter:mon-comp-rpt:delete']"
-            >
-              删除
-            </el-button>
-            <el-button
-              size="small"
-              type="success"
-              link
-              @click="handleViewChart(scope.row)"
-              v-hasPermi="['datacenter:mon-comp-rpt:query']"
-            >
-              图表
-            </el-button>
           </template>
         </el-table-column>
       </el-table>
 
-      <!-- 分页 -->
-      <div class="pagination-wrapper">
-        <Pagination
-          :total="total"
-          v-model:page="queryParams.pageNo"
-          v-model:limit="queryParams.pageSize"
-          @pagination="getList"
-        />
+      <!-- 分页 - 居中显示 -->
+      <div class="pagination-container">
+        <div class="pagination-content">
+          <div class="page-info">
+            共 <span class="text-primary font-medium">{{ total }}</span> 条
+          </div>
+          <Pagination
+            :total="total"
+            v-model:page="queryParams.pageNo"
+            v-model:limit="queryParams.pageSize"
+            @pagination="getList"
+            layout="sizes, prev, pager, next, jumper"
+            :page-sizes="[10, 20, 50, 100]"
+          />
+        </div>
       </div>
-    </el-card>
-  </ContentWrap>
+    </ContentWrap>
 
-  <!-- 表单弹窗：添加/修改 -->
-  <MonCompRptForm ref="formRef" @success="getList" />
+    <!-- 详情抽屉 -->
+    <div
+      v-if="isDetailShow"
+      class="detail-mask"
+      @click="closeDetail"
+    ></div>
+    <div
+      v-if="isDetailShow"
+      class="detail-drawer"
+      :class="{ 'full-screen': isFullScreen }"
+      @click.stop
+    >
+      <div class="detail-header flex justify-between items-center p-4 border-b">
+        <h3 class="text-lg font-semibold">数据详情</h3>
+        <div class="detail-header-btns">
+          <el-tooltip
+            :content="isFullScreen ? '退出全屏' : '全屏显示'"
+            placement="bottom"
+          >
+            <el-button
+              text
+              size="small"
+              @click="toggleFullScreen"
+              class="fullscreen-btn"
+            >
+              <!-- 减号放大镜图标（退出全屏） -->
+              <svg
+                v-if="isFullScreen"
+                class="zoom-out-icon"
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <!-- 放大镜圆形部分 -->
+                <circle cx="11" cy="11" r="8" />
+                <!-- 放大镜手柄 -->
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <!-- 减号 -->
+                <line x1="8" y1="11" x2="14" y2="11" />
+              </svg>
+              <!-- 加号放大镜图标（进入全屏） -->
+              <svg
+                v-else
+                class="zoom-in-icon"
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <!-- 放大镜圆形部分 -->
+                <circle cx="11" cy="11" r="8" />
+                <!-- 放大镜手柄 -->
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <!-- 加号横线 -->
+                <line x1="11" y1="8" x2="11" y2="14" />
+                <!-- 加号竖线 -->
+                <line x1="8" y1="11" x2="14" y2="11" />
+              </svg>
+            </el-button>
+          </el-tooltip>
+          <el-tooltip content="关闭" placement="bottom">
+            <el-button
+              text
+              size="small"
+              @click="closeDetail"
+              class="close-btn"
+            >
+              <Icon icon="ep:close" />
+            </el-button>
+          </el-tooltip>
+        </div>
+      </div>
+
+      <div class="detail-content p-6">
+        <el-descriptions
+          title=""
+          :column="1"
+          border
+          :label-style="{ 'width': '120px', 'font-weight': '500', 'text-align': 'left' }"
+          :content-style="{ 'flex': '1', 'text-align': 'left' }"
+        >
+          <el-descriptions-item label="主键ID">{{ selectedRow?.id || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="唯一编码">{{ selectedRow?.statId || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="统计周期类型">{{ selectedRow?.statCycle || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="统计周期描述">{{ selectedRow?.statCycleName || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="行政区划代码">{{ selectedRow?.regionCode || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="区域名称">{{ selectedRow?.regionName || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="部件大类ID">{{ selectedRow?.compMajorId || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="部件大类名称">{{ selectedRow?.compMajorName || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="部件小类ID">{{ selectedRow?.compMinorId || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="部件小类名称">{{ selectedRow?.compMinorName || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="总数量">{{ selectedRow?.totalCompCount || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="正常数量">{{ selectedRow?.normalCompCount || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="异常数量">{{ selectedRow?.abnCompCount || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="维护数量">{{ selectedRow?.mntCompCount || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="废弃数量">{{ selectedRow?.discardCompCount || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="新增数量">{{ selectedRow?.newCompCount || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="更新数量">{{ selectedRow?.updateCompCount || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="生成用户ID">{{ selectedRow?.statUser || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="生成时间">{{ dateFormatter(selectedRow?.statTime) || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="报表说明">{{ selectedRow?.rptRemark || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="额外维度1">{{ selectedRow?.extCat1 || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="额外维度2">{{ selectedRow?.extCat2 || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="额外信息1">{{ selectedRow?.extCommon1 || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="额外信息2">{{ selectedRow?.extCommon2 || '-' }}</el-descriptions-item>
+        </el-descriptions>
+      </div>
+    </div>
+
+    <!-- 表单弹窗：添加/修改 -->
+    <MonCompRptForm ref="formRef" @success="getList" />
+  </div>
 </template>
 
 <script setup lang="ts">
+import { ref, reactive, nextTick, onMounted, onUnmounted } from 'vue'
 import { dateFormatter } from '@/utils/formatTime'
 import download from '@/utils/download'
 import { MonCompRptApi, MonCompRptVO } from '@/api/dataHub/managedComponent/moncomprpt'
@@ -582,7 +333,12 @@ const { t } = useI18n() // 国际化
 const loading = ref(true) // 列表的加载中
 const list = ref<MonCompRptVO[]>([]) // 列表的数据
 const total = ref(0) // 列表的总页数
-const showFullSearch = ref(false) // 是否显示完整搜索表单
+const exportLoading = ref(false) // 导出的加载中
+
+// 详情伪抽屉相关变量
+const isDetailShow = ref(false)
+const selectedRow = ref<MonCompRptVO | null>(null)
+const isFullScreen = ref(false)
 
 const queryParams = reactive({
   pageNo: 1,
@@ -609,25 +365,37 @@ const queryParams = reactive({
   extCat1: undefined,
   extCat2: undefined,
   extCommon1: undefined,
-  extCommon2: undefined,
-  sortField: undefined,
-  sortOrder: undefined,
+  extCommon2: undefined
 })
 const queryFormRef = ref() // 搜索的表单
-const exportLoading = ref(false) // 导出的加载中
+const formRef = ref() // 表单弹窗
 
-/** 计算百分比 */
-const calculatePercentage = (part: number, total: number) => {
-  if (!total) return '0%'
-  return `${((part || 0) / total * 100).toFixed(1)}%`
+/** 打开详情伪抽屉 */
+const openDetail = (row: MonCompRptVO) => {
+  selectedRow.value = row
+  isDetailShow.value = true
+  isFullScreen.value = false
+  document.body.style.overflow = 'hidden'
 }
 
-/** 查看图表 */
-const handleViewChart = (row: any) => {
-  // 这里可以打开图表弹窗或跳转到图表页面
-  message.success(`查看统计图表: ${row.statCycleName}`)
-  // 实际项目中可以调用图表弹窗组件
-  // chartRef.value.open(row.id)
+/** 关闭详情伪抽屉 */
+const closeDetail = () => {
+  isDetailShow.value = false
+  selectedRow.value = null
+  isFullScreen.value = false
+  document.body.style.overflow = ''
+}
+
+/** 切换全屏/缩小 */
+const toggleFullScreen = () => {
+  isFullScreen.value = !isFullScreen.value
+  nextTick(() => {
+    const iconEl = document.querySelector('.fullscreen-btn')
+    if (iconEl) {
+      iconEl.classList.add('btn-fade')
+      setTimeout(() => iconEl.classList.remove('btn-fade'), 300)
+    }
+  })
 }
 
 /** 查询列表 */
@@ -650,12 +418,11 @@ const handleQuery = () => {
 
 /** 重置按钮操作 */
 const resetQuery = () => {
-  queryFormRef.value.resetFields()
+  queryFormRef.value?.resetFields()
   handleQuery()
 }
 
 /** 添加/修改操作 */
-const formRef = ref()
 const openForm = (type: string, id?: number) => {
   formRef.value.open(type, id)
 }
@@ -688,389 +455,378 @@ const handleExport = async () => {
   }
 }
 
-/** 切换搜索表单显示 */
-const toggleSearchForm = () => {
-  showFullSearch.value = !showFullSearch.value
-}
-
-/** 排序处理 */
-const handleSortChange = (column: any) => {
-  if (column.prop) {
-    queryParams.sortField = column.prop
-    queryParams.sortOrder = column.order === 'ascending' ? 'asc' :
-      column.order === 'descending' ? 'desc' : undefined
-  } else {
-    queryParams.sortField = undefined
-    queryParams.sortOrder = undefined
-  }
-  getList()
-}
-
 /** 初始化 **/
 onMounted(() => {
   getList()
 })
+
+onUnmounted(() => {
+  document.body.style.overflow = ''
+  isFullScreen.value = false
+})
 </script>
 
-<style scoped>
-.search-card {
-  margin-bottom: 16px;
-  border-radius: 8px;
-}
-
-.table-card {
-  border-radius: 8px;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.card-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #303133;
-}
-
-.toggle-btn {
-  color: #409eff;
-  font-size: 13px;
-}
-
-.table-info {
-  font-size: 14px;
-  color: #606266;
-}
-
-.info-highlight {
-  color: #409eff;
-  font-weight: 600;
-}
-
-.search-form {
+<style scoped lang="scss">
+.mon-comp-rpt-page {
+  padding: 8px;
+  height: 100vh;
+  box-sizing: border-box;
+  background-color: #f9fafb;
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1px;
 }
 
-.form-section {
-  border: 1px solid #ebeef5;
-  border-radius: 6px;
-  padding: 16px;
-  background: #fafbfc;
+/* 搜索栏样式 - 更紧凑 */
+.search-container {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 12px 16px;
+  flex-shrink: 0;
 }
 
-.section-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #409eff;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px dashed #e1e4e8;
+.search-content {
+  width: 100%;
 }
 
 .form-row {
   display: flex;
   flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+}
+
+.search-form {
+  width: 100%;
+}
+
+.search-form ::v-deep(.el-form-item) {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.search-form ::v-deep(.el-form-item__label) {
+  font-size: 13px;
+  color: #333;
+  text-align: right;
+  padding-right: 6px;
+}
+
+/* 按钮组与搜索字段同行 */
+.search-buttons-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* 列表区域样式 */
+.list-container {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.list-table {
+  flex: 1;
+  overflow: auto;
+
+  /* 禁止列拖动 */
+  ::v-deep(.el-table) {
+    table-layout: fixed;
+    border: none;
+  }
+
+  /* 去掉表格边框 */
+  ::v-deep(.el-table__header),
+  ::v-deep(.el-table__body),
+  ::v-deep(.el-table__row) {
+    border: none;
+  }
+
+  ::v-deep(.el-table th),
+  ::v-deep(.el-table td) {
+    border: none;
+  }
+
+  /* 添加行分隔线 */
+  ::v-deep(.el-table__row) {
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  /* 禁止列宽调整 */
+  ::v-deep(.el-table__header-wrapper .el-table__header) {
+    .el-table__column-resize-proxy {
+      display: none !important;
+    }
+  }
+
+  /* 隐藏列拖动指示器 */
+  ::v-deep(.el-table .caret-wrapper) {
+    cursor: default !important;
+  }
+
+  ::v-deep(.el-table__body tr:hover > td) {
+    background-color: #f0f9ff !important;
+  }
+
+  ::v-deep(.el-table__row--striped > td) {
+    background-color: #fafafa !important;
+  }
+
+  ::v-deep(.el-table__fixed-right) {
+    z-index: 10;
+    background-color: #fff !important;
+  }
+}
+
+/* 操作按钮组 - 紧凑排列 */
+.operation-btn-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.operation-btn {
+  padding: 2px 6px !important;
+  font-size: 12px !important;
+  min-width: auto !important;
+  height: 24px !important;
+}
+
+/* 分页样式 - 居中显示 */
+.pagination-container {
+  padding: 12px 0;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pagination-content {
+  display: flex;
+  align-items: center;
   gap: 16px;
 }
 
-.form-actions {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  padding-top: 16px;
-  border-top: 1px solid #ebeef5;
-}
-
-.pagination-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #ebeef5;
-}
-
-/* 表格内容样式 */
-.stat-cycle {
-  line-height: 1.4;
-  font-size: 12px;
-}
-
-.cycle-type {
-  font-weight: 500;
-  color: #303133;
-  text-transform: capitalize;
-}
-
-.cycle-name {
-  color: #909399;
-  margin-top: 2px;
-}
-
-.region-info {
-  line-height: 1.4;
-  font-size: 12px;
-}
-
-.region-code {
-  color: #909399;
-  font-size: 11px;
-}
-
-.region-name {
-  font-weight: 500;
-  color: #303133;
-  margin-top: 2px;
-}
-
-.component-category {
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-.category-item {
-  margin-bottom: 10px;
-  padding-bottom: 8px;
-  border-bottom: 1px dashed #f0f0f0;
-}
-
-.category-label {
-  font-weight: 500;
+.page-info {
   color: #606266;
-  display: block;
-  margin-bottom: 4px;
-}
-
-.category-detail {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.major-id,
-.minor-id {
-  color: #909399;
-  font-size: 11px;
-}
-
-.major-name,
-.minor-name {
-  color: #303133;
-  font-weight: 500;
-}
-
-.no-minor {
-  color: #c0c4cc;
-  font-style: italic;
-}
-
-.count-summary {
-  line-height: 1.4;
-  text-align: center;
-}
-
-.total-count {
-  font-weight: 600;
-  color: #303133;
   font-size: 14px;
 }
 
-.status-counts {
-  display: flex;
-  justify-content: center;
-  gap: 4px;
-  margin-top: 4px;
+/* 伪抽屉核心样式 */
+.detail-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  transition: opacity 0.3s ease;
 }
 
-.count-detail {
-  font-size: 13px;
+.detail-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: calc(100% / 3);
+  height: 100vh;
+  background-color: #fff;
+  box-shadow: -2px 0 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: width 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  transform: translateX(0);
+  overflow: hidden;
 }
 
-.count-item {
+.detail-drawer.full-screen {
+  width: 100%;
+  box-shadow: none;
+}
+
+/* 抽屉头部 */
+.detail-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #eee;
+  position: relative;
+  z-index: 1001;
+}
+
+.detail-header-btns {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid #e1e4e8;
+  gap: 8px;
 }
 
-.count-row {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 8px;
-}
-
-.count-cell {
-  flex: 1;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.count-label {
-  font-weight: 500;
+/* 全屏按钮样式 - 无背景 */
+.fullscreen-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background-color: transparent;
   color: #606266;
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: #409eff;
+    background-color: rgba(64, 158, 255, 0.1);
+    transform: scale(1.05);
+  }
 }
 
-.count-value {
-  font-weight: 600;
-  padding: 2px 6px;
+/* 关闭按钮样式 - 无背景 */
+.close-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background-color: transparent;
+  color: #606266;
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: #f56c6c;
+    background-color: rgba(245, 108, 108, 0.1);
+    transform: scale(1.05);
+  }
+}
+
+/* 按钮动画 */
+.btn-fade {
+  animation: btnFade 0.3s ease;
+}
+
+@keyframes btnFade {
+  0% { opacity: 0.5; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* 抽屉内容区域 */
+.detail-content {
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+
+/* 详情描述组件样式 - 全部左对齐 */
+::v-deep(.el-descriptions) {
+  --el-descriptions-item-padding: 16px 12px;
+}
+
+::v-deep(.el-descriptions__border .el-descriptions-item) {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+::v-deep(.el-descriptions__label) {
+  text-align: left !important;
+  color: #666;
+  justify-content: flex-start !important;
+}
+
+::v-deep(.el-descriptions__content) {
+  text-align: left !important;
+  color: #333;
+  word-break: break-all;
+  justify-content: flex-start !important;
+}
+
+::v-deep(.el-descriptions__cell) {
+  text-align: left !important;
+  justify-content: flex-start !important;
+}
+
+/* 响应式适配 */
+@media (max-width: 1440px) {
+  .search-buttons-group {
+    min-width: auto;
+  }
+
+  ::v-deep(.el-button) {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .detail-drawer {
+    width: 40%;
+  }
+}
+
+@media (max-width: 1200px) {
+  .search-form .el-input,
+  .search-form .el-select {
+    width: 140px !important;
+  }
+
+  .detail-drawer {
+    width: 50%;
+  }
+}
+
+@media (max-width: 992px) {
+  .form-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .search-buttons-group {
+    width: 100%;
+    justify-content: flex-start;
+    margin-left: 0;
+    margin-top: 8px;
+  }
+
+  .detail-drawer {
+    width: 70%;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-buttons-group {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .detail-drawer {
+    width: 100%;
+  }
+
+  .operation-btn-group {
+    flex-wrap: wrap;
+  }
+
+  .pagination-content {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* 滚动条优化 */
+::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ddd;
   border-radius: 3px;
 }
 
-.count-value.total {
-  color: #409eff;
-  background: #ecf5ff;
-}
-
-.count-value.normal {
-  color: #67c23a;
-  background: #f0f9eb;
-}
-
-.count-value.abnormal {
-  color: #f56c6c;
-  background: #fef0f0;
-}
-
-.count-value.maintenance {
-  color: #e6a23c;
-  background: #fdf6ec;
-}
-
-.count-value.discard {
-  color: #909399;
-  background: #f4f4f5;
-}
-
-.count-value.new {
-  color: #409eff;
-  background: #ecf5ff;
-}
-
-.count-value.update {
-  color: #67c23a;
-  background: #f0f9eb;
-}
-
-.count-chart {
-  margin-top: 12px;
-  padding-top: 8px;
-  border-top: 1px dashed #e1e4e8;
-}
-
-.chart-bar {
-  height: 20px;
-  background: #f5f7fa;
-  border-radius: 10px;
-  overflow: hidden;
-  display: flex;
-}
-
-.bar-segment {
-  height: 100%;
-  transition: all 0.3s ease;
-}
-
-.bar-segment.normal {
-  background: #67c23a;
-}
-
-.bar-segment.abnormal {
-  background: #f56c6c;
-}
-
-.bar-segment.maintenance {
-  background: #e6a23c;
-}
-
-.bar-segment.discard {
-  background: #909399;
-}
-
-.no-data-chart {
-  text-align: center;
-  color: #c0c4cc;
-  font-style: italic;
-  font-size: 12px;
-}
-
-.generate-info {
-  line-height: 1.4;
-  font-size: 12px;
-}
-
-.generate-user {
-  color: #909399;
-}
-
-.generate-time {
-  color: #303133;
-  margin-top: 2px;
-}
-
-.remark-text {
-  color: #606266;
-  font-style: italic;
-}
-
-.no-remark {
-  color: #c0c4cc;
-  font-style: italic;
-}
-
-.ext-fields {
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-.ext-field {
-  display: flex;
-  margin-bottom: 6px;
-}
-
-.field-label {
-  font-weight: 500;
-  color: #606266;
-  min-width: 80px;
-  text-align: right;
-  margin-right: 8px;
-}
-
-.field-value {
-  color: #303133;
-  word-break: break-all;
-}
-
-.no-ext {
-  color: #c0c4cc;
-  font-style: italic;
-  text-align: center;
-  padding: 8px 0;
-}
-
-:deep(.el-card__header) {
-  padding: 12px 20px;
-  border-bottom: 1px solid #ebeef5;
-}
-
-:deep(.el-table .cell) {
-  padding: 8px 12px;
-}
-
-:deep(.el-table th) {
-  font-weight: 600;
-}
-
-:deep(.el-table .el-table__row:hover) {
-  background-color: #f5f7fa;
-}
-
-:deep(.el-input-number) {
-  width: 100%;
+::-webkit-scrollbar-track {
+  background: #f5f5f5;
+  border-radius: 3px;
 }
 </style>

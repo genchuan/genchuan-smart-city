@@ -64,6 +64,9 @@ router.beforeEach(async (to, from, next) => {
   if (to.name === 'DeviceTelemetryDetail') {
     to.meta.activeMenu = '/tB/a/devices'; // 这里的修改会被菜单匹配逻辑读取
   }
+  if (to.name === 'BpmProcessInstanceDetail3') {
+    to.meta.activeMenu = '/tB/a/profiles/devicesWarning'; // 这里的修改会被菜单匹配逻辑读取
+  }
   if (getAccessToken()) {
     if (to.path === '/login') {
       next({ path: '/' })

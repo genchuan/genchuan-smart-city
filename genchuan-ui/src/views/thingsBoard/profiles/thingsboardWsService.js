@@ -18,7 +18,7 @@ export function useThingsBoardWs() {
         }
 
         // 创建新连接
-        // ws.value = new WebSocket('ws://127.0.0.1:8080/api/ws');
+        // ws.value = new WebSocket('ws://192.168.8.67:8080/api/ws');
         ws.value = new WebSocket(`${import.meta.env.VITE_THINGS_BOARD_WS_URL}`);
 
         // 连接打开时

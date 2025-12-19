@@ -40,3 +40,14 @@ export const getUserRoleList = async (userId: number) => {
 export const assignUserRole = async (data: PermissionAssignUserRoleReqVO) => {
   return await request.post({ url: '/system/permission/assign-user-role', data })
 }
+
+//根据角色id获取角色菜单权限下的树形结构菜单详细信息
+export const getMenuListByRoleId = async (roleId: number) => {
+  return await request.get({ url: '/system/permission/list-role-menu-tree?roleId=' + roleId })
+}
+//根据角色标识获取角色菜单权限下的树形结构菜单详细信息
+export const getMenuListByRoleKey = async (roleCode: number) => {
+  return await request.get({
+    url: '/system/permission/list-role-menu-tree-by-code?roleCode=' + roleCode
+  })
+}

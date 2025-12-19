@@ -1,5 +1,5 @@
 <template>
-  <Dialog :title="dialogTitle" v-model="dialogVisible" width="850px">
+  <Dialog :title="dialogTitle" v-model="dialogVisible" width="650px">
     <el-form
       ref="formRef"
       :model="formData"
@@ -8,47 +8,50 @@
       v-loading="formLoading"
       class="p-4 bg-gray-50 rounded-lg"
     >
-      <el-row :gutter="20">
-        <!-- 第一列 -->
-        <el-col :span="12">
-          <el-form-item label="标准项名称" prop="stdItemName">
-            <el-input
-              v-model="formData.stdItemName"
-              placeholder="请输入标准项名称"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="标准项编码" prop="stdItemCode">
-            <el-input
-              v-model="formData.stdItemCode"
-              placeholder="请输入标准项编码"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="所属标准分类ID" prop="stdCatId">
-            <el-input
-              v-model="formData.stdCatId"
-              placeholder="请输入所属标准分类ID"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="所属标准分类名称" prop="stdCatName">
-            <el-input
-              v-model="formData.stdCatName"
-              placeholder="请输入所属标准分类名称"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="标准等级" prop="stdLevel">
-            <el-input
-              v-model="formData.stdLevel"
-              placeholder="请输入标准等级"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-        </el-col>
+      <!-- 基础信息组 -->
+      <el-divider content-position="left">基础信息</el-divider>
+      <el-form-item label="标准项名称" prop="stdItemName">
+        <el-input
+          v-model="formData.stdItemName"
+          placeholder="请输入标准项名称"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
+      <el-form-item label="标准项编码" prop="stdItemCode">
+        <el-input
+          v-model="formData.stdItemCode"
+          placeholder="请输入标准项编码"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
 
-        <!-- 第二列 -->
+      <!-- 分类信息组 -->
+      <el-divider content-position="left">分类信息</el-divider>
+      <el-form-item label="所属标准分类ID" prop="stdCatId">
+        <el-input
+          v-model="formData.stdCatId"
+          placeholder="请输入所属标准分类ID"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
+      <el-form-item label="所属标准分类名称" prop="stdCatName">
+        <el-input
+          v-model="formData.stdCatName"
+          placeholder="请输入所属标准分类名称"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
+      <el-form-item label="标准等级" prop="stdLevel">
+        <el-input
+          v-model="formData.stdLevel"
+          placeholder="请输入标准等级"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
+
+      <!-- 评分设置组 -->
+      <el-divider content-position="left">评分设置</el-divider>
+      <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="分数下限" prop="scoreMin">
             <el-input
@@ -58,6 +61,8 @@
               class="w-full rounded-md"
             />
           </el-form-item>
+        </el-col>
+        <el-col :span="12">
           <el-form-item label="分数上限" prop="scoreMax">
             <el-input
               v-model="formData.scoreMax"
@@ -66,47 +71,53 @@
               class="w-full rounded-md"
             />
           </el-form-item>
-          <el-form-item label="排序序号" prop="sortNum">
-            <el-input
-              v-model="formData.sortNum"
-              placeholder="请输入排序序号"
-              type="number"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="标准描述" prop="stdDesc">
-            <el-input
-              v-model="formData.stdDesc"
-              placeholder="请输入标准描述"
-              type="textarea"
-              :rows="3"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="启用状态" prop="enableStatus">
-            <el-radio-group v-model="formData.enableStatus" class="radio-group">
-              <el-radio value="ENABLED">启用</el-radio>
-              <el-radio value="Disabled">禁用</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="创建人(业务)" prop="createUserBiz">
-            <el-input
-              v-model="formData.createUserBiz"
-              placeholder="请输入创建人(业务)"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
-          <el-form-item label="创建时间(业务)" prop="createTimeBiz">
-            <el-date-picker
-              v-model="formData.createTimeBiz"
-              type="date"
-              value-format="x"
-              placeholder="选择创建时间(业务)"
-              class="w-full rounded-md"
-            />
-          </el-form-item>
         </el-col>
       </el-row>
+      <el-form-item label="排序序号" prop="sortNum">
+        <el-input
+          v-model="formData.sortNum"
+          placeholder="请输入排序序号"
+          type="number"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
+
+      <!-- 其他信息组 -->
+      <el-divider content-position="left">其他信息</el-divider>
+      <el-form-item label="标准描述" prop="stdDesc">
+        <el-input
+          v-model="formData.stdDesc"
+          placeholder="请输入标准描述"
+          type="textarea"
+          :rows="3"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
+      <el-form-item label="启用状态" prop="enableStatus">
+        <el-radio-group v-model="formData.enableStatus" class="radio-group">
+          <el-radio value="ENABLED">启用</el-radio>
+          <el-radio value="Disabled">禁用</el-radio>
+        </el-radio-group>
+      </el-form-item>
+
+      <!-- 创建信息组 -->
+      <el-divider content-position="left">创建信息</el-divider>
+      <el-form-item label="创建人(业务)" prop="createUserBiz">
+        <el-input
+          v-model="formData.createUserBiz"
+          placeholder="请输入创建人(业务)"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
+      <el-form-item label="创建时间(业务)" prop="createTimeBiz">
+        <el-date-picker
+          v-model="formData.createTimeBiz"
+          type="date"
+          value-format="x"
+          placeholder="选择创建时间(业务)"
+          class="w-full rounded-md"
+        />
+      </el-form-item>
     </el-form>
 
     <template #footer>
@@ -270,10 +281,12 @@ const resetForm = () => {
 
 .el-dialog__body {
   padding: 16px 24px;
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
 .el-form-item {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .el-textarea {
@@ -289,5 +302,17 @@ const resetForm = () => {
 
 :deep(.el-date-editor .el-input__wrapper) {
   height: auto;
+}
+
+/* 分组分隔线样式优化 */
+:deep(.el-divider) {
+  margin: 16px 0;
+}
+
+:deep(.el-divider__text) {
+  font-weight: 500;
+  color: #333;
+  background-color: #fafafa;
+  padding: 0 8px;
 }
 </style>

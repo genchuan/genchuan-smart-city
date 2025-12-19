@@ -324,7 +324,7 @@ const initMap = () => {
   const callbackName = `initMap_${props.idName}`;
 
   const script = document.createElement('script');
-  script.src = `https://map.qq.com/api/gljs?v=1.exp&key=OHCBZ-7BPC3-J7E3H-OA62K-Y3ZFZ-JQBPD&callback=${callbackName}`;
+  script.src = `https://map.qq.com/api/gljs?v=1.exp&key=QTQBZ-F3RWW-JJJRV-YNPA5-ZIKDK-3SBNO&callback=${callbackName}`;
   script.async = true;
 
   window[callbackName] = () => {
@@ -345,7 +345,8 @@ const mapCallback = () => {
 
   // 创建地图实例
   map = new TMap.Map(mapContainer, {
-    center: new TMap.LatLng(26.793227, 117.810114),
+    center: new TMap.LatLng(23.7356, 114.6826),
+    // center: new TMap.LatLng(26.793227, 117.810114),
     zoom: 11,
     mapStyleId: 'style1'
   });

@@ -22,9 +22,9 @@ export interface EvtTypeCfgVO {
 
 // 事件类型配置 API
 export const EvtTypeCfgApi = {
-  // 查询事件类型配置列表
-  getEvtTypeCfgList: async (params) => {
-    return await request.get({ url: `/datacenter/evt-type-cfg/list`, params })
+  // 查询事件类型配置分页
+  getEvtTypeCfgPage: async (params: any) => {
+    return await request.get({ url: `/datacenter/evt-type-cfg/page`, params })
   },
 
   // 查询事件类型配置详情
@@ -51,4 +51,4 @@ export const EvtTypeCfgApi = {
   exportEvtTypeCfg: async (params) => {
     return await request.download({ url: `/datacenter/evt-type-cfg/export-excel`, params })
   },
-}
+}

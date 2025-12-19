@@ -6,9 +6,8 @@
       :model="queryParams"
       ref="queryFormRef"
       :inline="true"
-      label-width="68px"
     >
-      <el-form-item label="指南名称" prop="guideName">
+      <el-form-item label="指南名称" prop="guideName" label-width="100px">
         <el-input
           v-model="queryParams.guideName"
           placeholder="请输入指南名称"
@@ -26,18 +25,18 @@
           class="!w-240px"
         />
       </el-form-item>
-      <!--<el-form-item label="创建时间" prop="createTime">-->
-      <!--  <el-date-picker-->
-      <!--    v-model="queryParams.createTime"-->
-      <!--    value-format="YYYY-MM-DD HH:mm:ss"-->
-      <!--    type="daterange"-->
-      <!--    start-placeholder="开始日期"-->
-      <!--    end-placeholder="结束日期"-->
-      <!--    :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"-->
-      <!--    class="!w-220px"-->
-      <!--  />-->
-      <!--</el-form-item>-->
-      <el-form-item>
+      <el-form-item label="创建时间" prop="createTime">
+        <el-date-picker
+          v-model="queryParams.createTime"
+          value-format="YYYY-MM-DD HH:mm:ss"
+          type="daterange"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
+          class="!w-220px"
+        />
+      </el-form-item>
+      <el-form-item style="margin-left: 80px">
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
         <el-button
