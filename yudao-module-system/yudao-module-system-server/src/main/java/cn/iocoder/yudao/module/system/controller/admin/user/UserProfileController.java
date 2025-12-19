@@ -84,10 +84,10 @@ public class UserProfileController {
 
     @PostMapping("/update-avatar")
     @Operation(summary = "上传用户头像")
-    public CommonResult<String> updateUserAvatar(@RequestParam("file") MultipartFile file) {
+    public CommonResult<String> updateUserAvatar(@RequestParam("avatarFile") MultipartFile avatarFile) {
         try {
             // 1. 上传文件到MinIO
-            String avatarUrl = fileUploadService.uploadAvatar(file);
+            String avatarUrl = fileUploadService.uploadAvatar(avatarFile);
 
             // 2. 更新用户头像
             userService.updateUserAvatar(getLoginUserId(), avatarUrl);
