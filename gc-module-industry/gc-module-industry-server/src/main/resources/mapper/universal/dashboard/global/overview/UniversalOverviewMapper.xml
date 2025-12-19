@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.universal.dashboard.global.overview.UniversalOverviewMapper">
+
+    <!--
+        查询通用大屏全域数据地图
+        说明：
+        - 基于管理部件表 + 空间数据表
+        - 用于大屏地图点位展示
+        - 支持行政区域 / 设施类型 / 状态 / 时间范围筛选
+    -->
+    <select id="listUniversalOverview"
+            parameterType="cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.global.overview.vo.UniversalOverviewQueryReqVO"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.global.overview.vo.UniversalOverviewRespVO">
+
+        SELECT
+        c.mng_comp_id    AS facilityId,
+        c.comp_name      AS facilityName,
+        c.grid_name      AS regionName,
+        c.minor_name     AS facilityType,
+        c.comp_status    AS status,
+        s.coord_x        AS coordX,
+        s.coord_y        AS coordY
+        FROM gc_biz_mng_comp c
+        LEFT JOIN gc_biz_mng_comp_spatial s
+        ON c.mng_comp_id = s.mng_comp_id
+
+               where 1=1
+        <!-- 行政区域筛选：comp_code 前 6 位 -->
+        <if test="regionShortCode != null and regionShortCode != ''">
+            AND LEFT(c.comp_code, 6) = #{regionShortCode}
+        </if>
+
+        <!-- 设施类型筛选 -->
+        <if test="minorId != null and minorId != ''">
+            AND c.minor_id = #{minorId}
+        </if>
+
+        <!-- 设施状态筛选 -->
+        <if test="compStatus != null and compStatus != ''">
+            AND c.comp_status = #{compStatus}
+        </if>
+
+        <!-- 时间范围筛选 -->
+        <if test="startTime != null and endTime != null">
+            AND c.create_time_sys BETWEEN #{startTime} AND #{endTime}
+        </if>
+
+    </select>
+
+</mapper>

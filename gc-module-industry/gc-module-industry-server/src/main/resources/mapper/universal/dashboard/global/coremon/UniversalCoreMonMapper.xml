@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    通用大屏核心要素运行监测 Mapper XML
+    功能说明：
+    1. 定义数据库访问的 SQL 语句
+    2. namespace 对应 Mapper 接口全路径
+    3. select 语句的 resultType 对应查询返回的 VO 类
+-->
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.universal.dashboard.global.coremon.UniversalCoreMonMapper">
+
+    <!--
+        查询通用大屏核心要素运行监测的方法
+        id: 对应 Mapper 接口的方法名
+        resultType: 查询结果映射到的 VO 类
+        参数通过 Mapper 接口传入
+    -->
+    <select id="getUniversalCoreMon"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.global.coremon.vo.UniversalCoreMonRespVO"
+            parameterType="cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.global.coremon.vo.UniversalCoreMonQueryReqVO">
+
+        SELECT
+        c.mng_comp_id AS mngCompId,
+        c.comp_name AS compName,
+        g.status,
+        g.abnormal_coord AS abnormalCoord,
+        g.warn_time AS warnTime,
+        g.fault_code AS faultCode,
+        w.wo_status AS woStatus,
+        d.device_id AS deviceId
+        FROM biz_mng_comp c
+        LEFT JOIN gen_gas_pipe_mon g ON c.mng_comp_id = g.comp_id
+        LEFT JOIN biz_gas_repair_wo w ON g.warn_id = w.warn_id
+        LEFT JOIN sys_mon_device d ON c.mng_comp_id = d.comp_id
+        WHERE 1=1
+        <if test="regionShortCode != null and regionShortCode != ''">
+            AND c.dept_code LIKE CONCAT(#{regionShortCode}, '%')
+        </if>
+        <if test="startTime != null">
+            AND g.warn_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND g.warn_time &lt;= #{endTime}
+        </if>
+        <if test="facilityType != null and facilityType != ''">
+            AND c.comp_name LIKE CONCAT('%', #{facilityType}, '%')
+        </if>
+        <if test="warnLevel != null and warnLevel != ''">
+            AND g.warn_level = #{warnLevel}
+        </if>
+        <if test="faultType != null and faultType != ''">
+            AND g.fault_type = #{faultType}
+        </if>
+        <if test="woStatus != null and woStatus != ''">
+            AND w.wo_status = #{woStatus}
+        </if>
+    </select>
+
+
+</mapper>
