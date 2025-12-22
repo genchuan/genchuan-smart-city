@@ -329,7 +329,7 @@ defineExpose({
   flex-direction: column;
   width: 100%;
   height: auto;
-  bottom: 1vh;
+  bottom: 0.5vh;
   left: 0;
   display: flex;
   flex-wrap: wrap;
