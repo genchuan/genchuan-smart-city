@@ -1,13 +1,18 @@
 package cn.iocoder.yudao.module.datacenter.service.thingsboard.asset;
 
 import java.util.*;
+
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.asset.vo.AssetDetailRespVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.asset.vo.AssetPageReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.asset.vo.AssetSaveReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.asset.vo.AssetSimpleRespVO;
+import cn.iocoder.yudao.module.datacenter.dal.dataobject.thingsboard.asset.AssetDO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import org.thingsboard.server.common.data.asset.Asset;
 import org.thingsboard.server.common.data.asset.AssetInfo;
+import org.thingsboard.server.common.data.page.PageData;
+import org.thingsboard.server.common.data.page.PageLink;
 
 /**
  * 资产 Service 接口
@@ -17,53 +22,52 @@ import org.thingsboard.server.common.data.asset.AssetInfo;
 public interface AssetService {
 
     /**
-     * 创建资产
+     * 创建资产信息
      *
      * @param createReqVO 创建信息
      * @return 编号
      */
-    String createAsset(@Valid AssetSaveReqVO createReqVO);
+    Long createAsset(@Valid AssetSaveReqVO createReqVO);
 
     /**
-     * 更新资产
+     * 更新资产信息
      *
      * @param updateReqVO 更新信息
      */
     void updateAsset(@Valid AssetSaveReqVO updateReqVO);
 
     /**
-     * 删除资产
+     * 删除资产信息
      *
      * @param id 编号
      */
-    void deleteAsset(String id);
+    void deleteAsset(Long id);
 
     /**
-     * 批量删除资产
-     *
-     * @param ids 编号
-     */
-    void deleteAssetListByIds(List<String> ids);
-
-    /**
-     * 获得资产
+     * 获得资产信息
      *
      * @param id 编号
-     * @return 资产
+     * @return 资产信息
      */
     AssetInfo getAsset(String id);
 
     /**
-     * 获得资产分页
+     * 获得资产信息分页
      *
      * @param pageReqVO 分页查询
-     * @return 资产分页
+     * @return 资产信息分页
      */
-    PageResult<Asset> getAssetPage(AssetPageReqVO pageReqVO);
+    PageResult<AssetDO> getAssetPage(AssetPageReqVO pageReqVO);
+
+
+    PageResult<AssetDetailRespVO> getAssetPage1(Integer pageSize, Integer page);
+
+    List<AssetSimpleRespVO> getAssetList();
 
     /**
+     * 同步ThingsBoard资产到本地数据库
      *
-     * @return 资产简单数据
+     * @return 同步结果信息
      */
-    List<AssetSimpleRespVO> getAssetList();
+//    Map<String, Object> syncAssetsFromThingsBoard();
 }

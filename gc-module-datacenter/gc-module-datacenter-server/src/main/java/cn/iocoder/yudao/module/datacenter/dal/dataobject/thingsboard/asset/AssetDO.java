@@ -7,12 +7,12 @@ import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 import java.math.BigInteger;
 
 /**
- * 资产 DO
+ * 资产信息 DO
  *
- * @author 芋道源码
+ * @author zhucongquan
  */
-@TableName("asset")
-@KeySequence("asset_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。
+@TableName("tb_asset_info")
+@KeySequence("tb_asset_info_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -22,59 +22,89 @@ import java.math.BigInteger;
 public class AssetDO extends BaseDO {
 
     /**
+     * 主键ID
+     */
+    @TableId
+    private Long id;
+    /**
      * 资产ID
      */
-    @TableId(type = IdType.INPUT)
-    private String id;
-
+    private String assetId;
     /**
-     * TB租户ID
+     * 实体类型
      */
-    private String tenantId;
-
+    private String entityType;
+    /**
+     * 创建时间戳
+     */
+    private Long createdTime;
+    /**
+     * 租户实体类型
+     */
+    private String tenantEntityType;
     /**
      * 客户ID
      */
     private String customerId;
-
+    /**
+     * 客户实体类型
+     */
+    private String customerEntityType;
+    /**
+     * 资产档案ID
+     */
+    private String assetProfileId;
+    /**
+     * 资产档案实体类型
+     */
+    private String assetProfileEntityType;
     /**
      * 资产名称
      */
-    private String name;
-
+    private String assetName;
     /**
      * 资产类型
      */
-    private String type;
-
+    private String assetType;
     /**
-     * 标签
+     * 资产标签
      */
-    private String label;
-
-    /**
-     * 资产实体ID
-     */
-    private String assetProfileId;
-
-    /**
-     * 附加信息
-     */
-    private String additionalInfo;
-
+    private String assetLabel;
     /**
      * 外部ID
      */
     private String externalId;
-
     /**
-     * 版本
+     * 版本号
      */
-    private Long version;
-
+    private Integer version;
     /**
-     * 创建时间
+     * 客户标题
      */
-    private BigInteger createdTime;
+    private String customerTitle;
+    /**
+     * 客户是否公开
+     */
+    private Boolean customerIsPublic;
+    /**
+     * 资产档案名称
+     */
+    private String assetProfileName;
+    /**
+     * 附加信息
+     */
+    private String additionalInfo;
+    /**
+     * 属性列表
+     */
+    private String attributes;
+    /**
+     * 关联设备列表
+     */
+    private String contextDevices;
+    /**
+     * 系统租户ID
+     */
+    private Long tenantIdSys;
 
 }

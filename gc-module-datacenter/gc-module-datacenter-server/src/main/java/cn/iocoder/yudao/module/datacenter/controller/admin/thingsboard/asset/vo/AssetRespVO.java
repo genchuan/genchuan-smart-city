@@ -11,52 +11,92 @@ import java.time.LocalDateTime;
 @ExcelIgnoreUnannotated
 public class AssetRespVO {
 
-    @Schema(description = "资产ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "19775")
+    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "16638")
+    @ExcelProperty("主键ID")
+    private Long id;
+
+    @Schema(description = "资产ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "32353")
     @ExcelProperty("资产ID")
-    private String id;
+    private String assetId;
 
-    @Schema(description = "租户ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "10102")
-    @ExcelProperty("租户ID")
-    private String tenantId;
+    @Schema(description = "实体类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @ExcelProperty("实体类型")
+    private String entityType;
 
-    @Schema(description = "客户ID", example = "4677")
+    @Schema(description = "创建时间戳", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("创建时间戳")
+    private Long createdTime;
+
+    @Schema(description = "租户实体类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @ExcelProperty("租户实体类型")
+    private String tenantEntityType;
+
+    @Schema(description = "客户ID", example = "29253")
     @ExcelProperty("客户ID")
     private String customerId;
 
-    @Schema(description = "资产名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "资产1")
-    @ExcelProperty("资产名称")
-    private String name;
+    @Schema(description = "客户实体类型", example = "2")
+    @ExcelProperty("客户实体类型")
+    private String customerEntityType;
 
-    @Schema(description = "资产类型", example = "building")
-    @ExcelProperty("资产类型")
-    private String type;
-
-    @Schema(description = "标签")
-    @ExcelProperty("标签")
-    private String label;
-
-    @Schema(description = "资产实体ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "28197")
-    @ExcelProperty("资产实体ID")
+    @Schema(description = "资产档案ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "31817")
+    @ExcelProperty("资产档案ID")
     private String assetProfileId;
+
+    @Schema(description = "资产档案实体类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @ExcelProperty("资产档案实体类型")
+    private String assetProfileEntityType;
+
+    @Schema(description = "资产名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "张三")
+    @ExcelProperty("资产名称")
+    private String assetName;
+
+    @Schema(description = "资产类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
+    @ExcelProperty("资产类型")
+    private String assetType;
+
+    @Schema(description = "资产标签")
+    @ExcelProperty("资产标签")
+    private String assetLabel;
+
+    @Schema(description = "外部ID", example = "3674")
+    @ExcelProperty("外部ID")
+    private String externalId;
+
+    @Schema(description = "版本号", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("版本号")
+    private Integer version;
+
+    @Schema(description = "客户标题")
+    @ExcelProperty("客户标题")
+    private String customerTitle;
+
+    @Schema(description = "客户是否公开")
+    @ExcelProperty("客户是否公开")
+    private Boolean customerIsPublic;
+
+    @Schema(description = "资产档案名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "王五")
+    @ExcelProperty("资产档案名称")
+    private String assetProfileName;
 
     @Schema(description = "附加信息")
     @ExcelProperty("附加信息")
     private String additionalInfo;
 
-    @Schema(description = "外部ID", example = "21772")
-    @ExcelProperty("外部ID")
-    private String externalId;
+    @Schema(description = "属性列表")
+    @ExcelProperty("属性列表")
+    private String attributes;
 
-    @Schema(description = "版本")
-    @ExcelProperty("版本")
-    private Long version;
+    @Schema(description = "关联设备列表")
+    @ExcelProperty("关联设备列表")
+    private String contextDevices;
 
-    @Schema(description = "系统创建时间")
-    @ExcelProperty("系统创建时间")
-    private LocalDateTime createTime;
+    @Schema(description = "系统租户ID", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("系统租户ID")
+    private Long tenantIdSys;
 
     @Schema(description = "创建时间")
     @ExcelProperty("创建时间")
-    private LocalDateTime createdTime;
+    private LocalDateTime createTime;
 
 }

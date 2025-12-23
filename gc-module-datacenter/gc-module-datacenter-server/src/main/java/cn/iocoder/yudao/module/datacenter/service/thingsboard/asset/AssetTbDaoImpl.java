@@ -4,7 +4,11 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.asset.vo.AssetPageReqVO;
 import cn.iocoder.yudao.module.datacenter.service.thingsboard.asset.Dao.AssetTbDao;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.thingsboard.rest.client.RestClient;
 import org.thingsboard.server.common.data.asset.Asset;
 import org.thingsboard.server.common.data.asset.AssetInfo;
@@ -12,7 +16,7 @@ import org.thingsboard.server.common.data.id.AssetId;
 import org.thingsboard.server.common.data.page.PageData;
 import org.thingsboard.server.common.data.page.PageLink;
 
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class AssetTbDaoImpl implements AssetTbDao {
@@ -62,16 +66,129 @@ public class AssetTbDaoImpl implements AssetTbDao {
         RestClient client = new RestClient(url);
         client.login(username, password);
 
-        // 获取资产详情
         Optional<AssetInfo> assetInfoOptional = client.getAssetInfoById(AssetId.fromString(id));
-
         try {
-            if (assetInfoOptional.isPresent()) {
-                AssetInfo assetInfo = assetInfoOptional.get();
-                // 可以在这里添加额外的资产信息处理逻辑
-                return assetInfo;
+            return assetInfoOptional.orElse(null);
+        } finally {
+            client.logout();
+            client.close();
+        }
+    }
+
+    @Override
+    public PageData<Asset> getAllAssets(PageLink pageLink) {
+        RestClient client = new RestClient(url);
+        try {
+            client.login(username, password);
+            return getAllAssets(pageLink, client);
+        } finally {
+            client.logout();
+            client.close();
+        }
+    }
+
+    private PageData<Asset> getAllAssets(PageLink pageLink, RestClient client) {
+        try {
+            String assetsUrl = url + "api/tenant/assets?pageSize=" + pageLink.getPageSize() + "&page=" + pageLink.getPage();
+            String token = client.getToken();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-Authorization", "Bearer " + token);
+            headers.set("Content-Type", "application/json");
+
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            RestTemplate restTemplate = new RestTemplate();
+
+            ResponseEntity<PageData<Asset>> response = restTemplate.exchange(
+                    assetsUrl,
+                    org.springframework.http.HttpMethod.GET,
+                    entity,
+                    new org.springframework.core.ParameterizedTypeReference<PageData<Asset>>() {}
+            );
+
+            return response.getBody();
+        } catch (Exception e) {
+            throw new RuntimeException("获取资产列表失败", e);
+        }
+    }
+
+    @Override
+    public List<Map<String, Object>> getAssetAttributes(String assetId) {
+        RestClient client = new RestClient(url);
+        try {
+            client.login(username, password);
+
+            // 构建获取属性的URL
+            String attributesUrl = url + "api/plugins/telemetry/ASSET/" + assetId + "/values/attributes";
+
+            String token = client.getToken();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-Authorization", "Bearer " + token);
+            headers.set("Content-Type", "application/json");
+
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            RestTemplate restTemplate = new RestTemplate();
+
+            ResponseEntity<List> response = restTemplate.exchange(
+                    attributesUrl,
+                    org.springframework.http.HttpMethod.GET,
+                    entity,
+                    List.class
+            );
+
+            return (List<Map<String, Object>>) response.getBody();
+        } catch (Exception e) {
+            throw new RuntimeException("获取资产属性失败: " + e.getMessage(), e);
+        } finally {
+            client.logout();
+            client.close();
+        }
+    }
+
+    @Override
+    public List<Map<String, Object>> getAssetRelatedDevices(String assetId) {
+        RestClient client = new RestClient(url);
+        try {
+            client.login(username, password);
+
+            // 构建获取关联设备的URL
+            String relationsUrl = url + "api/relations/info?toId=" + assetId + "&toType=ASSET";
+
+            String token = client.getToken();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-Authorization", "Bearer " + token);
+            headers.set("Content-Type", "application/json");
+
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            RestTemplate restTemplate = new RestTemplate();
+
+            ResponseEntity<List> response = restTemplate.exchange(
+                    relationsUrl,
+                    org.springframework.http.HttpMethod.GET,
+                    entity,
+                    List.class
+            );
+
+            List<Map<String, Object>> relations = (List<Map<String, Object>>) response.getBody();
+
+            // 转换格式为期望的设备列表格式
+            List<Map<String, Object>> devices = new ArrayList<>();
+            if (relations != null) {
+                for (Map<String, Object> relation : relations) {
+                    Map<String, Object> from = (Map<String, Object>) relation.get("from");
+                    if ("DEVICE".equals(from.get("entityType"))) {
+                        Map<String, Object> device = new HashMap<>();
+                        device.put("deviceName", relation.get("fromName"));
+                        device.put("entityType", "DEVICE");
+                        device.put("deviceId", from.get("id"));
+                        devices.add(device);
+                    }
+                }
             }
-            return null;
+
+            return devices;
+        } catch (Exception e) {
+            throw new RuntimeException("获取资产关联设备失败: " + e.getMessage(), e);
         } finally {
             client.logout();
             client.close();
