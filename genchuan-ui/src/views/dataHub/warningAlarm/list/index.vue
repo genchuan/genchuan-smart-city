@@ -26,21 +26,6 @@
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="预警领域" prop="warningField">
-        <el-select
-          v-model="queryParams.warningField"
-          placeholder="请选择预警领域"
-          clearable
-          class="!w-240px"
-        >
-          <el-option
-            v-for="item in warningFieldOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-      </el-form-item>
 
       <el-form-item label="预警类型" prop="warningType">
         <el-tree-select
@@ -111,6 +96,17 @@
         </el-select>
       </el-form-item>
 
+      <!-- 新增：应用场景搜索 -->
+      <el-form-item label="应用场景">
+        <!-- 绑定ref用于调用子组件方法 -->
+        <AppSceneTree
+          ref="appSceneTreeRef"
+          v-model="sceneSelectedCodes"
+          @change="handleSceneChange"
+          style="width: 220px"
+        />
+      </el-form-item>
+
       <el-form-item>
         <el-button @click="handleQuery">
           <Icon icon="ep:search" class="mr-5px" />
@@ -119,23 +115,6 @@
         <el-button @click="resetQuery">
           <Icon icon="ep:refresh" class="mr-5px" />
           重置
-        </el-button>
-        <!--        <el-button-->
-        <!--          type="primary"-->
-        <!--          plain-->
-        <!--          @click="handleImport"-->
-        <!--          v-hasPermi="['datacenter:warning-alert-list-table:import']"-->
-        <!--        >-->
-        <!--          <Icon icon="ep:upload" class="mr-5px" /> 导入-->
-        <!--        </el-button>-->
-        <el-button
-          type="primary"
-          plain
-          @click="openForm('create')"
-          v-hasPermi="['datacenter:warning-alert-list-table:create']"
-        >
-          <Icon icon="ep:plus" class="mr-5px" />
-          新增
         </el-button>
         <el-button
           type="success"
@@ -215,17 +194,19 @@
         :show-overflow-tooltip="true"
       />
       <el-table-column
-        label="预警领域"
-        align="center"
-        prop="warningField"
-        v-if="tableColumnShow('预警领域')"
-        :show-overflow-tooltip="true"
-      />
-      <el-table-column
         label="预警类型"
         align="center"
         prop="warningType"
         v-if="tableColumnShow('预警类型')"
+        :show-overflow-tooltip="true"
+      />
+
+      <!-- 新增：应用场景列 -->
+      <el-table-column
+        label="应用场景"
+        align="center"
+        prop="appScene"
+        v-if="tableColumnShow('应用场景')"
         :show-overflow-tooltip="true"
       />
 
@@ -385,15 +366,6 @@
           <el-button
             link
             type="primary"
-            @click.stop="openForm('update', scope.row.id)"
-            v-hasPermi="['datacenter:warning-alert-list-table:update']"
-            v-if="scope.row.relatedObjectType !== 'DEVICE'"
-          >
-            修改
-          </el-button>
-          <el-button
-            link
-            type="primary"
             @click.stop="handleOpenDetail(scope.row.id)"
             v-hasPermi="['datacenter:warning-alert-list-table:detail']"
           >
@@ -419,13 +391,10 @@
     :is-fullscreen="isDrawerFullscreen"
     @update:is-fullscreen="isDrawerFullscreen = $event"
   />
-  <!--  <DispatchOrderForm ref="dispatchFormRef" @success="getList" />-->
   <ReceiveOrderForm ref="receiveFormRef" @success="getList" />
   <SubmitReviewForm ref="submitReviewFormRef" @success="getList" />
-  <!--  <DeleteReasonForm ref="deleteReasonFormRef" @confirm="confirmDelete" />-->
   <ReviewForm ref="reviewFormRef" @success="getList" />
   <ExportOptionsForm ref="exportOptionsFormRef" @confirm="confirmExport" />
-  <!--  <ImportForm ref="importFormRef" @success="getList" />-->
 </template>
 
 <script setup lang="ts">
@@ -435,30 +404,29 @@ import { WarningAlertListTableApi, WarningAlertListTableVO } from '@/api/dataHub
 import { MonEvtCatApi } from '@/api/dataHub/monitorCompEventMgr/monitorEvtConfigMgr/monevtcat'
 import WarningAlertListTableForm from './WarningAlertListTableForm.vue'
 import WarningDetailDrawer from './components/WarningDetailDrawer.vue'
-// import DispatchOrderForm from './components/DispatchOrderForm.vue'
 import ReceiveOrderForm from './components/ReceiveOrderForm.vue'
 import SubmitReviewForm from './components/SubmitReviewForm.vue'
 import ReviewForm from './components/ReviewForm.vue'
 import ExportOptionsForm from './components/ExportOptionsForm.vue'
-// import ImportForm from './components/ImportForm.vue'
-import { ref } from 'vue'
+import AppSceneTree from '@/views/dataHub/common/AppSceneTree.vue' // 新增：引入应用场景树组件
+import { ref, reactive, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Menu } from '@element-plus/icons-vue'
-// import DeleteReasonForm from './components/DeleteReasonForm.vue'
+import { useRoute } from 'vue-router' // 新增：引入路由
 defineOptions({ name: 'WarningAlertListTable' })
 
+const route = useRoute() // 新增：路由实例
 const message = useMessage()
 const { t } = useI18n()
 
 // 组件引用
 const formRef = ref()
 const detailDrawerRef = ref()
-// const dispatchFormRef = ref()
 const receiveFormRef = ref()
 const submitReviewFormRef = ref()
 const reviewFormRef = ref()
 const exportOptionsFormRef = ref()
-// const importFormRef = ref()
+const appSceneTreeRef = ref<any>(null) // 新增：应用场景树组件引用
 
 // 状态管理
 const loading = ref(true)
@@ -467,6 +435,9 @@ const total = ref(0)
 const exportLoading = ref(false)
 const isDrawerFullscreen = ref(false)
 const currentRowId = ref<number | null>(null) // 仅用于行高亮
+const fromIndexPage = ref(false) // 新增：标记是否从其他页面跳转
+const sceneSelectedCodes = ref<string[]>([]) // 新增：应用场景选中的编码
+
 /** 用户数据接口类型 */
 interface UserItem {
   id: number
@@ -497,8 +468,8 @@ const tableColumns = ref([
   { label: '告警编号', visible: true },
   { label: '关联对象类型', visible: true },
   { label: '关联对象名称', visible: true },
-  { label: '预警领域', visible: true },
   { label: '预警类型', visible: true },
+  { label: '应用场景', visible: true }, // 新增：应用场景列
   { label: '预警状态', visible: true },
   { label: '触发原因', visible: true },
   { label: '派发部门', visible: true },
@@ -521,6 +492,7 @@ const tableColumnShow = (label) => {
     }
   }
 }
+
 /** ====================== 预警类型树选择 ====================== */
 const warningTypeTree = ref<any[]>([])
 const warningTypeLoading = ref(false)
@@ -616,6 +588,15 @@ function findUserNicknameById(id: string | number | undefined): string | undefin
   return user ? user.nickname : undefined
 }
 
+/** 新增：处理应用场景选择变化 */
+const handleSceneChange = (data: { values: string[]; labels: string[] }, isInit = false) => {
+  queryParams.extendCategory1 = data.values.length > 0 ? data.values[0] : undefined
+  queryParams.extendCategory2 = data.labels.length > 0 ? data.labels[0] : undefined
+  if (fromIndexPage.value && !isInit) {
+    fromIndexPage.value = false
+  }
+}
+
 const queryFormRef = ref()
 
 // 查询参数
@@ -632,14 +613,26 @@ const queryParams = reactive({
   orderByColumn: '', // 初始无排序
   isAsc: '', // 初始无排序
   status: undefined,
-  responsiblePerson: undefined
+  responsiblePerson: undefined,
+  // 新增：应用场景相关参数
+  extendCategory1: undefined,
+  extendCategory2: undefined,
+  code: undefined
 })
 
 /** 查询列表 */
 const getList = async () => {
   loading.value = true
   try {
-    const data = await WarningAlertListTableApi.getWarningAlertListTablePage(queryParams)
+    const params = {
+      ...queryParams,
+      // 从index跳转且未手动选择场景时，用code筛选
+      extendCategory1: fromIndexPage.value && !queryParams.extendCategory1 && queryParams.code
+        ? queryParams.code
+        : queryParams.extendCategory1
+    }
+
+    const data = await WarningAlertListTableApi.getWarningAlertListTablePage(params)
     list.value = data.list.map((item) => {
       //  部门名称映射
       const deptNode = findLabelById(deptTree.value, Number(item.dispatchDepartment))
@@ -668,8 +661,14 @@ const handleQuery = () => {
 /** 重置按钮操作 */
 const resetQuery = () => {
   queryFormRef.value.resetFields()
+  sceneSelectedCodes.value = [] // 新增：重置应用场景选择
   queryParams.orderByColumn = '' // 重置为无排序
   queryParams.isAsc = '' // 重置为无排序
+  // 新增：重置应用场景相关参数
+  Object.assign(queryParams, {
+    extendCategory1: undefined,
+    extendCategory2: undefined
+  })
   handleQuery()
 }
 
@@ -726,21 +725,6 @@ const handleDispatch = async (row: WarningAlertListTableVO) => {
   }
 }
 
-/** 接单操作 */
-// const handleReceiveOrder = (row: WarningAlertListTableVO) => {
-//   receiveFormRef.value.open(row)
-// }
-
-/** 提交审核操作 */
-// const handleSubmitReview = (row: WarningAlertListTableVO) => {
-//   submitReviewFormRef.value.open(row)
-// }
-
-/** 审核操作 */
-// const handleReview = (row: WarningAlertListTableVO) => {
-//   reviewFormRef.value.open(row)
-// }
-
 /** 删除按钮操作 */
 const handleDelete = async (id: number) => {
   try {
@@ -753,10 +737,6 @@ const handleDelete = async (id: number) => {
     await getList()
   } catch {}
 }
-/** 导入操作 */
-// const handleImport = () => {
-//   importFormRef.value.open()
-// }
 
 /** 打开导出选项 */
 const openExportOptions = () => {
@@ -767,11 +747,18 @@ const openExportOptions = () => {
 const confirmExport = async (fields: string[], format: string) => {
   try {
     exportLoading.value = true
-    const data = await WarningAlertListTableApi.exportWarningAlertListTable({
+    // 新增：导出时包含应用场景参数
+    const params = {
       ...queryParams,
       exportFields: fields,
-      format
-    })
+      format,
+      // 从index跳转且未手动选择场景时，用code筛选
+      extendCategory1: fromIndexPage.value && !queryParams.extendCategory1 && queryParams.code
+        ? queryParams.code
+        : queryParams.extendCategory1
+    }
+
+    const data = await WarningAlertListTableApi.exportWarningAlertListTable(params)
 
     const fileName = `预警记录.${format === 'excel' ? 'xls' : 'csv'}`
     download.excel(data, fileName)
@@ -793,7 +780,6 @@ const isOverdue = (row: WarningAlertListTableVO) => {
 
   const requiredTime = new Date(row.requiredCompleteTime).getTime()
   const now = new Date().getTime()
-
   return now > requiredTime
 }
 
@@ -808,10 +794,35 @@ const getOverdueHours = (row: WarningAlertListTableVO) => {
 }
 
 /** 初始化 */
-onMounted(() => {
+onMounted(async () => {
   loadWarningTypeTree()
   loadDeptTree()
   getUserList()
-  getList()
+
+  // 新增：处理路由传值
+  const code = route.query.code as string
+  if (code && /^\d+$/.test(code)) {
+    fromIndexPage.value = true
+    queryParams.code = code
+
+    // 等待子组件加载数据完成
+    if (appSceneTreeRef.value) {
+      await appSceneTreeRef.value.loadSceneTreeData()
+    }
+
+    // 查找code对应的label
+    const sceneLabels = []
+    if (appSceneTreeRef.value?.flatSceneList) {
+      const matchItem = appSceneTreeRef.value.flatSceneList.find(
+        (item: any) => item.sceneCatCode === code
+      )
+      if (matchItem) sceneLabels.push(matchItem.sceneCatName)
+    }
+    // 赋值选中值并触发change事件 初始化调用：传递isInit=true，避免重置fromIndexPage
+    sceneSelectedCodes.value = [code]
+    handleSceneChange({ values: [code], labels: sceneLabels }, true)
+  }
+
+  await getList()
 })
 </script>
