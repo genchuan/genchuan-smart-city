@@ -1,10 +1,9 @@
 package cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.asset;
 
-import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.asset.vo.AssetSimpleRespVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.asset.vo.*;
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.AlarmRespVO;
+import cn.iocoder.yudao.module.datacenter.dal.dataobject.thingsboard.asset.AssetDO;
 import cn.iocoder.yudao.module.datacenter.service.thingsboard.asset.AssetService;
-import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.asset.vo.AssetPageReqVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.asset.vo.AssetRespVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.asset.vo.AssetSaveReqVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -29,6 +28,8 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import org.thingsboard.server.common.data.asset.Asset;
 import org.thingsboard.server.common.data.asset.AssetInfo;
+import org.thingsboard.server.common.data.page.PageData;
+import org.thingsboard.server.common.data.page.PageLink;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
@@ -44,7 +45,7 @@ public class AssetController {
     @PostMapping("/create")
     @Operation(summary = "创建资产")
     @PreAuthorize("@ss.hasPermission('datacenter:asset:create')")
-    public CommonResult<String> createAsset(@Valid @RequestBody AssetSaveReqVO createReqVO) {
+    public CommonResult<Long> createAsset(@Valid @RequestBody AssetSaveReqVO createReqVO) {
         return success(assetService.createAsset(createReqVO));
     }
 
@@ -60,17 +61,8 @@ public class AssetController {
     @Operation(summary = "删除资产")
     @Parameter(name = "id", description = "编号", required = true)
     @PreAuthorize("@ss.hasPermission('datacenter:asset:delete')")
-    public CommonResult<Boolean> deleteAsset(@RequestParam("id") String id) {
+    public CommonResult<Boolean> deleteAsset(@RequestParam("id") Long id) {
         assetService.deleteAsset(id);
-        return success(true);
-    }
-
-    @DeleteMapping("/delete-list")
-    @Parameter(name = "ids", description = "编号", required = true)
-    @Operation(summary = "批量删除资产")
-    @PreAuthorize("@ss.hasPermission('datacenter:asset:delete')")
-    public CommonResult<Boolean> deleteAssetList(@RequestParam("ids") List<String> ids) {
-        assetService.deleteAssetListByIds(ids);
         return success(true);
     }
 
@@ -84,10 +76,10 @@ public class AssetController {
     }
 
     @GetMapping("/page")
-    @Operation(summary = "获得资产分页")
-    @PreAuthorize("@ss.hasPermission('datacenter:asset:query')")
-    public CommonResult<PageResult<AssetRespVO>> getAssetPage(@Valid AssetPageReqVO pageReqVO) {
-        PageResult<Asset> pageResult = assetService.getAssetPage(pageReqVO);
+    @Operation(summary = "获得资产信息分页")
+    @PreAuthorize("@ss.hasPermission('datacenter:asset-info:query')")
+    public CommonResult<PageResult<AssetRespVO>> getAssetInfoPage(@Valid AssetPageReqVO pageReqVO) {
+        PageResult<AssetDO> pageResult = assetService.getAssetPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, AssetRespVO.class));
     }
 
@@ -98,20 +90,32 @@ public class AssetController {
     public void exportAssetExcel(@Valid AssetPageReqVO pageReqVO,
                                  HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<Asset> list = assetService.getAssetPage(pageReqVO).getList();
+        List<AssetDO> list = assetService.getAssetPage(pageReqVO).getList();
         // 导出 Excel
         ExcelUtils.write(response, "资产.xls", "数据", AssetRespVO.class,
                 BeanUtils.toBean(list, AssetRespVO.class));
     }
+
     /**
      * 获取资产简单信息
      */
-    @GetMapping("/list")
+    @GetMapping("/list-simple")
     @Operation(summary = "获取资产简单信息列表")
     @PreAuthorize("@ss.hasPermission('datacenter:asset:query')")
     public CommonResult<List<AssetSimpleRespVO>> getAssetList(){
         List<AssetSimpleRespVO> list = assetService.getAssetList();
         return success(list);
+    }
+
+    @GetMapping("/asset-page")
+    @Operation(summary = "获取tb资产分页（包含属性和设备信息）")
+    @PreAuthorize("@ss.hasPermission('device:alarm:query')")
+    public CommonResult<PageResult<AssetDetailRespVO>> getAssetPage(
+            @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
+            @RequestParam(value = "page", defaultValue = "0") Integer page) {
+
+        PageResult<AssetDetailRespVO> pageResult = assetService.getAssetPage1(pageSize, page);
+        return success(pageResult);
     }
 
 }
