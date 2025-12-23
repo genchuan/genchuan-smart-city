@@ -24,4 +24,19 @@ public interface ErrorCodeConstants {
     ErrorCode SCENE_STATUS_ICON_NOT_EXISTS = new ErrorCode(500_004, "场景状态字段图标配置不存在");
     // ========== 场景地图整体配置  ==========
     ErrorCode SCENE_MAP_CONFIG_NOT_EXISTS = new ErrorCode(500_005, "场景地图整体配置不存在");
+
+
+// ========== 停车订单
+    ErrorCode PARK_WO_NOT_EXISTS = new ErrorCode(600_001, "停车订单不存在");
+    // ========== 停车缴费服务  ==========
+    ErrorCode PARK_PAY_NOT_EXISTS = new ErrorCode(600_002, "停车缴费服务不存在");
+    // ========== 欠费追缴  ==========
+    ErrorCode PARK_ARREARS_RECOVERY_NOT_EXISTS = new ErrorCode(600_003, "欠费追缴不存在");
+
+    // ========== 停车预约服务  ==========
+    ErrorCode PARK_RESERVATION_NOT_EXISTS = new ErrorCode(600_004, "停车预约服务不存在");
+    // ========== 停车泊位实时状态  ==========
+    ErrorCode PARK_REAL_TIME_NOT_EXISTS = new ErrorCode(600_005, "停车泊位实时状态不存在");
+    // ========== 泊位锁定记录  ==========
+    ErrorCode PARK_BERTH_LOCK_NOT_EXISTS = new ErrorCode(600_006, "泊位锁定记录不存在");
 }

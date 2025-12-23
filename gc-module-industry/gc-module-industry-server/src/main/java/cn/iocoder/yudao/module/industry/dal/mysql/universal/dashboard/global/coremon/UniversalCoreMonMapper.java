@@ -19,6 +19,6 @@ public interface UniversalCoreMonMapper {
      * @param universalCoreMonQueryReqVO 查询参数
      * @return UniversalCoreMonRespVO 结果
      */
-    List<UniversalCoreMonRespVO> getUniversalCoreMon(UniversalCoreMonQueryReqVO universalCoreMonQueryReqVO);
+    List<UniversalCoreMonRespVO> listUniversalCoreMon(UniversalCoreMonQueryReqVO universalCoreMonQueryReqVO);
 
 }

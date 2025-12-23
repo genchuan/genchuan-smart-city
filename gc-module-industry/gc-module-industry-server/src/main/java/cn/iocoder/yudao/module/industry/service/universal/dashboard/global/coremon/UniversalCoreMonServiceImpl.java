@@ -33,8 +33,8 @@ public class UniversalCoreMonServiceImpl implements UniversalCoreMonService {
      * @return UniversalCoreMonRespVO 查询结果 VO 对象
      */
     @Override
-    public List<UniversalCoreMonRespVO> getUniversalCoreMon(UniversalCoreMonQueryReqVO universalCoreMonQueryReqVO) {
+    public List<UniversalCoreMonRespVO> listUniversalCoreMon(UniversalCoreMonQueryReqVO universalCoreMonQueryReqVO) {
         // 调用 Mapper 方法查询数据库并返回结果
-        return universalCoreMonMapper.getUniversalCoreMon(universalCoreMonQueryReqVO);
+        return universalCoreMonMapper.listUniversalCoreMon(universalCoreMonQueryReqVO);
     }
 }

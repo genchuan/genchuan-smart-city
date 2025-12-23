@@ -29,10 +29,10 @@ public class UniversalCoreMonController {
     @GetMapping("/get")
     @Operation(summary = "获得通用大屏核心要素运行监测")
     @PreAuthorize("@ss.hasPermission('industry:universal-core-mon:query')")
-    public CommonResult<List<UniversalCoreMonRespVO>> getUniversalCoreMon(
+    public CommonResult<List<UniversalCoreMonRespVO>> listUniversalCoreMon(
             @Valid UniversalCoreMonQueryReqVO universalCoreMonQueryReqVO
     ) {
-        List<UniversalCoreMonRespVO> universalCoreMonRespVO = universalCoreMonService.getUniversalCoreMon(universalCoreMonQueryReqVO);
+        List<UniversalCoreMonRespVO> universalCoreMonRespVO = universalCoreMonService.listUniversalCoreMon(universalCoreMonQueryReqVO);
         return success(universalCoreMonRespVO);
     }
 }

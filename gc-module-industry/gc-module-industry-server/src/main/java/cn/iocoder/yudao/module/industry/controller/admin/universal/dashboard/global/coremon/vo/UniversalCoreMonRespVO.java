@@ -20,7 +20,7 @@ public class UniversalCoreMonRespVO {
     @ExcelProperty("运行状态")
     private String status;
 
-    @Schema(description = "异常位置", example = "39.90,116.40")
+    @Schema(description = "异常位置", example = "隆福社区")
     @ExcelProperty("异常位置")
     private String abnormalCoord;
 

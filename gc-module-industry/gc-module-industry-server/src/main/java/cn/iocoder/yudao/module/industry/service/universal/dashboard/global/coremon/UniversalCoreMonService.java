@@ -17,5 +17,5 @@ public interface UniversalCoreMonService {
      * @param universalCoreMonQueryReqVO 查询条件
      * @return 查询结果
      */
-    List<UniversalCoreMonRespVO> getUniversalCoreMon(UniversalCoreMonQueryReqVO universalCoreMonQueryReqVO);
+    List<UniversalCoreMonRespVO> listUniversalCoreMon(UniversalCoreMonQueryReqVO universalCoreMonQueryReqVO);
 }
