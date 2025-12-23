@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.lawenf.dashboard.global.forceview.LawForceViewMapper">
+
+    <!-- 获取执法人员定位 -->
+    <select id="selectStaffLoc"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.forceview.vo.LawForceStaffLocVO">
+        SELECT
+        law_enf_user_id AS lawEnfUserId,
+        user_name AS userName,
+        coord_x AS coordX,
+        coord_y AS coordY,
+        region_full_code AS regionFullCode
+        FROM biz_law_enf_staff_loc d
+        <where>
+            <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.AreaSqlMapper.likeByRegionShortCode">
+                <property name="areaColumn" value="LEFT(d.region_full_code,6)"/>
+            </include>
+        </where>
+    </select>
+
+    <!-- 获取执法车辆定位 -->
+    <select id="selectVehicleLoc"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.forceview.vo.LawForceVehicleLocVO">
+        SELECT
+        law_enf_vehicle_id AS lawEnfVehicleId,
+        license_plate AS licensePlate,
+        vehicle_coord_x AS vehicleCoordX,
+        vehicle_coord_y AS vehicleCoordY,
+        region_full_code AS regionFullCode
+        FROM biz_law_enf_vehicle d
+        <where>
+            <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.AreaSqlMapper.likeByRegionShortCode">
+                <property name="areaColumn" value="LEFT(d.region_full_code,6)"/>
+            </include>
+        </where>
+    </select>
+
+    <!-- 获取执法站点位置 -->
+    <select id="selectStationLoc"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.forceview.vo.LawForceStationLocVO">
+        SELECT
+        station_coord_x AS stationCoordX,
+        station_coord_y AS stationCoordY,
+        region_full_code AS regionFullCode
+        FROM biz_law_enf_station d
+        <where>
+            <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.AreaSqlMapper.likeByRegionShortCode">
+                <property name="areaColumn" value="LEFT(d.region_full_code,6)"/>
+            </include>
+        </where>
+    </select>
+
+    <!-- 获取各区域执法人员数量（stat_ 表不用公共片段） -->
+    <select id="selectRegionStaffCount"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.forceview.vo.LawForceStaffCountVO">
+        SELECT
+        ifnull(sum(staff_count),0) AS staffCount
+        FROM stat_law_enf_force
+        <where>
+            <if test="regionShortCode != null">
+                region_short_code = #{regionShortCode}
+            </if>
+        </where>
+    </select>
+
+</mapper>
