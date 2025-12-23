@@ -12,11 +12,7 @@
         coord_y AS coordY,
         region_full_code AS regionFullCode
         FROM biz_law_enf_staff_loc d
-        <where>
-            <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.AreaSqlMapper.likeByRegionShortCode">
-                <property name="areaColumn" value="LEFT(d.region_full_code,6)"/>
-            </include>
-        </where>
+
     </select>
 
     <!-- 获取执法车辆定位 -->
@@ -29,11 +25,7 @@
         vehicle_coord_y AS vehicleCoordY,
         region_full_code AS regionFullCode
         FROM biz_law_enf_vehicle d
-        <where>
-            <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.AreaSqlMapper.likeByRegionShortCode">
-                <property name="areaColumn" value="LEFT(d.region_full_code,6)"/>
-            </include>
-        </where>
+
     </select>
 
     <!-- 获取执法站点位置 -->
@@ -44,11 +36,7 @@
         station_coord_y AS stationCoordY,
         region_full_code AS regionFullCode
         FROM biz_law_enf_station d
-        <where>
-            <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.AreaSqlMapper.likeByRegionShortCode">
-                <property name="areaColumn" value="LEFT(d.region_full_code,6)"/>
-            </include>
-        </where>
+
     </select>
 
     <!-- 获取各区域执法人员数量（stat_ 表不用公共片段） -->
