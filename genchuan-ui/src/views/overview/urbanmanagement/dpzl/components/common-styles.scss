@@ -122,7 +122,6 @@
 .indicator-cards {
   display: flex;
   gap: 0.3vw;
-  padding: 0 0.1vw;
   box-sizing: border-box;
   align-items: center;
   justify-content: center;
@@ -133,7 +132,6 @@
   background: rgba(0, 30, 60, 0.6);
   border-radius: 8px;
   padding: 0.5vw;
-  margin-top: 0.5vw;
   cursor: pointer;
   transition: all 0.3s;
   border: 1px solid transparent;
@@ -163,7 +161,7 @@
 }
 
 .indicator-title {
-  font-size: 1.2vw;
+  font-size: 1vw;
   text-align: center;
   font-weight: bold;
   color: #fff96d;
@@ -177,20 +175,20 @@
   font-weight: bold;
   margin: 0.5vw 0;
   transition: all 0.3s;
-  margin-bottom: 2vh;
+  margin-bottom: 1vh;
 }
 
 .indicator-total {
   font-size: 0.7vw;
   color: #ccf;
   text-align: left;
-  margin-bottom: 2vh;
+  margin-bottom: 1vh;
 }
 
 .indicator-threshold {
   font-size: 0.7vw;
   color: #ccc;
-  margin-bottom: 2vh;
+  margin-bottom: 1vh;
 }
 
 .indicator-trends {
