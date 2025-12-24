@@ -23,7 +23,6 @@
             </div>
             <div class="actions-right">
               <div class="filter-group">
-                <!-- 统计周期：写死 -->
                 <el-select
                   v-model="coreFilterParams.stat_cycle"
                   size="small"
@@ -38,7 +37,6 @@
                   <el-option label="年统计" value="YEAR"/>
                 </el-select>
 
-                <!-- 行政区域：动态渲染（从API获取） -->
                 <el-select
                   v-model="coreFilterParams.region_code"
                   size="small"
@@ -83,7 +81,11 @@
               </div>
             </div>
 
-            <div class="indicator-card card-qualify" :class="getGroupStatusClass('qualify_rate')">
+            <!-- 达标率卡片：脉冲动画持续到指标恢复 -->
+            <div
+              class="indicator-card card-qualify"
+              :class="[getGroupStatusClass('qualify_rate'), { 'pulse-danger': qualifyWarnPulse }]"
+            >
               <div class="indicator-title">达标率</div>
               <div class="sub-indicators">
                 <div class="sub-indicator-item">
@@ -149,7 +151,7 @@
       </div>
 
       <div class="middle">
-        <!-- 全域数据地图面板：仅此处新增筛选控件 -->
+        <!-- 全域数据地图面板 -->
         <div class="panel middle_top" style="min-width: 3vw;" ref="map">
           <div class="header-actions">
             <div class="actions-left">
@@ -157,7 +159,6 @@
             </div>
             <div class="actions-right">
               <div class="map-filter-group">
-                <!-- 行政区域：动态渲染（从API获取） -->
                 <el-select
                   v-model="mapFilterParams.region_code"
                   placeholder="行政区域"
@@ -173,7 +174,6 @@
                   />
                 </el-select>
 
-                <!-- 设施类型：写死 -->
                 <el-select
                   v-model="mapFilterParams.facility_type"
                   placeholder="设施类型"
@@ -188,7 +188,6 @@
                   <el-option label="环卫设施" value="sanitation"/>
                 </el-select>
 
-                <!-- 设施状态：写死 -->
                 <el-select
                   v-model="mapFilterParams.status"
                   placeholder="设施状态"
@@ -239,10 +238,46 @@
               <p>全局态势趋势分析</p>
             </div>
             <div class="actions-right">
+              <!-- 保留：区域筛选框 -->
+              <el-select
+                v-model="trendFilterParams.region_code"
+                size="small"
+                style="width: 5vw;"
+                class="trend-filter-select"
+                @change="fetchTrendData"
+                placeholder="选择区域"
+              >
+                <el-option
+                  v-for="item in regionOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+
+              <button
+                class="export-btn"
+                @click="exportTrendExcel"
+                :disabled="!trendData.xAxis.length"
+              >
+                导出Excel
+              </button>
+
               <button class="panel-fullscreen-btn" @click="togglePanelFullscreen('trend')">
                 <el-icon color="#00ccff" size="16"><FullScreen /></el-icon>
               </button>
             </div>
+          </div>
+
+          <!-- 折线图组件 -->
+          <div class="trend-chart-box" style="width: 100%; height: calc(100% - 40px);">
+            <chart-component
+              :data="chartData"
+              :yAxisName="''"
+              :showGrid="true"
+              :showArea="false"
+              :baseFontScale="1"
+            />
           </div>
           <div class="panel-footer"></div>
         </div>
@@ -282,14 +317,21 @@
 </template>
 
 <script setup>
-import { ref, getCurrentInstance, onMounted } from 'vue';
+import { ref, getCurrentInstance, onMounted, watch, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { ArrowLeft, FullScreen } from "@element-plus/icons-vue";
 import screenFull from "screenfull";
+import * as XLSX from 'xlsx';
 import MapCommon from "@/views/industry/MapCommon.vue";
-// 新增导入fetchRegionDict
-import { fetchUrbanManagementCoreIndicators, fetchUrbanConstructionGeometries, fetchRegionDict } from '@/api/industry/qjtszlmb.js';
+import ChartComponent from "@/views/industry/ChartLine.vue";
+import {
+  fetchUrbanManagementCoreIndicators,
+  fetchUrbanConstructionGeometries,
+  fetchRegionDict,
+  fetchCoreIndicatorTrend,
+  checkContinuousAbnormal
+} from '@/api/industry/qjtszlmb.js';
 
 const router = useRouter();
 const pageContainerRef = ref(null);
@@ -297,24 +339,43 @@ const instance = getCurrentInstance();
 const mapCommonRef = ref(null);
 const geometriesArray = ref([]);
 const statData = ref({});
+// 新增：达标率预警脉冲动画控制
+const qualifyWarnPulse = ref(false);
 
-// 新增：行政区域选项（动态从API获取）
+// 行政区域选项
 const regionOptions = ref([]);
 
-// 核心指标看板筛选参数（独立）
+// 核心指标看板筛选参数
 const coreFilterParams = ref({
   stat_cycle: 'DAY',
-  region_code: '' // 不再硬编码默认值，由API返回后赋值
+  region_code: ''
 });
 
-// 全域数据地图筛选参数（独立）
+// 全域数据地图筛选参数
 const mapFilterParams = ref({
-  region_code: '',    // 行政区域编码
-  facility_type: '',  // 设施类型
-  status: ''          // 设施状态（正常/异常/维护）
+  region_code: '',
+  facility_type: '',
+  status: ''
 });
 
-// 核心指标预警逻辑（仅作用于核心指标看板）
+// 简化：趋势分析筛选参数（仅保留区域筛选）
+const trendFilterParams = ref({
+  region_code: '' // 移除indicators参数
+});
+
+// 趋势数据和图表数据
+const trendData = ref({
+  xAxis: [],
+  series: [],
+  abnormalPeriods: [],
+  predictXAxis: []
+});
+const chartData = ref({
+  xAxis: [],
+  series: []
+});
+
+// 核心指标预警逻辑
 const getGroupStatusClass = (field) => {
   if (!statData.value[field]) return 'normal';
   if (field === 'qualify_rate') {
@@ -324,18 +385,28 @@ const getGroupStatusClass = (field) => {
   return 'normal';
 };
 
-// 核心指标数据请求（仅核心指标看板使用）
+// 计算属性：判断达标率是否异常（用于实时监听）
+const isQualifyRateAbnormal = computed(() => {
+  if (statData.value.qualify_rate === undefined || statData.value.qualify_warn_threshold === undefined) {
+    return false;
+  }
+  return statData.value.qualify_rate < statData.value.qualify_warn_threshold;
+});
+
+// 核心指标数据请求（修改：移除定时关闭，改为实时判断）
 const fetchCoreData = async () => {
   try {
     const data = await fetchUrbanManagementCoreIndicators(coreFilterParams.value);
     statData.value = data;
+    // 直接根据指标状态设置动画（无定时关闭）
+    qualifyWarnPulse.value = isQualifyRateAbnormal.value;
   } catch (error) {
     console.error('获取核心指标数据失败:', error);
     ElMessage.error('核心指标数据加载失败，请刷新页面重试');
   }
 };
 
-// 地图数据请求（仅全域数据地图使用，传递地图专属筛选参数）
+// 地图数据请求
 const fetchMapData = async () => {
   try {
     const data = await fetchUrbanConstructionGeometries(mapFilterParams.value);
@@ -348,16 +419,133 @@ const fetchMapData = async () => {
 
 // 重置地图筛选参数
 const resetMapFilter = () => {
-  // 清空所有地图筛选参数
   mapFilterParams.value = {
     region_code: '',
     facility_type: '',
     status: ''
   };
-  // 重新加载全部地图数据
   fetchMapData();
-  // 提示用户重置成功
   ElMessage.success('地图筛选条件已重置');
+};
+
+// 获取趋势数据（无需传indicators，后端返回全部核心指标）
+const fetchTrendData = async () => {
+  if (!trendFilterParams.value.region_code) {
+    ElMessage.warning('请先选择区域');
+    return;
+  }
+  try {
+    // 仅传区域参数，后端返回全部核心指标的趋势数据
+    const data = await fetchCoreIndicatorTrend(trendFilterParams.value);
+    trendData.value = data;
+
+    // 组装图表数据
+    const fullXAxis = [...data.xAxis, ...data.predictXAxis];
+    const fullSeries = data.series.map(seriesItem => {
+      const fullData = [...seriesItem.data, ...seriesItem.predictData];
+      return {
+        name: seriesItem.name,
+        type: 'line',
+        data: fullData,
+        lineStyle: {
+          ...seriesItem.lineStyle,
+          type: Array(fullData.length).fill('solid').map((v, i) =>
+            i >= data.xAxis.length ? 'dashed' : v
+          )
+        },
+        markArea: {
+          data: data.abnormalPeriods.map(period => [
+            {
+              name: period.reason,
+              xAxis: period.start
+            },
+            {
+              xAxis: period.end
+            }
+          ]),
+          itemStyle: {
+            color: 'rgba(255, 0, 0, 0.1)'
+          },
+          emphasis: {
+            label: {
+              show: true,
+              formatter: (params) => params.name
+            },
+            itemStyle: {color: 'rgba(255, 0, 0, 0.2)'}
+          }
+        }
+      };
+    });
+
+    chartData.value = {
+      xAxis: fullXAxis,
+      series: fullSeries
+    };
+
+    checkAbnormalWarning();
+  } catch (error) {
+    console.error('获取趋势数据失败:', error);
+    ElMessage.error('趋势数据加载失败，请重试');
+  }
+};
+
+// 检查连续异常预警
+const checkAbnormalWarning = async () => {
+  const region = trendFilterParams.value.region_code;
+  if (!region) return;
+
+  const abnormalWarn = await checkContinuousAbnormal(region, 'abnormal_count', 30, 3);
+  if (abnormalWarn.isTrigger) {
+    ElMessageBox.warning(
+      `【${regionOptions.value.find(item => item.value === region)?.label}】异常数连续3天超过30，当前值：${abnormalWarn.lastNDays.join(', ')}`,
+      '预警提醒',
+      {
+        confirmButtonText: '确认',
+        type: 'warning'
+      }
+    );
+  }
+
+  const qualifyWarn = await checkContinuousAbnormal(region, 'qualify_rate', 90, 3);
+  if (qualifyWarn.isTrigger) {
+    ElMessageBox.warning(
+      `【${regionOptions.value.find(item => item.value === region)?.label}】达标率连续3天低于90%，当前值：${qualifyWarn.lastNDays.join(', ')}%`,
+      '预警提醒',
+      {
+        confirmButtonText: '确认',
+        type: 'warning'
+      }
+    );
+  }
+};
+
+// 导出Excel
+const exportTrendExcel = () => {
+  if (!trendData.value.xAxis.length) return;
+
+  const header = ['日期', ...trendData.value.series.map(s => s.name)];
+  const rows = trendData.value.xAxis.map((date, idx) => {
+    const row = [date];
+    trendData.value.series.forEach(series => {
+      row.push(series.data[idx]);
+    });
+    return row;
+  });
+
+  trendData.value.predictXAxis.forEach((date, idx) => {
+    const row = [date + '(预判)'];
+    trendData.value.series.forEach(series => {
+      row.push(series.predictData[idx]);
+    });
+    rows.push(row);
+  });
+
+  const ws = XLSX.utils.aoa_to_sheet([header, ...rows]);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '核心指标趋势');
+  XLSX.writeFile(wb, `核心指标趋势_${new Date().toLocaleDateString()}.xlsx`);
+
+  ElMessage.success('Excel导出成功');
 };
 
 // 全屏切换（页面级）
@@ -389,25 +577,49 @@ const togglePanelFullscreen = (panelRefName) => {
   screenFull.isFullscreen ? screenFull.exit() : screenFull.request(panel);
 };
 
-// 页面挂载：先获取区域字典 → 赋值默认值 → 加载业务数据（无冗余逻辑）
+// 监听达标率状态变化，实时控制动画（核心修改）
+watch(isQualifyRateAbnormal, (newVal) => {
+  qualifyWarnPulse.value = newVal;
+}, { immediate: true, deep: true });
+
+// 监听区域选项变化，加载趋势数据
+watch(regionOptions, (newVal) => {
+  if (newVal.length > 0) {
+    trendFilterParams.value.region_code = newVal[0].value;
+    fetchTrendData();
+  }
+}, { immediate: true });
+
+// 页面挂载
 onMounted(async () => {
-  // 1. 先获取行政区域字典（API层已兜底，无需额外判断）
+  // 1. 获取行政区域字典
   const regionData = await fetchRegionDict();
   regionOptions.value = regionData;
 
-  // 2. 设置核心指标区域默认值（取第一个选项）
-  coreFilterParams.value.region_code = regionOptions.value[0].value;
+  // 2. 设置核心指标区域默认值
+  coreFilterParams.value.region_code = regionOptions.value[0]?.value || '';
 
-  // 3. 分别加载核心指标和地图数据
+  // 3. 加载核心指标和地图数据
   await Promise.all([
     fetchCoreData(),
     fetchMapData()
   ]);
+
+  // 4. 加载趋势数据
+  if (regionOptions.value.length > 0) {
+    trendFilterParams.value.region_code = regionOptions.value[0].value;
+    fetchTrendData();
+  }
+
+  // 模拟实时数据刷新（可选：每30秒刷新一次核心指标，模拟真实场景）
+  setInterval(() => {
+    fetchCoreData();
+  }, 30000);
 });
 </script>
 
 <style lang="scss" scoped>
-// 原有样式保留，新增地图筛选控件样式
+// 原有样式完全保留，调整动画循环方式
 .page-container {
   width: 100%;
   height: 100vh;
@@ -571,7 +783,6 @@ onMounted(async () => {
   }
 }
 
-// 布局样式
 .mainbox {
   display: flex;
   margin: 0 auto;
@@ -610,6 +821,7 @@ onMounted(async () => {
   margin-bottom: 1%;
   overflow: visible !important;
   position: relative;
+  padding: 0.2vw !important;
   height: 69%;
 }
 
@@ -639,7 +851,6 @@ onMounted(async () => {
   margin-top: 1vh;
 }
 
-// 核心指标看板筛选样式
 .filter-group {
   display: flex;
   align-items: center;
@@ -678,7 +889,6 @@ onMounted(async () => {
   }
 }
 
-// 指标卡片样式
 .indicator-cards {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -732,7 +942,6 @@ onMounted(async () => {
   }
 }
 
-// 指标卡片背景样式
 .card-total.normal {
   background: linear-gradient(135deg, rgba(0, 168, 255, 0.3) 30%, #00528a 100%);
 }
@@ -787,7 +996,6 @@ onMounted(async () => {
   border-top-color: #ff4d4d;
 }
 
-// 地图专属筛选控件样式
 .map-filter-group {
   display: flex;
   align-items: center;
@@ -826,7 +1034,6 @@ onMounted(async () => {
     }
   }
 
-  // 重置按钮样式
   .map-filter-reset-btn {
     padding: 0.2vw 0.6vw;
     margin-right: 5px;
@@ -863,5 +1070,74 @@ onMounted(async () => {
     transform: scale(1.1);
     background: rgba(0, 40, 80, 0.9);
   }
+}
+
+.trend-filter-select {
+  color: #fff;
+  background: rgba(0, 30, 60, 0.5);
+
+  :deep(.el-input__wrapper) {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  :deep(.el-input__placeholder) {
+    color: #ccefff;
+  }
+
+  :deep(.el-select-dropdown) {
+    background: rgba(0, 30, 60, 0.8);
+    border: 1px solid #00ccff;
+
+    .el-option {
+      color: #fff;
+
+      &:hover {
+        background: rgba(0, 204, 255, 0.2);
+      }
+
+      &.selected {
+        background: rgba(0, 204, 255, 0.3);
+      }
+    }
+  }
+}
+
+.export-btn {
+  padding: 0.2vw 0.6vw;
+  line-height: 1.5vh;
+  background: rgba(0, 30, 60, 0.8);
+  color: #00ccff;
+  border: 1px solid #00ccff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8vw;
+  transition: all 0.2s;
+
+  &:hover {
+    background: rgba(0, 40, 80, 0.9);
+    transform: scale(1.05);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+// 修改：动画改为持续循环（移除alternate，保留infinite）
+@keyframes pulse-danger {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 0 15px rgba(255, 77, 77, 0);
+  }
+}
+
+.pulse-danger {
+  animation: pulse-danger 1s infinite; /* 持续循环，无交替 */
 }
 </style>

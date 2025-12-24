@@ -17,17 +17,27 @@ public interface AssetMapper extends BaseMapperX<AssetDO> {
 
     default PageResult<AssetDO> selectPage(AssetPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<AssetDO>()
-                .eqIfPresent(AssetDO::getTenantId, reqVO.getTenantId())
+                .eqIfPresent(AssetDO::getAssetId, reqVO.getAssetId())
+                .eqIfPresent(AssetDO::getEntityType, reqVO.getEntityType())
+                .betweenIfPresent(AssetDO::getCreatedTime, reqVO.getCreatedTime())
+                .eqIfPresent(AssetDO::getTenantEntityType, reqVO.getTenantEntityType())
                 .eqIfPresent(AssetDO::getCustomerId, reqVO.getCustomerId())
-                .likeIfPresent(AssetDO::getName, reqVO.getName())
-                .eqIfPresent(AssetDO::getType, reqVO.getType())
-                .eqIfPresent(AssetDO::getLabel, reqVO.getLabel())
+                .eqIfPresent(AssetDO::getCustomerEntityType, reqVO.getCustomerEntityType())
                 .eqIfPresent(AssetDO::getAssetProfileId, reqVO.getAssetProfileId())
-                .eqIfPresent(AssetDO::getAdditionalInfo, reqVO.getAdditionalInfo())
+                .eqIfPresent(AssetDO::getAssetProfileEntityType, reqVO.getAssetProfileEntityType())
+                .likeIfPresent(AssetDO::getAssetName, reqVO.getAssetName())
+                .eqIfPresent(AssetDO::getAssetType, reqVO.getAssetType())
+                .eqIfPresent(AssetDO::getAssetLabel, reqVO.getAssetLabel())
                 .eqIfPresent(AssetDO::getExternalId, reqVO.getExternalId())
                 .eqIfPresent(AssetDO::getVersion, reqVO.getVersion())
+                .eqIfPresent(AssetDO::getCustomerTitle, reqVO.getCustomerTitle())
+                .eqIfPresent(AssetDO::getCustomerIsPublic, reqVO.getCustomerIsPublic())
+                .likeIfPresent(AssetDO::getAssetProfileName, reqVO.getAssetProfileName())
+                .eqIfPresent(AssetDO::getAdditionalInfo, reqVO.getAdditionalInfo())
+                .eqIfPresent(AssetDO::getAttributes, reqVO.getAttributes())
+                .eqIfPresent(AssetDO::getContextDevices, reqVO.getContextDevices())
+                .eqIfPresent(AssetDO::getTenantIdSys, reqVO.getTenantIdSys())
                 .betweenIfPresent(AssetDO::getCreateTime, reqVO.getCreateTime())
-                .betweenIfPresent(AssetDO::getCreatedTime, reqVO.getCreatedTime())
                 .orderByDesc(AssetDO::getId));
     }
 

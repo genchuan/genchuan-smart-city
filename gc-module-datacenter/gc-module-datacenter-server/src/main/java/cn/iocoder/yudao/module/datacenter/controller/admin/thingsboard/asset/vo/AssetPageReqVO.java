@@ -12,39 +12,69 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @Data
 public class AssetPageReqVO extends PageParam {
 
-    @Schema(description = "租户ID", example = "10102")
-    private String tenantId;
+    @Schema(description = "资产ID", example = "32353")
+    private String assetId;
 
-    @Schema(description = "客户ID", example = "4677")
+    @Schema(description = "实体类型", example = "1")
+    private String entityType;
+
+    @Schema(description = "创建时间戳")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private Long[] createdTime;
+
+    @Schema(description = "租户实体类型", example = "1")
+    private String tenantEntityType;
+
+    @Schema(description = "客户ID", example = "29253")
     private String customerId;
 
-    @Schema(description = "资产名称", example = "资产1")
-    private String name;
+    @Schema(description = "客户实体类型", example = "2")
+    private String customerEntityType;
 
-    @Schema(description = "资产类型", example = "building")
-    private String type;
-
-    @Schema(description = "标签")
-    private String label;
-
-    @Schema(description = "资产实体ID", example = "28197")
+    @Schema(description = "资产档案ID", example = "31817")
     private String assetProfileId;
+
+    @Schema(description = "资产档案实体类型", example = "1")
+    private String assetProfileEntityType;
+
+    @Schema(description = "资产名称", example = "张三")
+    private String assetName;
+
+    @Schema(description = "资产类型", example = "2")
+    private String assetType;
+
+    @Schema(description = "资产标签")
+    private String assetLabel;
+
+    @Schema(description = "外部ID", example = "3674")
+    private String externalId;
+
+    @Schema(description = "版本号")
+    private Integer version;
+
+    @Schema(description = "客户标题")
+    private String customerTitle;
+
+    @Schema(description = "客户是否公开")
+    private Boolean customerIsPublic;
+
+    @Schema(description = "资产档案名称", example = "王五")
+    private String assetProfileName;
 
     @Schema(description = "附加信息")
     private String additionalInfo;
 
-    @Schema(description = "外部ID", example = "21772")
-    private String externalId;
+    @Schema(description = "属性列表")
+    private String attributes;
 
-    @Schema(description = "版本")
-    private Long version;
+    @Schema(description = "关联设备列表")
+    private String contextDevices;
 
-    @Schema(description = "系统创建时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDateTime[] createTime;
+    @Schema(description = "系统租户ID")
+    private Long tenantIdSys;
 
     @Schema(description = "创建时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDateTime[] createdTime;
+    private LocalDateTime[] createTime;
 
 }

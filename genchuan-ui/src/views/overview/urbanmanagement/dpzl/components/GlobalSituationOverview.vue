@@ -152,19 +152,19 @@
                 </span>
                   </div>
                   <div class="indicator-total">总数: {{ indicator.total_count }} (达标: {{ getQualifiedCount(indicator) }})</div>
-<!--                  <div class="indicator-threshold">-->
-<!--                    <template v-if="indicator.target_value">-->
-<!--                      目标值: {{ indicator.target_value }}-->
-<!--                      <template v-if="['ind1002', 'ind1004'].includes(indicator.index_id)">%</template>-->
-<!--                      <template v-if="indicator.index_id === 'ind1006'">分钟</template>-->
-<!--                    </template>-->
-<!--                    <template v-if="indicator.warn_threshold">-->
-<!--                      <br/>-->
-<!--                      阈值: {{ indicator.warn_threshold }}-->
-<!--                      <template v-if="['ind1002', 'ind1004'].includes(indicator.index_id)">%</template>-->
-<!--                      <template v-if="indicator.index_id === 'ind1006' || indicator.index_id === 'ind1005'">分钟</template>-->
-<!--                    </template>-->
-<!--                  </div>-->
+                  <div class="indicator-threshold">
+                    <template v-if="indicator.target_value">
+                      目标值: {{ indicator.target_value }}
+                      <template v-if="['ind1002', 'ind1004'].includes(indicator.index_id)">%</template>
+                      <template v-if="indicator.index_id === 'ind1006'">分钟</template>
+                    </template>
+                    <template v-if="indicator.warn_threshold">
+                      <br/>
+                      阈值: {{ indicator.warn_threshold }}
+                      <template v-if="['ind1002', 'ind1004'].includes(indicator.index_id)">%</template>
+                      <template v-if="indicator.index_id === 'ind1006' || indicator.index_id === 'ind1005'">分钟</template>
+                    </template>
+                  </div>
                   <div class="indicator-trends">
                 <span class="trend-item" :class="indicator.yoy >= 0 ? 'up' : 'down'">
                   同比: {{ indicator.yoy > 0 ? '+' : '' }}{{ indicator.yoy }}%
@@ -271,19 +271,19 @@
                 </span>
                   </div>
                   <div class="indicator-total">总数: {{ indicator.total_count }} (达标: {{ getQualifiedCount(indicator) }})</div>
-<!--                  <div class="indicator-threshold">-->
-<!--                    <template v-if="indicator.target_value">-->
-<!--                      目标值: {{ indicator.target_value }}-->
-<!--                      <template v-if="['ind1002', 'ind1004'].includes(indicator.index_id)">%</template>-->
-<!--                      <template v-if="indicator.index_id === 'ind1006'">分钟</template>-->
-<!--                    </template>-->
-<!--                    <template v-if="indicator.warn_threshold">-->
-<!--                      <br/>-->
-<!--                      阈值: {{ indicator.warn_threshold }}-->
-<!--                      <template v-if="['ind1002', 'ind1004'].includes(indicator.index_id)">%</template>-->
-<!--                      <template v-if="indicator.index_id === 'ind1006' || indicator.index_id === 'ind1005'">分钟</template>-->
-<!--                    </template>-->
-<!--                  </div>-->
+                  <div class="indicator-threshold">
+                    <template v-if="indicator.target_value">
+                      目标值: {{ indicator.target_value }}
+                      <template v-if="['ind1002', 'ind1004'].includes(indicator.index_id)">%</template>
+                      <template v-if="indicator.index_id === 'ind1006'">分钟</template>
+                    </template>
+                    <template v-if="indicator.warn_threshold">
+                      <br/>
+                      阈值: {{ indicator.warn_threshold }}
+                      <template v-if="['ind1002', 'ind1004'].includes(indicator.index_id)">%</template>
+                      <template v-if="indicator.index_id === 'ind1006' || indicator.index_id === 'ind1005'">分钟</template>
+                    </template>
+                  </div>
                   <div class="indicator-trends">
                 <span class="trend-item" :class="indicator.yoy >= 0 ? 'up' : 'down'">
                   同比: {{ indicator.yoy > 0 ? '+' : '' }}{{ indicator.yoy }}%
@@ -531,12 +531,12 @@
         >
           生成督办工单
         </el-button>
-<!--        <el-button-->
-<!--          type="primary"-->
-<!--          @click="modifyIndicatorConfig"-->
-<!--        >-->
-<!--          修改指标配置-->
-<!--        </el-button>-->
+        <!--        <el-button-->
+        <!--          type="primary"-->
+        <!--          @click="modifyIndicatorConfig"-->
+        <!--        >-->
+        <!--          修改指标配置-->
+        <!--        </el-button>-->
       </template>
     </el-dialog>
 
