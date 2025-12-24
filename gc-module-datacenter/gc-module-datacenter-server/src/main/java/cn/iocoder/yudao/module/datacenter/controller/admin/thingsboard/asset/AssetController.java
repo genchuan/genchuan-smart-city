@@ -28,6 +28,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import org.thingsboard.server.common.data.asset.Asset;
 import org.thingsboard.server.common.data.asset.AssetInfo;
+import org.thingsboard.server.common.data.asset.AssetProfile;
 import org.thingsboard.server.common.data.page.PageData;
 import org.thingsboard.server.common.data.page.PageLink;
 
@@ -116,6 +117,27 @@ public class AssetController {
 
         PageResult<AssetDetailRespVO> pageResult = assetService.getAssetPage1(pageSize, page);
         return success(pageResult);
+    }
+
+    @PostMapping("/sync")
+    @Operation(summary = "同步ThingsBoard资产")
+    @PreAuthorize("@ss.hasPermission('datacenter:asset:sync')")
+    public CommonResult<Map<String, Object>> syncAssetsFromThingsBoard() {
+        Map<String, Object> result = assetService.syncAssetsFromThingsBoard();
+        return success(result);
+    }
+
+    @GetMapping("/asset-profiles")
+    @Operation(summary = "获取资产配置分页列表")
+    @PreAuthorize("@ss.hasPermission('datacenter:asset:query')")
+    public CommonResult<PageData<AssetProfile>> getAssetProfiles(
+            @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "sortProperty", required = false) String sortProperty,
+            @RequestParam(value = "sortOrder", required = false) String sortOrder) {
+
+        PageData<AssetProfile> assetProfiles = assetService.getAssetProfiles(pageSize, page, sortProperty, sortOrder);
+        return success(assetProfiles);
     }
 
 }

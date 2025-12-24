@@ -11,6 +11,7 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import org.thingsboard.server.common.data.asset.Asset;
 import org.thingsboard.server.common.data.asset.AssetInfo;
+import org.thingsboard.server.common.data.asset.AssetProfile;
 import org.thingsboard.server.common.data.page.PageData;
 import org.thingsboard.server.common.data.page.PageLink;
 
@@ -69,5 +70,18 @@ public interface AssetService {
      *
      * @return 同步结果信息
      */
-//    Map<String, Object> syncAssetsFromThingsBoard();
+    Map<String, Object> syncAssetsFromThingsBoard();
+
+
+    /**
+     * 获取资产配置分页列表
+     *
+     * @param pageSize 每页大小
+     * @param page 页码
+     * @param sortProperty 排序字段
+     * @param sortOrder 排序方向
+     * @return 资产配置分页数据
+     */
+    PageData<AssetProfile> getAssetProfiles(Integer pageSize, Integer page, String sortProperty, String sortOrder);
+
 }

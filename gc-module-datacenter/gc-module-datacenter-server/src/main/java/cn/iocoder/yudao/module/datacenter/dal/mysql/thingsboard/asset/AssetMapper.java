@@ -41,4 +41,9 @@ public interface AssetMapper extends BaseMapperX<AssetDO> {
                 .orderByDesc(AssetDO::getId));
     }
 
+    /**
+     * 根据资产ID查询
+     */
+    AssetDO selectByAssetId(String assetId);
+
 }
