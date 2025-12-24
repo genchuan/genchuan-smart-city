@@ -1,11 +1,14 @@
 package cn.iocoder.yudao.module.datacenter.dal.mysql.alarm.warningalertlisttable;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.SortingField;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlisttable.vo.ResponsiblePersonLevelStatisticsRespVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlisttable.vo.ResponsiblePersonStatisticsRespVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlisttable.vo.WarningAlertListTablePageReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlisttable.vo.WarningAlertListTableStatisticsRespVO;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.alarm.warningalertlisttable.WarningAlertListTableDO;
@@ -31,24 +34,35 @@ public interface WarningAlertListTableMapper extends BaseMapperX<WarningAlertLis
                     "WHEN 'general'   THEN 1 " +
                     "ELSE 99 END " + reqVO.getIsAsc();
             wrapper.last("ORDER BY " + caseSql);
-            return selectPage(reqVO, null, wrapper); // 使用完整的wrapper
+            return selectPage(reqVO, null, wrapper);
         }
         else if ("triggertime".equals(reqVO.getOrderByColumn())) {
             wrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), WarningAlertListTableDO::getTriggerTime);
-            return selectPage(reqVO, null, wrapper); // 使用完整的wrapper
+            return selectPage(reqVO, null, wrapper);
         }
         else if ("requiredcompletetime".equals(reqVO.getOrderByColumn())) {
             wrapper.orderBy(true, "asc".equals(reqVO.getIsAsc()), WarningAlertListTableDO::getRequiredCompleteTime);
-            return selectPage(reqVO, null, wrapper); // 使用完整的wrapper
+            return selectPage(reqVO, null, wrapper);
         }
 
-        // 第三步：处理普通排序
+        // 第三步：处理普通排序 - 修复空指针问题
+        String orderByColumn = reqVO.getOrderByColumn();
+        String isAsc = reqVO.getIsAsc();
+
+        // 添加空值检查和默认排序
+        if (orderByColumn == null || orderByColumn.trim().isEmpty()) {
+            // 如果没有指定排序字段，使用默认排序（如按ID倒序）
+            wrapper.orderByDesc(WarningAlertListTableDO::getId);
+            return selectPage(reqVO, null, wrapper);
+        }
+
+        // 如果有有效的排序字段，继续原来的逻辑
         SortingField sortingField = new SortingField();
-        sortingField.setField(reqVO.getOrderByColumn());
-        sortingField.setOrder(reqVO.getIsAsc());
+        sortingField.setField(orderByColumn);
+        sortingField.setOrder(isAsc != null ? isAsc : "desc"); // 为排序方向提供默认值
         List<SortingField> sortingFields = new ArrayList<>();
         sortingFields.add(sortingField);
-        return selectPage(reqVO, sortingFields, wrapper); // 使用完整的wrapper
+        return selectPage(reqVO, sortingFields, wrapper);
     }
 
     // 提取完整的查询条件构建方法
@@ -86,7 +100,12 @@ public interface WarningAlertListTableMapper extends BaseMapperX<WarningAlertLis
                 .eqIfPresent(WarningAlertListTableDO::getRegionName, reqVO.getRegionName())
                 .eqIfPresent(WarningAlertListTableDO::getGridId, reqVO.getGridId())
                 .eqIfPresent(WarningAlertListTableDO::getGridName, reqVO.getGridName())
-                .eqIfPresent(WarningAlertListTableDO::getAddress, reqVO.getAddress());
+                .eqIfPresent(WarningAlertListTableDO::getAddress, reqVO.getAddress())
+                .eqIfPresent(WarningAlertListTableDO::getEventDescription, reqVO.getEventDescription())
+                .eqIfPresent(WarningAlertListTableDO::getScenePhotos, reqVO.getScenePhotos())
+                .eqIfPresent(WarningAlertListTableDO::getUploaderName, reqVO.getUploaderName())
+                .eqIfPresent(WarningAlertListTableDO::getUploaderPhone, reqVO.getUploaderPhone())
+                .likeIfPresent(WarningAlertListTableDO::getTitle, reqVO.getTitle());
     }
 
     List<WarningAlertListTableStatisticsRespVO> selectWarningLevelStatistics();
@@ -116,4 +135,16 @@ public interface WarningAlertListTableMapper extends BaseMapperX<WarningAlertLis
      */
     int updateBatch(List<WarningAlertListTableDO> list);
 
+    /**
+     * 获取责任人告警统计
+     */
+    List<ResponsiblePersonStatisticsRespVO> selectResponsiblePersonStatistics();
+
+    /**
+     * 获取责任人预警等级统计
+     */
+    List<ResponsiblePersonLevelStatisticsRespVO> selectResponsiblePersonLevelStatistics(String responsiblePerson,
+                                                                                        LocalDateTime startTime,
+                                                                                        LocalDateTime endTime,
+                                                                                        String warningStatus);
 }

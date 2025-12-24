@@ -1,7 +1,13 @@
 package cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlisttable;
 
 import cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlisttable.vo.*;
+import cn.iocoder.yudao.module.datacenter.dal.mysql.alarm.warningalertlisttable.WarningAlertListTableMapper;
 import io.swagger.v3.oas.annotations.Parameters;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -14,6 +20,9 @@ import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.io.IOException;
 import java.io.BufferedReader;
@@ -52,6 +61,19 @@ public class WarningAlertListTableController {
     public CommonResult<Long> createWarningAlertListTable(@Valid @RequestBody WarningAlertListTableSaveReqVO createReqVO) {
         return success(warningAlertListTableService.createWarningAlertListTable(createReqVO));
     }
+
+//    @PostMapping("/create")
+//    @Operation(summary = "创建预警告警列表")
+//    @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:create')")
+//    public CommonResult<Long> createWarningAlertListTable(@Valid @RequestBody WarningAlertListTableSaveReqVO createReqVO) {
+//        try {
+//            // 直接调用服务方法，服务方法内部会处理图片数据
+//            return success(warningAlertListTableService.createWarningAlertListTable(createReqVO));
+//        } catch (Exception e) {
+//            return CommonResult.error(500, "创建预警告警失败: " + e.getMessage());
+//        }
+//    }
+
     @PostMapping("/created")
     @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:create')")
     @Operation(summary = "创建业务请求申请")
@@ -108,16 +130,33 @@ public class WarningAlertListTableController {
 
     @GetMapping("/level-statistics")
     @Operation(summary = "获取预警等级分布统计")
-    @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:query')")
+//    @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:query')")
     public CommonResult<List<WarningAlertListTableStatisticsRespVO>> getWarningLevelStatistics() {
         return success(warningAlertListTableService.getWarningLevelStatistics());
     }
 
     @GetMapping("/status-statistics")
     @Operation(summary = "获取预警状态分布统计")
-    @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:query')")
+//    @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:query')")
     public CommonResult<List<WarningAlertListTableStatisticsRespVO>> getWarningStatusStatistics() {
         return success(warningAlertListTableService.getWarningStatusStatistics());
+    }
+
+    @GetMapping("/responsible-person-statistics")
+    @Operation(summary = "获取责任人告警统计")
+//    @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:query')")
+    public CommonResult<List<ResponsiblePersonStatisticsRespVO>> getResponsiblePersonStatistics() {
+        List<ResponsiblePersonStatisticsRespVO> statistics = warningAlertListTableService.getResponsiblePersonStatistics();
+        return success(statistics);
+    }
+
+    @PostMapping("/responsible-person-level-statistics")
+    @Operation(summary = "获取责任人预警等级统计")
+//    @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:query')")
+    public CommonResult<List<ResponsiblePersonLevelStatisticsRespVO>> getResponsiblePersonLevelStatistics(
+            @Valid @RequestBody ResponsiblePersonLevelStatisticsReqVO reqVO) {
+        List<ResponsiblePersonLevelStatisticsRespVO> statistics = warningAlertListTableService.getResponsiblePersonLevelStatistics(reqVO);
+        return success(statistics);
     }
 
     @PostMapping("/import")
@@ -492,6 +531,7 @@ public class WarningAlertListTableController {
                 setAddress("北京市东城区王府井大街100号");
                 setLongitude("116.397128");
                 setLatitude("39.916527");
+                setTitle("垃圾箱满溢预警");
             }},
             new WarningAlertListTableImportExcelVO() {{ // 一般预警示例
                 setAlertCode("ALERT202510099");
@@ -525,6 +565,7 @@ public class WarningAlertListTableController {
                 setAddress("北京市东城区王府井大街100号");
                 setLongitude("116.397128");
                 setLatitude("39.916527");
+                setTitle("垃圾箱满溢预警");
             }}
         );
         
@@ -722,6 +763,51 @@ public class WarningAlertListTableController {
 
         WarningAlertListTableSyncRespVO result = warningAlertListTableService.syncAllAlarmsFromThingsBoard(overwrite);
         return success(result);
+    }
+
+    @PostMapping(value = "/upload-scene-photos-base64", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "验证并处理现场照片(文件转Base64)")
+    @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:update')")
+    public CommonResult<Map<String, Object>> uploadScenePhotosBase64(
+            @RequestParam("file") List<MultipartFile> file) {
+
+        try {
+            if (file == null || file.isEmpty()) {
+                return CommonResult.error(400, "上传文件不能为空");
+            }
+
+            Map<String, Object> result = warningAlertListTableService.uploadScenePhotosBase64(file);
+            return success(result);
+        } catch (Exception e) {
+            return CommonResult.error(500, "图片处理失败: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/get-scene-photos/{alertId}")
+    @Operation(summary = "获取现场照片列表")
+    @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:query')")
+    public CommonResult<List<String>> getScenePhotos(@PathVariable("alertId") Long alertId) {
+        try {
+            List<String> photos = warningAlertListTableService.getScenePhotos(alertId);
+            return success(photos);
+        } catch (Exception e) {
+            return CommonResult.error(500, "获取图片失败: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/delete-scene-photo-base64")
+    @Operation(summary = "删除现场照片(Base64)")
+    @PreAuthorize("@ss.hasPermission('datacenter:warning-alert-list-table:update')")
+    public CommonResult<Boolean> deleteScenePhotoBase64(
+            @RequestParam("alertId") Long alertId,
+            @RequestParam("photoIndex") Integer photoIndex) {
+
+        try {
+            boolean result = warningAlertListTableService.deleteScenePhoto(alertId, photoIndex);
+            return success(result);
+        } catch (Exception e) {
+            return CommonResult.error(500, "删除图片失败: " + e.getMessage());
+        }
     }
 
 }

@@ -6,6 +6,7 @@ import cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlis
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.alarm.warningalertlisttable.WarningAlertListTableDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 预警告警列表 Service 接口
@@ -87,4 +88,29 @@ public interface WarningAlertListTableService {
      */
     WarningAlertListTableSyncRespVO syncAllAlarmsFromThingsBoard(Boolean overwrite);
 
+    /**
+     * 验证并处理现场照片(Base64)
+     * 将上传的文件转换为Base64格式
+     */
+    Map<String, Object> uploadScenePhotosBase64(List<MultipartFile> files);
+
+    /**
+     * 获取现场照片列表
+     */
+    List<String> getScenePhotos(Long alertId);
+
+    /**
+     * 删除现场照片
+     */
+    boolean deleteScenePhoto(Long alertId, Integer photoIndex);
+
+    /**
+     * 获取责任人告警统计
+     */
+    List<ResponsiblePersonStatisticsRespVO> getResponsiblePersonStatistics();
+
+    /**
+     * 获取责任人预警等级统计
+     */
+    List<ResponsiblePersonLevelStatisticsRespVO> getResponsiblePersonLevelStatistics(ResponsiblePersonLevelStatisticsReqVO reqVO);
 }

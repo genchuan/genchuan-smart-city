@@ -71,4 +71,9 @@ public class EventDispositionServiceImpl implements EventDispositionService {
         return eventDispositionMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public EventDispositionDO getEventDispositionByEventTypeId(String eventTypeId) {
+        return eventDispositionMapper.selectOne(EventDispositionDO::getEventTypeId, eventTypeId);
+    }
+
 }

@@ -107,7 +107,7 @@ public class WarningAlertListTablePageReqVO extends PageParam {
     private String processInstanceId;
 
     @Schema(description = "预警类型ID")
-    private Long warningTypeId;
+    private String warningTypeId;
 
     @Schema(description = "区域编码")
     private String regionCode;
@@ -130,4 +130,18 @@ public class WarningAlertListTablePageReqVO extends PageParam {
     @Schema(description = "纬度")
     private String latitude;
 
+    @Schema(description = "事件描述")
+    private String eventDescription;
+
+    @Schema(description = "现场照片")
+    private String scenePhotos;
+
+    @Schema(description = "上传人姓名")
+    private String uploaderName;
+
+    @Schema(description = "上传人电话")
+    private String uploaderPhone;
+
+    @Schema(description = "标题")
+    private String title;
 }

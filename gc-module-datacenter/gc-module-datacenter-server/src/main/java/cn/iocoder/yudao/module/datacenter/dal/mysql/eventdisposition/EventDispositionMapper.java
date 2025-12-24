@@ -33,4 +33,9 @@ public interface EventDispositionMapper extends BaseMapperX<EventDispositionDO> 
                 .orderByDesc(EventDispositionDO::getId));
     }
 
+
+    default EventDispositionDO selectByEventTypeId(String eventTypeId) {
+        return selectOne(EventDispositionDO::getEventTypeId, eventTypeId);
+    }
+
 }

@@ -141,7 +141,7 @@ public class WarningAlertListTableDO extends BaseDO {
     /**
      * 预警类型ID
      */
-    private Long warningTypeId;
+    private String warningTypeId;
 
     /**
      * 区域编码
@@ -177,4 +177,30 @@ public class WarningAlertListTableDO extends BaseDO {
      * 纬度
      */
     private String latitude;
+
+    /**
+     * 事件描述
+     */
+    private String eventDescription;
+
+    /**
+     * 现场照片（Base64编码，多个图片用分号分隔）
+     * 格式：data:image/jpeg;base64,xxx;data:image/png;base64,yyy
+     */
+    private String scenePhotos;
+
+    /**
+     * 上传人姓名
+     */
+    private String uploaderName;
+
+    /**
+     * 上传人电话
+     */
+    private String uploaderPhone;
+
+    /**
+     * 标题
+     */
+    private String title;
 }

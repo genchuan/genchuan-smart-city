@@ -173,7 +173,7 @@ public class AssetSpatialDataServiceImpl implements AssetSpatialDataService {
             assetSpatialData.setOperUser("系统导入");//默认操作人
         }
         // 设置时间字段 - 使用 java.time.LocalDateTime
-        LocalDateTime now = LocalDateTime.now();
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
 
         // 设置 create_time 和 update_time（MyBatis-Plus 自动填充字段）
         assetSpatialData.setCreateTime(now);
@@ -199,7 +199,7 @@ public class AssetSpatialDataServiceImpl implements AssetSpatialDataService {
         updateObj.setDeleted(existingAssetSpatialData.getDeleted());
 
         // 设置更新时间 - 使用完整限定名避免冲突
-        LocalDateTime now = LocalDateTime.now();
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
         updateObj.setUpdateTime(now);
         updateObj.setUpdatedTime(now);
 

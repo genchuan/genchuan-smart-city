@@ -4,10 +4,19 @@ import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.module.bpm.api.task.BpmProcessInstanceApi;
 import cn.iocoder.yudao.module.bpm.api.task.dto.BpmProcessInstanceCreateReqDTO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlisttable.vo.*;
+import cn.iocoder.yudao.module.datacenter.controller.admin.evaluate.inspectionstatistics.vo.InspectionStatisticsPageReqVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.evaluate.inspectionstatistics.vo.InspectionStatisticsSaveReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.AlarmRespVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DeviceAttributeRespVO;
+import cn.iocoder.yudao.module.datacenter.dal.dataobject.evaluate.inspectionstatistics.InspectionStatisticsDO;
+import cn.iocoder.yudao.module.datacenter.dal.dataobject.eventdisposition.EventDispositionDO;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.mngmattercfg.managedmattermajor.ManagedMatterMajorDO;
 import cn.iocoder.yudao.module.datacenter.enums.EventStatusEnum;
+import cn.iocoder.yudao.module.datacenter.framework.util.ImageBase64Utils;
+import cn.iocoder.yudao.module.datacenter.framework.util.UuidUtils;
+import cn.iocoder.yudao.module.datacenter.service.appscenecategory.AppSceneCategoryService;
+import cn.iocoder.yudao.module.datacenter.service.evaluate.inspectionstatistics.InspectionStatisticsService;
+import cn.iocoder.yudao.module.datacenter.service.eventdisposition.EventDispositionService;
 import cn.iocoder.yudao.module.datacenter.service.mngmattercfg.managedmattermajor.ManagedMatterMajorService;
 import cn.iocoder.yudao.module.datacenter.service.thingsboard.device.DeviceService;
 import org.springframework.stereotype.Service;
@@ -15,6 +24,8 @@ import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -27,6 +38,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.datacenter.dal.mysql.alarm.warningalertlisttable.WarningAlertListTableMapper;
+import org.springframework.web.multipart.MultipartFile;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.datacenter.enums.ErrorCodeConstants.WARNING_ALERT_LIST_TABLE_NOT_EXISTS;
@@ -49,17 +61,24 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
     @Resource
     private WarningAlertListTableMapper warningAlertListTableMapper;
     @Resource
-    private ManagedMatterMajorService managedMatterMajorService;
-
+    private EventDispositionService eventDispositionService;
     @Resource
     private DeviceService deviceService;
+    @Resource
+    private InspectionStatisticsService inspectionStatisticsService;
 
     @Override
     public Long createWarningAlertListTable(WarningAlertListTableSaveReqVO createReqVO) {
 
         // 插入
         WarningAlertListTableDO warningAlertListTable = BeanUtils.toBean(createReqVO, WarningAlertListTableDO.class);
+
+        //自动生成预警编码
+//        warningAlertListTable.setAlertCode(UuidUtils.generateUUID());
+
         warningAlertListTableMapper.insert(warningAlertListTable);
+        // 新增：更新环卫考核统计结果
+        updateInspectionStatisticsAfterAlertCreation();
 
         // 返回
         return warningAlertListTable.getId();
@@ -196,18 +215,45 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
     public Long createWarningAlertListTable(Long id) {
         WarningAlertListTableDO warningAlertListTable = warningAlertListTableMapper.selectById(id);
 
-        // todo 通过事件小类查找流程模型
+        // todo 通过事件关联处置表查找流程模型
+        // 通过预警类型ID查询事件关联处置表，获取流程模型ID
+        String warningTypeId = warningAlertListTable.getWarningTypeId();
 
-        ManagedMatterMajorDO managedMatterMajor =
-                managedMatterMajorService.getManagedMatterMajor(Long.parseLong(warningAlertListTable.getWarningType()));
+        if (warningTypeId == null || warningTypeId.trim().isEmpty()) {
+            throw new IllegalArgumentException("预警类型ID不能为空");
+        }
 
-        // 创建流程实例
+        // 查询事件关联处置配置
+        EventDispositionDO eventDisposition = eventDispositionService.getEventDispositionByEventTypeId(warningTypeId);
+        if (eventDisposition == null) {
+            throw new IllegalArgumentException("未找到对应的事件关联处置配置，预警类型ID：" + warningTypeId);
+        }
+
+        if (eventDisposition.getProcessModelId() == null || eventDisposition.getProcessModelId().trim().isEmpty()) {
+            throw new IllegalArgumentException("事件关联处置配置中流程模型ID为空，事件类型ID：" + warningTypeId);
+        }
+
+
+//        ManagedMatterMajorDO managedMatterMajor = appSceneCategoryService.getAppSceneCategoryPage(warningAlertListTable.getWarningTypeId());
+//                managedMatterMajorService.getManagedMatterMajor(Long.parseLong(warningAlertListTable.getWarningType()));
+
+// 创建流程实例
         CommonResult<String> commonResult = processInstanceApi.createProcessInstance(1L,
                 new BpmProcessInstanceCreateReqDTO()
-                        .setProcessDefinitionKey(managedMatterMajor.getFlowInstanceId())
+                        .setProcessDefinitionKey(eventDisposition.getProcessModelId())
                         .setBusinessKey(String.valueOf(warningAlertListTable.getId())));
+
+        if (!commonResult.isSuccess()) {
+            throw new RuntimeException("创建流程实例失败: " + commonResult.getMsg());
+        }
+
         String processInstanceId = commonResult.getData();
-        warningAlertListTableMapper.updateById(warningAlertListTable.setProcessInstanceId(processInstanceId).setStatus(EventStatusEnum.PADDED.getStatus()));
+
+        // 更新预警记录
+        warningAlertListTable.setProcessInstanceId(processInstanceId);
+        warningAlertListTable.setStatus(EventStatusEnum.PADDED.getStatus());
+        warningAlertListTableMapper.updateById(warningAlertListTable);
+
         return warningAlertListTable.getId();
     }
 
@@ -247,6 +293,248 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
         }
     }
 
+    @Override
+    public Map<String, Object> uploadScenePhotosBase64(List<MultipartFile> file) {
+        Map<String, Object> result = new HashMap<>();
+        List<String> processedImages = new ArrayList<>();
+        List<String> failReasons = new ArrayList<>();
+        int successCount = 0;
+        int failCount = 0;
+
+        for (int i = 0; i < file.size(); i++) {
+            MultipartFile files = file.get(i);
+            try {
+                // 1. 验证文件是否为空
+                if (file.isEmpty()) {
+                    failCount++;
+                    failReasons.add("第" + (i + 1) + "张图片为空");
+                    continue;
+                }
+
+                // 2. 验证文件类型
+                String mimeType = files.getContentType();
+                if (mimeType == null || !mimeType.startsWith("image/")) {
+                    failCount++;
+                    failReasons.add("第" + (i + 1) + "张图片类型不支持，当前类型: " + mimeType);
+                    continue;
+                }
+
+                // 3. 验证文件大小（限制为2MB）
+                if (files.getSize() > 2 * 1024 * 1024) {
+                    failCount++;
+                    failReasons.add("第" + (i + 1) + "张图片大小超过2MB限制");
+                    continue;
+                }
+
+                // 4. 转换为Base64
+                byte[] fileBytes = files.getBytes();
+                String base64Data = java.util.Base64.getEncoder().encodeToString(fileBytes);
+                String base64String = "data:" + mimeType + ";base64," + base64Data;
+
+                // 5. 验证Base64格式
+                if (!ImageBase64Utils.isValidBase64Image(base64String)) {
+                    failCount++;
+                    failReasons.add("第" + (i + 1) + "张图片Base64格式无效");
+                    continue;
+                }
+
+                processedImages.add(base64String);
+                successCount++;
+
+            } catch (Exception e) {
+                failCount++;
+                failReasons.add("第" + (i + 1) + "张图片处理失败: " + e.getMessage());
+                System.err.println("图片处理失败: " + e.getMessage());
+            }
+        }
+
+        // 返回结果
+        result.put("successCount", successCount);
+        result.put("failCount", failCount);
+        result.put("totalImages", file.size());
+        result.put("processedImages", processedImages);
+
+        if (!failReasons.isEmpty()) {
+            result.put("failReasons", failReasons);
+        }
+
+        if (processedImages.isEmpty()) {
+            throw new IllegalArgumentException("所有图片处理失败，请检查图片格式。失败原因: " + String.join("; ", failReasons));
+        }
+
+        return result;
+    }
+
+
+    @Override
+    public List<String> getScenePhotos(Long alertId) {
+        WarningAlertListTableDO alert = warningAlertListTableMapper.selectById(alertId);
+        if (alert == null) {
+            throw exception(WARNING_ALERT_LIST_TABLE_NOT_EXISTS);
+        }
+
+        if (alert.getScenePhotos() == null) {
+            return new ArrayList<>();
+        }
+
+        return ImageBase64Utils.listStringToImages(alert.getScenePhotos());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean deleteScenePhoto(Long alertId, Integer photoIndex) {
+        WarningAlertListTableDO alert = warningAlertListTableMapper.selectById(alertId);
+        if (alert == null) {
+            throw exception(WARNING_ALERT_LIST_TABLE_NOT_EXISTS);
+        }
+
+        if (alert.getScenePhotos() == null) {
+            return true;
+        }
+
+        List<String> photos = ImageBase64Utils.listStringToImages(alert.getScenePhotos());
+
+        if (photoIndex < 0 || photoIndex >= photos.size()) {
+            throw new IllegalArgumentException("图片索引超出范围");
+        }
+
+        photos.remove(photoIndex.intValue());
+
+        // 更新数据库
+        alert.setScenePhotos(ImageBase64Utils.imagesToListString(photos));
+        warningAlertListTableMapper.updateById(alert);
+
+        return true;
+    }
+
+    @Override
+    public List<ResponsiblePersonStatisticsRespVO> getResponsiblePersonStatistics() {
+        return warningAlertListTableMapper.selectResponsiblePersonStatistics();
+    }
+
+    @Override
+    public List<ResponsiblePersonLevelStatisticsRespVO> getResponsiblePersonLevelStatistics(ResponsiblePersonLevelStatisticsReqVO reqVO) {
+        // 验证责任人参数
+        if (reqVO.getResponsiblePerson() == null || reqVO.getResponsiblePerson().trim().isEmpty()) {
+            throw new IllegalArgumentException("责任人姓名不能为空");
+        }
+
+        List<ResponsiblePersonLevelStatisticsRespVO> result = warningAlertListTableMapper.selectResponsiblePersonLevelStatistics(
+                reqVO.getResponsiblePerson(),
+                reqVO.getStartTime(),
+                reqVO.getEndTime(),
+                reqVO.getWarningStatus()
+        );
+
+        // 确保所有预警等级都有数据（即使数量为0）
+        return ensureAllLevelsPresent(result);
+    }
+
+    /**
+     * 确保返回所有预警等级，没有数据的等级数量为0
+     */
+    private List<ResponsiblePersonLevelStatisticsRespVO> ensureAllLevelsPresent(List<ResponsiblePersonLevelStatisticsRespVO> statistics) {
+        Map<String, ResponsiblePersonLevelStatisticsRespVO> levelMap = new HashMap<>();
+
+        // 将查询结果放入Map，使用name作为key
+        for (ResponsiblePersonLevelStatisticsRespVO stat : statistics) {
+            levelMap.put(stat.getName(), stat);
+        }
+
+        // 定义所有可能的预警等级（中文名称）
+        String[] allLevels = {"紧急", "重要", "一般"};
+
+        List<ResponsiblePersonLevelStatisticsRespVO> result = new ArrayList<>();
+        for (String levelName : allLevels) {
+            if (levelMap.containsKey(levelName)) {
+                result.add(levelMap.get(levelName));
+            } else {
+                // 创建默认的统计对象（数量为0）
+                ResponsiblePersonLevelStatisticsRespVO defaultStat = new ResponsiblePersonLevelStatisticsRespVO();
+                defaultStat.setName(levelName);
+                defaultStat.setValue(0);
+                result.add(defaultStat);
+            }
+        }
+
+        return result;
+    }
+
+
+    /**
+     * 将MultipartFile转换为Base64并处理
+     */
+    private List<String> convertMultipartFilesToBase64(List<MultipartFile> files, Boolean compress, Float compressQuality) {
+        List<String> base64List = new ArrayList<>();
+
+        for (MultipartFile file : files) {
+            if (!file.isEmpty()) {
+                try {
+                    String base64 = convertToBase64(file);
+
+                    // 如果需要压缩
+                    if (Boolean.TRUE.equals(compress)) {
+                        base64 = ImageBase64Utils.compressBase64Image(base64, compressQuality);
+                    }
+
+                    base64List.add(base64);
+                } catch (Exception e) {
+                    System.err.println("文件转换失败: " + file.getOriginalFilename() + ", 错误: " + e.getMessage());
+                    throw new IllegalArgumentException("文件 " + file.getOriginalFilename() + " 处理失败: " + e.getMessage());
+                }
+            }
+        }
+
+        return base64List;
+    }
+
+    /**
+     * 处理已有的Base64图片
+     */
+    private List<String> processBase64Images(List<String> base64Images, Boolean compress, Float compressQuality) {
+        List<String> processedList = new ArrayList<>();
+
+        for (String base64Image : base64Images) {
+            try {
+                // 验证Base64格式
+                if (!ImageBase64Utils.isValidBase64Image(base64Image)) {
+                    throw new IllegalArgumentException("Base64图片格式无效");
+                }
+
+                String processedImage = base64Image;
+
+                // 如果需要压缩
+                if (Boolean.TRUE.equals(compress)) {
+                    processedImage = ImageBase64Utils.compressBase64Image(base64Image, compressQuality);
+                }
+
+                processedList.add(processedImage);
+            } catch (Exception e) {
+                System.err.println("Base64图片处理失败: " + e.getMessage());
+                throw new IllegalArgumentException("Base64图片处理失败: " + e.getMessage());
+            }
+        }
+
+        return processedList;
+    }
+
+    /**
+     * 单个文件转换为Base64
+     */
+    private String convertToBase64(MultipartFile file) throws IOException {
+        String mimeType = file.getContentType();
+        if (mimeType == null || !mimeType.startsWith("image/")) {
+            throw new IllegalArgumentException("文件类型必须是图片，当前类型: " + mimeType);
+        }
+
+        byte[] fileBytes = file.getBytes();
+        String base64Data = java.util.Base64.getEncoder().encodeToString(fileBytes);
+
+        // 根据MIME类型构建完整的Base64字符串
+        String imageType = mimeType.substring(6); // 去掉"image/"
+        return "data:image/" + imageType + ";base64," + base64Data;
+    }
+
     private static boolean isEmpty(String s) {
         return s == null || s.isEmpty();
     }
@@ -281,6 +569,7 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
                 && isEmpty(vo.getGridId())
                 && isEmpty(vo.getGridName())
                 && isEmpty(vo.getAddress())
+                && isEmpty(vo.getTitle())
                 && isEmpty(vo.getLongitude())
                 && isEmpty(vo.getLatitude());
     }
@@ -313,6 +602,7 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
         vo.setRegionCode(trimOrNull(vo.getRegionCode()));
         vo.setRegionName(trimOrNull(vo.getRegionName()));
         vo.setGridId(trimOrNull(vo.getGridId()));
+        vo.setTitle(trimOrNull(vo.getTitle()));
         vo.setGridName(trimOrNull(vo.getGridName()));
         vo.setAddress(trimOrNull(vo.getAddress()));
         vo.setLongitude(trimOrNull(vo.getLongitude()));
@@ -407,11 +697,7 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
                     warningAlert.setRegionCode(attr.getValueAsString());
                     break;
                 case "warning_type_id":
-                    try {
-                        warningAlert.setWarningTypeId(Long.parseLong(attr.getValueAsString()));
-                    } catch (NumberFormatException e) {
-                        // 忽略转换错误
-                    }
+                    warningAlert.setWarningTypeId(attr.getValueAsString());
                     break;
                 case "longitude":
                     warningAlert.setLongitude(attr.getValueAsString());
@@ -584,6 +870,86 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
     private LocalDateTime convertTimestampToLocalDateTime(Long timestamp) {
         if (timestamp == null) return null;
         return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault());
+    }
+
+    /**
+     * 创建告警后更新环卫考核统计结果
+     */
+    private void updateInspectionStatisticsAfterAlertCreation() {
+        try {
+            // 1. 获取环卫考核统计结果的分页数据
+            InspectionStatisticsPageReqVO pageReqVO = new InspectionStatisticsPageReqVO();
+            pageReqVO.setPageSize(100); // 限制查询数量
+            PageResult<InspectionStatisticsDO> pageResult = inspectionStatisticsService.getInspectionStatisticsPage(pageReqVO);
+
+            if (pageResult == null || pageResult.getList() == null || pageResult.getList().isEmpty()) {
+                System.out.println("环卫考核统计结果为空，跳过更新");
+                return;
+            }
+
+            // 2. 随机选择一条记录进行更新
+            List<InspectionStatisticsDO> statisticsList = pageResult.getList();
+            Random random = new Random();
+            InspectionStatisticsDO randomRecord = statisticsList.get(random.nextInt(statisticsList.size()));
+
+            // 3. 创建更新请求VO
+            InspectionStatisticsSaveReqVO updateReqVO = new InspectionStatisticsSaveReqVO();
+            updateReqVO.setId(randomRecord.getId());
+            updateReqVO.setInspectionDate(randomRecord.getInspectionDate());
+            updateReqVO.setAreaType(randomRecord.getAreaType());
+            updateReqVO.setAreaName(randomRecord.getAreaName());
+            updateReqVO.setTotalScore(randomRecord.getTotalScore());
+            updateReqVO.setMaxScore(randomRecord.getMaxScore());
+            updateReqVO.setWeight(randomRecord.getWeight());
+
+            // 样本数加1
+            Integer newSampleCount = (randomRecord.getSampleCount() != null ? randomRecord.getSampleCount() : 0) + 1;
+            updateReqVO.setSampleCount(newSampleCount);
+
+            // 重新计算最终得分（模拟计算逻辑）
+            updateReqVO.setScoreWeighted(calculateNewScoreWeighted(randomRecord, newSampleCount));
+
+            updateReqVO.setInspectionStatus(randomRecord.getInspectionStatus());
+
+            // 4. 调用更新接口
+            inspectionStatisticsService.updateInspectionStatistics(updateReqVO);
+
+            System.out.println("成功更新环卫考核统计记录，ID: " + randomRecord.getId() +
+                    ", 新样本数: " + newSampleCount);
+
+        } catch (Exception e) {
+            // 记录错误但不影响主流程
+            System.err.println("更新环卫考核统计结果失败: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 模拟重新计算最终得分
+     */
+    private BigDecimal calculateNewScoreWeighted(InspectionStatisticsDO record, Integer newSampleCount) {
+        if (record.getTotalScore() == null || record.getMaxScore() == null ||
+                record.getWeight() == null || record.getMaxScore().compareTo(BigDecimal.ZERO) == 0) {
+            // 如果缺少必要字段，返回原值或默认值
+            return record.getScoreWeighted() != null ? record.getScoreWeighted() : BigDecimal.ZERO;
+        }
+
+        try {
+            // 模拟计算逻辑：最终得分 = (总得分 / 满分) * 权重 * 100
+            BigDecimal scoreRatio = record.getTotalScore().divide(record.getMaxScore(), 4, BigDecimal.ROUND_HALF_UP);
+            BigDecimal weightedScore = scoreRatio.multiply(record.getWeight()).multiply(new BigDecimal("100"));
+
+            // 添加一些随机波动模拟真实场景（±5%）
+            Random random = new Random();
+            double fluctuation = (random.nextDouble() * 0.1) - 0.05; // -5% 到 +5%
+            BigDecimal fluctuationFactor = BigDecimal.ONE.add(BigDecimal.valueOf(fluctuation));
+
+            return weightedScore.multiply(fluctuationFactor).setScale(2, BigDecimal.ROUND_HALF_UP);
+
+        } catch (Exception e) {
+            System.err.println("计算最终得分失败: " + e.getMessage());
+            return record.getScoreWeighted() != null ? record.getScoreWeighted() : BigDecimal.ZERO;
+        }
     }
 
 

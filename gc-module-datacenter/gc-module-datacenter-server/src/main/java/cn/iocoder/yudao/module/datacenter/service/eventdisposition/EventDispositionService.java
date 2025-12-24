@@ -52,4 +52,10 @@ public interface EventDispositionService {
      */
     PageResult<EventDispositionDO> getEventDispositionPage(EventDispositionPageReqVO pageReqVO);
 
+    /**
+     * 根据事件类型ID查询监测事件关联处置
+     * @param eventTypeId 事件类型ID
+     * @return 监测事件关联处置
+     */
+    EventDispositionDO getEventDispositionByEventTypeId(String eventTypeId);
 }
