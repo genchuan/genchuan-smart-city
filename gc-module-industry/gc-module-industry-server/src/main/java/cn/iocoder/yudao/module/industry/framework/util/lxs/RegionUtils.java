@@ -85,6 +85,36 @@ public class RegionUtils {
         }
     }
 
+    /**
+     * 通过地区等级 获取地区码有效位数
+     *
+     * 规则：
+     * 6位码：
+     *   省级 -> 2
+     *   市级 -> 4
+     *   县级 -> 6
+     * 12位码：
+     *   省级 -> 2
+     *   市级 -> 4
+     *   县级 -> 6
+     *   街道 -> 9
+     *   社区 -> 12
+     *
+     * @param level 地区等级
+     * @return 有效位数；格式非法返回 null
+     */
+    public static Integer getEffectiveLengthByLevel(Integer level) {
+        if (level == null) return null;
+        switch (level) {
+            case 1 -> { return 2; }   // 省
+            case 2 -> { return 4; }   // 市
+            case 3 -> { return 6; }   // 县
+            case 4 -> { return 9; }   // 街道
+            case 5 -> { return 12; }  // 社区
+            default -> { return null; }
+        }
+    }
+
     public static void main(String[] args) {
         // 测试地区码，包括合法6位/12位码，以及非法码
         String[] codes = {
