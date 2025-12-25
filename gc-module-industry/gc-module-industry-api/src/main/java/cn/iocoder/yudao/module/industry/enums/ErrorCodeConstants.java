@@ -39,4 +39,6 @@ public interface ErrorCodeConstants {
     ErrorCode PARK_REAL_TIME_NOT_EXISTS = new ErrorCode(600_005, "停车泊位实时状态不存在");
     // ========== 泊位锁定记录  ==========
     ErrorCode PARK_BERTH_LOCK_NOT_EXISTS = new ErrorCode(600_006, "泊位锁定记录不存在");
+    // ========== 缴费统计  ==========
+    ErrorCode STAT_PARK_PAY_NOT_EXISTS = new ErrorCode(600_007, "缴费统计不存在");
 }

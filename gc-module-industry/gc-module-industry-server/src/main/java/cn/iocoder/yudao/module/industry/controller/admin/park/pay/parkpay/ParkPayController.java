@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay;
 
 import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.ParkPayPageReqVO;
+import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.ParkPayPayReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.ParkPayRespVO;
 import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.ParkPaySaveReqVO;
 import cn.iocoder.yudao.module.industry.dal.dataobject.park.pay.parkpay.ParkPayDO;
@@ -40,6 +41,14 @@ public class ParkPayController {
 
     @Resource
     private ParkPayService parkPayService;
+
+    @PostMapping("/pay")
+    @Operation(summary = "停车缴费支付")
+    @PreAuthorize("@ss.hasPermission('industry:park-pay:pay')")
+    public CommonResult<Boolean> pay(@Valid @RequestBody ParkPayPayReqVO reqVO) {
+        parkPayService.pay(reqVO);
+        return success(true);
+    }
 
     @PostMapping("/create")
     @Operation(summary = "创建停车缴费服务")
