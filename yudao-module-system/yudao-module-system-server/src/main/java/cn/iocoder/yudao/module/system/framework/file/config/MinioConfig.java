@@ -24,7 +24,8 @@ public class MinioConfig {
     }
 
     public static class MinioProperties {
-        private String endpoint = "http://112.47.127.21:9000";
+        private String endpoint = "http://192.168.8.68:9000";
+        private String publicEndpoint = "http://cloud.genchuan.cn:9000";
         private String accessKey = "minioadmin";
         private String accessSecret = "minioadmin123";
         private String bucket = "shunchang";
@@ -38,5 +39,7 @@ public class MinioConfig {
         public void setAccessSecret(String accessSecret) { this.accessSecret = accessSecret; }
         public String getBucket() { return bucket; }
         public void setBucket(String bucket) { this.bucket = bucket; }
+        public String getPublicEndpoint() { return publicEndpoint; }
+        public void setPublicEndpoint(String publicEndpoint) { this.publicEndpoint = publicEndpoint; }
     }
 }

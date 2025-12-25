@@ -52,7 +52,7 @@ public class FileUploadService {
         );
 
         // 返回文件访问URL
-        return minioProperties.getEndpoint() + "/" + minioProperties.getBucket() + "/" + fileName;
+        return minioProperties.getPublicEndpoint() + "/" + minioProperties.getBucket() + "/" + fileName;
     }
 
     private boolean isImageFile(String contentType) {
