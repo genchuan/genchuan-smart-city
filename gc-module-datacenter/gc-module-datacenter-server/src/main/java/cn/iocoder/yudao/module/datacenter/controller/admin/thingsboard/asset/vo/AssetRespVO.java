@@ -1,10 +1,21 @@
 package cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.asset.vo;
 
-import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
-import com.alibaba.excel.annotation.ExcelProperty;
+import cn.iocoder.yudao.module.datacenter.framework.util.RawJsonSerializer;
+import cn.iocoder.yudao.module.datacenter.service.thingsboard.asset.AssetServiceImpl;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
+import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
+import com.alibaba.excel.annotation.ExcelProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.LocalDateTime;
+import java.util.*;
 
 @Schema(description = "管理后台 - 资产 Response VO")
 @Data
@@ -84,11 +95,11 @@ public class AssetRespVO {
     private String additionalInfo;
 
     @Schema(description = "属性列表")
-    @ExcelProperty("属性列表")
+    @JsonSerialize(using = RawJsonSerializer.class)  // 使用自定义序列化器
     private String attributes;
 
     @Schema(description = "关联设备列表")
-    @ExcelProperty("关联设备列表")
+    @JsonSerialize(using = RawJsonSerializer.class)  // 使用自定义序列化器
     private String contextDevices;
 
     @Schema(description = "系统租户ID", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -99,4 +110,21 @@ public class AssetRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
+    private static final Logger log = LoggerFactory.getLogger(AssetServiceImpl.class);
+
+    @Schema(description = "通用扩展字段1")
+    @ExcelProperty("通用扩展字段1")
+    private String extCommon1;
+
+    @Schema(description = "通用扩展字段2")
+    @ExcelProperty("通用扩展字段2")
+    private String extCommon2;
+
+    @Schema(description = "通用扩展字段3")
+    @ExcelProperty("通用扩展字段3")
+    private String extCommon3;
+
+    @Schema(description = "通用扩展字段4")
+    @ExcelProperty("通用扩展字段4")
+    private String extCommon4;
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -151,8 +152,9 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public AssetInfo getAsset(String id) {
-        return assetTbDao.getAssetInfoById(id);
+    public AssetDO getAsset(Long id) {
+//        return assetTbDao.getAssetInfoById(id);
+        return assetMapper.selectById(id);
     }
 
     @Override
@@ -284,7 +286,6 @@ public class AssetServiceImpl implements AssetService {
         }
     }
 
-    // 在AssetServiceImpl类中添加以下方法
     @Override
     public PageData<AssetProfile> getAssetProfiles(Integer pageSize, Integer page, String sortProperty, String sortOrder) {
         return assetTbDao.getAssetProfiles(pageSize, page, sortProperty, sortOrder);
@@ -400,6 +401,10 @@ public class AssetServiceImpl implements AssetService {
                 .attributes(attributesJson)
                 .contextDevices(devicesJson)
                 .tenantIdSys(getCurrentTenantId())
+                .extCommon1(null)  // 或从 additionalInfo 提取，但根据需求可能留空
+                .extCommon2(null)
+                .extCommon3(null)
+                .extCommon4(null)
                 .build();
     }
 

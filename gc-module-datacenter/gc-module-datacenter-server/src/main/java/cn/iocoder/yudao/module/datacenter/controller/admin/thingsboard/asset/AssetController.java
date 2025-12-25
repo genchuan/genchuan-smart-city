@@ -4,6 +4,9 @@ import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.asset.vo.
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.AlarmRespVO;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.thingsboard.asset.AssetDO;
 import cn.iocoder.yudao.module.datacenter.service.thingsboard.asset.AssetService;
+import cn.iocoder.yudao.module.datacenter.service.thingsboard.asset.AssetServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -16,6 +19,7 @@ import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import java.util.*;
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -42,6 +46,8 @@ public class AssetController {
 
     @Resource
     private AssetService assetService;
+
+    private static final Logger log = LoggerFactory.getLogger(AssetServiceImpl.class);
 
     @PostMapping("/create")
     @Operation(summary = "创建资产")
@@ -71,9 +77,9 @@ public class AssetController {
     @Operation(summary = "获得资产")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('datacenter:asset:query')")
-    public CommonResult<AssetInfo> getAsset(@RequestParam("id") String id) {
-        AssetInfo asset = assetService.getAsset(id);
-        return success(BeanUtils.toBean(asset, AssetInfo.class));
+    public CommonResult<AssetRespVO> getAsset(@RequestParam("id") Long id) {
+        AssetDO asset = assetService.getAsset(id);
+        return success(BeanUtils.toBean(asset, AssetRespVO.class));
     }
 
     @GetMapping("/page")
@@ -82,6 +88,7 @@ public class AssetController {
     public CommonResult<PageResult<AssetRespVO>> getAssetInfoPage(@Valid AssetPageReqVO pageReqVO) {
         PageResult<AssetDO> pageResult = assetService.getAssetPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, AssetRespVO.class));
+
     }
 
     @GetMapping("/export-excel")

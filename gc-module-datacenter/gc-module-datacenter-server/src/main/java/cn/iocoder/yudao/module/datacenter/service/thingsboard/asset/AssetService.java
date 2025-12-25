@@ -50,7 +50,7 @@ public interface AssetService {
      * @param id 编号
      * @return 资产信息
      */
-    AssetInfo getAsset(String id);
+    AssetDO getAsset(Long id);
 
     /**
      * 获得资产信息分页
