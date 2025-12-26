@@ -147,4 +147,34 @@ public class AssetController {
         return success(assetProfiles);
     }
 
+    @PostMapping("/{assetId}/attributes")
+    @Operation(summary = "添加资产属性")
+    @PreAuthorize("@ss.hasPermission('datacenter:asset:update')")
+    public CommonResult<Boolean> addAssetAttributes(
+            @Parameter(description = "资产ID", required = true)
+            @PathVariable("assetId") String assetId,
+            @RequestBody Map<String, Object> attributes) {
+
+        assetService.addAssetAttributes(assetId, attributes);
+        return success(true);
+    }
+
+    @DeleteMapping("/{assetId}/attributes")
+    @Operation(summary = "删除资产属性")
+    @PreAuthorize("@ss.hasPermission('datacenter:asset:update')")
+    public CommonResult<Boolean> deleteAssetAttributes(
+            @Parameter(description = "资产ID", required = true)
+            @PathVariable("assetId") String assetId,
+            @Parameter(description = "属性作用域", example = "SERVER_SCOPE")
+            @RequestParam(value = "scope", defaultValue = "SERVER_SCOPE") String scope,
+            @Parameter(description = "要删除的属性键，用逗号分隔", required = true)
+            @RequestParam("keys") String keys) {
+
+        // 将逗号分隔的字符串转换为List
+        List<String> keyList = Arrays.asList(keys.split(","));
+
+        assetService.deleteAssetAttributes(assetId, scope, keyList);
+        return success(true);
+    }
+
 }

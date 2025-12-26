@@ -84,4 +84,18 @@ public interface AssetService {
      */
     PageData<AssetProfile> getAssetProfiles(Integer pageSize, Integer page, String sortProperty, String sortOrder);
 
+    /**
+     * 添加资产属性
+     * @param assetId 资产ID
+     * @param attributes 属性键值对
+     */
+    void addAssetAttributes(String assetId, Map<String, Object> attributes);
+
+    /**
+     * 删除资产属性
+     * @param assetId 资产ID
+     * @param scope 属性作用域
+     * @param keys 要删除的属性键列表
+     */
+    void deleteAssetAttributes(String assetId, String scope, List<String> keys);
 }
