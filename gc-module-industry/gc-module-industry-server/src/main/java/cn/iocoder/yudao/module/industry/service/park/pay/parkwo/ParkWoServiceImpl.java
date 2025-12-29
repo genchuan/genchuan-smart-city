@@ -43,6 +43,7 @@ public class ParkWoServiceImpl implements ParkWoService {
         //2.wo_id 和 wo_no 用UUID  ,32 位 UUID
         createReqVO.setWoId(UUID.randomUUID().toString().replace("-", ""));
         createReqVO.setWoNo(UUID.randomUUID().toString().replace("-", ""));
+        //3.TODO 完善和停车场名称关联，点击停车场名称可以跳转到对应停车场
 
         // 插入
         ParkWoDO parkWo = BeanUtils.toBean(createReqVO, ParkWoDO.class);

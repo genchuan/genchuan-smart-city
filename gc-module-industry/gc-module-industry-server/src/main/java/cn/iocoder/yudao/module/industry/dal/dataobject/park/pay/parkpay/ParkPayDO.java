@@ -117,6 +117,10 @@ public class ParkPayDO extends BaseDO {
      */
     private String createUser;
     /**
+     * 行政区划12位地址码
+     */
+    private String regionFullCode;
+    /**
      * 行政区划名称
      */
     private String regionName;

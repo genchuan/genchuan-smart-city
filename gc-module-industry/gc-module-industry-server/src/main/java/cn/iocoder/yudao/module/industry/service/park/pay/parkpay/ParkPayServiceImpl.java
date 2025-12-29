@@ -1,10 +1,7 @@
 package cn.iocoder.yudao.module.industry.service.park.pay.parkpay;
 
 import cn.iocoder.yudao.framework.common.exception.ErrorCode;
-import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.ParkPayDrillReqVO;
-import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.ParkPayPageReqVO;
-import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.ParkPayPayReqVO;
-import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.ParkPaySaveReqVO;
+import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.*;
 import cn.iocoder.yudao.module.industry.dal.dataobject.park.pay.parkpay.ParkPayDO;
 import cn.iocoder.yudao.module.industry.dal.mysql.park.pay.parkpay.ParkPayMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -24,6 +21,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserNickname;
 import static cn.iocoder.yudao.module.industry.enums.ErrorCodeConstants.*;
 
 /**
@@ -53,6 +51,11 @@ public class ParkPayServiceImpl implements ParkPayService {
         createReqVO.setPayWoNo(UUID.randomUUID().toString().replace("-", ""));
         //4. TODO 入场时间和出场时间、支付时间
         //5. TODO 所在地区
+        //6. TODO 停车场ID要关联
+        //6. TODO 泊位ID要关联
+
+
+        //二、1.添加入场记录-入场时间和出场时间？
 
 
         // 插入
@@ -127,6 +130,43 @@ public class ParkPayServiceImpl implements ParkPayService {
         Page<ParkPayDO> page = new Page<>(drillReqVO.getPageNo(), drillReqVO.getPageSize());
         IPage<ParkPayDO> iPage = parkPayMapper.selectDrillPage(page, drillReqVO,drillReqVO.getRegionFullCode());
         return new PageResult<>(iPage.getRecords(), iPage.getTotal());
+    }
+
+    @Override
+    public Long addParkPay(ParkPayAddReqVO addReqVO) {
+        //一、补全参数
+        //1. 去掉id
+
+        // 2. 生成 payId ，UUID 去掉“-”
+        addReqVO.setPayId(UUID.randomUUID().toString().replace("-", ""));
+
+        //3. TODO 关联订单编号，用新生成的订单编号,目前用UUID弄的 A:订单编号一开始是空的，后面结算的时候才生成
+//        addReqVO.setWoNo(UUID.randomUUID().toString().replace("-", ""));
+
+        //3. TODO A：预约成功会自动生成缴费记录，所以不需要这里传（因为预约成功会把预约id放到 新增缴费记录的参数里）
+//        addReqVO.setReservationId(UUID.randomUUID().toString().replace("-", ""));
+
+
+        //4. TODO 入场时间和出场时间、支付时间（创建只弄入场时间）
+        addReqVO.setEntryTime(LocalDateTime.now());
+
+        //5.支付状态
+        addReqVO.setPayStatus("待支付");
+
+        //6.放行状态
+        addReqVO.setReleaseStatus("未放行");
+        //5. TODO 所在地区。A：前端通过停车场所在地直接传入
+        //6. TODO 停车场ID要关联。A：前端直接传
+        //6. TODO 泊位ID要关联。A：前端直接传
+//
+//        String loginUserName = getLoginUserNickname();
+//        System.out.println("cs2025-12-29 15:27:00:"+loginUserName);
+
+        // 插入
+        ParkPayDO parkPay = BeanUtils.toBean(addReqVO, ParkPayDO.class);
+        parkPayMapper.insert(parkPay);
+        // 返回
+        return parkPay.getId();
     }
 
 

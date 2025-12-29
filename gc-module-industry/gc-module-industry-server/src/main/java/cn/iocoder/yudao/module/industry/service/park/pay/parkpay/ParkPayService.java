@@ -2,10 +2,7 @@ package cn.iocoder.yudao.module.industry.service.park.pay.parkpay;
 
 import java.util.*;
 
-import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.ParkPayDrillReqVO;
-import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.ParkPayPageReqVO;
-import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.ParkPayPayReqVO;
-import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.ParkPaySaveReqVO;
+import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.*;
 import cn.iocoder.yudao.module.industry.dal.dataobject.park.pay.parkpay.ParkPayDO;
 import jakarta.validation.*;
 
@@ -60,4 +57,6 @@ public interface ParkPayService {
     void pay(ParkPayPayReqVO reqVO);
 
     PageResult<ParkPayDO> drillParkPay(ParkPayDrillReqVO drillReqVO);
+
+    Long addParkPay(ParkPayAddReqVO addReqVO);
 }

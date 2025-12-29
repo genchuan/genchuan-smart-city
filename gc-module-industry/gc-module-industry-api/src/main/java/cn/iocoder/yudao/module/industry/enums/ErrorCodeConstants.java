@@ -43,4 +43,6 @@ public interface ErrorCodeConstants {
     ErrorCode STAT_PARK_PAY_NOT_EXISTS = new ErrorCode(600_007, "缴费统计不存在");
     // ========== 停车诱导服务  ==========
     ErrorCode PARK_GUIDANCE_NOT_EXISTS = new ErrorCode(600_008, "停车诱导服务不存在");
+    // ========== 放行记录 TODO  ==========
+    ErrorCode PARK_RELEASE_RECORD_NOT_EXISTS = new ErrorCode(600_009 , "放行记录不存在");
 }

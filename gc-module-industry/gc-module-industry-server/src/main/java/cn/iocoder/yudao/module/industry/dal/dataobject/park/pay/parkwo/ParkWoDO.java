@@ -36,6 +36,11 @@ public class ParkWoDO extends BaseDO {
      * 订单编号
      */
     private String woNo;
+
+    /**
+     * 停车场id
+     */
+    private Integer parkId;
     /**
      * 停车场名称
      */

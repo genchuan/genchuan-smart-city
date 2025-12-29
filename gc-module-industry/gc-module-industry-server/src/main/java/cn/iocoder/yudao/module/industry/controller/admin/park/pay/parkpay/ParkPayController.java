@@ -54,6 +54,23 @@ public class ParkPayController {
         return success(parkPayService.createParkPay(createReqVO));
     }
 
+    //即入场
+    @PostMapping("/add")
+    @Operation(summary = "新增停车缴费服务（前端暂时不要用这个）")
+    @PreAuthorize("@ss.hasPermission('industry:park-pay:add')")
+    public CommonResult<Long> addParkPay(@Valid @RequestBody ParkPayAddReqVO addReqVO) {
+        return success(parkPayService.addParkPay(addReqVO));
+    }
+
+    // 出场
+//    @PostMapping("/exit")
+//    @Operation(summary = "出场（前端暂时不要用这个）")
+//    @PreAuthorize("@ss.hasPermission('industry:park-pay:exit')")
+//    public CommonResult<Boolean> exit(@Valid @RequestBody ParkPayAddReqVO addReqVO) {
+//        parkPayService.addParkPay(addReqVO);
+//        return success(true);
+//    }
+
     @PutMapping("/update")
     @Operation(summary = "更新停车缴费服务")
     @PreAuthorize("@ss.hasPermission('industry:park-pay:update')")

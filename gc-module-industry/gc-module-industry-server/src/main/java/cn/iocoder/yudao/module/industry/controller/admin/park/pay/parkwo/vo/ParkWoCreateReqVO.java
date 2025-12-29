@@ -19,6 +19,10 @@ public class ParkWoCreateReqVO {
     @Schema(hidden = true)
     private String woNo;
 
+    @Schema(description = "停车场id", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @NotEmpty(message = "停车场id不能为空")
+    private String parkId;
+
     @Schema(description = "停车场名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "胜利路智慧停车场")
     @NotEmpty(message = "停车场名称不能为空")
     private String parkName;
