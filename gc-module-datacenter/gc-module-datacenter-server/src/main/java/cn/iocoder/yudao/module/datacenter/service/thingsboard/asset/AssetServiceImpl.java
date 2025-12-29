@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -151,8 +152,9 @@ public class AssetServiceImpl implements AssetService {
     }
 
     @Override
-    public AssetInfo getAsset(String id) {
-        return assetTbDao.getAssetInfoById(id);
+    public AssetDO getAsset(Long id) {
+//        return assetTbDao.getAssetInfoById(id);
+        return assetMapper.selectById(id);
     }
 
     @Override
@@ -284,10 +286,43 @@ public class AssetServiceImpl implements AssetService {
         }
     }
 
-    // 在AssetServiceImpl类中添加以下方法
     @Override
     public PageData<AssetProfile> getAssetProfiles(Integer pageSize, Integer page, String sortProperty, String sortOrder) {
         return assetTbDao.getAssetProfiles(pageSize, page, sortProperty, sortOrder);
+    }
+
+    @Override
+    public void addAssetAttributes(String assetId, Map<String, Object> attributes) {
+        try {
+            // 1. 先添加到ThingsBoard
+            assetTbDao.addAssetAttributes(assetId, attributes);
+
+            // 2. 更新本地数据库中的属性信息
+            updateLocalAssetAttributes(assetId);
+
+            log.info("资产属性添加成功，资产ID: {}", assetId);
+
+        } catch (Exception e) {
+            log.error("添加资产属性失败", e);
+            throw new RuntimeException("添加资产属性失败: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void deleteAssetAttributes(String assetId, String scope, List<String> keys) {
+        try {
+            // 1. 先从ThingsBoard删除
+            assetTbDao.deleteAssetAttributes(assetId, scope, keys);
+
+            // 2. 更新本地数据库中的属性信息
+            updateLocalAssetAttributes(assetId);
+
+            log.info("资产属性删除成功，资产ID: {}, 删除的属性: {}", assetId, keys);
+
+        } catch (Exception e) {
+            log.error("删除资产属性失败", e);
+            throw new RuntimeException("删除资产属性失败: " + e.getMessage());
+        }
     }
 
     /**
@@ -400,6 +435,10 @@ public class AssetServiceImpl implements AssetService {
                 .attributes(attributesJson)
                 .contextDevices(devicesJson)
                 .tenantIdSys(getCurrentTenantId())
+                .extCommon1(null)  // 或从 additionalInfo 提取，但根据需求可能留空
+                .extCommon2(null)
+                .extCommon3(null)
+                .extCommon4(null)
                 .build();
     }
 
@@ -428,6 +467,35 @@ public class AssetServiceImpl implements AssetService {
         return 1L; // 临时返回默认值
     }
 
+    /**
+     * 更新本地数据库中的资产属性信息
+     */
+    private void updateLocalAssetAttributes(String assetId) {
+        try {
+            // 根据assetId查找本地资产记录
+            AssetDO assetDO = assetMapper.selectByAssetId(assetId);
+            if (assetDO == null) {
+                log.warn("本地数据库中没有找到对应的资产记录，assetId: {}", assetId);
+                return;
+            }
+
+            // 重新获取最新的属性信息
+            String attributesJson = getAssetAttributesJson(assetId);
+
+            // 更新属性信息
+            AssetDO updateObj = new AssetDO();
+            updateObj.setId(assetDO.getId());
+            updateObj.setAttributes(attributesJson);
+
+            assetMapper.updateById(updateObj);
+
+            log.debug("本地资产属性更新成功，资产ID: {}", assetId);
+
+        } catch (Exception e) {
+            log.error("更新本地资产属性失败", e);
+            // 这里不抛出异常，因为ThingsBoard操作已经成功，本地更新失败可以记录日志但不要影响主流程
+        }
+    }
 
 
 }

@@ -7,9 +7,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.thingsboard.rest.client.RestClient;
 import org.thingsboard.server.common.data.asset.Asset;
 import org.thingsboard.server.common.data.asset.AssetInfo;
@@ -18,6 +20,7 @@ import org.thingsboard.server.common.data.id.AssetId;
 import org.thingsboard.server.common.data.page.PageData;
 import org.thingsboard.server.common.data.page.PageLink;
 
+import java.net.URI;
 import java.util.*;
 
 @Service
@@ -301,6 +304,90 @@ public class AssetTbDaoImpl implements AssetTbDao {
             return response.getBody();
         } catch (Exception e) {
             throw new RuntimeException("获取资产配置列表失败: " + e.getMessage(), e);
+        } finally {
+            client.logout();
+            client.close();
+        }
+    }
+
+    @Override
+    public void addAssetAttributes(String assetId, Map<String, Object> attributes) {
+        RestClient client = new RestClient(url);
+        try {
+            client.login(username, password);
+
+            // 构建添加属性的URL - 使用SERVER_SCOPE
+            String attributesUrl = url + "api/plugins/telemetry/ASSET/" + assetId + "/SERVER_SCOPE";
+
+            String token = client.getToken();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-Authorization", "Bearer " + token);
+            headers.set("Content-Type", "application/json");
+
+            // 将属性Map转换为JSON
+            ObjectMapper objectMapper = new ObjectMapper();
+            String attributesJson = objectMapper.writeValueAsString(attributes);
+
+            HttpEntity<String> entity = new HttpEntity<>(attributesJson, headers);
+            RestTemplate restTemplate = new RestTemplate();
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                    attributesUrl,
+                    org.springframework.http.HttpMethod.POST,
+                    entity,
+                    String.class
+            );
+
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                throw new RuntimeException("添加资产属性失败，状态码: " + response.getStatusCode());
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("添加资产属性失败: " + e.getMessage(), e);
+        } finally {
+            client.logout();
+            client.close();
+        }
+    }
+
+    @Override
+    public void deleteAssetAttributes(String assetId, String scope, List<String> keys) {
+        RestClient client = new RestClient(url);
+        try {
+            client.login(username, password);
+
+            // 构建删除属性的URL
+            String deleteUrl = url + "api/plugins/telemetry/ASSET/" + assetId + "/" + scope;
+
+            // 将多个key用逗号连接
+            String keysParam = String.join(",", keys);
+
+            // 使用UriComponentsBuilder构建URL
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(deleteUrl)
+                    .queryParam("keys", keysParam);
+
+            URI uri = builder.build().encode().toUri();
+
+            String token = client.getToken();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-Authorization", "Bearer " + token);
+
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            RestTemplate restTemplate = new RestTemplate();
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                    uri,
+                    HttpMethod.DELETE,
+                    entity,
+                    String.class
+            );
+
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                throw new RuntimeException("删除资产属性失败，状态码: " + response.getStatusCode());
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("删除资产属性失败: " + e.getMessage(), e);
         } finally {
             client.logout();
             client.close();
