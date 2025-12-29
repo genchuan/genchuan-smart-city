@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.datacenter.service.thingsboard.assetprofile;
 
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.assetprofile.vo.AssetProfilePageReqVO;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.assetprofile.vo.AssetProfileSaveReqVO;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.thingsboard.assetprofile.AssetProfileDO;
@@ -172,6 +173,13 @@ public class AssetProfileServiceImpl implements AssetProfileService {
     @Override
     public PageData<AssetProfile> getAssetProfilesFromThingsBoard(Integer pageSize, Integer page, String sortProperty, String sortOrder) {
         return assetProfileTbDao.getAssetProfiles(pageSize, page, sortProperty, sortOrder);
+    }
+
+    @Override
+    public List<AssetProfileDO> getAssetProfileList() {
+        // 使用 LambdaQueryWrapperX 构建查询条件，不设置分页参数
+        return assetProfileMapper.selectList(new LambdaQueryWrapperX<AssetProfileDO>()
+                .orderByDesc(AssetProfileDO::getId));
     }
 
     /**

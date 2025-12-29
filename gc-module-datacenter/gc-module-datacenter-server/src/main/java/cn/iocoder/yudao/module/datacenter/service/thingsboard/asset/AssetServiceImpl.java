@@ -7,6 +7,7 @@ import cn.iocoder.yudao.module.datacenter.dal.dataobject.thingsboard.asset.Asset
 import cn.iocoder.yudao.module.datacenter.service.thingsboard.asset.util.AssetBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,6 +24,9 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import org.thingsboard.server.common.data.asset.Asset;
 import org.thingsboard.server.common.data.asset.AssetInfo;
 import org.thingsboard.server.common.data.asset.AssetProfile;
+import org.thingsboard.server.common.data.id.AssetId;
+import org.thingsboard.server.common.data.id.AssetProfileId;
+import org.thingsboard.server.common.data.id.CustomerId;
 import org.thingsboard.server.common.data.page.PageData;
 import org.thingsboard.server.common.data.page.PageLink;
 import org.thingsboard.server.common.data.page.TimePageLink;
@@ -50,30 +55,18 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public Long createAsset(AssetSaveReqVO createReqVO) {
-//        // 插入
-//        AssetDO assetInfo = BeanUtils.toBean(createReqVO, AssetDO.class);
-//        assetMapper.insert(assetInfo);
-//        // 返回
-//        return assetInfo.getId();
         try {
+            log.info("开始创建资产，请求参数: {}", createReqVO);
+
             // 1. 先同步到ThingsBoard
-            Asset assetToCreate = AssetBuilder.buildAsset(
-                    createReqVO.getAssetName(),
-                    createReqVO.getAssetProfileId(),
-                    createReqVO.getAssetLabel(),
-                    createReqVO.getCustomerId(),
-                    extractDescription(createReqVO.getAdditionalInfo())
-            );
+            Asset assetToCreate = AssetBuilder.buildAssetFromReqVO(createReqVO);
+            log.info("构建的ThingsBoard资产对象: {}", assetToCreate);
 
             Asset createdAsset = assetTbDao.createAsset(assetToCreate);
+            log.info("ThingsBoard创建成功，返回资产: {}", createdAsset);
 
             // 2. 再保存到本地数据库
-            AssetDO assetInfo = BeanUtils.toBean(createReqVO, AssetDO.class);
-            // 设置从ThingsBoard返回的资产ID
-            if (createdAsset != null && createdAsset.getId() != null) {
-                assetInfo.setAssetId(createdAsset.getId().getId().toString());
-            }
-
+            AssetDO assetInfo = convertToAssetDO(createReqVO, createdAsset);
             assetMapper.insert(assetInfo);
 
             log.info("资产创建成功，本地ID: {}, ThingsBoard ID: {}",
@@ -87,13 +80,37 @@ public class AssetServiceImpl implements AssetService {
         }
     }
 
+
     @Override
-    public void updateAsset(AssetSaveReqVO updateReqVO) {
-        // 校验存在
-        validateAssetExists(updateReqVO.getId());
-        // 更新
-        AssetDO updateObj = BeanUtils.toBean(updateReqVO, AssetDO.class);
-        assetMapper.updateById(updateObj);
+    public void updateAsset(@Valid AssetSaveReqVO updateReqVO) {
+        try {
+            log.info("开始更新资产，请求参数: {}", updateReqVO);
+
+            // 1. 校验本地资产存在并获取资产信息
+            AssetDO existingAsset = validateAssetExists(updateReqVO.getId());
+            if (existingAsset.getAssetId() == null || existingAsset.getAssetId().isEmpty()) {
+                throw new IllegalArgumentException("资产未同步到ThingsBoard，无法更新");
+            }
+
+            // 2. 构建 ThingsBoard 资产对象（包含完整的ID信息）
+            Asset assetToUpdate = buildAssetForUpdate(updateReqVO, existingAsset);
+            log.info("构建的ThingsBoard更新资产对象: {}", assetToUpdate);
+
+            // 3. 先更新到 ThingsBoard
+            Asset updatedAsset = assetTbDao.createAsset(assetToUpdate);
+            log.info("ThingsBoard更新成功，返回资产: {}", updatedAsset);
+
+            // 4. 再更新本地数据库
+            AssetDO updateObj = convertToAssetDOForUpdate(updateReqVO, updatedAsset, existingAsset);
+            assetMapper.updateById(updateObj);
+
+            log.info("资产更新成功，本地ID: {}, ThingsBoard ID: {}",
+                    updateReqVO.getId(), existingAsset.getAssetId());
+
+        } catch (Exception e) {
+            log.error("更新资产失败", e);
+            throw new RuntimeException("更新资产失败: " + e.getMessage());
+        }
     }
 
     @Override
@@ -495,6 +512,219 @@ public class AssetServiceImpl implements AssetService {
             log.error("更新本地资产属性失败", e);
             // 这里不抛出异常，因为ThingsBoard操作已经成功，本地更新失败可以记录日志但不要影响主流程
         }
+    }
+
+    /**
+     * 将请求VO和创建的Asset对象转换为本地数据库对象
+     */
+    private AssetDO convertToAssetDO(AssetSaveReqVO createReqVO, Asset createdAsset) {
+        AssetDO assetDO = new AssetDO();
+
+        // 设置从ThingsBoard返回的信息
+        if (createdAsset != null && createdAsset.getId() != null) {
+            assetDO.setAssetId(createdAsset.getId().getId().toString());
+            assetDO.setEntityType(createdAsset.getId().getEntityType().name());
+        }
+
+        // 设置基本信息
+        assetDO.setAssetName(createReqVO.getAssetName());
+        assetDO.setAssetLabel(createReqVO.getLabel());
+
+        // 设置资产类型 - 优先使用前端传递的值
+        if (createReqVO.getAssetType() != null && !createReqVO.getAssetType().isEmpty()) {
+            assetDO.setAssetType(createReqVO.getAssetType());
+        } else if (createdAsset != null && createdAsset.getType() != null) {
+            // 如果前端没传，使用ThingsBoard返回的type
+            assetDO.setAssetType(createdAsset.getType());
+        }
+
+        // 设置资产档案信息
+        assetDO.setAssetProfileId(createReqVO.getAssetProfileId());
+        if (createdAsset != null && createdAsset.getAssetProfileId() != null) {
+            assetDO.setAssetProfileEntityType(createdAsset.getAssetProfileId().getEntityType().name());
+        }
+
+        // 设置客户信息
+        assetDO.setCustomerId(createReqVO.getCustomerId());
+        if (createdAsset != null && createdAsset.getCustomerId() != null) {
+            assetDO.setCustomerEntityType(createdAsset.getCustomerId().getEntityType().name());
+        }
+
+        // 设置租户信息
+        if (createdAsset != null && createdAsset.getTenantId() != null) {
+            assetDO.setTenantEntityType(createdAsset.getTenantId().getEntityType().name());
+        }
+
+        // 设置时间信息
+        if (createdAsset != null) {
+            assetDO.setCreatedTime(createdAsset.getCreatedTime());
+        }
+
+        // 设置版本号
+        if (createdAsset != null && createdAsset.getVersion() != null) {
+            assetDO.setVersion(createdAsset.getVersion().intValue());
+        }
+
+        // 设置附加信息
+        if (createReqVO.getAdditionalInfo() != null) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                assetDO.setAdditionalInfo(mapper.writeValueAsString(createReqVO.getAdditionalInfo()));
+            } catch (Exception e) {
+                log.warn("转换附加信息失败", e);
+            }
+        }
+
+        // 设置系统字段
+        assetDO.setTenantIdSys(getCurrentTenantId());
+        assetDO.setCreateTime(LocalDateTime.now());
+
+        return assetDO;
+    }
+
+    /**
+     * 构建用于更新的 ThingsBoard 资产对象
+     */
+    private Asset buildAssetForUpdate(AssetSaveReqVO reqVO, AssetDO existingAsset) {
+        Asset asset = new Asset();
+
+        // 设置资产ID（这是更新操作的关键）
+        try {
+            AssetId assetIdObj = new AssetId(UUID.fromString(existingAsset.getAssetId()));
+            asset.setId(assetIdObj);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("无效的资产ID格式: " + existingAsset.getAssetId(), e);
+        }
+
+        // 设置资产名称
+        if (reqVO.getAssetName() != null && !reqVO.getAssetName().isEmpty()) {
+            asset.setName(reqVO.getAssetName());
+        } else {
+            throw new IllegalArgumentException("资产名称不能为空");
+        }
+
+        // 设置资产配置ID
+        if (reqVO.getAssetProfileId() != null && !reqVO.getAssetProfileId().isEmpty()) {
+            try {
+                AssetProfileId assetProfileIdObj = new AssetProfileId(UUID.fromString(reqVO.getAssetProfileId()));
+                asset.setAssetProfileId(assetProfileIdObj);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("无效的资产档案ID格式: " + reqVO.getAssetProfileId(), e);
+            }
+        }
+
+        // 设置标签
+        if (reqVO.getLabel() != null && !reqVO.getLabel().isEmpty()) {
+            asset.setLabel(reqVO.getLabel());
+        }
+
+        // 设置客户ID
+        if (reqVO.getCustomerId() != null && !reqVO.getCustomerId().isEmpty()) {
+            try {
+                UUID customerUuid = UUID.fromString(reqVO.getCustomerId());
+                CustomerId customerIdObj = new CustomerId(customerUuid);
+                asset.setCustomerId(customerIdObj);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("无效的客户ID格式: " + reqVO.getCustomerId(), e);
+            }
+        }
+
+        // 设置资产类型
+        if (reqVO.getAssetType() != null && !reqVO.getAssetType().isEmpty()) {
+            asset.setType(reqVO.getAssetType());
+        }
+
+        // 设置附加信息 - 修复JSON处理
+        if (reqVO.getAdditionalInfo() != null) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode additionalInfo = mapper.valueToTree(reqVO.getAdditionalInfo());
+                asset.setAdditionalInfo(additionalInfo);
+            } catch (Exception e) {
+                log.warn("设置附加信息失败", e);
+            }
+        }
+
+        // 设置版本号（用于乐观锁）
+        if (reqVO.getVersion() != null) {
+            asset.setVersion(reqVO.getVersion().longValue());
+        } else {
+            // 如果没有提供版本号，则使用现有版本号+1
+            asset.setVersion(existingAsset.getVersion() != null ?
+                    existingAsset.getVersion().longValue() + 1 : 1L);
+        }
+
+        // 设置创建时间（从现有资产获取）
+        asset.setCreatedTime(existingAsset.getCreatedTime());
+
+        return asset;
+    }
+
+    /**
+     * 转换为本地数据库对象（更新专用）
+     */
+    private AssetDO convertToAssetDOForUpdate(AssetSaveReqVO reqVO, Asset updatedAsset, AssetDO existingAsset) {
+        AssetDO assetDO = new AssetDO();
+
+        // 设置主键ID
+        assetDO.setId(reqVO.getId());
+
+        // 保留原有的创建时间
+        assetDO.setCreateTime(existingAsset.getCreateTime());
+
+        // 设置从 ThingsBoard 返回的更新信息
+        if (updatedAsset != null) {
+            assetDO.setAssetId(updatedAsset.getId().getId().toString());
+            assetDO.setEntityType(updatedAsset.getId().getEntityType().name());
+            assetDO.setCreatedTime(updatedAsset.getCreatedTime());
+            assetDO.setVersion(updatedAsset.getVersion() != null ?
+                    updatedAsset.getVersion().intValue() : null);
+
+            // 更新租户和客户信息
+            if (updatedAsset.getTenantId() != null) {
+                assetDO.setTenantEntityType(updatedAsset.getTenantId().getEntityType().name());
+            }
+            if (updatedAsset.getCustomerId() != null) {
+                assetDO.setCustomerEntityType(updatedAsset.getCustomerId().getEntityType().name());
+            }
+            if (updatedAsset.getAssetProfileId() != null) {
+                assetDO.setAssetProfileEntityType(updatedAsset.getAssetProfileId().getEntityType().name());
+            }
+        }
+
+        // 设置基本字段（从请求VO）
+        assetDO.setAssetName(reqVO.getAssetName());
+        assetDO.setAssetLabel(reqVO.getLabel());
+        assetDO.setAssetType(reqVO.getAssetType());
+        assetDO.setAssetProfileId(reqVO.getAssetProfileId());
+        assetDO.setCustomerId(reqVO.getCustomerId());
+
+        // 修复 additionalInfo 的JSON处理
+        if (reqVO.getAdditionalInfo() != null) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                // 确保 additionalInfo 是有效的JSON字符串
+                String additionalInfoJson = mapper.writeValueAsString(reqVO.getAdditionalInfo());
+                log.info("转换后的附加信息JSON: {}", additionalInfoJson);
+                assetDO.setAdditionalInfo(additionalInfoJson);
+            } catch (Exception e) {
+                log.warn("转换附加信息失败", e);
+                // 如果转换失败，保留原有的附加信息
+                assetDO.setAdditionalInfo(existingAsset.getAdditionalInfo());
+            }
+        } else {
+            // 如果请求中没有附加信息，保留原有的
+            assetDO.setAdditionalInfo(existingAsset.getAdditionalInfo());
+        }
+
+        // 保留原有的属性关联信息
+        assetDO.setAttributes(existingAsset.getAttributes());
+        assetDO.setContextDevices(existingAsset.getContextDevices());
+
+        // 设置系统字段
+        assetDO.setTenantIdSys(getCurrentTenantId());
+
+        return assetDO;
     }
 
 

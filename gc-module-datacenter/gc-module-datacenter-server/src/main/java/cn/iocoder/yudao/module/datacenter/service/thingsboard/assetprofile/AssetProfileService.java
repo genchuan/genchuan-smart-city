@@ -74,4 +74,11 @@ public interface AssetProfileService {
      * @return 资产配置分页数据
      */
     PageData<AssetProfile> getAssetProfilesFromThingsBoard(Integer pageSize, Integer page, String sortProperty, String sortOrder);
+
+    /**
+     * 获得所有资产配置信息
+     *
+     * @return 所有资产配置信息列表
+     */
+    List<AssetProfileDO> getAssetProfileList();
 }

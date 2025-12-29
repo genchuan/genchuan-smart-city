@@ -98,7 +98,6 @@ public class AssetProfileController {
 
     @PostMapping("/sync")
     @Operation(summary = "同步ThingsBoard资产配置")
-    @PreAuthorize("@ss.hasPermission('datacenter:asset-profile:sync')")
     public CommonResult<Map<String, Object>> syncAssetProfilesFromThingsBoard() {
         Map<String, Object> result = assetProfileService.syncAssetProfilesFromThingsBoard();
         return success(result);
@@ -106,7 +105,6 @@ public class AssetProfileController {
 
     @GetMapping("/thingsboard-profiles")
     @Operation(summary = "获取ThingsBoard资产配置分页列表")
-    @PreAuthorize("@ss.hasPermission('datacenter:asset-profile:query')")
     public CommonResult<PageData<AssetProfile>> getAssetProfilesFromThingsBoard(
             @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
             @RequestParam(value = "page", defaultValue = "0") Integer page,
@@ -115,6 +113,13 @@ public class AssetProfileController {
 
         PageData<AssetProfile> assetProfiles = assetProfileService.getAssetProfilesFromThingsBoard(pageSize, page, sortProperty, sortOrder);
         return success(assetProfiles);
+    }
+
+    @GetMapping("/list-all")
+    @Operation(summary = "获得所有资产配置信息列表")
+    public CommonResult<List<AssetProfileRespVO>> getAssetProfileList() {
+        List<AssetProfileDO> list = assetProfileService.getAssetProfileList();
+        return success(BeanUtils.toBean(list, AssetProfileRespVO.class));
     }
 
 }
