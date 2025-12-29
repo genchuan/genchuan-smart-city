@@ -25,6 +25,7 @@ public class StatParkPayGenReqVO {
     private LocalDateTime endTime;
 
     @Schema(description = "区域代码", example = "350000000000")
+    @NotNull(message = "数据统计区域不能为空")
     private String regionFullCode;
 
     //筛选地区的下一级地区有效长度，比如350100000000，有效位数就是6

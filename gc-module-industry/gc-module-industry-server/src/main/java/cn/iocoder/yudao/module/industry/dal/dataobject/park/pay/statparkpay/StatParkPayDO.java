@@ -1,5 +1,8 @@
 package cn.iocoder.yudao.module.industry.dal.dataobject.park.pay.statparkpay;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import java.util.*;
 import java.time.LocalDateTime;
@@ -12,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * 缴费统计 DO
@@ -45,6 +49,14 @@ public class StatParkPayDO extends BaseDO {
      * 统计时间点
      */
     private LocalDateTime statTime;
+
+    private String statCycleName;
+
+
+    private LocalDateTime statStartTime;
+
+
+    private LocalDateTime statEndTime;
     /**
      * 所属区域名称
      */

@@ -41,4 +41,6 @@ public interface ErrorCodeConstants {
     ErrorCode PARK_BERTH_LOCK_NOT_EXISTS = new ErrorCode(600_006, "泊位锁定记录不存在");
     // ========== 缴费统计  ==========
     ErrorCode STAT_PARK_PAY_NOT_EXISTS = new ErrorCode(600_007, "缴费统计不存在");
+    // ========== 停车诱导服务  ==========
+    ErrorCode PARK_GUIDANCE_NOT_EXISTS = new ErrorCode(600_008, "停车诱导服务不存在");
 }

@@ -104,4 +104,16 @@ public class ParkPayPageReqVO extends PageParam {
     @Schema(description = "通用扩展字段2")
     private String extCommon2;
 
+    // ----------------- 新增筛选字段 -----------------
+    @Schema(description = "统计区间起始时间", requiredMode = Schema.RequiredMode.REQUIRED)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime statStartTime;
+
+    @Schema(description = "统计区间截止时间", requiredMode = Schema.RequiredMode.REQUIRED)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime statEndTime;
+
+    @Schema(description = "统计行政区划全码（12位）", example = "350100000000")
+    private String regionFullCode;
+
 }

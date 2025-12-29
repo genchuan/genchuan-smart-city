@@ -26,6 +26,7 @@ public interface StatParkPayMapper extends BaseMapperX<StatParkPayDO> {
                 .eqIfPresent(StatParkPayDO::getStatCycle, reqVO.getStatCycle())
                 .betweenIfPresent(StatParkPayDO::getStatTime, reqVO.getStatTime())
                 .likeIfPresent(StatParkPayDO::getRegionName, reqVO.getRegionName())
+                .likeIfPresent(StatParkPayDO::getStatCycleName, reqVO.getStatCycleName())
                 .eqIfPresent(StatParkPayDO::getRegionFullCode, reqVO.getRegionFullCode())
                 .eqIfPresent(StatParkPayDO::getTotalOrderCount, reqVO.getTotalOrderCount())
                 .eqIfPresent(StatParkPayDO::getTotalPayAmount, reqVO.getTotalPayAmount())

@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkwo;
 
+import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkwo.vo.ParkWoCreateReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkwo.vo.ParkWoPageReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkwo.vo.ParkWoRespVO;
 import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkwo.vo.ParkWoSaveReqVO;
@@ -32,9 +33,9 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 
 
-@Tag(name = "管理后台 - 停车订单")
+@Tag(name = "停车管理-停车订单")
 @RestController
-@RequestMapping("/pay/park-wo")
+@RequestMapping("/industry/park-wo")
 @Validated
 public class ParkWoController {
 
@@ -44,7 +45,7 @@ public class ParkWoController {
     @PostMapping("/create")
     @Operation(summary = "创建停车订单")
     @PreAuthorize("@ss.hasPermission('pay:park-wo:create')")
-    public CommonResult<Long> createParkWo(@Valid @RequestBody ParkWoSaveReqVO createReqVO) {
+    public CommonResult<Long> createParkWo(@Valid @RequestBody ParkWoCreateReqVO createReqVO) {
         return success(parkWoService.createParkWo(createReqVO));
     }
 

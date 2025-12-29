@@ -1,9 +1,6 @@
 package cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay;
 
-import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.ParkPayPageReqVO;
-import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.ParkPayPayReqVO;
-import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.ParkPayRespVO;
-import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.ParkPaySaveReqVO;
+import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.*;
 import cn.iocoder.yudao.module.industry.dal.dataobject.park.pay.parkpay.ParkPayDO;
 import cn.iocoder.yudao.module.industry.service.park.pay.parkpay.ParkPayService;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +30,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 
 
-@Tag(name = "管理后台 - 停车缴费服务")
+@Tag(name = "停车管理-缴费服务")
 @RestController
 @RequestMapping("/industry/park-pay")
 @Validated
@@ -90,6 +87,16 @@ public class ParkPayController {
         PageResult<ParkPayDO> pageResult = parkPayService.getParkPayPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, ParkPayRespVO.class));
     }
+
+    @GetMapping("/drill")
+    @Operation(summary = "钻取停车缴费订单")
+    @PreAuthorize("@ss.hasPermission('industry:park-pay:query')")
+    public CommonResult<PageResult<ParkPayRespVO>> drillParkPay(@Valid ParkPayDrillReqVO drillReqVO) {
+        // drillReqVO 包含 drill 条件，例如 region、status、startTime、endTime、pageNo、pageSize
+        PageResult<ParkPayDO> pageResult = parkPayService.drillParkPay(drillReqVO);
+        return success(BeanUtils.toBean(pageResult, ParkPayRespVO.class));
+    }
+
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出停车缴费服务 Excel")

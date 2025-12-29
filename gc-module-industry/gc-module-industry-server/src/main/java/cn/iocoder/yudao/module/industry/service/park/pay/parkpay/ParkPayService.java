@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.industry.service.park.pay.parkpay;
 
 import java.util.*;
 
+import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.ParkPayDrillReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.ParkPayPageReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.ParkPayPayReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.ParkPaySaveReqVO;
@@ -57,4 +58,6 @@ public interface ParkPayService {
     PageResult<ParkPayDO> getParkPayPage(ParkPayPageReqVO pageReqVO);
 
     void pay(ParkPayPayReqVO reqVO);
+
+    PageResult<ParkPayDO> drillParkPay(ParkPayDrillReqVO drillReqVO);
 }

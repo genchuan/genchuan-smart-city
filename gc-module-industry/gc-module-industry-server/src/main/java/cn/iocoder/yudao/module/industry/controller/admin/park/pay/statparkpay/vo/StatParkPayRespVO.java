@@ -3,6 +3,8 @@ package cn.iocoder.yudao.module.industry.controller.admin.park.pay.statparkpay.v
 import cn.iocoder.yudao.module.industry.dal.dataobject.park.pay.statparkpay.StatParkPayDO;
 import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import java.util.*;
 import java.math.BigDecimal;
@@ -26,6 +28,20 @@ public class StatParkPayRespVO {
     @Schema(description = "数据统计周期（如日/周/月）", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("数据统计周期（如日/周/月）")
     private String statCycle;
+
+    @Schema(description = "统计周期名称，如“2025年9月”", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotEmpty(message = "统计周期名称不能为空")
+    private String statCycleName;
+
+    @Schema(description = "统计区间起始时间", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "统计区间起始时间不能为空")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime statStartTime;
+
+    @Schema(description = "统计区间截止时间", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "统计区间截止时间不能为空")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime statEndTime;
 
     @Schema(description = "统计时间点", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("统计时间点")

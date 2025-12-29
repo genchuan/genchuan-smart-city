@@ -32,7 +32,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 
 
-@Tag(name = "管理后台 - 停车泊位实时状态")
+@Tag(name = "暂时不用-停车管理-泊位实时状态")
 @RestController
 @RequestMapping("/industry/park-real-time")
 @Validated

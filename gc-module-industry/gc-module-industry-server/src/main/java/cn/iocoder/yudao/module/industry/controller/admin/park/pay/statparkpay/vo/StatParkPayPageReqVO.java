@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.industry.controller.admin.park.pay.statparkpay.vo;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,6 +23,9 @@ public class StatParkPayPageReqVO extends PageParam {
 
     @Schema(description = "数据统计周期（如day/week/month）")
     private String statCycle;
+
+    @Schema(description = "统计周期名称，如“2025年9月”", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String statCycleName;
 
     @Schema(description = "统计时间点")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)

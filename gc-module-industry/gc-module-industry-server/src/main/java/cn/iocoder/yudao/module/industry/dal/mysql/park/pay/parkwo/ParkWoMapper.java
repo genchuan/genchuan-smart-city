@@ -26,7 +26,7 @@ public interface ParkWoMapper extends BaseMapperX<ParkWoDO> {
                 .likeIfPresent(ParkWoDO::getParkName, reqVO.getParkName())
                 .eqIfPresent(ParkWoDO::getParkEndure, reqVO.getParkEndure())
                 .eqIfPresent(ParkWoDO::getReceivableAmount, reqVO.getReceivableAmount())
-                .eqIfPresent(ParkWoDO::getArrearsReason, reqVO.getArrearsReason())
+                .likeIfPresent(ParkWoDO::getArrearsReason, reqVO.getArrearsReason())
                 .betweenIfPresent(ParkWoDO::getCreateTime, reqVO.getCreateTime())
                 .eqIfPresent(ParkWoDO::getExtCat1, reqVO.getExtCat1())
                 .eqIfPresent(ParkWoDO::getExtCat2, reqVO.getExtCat2())

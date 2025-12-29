@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -169,6 +170,12 @@ public class StatParkPayServiceImpl implements StatParkPayService {
         statParkPayDO.setStatCode(UUID.randomUUID().toString().replace("-", ""));
         statParkPayDO.setStatCycle(statCycle);
         statParkPayDO.setStatTime(endTime);
+        // 统计周期名称（展示用）
+        statParkPayDO.setStatCycleName(buildStatCycleName(statCycle, startTime, endTime));
+        // 统计口径起止时间（防回溯污染，钻取必用）
+        statParkPayDO.setStatStartTime(startTime);
+        statParkPayDO.setStatEndTime(endTime);
+
 
         //5.null 兜底处理
         // 主指标 null 兜底
@@ -234,6 +241,46 @@ public class StatParkPayServiceImpl implements StatParkPayService {
         return statParkPayDO.getId();
 
     }
+
+    /**
+     * 构建统计周期名称（用于展示）
+     */
+    private String buildStatCycleName(String statCycle,
+                                      LocalDateTime startTime,
+                                      LocalDateTime endTime) {
+
+        // 中文日期格式
+        DateTimeFormatter dayFormatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
+        DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("yyyy年MM月");
+        DateTimeFormatter yearFormatter = DateTimeFormatter.ofPattern("yyyy年");
+
+        switch (statCycle) {
+            case "day":
+                // 2025年12月24日
+                return startTime.format(dayFormatter);
+
+            case "week":
+                // 2025年12月18日-2025年12月24日
+                return startTime.format(dayFormatter)
+                        + "-"
+                        + endTime.format(dayFormatter);
+
+            case "month":
+                // 2025年12月
+                return startTime.format(monthFormatter);
+
+            case "year":
+                // 2025年
+                return startTime.format(yearFormatter);
+
+            default:
+                // 兜底：中文起止时间
+                return startTime.format(dayFormatter)
+                        + "-"
+                        + endTime.format(dayFormatter);
+        }
+    }
+
 
     @Override
     public void updateStatParkPay(StatParkPaySaveReqVO updateReqVO) {

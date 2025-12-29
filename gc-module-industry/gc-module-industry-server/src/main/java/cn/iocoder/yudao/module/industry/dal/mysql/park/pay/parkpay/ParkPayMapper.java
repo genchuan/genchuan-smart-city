@@ -6,9 +6,13 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 
+import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.ParkPayDrillReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.park.pay.parkpay.vo.ParkPayPageReqVO;
 import cn.iocoder.yudao.module.industry.dal.dataobject.park.pay.parkpay.ParkPayDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 
 /**
@@ -51,5 +55,13 @@ public interface ParkPayMapper extends BaseMapperX<ParkPayDO> {
                 .eqIfPresent(ParkPayDO::getExtCommon2, reqVO.getExtCommon2())
                 .orderByDesc(ParkPayDO::getId));
     }
+
+//    PageResult<ParkPayDO> pageParkPay(ParkPayPageReqVO pageReqVO);
+
+//    PageResult<ParkPayDO> selectDrillPage(ParkPayDrillReqVO drillReqVO);
+
+    IPage<ParkPayDO> selectDrillPage(Page<ParkPayDO> page,
+                                     @Param("reqVO") ParkPayDrillReqVO drillReqVO,
+                                     @Param("regionFullCode") String regionFullCode);
 
 }
