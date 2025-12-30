@@ -146,11 +146,11 @@ public class DeviceTbDaoImpl implements DeviceTbDao {
             org.springframework.http.HttpEntity<String> entity = new org.springframework.http.HttpEntity<>(headers);
 
             // 发送请求
-            org.springframework.http.ResponseEntity<PageData<AlarmInfo>> response = restTemplate.exchange(
+            ResponseEntity<PageData<AlarmInfo>> response = restTemplate.exchange(
                     alarmsUrl,
                     org.springframework.http.HttpMethod.GET,
                     entity,
-                    new org.springframework.core.ParameterizedTypeReference<PageData<AlarmInfo>>() {}
+                    new ParameterizedTypeReference<PageData<AlarmInfo>>() {}
             );
 
             return response.getBody();

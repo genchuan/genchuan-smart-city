@@ -434,5 +434,6 @@ public interface ErrorCodeConstants {
     // ========== 系统首页快捷菜单配置==========
     ErrorCode HOME_QUICK_MENU_NOT_EXISTS = new ErrorCode(199_002, "系统首页快捷菜单配置不存在");
 
-
+    // ========== 资产配置 ==========
+    ErrorCode ASSET_PROFILE_NOT_EXISTS = new ErrorCode(199_003, "资产配置信息不存在");
 }

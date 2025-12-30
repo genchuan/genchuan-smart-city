@@ -58,4 +58,12 @@ public interface EventDispositionService {
      * @return 监测事件关联处置
      */
     EventDispositionDO getEventDispositionByEventTypeId(String eventTypeId);
+
+    /**
+     * 根据事件类型ID和行政区划编码查询监测事件关联处置
+     * @param eventTypeId 事件类型ID
+     * @param divisionCode 行政区划编码
+     * @return 监测事件关联处置
+     */
+    EventDispositionDO getEventDispositionByEventTypeIdAndDivisionCode(String eventTypeId, String divisionCode);
 }

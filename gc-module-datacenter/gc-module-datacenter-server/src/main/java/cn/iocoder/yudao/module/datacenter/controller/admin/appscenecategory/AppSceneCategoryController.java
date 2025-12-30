@@ -73,7 +73,7 @@ public class AppSceneCategoryController {
 
     @GetMapping("/page")
     @Operation(summary = "获得应用场景分类配置分页")
-    @PreAuthorize("@ss.hasPermission('datacenter:app-scene-category:query')")
+//    @PreAuthorize("@ss.hasPermission('datacenter:app-scene-category:query')")
     public CommonResult<PageResult<AppSceneCategoryRespVO>> getAppSceneCategoryPage(@Valid AppSceneCategoryPageReqVO pageReqVO) {
         PageResult<AppSceneCategoryDO> pageResult = appSceneCategoryService.getAppSceneCategoryPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, AppSceneCategoryRespVO.class));
