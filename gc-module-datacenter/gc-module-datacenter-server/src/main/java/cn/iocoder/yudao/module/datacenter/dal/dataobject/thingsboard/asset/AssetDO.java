@@ -114,6 +114,14 @@ public class AssetDO extends BaseDO {
     private Object contextDevicesJson;
 
     /**
+     * 关联资产列表（向外关联）
+     */
+    private String contextAsset;
+
+    @TableField(exist = false)
+    private Object contextAssetJson;
+
+    /**
      * 通用扩展字段1
      */
     private String extCommon1;

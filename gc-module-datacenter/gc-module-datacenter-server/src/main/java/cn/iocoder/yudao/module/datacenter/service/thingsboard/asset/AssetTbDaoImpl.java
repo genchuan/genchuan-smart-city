@@ -394,5 +394,64 @@ public class AssetTbDaoImpl implements AssetTbDao {
         }
     }
 
+    @Override
+    public List<Map<String, Object>> getAssetOutwardRelations(String assetId) {
+        RestClient client = new RestClient(url);
+        try {
+            client.login(username, password);
+
+            // 构建获取向外关联的URL
+            String relationsUrl = url + "api/relations/info?fromId=" + assetId + "&fromType=ASSET";
+
+            String token = client.getToken();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-Authorization", "Bearer " + token);
+            headers.set("Content-Type", "application/json");
+
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            RestTemplate restTemplate = new RestTemplate();
+
+            ResponseEntity<List> response = restTemplate.exchange(
+                    relationsUrl,
+                    org.springframework.http.HttpMethod.GET,
+                    entity,
+                    List.class
+            );
+
+            List<Map<String, Object>> relations = (List<Map<String, Object>>) response.getBody();
+
+            // 转换格式为期望的资产列表格式
+            List<Map<String, Object>> assets = new ArrayList<>();
+            if (relations != null) {
+                for (Map<String, Object> relation : relations) {
+                    Map<String, Object> to = (Map<String, Object>) relation.get("to");
+                    if ("ASSET".equals(to.get("entityType"))) {
+                        Map<String, Object> asset = new HashMap<>();
+                        asset.put("assetName", relation.get("toName"));
+                        asset.put("entityType", "ASSET");
+                        asset.put("assetId", to.get("id"));
+                        assets.add(asset);
+                    }
+                }
+            }
+
+            return assets;
+        } catch (Exception e) {
+            throw new RuntimeException("获取资产向外关联资产失败: " + e.getMessage(), e);
+        } finally {
+            client.logout();
+            client.close();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
 
 }

@@ -256,6 +256,21 @@ public class AssetServiceImpl implements AssetService {
             vo.setContextDevice(contextDeviceList);
         }
 
+        // 新增：获取向外关联的资产
+        List<Map<String, Object>> outwardAssets = assetTbDao.getAssetOutwardRelations(asset.getId().toString());
+        if (outwardAssets != null && !outwardAssets.isEmpty()) {
+            List<ContextAssetVO> contextAssetList = outwardAssets.stream()
+                    .map(assetMap -> {
+                        ContextAssetVO contextAsset = new ContextAssetVO();
+                        contextAsset.setAssetName((String) assetMap.get("assetName"));
+                        contextAsset.setEntityType((String) assetMap.get("entityType"));
+                        contextAsset.setAssetId((String) assetMap.get("assetId"));
+                        return contextAsset;
+                    })
+                    .collect(Collectors.toList());
+            vo.setContextAsset(contextAssetList);
+        }
+
         return vo;
     }
 
@@ -347,11 +362,12 @@ public class AssetServiceImpl implements AssetService {
      */
     private void syncSingleAsset(Asset asset) {
         String assetId = asset.getId().getId().toString();
-        // 移除 try-catch，任何异常都会直接抛出到上层方法
         AssetDO existingAsset = assetMapper.selectByAssetId(assetId);
         String attributesJson = getAssetAttributesJson(assetId);
         String devicesJson = getAssetDevicesJson(assetId);
-        AssetDO assetDO = buildAssetDO(asset, attributesJson, devicesJson);
+        // 新增：获取向外关联资产的JSON字符串
+        String outwardAssetsJson = getAssetOutwardRelationsJson(assetId);
+        AssetDO assetDO = buildAssetDO(asset, attributesJson, devicesJson, outwardAssetsJson);
 
         if (existingAsset != null) {
             assetDO.setId(existingAsset.getId());
@@ -367,6 +383,22 @@ public class AssetServiceImpl implements AssetService {
     }
 
     /**
+     * 获取资产向外关联资产JSON字符串
+     */
+    private String getAssetOutwardRelationsJson(String assetId) {
+        try {
+            List<Map<String, Object>> outwardAssets = assetTbDao.getAssetOutwardRelations(assetId);
+            if (outwardAssets != null && !outwardAssets.isEmpty()) {
+                ObjectMapper mapper = new ObjectMapper();
+                return mapper.writeValueAsString(outwardAssets);
+            }
+        } catch (Exception e) {
+            log.warn("获取资产向外关联资产失败: {}", assetId, e);
+        }
+        return null;
+    }
+
+    /**
      * 判断资产数据是否发生变化
      */
     private boolean isAssetChanged(AssetDO existing, AssetDO latest) {
@@ -374,7 +406,8 @@ public class AssetServiceImpl implements AssetService {
                 !Objects.equals(existing.getAssetType(), latest.getAssetType()) ||
                 !Objects.equals(existing.getVersion(), latest.getVersion()) ||
                 !Objects.equals(existing.getAttributes(), latest.getAttributes()) ||
-                !Objects.equals(existing.getContextDevices(), latest.getContextDevices());
+                !Objects.equals(existing.getContextDevices(), latest.getContextDevices()) ||
+                !Objects.equals(existing.getContextAsset(), latest.getContextAsset()); // 新增比较
     }
 
     /**
@@ -413,7 +446,7 @@ public class AssetServiceImpl implements AssetService {
     /**
      * 构建 AssetDO 对象
      */
-    private AssetDO buildAssetDO(Asset asset, String attributesJson, String devicesJson) {
+    private AssetDO buildAssetDO(Asset asset, String attributesJson, String devicesJson, String outwardAssetsJson) {
         JsonNode additionalInfo = asset.getAdditionalInfo();
         String customerTitle = "";
         Boolean customerIsPublic = null;
@@ -451,6 +484,7 @@ public class AssetServiceImpl implements AssetService {
                 .additionalInfo(convertAdditionalInfoToJson(additionalInfo))
                 .attributes(attributesJson)
                 .contextDevices(devicesJson)
+                .contextAsset(outwardAssetsJson)
                 .tenantIdSys(getCurrentTenantId())
                 .extCommon1(null)  // 或从 additionalInfo 提取，但根据需求可能留空
                 .extCommon2(null)
@@ -574,6 +608,9 @@ public class AssetServiceImpl implements AssetService {
                 log.warn("转换附加信息失败", e);
             }
         }
+        // +++ 新增：设置通用扩展字段 +++
+        assetDO.setExtCommon1(createReqVO.getExtCommon1());
+        assetDO.setExtCommon2(createReqVO.getExtCommon2());
 
         // 设置系统字段
         assetDO.setTenantIdSys(getCurrentTenantId());
@@ -716,6 +753,10 @@ public class AssetServiceImpl implements AssetService {
             // 如果请求中没有附加信息，保留原有的
             assetDO.setAdditionalInfo(existingAsset.getAdditionalInfo());
         }
+
+        // +++ 新增：设置通用扩展字段 +++
+        assetDO.setExtCommon1(reqVO.getExtCommon1());
+        assetDO.setExtCommon2(reqVO.getExtCommon2());
 
         // 保留原有的属性关联信息
         assetDO.setAttributes(existingAsset.getAttributes());
