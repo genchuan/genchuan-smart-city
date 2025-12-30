@@ -35,7 +35,7 @@ public class ParkPayDO extends BaseDO {
     /**
      * 缴费记录唯一标识
      */
-    private String payId;
+    private String payCode;
     /**
      * 关联订单编号
      */
@@ -43,7 +43,7 @@ public class ParkPayDO extends BaseDO {
     /**
      * 关联预约记录ID
      */
-    private String reservationId;
+    private Long reservationId;
     /**
      * 支付订单编号
      */
@@ -51,7 +51,7 @@ public class ParkPayDO extends BaseDO {
     /**
      * 停车场唯一标识
      */
-    private String parkLotId;
+    private Long parkLotId;
     /**
      * 停车场名称
      */
@@ -59,7 +59,7 @@ public class ParkPayDO extends BaseDO {
     /**
      * 泊位唯一标识
      */
-    private String berthId;
+    private Long berthId;
     /**
      * 泊位编号
      */

@@ -21,7 +21,7 @@ public interface ParkWoMapper extends BaseMapperX<ParkWoDO> {
 
     default PageResult<ParkWoDO> selectPage(ParkWoPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<ParkWoDO>()
-                .eqIfPresent(ParkWoDO::getWoId, reqVO.getWoId())
+//                .eqIfPresent(ParkWoDO::getWoId, reqVO.getWoId())
                 .eqIfPresent(ParkWoDO::getWoNo, reqVO.getWoNo())
                 .likeIfPresent(ParkWoDO::getParkName, reqVO.getParkName())
                 .eqIfPresent(ParkWoDO::getParkEndure, reqVO.getParkEndure())

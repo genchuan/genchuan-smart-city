@@ -19,11 +19,11 @@ public class ParkArrearsRecoveryRespVO {
 
     @Schema(description = "欠费追缴唯一标识", example = "3125")
     @ExcelProperty("欠费追缴唯一标识")
-    private String recoveryId;
+    private String recoveryCode;
 
     @Schema(description = "关联订单ID", example = "25273")
     @ExcelProperty("关联订单ID")
-    private String woId;
+    private Long woId;
 
     @Schema(description = "订单编号")
     @ExcelProperty("订单编号")
@@ -31,7 +31,7 @@ public class ParkArrearsRecoveryRespVO {
 
     @Schema(description = "用户唯一标识", example = "28135")
     @ExcelProperty("用户唯一标识")
-    private String userId;
+    private Long userId;
 
     @Schema(description = "用户姓名", example = "张三")
     @ExcelProperty("用户姓名")
@@ -55,11 +55,11 @@ public class ParkArrearsRecoveryRespVO {
 
     @Schema(description = "追缴工单唯一标识", example = "12189")
     @ExcelProperty("追缴工单唯一标识")
-    private String recoveryWoId;
+    private Long recoveryWoId;
 
     @Schema(description = "执行追缴的人员ID", example = "1816")
     @ExcelProperty("执行追缴的人员ID")
-    private String recoveryUserId;
+    private Long recoveryUserId;
 
     @Schema(description = "追缴处理状态", example = "2")
     @ExcelProperty("追缴处理状态")

@@ -20,9 +20,9 @@ public class ParkReleaseRecordRespVO {
     @ExcelProperty("关联缴费记录标识")
     private Long payId;
 
-    @Schema(description = "放行指令唯一标识（UUID）", requiredMode = Schema.RequiredMode.REQUIRED, example = "13115")
-    @ExcelProperty("放行指令唯一标识（UUID）")
-    private String releaseCmdId;
+    @Schema(description = "放行指令唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "13115")
+    @ExcelProperty("放行指令唯一标识")
+    private Long releaseCmdId;
 
     @Schema(description = "放行状态（未放行，已放行）", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
     @ExcelProperty("放行状态（未放行，已放行）")

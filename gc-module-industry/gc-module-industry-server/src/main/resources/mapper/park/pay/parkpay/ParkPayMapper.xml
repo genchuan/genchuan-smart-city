@@ -14,7 +14,7 @@
         SELECT *
         FROM biz_park_pay
         WHERE 1=1
-        <if test="payId != null">AND pay_id = #{payId}</if>
+        <if test="payCode != null">AND pay_code = #{payCode}</if>
         <if test="woNo != null">AND wo_no = #{woNo}</if>
         <if test="reservationId != null">AND reservation_id = #{reservationId}</if>
         <if test="payWoNo != null">AND pay_wo_no = #{payWoNo}</if>

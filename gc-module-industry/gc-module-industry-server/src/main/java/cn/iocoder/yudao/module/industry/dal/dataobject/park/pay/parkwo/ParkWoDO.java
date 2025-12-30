@@ -28,10 +28,10 @@ public class ParkWoDO extends BaseDO {
      */
     @TableId
     private Long id;
-    /**
-     * 订单ID，唯一标识
-     */
-    private String woId;
+//    /**
+//     * 订单ID，唯一标识
+//     */
+//    private String woId;
     /**
      * 订单编号
      */

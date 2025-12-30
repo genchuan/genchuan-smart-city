@@ -18,8 +18,8 @@ public class ParkReleaseRecordPageReqVO extends PageParam {
     @Schema(description = "关联缴费记录标识", example = "31998")
     private Long payId;
 
-    @Schema(description = "放行指令唯一标识（UUID）", example = "13115")
-    private String releaseCmdId;
+    @Schema(description = "放行指令唯一标识", example = "13115")
+    private Long releaseCmdId;
 
     @Schema(description = "放行状态（未放行，已放行）", example = "2")
     private String releaseStatus;

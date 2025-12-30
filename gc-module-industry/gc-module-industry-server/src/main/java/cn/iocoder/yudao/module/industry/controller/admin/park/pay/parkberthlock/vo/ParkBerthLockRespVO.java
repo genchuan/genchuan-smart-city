@@ -18,11 +18,11 @@ public class ParkBerthLockRespVO {
 
     @Schema(description = "关联预约ID", example = "18569")
     @ExcelProperty("关联预约ID")
-    private String reservationId;
+    private Long reservationId;
 
     @Schema(description = "锁定的泊位唯一标识", example = "10041")
     @ExcelProperty("锁定的泊位唯一标识")
-    private String berthId;
+    private Long berthId;
 
     @Schema(description = "锁定开始时间")
     @ExcelProperty("锁定开始时间")

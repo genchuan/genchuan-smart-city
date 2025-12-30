@@ -16,7 +16,7 @@ public class ParkPayAddReqVO {
 //    @NotEmpty(message = "缴费记录唯一标识不能为空")
     //UUID生成
     @Schema(hidden = true)
-    private String payId;
+    private String payCode;
 
 //    @Schema(description = "关联订单编号", example = "WO20251226001")
     //后面支付完成后生成订单
@@ -26,21 +26,21 @@ public class ParkPayAddReqVO {
     @Schema(description = "关联预约记录ID", example = "R20251226001")
     //可空
     //预约成功会自动生成缴费记录，然后把预约id放到 新增缴费记录的参数里
-    private String reservationId;
+    private Long reservationId;
 
 //    @Schema(description = "支付订单编号", example = "PAY20251226001")
 //    private String payWoNo;
 
-    @Schema(description = "停车场唯一标识", example = "PL10001")
+    @Schema(description = "停车场唯一标识", example = "1")
     @NotEmpty(message = "停车场唯一标识不能为空")
-    private String parkLotId;
+    private Long parkLotId;
 
     @Schema(description = "停车场名称", example = "尚方停车场")
     @NotEmpty(message = "停车场名称不能为空")
     private String parkLotName;
 
     @Schema(description = "泊位唯一标识", example = "B10001")
-    private String berthId;
+    private Long berthId;
 
     @Schema(description = "泊位编号", example = "BO10001")
     private String berthNo;

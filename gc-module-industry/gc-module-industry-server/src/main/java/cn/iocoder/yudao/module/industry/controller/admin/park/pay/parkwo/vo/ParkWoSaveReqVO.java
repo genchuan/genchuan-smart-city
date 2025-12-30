@@ -13,9 +13,9 @@ public class ParkWoSaveReqVO {
     @Schema(description = "主键ID，唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "100")
     private Long id;
 
-    @Schema(description = "订单ID，唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "WO202512260001")
-    @NotEmpty(message = "订单ID，唯一标识不能为空")
-    private String woId;
+//    @Schema(description = "订单ID，唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "WO202512260001")
+//    @NotEmpty(message = "订单ID，唯一标识不能为空")
+//    private String woId;
 
     @Schema(description = "订单编号", requiredMode = Schema.RequiredMode.REQUIRED, example = "PARK-WO-20251226-0001")
     @NotEmpty(message = "订单编号不能为空")

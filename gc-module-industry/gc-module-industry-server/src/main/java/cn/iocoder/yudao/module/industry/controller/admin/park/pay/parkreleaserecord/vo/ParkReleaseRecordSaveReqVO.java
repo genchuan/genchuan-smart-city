@@ -18,9 +18,9 @@ public class ParkReleaseRecordSaveReqVO {
     @NotNull(message = "关联缴费记录标识不能为空")
     private Long payId;
 
-    @Schema(description = "放行指令唯一标识（UUID）", requiredMode = Schema.RequiredMode.REQUIRED, example = "5")
-    @NotEmpty(message = "放行指令唯一标识（UUID）不能为空")
-    private String releaseCmdId;
+    @Schema(description = "放行指令唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "5")
+    @NotEmpty(message = "放行指令唯一标识不能为空")
+    private Long releaseCmdId;
 
     @Schema(description = "放行状态（未放行，已放行）", requiredMode = Schema.RequiredMode.REQUIRED, example = "已放行")
     @NotEmpty(message = "放行状态（未放行，已放行）不能为空")

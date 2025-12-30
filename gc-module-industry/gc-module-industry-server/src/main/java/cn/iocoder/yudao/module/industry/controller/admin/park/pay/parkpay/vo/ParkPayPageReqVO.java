@@ -17,25 +17,25 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 public class ParkPayPageReqVO extends PageParam {
 
     @Schema(description = "缴费记录唯一标识", example = "19728")
-    private String payId;
+    private String payCode;
 
     @Schema(description = "关联订单编号")
     private String woNo;
 
     @Schema(description = "关联预约记录ID", example = "4022")
-    private String reservationId;
+    private Long reservationId;
 
     @Schema(description = "支付订单编号")
     private String payWoNo;
 
-    @Schema(description = "停车场唯一标识", example = "27720")
-    private String parkLotId;
+    @Schema(description = "停车场唯一标识", example = "1")
+    private Long parkLotId;
 
     @Schema(description = "停车场名称", example = "王五")
     private String parkLotName;
 
     @Schema(description = "泊位唯一标识", example = "14927")
-    private String berthId;
+    private Long berthId;
 
     @Schema(description = "泊位编号")
     private String berthNo;

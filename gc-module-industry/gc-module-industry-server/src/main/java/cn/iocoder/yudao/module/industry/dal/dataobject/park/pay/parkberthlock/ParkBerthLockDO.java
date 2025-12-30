@@ -32,11 +32,11 @@ public class ParkBerthLockDO extends BaseDO {
     /**
      * 关联预约ID
      */
-    private String reservationId;
+    private Long reservationId;
     /**
      * 锁定的泊位唯一标识
      */
-    private String berthId;
+    private Long berthId;
     /**
      * 锁定开始时间
      */

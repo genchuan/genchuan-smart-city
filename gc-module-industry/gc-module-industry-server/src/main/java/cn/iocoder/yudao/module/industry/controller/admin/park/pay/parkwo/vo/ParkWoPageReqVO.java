@@ -15,9 +15,9 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class ParkWoPageReqVO extends PageParam {
-
-    @Schema(description = "订单唯一标识", example = "WO20251226001")
-    private String woId;
+//    // TODO GAI
+//    @Schema(description = "订单唯一标识", example = "11")
+//    private Integer woId;
 
     @Schema(description = "订单编号", example = "NO20251226001")
     private String woNo;

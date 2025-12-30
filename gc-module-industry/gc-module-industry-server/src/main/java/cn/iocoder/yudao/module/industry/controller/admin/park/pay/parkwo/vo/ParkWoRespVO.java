@@ -17,9 +17,9 @@ public class ParkWoRespVO {
     @ExcelProperty("主键ID，唯一标识")
     private Long id;
 
-    @Schema(description = "订单ID，唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "WO20251226001")
-    @ExcelProperty("订单ID，唯一标识")
-    private String woId;
+//    @Schema(description = "订单ID，唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "WO20251226001")
+//    @ExcelProperty("订单ID，唯一标识")
+//    private String woId;
 
     @Schema(description = "订单编号", requiredMode = Schema.RequiredMode.REQUIRED, example = "NO20251226001")
     @ExcelProperty("订单编号")

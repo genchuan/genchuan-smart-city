@@ -16,9 +16,9 @@ public class ParkReleaseRecordAddReqVO {
 
 //    @Schema(description = "放行指令唯一标识（UUID）", requiredMode = Schema.RequiredMode.REQUIRED, example = "13115")
 //    @NotEmpty(message = "放行指令唯一标识（UUID）不能为空")
-    //UUID直接生成
+    //直接用1
     @Schema(hidden = true)
-    private String releaseCmdId;
+    private Long releaseCmdId;
 
     @Schema(description = "放行状态（未放行，已放行）", requiredMode = Schema.RequiredMode.REQUIRED, example = "已放行")
     @NotEmpty(message = "放行状态（未放行，已放行）不能为空")

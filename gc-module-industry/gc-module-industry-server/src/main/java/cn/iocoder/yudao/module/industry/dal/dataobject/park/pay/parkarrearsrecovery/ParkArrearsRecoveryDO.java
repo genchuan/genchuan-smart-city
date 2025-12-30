@@ -33,11 +33,11 @@ public class ParkArrearsRecoveryDO extends BaseDO {
     /**
      * 欠费追缴唯一标识
      */
-    private String recoveryId;
+    private String recoveryCode;
     /**
      * 关联订单ID
      */
-    private String woId;
+    private Long woId;
     /**
      * 订单编号
      */
@@ -45,7 +45,7 @@ public class ParkArrearsRecoveryDO extends BaseDO {
     /**
      * 用户唯一标识
      */
-    private String userId;
+    private Long userId;
     /**
      * 用户姓名
      */
@@ -69,11 +69,11 @@ public class ParkArrearsRecoveryDO extends BaseDO {
     /**
      * 追缴工单唯一标识
      */
-    private String recoveryWoId;
+    private Long recoveryWoId;
     /**
      * 执行追缴的人员ID
      */
-    private String recoveryUserId;
+    private Long recoveryUserId;
     /**
      * 追缴处理状态
      */

@@ -17,13 +17,13 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 public class ParkReservationPageReqVO extends PageParam {
 
     @Schema(description = "预约记录唯一标识", example = "10121")
-    private String reservationId;
+    private Long reservationId;
 
     @Schema(description = "预约订单编号")
     private String reservationNo;
 
     @Schema(description = "用户唯一标识", example = "21885")
-    private String userId;
+    private Long userId;
 
     @Schema(description = "用户姓名", example = "王五")
     private String userName;
@@ -31,14 +31,14 @@ public class ParkReservationPageReqVO extends PageParam {
     @Schema(description = "用户手机号")
     private String userPhone;
 
-    @Schema(description = "停车场唯一标识", example = "23534")
-    private String parkLotId;
+    @Schema(description = "停车场唯一标识", example = "1")
+    private Long parkLotId;
 
     @Schema(description = "停车场名称", example = "芋艿")
     private String parkLotName;
 
     @Schema(description = "泊位唯一标识", example = "15414")
-    private String berthId;
+    private Long berthId;
 
     @Schema(description = "泊位编号")
     private String berthNo;

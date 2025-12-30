@@ -63,13 +63,13 @@ public class ParkPayController {
     }
 
     // 出场
-//    @PostMapping("/exit")
-//    @Operation(summary = "出场（前端暂时不要用这个）")
-//    @PreAuthorize("@ss.hasPermission('industry:park-pay:exit')")
-//    public CommonResult<Boolean> exit(@Valid @RequestBody ParkPayAddReqVO addReqVO) {
-//        parkPayService.addParkPay(addReqVO);
-//        return success(true);
-//    }
+    @PostMapping("/exit")
+    @Operation(summary = "出场（前端暂时不要用这个）")
+    @PreAuthorize("@ss.hasPermission('industry:park-pay:exit')")
+    public CommonResult<Boolean> exit(@Valid @RequestBody ParkPayExitReqVO exitReqVO) {
+        parkPayService.exitParkPay(exitReqVO);
+        return success(true);
+    }
 
     @PutMapping("/update")
     @Operation(summary = "更新停车缴费服务")

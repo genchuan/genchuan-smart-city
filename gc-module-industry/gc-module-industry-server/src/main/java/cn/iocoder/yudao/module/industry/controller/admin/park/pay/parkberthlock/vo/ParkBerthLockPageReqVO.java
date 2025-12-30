@@ -16,10 +16,10 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 public class ParkBerthLockPageReqVO extends PageParam {
 
     @Schema(description = "关联预约ID", example = "18569")
-    private String reservationId;
+    private Long reservationId;
 
     @Schema(description = "锁定的泊位唯一标识", example = "10041")
-    private String berthId;
+    private Long berthId;
 
     @Schema(description = "锁定开始时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)

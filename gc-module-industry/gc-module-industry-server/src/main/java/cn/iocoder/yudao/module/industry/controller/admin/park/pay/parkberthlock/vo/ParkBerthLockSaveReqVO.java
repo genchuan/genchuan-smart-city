@@ -15,10 +15,10 @@ public class ParkBerthLockSaveReqVO {
     private Long id;
 
     @Schema(description = "关联预约ID", example = "18569")
-    private String reservationId;
+    private Long reservationId;
 
     @Schema(description = "锁定的泊位唯一标识", example = "10041")
-    private String berthId;
+    private Long berthId;
 
     @Schema(description = "锁定开始时间")
     private LocalDateTime lockStartTime;

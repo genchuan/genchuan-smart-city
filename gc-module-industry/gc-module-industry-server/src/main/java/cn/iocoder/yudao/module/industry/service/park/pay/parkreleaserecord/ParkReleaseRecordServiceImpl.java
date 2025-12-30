@@ -78,7 +78,7 @@ public class ParkReleaseRecordServiceImpl implements ParkReleaseRecordService {
     public Long addParkReleaseRecord(ParkReleaseRecordAddReqVO addReqVO) {
         //1. TODO 关联缴费记录id后面需要换成真实的
         //2. 放行指令标识UUID
-        String releaseCmdId= UUID.randomUUID().toString().replace("-","");
+        Long releaseCmdId= 1L;
         addReqVO.setReleaseCmdId(releaseCmdId);
         //3. 放行实际时间用现在
         addReqVO.setReleaseTime(LocalDateTime.now());

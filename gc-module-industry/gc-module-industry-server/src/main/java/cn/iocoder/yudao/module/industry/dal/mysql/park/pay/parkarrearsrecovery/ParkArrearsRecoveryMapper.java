@@ -21,7 +21,7 @@ public interface ParkArrearsRecoveryMapper extends BaseMapperX<ParkArrearsRecove
 
     default PageResult<ParkArrearsRecoveryDO> selectPage(ParkArrearsRecoveryPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<ParkArrearsRecoveryDO>()
-                .eqIfPresent(ParkArrearsRecoveryDO::getRecoveryId, reqVO.getRecoveryId())
+                .eqIfPresent(ParkArrearsRecoveryDO::getRecoveryCode, reqVO.getRecoveryCode())
                 .eqIfPresent(ParkArrearsRecoveryDO::getWoId, reqVO.getWoId())
                 .eqIfPresent(ParkArrearsRecoveryDO::getWoNo, reqVO.getWoNo())
                 .eqIfPresent(ParkArrearsRecoveryDO::getUserId, reqVO.getUserId())

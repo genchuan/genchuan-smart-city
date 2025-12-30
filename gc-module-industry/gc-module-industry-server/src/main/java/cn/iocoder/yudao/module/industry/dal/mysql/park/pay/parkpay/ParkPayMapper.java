@@ -25,7 +25,7 @@ public interface ParkPayMapper extends BaseMapperX<ParkPayDO> {
 
     default PageResult<ParkPayDO> selectPage(ParkPayPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<ParkPayDO>()
-                .eqIfPresent(ParkPayDO::getPayId, reqVO.getPayId())
+                .eqIfPresent(ParkPayDO::getPayCode, reqVO.getPayCode())
                 .eqIfPresent(ParkPayDO::getWoNo, reqVO.getWoNo())
                 .eqIfPresent(ParkPayDO::getReservationId, reqVO.getReservationId())
                 .eqIfPresent(ParkPayDO::getPayWoNo, reqVO.getPayWoNo())

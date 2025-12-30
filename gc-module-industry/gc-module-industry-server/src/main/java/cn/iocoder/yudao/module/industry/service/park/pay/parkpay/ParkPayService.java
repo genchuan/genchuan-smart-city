@@ -59,4 +59,6 @@ public interface ParkPayService {
     PageResult<ParkPayDO> drillParkPay(ParkPayDrillReqVO drillReqVO);
 
     Long addParkPay(ParkPayAddReqVO addReqVO);
+
+    void exitParkPay(ParkPayExitReqVO exitReqVO);
 }

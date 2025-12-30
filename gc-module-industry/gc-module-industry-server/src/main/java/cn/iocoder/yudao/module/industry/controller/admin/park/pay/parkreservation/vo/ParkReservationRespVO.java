@@ -19,7 +19,7 @@ public class ParkReservationRespVO {
 
     @Schema(description = "预约记录唯一标识", example = "10121")
     @ExcelProperty("预约记录唯一标识")
-    private String reservationId;
+    private Long reservationId;
 
     @Schema(description = "预约订单编号")
     @ExcelProperty("预约订单编号")
@@ -27,7 +27,7 @@ public class ParkReservationRespVO {
 
     @Schema(description = "用户唯一标识", example = "21885")
     @ExcelProperty("用户唯一标识")
-    private String userId;
+    private Long userId;
 
     @Schema(description = "用户姓名", example = "王五")
     @ExcelProperty("用户姓名")
@@ -37,9 +37,9 @@ public class ParkReservationRespVO {
     @ExcelProperty("用户手机号")
     private String userPhone;
 
-    @Schema(description = "停车场唯一标识", example = "23534")
+    @Schema(description = "停车场唯一标识", example = "1")
     @ExcelProperty("停车场唯一标识")
-    private String parkLotId;
+    private Long parkLotId;
 
     @Schema(description = "停车场名称", example = "芋艿")
     @ExcelProperty("停车场名称")
@@ -47,7 +47,7 @@ public class ParkReservationRespVO {
 
     @Schema(description = "泊位唯一标识", example = "15414")
     @ExcelProperty("泊位唯一标识")
-    private String berthId;
+    private Long berthId;
 
     @Schema(description = "泊位编号")
     @ExcelProperty("泊位编号")

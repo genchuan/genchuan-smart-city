@@ -32,7 +32,7 @@ public class ParkReservationDO extends BaseDO {
     /**
      * 预约记录唯一标识
      */
-    private String reservationId;
+    private Long reservationId;
     /**
      * 预约订单编号
      */
@@ -40,7 +40,7 @@ public class ParkReservationDO extends BaseDO {
     /**
      * 用户唯一标识
      */
-    private String userId;
+    private Long userId;
     /**
      * 用户姓名
      */
@@ -52,7 +52,7 @@ public class ParkReservationDO extends BaseDO {
     /**
      * 停车场唯一标识
      */
-    private String parkLotId;
+    private Long parkLotId;
     /**
      * 停车场名称
      */
@@ -60,7 +60,7 @@ public class ParkReservationDO extends BaseDO {
     /**
      * 泊位唯一标识
      */
-    private String berthId;
+    private Long berthId;
     /**
      * 泊位编号
      */

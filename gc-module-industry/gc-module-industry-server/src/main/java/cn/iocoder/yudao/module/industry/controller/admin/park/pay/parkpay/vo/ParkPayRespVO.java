@@ -19,7 +19,7 @@ public class ParkPayRespVO {
 
     @Schema(description = "缴费记录唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "19728")
     @ExcelProperty("缴费记录唯一标识")
-    private String payId;
+    private String payCode;
 
     @Schema(description = "关联订单编号")
     @ExcelProperty("关联订单编号")
@@ -27,15 +27,15 @@ public class ParkPayRespVO {
 
     @Schema(description = "关联预约记录ID", example = "4022")
     @ExcelProperty("关联预约记录ID")
-    private String reservationId;
+    private Long reservationId;
 
     @Schema(description = "支付订单编号")
     @ExcelProperty("支付订单编号")
     private String payWoNo;
 
-    @Schema(description = "停车场唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "27720")
+    @Schema(description = "停车场唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @ExcelProperty("停车场唯一标识")
-    private String parkLotId;
+    private Long parkLotId;
 
     @Schema(description = "停车场名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "王五")
     @ExcelProperty("停车场名称")
@@ -43,7 +43,7 @@ public class ParkPayRespVO {
 
     @Schema(description = "泊位唯一标识", example = "14927")
     @ExcelProperty("泊位唯一标识")
-    private String berthId;
+    private Long berthId;
 
     @Schema(description = "泊位编号")
     @ExcelProperty("泊位编号")

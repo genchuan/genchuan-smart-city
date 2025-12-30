@@ -16,16 +16,16 @@ public class ParkArrearsRecoverySaveReqVO {
     private Long id;
 
     @Schema(description = "欠费追缴唯一标识", example = "3125")
-    private String recoveryId;
+    private String recoveryCode;
 
     @Schema(description = "关联订单ID", example = "25273")
-    private String woId;
+    private Long woId;
 
     @Schema(description = "订单编号")
     private String woNo;
 
     @Schema(description = "用户唯一标识", example = "28135")
-    private String userId;
+    private Long userId;
 
     @Schema(description = "用户姓名", example = "张三")
     private String userName;
@@ -43,10 +43,10 @@ public class ParkArrearsRecoverySaveReqVO {
     private BigDecimal arrearsAmount;
 
     @Schema(description = "追缴工单唯一标识", example = "12189")
-    private String recoveryWoId;
+    private Long recoveryWoId;
 
     @Schema(description = "执行追缴的人员ID", example = "1816")
-    private String recoveryUserId;
+    private Long recoveryUserId;
 
     @Schema(description = "追缴处理状态", example = "2")
     private String recoveryStatus;

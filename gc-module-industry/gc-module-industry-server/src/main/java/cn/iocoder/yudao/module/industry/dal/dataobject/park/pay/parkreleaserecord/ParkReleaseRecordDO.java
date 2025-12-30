@@ -33,9 +33,9 @@ public class ParkReleaseRecordDO extends BaseDO {
      */
     private Long payId;
     /**
-     * 放行指令唯一标识（UUID）
+     * 放行指令唯一标识
      */
-    private String releaseCmdId;
+    private Long releaseCmdId;
     /**
      * 放行状态（未放行，已放行）
      */
