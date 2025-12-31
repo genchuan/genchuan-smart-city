@@ -47,4 +47,9 @@ public interface ErrorCodeConstants {
     ErrorCode PARK_RELEASE_RECORD_NOT_EXISTS = new ErrorCode(600_009 , "放行记录不存在");
     // ========== 优惠活动  ==========
     ErrorCode PARK_DISCOUNT_ACTIVITY_NOT_EXISTS = new ErrorCode(600_010, "优惠活动不存在");
+
+    // ========== 临停订单  ==========
+    ErrorCode ORDER_TEMP_NOT_EXISTS = new ErrorCode(600_011, "临停订单不存在");
+    // ========== 临停订单  ==========
+    ErrorCode PARK_ORDER_TEMP_NOT_EXISTS = new ErrorCode(600_012, "临停订单不存在");
 }

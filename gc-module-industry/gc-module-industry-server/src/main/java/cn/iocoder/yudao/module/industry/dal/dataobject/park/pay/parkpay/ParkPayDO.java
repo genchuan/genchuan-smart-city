@@ -71,6 +71,7 @@ public class ParkPayDO extends BaseDO {
     /**
      * 车辆入场时间
      */
+
     private LocalDateTime entryTime;
     /**
      * 车辆出场时间
