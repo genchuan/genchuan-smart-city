@@ -52,4 +52,8 @@ public interface ErrorCodeConstants {
     ErrorCode ORDER_TEMP_NOT_EXISTS = new ErrorCode(600_011, "临停订单不存在");
     // ========== 临停订单  ==========
     ErrorCode PARK_ORDER_TEMP_NOT_EXISTS = new ErrorCode(600_012, "临停订单不存在");
+    // ========== 期卡订单  ==========
+    ErrorCode PARK_ORDER_PERIOD_NOT_EXISTS = new ErrorCode(600_013, "期卡订单不存在");
+    // ========== 退款订单  ==========
+    ErrorCode ORDER_REFUND_NOT_EXISTS = new ErrorCode(600_014, "退款订单不存在");
 }
