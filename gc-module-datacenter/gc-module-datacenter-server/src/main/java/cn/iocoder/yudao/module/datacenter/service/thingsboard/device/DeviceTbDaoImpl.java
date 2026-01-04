@@ -3,12 +3,12 @@ package cn.iocoder.yudao.module.datacenter.service.thingsboard.device;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DevicePageReqVO;
 import cn.iocoder.yudao.module.datacenter.service.thingsboard.device.Dao.DeviceTbDao;
-import com.alibaba.nacos.shaded.io.grpc.netty.shaded.io.netty.handler.codec.http.HttpHeaders;
-import com.alibaba.nacos.shaded.io.grpc.netty.shaded.io.netty.handler.codec.http.HttpMethod;
-import org.apache.hc.core5.http.HttpEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.thingsboard.rest.client.RestClient;
@@ -24,6 +24,7 @@ import org.thingsboard.server.common.data.page.TimePageLink;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DeviceTbDaoImpl implements DeviceTbDao {
@@ -41,15 +42,26 @@ public class DeviceTbDaoImpl implements DeviceTbDao {
     public PageResult<Device> getDevicePage(DevicePageReqVO pageReqVO) {
         PageResult<Device> devicePageResult = new PageResult<>();
         RestClient client = new RestClient(url);
-        client.login(username, password);
-        PageData<Device> tenantDevices;
-        PageLink pageLink = new PageLink(pageReqVO.getPageSize(),pageReqVO.getPageNo()-1);
-        tenantDevices = client.getTenantDevices("顺昌排口设备", pageLink);
-        devicePageResult.setList(tenantDevices.getData());
-        devicePageResult.setTotal(tenantDevices.getTotalElements());
-        client.logout();
-        client.close();
-        return devicePageResult;
+        try {
+            client.login(username, password);
+
+            // 使用新的API
+            PageLink pageLink = new PageLink(pageReqVO.getPageSize(), pageReqVO.getPageNo() - 1);
+            PageData<DeviceInfo> tenantDevices = getAllDevices(pageLink, client);
+
+            // 转换为Device对象（如果需要保持原有返回类型）
+            List<Device> deviceList = tenantDevices.getData().stream()
+                    .map(this::convertDeviceInfoToDevice)
+                    .collect(Collectors.toList());
+
+            devicePageResult.setList(deviceList);
+            devicePageResult.setTotal(tenantDevices.getTotalElements());
+
+            return devicePageResult;
+        } finally {
+            client.logout();
+            client.close();
+        }
     }
 
     @Override
@@ -129,6 +141,79 @@ public class DeviceTbDaoImpl implements DeviceTbDao {
         }
     }
 
+    @Override
+    public DeviceInfo getDeviceInfo(String deviceId) {
+        RestClient client = new RestClient(url);
+        try {
+            client.login(username, password);
+
+            // 使用新的API获取设备详情
+            String deviceUrl = url + "api/tenant/deviceInfos/" + deviceId;
+
+            String token = client.getToken();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-Authorization", "Bearer " + token);
+            headers.set("Content-Type", "application/json");
+
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            RestTemplate restTemplate = new RestTemplate();
+
+            ResponseEntity<DeviceInfo> response = restTemplate.exchange(
+                    deviceUrl,
+                    org.springframework.http.HttpMethod.GET,
+                    entity,
+                    DeviceInfo.class
+            );
+
+            return response.getBody();
+        } catch (Exception e) {
+            throw new RuntimeException("获取设备详情失败: " + e.getMessage(), e);
+        } finally {
+            client.logout();
+            client.close();
+        }
+    }
+
+    @Override
+    public PageData<DeviceInfo> getAllDevices(PageLink pageLink) {
+        RestClient client = new RestClient(url);
+        try {
+            client.login(username, password);
+            return getAllDevices(pageLink, client);
+        } finally {
+            client.logout();
+            client.close();
+        }
+    }
+
+    private PageData<DeviceInfo> getAllDevices(PageLink pageLink, RestClient client) {
+        try {
+            // 构建新的API URL
+            String devicesUrl = url + "api/tenant/deviceInfos?pageSize=" + pageLink.getPageSize() +
+                    "&page=" + pageLink.getPage() +
+                    "&sortProperty=createdTime&sortOrder=DESC";
+
+            String token = client.getToken();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-Authorization", "Bearer " + token);
+            headers.set("Content-Type", "application/json");
+
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            RestTemplate restTemplate = new RestTemplate();
+
+            ResponseEntity<PageData<DeviceInfo>> response = restTemplate.exchange(
+                    devicesUrl,
+                    org.springframework.http.HttpMethod.GET,
+                    entity,
+                    new org.springframework.core.ParameterizedTypeReference<PageData<DeviceInfo>>() {}
+            );
+
+            return response.getBody();
+        } catch (Exception e) {
+            throw new RuntimeException("获取设备列表失败", e);
+        }
+    }
+
     private PageData<AlarmInfo> getAllAlarms(TimePageLink pageLink, RestClient client) {
         try {
             // 获取认证token
@@ -157,6 +242,20 @@ public class DeviceTbDaoImpl implements DeviceTbDao {
         } catch (Exception e) {
             throw new RuntimeException("获取告警列表失败", e);
         }
+    }
+
+    private Device convertDeviceInfoToDevice(DeviceInfo deviceInfo) {
+        Device device = new Device();
+        device.setId(deviceInfo.getId());
+        device.setCreatedTime(deviceInfo.getCreatedTime());
+        device.setTenantId(deviceInfo.getTenantId());
+        device.setCustomerId(deviceInfo.getCustomerId());
+        device.setName(deviceInfo.getName());
+        device.setType(deviceInfo.getType());
+        device.setLabel(deviceInfo.getLabel());
+        device.setDeviceProfileId(deviceInfo.getDeviceProfileId());
+        device.setAdditionalInfo(deviceInfo.getAdditionalInfo());
+        return device;
     }
 
 

@@ -9,6 +9,7 @@ import org.thingsboard.server.common.data.alarm.AlarmInfo;
 import org.thingsboard.server.common.data.id.EntityId;
 import org.thingsboard.server.common.data.kv.AttributeKvEntry;
 import org.thingsboard.server.common.data.page.PageData;
+import org.thingsboard.server.common.data.page.PageLink;
 import org.thingsboard.server.common.data.page.TimePageLink;
 
 import java.util.List;
@@ -25,4 +26,18 @@ public interface DeviceTbDao {
      * 获取告警列表（带分页）
      */
     PageData<AlarmInfo> getAlarms(TimePageLink pageLink);
+
+    /**
+     * 获取所有设备列表（分页）- 使用新的API
+     * @param pageLink 分页参数
+     * @return 设备分页数据
+     */
+    PageData<DeviceInfo> getAllDevices(PageLink pageLink);
+
+    /**
+     * 获取设备详情信息
+     * @param deviceId 设备ID
+     * @return 设备详情
+     */
+    DeviceInfo getDeviceInfo(String deviceId);
 }

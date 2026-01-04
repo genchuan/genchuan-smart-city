@@ -26,4 +26,9 @@ public interface AssetProfileTbDao {
      * 从ThingsBoard删除资产配置
      */
     void deleteAssetProfile(String assetProfileId);
+
+    /**
+     * 更新资产配置到ThingsBoard
+     */
+    AssetProfile updateAssetProfile(AssetProfile assetProfile);
 }

@@ -70,4 +70,18 @@ public interface DeviceService {
      * 获取告警列表（带分页）
      */
     PageResult<AlarmRespVO> getAlarmPage(Integer pageSize, Integer page);
+
+    /**
+     * 同步ThingsBoard设备到本地数据库
+     * @return 同步结果信息
+     */
+    Map<String, Object> syncDevicesFromThingsBoard();
+
+    /**
+     * 获取设备分页（包含完整信息）
+     * @param pageSize 每页大小
+     * @param page 页码
+     * @return 设备分页数据
+     */
+    PageResult<DeviceInfo> getDevicePageWithDetails(Integer pageSize, Integer page);
 }

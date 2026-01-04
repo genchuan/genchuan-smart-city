@@ -54,11 +54,21 @@ public class AssetProfileSaveReqVO {
     @Schema(description = "外部实体类型", example = "1")
     private String externalEntityType;
 
-    @Schema(description = "版本号", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "版本号不能为空")
+    @Schema(description = "版本号")
     private Integer version;
 
     @Schema(description = "是否默认配置")
     private Boolean isDefault;
 
+    @Schema(description = "通用扩展字段1")
+    private String extCommon1;
+
+    @Schema(description = "通用扩展字段2")
+    private String extCommon2;
+
+    @Schema(description = "通用扩展字段3")
+    private String extCommon3;
+
+    @Schema(description = "通用扩展字段4")
+    private String extCommon4;
 }

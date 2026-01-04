@@ -7,7 +7,12 @@ import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DeviceSaveReqVO;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.thingsboard.device.DeviceDO;
 import cn.iocoder.yudao.module.datacenter.dal.mysql.thingsboard.device.DeviceMapper;
+import cn.iocoder.yudao.module.datacenter.service.thingsboard.asset.AssetServiceImpl;
 import cn.iocoder.yudao.module.datacenter.service.thingsboard.device.Dao.DeviceTbDao;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -22,6 +27,7 @@ import org.thingsboard.server.common.data.DeviceInfo;
 import org.thingsboard.server.common.data.alarm.AlarmInfo;
 import org.thingsboard.server.common.data.kv.AttributeKvEntry;
 import org.thingsboard.server.common.data.page.PageData;
+import org.thingsboard.server.common.data.page.PageLink;
 import org.thingsboard.server.common.data.page.TimePageLink;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -41,6 +47,9 @@ public class DeviceServiceImpl implements DeviceService {
     private DeviceMapper deviceMapper;
     @Resource
     private DeviceTbDao deviceTbDao;
+
+    private static final Logger log = LoggerFactory.getLogger(AssetServiceImpl.class);
+
 
     @Override
     public String createDevice(DeviceSaveReqVO createReqVO) {
@@ -114,6 +123,63 @@ public class DeviceServiceImpl implements DeviceService {
         return new PageResult<>(alarmRespVOList, alarmPageData.getTotalElements());
     }
 
+    @Override
+    public Map<String, Object> syncDevicesFromThingsBoard() {
+        try {
+            log.info("开始自动同步ThingsBoard设备数据");
+            int pageSize = 50;
+            int currentPage = 0;
+            int totalSynced = 0;
+
+            while (true) {
+                PageLink pageLink = new PageLink(pageSize, currentPage);
+                PageData<DeviceInfo> devicePageData = deviceTbDao.getAllDevices(pageLink);
+
+                if (devicePageData == null || devicePageData.getData() == null || devicePageData.getData().isEmpty()) {
+                    break;
+                }
+
+                // 批量处理当前页的设备
+                for (DeviceInfo deviceInfo : devicePageData.getData()) {
+                    try {
+                        syncSingleDevice(deviceInfo);
+                        totalSynced++;
+                    } catch (Exception e) {
+                        log.error("同步单个设备失败: {}", deviceInfo.getName(), e);
+                        // 继续同步其他设备，不中断整个流程
+                    }
+                }
+
+                log.info("已同步第{}页设备数据，共{}条", currentPage + 1, devicePageData.getData().size());
+
+                if (devicePageData.getData().size() < pageSize) {
+                    break;
+                }
+                currentPage++;
+            }
+
+            log.info("设备同步完成，共处理{}条数据", totalSynced);
+            return Map.of("success", true, "totalSynced", totalSynced);
+
+        } catch (Exception e) {
+            log.error("自动同步设备数据失败", e);
+            return Map.of("success", false, "error", e.getMessage());
+        }
+    }
+
+    @Override
+    public PageResult<DeviceInfo> getDevicePageWithDetails(Integer pageSize, Integer page) {
+        PageLink pageLink = new PageLink(pageSize, page);
+        PageData<DeviceInfo> devicePageData = deviceTbDao.getAllDevices(pageLink);
+
+        if (devicePageData == null || devicePageData.getData() == null) {
+            return new PageResult<>(Collections.emptyList(), 0L);
+        }
+
+        return new PageResult<>(devicePageData.getData(), devicePageData.getTotalElements());
+    }
+
+
     private AlarmRespVO convertAlarmInfoToRespVO(AlarmInfo alarmInfo) {
         AlarmRespVO respVO = new AlarmRespVO();
 
@@ -176,4 +242,96 @@ public class DeviceServiceImpl implements DeviceService {
 
         return attrVO;
     }
+
+    /**
+     * 同步单个设备
+     */
+    private void syncSingleDevice(DeviceInfo deviceInfo) {
+        String deviceId = deviceInfo.getId().getId().toString();
+        DeviceDO existingDevice = deviceMapper.selectById(deviceId);
+
+        DeviceDO deviceDO = buildDeviceDO(deviceInfo);
+
+        if (existingDevice != null) {
+            deviceDO.setId(existingDevice.getId());
+            deviceDO.setCreateTime(existingDevice.getCreateTime());
+            if (isDeviceChanged(existingDevice, deviceDO)) {
+                deviceMapper.updateById(deviceDO);
+                log.debug("更新设备: {}", deviceInfo.getName());
+            }
+        } else {
+            deviceMapper.insert(deviceDO);
+            log.debug("新增设备: {}", deviceInfo.getName());
+        }
+    }
+
+    /**
+     * 构建 DeviceDO 对象
+     */
+    private DeviceDO buildDeviceDO(DeviceInfo deviceInfo) {
+        JsonNode additionalInfo = deviceInfo.getAdditionalInfo();
+        String customerTitle = "";
+        Boolean customerIsPublic = null;
+        String description = "";
+
+        if (additionalInfo != null) {
+            if (additionalInfo.has("customerTitle")) {
+                customerTitle = additionalInfo.get("customerTitle").asText();
+            }
+            if (additionalInfo.has("customerIsPublic")) {
+                customerIsPublic = additionalInfo.get("customerIsPublic").asBoolean();
+            }
+            if (additionalInfo.has("description")) {
+                description = additionalInfo.get("description").asText();
+            }
+        }
+
+        return DeviceDO.builder()
+                .id(deviceInfo.getId().getId().toString())
+                .tbTenantId(deviceInfo.getTenantId() != null ? deviceInfo.getTenantId().getId().toString() : null)
+                .customerId(deviceInfo.getCustomerId() != null ? deviceInfo.getCustomerId().getId().toString() : null)
+                .name(deviceInfo.getName())
+                .type(deviceInfo.getType())
+                .label(deviceInfo.getLabel())
+                .deviceProfileId(deviceInfo.getDeviceProfileId() != null ? deviceInfo.getDeviceProfileId().getId().toString() : null)
+                .firmwareId(deviceInfo.getFirmwareId() != null ? deviceInfo.getFirmwareId().toString() : null)
+                .softwareId(deviceInfo.getSoftwareId() != null ? deviceInfo.getSoftwareId().toString() : null)
+                .externalId(deviceInfo.getExternalId() != null ? deviceInfo.getExternalId().toString() : null)
+                .version(deviceInfo.getVersion())
+                .active(deviceInfo.isActive())
+                .deviceProfileName(deviceInfo.getDeviceProfileName())
+                .customerTitle(customerTitle)
+                .customerIsPublic(customerIsPublic)
+                .additionalInfo(convertAdditionalInfoToJson(additionalInfo))
+                .build();
+    }
+
+    /**
+     * 判断设备数据是否发生变化
+     */
+    private boolean isDeviceChanged(DeviceDO existing, DeviceDO latest) {
+        return !Objects.equals(existing.getName(), latest.getName()) ||
+                !Objects.equals(existing.getType(), latest.getType()) ||
+                !Objects.equals(existing.getLabel(), latest.getLabel()) ||
+                !Objects.equals(existing.getVersion(), latest.getVersion()) ||
+                !Objects.equals(existing.getActive(), latest.getActive()) ||
+                !Objects.equals(existing.getAdditionalInfo(), latest.getAdditionalInfo());
+    }
+
+    /**
+     * 转换附加信息为JSON字符串
+     */
+    private String convertAdditionalInfoToJson(JsonNode additionalInfo) {
+        if (additionalInfo == null || additionalInfo.isNull()) {
+            return null;
+        }
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.writeValueAsString(additionalInfo);
+        } catch (Exception e) {
+            log.warn("转换附加信息失败", e);
+            return null;
+        }
+    }
+
 }

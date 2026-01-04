@@ -127,4 +127,23 @@ public class DeviceController {
                 BeanUtils.toBean(list, DeviceRespVO.class));
     }
 
+    @PostMapping("/sync")
+    @Operation(summary = "同步ThingsBoard设备")
+    @PreAuthorize("@ss.hasPermission('device:device:sync')")
+    public CommonResult<Map<String, Object>> syncDevicesFromThingsBoard() {
+        Map<String, Object> result = deviceService.syncDevicesFromThingsBoard();
+        return success(result);
+    }
+
+    @GetMapping("/device-page-with-details")
+    @Operation(summary = "获取设备分页（包含完整信息）")
+    @PreAuthorize("@ss.hasPermission('device:device:query')")
+    public CommonResult<PageResult<DeviceInfo>> getDevicePageWithDetails(
+            @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
+            @RequestParam(value = "page", defaultValue = "0") Integer page) {
+
+        PageResult<DeviceInfo> pageResult = deviceService.getDevicePageWithDetails(pageSize, page);
+        return success(pageResult);
+    }
+
 }

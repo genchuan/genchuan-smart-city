@@ -81,11 +81,39 @@ public class AssetProfileServiceImpl implements AssetProfileService {
 
     @Override
     public void updateAssetProfile(AssetProfileSaveReqVO updateReqVO) {
-        // 校验存在
-        validateAssetProfileExists(updateReqVO.getId());
-        // 更新
-        AssetProfileDO updateObj = BeanUtils.toBean(updateReqVO, AssetProfileDO.class);
-        assetProfileMapper.updateById(updateObj);
+        try {
+            log.info("开始更新资产配置，请求参数: {}", updateReqVO);
+
+            // 1. 校验本地资产配置存在并获取配置信息
+            AssetProfileDO existingAssetProfile = validateAssetProfileExists(updateReqVO.getId());
+            if (existingAssetProfile.getProfileId() == null || existingAssetProfile.getProfileId().isEmpty()) {
+                throw new IllegalArgumentException("资产配置未同步到ThingsBoard，无法更新");
+            }
+
+            // 2. 构建 ThingsBoard 资产配置对象（包含完整的ID信息）
+            AssetProfile assetProfileToUpdate = AssetProfileBuilder.buildAssetProfileForUpdate(
+                    existingAssetProfile.getProfileId(),
+                    updateReqVO.getProfileName(),
+                    updateReqVO.getProfileDescription(),
+                    updateReqVO.getVersion() != null ? updateReqVO.getVersion().longValue() : null
+            );
+            log.info("构建的ThingsBoard更新资产配置对象: {}", assetProfileToUpdate);
+
+            // 3. 先更新到 ThingsBoard
+            AssetProfile updatedAssetProfile = assetProfileTbDao.updateAssetProfile(assetProfileToUpdate);
+            log.info("ThingsBoard更新成功，返回资产配置: {}", updatedAssetProfile);
+
+            // 4. 再更新本地数据库
+            AssetProfileDO updateObj = convertToAssetProfileDOForUpdate(updateReqVO, updatedAssetProfile, existingAssetProfile);
+            assetProfileMapper.updateById(updateObj);
+
+            log.info("资产配置更新成功，本地ID: {}, ThingsBoard ID: {}",
+                    updateReqVO.getId(), existingAssetProfile.getProfileId());
+
+        } catch (Exception e) {
+            log.error("更新资产配置失败", e);
+            throw new RuntimeException("更新资产配置失败: " + e.getMessage());
+        }
     }
 
     @Override
@@ -194,6 +222,12 @@ public class AssetProfileServiceImpl implements AssetProfileService {
         if (existingAssetProfile != null) {
             assetProfileDO.setId(existingAssetProfile.getId());
             assetProfileDO.setCreateTime(existingAssetProfile.getCreateTime());
+
+            assetProfileDO.setExtCommon1(existingAssetProfile.getExtCommon1());
+            assetProfileDO.setExtCommon2(existingAssetProfile.getExtCommon2());
+            assetProfileDO.setExtCommon3(existingAssetProfile.getExtCommon3());
+            assetProfileDO.setExtCommon4(existingAssetProfile.getExtCommon4());
+
             if (isAssetProfileChanged(existingAssetProfile, assetProfileDO)) {
                 assetProfileMapper.updateById(assetProfileDO);
                 log.debug("更新资产配置: {}", assetProfile.getName());
@@ -212,7 +246,11 @@ public class AssetProfileServiceImpl implements AssetProfileService {
                 !Objects.equals(existing.getProfileDescription(), latest.getProfileDescription()) ||
                 !Objects.equals(existing.getDefaultRuleChainId(), latest.getDefaultRuleChainId()) ||
                 !Objects.equals(existing.getVersion(), latest.getVersion()) ||
-                !Objects.equals(existing.getIsDefault(), latest.getIsDefault());
+                !Objects.equals(existing.getIsDefault(), latest.getIsDefault()) ||
+                !Objects.equals(existing.getExtCommon1(), latest.getExtCommon1()) ||
+                !Objects.equals(existing.getExtCommon2(), latest.getExtCommon2()) ||
+                !Objects.equals(existing.getExtCommon3(), latest.getExtCommon3()) ||
+                !Objects.equals(existing.getExtCommon4(), latest.getExtCommon4());
     }
 
     /**
@@ -237,6 +275,10 @@ public class AssetProfileServiceImpl implements AssetProfileService {
                 .version(assetProfile.getVersion() != null ? assetProfile.getVersion().intValue() : null)
                 .isDefault(assetProfile.isDefault())
                 .tenantId(getCurrentTenantId())
+                .extCommon1(null)
+                .extCommon2(null)
+                .extCommon3(null)
+                .extCommon4(null)
                 .build();
     }
 
@@ -246,6 +288,56 @@ public class AssetProfileServiceImpl implements AssetProfileService {
     private Long getCurrentTenantId() {
         // 根据您的权限系统实现获取当前租户ID
         return 1L; // 临时返回默认值
+    }
+
+    /**
+     * 转换为本地数据库对象（更新专用）
+     */
+    private AssetProfileDO convertToAssetProfileDOForUpdate(AssetProfileSaveReqVO reqVO,
+                                                            AssetProfile updatedAssetProfile,
+                                                            AssetProfileDO existingAssetProfile) {
+        AssetProfileDO assetProfileDO = new AssetProfileDO();
+
+        // 设置主键ID
+        assetProfileDO.setId(reqVO.getId());
+
+        // 保留原有的创建时间
+        assetProfileDO.setCreateTime(existingAssetProfile.getCreateTime());
+
+        // 设置从 ThingsBoard 返回的更新信息
+        if (updatedAssetProfile != null) {
+            assetProfileDO.setProfileId(updatedAssetProfile.getId().getId().toString());
+            assetProfileDO.setEntityType(updatedAssetProfile.getId().getEntityType().name());
+            assetProfileDO.setCreatedTime(updatedAssetProfile.getCreatedTime());
+            assetProfileDO.setVersion(updatedAssetProfile.getVersion() != null ?
+                    updatedAssetProfile.getVersion().intValue() : null);
+
+            // 更新租户信息
+            if (updatedAssetProfile.getTenantId() != null) {
+                assetProfileDO.setTenantIdTb(updatedAssetProfile.getTenantId().getId().toString());
+                assetProfileDO.setTenantEntityType(updatedAssetProfile.getTenantId().getEntityType().name());
+            }
+        }
+
+        // 设置基本字段（从请求VO）
+        assetProfileDO.setProfileName(reqVO.getProfileName());
+        assetProfileDO.setProfileDescription(reqVO.getProfileDescription());
+        assetProfileDO.setDefaultRuleChainId(reqVO.getDefaultRuleChainId());
+        assetProfileDO.setDefaultDashboardId(reqVO.getDefaultDashboardId());
+        assetProfileDO.setDefaultQueueName(reqVO.getDefaultQueueName());
+        assetProfileDO.setDefaultEdgeRuleChainId(reqVO.getDefaultEdgeRuleChainId());
+        assetProfileDO.setExternalId(reqVO.getExternalId());
+        assetProfileDO.setIsDefault(reqVO.getIsDefault());
+
+        // 设置系统字段
+        assetProfileDO.setTenantId(getCurrentTenantId());
+        // 设置扩展字段
+        assetProfileDO.setExtCommon1(reqVO.getExtCommon1());
+        assetProfileDO.setExtCommon2(reqVO.getExtCommon2());
+        assetProfileDO.setExtCommon3(reqVO.getExtCommon3());
+        assetProfileDO.setExtCommon4(reqVO.getExtCommon4());
+
+        return assetProfileDO;
     }
 
 }
