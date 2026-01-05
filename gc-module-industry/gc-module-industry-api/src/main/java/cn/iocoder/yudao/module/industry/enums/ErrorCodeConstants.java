@@ -56,4 +56,6 @@ public interface ErrorCodeConstants {
     ErrorCode PARK_ORDER_PERIOD_NOT_EXISTS = new ErrorCode(600_013, "期卡订单不存在");
     // ========== 退款订单  ==========
     ErrorCode ORDER_REFUND_NOT_EXISTS = new ErrorCode(600_014, "退款订单不存在");
+    // ========== 逃费订单  ==========
+    ErrorCode ORDER_ESCAPE_NOT_EXISTS = new ErrorCode(600_015, "逃费订单不存在");
 }

@@ -34,7 +34,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 @Tag(name = "管理后台 - 退款订单")
 @RestController
-@RequestMapping("/park/order-refund")
+@RequestMapping("/industry/park-order-refund")
 @Validated
 public class ParkOrderRefundController {
 
