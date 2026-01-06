@@ -1,11 +1,13 @@
 package cn.iocoder.yudao.module.industry.controller.admin.park.order.parkorderescape;
 
 import cn.iocoder.yudao.framework.common.exception.ErrorCode;
-import cn.iocoder.yudao.module.datacenter.controller.admin.alarm.warningalertlisttable.vo.WarningAlertListTableImportExcelVO;
+
+
 import cn.iocoder.yudao.module.industry.controller.admin.park.order.parkorderescape.vo.ParkOrderEscapePageReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.park.order.parkorderescape.vo.ParkOrderEscapeRespVO;
 import cn.iocoder.yudao.module.industry.controller.admin.park.order.parkorderescape.vo.ParkOrderEscapeSaveReqVO;
 import cn.iocoder.yudao.module.industry.dal.dataobject.park.order.parkorderescape.ParkOrderEscapeDO;
+import cn.iocoder.yudao.module.industry.framework.util.lxs.importer.ImportUtils;
 import cn.iocoder.yudao.module.industry.service.park.order.parkorderescape.ParkOrderEscapeService;
 import com.alibaba.excel.EasyExcel;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,6 +25,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.io.IOException;
 
@@ -110,47 +114,33 @@ public class ParkOrderEscapeController {
             value = "/import-excel",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
-    @Operation(summary = "导入逃费订单 Excel")
+    @Operation(summary = "导入逃费订单 Excel(暂时别用）")
     @PreAuthorize("@ss.hasPermission('park:order-escape:import')")
     @ApiAccessLog(operateType = IMPORT)
-    public CommonResult<List<ParkOrderEscapeSaveReqVO>> importOrderEscapeExcel(
+    public CommonResult<Integer> importOrderEscapeExcel(
             @Parameter(description = "Excel 文件", required = true)
             @RequestPart("file") MultipartFile file  // <-- 这里改成 @RequestPart
-    ) throws IOException {
+    ) throws IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 
         if (file == null || file.isEmpty()) {
             throw exception(new ErrorCode(500, "上传文件不能为空"));
         }
 
 
-        List<ParkOrderEscapeSaveReqVO> importList =EasyExcel.read(file.getInputStream())
-                    .head(WarningAlertListTableImportExcelVO.class)
-//                    .autoCloseStream(false)
-                    .sheet(0) // 第一个Sheet
-                    .headRowNumber(1) // 第一行作为表头
-                    .doReadSync();
+        //1.将Excel数据转化为批量新增的数据
+        Map<String, Object> importList = ImportUtils.importExcelAndReturnEntity(file,ParkOrderEscapeDO.class.getName());
+        List<ParkOrderEscapeDO> parkOrderEscapeDOList= (List<ParkOrderEscapeDO>) importList.get("entityList");
 
-        // 1. EasyExcel 直接解析
-//        List<ParkOrderEscapeSaveReqVO> importList =
-//                EasyExcel.read(file.getInputStream())
-//                        .head(ParkOrderEscapeSaveReqVO.class)
-//                        .sheet()
-//                        .doReadSync();
-
-        if (importList.isEmpty()) {
+        if (parkOrderEscapeDOList.isEmpty()) {
             throw exception(new ErrorCode(500, "Excel 中没有数据"));
         }
 
-        return success(importList);
-        // 2. VO -> DO
-//        List<ParkOrderEscapeDO> doList = BeanUtils.toBean(importList, ParkOrderEscapeDO.class);
+        //2.批量入库
+        int insertCount = 0;
+        insertCount = orderEscapeService.insertBatch(parkOrderEscapeDOList);
+        //3.返回成功条目
+        return success(insertCount);
 
-        // 3. 批量入库
-//        orderEscapeService.createBatch(doList);
-
-//        return CommonResult.success("成功导入 " + doList.size() + " 条数据");
-        // 2. 直接返回给前端展示（不入库）
-//        return success(doList);
     }
 
 }

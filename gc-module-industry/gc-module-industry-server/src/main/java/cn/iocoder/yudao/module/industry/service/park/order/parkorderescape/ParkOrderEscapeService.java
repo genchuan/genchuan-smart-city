@@ -5,6 +5,7 @@ import java.util.*;
 import cn.iocoder.yudao.module.industry.controller.admin.park.order.parkorderescape.vo.ParkOrderEscapePageReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.park.order.parkorderescape.vo.ParkOrderEscapeSaveReqVO;
 import cn.iocoder.yudao.module.industry.dal.dataobject.park.order.parkorderescape.ParkOrderEscapeDO;
+import com.baomidou.mybatisplus.extension.service.IService;
 import jakarta.validation.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -55,4 +56,5 @@ public interface ParkOrderEscapeService {
      */
     PageResult<ParkOrderEscapeDO> getOrderEscapePage(ParkOrderEscapePageReqVO pageReqVO);
 
+    int insertBatch(List<ParkOrderEscapeDO> parkOrderEscapeDOList);
 }

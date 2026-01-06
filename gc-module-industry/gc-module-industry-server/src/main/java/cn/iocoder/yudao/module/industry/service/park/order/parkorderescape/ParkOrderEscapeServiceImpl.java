@@ -4,6 +4,8 @@ import cn.iocoder.yudao.module.industry.controller.admin.park.order.parkorderesc
 import cn.iocoder.yudao.module.industry.controller.admin.park.order.parkorderescape.vo.ParkOrderEscapeSaveReqVO;
 import cn.iocoder.yudao.module.industry.dal.dataobject.park.order.parkorderescape.ParkOrderEscapeDO;
 import cn.iocoder.yudao.module.industry.dal.mysql.park.order.parkorderescape.ParkOrderEscapeMapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.ibatis.executor.BatchResult;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -73,6 +75,20 @@ public class ParkOrderEscapeServiceImpl implements ParkOrderEscapeService {
     @Override
     public PageResult<ParkOrderEscapeDO> getOrderEscapePage(ParkOrderEscapePageReqVO pageReqVO) {
         return orderEscapeMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public int insertBatch(List<ParkOrderEscapeDO> parkOrderEscapeDOList) {
+
+
+        int successCount=0;
+        for(ParkOrderEscapeDO parkOrderEscapeDO:parkOrderEscapeDOList){
+            parkOrderEscapeDO.setId(null);
+            int count = orderEscapeMapper.insert(parkOrderEscapeDO);
+            successCount+=count;
+        }
+
+        return successCount;
     }
 
 }
