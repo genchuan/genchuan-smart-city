@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo;
 
 
+import cn.iocoder.yudao.module.datacenter.service.thingsboard.device.util.DeviceProfileIdDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import jakarta.validation.constraints.*;
@@ -12,8 +14,7 @@ public class DeviceSaveReqVO {
     @Schema(description = "设备ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "19775")
     private String id;
 
-    @Schema(description = "TB租户", requiredMode = Schema.RequiredMode.REQUIRED, example = "10102")
-    @NotEmpty(message = "TB租户不能为空")
+    @Schema(description = "TB租户")
     private String tbTenantId;
 
     @Schema(description = "客户ID", example = "4677")
@@ -31,6 +32,7 @@ public class DeviceSaveReqVO {
 
     @Schema(description = "设备实体ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "28197")
     @NotEmpty(message = "设备实体ID不能为空")
+    @JsonDeserialize(using = DeviceProfileIdDeserializer.class)
     private String deviceProfileId;
 
     @Schema(description = "设备配置")
@@ -47,5 +49,8 @@ public class DeviceSaveReqVO {
 
     @Schema(description = "版本")
     private Long version;
+
+    @Schema(description = "附加信息")
+    private Object additionalInfo;
 
 }

@@ -40,4 +40,24 @@ public interface DeviceTbDao {
      * @return 设备详情
      */
     DeviceInfo getDeviceInfo(String deviceId);
+
+    /**
+     * 创建设备到ThingsBoard
+     * @param device 设备信息
+     * @return 创建后的设备信息
+     */
+    Device createDevice(Device device);
+
+    /**
+     * 从ThingsBoard删除设备
+     * @param deviceId 设备ID
+     */
+    void deleteDevice(String deviceId);
+
+    /**
+     * 更新设备信息到ThingsBoard
+     * @param device 设备信息
+     * @return 更新后的设备信息
+     */
+    Device updateDevice(Device device);
 }

@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.datacenter.service.thingsboard.device;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DevicePageReqVO;
 import cn.iocoder.yudao.module.datacenter.service.thingsboard.device.Dao.DeviceTbDao;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
@@ -185,6 +186,112 @@ public class DeviceTbDaoImpl implements DeviceTbDao {
             client.close();
         }
     }
+
+    @Override
+    public Device createDevice(Device device) {
+        RestClient client = new RestClient(url);
+        try {
+            client.login(username, password);
+
+            // 构建创建设备的URL
+            String createDeviceUrl = url + "api/device";
+
+            String token = client.getToken();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-Authorization", "Bearer " + token);
+            headers.set("Content-Type", "application/json");
+
+            // 使用ObjectMapper将Device对象转换为JSON
+            ObjectMapper objectMapper = new ObjectMapper();
+            String deviceJson = objectMapper.writeValueAsString(device);
+
+            HttpEntity<String> entity = new HttpEntity<>(deviceJson, headers);
+            RestTemplate restTemplate = new RestTemplate();
+
+            ResponseEntity<Device> response = restTemplate.exchange(
+                    createDeviceUrl,
+                    org.springframework.http.HttpMethod.POST,
+                    entity,
+                    Device.class
+            );
+
+            return response.getBody();
+        } catch (Exception e) {
+            throw new RuntimeException("创建设备失败: " + e.getMessage(), e);
+        } finally {
+            client.logout();
+            client.close();
+        }
+    }
+
+    @Override
+    public void deleteDevice(String deviceId) {
+        RestClient client = new RestClient(url);
+        try {
+            client.login(username, password);
+
+            // 构建删除设备的URL
+            String deleteDeviceUrl = url + "api/device/" + deviceId;
+
+            String token = client.getToken();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-Authorization", "Bearer " + token);
+
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            RestTemplate restTemplate = new RestTemplate();
+
+            restTemplate.exchange(
+                    deleteDeviceUrl,
+                    org.springframework.http.HttpMethod.DELETE,
+                    entity,
+                    Void.class
+            );
+
+        } catch (Exception e) {
+            throw new RuntimeException("删除设备失败: " + e.getMessage(), e);
+        } finally {
+            client.logout();
+            client.close();
+        }
+    }
+
+    @Override
+    public Device updateDevice(Device device) {
+        RestClient client = new RestClient(url);
+        try {
+            client.login(username, password);
+
+            // 构建更新设备的URL
+            String updateDeviceUrl = url + "api/device";
+
+            String token = client.getToken();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-Authorization", "Bearer " + token);
+            headers.set("Content-Type", "application/json");
+
+            // 使用ObjectMapper将Device对象转换为JSON
+            ObjectMapper objectMapper = new ObjectMapper();
+            String deviceJson = objectMapper.writeValueAsString(device);
+
+            HttpEntity<String> entity = new HttpEntity<>(deviceJson, headers);
+            RestTemplate restTemplate = new RestTemplate();
+
+            ResponseEntity<Device> response = restTemplate.exchange(
+                    updateDeviceUrl,
+                    org.springframework.http.HttpMethod.POST,
+                    entity,
+                    Device.class
+            );
+
+            return response.getBody();
+        } catch (Exception e) {
+            throw new RuntimeException("更新设备失败: " + e.getMessage(), e);
+        } finally {
+            client.logout();
+            client.close();
+        }
+    }
+
 
     private PageData<DeviceInfo> getAllDevices(PageLink pageLink, RestClient client) {
         try {

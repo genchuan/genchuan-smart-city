@@ -141,9 +141,6 @@ public class AssetServiceImpl implements AssetService {
 
 
     private AssetDO validateAssetExists(Long id) {
-//        if (assetMapper.selectById(id) == null) {
-//            throw exception(ASSET_NOT_EXISTS);
-//        }
         AssetDO assetDO = assetMapper.selectById(id);
         if (assetDO == null) {
             throw exception(ASSET_NOT_EXISTS);

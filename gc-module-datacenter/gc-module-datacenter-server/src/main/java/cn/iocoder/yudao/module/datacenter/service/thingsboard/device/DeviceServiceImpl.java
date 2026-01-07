@@ -9,6 +9,7 @@ import cn.iocoder.yudao.module.datacenter.dal.dataobject.thingsboard.device.Devi
 import cn.iocoder.yudao.module.datacenter.dal.mysql.thingsboard.device.DeviceMapper;
 import cn.iocoder.yudao.module.datacenter.service.thingsboard.asset.AssetServiceImpl;
 import cn.iocoder.yudao.module.datacenter.service.thingsboard.device.Dao.DeviceTbDao;
+import cn.iocoder.yudao.module.datacenter.service.thingsboard.device.util.DeviceBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -25,6 +26,10 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import org.thingsboard.server.common.data.Device;
 import org.thingsboard.server.common.data.DeviceInfo;
 import org.thingsboard.server.common.data.alarm.AlarmInfo;
+import org.thingsboard.server.common.data.id.CustomerId;
+import org.thingsboard.server.common.data.id.DeviceId;
+import org.thingsboard.server.common.data.id.DeviceProfileId;
+import org.thingsboard.server.common.data.id.TenantId;
 import org.thingsboard.server.common.data.kv.AttributeKvEntry;
 import org.thingsboard.server.common.data.page.PageData;
 import org.thingsboard.server.common.data.page.PageLink;
@@ -53,29 +58,82 @@ public class DeviceServiceImpl implements DeviceService {
 
     @Override
     public String createDevice(DeviceSaveReqVO createReqVO) {
-        // 插入
-        DeviceDO device = BeanUtils.toBean(createReqVO, DeviceDO.class);
-        deviceMapper.insert(device);
+        try {
+            log.info("开始创建设备，请求参数: {}", createReqVO);
 
-        // 返回
-        return device.getId();
+            // 1. 先同步到ThingsBoard
+            Device deviceToCreate = DeviceBuilder.buildDeviceFromReqVO(createReqVO);
+            log.info("构建的ThingsBoard设备对象: {}", deviceToCreate);
+
+            Device createdDevice = deviceTbDao.createDevice(deviceToCreate);
+            log.info("ThingsBoard创建成功，返回设备: {}", createdDevice);
+
+            // 2. 再保存到本地数据库
+            DeviceDO deviceDO = convertToDeviceDO(createReqVO, createdDevice);
+            deviceMapper.insert(deviceDO);
+
+            log.info("设备创建成功，本地ID: {}, ThingsBoard ID: {}",
+                    deviceDO.getId(), deviceDO.getId());
+
+            return deviceDO.getId();
+
+        } catch (Exception e) {
+            log.error("创建设备失败", e);
+            throw new RuntimeException("创建设备失败: " + e.getMessage());
+        }
     }
 
     @Override
     public void updateDevice(DeviceSaveReqVO updateReqVO) {
-        // 校验存在
-        validateDeviceExists(updateReqVO.getId());
-        // 更新
-        DeviceDO updateObj = BeanUtils.toBean(updateReqVO, DeviceDO.class);
-        deviceMapper.updateById(updateObj);
+        try {
+            log.info("开始更新设备，请求参数: {}", updateReqVO);
+
+            // 1. 校验本地设备存在并获取设备信息
+            DeviceDO existingDevice = validateDeviceExists(updateReqVO.getId());
+            if (existingDevice.getId() == null || existingDevice.getId().isEmpty()) {
+                throw new IllegalArgumentException("设备未同步到ThingsBoard，无法更新");
+            }
+
+            // 2. 构建 ThingsBoard 设备对象（包含完整的ID信息）
+            Device deviceToUpdate = buildDeviceForUpdate(updateReqVO, existingDevice);
+            log.info("构建的ThingsBoard更新设备对象: {}", deviceToUpdate);
+
+            // 3. 先更新到 ThingsBoard
+            Device updatedDevice = deviceTbDao.updateDevice(deviceToUpdate);
+            log.info("ThingsBoard更新成功，返回设备: {}", updatedDevice);
+
+            // 4. 再更新本地数据库
+            DeviceDO updateObj = convertToDeviceDOForUpdate(updateReqVO, updatedDevice, existingDevice);
+            deviceMapper.updateById(updateObj);
+
+            log.info("设备更新成功，设备ID: {}", updateReqVO.getId());
+
+        } catch (Exception e) {
+            log.error("更新设备失败", e);
+            throw new RuntimeException("更新设备失败: " + e.getMessage());
+        }
     }
 
     @Override
     public void deleteDevice(String id) {
-        // 校验存在
-        validateDeviceExists(id);
-        // 删除
-        deviceMapper.deleteById(id);
+        try {
+            // 1. 先校验存在并获取设备信息
+            DeviceDO deviceDO = validateDeviceExists(id);
+
+            // 2. 从ThingsBoard删除
+            if (deviceDO.getId() != null) {
+                deviceTbDao.deleteDevice(deviceDO.getId());
+            }
+
+            // 3. 从本地数据库删除
+            deviceMapper.deleteById(id);
+
+            log.info("设备删除成功，设备ID: {}", id);
+
+        } catch (Exception e) {
+            log.error("删除设备失败", e);
+            throw new RuntimeException("删除设备失败: " + e.getMessage());
+        }
     }
 
     @Override
@@ -85,10 +143,12 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
 
-    private void validateDeviceExists(String id) {
+    private DeviceDO validateDeviceExists(String id) {
+        DeviceDO deviceDO = deviceMapper.selectById(id);
         if (deviceMapper.selectById(id) == null) {
             throw exception(DEVICE_NOT_EXISTS);
         }
+        return deviceDO;
     }
 
     @Override
@@ -334,4 +394,173 @@ public class DeviceServiceImpl implements DeviceService {
         }
     }
 
+    // 辅助方法：构建用于更新的设备对象
+    private Device buildDeviceForUpdate(DeviceSaveReqVO reqVO, DeviceDO existingDevice) {
+        Device device = new Device();
+
+        // 设置设备ID（这是更新操作的关键）
+        try {
+            DeviceId deviceIdObj = new DeviceId(UUID.fromString(existingDevice.getId()));
+            device.setId(deviceIdObj);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("无效的设备ID格式: " + existingDevice.getId(), e);
+        }
+
+        // 设置设备名称
+        if (reqVO.getName() != null && !reqVO.getName().isEmpty()) {
+            device.setName(reqVO.getName());
+        } else {
+            throw new IllegalArgumentException("设备名称不能为空");
+        }
+
+        // 设置设备配置ID
+        if (reqVO.getDeviceProfileId() != null && !reqVO.getDeviceProfileId().isEmpty()) {
+            try {
+                DeviceProfileId deviceProfileIdObj = new DeviceProfileId(UUID.fromString(reqVO.getDeviceProfileId()));
+                device.setDeviceProfileId(deviceProfileIdObj);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("无效的设备档案ID格式: " + reqVO.getDeviceProfileId(), e);
+            }
+        }
+
+        // 设置标签
+        if (reqVO.getLabel() != null && !reqVO.getLabel().isEmpty()) {
+            device.setLabel(reqVO.getLabel());
+        }
+
+        // 设置客户ID
+        if (reqVO.getCustomerId() != null && !reqVO.getCustomerId().isEmpty()) {
+            try {
+                UUID customerUuid = UUID.fromString(reqVO.getCustomerId());
+                CustomerId customerIdObj = new CustomerId(customerUuid);
+                device.setCustomerId(customerIdObj);
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("无效的客户ID格式: " + reqVO.getCustomerId(), e);
+            }
+        }
+
+        // 设置租户ID
+//        if (reqVO.getTbTenantId() != null && !reqVO.getTbTenantId().isEmpty()) {
+//            try {
+//                UUID tenantUuid = UUID.fromString(reqVO.getTbTenantId());
+//                TenantId tenantIdObj = new TenantId(tenantUuid);
+//                device.setTenantId(tenantIdObj);
+//            } catch (IllegalArgumentException e) {
+//                throw new RuntimeException("无效的租户ID格式: " + reqVO.getTbTenantId(), e);
+//            }
+//        }
+
+        // 设置设备类型
+        if (reqVO.getType() != null && !reqVO.getType().isEmpty()) {
+            device.setType(reqVO.getType());
+        }
+
+        // 设置附加信息
+        if (reqVO.getAdditionalInfo() != null) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode additionalInfo = mapper.valueToTree(reqVO.getAdditionalInfo());
+                device.setAdditionalInfo(additionalInfo);
+            } catch (Exception e) {
+                throw new RuntimeException("设置附加信息失败", e);
+            }
+        }
+
+        // 设置版本号（用于乐观锁）
+        if (reqVO.getVersion() != null) {
+            device.setVersion(reqVO.getVersion());
+        } else {
+            // 如果没有提供版本号，则使用现有版本号+1
+            device.setVersion(existingDevice.getVersion() != null ?
+                    existingDevice.getVersion() + 1 : 1L);
+        }
+
+        // 设置创建时间（从现有设备获取）
+        device.setCreatedTime(existingDevice.getCreateTime() != null ?
+                existingDevice.getCreateTime().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli() :
+                System.currentTimeMillis());
+
+        return device;
+    }
+
+    // 辅助方法：将请求VO和创建的Device对象转换为本地数据库对象
+    private DeviceDO convertToDeviceDO(DeviceSaveReqVO createReqVO, Device createdDevice) {
+        DeviceDO deviceDO = new DeviceDO();
+
+        // 设置从ThingsBoard返回的信息
+        if (createdDevice != null && createdDevice.getId() != null) {
+            deviceDO.setId(createdDevice.getId().getId().toString());
+        }
+
+        // 设置基本信息
+        deviceDO.setName(createReqVO.getName());
+        deviceDO.setLabel(createReqVO.getLabel());
+        deviceDO.setType(createReqVO.getType());
+        deviceDO.setDeviceProfileId(createReqVO.getDeviceProfileId());
+        deviceDO.setCustomerId(createReqVO.getCustomerId());
+        deviceDO.setTbTenantId(createReqVO.getTbTenantId());
+
+        // 设置版本号
+        if (createdDevice != null && createdDevice.getVersion() != null) {
+            deviceDO.setVersion(createdDevice.getVersion());
+        }
+
+        // 设置附加信息
+        if (createReqVO.getAdditionalInfo() != null) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                deviceDO.setAdditionalInfo(mapper.writeValueAsString(createReqVO.getAdditionalInfo()));
+            } catch (Exception e) {
+                log.warn("转换附加信息失败", e);
+            }
+        }
+
+        // 设置系统字段
+        deviceDO.setCreateTime(java.time.LocalDateTime.now());
+
+        return deviceDO;
+    }
+
+    // 辅助方法：转换为本地数据库对象（更新专用）
+    private DeviceDO convertToDeviceDOForUpdate(DeviceSaveReqVO reqVO, Device updatedDevice, DeviceDO existingDevice) {
+        DeviceDO deviceDO = new DeviceDO();
+
+        // 设置主键ID
+        deviceDO.setId(reqVO.getId());
+
+        // 保留原有的创建时间
+        deviceDO.setCreateTime(existingDevice.getCreateTime());
+
+        // 设置从 ThingsBoard 返回的更新信息
+        if (updatedDevice != null) {
+            deviceDO.setId(updatedDevice.getId().getId().toString());
+            deviceDO.setVersion(updatedDevice.getVersion());
+        }
+
+        // 设置基本字段（从请求VO）
+        deviceDO.setName(reqVO.getName());
+        deviceDO.setLabel(reqVO.getLabel());
+        deviceDO.setType(reqVO.getType());
+        deviceDO.setDeviceProfileId(reqVO.getDeviceProfileId());
+        deviceDO.setCustomerId(reqVO.getCustomerId());
+        deviceDO.setTbTenantId(reqVO.getTbTenantId());
+
+        // 设置附加信息
+        if (reqVO.getAdditionalInfo() != null) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                String additionalInfoJson = mapper.writeValueAsString(reqVO.getAdditionalInfo());
+                deviceDO.setAdditionalInfo(additionalInfoJson);
+            } catch (Exception e) {
+                log.warn("转换附加信息失败", e);
+                // 如果转换失败，保留原有的附加信息
+                deviceDO.setAdditionalInfo(existingDevice.getAdditionalInfo());
+            }
+        } else {
+            // 如果请求中没有附加信息，保留原有的
+            deviceDO.setAdditionalInfo(existingDevice.getAdditionalInfo());
+        }
+
+        return deviceDO;
+    }
 }
