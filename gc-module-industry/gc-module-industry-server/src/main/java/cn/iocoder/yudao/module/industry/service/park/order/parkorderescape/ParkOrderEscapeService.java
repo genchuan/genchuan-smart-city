@@ -10,6 +10,7 @@ import jakarta.validation.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 逃费订单 Service 接口
@@ -57,4 +58,8 @@ public interface ParkOrderEscapeService {
     PageResult<ParkOrderEscapeDO> getOrderEscapePage(ParkOrderEscapePageReqVO pageReqVO);
 
     int insertBatch(List<ParkOrderEscapeDO> parkOrderEscapeDOList);
+
+    Integer importExcel(MultipartFile file);
+
+    Map<String, Object> statOrderEscape(ParkOrderEscapePageReqVO pageReqVO);
 }

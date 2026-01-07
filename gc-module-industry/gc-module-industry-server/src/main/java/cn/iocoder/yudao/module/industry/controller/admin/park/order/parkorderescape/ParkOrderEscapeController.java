@@ -8,8 +8,12 @@ import cn.iocoder.yudao.module.industry.controller.admin.park.order.parkorderesc
 import cn.iocoder.yudao.module.industry.controller.admin.park.order.parkorderescape.vo.ParkOrderEscapeSaveReqVO;
 import cn.iocoder.yudao.module.industry.dal.dataobject.park.order.parkorderescape.ParkOrderEscapeDO;
 import cn.iocoder.yudao.module.industry.framework.util.lxs.importer.ImportUtils;
+import cn.iocoder.yudao.module.industry.framework.util.lxs.stat.StatUtils;
 import cn.iocoder.yudao.module.industry.service.park.order.parkorderescape.ParkOrderEscapeService;
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.write.builder.ExcelWriterSheetBuilder;
+import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
+import com.alibaba.excel.write.style.row.SimpleRowHeightStyleStrategy;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.SchemaProperty;
@@ -27,6 +31,7 @@ import jakarta.validation.*;
 import jakarta.servlet.http.*;
 
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.util.*;
 import java.io.IOException;
 
@@ -110,6 +115,34 @@ public class ParkOrderEscapeController {
                         BeanUtils.toBean(list, ParkOrderEscapeRespVO.class));
     }
 
+    @GetMapping("/import-template")
+    @Operation(summary = "下载逃费订单导入模板")
+    @PreAuthorize("@ss.hasPermission('park:order-escape:export')")
+    @ApiAccessLog(operateType = EXPORT)
+    public void importTemplate(HttpServletResponse response) throws IOException {
+
+        String fileName = "逃费订单导入模板.xlsx";
+
+        // 构建表头
+        List<List<String>> head = ImportUtils.buildHead(
+                ParkOrderEscapeDO.class,
+                ParkOrderEscapeRespVO.class
+        );
+
+        // 写空模板
+        ExcelWriterSheetBuilder sheetBuilder = EasyExcel
+                .write(response.getOutputStream())
+                // 固定行高，防止表头被拉高
+                .registerWriteHandler(new SimpleRowHeightStyleStrategy((short) 25, (short) 20))
+                // 列宽自适应，横向扩展
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                .head(head)
+                .sheet("模板");
+
+        sheetBuilder.doWrite(Collections.emptyList());
+    }
+
+
     @PostMapping(
             value = "/import-excel",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
@@ -122,25 +155,23 @@ public class ParkOrderEscapeController {
             @RequestPart("file") MultipartFile file  // <-- 这里改成 @RequestPart
     ) throws IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 
+        //1.校验
         if (file == null || file.isEmpty()) {
-            throw exception(new ErrorCode(500, "上传文件不能为空"));
+            throw  exception(new ErrorCode(500, "上传文件不能为空"));
         }
 
-
-        //1.将Excel数据转化为批量新增的数据
-        Map<String, Object> importList = ImportUtils.importExcelAndReturnEntity(file,ParkOrderEscapeDO.class.getName());
-        List<ParkOrderEscapeDO> parkOrderEscapeDOList= (List<ParkOrderEscapeDO>) importList.get("entityList");
-
-        if (parkOrderEscapeDOList.isEmpty()) {
-            throw exception(new ErrorCode(500, "Excel 中没有数据"));
-        }
-
-        //2.批量入库
-        int insertCount = 0;
-        insertCount = orderEscapeService.insertBatch(parkOrderEscapeDOList);
-        //3.返回成功条目
-        return success(insertCount);
+        return success(orderEscapeService.importExcel(file));
 
     }
 
+    /**
+     * 统计逃费订单数值字段的sum和avg
+     *
+     */
+    @GetMapping("/stat")
+    @Operation(summary = "逃费订单数值字段统计")
+    @PreAuthorize("@ss.hasPermission('park:order-escape:query')")
+    public CommonResult<Map<String, Object>> statOrderEscape(@Valid ParkOrderEscapePageReqVO pageReqVO) {
+        return success(orderEscapeService.statOrderEscape(pageReqVO));
+    }
 }

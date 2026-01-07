@@ -37,16 +37,16 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 public class ImporterController {
     @PostMapping("/import-excel-to-raw-list")
     @Operation(summary = "导入excel，转化为批量新增到数据库的原始数据列表")
-    public <T> CommonResult<Map<String, Object>> importExcelToRawList(
+    public <T> CommonResult<List<T>> importExcelToRawList(
             @RequestParam("file") MultipartFile file,
             @RequestParam("targetClassName") String targetClassName
     ) throws Exception {
 
-        Map<String, Object> result= ImportUtils.importExcelAndReturnEntity(file,targetClassName);
-        return CommonResult.success(result);
+        List<T> list= ImportUtils.importExcelAndReturnEntity(file,targetClassName);
+        return CommonResult.success(list);
     }
 
-    //该部分代码已被整合入工具方法ImportUtils
+    //(暂时不用)该部分代码已被整合入工具方法ImportUtils
     @PostMapping("/import-any")
     @Operation(summary = "(暂时不用)通用导入 Excel - 先收集字段信息")
     public <T> CommonResult<Map<String, Object>> importAny(
