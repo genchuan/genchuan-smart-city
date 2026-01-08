@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.thingsboard.rest.client.RestClient;
 import org.thingsboard.server.common.data.Device;
 import org.thingsboard.server.common.data.DeviceInfo;
@@ -24,6 +25,7 @@ import org.thingsboard.server.common.data.page.PageLink;
 import org.thingsboard.server.common.data.page.TimePageLink;
 
 import javax.annotation.Resource;
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -286,6 +288,117 @@ public class DeviceTbDaoImpl implements DeviceTbDao {
             return response.getBody();
         } catch (Exception e) {
             throw new RuntimeException("更新设备失败: " + e.getMessage(), e);
+        } finally {
+            client.logout();
+            client.close();
+        }
+    }
+
+    // 获取设备属性
+    @Override
+    public List<Map<String, Object>> getDeviceAttributes(String deviceId) {
+        RestClient client = new RestClient(url);
+        try {
+            client.login(username, password);
+
+            // 构建获取属性的URL
+            String attributesUrl = url + "api/plugins/telemetry/DEVICE/" + deviceId + "/values/attributes";
+
+            String token = client.getToken();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-Authorization", "Bearer " + token);
+            headers.set("Content-Type", "application/json");
+
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            RestTemplate restTemplate = new RestTemplate();
+
+            ResponseEntity<List> response = restTemplate.exchange(
+                    attributesUrl,
+                    org.springframework.http.HttpMethod.GET,
+                    entity,
+                    List.class
+            );
+
+            return (List<Map<String, Object>>) response.getBody();
+        } catch (Exception e) {
+            throw new RuntimeException("获取设备属性失败: " + e.getMessage(), e);
+        } finally {
+            client.logout();
+            client.close();
+        }
+    }
+
+    // 添加设备属性
+    @Override
+    public void addDeviceAttributes(String deviceId, Map<String, Object> attributes) {
+        RestClient client = new RestClient(url);
+        try {
+            client.login(username, password);
+
+            String attributesUrl = url + "api/plugins/telemetry/DEVICE/" + deviceId + "/SERVER_SCOPE";
+
+            String token = client.getToken();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-Authorization", "Bearer " + token);
+            headers.set("Content-Type", "application/json");
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String attributesJson = objectMapper.writeValueAsString(attributes);
+
+            HttpEntity<String> entity = new HttpEntity<>(attributesJson, headers);
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                    attributesUrl,
+                    HttpMethod.POST,
+                    entity,
+                    String.class
+            );
+
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                throw new RuntimeException("添加设备属性失败，状态码: " + response.getStatusCode());
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("添加设备属性失败: " + e.getMessage(), e);
+        } finally {
+            client.logout();
+            client.close();
+        }
+    }
+
+    // 删除设备属性
+    @Override
+    public void deleteDeviceAttributes(String deviceId, String scope, List<String> keys) {
+        RestClient client = new RestClient(url);
+        try {
+            client.login(username, password);
+
+            String deleteUrl = url + "api/plugins/telemetry/DEVICE/" + deviceId + "/" + scope;
+            String keysParam = String.join(",", keys);
+
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(deleteUrl)
+                    .queryParam("keys", keysParam);
+            URI uri = builder.build().encode().toUri();
+
+            String token = client.getToken();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-Authorization", "Bearer " + token);
+
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                    uri,
+                    HttpMethod.DELETE,
+                    entity,
+                    String.class
+            );
+
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                throw new RuntimeException("删除设备属性失败，状态码: " + response.getStatusCode());
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("删除设备属性失败: " + e.getMessage(), e);
         } finally {
             client.logout();
             client.close();

@@ -1,15 +1,13 @@
 package cn.iocoder.yudao.module.datacenter.service.thingsboard.device;
 
 
-import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.AlarmRespVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DeviceAttributeRespVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DevicePageReqVO;
-import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.DeviceSaveReqVO;
+import cn.iocoder.yudao.module.datacenter.controller.admin.thingsboard.device.vo.*;
 import cn.iocoder.yudao.module.datacenter.dal.dataobject.thingsboard.device.DeviceDO;
 import cn.iocoder.yudao.module.datacenter.dal.mysql.thingsboard.device.DeviceMapper;
 import cn.iocoder.yudao.module.datacenter.service.thingsboard.asset.AssetServiceImpl;
 import cn.iocoder.yudao.module.datacenter.service.thingsboard.device.Dao.DeviceTbDao;
 import cn.iocoder.yudao.module.datacenter.service.thingsboard.device.util.DeviceBuilder;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -152,13 +150,13 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public DeviceInfo getDevice(String id) {
-        return deviceTbDao.getDeviceInfoById(id);
+    public DeviceDO getDevice(String id) {
+        return deviceMapper.selectById(id);
     }
 
     @Override
-    public PageResult<Device> getDevicePage(DevicePageReqVO pageReqVO) {
-        return deviceTbDao.getDevicePage(pageReqVO);
+    public PageResult<DeviceDO> getDevicePage(DevicePageReqVO pageReqVO) {
+        return deviceMapper.selectPage(pageReqVO);
     }
 
     @Override
@@ -227,17 +225,33 @@ public class DeviceServiceImpl implements DeviceService {
         }
     }
 
+    // 添加设备属性
     @Override
-    public PageResult<DeviceInfo> getDevicePageWithDetails(Integer pageSize, Integer page) {
-        PageLink pageLink = new PageLink(pageSize, page);
-        PageData<DeviceInfo> devicePageData = deviceTbDao.getAllDevices(pageLink);
-
-        if (devicePageData == null || devicePageData.getData() == null) {
-            return new PageResult<>(Collections.emptyList(), 0L);
+    public void addDeviceAttributes(String deviceId, Map<String, Object> attributes) {
+        try {
+            deviceTbDao.addDeviceAttributes(deviceId, attributes);
+            updateLocalDeviceAttributes(deviceId);
+            log.info("设备属性添加成功，设备ID: {}", deviceId);
+        } catch (Exception e) {
+            log.error("添加设备属性失败", e);
+            throw new RuntimeException("添加设备属性失败: " + e.getMessage());
         }
-
-        return new PageResult<>(devicePageData.getData(), devicePageData.getTotalElements());
     }
+
+    // 删除设备属性
+    @Override
+    public void deleteDeviceAttributes(String deviceId, String scope, List<String> keys) {
+        try {
+            deviceTbDao.deleteDeviceAttributes(deviceId, scope, keys);
+            updateLocalDeviceAttributes(deviceId);
+            log.info("设备属性删除成功，设备ID: {}", deviceId);
+        } catch (Exception e) {
+            log.error("删除设备属性失败", e);
+            throw new RuntimeException("删除设备属性失败: " + e.getMessage());
+        }
+    }
+
+
 
 
     private AlarmRespVO convertAlarmInfoToRespVO(AlarmInfo alarmInfo) {
@@ -310,7 +324,9 @@ public class DeviceServiceImpl implements DeviceService {
         String deviceId = deviceInfo.getId().getId().toString();
         DeviceDO existingDevice = deviceMapper.selectById(deviceId);
 
-        DeviceDO deviceDO = buildDeviceDO(deviceInfo);
+        // 获取设备属性
+        String attributesJson = getDeviceAttributesJson(deviceId);
+        DeviceDO deviceDO = buildDeviceDO(deviceInfo, attributesJson);
 
         if (existingDevice != null) {
             deviceDO.setId(existingDevice.getId());
@@ -328,7 +344,7 @@ public class DeviceServiceImpl implements DeviceService {
     /**
      * 构建 DeviceDO 对象
      */
-    private DeviceDO buildDeviceDO(DeviceInfo deviceInfo) {
+    private DeviceDO buildDeviceDO(DeviceInfo deviceInfo, String attributesJson) {
         JsonNode additionalInfo = deviceInfo.getAdditionalInfo();
         String customerTitle = "";
         Boolean customerIsPublic = null;
@@ -363,6 +379,12 @@ public class DeviceServiceImpl implements DeviceService {
                 .customerTitle(customerTitle)
                 .customerIsPublic(customerIsPublic)
                 .additionalInfo(convertAdditionalInfoToJson(additionalInfo))
+                // 新增字段
+                .attributes(attributesJson)
+                .extCommon1(null)  // 可以从additionalInfo中提取或留空
+                .extCommon2(null)
+                .extCommon3(null)
+                .extCommon4(null)
                 .build();
     }
 
@@ -375,7 +397,11 @@ public class DeviceServiceImpl implements DeviceService {
                 !Objects.equals(existing.getLabel(), latest.getLabel()) ||
                 !Objects.equals(existing.getVersion(), latest.getVersion()) ||
                 !Objects.equals(existing.getActive(), latest.getActive()) ||
-                !Objects.equals(existing.getAdditionalInfo(), latest.getAdditionalInfo());
+                !Objects.equals(existing.getAttributes(), latest.getAttributes()) ||
+                !Objects.equals(existing.getExtCommon1(), latest.getExtCommon1()) ||
+                !Objects.equals(existing.getExtCommon2(), latest.getExtCommon2()) ||
+                !Objects.equals(existing.getExtCommon3(), latest.getExtCommon3()) ||
+                !Objects.equals(existing.getExtCommon4(), latest.getExtCommon4());
     }
 
     /**
@@ -439,17 +465,6 @@ public class DeviceServiceImpl implements DeviceService {
             }
         }
 
-        // 设置租户ID
-//        if (reqVO.getTbTenantId() != null && !reqVO.getTbTenantId().isEmpty()) {
-//            try {
-//                UUID tenantUuid = UUID.fromString(reqVO.getTbTenantId());
-//                TenantId tenantIdObj = new TenantId(tenantUuid);
-//                device.setTenantId(tenantIdObj);
-//            } catch (IllegalArgumentException e) {
-//                throw new RuntimeException("无效的租户ID格式: " + reqVO.getTbTenantId(), e);
-//            }
-//        }
-
         // 设置设备类型
         if (reqVO.getType() != null && !reqVO.getType().isEmpty()) {
             device.setType(reqVO.getType());
@@ -499,6 +514,10 @@ public class DeviceServiceImpl implements DeviceService {
         deviceDO.setDeviceProfileId(createReqVO.getDeviceProfileId());
         deviceDO.setCustomerId(createReqVO.getCustomerId());
         deviceDO.setTbTenantId(createReqVO.getTbTenantId());
+        deviceDO.setExtCommon1(createReqVO.getExtCommon1());
+        deviceDO.setExtCommon2(createReqVO.getExtCommon2());
+        deviceDO.setExtCommon3(createReqVO.getExtCommon3());
+        deviceDO.setExtCommon4(createReqVO.getExtCommon4());
 
         // 设置版本号
         if (createdDevice != null && createdDevice.getVersion() != null) {
@@ -520,6 +539,21 @@ public class DeviceServiceImpl implements DeviceService {
 
         return deviceDO;
     }
+
+    //  获取设备属性JSON字符串
+    private String getDeviceAttributesJson(String deviceId) {
+        try {
+            List<Map<String, Object>> attributes = deviceTbDao.getDeviceAttributes(deviceId);
+            if (attributes != null && !attributes.isEmpty()) {
+                ObjectMapper mapper = new ObjectMapper();
+                return mapper.writeValueAsString(attributes);
+            }
+        } catch (Exception e) {
+            log.warn("获取设备属性失败: {}", deviceId, e);
+        }
+        return null;
+    }
+
 
     // 辅助方法：转换为本地数据库对象（更新专用）
     private DeviceDO convertToDeviceDOForUpdate(DeviceSaveReqVO reqVO, Device updatedDevice, DeviceDO existingDevice) {
@@ -562,5 +596,24 @@ public class DeviceServiceImpl implements DeviceService {
         }
 
         return deviceDO;
+    }
+
+    // 更新本地设备属性
+    private void updateLocalDeviceAttributes(String deviceId) {
+        try {
+            DeviceDO deviceDO = deviceMapper.selectById(deviceId);
+            if (deviceDO == null) return;
+
+            String attributesJson = getDeviceAttributesJson(deviceId);
+            DeviceDO updateObj = new DeviceDO();
+            updateObj.setId(deviceDO.getId());
+            updateObj.setAttributes(attributesJson);
+
+            deviceMapper.updateById(updateObj);
+            log.debug("本地设备属性更新成功，设备ID: {}", deviceId);
+        } catch (Exception e) {
+            log.error("更新本地设备属性失败", e);
+            // 这里不抛出异常，因为ThingsBoard操作已经成功
+        }
     }
 }

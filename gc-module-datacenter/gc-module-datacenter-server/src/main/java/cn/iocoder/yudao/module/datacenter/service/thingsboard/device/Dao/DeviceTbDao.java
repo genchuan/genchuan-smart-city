@@ -13,6 +13,7 @@ import org.thingsboard.server.common.data.page.PageLink;
 import org.thingsboard.server.common.data.page.TimePageLink;
 
 import java.util.List;
+import java.util.Map;
 
 public interface DeviceTbDao {
     PageResult<Device> getDevicePage(DevicePageReqVO pageReqVO);
@@ -60,4 +61,26 @@ public interface DeviceTbDao {
      * @return 更新后的设备信息
      */
     Device updateDevice(Device device);
+
+    /**
+     * 获取设备属性
+     * @param deviceId 设备ID
+     * @return 属性列表
+     */
+    List<Map<String, Object>> getDeviceAttributes(String deviceId);
+
+    /**
+     * 添加设备属性
+     * @param deviceId 设备ID
+     * @param attributes 属性键值对
+     */
+    void addDeviceAttributes(String deviceId, Map<String, Object> attributes);
+
+    /**
+     * 删除设备属性
+     * @param deviceId 设备ID
+     * @param scope 属性作用域
+     * @param keys 要删除的属性键列表
+     */
+    void deleteDeviceAttributes(String deviceId, String scope, List<String> keys);
 }

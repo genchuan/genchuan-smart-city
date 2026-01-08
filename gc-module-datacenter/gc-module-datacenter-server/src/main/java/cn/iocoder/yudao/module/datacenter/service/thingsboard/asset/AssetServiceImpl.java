@@ -167,7 +167,6 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public AssetDO getAsset(Long id) {
-//        return assetTbDao.getAssetInfoById(id);
         return assetMapper.selectById(id);
     }
 
