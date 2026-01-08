@@ -58,4 +58,10 @@ public interface ErrorCodeConstants {
     ErrorCode ORDER_REFUND_NOT_EXISTS = new ErrorCode(600_014, "退款订单不存在");
     // ========== 逃费订单  ==========
     ErrorCode ORDER_ESCAPE_NOT_EXISTS = new ErrorCode(600_015, "逃费订单不存在");
+    // ========== 分账结算表 ==========
+    ErrorCode PARK_SETTLEMENT_NOT_EXISTS = new ErrorCode(600_016, "分账结算表不存在");
+    // ========== 欠费记录 ==========
+    ErrorCode PARK_ARREARS_NOT_EXISTS = new ErrorCode(600_017, "欠费记录不存在");
+    // ========== 钱包充值  ==========
+    ErrorCode PARK_WALLET_RECHARGE_NOT_EXISTS = new ErrorCode(600_018, "钱包充值不存在");
 }

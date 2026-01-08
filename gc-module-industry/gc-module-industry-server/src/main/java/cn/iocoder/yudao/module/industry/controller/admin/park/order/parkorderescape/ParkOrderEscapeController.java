@@ -8,7 +8,9 @@ import cn.iocoder.yudao.module.industry.controller.admin.park.order.parkorderesc
 import cn.iocoder.yudao.module.industry.controller.admin.park.order.parkorderescape.vo.ParkOrderEscapeSaveReqVO;
 import cn.iocoder.yudao.module.industry.dal.dataobject.park.order.parkorderescape.ParkOrderEscapeDO;
 import cn.iocoder.yudao.module.industry.framework.util.lxs.importer.ImportUtils;
-import cn.iocoder.yudao.module.industry.framework.util.lxs.stat.StatUtils;
+
+import cn.iocoder.yudao.module.industry.framework.util.lxs.stat.StatFacade;
+
 import cn.iocoder.yudao.module.industry.service.park.order.parkorderescape.ParkOrderEscapeService;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.write.builder.ExcelWriterSheetBuilder;
@@ -52,7 +54,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import static cn.iocoder.yudao.module.industry.enums.ErrorCodeConstants.PARK_GUIDANCE_NOT_EXISTS;
 
 
-@Tag(name = "管理后台 - 逃费订单")
+@Tag(name = "停车管理-订单 - 逃费订单")
 @RestController
 @RequestMapping("/industry/park-order-escape")
 @Validated
@@ -164,14 +166,17 @@ public class ParkOrderEscapeController {
 
     }
 
-    /**
-     * 统计逃费订单数值字段的sum和avg
-     *
-     */
+    //传参：分页查询参数reqVO；分页查询方法orderEscapeService::getOrderEscapePage
+    //将分页数据列表 的 数字类字段 统计出总和 及 平均值
     @GetMapping("/stat")
-    @Operation(summary = "逃费订单数值字段统计")
-    @PreAuthorize("@ss.hasPermission('park:order-escape:query')")
-    public CommonResult<Map<String, Object>> statOrderEscape(@Valid ParkOrderEscapePageReqVO pageReqVO) {
-        return success(orderEscapeService.statOrderEscape(pageReqVO));
+    @Operation(summary = "（勿用）统计分页数据")
+    public CommonResult<Map<String, Object>> stat5(
+            @Valid ParkOrderEscapePageReqVO reqVO) {
+        return success(
+                StatFacade.statPage(
+                        orderEscapeService::getOrderEscapePage,
+                        reqVO
+                )
+        );
     }
 }

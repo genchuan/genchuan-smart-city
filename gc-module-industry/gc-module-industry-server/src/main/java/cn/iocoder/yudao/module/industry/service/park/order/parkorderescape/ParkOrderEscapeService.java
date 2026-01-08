@@ -61,5 +61,5 @@ public interface ParkOrderEscapeService {
 
     Integer importExcel(MultipartFile file);
 
-    Map<String, Object> statOrderEscape(ParkOrderEscapePageReqVO pageReqVO);
+
 }

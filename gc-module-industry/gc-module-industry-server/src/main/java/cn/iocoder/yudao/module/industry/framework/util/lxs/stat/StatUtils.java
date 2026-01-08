@@ -9,6 +9,14 @@ import java.math.RoundingMode;
 import java.util.*;
 
 public class StatUtils {
+    //对传入的数据列表进行统计,默认数据列表的全部项类型都是一致的
+    public static <T> Map<String, Object> statList( List<T> dataList){
+        if (dataList == null || dataList.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        Class<T> clazz = (Class<T>) dataList.get(0).getClass();
+        return statList(clazz, dataList);
+    }
     //对传入的数据列表进行统计：
 
     /**

@@ -36,7 +36,7 @@ import static cn.iocoder.yudao.module.industry.enums.ErrorCodeConstants.ORDER_ES
  */
 @Service
 @Validated
-public class ParkOrderEscapeServiceImpl implements ParkOrderEscapeService {
+public class ParkOrderEscapeServiceImpl implements ParkOrderEscapeService{
 
     @Resource
     private ParkOrderEscapeMapper orderEscapeMapper;
@@ -125,15 +125,6 @@ public class ParkOrderEscapeServiceImpl implements ParkOrderEscapeService {
 
     }
 
-    @Override
-    public Map<String, Object> statOrderEscape(ParkOrderEscapePageReqVO pageReqVO) {
-        //1.获取要统计的数据
-        PageResult<ParkOrderEscapeDO> result= orderEscapeMapper.selectPage(pageReqVO);
-        List<ParkOrderEscapeDO> list =result.getList();
 
-        // 2.调用统计工具
-        Map<String, Object> statMap = StatUtils.statList(ParkOrderEscapeDO.class, list);
-        return statMap;
-    }
 
 }
