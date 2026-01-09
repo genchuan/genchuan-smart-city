@@ -63,5 +63,26 @@ public interface ErrorCodeConstants {
     // ========== 欠费记录 ==========
     ErrorCode PARK_ARREARS_NOT_EXISTS = new ErrorCode(600_017, "欠费记录不存在");
     // ========== 钱包充值  ==========
-    ErrorCode PARK_WALLET_RECHARGE_NOT_EXISTS = new ErrorCode(600_018, "钱包充值不存在");
+    ErrorCode PARK_WALLET_RECHARGE_NOT_EXISTS = new ErrorCode(500, "钱包充值不存在");
+    // ========== 停车系统用户  ==========
+    ErrorCode PARK_USER_NOT_EXISTS = new ErrorCode(500, "停车系统用户不存在");
+    // ========== 商户==========
+    ErrorCode PARK_MERCHANT_NOT_EXISTS = new ErrorCode(500, "商户不存在");
+    // ========== 商户权限==========
+    ErrorCode PARK_MERCHANT_PERMISSION_NOT_EXISTS = new ErrorCode(500, "商户权限不存在");
+    // ========== 访客==========
+    ErrorCode PARK_VISITOR_NOT_EXISTS = new ErrorCode(500, "访客不存在");
+
+    // ========== 车位信息 ==========
+    ErrorCode PARK_SPACE_NOT_EXISTS = new ErrorCode(601_001, "车位信息不存在");
+
+    // ========== 车库信息 ==========
+    ErrorCode PARK_GARAGE_NOT_EXISTS = new ErrorCode(601_002, "车库信息不存在");
+
+    // ========== 车场信息 ==========
+    ErrorCode PARK_LOT_NOT_EXISTS = new ErrorCode(601_003, "车场信息不存在");
+    // ========== 出入口信息 ==========
+    ErrorCode PARK_ENTRY_EXIT_NOT_EXISTS = new ErrorCode(601_004, "出入口信息不存在");
+    // ========== 路侧泊位 ==========
+    ErrorCode PARK_ROADSIDE_NOT_EXISTS = new ErrorCode(601_005, "路侧泊位不存在");
 }
