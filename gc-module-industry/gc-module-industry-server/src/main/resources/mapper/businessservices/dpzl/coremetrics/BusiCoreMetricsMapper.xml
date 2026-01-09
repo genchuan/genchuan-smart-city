@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.businessservices.dpzl.coremetrics.BusiCoreMetricsMapper">
+
+    <!-- 获取最新审批办结率 -->
+    <select id="selectLatestApprovalCompleteRate" resultType="java.math.BigDecimal">
+        SELECT approval_complete_rate
+        FROM stat_approval_rpt
+        WHERE deleted = 0
+        <if test="statCycle != null and statCycle != ''">
+            AND stat_cycle = #{statCycle}
+        </if>
+        ORDER BY stat_time DESC
+        LIMIT 1
+    </select>
+
+    <!-- 获取最新政策兑现率 -->
+    <select id="selectLatestPolFulfillRate" resultType="java.math.BigDecimal">
+        SELECT pol_fulfill_rate
+        FROM stat_pol_rpt
+        WHERE deleted = 0
+        <if test="statCycle != null and statCycle != ''">
+            AND stat_cycle = #{statCycle}
+        </if>
+        ORDER BY stat_time DESC
+        LIMIT 1
+    </select>
+
+    <!-- 获取最新企业满意度 -->
+    <select id="selectLatestEntSatisfy" resultType="java.math.BigDecimal">
+        SELECT ent_satisfy
+        FROM stat_satisfy_rpt
+        WHERE deleted = 0
+        <if test="statCycle != null and statCycle != ''">
+            AND stat_cycle = #{statCycle}
+        </if>
+        ORDER BY stat_time DESC
+        LIMIT 1
+    </select>
+
+    <!-- 获取最新诉求超期率 -->
+    <select id="selectLatestAppealOverdueRate" resultType="java.math.BigDecimal">
+        SELECT appeal_overdue_rate
+        FROM stat_appeal_rpt
+        WHERE deleted = 0
+        <if test="statCycle != null and statCycle != ''">
+            AND stat_cycle = #{statCycle}
+        </if>
+        ORDER BY stat_time DESC
+        LIMIT 1
+    </select>
+
+    <!-- 获取各区域审批办结率对比 -->
+    <select id="selectRegionApprovalRates" resultType="cn.iocoder.yudao.module.industry.controller.admin.businessservices.dpzl.coremetrics.vo.BusiCoreMetricsRespVO$RegionApprovalRateVO">
+        SELECT
+        sa.region_name as regionName,
+        sar.complete_rate as completeRate
+        FROM stat_approval_rpt sar
+        LEFT JOIN sys_area sa ON sar.region_code = sa.region_code
+        WHERE sar.deleted = 0
+        AND sar.stat_time = (
+        SELECT MAX(stat_time)
+        FROM stat_approval_rpt sar2
+        WHERE sar2.region_code = sar.region_code
+        AND sar2.deleted = 0
+        <if test="statCycle != null and statCycle != ''">
+            AND sar2.stat_cycle = #{statCycle}
+        </if>
+        )
+        <if test="statCycle != null and statCycle != ''">
+            AND sar.stat_cycle = #{statCycle}
+        </if>
+        AND sar.region_code IS NOT NULL
+        ORDER BY sar.complete_rate DESC
+    </select>
+
+    <!-- 获取近30天政策兑现趋势 -->
+    <select id="selectPolFulfillTrendsLast30Days" resultType="cn.iocoder.yudao.module.industry.controller.admin.businessservices.dpzl.coremetrics.vo.BusiCoreMetricsRespVO$PolFulfillTrendVO">
+        SELECT
+            date as date,
+            fulfill_count as fulfillCount
+        FROM stat_pol_rpt
+        WHERE deleted = 0
+          AND date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+          AND date IS NOT NULL
+        ORDER BY date ASC
+    </select>
+
+</mapper>

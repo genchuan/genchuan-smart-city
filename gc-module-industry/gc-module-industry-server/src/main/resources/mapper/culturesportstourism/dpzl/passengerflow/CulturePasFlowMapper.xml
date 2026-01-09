@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.culturesportstourism.dpzl.passengerflow.CulturePasFlowMapper">
+
+    <select id="selectTotalRptCount" resultType="java.lang.Long">
+        SELECT SUM(count) AS totalRptCount
+        FROM stat_mon_evt_rpt
+        WHERE 1=1
+        <if test="query.dateType != null">
+            AND stat_cycle =
+            <choose>
+                <when test="query.dateType == 'today'">CURDATE()</when>
+                <when test="query.dateType == 'yesterday'">DATE_SUB(CURDATE(), INTERVAL 1 DAY)</when>
+                <when test="query.dateType == 'weekend'">
+                    CASE WHEN WEEKDAY(CURDATE()) = 5 THEN CURDATE()
+                    WHEN WEEKDAY(CURDATE()) = 6 THEN CURDATE()
+                    ELSE DATE_SUB(CURDATE(), INTERVAL (WEEKDAY(CURDATE()) + 2) DAY)
+                    END
+                </when>
+            </choose>
+        </if>
+        <if test="query.regionCode != null">
+            AND region_code LIKE CONCAT(#{query.regionCode}, '%')
+        </if>
+        <if test="query.catName != null">
+            AND cat_name = #{query.catName}
+        </if>
+    </select>
+
+    <select id="selectMaxHour" resultType="java.lang.Integer">
+        SELECT hour AS maxHour
+        FROM stat_mon_evt_rpt
+        WHERE 1=1
+        <if test="query.dateType != null">
+            AND stat_cycle =
+            <choose>
+                <when test="query.dateType == 'today'">CURDATE()</when>
+                <when test="query.dateType == 'yesterday'">DATE_SUB(CURDATE(), INTERVAL 1 DAY)</when>
+                <when test="query.dateType == 'weekend'">
+                    CASE WHEN WEEKDAY(CURDATE()) = 5 THEN CURDATE()
+                    WHEN WEEKDAY(CURDATE()) = 6 THEN CURDATE()
+                    ELSE DATE_SUB(CURDATE(), INTERVAL (WEEKDAY(CURDATE()) + 2) DAY)
+                    END
+                </when>
+            </choose>
+        </if>
+        <if test="query.regionCode != null">
+            AND region_code LIKE CONCAT(#{query.regionCode}, '%')
+        </if>
+        <if test="query.catName != null">
+            AND cat_name = #{query.catName}
+        </if>
+        GROUP BY hour
+        ORDER BY SUM(count) DESC
+        LIMIT 1
+    </select>
+
+    <select id="selectHourlyTrends" resultType="cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.passengerflow.vo.CulturePasFlowRespVO$HourlyTrend">
+        SELECT
+        CONCAT(LPAD(hour, 2, '0'), ':',
+        CASE
+        WHEN minute = 0 THEN '00'
+        WHEN minute = 15 THEN '15'
+        WHEN minute = 30 THEN '30'
+        WHEN minute = 45 THEN '45'
+        END) AS time,
+        SUM(count) AS count,
+        (hour = (SELECT hour FROM stat_mon_evt_rpt
+        WHERE 1=1
+        <if test="query.dateType != null">
+            AND stat_cycle =
+            <choose>
+                <when test="query.dateType == 'today'">CURDATE()</when>
+                <when test="query.dateType == 'yesterday'">DATE_SUB(CURDATE(), INTERVAL 1 DAY)</when>
+                <when test="query.dateType == 'weekend'">
+                    CASE WHEN WEEKDAY(CURDATE()) = 5 THEN CURDATE()
+                    WHEN WEEKDAY(CURDATE()) = 6 THEN CURDATE()
+                    ELSE DATE_SUB(CURDATE(), INTERVAL (WEEKDAY(CURDATE()) + 2) DAY)
+                    END
+                </when>
+            </choose>
+        </if>
+        <if test="query.regionCode != null">
+            AND region_code LIKE CONCAT(#{query.regionCode}, '%')
+        </if>
+        <if test="query.catName != null">
+            AND cat_name = #{query.catName}
+        </if>
+        GROUP BY hour ORDER BY SUM(count) DESC LIMIT 1)) AS isPeak
+        FROM stat_mon_evt_rpt
+        WHERE 1=1
+        <if test="query.dateType != null">
+            AND stat_cycle =
+            <choose>
+                <when test="query.dateType == 'today'">CURDATE()</when>
+                <when test="query.dateType == 'yesterday'">DATE_SUB(CURDATE(), INTERVAL 1 DAY)</when>
+                <when test="query.dateType == 'weekend'">
+                    CASE WHEN WEEKDAY(CURDATE()) = 5 THEN CURDATE()
+                    WHEN WEEKDAY(CURDATE()) = 6 THEN CURDATE()
+                    ELSE DATE_SUB(CURDATE(), INTERVAL (WEEKDAY(CURDATE()) + 2) DAY)
+                    END
+                </when>
+            </choose>
+        </if>
+        <if test="query.regionCode != null">
+            AND region_code LIKE CONCAT(#{query.regionCode}, '%')
+        </if>
+        <if test="query.catName != null">
+            AND cat_name = #{query.catName}
+        </if>
+        GROUP BY hour, minute
+        ORDER BY hour, minute
+    </select>
+
+    <select id="selectRegionDistributions" resultType="cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.passengerflow.vo.CulturePasFlowRespVO$RegionDistribution">
+        SELECT
+        a.region_name AS regionName,
+        SUM(r.count) AS count,
+        (SUM(r.count) / (SELECT SUM(count) FROM stat_mon_evt_rpt WHERE 1=1
+        <if test="query.dateType != null">
+            AND stat_cycle =
+            <choose>
+                <when test="query.dateType == 'today'">CURDATE()</when>
+                <when test="query.dateType == 'yesterday'">DATE_SUB(CURDATE(), INTERVAL 1 DAY)</when>
+                <when test="query.dateType == 'weekend'">
+                    CASE WHEN WEEKDAY(CURDATE()) = 5 THEN CURDATE()
+                    WHEN WEEKDAY(CURDATE()) = 6 THEN CURDATE()
+                    ELSE DATE_SUB(CURDATE(), INTERVAL (WEEKDAY(CURDATE()) + 2) DAY)
+                    END
+                </when>
+            </choose>
+        </if>
+        <if test="query.regionCode != null">
+            AND region_code LIKE CONCAT(#{query.regionCode}, '%')
+        </if>
+        <if test="query.catName != null">
+            AND cat_name = #{query.catName}
+        </if>
+        )) * 100 AS proportion,
+        ((SUM(r.count) / (SELECT SUM(count) FROM stat_mon_evt_rpt WHERE 1=1
+        <if test="query.dateType != null">
+            AND stat_cycle =
+            <choose>
+                <when test="query.dateType == 'today'">CURDATE()</when>
+                <when test="query.dateType == 'yesterday'">DATE_SUB(CURDATE(), INTERVAL 1 DAY)</when>
+                <when test="query.dateType == 'weekend'">
+                    CASE WHEN WEEKDAY(CURDATE()) = 5 THEN CURDATE()
+                    WHEN WEEKDAY(CURDATE()) = 6 THEN CURDATE()
+                    ELSE DATE_SUB(CURDATE(), INTERVAL (WEEKDAY(CURDATE()) + 2) DAY)
+                    END
+                </when>
+            </choose>
+        </if>
+        <if test="query.regionCode != null">
+            AND region_code LIKE CONCAT(#{query.regionCode}, '%')
+        </if>
+        <if test="query.catName != null">
+            AND cat_name = #{query.catName}
+        </if>
+        )) * 100 > 30) AS isOverThreshold
+        FROM stat_mon_evt_rpt r
+        LEFT JOIN sys_area a ON r.region_code = a.region_code
+        WHERE 1=1
+        <if test="query.dateType != null">
+            AND r.stat_cycle =
+            <choose>
+                <when test="query.dateType == 'today'">CURDATE()</when>
+                <when test="query.dateType == 'yesterday'">DATE_SUB(CURDATE(), INTERVAL 1 DAY)</when>
+                <when test="query.dateType == 'weekend'">
+                    CASE WHEN WEEKDAY(CURDATE()) = 5 THEN CURDATE()
+                    WHEN WEEKDAY(CURDATE()) = 6 THEN CURDATE()
+                    ELSE DATE_SUB(CURDATE(), INTERVAL (WEEKDAY(CURDATE()) + 2) DAY)
+                    END
+                </when>
+            </choose>
+        </if>
+        <if test="query.regionCode != null">
+            AND r.region_code LIKE CONCAT(#{query.regionCode}, '%')
+        </if>
+        <if test="query.catName != null">
+            AND r.cat_name = #{query.catName}
+        </if>
+        GROUP BY a.region_name
+        ORDER BY count DESC
+    </select>
+</mapper>

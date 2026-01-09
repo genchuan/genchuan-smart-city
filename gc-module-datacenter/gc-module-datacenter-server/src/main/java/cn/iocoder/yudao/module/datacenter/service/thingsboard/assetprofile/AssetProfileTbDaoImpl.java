@@ -151,4 +151,38 @@ public class AssetProfileTbDaoImpl implements AssetProfileTbDao {
             client.close();
         }
     }
+
+    @Override
+    public AssetProfile updateAssetProfile(AssetProfile assetProfile) {
+        RestClient client = new RestClient(url);
+        try {
+            client.login(username, password);
+
+            // 构建更新资产配置的URL - 与新增接口相同
+            String updateAssetProfileUrl = url + "api/assetProfile";
+
+            String token = client.getToken();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-Authorization", "Bearer " + token);
+            headers.set("Content-Type", "application/json");
+
+            String assetProfileJson = objectMapper.writeValueAsString(assetProfile);
+            HttpEntity<String> entity = new HttpEntity<>(assetProfileJson, headers);
+            RestTemplate restTemplate = new RestTemplate();
+
+            ResponseEntity<AssetProfile> response = restTemplate.exchange(
+                    updateAssetProfileUrl,
+                    org.springframework.http.HttpMethod.POST, // 使用POST方法
+                    entity,
+                    AssetProfile.class
+            );
+
+            return response.getBody();
+        } catch (Exception e) {
+            throw new RuntimeException("更新资产配置失败: " + e.getMessage(), e);
+        } finally {
+            client.logout();
+            client.close();
+        }
+    }
 }

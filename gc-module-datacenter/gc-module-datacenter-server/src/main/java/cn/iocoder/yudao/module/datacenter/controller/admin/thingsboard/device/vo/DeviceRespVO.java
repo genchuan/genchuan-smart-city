@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Schema(description = "管理后台 - 设备 Response VO")
 @Data
@@ -60,6 +61,28 @@ public class DeviceRespVO {
     @Schema(description = "版本")
     @ExcelProperty("版本")
     private Long version;
+
+    // 新增属性字段
+    @Schema(description = "属性列表")
+    @ExcelProperty("属性列表")
+    private List<DeviceAttributeRespVO> attributes;
+
+    // 新增扩展字段
+    @Schema(description = "通用扩展字段1")
+    @ExcelProperty("通用扩展字段1")
+    private String extCommon1;
+
+    @Schema(description = "通用扩展字段2")
+    @ExcelProperty("通用扩展字段2")
+    private String extCommon2;
+
+    @Schema(description = "通用扩展字段3")
+    @ExcelProperty("通用扩展字段3")
+    private String extCommon3;
+
+    @Schema(description = "通用扩展字段4")
+    @ExcelProperty("通用扩展字段4")
+    private String extCommon4;
 
     @Schema(description = "创建时间")
     @ExcelProperty("创建时间")

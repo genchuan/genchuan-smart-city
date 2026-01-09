@@ -15,9 +15,9 @@ public class EmergCoreMetricsQueryReqVO {
 
         @Schema(description = "统计开始时间（含）,yyyy-MM-dd HH:mm:ss", example = "2025-01-01 09:00:00")
         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        private LocalDateTime startDate;
+        private LocalDateTime startTime;
 
         @Schema(description = "统计结束时间（含）,yyyy-MM-dd HH:mm:ss", example = "2025-11-01 23:59:59")
         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        private LocalDateTime endDate;
+        private LocalDateTime endTime;
 }

@@ -30,7 +30,17 @@ public interface DeviceMapper extends BaseMapperX<DeviceDO> {
                 .eqIfPresent(DeviceDO::getExternalId, reqVO.getExternalId())
                 .eqIfPresent(DeviceDO::getVersion, reqVO.getVersion())
                 .betweenIfPresent(DeviceDO::getCreateTime, reqVO.getCreateTime())
+                .eqIfPresent(DeviceDO::getAttributes, reqVO.getAttributes())
+                .eqIfPresent(DeviceDO::getExtCommon1, reqVO.getExtCommon1())
+                .eqIfPresent(DeviceDO::getExtCommon2, reqVO.getExtCommon2())
+                .eqIfPresent(DeviceDO::getExtCommon3, reqVO.getExtCommon3())
+                .eqIfPresent(DeviceDO::getExtCommon4, reqVO.getExtCommon4())
                 .orderByDesc(DeviceDO::getId));
     }
+
+    /**
+     * 根据设备ID查询
+     */
+    DeviceDO selectByDeviceId(String deviceId);
 
 }

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.businessservices.dpzl.serviceitems.BusiServiceItemsMapper">
+
+    <!-- 服务事项总数 -->
+    <select id="selectTotalSvcCount" resultType="java.lang.Integer">
+        SELECT SUM(count)
+        FROM stat_svc_rpt
+        WHERE deleted = 0
+    </select>
+
+    <!-- 当日待办量 -->
+    <select id="selectDailyPendCount" resultType="java.lang.Integer">
+        SELECT daily_pend_count
+        FROM stat_svc_rpt
+        WHERE deleted = 0
+        ORDER BY stat_time DESC
+            LIMIT 1
+    </select>
+
+    <!-- 事项办结率 -->
+    <select id="selectSvcCompleteRate" resultType="java.math.BigDecimal">
+        SELECT svc_complete_rate
+        FROM stat_svc_rpt
+        WHERE deleted = 0
+        ORDER BY stat_time DESC
+            LIMIT 1
+    </select>
+
+    <!-- 超期事项数 -->
+    <select id="selectOverdueSvcCount" resultType="java.lang.Integer">
+        SELECT overdue_svc_count
+        FROM stat_svc_rpt
+        WHERE deleted = 0
+        ORDER BY stat_time DESC
+            LIMIT 1
+    </select>
+
+    <!-- 事项类型分布 -->
+    <select id="selectTypeDistribution" resultType="java.util.LinkedHashMap">
+        SELECT
+            st.type_name,
+            SUM(sr.count) as count
+        FROM stat_svc_rpt sr
+            LEFT JOIN sys_svc_type st ON sr.type_code = st.type_code AND st.deleted = 0
+        WHERE sr.deleted = 0
+        GROUP BY st.type_name
+    </select>
+
+    <!-- 近24小时事项办理趋势 -->
+    <select id="selectHourlyTrend" resultType="java.util.LinkedHashMap">
+        SELECT
+            HOUR(stat_time) as hour,
+            SUM(handle_count) as handle_count
+        FROM stat_svc_rpt
+        WHERE deleted = 0
+          AND stat_time >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
+        GROUP BY HOUR(stat_time)
+        ORDER BY hour
+    </select>
+
+</mapper>

@@ -3,10 +3,7 @@ package cn.iocoder.yudao.module.system.controller.admin.permission;
 import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import cn.iocoder.yudao.module.system.controller.admin.permission.vo.menu.MenuListReqVO;
-import cn.iocoder.yudao.module.system.controller.admin.permission.vo.menu.MenuRespVO;
-import cn.iocoder.yudao.module.system.controller.admin.permission.vo.menu.MenuSaveVO;
-import cn.iocoder.yudao.module.system.controller.admin.permission.vo.menu.MenuSimpleRespVO;
+import cn.iocoder.yudao.module.system.controller.admin.permission.vo.menu.*;
 import cn.iocoder.yudao.module.system.dal.dataobject.permission.MenuDO;
 import cn.iocoder.yudao.module.system.service.permission.MenuService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -83,6 +80,24 @@ public class MenuController {
     public CommonResult<MenuRespVO> getMenu(Long id) {
         MenuDO menu = menuService.getMenu(id);
         return success(BeanUtils.toBean(menu, MenuRespVO.class));
+    }
+
+    @GetMapping("/tree")
+    @Operation(summary = "获取菜单树形结构", description = "获取完整的菜单树形结构，自动过滤掉按钮类型的菜单")
+    @PreAuthorize("@ss.hasPermission('system:menu:query')")
+    public CommonResult<List<MenuTreeRespVO>> getMenuTree() {
+        List<MenuDO> menuList = menuService.getMenuList();
+        List<MenuTreeRespVO> menuTree = MenuTreeUtil.buildMenuTree(menuList);
+        return success(menuTree);
+    }
+
+    @PostMapping("/tree-by-ids")
+    @Operation(summary = "根据菜单编号列表获取菜单树形结构", description = "根据菜单编号列表获取完整的菜单树形结构，自动过滤掉按钮类型的菜单")
+    @PreAuthorize("@ss.hasPermission('system:menu:query')")
+    public CommonResult<List<MenuTreeRespVO>> getMenuTreeByIds(@RequestBody @Valid MenuTreeByIdsReqVO reqVO) {
+        List<MenuDO> menuList = menuService.getMenuListByIds(reqVO.getMenuIds());
+        List<MenuTreeRespVO> menuTree = MenuTreeUtil.buildMenuTreeByIds(menuList);
+        return success(menuTree);
     }
 
 }

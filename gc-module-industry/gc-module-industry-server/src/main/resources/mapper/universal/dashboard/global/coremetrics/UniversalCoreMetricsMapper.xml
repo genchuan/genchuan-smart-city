@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    通用大屏核心指标看板 Mapper XML
+    功能说明：
+    1. 定义数据库访问的 SQL 语句
+    2. namespace 对应 Mapper 接口全路径
+    3. select 语句的 resultType 对应查询返回的 VO 类
+-->
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.universal.dashboard.global.coremetrics.UniversalCoreMetricsMapper">
+
+    <!--
+        查询通用大屏核心指标看板的方法
+        id: 对应 Mapper 接口的方法名
+        resultType: 查询结果映射到的 VO 类
+        参数通过 Mapper 接口传入
+    -->
+    <select id="getUniversalCoreMetrics"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.global.coremetrics.vo.UniversalCoreMetricsRespVO">
+        SELECT
+        SUM(total_comp_count) AS totalCount,
+        SUM(IFNULL(damaged_comp_count,0) + IFNULL(lost_comp_count,0) + IFNULL(discarded_comp_count,0)) AS abnormalCount,
+        ROUND(SUM(normal_comp_count) / NULLIF(SUM(total_comp_count),0) * 100, 2) AS qualifyRate,
+        ROUND(SUM(update_comp_count) / NULLIF(SUM(IFNULL(damaged_comp_count,0) + IFNULL(lost_comp_count,0)), 0) * 100, 2) AS closeRate,
+        0 AS yoyGrowth,
+        0 AS momGrowth
+        FROM stat_mng_comp
+        <where>
+            <if test="regionShortCode != null and regionShortCode != ''">
+                AND area_code = #{regionShortCode}
+            </if>
+            <if test="statCycle != null and statCycle != ''">
+                AND stat_cycle = #{statCycle}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

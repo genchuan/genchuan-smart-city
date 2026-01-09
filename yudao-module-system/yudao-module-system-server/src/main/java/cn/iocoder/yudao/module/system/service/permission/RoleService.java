@@ -121,4 +121,11 @@ public interface RoleService {
      */
     void validateRoleList(Collection<Long> ids);
 
+    /**
+     * 根据角色标识获取角色信息
+     *
+     * @param code 角色标识
+     * @return 角色信息
+     */
+    RoleDO getRoleByCode(String code);
 }

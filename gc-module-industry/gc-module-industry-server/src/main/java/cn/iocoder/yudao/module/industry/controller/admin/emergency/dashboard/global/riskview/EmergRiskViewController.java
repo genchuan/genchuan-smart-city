@@ -19,7 +19,7 @@ import java.util.List;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 
-@Tag(name = "管理后台 - 风险分布视图")
+@Tag(name = "管理后台 - 应急风险分布视图")
 @RestController
 @RequestMapping("/industry/emerg-risk-view")
 @Validated

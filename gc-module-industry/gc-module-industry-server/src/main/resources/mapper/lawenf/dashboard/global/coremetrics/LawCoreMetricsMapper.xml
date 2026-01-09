@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.lawenf.dashboard.global.coremetrics.LawCoreMetricsMapper">
+
+    <select id="getLawCoreMetrics2"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.coremetrics.vo.LawCoreMetricsRespVO">
+        select
+            (
+                select ifnull(avg(avg_case_handle_time),0)
+                from stat_law_enf_case
+                <where>
+                    <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.TimeSqlMapper.searchByStartTimeEndTime">
+                        <property name="search_time_col" value="stat_time"/>
+                    </include>
+                </where>
+            )as avg_case_handle_time,
+
+            (
+                select ifnull(avg(repeat_rpt_rate),0)
+                from stat_law_enf_case
+                <where>
+                    <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.TimeSqlMapper.searchByStartTimeEndTime">
+                        <property name="search_time_col" value="stat_time"/>
+                    </include>
+                </where>
+            ) as repeat_rpt_rate,
+
+            (
+                select ifnull(avg(law_compliance_rate),0)
+                from stat_law_enf_std
+                <where>
+                    <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.TimeSqlMapper.searchByStartTimeEndTime">
+                        <property name="search_time_col" value="stat_time"/>
+                    </include>
+                </where>
+            ) as law_compliance_rate,
+
+            (
+                select ifnull(avg(cross_dept_coop_rate),0)
+                from stat_law_enf_coop
+                <where>
+                    <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.TimeSqlMapper.searchByStartTimeEndTime">
+                        <property name="search_time_col" value="stat_time"/>
+                    </include>
+                </where>
+            ) as cross_dept_coop_rate
+    </select>
+
+
+
+<!--    获取平均时长指标的当前值和更新时间和默认预警状态-->
+    <select id="getAvgCaseHandleTime"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.coremetrics.vo.CoreMetricVO">
+
+            select
+                ifnull(avg(avg_case_handle_time),0) as value,
+                max(stat_time) as updateTime,
+                0 as warnStatus
+            from stat_law_enf_case
+            <where>
+                <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.TimeSqlMapper.searchByStartTimeEndTime">
+                    <property name="search_time_col" value="stat_time"/>
+                </include>
+            </where>
+
+    </select>
+
+
+    <!-- 获取重复上报率 -->
+    <select id="getRepeatRptRate"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.coremetrics.vo.CoreMetricVO">
+        select
+        ifnull(avg(repeat_rpt_rate),0) as value,
+        max(stat_time) as updateTime,
+        0 as warnStatus
+        from stat_law_enf_case
+        <where>
+            <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.TimeSqlMapper.searchByStartTimeEndTime">
+                <property name="search_time_col" value="stat_time"/>
+            </include>
+        </where>
+    </select>
+
+    <!-- 获取执法规范率 -->
+    <select id="getLawComplianceRate"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.coremetrics.vo.CoreMetricVO">
+        select
+        ifnull(avg(law_compliance_rate),0) as value,
+        max(stat_time) as updateTime,
+        0 as warnStatus
+        from stat_law_enf_std
+        <where>
+            <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.TimeSqlMapper.searchByStartTimeEndTime">
+                <property name="search_time_col" value="stat_time"/>
+            </include>
+        </where>
+    </select>
+
+    <!-- 获取跨部门协作率 -->
+    <select id="getCrossDeptCoopRate"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.coremetrics.vo.CoreMetricVO">
+        select
+        ifnull(avg(cross_dept_coop_rate),0) as value,
+        max(stat_time) as updateTime,
+        0 as warnStatus
+        from stat_law_enf_coop
+        <where>
+            <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.TimeSqlMapper.searchByStartTimeEndTime">
+                <property name="search_time_col" value="stat_time"/>
+            </include>
+        </where>
+    </select>
+<!--    <select id="getAvgCaseHandleTimeTrendVOList"-->
+<!--            resultType="cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.coremetrics.vo.TreatTrendVO">-->
+<!--        select-->
+<!--        DATE(stat_time) AS date,                &lt;!&ndash; 日期字段 &ndash;&gt;-->
+<!--        ifnull(avg(avg_case_handle_time),0) as value-->
+<!--        from stat_law_enf_case-->
+<!--        <where>-->
+<!--            &lt;!&ndash; 近30天 &ndash;&gt;-->
+<!--            stat_time &gt;= DATE_SUB(CURDATE(), INTERVAL 7 DAY)-->
+<!--        </where>-->
+<!--        GROUP BY DATE(stat_time)-->
+<!--        ORDER BY DATE(stat_time) ASC-->
+<!--    </select>-->
+    <!-- ===============================
+1. 平均案件办结时长 - 近7天趋势
+=============================== -->
+    <select id="getAvgCaseHandleTimeTrendVOList"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.coremetrics.vo.TreatTrendVO">
+        SELECT
+        DATE(stat_time) AS date,                <!-- 日期字段 -->
+        IFNULL(AVG(avg_case_handle_time), 0) AS value
+        FROM stat_law_enf_case
+        <where>
+            stat_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+        </where>
+        GROUP BY DATE(stat_time)
+        ORDER BY DATE(stat_time) ASC
+    </select>
+
+    <!-- ===============================
+    2. 执法合规率 - 近7天趋势
+    =============================== -->
+    <select id="getLawComplianceRateTrendVOList"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.coremetrics.vo.TreatTrendVO">
+        SELECT
+        DATE(stat_time) AS date,
+        IFNULL(AVG(law_compliance_rate), 0) AS value
+        FROM stat_law_enf_std
+        <where>
+            stat_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+        </where>
+        GROUP BY DATE(stat_time)
+        ORDER BY DATE(stat_time) ASC
+    </select>
+
+    <!-- ===============================
+    3. 重复举报率 - 近7天趋势
+    =============================== -->
+    <select id="getRepeatRptRateTrendVOList"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.coremetrics.vo.TreatTrendVO">
+        SELECT
+        DATE(stat_time) AS date,
+        IFNULL(AVG(repeat_rpt_rate), 0) AS value
+        FROM stat_law_enf_case
+        <where>
+            stat_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+        </where>
+        GROUP BY DATE(stat_time)
+        ORDER BY DATE(stat_time) ASC
+    </select>
+
+    <!-- ===============================
+    4. 跨部门协同率 - 近7天趋势
+    =============================== -->
+    <select id="getCrossDeptCoopRateTrendVOList"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.coremetrics.vo.TreatTrendVO">
+        SELECT
+        DATE(stat_time) AS date,
+        IFNULL(AVG(cross_dept_coop_rate), 0) AS value
+        FROM stat_law_enf_coop
+        <where>
+            stat_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+        </where>
+        GROUP BY DATE(stat_time)
+        ORDER BY DATE(stat_time) ASC
+    </select>
+
+
+</mapper>

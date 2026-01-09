@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.culturesportstourism.dpzl.coremetrics.CultureCoreMetricsMapper">
+
+    <!-- 查询文旅资源总数 -->
+    <select id="selectTotalSceneCount" resultType="cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.coreindicators.vo.CultureCoreMetricsRespVO$CoreMetricVO">
+        SELECT
+        IFNULL(SUM(total_scene_count), 0) AS value,
+        IFNULL(MAX(stat_time), NOW()) AS updateTime,
+        0 AS warnStatus,
+        #{timeCycle} AS timeCycle
+        FROM stat_app_scene_rpt
+        <where>
+            <if test="startTime != null and endTime != null">
+                AND stat_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+            <if test="startTime != null and endTime == null">
+                AND stat_time &gt;= #{startTime}
+            </if>
+            <if test="startTime == null and endTime != null">
+                AND stat_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
+    <!-- 查询当日客流峰值 -->
+    <select id="selectMaxCount" resultType="cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.coreindicators.vo.CultureCoreMetricsRespVO$CoreMetricVO">
+        SELECT
+        IFNULL(MAX(max_count), 0) AS value,
+        IFNULL(MAX(stat_time), NOW()) AS updateTime,
+        0 AS warnStatus,
+        #{timeCycle} AS timeCycle
+        FROM stat_app_scene_visitor
+        <where>
+            <if test="startTime != null and endTime != null">
+                AND stat_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+            <if test="startTime != null and endTime == null">
+                AND stat_time &gt;= #{startTime}
+            </if>
+            <if test="startTime == null and endTime != null">
+                AND stat_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
+    <!-- 查询投诉办结率 -->
+    <select id="selectCompleteRate" resultType="cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.coreindicators.vo.CultureCoreMetricsRespVO$CoreMetricVO">
+        SELECT
+        IFNULL(AVG(complete_rate), 0) AS value,
+        IFNULL(MAX(stat_time), NOW()) AS updateTime,
+        0 AS warnStatus,
+        #{timeCycle} AS timeCycle
+        FROM stat_mng_matter_rpt
+        <where>
+            <if test="startTime != null and endTime != null">
+                AND stat_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+            <if test="startTime != null and endTime == null">
+                AND stat_time &gt;= #{startTime}
+            </if>
+            <if test="startTime == null and endTime != null">
+                AND stat_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
+    <!-- 查询设施完好率 -->
+    <select id="selectFacilityGoodRate" resultType="cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.coreindicators.vo.CultureCoreMetricsRespVO$CoreMetricVO">
+        SELECT
+        IFNULL(ROUND(SUM(normal_comp_count) / NULLIF(SUM(total_comp_count), 0) * 100, 2), 0) AS value,
+        IFNULL(MAX(stat_time), NOW()) AS updateTime,
+        0 AS warnStatus,
+        #{timeCycle} AS timeCycle
+        FROM stat_app_scene_fac
+        <where>
+            <if test="startTime != null and endTime != null">
+                AND stat_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+            <if test="startTime != null and endTime == null">
+                AND stat_time &gt;= #{startTime}
+            </if>
+            <if test="startTime == null and endTime != null">
+                AND stat_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
+    <!-- 查询活动开展数 -->
+    <select id="selectNewSceneCount" resultType="cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.coreindicators.vo.CultureCoreMetricsRespVO$CoreMetricVO">
+        SELECT
+        IFNULL(SUM(new_scene_count), 0) AS value,
+        IFNULL(MAX(stat_time), NOW()) AS updateTime,
+        0 AS warnStatus,
+        #{timeCycle} AS timeCycle
+        FROM stat_app_scene_rpt
+        <where>
+            <if test="startTime != null and endTime != null">
+                AND stat_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+            <if test="startTime != null and endTime == null">
+                AND stat_time &gt;= #{startTime}
+            </if>
+            <if test="startTime == null and endTime != null">
+                AND stat_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
+
+</mapper>

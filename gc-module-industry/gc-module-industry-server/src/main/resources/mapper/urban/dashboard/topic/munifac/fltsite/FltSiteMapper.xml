@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    市政设施专题-故障设施空间数据 Mapper XML
+    功能说明：
+    1. 定义数据库访问的 SQL 语句
+    2. namespace 对应 Mapper 接口全路径
+    3. select 语句的 resultType 对应查询返回的 VO 类
+-->
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.urban.dashboard.topic.munifac.fltsite.FltSiteMapper">
+
+    <!--
+        查询市政设施专题-故障设施空间数据的方法
+        id: 对应 Mapper 接口的方法名
+        resultType: 查询结果映射到的 VO 类
+        参数通过 Mapper 接口传入
+    -->
+    <select id="getFltSite"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.urban.dashboard.topic.munifac.fltsite.vo.FltSiteRespVO">
+        SELECT
+        c.mng_comp_id AS mngCompId,
+        c.comp_name AS compName,
+        c.comp_status AS compStatus,
+        c.fault_reason AS faultReason,
+        s.coord_x AS coordX,
+        s.coord_y AS coordY,
+        c.minor_name AS compType,
+        c.create_time_sys AS reportTime,
+        c.creator AS handler,
+        c.handle_status AS handleStatus,
+        c.update_time_sys AS updateTime,
+        CASE
+            WHEN TIMESTAMPADD(HOUR, 24, c.create_time_sys) &lt; NOW() THEN TRUE
+            ELSE FALSE
+        END AS isTimeout
+        FROM biz_mng_comp c
+        LEFT JOIN biz_mng_comp_spatial s ON c.mng_comp_id = s.mng_comp_id
+<!--        <where>-->
+<!--            <if test="compStatus != null and compStatus != ''">-->
+<!--                AND c.comp_status = #{compStatus}-->
+<!--            </if>-->
+<!--            <if test="compType != null and compType != ''">-->
+<!--                AND c.minor_name = #{compType}-->
+<!--            </if>-->
+<!--            &lt;!&ndash; 可以根据需求继续添加查询条件 &ndash;&gt;-->
+<!--        </where>-->
+        ORDER BY c.create_time_sys DESC
+    </select>
+
+</mapper>

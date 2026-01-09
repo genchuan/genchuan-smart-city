@@ -106,7 +106,7 @@ public class AssetTbDaoImpl implements AssetTbDao {
 
             ResponseEntity<PageData<Asset>> response = restTemplate.exchange(
                     assetsUrl,
-                    HttpMethod.GET,
+                    org.springframework.http.HttpMethod.GET,
                     entity,
                     new org.springframework.core.ParameterizedTypeReference<PageData<Asset>>() {}
             );
@@ -136,7 +136,7 @@ public class AssetTbDaoImpl implements AssetTbDao {
 
             ResponseEntity<List> response = restTemplate.exchange(
                     attributesUrl,
-                    HttpMethod.GET,
+                    org.springframework.http.HttpMethod.GET,
                     entity,
                     List.class
             );
@@ -169,7 +169,7 @@ public class AssetTbDaoImpl implements AssetTbDao {
 
             ResponseEntity<List> response = restTemplate.exchange(
                     relationsUrl,
-                    HttpMethod.GET,
+                    org.springframework.http.HttpMethod.GET,
                     entity,
                     List.class
             );
@@ -223,7 +223,7 @@ public class AssetTbDaoImpl implements AssetTbDao {
 
             ResponseEntity<Asset> response = restTemplate.exchange(
                     createAssetUrl,
-                    HttpMethod.POST,
+                    org.springframework.http.HttpMethod.POST,
                     entity,
                     Asset.class
             );
@@ -255,7 +255,7 @@ public class AssetTbDaoImpl implements AssetTbDao {
 
             restTemplate.exchange(
                     deleteAssetUrl,
-                    HttpMethod.DELETE,
+                    org.springframework.http.HttpMethod.DELETE,
                     entity,
                     Void.class
             );
@@ -296,7 +296,7 @@ public class AssetTbDaoImpl implements AssetTbDao {
 
             ResponseEntity<PageData<AssetProfile>> response = restTemplate.exchange(
                     urlBuilder.toString(),
-                    HttpMethod.GET,
+                    org.springframework.http.HttpMethod.GET,
                     entity,
                     new org.springframework.core.ParameterizedTypeReference<PageData<AssetProfile>>() {}
             );
@@ -333,7 +333,7 @@ public class AssetTbDaoImpl implements AssetTbDao {
 
             ResponseEntity<String> response = restTemplate.exchange(
                     attributesUrl,
-                    HttpMethod.POST,
+                    org.springframework.http.HttpMethod.POST,
                     entity,
                     String.class
             );
@@ -393,6 +393,65 @@ public class AssetTbDaoImpl implements AssetTbDao {
             client.close();
         }
     }
+
+    @Override
+    public List<Map<String, Object>> getAssetOutwardRelations(String assetId) {
+        RestClient client = new RestClient(url);
+        try {
+            client.login(username, password);
+
+            // 构建获取向外关联的URL
+            String relationsUrl = url + "api/relations/info?fromId=" + assetId + "&fromType=ASSET";
+
+            String token = client.getToken();
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-Authorization", "Bearer " + token);
+            headers.set("Content-Type", "application/json");
+
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            RestTemplate restTemplate = new RestTemplate();
+
+            ResponseEntity<List> response = restTemplate.exchange(
+                    relationsUrl,
+                    org.springframework.http.HttpMethod.GET,
+                    entity,
+                    List.class
+            );
+
+            List<Map<String, Object>> relations = (List<Map<String, Object>>) response.getBody();
+
+            // 转换格式为期望的资产列表格式
+            List<Map<String, Object>> assets = new ArrayList<>();
+            if (relations != null) {
+                for (Map<String, Object> relation : relations) {
+                    Map<String, Object> to = (Map<String, Object>) relation.get("to");
+                    if ("ASSET".equals(to.get("entityType"))) {
+                        Map<String, Object> asset = new HashMap<>();
+                        asset.put("assetName", relation.get("toName"));
+                        asset.put("entityType", "ASSET");
+                        asset.put("assetId", to.get("id"));
+                        assets.add(asset);
+                    }
+                }
+            }
+
+            return assets;
+        } catch (Exception e) {
+            throw new RuntimeException("获取资产向外关联资产失败: " + e.getMessage(), e);
+        } finally {
+            client.logout();
+            client.close();
+        }
+    }
+
+
+
+
+
+
+
+
+
 
 
 }

@@ -8,6 +8,10 @@ import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.framework.datapermission.core.annotation.DataPermission;
 import cn.iocoder.yudao.framework.common.biz.system.permission.dto.DeptDataPermissionRespDTO;
+import cn.iocoder.yudao.module.system.controller.admin.permission.vo.menu.MenuDetailRespVO;
+import cn.iocoder.yudao.module.system.controller.admin.permission.vo.menu.MenuSimpleRespVO;
+import cn.iocoder.yudao.module.system.controller.admin.permission.vo.menu.MenuTreeRespVO;
+import cn.iocoder.yudao.module.system.controller.admin.permission.vo.menu.MenuTreeUtil;
 import cn.iocoder.yudao.module.system.dal.dataobject.permission.MenuDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.permission.RoleDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.permission.RoleMenuDO;
@@ -192,6 +196,66 @@ public class PermissionServiceImpl implements PermissionService {
         }
         // 如果是非管理员的情况下，获得拥有的菜单编号
         return convertSet(roleMenuMapper.selectListByRoleId(roleIds), RoleMenuDO::getMenuId);
+    }
+
+    @Override
+    public Set<MenuDetailRespVO> getRoleMenuInfoListByRoleId(Long roleId) {
+        // 获得角色拥有的菜单编号集合
+        Set<Long> menuIds = getRoleMenuListByRoleId(Collections.singleton(roleId));
+        if (CollUtil.isEmpty(menuIds)) {
+            return Collections.emptySet();
+        }
+
+        // 查询菜单详细信息
+        List<MenuDO> menus = menuService.getMenuList(menuIds);
+
+        // 转换为 VO 对象
+        return convertSet(menus, menu -> {
+            MenuDetailRespVO vo = new MenuDetailRespVO();
+            vo.setId(menu.getId());
+            vo.setName(menu.getName());
+            vo.setParentId(menu.getParentId());
+            vo.setType(menu.getType());
+            vo.setPath(menu.getPath());
+            vo.setIcon(menu.getIcon());
+            vo.setPermission(menu.getPermission());
+            vo.setSort(menu.getSort());
+            vo.setComponent(menu.getComponent());
+            vo.setComponentName(menu.getComponentName());
+            vo.setStatus(menu.getStatus());
+            vo.setVisible(menu.getVisible());
+            vo.setKeepAlive(menu.getKeepAlive());
+            vo.setAlwaysShow(menu.getAlwaysShow());
+            return vo;
+        });
+    }
+
+    @Override
+    public List<MenuTreeRespVO> getRoleMenuTreeByRoleId(Long roleId) {
+        // 获得角色拥有的菜单编号集合
+        Set<Long> menuIds = getRoleMenuListByRoleId(Collections.singleton(roleId));
+        if (CollUtil.isEmpty(menuIds)) {
+            return Collections.emptyList();
+        }
+
+        // 查询菜单详细信息
+        List<MenuDO> menus = menuService.getMenuList(menuIds);
+
+        // 转换为树形结构（排除按钮类型）
+        return MenuTreeUtil.buildMenuTree(menus);
+    }
+
+    @Override
+    public List<MenuTreeRespVO> getRoleMenuTreeByRoleCode(String roleCode) {
+        // 根据角色标识获取角色信息
+        RoleDO role = roleService.getRoleByCode(roleCode);
+        if (role == null) {
+            log.warn("[getRoleMenuTreeByRoleCode][角色标识({})不存在]", roleCode);
+            return Collections.emptyList();
+        }
+
+        // 使用已有的根据角色ID查询的方法
+        return getRoleMenuTreeByRoleId(role.getId());
     }
 
     @Override

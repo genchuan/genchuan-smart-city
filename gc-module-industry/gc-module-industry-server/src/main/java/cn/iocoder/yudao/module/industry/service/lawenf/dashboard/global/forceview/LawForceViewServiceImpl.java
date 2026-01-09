@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.industry.service.lawenf.dashboard.global.forcevi
 
 import cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.forceview.vo.LawForceViewQueryReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.forceview.vo.LawForceViewRespVO;
+
 import cn.iocoder.yudao.module.industry.dal.mysql.lawenf.dashboard.global.forceview.LawForceViewMapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;

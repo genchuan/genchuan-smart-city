@@ -2,6 +2,8 @@ package cn.iocoder.yudao.module.system.controller.admin.permission;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.module.system.controller.admin.permission.vo.menu.MenuDetailRespVO;
+import cn.iocoder.yudao.module.system.controller.admin.permission.vo.menu.MenuTreeRespVO;
 import cn.iocoder.yudao.module.system.controller.admin.permission.vo.permission.PermissionAssignRoleDataScopeReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.permission.vo.permission.PermissionAssignRoleMenuReqVO;
 import cn.iocoder.yudao.module.system.controller.admin.permission.vo.permission.PermissionAssignUserRoleReqVO;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+
+import java.util.List;
 import java.util.Set;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
@@ -77,6 +81,30 @@ public class PermissionController {
     public CommonResult<Boolean> assignUserRole(@Validated @RequestBody PermissionAssignUserRoleReqVO reqVO) {
         permissionService.assignUserRole(reqVO.getUserId(), reqVO.getRoleIds());
         return success(true);
+    }
+
+    @Operation(summary = "获得角色拥有的菜单详细信息")
+    @Parameter(name = "roleId", description = "角色编号", required = true)
+    @GetMapping("/list-role-menu-info")
+    @PreAuthorize("@ss.hasPermission('system:permission:assign-role-menu')")
+    public CommonResult<Set<MenuDetailRespVO>> getRoleMenuInfoList(Long roleId) {
+        return success(permissionService.getRoleMenuInfoListByRoleId(roleId));
+    }
+
+    @Operation(summary = "获得角色拥有的菜单树形结构")
+    @Parameter(name = "roleId", description = "角色编号", required = true)
+    @GetMapping("/list-role-menu-tree")
+    @PreAuthorize("@ss.hasPermission('system:permission:assign-role-menu')")
+    public CommonResult<List<MenuTreeRespVO>> getRoleMenuTree(Long roleId) {
+        return success(permissionService.getRoleMenuTreeByRoleId(roleId));
+    }
+
+    @Operation(summary = "获得角色拥有的菜单树形结构（根据角色标识）")
+    @Parameter(name = "roleCode", description = "角色标识", required = true)
+    @GetMapping("/list-role-menu-tree-by-code")
+    @PreAuthorize("@ss.hasPermission('system:permission:assign-role-menu')")
+    public CommonResult<List<MenuTreeRespVO>> getRoleMenuTreeByRoleCode(@RequestParam("roleCode") String roleCode) {
+        return success(permissionService.getRoleMenuTreeByRoleCode(roleCode));
     }
 
 }

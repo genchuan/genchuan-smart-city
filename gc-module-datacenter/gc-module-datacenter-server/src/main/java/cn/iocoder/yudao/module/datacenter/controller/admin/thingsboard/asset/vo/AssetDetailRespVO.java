@@ -62,6 +62,9 @@ public class AssetDetailRespVO {
     @Schema(description = "关联设备列表")
     private List<ContextDeviceVO> contextDevice;
 
+    @Schema(description = "关联资产列表")
+    private List<ContextAssetVO> contextAsset;
+
     @Schema(description = "通用扩展字段1")
     private String extCommon1;
 

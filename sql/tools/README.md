@@ -57,7 +57,7 @@ docker load -i dm8_20240715_x86_rh6_rq_single.tar
 ```Bash
 docker compose up -d dm8
 # 注意：启动完 dm 后，需要手动再执行如下命令，因为 dm 不支持初始化脚本
-docker compose exec dm8 bash -c '/opt/dmdbms/bin/disql SYSDBA/SYSDBA001 \`/tmp/schema.sql'
+docker compose exec dm8 bash -c '/opt/dmdbms/bin/disql root/root001 \`/tmp/schema.sql'
 exit
 ```
 

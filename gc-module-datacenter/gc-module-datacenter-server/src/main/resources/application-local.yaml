@@ -207,7 +207,9 @@ justauth:
     prefix: 'social_auth_state:' # 缓存前缀，目前只对 Redis 缓存生效，默认 JUSTAUTH::STATE::
     timeout: 24h # 超时时长，目前只对 Redis 缓存生效，默认 3 分钟
 
+#test@gc.com Hr.12345 演示租户
+#开发租户
 thingsboard:
-  url: http://112.47.127.21:81/
-  username: test@gc.com
-  password: Hr.12345
+  url: http://127.0.0.1:81/
+  username: user
+  password: password

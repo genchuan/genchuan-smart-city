@@ -190,6 +190,17 @@ public class MenuServiceImpl implements MenuService {
         return menuMapper.selectBatchIds(ids);
     }
 
+    @Override
+    public List<MenuDO> getMenuListByIds(List<Long> ids) {
+        log.info("查询菜单列表，IDs: {}", ids);
+        if (CollUtil.isEmpty(ids)) {
+            return Collections.emptyList();
+        }
+        List<MenuDO> result = menuMapper.selectBatchIds(ids);
+        log.info("查询结果数量: {}", result.size());
+        return result;
+    }
+
     /**
      * 校验父菜单是否合法
      * <p>
