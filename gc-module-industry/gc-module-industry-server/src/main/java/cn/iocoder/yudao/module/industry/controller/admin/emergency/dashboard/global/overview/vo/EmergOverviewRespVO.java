@@ -4,6 +4,8 @@ import com.alibaba.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Schema(description = "管理后台 - 应急全域数据概览 Response VO")
 @Data
 public class EmergOverviewRespVO {
@@ -31,4 +33,8 @@ public class EmergOverviewRespVO {
     @Schema(description = "行政区划覆盖数（当前行政区等级下一级别全部的总数，不包括当前行政区等级）", requiredMode = Schema.RequiredMode.REQUIRED, example = "12")
     @ExcelProperty("行政区划覆盖数")
     private Integer regionCoverCount;
+
+    @Schema(description = "数据更新时间", requiredMode = Schema.RequiredMode.REQUIRED, example = "2025-11-19 10:00:00")
+    @ExcelProperty("数据更新时间")
+    private LocalDateTime updateTime;
 }

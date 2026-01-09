@@ -102,6 +102,10 @@ public class AssetRespVO {
     @JsonSerialize(using = RawJsonSerializer.class)  // 使用自定义序列化器
     private String contextDevices;
 
+    @Schema(description = "关联资产列表")
+    @JsonSerialize(using = RawJsonSerializer.class)
+    private String contextAsset;
+
     @Schema(description = "系统租户ID", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("系统租户ID")
     private Long tenantIdSys;

@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.datacenter.dal.dataobject.thingsboard.device;
 
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
         import java.util.*;
         import java.time.LocalDateTime;
@@ -13,7 +14,7 @@ import com.baomidou.mybatisplus.annotation.*;
  *
  * @author 芋道源码
  */
-@TableName("device")
+@TableName("tb_device_info")
 @KeySequence("device_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -73,5 +74,44 @@ public class DeviceDO extends BaseDO {
      */
     private Long version;
 
+    private String additionalInfo;
 
+    private Boolean active;
+
+    private String deviceProfileName;
+
+    private String customerTitle;
+
+    private Boolean customerIsPublic;
+
+    @TableField(exist = false)
+    private Object additionalInfoJson;
+
+    /**
+     * 属性列表（JSON格式）
+     */
+    private String attributes;
+
+    /**
+     * 通用扩展字段1
+     */
+    private String extCommon1;
+
+    /**
+     * 通用扩展字段2
+     */
+    private String extCommon2;
+
+    /**
+     * 通用扩展字段3
+     */
+    private String extCommon3;
+
+    /**
+     * 通用扩展字段4
+     */
+    private String extCommon4;
+
+    @TableField(exist = false)
+    private Object attributesJson;
 }

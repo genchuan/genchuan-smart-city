@@ -34,14 +34,14 @@ public class BpmUserGroupController {
 
     @PostMapping("/create")
     @Operation(summary = "创建用户组")
-    @PreAuthorize("@ss.hasPermission('bpm:user-group:create')")
+    // @PreAuthorize("@ss.hasPermission('bpm:user-group:create')")
     public CommonResult<Long> createUserGroup(@Valid @RequestBody BpmUserGroupSaveReqVO createReqVO) {
         return success(userGroupService.createUserGroup(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新用户组")
-    @PreAuthorize("@ss.hasPermission('bpm:user-group:update')")
+    // @PreAuthorize("@ss.hasPermission('bpm:user-group:update')")
     public CommonResult<Boolean> updateUserGroup(@Valid @RequestBody BpmUserGroupSaveReqVO updateReqVO) {
         userGroupService.updateUserGroup(updateReqVO);
         return success(true);
@@ -50,7 +50,7 @@ public class BpmUserGroupController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除用户组")
     @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('bpm:user-group:delete')")
+    // @PreAuthorize("@ss.hasPermission('bpm:user-group:delete')")
     public CommonResult<Boolean> deleteUserGroup(@RequestParam("id") Long id) {
         userGroupService.deleteUserGroup(id);
         return success(true);
@@ -59,7 +59,7 @@ public class BpmUserGroupController {
     @GetMapping("/get")
     @Operation(summary = "获得用户组")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('bpm:user-group:query')")
+    // @PreAuthorize("@ss.hasPermission('bpm:user-group:query')")
     public CommonResult<BpmUserGroupRespVO> getUserGroup(@RequestParam("id") Long id) {
         BpmUserGroupDO userGroup = userGroupService.getUserGroup(id);
         return success(BeanUtils.toBean(userGroup, BpmUserGroupRespVO.class));
@@ -67,7 +67,7 @@ public class BpmUserGroupController {
 
     @GetMapping("/page")
     @Operation(summary = "获得用户组分页")
-    @PreAuthorize("@ss.hasPermission('bpm:user-group:query')")
+    // @PreAuthorize("@ss.hasPermission('bpm:user-group:query')")
     public CommonResult<PageResult<BpmUserGroupRespVO>> getUserGroupPage(@Valid BpmUserGroupPageReqVO pageVO) {
         PageResult<BpmUserGroupDO> pageResult = userGroupService.getUserGroupPage(pageVO);
         return success(BeanUtils.toBean(pageResult, BpmUserGroupRespVO.class));

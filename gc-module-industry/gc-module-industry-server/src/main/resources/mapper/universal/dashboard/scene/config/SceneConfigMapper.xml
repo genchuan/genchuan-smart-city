@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    获取场景配置接口 Mapper XML
+    功能说明：
+    1. 定义数据库访问的 SQL 语句
+    2. namespace 对应 Mapper 接口全路径
+    3. select 语句的 resultType 对应查询返回的 VO 类
+-->
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.universal.dashboard.scene.config.SceneConfigMapper">
+
+    <!--
+        查询获取场景配置接口的方法
+        id: 对应 Mapper 接口的方法名
+        resultType: 查询结果映射到的 VO 类
+        参数通过 Mapper 接口传入
+    -->
+    <select id="getSceneConfig"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.universal.dashboard.scene.config.vo.SceneConfigRespVO">
+
+    </select>
+
+</mapper>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.marketreg.dashboard.global.caseview.MarketCaseViewMapper">
+
+    <select id="getMarketCaseView"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.marketreg.dashboard.global.caseview.vo.MarketCaseViewRespVO">
+        SELECT
+            COUNT(1) AS totalCase,
+            ifnull(SUM(CASE WHEN status = 0 THEN 1 ELSE 0 END),0) AS pendAcceptCase,
+            ifnull(SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END),0) AS handlCase,
+            ifnull(SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END),0) AS completedCase,
+            ifnull(
+                SUM(
+                    CASE
+                        WHEN complete_time IS NOT NULL AND TIMESTAMPDIFF(SECOND, accept_time, complete_time) > #{prescribedDuration} * 24 * 3600 THEN 1
+                        WHEN complete_time IS NULL AND TIMESTAMPDIFF(SECOND, accept_time, NOW()) > #{prescribedDuration} * 24 * 3600 THEN 1
+                        ELSE 0
+                    END
+                )
+            ,0) AS overtimeCase,
+            ROUND(
+                ifnull(
+                    SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END) /
+                    NULLIF(COUNT(1) - SUM(CASE WHEN status = 0 THEN 1 ELSE 0 END), 0) * 100
+                    ,0
+                )
+                ,2
+            ) AS caseHandleRate
+        FROM biz_case
+        <where>
+            <!-- 状态筛选（多选） -->
+            <if test="statusList != null and !statusList.isEmpty()">
+                AND status IN
+                <foreach collection="statusList" item="status" open="(" separator="," close=")">
+                    #{status}
+                </foreach>
+            </if>
+            <!-- 类型筛选 -->
+            <if test="type != null">
+                AND type = #{type}
+            </if>
+            <!-- 时间筛选 -->
+            and
+            <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.TimeSqlMapper.searchByStartTimeEndTime">
+                <property name="search_time_col" value="create_time"/>
+            </include>
+        </where>
+    </select>
+
+</mapper>

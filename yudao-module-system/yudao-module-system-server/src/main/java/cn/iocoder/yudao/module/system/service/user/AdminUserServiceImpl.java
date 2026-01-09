@@ -507,6 +507,25 @@ public class AdminUserServiceImpl implements AdminUserService {
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 
+    // 在 AdminUserServiceImpl 类中添加以下方法
+    @Override
+    @LogRecord(type = SYSTEM_USER_TYPE, subType = SYSTEM_USER_UPDATE_AVATAR_SUB_TYPE, bizNo = "{{#id}}",
+            success = SYSTEM_USER_UPDATE_AVATAR_SUCCESS)
+    public void updateUserAvatar(Long id, String avatarUrl) {
+        // 校验用户存在
+        AdminUserDO user = validateUserExists(id);
+
+        // 更新头像
+        AdminUserDO updateObj = new AdminUserDO();
+        updateObj.setId(id);
+        updateObj.setAvatar(avatarUrl);
+        userMapper.updateById(updateObj);
+
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("user", user);
+        LogRecordContext.putVariable("avatarUrl", avatarUrl);
+    }
+
     /**
      * 对密码进行加密
      *

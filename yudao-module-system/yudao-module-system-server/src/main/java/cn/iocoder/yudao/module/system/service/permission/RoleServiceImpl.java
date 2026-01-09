@@ -250,6 +250,11 @@ public class RoleServiceImpl implements RoleService {
         });
     }
 
+    @Override
+    public RoleDO getRoleByCode(String code) {
+        return roleMapper.selectByCode(code);
+    }
+
     /**
      * 获得自身的代理对象，解决 AOP 生效问题
      *

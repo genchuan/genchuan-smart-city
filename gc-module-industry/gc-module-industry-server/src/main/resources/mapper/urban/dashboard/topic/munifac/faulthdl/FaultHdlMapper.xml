@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    市政设施专题-标记故障处置完成 Mapper XML
+    功能说明：
+    1. 定义数据库访问的 SQL 语句
+    2. namespace 对应 Mapper 接口全路径
+    3. select 语句的 resultType 对应查询返回的 VO 类
+-->
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.urban.dashboard.topic.munifac.faulthdl.FaultHdlMapper">
+
+    <!--
+        查询市政设施专题-标记故障处置完成的方法
+        id: 对应 Mapper 接口的方法名
+        resultType: 查询结果映射到的 VO 类
+        参数通过 Mapper 接口传入
+    -->
+    <select id="getFaultHdl"
+            resultType="cn.iocoder.yudao.module.industry.controller.admin.urban.dashboard.topic.munifac.faulthdl.vo.FaultHdlRespVO">
+
+    </select>
+
+</mapper>

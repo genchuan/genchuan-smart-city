@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.park.pay.parkpay.ParkPayMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+    <select id="pageParkPay"
+            resultType="cn.iocoder.yudao.module.industry.dal.dataobject.park.pay.parkpay.ParkPayDO">
+        SELECT *
+        FROM biz_park_pay
+        WHERE 1=1
+        <if test="payCode != null">AND pay_code = #{payCode}</if>
+        <if test="woNo != null">AND wo_no = #{woNo}</if>
+        <if test="reservationId != null">AND reservation_id = #{reservationId}</if>
+        <if test="payWoNo != null">AND pay_wo_no = #{payWoNo}</if>
+        <if test="parkLotId != null">AND park_lot_id = #{parkLotId}</if>
+        <if test="parkLotName != null">AND park_lot_name LIKE CONCAT('%', #{parkLotName}, '%')</if>
+        <if test="berthId != null">AND berth_id = #{berthId}</if>
+        <if test="berthNo != null">AND berth_no = #{berthNo}</if>
+        <if test="plateNum != null">AND plate_num = #{plateNum}</if>
+        <if test="entryTime != null">
+            AND entry_time &gt;= #{entryTime[0]}
+            AND entry_time &lt;= #{entryTime[1]}
+        </if>
+        <if test="exitTime != null">
+            AND exit_time &gt;= #{exitTime[0]}
+            AND exit_time &lt;= #{exitTime[1]}
+        </if>
+        <if test="payTime != null">
+            AND pay_time &gt;= #{payTime[0]}
+            AND pay_time &lt;= #{payTime[1]}
+        </if>
+        <if test="createTime != null">
+            AND create_time &gt;= #{createTime[0]}
+            AND create_time &lt;= #{createTime[1]}
+        </if>
+        <if test="statStartTime != null">AND create_time &gt;= #{statStartTime}</if>
+        <if test="statEndTime != null">AND create_time &lt;= #{statEndTime}</if>
+        <if test="regionFullCode != null">AND region_full_code = #{regionFullCode}</if>
+        <if test="regionName != null">AND region_name LIKE CONCAT('%', #{regionName}, '%')</if>
+        <if test="gridName != null">AND grid_name LIKE CONCAT('%', #{gridName}, '%')</if>
+        <if test="extCat1 != null">AND ext_cat1 = #{extCat1}</if>
+        <if test="extCat2 != null">AND ext_cat2 = #{extCat2}</if>
+        <if test="extCommon1 != null">AND ext_common1 = #{extCommon1}</if>
+        <if test="extCommon2 != null">AND ext_common2 = #{extCommon2}</if>
+        ORDER BY id DESC
+    </select>
+
+    <select id="selectDrillPage" resultType="cn.iocoder.yudao.module.industry.dal.dataobject.park.pay.parkpay.ParkPayDO">
+        SELECT *
+        FROM biz_park_pay
+        <where>
+            <if test="regionFullCode != null and regionFullCode != ''">
+                AND
+                <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.AreaSqlMapper.likeByRegionFullCode">
+                    <property name="areaColumn" value="region_full_code"/>
+                </include>
+            </if>
+            <if test="reqVO.startTime != null">
+                AND create_time &gt;= #{reqVO.startTime}
+            </if>
+            <if test="reqVO.endTime != null">
+                AND create_time &lt;= #{reqVO.endTime}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
+
+</mapper>

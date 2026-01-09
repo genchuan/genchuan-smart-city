@@ -36,6 +36,10 @@ public interface AssetProfileMapper extends BaseMapperX<AssetProfileDO> {
                 .eqIfPresent(AssetProfileDO::getVersion, reqVO.getVersion())
                 .eqIfPresent(AssetProfileDO::getIsDefault, reqVO.getIsDefault())
                 .betweenIfPresent(AssetProfileDO::getCreateTime, reqVO.getCreateTime())
+                .eqIfPresent(AssetProfileDO::getExtCommon1, reqVO.getExtCommon1())
+                .eqIfPresent(AssetProfileDO::getExtCommon2, reqVO.getExtCommon2())
+                .eqIfPresent(AssetProfileDO::getExtCommon3, reqVO.getExtCommon3())
+                .eqIfPresent(AssetProfileDO::getExtCommon4, reqVO.getExtCommon4())
                 .orderByDesc(AssetProfileDO::getId));
     }
 

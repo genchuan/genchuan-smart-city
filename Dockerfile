@@ -1,5 +1,5 @@
 # 适用于 yudao-module-system-biz 等子模块
-FROM eclipse-temurin:21-jre
+FROM harbor.genchuan.cn/library/eclipse-temurin:21-jre
 
 ARG MODULE_NAME=yudao-gateway
 ARG JAR_PATH=yudao-gateway
@@ -7,8 +7,8 @@ ENV TZ=Asia/Shanghai
 ENV JAVA_OPTS="-Xms512m -Xmx512m"
 ENV NACOS_SERVER_ADDR=nacos-server:8848
 ENV NACOS_NAMESPACE=public
-ENV NACOS_USERNAME=nacos
-ENV NACOS_PASSWORD=nacos
+ENV NACOS_USERNAME=
+ENV NACOS_PASSWORD=
 COPY ${JAR_PATH}/target/${MODULE_NAME}.jar app.jar
 
 # 使用 exec 形式传递所有参数

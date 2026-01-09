@@ -1,10 +1,7 @@
 package cn.iocoder.yudao.module.industry.dal.mysql.lawenf.dashboard.global.forceview;
 
 
-import cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.forceview.vo.LawForceStaffCountVO;
-import cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.forceview.vo.LawForceStaffLocVO;
-import cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.forceview.vo.LawForceStationLocVO;
-import cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.forceview.vo.LawForceVehicleLocVO;
+import cn.iocoder.yudao.module.industry.controller.admin.lawenf.dashboard.global.forceview.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

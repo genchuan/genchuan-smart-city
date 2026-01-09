@@ -30,14 +30,14 @@ public class BpmProcessExpressionController {
 
     @PostMapping("/create")
     @Operation(summary = "创建流程表达式")
-    @PreAuthorize("@ss.hasPermission('bpm:process-expression:create')")
+    // @PreAuthorize("@ss.hasPermission('bpm:process-expression:create')")
     public CommonResult<Long> createProcessExpression(@Valid @RequestBody BpmProcessExpressionSaveReqVO createReqVO) {
         return success(processExpressionService.createProcessExpression(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新流程表达式")
-    @PreAuthorize("@ss.hasPermission('bpm:process-expression:update')")
+    // @PreAuthorize("@ss.hasPermission('bpm:process-expression:update')")
     public CommonResult<Boolean> updateProcessExpression(@Valid @RequestBody BpmProcessExpressionSaveReqVO updateReqVO) {
         processExpressionService.updateProcessExpression(updateReqVO);
         return success(true);
@@ -46,7 +46,7 @@ public class BpmProcessExpressionController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除流程表达式")
     @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('bpm:process-expression:delete')")
+    // @PreAuthorize("@ss.hasPermission('bpm:process-expression:delete')")
     public CommonResult<Boolean> deleteProcessExpression(@RequestParam("id") Long id) {
         processExpressionService.deleteProcessExpression(id);
         return success(true);
@@ -55,7 +55,7 @@ public class BpmProcessExpressionController {
     @GetMapping("/get")
     @Operation(summary = "获得流程表达式")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('bpm:process-expression:query')")
+    // @PreAuthorize("@ss.hasPermission('bpm:process-expression:query')")
     public CommonResult<BpmProcessExpressionRespVO> getProcessExpression(@RequestParam("id") Long id) {
         BpmProcessExpressionDO processExpression = processExpressionService.getProcessExpression(id);
         return success(BeanUtils.toBean(processExpression, BpmProcessExpressionRespVO.class));
@@ -63,7 +63,7 @@ public class BpmProcessExpressionController {
 
     @GetMapping("/page")
     @Operation(summary = "获得流程表达式分页")
-    @PreAuthorize("@ss.hasPermission('bpm:process-expression:query')")
+    // @PreAuthorize("@ss.hasPermission('bpm:process-expression:query')")
     public CommonResult<PageResult<BpmProcessExpressionRespVO>> getProcessExpressionPage(
             @Valid BpmProcessExpressionPageReqVO pageReqVO) {
         PageResult<BpmProcessExpressionDO> pageResult = processExpressionService.getProcessExpressionPage(pageReqVO);

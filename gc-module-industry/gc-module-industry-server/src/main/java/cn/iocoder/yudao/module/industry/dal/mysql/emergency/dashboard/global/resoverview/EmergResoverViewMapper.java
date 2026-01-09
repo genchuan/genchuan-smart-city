@@ -23,4 +23,7 @@ public interface EmergResoverViewMapper {
          */
         List<EmergResoverViewRespVO> listEmergResoverView(EmergResoverViewQueryReqVO emergResoverViewQueryReqVO);
 
+        EmergResoverViewRespVO getByResId(String resId);
+
+        int updateStockAfterDispatch(String resId, int newAvailableQty, int newDispatchQty, String newStockStatus);
 }

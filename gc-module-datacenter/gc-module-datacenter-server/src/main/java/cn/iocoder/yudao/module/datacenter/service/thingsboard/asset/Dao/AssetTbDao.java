@@ -64,4 +64,12 @@ public interface AssetTbDao {
      * @param keys 要删除的属性键列表
      */
     void deleteAssetAttributes(String assetId, String scope, List<String> keys);
+
+    /**
+     * 获取资产向外关联的资产
+     * @param assetId 资产ID
+     * @return 关联资产列表
+     */
+    List<Map<String, Object>> getAssetOutwardRelations(String assetId);
+
 }

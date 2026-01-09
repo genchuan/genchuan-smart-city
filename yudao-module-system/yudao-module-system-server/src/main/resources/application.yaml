@@ -185,3 +185,10 @@ yudao:
     end-code: 9999 # 这里配置 9999 的原因是，测试方便。
 
 debug: false
+
+minio:
+  endpoint: http://127.0.0.1:9000        # 内网上传地址
+  public-endpoint: http://public.com.cn:9000  # 外网访问地址
+  access-key: user
+  access-secret: password
+  bucket: bucket

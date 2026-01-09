@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.industry.controller.admin.emergency.dashboard.global.resoverview;
 
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.module.industry.controller.admin.emergency.dashboard.global.resoverview.vo.EmergResoverDispatchReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.emergency.dashboard.global.resoverview.vo.EmergResoverViewQueryReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.emergency.dashboard.global.resoverview.vo.EmergResoverViewRespVO;
 import cn.iocoder.yudao.module.industry.service.emergency.dashboard.global.resoverview.EmergResoverViewService;
@@ -33,5 +34,15 @@ public class EmergResoverViewController {
     ) {
         List<EmergResoverViewRespVO> emergResoverViewRespVO = emergResoverViewService.listEmergResoverView(emergResoverViewQueryReqVO);
         return success(emergResoverViewRespVO);
+    }
+
+    @GetMapping("/dispatch")
+    @Operation(summary = "调度应急资源")
+    @PreAuthorize("@ss.hasPermission('industry:dispatch-emerg-resover:update')")
+    public CommonResult<Boolean> dispatchEmergResover(
+            @Valid EmergResoverDispatchReqVO emergResoverDispatchReqVO
+            ) {
+        emergResoverViewService.dispatchEmergResover(emergResoverDispatchReqVO);
+        return success(true);
     }
 }

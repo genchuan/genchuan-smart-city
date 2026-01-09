@@ -36,6 +36,7 @@ public interface AssetMapper extends BaseMapperX<AssetDO> {
                 .eqIfPresent(AssetDO::getAdditionalInfo, reqVO.getAdditionalInfo())
                 .eqIfPresent(AssetDO::getAttributes, reqVO.getAttributes())
                 .eqIfPresent(AssetDO::getContextDevices, reqVO.getContextDevices())
+                .eqIfPresent(AssetDO::getContextAsset, reqVO.getContextAsset())
                 .eqIfPresent(AssetDO::getTenantIdSys, reqVO.getTenantIdSys())
                 .betweenIfPresent(AssetDO::getCreateTime, reqVO.getCreateTime())
                 .eqIfPresent(AssetDO::getExtCommon1, reqVO.getExtCommon1())

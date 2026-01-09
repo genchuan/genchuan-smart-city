@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.industry.service.emergency.dashboard.global.resoverview;
 
 
+import cn.iocoder.yudao.module.industry.controller.admin.emergency.dashboard.global.resoverview.vo.EmergResoverDispatchReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.emergency.dashboard.global.resoverview.vo.EmergResoverViewQueryReqVO;
 import cn.iocoder.yudao.module.industry.controller.admin.emergency.dashboard.global.resoverview.vo.EmergResoverViewRespVO;
 
@@ -20,4 +21,6 @@ public interface EmergResoverViewService {
          * @return 查询结果
          */
         List<EmergResoverViewRespVO> listEmergResoverView(EmergResoverViewQueryReqVO emergResoverViewQueryReqVO);
+
+        void dispatchEmergResover(EmergResoverDispatchReqVO emergResoverDispatchReqVO);
 }

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.culturesportstourism.dpzl.datamap.CultureDataMapMapper">
+
+    <select id="queryDataMap" resultType="cn.iocoder.yudao.module.industry.controller.admin.culturesportstourism.dpzl.datamap.vo.CultureDataMapRespVO">
+        SELECT
+        s.coord_x AS coordX,
+        s.coord_y AS coordY,
+        c.cat_name AS compCatName,
+        r.total_rpt_count AS totalRptCount,
+        i.run_status AS runStatus,
+        <!-- 当 e 表无匹配时返回 NULL -->
+        IFNULL(e.incident_x, NULL)  AS incidentX,
+        IFNULL(e.incident_y, NULL)  AS incidentY
+        FROM
+        gc_biz_mng_comp_spatial s
+        LEFT JOIN biz_mon_comp_info i ON s.mng_comp_id = i.mon_comp_id
+        LEFT JOIN sys_mon_comp_cat c ON i.comp_cat_id = c.mon_comp_cat_id
+        LEFT JOIN stat_mon_evt_rpt r ON i.region_code = r.region_code
+        LEFT JOIN biz_mon_evt_info e ON i.mon_comp_id = e.rel_comp_id
+        WHERE
+        s.deleted = 0
+        AND i.deleted = 0
+        AND c.deleted = 0
+        <!-- 可根据查询条件动态添加过滤 -->
+        <if test="regionCode != null">AND s.region_code = #{regionCode}</if>
+        <if test="statCycle != null">AND r.stat_cycle = #{statCycle}</if>
+    </select>
+</mapper>

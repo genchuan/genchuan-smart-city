@@ -35,4 +35,16 @@ public class EmergRiskViewRespVO {
     @Schema(description = "发现时间", example = "2025-01-15 14:23:00")
     @ExcelProperty("发现时间")
     private LocalDateTime discoverTime;  // 来源：biz_risk_hazard.discover_time
+
+    @Schema(description = "纬度(地图坐标)", example = "39.922930")
+    @ExcelProperty("纬度")
+    private Double coordX;  // 来源：biz_risk_hazard.coord_x
+
+    @Schema(description = "经度(地图坐标)", example = "116.412750")
+    @ExcelProperty("经度")
+    private Double coordY;  // 来源：biz_risk_hazard.coord_y
+
+    @Schema(description = "数据更新时间", requiredMode = Schema.RequiredMode.REQUIRED, example = "2025-11-19 10:00:00")
+    @ExcelProperty("数据更新时间")
+    private LocalDateTime updateTime;
 }

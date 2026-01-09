@@ -70,6 +70,9 @@ public class AssetSaveReqVO {
     @Schema(description = "关联设备列表")
     private String contextDevices;
 
+    @Schema(description = "关联资产列表")
+    private String contextAsset;
+
     @Schema(description = "系统租户ID")
     private Long tenantIdSys;
 
