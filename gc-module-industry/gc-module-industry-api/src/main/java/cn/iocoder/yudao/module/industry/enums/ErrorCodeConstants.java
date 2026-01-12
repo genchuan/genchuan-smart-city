@@ -85,4 +85,22 @@ public interface ErrorCodeConstants {
     ErrorCode PARK_ENTRY_EXIT_NOT_EXISTS = new ErrorCode(601_004, "出入口信息不存在");
     // ========== 路侧泊位 ==========
     ErrorCode PARK_ROADSIDE_NOT_EXISTS = new ErrorCode(601_005, "路侧泊位不存在");
+
+    // ========== 黑白名单==========
+    ErrorCode PARK_BLACK_WHITE_LIST_NOT_EXISTS = new ErrorCode(500, "黑白名单不存在");
+    // ========== 运维排班==========
+    ErrorCode PARK_MAINTAIN_SCHEDULE_NOT_EXISTS = new ErrorCode(500, "运维排班不存在");
+    // ========== 运维人员==========
+    ErrorCode PARK_MAINTAIN_USER_NOT_EXISTS = new ErrorCode(500, "运维人员不存在");
+    // ========== 代付规则==========
+    ErrorCode PARK_PAYMENT_PROXY_NOT_EXISTS = new ErrorCode(500, "代付规则不存在");
+
+    // ========== 在停车辆 ==========
+    ErrorCode PARK_CAR_PARKING_NOT_EXISTS = new ErrorCode(500, "在停车辆不存在");
+    // ========== 入场记录 ==========
+    ErrorCode PARK_CAR_ENTRY_NOT_EXISTS = new ErrorCode(500, "入场记录不存在");
+    // ========== 通行规则 ==========
+    ErrorCode PARK_PASS_RULE_NOT_EXISTS = new ErrorCode(500, "通行规则不存在");
+    // ========== 资源台账 ==========
+    ErrorCode PARK_RESOURCE_ACCOUNT_NOT_EXISTS = new ErrorCode(500, "资源台账不存在");
 }
