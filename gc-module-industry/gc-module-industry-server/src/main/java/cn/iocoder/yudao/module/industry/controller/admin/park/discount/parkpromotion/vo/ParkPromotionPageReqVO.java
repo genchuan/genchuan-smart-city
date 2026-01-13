@@ -15,14 +15,17 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @ToString(callSuper = true)
 public class ParkPromotionPageReqVO extends PageParam {
 
-    @Schema(description = "[活动名称] 优惠活动名称", example = "王五")
+    @Schema(description = "[活动名称] 优惠活动名称", example = "赵六")
     private String activityName;
 
     @Schema(description = "[活动类型] 满减 / 折扣 / 赠送 / 充值送 / 其他", example = "1")
     private String activityType;
 
-    @Schema(description = "[适用范围] 全局 / 区域 / 车场 / 用户类型（JSON字符串）")
-    private String applyScope;
+    @Schema(description = "[适用范围类型] 全局/区域/车场/用户", example = "1")
+    private String applyScopeType;
+
+    @Schema(description = "[适用范围值] 车场ID、用户ID或区域12位编码列表，英文逗号分隔，如1,2")
+    private String applyScopeValue;
 
     @Schema(description = "[活动开始时间] 活动生效开始时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
@@ -38,16 +41,13 @@ public class ParkPromotionPageReqVO extends PageParam {
     @Schema(description = "[已使用名额] 已消耗活动名额")
     private Integer usedQuota;
 
-    @Schema(description = "[状态] 未开始 / 进行中 / 已结束 / 已取消", example = "2")
+    @Schema(description = "[状态] 未开始 / 进行中 / 已结束 / 已取消", example = "1")
     private String status;
 
     @Schema(description = "[活动规则配置] 活动规则定义（JSON字符串）")
     private String ruleConfig;
 
-    @Schema(description = "[活动数据统计] 统计信息（JSON字符串）")
-    private String dataStatistics;
-
-    @Schema(description = "[备注] 优惠活动相关说明", example = "随便")
+    @Schema(description = "[备注] 优惠活动相关说明", example = "你猜")
     private String remark;
 
     @Schema(description = "[创建时间] 记录创建时间")

@@ -24,7 +24,6 @@ public interface ParkFeeTempMapper extends BaseMapperX<ParkFeeTempDO> {
                 .eqIfPresent(ParkFeeTempDO::getFeeStrategyId, reqVO.getFeeStrategyId())
                 .betweenIfPresent(ParkFeeTempDO::getFreeParkingTime, reqVO.getFreeParkingTime())
                 .eqIfPresent(ParkFeeTempDO::getMaxDailyFee, reqVO.getMaxDailyFee())
-                .eqIfPresent(ParkFeeTempDO::getDiscountRule, reqVO.getDiscountRule())
                 .eqIfPresent(ParkFeeTempDO::getStatus, reqVO.getStatus())
                 .betweenIfPresent(ParkFeeTempDO::getCreateTime, reqVO.getCreateTime())
                 .eqIfPresent(ParkFeeTempDO::getRemark, reqVO.getRemark())

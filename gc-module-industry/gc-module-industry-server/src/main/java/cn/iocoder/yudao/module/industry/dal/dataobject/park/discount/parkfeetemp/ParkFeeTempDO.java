@@ -49,10 +49,6 @@ public class ParkFeeTempDO extends BaseDO {
      */
     private BigDecimal maxDailyFee;
     /**
-     * [优惠抵扣规则] 优惠抵扣规则描述，varchar
-     */
-    private String discountRule;
-    /**
      * [状态] 启用 / 禁用
      */
     private String status;

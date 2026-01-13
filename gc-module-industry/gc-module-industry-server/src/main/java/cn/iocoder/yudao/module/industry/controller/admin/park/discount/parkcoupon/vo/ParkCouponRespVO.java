@@ -13,7 +13,7 @@ import com.alibaba.excel.annotation.*;
 @ExcelIgnoreUnannotated
 public class ParkCouponRespVO {
 
-    @Schema(description = "[主键ID] 优惠券唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "16925")
+    @Schema(description = "[主键ID] 优惠券唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "29701")
     @ExcelProperty("[主键ID] 优惠券唯一标识")
     private Long id;
 
@@ -25,9 +25,17 @@ public class ParkCouponRespVO {
     @ExcelProperty("[优惠券名称] 优惠券名称")
     private String couponName;
 
-    @Schema(description = "[优惠券类型] 满减券 / 折扣券 / 免费时长券 / 充值券", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @Schema(description = "[优惠券类型] 满减券 / 折扣券 / 免费时长券 / 充值券", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
     @ExcelProperty("[优惠券类型] 满减券 / 折扣券 / 免费时长券 / 充值券")
     private String couponType;
+
+    @Schema(description = "[适用范围类型] 全局/车场", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @ExcelProperty("[适用范围类型] 全局/车场")
+    private String applyScopeType;
+
+    @Schema(description = "[适用范围值] 车场ID列表，英文逗号分隔，如1,2")
+    @ExcelProperty("[适用范围值] 车场ID列表，英文逗号分隔，如1,2")
+    private String applyScopeValue;
 
     @Schema(description = "[面值/折扣比例] 优惠券面值或折扣比例")
     @ExcelProperty("[面值/折扣比例] 优惠券面值或折扣比例")
@@ -41,10 +49,6 @@ public class ParkCouponRespVO {
     @ExcelProperty("[免费时长] 单位：分钟，仅免费时长券适用")
     private Integer freeTime;
 
-    @Schema(description = "[适用范围] JSON 格式")
-    @ExcelProperty("[适用范围] JSON 格式")
-    private String applyScope;
-
     @Schema(description = "[生效时间] 优惠券生效时间", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("[生效时间] 优惠券生效时间")
     private LocalDateTime startTime;
@@ -57,11 +61,11 @@ public class ParkCouponRespVO {
     @ExcelProperty("[状态] 未发放 / 已发放 / 已使用 / 已过期 / 已作废")
     private String status;
 
-    @Schema(description = "[用户ID] 定向发放用户，关联 park_user.id", example = "15387")
+    @Schema(description = "[用户ID] 定向发放用户，关联 park_user.id", example = "14992")
     @ExcelProperty("[用户ID] 定向发放用户，关联 park_user.id")
     private Long userId;
 
-    @Schema(description = "[活动ID] 关联 park_promotion.promotion_id", example = "9082")
+    @Schema(description = "[活动ID] 关联 park_promotion.promotion_id", example = "25381")
     @ExcelProperty("[活动ID] 关联 park_promotion.promotion_id")
     private Long promotionId;
 
@@ -73,7 +77,7 @@ public class ParkCouponRespVO {
     @ExcelProperty("[使用时间] 优惠券使用时间")
     private LocalDateTime useTime;
 
-    @Schema(description = "[使用订单ID] 关联订单ID", example = "19275")
+    @Schema(description = "[使用订单ID] 关联订单ID", example = "29421")
     @ExcelProperty("[使用订单ID] 关联订单ID")
     private Long useOrderId;
 

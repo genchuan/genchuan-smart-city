@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 @Data
 public class ParkPromotionSaveReqVO {
 
-    @Schema(description = "[主键ID] 优惠活动唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "7612")
+    @Schema(description = "[主键ID] 优惠活动唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "1638")
     private Long id;
 
-    @Schema(description = "[活动名称] 优惠活动名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "王五")
+    @Schema(description = "[活动名称] 优惠活动名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "赵六")
     @NotEmpty(message = "[活动名称] 优惠活动名称不能为空")
     private String activityName;
 
@@ -22,9 +22,12 @@ public class ParkPromotionSaveReqVO {
     @NotEmpty(message = "[活动类型] 满减 / 折扣 / 赠送 / 充值送 / 其他不能为空")
     private String activityType;
 
-    @Schema(description = "[适用范围] 全局 / 区域 / 车场 / 用户类型（JSON字符串）", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotEmpty(message = "[适用范围] 全局 / 区域 / 车场 / 用户类型（JSON字符串）不能为空")
-    private String applyScope;
+    @Schema(description = "[适用范围类型] 全局/区域/车场/用户", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @NotEmpty(message = "[适用范围类型] 全局/区域/车场/用户不能为空")
+    private String applyScopeType;
+
+    @Schema(description = "[适用范围值] 车场ID、用户ID或区域12位编码列表，英文逗号分隔，如1,2")
+    private String applyScopeValue;
 
     @Schema(description = "[活动开始时间] 活动生效开始时间", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "[活动开始时间] 活动生效开始时间不能为空")
@@ -41,7 +44,7 @@ public class ParkPromotionSaveReqVO {
     @NotNull(message = "[已使用名额] 已消耗活动名额不能为空")
     private Integer usedQuota;
 
-    @Schema(description = "[状态] 未开始 / 进行中 / 已结束 / 已取消", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
+    @Schema(description = "[状态] 未开始 / 进行中 / 已结束 / 已取消", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @NotEmpty(message = "[状态] 未开始 / 进行中 / 已结束 / 已取消不能为空")
     private String status;
 
@@ -49,10 +52,7 @@ public class ParkPromotionSaveReqVO {
     @NotEmpty(message = "[活动规则配置] 活动规则定义（JSON字符串）不能为空")
     private String ruleConfig;
 
-    @Schema(description = "[活动数据统计] 统计信息（JSON字符串）")
-    private String dataStatistics;
-
-    @Schema(description = "[备注] 优惠活动相关说明", example = "随便")
+    @Schema(description = "[备注] 优惠活动相关说明", example = "你猜")
     private String remark;
 
     @Schema(description = "[通用扩展字段1] 预留扩展")

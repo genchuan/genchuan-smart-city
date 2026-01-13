@@ -41,9 +41,13 @@ public class ParkFeeStrategyDO extends BaseDO {
      */
     private String strategyType;
     /**
-     * [适用范围] 全局 / 区域 / 车场，JSON 格式varchar
+     * [适用范围类型] 全局/区域/车场
      */
-    private String applyScope;
+    private String applyScopeType;
+    /**
+     * [适用范围值] 车场ID或区域12位编码列表，英文逗号分隔，如1,2
+     */
+    private String applyScopeValue;
     /**
      * [基础费率] 元/分钟
      */
@@ -57,7 +61,7 @@ public class ParkFeeStrategyDO extends BaseDO {
      */
     private BigDecimal offPeakRate;
     /**
-     * [区域费率配置] JSON 格式，仅区域费率策略适用
+     * [区域费率配置] 仅区域费率策略有效，JSON型varchar：[{"region_code":"12位地区码","rate":0.5}]
      */
     private String regionRate;
     /**

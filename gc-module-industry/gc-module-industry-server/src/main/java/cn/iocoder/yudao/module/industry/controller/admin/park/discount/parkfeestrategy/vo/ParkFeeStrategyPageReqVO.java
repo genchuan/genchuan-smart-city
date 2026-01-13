@@ -16,14 +16,17 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @ToString(callSuper = true)
 public class ParkFeeStrategyPageReqVO extends PageParam {
 
-    @Schema(description = "[策略名称] 费率策略名称", example = "王五")
+    @Schema(description = "[策略名称] 费率策略名称", example = "芋艿")
     private String strategyName;
 
-    @Schema(description = "[策略类型] 基础费率 / 时段费率 / 区域费率", example = "1")
+    @Schema(description = "[策略类型] 基础费率 / 时段费率 / 区域费率", example = "2")
     private String strategyType;
 
-    @Schema(description = "[适用范围] 全局 / 区域 / 车场，JSON 格式varchar")
-    private String applyScope;
+    @Schema(description = "[适用范围类型] 全局/区域/车场", example = "1")
+    private String applyScopeType;
+
+    @Schema(description = "[适用范围值] 车场ID或区域12位编码列表，英文逗号分隔，如1,2")
+    private String applyScopeValue;
 
     @Schema(description = "[基础费率] 元/分钟")
     private BigDecimal baseRate;
@@ -34,7 +37,7 @@ public class ParkFeeStrategyPageReqVO extends PageParam {
     @Schema(description = "[平峰费率] 元/分钟，仅时段费率策略适用")
     private BigDecimal offPeakRate;
 
-    @Schema(description = "[区域费率配置] JSON 格式，仅区域费率策略适用")
+    @Schema(description = "[区域费率配置] 仅区域费率策略有效，JSON型varchar：[{'region_code':'12位地区码','rate':'0.5'}]")
     private String regionRate;
 
     @Schema(description = "[生效时间] 策略生效时间")
@@ -45,14 +48,14 @@ public class ParkFeeStrategyPageReqVO extends PageParam {
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] endTime;
 
-    @Schema(description = "[状态] 启用 / 禁用", example = "2")
+    @Schema(description = "[状态] 启用 / 禁用", example = "1")
     private String status;
 
     @Schema(description = "[创建时间] 记录创建时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
 
-    @Schema(description = "[备注] 费率策略相关备注说明", example = "你猜")
+    @Schema(description = "[备注] 费率策略相关备注说明", example = "随便")
     private String remark;
 
     @Schema(description = "[通用扩展字段1]")

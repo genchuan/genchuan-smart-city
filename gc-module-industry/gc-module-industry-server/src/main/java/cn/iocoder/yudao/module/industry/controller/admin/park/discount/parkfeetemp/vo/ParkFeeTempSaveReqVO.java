@@ -31,8 +31,7 @@ public class ParkFeeTempSaveReqVO {
     @Schema(description = "[单日最高费用] 超过该金额后封顶")
     private BigDecimal maxDailyFee;
 
-    @Schema(description = "[优惠抵扣规则] 优惠抵扣规则描述，varchar")
-    private String discountRule;
+
 
     @Schema(description = "[状态] 启用 / 禁用", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
     @NotEmpty(message = "[状态] 启用 / 禁用不能为空")

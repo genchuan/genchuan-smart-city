@@ -22,8 +22,14 @@ public class ParkCouponPageReqVO extends PageParam {
     @Schema(description = "[优惠券名称] 优惠券名称", example = "张三")
     private String couponName;
 
-    @Schema(description = "[优惠券类型] 满减券 / 折扣券 / 免费时长券 / 充值券", example = "1")
+    @Schema(description = "[优惠券类型] 满减券 / 折扣券 / 免费时长券 / 充值券", example = "2")
     private String couponType;
+
+    @Schema(description = "[适用范围类型] 全局/车场", example = "1")
+    private String applyScopeType;
+
+    @Schema(description = "[适用范围值] 车场ID列表，英文逗号分隔，如1,2")
+    private String applyScopeValue;
 
     @Schema(description = "[面值/折扣比例] 优惠券面值或折扣比例")
     private BigDecimal faceValue;
@@ -34,9 +40,6 @@ public class ParkCouponPageReqVO extends PageParam {
     @Schema(description = "[免费时长] 单位：分钟，仅免费时长券适用")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private Integer[] freeTime;
-
-    @Schema(description = "[适用范围] JSON 格式")
-    private String applyScope;
 
     @Schema(description = "[生效时间] 优惠券生效时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
@@ -49,10 +52,10 @@ public class ParkCouponPageReqVO extends PageParam {
     @Schema(description = "[状态] 未发放 / 已发放 / 已使用 / 已过期 / 已作废", example = "1")
     private String status;
 
-    @Schema(description = "[用户ID] 定向发放用户，关联 park_user.id", example = "15387")
+    @Schema(description = "[用户ID] 定向发放用户，关联 park_user.id", example = "14992")
     private Long userId;
 
-    @Schema(description = "[活动ID] 关联 park_promotion.promotion_id", example = "9082")
+    @Schema(description = "[活动ID] 关联 park_promotion.promotion_id", example = "25381")
     private Long promotionId;
 
     @Schema(description = "[领取时间] 优惠券领取时间")
@@ -63,7 +66,7 @@ public class ParkCouponPageReqVO extends PageParam {
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] useTime;
 
-    @Schema(description = "[使用订单ID] 关联订单ID", example = "19275")
+    @Schema(description = "[使用订单ID] 关联订单ID", example = "29421")
     private Long useOrderId;
 
     @Schema(description = "[创建时间] 记录创建时间")

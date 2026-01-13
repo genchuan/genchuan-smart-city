@@ -12,11 +12,11 @@ import com.alibaba.excel.annotation.*;
 @ExcelIgnoreUnannotated
 public class ParkPromotionRespVO {
 
-    @Schema(description = "[主键ID] 优惠活动唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "7612")
+    @Schema(description = "[主键ID] 优惠活动唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "1638")
     @ExcelProperty("[主键ID] 优惠活动唯一标识")
     private Long id;
 
-    @Schema(description = "[活动名称] 优惠活动名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "王五")
+    @Schema(description = "[活动名称] 优惠活动名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "赵六")
     @ExcelProperty("[活动名称] 优惠活动名称")
     private String activityName;
 
@@ -24,9 +24,13 @@ public class ParkPromotionRespVO {
     @ExcelProperty("[活动类型] 满减 / 折扣 / 赠送 / 充值送 / 其他")
     private String activityType;
 
-    @Schema(description = "[适用范围] 全局 / 区域 / 车场 / 用户类型（JSON字符串）", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("[适用范围] 全局 / 区域 / 车场 / 用户类型（JSON字符串）")
-    private String applyScope;
+    @Schema(description = "[适用范围类型] 全局/区域/车场/用户", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @ExcelProperty("[适用范围类型] 全局/区域/车场/用户")
+    private String applyScopeType;
+
+    @Schema(description = "[适用范围值] 车场ID、用户ID或区域12位编码列表，英文逗号分隔，如1,2")
+    @ExcelProperty("[适用范围值] 车场ID、用户ID或区域12位编码列表，英文逗号分隔，如1,2")
+    private String applyScopeValue;
 
     @Schema(description = "[活动开始时间] 活动生效开始时间", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("[活动开始时间] 活动生效开始时间")
@@ -44,7 +48,7 @@ public class ParkPromotionRespVO {
     @ExcelProperty("[已使用名额] 已消耗活动名额")
     private Integer usedQuota;
 
-    @Schema(description = "[状态] 未开始 / 进行中 / 已结束 / 已取消", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
+    @Schema(description = "[状态] 未开始 / 进行中 / 已结束 / 已取消", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @ExcelProperty("[状态] 未开始 / 进行中 / 已结束 / 已取消")
     private String status;
 
@@ -52,11 +56,7 @@ public class ParkPromotionRespVO {
     @ExcelProperty("[活动规则配置] 活动规则定义（JSON字符串）")
     private String ruleConfig;
 
-    @Schema(description = "[活动数据统计] 统计信息（JSON字符串）")
-    @ExcelProperty("[活动数据统计] 统计信息（JSON字符串）")
-    private String dataStatistics;
-
-    @Schema(description = "[备注] 优惠活动相关说明", example = "随便")
+    @Schema(description = "[备注] 优惠活动相关说明", example = "你猜")
     @ExcelProperty("[备注] 优惠活动相关说明")
     private String remark;
 

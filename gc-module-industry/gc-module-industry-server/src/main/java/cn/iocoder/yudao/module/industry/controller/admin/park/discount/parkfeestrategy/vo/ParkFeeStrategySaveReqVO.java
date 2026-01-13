@@ -12,19 +12,23 @@ import java.time.LocalDateTime;
 @Data
 public class ParkFeeStrategySaveReqVO {
 
-    @Schema(description = "[主键ID] 费率策略唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "10157")
+    @Schema(description = "[主键ID] 费率策略唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "14534")
     private Long id;
 
-    @Schema(description = "[策略名称] 费率策略名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "王五")
+    @Schema(description = "[策略名称] 费率策略名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "芋艿")
     @NotEmpty(message = "[策略名称] 费率策略名称不能为空")
     private String strategyName;
 
-    @Schema(description = "[策略类型] 基础费率 / 时段费率 / 区域费率", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @Schema(description = "[策略类型] 基础费率 / 时段费率 / 区域费率", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
     @NotEmpty(message = "[策略类型] 基础费率 / 时段费率 / 区域费率不能为空")
     private String strategyType;
 
-    @Schema(description = "[适用范围] 全局 / 区域 / 车场，JSON 格式varchar")
-    private String applyScope;
+    @Schema(description = "[适用范围类型] 全局/区域/车场", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @NotEmpty(message = "[适用范围类型] 全局/区域/车场不能为空")
+    private String applyScopeType;
+
+    @Schema(description = "[适用范围值] 车场ID或区域12位编码列表，英文逗号分隔，如1,2")
+    private String applyScopeValue;
 
     @Schema(description = "[基础费率] 元/分钟", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "[基础费率] 元/分钟不能为空")
@@ -36,7 +40,7 @@ public class ParkFeeStrategySaveReqVO {
     @Schema(description = "[平峰费率] 元/分钟，仅时段费率策略适用")
     private BigDecimal offPeakRate;
 
-    @Schema(description = "[区域费率配置] JSON 格式，仅区域费率策略适用")
+    @Schema(description = "[区域费率配置] 仅区域费率策略有效，JSON型varchar：[{'region_code':'12位地区码','rate':0.5}]")
     private String regionRate;
 
     @Schema(description = "[生效时间] 策略生效时间", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -46,10 +50,10 @@ public class ParkFeeStrategySaveReqVO {
     @Schema(description = "[失效时间] 策略失效时间，永久有效为 NULL")
     private LocalDateTime endTime;
 
-    @Schema(description = "[状态] 启用 / 禁用", example = "2")
+    @Schema(description = "[状态] 启用 / 禁用", example = "1")
     private String status;
 
-    @Schema(description = "[备注] 费率策略相关备注说明", example = "你猜")
+    @Schema(description = "[备注] 费率策略相关备注说明", example = "随便")
     private String remark;
 
     @Schema(description = "[通用扩展字段1]")

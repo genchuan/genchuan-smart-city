@@ -38,9 +38,13 @@ public class ParkPromotionDO extends BaseDO {
      */
     private String activityType;
     /**
-     * [适用范围] 全局 / 区域 / 车场 / 用户类型（JSON字符串）
+     * [适用范围类型] 全局/区域/车场/用户
      */
-    private String applyScope;
+    private String applyScopeType;
+    /**
+     * [适用范围值] 车场ID、用户ID或区域12位编码列表，英文逗号分隔，如1,2
+     */
+    private String applyScopeValue;
     /**
      * [活动开始时间] 活动生效开始时间
      */
@@ -65,10 +69,6 @@ public class ParkPromotionDO extends BaseDO {
      * [活动规则配置] 活动规则定义（JSON字符串）
      */
     private String ruleConfig;
-    /**
-     * [活动数据统计] 统计信息（JSON字符串）
-     */
-    private String dataStatistics;
     /**
      * [备注] 优惠活动相关说明
      */

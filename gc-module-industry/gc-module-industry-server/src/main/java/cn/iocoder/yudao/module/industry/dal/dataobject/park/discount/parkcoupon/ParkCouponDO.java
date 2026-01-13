@@ -46,6 +46,14 @@ public class ParkCouponDO extends BaseDO {
      */
     private String couponType;
     /**
+     * [适用范围类型] 全局/车场
+     */
+    private String applyScopeType;
+    /**
+     * [适用范围值] 车场ID列表，英文逗号分隔，如1,2
+     */
+    private String applyScopeValue;
+    /**
      * [面值/折扣比例] 优惠券面值或折扣比例
      */
     private BigDecimal faceValue;
@@ -57,10 +65,6 @@ public class ParkCouponDO extends BaseDO {
      * [免费时长] 单位：分钟，仅免费时长券适用
      */
     private Integer freeTime;
-    /**
-     * [适用范围] JSON 格式
-     */
-    private String applyScope;
     /**
      * [生效时间] 优惠券生效时间
      */
@@ -113,5 +117,4 @@ public class ParkCouponDO extends BaseDO {
      * [通用扩展字段4]
      */
     private String extCommon4;
-
 }

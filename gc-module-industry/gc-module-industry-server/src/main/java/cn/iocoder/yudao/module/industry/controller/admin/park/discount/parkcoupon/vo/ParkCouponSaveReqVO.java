@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Data
 public class ParkCouponSaveReqVO {
 
-    @Schema(description = "[主键ID] 优惠券唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "16925")
+    @Schema(description = "[主键ID] 优惠券唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "29701")
     private Long id;
 
     @Schema(description = "[优惠券码] 全局唯一优惠券码", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -23,9 +23,16 @@ public class ParkCouponSaveReqVO {
     @NotEmpty(message = "[优惠券名称] 优惠券名称不能为空")
     private String couponName;
 
-    @Schema(description = "[优惠券类型] 满减券 / 折扣券 / 免费时长券 / 充值券", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @Schema(description = "[优惠券类型] 满减券 / 折扣券 / 免费时长券 / 充值券", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
     @NotEmpty(message = "[优惠券类型] 满减券 / 折扣券 / 免费时长券 / 充值券不能为空")
     private String couponType;
+
+    @Schema(description = "[适用范围类型] 全局/车场", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @NotEmpty(message = "[适用范围类型] 全局/车场不能为空")
+    private String applyScopeType;
+
+    @Schema(description = "[适用范围值] 车场ID列表，英文逗号分隔，如1,2")
+    private String applyScopeValue;
 
     @Schema(description = "[面值/折扣比例] 优惠券面值或折扣比例")
     private BigDecimal faceValue;
@@ -35,9 +42,6 @@ public class ParkCouponSaveReqVO {
 
     @Schema(description = "[免费时长] 单位：分钟，仅免费时长券适用")
     private Integer freeTime;
-
-    @Schema(description = "[适用范围] JSON 格式")
-    private String applyScope;
 
     @Schema(description = "[生效时间] 优惠券生效时间", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "[生效时间] 优惠券生效时间不能为空")
@@ -51,10 +55,10 @@ public class ParkCouponSaveReqVO {
     @NotEmpty(message = "[状态] 未发放 / 已发放 / 已使用 / 已过期 / 已作废不能为空")
     private String status;
 
-    @Schema(description = "[用户ID] 定向发放用户，关联 park_user.id", example = "15387")
+    @Schema(description = "[用户ID] 定向发放用户，关联 park_user.id", example = "14992")
     private Long userId;
 
-    @Schema(description = "[活动ID] 关联 park_promotion.promotion_id", example = "9082")
+    @Schema(description = "[活动ID] 关联 park_promotion.promotion_id", example = "25381")
     private Long promotionId;
 
     @Schema(description = "[领取时间] 优惠券领取时间")
@@ -63,7 +67,7 @@ public class ParkCouponSaveReqVO {
     @Schema(description = "[使用时间] 优惠券使用时间")
     private LocalDateTime useTime;
 
-    @Schema(description = "[使用订单ID] 关联订单ID", example = "19275")
+    @Schema(description = "[使用订单ID] 关联订单ID", example = "29421")
     private Long useOrderId;
 
     @Schema(description = "[备注] 优惠券相关备注说明", example = "随便")
