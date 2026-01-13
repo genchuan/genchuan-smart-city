@@ -1,0 +1,104 @@
+package cn.iocoder.yudao.module.industry.controller.admin.park.discount.parkcoupon.vo;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
+import java.util.*;
+import java.math.BigDecimal;
+import org.springframework.format.annotation.DateTimeFormat;
+import java.time.LocalDateTime;
+import com.alibaba.excel.annotation.*;
+
+@Schema(description = "管理后台 - 优惠券 Response VO")
+@Data
+@ExcelIgnoreUnannotated
+public class ParkCouponRespVO {
+
+    @Schema(description = "[主键ID] 优惠券唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "16925")
+    @ExcelProperty("[主键ID] 优惠券唯一标识")
+    private Long id;
+
+    @Schema(description = "[优惠券码] 全局唯一优惠券码", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("[优惠券码] 全局唯一优惠券码")
+    private String couponCode;
+
+    @Schema(description = "[优惠券名称] 优惠券名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "张三")
+    @ExcelProperty("[优惠券名称] 优惠券名称")
+    private String couponName;
+
+    @Schema(description = "[优惠券类型] 满减券 / 折扣券 / 免费时长券 / 充值券", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @ExcelProperty("[优惠券类型] 满减券 / 折扣券 / 免费时长券 / 充值券")
+    private String couponType;
+
+    @Schema(description = "[面值/折扣比例] 优惠券面值或折扣比例")
+    @ExcelProperty("[面值/折扣比例] 优惠券面值或折扣比例")
+    private BigDecimal faceValue;
+
+    @Schema(description = "[最低消费金额] 仅满减券 / 折扣券适用")
+    @ExcelProperty("[最低消费金额] 仅满减券 / 折扣券适用")
+    private BigDecimal minConsume;
+
+    @Schema(description = "[免费时长] 单位：分钟，仅免费时长券适用")
+    @ExcelProperty("[免费时长] 单位：分钟，仅免费时长券适用")
+    private Integer freeTime;
+
+    @Schema(description = "[适用范围] JSON 格式")
+    @ExcelProperty("[适用范围] JSON 格式")
+    private String applyScope;
+
+    @Schema(description = "[生效时间] 优惠券生效时间", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("[生效时间] 优惠券生效时间")
+    private LocalDateTime startTime;
+
+    @Schema(description = "[失效时间] 优惠券失效时间", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("[失效时间] 优惠券失效时间")
+    private LocalDateTime endTime;
+
+    @Schema(description = "[状态] 未发放 / 已发放 / 已使用 / 已过期 / 已作废", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @ExcelProperty("[状态] 未发放 / 已发放 / 已使用 / 已过期 / 已作废")
+    private String status;
+
+    @Schema(description = "[用户ID] 定向发放用户，关联 park_user.id", example = "15387")
+    @ExcelProperty("[用户ID] 定向发放用户，关联 park_user.id")
+    private Long userId;
+
+    @Schema(description = "[活动ID] 关联 park_promotion.promotion_id", example = "9082")
+    @ExcelProperty("[活动ID] 关联 park_promotion.promotion_id")
+    private Long promotionId;
+
+    @Schema(description = "[领取时间] 优惠券领取时间")
+    @ExcelProperty("[领取时间] 优惠券领取时间")
+    private LocalDateTime getTime;
+
+    @Schema(description = "[使用时间] 优惠券使用时间")
+    @ExcelProperty("[使用时间] 优惠券使用时间")
+    private LocalDateTime useTime;
+
+    @Schema(description = "[使用订单ID] 关联订单ID", example = "19275")
+    @ExcelProperty("[使用订单ID] 关联订单ID")
+    private Long useOrderId;
+
+    @Schema(description = "[创建时间] 记录创建时间")
+    @ExcelProperty("[创建时间] 记录创建时间")
+    private LocalDateTime createTime;
+
+    @Schema(description = "[备注] 优惠券相关备注说明", example = "随便")
+    @ExcelProperty("[备注] 优惠券相关备注说明")
+    private String remark;
+
+    @Schema(description = "[通用扩展字段1]")
+    @ExcelProperty("[通用扩展字段1]")
+    private String extCommon1;
+
+    @Schema(description = "[通用扩展字段2]")
+    @ExcelProperty("[通用扩展字段2]")
+    private String extCommon2;
+
+    @Schema(description = "[通用扩展字段3]")
+    @ExcelProperty("[通用扩展字段3]")
+    private String extCommon3;
+
+    @Schema(description = "[通用扩展字段4]")
+    @ExcelProperty("[通用扩展字段4]")
+    private String extCommon4;
+
+}

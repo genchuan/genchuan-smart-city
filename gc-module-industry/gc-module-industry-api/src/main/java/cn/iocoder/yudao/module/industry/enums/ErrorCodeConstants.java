@@ -103,4 +103,26 @@ public interface ErrorCodeConstants {
     ErrorCode PARK_PASS_RULE_NOT_EXISTS = new ErrorCode(500, "通行规则不存在");
     // ========== 资源台账 ==========
     ErrorCode PARK_RESOURCE_ACCOUNT_NOT_EXISTS = new ErrorCode(500, "资源台账不存在");
+    // ========== 优惠券==========
+    ErrorCode PARK_COUPON_NOT_EXISTS = new ErrorCode(500, "优惠券不存在");
+    // ========== 费率策略==========
+    ErrorCode PARK_FEE_STRATEGY_NOT_EXISTS = new ErrorCode(500, "费率策略不存在");
+    // ========== 临停收费规则==========
+    ErrorCode PARK_FEE_TEMP_NOT_EXISTS = new ErrorCode(500, "临停收费规则不存在");
+    // ========== 期卡套餐==========
+    ErrorCode PARK_PERIOD_PACKAGE_NOT_EXISTS = new ErrorCode(500, "期卡套餐不存在");
+    // ========== 优惠活动==========
+    ErrorCode PARK_PROMOTION_NOT_EXISTS = new ErrorCode(500, "优惠活动不存在");
+    // ========== 稽查证据 ==========
+    ErrorCode PARK_INSPECTION_EVIDENCE_NOT_EXISTS = new ErrorCode(500, "稽查证据不存在");
+
+    // ========== 离场记录 ==========
+    ErrorCode PARK_CAR_EXIT_NOT_EXISTS = new ErrorCode(500, "离场记录不存在");
+
+    // ========== 特殊放行 ==========
+    ErrorCode PARK_SPECIAL_RELEASE_NOT_EXISTS = new ErrorCode(500, "特殊放行不存在");
+
+    // ========== 通行稽查 ==========
+    ErrorCode PARK_TRAFFIC_INSPECTION_NOT_EXISTS = new ErrorCode(500, "通行稽查不存在");
+
 }

@@ -31,7 +31,7 @@ import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 
-@Tag(name = "漳州停车管理 - 黑白名单")
+@Tag(name = "漳州停车管理-用户商户域 - 黑白名单")
 @RestController
 @RequestMapping("/industry/park-black-white-list")
 @Validated
