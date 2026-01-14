@@ -34,7 +34,7 @@ public interface ErrorCodeConstants {
     ErrorCode PARK_ARREARS_RECOVERY_NOT_EXISTS = new ErrorCode(600_003, "欠费追缴不存在");
 
     // ========== 停车预约服务  ==========
-    ErrorCode PARK_RESERVATION_NOT_EXISTS = new ErrorCode(600_004, "停车预约服务不存在");
+//    ErrorCode PARK_RESERVATION_NOT_EXISTS = new ErrorCode(600_004, "停车预约服务不存在");
     // ========== 停车泊位实时状态  ==========
     ErrorCode PARK_REAL_TIME_NOT_EXISTS = new ErrorCode(600_005, "停车泊位实时状态不存在");
     // ========== 泊位锁定记录  ==========
@@ -124,5 +124,15 @@ public interface ErrorCodeConstants {
 
     // ========== 通行稽查 ==========
     ErrorCode PARK_TRAFFIC_INSPECTION_NOT_EXISTS = new ErrorCode(500, "通行稽查不存在");
+    // ========== 充电收费==========
+    ErrorCode PARK_CHARGE_FEE_NOT_EXISTS = new ErrorCode(500, "充电收费不存在");
+    // ========== 充值套餐==========
+    ErrorCode PARK_RECHARGE_PACKAGE_NOT_EXISTS = new ErrorCode(500, "充值套餐不存在");
+    // ========== 停车诱导配置==========
+    ErrorCode PARK_INDUCTION_NOT_EXISTS = new ErrorCode(500, "停车诱导配置不存在");
+    // ========== 停车预约==========
+    ErrorCode PARK_RESERVATION_NOT_EXISTS = new ErrorCode(500, "停车预约不存在");
+    // ========== 反向寻车记录==========
+    ErrorCode PARK_REVERSE_SEARCH_NOT_EXISTS = new ErrorCode(500, "反向寻车记录不存在");
 
 }

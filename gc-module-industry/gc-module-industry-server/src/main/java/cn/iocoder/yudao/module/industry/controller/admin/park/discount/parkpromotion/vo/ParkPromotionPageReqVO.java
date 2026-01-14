@@ -41,7 +41,7 @@ public class ParkPromotionPageReqVO extends PageParam {
     @Schema(description = "[已使用名额] 已消耗活动名额")
     private Integer usedQuota;
 
-    @Schema(description = "[状态] 未开始 / 进行中 / 已结束 / 已取消", example = "1")
+    @Schema(description = "[状态] 未开始 / 进行中 / 已结束 / 已取消", example = "未开始")
     private String status;
 
     @Schema(description = "[活动规则配置] 活动规则定义（JSON字符串）")
