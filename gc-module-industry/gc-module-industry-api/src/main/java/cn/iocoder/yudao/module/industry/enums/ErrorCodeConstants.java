@@ -135,4 +135,9 @@ public interface ErrorCodeConstants {
     // ========== 反向寻车记录==========
     ErrorCode PARK_REVERSE_SEARCH_NOT_EXISTS = new ErrorCode(500, "反向寻车记录不存在");
 
+    // ========== 车辆入场记录 ==========
+    ErrorCode CAR_DRIVEIN_RECORD_NOT_EXISTS = new ErrorCode(500, "车辆入场记录不存在");
+
+    // ========== 车辆出场记录 ==========
+    ErrorCode CAR_DRIVEOUT_RECORD_NOT_EXISTS = new ErrorCode(500, "车辆出场记录不存在");
 }
