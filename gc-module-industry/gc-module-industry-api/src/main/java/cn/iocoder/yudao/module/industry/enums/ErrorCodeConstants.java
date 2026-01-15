@@ -140,4 +140,17 @@ public interface ErrorCodeConstants {
 
     // ========== 车辆出场记录 ==========
     ErrorCode CAR_DRIVEOUT_RECORD_NOT_EXISTS = new ErrorCode(500, "车辆出场记录不存在");
+    // ========== 充电预约==========
+    ErrorCode PARK_CHARGE_RESERVATION_NOT_EXISTS = new ErrorCode(500, "充电预约不存在");
+    // ========== 投诉记录==========
+    ErrorCode PARK_COMPLAINT_NOT_EXISTS = new ErrorCode(500, "投诉记录不存在");
+    // ========== 电子发票==========
+    ErrorCode PARK_E_INVOICE_NOT_EXISTS = new ErrorCode(500, "电子发票不存在");
+    // ========== 短信模板==========
+    ErrorCode PARK_SMS_TEMPLATE_NOT_EXISTS = new ErrorCode(500, "短信模板不存在");
+    // ========== 车位共享配置==========
+    ErrorCode PARK_SPACE_SHARE_NOT_EXISTS = new ErrorCode(500, "车位共享配置不存在");
+    // ========== 车位共享订单==========
+    ErrorCode PARK_SPACE_SHARE_ORDER_NOT_EXISTS = new ErrorCode(500, "车位共享订单不存在");
+
 }
