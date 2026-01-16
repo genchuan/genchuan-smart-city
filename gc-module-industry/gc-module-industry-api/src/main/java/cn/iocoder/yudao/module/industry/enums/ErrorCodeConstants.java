@@ -153,4 +153,15 @@ public interface ErrorCodeConstants {
     // ========== 车位共享订单==========
     ErrorCode PARK_SPACE_SHARE_ORDER_NOT_EXISTS = new ErrorCode(500, "车位共享订单不存在");
 
+    // ========== 停车运营统计==========
+    ErrorCode STAT_PARK_OPER_NOT_EXISTS = new ErrorCode(500, "停车运营统计不存在");
+    // ========== 用户积分==========
+    ErrorCode PARK_POINTS_NOT_EXISTS = new ErrorCode(500, "用户积分不存在");
+    // ========== 积分变动记录==========
+    ErrorCode PARK_POINTS_RECORD_NOT_EXISTS = new ErrorCode(500, "积分变动记录不存在");
+    // ========== 积分规则==========
+    ErrorCode PARK_POINTS_RULE_NOT_EXISTS = new ErrorCode(500, "积分规则不存在");
+    // ========== 畅停卡==========
+    ErrorCode PARK_SMOOTH_PARKING_CARD_NOT_EXISTS = new ErrorCode(500, "畅停卡不存在");
+
 }

@@ -31,7 +31,7 @@ import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 
-@Tag(name = "管理后台 - 充值套餐")
+@Tag(name = "漳州停车管理-收费优惠域 - 充值套餐")
 @RestController
 @RequestMapping("/industry/park-recharge-package")
 @Validated

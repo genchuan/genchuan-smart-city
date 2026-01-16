@@ -30,6 +30,7 @@
 <!--        <module>yudao-module-smartcity</module>-->
         <module>gc-module-datacenter</module>
         <module>gc-module-industry</module>
+        <module>gc-module-park</module>
     </modules>
 
     <name>${project.artifactId}</name>

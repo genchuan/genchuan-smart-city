@@ -31,7 +31,7 @@ import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 
-@Tag(name = "管理后台 - 停车诱导配置")
+@Tag(name = "漳州停车管理-增值服务域 - 停车诱导配置")
 @RestController
 @RequestMapping("/industry/park-induction")
 @Validated
