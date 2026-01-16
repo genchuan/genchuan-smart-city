@@ -12,7 +12,7 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 @Tag(name = "管理后台 - Test")
 @RestController
-@RequestMapping("/park/demo/test")
+@RequestMapping("/park/demo-test")
 @Validated
 public class DemoTestController {
 
@@ -24,7 +24,7 @@ public class DemoTestController {
     @GetMapping("/get")
     @Operation(summary = "获取 test 信息")
     public CommonResult<String> get() {
-        return success("true");
+        return success("admin true");
     }
 
 }
