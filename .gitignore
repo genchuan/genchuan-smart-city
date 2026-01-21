@@ -72,3 +72,12 @@ functions/mock
 screenshot
 .firebase
 sessionStore
+
+# 忽略所有模块中的 application 配置文件
+**/application.properties
+**/application.yml
+**/application.yaml
+**/application-*.properties
+**/application-*.yml
+**/application-*.yaml
+
