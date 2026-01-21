@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.park.dal.mysql.park.statrpt.chargeabnormal.ChargeAbnormalMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+    <select id="selectStatReport" resultType="java.util.HashMap">
+        SELECT
+        IFNULL(SUM(abnormal_amount), 0) AS totalAbnormalAmount,
+        COUNT(1) AS abnormalOrderCount,
+        SUM(CASE WHEN disposal_status = '已处置' THEN 1 ELSE 0 END) AS disposedCount,
+        SUM(CASE WHEN disposal_result = '已纠错' THEN 1 ELSE 0 END) AS correctedCount
+        FROM park_charge_abnormal
+        WHERE deleted = 0
+        <if test="req.startTime != null">
+            AND abnormal_time &gt;= #{req.startTime}
+        </if>
+        <if test="req.endTime != null">
+            AND abnormal_time &lt;= #{req.endTime}
+        </if>
+        <if test="req.regionFullCode != null and req.regionFullCode != ''">
+            AND region_full_code LIKE CONCAT(#{req.regionFullCode}, '%')
+        </if>
+        <if test="req.abnormalType != null and req.abnormalType != ''">
+            AND abnormal_type = #{req.abnormalType}
+        </if>
+        <if test="req.disposalStatus != null and req.disposalStatus != ''">
+            AND disposal_status = #{req.disposalStatus}
+        </if>
+        <if test="req.orderNo != null and req.orderNo != ''">
+            AND order_no = #{req.orderNo}
+        </if>
+        <if test="req.carNumber != null and req.carNumber != ''">
+            AND car_number = #{req.carNumber}
+        </if>
+        <if test="req.minAmount != null">
+            AND abnormal_amount &gt;= #{req.minAmount}
+        </if>
+        <if test="req.maxAmount != null">
+            AND abnormal_amount &lt;= #{req.maxAmount}
+        </if>
+    </select>
+    <select id="selectAbnormalAmountTrend"
+            resultType="cn.iocoder.yudao.module.park."></select>
+    <select id="selectAbnormalOrderCount"
+            resultType="cn.iocoder.yudao.module.park.controller.admin.park.statrpt.chargeabnormal.vo.TrendPointVO"></select>
+
+</mapper>
