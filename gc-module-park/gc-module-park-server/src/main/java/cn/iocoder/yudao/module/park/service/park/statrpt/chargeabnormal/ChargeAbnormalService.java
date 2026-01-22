@@ -57,4 +57,9 @@ public interface ChargeAbnormalService {
     StatReportRespVO statReport(StatReportReqVO reqVO);
 
     TrendRespVO statTrend(StatReportReqVO reqVO);
+    List<StatDistributionRespVO> sortStat(StatReportReqVO reqVO);
+
+    List<StatRegionRespVO> statGroupRegion(StatReportReqVO reqVO);
+
+    PageResult<ChargeAbnormalDO> statPage(StatReportReqVO reqVO);
 }

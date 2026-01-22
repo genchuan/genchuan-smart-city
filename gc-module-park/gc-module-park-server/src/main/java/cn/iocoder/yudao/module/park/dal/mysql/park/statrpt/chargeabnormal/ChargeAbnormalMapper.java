@@ -5,12 +5,9 @@ import java.util.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
-import cn.iocoder.yudao.module.park.controller.admin.park.statrpt.chargeabnormal.vo.ChargeAbnormalPageReqVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.statrpt.chargeabnormal.vo.StatReportReqVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.statrpt.chargeabnormal.vo.TrendPointVO;
+import cn.iocoder.yudao.module.park.controller.admin.park.statrpt.chargeabnormal.vo.*;
 import cn.iocoder.yudao.module.park.dal.dataobject.park.statrpt.chargeabnormal.ChargeAbnormalDO;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 /**
  * 收费异常 Mapper
@@ -49,9 +46,20 @@ public interface ChargeAbnormalMapper extends BaseMapperX<ChargeAbnormalDO> {
      * @param reqVO 查询条件
      * @return 统计结果 Map
      */
-    Map<String, Object> selectStatReport(@Param("req") StatReportReqVO reqVO);
+    Map<String, Object> selectStatReport(StatReportReqVO reqVO);
 
     List<TrendPointVO> selectAbnormalAmountTrend(StatReportReqVO reqVO);
 
     List<TrendPointVO> selectAbnormalOrderCount(StatReportReqVO reqVO);
+
+    /**
+     * 按异常原因分组统计笔数
+     */
+    List<StatDistributionRespVO> selectStatBySortField(StatReportReqVO reqVO);
+
+    List<StatRegionRespVO> selectStatByRegion(StatReportReqVO reqVO);
+
+    List<ChargeAbnormalDO> selectPageByCondition(StatReportReqVO reqVO);
+
+    Long selectCountByCondition(StatReportReqVO reqVO);
 }
