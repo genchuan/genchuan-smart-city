@@ -554,7 +554,7 @@ java -jar gc-module-industry-server.jar
 **点击跳转**：http://genchuan.cn
 
 ### 企业微信客服
-扫描下方二维码，联系我们，获取技术支持与服务。
+扫描下方二维码，联系我们，进群备注Gitee，获取技术支持与服务。
 
 ![客服小何.jpg](images/%E5%AE%A2%E6%9C%8D%E5%B0%8F%E4%BD%95.jpg)
 
