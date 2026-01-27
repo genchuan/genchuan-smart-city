@@ -21,5 +21,18 @@ public interface ErrorCodeConstants {
     // ========== 分账结算==========
     ErrorCode SETTLEMENT_NOT_EXISTS = new ErrorCode(500, "分账结算不存在");
 
+    // ========== 黑白名单==========
+    ErrorCode BLACK_WHITE_LIST_NOT_EXISTS = new ErrorCode(500, "黑白名单不存在");
+    // ========== 商户==========
+    ErrorCode MERCHANT_NOT_EXISTS = new ErrorCode(500, "商户不存在");
+    // ========== 商户权限==========
+    ErrorCode MERCHANT_PERMISSION_NOT_EXISTS = new ErrorCode(500, "商户权限不存在");
+    // ========== 代付规则==========
+    ErrorCode PAYMENT_PROXY_NOT_EXISTS = new ErrorCode(500, "代付规则不存在");
+    // ========== 系统用户==========
+    ErrorCode USER_NOT_EXISTS = new ErrorCode(500, "系统用户不存在");
+    // ========== 访客==========
+    ErrorCode VISITOR_NOT_EXISTS = new ErrorCode(500, "访客不存在");
+
 
 }
