@@ -34,5 +34,7 @@ public interface ErrorCodeConstants {
     // ========== 访客==========
     ErrorCode VISITOR_NOT_EXISTS = new ErrorCode(500, "访客不存在");
 
+    // ========== 真实设备监控------车牌识别事件 ==========
+    ErrorCode RECOGNITION_EVENTS_NOT_EXISTS = new ErrorCode(500, "车牌识别事件不存在");
 
 }

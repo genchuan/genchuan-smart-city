@@ -55,6 +55,22 @@ public class TenantSecurityWebFilter extends ApiRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         Long tenantId = TenantContextHolder.getTenantId();
+
+        // ========== 新增：设备接口特殊处理 ==========
+        // 检查是否是设备接收接口
+        if (isDeviceReceiveEventUrl(request)) {
+            // 对于设备接口，强制设置租户ID为1
+            if (tenantId == null) {
+                tenantId = 1L;
+                TenantContextHolder.setTenantId(tenantId);
+                log.info("[doFilterInternal][设备接口 {} 自动设置租户ID为1]", request.getRequestURI());
+            }
+            // 跳过后续的租户校验，直接放行
+            chain.doFilter(request, response);
+            return;
+        }
+        // ==========================================
+
         // 1. 登陆的用户，校验是否有权限访问该租户，避免越权问题。
         LoginUser user = SecurityFrameworkUtils.getLoginUser();
         if (user != null) {
@@ -98,6 +114,19 @@ public class TenantSecurityWebFilter extends ApiRequestFilter {
 
         // 继续过滤
         chain.doFilter(request, response);
+    }
+
+    /**
+     * 判断是否是设备接收接口
+     */
+    private boolean isDeviceReceiveEventUrl(HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        String method = request.getMethod();
+
+        // 匹配设备接口路径和方法
+        return "POST".equalsIgnoreCase(method) &&
+                (requestURI.endsWith("/admin-api/park/recognition-events/receive-event") ||
+                        requestURI.contains("/park/device/receive-event"));
     }
 
     private boolean isIgnoreUrl(HttpServletRequest request) {
