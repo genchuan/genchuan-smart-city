@@ -1,10 +1,9 @@
 package cn.iocoder.yudao.module.park.controller.admin.park.user.merchantpermission.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import java.util.*;
-import jakarta.validation.constraints.*;
-import org.springframework.format.annotation.DateTimeFormat;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
 import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 商户权限新增/修改 Request VO")

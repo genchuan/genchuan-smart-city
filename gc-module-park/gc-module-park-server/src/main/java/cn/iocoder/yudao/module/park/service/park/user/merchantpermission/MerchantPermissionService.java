@@ -1,13 +1,10 @@
 package cn.iocoder.yudao.module.park.service.park.user.merchantpermission;
 
-import java.util.*;
-
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.park.controller.admin.park.user.merchantpermission.vo.MerchantPermissionPageReqVO;
 import cn.iocoder.yudao.module.park.controller.admin.park.user.merchantpermission.vo.MerchantPermissionSaveReqVO;
 import cn.iocoder.yudao.module.park.dal.dataobject.park.user.merchantpermission.MerchantPermissionDO;
-import jakarta.validation.*;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import jakarta.validation.Valid;
 
 /**
  * 商户权限 Service 接口

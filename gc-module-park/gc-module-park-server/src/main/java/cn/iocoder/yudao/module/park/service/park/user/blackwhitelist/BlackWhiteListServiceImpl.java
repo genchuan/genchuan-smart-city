@@ -1,22 +1,17 @@
 package cn.iocoder.yudao.module.park.service.park.user.blackwhitelist;
 
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.park.controller.admin.park.user.blackwhitelist.vo.BlackWhiteListPageReqVO;
 import cn.iocoder.yudao.module.park.controller.admin.park.user.blackwhitelist.vo.BlackWhiteListSaveReqVO;
 import cn.iocoder.yudao.module.park.dal.dataobject.park.user.blackwhitelist.BlackWhiteListDO;
 import cn.iocoder.yudao.module.park.dal.mysql.park.user.blackwhitelist.BlackWhiteListMapper;
-import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.module.park.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.park.enums.ErrorCodeConstants.BLACK_WHITE_LIST_NOT_EXISTS;
 
 /**
  * 黑白名单 Service 实现类

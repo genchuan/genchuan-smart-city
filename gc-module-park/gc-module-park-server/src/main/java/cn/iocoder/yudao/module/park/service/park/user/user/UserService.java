@@ -1,13 +1,10 @@
 package cn.iocoder.yudao.module.park.service.park.user.user;
 
-import java.util.*;
-
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.park.controller.admin.park.user.user.vo.UserPageReqVO;
 import cn.iocoder.yudao.module.park.controller.admin.park.user.user.vo.UserSaveReqVO;
 import cn.iocoder.yudao.module.park.dal.dataobject.park.user.user.UserDO;
-import jakarta.validation.*;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import jakarta.validation.Valid;
 
 /**
  * 系统用户 Service 接口

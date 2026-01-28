@@ -1,10 +1,8 @@
 package cn.iocoder.yudao.module.park.dal.mysql.park.user.merchant;
 
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.park.controller.admin.park.user.merchant.vo.MerchantPageReqVO;
 import cn.iocoder.yudao.module.park.dal.dataobject.park.user.merchant.MerchantDO;
 import org.apache.ibatis.annotations.Mapper;

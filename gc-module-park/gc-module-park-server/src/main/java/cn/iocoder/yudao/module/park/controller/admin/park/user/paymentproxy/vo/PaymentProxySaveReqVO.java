@@ -1,9 +1,8 @@
 package cn.iocoder.yudao.module.park.controller.admin.park.user.paymentproxy.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import java.util.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.Data;
 
 @Schema(description = "管理后台 - 代付规则新增/修改 Request VO")
 @Data

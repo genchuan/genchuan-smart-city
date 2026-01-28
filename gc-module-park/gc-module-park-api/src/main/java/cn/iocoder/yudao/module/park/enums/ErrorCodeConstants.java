@@ -34,6 +34,16 @@ public interface ErrorCodeConstants {
     // ========== 访客==========
     ErrorCode VISITOR_NOT_EXISTS = new ErrorCode(500, "访客不存在");
 
+    // ========== 认证记录==========
+    ErrorCode CERTIFICATION_NOT_EXISTS = new ErrorCode(500, "认证记录不存在");
+    // ========== 企业信息==========
+    ErrorCode ENTERPRISE_INFORMATION_NOT_EXISTS = new ErrorCode(500, "企业信息不存在");
+    // ========== 政府部门==========
+    ErrorCode GOVERNMENT_DEPARTMENT_NOT_EXISTS = new ErrorCode(500, "政府部门不存在");
+    // ========== 运维排班==========
+    ErrorCode MAINTAIN_SCHEDULE_NOT_EXISTS = new ErrorCode(500, "运维排班不存在");
+    // ========== 运维人员==========
+    ErrorCode MAINTAIN_USER_NOT_EXISTS = new ErrorCode(500, "运维人员不存在");
     // ========== 真实设备监控------车牌识别事件 ==========
     ErrorCode RECOGNITION_EVENTS_NOT_EXISTS = new ErrorCode(500, "车牌识别事件不存在");
 
