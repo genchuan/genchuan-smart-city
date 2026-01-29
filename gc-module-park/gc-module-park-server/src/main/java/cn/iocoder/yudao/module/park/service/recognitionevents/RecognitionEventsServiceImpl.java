@@ -1,21 +1,17 @@
 package cn.iocoder.yudao.module.park.service.recognitionevents;
 
-import org.springframework.stereotype.Service;
-import jakarta.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
-import cn.iocoder.yudao.module.park.controller.admin.recognitionevents.vo.*;
-import cn.iocoder.yudao.module.park.dal.dataobject.recognitionevents.RecognitionEventsDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
+import cn.iocoder.yudao.module.park.controller.admin.recognitionevents.vo.RecognitionEventsPageReqVO;
+import cn.iocoder.yudao.module.park.controller.admin.recognitionevents.vo.RecognitionEventsSaveReqVO;
+import cn.iocoder.yudao.module.park.dal.dataobject.recognitionevents.RecognitionEventsDO;
 import cn.iocoder.yudao.module.park.dal.mysql.recognitionevents.RecognitionEventsMapper;
+import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.module.park.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.park.enums.ErrorCodeConstants.RECOGNITION_EVENTS_NOT_EXISTS;
 
 /**
  * 车牌识别事件 Service 实现类

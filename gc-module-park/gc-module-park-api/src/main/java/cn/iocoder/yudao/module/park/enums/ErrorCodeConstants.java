@@ -47,4 +47,12 @@ public interface ErrorCodeConstants {
     // ========== 真实设备监控------车牌识别事件 ==========
     ErrorCode RECOGNITION_EVENTS_NOT_EXISTS = new ErrorCode(500, "车牌识别事件不存在");
 
+    // ========== 地址==========
+    ErrorCode ADDRESS_NOT_EXISTS = new ErrorCode(500, "地址不存在");
+    // ========== 参与单位==========
+    ErrorCode PARTICIPATING_UNIT_NOT_EXISTS = new ErrorCode(500, "参与单位不存在");
+    // ========== 接收方==========
+    ErrorCode RECEIVER_TABLE_NOT_EXISTS = new ErrorCode(500, "接收方不存在");
+    // ========== 供应商==========
+    ErrorCode SUPPLIER_NOT_EXISTS = new ErrorCode(500, "供应商不存在");
 }
