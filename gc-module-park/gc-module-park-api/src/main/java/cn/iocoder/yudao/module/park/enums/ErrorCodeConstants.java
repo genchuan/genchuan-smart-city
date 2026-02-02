@@ -97,4 +97,11 @@ public interface ErrorCodeConstants {
 
     // ========== 管理事项类别 ==========
     ErrorCode ITEM_TYPE_NOT_EXISTS = new ErrorCode(500, "管理事项类别不存在");
+
+    // ========== 泊位录入车辆 ==========
+    ErrorCode INPUT_CAR_NOT_EXISTS = new ErrorCode(500, "泊位录入车辆不存在");
+
+    // ========== 路测泊位管理 ==========
+    ErrorCode ROADSIDE_BERTH_MANAGE_NOT_EXISTS = new ErrorCode(500, "路测泊位管理不存在");
+
 }
