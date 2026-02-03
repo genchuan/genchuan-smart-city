@@ -27,7 +27,7 @@ BuildAndPush:
         case $module in
           "yudao-gateway") jar_path="yudao-gateway" ;;
           "gc-module-datacenter-server") jar_path="gc-module-datacenter/gc-module-datacenter-server" ;;
-          "gc-module-park-server") jar_path="gc-module-park/gc-module-datacenter-server" ;;
+          "gc-module-park-server") jar_path="gc-module-park/gc-module-park-server" ;;
           "gc-module-industry-server") jar_path="gc-module-industry/gc-module-industry-server" ;;
           "yudao-module-bpm-server") jar_path="yudao-module-bpm/yudao-module-bpm-server" ;;
           "yudao-module-infra-server") jar_path="yudao-module-infra/yudao-module-infra-server" ;;
