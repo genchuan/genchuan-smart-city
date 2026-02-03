@@ -1,9 +1,6 @@
 package cn.iocoder.yudao.module.park.service.park.resource.inputcar;
 
-import cn.iocoder.yudao.module.park.controller.admin.park.resource.inputcar.vo.ParkInputCarEntryReqVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.resource.inputcar.vo.ParkInputCarExitReqVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.resource.inputcar.vo.ParkInputCarPageReqVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.resource.inputcar.vo.ParkInputCarSaveReqVO;
+import cn.iocoder.yudao.module.park.controller.admin.park.resource.inputcar.vo.*;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.park.dal.dataobject.park.resource.inputcar.ParkInputCarDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -68,4 +65,20 @@ public interface ParkInputCarService {
      * @param reqVO 离场信息
      */
     void updateExit(ParkInputCarExitReqVO reqVO);
+
+    /**
+     * 模拟地磁检测车辆进入
+     *
+     * @param reqVO 请求信息，包含目标泊位号和入场时间
+     * @return 记录ID
+     */
+    Long simulateMagneticDetection(@Valid ParkInputCarMagneticDetectionReqVO reqVO);
+
+    /**
+     * 模拟地磁检测车辆离场
+     *
+     * @param reqVO 请求信息，包含车辆记录ID和离场时间
+     * @return 是否成功
+     */
+    Boolean simulateMagneticDetectionExit(@Valid ParkInputCarMagneticDetectionExitReqVO reqVO);
 }

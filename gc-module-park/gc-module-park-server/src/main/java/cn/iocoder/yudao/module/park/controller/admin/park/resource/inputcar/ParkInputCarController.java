@@ -104,4 +104,18 @@ public class ParkInputCarController {
         return CommonResult.success(true);
     }
 
+    @PostMapping("/simulate-magnetic-detection")
+    @Operation(summary = "模拟地磁检测车辆进入")
+    @PreAuthorize("@ss.hasPermission('park:input-car:create')")
+    public CommonResult<Long> simulateMagneticDetection(@Valid @RequestBody ParkInputCarMagneticDetectionReqVO reqVO) {
+        return CommonResult.success(inputCarService.simulateMagneticDetection(reqVO));
+    }
+
+    @PostMapping("/simulate-magnetic-detection-exit")
+    @Operation(summary = "模拟地磁检测车辆离场")
+    @PreAuthorize("@ss.hasPermission('park:input-car:update')")
+    public CommonResult<Boolean> simulateMagneticDetectionExit(@Valid @RequestBody ParkInputCarMagneticDetectionExitReqVO reqVO) {
+        return CommonResult.success(inputCarService.simulateMagneticDetectionExit(reqVO));
+    }
+
 }

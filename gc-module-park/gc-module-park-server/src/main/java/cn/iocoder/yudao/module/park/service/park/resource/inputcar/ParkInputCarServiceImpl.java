@@ -1,9 +1,14 @@
 package cn.iocoder.yudao.module.park.service.park.resource.inputcar;
 
-import cn.iocoder.yudao.module.park.controller.admin.park.resource.inputcar.vo.ParkInputCarEntryReqVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.resource.inputcar.vo.ParkInputCarExitReqVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.resource.inputcar.vo.ParkInputCarPageReqVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.resource.inputcar.vo.ParkInputCarSaveReqVO;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.module.bpm.api.task.BpmProcessInstanceApi;
+import cn.iocoder.yudao.module.bpm.api.task.dto.BpmProcessInstanceCreateReqDTO;
+import cn.iocoder.yudao.module.park.controller.admin.park.resource.inputcar.vo.*;
+import cn.iocoder.yudao.module.park.controller.admin.park.resource.roadsideberthmanage.vo.RoadsideBerthManageSaveReqVO;
+import cn.iocoder.yudao.module.park.dal.dataobject.park.resource.roadsideberthmanage.RoadsideBerthManageDO;
+import cn.iocoder.yudao.module.park.service.park.resource.roadsideberthmanage.RoadsideBerthManageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,8 +20,11 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.park.dal.mysql.park.resource.inputcar.ParkInputCarMapper;
 
+import java.util.HashMap;
+
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.park.enums.ErrorCodeConstants.*;
+
 
 /**
  * 泊位录入车辆 Service 实现类
@@ -29,6 +37,14 @@ public class ParkInputCarServiceImpl implements ParkInputCarService {
 
     @Resource
     private ParkInputCarMapper inputCarMapper;
+
+    @Resource
+    private BpmProcessInstanceApi processInstanceApi;
+
+    @Resource
+    private RoadsideBerthManageService roadsideBerthManageService;
+
+    private static final Logger log = LoggerFactory.getLogger(ParkInputCarServiceImpl.class);
 
     @Override
     public Long createInputCar(ParkInputCarSaveReqVO createReqVO) {
@@ -74,12 +90,90 @@ public class ParkInputCarServiceImpl implements ParkInputCarService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Long createEntry(ParkInputCarEntryReqVO reqVO) {
+    public Long simulateMagneticDetection(ParkInputCarMagneticDetectionReqVO reqVO) {
         // 创建进场记录
         ParkInputCarDO car = new ParkInputCarDO();
-        BeanUtils.copyProperties(reqVO, car);
-        car.setParkingStatus("1"); // 1-在场状态
+        car.setTargetBerthNo(reqVO.getTargetBerthNo());
+        car.setEntryTime(reqVO.getEntryTime());
+//        car.setParkingStatus("1"); // 1-在场状态
         inputCarMapper.insert(car);
+
+        // 创建流程实例
+        try {
+            BpmProcessInstanceCreateReqDTO createReqDTO = new BpmProcessInstanceCreateReqDTO();
+            createReqDTO.setProcessDefinitionKey("park_01");
+            createReqDTO.setBusinessKey(String.valueOf(car.getId()));
+
+            CommonResult<String> commonResult = processInstanceApi.createProcessInstance(1L, createReqDTO);
+
+            if (!commonResult.isSuccess()) {
+                log.warn("创建流程实例失败: {}, 但车辆记录已保存，ID: {}", commonResult.getMsg(), car.getId());
+                // 不抛出异常，返回成功创建的车辆记录ID
+                return car.getId();
+            }
+
+            log.info("成功创建流程实例: {}", commonResult.getData());
+        } catch (Exception e) {
+            log.warn("调用流程服务异常，但车辆记录已保存，ID: {}", car.getId(), e);
+            // 不抛出异常，返回成功创建的车辆记录ID
+        }
+
+        return car.getId();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean simulateMagneticDetectionExit(ParkInputCarMagneticDetectionExitReqVO reqVO) {
+        // 校验车辆记录是否存在
+        ParkInputCarDO car = inputCarMapper.selectById(reqVO.getId());
+        if (car == null) {
+            throw exception(INPUT_CAR_NOT_EXISTS);
+        }
+
+        // 更新车辆离场信息
+        ParkInputCarDO updateObj = new ParkInputCarDO();
+        updateObj.setId(reqVO.getId());
+        updateObj.setExitTime(reqVO.getExitTime());
+//        updateObj.setParkingStatus("2"); // 2-已离场状态
+        inputCarMapper.updateById(updateObj);
+
+        // 创建离场流程实例
+        try {
+            BpmProcessInstanceCreateReqDTO createReqDTO = new BpmProcessInstanceCreateReqDTO();
+            createReqDTO.setProcessDefinitionKey("park_02");
+            createReqDTO.setBusinessKey(String.valueOf(reqVO.getId()));
+
+            CommonResult<String> commonResult = processInstanceApi.createProcessInstance(1L, createReqDTO);
+
+            if (!commonResult.isSuccess()) {
+                log.warn("创建离场流程实例失败: {}, 但车辆离场记录已更新，ID: {}", commonResult.getMsg(), reqVO.getId());
+                // 不抛出异常，返回成功更新的状态
+                return true;
+            }
+
+            log.info("成功创建离场流程实例: {}", commonResult.getData());
+        } catch (Exception e) {
+            log.warn("调用离场流程服务异常，但车辆离场记录已更新，ID: {}", reqVO.getId(), e);
+            // 不抛出异常，返回成功更新的状态
+        }
+
+        return true;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long createEntry(ParkInputCarEntryReqVO reqVO) {
+        // 更新进场记录
+        ParkInputCarDO car = new ParkInputCarDO();
+        BeanUtils.copyProperties(reqVO, car);
+        car.setId(reqVO.getId());
+        car.setParkingStatus("已停入"); // 1-在场状态
+        inputCarMapper.updateById(car);
+
+        // 更新路测泊位管理表
+        updateRoadsideBerthOnEntry(reqVO.getTargetBerthNo(), reqVO.getCarNumber());
+
+
         return car.getId();
     }
 
@@ -95,9 +189,56 @@ public class ParkInputCarServiceImpl implements ParkInputCarService {
         // 更新离场信息
         ParkInputCarDO updateObj = new ParkInputCarDO();
         updateObj.setId(reqVO.getId());
-        updateObj.setExitTime(reqVO.getExitTime());
-        updateObj.setParkingStatus("2"); // 2-已离场状态
+        updateObj.setParkingStatus(reqVO.getParkingStatus());
         inputCarMapper.updateById(updateObj);
+
+        // 更新路测泊位管理表
+        updateRoadsideBerthOnExit(car.getTargetBerthNo());
+
+    }
+
+    // 新增辅助方法：车辆进场时更新泊位状态
+    private void updateRoadsideBerthOnEntry(String targetBerthNo, String carNumber) {
+        try {
+            // 根据泊位编号查找路测泊位管理记录
+            RoadsideBerthManageDO berth = roadsideBerthManageService.getRoadsideBerthManageByBerthCode(targetBerthNo);
+            if (berth == null) {
+                log.warn("更新路测泊位管理失败：泊位编号不存在，berthCode={}", targetBerthNo);
+                return; // 泊位不存在，不阻断主流程
+            }
+            // 更新泊位状态和当前车辆
+            RoadsideBerthManageSaveReqVO updateReqVO = new RoadsideBerthManageSaveReqVO();
+            updateReqVO.setId(berth.getId());
+            updateReqVO.setCurrentCar(carNumber);
+            updateReqVO.setBerthStatus("占用"); // 1-占用状态
+            roadsideBerthManageService.updateRoadsideBerthManage(updateReqVO);
+            log.info("路测泊位管理更新成功：泊位{}状态设置为占用，车辆{}", targetBerthNo, carNumber);
+        } catch (Exception e) {
+            log.error("更新路测泊位管理异常：berthCode={}", targetBerthNo, e);
+            // 不抛出异常，避免影响车辆进场主流程
+        }
+    }
+
+    // 新增辅助方法：车辆离场时更新泊位状态
+    private void updateRoadsideBerthOnExit(String targetBerthNo) {
+        try {
+            // 根据泊位编号查找路测泊位管理记录
+            RoadsideBerthManageDO berth = roadsideBerthManageService.getRoadsideBerthManageByBerthCode(targetBerthNo);
+            if (berth == null) {
+                log.warn("更新路测泊位管理失败：泊位编号不存在，berthCode={}", targetBerthNo);
+                return;
+            }
+            // 更新泊位状态和当前车辆（离场后清空）
+            RoadsideBerthManageSaveReqVO updateReqVO = new RoadsideBerthManageSaveReqVO();
+            updateReqVO.setId(berth.getId());
+            updateReqVO.setCurrentCar(" "); // 清空车辆
+            updateReqVO.setBerthStatus("空闲"); // 2-空闲状态
+            roadsideBerthManageService.updateRoadsideBerthManage(updateReqVO);
+            log.info("路测泊位管理更新成功：泊位{}状态设置为空闲", targetBerthNo);
+        } catch (Exception e) {
+            log.error("更新路测泊位管理异常：berthCode={}", targetBerthNo, e);
+            // 不抛出异常，避免影响车辆离场主流程
+        }
     }
 
 }
