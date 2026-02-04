@@ -5,6 +5,8 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.module.park.dal.dataobject.park.resource.inputcar.ParkInputCarDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 
+import java.util.List;
+
 /**
  * 泊位录入车辆 Service 接口
  *
@@ -50,6 +52,14 @@ public interface ParkInputCarService {
      */
     PageResult<ParkInputCarDO> getInputCarPage(ParkInputCarPageReqVO pageReqVO);
 
+    /**
+     * 根据目标泊位号查询历史所有停过的车辆
+     *
+     * @param targetBerthNo 目标泊位号
+     * @param parkingStatus 停车状态（可选，为null时查询所有状态）
+     * @return 车辆列表
+     */
+    List<ParkInputCarDO> getInputCarHistoryByBerthNo(String targetBerthNo, String parkingStatus);
 
     /**
      * 车辆进场

@@ -7,6 +7,7 @@ import cn.iocoder.yudao.module.park.controller.admin.park.resource.inputcar.vo.*
 import cn.iocoder.yudao.module.park.controller.admin.park.resource.roadsideberthmanage.vo.RoadsideBerthManageSaveReqVO;
 import cn.iocoder.yudao.module.park.dal.dataobject.park.resource.roadsideberthmanage.RoadsideBerthManageDO;
 import cn.iocoder.yudao.module.park.service.park.resource.roadsideberthmanage.RoadsideBerthManageService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.park.dal.mysql.park.resource.inputcar.ParkInputCarMapper;
 
 import java.util.HashMap;
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.park.enums.ErrorCodeConstants.*;
@@ -51,6 +53,8 @@ public class ParkInputCarServiceImpl implements ParkInputCarService {
         // 插入
         ParkInputCarDO inputCar = BeanUtils.toBean(createReqVO, ParkInputCarDO.class);
         inputCarMapper.insert(inputCar);
+        // 更新路测泊位管理表
+        updateRoadsideBerthOnEntry(createReqVO.getTargetBerthNo(), createReqVO.getCarNumber());
         // 返回
         return inputCar.getId();
     }
@@ -89,13 +93,33 @@ public class ParkInputCarServiceImpl implements ParkInputCarService {
     }
 
     @Override
+    public List<ParkInputCarDO> getInputCarHistoryByBerthNo(String targetBerthNo, String parkingStatus) {
+        // 使用MyBatis-Plus的查询条件构造器
+        QueryWrapper<ParkInputCarDO> queryWrapper = new QueryWrapper<>();
+
+        // 设置查询条件：目标泊位号必须匹配
+        queryWrapper.eq("target_berth_no", targetBerthNo);
+
+        // 新增条件：如果parkingStatus非空，则按停车状态筛选
+        if (parkingStatus != null && !parkingStatus.trim().isEmpty()) {
+            queryWrapper.eq("parking_status", parkingStatus);
+        }
+
+        // 按入场时间倒序排列，最新的记录在前面
+        queryWrapper.orderByDesc("entry_time");
+
+        // 执行查询并返回结果列表
+        return inputCarMapper.selectList(queryWrapper);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public Long simulateMagneticDetection(ParkInputCarMagneticDetectionReqVO reqVO) {
         // 创建进场记录
         ParkInputCarDO car = new ParkInputCarDO();
         car.setTargetBerthNo(reqVO.getTargetBerthNo());
         car.setEntryTime(reqVO.getEntryTime());
-//        car.setParkingStatus("1"); // 1-在场状态
+        car.setParkingStatus("待录入"); // 1-在场状态
         inputCarMapper.insert(car);
 
         // 创建流程实例
@@ -190,6 +214,7 @@ public class ParkInputCarServiceImpl implements ParkInputCarService {
         ParkInputCarDO updateObj = new ParkInputCarDO();
         updateObj.setId(reqVO.getId());
         updateObj.setParkingStatus(reqVO.getParkingStatus());
+        updateObj.setExitTime(reqVO.getExitTime());
         inputCarMapper.updateById(updateObj);
 
         // 更新路测泊位管理表

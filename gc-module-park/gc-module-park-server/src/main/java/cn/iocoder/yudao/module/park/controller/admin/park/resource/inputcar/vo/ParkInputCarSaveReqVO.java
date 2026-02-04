@@ -11,7 +11,7 @@ import jakarta.validation.constraints.*;
 @Data
 public class ParkInputCarSaveReqVO {
 
-    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "25588")
+    @Schema(description = "主键ID")
     private Long id;
 
     @Schema(description = "目标泊位号")

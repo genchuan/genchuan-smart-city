@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.park.controller.admin.park.resource.inputcar;
 
 import cn.iocoder.yudao.module.park.controller.admin.park.resource.inputcar.vo.*;
+//import cn.iocoder.yudao.module.park.framework.file.FileUploadService;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -24,9 +25,11 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
+import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId;
 
 import cn.iocoder.yudao.module.park.dal.dataobject.park.resource.inputcar.ParkInputCarDO;
 import cn.iocoder.yudao.module.park.service.park.resource.inputcar.ParkInputCarService;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "管理后台 - 泊位录入车辆")
 @RestController
@@ -36,6 +39,9 @@ public class ParkInputCarController {
 
     @Resource
     private ParkInputCarService inputCarService;
+
+//    @Resource
+//    private FileUploadService fileUploadService;
 
     @PostMapping("/create")
     @Operation(summary = "创建泊位录入车辆")
@@ -91,6 +97,24 @@ public class ParkInputCarController {
                         BeanUtils.toBean(list, ParkInputCarRespVO.class));
     }
 
+    @GetMapping("/history-by-berth")
+    @Operation(summary = "根据目标泊位号查询历史所有停过的车辆")
+    @PreAuthorize("@ss.hasPermission('park:input-car:query')")
+    public CommonResult<List<ParkInputCarRespVO>> getInputCarHistoryByBerthNo(
+            @Parameter(description = "目标泊位号", required = true)
+            @RequestParam("targetBerthNo") String targetBerthNo,
+            @Parameter(description = "停车状态", example = "已停入") // 新增参数描述
+            @RequestParam(value = "parkingStatus", required = false) String parkingStatus) { // required=false表示可选
+
+        // 调用服务层方法获取数据（传入新参数）
+        List<ParkInputCarDO> historyList = inputCarService.getInputCarHistoryByBerthNo(targetBerthNo, parkingStatus);
+
+        // 转换为响应VO对象
+        List<ParkInputCarRespVO> respVOList = BeanUtils.toBean(historyList, ParkInputCarRespVO.class);
+
+        return CommonResult.success(respVOList);
+    }
+
     @PostMapping("/entry")
     @Operation(summary = "车辆进场")
     public CommonResult<Long> createEntry(@Valid @RequestBody ParkInputCarEntryReqVO reqVO) {
@@ -117,5 +141,19 @@ public class ParkInputCarController {
     public CommonResult<Boolean> simulateMagneticDetectionExit(@Valid @RequestBody ParkInputCarMagneticDetectionExitReqVO reqVO) {
         return CommonResult.success(inputCarService.simulateMagneticDetectionExit(reqVO));
     }
+
+//    @PostMapping("/update-photo")
+//    @Operation(summary = "上传停车图片")
+//    public CommonResult<String> updateUserAvatar(@RequestParam("avatarFile") MultipartFile avatarFile) {
+//        try {
+//            // 1. 上传文件到MinIO
+//            String avatarUrl = fileUploadService.uploadAvatar(avatarFile);
+//
+//            return success(avatarUrl);
+//        } catch (Exception e) {
+//
+//            return CommonResult.error(500, "上传图片失败: " + e.getMessage());
+//        }
+//    }
 
 }
