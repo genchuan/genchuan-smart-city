@@ -14,7 +14,10 @@ public class ParkInputCarExitReqVO {
     @NotNull(message = "主键ID不能为空")
     private Long id;
 
-    @Schema(description = "出场时间", required = true)
+    @Schema(description = "停车状态", example = "已驶离")
+    private String parkingStatus;
+
+    @Schema(description = "出场时间", required = true,example = "1770175647604")
     @NotNull(message = "出场时间不能为空")
     private LocalDateTime exitTime;
 }

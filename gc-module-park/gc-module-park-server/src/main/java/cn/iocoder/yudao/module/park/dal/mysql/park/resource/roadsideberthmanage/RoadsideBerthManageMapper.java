@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.park.controller.admin.park.resource.roadsideberthmanage.vo.RoadsideBerthManagePageReqVO;
 import cn.iocoder.yudao.module.park.dal.dataobject.park.resource.roadsideberthmanage.RoadsideBerthManageDO;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -17,6 +18,7 @@ public interface RoadsideBerthManageMapper extends BaseMapperX<RoadsideBerthMana
 
     default PageResult<RoadsideBerthManageDO> selectPage(RoadsideBerthManagePageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<RoadsideBerthManageDO>()
+                .eqIfPresent(RoadsideBerthManageDO::getParkId, reqVO.getParkId())
                 .eqIfPresent(RoadsideBerthManageDO::getBerthCode, reqVO.getBerthCode())
                 .likeIfPresent(RoadsideBerthManageDO::getRoadName, reqVO.getRoadName())
                 .eqIfPresent(RoadsideBerthManageDO::getLocationDesc, reqVO.getLocationDesc())
@@ -33,6 +35,13 @@ public interface RoadsideBerthManageMapper extends BaseMapperX<RoadsideBerthMana
                 .eqIfPresent(RoadsideBerthManageDO::getExtCommon4, reqVO.getExtCommon4())
                 .betweenIfPresent(RoadsideBerthManageDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(RoadsideBerthManageDO::getId));
+    }
+
+    // 新增：根据berthCode查询记录
+    default RoadsideBerthManageDO selectByBerthCode(String berthCode, String parkId) {
+        return selectOne(new QueryWrapper<RoadsideBerthManageDO>()
+                .eq("berth_code", berthCode)
+                .eq("park_id", parkId));
     }
 
 }

@@ -29,6 +29,12 @@ public class RoadsideBerthManageDO extends BaseDO {
      */
     @TableId
     private Long id;
+
+    /**
+     * 车场ID
+     */
+    private String parkId;
+
     /**
      * 泊位编号
      */

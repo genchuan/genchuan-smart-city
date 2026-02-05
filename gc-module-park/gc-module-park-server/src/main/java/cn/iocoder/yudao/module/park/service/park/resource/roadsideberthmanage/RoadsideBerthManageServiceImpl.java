@@ -69,4 +69,9 @@ public class RoadsideBerthManageServiceImpl implements RoadsideBerthManageServic
         return roadsideBerthManageMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public RoadsideBerthManageDO getRoadsideBerthManageByBerthCode(String berthCode, String parkId) {
+        return roadsideBerthManageMapper.selectByBerthCode(berthCode,parkId);
+    }
+
 }

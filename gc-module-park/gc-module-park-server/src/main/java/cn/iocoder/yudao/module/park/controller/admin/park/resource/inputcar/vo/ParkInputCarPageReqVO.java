@@ -15,6 +15,9 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @ToString(callSuper = true)
 public class ParkInputCarPageReqVO extends PageParam {
 
+    @Schema(description = "车场ID")
+    private String parkId;
+
     @Schema(description = "目标泊位号")
     private String targetBerthNo;
 

@@ -11,6 +11,14 @@ import java.time.LocalDateTime;
 @Data
 public class ParkInputCarEntryReqVO {
 
+    @Schema(description = "主键ID", required = true, example = "1024")
+    @NotNull(message = "主键ID不能为空")
+    private Long id;
+
+    @Schema(description = "车场ID", required = true, example = "1")
+    @NotNull(message = "车场ID不能为空")
+    private String parkId;
+
     @Schema(description = "目标泊位编号", required = true, example = "A001")
     @NotBlank(message = "目标泊位编号不能为空")
     private String targetBerthNo;
@@ -19,13 +27,16 @@ public class ParkInputCarEntryReqVO {
     @NotBlank(message = "车牌号不能为空")
     private String carNumber;
 
-    @Schema(description = "车辆类型", example = "1")
-    private Integer carType;
+    @Schema(description = "车辆类型", example = "小型汽车")
+    private String carType;
 
-    @Schema(description = "车牌颜色", example = "1")
-    private Integer plateColor;
+    @Schema(description = "车牌颜色", example = "白色")
+    private String plateColor;
 
-    @Schema(description = "入场时间", required = true)
-    @NotNull(message = "入场时间不能为空")
-    private LocalDateTime entryTime;
+    @Schema(description = "车辆照片")
+    private String extCommon1;
+
+//    @Schema(description = "入场时间", required = true)
+//    @NotNull(message = "入场时间不能为空")
+//    private LocalDateTime entryTime;
 }

@@ -13,6 +13,9 @@ public class RoadsideBerthManageSaveReqVO {
     @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "27797")
     private Long id;
 
+    @Schema(description = "车场ID", example = "1")
+    private String parkId;
+
     @Schema(description = "泊位编号")
     private String berthCode;
 
