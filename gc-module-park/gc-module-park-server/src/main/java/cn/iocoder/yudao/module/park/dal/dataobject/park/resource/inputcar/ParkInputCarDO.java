@@ -27,6 +27,12 @@ public class ParkInputCarDO extends BaseDO {
      */
     @TableId
     private Long id;
+
+    /**
+     * 车场ID
+     */
+    private String parkId;
+
     /**
      * 目标泊位号
      */

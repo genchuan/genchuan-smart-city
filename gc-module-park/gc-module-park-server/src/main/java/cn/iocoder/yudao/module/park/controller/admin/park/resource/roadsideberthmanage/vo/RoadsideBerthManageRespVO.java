@@ -17,6 +17,10 @@ public class RoadsideBerthManageRespVO {
     @ExcelProperty("主键ID")
     private Long id;
 
+    @Schema(description = "车场ID", example = "1")
+    @ExcelProperty("车场ID")
+    private String parkId;
+
     @Schema(description = "泊位编号")
     @ExcelProperty("泊位编号")
     private String berthCode;

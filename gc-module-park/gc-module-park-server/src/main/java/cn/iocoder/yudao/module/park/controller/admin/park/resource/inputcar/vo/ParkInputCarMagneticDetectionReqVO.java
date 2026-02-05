@@ -11,6 +11,10 @@ import java.time.LocalDateTime;
 @Data
 public class ParkInputCarMagneticDetectionReqVO {
 
+    @Schema(description = "车场ID", required = true, example = "1")
+    @NotNull(message = "车场ID不能为空")
+    private String parkId;
+
     @Schema(description = "目标泊位号", required = true, example = "A001")
     @NotBlank(message = "目标泊位号不能为空")
     private String targetBerthNo;

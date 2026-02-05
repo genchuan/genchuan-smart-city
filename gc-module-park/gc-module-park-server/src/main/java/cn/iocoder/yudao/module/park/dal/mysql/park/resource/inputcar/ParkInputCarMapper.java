@@ -17,6 +17,7 @@ public interface ParkInputCarMapper extends BaseMapperX<ParkInputCarDO> {
 
     default PageResult<ParkInputCarDO> selectPage(ParkInputCarPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<ParkInputCarDO>()
+                .eqIfPresent(ParkInputCarDO::getParkId, reqVO.getParkId())
                 .eqIfPresent(ParkInputCarDO::getTargetBerthNo, reqVO.getTargetBerthNo())
                 .eqIfPresent(ParkInputCarDO::getCarNumber, reqVO.getCarNumber())
                 .eqIfPresent(ParkInputCarDO::getCarType, reqVO.getCarType())

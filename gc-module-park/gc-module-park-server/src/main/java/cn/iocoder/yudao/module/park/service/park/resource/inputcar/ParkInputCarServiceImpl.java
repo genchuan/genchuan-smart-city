@@ -54,7 +54,7 @@ public class ParkInputCarServiceImpl implements ParkInputCarService {
         ParkInputCarDO inputCar = BeanUtils.toBean(createReqVO, ParkInputCarDO.class);
         inputCarMapper.insert(inputCar);
         // 更新路测泊位管理表
-        updateRoadsideBerthOnEntry(createReqVO.getTargetBerthNo(), createReqVO.getCarNumber());
+        updateRoadsideBerthOnEntry(createReqVO.getTargetBerthNo(), createReqVO.getCarNumber(),createReqVO.getParkId());
         // 返回
         return inputCar.getId();
     }
@@ -93,12 +93,12 @@ public class ParkInputCarServiceImpl implements ParkInputCarService {
     }
 
     @Override
-    public List<ParkInputCarDO> getInputCarHistoryByBerthNo(String targetBerthNo, String parkingStatus) {
+    public List<ParkInputCarDO> getInputCarHistoryByBerthNo(String targetBerthNo, String parkingStatus, String parkId) {
         // 使用MyBatis-Plus的查询条件构造器
         QueryWrapper<ParkInputCarDO> queryWrapper = new QueryWrapper<>();
 
         // 设置查询条件：目标泊位号必须匹配
-        queryWrapper.eq("target_berth_no", targetBerthNo);
+        queryWrapper.eq("target_berth_no", targetBerthNo).eq("park_id", parkId);;
 
         // 新增条件：如果parkingStatus非空，则按停车状态筛选
         if (parkingStatus != null && !parkingStatus.trim().isEmpty()) {
@@ -117,6 +117,7 @@ public class ParkInputCarServiceImpl implements ParkInputCarService {
     public Long simulateMagneticDetection(ParkInputCarMagneticDetectionReqVO reqVO) {
         // 创建进场记录
         ParkInputCarDO car = new ParkInputCarDO();
+        car.setParkId(reqVO.getParkId());
         car.setTargetBerthNo(reqVO.getTargetBerthNo());
         car.setEntryTime(reqVO.getEntryTime());
         car.setParkingStatus("待录入"); // 1-在场状态
@@ -192,10 +193,11 @@ public class ParkInputCarServiceImpl implements ParkInputCarService {
         BeanUtils.copyProperties(reqVO, car);
         car.setId(reqVO.getId());
         car.setParkingStatus("已停入"); // 1-在场状态
+        car.setExtCommon1(reqVO.getExtCommon1());
         inputCarMapper.updateById(car);
 
         // 更新路测泊位管理表
-        updateRoadsideBerthOnEntry(reqVO.getTargetBerthNo(), reqVO.getCarNumber());
+        updateRoadsideBerthOnEntry(reqVO.getTargetBerthNo(), reqVO.getCarNumber(),reqVO.getParkId());
 
 
         return car.getId();
@@ -218,15 +220,15 @@ public class ParkInputCarServiceImpl implements ParkInputCarService {
         inputCarMapper.updateById(updateObj);
 
         // 更新路测泊位管理表
-        updateRoadsideBerthOnExit(car.getTargetBerthNo());
+        updateRoadsideBerthOnExit(car.getTargetBerthNo(),car.getParkId());
 
     }
 
     // 新增辅助方法：车辆进场时更新泊位状态
-    private void updateRoadsideBerthOnEntry(String targetBerthNo, String carNumber) {
+    private void updateRoadsideBerthOnEntry(String targetBerthNo, String carNumber, String parkId) {
         try {
             // 根据泊位编号查找路测泊位管理记录
-            RoadsideBerthManageDO berth = roadsideBerthManageService.getRoadsideBerthManageByBerthCode(targetBerthNo);
+            RoadsideBerthManageDO berth = roadsideBerthManageService.getRoadsideBerthManageByBerthCode(targetBerthNo,parkId);
             if (berth == null) {
                 log.warn("更新路测泊位管理失败：泊位编号不存在，berthCode={}", targetBerthNo);
                 return; // 泊位不存在，不阻断主流程
@@ -245,10 +247,10 @@ public class ParkInputCarServiceImpl implements ParkInputCarService {
     }
 
     // 新增辅助方法：车辆离场时更新泊位状态
-    private void updateRoadsideBerthOnExit(String targetBerthNo) {
+    private void updateRoadsideBerthOnExit(String targetBerthNo, String parkId) {
         try {
             // 根据泊位编号查找路测泊位管理记录
-            RoadsideBerthManageDO berth = roadsideBerthManageService.getRoadsideBerthManageByBerthCode(targetBerthNo);
+            RoadsideBerthManageDO berth = roadsideBerthManageService.getRoadsideBerthManageByBerthCode(targetBerthNo,parkId);
             if (berth == null) {
                 log.warn("更新路测泊位管理失败：泊位编号不存在，berthCode={}", targetBerthNo);
                 return;

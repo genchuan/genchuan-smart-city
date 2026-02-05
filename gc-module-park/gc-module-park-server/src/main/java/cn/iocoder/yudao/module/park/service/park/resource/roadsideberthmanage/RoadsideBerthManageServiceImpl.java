@@ -70,8 +70,8 @@ public class RoadsideBerthManageServiceImpl implements RoadsideBerthManageServic
     }
 
     @Override
-    public RoadsideBerthManageDO getRoadsideBerthManageByBerthCode(String berthCode) {
-        return roadsideBerthManageMapper.selectByBerthCode(berthCode);
+    public RoadsideBerthManageDO getRoadsideBerthManageByBerthCode(String berthCode, String parkId) {
+        return roadsideBerthManageMapper.selectByBerthCode(berthCode,parkId);
     }
 
 }

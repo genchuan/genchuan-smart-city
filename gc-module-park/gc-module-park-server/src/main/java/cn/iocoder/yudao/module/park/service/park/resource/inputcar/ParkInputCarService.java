@@ -59,7 +59,7 @@ public interface ParkInputCarService {
      * @param parkingStatus 停车状态（可选，为null时查询所有状态）
      * @return 车辆列表
      */
-    List<ParkInputCarDO> getInputCarHistoryByBerthNo(String targetBerthNo, String parkingStatus);
+    List<ParkInputCarDO> getInputCarHistoryByBerthNo(String targetBerthNo, String parkingStatus, String parkId);
 
     /**
      * 车辆进场

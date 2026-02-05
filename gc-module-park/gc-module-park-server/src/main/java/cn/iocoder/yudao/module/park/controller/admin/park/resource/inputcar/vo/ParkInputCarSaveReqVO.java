@@ -14,6 +14,9 @@ public class ParkInputCarSaveReqVO {
     @Schema(description = "主键ID")
     private Long id;
 
+    @Schema(description = "车场ID", example = "1")
+    private String parkId;
+
     @Schema(description = "目标泊位号")
     private String targetBerthNo;
 

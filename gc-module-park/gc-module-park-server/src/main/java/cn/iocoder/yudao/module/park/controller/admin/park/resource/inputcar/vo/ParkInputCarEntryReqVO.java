@@ -15,6 +15,10 @@ public class ParkInputCarEntryReqVO {
     @NotNull(message = "主键ID不能为空")
     private Long id;
 
+    @Schema(description = "车场ID", required = true, example = "1")
+    @NotNull(message = "车场ID不能为空")
+    private String parkId;
+
     @Schema(description = "目标泊位编号", required = true, example = "A001")
     @NotBlank(message = "目标泊位编号不能为空")
     private String targetBerthNo;
@@ -28,6 +32,9 @@ public class ParkInputCarEntryReqVO {
 
     @Schema(description = "车牌颜色", example = "白色")
     private String plateColor;
+
+    @Schema(description = "车辆照片")
+    private String extCommon1;
 
 //    @Schema(description = "入场时间", required = true)
 //    @NotNull(message = "入场时间不能为空")

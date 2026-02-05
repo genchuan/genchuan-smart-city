@@ -16,6 +16,10 @@ public class ParkInputCarRespVO {
     @ExcelProperty("主键ID")
     private Long id;
 
+    @Schema(description = "车场ID", example = "1")
+    @ExcelProperty("车场ID")
+    private String parkId;
+
     @Schema(description = "目标泊位号")
     @ExcelProperty("目标泊位号")
     private String targetBerthNo;

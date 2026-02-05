@@ -57,6 +57,6 @@ public interface RoadsideBerthManageService {
      * @param berthCode 泊位编号
      * @return 路测泊位管理
      */
-    RoadsideBerthManageDO getRoadsideBerthManageByBerthCode(String berthCode);
+    RoadsideBerthManageDO getRoadsideBerthManageByBerthCode(String berthCode, String parkId);
 
 }

@@ -16,6 +16,9 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @ToString(callSuper = true)
 public class RoadsideBerthManagePageReqVO extends PageParam {
 
+    @Schema(description = "车场ID")
+    private String parkId;
+
     @Schema(description = "泊位编号")
     private String berthCode;
 

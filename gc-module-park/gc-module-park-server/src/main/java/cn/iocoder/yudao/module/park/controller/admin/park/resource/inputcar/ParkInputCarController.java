@@ -103,11 +103,13 @@ public class ParkInputCarController {
     public CommonResult<List<ParkInputCarRespVO>> getInputCarHistoryByBerthNo(
             @Parameter(description = "目标泊位号", required = true)
             @RequestParam("targetBerthNo") String targetBerthNo,
-            @Parameter(description = "停车状态", example = "已停入") // 新增参数描述
-            @RequestParam(value = "parkingStatus", required = false) String parkingStatus) { // required=false表示可选
+            @Parameter(description = "停车状态", example = "已停入")
+            @RequestParam(value = "parkingStatus", required = false) String parkingStatus,
+            @Parameter(description = "车场ID", required = true, example = "1")
+            @RequestParam("parkId") String parkId) {
 
         // 调用服务层方法获取数据（传入新参数）
-        List<ParkInputCarDO> historyList = inputCarService.getInputCarHistoryByBerthNo(targetBerthNo, parkingStatus);
+        List<ParkInputCarDO> historyList = inputCarService.getInputCarHistoryByBerthNo(targetBerthNo, parkingStatus, parkId);
 
         // 转换为响应VO对象
         List<ParkInputCarRespVO> respVOList = BeanUtils.toBean(historyList, ParkInputCarRespVO.class);
