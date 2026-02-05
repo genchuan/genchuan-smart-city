@@ -1,19 +1,19 @@
 package cn.iocoder.yudao.module.park.controller.admin.park.order.ordertemp.vo;
 
-import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
-import com.alibaba.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-
+import lombok.*;
+import java.util.*;
 import java.math.BigDecimal;
+import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
+import com.alibaba.excel.annotation.*;
 
 @Schema(description = "管理后台 - 临停订单 Response VO")
 @Data
 @ExcelIgnoreUnannotated
 public class OrderTempRespVO {
 
-    @Schema(description = "[主键ID] 临停订单唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "29620")
+    @Schema(description = "[主键ID] 临停订单唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "9482")
     @ExcelProperty("[主键ID] 临停订单唯一标识")
     private Long id;
 
@@ -21,21 +21,25 @@ public class OrderTempRespVO {
     @ExcelProperty("[车牌号码] 停车车辆的车牌号码")
     private String carNumber;
 
-    @Schema(description = "[入场记录ID] 关联入场记录，park_car_entry.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "9453")
-    @ExcelProperty("[入场记录ID] 关联入场记录，park_car_entry.id")
-    private Long entryId;
-
-    @Schema(description = "[离场记录ID] 关联离场记录，park_car_exit.id，可为 NULL", example = "15708")
-    @ExcelProperty("[离场记录ID] 关联离场记录，park_car_exit.id，可为 NULL")
-    private Long exitId;
-
-    @Schema(description = "[所属车场ID] 所属车场ID，关联 park_lot.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "30894")
+    @Schema(description = "[所属车场ID] 所属车场ID，关联 park_lot.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "4597")
     @ExcelProperty("[所属车场ID] 所属车场ID，关联 park_lot.id")
     private Long lotId;
 
-    @Schema(description = "[泊位ID] 停车泊位ID，关联 park_space.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "10920")
+    @Schema(description = "[泊位ID] 停车泊位ID，关联 park_space.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "3354")
     @ExcelProperty("[泊位ID] 停车泊位ID，关联 park_space.id")
     private Long spaceId;
+
+    @Schema(description = "[关联录入车辆表ID] 关联 park_input_car.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "11811")
+    @ExcelProperty("[关联录入车辆表ID] 关联 park_input_car.id")
+    private Long parkInputCarId;
+
+    @Schema(description = "[入场时间] 从 park_input_car 获取")
+    @ExcelProperty("[入场时间] 从 park_input_car 获取")
+    private LocalDateTime entryTime;
+
+    @Schema(description = "[出场时间] 从 park_input_car 获取")
+    @ExcelProperty("[出场时间] 从 park_input_car 获取")
+    private LocalDateTime exitTime;
 
     @Schema(description = "[停放时长] 停车时长，单位分钟")
     @ExcelProperty("[停放时长] 停车时长，单位分钟")
@@ -53,7 +57,7 @@ public class OrderTempRespVO {
     @ExcelProperty("[实付金额] 用户实际支付金额")
     private BigDecimal payAmount;
 
-    @Schema(description = "[费率策略ID] 关联费率策略ID，park_fee_strategy.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "6462")
+    @Schema(description = "[费率策略ID] 关联费率策略ID，park_fee_strategy.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "24602")
     @ExcelProperty("[费率策略ID] 关联费率策略ID，park_fee_strategy.id")
     private Long feeStrategyId;
 
@@ -61,15 +65,15 @@ public class OrderTempRespVO {
     @ExcelProperty("[订单状态] 如:待支付/已支付/已取消/已完成")
     private String orderStatus;
 
-    @Schema(description = "[支付状态] 如:未支付/已支付/部分支付", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @Schema(description = "[支付状态] 如:未支付/已支付/部分支付", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
     @ExcelProperty("[支付状态] 如:未支付/已支付/部分支付")
     private String payStatus;
 
-    @Schema(description = "[支付方式] 如:微信/支付宝/现金/其他", example = "1")
+    @Schema(description = "[支付方式] 如:微信/支付宝/现金/其他", example = "2")
     @ExcelProperty("[支付方式] 如:微信/支付宝/现金/其他")
     private String payType;
 
-    @Schema(description = "[缴费记录ID] 关联缴费记录ID，park_payment.id，可为 NULL", example = "3864")
+    @Schema(description = "[缴费记录ID] 关联缴费记录ID，park_payment.id，可为 NULL", example = "6982")
     @ExcelProperty("[缴费记录ID] 关联缴费记录ID，park_payment.id，可为 NULL")
     private Long paymentId;
 

@@ -1,17 +1,21 @@
 package cn.iocoder.yudao.module.park.dal.dataobject.park.order.ordertemp;
 
-import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
-import com.baomidou.mybatisplus.annotation.KeySequence;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
-
+import java.util.*;
+import java.time.LocalDateTime;
+import java.time.LocalDateTime;
 import java.math.BigDecimal;
+import java.math.BigDecimal;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.*;
+import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 
 /**
  * 临停订单 DO
  *
- * @author lxs
+ * @author 亘川智城
  */
 @TableName("park_order_temp")
 @KeySequence("park_order_temp_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。
@@ -33,14 +37,6 @@ public class OrderTempDO extends BaseDO {
      */
     private String carNumber;
     /**
-     * [入场记录ID] 关联入场记录，park_car_entry.id
-     */
-    private Long entryId;
-    /**
-     * [离场记录ID] 关联离场记录，park_car_exit.id，可为 NULL
-     */
-    private Long exitId;
-    /**
      * [所属车场ID] 所属车场ID，关联 park_lot.id
      */
     private Long lotId;
@@ -48,6 +44,18 @@ public class OrderTempDO extends BaseDO {
      * [泊位ID] 停车泊位ID，关联 park_space.id
      */
     private Long spaceId;
+    /**
+     * [关联录入车辆表ID] 关联 park_input_car.id
+     */
+    private Long parkInputCarId;
+    /**
+     * [入场时间] 从 park_input_car 获取
+     */
+    private LocalDateTime entryTime;
+    /**
+     * [出场时间] 从 park_input_car 获取
+     */
+    private LocalDateTime exitTime;
     /**
      * [停放时长] 停车时长，单位分钟
      */

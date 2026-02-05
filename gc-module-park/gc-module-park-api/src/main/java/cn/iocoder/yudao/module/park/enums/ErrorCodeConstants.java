@@ -104,4 +104,8 @@ public interface ErrorCodeConstants {
     // ========== 路测泊位管理 ==========
     ErrorCode ROADSIDE_BERTH_MANAGE_NOT_EXISTS = new ErrorCode(500, "路测泊位管理不存在");
 
+    // ========== 优惠券==========
+//    ErrorCode COUPON_NOT_EXISTS = new ErrorCode(500, "优惠券不存在");
+    // ========== 畅停卡==========
+    ErrorCode SMOOTH_STOP_CARD_NOT_EXISTS = new ErrorCode(500, "畅停卡不存在");
 }

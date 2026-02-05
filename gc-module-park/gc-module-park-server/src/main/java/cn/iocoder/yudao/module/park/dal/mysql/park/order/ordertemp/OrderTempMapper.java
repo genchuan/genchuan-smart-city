@@ -1,8 +1,10 @@
 package cn.iocoder.yudao.module.park.dal.mysql.park.order.ordertemp;
 
+import java.util.*;
+
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.park.controller.admin.park.order.ordertemp.vo.OrderTempPageReqVO;
 import cn.iocoder.yudao.module.park.dal.dataobject.park.order.ordertemp.OrderTempDO;
 import org.apache.ibatis.annotations.Mapper;
@@ -10,7 +12,7 @@ import org.apache.ibatis.annotations.Mapper;
 /**
  * 临停订单 Mapper
  *
- * @author lxs
+ * @author 亘川智城
  */
 @Mapper
 public interface OrderTempMapper extends BaseMapperX<OrderTempDO> {
@@ -18,10 +20,11 @@ public interface OrderTempMapper extends BaseMapperX<OrderTempDO> {
     default PageResult<OrderTempDO> selectPage(OrderTempPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<OrderTempDO>()
                 .eqIfPresent(OrderTempDO::getCarNumber, reqVO.getCarNumber())
-                .eqIfPresent(OrderTempDO::getEntryId, reqVO.getEntryId())
-                .eqIfPresent(OrderTempDO::getExitId, reqVO.getExitId())
                 .eqIfPresent(OrderTempDO::getLotId, reqVO.getLotId())
                 .eqIfPresent(OrderTempDO::getSpaceId, reqVO.getSpaceId())
+                .eqIfPresent(OrderTempDO::getParkInputCarId, reqVO.getParkInputCarId())
+                .betweenIfPresent(OrderTempDO::getEntryTime, reqVO.getEntryTime())
+                .betweenIfPresent(OrderTempDO::getExitTime, reqVO.getExitTime())
                 .eqIfPresent(OrderTempDO::getParkingDuration, reqVO.getParkingDuration())
                 .eqIfPresent(OrderTempDO::getOriginalAmount, reqVO.getOriginalAmount())
                 .eqIfPresent(OrderTempDO::getDiscountAmount, reqVO.getDiscountAmount())

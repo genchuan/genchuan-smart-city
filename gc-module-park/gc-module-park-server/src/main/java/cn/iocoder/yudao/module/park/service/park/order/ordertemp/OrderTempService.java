@@ -1,15 +1,19 @@
 package cn.iocoder.yudao.module.park.service.park.order.ordertemp;
 
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import java.util.*;
+
+import cn.iocoder.yudao.module.park.controller.admin.park.order.ordertemp.vo.OrderTempGenerateReqVO;
 import cn.iocoder.yudao.module.park.controller.admin.park.order.ordertemp.vo.OrderTempPageReqVO;
 import cn.iocoder.yudao.module.park.controller.admin.park.order.ordertemp.vo.OrderTempSaveReqVO;
 import cn.iocoder.yudao.module.park.dal.dataobject.park.order.ordertemp.OrderTempDO;
-import jakarta.validation.Valid;
+import jakarta.validation.*;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 临停订单 Service 接口
  *
- * @author lxs
+ * @author 亘川智城
  */
 public interface OrderTempService {
 
@@ -51,4 +55,5 @@ public interface OrderTempService {
      */
     PageResult<OrderTempDO> getOrderTempPage(OrderTempPageReqVO pageReqVO);
 
+    Long generateOrderTemp(OrderTempGenerateReqVO reqVO);
 }
