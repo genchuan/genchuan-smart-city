@@ -38,14 +38,14 @@ public class RoadsideBerthManageController {
 
     @PostMapping("/create")
     @Operation(summary = "创建路测泊位管理")
-    @PreAuthorize("@ss.hasPermission('park:roadside-berth-manage:create')")
+//    @PreAuthorize("@ss.hasPermission('park:roadside-berth-manage:create')")
     public CommonResult<Long> createRoadsideBerthManage(@Valid @RequestBody RoadsideBerthManageSaveReqVO createReqVO) {
         return success(roadsideBerthManageService.createRoadsideBerthManage(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新路测泊位管理")
-    @PreAuthorize("@ss.hasPermission('park:roadside-berth-manage:update')")
+//    @PreAuthorize("@ss.hasPermission('park:roadside-berth-manage:update')")
     public CommonResult<Boolean> updateRoadsideBerthManage(@Valid @RequestBody RoadsideBerthManageSaveReqVO updateReqVO) {
         roadsideBerthManageService.updateRoadsideBerthManage(updateReqVO);
         return success(true);
@@ -54,7 +54,7 @@ public class RoadsideBerthManageController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除路测泊位管理")
     @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('park:roadside-berth-manage:delete')")
+//    @PreAuthorize("@ss.hasPermission('park:roadside-berth-manage:delete')")
     public CommonResult<Boolean> deleteRoadsideBerthManage(@RequestParam("id") Long id) {
         roadsideBerthManageService.deleteRoadsideBerthManage(id);
         return success(true);
@@ -63,7 +63,7 @@ public class RoadsideBerthManageController {
     @GetMapping("/get")
     @Operation(summary = "获得路测泊位管理")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('park:roadside-berth-manage:query')")
+//    @PreAuthorize("@ss.hasPermission('park:roadside-berth-manage:query')")
     public CommonResult<RoadsideBerthManageRespVO> getRoadsideBerthManage(@RequestParam("id") Long id) {
         RoadsideBerthManageDO roadsideBerthManage = roadsideBerthManageService.getRoadsideBerthManage(id);
         return success(BeanUtils.toBean(roadsideBerthManage, RoadsideBerthManageRespVO.class));
@@ -71,7 +71,7 @@ public class RoadsideBerthManageController {
 
     @GetMapping("/page")
     @Operation(summary = "获得路测泊位管理分页")
-    @PreAuthorize("@ss.hasPermission('park:roadside-berth-manage:query')")
+//    @PreAuthorize("@ss.hasPermission('park:roadside-berth-manage:query')")
     public CommonResult<PageResult<RoadsideBerthManageRespVO>> getRoadsideBerthManagePage(@Valid RoadsideBerthManagePageReqVO pageReqVO) {
         PageResult<RoadsideBerthManageDO> pageResult = roadsideBerthManageService.getRoadsideBerthManagePage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, RoadsideBerthManageRespVO.class));
@@ -79,7 +79,7 @@ public class RoadsideBerthManageController {
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出路测泊位管理 Excel")
-    @PreAuthorize("@ss.hasPermission('park:roadside-berth-manage:export')")
+//    @PreAuthorize("@ss.hasPermission('park:roadside-berth-manage:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportRoadsideBerthManageExcel(@Valid RoadsideBerthManagePageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
