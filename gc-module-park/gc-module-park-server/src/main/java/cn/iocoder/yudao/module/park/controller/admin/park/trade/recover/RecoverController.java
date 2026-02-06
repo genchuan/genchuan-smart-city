@@ -1,10 +1,7 @@
 package cn.iocoder.yudao.module.park.controller.admin.park.trade.recover;
 
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
-import cn.iocoder.yudao.module.park.controller.admin.park.trade.deduction.vo.CalculateChargeAmountReqVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.trade.deduction.vo.CalculateChargeAmountRespVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.trade.recover.vo.GenerateArrearsQrCodeReqVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.trade.recover.vo.PreDiscountAutoCalculateReqVO;
+import cn.iocoder.yudao.module.park.controller.admin.park.trade.recover.vo.*;
 import cn.iocoder.yudao.module.park.service.park.trade.recover.RecoverService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,8 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.math.BigDecimal;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
@@ -45,10 +40,19 @@ public class RecoverController {
     @PostMapping("/pre-discount-auto-calculate")
     @Operation(summary = "追缴服务-优惠券前折扣")
     @PreAuthorize("@ss.hasPermission('park:recover:pre-discount-auto-calculate')")
-    public CommonResult<BigDecimal> preDiscountAutoCalculate(@Valid @RequestBody PreDiscountAutoCalculateReqVO reqVO) {
-        BigDecimal respVO = recoverService.preDiscountAutoCalculate(reqVO);
+    public CommonResult<PreDiscountAutoCalculateRespVO> preDiscountAutoCalculate(@Valid @RequestBody PreDiscountAutoCalculateReqVO reqVO) {
+        PreDiscountAutoCalculateRespVO respVO = recoverService.preDiscountAutoCalculate(reqVO);
         return success(respVO);
     }
+
+    @PostMapping("/wallet-pay")
+    @Operation(summary = "追缴服务-钱包支付")
+    @PreAuthorize("@ss.hasPermission('park:recover:wallet-pay')")
+    public CommonResult<RecoverWalletPayRespVO> walletPay(@Valid @RequestBody RecoverWalletPayReqVO reqVO) {
+        RecoverWalletPayRespVO respVO=recoverService.walletPay(reqVO);
+        return success(respVO);
+    }
+
 
 
 }

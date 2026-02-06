@@ -5,16 +5,9 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
 @Schema(description = "管理后台 - 临停订单生成 Request VO")
 @Data
 public class OrderTempGenerateReqVO {
-
-//    @Schema(description = "[主键ID] 临停订单唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "29620")
-//    private Long id;
-
     @Schema(description = "[车牌号码] 停车车辆的车牌号码", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotEmpty(message = "[车牌号码] 停车车辆的车牌号码不能为空")
     private String carNumber;
@@ -31,13 +24,14 @@ public class OrderTempGenerateReqVO {
     @NotNull(message = "[关联录入车辆表ID] 关联 park_input_car.id不能为空")
     private Long parkInputCarId;
 
+    @Schema(description = "[备注] 临停订单相关备注说明", example = "你说的对")
+    private String remark;
     //车场表得到
 //    @Schema(description = "[费率策略ID] 关联费率策略ID，park_fee_strategy.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "24602")
 //    @NotNull(message = "[费率策略ID] 关联费率策略ID，park_fee_strategy.id不能为空")
 //    private Long feeStrategyId;
 
-    @Schema(description = "[备注] 临停订单相关备注说明", example = "你说的对")
-    private String remark;
+
 
     //通过录入车辆表获取
 //    @Schema(description = "[入场时间] 从 park_input_car 获取")

@@ -108,4 +108,8 @@ public interface ErrorCodeConstants {
 //    ErrorCode COUPON_NOT_EXISTS = new ErrorCode(500, "优惠券不存在");
     // ========== 畅停卡==========
     ErrorCode SMOOTH_STOP_CARD_NOT_EXISTS = new ErrorCode(500, "畅停卡不存在");
+    // ========== 用户钱包==========
+    ErrorCode WALLET_NOT_EXISTS = new ErrorCode(500, "用户钱包不存在");
+    // ========== 钱包流水==========
+    ErrorCode WALLET_FLOW_NOT_EXISTS = new ErrorCode(500, "钱包流水不存在");
 }

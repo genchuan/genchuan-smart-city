@@ -1,11 +1,11 @@
 package cn.iocoder.yudao.module.park.controller.admin.park.order.ordertemp.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import java.util.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
 import java.math.BigDecimal;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 临停订单新增/修改 Request VO")
@@ -30,6 +30,10 @@ public class OrderTempSaveReqVO {
     @Schema(description = "[关联录入车辆表ID] 关联 park_input_car.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "11811")
     @NotNull(message = "[关联录入车辆表ID] 关联 park_input_car.id不能为空")
     private Long parkInputCarId;
+
+    @Schema(description = "[使用的优惠券ID] 关联 park_coupon.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @NotNull(message = "[使用的优惠券ID] 不能为空")
+    private Long couponId;
 
     @Schema(description = "[入场时间] 从 park_input_car 获取")
     private LocalDateTime entryTime;

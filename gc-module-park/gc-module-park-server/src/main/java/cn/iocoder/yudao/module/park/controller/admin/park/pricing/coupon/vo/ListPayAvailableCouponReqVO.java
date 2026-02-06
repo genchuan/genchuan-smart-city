@@ -12,7 +12,7 @@ public class ListPayAvailableCouponReqVO {
     private BigDecimal orginalAmount;
 
     @Schema(description = "[欠费记录Id列表(字符串形式)]", example = "1,2,3")
-    private String arrearsIdListStr;
+    private String orderIdListStr;
 
 //    @Schema(description = "[车牌号]", example = "京123456") //车牌号用于判断是否白名单
 //    private String carNumber;

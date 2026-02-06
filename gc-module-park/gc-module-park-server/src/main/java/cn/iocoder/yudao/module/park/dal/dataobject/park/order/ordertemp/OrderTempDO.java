@@ -1,16 +1,13 @@
 package cn.iocoder.yudao.module.park.dal.dataobject.park.order.ordertemp;
 
-import lombok.*;
-import java.util.*;
-import java.time.LocalDateTime;
-import java.time.LocalDateTime;
-import java.math.BigDecimal;
-import java.math.BigDecimal;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.LocalDateTime;
-import com.baomidou.mybatisplus.annotation.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
+import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * 临停订单 DO
@@ -33,6 +30,10 @@ public class OrderTempDO extends BaseDO {
     @TableId
     private Long id;
     /**
+     * [订单唯一编号] 订单唯一编号
+     */
+    private String orderCode;
+    /**
      * [车牌号码] 停车车辆的车牌号码
      */
     private String carNumber;
@@ -48,6 +49,11 @@ public class OrderTempDO extends BaseDO {
      * [关联录入车辆表ID] 关联 park_input_car.id
      */
     private Long parkInputCarId;
+
+    /**
+     * [优惠券ID] 关联 park_coupon.id
+     */
+    private Long couponId;
     /**
      * [入场时间] 从 park_input_car 获取
      */

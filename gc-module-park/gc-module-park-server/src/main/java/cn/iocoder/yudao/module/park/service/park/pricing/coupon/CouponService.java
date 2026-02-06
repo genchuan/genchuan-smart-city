@@ -1,14 +1,9 @@
 package cn.iocoder.yudao.module.park.service.park.pricing.coupon;
 
-import java.util.*;
-
-import cn.iocoder.yudao.module.park.controller.admin.park.pricing.coupon.vo.CouponPageReqVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.pricing.coupon.vo.CouponSaveReqVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.pricing.coupon.vo.ListPayAvailableCouponReqVO;
-import cn.iocoder.yudao.module.park.dal.dataobject.park.pricing.coupon.CouponDO;
-import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import cn.iocoder.yudao.module.park.controller.admin.park.pricing.coupon.vo.*;
+import cn.iocoder.yudao.module.park.dal.dataobject.park.pricing.coupon.CouponDO;
+import jakarta.validation.Valid;
 
 /**
  * 优惠券 Service 接口
@@ -56,4 +51,6 @@ public interface CouponService {
     PageResult<CouponDO> getCouponPage(CouponPageReqVO pageReqVO);
 
     PageResult<CouponDO> listPayAvailableCoupon(ListPayAvailableCouponReqVO req);
+
+    CalculateDiscountRespVO calculateDiscount(CalculateDiscountReqVO req);
 }

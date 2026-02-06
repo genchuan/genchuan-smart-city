@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.park.controller.admin.park.resource.inputcar.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+
 import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 地磁检测模拟车辆离场 Request VO")

@@ -1,36 +1,29 @@
 package cn.iocoder.yudao.module.park.controller.admin.park.pricing.coupon;
 
-import cn.iocoder.yudao.module.park.controller.admin.park.pricing.coupon.vo.CouponPageReqVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.pricing.coupon.vo.CouponRespVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.pricing.coupon.vo.CouponSaveReqVO;
-
-import cn.iocoder.yudao.module.park.controller.admin.park.pricing.coupon.vo.ListPayAvailableCouponReqVO;
-import cn.iocoder.yudao.module.park.dal.dataobject.park.pricing.coupon.CouponDO;
-import cn.iocoder.yudao.module.park.service.park.pricing.coupon.CouponService;
-import org.springframework.web.bind.annotation.*;
-import jakarta.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.security.access.prepost.PreAuthorize;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Operation;
-
-import jakarta.validation.constraints.*;
-import jakarta.validation.*;
-import jakarta.servlet.http.*;
-import java.util.*;
-import java.io.IOException;
-
+import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
-
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.module.park.controller.admin.park.pricing.coupon.vo.*;
+import cn.iocoder.yudao.module.park.dal.dataobject.park.pricing.coupon.CouponDO;
+import cn.iocoder.yudao.module.park.service.park.pricing.coupon.CouponService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
-import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
-import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
+import java.io.IOException;
+import java.util.List;
+
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 
 @Tag(name = "管理后台 - 优惠券")
@@ -42,6 +35,14 @@ public class CouponController {
     @Resource
     private CouponService couponService;
 
+    //优惠计算（只负责用优惠规则计算，不负责校验该优惠券是否生效）TODO 可后续把校验提取为公共方法，计算优惠也用。
+    @PostMapping("/calculate-discount")
+    @Operation(summary = "优惠计算")
+    @PreAuthorize("@ss.hasPermission('park:coupon:calculate-discount')")
+    public CommonResult<CalculateDiscountRespVO> calculateDiscount(@RequestBody CalculateDiscountReqVO req){
+        CalculateDiscountRespVO respVO = couponService.calculateDiscount(req);
+        return success(respVO);
+    }
     @PostMapping("/pay-available-list")
     @Operation(summary = "获取支付可用优惠券列表")
     @PreAuthorize("@ss.hasPermission('park:coupon:pay-available-list')")

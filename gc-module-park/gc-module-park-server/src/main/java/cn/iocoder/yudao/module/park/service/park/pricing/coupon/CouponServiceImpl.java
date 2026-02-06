@@ -1,30 +1,23 @@
 package cn.iocoder.yudao.module.park.service.park.pricing.coupon;
 
-import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.yudao.framework.common.exception.ErrorCode;
-import cn.iocoder.yudao.module.park.controller.admin.park.pricing.coupon.vo.CouponPageReqVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.pricing.coupon.vo.CouponSaveReqVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.pricing.coupon.vo.ListPayAvailableCouponReqVO;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.module.park.controller.admin.park.pricing.coupon.vo.*;
 import cn.iocoder.yudao.module.park.dal.dataobject.park.pricing.coupon.CouponDO;
 import cn.iocoder.yudao.module.park.dal.mysql.park.pricing.coupon.CouponMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId;
-import static cn.iocoder.yudao.module.park.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.park.enums.ErrorCodeConstants.COUPON_NOT_EXISTS;
 
 /**
  * 优惠券 Service 实现类
@@ -84,7 +77,7 @@ public class CouponServiceImpl implements CouponService {
     public PageResult<CouponDO> listPayAvailableCoupon(ListPayAvailableCouponReqVO req) {
         //0.解析参数
         BigDecimal orginalAmount=req.getOrginalAmount();
-        String arrearsIdListStr = req.getArrearsIdListStr();
+        String orderIdListStr = req.getOrderIdListStr();
         Long parkLotId = req.getParkLotId();
 
         //1.获取用户ID
@@ -94,7 +87,7 @@ public class CouponServiceImpl implements CouponService {
         }
 
         // 2. 验证参数
-        if (req.getOrginalAmount() == null || req.getParkLotId() == null) {
+        if (orginalAmount == null || parkLotId == null) {
             throw exception(new ErrorCode(500,"支付原始金额和车场ID不能为空"));
         }
 
@@ -110,7 +103,7 @@ public class CouponServiceImpl implements CouponService {
         // 3.3 处理最低消费金额条件（包含null的情况）
         // null 表示没有最低消费限制，可以使用
         queryWrapper.and(wrapper ->
-                wrapper.le(CouponDO::getMinConsume, req.getOrginalAmount())
+                wrapper.le(CouponDO::getMinConsume, orginalAmount)
                         .or()
                         .isNull(CouponDO::getMinConsume)
         );
@@ -124,7 +117,7 @@ public class CouponServiceImpl implements CouponService {
         queryWrapper.and(wrapper ->
                 wrapper.eq(CouponDO::getApplyScope, "全局")
                         .or(w -> w.eq(CouponDO::getApplyScope, "车场")
-                                .like(CouponDO::getScopeIds, req.getParkLotId().toString()))
+                                .like(CouponDO::getScopeIds, parkLotId.toString()))
         );
 
 //        // 3.6 优惠券未使用且未过期
@@ -142,5 +135,91 @@ public class CouponServiceImpl implements CouponService {
         // 5. 转换为PageResult返回
         return new PageResult<>(couponPage.getRecords(), couponPage.getTotal());
     }
+
+    /**
+     * 计算优惠券折扣金额
+     *
+     * <p>
+     * 业务说明：
+     * 1. 根据优惠券ID获取优惠券信息
+     * 2. 校验优惠券是否存在、是否启用、是否在有效期内
+     * 3. 校验是否满足最低消费金额
+     * 4. 根据优惠券类型计算优惠金额
+     * 5. 返回优惠金额和优惠后金额
+     * </p>
+     *
+     * @param req 优惠计算请求参数
+     * @return 优惠计算结果
+     */
+    @Override
+    public CalculateDiscountRespVO calculateDiscount(CalculateDiscountReqVO req) {
+
+        // 1. 获取优惠券信息
+        CouponDO coupon = couponMapper.selectById(req.getCouponId());
+        if (coupon == null) {
+            throw exception(new ErrorCode(500,"优惠券不存在"));
+        }
+
+        // 2. 校验优惠券状态（必须是启用状态）
+        if (!"启用".equals(coupon.getStatus())) {
+            throw exception(new ErrorCode(500, "优惠券不可用"));
+        }
+
+        // 3. 校验优惠券有效期
+        LocalDateTime now = LocalDateTime.now();
+        if (coupon.getStartTime() != null && coupon.getStartTime().isAfter(now)) {
+            throw exception(new ErrorCode(500, "优惠券尚未生效"));
+        }
+        if (coupon.getEndTime() != null && coupon.getEndTime().isBefore(now)) {
+            throw exception(new ErrorCode(500, "优惠券已过期"));
+        }
+
+        BigDecimal originalAmount = req.getOriginalAmount();
+
+        // 4. 校验最低消费金额
+        // min_consume 为 null 表示不限制最低消费
+        if (coupon.getMinConsume() != null
+                && originalAmount.compareTo(coupon.getMinConsume()) < 0) {
+            throw exception(new ErrorCode(500, "未满足优惠券最低消费金额"));
+        }
+
+        // 5. 根据优惠券类型计算优惠金额
+        BigDecimal discountAmount = BigDecimal.ZERO;
+        BigDecimal afterDiscountAmount = originalAmount;
+
+        String couponType = coupon.getCouponType();
+        String faceValue = coupon.getFaceValue();
+
+        if ("满减券".equals(couponType)) {
+            // 满减券：直接减固定金额
+            BigDecimal minusAmount = new BigDecimal(faceValue);
+            discountAmount = minusAmount;
+
+        } else if ("折扣券".equals(couponType)) {
+            // 折扣券：face_value 为折扣比例，例如 0.8
+            BigDecimal discountRate = new BigDecimal(faceValue);
+            afterDiscountAmount = originalAmount.multiply(discountRate)
+                    .setScale(2, BigDecimal.ROUND_HALF_UP);
+            discountAmount = originalAmount.subtract(afterDiscountAmount);
+
+        } else {
+            // 免费时长券 / 未支持的优惠券类型
+            throw exception(new ErrorCode(500, "该优惠券类型不支持金额计算"));
+        }
+
+        // 6. 防止出现负数金额（最多减到 0）
+        if (discountAmount.compareTo(originalAmount) > 0) {
+            discountAmount = originalAmount;
+        }
+        afterDiscountAmount = originalAmount.subtract(discountAmount);
+
+        // 7. 封装返回结果
+        CalculateDiscountRespVO respVO = new CalculateDiscountRespVO();
+        respVO.setDiscountAmount(discountAmount);
+        respVO.setAfterDiscountAmount(afterDiscountAmount);
+
+        return respVO;
+    }
+
 
 }

@@ -2,33 +2,29 @@ package cn.iocoder.yudao.module.park.service.park.order.ordertemp;
 
 import cn.iocoder.yudao.framework.common.exception.ErrorCode;
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.park.controller.admin.park.order.ordertemp.vo.OrderTempGenerateReqVO;
 import cn.iocoder.yudao.module.park.controller.admin.park.order.ordertemp.vo.OrderTempPageReqVO;
 import cn.iocoder.yudao.module.park.controller.admin.park.order.ordertemp.vo.OrderTempSaveReqVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.trade.deduction.vo.CalculateChargeAmountRespVO;
 import cn.iocoder.yudao.module.park.dal.dataobject.park.order.ordertemp.OrderTempDO;
 import cn.iocoder.yudao.module.park.dal.dataobject.park.resource.inputcar.ParkInputCarDO;
 import cn.iocoder.yudao.module.park.dal.mysql.park.order.ordertemp.OrderTempMapper;
 import cn.iocoder.yudao.module.park.dal.mysql.park.resource.inputcar.ParkInputCarMapper;
-import cn.iocoder.yudao.module.park.service.park.resource.inputcar.ParkInputCarService;
-import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
+import java.util.UUID;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.module.park.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.park.enums.ErrorCodeConstants.ORDER_TEMP_NOT_EXISTS;
 
 /**
  * 临停订单 Service 实现类
@@ -229,13 +225,14 @@ public class OrderTempServiceImpl implements OrderTempService {
 //
 //    }
 
-
-
     //大致逻辑同上，修复了每日封顶bug：比如我2026-02-01 08:00:00进场，2026-02-05 08:00:00出场，只算一天封顶钱
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long generateOrderTemp(OrderTempGenerateReqVO reqVO) {
         // 一、获取基础数据
+        //0.生成订单编号，UUID
+        String orderCode="ORDER"+ UUID.randomUUID().toString().replace("-","");
+
         //1.获取入场出场时间
         Long parkInputCarId = reqVO.getParkInputCarId();
         ParkInputCarDO parkInputCarDO = parkInputCarMapper.selectById(parkInputCarId);
@@ -271,6 +268,8 @@ public class OrderTempServiceImpl implements OrderTempService {
         insertOrderTempDO.setEntryTime(entryTime);
         insertOrderTempDO.setExitTime(exitTime);
 
+        //订单编号UUID
+        insertOrderTempDO.setOrderCode(orderCode);
         // 计算总停车分钟数
         long totalMinutes = Duration.between(entryTime, exitTime).toMinutes();
         insertOrderTempDO.setParkingDuration((int) totalMinutes);

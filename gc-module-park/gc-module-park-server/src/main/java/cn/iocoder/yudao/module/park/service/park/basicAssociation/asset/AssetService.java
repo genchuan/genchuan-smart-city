@@ -1,10 +1,10 @@
 package cn.iocoder.yudao.module.park.service.park.basicAssociation.asset;
 
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.park.controller.admin.park.basicAssociation.asset.vo.AssetPageReqVO;
 import cn.iocoder.yudao.module.park.controller.admin.park.basicAssociation.asset.vo.AssetSaveReqVO;
-import jakarta.validation.*;
 import cn.iocoder.yudao.module.park.dal.dataobject.park.basicAssociation.asset.AssetDO;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import jakarta.validation.Valid;
 
 /**
  * 资产-thingsboard Service 接口

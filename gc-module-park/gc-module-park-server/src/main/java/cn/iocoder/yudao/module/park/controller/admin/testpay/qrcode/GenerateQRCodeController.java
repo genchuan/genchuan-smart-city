@@ -2,7 +2,10 @@ package cn.iocoder.yudao.module.park.controller.admin.testpay.qrcode;
 
 import cn.iocoder.yudao.module.park.framework.common.QrCodeUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "停车管理后台 - 生成二维码")
 @RestController

@@ -1,11 +1,14 @@
 package cn.iocoder.yudao.module.park.controller.admin.park.order.ordertemp.vo;
 
-import lombok.*;
-import java.util.*;
-import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import java.math.BigDecimal;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
@@ -19,6 +22,9 @@ public class OrderTempPageReqVO extends PageParam {
     @Schema(description = "[车牌号码] 停车车辆的车牌号码")
     private String carNumber;
 
+    @Schema(description = "[订单唯一编号] 订单唯一编号")
+    private String orderCode;
+
     @Schema(description = "[所属车场ID] 所属车场ID，关联 park_lot.id", example = "4597")
     private Long lotId;
 
@@ -27,6 +33,9 @@ public class OrderTempPageReqVO extends PageParam {
 
     @Schema(description = "[关联录入车辆表ID] 关联 park_input_car.id", example = "11811")
     private Long parkInputCarId;
+
+    @Schema(description = "[使用的优惠券ID] 关联 park_coupon.id",  example = "1")
+    private Long couponId;
 
     @Schema(description = "[入场时间] 从 park_input_car 获取")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)

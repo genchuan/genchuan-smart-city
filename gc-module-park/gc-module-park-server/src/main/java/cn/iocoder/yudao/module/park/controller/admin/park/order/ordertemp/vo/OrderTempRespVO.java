@@ -1,12 +1,13 @@
 package cn.iocoder.yudao.module.park.controller.admin.park.order.ordertemp.vo;
 
+import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
+import com.alibaba.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import java.util.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
 import java.math.BigDecimal;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
-import com.alibaba.excel.annotation.*;
 
 @Schema(description = "管理后台 - 临停订单 Response VO")
 @Data
@@ -16,6 +17,10 @@ public class OrderTempRespVO {
     @Schema(description = "[主键ID] 临停订单唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "9482")
     @ExcelProperty("[主键ID] 临停订单唯一标识")
     private Long id;
+
+    @Schema(description = "[订单唯一编号] 订单唯一编号", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("[订单唯一编号] 订单唯一编号")
+    private String orderCode;
 
     @Schema(description = "[车牌号码] 停车车辆的车牌号码", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("[车牌号码] 停车车辆的车牌号码")
@@ -32,6 +37,12 @@ public class OrderTempRespVO {
     @Schema(description = "[关联录入车辆表ID] 关联 park_input_car.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "11811")
     @ExcelProperty("[关联录入车辆表ID] 关联 park_input_car.id")
     private Long parkInputCarId;
+
+    @Schema(description = "[使用的优惠券ID] 关联 park_coupon.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @ExcelProperty("[使用的优惠券ID] ")
+    private Long couponId;
+
+
 
     @Schema(description = "[入场时间] 从 park_input_car 获取")
     @ExcelProperty("[入场时间] 从 park_input_car 获取")

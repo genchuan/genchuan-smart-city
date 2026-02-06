@@ -1,11 +1,9 @@
 package cn.iocoder.yudao.module.park.controller.admin.park.resource.inputcar.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.*;
-import jakarta.validation.constraints.*;
 
 @Schema(description = "管理后台 - 泊位录入车辆新增/修改 Request VO")
 @Data

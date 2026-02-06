@@ -1,12 +1,12 @@
 package cn.iocoder.yudao.module.park.service.park.marketing.smoothstopcard;
 
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.park.controller.admin.park.marketing.smoothstopcard.vo.SmoothStopCardPageReqVO;
 import cn.iocoder.yudao.module.park.controller.admin.park.marketing.smoothstopcard.vo.SmoothStopCardSaveReqVO;
 import cn.iocoder.yudao.module.park.controller.admin.park.marketing.smoothstopcard.vo.VerifyOrderFreeReqVO;
 import cn.iocoder.yudao.module.park.controller.admin.park.marketing.smoothstopcard.vo.VerifyOrderFreeRespVO;
 import cn.iocoder.yudao.module.park.dal.dataobject.park.marketing.smoothstopcard.SmoothStopCardDO;
-import jakarta.validation.*;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import jakarta.validation.Valid;
 
 /**
  * 畅停卡 Service 接口

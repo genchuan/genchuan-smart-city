@@ -1,19 +1,17 @@
 package cn.iocoder.yudao.module.park.service.park.basicAssociation.parttype;
 
-import cn.iocoder.yudao.module.park.controller.admin.park.basicAssociation.parttype.vo.PartTypePageReqVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.basicAssociation.parttype.vo.PartTypeSaveReqVO;
-import org.springframework.stereotype.Service;
-import jakarta.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
-
-import cn.iocoder.yudao.module.park.dal.dataobject.park.basicAssociation.parttype.PartTypeDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
+import cn.iocoder.yudao.module.park.controller.admin.park.basicAssociation.parttype.vo.PartTypePageReqVO;
+import cn.iocoder.yudao.module.park.controller.admin.park.basicAssociation.parttype.vo.PartTypeSaveReqVO;
+import cn.iocoder.yudao.module.park.dal.dataobject.park.basicAssociation.parttype.PartTypeDO;
 import cn.iocoder.yudao.module.park.dal.mysql.park.basicAssociation.parttype.PartTypeMapper;
+import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.module.park.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.park.enums.ErrorCodeConstants.PART_TYPE_NOT_EXISTS;
 
 /**
  * 管理部件类别 Service 实现类
