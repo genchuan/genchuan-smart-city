@@ -23,6 +23,7 @@ import cn.iocoder.yudao.module.park.dal.mysql.park.resource.inputcar.ParkInputCa
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.park.enums.ErrorCodeConstants.*;
@@ -122,22 +123,30 @@ public class ParkInputCarServiceImpl implements ParkInputCarService {
         car.setEntryTime(reqVO.getEntryTime());
         car.setParkingStatus("待录入"); // 1-在场状态
         inputCarMapper.insert(car);
-
         // 创建流程实例
         try {
             BpmProcessInstanceCreateReqDTO createReqDTO = new BpmProcessInstanceCreateReqDTO();
             createReqDTO.setProcessDefinitionKey("park_01");
             createReqDTO.setBusinessKey(String.valueOf(car.getId()));
 
+            // 将车辆记录信息作为流程变量传递
+            Map<String, Object> variables = new HashMap<>();
+            variables.put("inputCarId", car.getId());
+            variables.put("parkId", car.getParkId());
+            variables.put("targetBerthNo", car.getTargetBerthNo());
+            variables.put("entryTime", car.getEntryTime());
+            variables.put("parkingStatus", car.getParkingStatus());
+            createReqDTO.setVariables(variables);
+
             CommonResult<String> commonResult = processInstanceApi.createProcessInstance(1L, createReqDTO);
 
             if (!commonResult.isSuccess()) {
-                log.warn("创建流程实例失败: {}, 但车辆记录已保存，ID: {}", commonResult.getMsg(), car.getId());
+                log.warn("创建流程实例失败: {}, 但车辆记录已保存，ID: {}", commonResult.getMsg());
                 // 不抛出异常，返回成功创建的车辆记录ID
                 return car.getId();
             }
 
-            log.info("成功创建流程实例: {}", commonResult.getData());
+            log.info("成功创建流程实例: {}", commonResult.getData(), car.getId(),createReqDTO.getBusinessKey());
         } catch (Exception e) {
             log.warn("调用流程服务异常，但车辆记录已保存，ID: {}", car.getId(), e);
             // 不抛出异常，返回成功创建的车辆记录ID
