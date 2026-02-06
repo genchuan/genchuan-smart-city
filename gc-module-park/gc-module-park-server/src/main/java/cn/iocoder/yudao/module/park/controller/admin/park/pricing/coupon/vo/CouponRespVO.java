@@ -13,19 +13,23 @@ import java.time.LocalDateTime;
 @ExcelIgnoreUnannotated
 public class CouponRespVO {
 
-    @Schema(description = "[主键ID]", requiredMode = Schema.RequiredMode.REQUIRED, example = "19142")
+    @Schema(description = "[主键ID]", requiredMode = Schema.RequiredMode.REQUIRED, example = "29954")
     @ExcelProperty("[主键ID]")
     private Long id;
+
+    @Schema(description = "[优惠券码]")
+    @ExcelProperty("[优惠券码]")
+    private String couponCode;
+
+    @Schema(description = "[持有者ID] 关联 park_user.id", example = "3925")
+    @ExcelProperty("[持有者ID] 关联 park_user.id")
+    private Long holderId;
 
     @Schema(description = "[优惠券名称]", requiredMode = Schema.RequiredMode.REQUIRED, example = "赵六")
     @ExcelProperty("[优惠券名称]")
     private String couponName;
 
-    @Schema(description = "[优惠券码] 唯一优惠券码")
-    @ExcelProperty("[优惠券码] 唯一优惠券码")
-    private String couponCode;
-
-    @Schema(description = "[优惠券类型] 如:满减券/折扣券/免费时长券", example = "1")
+    @Schema(description = "[优惠券类型] 如:满减券/折扣券/免费时长券", example = "2")
     @ExcelProperty("[优惠券类型] 如:满减券/折扣券/免费时长券")
     private String couponType;
 
@@ -33,8 +37,8 @@ public class CouponRespVO {
     @ExcelProperty("[面值/折扣比例]")
     private String faceValue;
 
-    @Schema(description = "[最低消费金额] 满减券必填")
-    @ExcelProperty("[最低消费金额] 满减券必填")
+    @Schema(description = "[最低消费金额]")
+    @ExcelProperty("[最低消费金额]")
     private BigDecimal minConsume;
 
     @Schema(description = "[有效天数]")
@@ -57,20 +61,12 @@ public class CouponRespVO {
     @ExcelProperty("[适用范围ID列表] JSON格式varchar")
     private String scopeIds;
 
-    @Schema(description = "[领取次数]", example = "9619")
-    @ExcelProperty("[领取次数]")
-    private Integer getCount;
-
-    @Schema(description = "[使用次数]", example = "32176")
-    @ExcelProperty("[使用次数]")
-    private Integer useCount;
-
-    @Schema(description = "[状态] 如:启用/禁用/已过期", example = "2")
-    @ExcelProperty("[状态] 如:启用/禁用/已过期")
+    @Schema(description = "[状态] 如:启用/禁用/已使用/已过期", example = "2")
+    @ExcelProperty("[状态] 如:启用/禁用/已使用/已过期")
     private String status;
 
-    @Schema(description = "[创建时间] 记录创建时间")
-    @ExcelProperty("[创建时间] 记录创建时间")
+    @Schema(description = "[创建时间]")
+    @ExcelProperty("[创建时间]")
     private LocalDateTime createTime;
 
     @Schema(description = "[备注]", example = "随便")

@@ -17,8 +17,9 @@ public interface CouponMapper extends BaseMapperX<CouponDO> {
 
     default PageResult<CouponDO> selectPage(CouponPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<CouponDO>()
-                .likeIfPresent(CouponDO::getCouponName, reqVO.getCouponName())
                 .eqIfPresent(CouponDO::getCouponCode, reqVO.getCouponCode())
+                .eqIfPresent(CouponDO::getHolderId, reqVO.getHolderId())
+                .likeIfPresent(CouponDO::getCouponName, reqVO.getCouponName())
                 .eqIfPresent(CouponDO::getCouponType, reqVO.getCouponType())
                 .eqIfPresent(CouponDO::getFaceValue, reqVO.getFaceValue())
                 .eqIfPresent(CouponDO::getMinConsume, reqVO.getMinConsume())
@@ -27,8 +28,6 @@ public interface CouponMapper extends BaseMapperX<CouponDO> {
                 .betweenIfPresent(CouponDO::getEndTime, reqVO.getEndTime())
                 .eqIfPresent(CouponDO::getApplyScope, reqVO.getApplyScope())
                 .eqIfPresent(CouponDO::getScopeIds, reqVO.getScopeIds())
-                .eqIfPresent(CouponDO::getGetCount, reqVO.getGetCount())
-                .eqIfPresent(CouponDO::getUseCount, reqVO.getUseCount())
                 .eqIfPresent(CouponDO::getStatus, reqVO.getStatus())
                 .betweenIfPresent(CouponDO::getCreateTime, reqVO.getCreateTime())
                 .eqIfPresent(CouponDO::getRemark, reqVO.getRemark())

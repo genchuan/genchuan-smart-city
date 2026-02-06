@@ -1,10 +1,10 @@
 package cn.iocoder.yudao.module.park.service.park.basicAssociation.parttype;
 
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.park.controller.admin.park.basicAssociation.parttype.vo.PartTypePageReqVO;
 import cn.iocoder.yudao.module.park.controller.admin.park.basicAssociation.parttype.vo.PartTypeSaveReqVO;
-import jakarta.validation.*;
 import cn.iocoder.yudao.module.park.dal.dataobject.park.basicAssociation.parttype.PartTypeDO;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import jakarta.validation.Valid;
 
 /**
  * 管理部件类别 Service 接口

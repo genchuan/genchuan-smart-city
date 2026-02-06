@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.module.park.controller.admin.park.order.ordertemp.vo.OrderTempGenerateReqVO;
 import cn.iocoder.yudao.module.park.controller.admin.park.order.ordertemp.vo.OrderTempPageReqVO;
 import cn.iocoder.yudao.module.park.controller.admin.park.order.ordertemp.vo.OrderTempRespVO;
 import cn.iocoder.yudao.module.park.controller.admin.park.order.ordertemp.vo.OrderTempSaveReqVO;
@@ -37,8 +38,16 @@ public class OrderTempController {
     @Resource
     private OrderTempService orderTempService;
 
+    //车辆出场的时候调用
+    @PostMapping("/generate")
+    @Operation(summary = "创建临停订单,自动计算金额")
+    @PreAuthorize("@ss.hasPermission('park:order-temp:generate')")
+    public CommonResult<Long> generateOrderTemp(@Valid @RequestBody OrderTempGenerateReqVO reqVO) {
+        Long generateOrderTempId = orderTempService.generateOrderTemp(reqVO);
+        return success(generateOrderTempId);
+    }
     @PostMapping("/create")
-    @Operation(summary = "创建临停订单")
+    @Operation(summary = "（暂时别用）创建临停订单")
     @PreAuthorize("@ss.hasPermission('park:order-temp:create')")
     public CommonResult<Long> createOrderTemp(@Valid @RequestBody OrderTempSaveReqVO createReqVO) {
         return success(orderTempService.createOrderTemp(createReqVO));

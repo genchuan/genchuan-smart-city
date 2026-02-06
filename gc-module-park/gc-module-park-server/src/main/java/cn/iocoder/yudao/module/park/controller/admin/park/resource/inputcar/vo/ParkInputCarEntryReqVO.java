@@ -5,8 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Schema(description = "管理后台 - 车辆进场 Request VO")
 @Data
 public class ParkInputCarEntryReqVO {

@@ -1,10 +1,8 @@
 package cn.iocoder.yudao.module.park.controller.admin.park.basicAssociation.deviceextend.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import java.util.*;
-import jakarta.validation.constraints.*;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.Data;
+
 import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 设备扩展新增/修改 Request VO")

@@ -1,19 +1,17 @@
 package cn.iocoder.yudao.module.park.service.park.basicAssociation.monitorparttype;
 
-import cn.iocoder.yudao.module.park.controller.admin.park.basicAssociation.monitorparttype.vo.monitorPartTypePageReqVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.basicAssociation.monitorparttype.vo.monitorPartTypeSaveReqVO;
-import org.springframework.stereotype.Service;
-import jakarta.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
-
-import cn.iocoder.yudao.module.park.dal.dataobject.park.basicAssociation.monitorparttype.monitorPartTypeDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
+import cn.iocoder.yudao.module.park.controller.admin.park.basicAssociation.monitorparttype.vo.monitorPartTypePageReqVO;
+import cn.iocoder.yudao.module.park.controller.admin.park.basicAssociation.monitorparttype.vo.monitorPartTypeSaveReqVO;
+import cn.iocoder.yudao.module.park.dal.dataobject.park.basicAssociation.monitorparttype.monitorPartTypeDO;
 import cn.iocoder.yudao.module.park.dal.mysql.park.basicAssociation.monitorparttype.monitorPartTypeMapper;
+import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.module.park.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.park.enums.ErrorCodeConstants.MONITOR_PART_TYPE_NOT_EXISTS;
 
 /**
  * 监测部件类别 Service 实现类

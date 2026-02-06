@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.park.controller.admin.park.order.ordertemp.vo;
 
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -21,17 +22,28 @@ public class OrderTempPageReqVO extends PageParam {
     @Schema(description = "[车牌号码] 停车车辆的车牌号码")
     private String carNumber;
 
-    @Schema(description = "[入场记录ID] 关联入场记录，park_car_entry.id", example = "9453")
-    private Long entryId;
+    @Schema(description = "[订单唯一编号] 订单唯一编号")
+    private String orderCode;
 
-    @Schema(description = "[离场记录ID] 关联离场记录，park_car_exit.id，可为 NULL", example = "15708")
-    private Long exitId;
-
-    @Schema(description = "[所属车场ID] 所属车场ID，关联 park_lot.id", example = "30894")
+    @Schema(description = "[所属车场ID] 所属车场ID，关联 park_lot.id", example = "4597")
     private Long lotId;
 
-    @Schema(description = "[泊位ID] 停车泊位ID，关联 park_space.id", example = "10920")
+    @Schema(description = "[泊位ID] 停车泊位ID，关联 park_space.id", example = "3354")
     private Long spaceId;
+
+    @Schema(description = "[关联录入车辆表ID] 关联 park_input_car.id", example = "11811")
+    private Long parkInputCarId;
+
+    @Schema(description = "[使用的优惠券ID] 关联 park_coupon.id",  example = "1")
+    private Long couponId;
+
+    @Schema(description = "[入场时间] 从 park_input_car 获取")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime[] entryTime;
+
+    @Schema(description = "[出场时间] 从 park_input_car 获取")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime[] exitTime;
 
     @Schema(description = "[停放时长] 停车时长，单位分钟")
     private Integer parkingDuration;
@@ -45,19 +57,19 @@ public class OrderTempPageReqVO extends PageParam {
     @Schema(description = "[实付金额] 用户实际支付金额")
     private BigDecimal payAmount;
 
-    @Schema(description = "[费率策略ID] 关联费率策略ID，park_fee_strategy.id", example = "6462")
+    @Schema(description = "[费率策略ID] 关联费率策略ID，park_fee_strategy.id", example = "24602")
     private Long feeStrategyId;
 
     @Schema(description = "[订单状态] 如:待支付/已支付/已取消/已完成", example = "2")
     private String orderStatus;
 
-    @Schema(description = "[支付状态] 如:未支付/已支付/部分支付", example = "1")
+    @Schema(description = "[支付状态] 如:未支付/已支付/部分支付", example = "2")
     private String payStatus;
 
-    @Schema(description = "[支付方式] 如:微信/支付宝/现金/其他", example = "1")
+    @Schema(description = "[支付方式] 如:微信/支付宝/现金/其他", example = "2")
     private String payType;
 
-    @Schema(description = "[缴费记录ID] 关联缴费记录ID，park_payment.id，可为 NULL", example = "3864")
+    @Schema(description = "[缴费记录ID] 关联缴费记录ID，park_payment.id，可为 NULL", example = "6982")
     private Long paymentId;
 
     @Schema(description = "[创建时间] 记录创建时间")

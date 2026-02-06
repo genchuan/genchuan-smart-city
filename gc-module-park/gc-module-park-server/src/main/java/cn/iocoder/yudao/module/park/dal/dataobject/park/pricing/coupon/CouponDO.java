@@ -30,13 +30,17 @@ public class CouponDO extends BaseDO {
     @TableId
     private Long id;
     /**
+     * [优惠券码]
+     */
+    private String couponCode;
+    /**
+     * [持有者ID] 关联 park_user.id
+     */
+    private Long holderId;
+    /**
      * [优惠券名称]
      */
     private String couponName;
-    /**
-     * [优惠券码] 唯一优惠券码
-     */
-    private String couponCode;
     /**
      * [优惠券类型] 如:满减券/折扣券/免费时长券
      */
@@ -46,7 +50,7 @@ public class CouponDO extends BaseDO {
      */
     private String faceValue;
     /**
-     * [最低消费金额] 满减券必填
+     * [最低消费金额]
      */
     private BigDecimal minConsume;
     /**
@@ -70,15 +74,7 @@ public class CouponDO extends BaseDO {
      */
     private String scopeIds;
     /**
-     * [领取次数]
-     */
-    private Integer getCount;
-    /**
-     * [使用次数]
-     */
-    private Integer useCount;
-    /**
-     * [状态] 如:启用/禁用/已过期
+     * [状态] 如:启用/禁用/已使用/已过期
      */
     private String status;
     /**

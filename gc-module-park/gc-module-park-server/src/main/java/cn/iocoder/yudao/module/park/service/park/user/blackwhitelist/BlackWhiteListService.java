@@ -14,6 +14,12 @@ import jakarta.validation.Valid;
 public interface BlackWhiteListService {
 
     /**
+     * 通过车牌校验是否为白名单
+     * @param carNumber
+     * @return 是否为白名单
+     */
+    boolean verifyWhitelistByCarNumber(String carNumber);
+    /**
      * 创建黑白名单
      *
      * @param createReqVO 创建信息

@@ -6,9 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-import cn.iocoder.yudao.module.park.controller.admin.park.pricing.coupon.vo.CouponPageReqVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.pricing.coupon.vo.CouponRespVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.pricing.coupon.vo.CouponSaveReqVO;
+import cn.iocoder.yudao.module.park.controller.admin.park.pricing.coupon.vo.*;
 import cn.iocoder.yudao.module.park.dal.dataobject.park.pricing.coupon.CouponDO;
 import cn.iocoder.yudao.module.park.service.park.pricing.coupon.CouponService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,6 +34,23 @@ public class CouponController {
 
     @Resource
     private CouponService couponService;
+
+    //优惠计算（只负责用优惠规则计算，不负责校验该优惠券是否生效）TODO 可后续把校验提取为公共方法，计算优惠也用。
+    @PostMapping("/calculate-discount")
+    @Operation(summary = "优惠计算")
+    @PreAuthorize("@ss.hasPermission('park:coupon:calculate-discount')")
+    public CommonResult<CalculateDiscountRespVO> calculateDiscount(@RequestBody CalculateDiscountReqVO req){
+        CalculateDiscountRespVO respVO = couponService.calculateDiscount(req);
+        return success(respVO);
+    }
+    @PostMapping("/pay-available-list")
+    @Operation(summary = "获取支付可用优惠券列表")
+    @PreAuthorize("@ss.hasPermission('park:coupon:pay-available-list')")
+    public CommonResult<PageResult<CouponRespVO>> listPayAvailableCoupon(@RequestBody ListPayAvailableCouponReqVO req){
+        PageResult<CouponDO> pageResult = couponService.listPayAvailableCoupon(req);
+        return success(BeanUtils.toBean(pageResult, CouponRespVO.class));
+    }
+
 
     @PostMapping("/create")
     @Operation(summary = "创建优惠券")

@@ -1,10 +1,10 @@
 package cn.iocoder.yudao.module.park.service.park.basicAssociation.area;
 
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.park.controller.admin.park.basicAssociation.area.vo.AreaPageReqVO;
 import cn.iocoder.yudao.module.park.controller.admin.park.basicAssociation.area.vo.AreaSaveReqVO;
-import jakarta.validation.*;
 import cn.iocoder.yudao.module.park.dal.dataobject.park.basicAssociation.area.AreaDO;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import jakarta.validation.Valid;
 
 /**
  * 行政区划配置表 Service 接口

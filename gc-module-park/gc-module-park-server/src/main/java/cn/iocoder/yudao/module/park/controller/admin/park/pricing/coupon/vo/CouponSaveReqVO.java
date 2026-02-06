@@ -11,23 +11,26 @@ import java.time.LocalDateTime;
 @Data
 public class CouponSaveReqVO {
 
-    @Schema(description = "[主键ID]", requiredMode = Schema.RequiredMode.REQUIRED, example = "19142")
+    @Schema(description = "[主键ID]", requiredMode = Schema.RequiredMode.REQUIRED, example = "29954")
     private Long id;
+
+    @Schema(description = "[优惠券码]")
+    private String couponCode;
+
+    @Schema(description = "[持有者ID] 关联 park_user.id", example = "3925")
+    private Long holderId;
 
     @Schema(description = "[优惠券名称]", requiredMode = Schema.RequiredMode.REQUIRED, example = "赵六")
     @NotEmpty(message = "[优惠券名称]不能为空")
     private String couponName;
 
-    @Schema(description = "[优惠券码] 唯一优惠券码")
-    private String couponCode;
-
-    @Schema(description = "[优惠券类型] 如:满减券/折扣券/免费时长券", example = "1")
+    @Schema(description = "[优惠券类型] 如:满减券/折扣券/免费时长券", example = "2")
     private String couponType;
 
     @Schema(description = "[面值/折扣比例]")
     private String faceValue;
 
-    @Schema(description = "[最低消费金额] 满减券必填")
+    @Schema(description = "[最低消费金额]")
     private BigDecimal minConsume;
 
     @Schema(description = "[有效天数]")
@@ -45,13 +48,7 @@ public class CouponSaveReqVO {
     @Schema(description = "[适用范围ID列表] JSON格式varchar")
     private String scopeIds;
 
-    @Schema(description = "[领取次数]", example = "9619")
-    private Integer getCount;
-
-    @Schema(description = "[使用次数]", example = "32176")
-    private Integer useCount;
-
-    @Schema(description = "[状态] 如:启用/禁用/已过期", example = "2")
+    @Schema(description = "[状态] 如:启用/禁用/已使用/已过期", example = "2")
     private String status;
 
     @Schema(description = "[备注]", example = "随便")

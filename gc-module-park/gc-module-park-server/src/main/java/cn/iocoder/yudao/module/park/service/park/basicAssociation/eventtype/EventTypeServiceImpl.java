@@ -1,19 +1,17 @@
 package cn.iocoder.yudao.module.park.service.park.basicAssociation.eventtype;
 
-import cn.iocoder.yudao.module.park.controller.admin.park.basicAssociation.eventtype.vo.EventTypePageReqVO;
-import cn.iocoder.yudao.module.park.controller.admin.park.basicAssociation.eventtype.vo.EventTypeSaveReqVO;
-import org.springframework.stereotype.Service;
-import jakarta.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
-
-import cn.iocoder.yudao.module.park.dal.dataobject.park.basicAssociation.eventtype.EventTypeDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
+import cn.iocoder.yudao.module.park.controller.admin.park.basicAssociation.eventtype.vo.EventTypePageReqVO;
+import cn.iocoder.yudao.module.park.controller.admin.park.basicAssociation.eventtype.vo.EventTypeSaveReqVO;
+import cn.iocoder.yudao.module.park.dal.dataobject.park.basicAssociation.eventtype.EventTypeDO;
 import cn.iocoder.yudao.module.park.dal.mysql.park.basicAssociation.eventtype.EventTypeMapper;
+import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.module.park.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.park.enums.ErrorCodeConstants.EVENT_TYPE_NOT_EXISTS;
 
 /**
  * 监测事件类别 Service 实现类
