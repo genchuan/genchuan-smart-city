@@ -40,19 +40,16 @@ public class ParkInputCarController {
     @Resource
     private ParkInputCarService inputCarService;
 
-//    @Resource
-//    private FileUploadService fileUploadService;
-
     @PostMapping("/create")
     @Operation(summary = "创建泊位录入车辆")
-    @PreAuthorize("@ss.hasPermission('park:input-car:create')")
+//    @PreAuthorize("@ss.hasPermission('park:input-car:create')")
     public CommonResult<Long> createInputCar(@Valid @RequestBody ParkInputCarSaveReqVO createReqVO) {
         return success(inputCarService.createInputCar(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新泊位录入车辆")
-    @PreAuthorize("@ss.hasPermission('park:input-car:update')")
+//    @PreAuthorize("@ss.hasPermission('park:input-car:update')")
     public CommonResult<Boolean> updateInputCar(@Valid @RequestBody ParkInputCarSaveReqVO updateReqVO) {
         inputCarService.updateInputCar(updateReqVO);
         return success(true);
@@ -61,7 +58,7 @@ public class ParkInputCarController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除泊位录入车辆")
     @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('park:input-car:delete')")
+//    @PreAuthorize("@ss.hasPermission('park:input-car:delete')")
     public CommonResult<Boolean> deleteInputCar(@RequestParam("id") Long id) {
         inputCarService.deleteInputCar(id);
         return success(true);
@@ -70,7 +67,7 @@ public class ParkInputCarController {
     @GetMapping("/get")
     @Operation(summary = "获得泊位录入车辆")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('park:input-car:query')")
+//    @PreAuthorize("@ss.hasPermission('park:input-car:query')")
     public CommonResult<ParkInputCarRespVO> getInputCar(@RequestParam("id") Long id) {
         ParkInputCarDO inputCar = inputCarService.getInputCar(id);
         return success(BeanUtils.toBean(inputCar, ParkInputCarRespVO.class));
@@ -78,7 +75,7 @@ public class ParkInputCarController {
 
     @GetMapping("/page")
     @Operation(summary = "获得泊位录入车辆分页")
-    @PreAuthorize("@ss.hasPermission('park:input-car:query')")
+//    @PreAuthorize("@ss.hasPermission('park:input-car:query')")
     public CommonResult<PageResult<ParkInputCarRespVO>> getInputCarPage(@Valid ParkInputCarPageReqVO pageReqVO) {
         PageResult<ParkInputCarDO> pageResult = inputCarService.getInputCarPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, ParkInputCarRespVO.class));
@@ -86,7 +83,7 @@ public class ParkInputCarController {
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出泊位录入车辆 Excel")
-    @PreAuthorize("@ss.hasPermission('park:input-car:export')")
+//    @PreAuthorize("@ss.hasPermission('park:input-car:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportInputCarExcel(@Valid ParkInputCarPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
@@ -99,7 +96,7 @@ public class ParkInputCarController {
 
     @GetMapping("/history-by-berth")
     @Operation(summary = "根据目标泊位号查询历史所有停过的车辆")
-    @PreAuthorize("@ss.hasPermission('park:input-car:query')")
+//    @PreAuthorize("@ss.hasPermission('park:input-car:query')")
     public CommonResult<List<ParkInputCarRespVO>> getInputCarHistoryByBerthNo(
             @Parameter(description = "目标泊位号", required = true)
             @RequestParam("targetBerthNo") String targetBerthNo,
@@ -132,30 +129,16 @@ public class ParkInputCarController {
 
     @PostMapping("/simulate-magnetic-detection")
     @Operation(summary = "模拟地磁检测车辆进入")
-    @PreAuthorize("@ss.hasPermission('park:input-car:create')")
+//    @PreAuthorize("@ss.hasPermission('park:input-car:create')")
     public CommonResult<Long> simulateMagneticDetection(@Valid @RequestBody ParkInputCarMagneticDetectionReqVO reqVO) {
         return CommonResult.success(inputCarService.simulateMagneticDetection(reqVO));
     }
 
     @PostMapping("/simulate-magnetic-detection-exit")
     @Operation(summary = "模拟地磁检测车辆离场")
-    @PreAuthorize("@ss.hasPermission('park:input-car:update')")
+//    @PreAuthorize("@ss.hasPermission('park:input-car:update')")
     public CommonResult<Boolean> simulateMagneticDetectionExit(@Valid @RequestBody ParkInputCarMagneticDetectionExitReqVO reqVO) {
         return CommonResult.success(inputCarService.simulateMagneticDetectionExit(reqVO));
     }
-
-//    @PostMapping("/update-photo")
-//    @Operation(summary = "上传停车图片")
-//    public CommonResult<String> updateUserAvatar(@RequestParam("avatarFile") MultipartFile avatarFile) {
-//        try {
-//            // 1. 上传文件到MinIO
-//            String avatarUrl = fileUploadService.uploadAvatar(avatarFile);
-//
-//            return success(avatarUrl);
-//        } catch (Exception e) {
-//
-//            return CommonResult.error(500, "上传图片失败: " + e.getMessage());
-//        }
-//    }
 
 }
