@@ -24,6 +24,7 @@ import cn.iocoder.yudao.module.park.dal.mysql.park.resource.inputcar.ParkInputCa
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.park.enums.ErrorCodeConstants.*;
@@ -233,7 +234,7 @@ public class ParkInputCarServiceImpl implements ParkInputCarService {
 
     }
 
-    // 新增辅助方法：车辆进场时更新泊位状态
+    // ：车辆进场时更新泊位状态
     private void updateRoadsideBerthOnEntry(String targetBerthNo, String carNumber, String parkId) {
         try {
             // 根据泊位编号查找路测泊位管理记录
@@ -242,20 +243,24 @@ public class ParkInputCarServiceImpl implements ParkInputCarService {
                 log.warn("更新路测泊位管理失败：泊位编号不存在，berthCode={}", targetBerthNo);
                 return; // 泊位不存在，不阻断主流程
             }
+
+            // 随机生成车辆类型：普通车辆或畅停卡
+            String vehicleType = new Random().nextBoolean() ? "普通车辆" : "畅停卡";
+
             // 更新泊位状态和当前车辆
             RoadsideBerthManageSaveReqVO updateReqVO = new RoadsideBerthManageSaveReqVO();
             updateReqVO.setId(berth.getId());
             updateReqVO.setCurrentCar(carNumber);
             updateReqVO.setBerthStatus("占用"); // 1-占用状态
+            updateReqVO.setExtCommon1(vehicleType);
             roadsideBerthManageService.updateRoadsideBerthManage(updateReqVO);
-            log.info("路测泊位管理更新成功：泊位{}状态设置为占用，车辆{}", targetBerthNo, carNumber);
         } catch (Exception e) {
             log.error("更新路测泊位管理异常：berthCode={}", targetBerthNo, e);
             // 不抛出异常，避免影响车辆进场主流程
         }
     }
 
-    // 新增辅助方法：车辆离场时更新泊位状态
+    // ：车辆离场时更新泊位状态
     private void updateRoadsideBerthOnExit(String targetBerthNo, String parkId) {
         try {
             // 根据泊位编号查找路测泊位管理记录
@@ -268,9 +273,11 @@ public class ParkInputCarServiceImpl implements ParkInputCarService {
             RoadsideBerthManageSaveReqVO updateReqVO = new RoadsideBerthManageSaveReqVO();
             updateReqVO.setId(berth.getId());
             updateReqVO.setCurrentCar(" "); // 清空车辆
+            updateReqVO.setExtCommon1(" "); // 清空车辆类型
             updateReqVO.setBerthStatus("空闲"); // 2-空闲状态
+
             roadsideBerthManageService.updateRoadsideBerthManage(updateReqVO);
-            log.info("路测泊位管理更新成功：泊位{}状态设置为空闲", targetBerthNo);
+
         } catch (Exception e) {
             log.error("更新路测泊位管理异常：berthCode={}", targetBerthNo, e);
             // 不抛出异常，避免影响车辆离场主流程
