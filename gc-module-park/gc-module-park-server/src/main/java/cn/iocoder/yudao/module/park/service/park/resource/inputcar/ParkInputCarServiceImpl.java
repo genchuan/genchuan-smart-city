@@ -270,8 +270,8 @@ public class ParkInputCarServiceImpl implements ParkInputCarService {
             // 更新泊位状态和当前车辆（离场后清空）
             RoadsideBerthManageSaveReqVO updateReqVO = new RoadsideBerthManageSaveReqVO();
             updateReqVO.setId(berth.getId());
-            updateReqVO.setCurrentCar(" "); // 清空车辆
-            updateReqVO.setExtCommon1(" "); // 清空车辆类型
+            updateReqVO.setCurrentCar(""); // 清空车辆
+            updateReqVO.setExtCommon1(""); // 清空车辆类型
             updateReqVO.setBerthStatus("空闲"); // 2-空闲状态
 
             roadsideBerthManageService.updateRoadsideBerthManage(updateReqVO);
