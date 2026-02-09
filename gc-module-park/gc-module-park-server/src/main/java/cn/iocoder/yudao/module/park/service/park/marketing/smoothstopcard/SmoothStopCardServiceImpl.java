@@ -84,10 +84,10 @@ public class SmoothStopCardServiceImpl implements SmoothStopCardService {
     public VerifyOrderFreeRespVO verifyOrderFreeBySmoothCard(VerifyOrderFreeReqVO reqVO) {
 
         //TODO cs
-        Long userId2=getLoginUserId();
-        LoginUser loginUser=getLoginUser();
-        String username= getLoginUserNickname();
-        log.info("用户{},用户信息{},用户名字{}", userId2,loginUser,username);
+//        Long userId2=getLoginUserId();
+//        LoginUser loginUser=getLoginUser();
+//        String username= getLoginUserNickname();
+//        log.info("用户{},用户信息{},用户名字{}", userId2,loginUser,username);
         // 1. 参数校验
         if (reqVO == null ||  reqVO.getCarNumber() == null
                 || reqVO.getParkLotId() == null) {

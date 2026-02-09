@@ -162,7 +162,7 @@ public class CouponServiceImpl implements CouponService {
 
         // 2. 校验优惠券状态（必须是启用状态）
         if (!"启用".equals(coupon.getStatus())) {
-            throw exception(new ErrorCode(500, "优惠券不可用"));
+            throw exception(new ErrorCode(500, "优惠券不是启用状态"));
         }
 
         // 3. 校验优惠券有效期

@@ -65,14 +65,26 @@ public class RecoverServiceImpl implements  RecoverService{
         String encodedCarNumber = URLEncoder.encode(carNumber, StandardCharsets.UTF_8);
         String encodedOrderIds = orderIdListStr != null ? URLEncoder.encode(orderIdListStr, StandardCharsets.UTF_8) : "";
 
+//        // 把金额、车牌、订单ID列表和 parkLotId 拼接到 URL
+//        String payUrl = String.format(
+//
+//                "https://yourdomain.com/pay?orginalAmount=%s&carNumber=%s&orderIds=%s&parkLotId=%s",
+//                orginalAmount.toPlainString(),
+//                encodedCarNumber,
+//                encodedOrderIds,
+//                parkLotId.toString()
+//        );
         // 把金额、车牌、订单ID列表和 parkLotId 拼接到 URL
         String payUrl = String.format(
-                "https://yourdomain.com/pay?orginalAmount=%s&carNumber=%s&orderIds=%s&parkLotId=%s",
-                orginalAmount.toPlainString(),
-                encodedCarNumber,
-                encodedOrderIds,
-                parkLotId.toString()
+
+                "http://192.168.8.244:9000/#/genchuan/pay/index?&id=%s",
+//                orginalAmount.toPlainString(),
+//                encodedCarNumber,
+                encodedOrderIds
+//                parkLotId.toString()
         );
+
+
 
         // 3. 生成二维码 Base64
         return QrCodeUtils.generateBase64(payUrl, 300, 300);
@@ -95,6 +107,7 @@ public class RecoverServiceImpl implements  RecoverService{
             respVO.setPreDiscountAmount(preDiscountAmount);
             String discountReasonDesc="白名单车辆免缴费用";
             respVO.setDiscountReasonDesc(discountReasonDesc);
+            respVO.setIsWhiteList(true);
             return respVO;
         }
 
@@ -108,6 +121,7 @@ public class RecoverServiceImpl implements  RecoverService{
             respVO.setPreDiscountAmount(preDiscountAmount);
             String discountReasonDesc="畅停卡生效，免缴费用";
             respVO.setDiscountReasonDesc(discountReasonDesc);
+            respVO.setIsSmoothStopCard(true);
             return respVO;
         }
 

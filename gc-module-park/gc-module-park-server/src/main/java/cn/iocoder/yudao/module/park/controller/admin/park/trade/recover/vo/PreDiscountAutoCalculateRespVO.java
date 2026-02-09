@@ -13,4 +13,10 @@ public class PreDiscountAutoCalculateRespVO {
 
     @Schema(description = "优惠原因说明", example = "白名单车辆免缴费用")
     String discountReasonDesc;
+
+    @Schema(description = "是否为白名单", example = "true")
+    Boolean isWhiteList;
+
+    @Schema(description = "是否为畅停卡生效", example = "null")
+    Boolean isSmoothStopCard;
 }

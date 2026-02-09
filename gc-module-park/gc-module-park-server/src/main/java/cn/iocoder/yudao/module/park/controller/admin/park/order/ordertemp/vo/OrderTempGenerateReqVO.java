@@ -8,19 +8,19 @@ import lombok.Data;
 @Schema(description = "管理后台 - 临停订单生成 Request VO")
 @Data
 public class OrderTempGenerateReqVO {
-    @Schema(description = "[车牌号码] 停车车辆的车牌号码", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "[车牌号码] 停车车辆的车牌号码", requiredMode = Schema.RequiredMode.REQUIRED,example = "闽A12345")
     @NotEmpty(message = "[车牌号码] 停车车辆的车牌号码不能为空")
     private String carNumber;
 
-    @Schema(description = "[所属车场ID] 所属车场ID，关联 park_lot.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "4597")
+    @Schema(description = "[所属车场ID] 所属车场ID，关联 park_lot.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @NotNull(message = "[所属车场ID] 所属车场ID，关联 park_lot.id不能为空")
     private Long lotId;
 
-    @Schema(description = "[泊位ID] 停车泊位ID，关联 park_space.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "3354")
+    @Schema(description = "[泊位ID] 停车泊位ID，关联 park_space.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @NotNull(message = "[泊位ID] 停车泊位ID，关联 park_space.id不能为空")
     private Long spaceId;
 
-    @Schema(description = "[关联录入车辆表ID] 关联 park_input_car.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "11811")
+    @Schema(description = "[关联录入车辆表ID] 关联 park_input_car.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "100")
     @NotNull(message = "[关联录入车辆表ID] 关联 park_input_car.id不能为空")
     private Long parkInputCarId;
 

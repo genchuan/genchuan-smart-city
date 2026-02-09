@@ -263,7 +263,7 @@ public class OrderTempServiceImpl implements OrderTempService {
         insertOrderTempDO.setSpaceId(reqVO.getSpaceId());
         insertOrderTempDO.setParkInputCarId(reqVO.getParkInputCarId());
         insertOrderTempDO.setRemark(reqVO.getRemark());
-        insertOrderTempDO.setFeeStrategyId(1L); // TODO: 从配置获取
+        insertOrderTempDO.setFeeStrategyId(feeStrategyId); // TODO: 从配置获取
 
         insertOrderTempDO.setEntryTime(entryTime);
         insertOrderTempDO.setExitTime(exitTime);

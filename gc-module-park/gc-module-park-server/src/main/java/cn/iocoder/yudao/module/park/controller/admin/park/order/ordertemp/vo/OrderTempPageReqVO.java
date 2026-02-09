@@ -19,7 +19,7 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @ToString(callSuper = true)
 public class OrderTempPageReqVO extends PageParam {
 
-    @Schema(description = "[车牌号码] 停车车辆的车牌号码")
+    @Schema(description = "[车牌号码] 停车车辆的车牌号码",example = "闽A12345")
     private String carNumber;
 
     @Schema(description = "[订单唯一编号] 订单唯一编号")
@@ -60,10 +60,10 @@ public class OrderTempPageReqVO extends PageParam {
     @Schema(description = "[费率策略ID] 关联费率策略ID，park_fee_strategy.id", example = "24602")
     private Long feeStrategyId;
 
-    @Schema(description = "[订单状态] 如:待支付/已支付/已取消/已完成", example = "2")
+    @Schema(description = "[订单状态] 如:待支付/已支付/已取消/已完成", example = "待支付")
     private String orderStatus;
 
-    @Schema(description = "[支付状态] 如:未支付/已支付/部分支付", example = "2")
+    @Schema(description = "[支付状态] 如:未支付/已支付/部分支付", example = "未支付")
     private String payStatus;
 
     @Schema(description = "[支付方式] 如:微信/支付宝/现金/其他", example = "2")
