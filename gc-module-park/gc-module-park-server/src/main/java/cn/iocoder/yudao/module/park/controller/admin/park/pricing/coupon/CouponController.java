@@ -26,7 +26,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPOR
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 
-@Tag(name = "管理后台 - 优惠券")
+@Tag(name = "漳州停车管理后台 - 优惠券")
 @RestController
 @RequestMapping("/park/coupon")
 @Validated
