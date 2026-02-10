@@ -112,4 +112,7 @@ public interface ErrorCodeConstants {
     ErrorCode WALLET_NOT_EXISTS = new ErrorCode(500, "用户钱包不存在");
     // ========== 钱包流水==========
     ErrorCode WALLET_FLOW_NOT_EXISTS = new ErrorCode(500, "钱包流水不存在");
+
+    // ========== 停车场信息管理 ==========
+    ErrorCode ING_LOT_INFO_NOT_EXISTS = new ErrorCode(500, "停车场信息管理不存在");
 }
