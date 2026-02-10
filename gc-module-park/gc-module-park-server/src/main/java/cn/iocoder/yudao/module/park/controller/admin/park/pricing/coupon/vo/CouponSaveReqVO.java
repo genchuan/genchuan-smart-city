@@ -17,14 +17,14 @@ public class CouponSaveReqVO {
     @Schema(description = "[优惠券码]")
     private String couponCode;
 
-    @Schema(description = "[持有者ID] 关联 park_user.id", example = "3925")
+    @Schema(description = "[持有者ID] 关联 park_user.id", example = "1")
     private Long holderId;
 
-    @Schema(description = "[优惠券名称]", requiredMode = Schema.RequiredMode.REQUIRED, example = "赵六")
+    @Schema(description = "[优惠券名称]", requiredMode = Schema.RequiredMode.REQUIRED, example = "新用户满10减5券")
     @NotEmpty(message = "[优惠券名称]不能为空")
     private String couponName;
 
-    @Schema(description = "[优惠券类型] 如:满减券/折扣券/免费时长券", example = "2")
+    @Schema(description = "[优惠券类型] 如:满减券/折扣券/免费时长券", example = "满减券")
     private String couponType;
 
     @Schema(description = "[面值/折扣比例]")

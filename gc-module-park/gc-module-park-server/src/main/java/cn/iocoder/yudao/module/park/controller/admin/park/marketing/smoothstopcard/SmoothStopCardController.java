@@ -40,20 +40,20 @@ public class SmoothStopCardController {
     //验证该用户该车牌此次停车是否有畅停卡生效
     @PostMapping("/verify-order-free-by-smooth-card")
     @Operation(summary = "（前端不接）验证该用户该车牌此次停车是否有畅停卡生效")
-    @PreAuthorize("@ss.hasPermission('park:smooth-stop-card:verify-order-free-by-smooth-card')")
+//    @PreAuthorize("@ss.hasPermission('park:smooth-stop-card:verify-order-free-by-smooth-card')")
     public CommonResult<VerifyOrderFreeRespVO> verifyOrderFreeBySmoothCard(@Valid @RequestBody VerifyOrderFreeReqVO reqVO) {
         return success(smoothStopCardService.verifyOrderFreeBySmoothCard(reqVO));
     }
     @PostMapping("/create")
     @Operation(summary = "创建畅停卡")
-    @PreAuthorize("@ss.hasPermission('park:smooth-stop-card:create')")
+//    @PreAuthorize("@ss.hasPermission('park:smooth-stop-card:create')")
     public CommonResult<Long> createSmoothStopCard(@Valid @RequestBody SmoothStopCardSaveReqVO createReqVO) {
         return success(smoothStopCardService.createSmoothStopCard(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新畅停卡")
-    @PreAuthorize("@ss.hasPermission('park:smooth-stop-card:update')")
+//    @PreAuthorize("@ss.hasPermission('park:smooth-stop-card:update')")
     public CommonResult<Boolean> updateSmoothStopCard(@Valid @RequestBody SmoothStopCardSaveReqVO updateReqVO) {
         smoothStopCardService.updateSmoothStopCard(updateReqVO);
         return success(true);
@@ -62,7 +62,7 @@ public class SmoothStopCardController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除畅停卡")
     @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('park:smooth-stop-card:delete')")
+//    @PreAuthorize("@ss.hasPermission('park:smooth-stop-card:delete')")
     public CommonResult<Boolean> deleteSmoothStopCard(@RequestParam("id") Long id) {
         smoothStopCardService.deleteSmoothStopCard(id);
         return success(true);
@@ -71,7 +71,7 @@ public class SmoothStopCardController {
     @GetMapping("/get")
     @Operation(summary = "获得畅停卡")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('park:smooth-stop-card:query')")
+//    @PreAuthorize("@ss.hasPermission('park:smooth-stop-card:query')")
     public CommonResult<SmoothStopCardRespVO> getSmoothStopCard(@RequestParam("id") Long id) {
         SmoothStopCardDO smoothStopCard = smoothStopCardService.getSmoothStopCard(id);
         return success(BeanUtils.toBean(smoothStopCard, SmoothStopCardRespVO.class));
@@ -79,7 +79,7 @@ public class SmoothStopCardController {
 
     @GetMapping("/page")
     @Operation(summary = "获得畅停卡分页")
-    @PreAuthorize("@ss.hasPermission('park:smooth-stop-card:query')")
+//    @PreAuthorize("@ss.hasPermission('park:smooth-stop-card:query')")
     public CommonResult<PageResult<SmoothStopCardRespVO>> getSmoothStopCardPage(@Valid SmoothStopCardPageReqVO pageReqVO) {
         PageResult<SmoothStopCardDO> pageResult = smoothStopCardService.getSmoothStopCardPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, SmoothStopCardRespVO.class));
@@ -87,7 +87,7 @@ public class SmoothStopCardController {
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出畅停卡 Excel")
-    @PreAuthorize("@ss.hasPermission('park:smooth-stop-card:export')")
+//    @PreAuthorize("@ss.hasPermission('park:smooth-stop-card:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportSmoothStopCardExcel(@Valid SmoothStopCardPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {

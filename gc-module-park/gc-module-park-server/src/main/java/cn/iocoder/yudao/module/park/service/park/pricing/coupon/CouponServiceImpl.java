@@ -12,10 +12,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 //import static cn.hutool.core.lang.Validator.validateNotNull;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -39,13 +41,51 @@ public class CouponServiceImpl implements CouponService {
     private OrderTempMapper orderTempMapper;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Long createCoupon(CouponSaveReqVO createReqVO) {
-        // 插入
+        // 1. 新增时 ID 必须为空
+        createReqVO.setId(null);
+
+        // 2. 生成优惠券码
+        String couponCode = "COUPON" + UUID.randomUUID().toString().replace("-", "");
+        createReqVO.setCouponCode(couponCode);
+
+        // 3. 处理状态：新建默认【启用】
+        if (createReqVO.getStatus() == null) {
+            createReqVO.setStatus("启用");
+            // 如果你有枚举：CouponStatus.ENABLED.getValue()
+        }
+
+        // 4. 时间逻辑处理
+        // 4.1 如果前端没传 startTime，默认立即生效
+        if (createReqVO.getStartTime() == null) {
+            createReqVO.setStartTime(LocalDateTime.now());
+        }
+
+        // 4.2 如果传了 validDays，但没传 endTime，则自动计算
+        if (createReqVO.getValidDays() != null && createReqVO.getEndTime() == null) {
+            createReqVO.setEndTime(
+                    createReqVO.getStartTime().plusDays(createReqVO.getValidDays())
+            );
+        }
+
+        // 4.3 基础校验：生效时间不能大于失效时间
+        if (createReqVO.getEndTime() != null
+                && createReqVO.getStartTime().isAfter(createReqVO.getEndTime())) {
+            throw new IllegalArgumentException("优惠券生效时间不能晚于失效时间");
+        }
+
+        // 5. VO -> DO
         CouponDO coupon = BeanUtils.toBean(createReqVO, CouponDO.class);
+
+
+
+        // 7. 插入
         couponMapper.insert(coupon);
-        // 返回
+
         return coupon.getId();
     }
+
 
     @Override
     public void updateCoupon(CouponSaveReqVO updateReqVO) {
@@ -281,9 +321,9 @@ public class CouponServiceImpl implements CouponService {
         } else if ("折扣券".equals(couponType)) {
             // 折扣券：face_value 为折扣比例，例如 0.8
             BigDecimal discountRate = new BigDecimal(faceValue);
-            afterDiscountAmount = originalAmount.multiply(discountRate)
+            discountAmount =  originalAmount.multiply(BigDecimal.ONE.subtract(discountRate))
                     .setScale(2, BigDecimal.ROUND_HALF_UP);
-            discountAmount = originalAmount.subtract(afterDiscountAmount);
+            ;
 
         } else {
             // 免费时长券 / 未支持的优惠券类型

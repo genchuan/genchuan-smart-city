@@ -39,7 +39,7 @@ public class CouponController {
     // 优惠券优惠金额预览（只做校验 + 试算，不落库、不加锁）（取代calculateDiscount）
     @PostMapping("/preview-discount")
     @Operation(summary = "（暂时不用）优惠券优惠金额预览")
-    @PreAuthorize("@ss.hasPermission('park:coupon:preview-discount')")
+//    @PreAuthorize("@ss.hasPermission('park:coupon:preview-discount')")
     public CommonResult<PreviewCouponDiscountRespVO> previewCouponDiscount(
             @RequestBody PreviewCouponDiscountReqVO req) {
 
@@ -52,14 +52,14 @@ public class CouponController {
     //优惠计算（只负责用优惠规则计算，不负责校验该优惠券是否生效）TODO 可后续把校验提取为公共方法，计算优惠也用。
     @PostMapping("/calculate-discount")
     @Operation(summary = "优惠计算")
-    @PreAuthorize("@ss.hasPermission('park:coupon:calculate-discount')")
+//    @PreAuthorize("@ss.hasPermission('park:coupon:calculate-discount')")
     public CommonResult<CalculateDiscountRespVO> calculateDiscount(@RequestBody CalculateDiscountReqVO req){
         CalculateDiscountRespVO respVO = couponService.calculateDiscount(req);
         return success(respVO);
     }
     @PostMapping("/pay-available-list")
     @Operation(summary = "获取支付可用优惠券列表")
-    @PreAuthorize("@ss.hasPermission('park:coupon:pay-available-list')")
+//    @PreAuthorize("@ss.hasPermission('park:coupon:pay-available-list')")
     public CommonResult<PageResult<CouponRespVO>> listPayAvailableCoupon(@RequestBody ListPayAvailableCouponReqVO req){
         PageResult<CouponDO> pageResult = couponService.listPayAvailableCoupon(req);
         return success(BeanUtils.toBean(pageResult, CouponRespVO.class));
@@ -68,14 +68,14 @@ public class CouponController {
 
     @PostMapping("/create")
     @Operation(summary = "创建优惠券")
-    @PreAuthorize("@ss.hasPermission('park:coupon:create')")
+//    @PreAuthorize("@ss.hasPermission('park:coupon:create')")
     public CommonResult<Long> createCoupon(@Valid @RequestBody CouponSaveReqVO createReqVO) {
         return success(couponService.createCoupon(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新优惠券")
-    @PreAuthorize("@ss.hasPermission('park:coupon:update')")
+//    @PreAuthorize("@ss.hasPermission('park:coupon:update')")
     public CommonResult<Boolean> updateCoupon(@Valid @RequestBody CouponSaveReqVO updateReqVO) {
         couponService.updateCoupon(updateReqVO);
         return success(true);
@@ -84,7 +84,7 @@ public class CouponController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除优惠券")
     @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('park:coupon:delete')")
+//    @PreAuthorize("@ss.hasPermission('park:coupon:delete')")
     public CommonResult<Boolean> deleteCoupon(@RequestParam("id") Long id) {
         couponService.deleteCoupon(id);
         return success(true);
@@ -93,7 +93,7 @@ public class CouponController {
     @GetMapping("/get")
     @Operation(summary = "获得优惠券")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('park:coupon:query')")
+//    @PreAuthorize("@ss.hasPermission('park:coupon:query')")
     public CommonResult<CouponRespVO> getCoupon(@RequestParam("id") Long id) {
         CouponDO coupon = couponService.getCoupon(id);
         return success(BeanUtils.toBean(coupon, CouponRespVO.class));
@@ -101,7 +101,7 @@ public class CouponController {
 
     @GetMapping("/page")
     @Operation(summary = "获得优惠券分页")
-    @PreAuthorize("@ss.hasPermission('park:coupon:query')")
+//    @PreAuthorize("@ss.hasPermission('park:coupon:query')")
     public CommonResult<PageResult<CouponRespVO>> getCouponPage(@Valid CouponPageReqVO pageReqVO) {
         PageResult<CouponDO> pageResult = couponService.getCouponPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, CouponRespVO.class));
@@ -109,7 +109,7 @@ public class CouponController {
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出优惠券 Excel")
-    @PreAuthorize("@ss.hasPermission('park:coupon:export')")
+//    @PreAuthorize("@ss.hasPermission('park:coupon:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportCouponExcel(@Valid CouponPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {

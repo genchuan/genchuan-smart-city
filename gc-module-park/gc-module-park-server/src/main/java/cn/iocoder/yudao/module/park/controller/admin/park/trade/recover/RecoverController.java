@@ -28,7 +28,7 @@ public class RecoverController {
     //1.生成欠费支付二维码
     @PostMapping("/generate-arrears-qrcode")
     @Operation(summary = "追缴服务-生成欠费支付二维码")
-    @PreAuthorize("@ss.hasPermission('park:recover:generate-arrears-qrcode')")
+//    @PreAuthorize("@ss.hasPermission('park:recover:generate-arrears-qrcode')")
     public CommonResult<String> generateArrearsQrCode(@Valid @RequestBody GenerateArrearsQrCodeReqVO reqVO) {
         String respVO = recoverService.generateArrearsQrCode(reqVO);
         return success(respVO);
@@ -39,7 +39,7 @@ public class RecoverController {
     //1.优惠券前折扣
     @PostMapping("/pre-discount-auto-calculate")
     @Operation(summary = "追缴服务-优惠券前折扣")
-    @PreAuthorize("@ss.hasPermission('park:recover:pre-discount-auto-calculate')")
+//    @PreAuthorize("@ss.hasPermission('park:recover:pre-discount-auto-calculate')")
     public CommonResult<PreDiscountAutoCalculateRespVO> preDiscountAutoCalculate(@Valid @RequestBody PreDiscountAutoCalculateReqVO reqVO) {
         PreDiscountAutoCalculateRespVO respVO = recoverService.preDiscountAutoCalculate(reqVO);
         return success(respVO);
@@ -47,7 +47,7 @@ public class RecoverController {
 
     @PostMapping("/wallet-pay")
     @Operation(summary = "追缴服务-钱包支付")
-    @PreAuthorize("@ss.hasPermission('park:recover:wallet-pay')")
+//    @PreAuthorize("@ss.hasPermission('park:recover:wallet-pay')")
     public CommonResult<RecoverWalletPayRespVO> walletPay(@Valid @RequestBody RecoverWalletPayReqVO reqVO) {
         RecoverWalletPayRespVO respVO=recoverService.walletPay(reqVO);
         return success(respVO);

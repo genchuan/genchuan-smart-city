@@ -41,21 +41,21 @@ public class OrderTempController {
     //车辆出场的时候调用
     @PostMapping("/generate")
     @Operation(summary = "创建临停订单,自动计算金额")
-    @PreAuthorize("@ss.hasPermission('park:order-temp:generate')")
+//    @PreAuthorize("@ss.hasPermission('park:order-temp:generate')")
     public CommonResult<Long> generateOrderTemp(@Valid @RequestBody OrderTempGenerateReqVO reqVO) {
         Long generateOrderTempId = orderTempService.generateOrderTemp(reqVO);
         return success(generateOrderTempId);
     }
     @PostMapping("/create")
     @Operation(summary = "（暂时别用）创建临停订单")
-    @PreAuthorize("@ss.hasPermission('park:order-temp:create')")
+//    @PreAuthorize("@ss.hasPermission('park:order-temp:create')")
     public CommonResult<Long> createOrderTemp(@Valid @RequestBody OrderTempSaveReqVO createReqVO) {
         return success(orderTempService.createOrderTemp(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新临停订单")
-    @PreAuthorize("@ss.hasPermission('park:order-temp:update')")
+//    @PreAuthorize("@ss.hasPermission('park:order-temp:update')")
     public CommonResult<Boolean> updateOrderTemp(@Valid @RequestBody OrderTempSaveReqVO updateReqVO) {
         orderTempService.updateOrderTemp(updateReqVO);
         return success(true);
@@ -64,7 +64,7 @@ public class OrderTempController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除临停订单")
     @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('park:order-temp:delete')")
+//    @PreAuthorize("@ss.hasPermission('park:order-temp:delete')")
     public CommonResult<Boolean> deleteOrderTemp(@RequestParam("id") Long id) {
         orderTempService.deleteOrderTemp(id);
         return success(true);
@@ -73,7 +73,7 @@ public class OrderTempController {
     @GetMapping("/get")
     @Operation(summary = "获得临停订单")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('park:order-temp:query')")
+//    @PreAuthorize("@ss.hasPermission('park:order-temp:query')")
     public CommonResult<OrderTempRespVO> getOrderTemp(@RequestParam("id") Long id) {
         OrderTempDO orderTemp = orderTempService.getOrderTemp(id);
         return success(BeanUtils.toBean(orderTemp, OrderTempRespVO.class));
@@ -81,7 +81,7 @@ public class OrderTempController {
 
     @GetMapping("/page")
     @Operation(summary = "获得临停订单分页")
-    @PreAuthorize("@ss.hasPermission('park:order-temp:query')")
+//    @PreAuthorize("@ss.hasPermission('park:order-temp:query')")
     public CommonResult<PageResult<OrderTempRespVO>> getOrderTempPage(@Valid OrderTempPageReqVO pageReqVO) {
         PageResult<OrderTempDO> pageResult = orderTempService.getOrderTempPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, OrderTempRespVO.class));
@@ -89,7 +89,7 @@ public class OrderTempController {
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出临停订单 Excel")
-    @PreAuthorize("@ss.hasPermission('park:order-temp:export')")
+//    @PreAuthorize("@ss.hasPermission('park:order-temp:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportOrderTempExcel(@Valid OrderTempPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {

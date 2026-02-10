@@ -39,14 +39,14 @@ public class WalletFlowController {
 
     @PostMapping("/create")
     @Operation(summary = "创建钱包流水")
-    @PreAuthorize("@ss.hasPermission('park:wallet-flow:create')")
+//    @PreAuthorize("@ss.hasPermission('park:wallet-flow:create')")
     public CommonResult<Long> createWalletFlow(@Valid @RequestBody WalletFlowSaveReqVO createReqVO) {
         return success(walletFlowService.createWalletFlow(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新钱包流水")
-    @PreAuthorize("@ss.hasPermission('park:wallet-flow:update')")
+//    @PreAuthorize("@ss.hasPermission('park:wallet-flow:update')")
     public CommonResult<Boolean> updateWalletFlow(@Valid @RequestBody WalletFlowSaveReqVO updateReqVO) {
         walletFlowService.updateWalletFlow(updateReqVO);
         return success(true);
@@ -55,7 +55,7 @@ public class WalletFlowController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除钱包流水")
     @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('park:wallet-flow:delete')")
+//    @PreAuthorize("@ss.hasPermission('park:wallet-flow:delete')")
     public CommonResult<Boolean> deleteWalletFlow(@RequestParam("id") Long id) {
         walletFlowService.deleteWalletFlow(id);
         return success(true);
@@ -64,7 +64,7 @@ public class WalletFlowController {
     @GetMapping("/get")
     @Operation(summary = "获得钱包流水")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('park:wallet-flow:query')")
+//    @PreAuthorize("@ss.hasPermission('park:wallet-flow:query')")
     public CommonResult<WalletFlowRespVO> getWalletFlow(@RequestParam("id") Long id) {
         WalletFlowDO walletFlow = walletFlowService.getWalletFlow(id);
         return success(BeanUtils.toBean(walletFlow, WalletFlowRespVO.class));
@@ -72,7 +72,7 @@ public class WalletFlowController {
 
     @GetMapping("/page")
     @Operation(summary = "获得钱包流水分页")
-    @PreAuthorize("@ss.hasPermission('park:wallet-flow:query')")
+//    @PreAuthorize("@ss.hasPermission('park:wallet-flow:query')")
     public CommonResult<PageResult<WalletFlowRespVO>> getWalletFlowPage(@Valid WalletFlowPageReqVO pageReqVO) {
         PageResult<WalletFlowDO> pageResult = walletFlowService.getWalletFlowPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, WalletFlowRespVO.class));
@@ -80,7 +80,7 @@ public class WalletFlowController {
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出钱包流水 Excel")
-    @PreAuthorize("@ss.hasPermission('park:wallet-flow:export')")
+//    @PreAuthorize("@ss.hasPermission('park:wallet-flow:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportWalletFlowExcel(@Valid WalletFlowPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
