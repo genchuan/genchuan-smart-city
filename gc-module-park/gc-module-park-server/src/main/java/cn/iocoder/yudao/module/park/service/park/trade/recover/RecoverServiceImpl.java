@@ -76,8 +76,7 @@ public class RecoverServiceImpl implements  RecoverService{
 //        );
         // 把金额、车牌、订单ID列表和 parkLotId 拼接到 URL
         String payUrl = String.format(
-
-                "http://192.168.8.244:9000/#/genchuan/pay/index?&id=%s",
+                "http://112.47.127.21:9000/#/genchuan/pay/index?&id=%s",
 //                orginalAmount.toPlainString(),
 //                encodedCarNumber,
                 encodedOrderIds

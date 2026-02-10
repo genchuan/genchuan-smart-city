@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.park.dal.dataobject.park.order.ordertemp.OrderTem
 import cn.iocoder.yudao.module.park.dal.dataobject.park.resource.inputcar.ParkInputCarDO;
 import cn.iocoder.yudao.module.park.dal.mysql.park.order.ordertemp.OrderTempMapper;
 import cn.iocoder.yudao.module.park.dal.mysql.park.resource.inputcar.ParkInputCarMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -248,6 +249,13 @@ public class OrderTempServiceImpl implements OrderTempService {
         }
         if (exitTime.isBefore(entryTime)) {
             throw exception(new ErrorCode(500, "出场时间不能早于入场时间"));
+        }
+
+        //1.5 判断该停车记录是否创建了订单
+        LambdaQueryWrapper<OrderTempDO> orderTempDOLambdaQueryWrapper =new LambdaQueryWrapper<>();
+        orderTempDOLambdaQueryWrapper.eq(OrderTempDO::getParkInputCarId,parkInputCarId);
+        if(orderTempMapper.exists(orderTempDOLambdaQueryWrapper)){
+            throw exception(new ErrorCode(500, "该停车出入场记录已经创建了订单，请勿重复创建！"));
         }
 
         //2. TODO 通过车场Id获得策略Id(暂时写死）

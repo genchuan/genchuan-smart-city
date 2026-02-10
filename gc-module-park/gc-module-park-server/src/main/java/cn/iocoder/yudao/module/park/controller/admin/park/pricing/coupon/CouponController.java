@@ -35,6 +35,20 @@ public class CouponController {
     @Resource
     private CouponService couponService;
 
+
+    // 优惠券优惠金额预览（只做校验 + 试算，不落库、不加锁）（取代calculateDiscount）
+    @PostMapping("/preview-discount")
+    @Operation(summary = "（暂时不用）优惠券优惠金额预览")
+    @PreAuthorize("@ss.hasPermission('park:coupon:preview-discount')")
+    public CommonResult<PreviewCouponDiscountRespVO> previewCouponDiscount(
+            @RequestBody PreviewCouponDiscountReqVO req) {
+
+        PreviewCouponDiscountRespVO respVO =
+                couponService.previewCouponDiscount(req);
+
+        return success(respVO);
+    }
+
     //优惠计算（只负责用优惠规则计算，不负责校验该优惠券是否生效）TODO 可后续把校验提取为公共方法，计算优惠也用。
     @PostMapping("/calculate-discount")
     @Operation(summary = "优惠计算")
