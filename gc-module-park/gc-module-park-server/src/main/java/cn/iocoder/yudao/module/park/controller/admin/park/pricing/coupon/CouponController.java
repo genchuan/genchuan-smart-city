@@ -43,6 +43,7 @@ public class CouponController {
     public CommonResult<PreviewCouponDiscountRespVO> previewCouponDiscount(
             @RequestBody PreviewCouponDiscountReqVO req) {
 
+        System.out.println("cs2026-02-12 17:08:27:contro");
         PreviewCouponDiscountRespVO respVO =
                 couponService.previewCouponDiscount(req);
 

@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.park.controller.admin.park.marketing.smoothstopcard.vo;
 
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import cn.iocoder.yudao.framework.common.pojo.SortablePageParam;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,7 +16,7 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class SmoothStopCardPageReqVO extends PageParam {
+public class SmoothStopCardPageReqVO extends SortablePageParam {
 
     @Schema(description = "[卡名称]", example = "李四")
     private String cardName;
