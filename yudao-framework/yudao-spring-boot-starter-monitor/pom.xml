@@ -14,6 +14,18 @@
     <name>${project.artifactId}</name>
     <description>服务监控，提供链路追踪、日志服务、指标收集等等功能</description>
     <url>https://github.com/YunaiV/ruoyi-vue-pro</url>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>16</source>
+                    <target>16</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
         <dependency>
