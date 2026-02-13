@@ -37,6 +37,11 @@ public class CouponDO extends BaseDO {
      * [持有者ID] 关联 park_user.id
      */
     private Long holderId;
+
+    /**
+     * [绑定的订单唯一标识码] 关联 order_temp.order_code
+     */
+    private String lockedOrderCode;
     /**
      * [优惠券名称]
      */

@@ -38,7 +38,7 @@ public class CouponController {
 
     // 优惠券优惠金额预览（只做校验 + 试算，不落库、不加锁）（取代calculateDiscount）
     @PostMapping("/preview-discount")
-    @Operation(summary = "（暂时不用）优惠券优惠金额预览")
+    @Operation(summary = "（自测中，暂时不用）优惠券优惠金额预览")
 //    @PreAuthorize("@ss.hasPermission('park:coupon:preview-discount')")
     public CommonResult<PreviewCouponDiscountRespVO> previewCouponDiscount(
             @RequestBody PreviewCouponDiscountReqVO req) {
@@ -50,14 +50,34 @@ public class CouponController {
         return success(respVO);
     }
 
-    //优惠计算（只负责用优惠规则计算，不负责校验该优惠券是否生效）TODO 可后续把校验提取为公共方法，计算优惠也用。
-    @PostMapping("/calculate-discount")
-    @Operation(summary = "优惠计算")
-//    @PreAuthorize("@ss.hasPermission('park:coupon:calculate-discount')")
-    public CommonResult<CalculateDiscountRespVO> calculateDiscount(@RequestBody CalculateDiscountReqVO req){
-        CalculateDiscountRespVO respVO = couponService.calculateDiscount(req);
+    //取代listPayAvailableCoupon
+    @PostMapping("/order-temp-available-list")
+    @Operation(summary = "获取临停订单可用优惠券列表")
+//    @PreAuthorize("@ss.hasPermission('park:coupon:pay-available-list')")
+    public CommonResult<PageResult<CouponRespVO>> listOrderTempAvailableCoupon(@RequestBody ListOrderTempAvailableCouponReqVO req){
+        PageResult<CouponDO> pageResult = couponService.listOrderTempAvailableCoupon(req);
+        return success(BeanUtils.toBean(pageResult, CouponRespVO.class));
+    }
+
+    // 0213-使用优惠券（会有数据库修改操作）
+    @PostMapping("/use-coupon")
+    @Operation(summary = "使用优惠券")
+//    @PreAuthorize("@ss.hasPermission('park:coupon:use-coupon')")
+    public CommonResult<UseCouponRespVO> useCoupon(@RequestBody UseCouponReqVO req){
+        UseCouponRespVO respVO = couponService.useCoupon(req);
         return success(respVO);
     }
+
+    // 0213-取消使用优惠券（会有数据库修改操作）
+    @PostMapping("/cancel-use-coupon")
+    @Operation(summary = "取消使用优惠券")
+//    @PreAuthorize("@ss.hasPermission('park:coupon:cancel-use-coupon')")
+    public CommonResult<CancelUseCouponRespVO> cancelUseCoupon(@RequestBody CancelUseCouponReqVO req){
+        CancelUseCouponRespVO respVO = couponService.cancelUseCoupon(req);
+        return success(respVO);
+    }
+
+    //被listOrderTempAvailableCoupon取代
     @PostMapping("/pay-available-list")
     @Operation(summary = "获取支付可用优惠券列表")
 //    @PreAuthorize("@ss.hasPermission('park:coupon:pay-available-list')")
@@ -66,6 +86,14 @@ public class CouponController {
         return success(BeanUtils.toBean(pageResult, CouponRespVO.class));
     }
 
+    // (被取代）0209-优惠计算（只负责用优惠规则计算，不负责校验该优惠券是否生效）TODO 可后续把校验提取为公共方法，计算优惠也用。
+    @PostMapping("/calculate-discount")
+    @Operation(summary = "优惠计算")
+//    @PreAuthorize("@ss.hasPermission('park:coupon:calculate-discount')")
+    public CommonResult<CalculateDiscountRespVO> calculateDiscount(@RequestBody CalculateDiscountReqVO req){
+        CalculateDiscountRespVO respVO = couponService.calculateDiscount(req);
+        return success(respVO);
+    }
 
     @PostMapping("/create")
     @Operation(summary = "创建优惠券")

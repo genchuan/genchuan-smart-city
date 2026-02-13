@@ -55,4 +55,10 @@ public interface CouponService {
     CalculateDiscountRespVO calculateDiscount(CalculateDiscountReqVO req);
 
     PreviewCouponDiscountRespVO previewCouponDiscount(PreviewCouponDiscountReqVO req);
+
+    PageResult<CouponDO> listOrderTempAvailableCoupon(ListOrderTempAvailableCouponReqVO req);
+
+    UseCouponRespVO useCoupon(UseCouponReqVO req);
+
+    CancelUseCouponRespVO cancelUseCoupon(CancelUseCouponReqVO req);
 }

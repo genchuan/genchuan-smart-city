@@ -45,6 +45,15 @@ public class RecoverController {
         return success(respVO);
     }
 
+    @PostMapping("/wallet-pay-order-temp")
+    @Operation(summary = "追缴服务-临停订单钱包支付")
+//    @PreAuthorize("@ss.hasPermission('park:recover:wallet-pay-order-temp')")
+    public CommonResult<WalletPayOrderTempRespVO> walletPayOrderTemp(@Valid @RequestBody WalletPayOrderTempReqVO reqVO) {
+        WalletPayOrderTempRespVO respVO=recoverService.walletPayOrderTemp(reqVO);
+        return success(respVO);
+    }
+
+    //取消使用，用这个walletPayOrderTemp
     @PostMapping("/wallet-pay")
     @Operation(summary = "追缴服务-钱包支付")
 //    @PreAuthorize("@ss.hasPermission('park:recover:wallet-pay')")

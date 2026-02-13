@@ -24,6 +24,9 @@ public class CouponPageReqVO extends PageParam {
     @Schema(description = "[持有者ID] 关联 park_user.id", example = "3925")
     private Long holderId;
 
+    @Schema(description = "[绑定的订单的唯一标识码code] 关联 order_temp.code", example = "order325485")
+    private String lockedOrderCode;
+
     @Schema(description = "[优惠券名称]", example = "赵六")
     private String couponName;
 

@@ -59,13 +59,13 @@ public final class BizValidator {
     /**
      * 校验多个字段是否为 null
      * 使用示例：
-     * validateNotNullFields("status", status, "startTime", startTime);
+     * validateNotNullValue("status", status, "startTime", startTime);
      *
      * 若存在多个字段为 null，统一抛出异常：
      * 字段不能为空：status, startTime
      */
-    public static void validateNotNullFields(Object... fieldNameAndValues) {
-        log.error("### validateNotNullFields version = 2026-02-12-01");
+    public static void validateNotNullValue(Object... fieldNameAndValues) {
+        log.error("### validateNotNullValue version = 2026-02-12-01");
 
 
 
@@ -76,7 +76,7 @@ public final class BizValidator {
         if (fieldNameAndValues.length % 2 != 0) {
             throw exception(new ErrorCode(
                     500,
-                    "validateNotNullFields 参数必须成对传入：字段名 + 字段值"
+                    "validateNotNullValue 参数必须成对传入：字段名 + 字段值"
             ));
         }
 
@@ -92,7 +92,7 @@ public final class BizValidator {
             if (!(fieldNameObj instanceof String)) {
                 throw exception(new ErrorCode(
                         500,
-                        "validateNotNullFields 第 " + i + " 个参数必须是 String 类型字段名"
+                        "validateNotNullValue 第 " + i + " 个参数必须是 String 类型字段名"
                 ));
             }
 
@@ -137,7 +137,7 @@ public final class BizValidator {
             if (foundThisMethod) {
                 return element;
             }
-            if ("validateNotNullFields".equals(element.getMethodName())) {
+            if ("validateNotNullValue".equals(element.getMethodName())) {
                 foundThisMethod = true;
             }
         }

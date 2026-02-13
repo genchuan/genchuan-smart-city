@@ -25,6 +25,10 @@ public class CouponRespVO {
     @ExcelProperty("[持有者ID] 关联 park_user.id")
     private Long holderId;
 
+    @Schema(description = "[绑定的订单的唯一标识码code] 关联 order_temp.code", example = "order325485")
+    @ExcelProperty("[绑定的订单的唯一标识码code] 关联 order_temp.code")
+    private String lockedOrderCode;
+
     @Schema(description = "[优惠券名称]", requiredMode = Schema.RequiredMode.REQUIRED, example = "赵六")
     @ExcelProperty("[优惠券名称]")
     private String couponName;

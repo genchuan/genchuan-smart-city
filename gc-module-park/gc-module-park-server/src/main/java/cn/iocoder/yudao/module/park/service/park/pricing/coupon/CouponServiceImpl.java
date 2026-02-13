@@ -17,16 +17,14 @@ import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 //import static cn.hutool.core.lang.Validator.validateNotNull;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId;
 import static cn.iocoder.yudao.module.park.enums.ErrorCodeConstants.COUPON_NOT_EXISTS;
 import static cn.iocoder.yudao.module.park.framework.common.BizValidator.validateNotNull;
-import static cn.iocoder.yudao.module.park.framework.common.BizValidator.validateNotNullFields;
+import static cn.iocoder.yudao.module.park.framework.common.BizValidator.validateNotNullValue;
 
 /**
  * 优惠券 Service 实现类
@@ -71,7 +69,7 @@ public class CouponServiceImpl implements CouponService {
         BigDecimal originalAmount = orderTemp.getOriginalAmount();
 
         // 二. 校验优惠券是否可用
-        Map<String, Object> validateResult = validateCouponForOrder(originalAmount, coupon);
+        Map<String, Object> validateResult = validateCouponForOrder(coupon,orderTemp);
         if (!(Boolean) validateResult.get("isSuccess")) {
             throw exception(new ErrorCode(500, (String) validateResult.get("failureMessage")));
         }
@@ -87,6 +85,234 @@ public class CouponServiceImpl implements CouponService {
         return respVO;
     }
 
+    @Override
+    public PageResult<CouponDO> listOrderTempAvailableCoupon(ListOrderTempAvailableCouponReqVO req) {
+        Long orderTempId = req.getOrderTempId();
+        OrderTempDO orderTempDO = orderTempMapper.selectById(orderTempId);
+        validateNotNull(orderTempDO,"临停订单不存在");
+
+
+        //0.解析参数
+        BigDecimal orginalAmount=orderTempDO.getOriginalAmount();
+        Long parkLotId = orderTempDO.getLotId();
+
+        //1.获取用户ID
+        Long userId = getLoginUserId();
+        if (userId == null) {
+            throw exception(new ErrorCode(500,"用户ID为空"));
+        }
+
+        // 2. 验证参数
+        if (orginalAmount == null || parkLotId == null) {
+            throw exception(new ErrorCode(500,"支付原始金额和车场ID不能为空"));
+        }
+
+        // 3. 构建查询条件
+        LambdaQueryWrapper<CouponDO> queryWrapper = new LambdaQueryWrapper<>();
+
+        // 3.1 持有者为当前用户
+        queryWrapper.eq(CouponDO::getHolderId, userId);
+
+        // 3.2 优惠券状态是启用的
+        queryWrapper.eq(CouponDO::getStatus, "启用");
+
+        // 3.3 处理最低消费金额条件（包含null的情况）
+        // null 表示没有最低消费限制，可以使用
+        queryWrapper.and(wrapper ->
+                wrapper.le(CouponDO::getMinConsume, orginalAmount)
+                        .or()
+                        .isNull(CouponDO::getMinConsume)
+        );
+
+        // 3.4 优惠券处于有效期内
+        LocalDateTime now = LocalDateTime.now();
+        queryWrapper.le(CouponDO::getStartTime, now);
+        queryWrapper.ge(CouponDO::getEndTime, now);
+
+        // 3.5 适用车场包含该车场id（包括全场通用的优惠券）（暂无区域）TODO 容易出问题的地方
+        queryWrapper.and(wrapper ->
+                wrapper.eq(CouponDO::getApplyScope, "全局")
+                        .or(w -> w.eq(CouponDO::getApplyScope, "车场")
+                                .and(w2 ->
+                                        w2.eq(CouponDO::getScopeIds, parkLotId.toString())
+                                                .or()
+                                                .like(CouponDO::getScopeIds, parkLotId + ",%")
+                                                .or()
+                                                .like(CouponDO::getScopeIds, "%," + parkLotId)
+                                                .or()
+                                                .like(CouponDO::getScopeIds, "%," + parkLotId + ",%")
+                                ))
+        );
+
+//        // 3.6 优惠券未使用且未过期
+//        queryWrapper.eq(CouponDO::getStatus, "启用");
+
+        // 3.7 按有效性排序：快到期的优先显示
+        queryWrapper.orderByAsc(CouponDO::getEndTime);
+
+        // 4. 执行分页查询
+        // 这里使用默认分页，如果前端需要传分页参数，可以修改ReqVO添加pageNum和pageSize字段
+        Page<CouponDO> page = new Page<>(1, 100); // 默认返回前100条记录
+
+        Page<CouponDO> couponPage = couponMapper.selectPage(page, queryWrapper);
+
+        // 4. 业务层精校：调用 validateCouponForOrder
+        List<CouponDO> availableCoupons = new ArrayList<>();
+        for (CouponDO coupon : couponPage.getRecords()) {
+            Map<String, Object> validateResult = validateCouponForOrder(coupon, orderTempDO);
+
+            if ((Boolean) validateResult.get("isSuccess")) {
+                availableCoupons.add(coupon); // 通过精校验才加入列表
+            }
+        }
+
+        // 5. 返回最终可用优惠券列表
+        return new PageResult<>(availableCoupons,(long)availableCoupons.size());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public UseCouponRespVO useCoupon(UseCouponReqVO req) {
+        //一、获取参数、初始化
+        Long couponId = req.getCouponId();
+        Long orderTempId = req.getOrderTempId();
+
+        CouponDO couponDO = couponMapper.selectById(couponId);
+        OrderTempDO orderTempDO = orderTempMapper.selectById(orderTempId);
+
+        validateNotNullValue(
+                "couponId", couponId,
+                "orderTempId", orderTempId,
+                "couponDO", couponDO,
+                "orderTempDO", orderTempDO
+        );
+
+        BigDecimal discountAmount = BigDecimal.ZERO;
+        BigDecimal afterDiscountAmount = BigDecimal.ZERO;
+
+        OrderTempDO updateOrder = new OrderTempDO();
+        CouponDO updateCoupon = new CouponDO();
+
+        String couponStatus = "锁定";
+
+        //二、校验
+        Map<String,Object> validateCouponForOrderResult = validateCouponForOrder(couponDO, orderTempDO);
+        if (!(Boolean) validateCouponForOrderResult.get("isSuccess")) {
+            // 处理失败情况：
+            throw exception(new ErrorCode(500, (String) validateCouponForOrderResult.get("failureMessage")));
+        }
+
+        //三、计算优惠金额
+        Map<String,Object> calculateDiscountResult = calculateDiscount(orderTempDO.getOriginalAmount(),couponDO);
+        discountAmount = (BigDecimal) calculateDiscountResult.get("discountAmount");
+        afterDiscountAmount = (BigDecimal) calculateDiscountResult.get("afterDiscountAmount");
+
+        //四、使用优惠卷
+        //1.更新订单
+        updateOrder.setId(orderTempDO.getId());
+        updateOrder.setCouponId(couponDO.getId());
+        updateOrder.setDiscountAmount(discountAmount);
+        updateOrder.setPayAmount(afterDiscountAmount);
+        updateOrder.setUpdateTime(LocalDateTime.now());
+
+        //2.更新优惠券
+        updateCoupon.setId(couponDO.getId());
+        updateCoupon.setStatus(couponStatus);
+        updateCoupon.setLockedOrderCode(String.valueOf(orderTempDO.getOrderCode()));
+        updateCoupon.setUpdateTime(LocalDateTime.now());
+
+        //五、数据库更新
+        int updateOrderNum = orderTempMapper.updateById(updateOrder);
+        int updateCouponNum = couponMapper.updateById(updateCoupon);
+
+        if (updateOrderNum<1||updateCouponNum<1){
+            throw exception(new ErrorCode(500,"订单或者优惠券更新失败"));
+        }
+
+        //六、构造返参
+        UseCouponRespVO respVO = new UseCouponRespVO();
+        respVO.setIsSuccess(true);
+
+        return respVO;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public CancelUseCouponRespVO cancelUseCoupon(CancelUseCouponReqVO req) {
+        //一、获取参数、初始化
+        Long couponId = req.getCouponId();
+        Long orderTempId = req.getOrderTempId();
+
+        CouponDO couponDO = couponMapper.selectById(couponId);
+
+        OrderTempDO orderTempDO = orderTempMapper.selectById(orderTempId);
+        Long orderCouponId = orderTempDO.getCouponId();
+        String couponLockedOrderCode = couponDO.getLockedOrderCode();
+
+        validateNotNullValue(
+                "couponId", couponId,
+                "orderTempId", orderTempId,
+                "couponDO", couponDO,
+                "orderTempDO", orderTempDO
+        );
+
+        BigDecimal discountAmount = orderTempDO.getDiscountAmount();
+        BigDecimal afterDiscountAmount = orderTempDO.getPayAmount();
+
+        OrderTempDO updateOrder = new OrderTempDO();
+        CouponDO updateCoupon = new CouponDO();
+
+        String LOCKED = "绑定";
+        //修改后的优惠券状态
+        String ENABLED = "启用";
+
+        //二、校验
+        //1.校验订单
+        if (!(Objects.equals(orderCouponId, couponDO.getId()))){
+            throw exception(500,"订单绑定的优惠券id不符合当前优惠券id");
+        }
+        //2.校验优惠券
+        //优惠券应该是绑定状态的
+        if (!(LOCKED.equals(couponDO.getStatus()))){
+            throw exception(500,"优惠券的状态不是绑定状态");
+        }
+        //优惠券绑定的订单标识码必须是对应订单的标识码
+        if (!Objects.equals(couponLockedOrderCode, orderTempDO.getOrderCode())){
+            throw exception(500,"优惠券绑定的订单标识码不符合当前订单标识码");
+        }
+
+        //三、设置订单
+        updateOrder.setId(orderTempId);
+        updateOrder.setCouponId(null);
+        updateOrder.setDiscountAmount(BigDecimal.ZERO);
+        updateOrder.setPayAmount(orderTempDO.getOriginalAmount());
+        updateOrder.setUpdateTime(LocalDateTime.now());
+
+        //四、设置优惠卷
+        updateCoupon.setId(couponId);
+        updateCoupon.setStatus(ENABLED);
+        updateCoupon.setLockedOrderCode(null);
+        updateCoupon.setUpdateTime(LocalDateTime.now());
+
+        //五、数据库更新
+        int updateOrderNum = orderTempMapper.updateById(updateOrder);
+        if (updateOrderNum < 1) {
+            throw exception(500, "订单解绑失败");
+        }
+
+        int updateCouponNum = couponMapper.updateById(updateCoupon);
+        if (updateCouponNum < 1) {
+            throw exception(500, "优惠券解绑失败");
+        }
+
+
+        //六、构造返参
+        CancelUseCouponRespVO respVO = new CancelUseCouponRespVO();
+        respVO.setIsSuccess(true);
+
+        return respVO;
+    }
+
     /**
      * 校验优惠券是否可以用于当前订单
      *
@@ -97,52 +323,67 @@ public class CouponServiceImpl implements CouponService {
      * 4. 当前订单金额是否满足优惠券的最低消费金额
      *
      * <p>示例调用：
-     * Map<String,Object> result = validateCouponForOrder(orderAmount, coupon);
-     * if (!(Boolean) result.get("isSuccess")) {
-     *     // 处理失败情况：result.get("failureMessage")
-     * }
+         Map<String,Object> validateCouponForOrderResult = validateCouponForOrder(couponDO, orderTempDO);
+         if (!(Boolean) validateCouponForOrderResult.get("isSuccess")) {
+         // 处理失败情况：
+         throw exception(new ErrorCode(500, (String) validateCouponForOrderResult.get("failureMessage")));
+         }
      *
-     * @param originalAmount 当前订单金额，不可为 null
-     * @param coupon 要使用的优惠券对象，不可为 null
+//     * @param originalAmount 当前订单金额，不可为 null
+     * @param couponDO 要使用的优惠券对象，不可为 null
      * @return 返回 Map，其中包含：
      *         - isSuccess (Boolean)：校验是否通过
-     *         - failureMessage (String)：校验失败的提示信息
+     *         - failureMessage (String)：校验失败的提示信息,默认null
      */
     public Map<String,Object> validateCouponForOrder(
-            BigDecimal originalAmount,
-            CouponDO coupon
+            CouponDO couponDO,
+            OrderTempDO orderTempDO
     ) {
         //返参
         Map<String, Object> resultMap = new HashMap<>() {{
             put("isSuccess", false);// 默认校验未通过
-            put("failureMessage", "");// 默认消息为空
+            put("failureMessage", null);// 默认消息为null
         }};
 
         // ===== 1. 提取本方法会用到的字段 =====
-        if (coupon == null) {
+        if (couponDO == null) {
             resultMap.put("failureMessage", "优惠券不存在");
             return resultMap;
         }
 
-        String couponStatus = coupon.getStatus();
-        LocalDateTime couponStartTime = coupon.getStartTime();
-        LocalDateTime couponEndTime = coupon.getEndTime();
-        BigDecimal couponMinConsume = coupon.getMinConsume();
+        String couponStatus = couponDO.getStatus();
+        LocalDateTime couponStartTime = couponDO.getStartTime();
+        LocalDateTime couponEndTime = couponDO.getEndTime();
+        BigDecimal couponMinConsume = couponDO.getMinConsume();
+        String couponApplyScope = couponDO.getApplyScope();
+        String couponScopeIds = couponDO.getScopeIds();
 
-        validateNotNullFields(
+        if (orderTempDO == null) {
+            resultMap.put("failureMessage", "临停订单不存在");
+            return resultMap;
+        }
+        Long orderLotId = orderTempDO.getLotId();
+        BigDecimal originalAmount = orderTempDO.getOriginalAmount();
+
+
+        Long userId=getLoginUserId();
+
+        validateNotNullValue(
                 "couponStatus", couponStatus,
                 "couponStartTime", couponStartTime,
                 "couponEndTime", couponEndTime,
                 "couponMinConsume", couponMinConsume,
-                "originalAmount", originalAmount
+                "originalAmount", originalAmount,
+                "userId",userId,
+                "orderLotId",orderLotId
         );
 
 // 1. 状态校验
-//        if (!"启用".equals(couponStatus)) {
-//            System.out.println("cs2026-02-12 15:53:38:"+"优惠卷");
-//            resultMap.put("failureMessage", "优惠券不是启用状态");
-//            return resultMap;
-//        }
+        if (!"启用".equals(couponStatus)) {
+            System.out.println("cs2026-02-12 15:53:38:"+"优惠卷");
+            resultMap.put("failureMessage", "优惠券不是启用状态");
+            return resultMap;
+        }
 
 // 2. 有效期校验
         LocalDateTime now = LocalDateTime.now();
@@ -162,22 +403,30 @@ public class CouponServiceImpl implements CouponService {
             return resultMap;
         }
 
+        // 5. 适用范围校验
+        if ("车场".equals(couponApplyScope)) {
+            if (!matchLotId(couponScopeIds, orderLotId)) {
+                resultMap.put("failureMessage", "该优惠券不适用于当前车场");
+                return resultMap;
+            }
+        }
+
 // 如果全部校验通过
         resultMap.put("isSuccess", true);
         return resultMap;
     }
 
     /**
-     * 计算优惠金额及优惠后订单金额
+     * 计算优惠金额及优惠后订单金额（不对优惠券有效性校验，纯计算金额）
      *
      * <p>本方法支持以下优惠券类型：
      * 1. 满减券：直接减去面值
      * 2. 折扣券：按面值折扣计算优惠金额
      *
      * <p>示例调用：
-     * Map<String,Object> result = calculateDiscount(orderAmount, coupon);
-     * BigDecimal discountAmount = (BigDecimal) result.get("discountAmount");
-     * BigDecimal afterDiscountAmount = (BigDecimal) result.get("afterDiscountAmount");
+         Map<String,Object> calculateDiscountResult = calculateDiscount(orderTempDO.getOriginalAmount(),couponDO);
+         discountAmount = (BigDecimal) calculateDiscountResult.get("discountAmount");
+         afterDiscountAmount = (BigDecimal) calculateDiscountResult.get("afterDiscountAmount");
      *
      * @param originalAmount 当前订单金额，不可为 null
      * @param coupon 优惠券对象，不可为 null，且 couponType 和 faceValue 不可为 null
@@ -187,12 +436,14 @@ public class CouponServiceImpl implements CouponService {
      *
      */
     private Map<String,Object> calculateDiscount(BigDecimal originalAmount, CouponDO coupon) {
+        //一、校验与初始化
+        validateNotNullValue("coupon",coupon);
         // ===== 1. 提取字段 =====
         String couponType = coupon.getCouponType();
         String faceValue = coupon.getFaceValue();
 
         // ===== 2. 非空校验 =====
-        validateNotNullFields(
+        validateNotNullValue(
                 "originalAmount", originalAmount,
                 "couponType", couponType,
                 "faceValue", faceValue
@@ -203,6 +454,7 @@ public class CouponServiceImpl implements CouponService {
         resultMap.put("discountAmount", BigDecimal.ZERO);
         resultMap.put("afterDiscountAmount", originalAmount);
 
+        //二、业务逻辑
         // ===== 4. 计算逻辑 =====
         if ("满减券".equals(couponType)) {
             BigDecimal discountAmount = new BigDecimal(faceValue);
@@ -278,7 +530,15 @@ public class CouponServiceImpl implements CouponService {
         queryWrapper.and(wrapper ->
                 wrapper.eq(CouponDO::getApplyScope, "全局")
                         .or(w -> w.eq(CouponDO::getApplyScope, "车场")
-                                .like(CouponDO::getScopeIds, parkLotId.toString()))
+                                .and(w2 ->
+                                        w2.eq(CouponDO::getScopeIds, parkLotId.toString())
+                                                .or()
+                                                .like(CouponDO::getScopeIds, parkLotId + ",%")
+                                                .or()
+                                                .like(CouponDO::getScopeIds, "%," + parkLotId)
+                                                .or()
+                                                .like(CouponDO::getScopeIds, "%," + parkLotId + ",%")
+                                ))
         );
 
 //        // 3.6 优惠券未使用且未过期
@@ -295,6 +555,20 @@ public class CouponServiceImpl implements CouponService {
 
         // 5. 转换为PageResult返回
         return new PageResult<>(couponPage.getRecords(), couponPage.getTotal());
+    }
+
+    /**
+     * 判断停车场ID是否在scopeIds中
+     */
+    private boolean matchLotId(String scopeIds, Long lotId) {
+        if (scopeIds == null || lotId == null) return false;
+        String[] ids = scopeIds.split(",");
+        for (String idStr : ids) {
+            if (idStr.trim().equals(lotId.toString())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

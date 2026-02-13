@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.park.controller.admin.park.pricing.coupon.vo;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
@@ -19,6 +20,9 @@ public class CouponSaveReqVO {
 
     @Schema(description = "[持有者ID] 关联 park_user.id", example = "1")
     private Long holderId;
+
+    @Schema(description = "[绑定的订单的唯一标识码code] 关联 order_temp.code", example = "order325485")
+    private String lockedOrderCode;
 
     @Schema(description = "[优惠券名称]", requiredMode = Schema.RequiredMode.REQUIRED, example = "新用户满10减5券")
     @NotEmpty(message = "[优惠券名称]不能为空")

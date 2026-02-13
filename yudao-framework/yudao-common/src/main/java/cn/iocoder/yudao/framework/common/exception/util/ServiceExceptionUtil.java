@@ -17,6 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 public class ServiceExceptionUtil {
 
     // ========== 和 ServiceException 的集成 ==========
+    public static ServiceException exception(Integer code,String msg) {
+        ErrorCode errorCode = new ErrorCode(code,msg);
+        return exception0(errorCode.getCode(), errorCode.getMsg());
+    }
 
     public static ServiceException exception(ErrorCode errorCode) {
         return exception0(errorCode.getCode(), errorCode.getMsg());

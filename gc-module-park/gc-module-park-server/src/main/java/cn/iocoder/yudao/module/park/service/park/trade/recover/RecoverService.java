@@ -8,4 +8,6 @@ public interface RecoverService {
     PreDiscountAutoCalculateRespVO preDiscountAutoCalculate(PreDiscountAutoCalculateReqVO reqVO);
 
     RecoverWalletPayRespVO walletPay(RecoverWalletPayReqVO reqVO);
+
+    WalletPayOrderTempRespVO walletPayOrderTemp(WalletPayOrderTempReqVO reqVO);
 }

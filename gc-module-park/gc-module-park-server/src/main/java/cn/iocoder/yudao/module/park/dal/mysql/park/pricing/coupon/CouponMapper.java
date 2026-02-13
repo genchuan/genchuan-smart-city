@@ -19,6 +19,7 @@ public interface CouponMapper extends BaseMapperX<CouponDO> {
         return selectPage(reqVO, new LambdaQueryWrapperX<CouponDO>()
                 .eqIfPresent(CouponDO::getCouponCode, reqVO.getCouponCode())
                 .eqIfPresent(CouponDO::getHolderId, reqVO.getHolderId())
+                .eqIfPresent(CouponDO::getLockedOrderCode, reqVO.getLockedOrderCode())
                 .likeIfPresent(CouponDO::getCouponName, reqVO.getCouponName())
                 .eqIfPresent(CouponDO::getCouponType, reqVO.getCouponType())
                 .eqIfPresent(CouponDO::getFaceValue, reqVO.getFaceValue())
