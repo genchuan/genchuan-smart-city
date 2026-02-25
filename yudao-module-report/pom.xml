@@ -8,8 +8,6 @@
         <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
-
     <modules>
         <module>yudao-module-report-api</module>
         <module>yudao-module-report-server</module>

@@ -15,6 +15,7 @@
     <description>WebSocket 框架，支持多节点的广播</description>
     <url>https://github.com/YunaiV/ruoyi-vue-pro</url>
 
+
     <dependencies>
         <dependency>
             <groupId>cn.iocoder.cloud</groupId>
