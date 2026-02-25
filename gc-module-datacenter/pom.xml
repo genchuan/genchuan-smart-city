@@ -7,18 +7,6 @@
         <groupId>cn.iocoder.cloud</groupId>
         <version>${revision}</version> <!-- 1. 修改 version 为 ${revision} -->
     </parent>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>16</source>
-                    <target>16</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <modules>
         <module>gc-module-datacenter-api</module>
         <module>gc-module-datacenter-server</module>
