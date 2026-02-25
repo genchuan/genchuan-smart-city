@@ -17,8 +17,6 @@
         物联网 模块 API，暴露给其它模块调用
     </description>
 
-
-
     <dependencies>
         <dependency>
             <groupId>cn.iocoder.cloud</groupId>

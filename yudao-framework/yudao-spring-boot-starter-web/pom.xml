@@ -15,8 +15,6 @@
     <description>Web 框架，全局异常、API 日志、脱敏、错误码等</description>
     <url>https://github.com/YunaiV/ruoyi-vue-pro</url>
 
-
-
     <dependencies>
         <dependency>
             <groupId>cn.iocoder.cloud</groupId>

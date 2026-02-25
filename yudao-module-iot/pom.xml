@@ -7,8 +7,6 @@
         <groupId>cn.iocoder.cloud</groupId>
         <version>${revision}</version>
     </parent>
-
-
     <modules>
         <module>yudao-module-iot-api</module>
         <module>yudao-module-iot-biz</module>

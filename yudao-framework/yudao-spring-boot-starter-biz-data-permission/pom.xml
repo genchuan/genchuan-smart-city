@@ -15,8 +15,6 @@
     <description>数据权限</description>
     <url>https://github.com/YunaiV/ruoyi-vue-pro</url>
 
-
-
     <dependencies>
         <dependency>
             <groupId>cn.iocoder.cloud</groupId>

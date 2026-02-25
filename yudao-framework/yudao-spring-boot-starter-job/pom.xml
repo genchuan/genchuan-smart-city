@@ -15,8 +15,6 @@
     <description>任务拓展，基于 XXL-Job 实现</description>
     <url>https://github.com/YunaiV/ruoyi-vue-pro</url>
 
-
-
     <dependencies>
         <dependency>
             <groupId>cn.iocoder.cloud</groupId>

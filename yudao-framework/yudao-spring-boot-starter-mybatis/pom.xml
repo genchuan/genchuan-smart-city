@@ -15,8 +15,6 @@
     <description>数据库连接池、多数据源、事务、MyBatis 拓展</description>
     <url>https://github.com/YunaiV/ruoyi-vue-pro</url>
 
-
-
     <dependencies>
         <dependency>
             <groupId>cn.iocoder.cloud</groupId>

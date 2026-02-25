@@ -15,8 +15,6 @@
     <description>服务监控，提供链路追踪、日志服务、指标收集等等功能</description>
     <url>https://github.com/YunaiV/ruoyi-vue-pro</url>
 
-
-
     <dependencies>
         <dependency>
             <groupId>cn.iocoder.cloud</groupId>
