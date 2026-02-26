@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagecollection.GarbageAbnormalMapper">
+
+    <resultMap id="GarbageAbnormalDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageAbnormalDetailDO">
+
+        <id column="id" property="id"/>
+        <result column="abnormal_id" property="abnormalId"/>
+        <result column="plan_id" property="planId"/>
+        <result column="abnormal_type_id" property="abnormalTypeId"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="report_by" property="reportBy"/>
+        <result column="report_time" property="reportTime"/>
+        <result column="priority" property="priority"/>
+        <result column="handler_id" property="handlerId"/>
+        <result column="handle_status" property="handleStatus"/>
+        <result column="is_timeout" property="isTimeout"/>
+        <result column="handle_desc" property="handleDesc"/>
+        <result column="handle_photo_url" property="handlePhotoUrl"/>
+        <result column="review_status" property="reviewStatus"/>
+        <result column="review_by" property="reviewBy"/>
+        <result column="review_time" property="reviewTime"/>
+        <result column="ext_common1" property="extCommon1"/>
+        <result column="ext_common2" property="extCommon2"/>
+        <result column="ext_common3" property="extCommon3"/>
+        <result column="ext_common4" property="extCommon4"/>
+
+        <result column="plan_no" property="planNo"/>
+        <result column="abnormal_type_name" property="abnormalTypeName"/>
+        <result column="area_name" property="areaName"/>
+        <result column="report_name" property="reportName"/>
+    </resultMap>
+
+    <select id="selectDetailPage" resultMap="GarbageAbnormalDetailResultMap">
+        SELECT
+        ga.*,
+        gc.plan_no AS plan_no,
+        sat.abnormal_name AS abnormal_type_name,
+        sa.area_name AS area_name,
+        su.user_name AS report_name
+        FROM garbage_abnormal ga
+        LEFT JOIN garbage_collection gc ON ga.plan_id = gc.collection_id AND gc.deleted = 0
+        LEFT JOIN sys_abnormal_type sat ON ga.abnormal_type_id = sat.abnormal_type_id AND sat.deleted = 0
+        LEFT JOIN sys_area sa ON ga.area_code = sa.area_code AND sa.deleted = 0
+        LEFT JOIN sys_user su ON ga.report_by = su.user_id AND su.deleted = 0
+        WHERE ga.deleted = 0
+        ORDER BY ga.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.pageSize}
+    </select>
+
+    <select id="selectCount" resultType="Long">
+        SELECT COUNT(*)
+        FROM garbage_abnormal ga
+        WHERE ga.deleted = 0
+    </select>
+
+</mapper>

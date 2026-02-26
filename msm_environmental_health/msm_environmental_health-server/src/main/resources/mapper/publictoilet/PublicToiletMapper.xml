@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.publictoilet.PublicToiletMapper">
+
+    <resultMap id="PublicToiletDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.PublicToiletDetailDO">
+
+        <id column="id" property="id"/>
+        <result column="toilet_id" property="toiletId"/>
+        <result column="name" property="name"/>
+        <result column="location" property="location"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="open_hours" property="openHours"/>
+        <result column="stall_count" property="stallCount"/>
+        <result column="operation_status_id" property="operationStatusId"/>
+        <result column="manager_id" property="managerId"/>
+        <result column="cleaning_rate" property="cleaningRate"/>
+        <result column="complaint_rate" property="complaintRate"/>
+        <result column="warning_count" property="warningCount"/>
+        <result column="facility_rate" property="facilityRate"/>
+        <result column="cleaning_frequency" property="cleaningFrequency"/>
+        <result column="cleaning_time" property="cleaningTime"/>
+        <result column="cleaning_content" property="cleaningContent"/>
+        <result column="cleaning_standard" property="cleaningStandard"/>
+        <result column="cleaner_ids" property="cleanerIds"/>
+        <result column="consumable_stock" property="consumableStock"/>
+        <result column="consumable_threshold" property="consumableThreshold"/>
+        <result column="consumable_gap" property="consumableGap"/>
+        <result column="last_supply_time" property="lastSupplyTime"/>
+        <result column="supply_cycle" property="supplyCycle"/>
+        <result column="ext_common1" property="extCommon1"/>
+        <result column="ext_common2" property="extCommon2"/>
+        <result column="ext_common3" property="extCommon3"/>
+        <result column="ext_common4" property="extCommon4"/>
+
+        <!-- 关联查询的额外字段 -->
+        <result column="area_name" property="areaName"/>
+        <result column="operation_status_name" property="operationStatusName"/>
+        <result column="manager_name" property="managerName"/>
+        <result column="cleaner_name" property="cleanerName"/>
+    </resultMap>
+
+    <select id="selectDetailPage" resultMap="PublicToiletDetailResultMap">
+        SELECT
+        pt.*,
+        a.area_name AS area_name,
+        os.name AS operation_status_name,
+        u.user_name AS manager_name,
+        IFNULL(GROUP_CONCAT(DISTINCT u2.user_name), '') AS cleaners_name_str
+        FROM public_toilet pt
+        LEFT JOIN sys_area a ON pt.area_code = a.area_code AND a.deleted = 0
+        LEFT JOIN sys_operation_status os ON pt.operation_status_id = os.sys_operation_status_id AND os.deleted = 0
+        LEFT JOIN sys_user u ON pt.manager_id = u.user_id AND u.deleted = 0
+        LEFT JOIN sys_user u2 ON FIND_IN_SET(
+                                        u2.user_id,
+                                        REPLACE(REPLACE(REPLACE(REPLACE(pt.cleaner_ids, '[', ''), ']', ''), '"', ''), ' ', '')
+                                ) AND u2.deleted = 0
+        WHERE pt.deleted = 0
+        GROUP BY pt.id, a.area_name, os.name, u.user_name
+        ORDER BY pt.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.pageSize}
+    </select>
+
+    <!-- 查询总条数 -->
+    <select id="selectCount" resultType="Long">
+        SELECT COUNT(*)
+        FROM public_toilet pt
+        WHERE pt.deleted = 0
+    </select>
+</mapper>

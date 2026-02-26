@@ -250,6 +250,23 @@ spring:
             - Path=/app-api/data/***
           filters:
             - RewritePath=/app-api/data/v3/api-docs, /v3/api-docs
+
+        ## envirhealthServer 服务 ###########################
+        - id: envirhealth-admin-api
+          uri: grayLb://envirhealth-server
+          predicates:
+            - Path=/admin-api/envirhealth/**  # 改为全小写
+          filters:
+            - RewritePath=/admin-api/envirhealth/v3/api-docs, /v3/api-docs
+
+        - id: envirhealth-app-api
+          uri: grayLb://envirhealth-server
+          predicates:
+            - Path=/app-api/envirhealth/**  # 改为全小写
+          filters:
+            - RewritePath=/app-api/envirhealth/v3/api-docs, /v3/api-docs
+        ###########################################################
+
       x-forwarded:
         prefix-enabled: false # 避免 Swagger 重复带上额外的 /admin-api/system 前缀
 
@@ -313,6 +330,15 @@ knife4j:
       - name: industry-server        # 自定义模块名字，可以随便写，但最好和服务名一致
         service-name: industry-server # 必须和 Gateway 路由 uri 对应的服务名一致
         url: /admin-api/industry/v3/api-docs # 对应模块 Swagger 文档路径
+      - name: park-server        # 自定义模块名字，可以随便写，但最好和服务名一致
+        service-name: park-server # 必须和 Gateway 路由 uri 对应的服务名一致
+        url: /admin-api/park/v3/api-docs # 对应模块 Swagger 文档路径
+      # envirHealthServer 的 Swagger 聚合配置 ###########################
+      - name: envirhealth-server
+        service-name: envirhealth-server
+        url: /admin-api/envirhealth/v3/api-docs  # 改为全小写
+      ###########################################################
+
       - name: park-server
         service-name: park-server
         url: /admin-api/park/v3/api-docs
