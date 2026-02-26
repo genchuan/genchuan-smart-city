@@ -5,6 +5,7 @@
     <parent>
         <artifactId>yudao</artifactId>
         <groupId>cn.iocoder.cloud</groupId>
+        <relativePath>../pom.xml</relativePath>
         <version>${revision}</version> <!-- 1. 修改 version 为 ${revision} -->
     </parent>
     <modules>

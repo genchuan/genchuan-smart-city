@@ -5,6 +5,7 @@
     <parent>
         <artifactId>gc-module-evaluate</artifactId>
         <groupId>cn.iocoder.cloud</groupId>
+        <relativePath>../pom.xml</relativePath>
         <version>${revision}</version> <!-- 1. 修改 version 为 ${revision} -->
     </parent>
     <modelVersion>4.0.0</modelVersion>
