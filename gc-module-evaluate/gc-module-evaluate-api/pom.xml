@@ -21,6 +21,11 @@
             <groupId>cn.iocoder.cloud</groupId>
             <artifactId>yudao-common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>
