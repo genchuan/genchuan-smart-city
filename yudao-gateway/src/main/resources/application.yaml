@@ -238,7 +238,7 @@ spring:
           filters:
             - RewritePath=/app-api/park/v3/api-docs, /v3/api-docs
 
-        ## envirHealthServer 服务 ###########################
+        ## envirhealthServer 服务 ###########################
         - id: envirhealth-admin-api
           uri: grayLb://envirhealth-server
           predicates:
