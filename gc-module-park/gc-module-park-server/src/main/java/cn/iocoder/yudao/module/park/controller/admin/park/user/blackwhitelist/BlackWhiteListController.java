@@ -9,6 +9,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.park.controller.admin.park.user.blackwhitelist.vo.BlackWhiteListPageReqVO;
 import cn.iocoder.yudao.module.park.controller.admin.park.user.blackwhitelist.vo.BlackWhiteListRespVO;
 import cn.iocoder.yudao.module.park.controller.admin.park.user.blackwhitelist.vo.BlackWhiteListSaveReqVO;
+import cn.iocoder.yudao.module.park.controller.admin.park.user.blackwhitelist.vo.VerifyWhitelistReqVO;
 import cn.iocoder.yudao.module.park.dal.dataobject.park.user.blackwhitelist.BlackWhiteListDO;
 import cn.iocoder.yudao.module.park.service.park.user.blackwhitelist.BlackWhiteListService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,6 +38,12 @@ public class BlackWhiteListController {
     @Resource
     private BlackWhiteListService blackWhiteListService;
 
+    @PostMapping("/verify-whitelist-by-car-number")
+    @Operation(summary = "通过车牌验证是否为白名单")
+    @PreAuthorize("@ss.hasPermission('park:black-white-list:verify-whitelist-by-car-number')")
+    public CommonResult<Boolean> verifyWhitelistByCarNumber(@Valid @RequestBody VerifyWhitelistReqVO reqVO) {
+        return success(blackWhiteListService.verifyWhitelistByCarNumber(reqVO.getCarNumber()));
+    }
     @PostMapping("/create")
     @Operation(summary = "创建黑白名单")
     @PreAuthorize("@ss.hasPermission('park:black-white-list:create')")
