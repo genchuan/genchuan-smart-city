@@ -84,11 +84,57 @@ public class RuleCategoryRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-    // 新增的展示字段（输入交互后需要展示的）
-    private String createUserName; // 创建人
 
-    private Integer ruleItemCount; // 规则项数量
-    private Integer vetoItemCount; // 否决项数量
+    // ========== 交互后新增字段 ==========
+    @Schema(description = "创建人名称")
+    private String createUserName; // 创建人：sys_user.user_name
 
+    @Schema(description = "规则项数量（自动统计）")
+    private Integer ruleItemCount; // eval_rule_category.item_count
 
+    @Schema(description = "否决项数量（自动统计）")
+    private Integer vetoItemCount; // 否决项表统计数
+
+    @Schema(description = "变更日志（截取前50字）")
+    private String shortChangeLog; // 截取后的变更日志
+
+    // ========== 关联字典/关联表字段 ==========
+    @Schema(description = "适用指标体系名称")
+    private String indexSystemName; // eval_index_system.name
+
+    @Schema(description = "规则项名称")
+    private String ruleItemName; // eval_rule_item.name
+
+    @Schema(description = "关联指标项名称")
+    private String indexItemName; // eval_index_item.name
+
+    @Schema(description = "评分逻辑")
+    private String scoreLogic; // eval_rule_item.score_logic
+
+    @Schema(description = "满分值")
+    private Integer fullScore; // eval_rule_item.full_score
+
+    @Schema(description = "规则类型名称")
+    private String ruleTypeName; // sys_rule_type.name
+
+    @Schema(description = "否决项名称")
+    private String vetoItemName; // eval_veto_item.name
+
+    @Schema(description = "适用对象类型名称")
+    private String objectTypeName; // sys_object_type.name
+
+    @Schema(description = "否决条件")
+    private String vetoCondition; // eval_veto_item.condition
+
+    @Schema(description = "生效周期")
+    private String validCycle; // eval_veto_item.valid_cycle
+
+    @Schema(description = "状态名称")
+    private String statusName; // sys_status.name
+
+    @Schema(description = "停用时间")
+    private LocalDateTime stopTime; // eval_rule_category.update_time（停用时间）
+
+    @Schema(description = "停用操作人名称")
+    private String stopUserName; // sys_user.user_name（update_by关联）
 }

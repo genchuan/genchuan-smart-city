@@ -72,4 +72,21 @@ public class RuleCategoryPageReqVO extends PageParam {
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
     private String statusName;
+    // ========== 新增缺失的查询字段（核心修复） ==========
+    @Schema(description = "适用对象类型名称（关联sys_object_type.name）")
+    private String objectTypeName; // 修复NoSuchPropertyException的核心字段
+
+    @Schema(description = "规则项名称（关联eval_rule_item.name）")
+    private String ruleItemName;
+
+    @Schema(description = "关联指标项名称（关联eval_index_item.name）")
+    private String indexItemName;
+
+    @Schema(description = "规则类型名称（关联sys_rule_type.name）")
+    private String ruleTypeName;
+
+    @Schema(description = "否决项名称（关联eval_veto_item.name）")
+    private String vetoItemName;
+    @Schema(description = "否决项名称（关联eval_veto_item.name）")
+    private String indexItemId;
 }

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>gc-module-evaluate</artifactId>
         <groupId>cn.iocoder.cloud</groupId>
-        <version>2.5.0-SNAPSHOT</version> <!-- 1. 修改 version 为 ${revision} -->
+        <version>${revision}</version> <!-- 1. 修改 version 为 ${revision} -->
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging> <!-- 2. 新增 packaging 为 jar -->
@@ -147,6 +147,11 @@
             <artifactId>flowable-http-common</artifactId>
             <version>7.2.0</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

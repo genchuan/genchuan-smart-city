@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.evaluate.dal.dataobject.objecttype;
+package cn.iocoder.yudao.module.evaluate.dal.dataobject.sys;
 
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 import com.baomidou.mybatisplus.annotation.KeySequence;
@@ -8,22 +8,15 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
 import java.time.LocalDateTime;
-
-/**
- * 对象类型字典 DO
- *
- * @author 亘川智城
- */
-@TableName("sys_object_type")
-@KeySequence("sys_object_type_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。
+@TableName("sys_rule_type")
+@KeySequence("sys_rule_type_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ObjectTypeDO extends BaseDO {
-
+public class RuleTypeDO extends BaseDO {
     /**
      * 主键ID
      */
@@ -47,11 +40,11 @@ public class ObjectTypeDO extends BaseDO {
     @TableField("`desc`")
     private String desc;
     /**
-     * 业务创建时间
+     * 创建时间（业务字段）
      */
     private LocalDateTime bizCreateTime;
     /**
-     * 业务更新时间
+     * 更新时间（业务字段）
      */
     private LocalDateTime bizUpdateTime;
     /**
@@ -70,5 +63,4 @@ public class ObjectTypeDO extends BaseDO {
      * 通用扩展字段4
      */
     private String extCommon4;
-
 }

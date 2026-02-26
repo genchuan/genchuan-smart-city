@@ -41,6 +41,10 @@ public class RuleCategoryDO extends BaseDO {
      */
     private String systemId;
     /**
+     * 否决项表D（关联eval_veto_item.veto_item_id）
+     */
+    private String vetoItemId;
+    /**
      * 规则项数量
      */
     private Integer itemCount;
@@ -55,7 +59,7 @@ public class RuleCategoryDO extends BaseDO {
     /**
      * 使用次数
      */
-    private Integer use_Count;
+    private Integer useCount;
     /**
      * 更新人ID（关联sys_user.user_id）
      */

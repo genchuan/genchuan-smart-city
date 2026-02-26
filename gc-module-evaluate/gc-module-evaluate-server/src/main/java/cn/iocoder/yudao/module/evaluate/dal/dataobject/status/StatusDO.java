@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.evaluate.dal.dataobject.status;
 
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
@@ -43,6 +44,7 @@ public class StatusDO extends BaseDO {
     /**
      * 状态描述
      */
+    @TableField("`desc`")
     private String desc;
     /**
      * 业务创建时间

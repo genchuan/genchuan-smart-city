@@ -5,7 +5,7 @@
     <parent>
         <artifactId>gc-module-evaluate</artifactId>
         <groupId>cn.iocoder.cloud</groupId>
-        <version>2.5.0-SNAPSHOT</version> <!-- 1. 修改 version 为 ${revision} -->
+        <version>${revision}</version> <!-- 1. 修改 version 为 ${revision} -->
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>gc-module-evaluate-api</artifactId>
