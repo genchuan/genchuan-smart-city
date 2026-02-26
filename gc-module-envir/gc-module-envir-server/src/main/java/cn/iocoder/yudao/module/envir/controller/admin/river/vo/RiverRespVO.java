@@ -1,0 +1,108 @@
+package cn.iocoder.yudao.module.envir.controller.admin.river.vo;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
+import java.util.*;
+import java.math.BigDecimal;
+import org.springframework.format.annotation.DateTimeFormat;
+import java.time.LocalDateTime;
+import com.alibaba.excel.annotation.*;
+
+@Schema(description = "管理后台 - 河道 Response VO")
+@Data
+@ExcelIgnoreUnannotated
+public class RiverRespVO {
+
+    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "31320")
+    @ExcelProperty("主键ID")
+    private Long id;
+
+    @Schema(description = "业务主键（UUID）", example = "16738")
+    @ExcelProperty("业务主键（UUID）")
+    private String riverId;
+
+    @Schema(description = "河道名称", example = "王五")
+    @ExcelProperty("河道名称")
+    private String name;
+
+    @Schema(description = "责任河段（如：XX河上游0-5km/中游5-10km/下游10-15km）")
+    @ExcelProperty("责任河段（如：XX河上游0-5km/中游5-10km/下游10-15km）")
+    private String responsibilitySection;
+
+    @Schema(description = "所属区域（关联sys_area.area_code）")
+    @ExcelProperty("所属区域（关联sys_area.area_code）")
+    private String areaCode;
+
+    @Schema(description = "水域保洁频次（可选值：每2小时/每日3次/每日2次/每日1次/每周2次/汛期加密）")
+    @ExcelProperty("水域保洁频次（可选值：每2小时/每日3次/每日2次/每日1次/每周2次/汛期加密）")
+    private String waterCleaningFrequency;
+
+    @Schema(description = "陆域清扫频次（可选值：每小时/每日2次/每日1次/隔日1次/每周1次）")
+    @ExcelProperty("陆域清扫频次（可选值：每小时/每日2次/每日1次/隔日1次/每周1次）")
+    private String landCleaningFrequency;
+
+    @Schema(description = "水质监测周期（单位：天）")
+    @ExcelProperty("水质监测周期（单位：天）")
+    private Integer waterQualityCycle;
+
+    @Schema(description = "水质监测详细数据（含透明度、异味等级、污染物浓度<氨氮/COD/总磷>等）")
+    @ExcelProperty("水质监测详细数据（含透明度、异味等级、污染物浓度<氨氮/COD/总磷>等）")
+    private String waterQualityData;
+
+    @Schema(description = "污染溯源ID（关联溯源表）", example = "1146")
+    @ExcelProperty("污染溯源ID（关联溯源表）")
+    private String pollutionSourceId;
+
+    @Schema(description = "负责人（关联sys_user.id）", example = "24325")
+    @ExcelProperty("负责人（关联sys_user.id）")
+    private String managerId;
+
+    @Schema(description = "业务创建人（关联sys_user.id）")
+    @ExcelProperty("业务创建人（关联sys_user.id）")
+    private String abnormalCreateBy;
+
+    @Schema(description = "业务创建时间")
+    @ExcelProperty("业务创建时间")
+    private LocalDateTime abnormalCreateTime;
+
+    @Schema(description = "业务更新时间")
+    @ExcelProperty("业务更新时间")
+    private LocalDateTime abnormalUpdateTime;
+
+    @Schema(description = "垃圾打捞量（单位：吨/日）")
+    @ExcelProperty("垃圾打捞量（单位：吨/日）")
+    private BigDecimal wasteFishingVolume;
+
+    @Schema(description = "保洁覆盖率（0.00-100.00）")
+    @ExcelProperty("保洁覆盖率（0.00-100.00）")
+    private BigDecimal cleaningCoverage;
+
+    @Schema(description = "水质达标率（0.00-100.00）")
+    @ExcelProperty("水质达标率（0.00-100.00）")
+    private BigDecimal waterQualityRate;
+
+    @Schema(description = "垃圾打捞对比照片URL（多个用逗号分隔）", example = "https://www.iocoder.cn")
+    @ExcelProperty("垃圾打捞对比照片URL（多个用逗号分隔）")
+    private String fishingPhotoUrl;
+
+    @Schema(description = "通用扩展字段1")
+    @ExcelProperty("通用扩展字段1")
+    private String extCommon1;
+
+    @Schema(description = "通用扩展字段2")
+    @ExcelProperty("通用扩展字段2")
+    private String extCommon2;
+
+    @Schema(description = "通用扩展字段3")
+    @ExcelProperty("通用扩展字段3")
+    private String extCommon3;
+
+    @Schema(description = "通用扩展字段4")
+    @ExcelProperty("通用扩展字段4")
+    private String extCommon4;
+
+    @Schema(description = "创建时间")
+    @ExcelProperty("创建时间")
+    private LocalDateTime createTime;
+
+}

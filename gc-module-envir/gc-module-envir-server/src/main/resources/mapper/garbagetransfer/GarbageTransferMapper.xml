@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envir.dal.mysql.garbagetransfer.GarbageTransferMapper">
+
+    <resultMap id="GarbageTransferDetailResultMap" type="cn.iocoder.yudao.module.envir.dal.dataobject.garbagetransfer.GarbageTransferDetailDO">
+        <!-- 继承 GarbageTransferDO 的基础字段 -->
+        <id column="id" property="id"/>
+        <result column="garbage_transfer_id" property="garbageTransferId"/>
+        <result column="name" property="name"/>
+        <result column="location" property="location"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="equipment_ids" property="equipmentIds"/>
+        <result column="environment_threshold" property="environmentThreshold"/>
+        <result column="environment_data" property="environmentData"/>
+        <result column="transfer_destination" property="transferDestination"/>
+        <result column="manager_id" property="managerId"/>
+        <result column="operation_status_id" property="operationStatusId"/>
+        <result column="abnormal_create_by" property="abnormalCreateBy"/>
+        <result column="abnormal_create_time" property="abnormalCreateTime"/>
+        <result column="abnormal_update_time" property="abnormalUpdateTime"/>
+        <result column="daily_transfer_volume" property="dailyTransferVolume"/>
+        <result column="equipment_rate" property="equipmentRate"/>
+        <result column="environment_rate" property="environmentRate"/>
+        <result column="ext_common1" property="extCommon1"/>
+        <result column="ext_common2" property="extCommon2"/>
+        <result column="ext_common3" property="extCommon3"/>
+        <result column="ext_common4" property="extCommon4"/>
+
+        <!-- 关联字段 -->
+        <result column="area_name" property="areaName"/>
+        <result column="equipments_name_str" property="equipmentsNameStr"/>
+        <result column="manager_name" property="managerName"/>
+        <result column="operation_status_name" property="operationStatusName"/>
+    </resultMap>
+
+    <select id="selectListDetail" resultMap="GarbageTransferDetailResultMap">
+        SELECT
+            gt.*,
+            a.area_name AS area_name,
+            os.name AS operation_status_name,
+            u.user_name AS manager_name,
+            GROUP_CONCAT(DISTINCT e.name) AS equipments_name_str
+        FROM garbage_transfer gt
+                 LEFT JOIN sys_area a ON gt.area_code = a.area_code AND a.deleted = 0
+                 LEFT JOIN sys_operation_status os ON gt.operation_status_id = os.sys_operation_status_id AND os.deleted = 0
+                 LEFT JOIN sys_user u ON gt.manager_id = u.user_id AND u.deleted = 0
+                 LEFT JOIN sys_equipment e ON FIND_IN_SET(e.sys_equipment_id, gt.equipment_ids) AND e.deleted = 0
+        WHERE gt.deleted = 0
+        GROUP BY gt.id, a.area_name, os.name, u.user_name
+        ORDER BY gt.id DESC
+    </select>
+
+    <select id="selectDetailPage" resultMap="GarbageTransferDetailResultMap">
+        SELECT
+            gt.*,
+            a.area_name AS area_name,
+            os.name AS operation_status_name,
+            u.user_name AS manager_name,
+            GROUP_CONCAT(DISTINCT e.name) AS equipments_name_str
+        FROM garbage_transfer gt
+                 LEFT JOIN sys_area a ON gt.area_code = a.area_code AND a.deleted = 0
+                 LEFT JOIN sys_operation_status os ON gt.operation_status_id = os.sys_operation_status_id AND os.deleted = 0
+                 LEFT JOIN sys_user u ON gt.manager_id = u.user_id AND u.deleted = 0
+                 LEFT JOIN sys_equipment e ON FIND_IN_SET(e.sys_equipment_id, gt.equipment_ids) AND e.deleted = 0
+        WHERE gt.deleted = 0
+        GROUP BY gt.id, a.area_name, os.name, u.user_name
+        ORDER BY gt.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.pageSize}
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Long">
+        SELECT COUNT(DISTINCT gt.id)
+        FROM garbage_transfer gt
+    </select>
+</mapper>

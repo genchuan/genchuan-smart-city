@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envir.dal.mysql.commercialstreet.CommercialStreetMapper">
+
+    <resultMap id="CommercialStreetDetailResultMap" type="cn.iocoder.yudao.module.envir.dal.dataobject.commercialstreet.CommercialStreetDetailDO">
+        <!-- 继承父类字段 -->
+        <id column="id" property="id"/>
+        <result column="commercial_street_id" property="commercialStreetId"/>
+        <result column="name" property="name"/>
+        <result column="address" property="address"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="cleaning_frequency" property="cleaningFrequency"/>
+        <result column="patrol_interval" property="patrolInterval"/>
+        <result column="collection_points" property="collectionPoints"/>
+        <result column="transfer_interval" property="transferInterval"/>
+        <result column="facility_ids" property="facilityIds"/>
+        <result column="manager_id" property="managerId"/>
+        <result column="abnormal_create_by" property="abnormalCreateBy"/>
+        <result column="abnormal_create_time" property="abnormalCreateTime"/>
+        <result column="abnormal_update_time" property="abnormalUpdateTime"/>
+        <result column="cleaning_coverage" property="cleaningCoverage"/>
+        <result column="facility_rate" property="facilityRate"/>
+        <result column="disposal_duration" property="disposalDuration"/>
+        <result column="problem_photo_url" property="problemPhotoUrl"/>
+        <result column="ext_common1" property="extCommon1"/>
+        <result column="ext_common2" property="extCommon2"/>
+        <result column="ext_common3" property="extCommon3"/>
+        <result column="ext_common4" property="extCommon4"/>
+        <!-- 关联查询的额外字段 -->
+        <result column="area_name" property="areaName"/>
+        <result column="facilitys_name_str" property="facilitysNameStr"/>
+        <result column="manager_name" property="managerName"/>
+    </resultMap>
+
+    <select id="selectListDetail" resultMap="CommercialStreetDetailResultMap">
+        SELECT
+            cs.*,
+            a.area_name AS area_name,
+            GROUP_CONCAT(DISTINCT f.name) AS facilitys_name_str,
+            u.user_name AS manager_name
+        FROM commercial_street cs
+                 LEFT JOIN sys_area a ON cs.area_code = a.area_code AND a.deleted = 0
+                 LEFT JOIN sys_user u ON cs.manager_id = u.user_id AND u.deleted = 0
+                 LEFT JOIN sys_facility f ON FIND_IN_SET(f.sys_facility_id, cs.facility_ids) AND f.deleted = 0
+        WHERE cs.deleted = 0
+        GROUP BY
+            cs.id,
+            a.area_name,
+            u.user_name
+        ORDER BY cs.id DESC
+    </select>
+
+    <select id="selectDetailPage" resultMap="CommercialStreetDetailResultMap">
+        SELECT
+            cs.*,
+            a.area_name AS area_name,
+            GROUP_CONCAT(DISTINCT f.name) AS facilitys_name_str,
+            u.user_name AS manager_name
+        FROM commercial_street cs
+                 LEFT JOIN sys_area a ON cs.area_code = a.area_code AND a.deleted = 0
+                 LEFT JOIN sys_user u ON cs.manager_id = u.user_id AND u.deleted = 0
+                 LEFT JOIN sys_facility f ON FIND_IN_SET(f.sys_facility_id, cs.facility_ids) AND f.deleted = 0
+        WHERE cs.deleted = 0
+        GROUP BY
+            cs.id,
+            a.area_name,
+            u.user_name
+        ORDER BY cs.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.pageSize}
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Long">
+        SELECT COUNT(DISTINCT cs.id)
+        FROM commercial_street cs
+    </select>
+
+</mapper>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envir.dal.mysql.publictoilet.PublicToiletMapper">
+
+    <resultMap id="PublicToiletDetailResultMap" type="cn.iocoder.yudao.module.envir.dal.dataobject.publictoilet.PublicToiletDetailDO">
+
+        <id column="id" property="id"/>
+        <result column="public_toilet_id" property="publicToiletId"/>
+        <result column="name" property="name"/>
+        <result column="location" property="location"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="open_hours" property="openHours"/>
+        <result column="stall_count" property="stallCount"/>
+        <result column="facility_ids" property="facilityIds"/>
+        <result column="consumable_ids" property="consumableIds"/>
+        <result column="operation_status_id" property="operationStatusId"/>
+        <result column="manager_id" property="managerId"/>
+        <result column="abnormal_create_by" property="abnormalCreateBy"/>
+        <result column="abnormal_create_time" property="abnormalCreateTime"/>
+        <result column="abnormal_update_time" property="abnormalUpdateTime"/>
+        <result column="cleaning_rate" property="cleaningRate"/>
+        <result column="warning_count" property="warningCount"/>
+        <result column="complaint_rate" property="complaintRate"/>
+        <result column="photo_url" property="photoUrl"/>
+        <result column="ext_common1" property="extCommon1"/>
+        <result column="ext_common2" property="extCommon2"/>
+        <result column="ext_common3" property="extCommon3"/>
+        <result column="ext_common4" property="extCommon4"/>
+
+        <!-- 关联查询的额外字段 -->
+        <result column="area_name" property="areaName"/>
+        <result column="facility_name_str" property="facilityNameStr"/>
+        <result column="operation_status_name" property="operationStatusName"/>
+        <result column="manager_name" property="managerName"/>
+    </resultMap>
+
+<!--    <select id="selectListDetail" resultMap="PublicToiletDetailResultMap">
+        SELECT
+            pt.*,
+            a.area_name AS area_name,
+            GROUP_CONCAT(DISTINCT f.name) AS facility_name_str,
+            os.name AS operation_status_name,
+            u.user_name AS manager_name
+        FROM public_toilet pt
+                 LEFT JOIN sys_area a ON pt.area_code = a.area_code AND a.deleted = 0
+                 LEFT JOIN sys_facility f ON FIND_IN_SET(f.sys_facility_id, pt.facility_ids) AND f.deleted = 0
+                 LEFT JOIN sys_operation_status os ON pt.operation_status_id = os.sys_operation_status_id AND os.deleted = 0
+                 LEFT JOIN sys_user u ON pt.manager_id = u.user_id AND u.deleted = 0
+        GROUP BY pt.id, a.area_name, os.name, u.user_name
+        ORDER BY pt.id DESC
+    </select>-->
+
+    <select id="selectDetailPage" resultMap="PublicToiletDetailResultMap">
+        SELECT
+            pt.*,
+            a.area_name AS area_name,
+            GROUP_CONCAT(DISTINCT f.name) AS facility_name_str,
+            os.name AS operation_status_name,
+            u.user_name AS manager_name
+        FROM public_toilet pt
+                 LEFT JOIN sys_area a ON pt.area_code = a.area_code AND a.deleted = 0
+                 LEFT JOIN sys_facility f ON FIND_IN_SET(f.sys_facility_id, pt.facility_ids) AND f.deleted = 0
+                 LEFT JOIN sys_operation_status os ON pt.operation_status_id = os.sys_operation_status_id AND os.deleted = 0
+                 LEFT JOIN sys_user u ON pt.manager_id = u.user_id AND u.deleted = 0
+        GROUP BY pt.id, a.area_name, os.name, u.user_name
+        ORDER BY pt.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.pageSize}
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Long">
+        SELECT COUNT(DISTINCT pt.id)
+        FROM public_toilet pt
+    </select>
+
+</mapper>
