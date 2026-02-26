@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.GarbageTransferMapper">
+
+    <resultMap id="GarbageTransferDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.detail.GarbageTransferDetailDO">
+        <!-- 基础字段映射 -->
+        <id column="id" property="id"/>
+        <result column="transfer_id" property="transferId"/>
+        <result column="name" property="name"/>
+        <result column="location" property="location"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="equipment_ids" property="equipmentIds"/>
+        <result column="operation_status_id" property="operationStatusId"/>
+        <result column="manager_id" property="managerId"/>
+        <result column="daily_transfer_volume" property="dailyTransferVolume"/>
+        <result column="equipment_rate" property="equipmentRate"/>
+        <result column="environment_rate" property="environmentRate"/>
+        <result column="unhandled_alarm_count" property="unhandledAlarmCount"/>
+        <result column="pending_maintenance_count" property="pendingMaintenanceCount"/>
+        <result column="environment_data" property="environmentData"/>
+        <result column="ext_common1" property="extCommon1"/>
+        <result column="ext_common2" property="extCommon2"/>
+        <result column="ext_common3" property="extCommon3"/>
+        <result column="ext_common4" property="extCommon4"/>
+
+        <!-- 关联查询的额外字段 -->
+        <result column="area_name" property="areaName"/>
+        <result column="equipments_name_str" property="equipmentsNameStr"/>
+        <result column="operation_status_name" property="operationStatusName"/>
+        <result column="manager_name" property="managerName"/>
+    </resultMap>
+
+    <select id="selectDetailPage" resultMap="GarbageTransferDetailResultMap">
+        SELECT
+        gt.*,
+        a.area_name AS area_name,
+        os.name AS operation_status_name,
+        u.user_name AS manager_name,
+        IFNULL(GROUP_CONCAT(DISTINCT e.name), '') AS equipments_name_str
+        FROM garbage_transfer gt
+        LEFT JOIN sys_area a ON gt.area_code = a.area_code AND a.deleted = 0
+        LEFT JOIN sys_operation_status os ON gt.operation_status_id = os.sys_operation_status_id AND os.deleted = 0
+        LEFT JOIN sys_user u ON gt.manager_id = u.user_id AND u.deleted = 0
+        LEFT JOIN sys_equipment e ON FIND_IN_SET(
+        e.sys_equipment_id,
+        REPLACE(REPLACE(REPLACE(REPLACE(gt.equipment_ids, '[', ''), ']', ''), '"', ''), ' ', '')
+        ) AND e.deleted = 0
+        WHERE gt.deleted = 0
+        GROUP BY gt.id, a.area_name, os.name, u.user_name
+        ORDER BY gt.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.pageSize}
+    </select>
+
+    <!-- 查询总条数 -->
+    <select id="selectCount" resultType="Long">
+        SELECT COUNT(DISTINCT gt.id)
+        FROM garbage_transfer gt
+        WHERE gt.deleted = 0
+    </select>
+
+</mapper>

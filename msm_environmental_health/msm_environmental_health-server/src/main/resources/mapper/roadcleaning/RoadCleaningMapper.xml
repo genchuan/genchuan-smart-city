@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.roadcleaning.RoadCleaningMapper">
+
+    <resultMap id="RoadCleaningDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning.Detail.RoadCleaningDetailDO">
+        <!-- 主表基础字段映射 -->
+        <id column="id" property="id"/>
+        <result column="cleaning_id" property="cleaningId"/>
+        <result column="plan_no" property="planNo"/>
+        <result column="road_id" property="roadId"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="frequency" property="frequency"/>
+        <result column="time_period" property="timePeriod"/>
+        <result column="staff_ids" property="staffIds"/>
+        <result column="plan_status_id" property="planStatusId"/>
+        <result column="quality_rate" property="qualityRate"/>
+        <result column="problem_count" property="problemCount"/>
+        <result column="attendance_rate" property="attendanceRate"/>
+        <result column="tool_ids" property="toolIds"/>
+        <result column="standard" property="standard"/>
+        <result column="checkin_time" property="checkinTime"/>
+        <result column="progress" property="progress"/>
+        <result column="operation_status" property="operationStatus"/>
+        <result column="track_coverage" property="trackCoverage"/>
+        <result column="last_report_time" property="lastReportTime"/>
+        <result column="is_abnormal" property="isAbnormal"/>
+        <result column="is_effective" property="isEffective"/>
+        <result column="complete_time" property="completeTime"/>
+        <result column="check_photo_url" property="checkPhotoUrl"/>
+        <result column="review_status" property="reviewStatus"/>
+        <result column="review_by" property="reviewBy"/>
+        <result column="review_time" property="reviewTime"/>
+        <result column="reform_require" property="reformRequire"/>
+        <result column="ext_common1" property="extCommon1"/>
+        <result column="ext_common2" property="extCommon2"/>
+        <result column="ext_common3" property="extCommon3"/>
+        <result column="ext_common4" property="extCommon4"/>
+
+        <result column="road_name" property="roadName"/>
+        <result column="area_name" property="areaName"/>
+        <result column="staffs_name_str" property="staffsNameStr"/>
+        <result column="plan_status_name" property="planStatusName"/>
+        <result column="tools_name_str" property="toolsNameStr"/>
+    </resultMap>
+
+    <select id="selectDetailPage" resultMap="RoadCleaningDetailResultMap">
+        SELECT
+            rc.*,
+            r.road_name AS road_name,
+            a.area_name AS area_name,
+            ps.name AS plan_status_name,
+            IFNULL(GROUP_CONCAT(DISTINCT u.user_name), '') AS staffs_name_str,
+            IFNULL(GROUP_CONCAT(DISTINCT t.name SEPARATOR ','), '') AS tools_name_str
+        FROM road_cleaning rc
+                 LEFT JOIN sys_road r ON rc.road_id = r.road_id AND r.deleted = 0
+                 LEFT JOIN sys_area a ON rc.area_code = a.area_code AND a.deleted = 0
+                 LEFT JOIN sys_plan_status ps ON rc.plan_status_id = ps.sys_plan_status_id AND ps.deleted = 0
+                 LEFT JOIN sys_user u ON FIND_IN_SET(
+                                                 u.user_id,
+                                                 REPLACE(REPLACE(REPLACE(REPLACE(rc.staff_ids, '[', ''), ']', ''), '"', ''), ' ', '')
+                                         ) AND u.deleted = 0
+                 LEFT JOIN sys_tool t ON FIND_IN_SET(
+                                                 t.sys_tool_id,
+                                                 REPLACE(REPLACE(REPLACE(REPLACE(rc.tool_ids, '[', ''), ']', ''), '"', ''), ' ', '')
+                                         ) AND t.deleted = 0
+        WHERE rc.deleted = 0
+        GROUP BY rc.id, r.road_name, a.area_name, ps.name
+        ORDER BY rc.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.limit}
+    </select>
+
+
+    <select id="selectCount" resultType="java.lang.Long">
+        SELECT COUNT(DISTINCT rc.id)
+        FROM road_cleaning rc
+        where rc.deleted = 0
+    </select>
+
+</mapper>
