@@ -31,6 +31,7 @@
         <module>gc-module-datacenter</module>
         <module>gc-module-industry</module>
         <module>gc-module-park</module>
+        <module>gc-module-evaluate</module>
     </modules>
 
     <name>${project.artifactId}</name>

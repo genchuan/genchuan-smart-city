@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.evaluate.dal.mysql.indexsystem.IndexSystemMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+    <!-- 联表分页查询指标体系列表 -->
+    <select id="selectPageWithJoin" resultType="cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.indexsystem.vo.IndexSystemPageItemVO">
+        SELECT
+        eis.id,
+        eis.system_id AS systemId,
+        eis.name,
+        eis.code,
+        eis.version,
+        eis.desc AS description,
+        eis.category_count AS categoryCount,
+        eis.item_count AS itemCount,
+        eis.object_type_id AS objectTypeId,
+        eis.status_id AS statusId,
+        eis.create_by AS createBy,
+        eis.biz_create_time AS bizCreateTime,
+        eis.biz_update_time AS bizUpdateTime,
+
+        <!-- 关联字典表字段（注意：关联的是字典表的业务ID字段）-->
+        sot.name AS objectTypeName,
+        ss.name AS statusName,
+        creator.user_name AS createByName
+
+        FROM eval_index_system eis
+        <!-- 注意：sys_object_type表用type_id字段关联 -->
+        LEFT JOIN sys_object_type sot ON eis.object_type_id = sot.type_id
+        <!-- 注意：sys_status表用status_id字段关联 -->
+        LEFT JOIN sys_status ss ON eis.status_id = ss.status_id
+        LEFT JOIN sys_user creator ON eis.create_by = creator.user_id
+
+        WHERE eis.deleted = 0
+        AND eis.tenant_id = #{reqVO.tenantId}
+
+        <!-- 动态筛选条件 -->
+        <if test="reqVO.name != null and reqVO.name != ''">
+            AND eis.name LIKE CONCAT('%', #{reqVO.name}, '%')
+        </if>
+        <if test="reqVO.code != null and reqVO.code != ''">
+            AND eis.code = #{reqVO.code}
+        </if>
+        <if test="reqVO.systemId != null and reqVO.systemId != ''">
+            AND eis.system_id = #{reqVO.systemId}
+        </if>
+        <if test="reqVO.objectTypeId != null and reqVO.objectTypeId != ''">
+            AND eis.object_type_id = #{reqVO.objectTypeId}
+        </if>
+        <if test="reqVO.statusId != null and reqVO.statusId != ''">
+            AND eis.status_id = #{reqVO.statusId}
+        </if>
+        <if test="reqVO.version != null and reqVO.version != ''">
+            AND eis.version = #{reqVO.version}
+        </if>
+
+        ORDER BY eis.biz_create_time DESC
+    </select>
+
+    <!-- 查询指标体系基本信息（详情页） -->
+    <select id="selectDetailBaseInfo" resultType="cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.indexsystem.vo.IndexSystemDetailVO$BaseInfo">
+        SELECT
+        eis.system_id AS systemId,
+        eis.name,
+        eis.code,
+        eis.version,
+        eis.desc AS description,
+        eis.biz_create_time AS bizCreateTime,
+        eis.biz_update_time AS bizUpdateTime,
+
+        sot.name AS objectTypeName,
+        ss.name AS statusName,
+        creator.user_name AS createByName
+
+        FROM eval_index_system eis
+        <!-- 注意：关联字典表的业务ID字段 -->
+        LEFT JOIN sys_object_type sot ON eis.object_type_id = sot.type_id
+        LEFT JOIN sys_status ss ON eis.status_id = ss.status_id
+        LEFT JOIN sys_user creator ON eis.create_by = creator.user_id
+
+        WHERE eis.system_id = #{systemId}
+        AND eis.deleted = 0
+    </select>
+
+    <!-- 查询指标分类列表 -->
+    <select id="selectCategoriesBySystemId" resultType="cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.indexsystem.vo.IndexSystemDetailVO$CategoryVO">
+        SELECT
+            eic.category_id AS categoryId,
+            eic.name,
+            eic.weight
+        FROM eval_index_category eic
+        WHERE eic.system_id = #{systemId}
+          AND eic.deleted = 0
+    </select>
+
+    <!-- 查询指标项列表（批量查询） -->
+    <select id="selectItemsByCategoryIds" resultType="cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.indexsystem.vo.IndexSystemDetailVO$IndexItemVO">
+        SELECT
+        eii.item_id AS itemId,
+        eii.category_id AS categoryId,
+        eii.name,
+        eii.threshold,
+        eii.weight,
+
+        <!-- 关联字典表的type_id/way_id字段（UUID），不是id字段-->
+        sit.name AS indexTypeName,
+        scw.name AS calcWayName
+
+        FROM eval_index_item eii
+        <!-- 注意：关联sys_index_type表的type_id字段 -->
+        LEFT JOIN sys_index_type sit ON eii.index_type_id = sit.type_id
+        <!-- 注意：关联sys_calc_way表的way_id字段 -->
+        LEFT JOIN sys_calc_way scw ON eii.calc_way_id = scw.way_id
+
+        WHERE eii.category_id IN
+        <foreach collection="categoryIds" item="categoryId" open="(" separator="," close=")">
+            #{categoryId}
+        </foreach>
+        AND eii.deleted = 0
+       <!-- ORDER BY eii.sort_no ASC -->
+    </select>
+
+    <!-- 校验分类权重总和 -->
+    <select id="selectCategoryWeightSum" resultType="java.lang.Double">
+        SELECT SUM(weight)
+        FROM eval_index_category
+        WHERE system_id = #{systemId}
+          AND deleted = 0
+    </select>
+
+    <!-- 校验指标项权重总和 -->
+    <select id="selectItemWeightSum" resultType="java.lang.Double">
+        SELECT SUM(weight)
+        FROM eval_index_item
+        WHERE category_id = #{categoryId}
+          AND deleted = 0
+    </select>
+
+</mapper>
