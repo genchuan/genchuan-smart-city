@@ -50,12 +50,69 @@ public class CategoryServiceImpl implements CategoryService {
         categoryMapper.updateById(updateObj);
     }
 
+//    @Override
+//    public void deleteCategory(Long id) {
+//        // 校验存在
+//        validateCategoryExists(id);
+//        // 删除
+//        categoryMapper.deleteById(id);
+//    }
+
     @Override
     public void deleteCategory(Long id) {
         // 校验存在
         validateCategoryExists(id);
+
+        // 检查是否有子分类
+        CategoryDO category = categoryMapper.selectById(id);
+        if (category != null) {
+            // 将Long类型的id转换为String类型
+            String categoryIdStr = String.valueOf(id);
+            List<String> parentIds = Collections.singletonList(categoryIdStr);
+            boolean hasChildren = categoryMapper.hasChildrenByParentIds(parentIds);
+
+            if (hasChildren) {
+                throw exception(CATEGORY_HAS_CHILDREN);
+            }
+        }
+
         // 删除
-        categoryMapper.deleteById(id);
+        int rows = categoryMapper.deleteById(id);
+        if (rows == 0) {
+            throw exception(CATEGORY_DELETE_FAILED);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteCategories(List<Long> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return;
+        }
+
+        // 1. 校验所有分类是否存在
+        List<CategoryDO> categories = categoryMapper.selectListByIds(ids);
+        if (categories.size() != ids.size()) {
+            throw exception(CATEGORY_NOT_EXISTS);
+        }
+
+        // 2. 检查是否有分类存在子分类
+        // 获取所有分类的ID（转换为String类型，因为parentId是String类型）
+        List<String> categoryIdStrs = categories.stream()
+                .map(category -> String.valueOf(category.getId()))
+                .collect(Collectors.toList());
+
+        // 检查是否有子分类
+        boolean hasChildren = categoryMapper.hasChildrenByParentIds(categoryIdStrs);
+        if (hasChildren) {
+            throw exception(CATEGORY_HAS_CHILDREN);
+        }
+
+        // 3. 执行批量删除
+        int deletedCount = categoryMapper.deleteBatchIds(ids);
+        if (deletedCount != ids.size()) {
+            throw exception(CATEGORY_BATCH_DELETE_FAILED);
+        }
     }
 
     private void validateCategoryExists(Long id) {
@@ -75,32 +132,46 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryTreeRespVO> getCategoryTree() {
+    public List<CategorySimpleTreeRespVO> getCategorySimpleTree() {
         // 1. 查询出所有分类数据
         List<CategoryDO> allCategories = categoryMapper.selectList();
         if (CollectionUtils.isEmpty(allCategories)) {
             return Collections.emptyList();
         }
 
-        // 2. 使用 BeanUtils 将所有 DO 转换为 TreeRespVO
-        List<CategoryTreeRespVO> treeNodeList = BeanUtils.toBean(allCategories, CategoryTreeRespVO.class);
+        // 2. 转换为简化树节点列表
+        List<CategorySimpleTreeRespVO> treeNodeList = allCategories.stream()
+                .map(category -> {
+                    CategorySimpleTreeRespVO node = new CategorySimpleTreeRespVO();
+                    // 将Long类型的id转换为String类型，符合前端要求
+                    node.setId(String.valueOf(category.getId()));
+                    // 使用categoryName作为label
+                    node.setLabel(category.getCategoryName());
+                    return node;
+                })
+                .collect(Collectors.toList());
 
         // 3. 构建 id 到节点的 Map，便于查找
-        Map<Long, CategoryTreeRespVO> nodeMap = treeNodeList.stream()
-                .collect(Collectors.toMap(CategoryTreeRespVO::getId, node -> node));
+        Map<String, CategorySimpleTreeRespVO> nodeMap = treeNodeList.stream()
+                .collect(Collectors.toMap(CategorySimpleTreeRespVO::getId, node -> node));
 
         // 4. 构建树形结构
-        List<CategoryTreeRespVO> rootList = new ArrayList<>();
-        for (CategoryTreeRespVO node : treeNodeList) {
-            String parentIdStr = node.getParentId();
-            // 判断是否为根节点 (parentId 为 null 或为空字符串)
-            if (parentIdStr == null || parentIdStr.trim().isEmpty()) {
-                rootList.add(node);
-            } else {
-                // 尝试将 parentId 转换为 Long，考虑到数据库中可能是数字字符串
-                try {
-                    Long parentId = Long.parseLong(parentIdStr);
-                    CategoryTreeRespVO parentNode = nodeMap.get(parentId);
+        List<CategorySimpleTreeRespVO> rootList = new ArrayList<>();
+        for (CategorySimpleTreeRespVO node : treeNodeList) {
+            // 获取当前节点对应的原始DO对象，以获取parentId
+            CategoryDO originalCategory = allCategories.stream()
+                    .filter(c -> String.valueOf(c.getId()).equals(node.getId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (originalCategory != null) {
+                String parentIdStr = originalCategory.getParentId();
+                // 判断是否为根节点 (parentId 为 null 或为空字符串)
+                if (parentIdStr == null || parentIdStr.trim().isEmpty()) {
+                    rootList.add(node);
+                } else {
+                    // 直接使用parentId字符串查找父节点
+                    CategorySimpleTreeRespVO parentNode = nodeMap.get(parentIdStr);
                     if (parentNode != null) {
                         // 初始化子列表
                         if (parentNode.getChildren() == null) {
@@ -108,10 +179,7 @@ public class CategoryServiceImpl implements CategoryService {
                         }
                         parentNode.getChildren().add(node);
                     }
-                    // 如果父节点不存在于本次查询结果中，则当前节点暂时作为“孤儿节点”处理，可根据业务决定是否加入根节点或忽略。
-                } catch (NumberFormatException e) {
-                    // 如果 parentId 不是有效数字，按父节点不存在处理
-                    // 根据业务需要，可以记录日志或做其他处理
+                    // 如果父节点不存在于本次查询结果中，则当前节点暂时作为"孤儿节点"处理
                 }
             }
         }

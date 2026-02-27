@@ -37,6 +37,13 @@ public interface CategoryService {
     void deleteCategory(Long id);
 
     /**
+     * 批量删除管理部件分类
+     *
+     * @param ids 编号列表
+     */
+    void deleteCategories(List<Long> ids);
+
+    /**
      * 获得管理部件分类
      *
      * @param id 编号
@@ -53,9 +60,9 @@ public interface CategoryService {
     PageResult<CategoryDO> getCategoryPage(CategoryPageReqVO pageReqVO);
 
     /**
-     * 获得管理部件分类树
+     * 获得管理部件分类简化树（仅包含id、label、children）
      *
-     * @return 管理部件分类树列表
+     * @return 管理部件分类简化树列表
      */
-    List<CategoryTreeRespVO> getCategoryTree();
+    List<CategorySimpleTreeRespVO> getCategorySimpleTree();
 }

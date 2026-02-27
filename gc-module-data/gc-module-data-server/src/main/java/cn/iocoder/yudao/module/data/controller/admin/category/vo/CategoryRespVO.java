@@ -18,11 +18,11 @@ public class CategoryRespVO {
 
     @Schema(description = "分类名称", example = "王五")
     @ExcelProperty("分类名称")
-    private String name;
+    private String categoryName;
 
     @Schema(description = "分类代码")
     @ExcelProperty("分类代码")
-    private String code;
+    private String categoryCode;
 
     @Schema(description = "编码排序类型", example = "1")
     @ExcelProperty("编码排序类型")
@@ -34,23 +34,23 @@ public class CategoryRespVO {
 
     @Schema(description = "上级分类名称", example = "张三")
     @ExcelProperty("上级分类名称")
-    private String parentName;
+    private String parentCategoryName;
 
-    @Schema(description = "关联图标ID", example = "26428")
-    @ExcelProperty("关联图标ID")
-    private String iconId;
+    @Schema(description = "图示名称", example = "26428")
+    @ExcelProperty("图示名称")
+    private String iconName;
 
-    @Schema(description = "图示审核状态ID", example = "655")
-    @ExcelProperty("图示审核状态ID")
-    private String iconAuditStatusId;
+    @Schema(description = "图示审核状态", example = "655")
+    @ExcelProperty("图示审核状态")
+    private String auditStatus;
 
-    @Schema(description = "分类类型ID", example = "27463")
-    @ExcelProperty("分类类型ID")
-    private String categoryTypeId;
+    @Schema(description = "分类类型", example = "27463")
+    @ExcelProperty("分类类型")
+    private String categoryType;
 
-    @Schema(description = "关联状态ID", example = "6219")
-    @ExcelProperty("关联状态ID")
-    private String statusId;
+    @Schema(description = "状态", example = "0,1,2")
+    @ExcelProperty("状态")
+    private String status;
 
     @Schema(description = "关联审核状态ID", example = "26882")
     @ExcelProperty("关联审核状态ID")
@@ -80,8 +80,13 @@ public class CategoryRespVO {
     @ExcelProperty("通用扩展字段2")
     private String extCommon2;
 
+    @Schema(description = "创建人")
+    @ExcelProperty("创建人")
+    private String creator;
+
     @Schema(description = "创建时间")
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
+
 
 }

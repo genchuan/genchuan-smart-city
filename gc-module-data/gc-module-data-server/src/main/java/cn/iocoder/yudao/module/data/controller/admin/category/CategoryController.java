@@ -62,6 +62,14 @@ public class CategoryController {
         return success(true);
     }
 
+    @DeleteMapping("/batch-delete")
+    @Operation(summary = "批量删除管理部件分类")
+    @PreAuthorize("@ss.hasPermission('data:category:delete')")
+    public CommonResult<Boolean> deleteCategories(@RequestBody List<Long> ids) {
+        categoryService.deleteCategories(ids);
+        return success(true);
+    }
+
     @GetMapping("/get")
     @Operation(summary = "获得管理部件分类")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
@@ -79,6 +87,14 @@ public class CategoryController {
         return success(BeanUtils.toBean(pageResult, CategoryRespVO.class));
     }
 
+    @GetMapping("/tree")
+    @Operation(summary = "获得管理部件分类树")
+    @PreAuthorize("@ss.hasPermission('data:category:query')")
+    public CommonResult<List<CategorySimpleTreeRespVO>> getCategoryTree() {
+        List<CategorySimpleTreeRespVO> tree = categoryService.getCategorySimpleTree();
+        return success(tree);
+    }
+
     @GetMapping("/export-excel")
     @Operation(summary = "导出管理部件分类 Excel")
     @PreAuthorize("@ss.hasPermission('data:category:export')")
@@ -90,14 +106,6 @@ public class CategoryController {
         // 导出 Excel
         ExcelUtils.write(response, "管理部件分类.xls", "数据", CategoryRespVO.class,
                         BeanUtils.toBean(list, CategoryRespVO.class));
-    }
-
-    @GetMapping("/tree")
-    @Operation(summary = "获得管理部件分类树")
-    @PreAuthorize("@ss.hasPermission('data:category:query')")
-    public CommonResult<List<CategoryTreeRespVO>> getCategoryTree() {
-        List<CategoryTreeRespVO> tree = categoryService.getCategoryTree();
-        return success(tree);
     }
 
 }

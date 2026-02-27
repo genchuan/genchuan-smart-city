@@ -30,11 +30,11 @@ public class CategoryDO extends BaseDO {
     /**
      * 分类名称
      */
-    private String name;
+    private String categoryName;
     /**
      * 分类代码
      */
-    private String code;
+    private String categoryCode;
     /**
      * 编码排序类型
      */
@@ -46,23 +46,23 @@ public class CategoryDO extends BaseDO {
     /**
      * 上级分类名称
      */
-    private String parentName;
+    private String parentCategoryName;
     /**
-     * 关联图标ID
+     * 图示名称
      */
-    private String iconId;
+    private String iconName;
     /**
-     * 图示审核状态ID
+     * 图示审核状态
      */
-    private String iconAuditStatusId;
+    private String auditStatus;
     /**
-     * 分类类型ID
+     * 分类类型
      */
-    private String categoryTypeId;
+    private String categoryType;
     /**
-     * 关联状态ID
+     * 状态
      */
-    private String statusId;
+    private String status;
     /**
      * 关联审核状态ID
      */
@@ -91,5 +91,10 @@ public class CategoryDO extends BaseDO {
      * 通用扩展字段2
      */
     private String extCommon2;
+
+    /**
+     * 创建人
+     */
+    private String creator;
 
 }

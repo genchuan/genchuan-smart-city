@@ -16,10 +16,10 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 public class CategoryPageReqVO extends PageParam {
 
     @Schema(description = "分类名称", example = "王五")
-    private String name;
+    private String categoryName;
 
     @Schema(description = "分类代码")
-    private String code;
+    private String categoryCode;
 
     @Schema(description = "编码排序类型", example = "1")
     private String codeSortType;
@@ -28,19 +28,19 @@ public class CategoryPageReqVO extends PageParam {
     private String parentId;
 
     @Schema(description = "上级分类名称", example = "张三")
-    private String parentName;
+    private String parentCategoryName;
 
-    @Schema(description = "关联图标ID", example = "26428")
-    private String iconId;
+    @Schema(description = "图标名称", example = "26428")
+    private String iconName;
 
-    @Schema(description = "图示审核状态ID", example = "655")
-    private String iconAuditStatusId;
+    @Schema(description = "图示审核状态", example = "0,1,2")
+    private String auditStatus;
 
-    @Schema(description = "分类类型ID", example = "27463")
-    private String categoryTypeId;
+    @Schema(description = "分类类型", example = "27463")
+    private String categoryType;
 
-    @Schema(description = "关联状态ID", example = "6219")
-    private String statusId;
+    @Schema(description = "状态", example = "0,1,2")
+    private String status;
 
     @Schema(description = "关联审核状态ID", example = "26882")
     private String auditStatusId;
@@ -63,8 +63,13 @@ public class CategoryPageReqVO extends PageParam {
     @Schema(description = "通用扩展字段2")
     private String extCommon2;
 
+    @Schema(description = "创建人")
+    private String creator;
+
     @Schema(description = "创建时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
+
+
 
 }
