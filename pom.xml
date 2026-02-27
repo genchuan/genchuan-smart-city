@@ -33,6 +33,7 @@
         <module>gc-module-park</module>
         <module>gc-module-data</module>
         <module>msm_environmental_health</module>
+        <module>msm_municipal_facility</module>
     </modules>
 
     <name>${project.artifactId}</name>
