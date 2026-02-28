@@ -38,7 +38,7 @@
 
         <dependency>
             <groupId>cn.iocoder.cloud</groupId>
-            <artifactId>gc-module-park-api</artifactId>
+            <artifactId>msm_municipal_facility-api</artifactId>
             <version>${revision}</version>
         </dependency>
 
