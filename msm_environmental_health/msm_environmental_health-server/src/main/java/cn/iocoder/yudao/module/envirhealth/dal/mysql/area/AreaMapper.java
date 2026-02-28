@@ -6,6 +6,8 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.area.AreaDO;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.area.vo.*;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * 区域编码 Mapper
@@ -29,4 +31,6 @@ public interface AreaMapper extends BaseMapperX<AreaDO> {
                 .orderByDesc(AreaDO::getId));
     }
 
+    @Select("SELECT * FROM sys_area WHERE area_code = #{areaCode} LIMIT 1")
+    AreaDO selectByAreaCode(@Param("areaCode") String areaCode);
 }

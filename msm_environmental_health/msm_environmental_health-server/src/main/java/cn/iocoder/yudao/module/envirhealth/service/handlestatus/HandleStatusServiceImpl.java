@@ -1,5 +1,9 @@
 package cn.iocoder.yudao.module.envirhealth.service.handlestatus;
 
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.abnormaltype.AbnormalTypeOptionVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.AbnormalTypeDO;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -71,4 +75,21 @@ public class HandleStatusServiceImpl implements HandleStatusService {
         return handleStatusMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public List<HandleStatusOptionVO> getHandleStatusOptions() {
+
+        List<HandleStatusDO> list;
+        list = handleStatusMapper.selectList(
+                new LambdaQueryWrapperX<HandleStatusDO>()
+                        .eq(HandleStatusDO::getDeleted, 0)
+                        .orderByDesc(HandleStatusDO::getId)
+        );
+        // 将DO转换为下拉框VO（label=name，value=id）
+        return CollectionUtils.convertList(list, handleStatusDO -> {
+            HandleStatusOptionVO vo = new HandleStatusOptionVO();
+            vo.setLabel(handleStatusDO.getName());
+            vo.setValue(handleStatusDO.getSysHandleStatusId());
+            return vo;
+        });
+    }
 }

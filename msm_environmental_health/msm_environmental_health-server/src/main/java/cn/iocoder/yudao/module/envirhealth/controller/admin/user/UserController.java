@@ -1,9 +1,10 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.user;
 
+import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehicleOptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -33,7 +34,7 @@ import cn.iocoder.yudao.module.envirhealth.service.user.user.UserService;
 
 @Tag(name = "环境卫生管理 - 系统用户")
 @RestController
-@RequestMapping("/health/user")
+@RequestMapping("/envirhealth/user")
 @Validated
 public class UserController {
 
@@ -94,4 +95,14 @@ public class UserController {
                         BeanUtils.toBean(list, UserRespVO.class));
     }
 
-}*/
+    /**
+     * 获得系统用户下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得系统用户(下拉框)")
+    @PreAuthorize("@ss.hasPermission('health:user:query')")
+    public CommonResult<List<UserOptionVO>> getUserOptions() {
+        return success(userService.getUserOptions());
+    }
+}

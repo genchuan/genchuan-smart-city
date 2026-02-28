@@ -1,7 +1,12 @@
 package cn.iocoder.yudao.module.envirhealth.service.user.user;
 
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehicleOptionVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.VehicleDO;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -11,6 +16,8 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.user.UserMapper;
+
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.*;
@@ -69,4 +76,21 @@ public class UserServiceImpl implements UserService {
         return userMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public List<UserOptionVO> getUserOptions() {
+
+        List<UserDO> list;
+        list = userMapper.selectList(
+                new LambdaQueryWrapperX<UserDO>()
+                        .eq(UserDO::getDeleted, 0)
+                        .orderByDesc(UserDO::getId)
+        );
+        // 将DO转换为下拉框VO（label=name，value=id）
+        return CollectionUtils.convertList(list, userDO -> {
+            UserOptionVO vo = new UserOptionVO();
+            vo.setLabel(userDO.getUserName());
+            vo.setValue(userDO.getUserId());
+            return vo;
+        });
+    }
 }

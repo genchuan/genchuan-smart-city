@@ -1,10 +1,14 @@
 package cn.iocoder.yudao.module.envirhealth.service.user.user;
 
+import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehicleOptionVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.UserDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+
+import java.util.List;
 
 /**
  * 系统用户 Service 接口
@@ -51,4 +55,9 @@ public interface UserService {
      */
     PageResult<UserDO> getUserPage(UserPageReqVO pageReqVO);
 
+    /**
+     * 获得系统用户下拉框选项
+     * @return 下拉框选项列表
+     */
+    List<UserOptionVO> getUserOptions();
 }

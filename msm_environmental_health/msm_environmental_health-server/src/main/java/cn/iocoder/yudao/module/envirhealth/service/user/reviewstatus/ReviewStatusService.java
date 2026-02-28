@@ -1,10 +1,14 @@
 package cn.iocoder.yudao.module.envirhealth.service.user.reviewstatus;
 
+import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.reviewresult.ReviewResultOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.reviewstatus.ReviewStatusPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.reviewstatus.ReviewStatusSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.util.options.vo.OptionVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.ReviewStatusDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+
+import java.util.List;
 
 /**
  * 审核状态字典表 Service 接口
@@ -51,4 +55,9 @@ public interface ReviewStatusService {
      */
     PageResult<ReviewStatusDO> getReviewStatusPage(ReviewStatusPageReqVO pageReqVO);
 
+    /**
+     * 获得审核状态下拉框选项
+     * @return 下拉框选项列表
+     */
+    List<OptionVO> getReviewStatusOptions();
 }

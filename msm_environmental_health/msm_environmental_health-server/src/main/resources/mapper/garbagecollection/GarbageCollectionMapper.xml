@@ -39,32 +39,74 @@
 
     <select id="selectDetailPage" resultMap="GarbageCollectionDetailResultMap">
         SELECT
-            gc.*,
-            gt.name AS garbage_type_name,
-            a.area_name AS area_name,
-            v.license_plate AS vehicle_license_plate,
-            ps.name AS plan_status_name,
-            IFNULL(GROUP_CONCAT(DISTINCT u.user_name), '') AS users_name_str,
-            IFNULL(GROUP_CONCAT(DISTINCT p.point_name), '') AS points_name_str
+        gc.*,
+        gt.name AS garbage_type_name,
+        a.area_name AS area_name,
+        v.license_plate AS vehicle_license_plate,
+        ps.name AS plan_status_name,
+        IFNULL(GROUP_CONCAT(DISTINCT u.user_name), '') AS users_name_str,
+        IFNULL(GROUP_CONCAT(DISTINCT p.point_name), '') AS points_name_str
         FROM garbage_collection gc
-                 LEFT JOIN sys_garbage_type gt ON gc.garbage_type_id = gt.sys_garbage_type_id AND gt.deleted = 0
-                 LEFT JOIN sys_area a ON gc.area_code = a.area_code AND a.deleted = 0
-                 LEFT JOIN sys_vehicle v ON gc.vehicle_id = v.sys_vehicle_id AND v.deleted = 0
-                 LEFT JOIN sys_plan_status ps ON gc.plan_status_id = ps.sys_plan_status_id AND ps.deleted = 0
-                 LEFT JOIN sys_user u ON FIND_IN_SET(
-                                                 u.user_id,
-                                                 REPLACE(REPLACE(REPLACE(REPLACE(gc.staff_ids, '[', ''), ']', ''), '"', ''), ' ', '')
-                                         ) AND u.deleted = 0
-                 LEFT JOIN point p ON FIND_IN_SET(
-                                                 p.point_id,
-                                                 REPLACE(REPLACE(REPLACE(REPLACE(gc.point_ids, '[', ''), ']', ''), '"', ''), ' ', '')
-                                         ) AND p.deleted = 0
+        LEFT JOIN sys_garbage_type gt ON gc.garbage_type_id = gt.sys_garbage_type_id AND gt.deleted = 0
+        LEFT JOIN sys_area a ON gc.area_code = a.area_code AND a.deleted = 0
+        LEFT JOIN sys_vehicle v ON gc.vehicle_id = v.sys_vehicle_id AND v.deleted = 0
+        LEFT JOIN sys_plan_status ps ON gc.plan_status_id = ps.sys_plan_status_id AND ps.deleted = 0
+        LEFT JOIN sys_user u ON FIND_IN_SET(
+        u.user_id,
+        REPLACE(REPLACE(REPLACE(REPLACE(gc.staff_ids, '[', ''), ']', ''), '"', ''), ' ', '')
+        ) AND u.deleted = 0
+        LEFT JOIN point p ON FIND_IN_SET(
+        p.point_id,
+        REPLACE(REPLACE(REPLACE(REPLACE(gc.point_ids, '[', ''), ']', ''), '"', ''), ' ', '')
+        ) AND p.deleted = 0
+        <where>
+            gc.deleted = 0
+            <if test="reqVO.planNo != null and reqVO.planNo != ''">
+                AND gc.plan_no LIKE CONCAT('%', #{reqVO.planNo}, '%')
+            </if>
+
+            <if test="reqVO.areaCode != null and reqVO.areaCode != ''">
+                AND gc.area_code = #{reqVO.areaCode}
+            </if>
+
+            <if test="reqVO.garbageTypeId != null and reqVO.garbageTypeId != ''">
+                AND gc.garbage_type_id = #{reqVO.garbageTypeId}
+            </if>
+
+            <if test="reqVO.vehicleId != null and reqVO.vehicleId != ''">
+                AND gc.vehicle_id = #{reqVO.vehicleId}
+            </if>
+
+            <if test="reqVO.planStatusId != null and reqVO.planStatusId != ''">
+                AND gc.plan_status_id = #{reqVO.planStatusId}
+            </if>
+
+            <if test="reqVO.frequency != null and reqVO.frequency != ''">
+                AND gc.frequency = #{reqVO.frequency}
+            </if>
+
+            <if test="reqVO.timePeriod != null and reqVO.timePeriod != ''">
+                AND gc.time_period = #{reqVO.timePeriod}
+            </if>
+
+            <if test="reqVO.createBy != null and reqVO.createBy != ''">
+                AND gc.create_by = #{reqVO.createBy}
+            </if>
+
+            <if test="reqVO.isAbnormal != null">
+                AND gc.is_abnormal = #{reqVO.isAbnormal}
+            </if>
+
+            <if test="reqVO.createTime != null and reqVO.createTime[0] != null and reqVO.createTime[1] != null">
+                AND gc.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+        </where>
         GROUP BY
-            gc.id,
-            gt.sys_garbage_type_id, gt.name,
-            a.area_code, a.area_name,
-            v.sys_vehicle_id, v.license_plate,
-            ps.sys_plan_status_id, ps.name
+        gc.id,
+        gt.sys_garbage_type_id, gt.name,
+        a.area_code, a.area_name,
+        v.sys_vehicle_id, v.license_plate,
+        ps.sys_plan_status_id, ps.name
         ORDER BY gc.id DESC
         LIMIT #{reqVO.offset}, #{reqVO.pageSize}
     </select>
@@ -72,6 +114,38 @@
     <select id="selectCount" resultType="Long">
         SELECT COUNT(*)
         FROM garbage_collection gc
-        WHERE gc.deleted = 0
+        <where>
+            gc.deleted = 0
+            <if test="reqVO.planNo != null and reqVO.planNo != ''">
+                AND gc.plan_no LIKE CONCAT('%', #{reqVO.planNo}, '%')
+            </if>
+            <if test="reqVO.areaCode != null and reqVO.areaCode != ''">
+                AND gc.area_code = #{reqVO.areaCode}
+            </if>
+            <if test="reqVO.garbageTypeId != null and reqVO.garbageTypeId != ''">
+                AND gc.garbage_type_id = #{reqVO.garbageTypeId}
+            </if>
+            <if test="reqVO.vehicleId != null and reqVO.vehicleId != ''">
+                AND gc.vehicle_id = #{reqVO.vehicleId}
+            </if>
+            <if test="reqVO.planStatusId != null and reqVO.planStatusId != ''">
+                AND gc.plan_status_id = #{reqVO.planStatusId}
+            </if>
+            <if test="reqVO.frequency != null and reqVO.frequency != ''">
+                AND gc.frequency = #{reqVO.frequency}
+            </if>
+            <if test="reqVO.timePeriod != null and reqVO.timePeriod != ''">
+                AND gc.time_period = #{reqVO.timePeriod}
+            </if>
+            <if test="reqVO.createBy != null and reqVO.createBy != ''">
+                AND gc.create_by = #{reqVO.createBy}
+            </if>
+            <if test="reqVO.isAbnormal != null">
+                AND gc.is_abnormal = #{reqVO.isAbnormal}
+            </if>
+            <if test="reqVO.createTime != null and reqVO.createTime[0] != null and reqVO.createTime[1] != null">
+                AND gc.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+        </where>
     </select>
 </mapper>

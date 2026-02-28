@@ -1,9 +1,10 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.user;
 
+import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.reviewresult.ReviewResultOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.reviewstatus.ReviewStatusPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.reviewstatus.ReviewStatusRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.reviewstatus.ReviewStatusSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.util.options.vo.OptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +32,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.ReviewStatusDO;
 import cn.iocoder.yudao.module.envirhealth.service.user.reviewstatus.ReviewStatusService;
 
-@Tag(name = "管理后台 - 审核状态字典表")
+@Tag(name = "字典表 - 审核状态")
 @RestController
 @RequestMapping("/envirhealth/review-status")
 @Validated
@@ -94,4 +95,14 @@ public class ReviewStatusController {
                         BeanUtils.toBean(list, ReviewStatusRespVO.class));
     }
 
-}*/
+    /**
+     * 获得审核状态下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得审核状态(下拉框)")
+    @PreAuthorize("@ss.hasPermission('health:review-status:query')")
+    public CommonResult<List<OptionVO>> getReviewStatusOptions() {
+        return success(reviewStatusService.getReviewStatusOptions());
+    }
+}

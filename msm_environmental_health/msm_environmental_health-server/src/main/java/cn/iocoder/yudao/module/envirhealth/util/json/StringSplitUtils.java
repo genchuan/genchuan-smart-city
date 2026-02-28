@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.envirhealth.util;
+package cn.iocoder.yudao.module.envirhealth.util.json;
 
 import java.util.ArrayList;
 import java.util.Arrays;

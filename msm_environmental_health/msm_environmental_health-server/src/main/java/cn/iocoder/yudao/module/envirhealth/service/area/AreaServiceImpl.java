@@ -1,5 +1,9 @@
 package cn.iocoder.yudao.module.envirhealth.service.area;
 
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserOptionVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.UserDO;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -10,6 +14,8 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.area.AreaMapper;
+
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.*;
@@ -68,4 +74,30 @@ public class AreaServiceImpl implements AreaService {
         return areaMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public List<AreaOptionVO> getAreaOptions() {
+
+        List<AreaDO> list;
+        list = areaMapper.selectList(
+                new LambdaQueryWrapperX<AreaDO>()
+                        .eq(AreaDO::getDeleted, 0)
+                        .orderByDesc(AreaDO::getId)
+        );
+        // 将DO转换为下拉框VO（label=name，value=id）
+        return CollectionUtils.convertList(list, areaDO -> {
+            AreaOptionVO vo = new AreaOptionVO();
+            vo.setLabel(areaDO.getAreaName());
+            vo.setValue(areaDO.getAreaCode());
+            return vo;
+        });
+    }
+
+    @Override
+    public String getAreaNameByCode(String areaCode) {
+        if (areaCode == null || areaCode.isEmpty()) {
+            return null;
+        }
+        AreaDO areaDO = areaMapper.selectByAreaCode(areaCode);
+        return areaDO != null ? areaDO.getAreaName() : null;
+    }
 }

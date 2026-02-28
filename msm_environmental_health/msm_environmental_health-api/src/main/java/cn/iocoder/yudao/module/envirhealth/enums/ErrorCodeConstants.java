@@ -82,4 +82,6 @@ public interface ErrorCodeConstants {
     ErrorCode ASSESSMENT_GRADE_NOT_EXISTS = new ErrorCode(999_065, "考核等级字典表不存在");
     ErrorCode REVIEW_STATUS_NOT_EXISTS = new ErrorCode(999_066, "审核状态字典表不存在");
 
+    ErrorCode COLLECTION_FREQUENCY_NOT_EXISTS = new ErrorCode(999_067, "收运频次字典不存在");
+    ErrorCode COLLECTION_TIME_PERIOD_NOT_EXISTS = new ErrorCode(999_068, "收运时段字典不存在");
 }

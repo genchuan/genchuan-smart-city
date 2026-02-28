@@ -1,7 +1,12 @@
 package cn.iocoder.yudao.module.envirhealth.service.urbanvillage.reviewresult;
 
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.collectionfrequency.CollectionFrequencyOptionVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.reviewresult.ReviewResultOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.reviewresult.ReviewResultPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.reviewresult.ReviewResultSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.CollectionFrequencyDO;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -11,6 +16,8 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.urbanvillage.ReviewResultMapper;
+
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.*;
@@ -69,4 +76,21 @@ public class ReviewResultServiceImpl implements ReviewResultService {
         return reviewResultMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public List<ReviewResultOptionVO> getReviewResultOptions() {
+
+        List<ReviewResultDO> list;
+        list = reviewResultMapper.selectList(
+                new LambdaQueryWrapperX<ReviewResultDO>()
+                        .eq(ReviewResultDO::getDeleted, 0)
+                        .orderByDesc(ReviewResultDO::getId)
+        );
+        // 将DO转换为下拉框VO（label=name，value=id）
+        return CollectionUtils.convertList(list, reviewResultDO -> {
+            ReviewResultOptionVO vo = new ReviewResultOptionVO();
+            vo.setLabel(reviewResultDO.getReviewResultName());
+            vo.setValue(reviewResultDO.getReviewResultId());
+            return vo;
+        });
+    }
 }

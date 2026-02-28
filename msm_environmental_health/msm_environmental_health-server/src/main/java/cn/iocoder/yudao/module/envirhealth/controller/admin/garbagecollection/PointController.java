@@ -1,9 +1,10 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection;
 
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.point.PointOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.point.PointPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.point.PointRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.point.PointSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetype.vo.GarbageTypeOptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +32,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.PointDO;
 import cn.iocoder.yudao.module.envirhealth.service.garbagecollection.point.PointService;
 
-@Tag(name = "管理后台 - 点位")
+@Tag(name = "字典表 - 点位")
 @RestController
 @RequestMapping("/envirhealth/point")
 @Validated
@@ -94,4 +95,14 @@ public class PointController {
                         BeanUtils.toBean(list, PointRespVO.class));
     }
 
-}*/
+    /**
+     * 获得点位字典下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得点位字典(下拉框)")
+    @PreAuthorize("@ss.hasPermission('health:point:query')")
+    public CommonResult<List<PointOptionVO>> getPointOptions() {
+        return success(pointService.getPointOptions());
+    }
+}

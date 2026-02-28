@@ -1,5 +1,8 @@
-package cn.iocoder.yudao.module.envirhealth.service.garbagecollection.planstatus;
+package cn.iocoder.yudao.module.envirhealth.service.planstatus;
 
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.planstatus.vo.PlanStatusOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.planstatus.vo.PlanStatusPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.planstatus.vo.PlanStatusSaveReqVO;
 import org.springframework.stereotype.Service;
@@ -11,6 +14,8 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.planstatus.PlanStatusMapper;
+
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.*;
@@ -69,4 +74,21 @@ public class PlanStatusServiceImpl implements PlanStatusService {
         return planStatusMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public List<PlanStatusOptionVO> getPlanStatusOptions() {
+
+        List<PlanStatusDO> list;
+        list = planStatusMapper.selectList(
+                new LambdaQueryWrapperX<PlanStatusDO>()
+                        .eq(PlanStatusDO::getDeleted, 0)
+                        .orderByDesc(PlanStatusDO::getId)
+        );
+        // 将DO转换为下拉框VO（label=name，value=id）
+        return CollectionUtils.convertList(list, planStatusDO -> {
+            PlanStatusOptionVO vo = new PlanStatusOptionVO();
+            vo.setLabel(planStatusDO.getName());
+            vo.setValue(planStatusDO.getSysPlanStatusId());
+            return vo;
+        });
+    }
 }

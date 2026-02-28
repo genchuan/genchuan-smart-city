@@ -2,8 +2,12 @@ package cn.iocoder.yudao.module.envirhealth.service.garbagecollection.garbageabn
 
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbageabnormal.GarbageAbnormalPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbageabnormal.GarbageAbnormalSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbageabnormal.card.abnormal.GarbageAbnormalCardAbnormalRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.GarbageCollectionPageReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.circle.all.GarbageCollectionCircleAllVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageAbnormalDetailDO;
+import cn.iocoder.yudao.module.envirhealth.util.circle.vo.CircleVO;
+import cn.iocoder.yudao.module.envirhealth.util.column.vo.ColumnVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.GarbageAbnormalDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -62,4 +66,27 @@ public interface GarbageAbnormalService {
      * @return 垃圾异常记录详情分页
      */
     PageResult<GarbageAbnormalDetailDO> getGarbageAbnormalDetailPage(GarbageAbnormalPageReqVO pageReqVO);
+
+    GarbageAbnormalCardAbnormalRespVO getGarbageAbnormalCardAbnormal();
+
+    /**
+     * 获取异常类型占比（环状图）
+     *
+     * @return 异常类型占比列表
+     */
+    List<CircleVO> getGarbageAbnormalTypeCircleAbnormal();
+
+    /**
+     * 获取区域分布占比（环状图）
+     *
+     * @return 区域分布占比列表
+     */
+    List<CircleVO> getGarbageAbnormalAreaDistributionCircle();
+
+    /**
+     * 获取不同责任人的待处置异常数量对比（柱状图）
+     *
+     * @return 责任人待处置异常数量列表
+     */
+    List<ColumnVO> getHandlerAbnormalColumn();
 }

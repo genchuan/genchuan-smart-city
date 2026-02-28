@@ -1,9 +1,10 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection;
 
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.abnormaltype.AbnormalTypeOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.abnormaltype.AbnormalTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.abnormaltype.AbnormalTypeRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.abnormaltype.AbnormalTypeSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.collectionfrequency.CollectionFrequencyOptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +32,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.AbnormalTypeDO;
 import cn.iocoder.yudao.module.envirhealth.service.garbagecollection.abnormaltype.AbnormalTypeService;
 
-@Tag(name = "管理后台 - 垃圾异常类型字典")
+@Tag(name = "字典表 - 垃圾异常类型")
 @RestController
 @RequestMapping("/envirhealth/abnormal-type")
 @Validated
@@ -94,4 +95,14 @@ public class AbnormalTypeController {
                         BeanUtils.toBean(list, AbnormalTypeRespVO.class));
     }
 
-}*/
+    /**
+     * 获得收运频次字典下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得垃圾异常类型(下拉框)")
+    @PreAuthorize("@ss.hasPermission('health:abnormal-type:query')")
+    public CommonResult<List<AbnormalTypeOptionVO>> getAbnormalTypeOptions() {
+        return success(abnormalTypeService.getAbnormalTypeOptions());
+    }
+}

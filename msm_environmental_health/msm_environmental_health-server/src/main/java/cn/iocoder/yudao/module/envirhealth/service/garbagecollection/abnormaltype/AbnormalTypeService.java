@@ -1,10 +1,14 @@
 package cn.iocoder.yudao.module.envirhealth.service.garbagecollection.abnormaltype;
 
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.abnormaltype.AbnormalTypeOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.abnormaltype.AbnormalTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.abnormaltype.AbnormalTypeSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.collectionfrequency.CollectionFrequencyOptionVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.AbnormalTypeDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+
+import java.util.List;
 
 /**
  * 垃圾异常类型字典 Service 接口
@@ -51,4 +55,9 @@ public interface AbnormalTypeService {
      */
     PageResult<AbnormalTypeDO> getAbnormalTypePage(AbnormalTypePageReqVO pageReqVO);
 
+    /**
+     * 获得垃圾异常类型下拉框选项
+     * @return 下拉框选项列表
+     */
+    List<AbnormalTypeOptionVO> getAbnormalTypeOptions();
 }

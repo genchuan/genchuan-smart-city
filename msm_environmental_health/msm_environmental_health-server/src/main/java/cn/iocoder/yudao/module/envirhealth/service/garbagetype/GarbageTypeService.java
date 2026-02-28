@@ -1,10 +1,13 @@
-package cn.iocoder.yudao.module.envirhealth.service.garbagecollection.garbagetype;
+package cn.iocoder.yudao.module.envirhealth.service.garbagetype;
 
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetype.vo.GarbageTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetype.vo.GarbageTypeSaveReqVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetype.GarbageTypeDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetype.vo.GarbageTypeOptionVO;
+
+import java.util.List;
 
 /**
  * 垃圾品类字典 Service 接口
@@ -51,4 +54,9 @@ public interface GarbageTypeService {
      */
     PageResult<GarbageTypeDO> getGarbageTypePage(GarbageTypePageReqVO pageReqVO);
 
+    /**
+     * 获得垃圾品类字典下拉框选项
+     * @return 下拉框选项列表
+     */
+    List<GarbageTypeOptionVO> getGarbageTypeOptions();
 }

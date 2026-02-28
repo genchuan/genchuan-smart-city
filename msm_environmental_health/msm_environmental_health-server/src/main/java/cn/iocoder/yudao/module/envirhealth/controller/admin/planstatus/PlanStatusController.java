@@ -1,4 +1,3 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.planstatus;
 
 import org.springframework.web.bind.annotation.*;
@@ -27,9 +26,9 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 import cn.iocoder.yudao.module.envirhealth.controller.admin.planstatus.vo.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.planstatus.PlanStatusDO;
-import cn.iocoder.yudao.module.envirhealth.service.garbagecollection.planstatus.PlanStatusService;
+import cn.iocoder.yudao.module.envirhealth.service.planstatus.PlanStatusService;
 
-@Tag(name = "环境卫生管理 - 计划状态字典")
+@Tag(name = "字典表 - 计划状态")
 @RestController
 @RequestMapping("/envirhealth/plan-status")
 @Validated
@@ -92,4 +91,14 @@ public class PlanStatusController {
                         BeanUtils.toBean(list, PlanStatusRespVO.class));
     }
 
-}*/
+    /**
+     * 获得计划状态下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得计划状态字典(下拉框)")
+    @PreAuthorize("@ss.hasPermission('health:plan-status:query')")
+    public CommonResult<List<PlanStatusOptionVO>> getPlanStatusOptions() {
+        return success(planStatusService.getPlanStatusOptions());
+    }
+}

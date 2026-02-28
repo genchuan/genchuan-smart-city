@@ -1,6 +1,7 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage;
 
+import cn.iocoder.yudao.module.envirhealth.controller.admin.handlestatus.vo.HandleStatusOptionVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.reviewresult.ReviewResultOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.reviewresult.ReviewResultPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.reviewresult.ReviewResultRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.reviewresult.ReviewResultSaveReqVO;
@@ -31,7 +32,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.urbanvillage.ReviewResultDO;
 import cn.iocoder.yudao.module.envirhealth.service.urbanvillage.reviewresult.ReviewResultService;
 
-@Tag(name = "管理后台 - 复核结果字典表")
+@Tag(name = "字典表 - 复核结果")
 @RestController
 @RequestMapping("/envirhealth/review-result")
 @Validated
@@ -94,4 +95,14 @@ public class ReviewResultController {
                         BeanUtils.toBean(list, ReviewResultRespVO.class));
     }
 
-}*/
+    /**
+     * 获得复核结果下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得复核结果(下拉框)")
+    @PreAuthorize("@ss.hasPermission('health:review-result:query')")
+    public CommonResult<List<ReviewResultOptionVO>> getReviewResultOptions() {
+        return success(reviewResultService.getReviewResultOptions());
+    }
+}

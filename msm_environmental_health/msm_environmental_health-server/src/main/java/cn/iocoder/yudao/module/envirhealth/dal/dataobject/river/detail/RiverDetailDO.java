@@ -1,7 +1,7 @@
 package cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.detail;
 
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.RiverDO;
-import cn.iocoder.yudao.module.envirhealth.util.StringSplitUtils;
+import cn.iocoder.yudao.module.envirhealth.util.json.StringSplitUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 

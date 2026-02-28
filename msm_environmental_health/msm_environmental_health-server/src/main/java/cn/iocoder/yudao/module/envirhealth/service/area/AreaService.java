@@ -1,9 +1,12 @@
 package cn.iocoder.yudao.module.envirhealth.service.area;
 
+import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserOptionVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.area.vo.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.area.AreaDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+
+import java.util.List;
 
 /**
  * 区域编码 Service 接口
@@ -50,4 +53,16 @@ public interface AreaService {
      */
     PageResult<AreaDO> getAreaPage(AreaPageReqVO pageReqVO);
 
+    /**
+     * 获得区域编码下拉框选项
+     * @return 下拉框选项列表
+     */
+    List<AreaOptionVO> getAreaOptions();
+
+    /**
+     * 根据区域编码获取区域名称
+     * @param areaCode 区域编码（如 310101）
+     * @return 区域名称（如 黄浦区），无则返回 null
+     */
+    String getAreaNameByCode(String areaCode);
 }

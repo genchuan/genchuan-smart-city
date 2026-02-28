@@ -1,10 +1,14 @@
 package cn.iocoder.yudao.module.envirhealth.service.garbagecollection.point;
 
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.point.PointOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.point.PointPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.point.PointSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetype.vo.GarbageTypeOptionVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.PointDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+
+import java.util.List;
 
 /**
  * 点位 Service 接口
@@ -51,4 +55,9 @@ public interface PointService {
      */
     PageResult<PointDO> getPointPage(PointPageReqVO pageReqVO);
 
+    /**
+     * 获得点位字典下拉框选项
+     * @return 下拉框选项列表
+     */
+    List<PointOptionVO> getPointOptions();
 }

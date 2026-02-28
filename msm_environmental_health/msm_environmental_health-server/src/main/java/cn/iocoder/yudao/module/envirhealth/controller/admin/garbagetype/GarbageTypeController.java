@@ -1,6 +1,6 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetype;
 
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetype.vo.GarbageTypeOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetype.vo.GarbageTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetype.vo.GarbageTypeRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetype.vo.GarbageTypeSaveReqVO;
@@ -29,11 +29,11 @@ import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetype.GarbageTypeDO;
-import cn.iocoder.yudao.module.envirhealth.service.garbagecollection.garbagetype.GarbageTypeService;
+import cn.iocoder.yudao.module.envirhealth.service.garbagetype.GarbageTypeService;
 
-@Tag(name = "环境卫生管理 - 垃圾品类字典")
+@Tag(name = "字典表 - 垃圾品类")
 @RestController
-@RequestMapping("/health/garbage-type")
+@RequestMapping("/envirhealth/garbage-type")
 @Validated
 public class GarbageTypeController {
 
@@ -94,4 +94,14 @@ public class GarbageTypeController {
                         BeanUtils.toBean(list, GarbageTypeRespVO.class));
     }
 
-}*/
+    /**
+     * 获得垃圾品类字典下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得垃圾品类字典(下拉框)")
+    @PreAuthorize("@ss.hasPermission('health:garbage-type:query')")
+    public CommonResult<List<GarbageTypeOptionVO>> getGarbageTypeOptions() {
+        return success(garbageTypeService.getGarbageTypeOptions());
+    }
+}

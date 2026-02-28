@@ -13,9 +13,12 @@ import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.Garb
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageAbnormalDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.AbnormalTypeDO;
 
+import cn.iocoder.yudao.module.envirhealth.util.circle.vo.CircleVO;
+import cn.iocoder.yudao.module.envirhealth.util.column.vo.ColumnVO;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -52,24 +55,53 @@ public interface GarbageAbnormalMapper extends BaseMapperX<GarbageAbnormalDO> {
                 .orderByDesc(GarbageAbnormalDO::getId));
     }
 
-    /*default List<GarbageAbnormalDetailDO> selectDetailPage() {
-        return selectJoinList(GarbageAbnormalDetailDO.class, new MPJLambdaWrapper<GarbageAbnormalDO>()
-                .selectAll(GarbageAbnormalDO.class)
-                .selectAs(GarbageCollectionDO::getPlanNo, GarbageAbnormalDetailDO::getPlanNo)
-                .selectAs(AbnormalTypeDO::getAbnormalName, GarbageAbnormalDetailDO::getAbnormalTypeName)
-                .selectAs(AreaDO::getAreaName, GarbageAbnormalDetailDO::getAreaName)
-                .selectAs(UserDO::getUserName, GarbageAbnormalDetailDO::getReportName)
-
-                .leftJoin(GarbageCollectionDO.class, GarbageCollectionDO::getCollectionId, GarbageAbnormalDO::getPlanId)
-                .leftJoin(AbnormalTypeDO.class, AbnormalTypeDO::getAbnormalTypeId, GarbageAbnormalDO::getAbnormalTypeId)
-                .leftJoin(AreaDO.class, AreaDO::getAreaCode, GarbageAbnormalDO::getAreaCode)
-                .leftJoin(UserDO.class, UserDO::getUserId, GarbageAbnormalDO::getReportBy)
-
-        );
-    }*/
-
     List<GarbageAbnormalDetailDO> selectDetailPage(@Param("reqVO") GarbageAbnormalPageReqVO pageReqVO);
 
-
     Long selectCount(@Param("reqVO") GarbageAbnormalPageReqVO pageReqVO);
+
+    /**
+     * 获取异常类型占比统计
+     * @return 异常类型占比列表
+     */
+    @Select("SELECT " +
+            "sat.abnormal_name as name, " +
+            "COUNT(ga.id) as value, " +
+            "ROUND(COUNT(ga.id) * 100.0 / (SELECT COUNT(*) FROM garbage_abnormal WHERE deleted = 0), 2) as proportion " +
+            "FROM garbage_abnormal ga " +
+            "LEFT JOIN sys_abnormal_type sat ON ga.abnormal_type_id = sat.abnormal_type_id " +
+            "WHERE ga.deleted = 0 " +
+            "GROUP BY ga.abnormal_type_id, sat.abnormal_name " +
+            "ORDER BY value DESC")
+    List<CircleVO> selectAbnormalTypeCircle();
+
+    /**
+     * 获取区域分布占比统计
+     * @return 区域分布占比列表
+     */
+    @Select("SELECT " +
+            "sa.area_name as name, " +
+            "COUNT(ga.id) as value, " +
+            "ROUND(COUNT(ga.id) * 100.0 / (SELECT COUNT(*) FROM garbage_abnormal WHERE deleted = 0), 2) as proportion " +
+            "FROM garbage_abnormal ga " +
+            "LEFT JOIN sys_area sa ON ga.area_code = sa.area_code " +
+            "WHERE ga.deleted = 0 " +
+            "GROUP BY ga.area_code, sa.area_name " +
+            "ORDER BY value DESC")
+    List<CircleVO> selectAreaDistributionCircle();
+
+    /**
+     * 获取不同责任人的待处置异常数量对比（柱状图）
+     * 返回责任人名称和对应的待处置异常数量
+     */
+    @Select("SELECT " +
+            "su.user_name as name, " +
+            "COUNT(ga.id) as value " +
+            "FROM garbage_abnormal ga " +
+            "LEFT JOIN sys_user su ON ga.handler_id = su.user_id " +
+            "WHERE ga.deleted = 0 " +
+            "AND ga.handle_status = '待处置' " +
+            "AND su.user_name IS NOT NULL " +
+            "GROUP BY ga.handler_id, su.user_name " +
+            "ORDER BY value DESC")
+    List<ColumnVO> selectHandlerAbnormalColumn();
 }

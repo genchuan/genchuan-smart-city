@@ -1,6 +1,6 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.handlestatus;
 
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.abnormaltype.AbnormalTypeOptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -30,7 +30,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.handlestatus.vo.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.handlestatus.HandleStatusDO;
 import cn.iocoder.yudao.module.envirhealth.service.handlestatus.HandleStatusService;
 
-@Tag(name = "环境卫生管理 - 处置状态字典表")
+@Tag(name = "字典表 - 处置状态")
 @RestController
 @RequestMapping("/envirhealth/handle-status")
 @Validated
@@ -93,4 +93,14 @@ public class HandleStatusController {
                         BeanUtils.toBean(list, HandleStatusRespVO.class));
     }
 
-}*/
+    /**
+     * 获得处置状态下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得处置状态类型(下拉框)")
+    @PreAuthorize("@ss.hasPermission('health:handle-status:query')")
+    public CommonResult<List<HandleStatusOptionVO>> getHandleStatusOptions() {
+        return success(handleStatusService.getHandleStatusOptions());
+    }
+}

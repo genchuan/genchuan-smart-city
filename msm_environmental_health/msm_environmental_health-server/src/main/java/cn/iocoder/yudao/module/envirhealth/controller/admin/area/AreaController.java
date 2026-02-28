@@ -1,6 +1,6 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.area;
 
+import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserOptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -29,9 +29,9 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.area.vo.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.area.AreaDO;
 import cn.iocoder.yudao.module.envirhealth.service.area.AreaService;
 
-@Tag(name = "环境卫生管理 - 区域编码")
+@Tag(name = "字典表 - 区域编码")
 @RestController
-@RequestMapping("/health/area")
+@RequestMapping("/envirhealth/area")
 @Validated
 public class AreaController {
 
@@ -92,4 +92,14 @@ public class AreaController {
                         BeanUtils.toBean(list, AreaRespVO.class));
     }
 
-}*/
+    /**
+     * 获得区域编码下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得区域编码(下拉框)")
+    @PreAuthorize("@ss.hasPermission('health:area:query')")
+    public CommonResult<List<AreaOptionVO>> getAreaOptions() {
+        return success(areaService.getAreaOptions());
+    }
+}

@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle;
 
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.collectionfrequency.CollectionFrequencyOptionVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehicleOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehiclePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehicleRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehicleSaveReqVO;
@@ -103,5 +105,16 @@ public class VehicleController {
                 vehicleService.getVehicleDetailPage(pageReqVO);
 
         return success(pageResult);
+    }
+
+    /**
+     * 获得车辆下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得车辆(下拉框)")
+    @PreAuthorize("@ss.hasPermission('health:vehicle:query')")
+    public CommonResult<List<VehicleOptionVO>> getVehicleOptions() {
+        return success(vehicleService.getVehicleOptions());
     }
 }

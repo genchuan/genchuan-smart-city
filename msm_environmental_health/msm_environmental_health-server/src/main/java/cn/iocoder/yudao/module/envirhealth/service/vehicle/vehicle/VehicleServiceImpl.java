@@ -1,7 +1,12 @@
 package cn.iocoder.yudao.module.envirhealth.service.vehicle.vehicle;
 
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.collectionfrequency.CollectionFrequencyOptionVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehicleOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehiclePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehicleSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.CollectionFrequencyDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.detail.VehicleDetailDO;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -83,5 +88,23 @@ public class VehicleServiceImpl implements VehicleService {
 
         List<VehicleDetailDO> list = vehicleMapper.selectDetailPage(pageReqVO);
         return new PageResult<>(list, total);
+    }
+
+    @Override
+    public List<VehicleOptionVO> getVehicleOptions() {
+
+        List<VehicleDO> list;
+        list = vehicleMapper.selectList(
+                new LambdaQueryWrapperX<VehicleDO>()
+                        .eq(VehicleDO::getDeleted, 0)
+                        .orderByDesc(VehicleDO::getId)
+        );
+        // 将DO转换为下拉框VO（label=name，value=id）
+        return CollectionUtils.convertList(list, vehicleDO -> {
+            VehicleOptionVO vo = new VehicleOptionVO();
+            vo.setLabel(vehicleDO.getLicensePlate());
+            vo.setValue(vehicleDO.getSysVehicleId());
+            return vo;
+        });
     }
 }

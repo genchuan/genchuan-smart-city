@@ -1,7 +1,10 @@
 package cn.iocoder.yudao.module.envirhealth.service.user.reviewstatus;
 
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.reviewresult.ReviewResultOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.reviewstatus.ReviewStatusPageReqVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.reviewstatus.ReviewStatusSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.reviewstatus.ReviewStatusSaveReqVO;import cn.iocoder.yudao.module.envirhealth.util.options.vo.OptionVO;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -11,6 +14,8 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.user.ReviewStatusMapper;
+
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.*;
@@ -69,4 +74,21 @@ public class ReviewStatusServiceImpl implements ReviewStatusService {
         return reviewStatusMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public List<OptionVO> getReviewStatusOptions() {
+
+        List<ReviewStatusDO> list;
+        list = reviewStatusMapper.selectList(
+                new LambdaQueryWrapperX<ReviewStatusDO>()
+                        .eq(ReviewStatusDO::getDeleted, 0)
+                        .orderByDesc(ReviewStatusDO::getId)
+        );
+        // 将DO转换为下拉框VO（label=name，value=id）
+        return CollectionUtils.convertList(list, reviewStatusDO -> {
+            OptionVO vo = new OptionVO();
+            vo.setLabel(reviewStatusDO.getReviewStatusName());
+            vo.setValue(reviewStatusDO.getReviewStatusId());
+            return vo;
+        });
+    }
 }

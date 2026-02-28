@@ -1,10 +1,14 @@
-package cn.iocoder.yudao.module.envirhealth.service.garbagecollection.planstatus;
+package cn.iocoder.yudao.module.envirhealth.service.planstatus;
 
+import cn.iocoder.yudao.module.envirhealth.controller.admin.planstatus.vo.PlanStatusOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.planstatus.vo.PlanStatusPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.planstatus.vo.PlanStatusSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehicleOptionVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.planstatus.PlanStatusDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+
+import java.util.List;
 
 /**
  * 计划状态字典 Service 接口
@@ -51,4 +55,9 @@ public interface PlanStatusService {
      */
     PageResult<PlanStatusDO> getPlanStatusPage(PlanStatusPageReqVO pageReqVO);
 
+    /**
+     * 获得计划状态字典下拉框选项
+     * @return 下拉框选项列表
+     */
+    List<PlanStatusOptionVO> getPlanStatusOptions();
 }

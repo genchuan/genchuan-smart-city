@@ -1,7 +1,7 @@
 package cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail;
 
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.PublicToiletDO;
-import cn.iocoder.yudao.module.envirhealth.util.StringSplitUtils;
+import cn.iocoder.yudao.module.envirhealth.util.json.StringSplitUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 

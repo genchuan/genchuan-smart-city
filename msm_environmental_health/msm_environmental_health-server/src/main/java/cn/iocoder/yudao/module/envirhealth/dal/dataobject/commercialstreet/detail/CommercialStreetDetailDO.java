@@ -1,7 +1,7 @@
 package cn.iocoder.yudao.module.envirhealth.dal.dataobject.commercialstreet.detail;
 
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.commercialstreet.CommercialStreetDO;
-import cn.iocoder.yudao.module.envirhealth.util.StringSplitUtils;
+import cn.iocoder.yudao.module.envirhealth.util.json.StringSplitUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 

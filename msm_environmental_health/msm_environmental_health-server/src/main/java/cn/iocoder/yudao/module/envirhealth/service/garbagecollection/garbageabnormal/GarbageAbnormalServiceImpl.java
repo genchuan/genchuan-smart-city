@@ -2,9 +2,10 @@ package cn.iocoder.yudao.module.envirhealth.service.garbagecollection.garbageabn
 
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbageabnormal.GarbageAbnormalPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbageabnormal.GarbageAbnormalSaveReqVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.GarbageCollectionPageReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbageabnormal.card.abnormal.GarbageAbnormalCardAbnormalRespVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageAbnormalDetailDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageCollectionDetailDO;
+import cn.iocoder.yudao.module.envirhealth.util.circle.vo.CircleVO;
+import cn.iocoder.yudao.module.envirhealth.util.column.vo.ColumnVO;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -85,5 +86,42 @@ public class GarbageAbnormalServiceImpl implements GarbageAbnormalService {
 
         List<GarbageAbnormalDetailDO> list = garbageAbnormalMapper.selectDetailPage(pageReqVO);
         return new PageResult<>(list, total);
+    }
+
+    @Override
+    public GarbageAbnormalCardAbnormalRespVO getGarbageAbnormalCardAbnormal() {
+        GarbageAbnormalCardAbnormalRespVO statistics = new GarbageAbnormalCardAbnormalRespVO();
+
+        // 1. 待处置异常总数（handle_status = 待处置）
+        GarbageAbnormalPageReqVO toHandleReq = new GarbageAbnormalPageReqVO();
+        toHandleReq.setHandleStatus("待处置");
+        statistics.setToHandleTotal(garbageAbnormalMapper.selectCount(toHandleReq));
+
+        // 2. 高优先级数（priority = 高）
+        GarbageAbnormalPageReqVO highPriorityReq = new GarbageAbnormalPageReqVO();
+        highPriorityReq.setPriority("高");
+        statistics.setHighPriorityTotal(garbageAbnormalMapper.selectCount(highPriorityReq));
+
+        // 3. 超时未处理数（is_timeout = 是）
+        GarbageAbnormalPageReqVO timeoutReq = new GarbageAbnormalPageReqVO();
+        timeoutReq.setIsTimeout("是");
+        statistics.setTimeoutTotal(garbageAbnormalMapper.selectCount(timeoutReq));
+
+        return statistics;
+    }
+
+    @Override
+    public List<CircleVO> getGarbageAbnormalTypeCircleAbnormal() {
+        return garbageAbnormalMapper.selectAbnormalTypeCircle();
+    }
+
+    @Override
+    public List<CircleVO> getGarbageAbnormalAreaDistributionCircle() {
+        return garbageAbnormalMapper.selectAreaDistributionCircle();
+    }
+
+    @Override
+    public List<ColumnVO> getHandlerAbnormalColumn() {
+        return garbageAbnormalMapper.selectHandlerAbnormalColumn();
     }
 }

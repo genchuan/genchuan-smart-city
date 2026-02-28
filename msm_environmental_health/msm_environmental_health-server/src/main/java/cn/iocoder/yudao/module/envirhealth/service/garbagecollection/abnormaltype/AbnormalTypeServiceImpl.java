@@ -1,7 +1,12 @@
 package cn.iocoder.yudao.module.envirhealth.service.garbagecollection.abnormaltype;
 
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.abnormaltype.AbnormalTypeOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.abnormaltype.AbnormalTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.abnormaltype.AbnormalTypeSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.collectionfrequency.CollectionFrequencyOptionVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.CollectionFrequencyDO;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -11,6 +16,8 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagecollection.AbnormalTypeMapper;
+
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.*;
@@ -69,4 +76,21 @@ public class AbnormalTypeServiceImpl implements AbnormalTypeService {
         return abnormalTypeMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public List<AbnormalTypeOptionVO> getAbnormalTypeOptions() {
+
+        List<AbnormalTypeDO> list;
+        list = abnormalTypeMapper.selectList(
+                new LambdaQueryWrapperX<AbnormalTypeDO>()
+                        .eq(AbnormalTypeDO::getDeleted, 0)
+                        .orderByDesc(AbnormalTypeDO::getId)
+        );
+        // 将DO转换为下拉框VO（label=name，value=id）
+        return CollectionUtils.convertList(list, abnormalTypeDO -> {
+            AbnormalTypeOptionVO vo = new AbnormalTypeOptionVO();
+            vo.setLabel(abnormalTypeDO.getAbnormalName());
+            vo.setValue(abnormalTypeDO.getAbnormalTypeId());
+            return vo;
+        });
+    }
 }
