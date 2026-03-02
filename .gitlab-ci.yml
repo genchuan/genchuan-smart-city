@@ -23,10 +23,11 @@ BuildAndPush:
     - echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
     - |
       # 遍历所有模块并构建 Docker 镜像
-      for module in "yudao-gateway" "gc-module-industry-server" "gc-module-datacenter-server" "yudao-module-bpm-server" "yudao-module-iot-biz" "yudao-module-infra-server" "yudao-module-system-server"; do
+      for module in "yudao-gateway" "gc-module-park-server" "gc-module-industry-server" "gc-module-datacenter-server" "yudao-module-bpm-server" "yudao-module-iot-biz" "yudao-module-infra-server" "yudao-module-system-server"; do
         case $module in
           "yudao-gateway") jar_path="yudao-gateway" ;;
           "gc-module-datacenter-server") jar_path="gc-module-datacenter/gc-module-datacenter-server" ;;
+          "gc-module-park-server") jar_path="gc-module-park/gc-module-park-server" ;;
           "gc-module-industry-server") jar_path="gc-module-industry/gc-module-industry-server" ;;
           "yudao-module-bpm-server") jar_path="yudao-module-bpm/yudao-module-bpm-server" ;;
           "yudao-module-infra-server") jar_path="yudao-module-infra/yudao-module-infra-server" ;;

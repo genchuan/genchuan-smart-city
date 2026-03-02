@@ -7,14 +7,14 @@ spring:
       #      username: # Nacos 账号
       #      password: # Nacos 密码
       discovery: # 【配置中心】配置项
-        namespace:  dev # 命名空间。这里使用 dev 开发环境
+        namespace: # 命名空间。这里使用 dev 开发环境
         group: DEFAULT_GROUP # 使用的 Nacos 配置分组，默认为 DEFAULT_GROUP
         #        ip: 127.0.0.1 # 明确指定IP
         #        port: 48081        # 确保服务端口未被占用
         metadata:
           version: 1.0.0 # 服务实例的版本号，可用于灰度发布
       config: # 【注册中心】配置项
-        namespace: dev # 命名空间。这里使用 dev 开发环境
+        namespace: # 命名空间。这里使用 dev 开发环境
         group: DEFAULT_GROUP # 使用的 Nacos 配置分组，默认为 DEFAULT_GROUP
 
 --- #################### 数据库相关配置 ####################
@@ -148,3 +148,12 @@ yudao:
     mock-enable: true
   access-log: # 访问日志的配置项
     enable: false
+
+
+alipay:
+  app-id: 9021000133684966
+  private-key: MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCkJhAOL641LSY41b+rJoJr/6VALt+PHkzFVUgH0Bt/oK2acdFqCQVcD0w0B0tJIppYKQx4ZjNZF3FPUnErxbNAjzeUvuflOk+xw4nKBCp6f93zA5ka1j9MnxQ+VNCQ7/YKRnVrmPOENc77zueYNKSdEXgUKmMeNPfuEdW2EboC1jA1LOTXSRwHSs1Dq9j8rh8n4d/M1IgB446fUm/aS/JleDauAu1e0bbiW2rsB3jm49h1zhNiJH+yWnDcLemVwlk70wIvlWamjaiEPQISuHKwYe3EuTFGzFKyMHrd0C7kl123+Uu6SNhvMHCQ4LhP2cVkyxBUWsy26oj4P9cF1ThXAgMBAAECggEAThIUXMrsrjn1Dd8LtBkyuq7yJ56jkWw10z0Gb0DZc1A2gVhU43u64tgbxDsb4YLlqbyMQ89H6L2vlKx/SvRSlwgGxWYu4OVk9gUsSbrFgVHDfEtfzFXN8WFPvX2VXPnkKWrteelbGKyG71iu6cNP76xZUi3+ymUi7kXpQRkZQTNeI+RrJrQQXUjUmEcmNxa4SzQB8mdzOwOdDPLo1bHZ48uy4RH5T/lLPERtdCMejBQeyJxOv5uV8L2892gvyd9geMpIJ5W7TppGf8DonnkzdnppTCu0vSGg4aGLZjI2x8qeU9KNtsyz0vOHS+cCLg071jUQQCPezZ+KLxxgwIWAAQKBgQDf9ADxD3124ItAaHHoUdkgR6XDozvea/kVJ1Wcuh3ZPOnEejXrqQ5qyyNe07xvEv9ChmYY66KcDuBaniPl1+1Rd9rSuel3Uw/h91d+1BuQrGUjpPKy4rIGEiNXRz/DUZ+lkz/MhLS0dVqbv3Jqrw60V0OQqzw8Ma3H41bYdzDgAQKBgQC7o0NzCk+eorSxjzmfu/Tqn4vqLLSwM5UoNFQ6wLCXGZAVSlBc15h27vYhvWL7YR5djhKmeirqv5Wiwf8dRGKBTOx3Qk7sWavCbV0Giwc9+KNZ/sAx7/N8BTt36+76Glb04iSAAMgsUr0GpJoHWUdt3Vgje/Je5snwDgoYDzkYVwKBgQDP80xkilOf7MSg29rZNBb/KEg9rvbKg0vYXpvaWd+ZdjxC2o/y8RmYBGQli0pvgR5Q8WcgQLzPV+jve+QtaiDNAxPHlCW7TP90fS1bcSzfW5TWUjWh8WoIxRLX2irU/JfXMTGOgLMi1c16zXw6n65xuo3caYQXCLIq52gevB5AAQKBgH0H32wK1N8qICmo/IbZ4ettgPf77jLzTFLL+8xilck5uW7WZBJZfzjRJqV44zoKjwdcIkVYZryiCP25M1u3M8RhE7isMJcBcZhO84vmnF7JDWBshnlAIQjlG6lfR5DUeFkZT6UT4E7YmyiQCisXbKditNaAQxLFyo3xbPx3OF5lAoGBAN0EWvW4NyjqQE2ljKc8+KnEc2lyV0YqRFc560+fmq8BovYPAjcBRntnV6MGydGsIH/AXoKX6uFRn5LsscvDViHElpgClAD3Ofq374xnwEoVv704KgWWi28Uhcz+ATUuaUhhaWfy9kHGC2l1waHL+xNvWmitFXOJvT8pUlraqXM3
+  alipay-public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkz76G4Bg2X3+JR/qqH+hJCqmM7YBmIjThbXVVQxAoubxAUQ0H2RwM4NTrkNNzKPotL2WZVuJHSKbRxiuCfsAKuwU93u6fQf7WVzM/RZghyGHNH0xFYpDPoBcDH8/OuuxWSwxYcNTBRnNaBGx5fW+QfT2uDpuGLN294n6/rem/+WuYhJbML0HsxvLGPWN77/iWN57NUo/HG5sdRHC/y1bwaywp9iojL0huiCjOyczaSUTDaeoK10TS3SZvJB8ki9hWzlK2CnVOHm+PkAFtTMcyBfJC90b3pZ9vs5cgep7ngdjHBD9kj7GoTy2hqJrQC1vtK+sIjPYuCxDNYUYn5Rw6QIDAQAB
+  notify-url: http://内网穿透地址/api/alipay/notify   #支付宝会悄悄的给我们发送一个请求，告诉我们支付成功的信息
+  return-url: https://xxx.com/pay/return    #同步通知，支付成功，一般跳转到成功页
+  gateway-url: https://openapi.alipaydev.com/gateway.do   # 沙箱

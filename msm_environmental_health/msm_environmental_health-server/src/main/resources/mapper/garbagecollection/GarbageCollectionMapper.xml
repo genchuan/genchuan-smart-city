@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagecollection.GarbageCollectionMapper">
+
+    <resultMap id="GarbageCollectionDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageCollectionDetailDO">
+        <id column="id" property="id"/>
+        <result column="collection_id" property="collectionId"/>
+        <result column="plan_no" property="planNo"/>
+        <result column="garbage_type_id" property="garbageTypeId"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="point_ids" property="pointIds"/>
+        <result column="frequency" property="frequency"/>
+        <result column="time_period" property="timePeriod"/>
+        <result column="vehicle_id" property="vehicleId"/>
+        <result column="staff_ids" property="staffIds"/>
+        <result column="plan_status_id" property="planStatusId"/>
+        <result column="create_by" property="createBy"/>
+        <result column="abnormal_create_time" property="abnormalCreateTime"/>
+        <result column="abnormal_update_time" property="abnormalUpdateTime"/>
+        <result column="completion_rate" property="completionRate"/>
+        <result column="abnormal_count" property="abnormalCount"/>
+        <result column="ext_common1" property="extCommon1"/>
+        <result column="ext_common2" property="extCommon2"/>
+        <result column="ext_common3" property="extCommon3"/>
+        <result column="ext_common4" property="extCommon4"/>
+        <result column="complete_time" property="completeTime"/>
+        <result column="total_volume" property="totalVolume"/>
+        <result column="abnormal_result" property="abnormalResult"/>
+        <result column="abnormal_complete_rate" property="abnormalCompleteRate"/>
+
+        <!-- 关联查询的额外字段 -->
+        <result column="garbage_type_name" property="garbageTypeName"/>
+        <result column="area_name" property="areaName"/>
+        <result column="vehicle_license_plate" property="vehicleLicensePlate"/>
+        <result column="plan_status_name" property="planStatusName"/>
+        <result column="users_name_str" property="usersNameStr"/>
+        <result column="points_name_str" property="pointsNameStr"/>
+    </resultMap>
+
+    <select id="selectDetailPage" resultMap="GarbageCollectionDetailResultMap">
+        SELECT
+        gc.*,
+        gt.name AS garbage_type_name,
+        a.area_name AS area_name,
+        v.license_plate AS vehicle_license_plate,
+        ps.name AS plan_status_name,
+        IFNULL(GROUP_CONCAT(DISTINCT u.user_name), '') AS users_name_str,
+        IFNULL(GROUP_CONCAT(DISTINCT p.point_name), '') AS points_name_str
+        FROM garbage_collection gc
+        LEFT JOIN sys_garbage_type gt ON gc.garbage_type_id = gt.sys_garbage_type_id AND gt.deleted = 0
+        LEFT JOIN sys_area a ON gc.area_code = a.area_code AND a.deleted = 0
+        LEFT JOIN sys_vehicle v ON gc.vehicle_id = v.sys_vehicle_id AND v.deleted = 0
+        LEFT JOIN sys_plan_status ps ON gc.plan_status_id = ps.sys_plan_status_id AND ps.deleted = 0
+        LEFT JOIN sys_user u ON FIND_IN_SET(
+        u.user_id,
+        REPLACE(REPLACE(REPLACE(REPLACE(gc.staff_ids, '[', ''), ']', ''), '"', ''), ' ', '')
+        ) AND u.deleted = 0
+        LEFT JOIN point p ON FIND_IN_SET(
+        p.point_id,
+        REPLACE(REPLACE(REPLACE(REPLACE(gc.point_ids, '[', ''), ']', ''), '"', ''), ' ', '')
+        ) AND p.deleted = 0
+        <where>
+            gc.deleted = 0
+            <if test="reqVO.planNo != null and reqVO.planNo != ''">
+                AND gc.plan_no LIKE CONCAT('%', #{reqVO.planNo}, '%')
+            </if>
+
+            <if test="reqVO.areaCode != null and reqVO.areaCode != ''">
+                AND gc.area_code = #{reqVO.areaCode}
+            </if>
+
+            <if test="reqVO.garbageTypeId != null and reqVO.garbageTypeId != ''">
+                AND gc.garbage_type_id = #{reqVO.garbageTypeId}
+            </if>
+
+            <if test="reqVO.vehicleId != null and reqVO.vehicleId != ''">
+                AND gc.vehicle_id = #{reqVO.vehicleId}
+            </if>
+
+            <if test="reqVO.planStatusId != null and reqVO.planStatusId != ''">
+                AND gc.plan_status_id = #{reqVO.planStatusId}
+            </if>
+
+            <if test="reqVO.frequency != null and reqVO.frequency != ''">
+                AND gc.frequency = #{reqVO.frequency}
+            </if>
+
+            <if test="reqVO.timePeriod != null and reqVO.timePeriod != ''">
+                AND gc.time_period = #{reqVO.timePeriod}
+            </if>
+
+            <if test="reqVO.createBy != null and reqVO.createBy != ''">
+                AND gc.create_by = #{reqVO.createBy}
+            </if>
+
+            <if test="reqVO.isAbnormal != null">
+                AND gc.is_abnormal = #{reqVO.isAbnormal}
+            </if>
+
+            <if test="reqVO.createTime != null and reqVO.createTime[0] != null and reqVO.createTime[1] != null">
+                AND gc.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+        </where>
+        GROUP BY
+        gc.id,
+        gt.sys_garbage_type_id, gt.name,
+        a.area_code, a.area_name,
+        v.sys_vehicle_id, v.license_plate,
+        ps.sys_plan_status_id, ps.name
+        ORDER BY gc.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.pageSize}
+    </select>
+
+    <select id="selectCount" resultType="Long">
+        SELECT COUNT(*)
+        FROM garbage_collection gc
+        <where>
+            gc.deleted = 0
+            <if test="reqVO.planNo != null and reqVO.planNo != ''">
+                AND gc.plan_no LIKE CONCAT('%', #{reqVO.planNo}, '%')
+            </if>
+            <if test="reqVO.areaCode != null and reqVO.areaCode != ''">
+                AND gc.area_code = #{reqVO.areaCode}
+            </if>
+            <if test="reqVO.garbageTypeId != null and reqVO.garbageTypeId != ''">
+                AND gc.garbage_type_id = #{reqVO.garbageTypeId}
+            </if>
+            <if test="reqVO.vehicleId != null and reqVO.vehicleId != ''">
+                AND gc.vehicle_id = #{reqVO.vehicleId}
+            </if>
+            <if test="reqVO.planStatusId != null and reqVO.planStatusId != ''">
+                AND gc.plan_status_id = #{reqVO.planStatusId}
+            </if>
+            <if test="reqVO.frequency != null and reqVO.frequency != ''">
+                AND gc.frequency = #{reqVO.frequency}
+            </if>
+            <if test="reqVO.timePeriod != null and reqVO.timePeriod != ''">
+                AND gc.time_period = #{reqVO.timePeriod}
+            </if>
+            <if test="reqVO.createBy != null and reqVO.createBy != ''">
+                AND gc.create_by = #{reqVO.createBy}
+            </if>
+            <if test="reqVO.isAbnormal != null">
+                AND gc.is_abnormal = #{reqVO.isAbnormal}
+            </if>
+            <if test="reqVO.createTime != null and reqVO.createTime[0] != null and reqVO.createTime[1] != null">
+                AND gc.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+        </where>
+    </select>
+</mapper>

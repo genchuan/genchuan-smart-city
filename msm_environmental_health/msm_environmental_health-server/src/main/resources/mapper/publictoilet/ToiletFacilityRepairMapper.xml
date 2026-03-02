@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.publictoilet.ToiletFacilityRepairMapper">
+
+    <resultMap id="ToiletFacilityRepairDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.ToiletFacilityRepairDetailDO">
+        <!-- 基础维修字段 -->
+        <id column="id" property="id"/>
+        <result column="repair_id" property="repairId"/>
+        <result column="toilet_id" property="toiletId"/>
+        <result column="facility_id" property="facilityId"/>
+        <result column="damage_desc" property="damageDesc"/>
+        <result column="report_by" property="reportBy"/>
+        <result column="report_time" property="reportTime"/>
+        <result column="photo_url" property="photoUrl"/>
+        <result column="repair_by" property="repairBy"/>
+        <result column="repair_status" property="repairStatus"/>
+        <result column="expected_complete_time" property="expectedCompleteTime"/>
+        <result column="actual_complete_time" property="actualCompleteTime"/>
+        <result column="accept_result" property="acceptResult"/>
+        <result column="accept_opinion" property="acceptOpinion"/>
+        <result column="ext_common1" property="extCommon1"/>
+        <result column="ext_common2" property="extCommon2"/>
+        <result column="ext_common3" property="extCommon3"/>
+        <result column="ext_common4" property="extCommon4"/>
+        <result column="deleted" property="deleted"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+
+        <!-- 关联查询的扩展字段 -->
+        <result column="toilet_name" property="toiletName"/>       <!-- 公厕名称 -->
+        <result column="facility_name" property="facilityName"/>   <!-- 设施名称 -->
+        <result column="report_name" property="reportName"/>       <!-- 上报人姓名 -->
+        <result column="repair_name" property="repairName"/>       <!-- 维修人姓名 -->
+    </resultMap>
+
+    <select id="selectDetailPage" resultMap="ToiletFacilityRepairDetailResultMap">
+        SELECT
+        tfr.*,
+        pt.name AS toilet_name,
+        sf.name AS facility_name,
+        u1.user_name AS report_name,
+        u2.user_name AS repair_name
+        FROM public_toilet_facility_repair tfr
+        LEFT JOIN public_toilet pt ON tfr.toilet_id = pt.toilet_id AND pt.deleted = 0
+        LEFT JOIN sys_facility sf ON tfr.facility_id = sf.sys_facility_id AND sf.deleted = 0
+        LEFT JOIN sys_user u1 ON tfr.report_by = u1.user_id AND u1.deleted = 0
+        LEFT JOIN sys_user u2 ON tfr.repair_by = u2.user_id AND u2.deleted = 0
+        WHERE tfr.deleted = 0
+        ORDER BY tfr.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.pageSize}
+    </select>
+
+    <!-- 查询维修总条数（带条件） -->
+    <select id="selectCount" resultType="Long">
+        SELECT COUNT(*)
+        FROM public_toilet_facility_repair tfr
+        WHERE tfr.deleted = 0
+    </select>
+
+</mapper>

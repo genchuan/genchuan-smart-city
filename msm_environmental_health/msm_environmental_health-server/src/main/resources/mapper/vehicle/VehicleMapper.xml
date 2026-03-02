@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.vehicle.VehicleMapper">
+
+    <resultMap id="VehicleDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.detail.VehicleDetailDO">
+        <!-- 主表 sys_vehicle 基础字段（继承自 VehicleDO） -->
+        <id column="id" property="id"/>
+        <result column="sys_vehicle_id" property="sysVehicleId"/>
+        <result column="license_plate" property="licensePlate"/>
+        <result column="vehicle_type_id" property="vehicleTypeId"/>
+        <result column="model" property="model"/>
+        <result column="dept_id" property="deptId"/>
+        <result column="route_id" property="routeId"/>
+        <result column="maintenance_cycle" property="maintenanceCycle"/>
+        <result column="driver_id" property="driverId"/>
+        <result column="vehicle_status_id" property="vehicleStatusId"/>
+        <result column="create_by" property="createBy"/>
+        <result column="abnormal_create_time" property="abnormalCreateTime"/>
+        <result column="abnormal_update_time" property="abnormalUpdateTime"/>
+        <result column="total_work_hours" property="totalWorkHours"/>
+        <result column="last_maintenance_time" property="lastMaintenanceTime"/>
+        <result column="alarm_count" property="alarmCount"/>
+        <result column="vehicle_photo_url" property="vehiclePhotoUrl"/>
+        <result column="ext_common1" property="extCommon1"/>
+        <result column="ext_common2" property="extCommon2"/>
+        <result column="ext_common3" property="extCommon3"/>
+        <result column="ext_common4" property="extCommon4"/>
+        <result column="plan_status_id" property="planStatusId"/>
+        <result column="work_status_id" property="workStatusId"/>
+        <result column="violation_type_id" property="violationTypeId"/>
+        <result column="violation_status_id" property="violationStatusId"/>
+        <result column="maintenance_type_id" property="maintenanceTypeId"/>
+        <result column="task_type_id" property="taskTypeId"/>
+
+        <!-- 关联查询的名称字段（VehicleDetailDO 扩展字段） -->
+        <result column="vehicle_type_name" property="vehicleTypeName"/>
+        <result column="dept_name" property="deptName"/>
+        <result column="route_name" property="routeName"/>
+        <result column="driver_name" property="driverName"/>
+        <result column="vehicle_status_name" property="vehicleStatusName"/>
+        <result column="create_name" property="createName"/>
+        <result column="plan_status_name" property="planStatusName"/>
+        <result column="work_status_name" property="workStatusName"/>
+        <result column="violation_type_name" property="violationTypeName"/>
+        <result column="violation_status_name" property="violationStatusName"/>
+        <result column="maintenance_type_name" property="maintenanceTypeName"/>
+        <result column="task_type_name" property="taskTypeName"/>
+    </resultMap>
+
+    <!-- 分页查询车辆详情（联表） -->
+    <select id="selectDetailPage" resultMap="VehicleDetailResultMap">
+        SELECT
+        v.*,
+        vt.name AS vehicle_type_name,
+        d.name AS dept_name,
+        r.name AS route_name,
+        u1.user_name AS driver_name,
+        vs.name AS vehicle_status_name,
+        u2.user_name AS create_name,
+        ps.name AS plan_status_name,
+        ws.work_status_name AS work_status_name,
+        vlt.violation_name AS violation_type_name,
+        vsts.violation_status_name AS violation_status_name,
+        mt.maintenance_name AS maintenance_type_name,
+        tt.name AS task_type_name
+        FROM sys_vehicle v
+        LEFT JOIN sys_vehicle_type vt ON v.vehicle_type_id = vt.sys_vehicle_type_id AND vt.deleted = 0
+        LEFT JOIN sys_dept d ON v.dept_id = d.sys_dept_id AND d.deleted = 0
+        LEFT JOIN sys_route r ON v.route_id = r.sys_route_id AND r.deleted = 0
+        LEFT JOIN sys_user u1 ON v.driver_id = u1.user_id AND u1.deleted = 0
+        LEFT JOIN sys_vehicle_status vs ON v.vehicle_status_id = vs.sys_vehicle_status_id AND vs.deleted = 0
+        LEFT JOIN sys_user u2 ON v.create_by = u2.user_id AND u2.deleted = 0
+        LEFT JOIN sys_plan_status ps ON v.plan_status_id = ps.sys_plan_status_id AND ps.deleted = 0
+        LEFT JOIN sys_work_status ws ON v.work_status_id = ws.work_status_id AND ws.deleted = 0
+        LEFT JOIN sys_violation_type vlt ON v.violation_type_id = vlt.violation_type_id AND vlt.deleted = 0
+        LEFT JOIN sys_violation_status vsts ON v.violation_status_id = vsts.violation_status_id AND vsts.deleted = 0
+        LEFT JOIN sys_maintenance_type mt ON v.maintenance_type_id = mt.maintenance_type_id AND mt.deleted = 0
+        LEFT JOIN sys_task_type tt ON v.task_type_id = tt.sys_task_type_id AND tt.deleted = 0
+        WHERE v.deleted = 0
+        ORDER BY v.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.pageSize}
+    </select>
+
+    <select id="selectCount" resultType="Long">
+        SELECT COUNT(*)
+        FROM sys_vehicle v
+        WHERE v.deleted = 0
+    </select>
+
+</mapper>
