@@ -21,6 +21,8 @@ public interface ErrorCodeConstants {
     ErrorCode INSTANCE_NOT_EXISTS = new ErrorCode(500, "管理部件实例不存在");
     ErrorCode INSTANCE_CATEGORY_ID_EMPTY = new ErrorCode(100501, "分类ID不能为空");
     ErrorCode INSTANCE_CATEGORY_ID_INVALID = new ErrorCode(100502, "分类ID格式无效");
-
+    // 错误码编号需确保唯一，例如接着已有的顺序
+    ErrorCode INSTANCE_IMPORT_FILE_EMPTY = new ErrorCode(1_004_005, "导入Excel文件不能为空");
+    ErrorCode INSTANCE_IMPORT_DATA_EMPTY = new ErrorCode(1_004_006, "导入Excel数据为空");
 
 }
