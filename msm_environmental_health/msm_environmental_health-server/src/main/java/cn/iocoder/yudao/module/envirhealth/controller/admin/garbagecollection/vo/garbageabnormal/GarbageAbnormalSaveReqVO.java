@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbageabnormal;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 public class GarbageAbnormalSaveReqVO {
 
-    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "14169")
+    @Schema(description = "主键ID", example = "15")
     private Long id;
 
     @Schema(description = "异常记录主键（UUID）", example = "11260")
@@ -45,7 +46,8 @@ public class GarbageAbnormalSaveReqVO {
     @Schema(description = "整改说明")
     private String handleDesc;
 
-    @Schema(description = "整改照片URL，JSON", example = "https://www.iocoder.cn")
+    @Schema(description = "整改照片URL，JSON", example = "[\"https://www.iocoder.cn/photo1.jpg\",\"https://www.iocoder.cn/photo2.jpg\"]")
+    @Pattern(regexp = "^$|^\\[.*\\]$", message = "handlePhotoUrl必须为JSON数组格式（如[]）")
     private String handlePhotoUrl;
 
     @Schema(description = "复核状态：待复核/通过/退回", example = "2")
@@ -68,5 +70,9 @@ public class GarbageAbnormalSaveReqVO {
 
     @Schema(description = "通用扩展字段4")
     private String extCommon4;
+
+    public void setHandlePhotoUrl(String handlePhotoUrl) {
+        this.handlePhotoUrl = (handlePhotoUrl == null || handlePhotoUrl.trim().isEmpty()) ? "[]" : handlePhotoUrl;
+    }
 
 }

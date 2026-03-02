@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.envirhealth.util.column.vo;
+package cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbageabnormal.column.abnormal;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -6,11 +6,10 @@ import lombok.Data;
 /**
  * 功能:
  * 作者:SWE22008
- * 日期:2026/2/28 17:01
+ * 日期:2026/3/2 11:10
  */
 @Data
-public class ColumnVO {
-
+public class GarbageAbnormalColumnAbnormalVO {
     /**
      * 责任人名称
      */

@@ -6,8 +6,11 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.GarbageCollectionPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.card.all.GarbageCollectionCardAllVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.circle.all.GarbageCollectionCircleAllVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.circle.completed.GarbageCollectionCircleCompletedVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.column.all.AreaCompletionRateColumnAllVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.column.completed.CollectionVolumeBarVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.column.pending.TimePeriodPendingColumnVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.trend.completed.CompletionRateTrendVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.trend.executing.GarbageCollectionDailyTrendVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.GarbageCollectionDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageCollectionDetailDO;
@@ -15,6 +18,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -88,13 +92,31 @@ public interface GarbageCollectionMapper extends BaseMapperX<GarbageCollectionDO
      * 统计收运计划各状态数量
      * @return 统计结果
      */
+    /**
+     * 统计收运计划各状态数量（修复JOIN导致的计数放大问题）
+     * @return 统计结果
+     */
     @Select("SELECT " +
-            "COUNT(*) AS total_count, " +
-            "SUM(CASE WHEN plan_status_id = 'uuid-plan-status-002' THEN 1 ELSE 0 END) AS executing_count, " +
-            "SUM(CASE WHEN plan_status_id = 'uuid-plan-status-003' THEN 1 ELSE 0 END) AS completed_count, " +
-            "SUM(CASE WHEN plan_status_id = 'uuid-plan-status-004' THEN 1 ELSE 0 END) AS abnormal_count " +
-            "FROM garbage_collection " +
-            "WHERE deleted = 0")
+            "gc_stats.total_count AS total_count, " +
+            "gc_stats.unexecuted_count AS unexecuted_count, " +
+            "gc_stats.executing_count AS executing_count, " +
+            "gc_stats.completed_count AS completed_count, " +
+            "COALESCE(ga_stats.abnormal_count, 0) AS abnormal_count " +
+            "FROM ( " +
+            "    SELECT " +
+            "        COUNT(DISTINCT id) AS total_count, " +
+            "        SUM(CASE WHEN plan_status_id = 'uuid-plan-status-001' THEN 1 ELSE 0 END) AS unexecuted_count, " +
+            "        SUM(CASE WHEN plan_status_id = 'uuid-plan-status-002' THEN 1 ELSE 0 END) AS executing_count, " +
+            "        SUM(CASE WHEN plan_status_id = 'uuid-plan-status-003' THEN 1 ELSE 0 END) AS completed_count " +
+            "    FROM garbage_collection " +
+            "    WHERE deleted = 0 " +
+            ") gc_stats " +
+            "LEFT JOIN ( " +
+            "    SELECT " +
+            "        COUNT(plan_id) AS abnormal_count " +
+            "    FROM garbage_abnormal " +
+            "    WHERE handle_status = '待处置' AND deleted = 0 " +
+            ") ga_stats ON 1=1")
     GarbageCollectionCardAllVO selectCardAll();
 
     /**
@@ -281,4 +303,140 @@ public interface GarbageCollectionMapper extends BaseMapperX<GarbageCollectionDO
             "GROUP BY DATE_FORMAT(create_time, '%H:00') " + // 按小时分组
             "ORDER BY timePoint ASC")
     List<GarbageCollectionDailyTrendVO> selectDailyCollectionVolumeTrend();
+
+    /**
+     * 获取已完成任务卡片统计数据
+     * @return 统计结果Map
+     */
+    @Select("SELECT " +
+            "COUNT(*) AS completed_task_count, " +
+            "IFNULL(SUM(total_volume), 0) AS total_collected_volume, " +
+            "IFNULL(AVG(completion_rate), 0) AS average_completion_rate, " +
+            "IFNULL(AVG(abnormal_complete_rate), 0) AS average_abnormal_complete_rate " +
+            "FROM garbage_collection " +
+            "WHERE deleted = 0 " +
+            "AND plan_status_id = 'uuid-plan-status-003'") // 已完成状态
+    Map<String, Object> selectCardCompleted();
+
+    /**
+     * 按日统计收运量
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @return 每日收运量列表
+     */
+    @Select("SELECT " +
+            "DATE(create_time) AS timeDimension, " +
+            "IFNULL(SUM(collected_volume), 0) AS collectedVolume " +
+            "FROM garbage_collection " +
+            "WHERE deleted = 0 " +
+            "AND create_time BETWEEN #{startDate} AND #{endDate} " +
+            "GROUP BY DATE(create_time) " +
+            "ORDER BY timeDimension ASC")
+    List<CollectionVolumeBarVO> selectDailyCollectionVolume(@Param("startDate") LocalDateTime startDate,
+                                                            @Param("endDate") LocalDateTime endDate);
+
+    /**
+     * 按周统计收运量
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @return 每周收运量列表
+     */
+    @Select("SELECT " +
+            "CONCAT(YEAR(create_time), '-', LPAD(WEEK(create_time, 1), 2, '0')) AS timeDimension, " +
+            "IFNULL(SUM(collected_volume), 0) AS collectedVolume " +
+            "FROM garbage_collection " +
+            "WHERE deleted = 0 " +
+            "AND create_time BETWEEN #{startDate} AND #{endDate} " +
+            "GROUP BY YEAR(create_time), WEEK(create_time, 1) " +
+            "ORDER BY timeDimension ASC")
+    List<CollectionVolumeBarVO> selectWeeklyCollectionVolume(@Param("startDate") LocalDateTime startDate,
+                                                             @Param("endDate") LocalDateTime endDate);
+    /**
+     * 按月统计收运量
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @return 每月收运量列表
+     */
+    @Select("SELECT " +
+            "DATE_FORMAT(create_time, '%Y-%m') AS timeDimension, " +
+            "IFNULL(SUM(collected_volume), 0) AS collectedVolume " +
+            "FROM garbage_collection " +
+            "WHERE deleted = 0 " +
+            "AND create_time BETWEEN #{startDate} AND #{endDate} " +
+            "GROUP BY DATE_FORMAT(create_time, '%Y-%m') " +
+            "ORDER BY timeDimension ASC")
+    List<CollectionVolumeBarVO> selectMonthlyCollectionVolume(@Param("startDate") LocalDateTime startDate,
+                                                              @Param("endDate") LocalDateTime endDate);
+
+    /**
+     * 查询收运完成率趋势（折线图）- 按完成时间统计
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @return 完成率趋势数据
+     */
+    @Select("SELECT " +
+            "date, " +
+            "ROUND(AVG(completion_rate), 2) AS completionRate " +
+            "FROM ( " +
+            "    SELECT " +
+            "        DATE_FORMAT(complete_time, '%Y-%m-%d') AS date, " +
+            "        completion_rate " +
+            "    FROM garbage_collection " +
+            "    WHERE deleted = 0 " +
+            "    AND plan_status_id = 'uuid-plan-status-003' " + // 只统计已完成的
+            "    AND complete_time BETWEEN #{startTime} AND #{endTime} " +
+            "    AND complete_time IS NOT NULL " +
+            ") t " +
+            "GROUP BY date " +
+            "ORDER BY date ASC")
+    List<CompletionRateTrendVO> selectCompletionRateTrend(@Param("startTime") LocalDateTime startTime,
+                                                          @Param("endTime") LocalDateTime endTime);
+
+    /**
+     * 统计已完成计划各区域收运量占比
+     * 只统计 plan_status_id = 'uuid-plan-status-003' (已完成) 的数据
+     * @return 区域收运量占比列表
+     */
+    @Select("SELECT " +
+            "IFNULL(a.area_name, '未知区域') AS name, " +
+            "ROUND(IFNULL(SUM(gc.total_volume), 0), 2) AS value, " +
+            "CASE WHEN total.total_volume = 0 THEN 0.00 " +
+            "     ELSE ROUND(SUM(gc.total_volume) * 100.0 / total.total_volume, 2) " +
+            "END AS proportion " +
+            "FROM garbage_collection gc " +
+            "LEFT JOIN sys_area a ON gc.area_code = a.area_code " +
+            "CROSS JOIN ( " +
+            "    SELECT IFNULL(SUM(total_volume), 0) AS total_volume " +
+            "    FROM garbage_collection " +
+            "    WHERE deleted = 0 AND plan_status_id = 'uuid-plan-status-003'" +
+            ") AS total " +
+            "WHERE gc.deleted = 0 " +
+            "AND gc.plan_status_id = 'uuid-plan-status-003' " +
+            "GROUP BY gc.area_code, a.area_name, total.total_volume " +
+            "ORDER BY value DESC")
+    List<GarbageCollectionCircleCompletedVO> selectCompletedVolumeByArea();
+
+    /**
+     * 统计已完成计划各品类收运量占比
+     * 只统计 plan_status_id = 'uuid-plan-status-003' (已完成) 的数据
+     * @return 品类收运量占比列表
+     */
+    @Select("SELECT " +
+            "IFNULL(g.name, '未知品类') AS name, " +
+            "ROUND(IFNULL(SUM(gc.total_volume), 0), 2) AS value, " +
+            "CASE WHEN total.total_volume = 0 THEN 0.00 " +
+            "     ELSE ROUND(SUM(gc.total_volume) * 100.0 / total.total_volume, 2) " +
+            "END AS proportion " +
+            "FROM garbage_collection gc " +
+            "LEFT JOIN sys_garbage_type g ON gc.garbage_type_id = g.sys_garbage_type_id " +
+            "CROSS JOIN ( " +
+            "    SELECT IFNULL(SUM(total_volume), 0) AS total_volume " +
+            "    FROM garbage_collection " +
+            "    WHERE deleted = 0 AND plan_status_id = 'uuid-plan-status-003'" +
+            ") AS total " +
+            "WHERE gc.deleted = 0 " +
+            "AND gc.plan_status_id = 'uuid-plan-status-003' " +
+            "GROUP BY gc.garbage_type_id, g.name, total.total_volume " +
+            "ORDER BY value DESC")
+    List<GarbageCollectionCircleCompletedVO> selectCompletedVolumeByGarbageType();
 }

@@ -84,4 +84,8 @@ public interface ErrorCodeConstants {
 
     ErrorCode COLLECTION_FREQUENCY_NOT_EXISTS = new ErrorCode(999_067, "收运频次字典不存在");
     ErrorCode COLLECTION_TIME_PERIOD_NOT_EXISTS = new ErrorCode(999_068, "收运时段字典不存在");
+
+
+    ErrorCode COLLECTION_STATISTICS_TIME_REQUIRED = new ErrorCode(1050080001, "统计时间不能为空");
+    ErrorCode COLLECTION_STATISTICS_DIMENSION_INVALID = new ErrorCode(1050080002, "统计维度无效，只能是day/week/month");
 }

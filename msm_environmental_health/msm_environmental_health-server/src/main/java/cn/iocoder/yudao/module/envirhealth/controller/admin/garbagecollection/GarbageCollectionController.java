@@ -2,16 +2,22 @@ package cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection;
 
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.*;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.card.all.GarbageCollectionCardAllVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.card.completed.GarbageCollectionCardCompletedVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.card.executing.GarbageCollectionCardExecutingVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.card.pending.GarbageCollectionCardPendingVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.circle.all.GarbageCollectionCircleAllVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.column.all.AreaCompletionRateColumnAllVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.column.completed.CollectionVolumeBarVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.column.pending.TimePeriodPendingColumnVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.statistics.GarbageCollectionStatisticsRespVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.trend.completed.CompletionRateTrendVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.trend.completed.GarbageCollectionTrendReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.trend.executing.GarbageCollectionDailyTrendVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageCollectionDetailDO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.circle.completed.GarbageCollectionCircleCompletedVO;
 import cn.iocoder.yudao.module.envirhealth.service.area.AreaService;
 import cn.iocoder.yudao.module.envirhealth.util.garbagecollection.ByteArrayMultipartFile;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
@@ -21,14 +27,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.util.StreamUtils;
 
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.io.IOException;
 
@@ -42,6 +46,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
+import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.GarbageCollectionDO;
 import cn.iocoder.yudao.module.envirhealth.service.garbagecollection.garbagecollection.GarbageCollectionService;
@@ -321,4 +326,46 @@ public class GarbageCollectionController {
     public CommonResult<List<GarbageCollectionDailyTrendVO>> getDailyCollectionVolumeTrend() {
         return success(garbageCollectionService.getDailyCollectionVolumeTrend());
     }
+
+    @GetMapping("/chart/card-completed")
+    @Operation(summary = "获取收运计划统计数据(卡片-已完成)")
+    @PreAuthorize("@ss.hasPermission('health:garbage-collection:query')")
+    public CommonResult<GarbageCollectionCardCompletedVO> getGarbageCollectionCardCompleted() {
+        return success(garbageCollectionService.getGarbageCollectionCardCompleted());
+    }
+
+    @GetMapping("/chart/collection-volume-comparison")
+    @Operation(summary = "获取收运量对比数据(柱状图-按日/周/月)")
+    @PreAuthorize("@ss.hasPermission('health:garbage-collection:query')")
+    public CommonResult<List<CollectionVolumeBarVO>> getCollectionVolumeComparison(
+            @Valid GarbageCollectionTrendReqVO reqVO) {
+        return success(garbageCollectionService.getCollectionVolumeComparison(
+                reqVO.getDimension(),
+                reqVO.getStartTime(),
+                reqVO.getEndTime()));
+    }
+
+    @GetMapping("/chart/completion-rate-trend")
+    @Operation(summary = "获取收运完成率趋势(折线图-已完成)")
+    @PreAuthorize("@ss.hasPermission('health:garbage-collection:query')")
+    public CommonResult<List<CompletionRateTrendVO>> getCompletionRateTrend(
+            @RequestParam @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND) LocalDateTime startTime,
+            @RequestParam @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND) LocalDateTime endTime) {
+        return success(garbageCollectionService.getCompletionRateTrend(startTime, endTime));
+    }
+
+    @GetMapping("/chart/completed-volume-by-area")
+    @Operation(summary = "获取已完成计划各区域收运量占比(环状图-已完成)")
+    @PreAuthorize("@ss.hasPermission('health:garbage-collection:query')")
+    public CommonResult<List<GarbageCollectionCircleCompletedVO>> getCompletedVolumeByArea() {
+        return success(garbageCollectionService.getCompletedVolumeByArea());
+    }
+
+    @GetMapping("/chart/completed-volume-by-garbage-type")
+    @Operation(summary = "获取已完成计划各品类收运量占比(环状图-已完成)")
+    @PreAuthorize("@ss.hasPermission('health:garbage-collection:query')")
+    public CommonResult<List<GarbageCollectionCircleCompletedVO>> getCompletedVolumeByGarbageType() {
+        return success(garbageCollectionService.getCompletedVolumeByGarbageType());
+    }
+
 }

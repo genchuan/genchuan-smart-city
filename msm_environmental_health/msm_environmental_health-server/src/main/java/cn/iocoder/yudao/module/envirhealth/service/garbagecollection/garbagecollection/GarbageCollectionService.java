@@ -5,18 +5,23 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.GarbageCollectionPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.GarbageCollectionSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.card.all.GarbageCollectionCardAllVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.card.completed.GarbageCollectionCardCompletedVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.card.executing.GarbageCollectionCardExecutingVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.card.pending.GarbageCollectionCardPendingVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.circle.all.GarbageCollectionCircleAllVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.circle.completed.GarbageCollectionCircleCompletedVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.column.all.AreaCompletionRateColumnAllVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.column.completed.CollectionVolumeBarVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.column.pending.TimePeriodPendingColumnVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.statistics.GarbageCollectionStatisticsRespVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.trend.completed.CompletionRateTrendVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.trend.executing.GarbageCollectionDailyTrendVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageCollectionDetailDO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.GarbageCollectionDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -151,4 +156,41 @@ public interface GarbageCollectionService {
      * @return 按小时维度的收运量趋势数据
      */
     List<GarbageCollectionDailyTrendVO> getDailyCollectionVolumeTrend();
+
+    /**
+     * 获取已完成任务卡片统计数据
+     * @return 已完成任务卡片统计VO
+     */
+    GarbageCollectionCardCompletedVO getGarbageCollectionCardCompleted();
+
+    /**
+     * 获取收运量对比数据（柱状图）
+     * @param dimension 维度：day-日，week-周，month-月
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @return 收运量对比数据
+     */
+    List<CollectionVolumeBarVO> getCollectionVolumeComparison(String dimension,
+                                                              LocalDateTime startTime,
+                                                              LocalDateTime endTime);
+
+    /**
+     * 获取收运完成率趋势（折线图）
+     * @param startTime 开始时间
+     * @param endTime 结束时间
+     * @return 完成率趋势数据
+     */
+    List<CompletionRateTrendVO> getCompletionRateTrend(LocalDateTime startTime, LocalDateTime endTime);
+
+    /**
+     * 获取已完成计划各区域收运量占比（环状图）
+     * @return 区域收运量占比列表
+     */
+    List<GarbageCollectionCircleCompletedVO> getCompletedVolumeByArea();
+
+    /**
+     * 获取已完成计划各品类收运量占比（环状图）
+     * @return 品类收运量占比列表
+     */
+    List<GarbageCollectionCircleCompletedVO> getCompletedVolumeByGarbageType();
 }

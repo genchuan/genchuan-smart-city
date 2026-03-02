@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 public class GarbageCollectionSaveReqVO {
 
-    @Schema(description = "主键ID", example = "19427")
+    @Schema(description = "主键ID", example = "15")
     private Long id;
 
     @Schema(description = "收运计划主键（UUID）", example = "uuid-collect-xxx")

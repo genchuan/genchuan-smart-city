@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.envirhealth.util.circle.vo;
+package cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbageabnormal.circle.abnormal;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -6,14 +6,14 @@ import lombok.Data;
 /**
  * 功能:
  * 作者:SWE22008
- * 日期:2026/2/28 16:24
+ * 日期:2026/3/2 11:03
  */
 @Data
-public class CircleVO {
+public class GarbageAbnormalCircleAbnormalVO {
     /**
      * 分类名称
      */
-    @Schema(description = "分类名称")
+    @Schema(description = "垃圾类型/区域名称")
     private String name;
     /**
      * 分类值（数量/重量）

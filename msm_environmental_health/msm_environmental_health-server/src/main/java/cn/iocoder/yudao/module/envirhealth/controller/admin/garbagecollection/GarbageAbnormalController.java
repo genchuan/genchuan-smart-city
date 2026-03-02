@@ -4,12 +4,12 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbageabnormal.GarbageAbnormalRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbageabnormal.GarbageAbnormalSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbageabnormal.card.abnormal.GarbageAbnormalCardAbnormalRespVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.GarbageCollectionPageReqVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.circle.all.GarbageCollectionCircleAllVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbageabnormal.card.review.GarbageAbnormalCardReviewRespVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbageabnormal.circle.abnormal.GarbageAbnormalCircleAbnormalVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbageabnormal.circle.review.GarbageAbnormalCircleReviewVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbageabnormal.column.abnormal.GarbageAbnormalColumnAbnormalVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbageabnormal.column.review.GarbageAbnormalColumnHandleTimeVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageAbnormalDetailDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageCollectionDetailDO;
-import cn.iocoder.yudao.module.envirhealth.util.circle.vo.CircleVO;
-import cn.iocoder.yudao.module.envirhealth.util.column.vo.ColumnVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -120,21 +120,49 @@ public class GarbageAbnormalController {
     @GetMapping("/chart/circle-abnormal-type")
     @Operation(summary = "获取异常类型占比(环状图-异常)")
     @PreAuthorize("@ss.hasPermission('envirhealth:garbage-abnormal:query')")
-    public CommonResult<List<CircleVO>> getGarbageAbnormalTypeCircle() {
+    public CommonResult<List<GarbageAbnormalCircleAbnormalVO>> getGarbageAbnormalTypeCircle() {
         return success(garbageAbnormalService.getGarbageAbnormalTypeCircleAbnormal());
     }
 
     @GetMapping("/chart/circle-area-distribution")
     @Operation(summary = "获取区域分布占比(环状图-异常)")
     @PreAuthorize("@ss.hasPermission('envirhealth:garbage-abnormal:query')")
-    public CommonResult<List<CircleVO>> getGarbageAbnormalAreaDistributionCircle() {
+    public CommonResult<List<GarbageAbnormalCircleAbnormalVO>> getGarbageAbnormalAreaDistributionCircle() {
         return success(garbageAbnormalService.getGarbageAbnormalAreaDistributionCircle());
     }
 
     @GetMapping("/chart/column-abnormal")
-    @Operation(summary = "获取不同责任人待处置异常数量对比(柱状图)")
+    @Operation(summary = "获取不同责任人待处置异常数量对比(柱状图-异常)")
     @PreAuthorize("@ss.hasPermission('envirhealth:garbage-abnormal:query')")
-    public CommonResult<List<ColumnVO>> getHandlerAbnormalColumn() {
+    public CommonResult<List<GarbageAbnormalColumnAbnormalVO>> getHandlerAbnormalColumn() {
         return success(garbageAbnormalService.getHandlerAbnormalColumn());
+    }
+
+    @GetMapping("/chart/card-review")
+    @Operation(summary = "获取待复核统计卡片数据(卡片-待复核)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:garbage-abnormal:query')")
+    public CommonResult<GarbageAbnormalCardReviewRespVO> getGarbageAbnormalCardReview() {
+        return success(garbageAbnormalService.getGarbageAbnormalCardReview());
+    }
+
+    @GetMapping("/chart/circle-review-result")
+    @Operation(summary = "获取复核结果占比(环状图-待复核)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:garbage-abnormal:query')")
+    public CommonResult<List<GarbageAbnormalCircleReviewVO>> getGarbageAbnormalReviewResultCircle() {
+        return success(garbageAbnormalService.getGarbageAbnormalReviewResultCircle());
+    }
+
+    @GetMapping("/chart/circle-abnormal-type-for-review")
+    @Operation(summary = "获取异常类型占比(环状图-待复核)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:garbage-abnormal:query')")
+    public CommonResult<List<GarbageAbnormalCircleAbnormalVO>> getGarbageAbnormalTypeCircleForReview() {
+        return success(garbageAbnormalService.getGarbageAbnormalTypeCircleForReview());
+    }
+
+    @GetMapping("/chart/column-avg-handle-time")
+    @Operation(summary = "获取异常处置平均时长对比(柱状图-待复核)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:garbage-abnormal:query')")
+    public CommonResult<List<GarbageAbnormalColumnHandleTimeVO>> getAvgHandleTimeColumn() {
+        return success(garbageAbnormalService.getAvgHandleTimeColumn());
     }
 }

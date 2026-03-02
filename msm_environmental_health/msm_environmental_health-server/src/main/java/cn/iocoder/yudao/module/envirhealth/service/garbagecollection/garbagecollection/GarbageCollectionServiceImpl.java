@@ -5,15 +5,20 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.GarbageCollectionPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.GarbageCollectionSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.card.all.GarbageCollectionCardAllVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.card.completed.GarbageCollectionCardCompletedVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.card.executing.GarbageCollectionCardExecutingVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.card.pending.GarbageCollectionCardPendingVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.circle.all.GarbageCollectionCircleAllVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.circle.completed.GarbageCollectionCircleCompletedVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.column.all.AreaCompletionRateColumnAllVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.column.completed.CollectionVolumeBarVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.column.pending.TimePeriodPendingColumnVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.statistics.GarbageCollectionStatisticsRespVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.trend.completed.CompletionRateTrendVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.trend.executing.GarbageCollectionDailyTrendVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageCollectionDetailDO;
-import cn.iocoder.yudao.module.envirhealth.util.garbagecollection.GarbageCollectionCodeGenerator;
+import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagecollection.GarbageAbnormalMapper;
+import cn.iocoder.yudao.module.envirhealth.util.garbagecollection.codegenerator.garbagecollection.GarbageCollectionCodeGenerator;
 import cn.iocoder.yudao.module.envirhealth.util.garbagecollection.vo.NameValueVO;
 import jakarta.validation.ConstraintViolation;
 import org.springframework.stereotype.Service;
@@ -31,10 +36,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -53,6 +55,8 @@ public class GarbageCollectionServiceImpl implements GarbageCollectionService {
     private GarbageCollectionMapper garbageCollectionMapper;
     @Resource
     private GarbageCollectionCodeGenerator codeGenerator;
+    @Resource
+    private GarbageAbnormalMapper garbageAbnormalMapper;
     @Resource
     private Validator validator;
 
@@ -304,28 +308,39 @@ public class GarbageCollectionServiceImpl implements GarbageCollectionService {
         Long totalCount = garbageCollectionMapper.selectTotalCount();
         respVO.setTotal(totalCount == null ? 0 : totalCount.intValue());
 
-        // 2. 查询各状态统计
+        // 2. 查询垃圾收集计划各状态统计（待执行/执行中/已完成）
         List<Map<String, Object>> statusStats = garbageCollectionMapper.selectStatisticsByPlanStatus();
 
-        // 3. 转换为Map格式
-        Map<String, Integer> planStatusCounts = new java.util.LinkedHashMap<>();
-
-        // 初始化所有状态为0
+        // 3. 转换为Map格式并初始化所有状态为0
+        Map<String, Integer> planStatusCounts = new LinkedHashMap<>();
         planStatusCounts.put("待执行", 0);
         planStatusCounts.put("执行中", 0);
         planStatusCounts.put("已完成", 0);
-        planStatusCounts.put("异常", 0);
-        planStatusCounts.put("待复核", 0);
+        planStatusCounts.put("异常", 0); // 后续替换为异常表数据
+        planStatusCounts.put("待复核", 0); // 后续替换为异常表数据
 
-        // 填充实际数据
+        // 4. 填充垃圾收集计划的状态数据（待执行/执行中/已完成）
         for (Map<String, Object> stat : statusStats) {
             String statusName = (String) stat.get("status_name");
             Long count = (Long) stat.get("count");
-            planStatusCounts.put(statusName, count.intValue());
+            // 只填充待执行/执行中/已完成，跳过异常相关状态
+            if (planStatusCounts.containsKey(statusName)
+                    && !"异常".equals(statusName)
+                    && !"待复核".equals(statusName)) {
+                planStatusCounts.put(statusName, count.intValue());
+            }
         }
 
-        respVO.setPlanStatusCounts(planStatusCounts);
+        // 5. 查询异常表数据，填充异常待处置、处置待复核
+        // 异常待处置：handle_status = 待处置
+        Long handlePendingCount = garbageAbnormalMapper.countHandlePending();
+        planStatusCounts.put("异常", handlePendingCount == null ? 0 : handlePendingCount.intValue());
 
+        // 处置待复核：handle_status = 待复核
+        Long reviewPendingCount = garbageAbnormalMapper.countReviewPending();
+        planStatusCounts.put("待复核", reviewPendingCount == null ? 0 : reviewPendingCount.intValue());
+
+        respVO.setPlanStatusCounts(planStatusCounts);
         return respVO;
     }
 
@@ -354,5 +369,113 @@ public class GarbageCollectionServiceImpl implements GarbageCollectionService {
     @Override
     public List<GarbageCollectionDailyTrendVO> getDailyCollectionVolumeTrend() {
         return garbageCollectionMapper.selectDailyCollectionVolumeTrend();
+    }
+
+    @Override
+    public GarbageCollectionCardCompletedVO getGarbageCollectionCardCompleted() {
+        // 1. 查询统计数据
+        Map<String, Object> stats = garbageCollectionMapper.selectCardCompleted();
+
+        // 2. 提取数据并处理空值
+        Long completedTaskCount = stats.get("completed_task_count") == null ? 0L :
+                ((Number) stats.get("completed_task_count")).longValue();
+
+        BigDecimal totalCollectedVolume = stats.get("total_collected_volume") == null ?
+                BigDecimal.ZERO : new BigDecimal(stats.get("total_collected_volume").toString());
+
+        BigDecimal averageCompletionRate = stats.get("average_completion_rate") == null ?
+                BigDecimal.ZERO : new BigDecimal(stats.get("average_completion_rate").toString());
+
+        BigDecimal averageAbnormalCompleteRate = stats.get("average_abnormal_complete_rate") == null ?
+                BigDecimal.ZERO : new BigDecimal(stats.get("average_abnormal_complete_rate").toString());
+
+        // 3. 构建返回对象
+        return GarbageCollectionCardCompletedVO.builder()
+                .completedTaskCount(completedTaskCount.intValue())
+                .totalCollectedVolume(totalCollectedVolume.setScale(2, BigDecimal.ROUND_HALF_UP))
+                .averageCompletionRate(averageCompletionRate.setScale(2, BigDecimal.ROUND_HALF_UP))
+                .abnormalCompleteRate(averageAbnormalCompleteRate.setScale(2, BigDecimal.ROUND_HALF_UP))
+                .build();
+    }
+
+    @Override
+    public List<CollectionVolumeBarVO> getCollectionVolumeComparison(String dimension,
+                                                                     LocalDateTime startTime,
+                                                                     LocalDateTime endTime) {
+        // 参数校验
+        if (startTime == null || endTime == null) {
+            throw exception(COLLECTION_STATISTICS_TIME_REQUIRED);
+        }
+
+        List<CollectionVolumeBarVO> result;
+
+        // 根据维度查询不同粒度的数据
+        switch (dimension.toLowerCase()) {
+            case "day":
+                result = garbageCollectionMapper.selectDailyCollectionVolume(startTime, endTime);
+                break;
+            case "week":
+                result = garbageCollectionMapper.selectWeeklyCollectionVolume(startTime, endTime);
+                break;
+            case "month":
+                result = garbageCollectionMapper.selectMonthlyCollectionVolume(startTime, endTime);
+                break;
+            default:
+                throw exception(COLLECTION_STATISTICS_DIMENSION_INVALID);
+        }
+
+        // 处理空结果集
+        if (CollectionUtils.isEmpty(result)) {
+            return new ArrayList<>();
+        }
+
+        // 格式化数据（保留两位小数）
+        result.forEach(item -> {
+            if (item.getCollectedVolume() != null) {
+                item.setCollectedVolume(item.getCollectedVolume()
+                        .setScale(2, BigDecimal.ROUND_HALF_UP));
+            } else {
+                item.setCollectedVolume(BigDecimal.ZERO);
+            }
+        });
+
+        return result;
+    }
+
+    @Override
+    public List<CompletionRateTrendVO> getCompletionRateTrend(LocalDateTime startTime, LocalDateTime endTime) {
+        // 参数校验
+        if (startTime == null || endTime == null) {
+            throw exception(COLLECTION_STATISTICS_TIME_REQUIRED);
+        }
+
+        List<CompletionRateTrendVO> result = garbageCollectionMapper.selectCompletionRateTrend(startTime, endTime);
+
+        // 处理空结果集
+        if (CollectionUtils.isEmpty(result)) {
+            return new ArrayList<>();
+        }
+
+        // 格式化完成率（保留两位小数）
+        result.forEach(item -> {
+            if (item.getCompletionRate() != null) {
+                item.setCompletionRate(item.getCompletionRate()
+                        .setScale(2, BigDecimal.ROUND_HALF_UP));
+            } else {
+                item.setCompletionRate(BigDecimal.ZERO);
+            }
+        });
+
+        return result;
+    }
+
+    @Override
+    public List<GarbageCollectionCircleCompletedVO> getCompletedVolumeByArea() {
+        return garbageCollectionMapper.selectCompletedVolumeByArea();
+    }
+
+    @Override
+    public List<GarbageCollectionCircleCompletedVO> getCompletedVolumeByGarbageType() {
+        return garbageCollectionMapper.selectCompletedVolumeByGarbageType();
     }
 }

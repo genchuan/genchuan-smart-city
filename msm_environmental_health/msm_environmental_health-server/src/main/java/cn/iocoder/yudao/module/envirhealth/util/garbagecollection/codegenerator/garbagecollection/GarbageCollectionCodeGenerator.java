@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.envirhealth.util.garbagecollection;
+package cn.iocoder.yudao.module.envirhealth.util.garbagecollection.codegenerator.garbagecollection;
 
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagecollection.GarbageCollectionMapper;
 import jakarta.annotation.Resource;

@@ -15,12 +15,15 @@ public class GarbageCollectionCardAllVO {
     @Schema(description = "总计划数", example = "8")
     private Long totalCount;
 
+    @Schema(description = "待执行计划数", example = "1")
+    private Long unexecutedCount;
+
     @Schema(description = "执行中计划数", example = "2")
     private Long executingCount;
 
     @Schema(description = "已完成计划数", example = "3")
     private Long completedCount;
 
-    @Schema(description = "异常计划数", example = "3")
+    @Schema(description = "异常计划数", example = "4")
     private Long abnormalCount;
 }
