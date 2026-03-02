@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.object.vo;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -16,9 +17,11 @@ public class ObjectSaveReqVO {
     private String objectId;
 
     @Schema(description = "对象名称", example = "芋艿")
+    @ExcelProperty(index = 0)
     private String name;
 
     @Schema(description = "对象编码")
+    @ExcelProperty(index = 1)
     private String code;
 
     @Schema(description = "所属区域编码（关联sys_area.area_code）")
@@ -30,11 +33,16 @@ public class ObjectSaveReqVO {
     @Schema(description = "负责人ID（关联sys_user.user_id）", example = "16200")
     private String managerId;
 
+    @Schema(description = "负责人联系电话")
+    @ExcelProperty(index = 5) // 新增：匹配第五列，赋值给userPhone
+    private String managerPhone;
+
     @Schema(description = "关联网格/部门ID（关联eval_related_object.related_id）", example = "24916")
     private String relatedId;
 
     @Schema(description = "状态ID（关联sys_status.status_id）", example = "16713")
-    private Integer statusId;
+    @ExcelProperty(index = 7)
+    private String statusId;
 
     @Schema(description = "创建人ID（关联sys_user.user_id）")
     private String createBy;
@@ -63,4 +71,23 @@ public class ObjectSaveReqVO {
     @Schema(description = "通用扩展字段4")
     private String extCommon4;
 
+    // ===== 新增Excel导入专用字段（只用于接收名称，加@ExcelProperty）=====
+    @Schema(description = "所属区域名称（仅Excel导入用）")
+    @ExcelProperty(index = 2) // 匹配Excel表头“所属区域”
+    private String areaName; // 仅导入时接收“上海市”等名称
+
+    @Schema(description = "对象类型名称（仅Excel导入用）")
+    @ExcelProperty(index = 3) // 匹配Excel表头“对象类型”
+    private String objectTypeName; // 仅导入时接收“事业单位”等名称
+
+    @Schema(description = "负责人名称（仅Excel导入用）")
+    @ExcelProperty(index = 4) // 匹配Excel表头“负责人”
+    private String managerName; // 仅导入时接收“李四”等名称
+
+    @Schema(description = "关联网格名称（仅Excel导入用）")
+    @ExcelProperty(index = 6) // 匹配Excel表头“关联网格/部门”
+    private String relatedName; // 仅导入时接收“技术研发部”等名称
+
+    @Schema(description = "创建人名称")
+    private String createUserName;
 }

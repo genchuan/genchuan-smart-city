@@ -2,9 +2,12 @@ package cn.iocoder.yudao.module.evaluate.service.objecttype;
 
 import cn.iocoder.yudao.module.evaluate.controller.admin.sys.objecttype.vo.ObjectTypePageReqVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.sys.objecttype.vo.ObjectTypeSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.common.vo.SelectOptionRespVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.objecttype.ObjectTypeDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+
+import java.util.List;
 
 /**
  * 对象类型字典 Service 接口
@@ -51,4 +54,6 @@ public interface ObjectTypeService {
      */
     PageResult<ObjectTypeDO> getObjectTypePage(ObjectTypePageReqVO pageReqVO);
 
+    // Service 核心逻辑
+    List<SelectOptionRespVO> getObjectTypeSimpleList();
 }

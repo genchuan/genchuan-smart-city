@@ -88,6 +88,9 @@ public class ObjectRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
+    @Schema(description = "更新时间（业务字段）")
+    @ExcelProperty("更新时间（业务字段）")
+    private LocalDateTime updateTime;
     // ========== 新增联表展示字段（前端需要的展示值） ==========
     @Schema(description = "所属区域名称（关联sys_area.area_name）", example = "北京市朝阳区")
     @ExcelProperty("所属区域名称")
@@ -125,4 +128,15 @@ public class ObjectRespVO {
     @ExcelProperty("变更日志（截取前50字）")
     private String changeLogShort; // 变更日志简写（截取前50字）
 
+    @Schema(description = "status_id=1的记录数（传指定statusId时，仅该状态有值，其余为0）")
+    @ExcelProperty("status_id=1的记录数")
+    private Long status1Count;
+
+    @Schema(description = "status_id=2的记录数")
+    @ExcelProperty("status_id=2的记录数")
+    private Long status2Count;
+
+    @Schema(description = "符合条件的总记录数（过滤deleted=1后）")
+    @ExcelProperty("符合条件的总记录数（过滤deleted=1后）")
+    private Long totalCount;
 }

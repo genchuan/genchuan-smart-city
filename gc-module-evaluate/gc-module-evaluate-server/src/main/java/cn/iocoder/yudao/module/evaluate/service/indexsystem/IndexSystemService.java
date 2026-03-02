@@ -60,4 +60,6 @@ public interface IndexSystemService {
 
     //----------------------xin-------------------
     PageResult<IndexSystemRespVO> getIndexSystemJoinPage(IndexSystemPageReqVO reqVO);
+
+    IndexSystemRespVO getStatusCount(Integer statusId);
 }

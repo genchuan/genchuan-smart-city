@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.evaluate.dal.dataobject.sys;
+package cn.iocoder.yudao.module.evaluate.dal.dataobject.sys.ruletype;
 
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 import com.baomidou.mybatisplus.annotation.KeySequence;
@@ -8,6 +8,12 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
 import java.time.LocalDateTime;
+
+/**
+ * 规则类型字典 DO
+ *
+ * @author 亘川智城
+ */
 @TableName("sys_rule_type")
 @KeySequence("sys_rule_type_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。
 @Data
@@ -17,6 +23,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RuleTypeDO extends BaseDO {
+
     /**
      * 主键ID
      */
@@ -40,11 +47,11 @@ public class RuleTypeDO extends BaseDO {
     @TableField("`desc`")
     private String desc;
     /**
-     * 创建时间（业务字段）
+     * 业务创建时间
      */
     private LocalDateTime bizCreateTime;
     /**
-     * 更新时间（业务字段）
+     * 业务更新时间
      */
     private LocalDateTime bizUpdateTime;
     /**
@@ -63,4 +70,5 @@ public class RuleTypeDO extends BaseDO {
      * 通用扩展字段4
      */
     private String extCommon4;
+
 }

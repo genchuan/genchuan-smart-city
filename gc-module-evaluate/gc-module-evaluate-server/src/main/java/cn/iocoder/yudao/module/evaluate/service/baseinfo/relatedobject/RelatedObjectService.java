@@ -2,9 +2,12 @@ package cn.iocoder.yudao.module.evaluate.service.baseinfo.relatedobject;
 
 import cn.iocoder.yudao.module.evaluate.controller.admin.baseinfo.relatedobject.vo.RelatedObjectPageReqVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.baseinfo.relatedobject.vo.RelatedObjectSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.common.vo.SelectOptionRespVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.baseinfo.relatedobject.RelatedObjectDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+
+import java.util.List;
 
 /**
  * 关联对象 Service 接口
@@ -51,4 +54,5 @@ public interface RelatedObjectService {
      */
     PageResult<RelatedObjectDO> getRelatedObjectPage(RelatedObjectPageReqVO pageReqVO);
 
+    List<SelectOptionRespVO> getRelatedObjectSimpleList();
 }

@@ -12,7 +12,7 @@ import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.ruleitem.RuleI
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.vetoitem.VetoItemDO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.objecttype.ObjectTypeDO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.status.StatusDO;
-import cn.iocoder.yudao.module.evaluate.dal.dataobject.sys.RuleTypeDO;
+import cn.iocoder.yudao.module.evaluate.dal.dataobject.sys.ruletype.RuleTypeDO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.user.UserDO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -66,7 +66,13 @@ public interface RuleCategoryMapper extends BaseMapperX<RuleCategoryDO> {
      * @param reqVO 查询条件
      * @return 分页结果
      */
-    default IPage<RuleCategoryRespVO> selectRuleCategoryPage(Page<RuleCategoryRespVO> page, @Param("reqVO") RuleCategoryPageReqVO reqVO) {
+    default Page<RuleCategoryRespVO> selectRuleCategoryAllPage(Page<RuleCategoryRespVO> page,
+                                                               @Param("reqVO") RuleCategoryPageReqVO reqVO) {
+        // ========== 核心修复1：先校验reqVO是否为null，避免基础空指针 ==========
+        if (reqVO == null) {
+            reqVO = new RuleCategoryPageReqVO(); // 初始化空VO，避免后续所有判空失效
+        }
+
         // 构建 MPJ 联表查询条件
         MPJLambdaWrapper<RuleCategoryDO> wrapper = new MPJLambdaWrapper<RuleCategoryDO>()
                 // ========== 1. 主表：规则分类表（eval_rule_category） ==========
@@ -94,35 +100,37 @@ public interface RuleCategoryMapper extends BaseMapperX<RuleCategoryDO> {
                 .leftJoin(ObjectTypeDO.class, ObjectTypeDO::getTypeId, VetoItemDO::getObjectTypeId)
                 .selectAs(ObjectTypeDO::getName, RuleCategoryRespVO::getObjectTypeName) // 适用对象类型名称
                 // ========== 8. 关联状态字典表（sys_status） ==========
-                .leftJoin(StatusDO.class, StatusDO::getId, RuleCategoryDO::getStatusId)
+                .leftJoin(StatusDO.class, StatusDO::getStatusId, RuleCategoryDO::getStatusId)
                 .selectAs(StatusDO::getName, RuleCategoryRespVO::getStatusName) // 状态名称
                 // ========== 9. 关联创建人用户表（sys_user） ==========
-                .leftJoin(UserDO.class, UserDO::getId, RuleCategoryDO::getCreateBy)
+                .leftJoin(UserDO.class, UserDO::getUserId, RuleCategoryDO::getCreateBy)
                 .selectAs(UserDO::getUserName, RuleCategoryRespVO::getCreateUserName) // 创建人名称
-                // ========== 10. 关联停用操作人用户表（sys_user - 别名） ==========
-                .leftJoin(UserDO.class, "u2", UserDO::getId, RuleCategoryDO::getUpdateBy)
+                // ========== 10. 关联停用操作人用户表（sys_user - 别名修复） ==========
+                .leftJoin(UserDO.class, "u2",UserDO::getUserId, RuleCategoryDO::getUpdateBy) // 正确的别名写法：表, ON条件, 别名
                 .selectAs("u2.user_name", RuleCategoryRespVO::getStopUserName) // 停用操作人名称
-                // ========== 自定义字段（统计/截取） ==========
+                // ========== 自定义字段（统计/截取 - 修复表别名） ==========
                 .selectAs(RuleCategoryDO::getItemCount, RuleCategoryRespVO::getRuleItemCount) // 规则项数量
-                .selectAs("COUNT(DISTINCT eval_veto_item.id)", RuleCategoryRespVO::getVetoItemCount) // 否决项数量（统计）
-                .selectAs("SUBSTRING(eval_rule_category.change_log, 1, 50)", RuleCategoryRespVO::getShortChangeLog) // 截取变更日志前50字
+                .selectAs("COUNT(DISTINCT t5.veto_item_id)", RuleCategoryRespVO::getVetoItemCount) // 用主键统计，避免id冲突
+                .selectAs("SUBSTRING(t.change_log, 1, 50)", RuleCategoryRespVO::getShortChangeLog) // 截取变更日志前50字
                 .selectAs(RuleCategoryDO::getUpdateTime, RuleCategoryRespVO::getStopTime) // 停用时间（复用update_time）
 
-                // ========== 查询条件 ==========
+                // ========== 查询条件（全量空指针修复） ==========
                 // 1. 规则分类ID
                 .eq(reqVO.getRuleCategoryId() != null, RuleCategoryDO::getRuleCategoryId, reqVO.getRuleCategoryId())
                 // 2. 规则分类名称（模糊查询）
-                .like(reqVO.getName() != null, RuleCategoryDO::getName, reqVO.getName())
+                .like(reqVO.getName() != null && !reqVO.getName().isEmpty(), RuleCategoryDO::getName, reqVO.getName())
                 // 3. 适用指标体系ID
                 .eq(reqVO.getSystemId() != null, RuleCategoryDO::getSystemId, reqVO.getSystemId())
                 // 4. 状态筛选（核心：全部/启用/停用）
                 .eq(reqVO.getStatusId() != null, RuleCategoryDO::getStatusId, reqVO.getStatusId())
                 // 5. 规则项数量
                 .eq(reqVO.getItemCount() != null, RuleCategoryDO::getItemCount, reqVO.getItemCount())
-                // 6. 最近使用时间范围
-                .between(reqVO.getLastUseTime() != null && reqVO.getLastUseTime().length == 2,
-                        RuleCategoryDO::getLastUseTime,
-                        reqVO.getLastUseTime()[0], reqVO.getLastUseTime()[1])
+//                // 6. 最近使用时间范围（修复：先判null，再判长度）
+//                .between(
+//                        reqVO.getLastUseTime() != null && reqVO.getLastUseTime().length == 2,
+//                        RuleCategoryDO::getLastUseTime,
+//                        reqVO.getLastUseTime()[0], reqVO.getLastUseTime()[1]
+//                )
                 // 7. 使用次数
                 .eq(reqVO.getUseCount() != null, RuleCategoryDO::getUseCount, reqVO.getUseCount())
                 // 8. 创建人ID
@@ -130,26 +138,33 @@ public interface RuleCategoryMapper extends BaseMapperX<RuleCategoryDO> {
                 // 9. 更新人ID
                 .eq(reqVO.getUpdateBy() != null, RuleCategoryDO::getUpdateBy, reqVO.getUpdateBy())
                 // 10. 创建时间（业务字段）范围
-                .between(reqVO.getBizCreateTime() != null && reqVO.getBizCreateTime().length == 2,
-                        RuleCategoryDO::getBizCreateTime,
-                        reqVO.getBizCreateTime()[0], reqVO.getBizCreateTime()[1])
+//                .between(
+//                        reqVO.getBizCreateTime() != null && reqVO.getBizCreateTime().length == 2,
+//                        RuleCategoryDO::getBizCreateTime,
+//                        reqVO.getBizCreateTime()[0], reqVO.getBizCreateTime()[1]
+//                )
                 // 11. 更新时间（业务字段）范围
-                .between(reqVO.getBizUpdateTime() != null && reqVO.getBizUpdateTime().length == 2,
-                        RuleCategoryDO::getBizUpdateTime,
-                        reqVO.getBizUpdateTime()[0], reqVO.getBizUpdateTime()[1])
+//                .between(
+//                        reqVO.getBizUpdateTime() != null && reqVO.getBizUpdateTime().length == 2,
+//                        RuleCategoryDO::getBizUpdateTime,
+//                        reqVO.getBizUpdateTime()[0], reqVO.getBizUpdateTime()[1]
+//                )
                 // 12. 变更日志（模糊查询）
-                .like(reqVO.getChangeLog() != null, RuleCategoryDO::getChangeLog, reqVO.getChangeLog())
+                .like(reqVO.getChangeLog() != null && !reqVO.getChangeLog().isEmpty(), RuleCategoryDO::getChangeLog, reqVO.getChangeLog())
                 // 13. 创建时间范围
-                .between(reqVO.getCreateTime() != null && reqVO.getCreateTime().length == 2,
-                        RuleCategoryDO::getCreateTime,
-                        reqVO.getCreateTime()[0], reqVO.getCreateTime()[1])
-                // 14. 状态名称（模糊查询）
-                .like(reqVO.getStatusName() != null, StatusDO::getName, reqVO.getStatusName())
+//                .between(
+//                        reqVO.getCreateTime() != null && reqVO.getCreateTime().length == 2,
+//                        RuleCategoryDO::getCreateTime,
+//                        reqVO.getCreateTime()[0], reqVO.getCreateTime()[1]
+//                )
+                // 14. 状态名称（模糊查询 - 补充空判）
+                .like(reqVO.getStatusName() != null && !reqVO.getStatusName().isEmpty(), StatusDO::getName, reqVO.getStatusName())
 
                 // ========== 分组（避免联表后数据重复） ==========
                 .groupBy(RuleCategoryDO::getId);
 
-        // 执行分页查询
-        return selectJoinPage(page, RuleCategoryRespVO.class, wrapper);
+        // 执行分页查询（确保泛型匹配）
+        Page<RuleCategoryRespVO> resultPage = selectJoinPage(page, RuleCategoryRespVO.class, wrapper);
+        return (Page<RuleCategoryRespVO>) resultPage;
     }
 }

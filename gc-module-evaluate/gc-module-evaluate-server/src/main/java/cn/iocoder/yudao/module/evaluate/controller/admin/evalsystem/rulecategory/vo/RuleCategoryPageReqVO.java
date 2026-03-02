@@ -87,6 +87,13 @@ public class RuleCategoryPageReqVO extends PageParam {
 
     @Schema(description = "否决项名称（关联eval_veto_item.name）")
     private String vetoItemName;
-    @Schema(description = "否决项名称（关联eval_veto_item.name）")
+    @Schema(description = "关联指标项名称（关联eval_rule_item.index_id）")
     private String indexItemId;
+
+    @Schema(description = "评分逻辑")
+    private String scoreLogic; // eval_rule_item.score_logic
+
+    @Schema(description = "满分值")
+    private Integer fullScore; // eval_rule_item.full_score
+
 }

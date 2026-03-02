@@ -129,4 +129,16 @@ public class IndexSystemRespVO {
     @Schema(description = "更新人姓名（也可用作停用操作人）")
     @ExcelProperty("更新人姓名（也可用作停用操作人）")
     private String updateUserName;
+
+    @Schema(description = "status_id=1的记录数（传指定statusId时，仅该状态有值，其余为0）")
+    @ExcelProperty("status_id=1的记录数")
+    private Long status1Count;
+
+    @Schema(description = "status_id=2的记录数")
+    @ExcelProperty("status_id=2的记录数")
+    private Long status2Count;
+
+    @Schema(description = "符合条件的总记录数（过滤deleted=1后）")
+    @ExcelProperty("符合条件的总记录数（过滤deleted=1后）")
+    private Long totalCount;
 }

@@ -9,6 +9,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.indexsystem.vo.*;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexsystem.IndexSystemDO;
 import cn.iocoder.yudao.module.evaluate.service.indexsystem.IndexSystemService;
+import com.alibaba.nacos.api.model.v2.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -116,5 +117,12 @@ public class IndexSystemController {
     public CommonResult<PageResult<IndexSystemRespVO>> getIndexSystemJoinPage(IndexSystemPageReqVO reqVO) {
         PageResult<IndexSystemRespVO> pageResult = indexSystemService.getIndexSystemJoinPage(reqVO);
         return CommonResult.success(pageResult);
+    }
+    @GetMapping("/status-count")
+    @Operation(summary = "获取status_id统计数据*")
+    public Result<IndexSystemRespVO> getStatusCount(
+            @RequestParam(required = false) Integer statusId) {
+        IndexSystemRespVO respVO = indexSystemService.getStatusCount(statusId);
+        return Result.success(respVO);
     }
 }

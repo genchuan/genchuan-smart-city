@@ -2,9 +2,12 @@ package cn.iocoder.yudao.module.evaluate.service.user;
 
 import cn.iocoder.yudao.module.evaluate.controller.admin.baseinfo.user.vo.UserPageReqVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.baseinfo.user.vo.UserSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.common.vo.SelectOptionRespVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.user.UserDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+
+import java.util.List;
 
 /**
  * 系统用户 Service 接口
@@ -51,4 +54,5 @@ public interface UserService {
      */
     PageResult<UserDO> getUserPage(UserPageReqVO pageReqVO);
 
+    List<SelectOptionRespVO> getUserSimpleList();
 }

@@ -52,5 +52,5 @@ public interface ErrorCodeConstants {
     ErrorCode PUSH_RECORD_NOT_EXISTS = new ErrorCode(634_543, "结果推送记录不存在");
     ErrorCode DOCKING_RECORD_NOT_EXISTS = new ErrorCode(128_975, "系统对接记录不存");
     ErrorCode REPORT_TEMPLATE_NOT_EXISTS = new ErrorCode(142_378, "报告模板不存在");
-
+    ErrorCode RULE_TYPE_NOT_EXISTS = new ErrorCode(436_293, "规则类型字典不存在");
 }

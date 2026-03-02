@@ -1,10 +1,12 @@
 package cn.iocoder.yudao.module.evaluate.service.indexsystem;
 
+import cn.hutool.core.convert.Convert;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.indexsystem.vo.*;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexsystem.IndexSystemDO;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.indexsystem.IndexSystemMapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -147,5 +149,36 @@ public class IndexSystemServiceImpl implements IndexSystemService {
     @Override
     public PageResult<IndexSystemRespVO> getIndexSystemJoinPage(IndexSystemPageReqVO reqVO) {
         return indexSystemMapper.selectSystemJoinPage(reqVO);
+    }
+
+    @Override
+    public IndexSystemRespVO getStatusCount(Integer statusId) {
+        IndexSystemRespVO respVO = new IndexSystemRespVO();
+
+        // 1. 改用普通QueryWrapper，支持字符串SQL片段
+        QueryWrapper<IndexSystemDO> wrapper = new QueryWrapper<IndexSystemDO>()
+                .ne("deleted", 1); // 对应原过滤条件，使用数据库下划线字段名
+
+        // 动态拼接statusId条件
+        if (statusId != null) {
+            wrapper.eq("status_id", statusId);
+        }
+
+        // 2. 普通QueryWrapper原生支持直接传入SQL片段
+        wrapper.select(
+                "COUNT(*) AS totalCount",
+                "SUM(CASE WHEN status_id = 1 THEN 1 ELSE 0 END) AS status1Count",
+                "SUM(CASE WHEN status_id = 2 THEN 1 ELSE 0 END) AS status2Count"
+        );
+
+        // 3. 仅执行1次数据库查询，拿到聚合结果
+        Map<String, Object> result = indexSystemMapper.selectMaps(wrapper).get(0);
+
+        // 4. 结果转换+空值保护（Convert是芋道框架内置工具类，自动处理null）
+        respVO.setTotalCount(Convert.toLong(result.get("totalCount"), 0L));
+        respVO.setStatus1Count(Convert.toLong(result.get("status1Count"), 0L));
+        respVO.setStatus2Count(Convert.toLong(result.get("status2Count"), 0L));
+
+        return respVO;
     }
 }

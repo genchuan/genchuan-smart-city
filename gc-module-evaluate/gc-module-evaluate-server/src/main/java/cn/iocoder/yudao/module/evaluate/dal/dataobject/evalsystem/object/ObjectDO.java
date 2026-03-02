@@ -59,7 +59,7 @@ public class ObjectDO extends BaseDO {
     /**
      * 状态ID（关联sys_status.status_id）
      */
-    private Integer statusId;
+    private String statusId;
     /**
      * 创建人ID（关联sys_user.user_id）
      */

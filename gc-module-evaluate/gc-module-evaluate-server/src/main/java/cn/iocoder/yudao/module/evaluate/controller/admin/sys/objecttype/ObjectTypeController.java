@@ -9,6 +9,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.evaluate.controller.admin.sys.objecttype.vo.ObjectTypePageReqVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.sys.objecttype.vo.ObjectTypeRespVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.sys.objecttype.vo.ObjectTypeSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.common.vo.SelectOptionRespVO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.objecttype.ObjectTypeDO;
 import cn.iocoder.yudao.module.evaluate.service.objecttype.ObjectTypeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +28,7 @@ import java.util.List;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
-@Tag(name = "管理后台 - 对象类型字典")
+@Tag(name = "管理后台 - 对象类型字典*")
 @RestController
 @RequestMapping("/evaluate/object-type")
 @Validated
@@ -89,5 +90,9 @@ public class ObjectTypeController {
         ExcelUtils.write(response, "对象类型字典.xls", "数据", ObjectTypeRespVO.class,
                         BeanUtils.toBean(list, ObjectTypeRespVO.class));
     }
-
+    @GetMapping("/simple-list")
+    @Operation(summary = "获取对象类型下拉列表***")
+    public CommonResult<List<SelectOptionRespVO>> getObjectTypeSimpleList() {
+        return success(objectTypeService.getObjectTypeSimpleList());
+    }
 }

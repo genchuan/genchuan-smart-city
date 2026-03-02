@@ -85,4 +85,13 @@ public class RuleCategoryServiceImpl implements RuleCategoryService {
         IPage<RuleCategoryRespVO> pageResult = ruleCategoryMapper.selectRuleCategoryPage(page, reqVO);
         return new PageResult<>(pageResult.getRecords(), pageResult.getTotal());
     }
+    @Override
+    public PageResult<RuleCategoryRespVO> getRuleCategoryAllPage(RuleCategoryPageReqVO reqVO) {
+        // 构建分页对象
+        Page<RuleCategoryRespVO> page = new Page<>(reqVO.getPageNo(), reqVO.getPageSize());
+        // 调用Mapper的联表分页查询
+        Page<RuleCategoryRespVO> resultPage = ruleCategoryMapper.selectRuleCategoryAllPage(page, reqVO);
+        // 转换为框架通用的PageResult
+        return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
+    }
 }

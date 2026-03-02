@@ -111,6 +111,19 @@ public class SubjectRespVO {
     @Schema(description = "变更日志（截取前50字）", example = "2026-02-25：新增评价对象，负责人张三")
     @ExcelProperty("变更日志（截取前50字）")
     private String changeLogShort; // 变更日志简写（截取前50字）
+
+    @Schema(description = "status_id=1的记录数（传指定statusId时，仅该状态有值，其余为0）")
+    @ExcelProperty("status_id=1的记录数")
+    private Long status1Count;
+
+    @Schema(description = "status_id=2的记录数")
+    @ExcelProperty("status_id=2的记录数")
+    private Long status2Count;
+
+    @Schema(description = "符合条件的总记录数（过滤deleted=1后）")
+    @ExcelProperty("符合条件的总记录数（过滤deleted=1后）")
+    private Long totalCount;
+
     // -------------------------- 内部成员VO（用于展示成员列表） --------------------------
     @Data
     public static class SubjectMemberRespVO {
