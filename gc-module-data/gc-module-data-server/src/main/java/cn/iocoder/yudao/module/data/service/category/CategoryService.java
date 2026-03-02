@@ -65,4 +65,13 @@ public interface CategoryService {
      * @return 管理部件分类简化树列表
      */
     List<CategorySimpleTreeRespVO> getCategorySimpleTree();
+
+    /**
+     * 获取指定父节点下的所有子节点ID（包括自身）
+     *
+     * @param parentId 父节点ID
+     * @param includeSelf 是否包含父节点自身
+     * @return 子节点ID列表
+     */
+    List<Long> getSubCategoryIds(String parentId, boolean includeSelf);
 }
