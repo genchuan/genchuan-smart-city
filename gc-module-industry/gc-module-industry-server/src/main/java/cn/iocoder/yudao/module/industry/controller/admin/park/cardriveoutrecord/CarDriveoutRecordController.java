@@ -41,14 +41,14 @@ public class CarDriveoutRecordController {
 
     @PostMapping("/create")
     @Operation(summary = "创建车辆出场记录")
-    @PreAuthorize("@ss.hasPermission('industry:car-driveout-record:create')")
+//    @PreAuthorize("@ss.hasPermission('industry:car-driveout-record:create')")
     public CommonResult<Long> createCarDriveoutRecord(@Valid @RequestBody CarDriveoutRecordSaveReqVO createReqVO) {
         return success(carDriveoutRecordService.createCarDriveoutRecord(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新车辆出场记录")
-    @PreAuthorize("@ss.hasPermission('industry:car-driveout-record:update')")
+//    @PreAuthorize("@ss.hasPermission('industry:car-driveout-record:update')")
     public CommonResult<Boolean> updateCarDriveoutRecord(@Valid @RequestBody CarDriveoutRecordSaveReqVO updateReqVO) {
         carDriveoutRecordService.updateCarDriveoutRecord(updateReqVO);
         return success(true);
@@ -57,7 +57,7 @@ public class CarDriveoutRecordController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除车辆出场记录")
     @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('industry:car-driveout-record:delete')")
+//    @PreAuthorize("@ss.hasPermission('industry:car-driveout-record:delete')")
     public CommonResult<Boolean> deleteCarDriveoutRecord(@RequestParam("id") Long id) {
         carDriveoutRecordService.deleteCarDriveoutRecord(id);
         return success(true);
@@ -66,7 +66,7 @@ public class CarDriveoutRecordController {
     @GetMapping("/get")
     @Operation(summary = "获得车辆出场记录")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('industry:car-driveout-record:query')")
+//    @PreAuthorize("@ss.hasPermission('industry:car-driveout-record:query')")
     public CommonResult<CarDriveoutRecordRespVO> getCarDriveoutRecord(@RequestParam("id") Long id) {
         CarDriveoutRecordDO carDriveoutRecord = carDriveoutRecordService.getCarDriveoutRecord(id);
         return success(BeanUtils.toBean(carDriveoutRecord, CarDriveoutRecordRespVO.class));
@@ -74,7 +74,7 @@ public class CarDriveoutRecordController {
 
     @GetMapping("/page")
     @Operation(summary = "获得车辆出场记录分页")
-    @PreAuthorize("@ss.hasPermission('industry:car-driveout-record:query')")
+//    @PreAuthorize("@ss.hasPermission('industry:car-driveout-record:query')")
     public CommonResult<PageResult<CarDriveoutRecordRespVO>> getCarDriveoutRecordPage(@Valid CarDriveoutRecordPageReqVO pageReqVO) {
         PageResult<CarDriveoutRecordDO> pageResult = carDriveoutRecordService.getCarDriveoutRecordPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, CarDriveoutRecordRespVO.class));
@@ -82,7 +82,7 @@ public class CarDriveoutRecordController {
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出车辆出场记录 Excel")
-    @PreAuthorize("@ss.hasPermission('industry:car-driveout-record:export')")
+//    @PreAuthorize("@ss.hasPermission('industry:car-driveout-record:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportCarDriveoutRecordExcel(@Valid CarDriveoutRecordPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {

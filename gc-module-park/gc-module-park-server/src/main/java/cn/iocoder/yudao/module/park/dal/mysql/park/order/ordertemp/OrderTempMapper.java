@@ -10,18 +10,21 @@ import org.apache.ibatis.annotations.Mapper;
 /**
  * 临停订单 Mapper
  *
- * @author lxs
+ * @author 亘川智城
  */
 @Mapper
 public interface OrderTempMapper extends BaseMapperX<OrderTempDO> {
 
     default PageResult<OrderTempDO> selectPage(OrderTempPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<OrderTempDO>()
+                .eqIfPresent(OrderTempDO::getOrderCode, reqVO.getOrderCode())
                 .eqIfPresent(OrderTempDO::getCarNumber, reqVO.getCarNumber())
-                .eqIfPresent(OrderTempDO::getEntryId, reqVO.getEntryId())
-                .eqIfPresent(OrderTempDO::getExitId, reqVO.getExitId())
                 .eqIfPresent(OrderTempDO::getLotId, reqVO.getLotId())
                 .eqIfPresent(OrderTempDO::getSpaceId, reqVO.getSpaceId())
+                .eqIfPresent(OrderTempDO::getCouponId, reqVO.getCouponId())
+                .eqIfPresent(OrderTempDO::getParkInputCarId, reqVO.getParkInputCarId())
+                .betweenIfPresent(OrderTempDO::getEntryTime, reqVO.getEntryTime())
+                .betweenIfPresent(OrderTempDO::getExitTime, reqVO.getExitTime())
                 .eqIfPresent(OrderTempDO::getParkingDuration, reqVO.getParkingDuration())
                 .eqIfPresent(OrderTempDO::getOriginalAmount, reqVO.getOriginalAmount())
                 .eqIfPresent(OrderTempDO::getDiscountAmount, reqVO.getDiscountAmount())

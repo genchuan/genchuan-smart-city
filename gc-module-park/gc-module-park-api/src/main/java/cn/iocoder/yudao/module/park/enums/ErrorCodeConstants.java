@@ -55,4 +55,64 @@ public interface ErrorCodeConstants {
     ErrorCode RECEIVER_TABLE_NOT_EXISTS = new ErrorCode(500, "接收方不存在");
     // ========== 供应商==========
     ErrorCode SUPPLIER_NOT_EXISTS = new ErrorCode(500, "供应商不存在");
+    // ========== 优惠券==========
+    ErrorCode COUPON_NOT_EXISTS = new ErrorCode(500, "优惠券不存在");
+    // ========== 费率策略==========
+    ErrorCode FEE_STRATEGY_NOT_EXISTS = new ErrorCode(500, "费率策略不存在");
+    // ========== 临停收费规则==========
+    ErrorCode FEE_TEMP_NOT_EXISTS = new ErrorCode(500, "临停收费规则不存在");
+    // ========== 期卡套餐==========
+    ErrorCode PERIOD_PACKAGE_NOT_EXISTS = new ErrorCode(500, "期卡套餐不存在");
+    // ========== 优惠活动==========
+    ErrorCode PROMOTION_NOT_EXISTS = new ErrorCode(500, "优惠活动不存在");
+    // ========== 充值套餐==========
+    ErrorCode RECHARGE_PACKAGE_NOT_EXISTS = new ErrorCode(500, "充值套餐不存在");
+
+    // ========== 行业应用类别 ==========
+    ErrorCode APP_TYPE_NOT_EXISTS = new ErrorCode(500, "行业应用类别不存在");
+
+    // ========== 行政区划配置表 ==========
+    ErrorCode AREA_NOT_EXISTS = new ErrorCode(500, "行政区划配置表不存在");
+
+    // ========== 资产-thingsboard ==========
+    ErrorCode ASSET_NOT_EXISTS = new ErrorCode(500, "资产-thingsboard不存在");
+
+    // ========== 资产扩展 ==========
+    ErrorCode ASSET_EXTEND_NOT_EXISTS = new ErrorCode(500, "资产扩展不存在");
+
+    // ========== 设备扩展 ==========
+    ErrorCode DEVICE_EXTEND_NOT_EXISTS = new ErrorCode(500, "设备扩展不存在");
+
+    // ========== 监测事件类别 ==========
+    ErrorCode EVENT_TYPE_NOT_EXISTS = new ErrorCode(500, "监测事件类别不存在");
+
+    // ========== 网格管理 ==========
+    ErrorCode GRID_MANAGE_NOT_EXISTS = new ErrorCode(500, "网格管理不存在");
+
+    // ========== 监测部件类别 ==========
+    ErrorCode MONITOR_PART_TYPE_NOT_EXISTS = new ErrorCode(500, "监测部件类别不存在");
+
+    // ========== 管理部件类别 ==========
+    ErrorCode PART_TYPE_NOT_EXISTS = new ErrorCode(500, "管理部件类别不存在");
+
+    // ========== 管理事项类别 ==========
+    ErrorCode ITEM_TYPE_NOT_EXISTS = new ErrorCode(500, "管理事项类别不存在");
+
+    // ========== 泊位录入车辆 ==========
+    ErrorCode INPUT_CAR_NOT_EXISTS = new ErrorCode(500, "泊位录入车辆不存在");
+
+    // ========== 路测泊位管理 ==========
+    ErrorCode ROADSIDE_BERTH_MANAGE_NOT_EXISTS = new ErrorCode(500, "路测泊位管理不存在");
+
+    // ========== 优惠券==========
+//    ErrorCode COUPON_NOT_EXISTS = new ErrorCode(500, "优惠券不存在");
+    // ========== 畅停卡==========
+    ErrorCode SMOOTH_STOP_CARD_NOT_EXISTS = new ErrorCode(500, "畅停卡不存在");
+    // ========== 用户钱包==========
+    ErrorCode WALLET_NOT_EXISTS = new ErrorCode(500, "用户钱包不存在");
+    // ========== 钱包流水==========
+    ErrorCode WALLET_FLOW_NOT_EXISTS = new ErrorCode(500, "钱包流水不存在");
+
+    // ========== 停车场信息管理 ==========
+    ErrorCode ING_LOT_INFO_NOT_EXISTS = new ErrorCode(500, "停车场信息管理不存在");
 }

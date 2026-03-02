@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.publicinstitution.InstitutionInspectionMapper">
+
+    <!-- 公共机构核查详情结果映射 -->
+    <resultMap id="InstitutionInspectionDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.publicinstitution.detail.InstitutionInspectionDetailDO">
+        <!-- 基础字段（继承自InstitutionInspectionDO） -->
+        <id column="id" property="id"/>
+        <result column="inspection_id" property="inspectionId"/>
+        <result column="institution_id" property="institutionId"/>
+        <result column="task_id" property="taskId"/>
+        <result column="task_type_id" property="taskTypeId"/>
+        <result column="report_by" property="reportBy"/>
+        <result column="report_time" property="reportTime"/>
+        <result column="report_result" property="reportResult"/>
+        <result column="inspection_status" property="inspectionStatus"/>
+        <result column="inspect_by" property="inspectBy"/>
+        <result column="inspection_time" property="inspectionTime"/>
+        <result column="reform_require" property="reformRequire"/>
+        <result column="inspection_photo" property="inspectionPhoto"/>
+        <result column="ext_common1" property="extCommon1"/>
+        <result column="ext_common2" property="extCommon2"/>
+        <result column="ext_common3" property="extCommon3"/>
+        <result column="ext_common4" property="extCommon4"/>
+
+        <!-- 关联查询的扩展字段 -->
+        <result column="institution_name" property="institutionName"/>
+        <result column="task_id" property="taskId"/>
+        <result column="task_type_name" property="taskTypeName"/>
+        <result column="report_name" property="reportName"/>
+        <result column="inspect_name" property="inspectName"/>
+    </resultMap>
+
+    <select id="selectDetailPage" resultMap="InstitutionInspectionDetailResultMap">
+        SELECT
+        pi.*,
+        pi_ins.name AS institution_name,
+        ttp.name AS task_type_name,
+        u1.user_name AS report_name,
+        u2.user_name AS inspect_name
+        FROM public_institution_inspection pi
+        LEFT JOIN public_institution pi_ins
+        ON pi.institution_id = pi_ins.institution_id AND pi_ins.deleted = 0
+        LEFT JOIN sys_task_type ttp
+        ON pi.task_type_id = ttp.sys_task_type_id AND ttp.deleted = 0
+        LEFT JOIN sys_user u1
+        ON pi.report_by = u1.user_id AND u1.deleted = 0
+        LEFT JOIN sys_user u2
+        ON pi.inspect_by = u2.user_id AND u2.deleted = 0
+        WHERE pi.deleted = 0
+        ORDER BY pi.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.pageSize}
+    </select>
+
+    <select id="selectCount" resultType="Long">
+        SELECT COUNT(*)
+        FROM public_institution_inspection pi
+        WHERE pi.deleted = 0
+    </select>
+
+</mapper>

@@ -7,11 +7,12 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * 临停订单 DO
  *
- * @author lxs
+ * @author 亘川智城
  */
 @TableName("park_order_temp")
 @KeySequence("park_order_temp_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。
@@ -29,17 +30,13 @@ public class OrderTempDO extends BaseDO {
     @TableId
     private Long id;
     /**
+     * [订单唯一编号] 订单唯一编号
+     */
+    private String orderCode;
+    /**
      * [车牌号码] 停车车辆的车牌号码
      */
     private String carNumber;
-    /**
-     * [入场记录ID] 关联入场记录，park_car_entry.id
-     */
-    private Long entryId;
-    /**
-     * [离场记录ID] 关联离场记录，park_car_exit.id，可为 NULL
-     */
-    private Long exitId;
     /**
      * [所属车场ID] 所属车场ID，关联 park_lot.id
      */
@@ -48,6 +45,23 @@ public class OrderTempDO extends BaseDO {
      * [泊位ID] 停车泊位ID，关联 park_space.id
      */
     private Long spaceId;
+    /**
+     * [关联录入车辆表ID] 关联 park_input_car.id
+     */
+    private Long parkInputCarId;
+
+    /**
+     * [优惠券ID] 关联 park_coupon.id
+     */
+    private Long couponId;
+    /**
+     * [入场时间] 从 park_input_car 获取
+     */
+    private LocalDateTime entryTime;
+    /**
+     * [出场时间] 从 park_input_car 获取
+     */
+    private LocalDateTime exitTime;
     /**
      * [停放时长] 停车时长，单位分钟
      */
