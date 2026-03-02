@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.facility.controller.admin.road.roadconfig;
 import cn.iocoder.yudao.module.facility.controller.admin.road.roadconfig.vo.RoadConfigPageReqVO;
 import cn.iocoder.yudao.module.facility.controller.admin.road.roadconfig.vo.RoadConfigRespVO;
 import cn.iocoder.yudao.module.facility.controller.admin.road.roadconfig.vo.RoadConfigSaveReqVO;
+import cn.iocoder.yudao.module.facility.controller.admin.road.roadconfig.vo.RoadConfigUpdateReqVO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.road.roadconfig.RoadConfigDO;
 import cn.iocoder.yudao.module.facility.service.road.roadconfig.RoadConfigService;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,6 @@ import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 
-
 @Tag(name = "管理后台 - 道路监测配置")
 @RestController
 @RequestMapping("/facility/road-config")
@@ -51,7 +51,7 @@ public class RoadConfigController {
     @PutMapping("/update")
     @Operation(summary = "更新道路监测配置")
     @PreAuthorize("@ss.hasPermission('facility:road-config:update')")
-    public CommonResult<Boolean> updateRoadConfig(@Valid @RequestBody RoadConfigSaveReqVO updateReqVO) {
+    public CommonResult<Boolean> updateRoadConfig(@Valid @RequestBody RoadConfigUpdateReqVO updateReqVO) {
         roadConfigService.updateRoadConfig(updateReqVO);
         return success(true);
     }

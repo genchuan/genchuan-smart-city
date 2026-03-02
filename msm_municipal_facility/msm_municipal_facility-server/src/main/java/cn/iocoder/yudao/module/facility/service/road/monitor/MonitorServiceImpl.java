@@ -69,7 +69,7 @@ public class MonitorServiceImpl implements MonitorService {
         // 6. 监测状态（默认运行中）
         monitor.setMonitorStatus("运行中");
 
-        // 7. 同步时长（临时方案：0~10 秒）
+        // 7. 同步时长（0~10 秒）
         monitor.setSyncDuration(BigDecimal.valueOf(new Random().nextInt(11)));
 
         // 8. 记录时间（采集时间）

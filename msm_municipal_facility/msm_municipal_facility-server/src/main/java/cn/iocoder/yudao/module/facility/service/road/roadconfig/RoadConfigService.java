@@ -4,9 +4,9 @@ import java.util.*;
 
 import cn.iocoder.yudao.module.facility.controller.admin.road.roadconfig.vo.RoadConfigPageReqVO;
 import cn.iocoder.yudao.module.facility.controller.admin.road.roadconfig.vo.RoadConfigSaveReqVO;
+import cn.iocoder.yudao.module.facility.controller.admin.road.roadconfig.vo.RoadConfigUpdateReqVO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.road.roadconfig.RoadConfigDO;
 import jakarta.validation.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
@@ -30,7 +30,7 @@ public interface RoadConfigService {
      *
      * @param updateReqVO 更新信息
      */
-    void updateRoadConfig(@Valid RoadConfigSaveReqVO updateReqVO);
+    void updateRoadConfig(@Valid RoadConfigUpdateReqVO updateReqVO);
 
     /**
      * 删除道路监测配置

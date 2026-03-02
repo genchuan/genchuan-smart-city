@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.facility.service.road.roadconfig;
 
 import cn.iocoder.yudao.module.facility.controller.admin.road.roadconfig.vo.RoadConfigPageReqVO;
 import cn.iocoder.yudao.module.facility.controller.admin.road.roadconfig.vo.RoadConfigSaveReqVO;
+import cn.iocoder.yudao.module.facility.controller.admin.road.roadconfig.vo.RoadConfigUpdateReqVO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.road.roadconfig.RoadConfigDO;
 import cn.iocoder.yudao.module.facility.dal.mysql.road.roadconfig.RoadConfigMapper;
 import org.springframework.stereotype.Service;
@@ -10,11 +11,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
 
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -34,6 +33,11 @@ public class RoadConfigServiceImpl implements RoadConfigService {
 
     @Override
     public Long createRoadConfig(RoadConfigSaveReqVO createReqVO) {
+        //自动生成配置编码
+        String configCode=UUID.randomUUID().toString().replace("-","");
+
+        createReqVO.setConfigCode(configCode);
+
         // 插入
         RoadConfigDO roadConfig = BeanUtils.toBean(createReqVO, RoadConfigDO.class);
         roadConfigMapper.insert(roadConfig);
@@ -42,7 +46,7 @@ public class RoadConfigServiceImpl implements RoadConfigService {
     }
 
     @Override
-    public void updateRoadConfig(RoadConfigSaveReqVO updateReqVO) {
+    public void updateRoadConfig(RoadConfigUpdateReqVO updateReqVO) {
         // 校验存在
         validateRoadConfigExists(updateReqVO.getId());
         // 更新

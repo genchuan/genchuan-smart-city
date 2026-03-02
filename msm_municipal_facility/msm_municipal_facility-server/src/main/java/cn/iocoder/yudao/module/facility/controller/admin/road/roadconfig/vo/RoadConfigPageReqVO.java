@@ -19,8 +19,14 @@ public class RoadConfigPageReqVO extends PageParam {
     @Schema(description = "[配置编码] UUID格式")
     private String configCode;
 
-    @Schema(description = "[道路ID] 关联road_facility.id", example = "26910")
+    @Schema(description = "[配置名称]", example = "赵六")
+    private String name;
+
+    @Schema(description = "[道路ID] 关联road_facility.id", example = "3554")
     private Long roadId;
+
+    @Schema(description = "[道路名称]", example = "芋艿")
+    private String roadName;
 
     @Schema(description = "[采集频率] 数据采集频率，单位：分钟")
     private Integer collectFrequency;

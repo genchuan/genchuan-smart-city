@@ -36,9 +36,17 @@ public class RoadConfigDO extends BaseDO {
      */
     private String configCode;
     /**
+     * [配置名称]
+     */
+    private String name;
+    /**
      * [道路ID] 关联road_facility.id
      */
     private Long roadId;
+    /**
+     * [道路名称]
+     */
+    private String roadName;
     /**
      * [采集频率] 数据采集频率，单位：分钟
      */
