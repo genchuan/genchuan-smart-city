@@ -250,7 +250,20 @@ spring:
             - Path=/app-api/data/***
           filters:
             - RewritePath=/app-api/data/v3/api-docs, /v3/api-docs
+        ## evaluate-server 服务
+        - id: evaluate-admin-api # 路由的编号
+          uri: grayLb://evaluate-server
+          predicates: # 断言，作为路由的匹配条件
+            - Path=/admin-api/evaluate/**
+          filters:
+            - RewritePath=/admin-api/evaluate/v3/api-docs, /v3/api-docs # 转发到 /v3/api-docs
 
+        - id: evaluate-app-api # 路由的编号
+          uri: grayLb://evaluate-server
+          predicates: # 断言，作为路由的匹配条件
+            - Path=/app-api/evaluate/***
+          filters:
+            - RewritePath=/app-api/evaluate/v3/api-docs, /v3/api-docs
         ## envirhealthServer 服务 ###########################
         - id: envirhealth-admin-api
           uri: grayLb://envirhealth-server
@@ -352,6 +365,10 @@ knife4j:
       - name: envirhealth-server
         service-name: envirhealth-server
         url: /admin-api/envirhealth/v3/api-docs  # 改为全小写
+      # evaluate 的 Swagger 聚合配置 ###########################
+      - name: evaluate-server
+        service-name: evaluate-server
+        url: /admin-api/evaluate/v3/api-docs  # 改为全小写
       # facility 的 Swagger 聚合配置 ###########################
       - name: facility-server        # 自定义模块名字，可以随便写，但最好和服务名一致
         service-name: facility-server # 必须和 Gateway 路由 uri 对应的服务名一致

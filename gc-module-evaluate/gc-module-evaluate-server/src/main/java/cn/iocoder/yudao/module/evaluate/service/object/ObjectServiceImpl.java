@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
+import java.util.UUID;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.evaluate.enums.ErrorCodeConstants.OBJECT_NAME_DUPLICATE;
@@ -51,6 +52,7 @@ public class ObjectServiceImpl implements ObjectService {
     public Long createObject(ObjectSaveReqVO createReqVO) {
         // 插入
         ObjectDO object = BeanUtils.toBean(createReqVO, ObjectDO.class);
+        object.setObjectId(UUID.randomUUID().toString());
         objectMapper.insert(object);
         // 返回
         return object.getId();
