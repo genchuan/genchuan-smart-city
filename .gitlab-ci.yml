@@ -24,7 +24,7 @@ BuildAndPush:
     - mvn clean package -Dmaven.test.skip=true
     - echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
     - |
-      MODULES="yudao-gateway yudao-module-system-server yudao-module-infra-server yudao-module-bpm-server gc-module-park-server gc-module-industry-server gc-module-datacenter-server gc-module-data-server msm-environmental-health-server"
+      MODULES="yudao-gateway yudao-module-system-server yudao-module-infra-server yudao-module-bpm-server gc-module-park-server gc-module-industry-server gc-module-datacenter-server gc-module-data-server msm-environmental-health-server msm-municipal-facility-server"
 
     - |
       for module in "${MODULES[@]}"; do
