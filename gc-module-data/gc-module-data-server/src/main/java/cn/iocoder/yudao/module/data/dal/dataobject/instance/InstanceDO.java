@@ -32,7 +32,7 @@ public class InstanceDO extends BaseDO {
     /**
      * 部件名称
      */
-    private String name;
+    private String partName;
     /**
      * 16位标识码
      */
@@ -40,11 +40,22 @@ public class InstanceDO extends BaseDO {
     /**
      * 关联分类ID
      */
-    private String categoryId;
+    private String parentCategoryId;
+
+    /**
+     * 分类名称（非数据库字段，用于关联查询结果）
+     */
+    @TableField(exist = false)
+    private String categoryName;
+
     /**
      * 关联网格ID
      */
     private String gridId;
+    /**
+     * 所在网格
+     */
+    private String gridName;
     /**
      * 经度
      */
@@ -58,17 +69,25 @@ public class InstanceDO extends BaseDO {
      */
     private Boolean coordVerifyFlag;
     /**
+     * 坐标信息
+     */
+    private String coordinate;
+    /**
      * 关联运行状态ID
      */
-    private String runStatusId;
+    private String runStatus;
     /**
-     * 关联部门ID
+     * 主管部门
      */
-    private String deptId;
+    private String deptName;
     /**
      * 关联行政区划代码
      */
     private String areaCode;
+    /**
+     * 行政区划归属
+     */
+    private String areaName;
     /**
      * 关联监测部件ID列表
      */
@@ -93,5 +112,8 @@ public class InstanceDO extends BaseDO {
      * 通用扩展字段2
      */
     private String extCommon2;
-
+    /**
+     * 创建人
+     */
+    private String creator;
 }

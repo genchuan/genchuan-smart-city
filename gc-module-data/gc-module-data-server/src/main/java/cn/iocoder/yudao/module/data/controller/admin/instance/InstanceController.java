@@ -77,7 +77,8 @@ public class InstanceController {
     @PreAuthorize("@ss.hasPermission('data:instance:query')")
     public CommonResult<PageResult<InstanceRespVO>> getInstancePage(@Valid InstancePageReqVO pageReqVO) {
         PageResult<InstanceDO> pageResult = instanceService.getInstancePage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, InstanceRespVO.class));
+        List<InstanceRespVO> voList = BeanUtils.toBean(pageResult.getList(), InstanceRespVO.class);
+        return success(new PageResult<>(voList, pageResult.getTotal()));
     }
 
     @GetMapping("/export-excel")
