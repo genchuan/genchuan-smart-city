@@ -2,7 +2,7 @@
 spring:
   cloud:
     nacos:
-      server-addr: 192.168.8.11:8848 # Nacos 服务器地址http://192.168.8.11:31591/
+      server-addr: nacos-sc:8848 # Nacos 服务器地址http://192.168.8.11:31591/
       #      username: # Nacos 账号
       #      password: # Nacos 密码
       discovery: # 【配置中心】配置项
