@@ -6,9 +6,13 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.subject.vo.*;
+import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.subject.vo.SubjectImportRespVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.subject.vo.SubjectPageReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.subject.vo.SubjectRespVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.subject.vo.SubjectSaveReqVO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.subject.SubjectDO;
 import cn.iocoder.yudao.module.evaluate.service.subject.SubjectService;
+import com.alibaba.nacos.api.model.v2.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,14 +22,16 @@ import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.IMPORT;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
-@Tag(name = "评价体系管理 - 评价主体")
+@Tag(name = "评价体系管理 - 评价主体***")
 @RestController
 @RequestMapping("/evaluate/subject")
 @Validated
@@ -96,6 +102,15 @@ public class SubjectController {
         ExcelUtils.write(response, "评价主体.xls", "数据", SubjectRespVO.class,
                         BeanUtils.toBean(list, SubjectRespVO.class));
     }
+    @PostMapping("/import-excel")
+    @Operation(summary = "导入评价主体 Excel")
+    @PreAuthorize("@ss.hasPermission('evaluate:subject:import')")
+    @ApiAccessLog(operateType = IMPORT)
+    public CommonResult<List<SubjectImportRespVO>> importSubjectExcel(
+            @RequestParam("file") MultipartFile file) {
+        List<SubjectImportRespVO> result = subjectService.importSubjectExcel(file);
+        return success(result);
+    }
     // -------------------------- 新增联表查询接口 --------------------------
 
 //    /**
@@ -131,10 +146,18 @@ public class SubjectController {
 //        return CommonResult.success(statResult);
 //    }
     @GetMapping("/allpage")
-    @Operation(summary = "获得评价主体分页（全部/启用/停用）")
+    @Operation(summary = "获得评价主体分页（全部/启用/停用）*")
     @PreAuthorize("@ss.hasPermission('evaluate:subject:query')")
     public CommonResult<PageResult<SubjectRespVO>> getSubjectJoinPage(SubjectPageReqVO reqVO) {
         PageResult<SubjectRespVO> pageResult = subjectService.getSubjectJoinPage(reqVO);
         return CommonResult.success(pageResult);
+    }
+
+    @GetMapping("/status-count")
+    @Operation(summary = "获取status_id统计数据*")
+    public Result<SubjectRespVO> getStatusCount(
+            @RequestParam(required = false) Integer statusId) {
+        SubjectRespVO respVO = subjectService.getStatusCount(statusId);
+        return Result.success(respVO);
     }
 }

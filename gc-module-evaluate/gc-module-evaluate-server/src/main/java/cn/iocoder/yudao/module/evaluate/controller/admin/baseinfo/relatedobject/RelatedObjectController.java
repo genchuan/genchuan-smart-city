@@ -9,6 +9,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.evaluate.controller.admin.baseinfo.relatedobject.vo.RelatedObjectPageReqVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.baseinfo.relatedobject.vo.RelatedObjectRespVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.baseinfo.relatedobject.vo.RelatedObjectSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.common.vo.SelectOptionRespVO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.baseinfo.relatedobject.RelatedObjectDO;
 import cn.iocoder.yudao.module.evaluate.service.baseinfo.relatedobject.RelatedObjectService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +28,7 @@ import java.util.List;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
-@Tag(name = "管理后台 - 关联对象")
+@Tag(name = "管理后台 - 关联对象（网格/部门）***")
 @RestController
 @RequestMapping("/evaluate/related-object")
 @Validated
@@ -89,5 +90,10 @@ public class RelatedObjectController {
         ExcelUtils.write(response, "关联对象.xls", "数据", RelatedObjectRespVO.class,
                         BeanUtils.toBean(list, RelatedObjectRespVO.class));
     }
-
+    // Controller
+    @GetMapping("/simple-list")
+    @Operation(summary = "获取关联网格/部门下拉列表***")
+    public CommonResult<List<SelectOptionRespVO>> getRelatedObjectSimpleList() {
+        return success(relatedObjectService.getRelatedObjectSimpleList());
+    }
 }

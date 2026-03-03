@@ -39,7 +39,7 @@ public class ObjectPageReqVO extends PageParam {
     private String relatedId;
 
     @Schema(description = "状态ID（关联sys_status.status_id）", example = "16713")
-    private Integer statusId;
+    private String statusId;
 
     @Schema(description = "创建人ID（关联sys_user.user_id）")
     private String createBy;
@@ -73,6 +73,10 @@ public class ObjectPageReqVO extends PageParam {
     @Schema(description = "创建时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
+
+    @Schema(description = "更新时间")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime[] ureateTime;
     // 添加分页偏移量计算（用于MyBatis）
     public Integer getOffset() {
         if (getPageNo() == null || getPageSize() == null) {
@@ -80,4 +84,22 @@ public class ObjectPageReqVO extends PageParam {
         }
         return (getPageNo() - 1) * getPageSize();
     }
+    // ========== 关联表字段（精确匹配，用于钻取筛选） ==========
+    @Schema(description = "所属区域名称")
+    private String areaName;        // 所属区域名称（精确匹配）
+
+    @Schema(description = "对象类型名称")
+    private String objectTypeName;  // 对象类型名称（精确匹配）
+
+    @Schema(description = "负责人姓名")
+    private String managerName;     // 负责人姓名（精确匹配）
+
+    @Schema(description = "联系电话")
+    private String managerPhone;    // 联系电话（精确匹配）
+
+    @Schema(description = "关联网格/部门名称")
+    private String relatedName;     // 关联网格/部门名称（精确匹配）
+
+    @Schema(description = "状态名称")
+    private String statusName;      // 状态名称（精确匹配）
 }

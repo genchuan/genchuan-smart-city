@@ -85,4 +85,15 @@ public class IndexItemRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
+    @Schema(description = "status_id=1的记录数（传指定statusId时，仅该状态有值，其余为0）")
+    @ExcelProperty("status_id=1的记录数")
+    private Long status1Count;
+
+    @Schema(description = "status_id=2的记录数")
+    @ExcelProperty("status_id=2的记录数")
+    private Long status2Count;
+
+    @Schema(description = "符合条件的总记录数（过滤deleted=1后）")
+    @ExcelProperty("符合条件的总记录数（过滤deleted=1后）")
+    private Long totalCount;
 }

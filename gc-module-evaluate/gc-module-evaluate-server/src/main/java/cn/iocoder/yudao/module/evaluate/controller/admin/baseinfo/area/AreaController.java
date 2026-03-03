@@ -9,6 +9,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.evaluate.controller.admin.baseinfo.area.vo.AreaPageReqVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.baseinfo.area.vo.AreaRespVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.baseinfo.area.vo.AreaSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.common.vo.SelectOptionRespVO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.area.AreaDO;
 import cn.iocoder.yudao.module.evaluate.service.area.AreaService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +28,7 @@ import java.util.List;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
-@Tag(name = "管理后台 - 区域编码")
+@Tag(name = "管理后台 - 区域编码字典***")
 @RestController
 @RequestMapping("/evaluate/area")
 @Validated
@@ -89,5 +90,9 @@ public class AreaController {
         ExcelUtils.write(response, "区域编码.xls", "数据", AreaRespVO.class,
                         BeanUtils.toBean(list, AreaRespVO.class));
     }
-
+    @GetMapping("/simple-list")
+    @Operation(summary = "获取所属区域下拉列表***")
+    public CommonResult<List<SelectOptionRespVO>> getAreaSimpleList() {
+        return success(areaService.getAreaSimpleList());
+    }
 }

@@ -89,12 +89,29 @@ public interface SubjectMapper extends BaseMapperX<SubjectDO> {
                 // 关联更新人用户表
                 .selectAs("updater", UserDO::getUserName, SubjectRespVO::getUpdateByName)
                 .leftJoin(UserDO.class, "updater", UserDO::getUserId, SubjectDO::getUpdateBy)
-                // 动态条件
+                // ==========================================
+                // ========== 【核心新增】动态查询条件 ==========
+                // ==========================================
+
+                // 1. 主体名称（主表，模糊查询）
                 .like(StrUtil.isNotBlank(reqVO.getName()), SubjectDO::getName, reqVO.getName())
-                .eq(StrUtil.isNotBlank(reqVO.getCode()), SubjectDO::getCode, reqVO.getCode())
-                .eq(reqVO.getSubjectTypeId() != null, SubjectDO::getSubjectTypeId, reqVO.getSubjectTypeId())
-                .eq(reqVO.getStatusId() != null, SubjectDO::getStatusId, reqVO.getStatusId())
-                // 排序
+                // 2. 主体编码（主表，模糊查询）
+                .like(StrUtil.isNotBlank(reqVO.getCode()), SubjectDO::getCode, reqVO.getCode())
+                // 3. 成员数量（主表，精确查询）
+                .eq(reqVO.getMemberCount() != null, SubjectDO::getMemberCount, reqVO.getMemberCount())
+                // 可选：成员数量范围查询
+                // .between(reqVO.getMemberCountStart() != null && reqVO.getMemberCountEnd() != null,
+                //         SubjectDO::getMemberCount, reqVO.getMemberCountStart(), reqVO.getMemberCountEnd())
+
+                // 4. 主体类型名称（关联表，精确匹配，钻取筛选）
+                .eq(StrUtil.isNotBlank(reqVO.getSubjectTypeName()), SubjectTypeDO::getName, reqVO.getSubjectTypeName())
+                // 5. 状态名称（关联表，精确匹配，钻取筛选）
+                .eq(StrUtil.isNotBlank(reqVO.getStatusName()), StatusDO::getName, reqVO.getStatusName())
+                // 6. 联系人姓名（关联表，精确匹配）
+                .eq(StrUtil.isNotBlank(reqVO.getContactName()), UserDO::getUserName, reqVO.getContactName())
+                // 7. 联系电话（关联表，精确匹配）
+                .eq(StrUtil.isNotBlank(reqVO.getContactPhone()), UserDO::getUserPhone, reqVO.getContactPhone())
+// 排序
                 .orderByDesc(SubjectDO::getCreateTime);
 
         // 3. 执行查询

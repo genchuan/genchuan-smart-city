@@ -134,4 +134,6 @@ public interface IndexSystemMapper extends BaseMapperX<IndexSystemDO> {
         // 8. 返回分页结果
         return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
     }
+
+
 }

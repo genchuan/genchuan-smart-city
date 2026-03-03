@@ -1,7 +1,8 @@
 package cn.iocoder.yudao.module.evaluate.service.object;
 
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.object.vo.EvalObjectOverviewVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.object.vo.ObjectPageReqVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.object.vo.ObjectRespVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.object.vo.ObjectSaveReqVO;
@@ -61,7 +62,7 @@ public interface ObjectService {
     /**
      * 分页查询评价对象（联表）
      */
-    PageResult<ObjectRespVO> pageJoinQuery(@Valid ObjectPageReqVO pageReqVO);
+    PageResult<ObjectRespVO> pageJoinQuery(ObjectPageReqVO reqVO);
 
     /**
      * 根据ID获取评价对象详情
@@ -77,8 +78,12 @@ public interface ObjectService {
     /**
      * 校验评价对象名称在同一区域是否唯一
      */
-    void validateNameUnique(String name, String areaCode, String excludeObjectId);
+    CommonResult<String> validateNameUnique(String name, String areaCode, String excludeObjectId);
 
     //新
-    PageResult<ObjectRespVO> getAllObjectPage(PageParam pageParam);
+    PageResult<ObjectRespVO> getAllObjectPage(ObjectPageReqVO pageParam);
+
+    ObjectRespVO getStatusCount(Integer statusId);
+
+    EvalObjectOverviewVO getOverview();
 }

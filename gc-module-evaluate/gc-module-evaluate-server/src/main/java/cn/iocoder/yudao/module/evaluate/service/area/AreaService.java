@@ -2,9 +2,12 @@ package cn.iocoder.yudao.module.evaluate.service.area;
 
 import cn.iocoder.yudao.module.evaluate.controller.admin.baseinfo.area.vo.AreaPageReqVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.baseinfo.area.vo.AreaSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.common.vo.SelectOptionRespVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.area.AreaDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+
+import java.util.List;
 
 /**
  * 区域编码 Service 接口
@@ -51,4 +54,6 @@ public interface AreaService {
      */
     PageResult<AreaDO> getAreaPage(AreaPageReqVO pageReqVO);
 
+    // Service 核心逻辑
+    List<SelectOptionRespVO> getAreaSimpleList();
 }

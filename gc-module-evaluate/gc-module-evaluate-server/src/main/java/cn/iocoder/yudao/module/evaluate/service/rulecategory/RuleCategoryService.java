@@ -56,4 +56,6 @@ public interface RuleCategoryService {
     Page<RuleCategoryRespVO> queryRulePage(Page<RuleCategoryRespVO> page, RuleCategoryPageReqVO query);
 
     PageResult<RuleCategoryRespVO> getRuleCategoryPageList(RuleCategoryPageReqVO reqVO);
+
+    PageResult<RuleCategoryRespVO> getRuleCategoryAllPage(RuleCategoryPageReqVO reqVO);
 }

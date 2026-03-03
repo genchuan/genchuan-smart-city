@@ -67,4 +67,16 @@ public class SubjectPageReqVO extends PageParam {
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
 
+    // ========== 关联表字段（精确匹配，用于钻取） ==========
+    @Schema(description = "通用扩展字段4")
+    private String subjectTypeName; // 主体类型名称（钻取筛选）
+
+    @Schema(description = "通用扩展字段4")
+    private String statusName;      // 状态名称（钻取筛选）
+
+    @Schema(description = "通用扩展字段4")
+    private String contactName;     // 联系人姓名（精确查询）
+
+    @Schema(description = "通用扩展字段4")
+    private String contactPhone;    // 联系电话（精确查询）
 }

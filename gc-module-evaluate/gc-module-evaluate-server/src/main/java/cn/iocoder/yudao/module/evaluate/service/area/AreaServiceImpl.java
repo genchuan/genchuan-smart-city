@@ -1,19 +1,22 @@
 package cn.iocoder.yudao.module.evaluate.service.area;
 
-import cn.iocoder.yudao.module.evaluate.controller.admin.baseinfo.area.vo.AreaPageReqVO;
-import cn.iocoder.yudao.module.evaluate.controller.admin.baseinfo.area.vo.AreaSaveReqVO;
-import org.springframework.stereotype.Service;
-import jakarta.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
-
-import cn.iocoder.yudao.module.evaluate.dal.dataobject.area.AreaDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.evaluate.controller.admin.baseinfo.area.vo.AreaPageReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.baseinfo.area.vo.AreaSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.common.vo.SelectOptionRespVO;
+import cn.iocoder.yudao.module.evaluate.dal.dataobject.area.AreaDO;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.area.AreaMapper;
+import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.module.evaluate.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.evaluate.enums.ErrorCodeConstants.AREA_NOT_EXISTS;
 
 /**
  * 区域编码 Service 实现类
@@ -68,5 +71,16 @@ public class AreaServiceImpl implements AreaService {
     public PageResult<AreaDO> getAreaPage(AreaPageReqVO pageReqVO) {
         return areaMapper.selectPage(pageReqVO);
     }
-
+    // Service 核心逻辑
+    @Override
+    public List<SelectOptionRespVO> getAreaSimpleList() {
+        // 假设 AreaDO 有 areaCode 和 areaName 字段
+        List<AreaDO> list = areaMapper.selectList(
+                new LambdaQueryWrapperX<AreaDO>().eq(AreaDO::getStatusId, 1)
+        );
+        // 转换：value存 area_code(String), label存 area_name
+        return list.stream()
+                .map(item -> new SelectOptionRespVO(item.getAreaCode(), item.getAreaName()))
+                .collect(Collectors.toList());
+    }
 }

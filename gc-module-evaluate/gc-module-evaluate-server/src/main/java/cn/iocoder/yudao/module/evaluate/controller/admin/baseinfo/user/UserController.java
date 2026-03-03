@@ -9,6 +9,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.evaluate.controller.admin.baseinfo.user.vo.UserPageReqVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.baseinfo.user.vo.UserRespVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.baseinfo.user.vo.UserSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.common.vo.SelectOptionRespVO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.user.UserDO;
 import cn.iocoder.yudao.module.evaluate.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -89,5 +90,9 @@ public class UserController {
         ExcelUtils.write(response, "系统用户.xls", "数据", UserRespVO.class,
                         BeanUtils.toBean(list, UserRespVO.class));
     }
-
+    @GetMapping("/simple-list")
+    @Operation(summary = "获取对象类型下拉列表")
+    public CommonResult<List<SelectOptionRespVO>> getUsserSimpleList() {
+        return success(userService.getUserSimpleList());
+    }
 }

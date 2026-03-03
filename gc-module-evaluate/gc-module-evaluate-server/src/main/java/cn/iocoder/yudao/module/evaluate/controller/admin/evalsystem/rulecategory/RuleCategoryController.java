@@ -121,5 +121,13 @@ public class RuleCategoryController {
         return CommonResult.success(null); // 暂未实现，返回空
     }
 
-
+    @Operation(summary = "规则分类分页查询（支持全部/启用/停用状态）*")
+    @GetMapping("/allpage")
+    public CommonResult<PageResult<RuleCategoryRespVO>> getRuleCategoryAllPage(
+            @Validated RuleCategoryPageReqVO reqVO) {
+        // 调用Service层执行联表分页查询
+        PageResult<RuleCategoryRespVO> pageResult = ruleCategoryService.getRuleCategoryAllPage(reqVO);
+        // 返回统一封装的响应结果
+        return CommonResult.success(pageResult);
+    }
 }
