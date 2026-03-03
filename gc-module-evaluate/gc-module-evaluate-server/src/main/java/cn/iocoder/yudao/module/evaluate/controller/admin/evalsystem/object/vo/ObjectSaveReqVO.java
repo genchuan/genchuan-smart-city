@@ -89,5 +89,6 @@ public class ObjectSaveReqVO {
     private String relatedName; // 仅导入时接收“技术研发部”等名称
 
     @Schema(description = "创建人名称")
+    @ExcelProperty
     private String createUserName;
 }

@@ -65,6 +65,7 @@ public class ObjectController {
     @Operation(summary = "创建评价对象")
     @PreAuthorize("@ss.hasPermission('evaluate:object:create')")
     public CommonResult<Long> createObject(@Valid @RequestBody ObjectSaveReqVO createReqVO) {
+
         return success(objectService.createObject(createReqVO));
     }
 
@@ -320,11 +321,7 @@ public class ObjectController {
     }
 //新改mpl
 
-    /**
-     *
-     * @param pageParam
-     * @return
-     */
+
     @GetMapping("/allpage")
     @Operation(summary = "评价对象全量联表查询*")
     public CommonResult<PageResult<ObjectRespVO>> getAllObjectPage(ObjectPageReqVO pageParam) {
