@@ -24,15 +24,7 @@ BuildAndPush:
     - mvn clean package -Dmaven.test.skip=true
     - echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
     - |
-      MODULES="yudao-gateway \
-      yudao-module-system-server \
-      yudao-module-infra-server \
-      yudao-module-bpm-server \
-      gc-module-park-server \
-      gc-module-industry-server \
-      gc-module-datacenter-server \
-      gc-module-data-server 
-      "
+      MODULES="yudao-gateway yudao-module-system-server yudao-module-infra-server yudao-module-bpm-server gc-module-park-server gc-module-industry-server gc-module-datacenter-server gc-module-data-server msm-environmental-health-server"
 
     - |
       for module in "${MODULES[@]}"; do
@@ -44,7 +36,9 @@ BuildAndPush:
           "gc-module-park-server") jar_path="gc-module-park/gc-module-park-server" ;;
           "gc-module-industry-server") jar_path="gc-module-industry/gc-module-industry-server" ;;
           "gc-module-datacenter-server") jar_path="gc-module-datacenter/gc-module-datacenter-server" ;;
-          "gc-module-data") jar_path="gc-module-data/gc-module-data-server" ;;
+          "gc-module-data-server") jar_path="gc-module-data/gc-module-data-server" ;;
+          "msm-environmental-health-server") jar_path="msm-environmental-health/msm-environmental-health-server" ;;
+          "msm-municipal-facility-server") jar_path="msm-municipal-facility/msm-municipal-facility-server" ;;
         esac
         docker build \
           --build-arg MODULE_NAME="$module" \
