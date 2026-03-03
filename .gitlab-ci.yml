@@ -1,7 +1,6 @@
 stages:
   - BuildAndPush
 
-
 variables:
   DOCKER_REGISTRY: "harbor.genchuan.cn"
   DOCKER_USERNAME: "guoyuanhong"
@@ -9,7 +8,6 @@ variables:
   MAVEN_IMAGE: "harbor.genchuan.cn/library/maven:3.9.6-alpine-jdk17-docker"
   DOCKER_BUILDKIT: "1"  # 启用 Docker BuildKit 提高构建速度
   POD_TAG: "$CI_COMMIT_BRANCH"  # Podman 镜像标签
-
 
 BuildAndPush:
   stage: BuildAndPush
@@ -24,27 +22,22 @@ BuildAndPush:
     - mvn clean package -Dmaven.test.skip=true
     - echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
     - |
-      MODULES=(
-        "yudao-gateway"
-        "gc-module-park-server"
-        "gc-module-industry-server"
-        "gc-module-datacenter-server"
-        "yudao-module-bpm-server"
-        "yudao-module-iot-biz"
-        "yudao-module-infra-server"
-        "yudao-module-system-server"
-      )
-    - |
-      for module in "${MODULES[@]}"; do
+      # 遍历所有模块并构建 Docker 镜像
+      for module in "yudao-gateway" "yudao-module-system-server" "yudao-module-infra-server" "yudao-module-bpm-server"   "gc-module-datacenter-server" "gc-module-data-server" "gc-module-industry-server" "gc-module-park-server" "msm-environmental-health-server" "msm-municipal-facility-server"  ; do
         case $module in
+          # 宇道四个基础服务
           "yudao-gateway") jar_path="yudao-gateway" ;;
-          "gc-module-datacenter-server") jar_path="gc-module-datacenter/gc-module-datacenter-server" ;;
-          "gc-module-park-server") jar_path="gc-module-park/gc-module-park-server" ;;
-          "gc-module-industry-server") jar_path="gc-module-industry/gc-module-industry-server" ;;
-          "yudao-module-bpm-server") jar_path="yudao-module-bpm/yudao-module-bpm-server" ;;
-          "yudao-module-infra-server") jar_path="yudao-module-infra/yudao-module-infra-server" ;;
           "yudao-module-system-server") jar_path="yudao-module-system/yudao-module-system-server" ;;
-          "yudao-module-iot-biz") jar_path="yudao-module-iot/yudao-module-iot-biz" ;;
+          "yudao-module-infra-server") jar_path="yudao-module-infra/yudao-module-infra-server" ;;
+          "yudao-module-bpm-server") jar_path="yudao-module-bpm/yudao-module-bpm-server" ;;
+          # gc旧服务
+          "gc-module-datacenter-server") jar_path="gc-module-datacenter/gc-module-datacenter-server" ;;
+          "gc-module-data-server") jar_path="gc-module-data/gc-module-data-server" ;;
+          "gc-module-industry-server") jar_path="gc-module-industry/gc-module-industry-server" ;;
+          "gc-module-park-server") jar_path="gc-module-park/gc-module-park-server" ;;
+          # gc新服务
+          "msm-environmental-health-server") jar_path="msm-environmental-health/msm-environmental-health-server" ;;
+          "msm-municipal-facility-server") jar_path="msm-municipal-facility/msm-municipal-facility-server" ;;
         esac
         docker build \
           --build-arg MODULE_NAME="$module" \
@@ -53,11 +46,9 @@ BuildAndPush:
         docker push "$DOCKER_REGISTRY/sccsgl/$module:$POD_TAG"
       done
 
-
   retry:
     max: 2
     when:
       - runner_system_failure
       - stuck_or_timeout_failure
       - unknown_failure
-
