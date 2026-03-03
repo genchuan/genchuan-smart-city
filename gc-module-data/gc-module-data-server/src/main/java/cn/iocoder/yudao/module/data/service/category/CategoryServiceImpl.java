@@ -128,6 +128,20 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public PageResult<CategoryDO> getCategoryPage(CategoryPageReqVO pageReqVO) {
+        // 处理树形查询参数
+        String treeParentId = pageReqVO.getTreeParentId();
+        if (treeParentId != null && !treeParentId.trim().isEmpty()) {
+            // 获取该节点及其所有子节点的ID
+            List<Long> subCategoryIds = getSubCategoryIds(treeParentId, pageReqVO.getIncludeSelf());
+
+            if (CollectionUtils.isEmpty(subCategoryIds)) {
+                // 如果没有找到任何节点，返回空结果
+                return new PageResult<>(Collections.emptyList(), 0L);
+            }
+
+            return categoryMapper.selectPageByCategoryIds(pageReqVO, subCategoryIds);
+        }
+
         return categoryMapper.selectPage(pageReqVO);
     }
 
@@ -184,6 +198,49 @@ public class CategoryServiceImpl implements CategoryService {
             }
         }
         return rootList;
+    }
+
+    @Override
+    public List<Long> getSubCategoryIds(String parentId, boolean includeSelf) {
+        // 1. 查询出所有分类数据
+        List<CategoryDO> allCategories = categoryMapper.selectList();
+        if (CollectionUtils.isEmpty(allCategories)) {
+            return Collections.emptyList();
+        }
+
+        // 2. 构建父节点到子节点的映射
+        Map<String, List<CategoryDO>> parentToChildrenMap = allCategories.stream()
+                .filter(category -> category.getParentId() != null && !category.getParentId().trim().isEmpty())
+                .collect(Collectors.groupingBy(CategoryDO::getParentId));
+
+        // 3. 递归获取所有子节点ID
+        List<Long> result = new ArrayList<>();
+        if (includeSelf) {
+            // 如果需要包含自身，先查找自身
+            allCategories.stream()
+                    .filter(category -> String.valueOf(category.getId()).equals(parentId))
+                    .findFirst()
+                    .ifPresent(category -> result.add(category.getId()));
+        }
+
+        // 4. 递归获取子节点
+        getChildrenIdsRecursive(parentId, parentToChildrenMap, result);
+
+        return result;
+    }
+
+    /**
+     * 递归获取子节点ID
+     */
+    private void getChildrenIdsRecursive(String parentId, Map<String, List<CategoryDO>> parentToChildrenMap, List<Long> result) {
+        List<CategoryDO> children = parentToChildrenMap.get(parentId);
+        if (children != null && !children.isEmpty()) {
+            for (CategoryDO child : children) {
+                result.add(child.getId());
+                // 递归获取孙子节点
+                getChildrenIdsRecursive(String.valueOf(child.getId()), parentToChildrenMap, result);
+            }
+        }
     }
 
 }

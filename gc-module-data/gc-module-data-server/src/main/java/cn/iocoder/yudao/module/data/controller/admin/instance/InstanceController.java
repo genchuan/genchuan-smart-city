@@ -28,6 +28,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.data.controller.admin.instance.vo.*;
 import cn.iocoder.yudao.module.data.dal.dataobject.instance.InstanceDO;
 import cn.iocoder.yudao.module.data.service.instance.InstanceService;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "管理后台 - 管理部件实例")
 @RestController
@@ -99,6 +100,16 @@ public class InstanceController {
     public CommonResult<List<InstanceRespVO>> getInstanceListByCategory(@RequestParam("categoryId") String categoryId) {
         List<InstanceDO> list = instanceService.getInstanceListByCategoryId(categoryId);
         return success(BeanUtils.toBean(list, InstanceRespVO.class));
+    }
+
+    @PostMapping("/import-excel")
+    @Operation(summary = "导入管理部件实例 Excel")
+    @PreAuthorize("@ss.hasPermission('data:instance:import')")
+    @ApiAccessLog(operateType = IMPORT)
+    public CommonResult<String> importInstanceExcel(@RequestParam("file") MultipartFile file) throws IOException {
+        // 调用服务层进行导入
+        String importResult = instanceService.importInstanceExcel(file);
+        return success(importResult);
     }
 
 }

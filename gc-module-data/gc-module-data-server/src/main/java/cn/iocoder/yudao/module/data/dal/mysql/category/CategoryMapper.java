@@ -87,4 +87,36 @@ public interface CategoryMapper extends BaseMapperX<CategoryDO> {
         return BaseMapperX.super.deleteBatchIds(ids);
     }
 
+    /**
+     * 根据分类ID列表分页查询
+     * @param reqVO 分页参数
+     * @param categoryIds 分类ID列表
+     * @return 分页结果
+     */
+    default PageResult<CategoryDO> selectPageByCategoryIds(CategoryPageReqVO reqVO, List<Long> categoryIds) {
+        LambdaQueryWrapperX<CategoryDO> queryWrapper = new LambdaQueryWrapperX<CategoryDO>()
+                .likeIfPresent(CategoryDO::getCategoryName, reqVO.getCategoryName())
+                .eqIfPresent(CategoryDO::getCategoryCode, reqVO.getCategoryCode())
+                .eqIfPresent(CategoryDO::getCodeSortType, reqVO.getCodeSortType())
+                .eqIfPresent(CategoryDO::getParentId, reqVO.getParentId())
+                .likeIfPresent(CategoryDO::getParentCategoryName, reqVO.getParentCategoryName())
+                .eqIfPresent(CategoryDO::getIconName, reqVO.getIconName())
+                .eqIfPresent(CategoryDO::getAuditStatus, reqVO.getAuditStatus())
+                .eqIfPresent(CategoryDO::getCategoryType, reqVO.getCategoryType())
+                .eqIfPresent(CategoryDO::getStatus, reqVO.getStatus())
+                .eqIfPresent(CategoryDO::getAuditStatusId, reqVO.getAuditStatusId())
+                .eqIfPresent(CategoryDO::getInstanceCount, reqVO.getInstanceCount())
+                .eqIfPresent(CategoryDO::getPurpose, reqVO.getPurpose())
+                .eqIfPresent(CategoryDO::getNotifyFlag, reqVO.getNotifyFlag())
+                .eqIfPresent(CategoryDO::getRemark, reqVO.getRemark())
+                .eqIfPresent(CategoryDO::getExtCommon1, reqVO.getExtCommon1())
+                .eqIfPresent(CategoryDO::getExtCommon2, reqVO.getExtCommon2())
+                .eqIfPresent(CategoryDO::getCreator, reqVO.getCreator())
+                .betweenIfPresent(CategoryDO::getCreateTime, reqVO.getCreateTime())
+                .in(CategoryDO::getId, categoryIds)  // 关键：按ID列表查询
+                .orderByDesc(CategoryDO::getId);
+
+        return selectPage(reqVO, queryWrapper);
+    }
+
 }

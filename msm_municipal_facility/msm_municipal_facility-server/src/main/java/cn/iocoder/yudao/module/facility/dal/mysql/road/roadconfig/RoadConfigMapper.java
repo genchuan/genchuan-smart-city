@@ -5,11 +5,9 @@ import java.util.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
-
 import cn.iocoder.yudao.module.facility.controller.admin.road.roadconfig.vo.RoadConfigPageReqVO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.road.roadconfig.RoadConfigDO;
 import org.apache.ibatis.annotations.Mapper;
-
 
 /**
  * 道路监测配置 Mapper
@@ -22,7 +20,9 @@ public interface RoadConfigMapper extends BaseMapperX<RoadConfigDO> {
     default PageResult<RoadConfigDO> selectPage(RoadConfigPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<RoadConfigDO>()
                 .eqIfPresent(RoadConfigDO::getConfigCode, reqVO.getConfigCode())
+                .likeIfPresent(RoadConfigDO::getName, reqVO.getName())
                 .eqIfPresent(RoadConfigDO::getRoadId, reqVO.getRoadId())
+                .likeIfPresent(RoadConfigDO::getRoadName, reqVO.getRoadName())
                 .eqIfPresent(RoadConfigDO::getCollectFrequency, reqVO.getCollectFrequency())
                 .eqIfPresent(RoadConfigDO::getPotholeNumThreshold, reqVO.getPotholeNumThreshold())
                 .eqIfPresent(RoadConfigDO::getCrackLengthThreshold, reqVO.getCrackLengthThreshold())

@@ -70,6 +70,11 @@ public class CategoryPageReqVO extends PageParam {
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
 
+    // 新增字段：树形查询参数
+    @Schema(description = "树形查询的父节点ID（点击树节点时传入，会查询该节点及其所有子节点）", example = "1")
+    private String treeParentId;
 
+    @Schema(description = "是否包含父节点自身（当treeParentId不为空时有效，默认true）", example = "true")
+    private Boolean includeSelf = true;
 
 }

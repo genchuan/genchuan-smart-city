@@ -13,7 +13,7 @@ import com.alibaba.excel.annotation.*;
 @ExcelIgnoreUnannotated
 public class RoadConfigRespVO {
 
-    @Schema(description = "[主键ID] 主键，道路监测配置唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "22603")
+    @Schema(description = "[主键ID] 主键，道路监测配置唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "7754")
     @ExcelProperty("[主键ID] 主键，道路监测配置唯一标识")
     private Long id;
 
@@ -21,9 +21,17 @@ public class RoadConfigRespVO {
     @ExcelProperty("[配置编码] UUID格式")
     private String configCode;
 
-    @Schema(description = "[道路ID] 关联road_facility.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "26910")
+    @Schema(description = "[配置名称]", example = "赵六")
+    @ExcelProperty("[配置名称]")
+    private String name;
+
+    @Schema(description = "[道路ID] 关联road_facility.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "3554")
     @ExcelProperty("[道路ID] 关联road_facility.id")
     private Long roadId;
+
+    @Schema(description = "[道路名称]", example = "芋艿")
+    @ExcelProperty("[道路名称]")
+    private String roadName;
 
     @Schema(description = "[采集频率] 数据采集频率，单位：分钟", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("[采集频率] 数据采集频率，单位：分钟")
