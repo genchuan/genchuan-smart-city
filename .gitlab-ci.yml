@@ -1,6 +1,7 @@
 stages:
   - BuildAndPush
-  
+
+
 variables:
   DOCKER_REGISTRY: "harbor.genchuan.cn"
   DOCKER_USERNAME: "guoyuanhong"
@@ -22,38 +23,34 @@ BuildAndPush:
   script:
     - mvn clean package -Dmaven.test.skip=true
     - echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
-   
     - |
-      declare -A MODULE_JAR_MAP=(
-        ["yudao-gateway"]="yudao-gateway"
-        ["gc-module-park-server"]="gc-module-park/gc-module-park-server"
-        ["gc-module-industry-server"]="gc-module-industry/gc-module-industry-server"
-        ["gc-module-datacenter-server"]="gc-module-datacenter/gc-module-datacenter-server"
-        ["yudao-module-bpm-server"]="yudao-module-bpm/yudao-module-bpm-server"
-        ["yudao-module-iot-biz"]="yudao-module-iot/yudao-module-iot-biz"
-        ["yudao-module-infra-server"]="yudao-module-infra/yudao-module-infra-server"
-        ["yudao-module-system-server"]="yudao-module-system/yudao-module-system-server"
+      MODULES=(
+        "yudao-gateway"
+        "gc-module-park-server"
+        "gc-module-industry-server"
+        "gc-module-datacenter-server"
+        "yudao-module-bpm-server"
+        "yudao-module-iot-biz"
+        "yudao-module-infra-server"
+        "yudao-module-system-server"
       )
     - |
-      for module in "${!MODULE_JAR_MAP[@]}"; do
-        jar_path=${MODULE_JAR_MAP[$module]}
-        echo "开始处理模块：$module (JAR路径：$jar_path)"
-        
-        # 构建镜像
-        if docker build \
+      for module in "${MODULES[@]}"; do
+        case $module in
+          "yudao-gateway") jar_path="yudao-gateway" ;;
+          "gc-module-datacenter-server") jar_path="gc-module-datacenter/gc-module-datacenter-server" ;;
+          "gc-module-park-server") jar_path="gc-module-park/gc-module-park-server" ;;
+          "gc-module-industry-server") jar_path="gc-module-industry/gc-module-industry-server" ;;
+          "yudao-module-bpm-server") jar_path="yudao-module-bpm/yudao-module-bpm-server" ;;
+          "yudao-module-infra-server") jar_path="yudao-module-infra/yudao-module-infra-server" ;;
+          "yudao-module-system-server") jar_path="yudao-module-system/yudao-module-system-server" ;;
+          "yudao-module-iot-biz") jar_path="yudao-module-iot/yudao-module-iot-biz" ;;
+        esac
+        docker build \
           --build-arg MODULE_NAME="$module" \
           --build-arg JAR_PATH="$jar_path" \
-          -t "$DOCKER_REGISTRY/sccsgl/$module:$POD_TAG" .; then
-          echo "模块[$module]镜像构建成功，开始推送..."
-          # 推送镜像
-          if docker push "$DOCKER_REGISTRY/sccsgl/$module:$POD_TAG"; then
-            echo "模块[$module]镜像推送成功！"
-          else
-            echo "警告：模块[$module]镜像推送失败，继续处理下一个模块..."
-          fi
-        else
-          echo "警告：模块[$module]镜像构建失败，继续处理下一个模块..."
-        fi
+          -t "$DOCKER_REGISTRY/sccsgl/$module:$POD_TAG" .
+        docker push "$DOCKER_REGISTRY/sccsgl/$module:$POD_TAG"
       done
 
 
