@@ -24,27 +24,27 @@ BuildAndPush:
     - mvn clean package -Dmaven.test.skip=true
     - echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
     - |
-      MODULES=(
-        "yudao-gateway"
-        "gc-module-park-server"
-        "gc-module-industry-server"
-        "gc-module-datacenter-server"
-        "yudao-module-bpm-server"
-        "yudao-module-iot-biz"
-        "yudao-module-infra-server"
-        "yudao-module-system-server"
-      )
+      MODULES="yudao-gateway \
+      yudao-module-system-server \
+      yudao-module-infra-server \
+      yudao-module-bpm-server \
+      gc-module-park-server \
+      gc-module-industry-server \
+      gc-module-datacenter-server \
+      gc-module-data-server 
+      "
+
     - |
       for module in "${MODULES[@]}"; do
         case $module in
           "yudao-gateway") jar_path="yudao-gateway" ;;
-          "gc-module-datacenter-server") jar_path="gc-module-datacenter/gc-module-datacenter-server" ;;
+          "yudao-module-system-server") jar_path="yudao-module-system/yudao-module-system-server" ;;
+          "yudao-module-infra-server") jar_path="yudao-module-infra/yudao-module-infra-server" ;;
+          "yudao-module-bpm-server") jar_path="yudao-module-bpm/yudao-module-bpm-server" ;;
           "gc-module-park-server") jar_path="gc-module-park/gc-module-park-server" ;;
           "gc-module-industry-server") jar_path="gc-module-industry/gc-module-industry-server" ;;
-          "yudao-module-bpm-server") jar_path="yudao-module-bpm/yudao-module-bpm-server" ;;
-          "yudao-module-infra-server") jar_path="yudao-module-infra/yudao-module-infra-server" ;;
-          "yudao-module-system-server") jar_path="yudao-module-system/yudao-module-system-server" ;;
-          "yudao-module-iot-biz") jar_path="yudao-module-iot/yudao-module-iot-biz" ;;
+          "gc-module-datacenter-server") jar_path="gc-module-datacenter/gc-module-datacenter-server" ;;
+          "gc-module-data") jar_path="gc-module-data/gc-module-data-server" ;;
         esac
         docker build \
           --build-arg MODULE_NAME="$module" \
