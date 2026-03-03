@@ -1,0 +1,88 @@
+package cn.iocoder.yudao.module.envirhealth.service.garbagetransfer.transferalarm;
+
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferalarm.TransferAlarmPageReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferalarm.TransferAlarmSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.detail.TransferAlarmDetailDO;
+import org.springframework.stereotype.Service;
+import jakarta.annotation.Resource;
+import org.springframework.validation.annotation.Validated;
+
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferAlarmDO;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+
+import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.TransferAlarmMapper;
+
+import java.util.List;
+
+import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.*;
+
+/**
+ * 转运站预警 Service 实现类
+ *
+ * @author 芋道源码
+ */
+@Service
+@Validated
+public class TransferAlarmServiceImpl implements TransferAlarmService {
+
+    @Resource
+    private TransferAlarmMapper transferAlarmMapper;
+
+    @Override
+    public Long createTransferAlarm(TransferAlarmSaveReqVO createReqVO) {
+        // 插入
+        TransferAlarmDO transferAlarm = BeanUtils.toBean(createReqVO, TransferAlarmDO.class);
+        transferAlarmMapper.insert(transferAlarm);
+        // 返回
+        return transferAlarm.getId();
+    }
+
+    @Override
+    public void updateTransferAlarm(TransferAlarmSaveReqVO updateReqVO) {
+        // 校验存在
+        validateTransferAlarmExists(updateReqVO.getId());
+        // 更新
+        TransferAlarmDO updateObj = BeanUtils.toBean(updateReqVO, TransferAlarmDO.class);
+        transferAlarmMapper.updateById(updateObj);
+    }
+
+    @Override
+    public void deleteTransferAlarm(Long id) {
+        // 校验存在
+        validateTransferAlarmExists(id);
+        // 删除
+        transferAlarmMapper.deleteById(id);
+    }
+
+    private void validateTransferAlarmExists(Long id) {
+        if (transferAlarmMapper.selectById(id) == null) {
+            throw exception(TRANSFER_ALARM_NOT_EXISTS);
+        }
+    }
+
+    @Override
+    public TransferAlarmDO getTransferAlarm(Long id) {
+        return transferAlarmMapper.selectById(id);
+    }
+
+    @Override
+    public PageResult<TransferAlarmDO> getTransferAlarmPage(TransferAlarmPageReqVO pageReqVO) {
+        return transferAlarmMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public PageResult<TransferAlarmDetailDO> getTransferAlarmDetailPage(TransferAlarmPageReqVO pageReqVO) {
+        Long total = transferAlarmMapper.selectCount(pageReqVO);
+        if (total == 0) {
+            return PageResult.empty();
+        }
+
+        pageReqVO.setOffset(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+
+        List<TransferAlarmDetailDO> list = transferAlarmMapper.selectDetailPage(pageReqVO);
+        return new PageResult<>(list, total);
+    }
+
+}
