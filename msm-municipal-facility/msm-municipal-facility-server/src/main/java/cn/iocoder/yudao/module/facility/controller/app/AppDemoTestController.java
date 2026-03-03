@@ -22,7 +22,7 @@ public class AppDemoTestController {
     }
 
     @GetMapping("/get")
-    @Operation(summary = "获取 test 信息")
+    @Operation(summary = "获取 test2 信息")
     public CommonResult<String> get() {
         return success("true");
     }
