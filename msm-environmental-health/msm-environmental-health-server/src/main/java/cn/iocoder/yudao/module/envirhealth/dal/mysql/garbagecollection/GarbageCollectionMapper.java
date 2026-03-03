@@ -94,7 +94,7 @@ public interface GarbageCollectionMapper extends BaseMapperX<GarbageCollectionDO
      * @return 统计结果
      */
     /**
-     * 统计收运计划各状态数量（修复JOIN导致的计数放大问题）
+     * 统计收运计划各状态数量
      * @return 统计结果
      */
     @Select("SELECT " +
@@ -294,10 +294,6 @@ public interface GarbageCollectionMapper extends BaseMapperX<GarbageCollectionDO
      * 查询当日收运量实时增长趋势（按小时分组）
      * @return 趋势数据列表
      */
-    /**
-     * 查询当日收运量实时增长趋势（按小时分组）
-     * @return 趋势数据列表
-     */
     /*@Select("SELECT " +
             "DATE_FORMAT(create_time, '%H:00') AS timePoint, " +
             "SUM(collected_volume) AS collectedVolume, " +
@@ -336,40 +332,63 @@ public interface GarbageCollectionMapper extends BaseMapperX<GarbageCollectionDO
     /**
      * 统计当日收运量（按小时）
      */
-    @Select("SELECT " +
+/*    @Select("SELECT " +
             "DATE_FORMAT(create_time, '%H:00') AS timeDimension, " +
             "IFNULL(SUM(collected_volume), 0) AS collectedVolume " +
             "FROM garbage_collection " +
             "WHERE deleted = 0 " +
             "AND DATE(create_time) = CURDATE() " +
             "GROUP BY DATE_FORMAT(create_time, '%H:00') " +
+            "ORDER BY timeDimension ASC")*/
+    @Select("SELECT " +
+            "DATE_FORMAT(create_time, '%H:00') AS timeDimension, " +
+            "IFNULL(SUM(collected_volume), 0) AS collectedVolume " +
+            "FROM garbage_collection " +
+            "WHERE deleted = 0 " +
+            "AND DATE(create_time) = '2026-02-26' " +  // 固定日期
+            "GROUP BY DATE_FORMAT(create_time, '%H:00') " +
             "ORDER BY timeDimension ASC")
     List<CollectionVolumeBarVO> selectTodayCollectionVolume();
 
     /**
-     * 统计当周收运量（按天）
+     * 统计本周按星期几的收运量（按周）- 包含所有7天
      */
     @Select("SELECT " +
-            "DATE_FORMAT(create_time, '%Y-%m-%d') AS timeDimension, " +
-            "IFNULL(SUM(collected_volume), 0) AS collectedVolume " +
-            "FROM garbage_collection " +
-            "WHERE deleted = 0 " +
-            "AND YEARWEEK(create_time, 1) = YEARWEEK(CURDATE(), 1) " +
-            "GROUP BY DATE_FORMAT(create_time, '%Y-%m-%d') " +
-            "ORDER BY timeDimension ASC")
+            "w.day_name AS timeDimension, " +
+            "IFNULL(SUM(gc.collected_volume), 0) AS collectedVolume " +
+            "FROM (" +
+            "  SELECT 2 AS day_num, 'Mon' AS day_name UNION ALL " +
+            "  SELECT 3, 'Tue' UNION ALL " +
+            "  SELECT 4, 'Wed' UNION ALL " +
+            "  SELECT 5, 'Thu' UNION ALL " +
+            "  SELECT 6, 'Fri' UNION ALL " +
+            "  SELECT 7, 'Sat' UNION ALL " +
+            "  SELECT 1, 'Sun'" +
+            ") w " +
+            "LEFT JOIN garbage_collection gc ON " +
+            "  DAYOFWEEK(gc.create_time) = w.day_num " +
+            "  AND YEARWEEK(gc.create_time, 1) = YEARWEEK('2026-02-26', 1) " +
+            "  AND gc.deleted = 0 " +
+            "GROUP BY w.day_num, w.day_name " +
+            "ORDER BY w.day_num")
     List<CollectionVolumeBarVO> selectWeeklyCollectionVolume();
 
     /**
-     * 统计当月收运量（按天）
+     * 统计今年收运量（按月份）
      */
     @Select("SELECT " +
-            "DATE_FORMAT(create_time, '%Y-%m-%d') AS timeDimension, " +
+            "ANY_VALUE(CASE MONTH(create_time) " +
+            "  WHEN 1 THEN 'Jan' WHEN 2 THEN 'Feb' WHEN 3 THEN 'Mar' " +
+            "  WHEN 4 THEN 'Apr' WHEN 5 THEN 'May' WHEN 6 THEN 'Jun' " +
+            "  WHEN 7 THEN 'Jul' WHEN 8 THEN 'Aug' WHEN 9 THEN 'Sep' " +
+            "  WHEN 10 THEN 'Oct' WHEN 11 THEN 'Nov' WHEN 12 THEN 'Dec' " +
+            "END) AS timeDimension, " +
             "IFNULL(SUM(collected_volume), 0) AS collectedVolume " +
             "FROM garbage_collection " +
             "WHERE deleted = 0 " +
-            "AND DATE_FORMAT(create_time, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m') " +
-            "GROUP BY DATE_FORMAT(create_time, '%Y-%m-%d') " +
-            "ORDER BY timeDimension ASC")
+            "AND YEAR(create_time) = YEAR(CURDATE()) " +
+            "GROUP BY MONTH(create_time) " +
+            "ORDER BY MONTH(create_time) ASC")
     List<CollectionVolumeBarVO> selectMonthlyCollectionVolume();
 
     /**

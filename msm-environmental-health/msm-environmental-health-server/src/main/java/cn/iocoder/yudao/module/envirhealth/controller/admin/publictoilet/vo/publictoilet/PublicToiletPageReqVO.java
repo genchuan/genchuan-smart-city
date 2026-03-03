@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.publictoilet;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
@@ -76,6 +77,9 @@ public class PublicToiletPageReqVO extends PageParam {
     @Schema(description = "缺口数量")
     private Integer consumableGap;
 
+    @Schema(description = "是否有缺口（true：有缺口，false：无缺口）")
+    private Boolean hasConsumableGap;
+
     @Schema(description = "上次补充时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] lastSupplyTime;
@@ -83,21 +87,29 @@ public class PublicToiletPageReqVO extends PageParam {
     @Schema(description = "补充周期")
     private String supplyCycle;
 
+    @JsonIgnore
     @Schema(description = "通用扩展字段1")
     private String extCommon1;
 
+    @JsonIgnore
     @Schema(description = "通用扩展字段2")
     private String extCommon2;
 
+    @JsonIgnore
     @Schema(description = "通用扩展字段3")
     private String extCommon3;
 
+    @JsonIgnore
     @Schema(description = "通用扩展字段4")
     private String extCommon4;
 
     @Schema(description = "创建时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
+
+    @Schema(description = "更新时间范围")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime[] updateTime;
 
     @Schema(hidden = true)
     private Integer offset;

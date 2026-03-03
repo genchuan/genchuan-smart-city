@@ -97,11 +97,6 @@ public class GarbageCollectionServiceImpl implements GarbageCollectionService {
     }
 
     @Override
-    public GarbageCollectionDO getGarbageCollection(Long id) {
-        return garbageCollectionMapper.selectById(id);
-    }
-
-    @Override
     public void deleteGarbageCollectionBatch(List<Long> ids) {
         if (CollectionUtils.isEmpty(ids)) {
             return;
@@ -116,6 +111,12 @@ public class GarbageCollectionServiceImpl implements GarbageCollectionService {
         // 批量删除
         garbageCollectionMapper.deleteBatchIds(ids);
     }
+
+    @Override
+    public GarbageCollectionDO getGarbageCollection(Long id) {
+        return garbageCollectionMapper.selectById(id);
+    }
+
 
     @Override
     public PageResult<GarbageCollectionDO> getGarbageCollectionPage(GarbageCollectionPageReqVO pageReqVO) {

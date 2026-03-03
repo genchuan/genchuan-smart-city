@@ -70,6 +70,15 @@ public class GarbageAbnormalController {
         return success(true);
     }
 
+    @DeleteMapping("/delete-batch")
+    @Operation(summary = "批量删除垃圾异常记录")
+    @Parameter(name = "ids", description = "编号列表", required = true)
+    @PreAuthorize("@ss.hasPermission('health:garbage-abnormal:delete')")
+    public CommonResult<Boolean> deleteGarbageAbnormalBatch(@RequestBody List<Long> ids) {
+        garbageAbnormalService.deleteGarbageAbnormalBatch(ids);
+        return success(true);
+    }
+
     @GetMapping("/get")
     @Operation(summary = "获得垃圾异常记录")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")

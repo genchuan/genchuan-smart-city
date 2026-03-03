@@ -1,11 +1,13 @@
 package cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet;
 
+import cn.iocoder.yudao.module.envirhealth.controller.admin.area.vo.AreaOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.GarbageCollectionPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.publictoilet.PublicToiletPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.publictoilet.PublicToiletRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.publictoilet.PublicToiletSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageCollectionDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.PublicToiletDetailDO;
+import cn.iocoder.yudao.module.envirhealth.util.options.vo.OptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -105,5 +107,16 @@ public class PublicToiletController {
                 publicToiletService.getPublicToiletDetailPage(pageReqVO);
 
         return success(pageResult);
+    }
+
+    /**
+     * 获得公厕名称下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得公厕名称(下拉框)")
+    @PreAuthorize("@ss.hasPermission('health:public-toilet:query')")
+    public CommonResult<List<OptionVO>> getPublicToiletNameOptions() {
+        return success(publicToiletService.getPublicToiletNameOptions());
     }
 }

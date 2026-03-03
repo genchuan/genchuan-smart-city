@@ -45,6 +45,13 @@ public interface GarbageAbnormalService {
     void deleteGarbageAbnormal(Long id);
 
     /**
+     * 批量垃圾异常记录
+     *
+     * @param ids 编号列表
+     */
+    void deleteGarbageAbnormalBatch(List<Long> ids);
+
+    /**
      * 获得垃圾异常记录
      *
      * @param id 编号

@@ -8,11 +8,15 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbageabnormal.circle.review.GarbageAbnormalCircleReviewVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbageabnormal.column.abnormal.GarbageAbnormalColumnAbnormalVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbageabnormal.column.review.GarbageAbnormalColumnHandleTimeVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.GarbageCollectionDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageAbnormalDetailDO;
 import cn.iocoder.yudao.module.envirhealth.util.garbagecollection.codegenerator.garbageabnormal.GarbageAbnormalCodeGenerator;
+import jakarta.validation.Validator;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
+import jakarta.validation.Validator;
 
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.GarbageAbnormalDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -38,6 +42,8 @@ public class GarbageAbnormalServiceImpl implements GarbageAbnormalService {
     private GarbageAbnormalMapper garbageAbnormalMapper;
     @Resource
     private GarbageAbnormalCodeGenerator codeGenerator;
+    @Resource
+    private Validator validator;
 
     @Override
     public Long createGarbageAbnormal(GarbageAbnormalSaveReqVO createReqVO) {
@@ -66,6 +72,22 @@ public class GarbageAbnormalServiceImpl implements GarbageAbnormalService {
         validateGarbageAbnormalExists(id);
         // 删除
         garbageAbnormalMapper.deleteById(id);
+    }
+
+    @Override
+    public void deleteGarbageAbnormalBatch(List<Long> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return;
+        }
+
+        // 校验所有计划是否存在
+        List<GarbageAbnormalDO> garbageAbnormals = garbageAbnormalMapper.selectBatchIds(ids);
+        if (garbageAbnormals.size() != ids.size()) {
+            throw exception(GARBAGE_ABNORMAL_NOT_EXISTS);
+        }
+
+        // 批量删除
+        garbageAbnormalMapper.deleteBatchIds(ids);
     }
 
     private void validateGarbageAbnormalExists(Long id) {
