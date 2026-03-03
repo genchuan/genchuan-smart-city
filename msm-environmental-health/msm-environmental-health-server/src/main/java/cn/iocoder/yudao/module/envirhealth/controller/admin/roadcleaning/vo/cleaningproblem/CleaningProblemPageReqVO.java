@@ -1,0 +1,97 @@
+package cn.iocoder.yudao.module.envirhealth.controller.admin.roadcleaning.vo.cleaningproblem;
+
+import lombok.*;
+import io.swagger.v3.oas.annotations.media.Schema;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import org.springframework.format.annotation.DateTimeFormat;
+import java.time.LocalDateTime;
+
+import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
+
+@Schema(description = "管理后台 - 道路清扫问题分页 Request VO")
+@Data
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class CleaningProblemPageReqVO extends PageParam {
+
+    @Schema(description = "问题主键（UUID）", example = "323")
+    private String problemId;
+
+    @Schema(description = "关联road_cleaning.cleaning_id", example = "31676")
+    private String planId;
+
+    @Schema(description = "关联sys_problem_type.id", example = "29261")
+    private String problemTypeId;
+
+    @Schema(description = "问题位置")
+    private String location;
+
+    @Schema(description = "关联sys_user.id")
+    private String reportBy;
+
+    @Schema(description = "上报时间")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime[] reportTime;
+
+    @Schema(description = "问题描述")
+    private String desc;
+
+    @Schema(description = "关联sys_team.id", example = "10062")
+    private String teamId;
+
+    @Schema(description = "处置状态：待处置/处理中/已办结", example = "2")
+    private String handleStatus;
+
+    @Schema(description = "超时提醒：是/否")
+    private String isTimeout;
+
+    @Schema(description = "处置结果")
+    private String handleResult;
+
+    @Schema(description = "通用扩展字段1")
+    private String extCommon1;
+
+    @Schema(description = "通用扩展字段2")
+    private String extCommon2;
+
+    @Schema(description = "通用扩展字段3")
+    private String extCommon3;
+
+    @Schema(description = "通用扩展字段4")
+    private String extCommon4;
+
+    @Schema(description = "创建时间")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime[] createTime;
+
+    @Schema(hidden = true)
+    private Integer offset;
+
+    @Schema(hidden = true)
+    private Integer limit;
+
+    /**
+     * 设置分页偏移量和每页大小
+     */
+    public void setOffset(Integer pageNo, Integer pageSize) {
+        if (pageNo != null && pageSize != null && pageNo > 0) {
+            this.offset = (pageNo - 1) * pageSize;
+            this.limit = pageSize;
+        }
+    }
+
+    /**
+     * 获取分页起始位置
+     */
+    public Integer getOffset() {
+        return offset;
+    }
+
+    /**
+     * 获取分页大小
+     */
+    public Integer getLimit() {
+        return limit != null ? limit : getPageSize();
+    }
+
+}
