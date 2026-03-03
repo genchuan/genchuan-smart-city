@@ -117,18 +117,17 @@ public class ObjectController {
     @PostMapping("/import")
     @Operation(summary = "批量导入评价对象")
     public CommonResult<Integer> importObjects(@RequestParam("file") MultipartFile file) throws IOException {
-        // 1. 读取Excel（使用index映射，不依赖表头名称）
-        List<ObjectSaveReqVO> importList;
-        try (InputStream inputStream = file.getInputStream()) {
-            importList = EasyExcel.read(inputStream)
-                    .head(ObjectSaveReqVO.class)
-                    .headRowNumber(1)      // 第一行为表头（虽然用index，但保留以跳过表头行）
+        // ===== 1. 读取原始单元格数据（不依赖VO映射）=====
+        List<Map<Integer, String>> rawRows;
+        try (InputStream is = file.getInputStream()) {
+            rawRows = EasyExcel.read(is)
+                    .headRowNumber(1)   // 第一行为表头，跳过
                     .sheet()
                     .doReadSync();
         }
-        log.info("Excel读取原始行数：{}", importList.size());
+        log.info("原始数据行数：{}", rawRows.size());
 
-        // 2. 构建名称->ID/编码的映射（保持不变）
+        // ===== 2. 构建名称->ID/编码的映射（保持不变）=====
         List<SelectOptionRespVO> userOptions = userService.getUserSimpleList();
         Map<String, String> userName2IdMap = userOptions.stream()
                 .collect(Collectors.toMap(SelectOptionRespVO::getLabel,
@@ -149,53 +148,74 @@ public class ObjectController {
                 .collect(Collectors.toMap(SelectOptionRespVO::getLabel,
                         option -> String.valueOf(option.getValue()), (oldVal, newVal) -> oldVal));
 
-        // 3. 逐行处理
+        // ===== 3. 逐行手动构建VO =====
         List<ObjectSaveReqVO> validVOList = new ArrayList<>();
-        for (int i = 0; i < importList.size(); i++) {
-            ObjectSaveReqVO vo = importList.get(i);
+        for (int i = 0; i < rawRows.size(); i++) {
+            Map<Integer, String> row = rawRows.get(i);
             int rowNum = i + 2; // 数据从第2行开始
 
+            // 获取各列数据（根据列索引）
+            String name = row.get(0);
+            String code = row.get(1);
+            String areaName = row.get(2);
+            String objectTypeName = row.get(3);
+            String managerName = row.get(4);
+            String managerPhone = row.get(5);
+            String relatedName = row.get(6);
+            String statusId = row.get(7);
+
             // 过滤空行
-            if (vo == null || StringUtils.isBlank(vo.getName()) || StringUtils.isBlank(vo.getCode())) {
+            if (StringUtils.isBlank(name) || StringUtils.isBlank(code)) {
                 log.warn("第{}行：对象名称/编码为空，跳过", rowNum);
                 continue;
             }
 
-            // 打印调试信息（确认字段已有值）
-            log.info("第{}行读取到：name={}, code={}, areaName={}, managerName={}",
-                    rowNum, vo.getName(), vo.getCode(), vo.getAreaName(), vo.getManagerName());
+            // 打印调试
+            log.info("第{}行原始数据：name={}, code={}, areaName={}, managerName={}",
+                    rowNum, name, code, areaName, managerName);
 
             try {
                 // 负责人名称 -> ID
-                String managerId = userName2IdMap.get(vo.getManagerName());
+                String managerId = userName2IdMap.get(managerName);
                 if (managerId == null) {
-                    throw new ServiceException(400, "未找到【启用状态】的负责人：" + vo.getManagerName());
+                    throw new ServiceException(400, "未找到【启用状态】的负责人：" + managerName);
                 }
-                vo.setManagerId(managerId);
 
                 // 所属区域名称 -> 编码
-                String areaCode = areaName2CodeMap.get(vo.getAreaName());
+                String areaCode = areaName2CodeMap.get(areaName);
                 if (areaCode == null) {
-                    throw new ServiceException(400, "未找到所属区域：" + vo.getAreaName());
+                    throw new ServiceException(400, "未找到所属区域：" + areaName);
                 }
-                vo.setAreaCode(areaCode);
 
                 // 对象类型名称 -> ID
-                String typeId = typeName2IdMap.get(vo.getObjectTypeName());
+                String typeId = typeName2IdMap.get(objectTypeName);
                 if (typeId == null) {
-                    throw new ServiceException(400, "未找到【启用状态】的对象类型：" + vo.getObjectTypeName());
+                    throw new ServiceException(400, "未找到【启用状态】的对象类型：" + objectTypeName);
                 }
-                vo.setObjectTypeId(typeId);
 
                 // 关联网格名称 -> ID
-                String relatedId = relatedName2IdMap.get(vo.getRelatedName());
+                String relatedId = relatedName2IdMap.get(relatedName);
                 if (relatedId == null) {
-                    throw new ServiceException(400, "未找到【启用状态】的关联网格类型：" + vo.getRelatedName());
+                    throw new ServiceException(400, "未找到【启用状态】的关联网格类型：" + relatedName);
                 }
+
+                // 手动构建VO
+                ObjectSaveReqVO vo = new ObjectSaveReqVO();
+                vo.setName(name);
+                vo.setCode(code);
+                vo.setAreaName(areaName);
+                vo.setObjectTypeName(objectTypeName);
+                vo.setManagerName(managerName);
+                vo.setManagerPhone(managerPhone);
+                vo.setRelatedName(relatedName);
+                vo.setStatusId(statusId);
+                // 设置映射后的ID
+                vo.setManagerId(managerId);
+                vo.setAreaCode(areaCode);
+                vo.setObjectTypeId(typeId);
                 vo.setRelatedId(relatedId);
 
-                validVOList.add(vo); // 只有通过所有映射的行才加入有效列表
-
+                validVOList.add(vo);
             } catch (Exception e) {
                 throw new ServiceException(400, "第" + rowNum + "行导入失败：" + e.getMessage());
             }
@@ -209,31 +229,67 @@ public class ObjectController {
         objectService.importObjects(validVOList);
         return success(validVOList.size());
     }
+
 //@PostMapping("/import")
 //@Operation(summary = "批量导入评价对象")
 //public CommonResult<Integer> importObjects(@RequestParam("file") MultipartFile file) throws IOException {
-//    // ===== 终极验证：读取Excel原始单元格数据（不映射VO）=====
-//    List<Map<Integer, String>> rawExcelData;
-//    try (InputStream is = file.getInputStream()) {
-//        rawExcelData = EasyExcel.read(is)
-//                .headRowNumber(1) // 表头行=1，数据行从2开始
+//    List<SimpleImportVO> importList;
+//    try (InputStream inputStream = file.getInputStream()) {
+//        importList = EasyExcel.read(inputStream)
+//                .head(SimpleImportVO.class)
+//                .headRowNumber(1)
 //                .sheet()
-//                .doReadSync(); // 读取原始行：key=列索引（0/1/2...），value=单元格值
+//                .doReadSync();
 //    }
-//
-//    // 打印原始单元格数据（必看！）
-//    log.info("Excel原始行数：{}", CollUtil.isEmpty(rawExcelData) ? 0 : rawExcelData.size());
-//    if (!CollUtil.isEmpty(rawExcelData)) {
-//        for (int i = 0; i < rawExcelData.size(); i++) {
-//            Map<Integer, String> row = rawExcelData.get(i);
-//            log.info("第{}行原始单元格数据：列0={}, 列1={}, 列2={}, 列3={}, 列4={}",
-//                    i+2, row.get(0), row.get(1), row.get(2), row.get(3), row.get(4));
+//    List<SimpleImportVO> list = new ArrayList<>();
+//    EasyExcel.read(file.getInputStream(), SimpleImportVO.class, new AnalysisEventListener<SimpleImportVO>() {
+//        @Override
+//        public void invoke(SimpleImportVO data, AnalysisContext context) {
+//            list.add(data);
+//            int row = context.readRowHolder().getRowIndex() + 1;
+//            log.info("第{}行VO: name={}", row, data.getName());
 //        }
+//        @Override
+//        public void doAfterAllAnalysed(AnalysisContext context) {
+//            log.info("解析完成");
+//        }
+//        @Override
+//        public void onException(Exception exception, AnalysisContext context) throws Exception {
+//            log.error("解析异常", exception);
+//            // 不抛出，继续观察
+//        }
+//    }).headRowNumber(1).sheet().doRead();
+//    log.info("读取到 {} 行", list.size());
+//    log.info("SimpleImportVO读取行数：{}", importList.size());
+//    for (int i = 0; i < importList.size(); i++) {
+//        SimpleImportVO vo = importList.get(i);
+//        log.info("第{}行：name={}, code={}, areaName={}, objectTypeName={}, managerName={}, managerPhone={}, relatedName={}, statusId={}",
+//                i+2, vo.getName(), vo.getCode(), vo.getAreaName(), vo.getObjectTypeName(),
+//                vo.getManagerName(), vo.getManagerPhone(), vo.getRelatedName(), vo.getStatusId());
 //    }
-//
-//    // 此时不用管VO，先看日志：如果列0/1有值（如“你好”/“dc”），说明Excel能读到数据；如果还是null，说明Excel文件有问题
-//    return success(rawExcelData.size());
+//    return success(importList.size());
 //}
+//    @PostMapping("/import")
+//    @Operation(summary = "批量导入评价对象")
+//public CommonResult<Integer> importObjects(@RequestParam("file") MultipartFile file) throws IOException {
+//    // === 临时测试：读取原始单元格数据 ===
+//    List<Map<Integer, String>> rawDataList;
+//    try (InputStream is = file.getInputStream()) {
+//        rawDataList = EasyExcel.read(is)
+//                .headRowNumber(1)   // 跳过表头
+//                .sheet()
+//                .doReadSync();
+//    }
+//    log.info("原始数据行数：{}", rawDataList.size());
+//    for (int i = 0; i < rawDataList.size(); i++) {
+//        Map<Integer, String> row = rawDataList.get(i);
+//        log.info("第{}行原始数据：列0={}, 列1={}, 列2={}, 列3={}, 列4={}, 列5={}, 列6={}, 列7={}",
+//                i+2, row.get(0), row.get(1), row.get(2), row.get(3),
+//                row.get(4), row.get(5), row.get(6), row.get(7));
+//    }
+//    return success(rawDataList.size()); // 先返回行数，观察日志
+//}
+
     @GetMapping("/evalpage")
     @Operation(summary = "分页查询对象列表", description = "支持分页查询对象信息，包含关联数据")
     public PageResult<ObjectRespVO> pageJoinQuery(@Valid ObjectPageReqVO pageReqVO) {
