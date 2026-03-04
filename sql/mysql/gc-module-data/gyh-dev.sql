@@ -2,7 +2,6 @@
 CREATE TABLE ` gc_event_type_management ` (
     -- 主键
                                             ` id ` BIGINT NOT NULL AUTO_INCREMENT COMMENT ''主键ID'',
-
     -- 业务字段
                                             ` event_type_id ` VARCHAR(32) COMMENT ''事件类型ID，唯一编码，采用UUID'',
                                             ` event_big_code ` VARCHAR(2) COMMENT ''事件大类代码，01-99'',

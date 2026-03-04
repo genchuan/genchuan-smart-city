@@ -23,7 +23,7 @@ BuildAndPush:
     - echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
     - |
       # 遍历所有模块并构建 Docker 镜像
-      for module in "yudao-gateway" "yudao-module-system-server" "yudao-module-infra-server" "yudao-module-bpm-server"   "gc-module-datacenter-server" "gc-module-data-server" "gc-module-industry-server" "gc-module-park-server" "msm-environmental-health-server" "msm-municipal-facility-server"  ; do
+      for module in "yudao-gateway" "yudao-module-system-server" "yudao-module-infra-server" "yudao-module-bpm-server" "gc-module-datacenter-server" "gc-module-data-server" "gc-module-industry-server" "gc-module-park-server" "msm-environmental-health-server" "msm-municipal-facility-server" "gc-module-evaluate-server"; do
         case $module in
           # 宇道四个基础服务
           "yudao-gateway") jar_path="yudao-gateway" ;;
@@ -38,6 +38,8 @@ BuildAndPush:
           # gc新服务
           "msm-environmental-health-server") jar_path="msm-environmental-health/msm-environmental-health-server" ;;
           "msm-municipal-facility-server") jar_path="msm-municipal-facility/msm-municipal-facility-server" ;;
+          "gc-module-evaluate-server") jar_path="gc-module-evaluate/gc-module-evaluate-server" ;;
+     
         esac
         docker build \
           --build-arg MODULE_NAME="$module" \

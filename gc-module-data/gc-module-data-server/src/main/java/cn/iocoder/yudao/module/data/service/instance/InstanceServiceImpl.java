@@ -78,7 +78,7 @@ public class InstanceServiceImpl implements InstanceService {
 
     @Override
     public PageResult<InstanceDO> getInstancePage(InstancePageReqVO pageReqVO) {
-        return instanceMapper.selectPage(pageReqVO);
+        return instanceMapper.selectPageWithCategory(pageReqVO, categoryService);
     }
 
     @Override
@@ -101,7 +101,7 @@ public class InstanceServiceImpl implements InstanceService {
 
         // 3. 查询该分类下的所有实例
         return instanceMapper.selectList(new LambdaQueryWrapperX<InstanceDO>()
-                .eq(InstanceDO::getCategoryId, categoryId));
+                .eq(InstanceDO::getParentCategoryId, categoryId));
     }
 
     @Override
@@ -127,7 +127,7 @@ public class InstanceServiceImpl implements InstanceService {
                 // 3.1 数据转换与校验
                 InstanceSaveReqVO saveReqVO = BeanUtils.toBean(importVO, InstanceSaveReqVO.class);
                 // 此处可以调用自定义校验，例如名称、唯一编码等非空校验
-                if (saveReqVO.getName() == null || saveReqVO.getName().trim().isEmpty()) {
+                if (saveReqVO.getPartName() == null || saveReqVO.getPartName().trim().isEmpty()) {
                     throw new RuntimeException("部件名称不能为空");
                 }
                 // 检查唯一标识码是否已存在（假设业务要求uniqueCode唯一）

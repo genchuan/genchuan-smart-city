@@ -7,7 +7,7 @@ import lombok.Data;
 public class InstanceImportVO {
 
     @ExcelProperty("部件名称")
-    private String name;
+    private String partName;
 
     @ExcelProperty("唯一编码")
     private String uniqueCode;
