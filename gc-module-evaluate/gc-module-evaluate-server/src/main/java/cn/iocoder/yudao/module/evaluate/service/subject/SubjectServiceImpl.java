@@ -9,9 +9,7 @@ import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.subject.vo.*
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.subject.SubjectDO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.subjecttype.SubjectTypeDO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.user.UserDO;
-import cn.iocoder.yudao.module.evaluate.dal.mysql.status.StatusMapper;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.subject.SubjectMapper;
-import cn.iocoder.yudao.module.evaluate.dal.mysql.subjectmember.SubjectMemberMapper;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.subjecttype.SubjectTypeMapper;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.user.UserMapper;
 import com.alibaba.excel.EasyExcel;
@@ -39,8 +37,8 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Resource
     private SubjectMapper subjectMapper;
-    @Resource
-    private SubjectMemberMapper subjectMemberMapper;
+//    @Resource
+//    private SubjectMemberMapper subjectMemberMapper;
     @Override
     public Long createSubject(SubjectSaveReqVO createReqVO) {
         // 插入
@@ -155,11 +153,11 @@ public class SubjectServiceImpl implements SubjectService {
 
 
     // 辅助判断方法
-    private boolean isManualSubject(SubjectRespVO vo) {
-        // 根据你的业务判断，比如通过 subjectTypeName 或者 subjectTypeId
-        // 示例：return "人工主体".equals(vo.getSubjectTypeName());
-        return true; // 这里先默认都返回，你自己加判断
-    }
+//    private boolean isManualSubject(SubjectRespVO vo) {
+//        // 根据你的业务判断，比如通过 subjectTypeName 或者 subjectTypeId
+//        // 示例：return "人工主体".equals(vo.getSubjectTypeName());
+//        return true; // 这里先默认都返回，你自己加判断
+//    }
 
 
 
@@ -202,8 +200,8 @@ public class SubjectServiceImpl implements SubjectService {
     private UserMapper sysUserMapper;
     @Resource
     private SubjectTypeMapper sysSubjectTypeMapper;
-    @Resource
-    private StatusMapper sysStatusMapper;
+//    @Resource
+//    private StatusMapper sysStatusMapper;
 
     @Override
     public List<SubjectImportRespVO> importSubjectExcel(MultipartFile file) {
@@ -288,7 +286,7 @@ public class SubjectServiceImpl implements SubjectService {
             }
 
             // --- 3.3 判定结果 ---
-            if (errorMsg.length() > 0) {
+            if (!errorMsg.isEmpty()) {
                 // 失败
                 resultList.add(new SubjectImportRespVO(lineNo, excelVO.getName(), false, errorMsg.toString()));
             } else {

@@ -134,12 +134,12 @@ public interface SubjectMapper extends BaseMapperX<SubjectDO> {
         return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
     }
     // 辅助方法：判断是否为人工主体
-    private boolean isManualSubject(SubjectRespVO vo) {
-        // 这里根据你的实际业务逻辑判断
-        // 比如：return "MANUAL".equals(vo.getSubjectTypeCode());
-        // 或者简单点：只要 memberCount > 0 就显示
-        return vo.getMemberCount() != null && vo.getMemberCount() > 0;
-    }
+//    private boolean isManualSubject(SubjectRespVO vo) {
+//        // 这里根据你的实际业务逻辑判断
+//        // 比如：return "MANUAL".equals(vo.getSubjectTypeCode());
+//        // 或者简单点：只要 memberCount > 0 就显示
+//        return vo.getMemberCount() != null && vo.getMemberCount() > 0;
+//    }
     // ========== 1. 卡片核心数据（总主体数、人工/系统主体数、启用主体数） ==========
     @Select("SELECT " +
             "COUNT(*) AS totalCount, " +
