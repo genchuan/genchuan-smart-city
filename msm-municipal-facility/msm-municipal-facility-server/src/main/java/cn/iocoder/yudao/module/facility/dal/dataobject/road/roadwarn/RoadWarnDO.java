@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.facility.dal.dataobject.road.warn;
+package cn.iocoder.yudao.module.facility.dal.dataobject.road.roadwarn;
 
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 import com.baomidou.mybatisplus.annotation.KeySequence;
@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WarnDO extends BaseDO {
+public class RoadWarnDO extends BaseDO {
 
     /**
      * [主键ID] 主键，预警记录唯一标识

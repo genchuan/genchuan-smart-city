@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.facility.service.road.roadconfig;
 import java.util.*;
 
 import cn.iocoder.yudao.module.facility.controller.admin.road.roadconfig.vo.RoadConfigPageReqVO;
+import cn.iocoder.yudao.module.facility.controller.admin.road.roadconfig.vo.RoadConfigRespVO;
 import cn.iocoder.yudao.module.facility.controller.admin.road.roadconfig.vo.RoadConfigSaveReqVO;
 import cn.iocoder.yudao.module.facility.controller.admin.road.roadconfig.vo.RoadConfigUpdateReqVO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.road.roadconfig.RoadConfigDO;
@@ -46,6 +47,14 @@ public interface RoadConfigService {
      * @return 道路监测配置
      */
     RoadConfigDO getRoadConfig(Long id);
+
+//    /**
+//     * 获得道路监测配置分页
+//     *
+//     * @param pageReqVO 分页查询
+//     * @return 道路监测配置分页
+//     */
+//    PageResult<RoadConfigRespVO> getRoadConfigPage(RoadConfigPageReqVO pageReqVO);
 
     /**
      * 获得道路监测配置分页

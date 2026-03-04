@@ -54,4 +54,6 @@ public interface MonitorService {
     PageResult<MonitorDO> getMonitorPage(MonitorPageReqVO pageReqVO);
 
     PageResult<RealtimePageRespVO> getRealtimePage(RealtimePageReqVO reqVO);
+
+    int batchUpdateMonitorStatus(BatchUpdateMonitorStatusReqVO reqVO);
 }

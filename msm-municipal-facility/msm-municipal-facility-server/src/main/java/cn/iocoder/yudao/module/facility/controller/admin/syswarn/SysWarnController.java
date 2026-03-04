@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.facility.controller.admin.syswarn;
 import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnPageReqVO;
 import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnRespVO;
 import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnSaveReqVO;
+import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnUpdateReqVO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.syswarn.SysWarnDO;
 import cn.iocoder.yudao.module.facility.service.syswarn.SysWarnService;
 import org.springframework.web.bind.annotation.*;
@@ -51,7 +52,7 @@ public class SysWarnController {
     @PutMapping("/update")
     @Operation(summary = "更新通用预警")
     @PreAuthorize("@ss.hasPermission('facility:sys-warn:update')")
-    public CommonResult<Boolean> updateSysWarn(@Valid @RequestBody SysWarnSaveReqVO updateReqVO) {
+    public CommonResult<Boolean> updateSysWarn(@Valid @RequestBody SysWarnUpdateReqVO updateReqVO) {
         sysWarnService.updateSysWarn(updateReqVO);
         return success(true);
     }

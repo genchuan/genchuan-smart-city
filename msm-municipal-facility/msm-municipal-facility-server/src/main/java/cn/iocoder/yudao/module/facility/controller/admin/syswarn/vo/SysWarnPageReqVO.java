@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,18 +16,30 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class SysWarnPageReqVO extends PageParam {
-
-    @Schema(description = "[预警编号] 预警唯一编号")
-    private String warnNo;
+//    @Schema(description = "[所属设施类型] 如：道路", example = "道路")
+    @Schema(hidden = true)
+    private String facilityType;
 
     @Schema(description = "[设施ID] 关联设施表ID", example = "29359")
     private Long facilityId;
 
+    @Schema(description = "[设施唯一code] 设施唯一编码")
+    private String facilityCode;
+
+    @Schema(description = "[预警编号] 预警唯一编号")
+    private String warnNo;
+
+
+
     @Schema(description = "[设施名称] 设施名称", example = "张三")
     private String facilityName;
 
-    @Schema(description = "[设施唯一code] 设施唯一编码")
-    private String facilityCode;
+
+
+
+
+
+
 
     @Schema(description = "[工单ID] 关联工单ID", example = "10560")
     private Long workOrderId;
@@ -52,13 +65,12 @@ public class SysWarnPageReqVO extends PageParam {
     @Schema(description = "[派单状态] 如：未派单/已派单", example = "2")
     private String assignStatus;
 
-    @Schema(description = "[所属设施类型] 如：道路", example = "2")
-    private String facilityType;
 
-    @Schema(description = "[预警类型] 如：坑洼数量超标/裂缝长度超标/路面温度超标/交通流量超标", example = "1")
+
+    @Schema(description = "[预警类型] 如：坑洼数量超标/裂缝长度超标/路面温度超标/交通流量超标", example = "坑洼数量超标")
     private String type;
 
-    @Schema(description = "[预警方式] 如：自动监测/人工上报", example = "2")
+    @Schema(description = "[预警方式] 如：自动监测/人工上报", example = "自动监测")
     private String wayType;
 
     @Schema(description = "[预警等级] 如：1-一般/2-较重/3-严重/4-紧急")

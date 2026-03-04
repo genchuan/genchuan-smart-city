@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.facility.controller.admin.road.warn.vo;
+package cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
@@ -7,9 +7,9 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 预警新增/修改 Request VO")
+@Schema(description = "管理后台 - 通用预警新增/修改 Request VO")
 @Data
-public class WarnSaveReqVO {
+public class SysWarnUpdateReqVO {
 
     @Schema(description = "[主键ID] 主键，预警记录唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "5795")
     private Long id;

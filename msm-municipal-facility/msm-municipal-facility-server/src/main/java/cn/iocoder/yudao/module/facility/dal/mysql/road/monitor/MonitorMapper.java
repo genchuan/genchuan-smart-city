@@ -35,7 +35,7 @@ public interface MonitorMapper extends BaseMapperX<MonitorDO> {
                 .eqIfPresent(MonitorDO::getTrafficFlowThreshold, reqVO.getTrafficFlowThreshold())
                 .eqIfPresent(MonitorDO::getCollectFrequencySnapshot, reqVO.getCollectFrequencySnapshot())
                 .eqIfPresent(MonitorDO::getIsWarning, reqVO.getIsWarning())
-                .eqIfPresent(MonitorDO::getWarningId, reqVO.getWarningId())
+                .eqIfPresent(MonitorDO::getWarningIdListStr, reqVO.getWarningIdListStr())
                 .eqIfPresent(MonitorDO::getMonitorStatus, reqVO.getMonitorStatus())
                 .eqIfPresent(MonitorDO::getStaffId, reqVO.getStaffId())
                 .likeIfPresent(MonitorDO::getStaffName, reqVO.getStaffName())
@@ -53,4 +53,8 @@ public interface MonitorMapper extends BaseMapperX<MonitorDO> {
     List<RealtimePageRespVO> getRealtimePage(RealtimePageReqVO reqVO);
 
     long countRealtimePage(RealtimePageReqVO reqVO);
+
+    int updateAllMonitorStatus(String monitorStatus);
+
+    int batchUpdateMonitorStatus(List<Long> roadIdList, String monitorStatus);
 }
