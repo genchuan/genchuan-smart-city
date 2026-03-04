@@ -35,7 +35,7 @@
         <module>gc-module-evaluate</module>
         <module>msm-environmental-health</module>
         <module>msm-municipal-facility</module>
-        
+
     </modules>
 
     <name>${project.artifactId}</name>

@@ -134,6 +134,11 @@ public class ObjectController {
                 .collect(Collectors.toMap(SelectOptionRespVO::getLabel,
                         option -> option.getValue().toString(), (oldVal, newVal) -> oldVal));
 
+//        Map<String, String> userName1IdMap = userOptions.stream()
+//                .collect(Collectors.toMap(SelectOptionRespVO::getLabel,
+//                        option -> option.getValue().toString(), (oldVal, newVal) -> oldVal));
+
+
         List<SelectOptionRespVO> areaOptions = areaService.getAreaSimpleList();
         Map<String, String> areaName2CodeMap = areaOptions.stream()
                 .collect(Collectors.toMap(SelectOptionRespVO::getLabel,

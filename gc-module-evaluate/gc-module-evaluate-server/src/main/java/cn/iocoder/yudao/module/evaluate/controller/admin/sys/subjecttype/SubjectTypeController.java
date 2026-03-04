@@ -9,6 +9,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.evaluate.controller.admin.sys.subjecttype.vo.SubjectTypePageReqVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.sys.subjecttype.vo.SubjectTypeRespVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.sys.subjecttype.vo.SubjectTypeSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.common.vo.SelectOptionRespVO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.subjecttype.SubjectTypeDO;
 import cn.iocoder.yudao.module.evaluate.service.subjecttype.SubjectTypeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -89,5 +90,9 @@ public class SubjectTypeController {
         ExcelUtils.write(response, "主体类型字典.xls", "数据", SubjectTypeRespVO.class,
                         BeanUtils.toBean(list, SubjectTypeRespVO.class));
     }
-
+    @GetMapping("/simple-list")
+    @Operation(summary = "获取所属区域下拉列表***")
+    public CommonResult<List<SelectOptionRespVO>> getSubjectTypeSimpleList() {
+        return success(subjectTypeService.getSubjectTypeSimpleList());
+    }
 }
