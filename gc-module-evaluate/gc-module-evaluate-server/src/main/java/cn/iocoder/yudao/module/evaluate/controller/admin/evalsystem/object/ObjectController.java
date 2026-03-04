@@ -164,7 +164,7 @@ public class ObjectController {
             String managerPhone = row.get(5);
             String relatedName = row.get(6);
             String statusId = row.get(7);
-
+            String createUserName = row.get(8);
             // 过滤空行
             if (StringUtils.isBlank(name) || StringUtils.isBlank(code)) {
                 log.warn("第{}行：对象名称/编码为空，跳过", rowNum);
@@ -199,7 +199,10 @@ public class ObjectController {
                 if (relatedId == null) {
                     throw new ServiceException(400, "未找到【启用状态】的关联网格类型：" + relatedName);
                 }
-
+                String createUserId = userName2IdMap.get(createUserName);
+                if (createUserId == null) {
+                    throw new ServiceException(400, "未找到【启用状态】的创建人：" + createUserName);
+                }
                 // 手动构建VO
                 ObjectSaveReqVO vo = new ObjectSaveReqVO();
                 vo.setName(name);
@@ -210,11 +213,13 @@ public class ObjectController {
                 vo.setManagerPhone(managerPhone);
                 vo.setRelatedName(relatedName);
                 vo.setStatusId(statusId);
+                vo.setCreateUserName(createUserName);
                 // 设置映射后的ID
                 vo.setManagerId(managerId);
                 vo.setAreaCode(areaCode);
                 vo.setObjectTypeId(typeId);
                 vo.setRelatedId(relatedId);
+                vo.setCreateBy(createUserId);
 
                 validVOList.add(vo);
             } catch (Exception e) {
