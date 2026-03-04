@@ -80,4 +80,5 @@ sessionStore
 **/application-*.properties
 **/application-*.yml
 **/application-*.yaml
+**/application*.yaml
 
