@@ -1,13 +1,12 @@
 package cn.iocoder.yudao.module.facility.service.road.roadwarn;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.facility.controller.admin.road.roadwarn.vo.RoadWarnPageReqVO;
-import cn.iocoder.yudao.module.facility.controller.admin.road.roadwarn.vo.RoadWarnPageRespVO;
-import cn.iocoder.yudao.module.facility.controller.admin.road.roadwarn.vo.WarnPageReqVO;
-import cn.iocoder.yudao.module.facility.controller.admin.road.roadwarn.vo.WarnSaveReqVO;
+import cn.iocoder.yudao.module.facility.controller.admin.road.roadwarn.vo.*;
 import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnSaveReqVO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.road.roadwarn.RoadWarnDO;
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 预警 Service 接口
@@ -22,7 +21,7 @@ public interface RoadWarnService {
      * @param createReqVO 创建信息
      * @return 编号
      */
-    Long createWarn(@Valid SysWarnSaveReqVO createReqVO);
+    List<Long> createWarn(@Valid RoadWarnSaveReqVO createReqVO);
 
     /**
      * 更新预警

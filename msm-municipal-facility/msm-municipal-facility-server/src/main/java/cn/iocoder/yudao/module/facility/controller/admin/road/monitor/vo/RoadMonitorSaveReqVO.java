@@ -1,24 +1,22 @@
 package cn.iocoder.yudao.module.facility.controller.admin.road.monitor.vo;
 
-import com.alibaba.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-
+import lombok.*;
+import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 道路监测新增/修改 Request VO")
 @Data
-public class MonitorUpdateReqVO {
+public class RoadMonitorSaveReqVO {
 
-    @Schema(description = "[主键ID] 主键，道路监测记录唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    private Long id;
+//    @Schema(description = "[主键ID] 主键，道路监测记录唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "25706")
+//    private Long id;
 
 //    @Schema(description = "[监测编码] UUID格式", requiredMode = Schema.RequiredMode.REQUIRED)
 //    @NotEmpty(message = "[监测编码] UUID格式不能为空")
-//    @Schema(hidden = true)
-//    private String monitorCode;
+    @Schema(hidden = true)
+    private String monitorCode;
 
     @Schema(description = "[道路ID] 关联road_facility.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @NotNull(message = "[道路ID] 关联road_facility.id不能为空")
@@ -32,16 +30,16 @@ public class MonitorUpdateReqVO {
     @NotNull(message = "[配置ID] 关联road_config.id不能为空")
     private Long configId;
 
-    @Schema(description = "[坑洼数量] 坑洼数量")
+    @Schema(description = "[坑洼数量] 坑洼数量",example = "100")
     private BigDecimal potholeNum;
 
-    @Schema(description = "[裂缝长度] 裂缝长度，单位：米")
+    @Schema(description = "[裂缝长度] 裂缝长度，单位：米",example = "100")
     private BigDecimal crackLength;
 
-    @Schema(description = "[路面温度] 路面温度，单位：摄氏度")
+    @Schema(description = "[路面温度] 路面温度，单位：摄氏度",example = "70")
     private BigDecimal roadTemp;
 
-    @Schema(description = "[交通流量] 交通流量，单位：辆/小时")
+    @Schema(description = "[交通流量] 交通流量，单位：辆/小时",example = "100")
     private BigDecimal trafficFlow;
 
     @Schema(hidden = true)
@@ -65,15 +63,16 @@ public class MonitorUpdateReqVO {
     private BigDecimal collectFrequencySnapshot;
 
     @Schema(hidden = true)
-//    @Schema(description = "[是否预警] 如:0-否/1-是")
+//    @Schema(description = "[是否预警] 如:0-不可触发预警/1-可触发预警但还没触发/2-已预警")
     private Integer isWarning;
 
-    @Schema(description = "[预警ID列表字符串]", example = "1,2")
+//    @Schema(description = "[预警ID列表字符串]", example = "1,2")
 //    @ExcelProperty("[预警ID列表字符串]")
+    @Schema(hidden = true)
     private String warningIdListStr;
 
-//    @Schema(hidden = true)
-    @Schema(description = "[监测状态] 如:运行中/已停止", requiredMode = Schema.RequiredMode.REQUIRED, example = "运行中")
+    @Schema(hidden = true)
+//    @Schema(description = "[监测状态] 如:运行中/已停止", requiredMode = Schema.RequiredMode.REQUIRED, example = "运行中")
 //    @NotEmpty(message = "[监测状态] 如:运行中/已停止不能为空")
     private String monitorStatus;
 

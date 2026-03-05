@@ -1,19 +1,16 @@
-package cn.iocoder.yudao.module.facility.service.road.monitor;
-
-import java.util.*;
+package cn.iocoder.yudao.module.facility.service.road.roadmonitor;
 
 import cn.iocoder.yudao.module.facility.controller.admin.road.monitor.vo.*;
-import cn.iocoder.yudao.module.facility.dal.dataobject.road.monitor.MonitorDO;
+import cn.iocoder.yudao.module.facility.dal.dataobject.road.roadmonitor.RoadMonitorDO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 道路监测 Service 接口
  *
  * @author 亘川智城
  */
-public interface MonitorService {
+public interface RoadMonitorService {
 
     /**
      * 创建道路监测
@@ -21,14 +18,14 @@ public interface MonitorService {
      * @param createReqVO 创建信息
      * @return 编号
      */
-    Long createMonitor(@Valid MonitorSaveReqVO createReqVO);
+    Long createMonitor(@Valid RoadMonitorSaveReqVO createReqVO);
 
     /**
      * 更新道路监测
      *
      * @param updateReqVO 更新信息
      */
-    void updateMonitor(@Valid MonitorUpdateReqVO updateReqVO);
+    void updateMonitor(@Valid RoadMonitorUpdateReqVO updateReqVO);
 
     /**
      * 删除道路监测
@@ -43,7 +40,7 @@ public interface MonitorService {
      * @param id 编号
      * @return 道路监测
      */
-    MonitorDO getMonitor(Long id);
+    RoadMonitorDO getMonitor(Long id);
 
     /**
      * 获得道路监测分页
@@ -51,9 +48,9 @@ public interface MonitorService {
      * @param pageReqVO 分页查询
      * @return 道路监测分页
      */
-    PageResult<MonitorDO> getMonitorPage(MonitorPageReqVO pageReqVO);
+    PageResult<RoadMonitorDO> getMonitorPage(RoadMonitorPageReqVO pageReqVO);
 
     PageResult<RealtimePageRespVO> getRealtimePage(RealtimePageReqVO reqVO);
 
-    int batchUpdateMonitorStatus(BatchUpdateMonitorStatusReqVO reqVO);
+    int batchUpdateMonitorStatus(BatchUpdateRoadMonitorStatusReqVO reqVO);
 }

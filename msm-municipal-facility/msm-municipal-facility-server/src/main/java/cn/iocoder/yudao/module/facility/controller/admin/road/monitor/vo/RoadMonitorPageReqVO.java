@@ -1,7 +1,6 @@
 package cn.iocoder.yudao.module.facility.controller.admin.road.monitor.vo;
 
 import lombok.*;
-import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import java.math.BigDecimal;
@@ -14,7 +13,7 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class MonitorPageReqVO extends PageParam {
+public class RoadMonitorPageReqVO extends PageParam {
 
     @Schema(description = "[监测编码] UUID格式")
     private String monitorCode;
@@ -55,7 +54,7 @@ public class MonitorPageReqVO extends PageParam {
     @Schema(description = "[采集频率快照] 采集时的数据采集频率，单位：分钟")
     private BigDecimal collectFrequencySnapshot;
 
-    @Schema(description = "[是否预警] 如:0-否/1-是")
+    @Schema(description = "[是否预警] 如:0-不可触发预警/1-可触发预警但还没触发/2-已预警")
     private Integer isWarning;
 
     @Schema(description = "[预警ID列表字符串]", example = "1,2")

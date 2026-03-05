@@ -3,7 +3,6 @@ package cn.iocoder.yudao.module.facility.controller.admin.road.monitor.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.List;
 @Data
 //@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class BatchUpdateMonitorStatusReqVO {
+public class BatchUpdateRoadMonitorStatusReqVO {
 
     @Schema(description = "[道路ID列表]，为null表示修改全部", example = "[1]")
     private List<Long> roadIdList;

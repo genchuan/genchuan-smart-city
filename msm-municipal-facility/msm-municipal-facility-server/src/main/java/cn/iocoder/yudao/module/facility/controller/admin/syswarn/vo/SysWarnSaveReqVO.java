@@ -20,15 +20,18 @@ public class SysWarnSaveReqVO {
     @Schema(hidden = true)
     private String warnNo;
 
-    @Schema(description = "[设施ID] 关联设施表ID", example = "29359")
+    @Schema(description = "[设施ID] 关联设施表ID", example = "1")
+    @NotNull(message = "[设施ID]不能为空")
     private Long facilityId;
 
-//    @Schema(description = "[设施名称] 设施名称", example = "张三")
-    @Schema(hidden = true)
+    @Schema(description = "[设施名称] 设施名称", example = "五四路")
+    @NotEmpty(message = "[设施名称]不能为空")
+//    @Schema(hidden = true)
     private String facilityName;
 
-//    @Schema(description = "[设施唯一code] 设施唯一编码")
-    @Schema(hidden = true)
+    @Schema(description = "[设施唯一code] 设施唯一编码",example = "FA00245")
+    @NotEmpty(message = "[设施唯一code]不能为空")
+//    @Schema(hidden = true)
     private String facilityCode;
 
 //    @Schema(description = "[工单ID] 关联工单ID", example = "10560")
@@ -37,22 +40,26 @@ public class SysWarnSaveReqVO {
 //    @Schema(description = "[工单唯一code] 工单唯一编码")
 //    private String workOrderCode;
 
-    @Schema(description = "[监测设备ID] 关联监测设备ID", example = "16520")
+    @Schema(description = "[监测设备ID] 关联监测设备ID", example = "1")
+    @NotNull(message = "[监测设备ID]不能为空")
     private Long deviceId;
 
-//    @Schema(description = "[监测设备唯一code] 监测设备唯一编码")
-    @Schema(hidden = true)
+    @Schema(description = "[监测设备唯一code] 监测设备唯一编码",example = "DEV0752")
+    @NotEmpty(message = "[监测设备唯一code]不能为空")
+//    @Schema(hidden = true)
     private String deviceCode;
 
-    @Schema(description = "[监测实时数据ID] 关联监测实时数据ID", example = "31788")
+    @Schema(description = "[监测实时数据ID] 关联监测实时数据ID", example = "1")
+    @NotNull(message = "[监测实时数据ID]不能为空")
     private Long monitorId;
 
-//    @Schema(description = "[监测实时数据唯一code] 监测实时数据唯一编码")
-    @Schema(hidden = true)
+    @Schema(description = "[监测实时数据唯一code] 监测实时数据唯一编码",example = "MO25568")
+    @NotEmpty(message = "[监测实时数据唯一code]不能为空")
+//    @Schema(hidden = true)
     private String monitorCode;
 
     @Schema(hidden = true)
-//    @Schema(description = "[预警状态] 如：待处置/有效待派单/已派单/超时/无效已归档", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+//    @Schema(description = "[预警状态] 如：待处置/有效待派单/已派单/超时/无效已归档", requiredMode = Schema.RequiredMode.REQUIRED, example = "待处置")
 //    @NotEmpty(message = "[预警状态] 如：待处置/有效待派单/已派单/超时/无效已归档不能为空")
     private String status;
 
@@ -61,21 +68,22 @@ public class SysWarnSaveReqVO {
 //    @NotEmpty(message = "[派单状态] 如：未派单/已派单不能为空")
     private String assignStatus;
 
-//    @Schema(description = "[所属设施类型] 如：道路", example = "道路")
-    @Schema(hidden = true)
+    @Schema(description = "[所属设施类型] 如：道路", example = "道路")
+    @NotEmpty(message = "[所属设施类型]不能为空")
+//    @Schema(hidden = true)
     private String facilityType;
 
-    //TODO 这里应该根据监测id自动获取
-//    @Schema(description = "[预警类型] 如：坑洼数量超标/裂缝长度超标/路面温度超标/交通流量超标", example = "坑洼数量超标")
-//    @NotEmpty(message = "[预警类型] 不能为空")
-    @Schema(hidden = true)
+
+    @Schema(description = "[预警类型] 如：坑洼数量超标/裂缝长度超标/路面温度超标/交通流量超标", example = "坑洼数量超标")
+    @NotEmpty(message = "[预警类型] 不能为空")
+//    @Schema(hidden = true)
     private String type;
 
     @Schema(description = "[预警方式] 如：自动监测/人工上报", example = "自动监测")
     @NotEmpty(message = "[预警方式] 不能为空")
     private String wayType;
 
-    @Schema(description = "[预警等级] 如：1-一般/2-较重/3-严重/4-紧急")
+    @Schema(description = "[预警等级] 如：1-一般/2-较重/3-严重/4-紧急",example = "1")
     @NotNull(message = "[预警等级] 不能为空")
     private Integer level;
 
@@ -83,20 +91,23 @@ public class SysWarnSaveReqVO {
     @Schema(hidden = true)
     private LocalDateTime triggerTime;
 
-    @Schema(description = "[预警处置时限] 单位：小时，可小数")
+    @Schema(description = "[预警处置时限] 单位：小时，可小数",example = "10")
     @NotNull(message = "[预警处置时限] 不能为空")
     private BigDecimal dealLimit;
 
-//    @Schema(description = "[超标指标名称] 如坑洼数量、裂缝长度等")
-    @Schema(hidden = true)
+    @Schema(description = "[超标指标名称] 如 坑洼数量、裂缝长度等",example = "坑洼数量")
+    @NotEmpty(message = "[超标指标名称] 不能为空")
+//    @Schema(hidden = true)
     private String overIndex;
 
-//    @Schema(description = "[超标数值] 实际超标的数值")
-    @Schema(hidden = true)
+    @Schema(description = "[超标数值] 实际超标的数值",example = "10")
+    @NotNull(message = "[超标数值] 不能为空")
+//    @Schema(hidden = true)
     private BigDecimal overValue;
 
-//    @Schema(description = "[超标阈值数值] 阈值")
-    @Schema(hidden = true)
+    @Schema(description = "[超标阈值数值] 阈值",example = "15")
+    @NotNull(message = "[超标阈值数值] 不能为空")
+//    @Schema(hidden = true)
     private BigDecimal thresholdValue;
 
 //    @Schema(description = "[确认意见] 人工确认后的描述")

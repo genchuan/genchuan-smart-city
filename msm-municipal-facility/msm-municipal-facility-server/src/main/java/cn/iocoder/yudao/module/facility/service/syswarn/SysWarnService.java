@@ -2,10 +2,7 @@ package cn.iocoder.yudao.module.facility.service.syswarn;
 
 import java.util.*;
 
-import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnPageReqVO;
-import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnRespVO;
-import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnSaveReqVO;
-import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnUpdateReqVO;
+import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.*;
 import cn.iocoder.yudao.module.facility.dal.dataobject.syswarn.SysWarnDO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -56,4 +53,11 @@ public interface SysWarnService {
      */
     PageResult<SysWarnRespVO> getSysWarnPage(SysWarnPageReqVO pageReqVO);
 
+    Integer batchConfirmInvalid(SysWarnBatchConfirmValidReqVO reqVO);
+
+    Integer batchUpdateSysWarn(SysWarnBatchUpdateReqVO reqVO);
+
+    Integer confirmValid(ConfirmValidReqVO reqVO);
+
+    Integer confirmInvalid(ConfirmInvalidReqVO reqVO);
 }

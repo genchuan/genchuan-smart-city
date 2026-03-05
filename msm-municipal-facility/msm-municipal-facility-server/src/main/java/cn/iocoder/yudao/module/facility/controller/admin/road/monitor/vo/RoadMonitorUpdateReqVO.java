@@ -1,25 +1,23 @@
 package cn.iocoder.yudao.module.facility.controller.admin.road.monitor.vo;
 
-import com.alibaba.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import java.util.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
 import java.math.BigDecimal;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 道路监测新增/修改 Request VO")
 @Data
-public class MonitorSaveReqVO {
+public class RoadMonitorUpdateReqVO {
 
-//    @Schema(description = "[主键ID] 主键，道路监测记录唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "25706")
-//    private Long id;
+    @Schema(description = "[主键ID] 主键，道路监测记录唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    private Long id;
 
 //    @Schema(description = "[监测编码] UUID格式", requiredMode = Schema.RequiredMode.REQUIRED)
 //    @NotEmpty(message = "[监测编码] UUID格式不能为空")
-    @Schema(hidden = true)
-    private String monitorCode;
+//    @Schema(hidden = true)
+//    private String monitorCode;
 
     @Schema(description = "[道路ID] 关联road_facility.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @NotNull(message = "[道路ID] 关联road_facility.id不能为空")
@@ -66,15 +64,15 @@ public class MonitorSaveReqVO {
     private BigDecimal collectFrequencySnapshot;
 
     @Schema(hidden = true)
-//    @Schema(description = "[是否预警] 如:0-否/1-是")
+//    @Schema(description = "[是否预警] 如:0-不可触发预警/1-可触发预警但还没触发/2-已预警")
     private Integer isWarning;
 
     @Schema(description = "[预警ID列表字符串]", example = "1,2")
 //    @ExcelProperty("[预警ID列表字符串]")
     private String warningIdListStr;
 
-    @Schema(hidden = true)
-//    @Schema(description = "[监测状态] 如:运行中/已停止", requiredMode = Schema.RequiredMode.REQUIRED, example = "运行中")
+//    @Schema(hidden = true)
+    @Schema(description = "[监测状态] 如:运行中/已停止", requiredMode = Schema.RequiredMode.REQUIRED, example = "运行中")
 //    @NotEmpty(message = "[监测状态] 如:运行中/已停止不能为空")
     private String monitorStatus;
 

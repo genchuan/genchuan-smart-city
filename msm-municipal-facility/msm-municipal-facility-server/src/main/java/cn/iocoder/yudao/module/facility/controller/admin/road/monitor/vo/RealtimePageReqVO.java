@@ -83,7 +83,7 @@ public class RealtimePageReqVO {
     @Schema(description = "[采集频率快照] 采集时的数据采集频率，单位：分钟")
     private BigDecimal collectFrequencySnapshot;
 
-    @Schema(description = "[是否预警] 如:0-否/1-是")
+    @Schema(description = "[是否预警] 如:0-不可触发预警/1-可触发预警但还没触发/2-已预警")
     private Integer isWarning;
 
     @Schema(description = "[预警ID列表字符串]", example = "1,2")

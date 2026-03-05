@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.iocoder.yudao.module.facility.dal.mysql.road.monitor.MonitorMapper">
+<mapper namespace="cn.iocoder.yudao.module.facility.dal.mysql.road.roadmonitor.RoadMonitorMapper">
     <update id="updateAllMonitorStatus">
         UPDATE road_monitor
         SET monitor_status = #{monitorStatus}

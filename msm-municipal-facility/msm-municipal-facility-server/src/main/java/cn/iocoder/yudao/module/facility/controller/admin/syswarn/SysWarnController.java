@@ -1,9 +1,6 @@
 package cn.iocoder.yudao.module.facility.controller.admin.syswarn;
 
-import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnPageReqVO;
-import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnRespVO;
-import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnSaveReqVO;
-import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnUpdateReqVO;
+import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.*;
 import cn.iocoder.yudao.module.facility.dal.dataobject.syswarn.SysWarnDO;
 import cn.iocoder.yudao.module.facility.service.syswarn.SysWarnService;
 import org.springframework.web.bind.annotation.*;
@@ -49,6 +46,38 @@ public class SysWarnController {
         return success(sysWarnService.createSysWarn(createReqVO));
     }
 
+    @PutMapping("/batch-update")
+    @Operation(summary = "批量更新通用预警")
+    @PreAuthorize("@ss.hasPermission('facility:sys-warn:update')")
+    public CommonResult<Integer> batchUpdateSysWarn(
+            @Valid @RequestBody SysWarnBatchUpdateReqVO reqVO) {
+        Integer updateCount = sysWarnService.batchUpdateSysWarn(reqVO);
+        return success(updateCount);
+    }
+    @PutMapping("/batch-confirm-invalid")
+    @Operation(summary = "批量确认无效预警")
+    @PreAuthorize("@ss.hasPermission('facility:sys-warn:update')")
+    public CommonResult<Integer> batchConfirmInvalidSysWarn(
+            @Valid @RequestBody SysWarnBatchConfirmValidReqVO reqVO) {
+        Integer count = sysWarnService.batchConfirmInvalid(reqVO);
+        return success(count);
+    }
+    @PutMapping("/confirm-invalid")
+    @Operation(summary = "标注无效预警")
+    @PreAuthorize("@ss.hasPermission('facility:sys-warn:confirm-invalid')")
+    public CommonResult<Integer> confirmInvalid(@Valid @RequestBody ConfirmInvalidReqVO reqVO) {
+        // 返回修改条数，通常是 1
+        Integer count = sysWarnService.confirmInvalid(reqVO);
+        return success(count);
+    }
+    @PutMapping("/confirm-valid")
+    @Operation(summary = "确认有效预警")
+    @PreAuthorize("@ss.hasPermission('facility:sys-warn:confirm-valid')")
+    public CommonResult<Integer> confirmValid(@Valid @RequestBody ConfirmValidReqVO reqVO) {
+        // 返回修改条数，通常是 1
+        Integer count = sysWarnService.confirmValid(reqVO);
+        return success(count);
+    }
     @PutMapping("/update")
     @Operation(summary = "更新通用预警")
     @PreAuthorize("@ss.hasPermission('facility:sys-warn:update')")

@@ -47,7 +47,7 @@ public class RoadWarnController {
     @PostMapping("/create")
     @Operation(summary = "创建预警")
     @PreAuthorize("@ss.hasPermission('facility:warn:create')")
-    public CommonResult<Long> createWarn(@Valid @RequestBody SysWarnSaveReqVO createReqVO) {
+    public CommonResult<List<Long>> createWarn(@Valid @RequestBody RoadWarnSaveReqVO createReqVO) {
         return success(roadWarnService.createWarn(createReqVO));
     }
 
@@ -77,13 +77,13 @@ public class RoadWarnController {
         return success(BeanUtils.toBean(warn, WarnRespVO.class));
     }
 
-    @GetMapping("/page")
-    @Operation(summary = "获得预警分页")
-    @PreAuthorize("@ss.hasPermission('facility:warn:query')")
-    public CommonResult<PageResult<WarnRespVO>> getWarnPage(@Valid WarnPageReqVO pageReqVO) {
-        PageResult<RoadWarnDO> pageResult = roadWarnService.getWarnPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, WarnRespVO.class));
-    }
+//    @GetMapping("/page")
+//    @Operation(summary = "获得预警分页")
+//    @PreAuthorize("@ss.hasPermission('facility:warn:query')")
+//    public CommonResult<PageResult<WarnRespVO>> getWarnPage(@Valid WarnPageReqVO pageReqVO) {
+//        PageResult<RoadWarnDO> pageResult = roadWarnService.getWarnPage(pageReqVO);
+//        return success(BeanUtils.toBean(pageResult, WarnRespVO.class));
+//    }
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出预警 Excel")

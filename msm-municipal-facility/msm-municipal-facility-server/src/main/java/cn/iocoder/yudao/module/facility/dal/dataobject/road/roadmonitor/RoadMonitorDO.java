@@ -1,22 +1,10 @@
-package cn.iocoder.yudao.module.facility.dal.dataobject.road.monitor;
+package cn.iocoder.yudao.module.facility.dal.dataobject.road.roadmonitor;
 
-import com.alibaba.excel.annotation.ExcelProperty;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import java.util.*;
-import java.math.BigDecimal;
-import java.math.BigDecimal;
-import java.math.BigDecimal;
-import java.math.BigDecimal;
-import java.math.BigDecimal;
-import java.math.BigDecimal;
-import java.math.BigDecimal;
-import java.math.BigDecimal;
-import java.math.BigDecimal;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.LocalDateTime;
-import java.time.LocalDateTime;
+
 import com.baomidou.mybatisplus.annotation.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 
@@ -33,7 +21,7 @@ import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MonitorDO extends BaseDO {
+public class RoadMonitorDO extends BaseDO {
 
     /**
      * [主键ID] 主键，道路监测记录唯一标识
@@ -93,7 +81,7 @@ public class MonitorDO extends BaseDO {
      */
     private BigDecimal collectFrequencySnapshot;
     /**
-     * [是否预警] 如:0-否/1-是
+     * [是否预警] 如:0-不可触发预警/1-可触发预警但还没触发/2-已预警
      */
     private Integer isWarning;
 

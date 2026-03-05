@@ -1,21 +1,20 @@
-package cn.iocoder.yudao.module.facility.service.road.monitor;
+package cn.iocoder.yudao.module.facility.service.road.roadmonitor;
 
-import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.module.facility.controller.admin.road.monitor.vo.*;
-import cn.iocoder.yudao.module.facility.dal.dataobject.road.monitor.MonitorDO;
+import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnCandidate;
+import cn.iocoder.yudao.module.facility.dal.dataobject.road.roadmonitor.RoadMonitorDO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.road.roadconfig.RoadConfigDO;
-import cn.iocoder.yudao.module.facility.dal.mysql.road.monitor.MonitorMapper;
+import cn.iocoder.yudao.module.facility.dal.mysql.road.roadmonitor.RoadMonitorMapper;
 import cn.iocoder.yudao.module.facility.dal.mysql.road.roadconfig.RoadConfigMapper;
+import cn.iocoder.yudao.module.facility.framework.lxsutils.road.RoadWarnUtil;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 
@@ -29,16 +28,17 @@ import static cn.iocoder.yudao.module.facility.enums.ErrorCodeConstants.*;
  */
 @Service
 @Validated
-public class MonitorServiceImpl implements MonitorService {
+public class RoadMonitorServiceImpl implements RoadMonitorService {
 
     @Resource
-    private MonitorMapper monitorMapper;
+    private RoadMonitorMapper roadMonitorMapper;
 
     @Resource
     private RoadConfigMapper roadConfigMapper;
 
     @Override
-    public Long createMonitor(MonitorSaveReqVO createReqVO) {
+    public Long createMonitor(RoadMonitorSaveReqVO createReqVO) {
+
         // 1. 查询 road_config（用于做快照）
         RoadConfigDO config = roadConfigMapper.selectById(createReqVO.getConfigId());
         if (config == null) {
@@ -46,7 +46,7 @@ public class MonitorServiceImpl implements MonitorService {
         }
 
         // 2. VO -> DO
-        MonitorDO monitor = BeanUtils.toBean(createReqVO, MonitorDO.class);
+        RoadMonitorDO monitor = BeanUtils.toBean(createReqVO, RoadMonitorDO.class);
 
         // 3. monitorCode：UUID
         monitor.setMonitorCode(UUID.randomUUID().toString().replace("-", ""));
@@ -62,8 +62,19 @@ public class MonitorServiceImpl implements MonitorService {
                         : BigDecimal.valueOf(config.getCollectFrequency())
         );
 
-        // 5. 是否预警（TODO：后续接入真实预警逻辑）
-        monitor.setIsWarning(0);
+        // 5. 是否预警 TODO
+        // 根据监测id获取数据，自动计算得到type、overIndex、overValue、thresholdValue
+        // 用来存放所有超标项
+        List<SysWarnCandidate> candidates = RoadWarnUtil.calculateCandidates(monitor);
+
+        if (candidates.isEmpty()) {
+            // 没有任何超标,不可预警
+            monitor.setIsWarning(0);
+        }else {
+            //可以触发预警但是还没触发预警
+            monitor.setIsWarning(1);
+        }
+
         monitor.setWarningIdListStr(null);
 
         // 6. 监测状态（默认运行中）
@@ -76,19 +87,19 @@ public class MonitorServiceImpl implements MonitorService {
         monitor.setRecordTime(LocalDateTime.now());
 
         // 9. 插入（id 由数据库生成）
-        monitorMapper.insert(monitor);
+        roadMonitorMapper.insert(monitor);
 
         // 10. 返回主键
         return monitor.getId();
     }
 
     @Override
-    public void updateMonitor(MonitorUpdateReqVO updateReqVO) {
+    public void updateMonitor(RoadMonitorUpdateReqVO updateReqVO) {
         // 校验存在
         validateMonitorExists(updateReqVO.getId());
         // 更新
-        MonitorDO updateObj = BeanUtils.toBean(updateReqVO, MonitorDO.class);
-        monitorMapper.updateById(updateObj);
+        RoadMonitorDO updateObj = BeanUtils.toBean(updateReqVO, RoadMonitorDO.class);
+        roadMonitorMapper.updateById(updateObj);
     }
 
     @Override
@@ -96,23 +107,23 @@ public class MonitorServiceImpl implements MonitorService {
         // 校验存在
         validateMonitorExists(id);
         // 删除
-        monitorMapper.deleteById(id);
+        roadMonitorMapper.deleteById(id);
     }
 
     private void validateMonitorExists(Long id) {
-        if (monitorMapper.selectById(id) == null) {
+        if (roadMonitorMapper.selectById(id) == null) {
             throw exception(MONITOR_NOT_EXISTS);
         }
     }
 
     @Override
-    public MonitorDO getMonitor(Long id) {
-        return monitorMapper.selectById(id);
+    public RoadMonitorDO getMonitor(Long id) {
+        return roadMonitorMapper.selectById(id);
     }
 
     @Override
-    public PageResult<MonitorDO> getMonitorPage(MonitorPageReqVO pageReqVO) {
-        return monitorMapper.selectPage(pageReqVO);
+    public PageResult<RoadMonitorDO> getMonitorPage(RoadMonitorPageReqVO pageReqVO) {
+        return roadMonitorMapper.selectPage(pageReqVO);
     }
 
     @Override
@@ -138,7 +149,7 @@ public class MonitorServiceImpl implements MonitorService {
 
         // 4. 查询分页数据
         //    从数据库获取当前页的道路监测数据列表
-        List<RealtimePageRespVO> list = monitorMapper.getRealtimePage(reqVO);
+        List<RealtimePageRespVO> list = roadMonitorMapper.getRealtimePage(reqVO);
 
         // 5. 填充“指标阈值范围”字段
         //    该字段用于前端统一显示阈值信息，如“坑洼≤10；裂缝≤5m”
@@ -149,7 +160,7 @@ public class MonitorServiceImpl implements MonitorService {
         }
 
         // 6. 查询总记录数（分页必须单独查总数）
-        long total = monitorMapper.countRealtimePage(reqVO);
+        long total = roadMonitorMapper.countRealtimePage(reqVO);
 
         // 7. 构造并返回分页结果
         //    PageResult 包含列表数据和总记录数
@@ -175,7 +186,7 @@ public class MonitorServiceImpl implements MonitorService {
      * @return 实际受影响的记录条数
      */
     @Override
-    public int batchUpdateMonitorStatus(BatchUpdateMonitorStatusReqVO reqVO) {
+    public int batchUpdateMonitorStatus(BatchUpdateRoadMonitorStatusReqVO reqVO) {
         // ==================== 1. 基础校验 ====================
         if (reqVO == null) {
             // 请求体不能为空，否则无法判断修改目标和状态
@@ -205,7 +216,7 @@ public class MonitorServiceImpl implements MonitorService {
         // roadIdList == null：表示对【全部道路】执行修改操作（高风险）
         // 必须通过明确的 null 语义触发，避免误操作
         if (roadIdList == null) {
-            return monitorMapper.updateAllMonitorStatus(monitorStatus);
+            return roadMonitorMapper.updateAllMonitorStatus(monitorStatus);
         }
 
         // roadIdList 为空集合：语义不明确，直接判定为非法参数
@@ -214,7 +225,7 @@ public class MonitorServiceImpl implements MonitorService {
         }
 
         // ==================== 5. 修改指定道路监测状态 ====================
-        return monitorMapper.batchUpdateMonitorStatus(roadIdList, monitorStatus);
+        return roadMonitorMapper.batchUpdateMonitorStatus(roadIdList, monitorStatus);
     }
 
     /**

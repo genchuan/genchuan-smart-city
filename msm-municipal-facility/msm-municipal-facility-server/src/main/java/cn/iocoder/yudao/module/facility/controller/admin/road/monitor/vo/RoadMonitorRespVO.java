@@ -2,16 +2,15 @@ package cn.iocoder.yudao.module.facility.controller.admin.road.monitor.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import java.util.*;
+
 import java.math.BigDecimal;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import com.alibaba.excel.annotation.*;
 
 @Schema(description = "管理后台 - 道路监测 Response VO")
 @Data
 @ExcelIgnoreUnannotated
-public class MonitorRespVO {
+public class RoadMonitorRespVO {
 
     @Schema(description = "[主键ID] 主键，道路监测记录唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "25706")
     @ExcelProperty("[主键ID] 主键，道路监测记录唯一标识")
@@ -69,7 +68,7 @@ public class MonitorRespVO {
     @ExcelProperty("[采集频率快照] 采集时的数据采集频率，单位：分钟")
     private BigDecimal collectFrequencySnapshot;
 
-    @Schema(description = "[是否预警] 如:0-否/1-是")
+    @Schema(description = "[是否预警] 如:0-不可触发预警/1-可触发预警但还没触发/2-已预警")
     @ExcelProperty("[是否预警] 如:0-否/1-是")
     private Integer isWarning;
 

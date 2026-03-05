@@ -42,6 +42,31 @@
         <result column="ext_common3" property="extCommon3"/>
         <result column="ext_common4" property="extCommon4"/>
     </resultMap>
+    <update id="batchUpdateByIdList">
+        UPDATE sys_warn
+        <set>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="assignStatus != null">
+                assign_status = #{assignStatus},
+            </if>
+            <if test="confirmOpinion != null">
+                confirm_opinion = #{confirmOpinion},
+            </if>
+            <if test="invalidReason != null">
+                invalid_reason = #{invalidReason},
+            </if>
+            <if test="suggest != null">
+                suggest = #{suggest},
+            </if>
+            update_time = NOW()
+        </set>
+        WHERE id IN
+        <foreach collection="idList" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </update>
     <select id="getSysWarnPage" resultType="cn.iocoder.yudao.module.facility.dal.dataobject.syswarn.SysWarnDO">
         SELECT *
         FROM sys_warn
@@ -101,6 +126,10 @@
 
         <if test="type != null and type != ''">
             AND type = #{type}
+        </if>
+
+        <if test="overIndex != null and overIndex != ''">
+            AND over_index = #{overIndex}
         </if>
 
         <if test="wayType != null and wayType != ''">
