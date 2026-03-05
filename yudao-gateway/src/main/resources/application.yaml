@@ -373,11 +373,7 @@ knife4j:
       - name: facility-server        # 自定义模块名字，可以随便写，但最好和服务名一致
         service-name: facility-server # 必须和 Gateway 路由 uri 对应的服务名一致
         url: /admin-api/facility/v3/api-docs # 对应模块 Swagger 文档路径
-      ###########################################################
-
-      - name: park-server
-        service-name: park-server
-        url: /admin-api/park/v3/api-docs
+      # data 的 Swagger 聚合配置 ###########################
       - name: data-server
         service-name: data-server
         url: /admin-api/data/v3/api-docs

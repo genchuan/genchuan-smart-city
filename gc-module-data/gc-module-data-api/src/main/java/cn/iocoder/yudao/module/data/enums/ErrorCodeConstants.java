@@ -24,5 +24,9 @@ public interface ErrorCodeConstants {
     // 错误码编号需确保唯一，例如接着已有的顺序
     ErrorCode INSTANCE_IMPORT_FILE_EMPTY = new ErrorCode(1_004_005, "导入Excel文件不能为空");
     ErrorCode INSTANCE_IMPORT_DATA_EMPTY = new ErrorCode(1_004_006, "导入Excel数据为空");
-
+    // ========== 管理事项分类 ==========
+    ErrorCode MATTER_CATEGORY_NOT_EXISTS = new ErrorCode(500, "管理事项分类不存在");
+    // ========== 管理事项实例==========
+    ErrorCode MATTER_INSTANCE_NOT_EXISTS = new ErrorCode(500, "管理事项实例不存在");
+    ErrorCode MATTER_CATEGORY_HAS_CHILDREN = new ErrorCode(500, "管理事项分类存在子分类，无法删除");
 }
