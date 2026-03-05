@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.park.dal.mysql.park.statrpt.chargeabnormal.ChargeAbnormalMapper">
+
+    <!--
+        公共查询条件片段（不包含 WHERE）
+        说明：
+        - 仅包含 AND 条件，便于在不同 SQL 中自由组合
+        - 覆盖时间、区域、类型、状态、金额等通用筛选条件
+     -->
+    <sql id="AbnormalCommonConditions">
+        <if test="startTime != null">
+            AND abnormal_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND abnormal_time &lt;= #{endTime}
+        </if>
+        <if test="regionFullCode != null and regionFullCode != ''">
+            AND
+            <include refid="cn.iocoder.yudao.module.industry.dal.mysql.common.AreaSqlMapper.likeByRegionFullCode">
+                <property name="areaColumn" value="region_full_code"/>
+            </include>
+        </if>
+        <if test="abnormalType != null and abnormalType != ''">
+            AND abnormal_type = #{abnormalType}
+        </if>
+        <if test="disposalStatus != null and disposalStatus != ''">
+            AND disposal_status = #{disposalStatus}
+        </if>
+        <if test="orderNo != null and orderNo != ''">
+            AND order_no = #{orderNo}
+        </if>
+        <if test="carNumber != null and carNumber != ''">
+            AND car_number = #{carNumber}
+        </if>
+        <if test="minAmount != null">
+            AND abnormal_amount &gt;= #{minAmount}
+        </if>
+        <if test="maxAmount != null">
+            AND abnormal_amount &lt;= #{maxAmount}
+        </if>
+    </sql>
+
+    <!--
+        收费异常统计总览查询
+        说明：
+        - 返回异常总金额、异常订单总数、已处置数量、已纠错数量
+        - 仅做数据聚合，不包含业务比率计算
+        - 统计结果由 Service 层进一步解释与加工
+     -->
+    <select id="selectStatReport" resultType="java.util.HashMap">
+        SELECT
+        IFNULL(SUM(abnormal_amount), 0) AS totalAbnormalAmount,
+        COUNT(1) AS abnormalOrderCount,
+        SUM(CASE WHEN disposal_status = '已处置' THEN 1 ELSE 0 END) AS disposedCount,
+        SUM(CASE WHEN disposal_result = '已纠错' THEN 1 ELSE 0 END) AS correctedCount
+        FROM park_charge_abnormal
+        WHERE deleted = 0
+        <include refid="AbnormalCommonConditions"/>
+    </select>
+
+    <!--
+        收费异常金额趋势统计（按天）
+        说明：
+        - 按天统计异常金额总和
+        - 仅返回数据库中“有数据的日期”
+        - 缺失日期由 Service 层补齐，保证趋势连续
+     -->
+    <select id="selectAbnormalAmountTrend"
+            resultType="cn.iocoder.yudao.module.park.controller.admin.park.statrpt.chargeabnormal.vo.TrendPointVO">
+        SELECT
+        DATE_FORMAT(abnormal_time, '%Y-%m-%d') AS timeKey,
+        'DAY' AS granularity,
+        IFNULL(SUM(abnormal_amount), 0) AS value
+        FROM park_charge_abnormal
+        WHERE deleted = 0
+        <include refid="AbnormalCommonConditions"/>
+        GROUP BY DATE_FORMAT(abnormal_time, '%Y-%m-%d')
+        ORDER BY timeKey
+    </select>
+
+    <!--
+        收费异常订单数量趋势统计（按天）
+        说明：
+        - 按天统计异常订单数量
+        - 仅返回数据库中存在异常的日期
+        - Service 层负责补齐无数据日期，默认值为 0
+     -->
+    <select id="selectAbnormalOrderCount"
+            resultType="cn.iocoder.yudao.module.park.controller.admin.park.statrpt.chargeabnormal.vo.TrendPointVO">
+        SELECT
+        DATE_FORMAT(abnormal_time, '%Y-%m-%d') AS timeKey,
+        'DAY' AS granularity,
+        COUNT(1) AS value
+        FROM park_charge_abnormal
+        WHERE deleted = 0
+        <include refid="AbnormalCommonConditions"/>
+        GROUP BY DATE_FORMAT(abnormal_time, '%Y-%m-%d')
+        ORDER BY timeKey
+    </select>
+
+
+    <!--
+        按异常原因进行分类统计
+        用于饼图、原因分布等场景
+    -->
+    <!--
+        按指定字段（原因/类型/状态）统计异常数量，用于饼图或占比分析
+        - ${statGroupField} 为传入列名
+        - 返回 groupFieldName / groupFieldValueName / value
+    -->
+    <select id="selectStatBySortField"
+            resultType="cn.iocoder.yudao.module.park.controller.admin.park.statrpt.chargeabnormal.vo.StatDistributionRespVO">
+
+        SELECT
+        '${statGroupField}' AS groupFieldName,   <!-- 这里直接传列名 -->
+        ${statGroupField} AS groupFieldValueName,
+        COUNT(1)        AS value
+        FROM park_charge_abnormal
+        WHERE deleted = 0
+        <include refid="AbnormalCommonConditions"/>
+        GROUP BY ${statGroupField}
+        ORDER BY value DESC
+    </select>
+
+    <!--
+        按区域统计异常数量：
+        - LEFT(region_full_code,6) 聚合子区域
+        - 与 sys_area 联表获取区域名称
+        - 返回 regionFullCode / regionName / value
+    -->
+    <select id="selectStatByRegion"
+            resultType="cn.iocoder.yudao.module.park.controller.admin.park.statrpt.chargeabnormal.vo.StatRegionRespVO">
+        SELECT
+        COALESCE(a.full_code,'未知区域12位全码') AS regionFullCode,
+        COALESCE(a.name,'未知区域名') AS regionName,
+        t_count.value as value
+        <!--        先获取筛选后的数据，再进行分组聚合数据-->
+        FROM (
+            SELECT LEFT(region_full_code,6) AS region6, COUNT(1) AS value
+            FROM park_charge_abnormal
+            WHERE deleted = 0
+            <include refid="AbnormalCommonConditions"/>
+            GROUP BY LEFT(region_full_code,6)
+        ) t_count
+        LEFT JOIN sys_area a ON
+        CONVERT(LEFT(t_count.region6,6) USING utf8mb4) = CONVERT(LEFT(a.short_code,6) USING utf8mb4)
+        ORDER BY t_count.value DESC
+
+    </select>
+
+    <select id="selectPageByCondition"
+            resultType="cn.iocoder.yudao.module.park.dal.dataobject.park.statrpt.chargeabnormal.ChargeAbnormalDO">
+        SELECT *
+        FROM park_charge_abnormal
+        WHERE deleted = 0
+        <include refid="AbnormalCommonConditions"/>
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <select id="selectCountByCondition" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM park_charge_abnormal
+        WHERE deleted = 0
+        <include refid="AbnormalCommonConditions"/>
+    </select>
+
+</mapper>

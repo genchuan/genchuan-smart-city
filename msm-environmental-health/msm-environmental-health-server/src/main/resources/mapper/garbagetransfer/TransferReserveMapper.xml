@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.TransferReserveMapper">
+
+    <resultMap id="TransferReserveDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.detail.TransferReserveDetailDO">
+        <!-- 基础字段映射（TransferReserveDO 核心字段） -->
+        <id column="id" property="id"/>
+        <result column="reserve_id" property="reserveId"/>
+        <result column="vehicle_id" property="vehicleId"/>
+        <result column="garbage_type_id" property="garbageTypeId"/>
+        <result column="expected_time" property="expectedTime"/>
+        <result column="garbage_weight" property="garbageWeight"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="reserve_status" property="reserveStatus"/>
+        <result column="sort_no" property="sortNo"/>
+        <result column="abnormal_create_time" property="abnormalCreateTime"/>
+        <result column="handle_by" property="handleBy"/>
+        <result column="ext_common1" property="extCommon1"/>
+        <result column="ext_common2" property="extCommon2"/>
+        <result column="ext_common3" property="extCommon3"/>
+        <result column="ext_common4" property="extCommon4"/>
+        <result column="create_time" property="createTime"/>
+
+        <!-- 关联查询的额外字段 -->
+        <result column="garbage_type_name" property="garbageTypeName"/>
+        <result column="vehicle_Name" property="vehicleName"/>
+        <result column="area_name" property="areaName"/>
+        <result column="handle_name" property="handleName"/>
+    </resultMap>
+
+    <select id="selectDetailPage" resultMap="TransferReserveDetailResultMap">
+        SELECT
+        tr.*,
+        g.name AS garbage_type_name,
+        v.license_plate AS vehicle_license_plate,
+        a.area_name AS area_name,
+        u.user_name AS handle_name
+        FROM garbage_transfer_reserve tr
+        LEFT JOIN sys_garbage_type g ON tr.garbage_type_id = g.sys_garbage_type_id AND g.deleted = 0
+        LEFT JOIN sys_vehicle v ON tr.vehicle_id = v.sys_vehicle_id AND v.deleted = 0
+        LEFT JOIN sys_area a ON tr.area_code = a.area_code AND a.deleted = 0
+        LEFT JOIN sys_user u ON tr.handle_by = u.user_id AND u.deleted = 0
+        WHERE tr.deleted = 0
+        ORDER BY tr.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.pageSize}
+    </select>
+
+    <select id="selectCount" resultType="Long">
+        SELECT COUNT(DISTINCT tr.id)
+        FROM garbage_transfer_reserve tr
+        WHERE tr.deleted = 0
+    </select>
+
+
+</mapper>

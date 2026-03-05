@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.publictoilet.ToiletComplaintMapper">
+
+    <resultMap id="ToiletComplaintDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.ToiletComplaintDetailDO">
+        <!-- 基础投诉字段（继承自 ToiletComplaintDO） -->
+        <id column="id" property="id"/>
+        <result column="complaint_id" property="complaintId"/>
+        <result column="toilet_id" property="toiletId"/>
+        <result column="complaint_type_id" property="complaintTypeId"/>
+        <result column="content" property="content"/>
+        <result column="complaint_name" property="complaintName"/>
+        <result column="phone" property="phone"/>
+        <result column="complaint_time" property="complaintTime"/>
+        <result column="dispatch_status" property="dispatchStatus"/>
+        <result column="handler_id" property="handlerId"/>
+        <result column="is_timeout" property="isTimeout"/>
+        <result column="handle_measure" property="handleMeasure"/>
+        <result column="handle_result" property="handleResult"/>
+        <result column="reform_photo" property="reformPhoto"/>
+        <result column="feedback_content" property="feedbackContent"/>
+        <result column="ext_common1" property="extCommon1"/>
+        <result column="ext_common2" property="extCommon2"/>
+        <result column="ext_common3" property="extCommon3"/>
+        <result column="ext_common4" property="extCommon4"/>
+
+        <!-- 关联查询的扩展字段 -->
+        <result column="toilet_name" property="toiletName"/>
+        <result column="complaint_type_name" property="complaintTypeName"/>
+        <result column="handler_Name" property="handlerName"/>
+    </resultMap>
+
+    <select id="selectDetailPage" resultMap="ToiletComplaintDetailResultMap">
+        SELECT
+        tc.*,
+        pt.name AS toilet_name,
+        ct.complaint_name AS complaint_type_name,
+        u.user_name AS handler_Name
+        FROM public_toilet_complaint tc
+        LEFT JOIN public_toilet pt ON tc.toilet_id = pt.toilet_id AND pt.deleted = 0
+        LEFT JOIN sys_complaint_type ct ON tc.complaint_type_id = ct.complaint_type_id AND ct.deleted = 0
+        LEFT JOIN sys_user u ON u.user_id = tc.handler_id AND u.deleted = 0
+        WHERE tc.deleted = 0
+
+        <!-- 基础字段过滤 -->
+        <if test="reqVO.complaintId != null and reqVO.complaintId != ''">
+            AND tc.complaint_id = #{reqVO.complaintId}
+        </if>
+        <if test="reqVO.toiletId != null and reqVO.toiletId != ''">
+            AND tc.toilet_id = #{reqVO.toiletId}
+        </if>
+        <if test="reqVO.complaintTypeId != null and reqVO.complaintTypeId != ''">
+            AND tc.complaint_type_id = #{reqVO.complaintTypeId}
+        </if>
+        <if test="reqVO.content != null and reqVO.content != ''">
+            AND tc.content LIKE CONCAT('%', #{reqVO.content}, '%')
+        </if>
+        <if test="reqVO.complaintName != null and reqVO.complaintName != ''">
+            AND tc.complaint_name LIKE CONCAT('%', #{reqVO.complaintName}, '%')
+        </if>
+        <if test="reqVO.phone != null and reqVO.phone != ''">
+            AND tc.phone LIKE CONCAT('%', #{reqVO.phone}, '%')
+        </if>
+
+        <!-- 投诉时间范围过滤 -->
+        <if test="reqVO.complaintTime != null and reqVO.complaintTime.length == 2">
+            AND tc.complaint_time BETWEEN #{reqVO.complaintTime[0]} AND #{reqVO.complaintTime[1]}
+        </if>
+
+        <!-- 派单状态过滤 -->
+        <if test="reqVO.dispatchStatus != null and reqVO.dispatchStatus != ''">
+            AND tc.dispatch_status = #{reqVO.dispatchStatus}
+        </if>
+
+        <!-- 处理人过滤 -->
+        <if test="reqVO.handlerId != null and reqVO.handlerId != ''">
+            AND tc.handler_id = #{reqVO.handlerId}
+        </if>
+
+        <!-- 超时状态过滤 -->
+        <if test="reqVO.isTimeout != null">
+            AND tc.is_timeout = #{reqVO.isTimeout}
+        </if>
+
+        <!-- 处理措施过滤 -->
+        <if test="reqVO.handleMeasure != null and reqVO.handleMeasure != ''">
+            AND tc.handle_measure LIKE CONCAT('%', #{reqVO.handleMeasure}, '%')
+        </if>
+
+        <!-- 处理结果过滤 -->
+        <if test="reqVO.handleResult != null and reqVO.handleResult != ''">
+            AND tc.handle_result LIKE CONCAT('%', #{reqVO.handleResult}, '%')
+        </if>
+
+        <!-- 反馈内容过滤 -->
+        <if test="reqVO.feedbackContent != null and reqVO.feedbackContent != ''">
+            AND tc.feedback_content LIKE CONCAT('%', #{reqVO.feedbackContent}, '%')
+        </if>
+
+        <!-- 关联表字段过滤 -->
+        <if test="reqVO.toiletName != null and reqVO.toiletName != ''">
+            AND pt.name LIKE CONCAT('%', #{reqVO.toiletName}, '%')
+        </if>
+        <if test="reqVO.complaintTypeName != null and reqVO.complaintTypeName != ''">
+            AND ct.complaint_name LIKE CONCAT('%', #{reqVO.complaintTypeName}, '%')
+        </if>
+        <if test="reqVO.handlerName != null and reqVO.handlerName != ''">
+            AND u.user_name LIKE CONCAT('%', #{reqVO.handlerName}, '%')
+        </if>
+
+        <!-- 创建时间范围过滤 -->
+        <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+            AND tc.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+        </if>
+
+        <!-- 更新时间范围过滤 -->
+        <if test="reqVO.updateTime != null and reqVO.updateTime.length == 2">
+            AND tc.update_time BETWEEN #{reqVO.updateTime[0]} AND #{reqVO.updateTime[1]}
+        </if>
+
+        ORDER BY tc.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.pageSize}
+    </select>
+
+    <select id="selectCount" resultType="Long">
+        SELECT COUNT(*)
+        FROM public_toilet_complaint tc
+        LEFT JOIN public_toilet pt ON tc.toilet_id = pt.toilet_id AND pt.deleted = 0
+        LEFT JOIN sys_complaint_type ct ON tc.complaint_type_id = ct.complaint_type_id AND ct.deleted = 0
+        LEFT JOIN sys_user u ON u.user_id = tc.handler_id AND u.deleted = 0
+        WHERE tc.deleted = 0
+
+        <!-- 与分页查询一致的动态条件 -->
+        <if test="reqVO.complaintId != null and reqVO.complaintId != ''">
+            AND tc.complaint_id = #{reqVO.complaintId}
+        </if>
+        <if test="reqVO.toiletId != null and reqVO.toiletId != ''">
+            AND tc.toilet_id = #{reqVO.toiletId}
+        </if>
+        <if test="reqVO.complaintTypeId != null and reqVO.complaintTypeId != ''">
+            AND tc.complaint_type_id = #{reqVO.complaintTypeId}
+        </if>
+        <if test="reqVO.content != null and reqVO.content != ''">
+            AND tc.content LIKE CONCAT('%', #{reqVO.content}, '%')
+        </if>
+        <if test="reqVO.complaintName != null and reqVO.complaintName != ''">
+            AND tc.complaint_name LIKE CONCAT('%', #{reqVO.complaintName}, '%')
+        </if>
+        <if test="reqVO.phone != null and reqVO.phone != ''">
+            AND tc.phone LIKE CONCAT('%', #{reqVO.phone}, '%')
+        </if>
+        <if test="reqVO.complaintTime != null and reqVO.complaintTime.length == 2">
+            AND tc.complaint_time BETWEEN #{reqVO.complaintTime[0]} AND #{reqVO.complaintTime[1]}
+        </if>
+        <if test="reqVO.dispatchStatus != null and reqVO.dispatchStatus != ''">
+            AND tc.dispatch_status = #{reqVO.dispatchStatus}
+        </if>
+        <if test="reqVO.handlerId != null and reqVO.handlerId != ''">
+            AND tc.handler_id = #{reqVO.handlerId}
+        </if>
+        <if test="reqVO.isTimeout != null">
+            AND tc.is_timeout = #{reqVO.isTimeout}
+        </if>
+        <if test="reqVO.handleMeasure != null and reqVO.handleMeasure != ''">
+            AND tc.handle_measure LIKE CONCAT('%', #{reqVO.handleMeasure}, '%')
+        </if>
+        <if test="reqVO.handleResult != null and reqVO.handleResult != ''">
+            AND tc.handle_result LIKE CONCAT('%', #{reqVO.handleResult}, '%')
+        </if>
+        <if test="reqVO.feedbackContent != null and reqVO.feedbackContent != ''">
+            AND tc.feedback_content LIKE CONCAT('%', #{reqVO.feedbackContent}, '%')
+        </if>
+        <if test="reqVO.toiletName != null and reqVO.toiletName != ''">
+            AND pt.name LIKE CONCAT('%', #{reqVO.toiletName}, '%')
+        </if>
+        <if test="reqVO.complaintTypeName != null and reqVO.complaintTypeName != ''">
+            AND ct.complaint_name LIKE CONCAT('%', #{reqVO.complaintTypeName}, '%')
+        </if>
+        <if test="reqVO.handlerName != null and reqVO.handlerName != ''">
+            AND u.user_name LIKE CONCAT('%', #{reqVO.handlerName}, '%')
+        </if>
+        <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+            AND tc.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+        </if>
+        <if test="reqVO.updateTime != null and reqVO.updateTime.length == 2">
+            AND tc.update_time BETWEEN #{reqVO.updateTime[0]} AND #{reqVO.updateTime[1]}
+        </if>
+    </select>
+
+</mapper>

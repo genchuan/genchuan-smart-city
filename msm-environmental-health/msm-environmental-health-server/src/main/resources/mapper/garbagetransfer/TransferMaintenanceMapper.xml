@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.TransferMaintenanceMapper">
+
+    <resultMap id="TransferMaintenanceDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.detail.TransferMaintenanceDetailDO">
+        <!-- 基础字段 -->
+        <id column="id" property="id"/>
+        <result column="maintenance_id" property="maintenanceId"/>
+        <result column="transfer_id" property="transferId"/>
+        <result column="equipment_id" property="equipmentId"/>
+        <result column="maintenance_cycle" property="maintenanceCycle"/>
+        <result column="last_maintenance_time" property="lastMaintenanceTime"/>
+        <result column="maintenance_content" property="maintenanceContent"/>
+        <result column="handle_by" property="handleBy"/>
+        <result column="maintenance_status" property="maintenanceStatus"/>
+        <result column="expected_complete_time" property="expectedCompleteTime"/>
+        <result column="abnormal_is_timeout" property="abnormalIsTimeout"/>
+        <result column="maintenance_time" property="maintenanceTime"/>
+        <result column="replace_parts" property="replaceParts"/>
+        <result column="maintenance_cost" property="maintenanceCost"/>
+        <result column="maintenance_photo" property="maintenancePhoto"/>
+        <result column="ext_common1" property="extCommon1"/>
+        <result column="ext_common2" property="extCommon2"/>
+        <result column="ext_common3" property="extCommon3"/>
+        <result column="ext_common4" property="extCommon4"/>
+
+        <!-- 关联查询字段 -->
+        <result column="transfer_name" property="transferName"/>
+        <result column="equipment_name" property="equipmentName"/>
+        <result column="handle_name" property="handleName"/>
+    </resultMap>
+
+    <!-- 分页查询详情（联表） -->
+    <select id="selectDetailPage" resultMap="TransferMaintenanceDetailResultMap">
+        SELECT
+        tm.*,
+        gt.name AS transfer_name,
+        se.name AS equipment_name,
+        su.user_name AS handle_name
+        FROM garbage_transfer_maintenance tm
+        LEFT JOIN garbage_transfer gt ON tm.transfer_id = gt.transfer_id AND gt.deleted = 0
+        LEFT JOIN sys_equipment se ON tm.equipment_id = se.sys_equipment_id AND se.deleted = 0
+        LEFT JOIN sys_user su ON tm.handle_by = su.user_id AND su.deleted = 0
+        WHERE tm.deleted = 0
+        ORDER BY tm.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.pageSize}
+    </select>
+
+    <!-- 统计总数（匹配分页条件） -->
+    <select id="selectCount" resultType="Long">
+        SELECT COUNT(*)
+        FROM garbage_transfer_maintenance tm
+        WHERE tm.deleted = 0
+    </select>
+
+</mapper>
