@@ -12,23 +12,30 @@
         <module>yudao-gateway</module>
         <module>yudao-framework</module>
         <!-- Server 主项目 -->
-<!--        <module>yudao-server</module>-->
+        <module>yudao-server</module>
         <!--  各种 module 拓展 -->
         <module>yudao-module-system</module>
         <module>yudao-module-infra</module>
 <!--        <module>yudao-module-member</module>-->
         <module>yudao-module-bpm</module>
-<!--        <module>yudao-module-iot</module>-->
+        <!-- <module>yudao-module-iot</module> -->
 <!--        <module>yudao-module-pay</module>-->
-<!--        <module>yudao-module-report</module>-->
+        <module>yudao-module-report</module>
 <!--        <module>yudao-module-mp</module>-->
 <!--        <module>yudao-module-mall</module>-->
 <!--        <module>yudao-module-crm</module>-->
 <!--        <module>yudao-module-erp</module>-->
 <!--        <module>yudao-module-ai</module>-->
+
 <!--        <module>yudao-module-smartcity</module>-->
         <module>gc-module-datacenter</module>
         <module>gc-module-industry</module>
+        <module>gc-module-park</module>
+        <module>gc-module-data</module>
+        <module>gc-module-evaluate</module>
+        <module>msm-environmental-health</module>
+        <module>msm-municipal-facility</module>
+
     </modules>
 
     <name>${project.artifactId}</name>

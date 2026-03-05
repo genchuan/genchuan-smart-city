@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mockStatic;
 
 /**
- * {@link cn.iocoder.yudao.module.system.framework.sms.core.client.impl.AliyunSmsClient} 的单元测试
+ * {@link AliyunSmsClient} 的单元测试
  *
  * @author 芋道源码
  */

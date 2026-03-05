@@ -3,16 +3,16 @@
 spring:
   cloud:
     nacos:
-      server-addr: 127.0.0.1:8848 # Nacos 服务器地址http://127.0.0.1:31591/
+      server-addr: nacos-sc:8848 # Nacos 服务器地址
       #      username: # Nacos 账号
       #      password: # Nacos 密码
       discovery: # 【配置中心】配置项
-        namespace: dev # 命名空间。这里使用 dev 开发环境
+        namespace: # 命名空间。这里使用 dev 开发环境
         group: DEFAULT_GROUP # 使用的 Nacos 配置分组，默认为 DEFAULT_GROUP
         metadata:
           version: 1.0.0 # 服务实例的版本号，可用于灰度发布
       config: # 【注册中心】配置项
-        namespace: dev # 命名空间。这里使用 dev 开发环境
+        namespace: # 命名空间。这里使用 dev 开发环境
         group: DEFAULT_GROUP # 使用的 Nacos 配置分组，默认为 DEFAULT_GROUP
 
 --- #################### 数据库相关配置 ####################
@@ -56,22 +56,26 @@ spring:
       primary: master
       datasource:
         master:
+#          url: jdbc:mysql://127.0.0.1:3306/ruoyi-vue-pro?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true # MySQL Connector/J 8.X 连接的示例
+#          username: root
+#          password: 123456
+
           url: jdbc:mysql://127.0.0.1:3306/ruoyi-vue-pro?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true # MySQL Connector/J 8.X 连接的示例
           username: root
-          password: password
+          password: 123456
         slave: # 模拟从库，可根据自己需要修改 # 模拟从库，可根据自己需要修改
           lazy: true # 开启懒加载，保证启动速度
           url: jdbc:mysql://127.0.0.1:3306/ruoyi-vue-pro?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true # MySQL Connector/J 8.X 连接的示例
           username: root
-          password: password
+          password: 123456
 
   # Redis 配置。Redisson 默认的配置足够使用，一般不需要进行调优
   data:
     redis:
-      host: 127.0.0.1 # 地址
+      host: genchuan-redis # 地址
       port: 6379 # 端口
       database: 0 # 数据库索引
-#      password: password # 密码，建议生产环境开启
+#      password: 123456 # 密码，建议生产环境开启
 
 --- #################### MQ 消息队列相关配置 ####################
 

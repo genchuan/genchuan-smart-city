@@ -187,8 +187,8 @@ yudao:
 debug: false
 
 minio:
-  endpoint: http://127.0.0.1:9000        # 内网上传地址
-  public-endpoint: http://public.com.cn:9000  # 外网访问地址
-  access-key: user
-  access-secret: password
-  bucket: bucket
+  endpoint: http://192.168.8.68:9000        # 内网上传地址
+  public-endpoint: http://cloud.genchuan.cn:9000  # 外网访问地址
+  access-key: minioadmin
+  access-secret: minioadmin123
+  bucket: shunchang

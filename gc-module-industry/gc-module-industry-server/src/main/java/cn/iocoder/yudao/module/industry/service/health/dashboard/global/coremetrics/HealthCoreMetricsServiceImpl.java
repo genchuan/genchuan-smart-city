@@ -180,11 +180,11 @@ public class HealthCoreMetricsServiceImpl implements HealthCoreMetricsService {
     /**
      * 指标达标状态计算
      */
-    private String calcStatus(java.math.BigDecimal value) {
+    private String calcStatus(BigDecimal value) {
         if (value == null) {
             return "正常";
         }
-        if (value.compareTo(new java.math.BigDecimal("90")) >= 0) {
+        if (value.compareTo(new BigDecimal("90")) >= 0) {
             return "达标";
         }
         return "未达标";

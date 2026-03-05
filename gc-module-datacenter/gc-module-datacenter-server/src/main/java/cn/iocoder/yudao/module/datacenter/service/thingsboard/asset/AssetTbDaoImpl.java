@@ -106,7 +106,7 @@ public class AssetTbDaoImpl implements AssetTbDao {
 
             ResponseEntity<PageData<Asset>> response = restTemplate.exchange(
                     assetsUrl,
-                    org.springframework.http.HttpMethod.GET,
+                    HttpMethod.GET,
                     entity,
                     new org.springframework.core.ParameterizedTypeReference<PageData<Asset>>() {}
             );
@@ -136,7 +136,7 @@ public class AssetTbDaoImpl implements AssetTbDao {
 
             ResponseEntity<List> response = restTemplate.exchange(
                     attributesUrl,
-                    org.springframework.http.HttpMethod.GET,
+                    HttpMethod.GET,
                     entity,
                     List.class
             );
@@ -169,7 +169,7 @@ public class AssetTbDaoImpl implements AssetTbDao {
 
             ResponseEntity<List> response = restTemplate.exchange(
                     relationsUrl,
-                    org.springframework.http.HttpMethod.GET,
+                    HttpMethod.GET,
                     entity,
                     List.class
             );
@@ -223,7 +223,7 @@ public class AssetTbDaoImpl implements AssetTbDao {
 
             ResponseEntity<Asset> response = restTemplate.exchange(
                     createAssetUrl,
-                    org.springframework.http.HttpMethod.POST,
+                    HttpMethod.POST,
                     entity,
                     Asset.class
             );
@@ -255,7 +255,7 @@ public class AssetTbDaoImpl implements AssetTbDao {
 
             restTemplate.exchange(
                     deleteAssetUrl,
-                    org.springframework.http.HttpMethod.DELETE,
+                    HttpMethod.DELETE,
                     entity,
                     Void.class
             );
@@ -296,7 +296,7 @@ public class AssetTbDaoImpl implements AssetTbDao {
 
             ResponseEntity<PageData<AssetProfile>> response = restTemplate.exchange(
                     urlBuilder.toString(),
-                    org.springframework.http.HttpMethod.GET,
+                    HttpMethod.GET,
                     entity,
                     new org.springframework.core.ParameterizedTypeReference<PageData<AssetProfile>>() {}
             );
@@ -333,7 +333,7 @@ public class AssetTbDaoImpl implements AssetTbDao {
 
             ResponseEntity<String> response = restTemplate.exchange(
                     attributesUrl,
-                    org.springframework.http.HttpMethod.POST,
+                    HttpMethod.POST,
                     entity,
                     String.class
             );
@@ -413,7 +413,7 @@ public class AssetTbDaoImpl implements AssetTbDao {
 
             ResponseEntity<List> response = restTemplate.exchange(
                     relationsUrl,
-                    org.springframework.http.HttpMethod.GET,
+                    HttpMethod.GET,
                     entity,
                     List.class
             );

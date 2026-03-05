@@ -1,4 +1,4 @@
-//package cn.iocoder.yudao.module.industry.client.datacenter;
+package cn.iocoder.yudao.module.industry.client.datacenter;//package cn.iocoder.yudao.module.industry.client.datacenter;
 //
 //import cn.iocoder.yudao.module.datacenter.controller.admin.appscenecategory.vo.AppSceneCategoryTreeRespVO;
 //import cn.iocoder.yudao.framework.common.pojo.CommonResult;

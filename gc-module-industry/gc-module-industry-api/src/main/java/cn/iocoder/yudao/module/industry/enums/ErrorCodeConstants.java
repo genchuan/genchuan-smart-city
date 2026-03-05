@@ -34,7 +34,7 @@ public interface ErrorCodeConstants {
     ErrorCode PARK_ARREARS_RECOVERY_NOT_EXISTS = new ErrorCode(600_003, "欠费追缴不存在");
 
     // ========== 停车预约服务  ==========
-    ErrorCode PARK_RESERVATION_NOT_EXISTS = new ErrorCode(600_004, "停车预约服务不存在");
+//    ErrorCode PARK_RESERVATION_NOT_EXISTS = new ErrorCode(600_004, "停车预约服务不存在");
     // ========== 停车泊位实时状态  ==========
     ErrorCode PARK_REAL_TIME_NOT_EXISTS = new ErrorCode(600_005, "停车泊位实时状态不存在");
     // ========== 泊位锁定记录  ==========
@@ -63,5 +63,105 @@ public interface ErrorCodeConstants {
     // ========== 欠费记录 ==========
     ErrorCode PARK_ARREARS_NOT_EXISTS = new ErrorCode(600_017, "欠费记录不存在");
     // ========== 钱包充值  ==========
-    ErrorCode PARK_WALLET_RECHARGE_NOT_EXISTS = new ErrorCode(600_018, "钱包充值不存在");
+    ErrorCode PARK_WALLET_RECHARGE_NOT_EXISTS = new ErrorCode(500, "钱包充值不存在");
+    // ========== 停车系统用户  ==========
+    ErrorCode PARK_USER_NOT_EXISTS = new ErrorCode(500, "停车系统用户不存在");
+    // ========== 商户==========
+    ErrorCode PARK_MERCHANT_NOT_EXISTS = new ErrorCode(500, "商户不存在");
+    // ========== 商户权限==========
+    ErrorCode PARK_MERCHANT_PERMISSION_NOT_EXISTS = new ErrorCode(500, "商户权限不存在");
+    // ========== 访客==========
+    ErrorCode PARK_VISITOR_NOT_EXISTS = new ErrorCode(500, "访客不存在");
+
+    // ========== 车位信息 ==========
+    ErrorCode PARK_SPACE_NOT_EXISTS = new ErrorCode(601_001, "车位信息不存在");
+
+    // ========== 车库信息 ==========
+    ErrorCode PARK_GARAGE_NOT_EXISTS = new ErrorCode(601_002, "车库信息不存在");
+
+    // ========== 车场信息 ==========
+    ErrorCode PARK_LOT_NOT_EXISTS = new ErrorCode(601_003, "车场信息不存在");
+    // ========== 出入口信息 ==========
+    ErrorCode PARK_ENTRY_EXIT_NOT_EXISTS = new ErrorCode(601_004, "出入口信息不存在");
+    // ========== 路侧泊位 ==========
+    ErrorCode PARK_ROADSIDE_NOT_EXISTS = new ErrorCode(601_005, "路侧泊位不存在");
+
+    // ========== 黑白名单==========
+    ErrorCode PARK_BLACK_WHITE_LIST_NOT_EXISTS = new ErrorCode(500, "黑白名单不存在");
+    // ========== 运维排班==========
+    ErrorCode PARK_MAINTAIN_SCHEDULE_NOT_EXISTS = new ErrorCode(500, "运维排班不存在");
+    // ========== 运维人员==========
+    ErrorCode PARK_MAINTAIN_USER_NOT_EXISTS = new ErrorCode(500, "运维人员不存在");
+    // ========== 代付规则==========
+    ErrorCode PARK_PAYMENT_PROXY_NOT_EXISTS = new ErrorCode(500, "代付规则不存在");
+
+    // ========== 在停车辆 ==========
+    ErrorCode PARK_CAR_PARKING_NOT_EXISTS = new ErrorCode(500, "在停车辆不存在");
+    // ========== 入场记录 ==========
+    ErrorCode PARK_CAR_ENTRY_NOT_EXISTS = new ErrorCode(500, "入场记录不存在");
+    // ========== 通行规则 ==========
+    ErrorCode PARK_PASS_RULE_NOT_EXISTS = new ErrorCode(500, "通行规则不存在");
+    // ========== 资源台账 ==========
+    ErrorCode PARK_RESOURCE_ACCOUNT_NOT_EXISTS = new ErrorCode(500, "资源台账不存在");
+    // ========== 优惠券==========
+    ErrorCode PARK_COUPON_NOT_EXISTS = new ErrorCode(500, "优惠券不存在");
+    // ========== 费率策略==========
+    ErrorCode PARK_FEE_STRATEGY_NOT_EXISTS = new ErrorCode(500, "费率策略不存在");
+    // ========== 临停收费规则==========
+    ErrorCode PARK_FEE_TEMP_NOT_EXISTS = new ErrorCode(500, "临停收费规则不存在");
+    // ========== 期卡套餐==========
+    ErrorCode PARK_PERIOD_PACKAGE_NOT_EXISTS = new ErrorCode(500, "期卡套餐不存在");
+    // ========== 优惠活动==========
+    ErrorCode PARK_PROMOTION_NOT_EXISTS = new ErrorCode(500, "优惠活动不存在");
+    // ========== 稽查证据 ==========
+    ErrorCode PARK_INSPECTION_EVIDENCE_NOT_EXISTS = new ErrorCode(500, "稽查证据不存在");
+
+    // ========== 离场记录 ==========
+    ErrorCode PARK_CAR_EXIT_NOT_EXISTS = new ErrorCode(500, "离场记录不存在");
+
+    // ========== 特殊放行 ==========
+    ErrorCode PARK_SPECIAL_RELEASE_NOT_EXISTS = new ErrorCode(500, "特殊放行不存在");
+
+    // ========== 通行稽查 ==========
+    ErrorCode PARK_TRAFFIC_INSPECTION_NOT_EXISTS = new ErrorCode(500, "通行稽查不存在");
+    // ========== 充电收费==========
+    ErrorCode PARK_CHARGE_FEE_NOT_EXISTS = new ErrorCode(500, "充电收费不存在");
+    // ========== 充值套餐==========
+    ErrorCode PARK_RECHARGE_PACKAGE_NOT_EXISTS = new ErrorCode(500, "充值套餐不存在");
+    // ========== 停车诱导配置==========
+    ErrorCode PARK_INDUCTION_NOT_EXISTS = new ErrorCode(500, "停车诱导配置不存在");
+    // ========== 停车预约==========
+    ErrorCode PARK_RESERVATION_NOT_EXISTS = new ErrorCode(500, "停车预约不存在");
+    // ========== 反向寻车记录==========
+    ErrorCode PARK_REVERSE_SEARCH_NOT_EXISTS = new ErrorCode(500, "反向寻车记录不存在");
+
+    // ========== 车辆入场记录 ==========
+    ErrorCode CAR_DRIVEIN_RECORD_NOT_EXISTS = new ErrorCode(500, "车辆入场记录不存在");
+
+    // ========== 车辆出场记录 ==========
+    ErrorCode CAR_DRIVEOUT_RECORD_NOT_EXISTS = new ErrorCode(500, "车辆出场记录不存在");
+    // ========== 充电预约==========
+    ErrorCode PARK_CHARGE_RESERVATION_NOT_EXISTS = new ErrorCode(500, "充电预约不存在");
+    // ========== 投诉记录==========
+    ErrorCode PARK_COMPLAINT_NOT_EXISTS = new ErrorCode(500, "投诉记录不存在");
+    // ========== 电子发票==========
+    ErrorCode PARK_E_INVOICE_NOT_EXISTS = new ErrorCode(500, "电子发票不存在");
+    // ========== 短信模板==========
+    ErrorCode PARK_SMS_TEMPLATE_NOT_EXISTS = new ErrorCode(500, "短信模板不存在");
+    // ========== 车位共享配置==========
+    ErrorCode PARK_SPACE_SHARE_NOT_EXISTS = new ErrorCode(500, "车位共享配置不存在");
+    // ========== 车位共享订单==========
+    ErrorCode PARK_SPACE_SHARE_ORDER_NOT_EXISTS = new ErrorCode(500, "车位共享订单不存在");
+
+    // ========== 停车运营统计==========
+    ErrorCode STAT_PARK_OPER_NOT_EXISTS = new ErrorCode(500, "停车运营统计不存在");
+    // ========== 用户积分==========
+    ErrorCode PARK_POINTS_NOT_EXISTS = new ErrorCode(500, "用户积分不存在");
+    // ========== 积分变动记录==========
+    ErrorCode PARK_POINTS_RECORD_NOT_EXISTS = new ErrorCode(500, "积分变动记录不存在");
+    // ========== 积分规则==========
+    ErrorCode PARK_POINTS_RULE_NOT_EXISTS = new ErrorCode(500, "积分规则不存在");
+    // ========== 畅停卡==========
+    ErrorCode PARK_SMOOTH_PARKING_CARD_NOT_EXISTS = new ErrorCode(500, "畅停卡不存在");
+
 }

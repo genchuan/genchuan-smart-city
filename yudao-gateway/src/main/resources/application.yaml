@@ -205,7 +205,7 @@ spring:
         - id: datacenter-app-api # 路由的编号
           uri: grayLb://datacenter-server
           predicates: # 断言，作为路由的匹配条件，对应 RouteDefinition 数组
-            - Path=/app-api/datacenter/***
+            - Path=/app-api/datacenter/**
           filters:
             - RewritePath=/app-api/datacenter/v3/api-docs, /v3/api-docs
         ## industry-server 服务
@@ -219,9 +219,82 @@ spring:
         - id: industry-app-api # 路由的编号
           uri: grayLb://industry-server
           predicates: # 断言，作为路由的匹配条件
-            - Path=/app-api/industry/**
+            - Path=/app-api/industry/***
           filters:
             - RewritePath=/app-api/industry/v3/api-docs, /v3/api-docs
+        ## park-server 服务
+        - id: park-admin-api # 路由的编号
+          uri: grayLb://park-server
+          predicates: # 断言，作为路由的匹配条件
+            - Path=/admin-api/park/**
+          filters:
+            - RewritePath=/admin-api/park/v3/api-docs, /v3/api-docs # 转发到 /v3/api-docs
+
+        - id: park-app-api # 路由的编号
+          uri: grayLb://park-server
+          predicates: # 断言，作为路由的匹配条件
+            - Path=/app-api/park/***
+          filters:
+            - RewritePath=/app-api/park/v3/api-docs, /v3/api-docs
+        ## data-server 服务
+        - id: data-admin-api # 路由的编号
+          uri: grayLb://data-server
+          predicates: # 断言，作为路由的匹配条件
+            - Path=/admin-api/data/**
+          filters:
+            - RewritePath=/admin-api/data/v3/api-docs, /v3/api-docs # 转发到 /v3/api-docs
+
+        - id: data-app-api # 路由的编号
+          uri: grayLb://data-server
+          predicates: # 断言，作为路由的匹配条件
+            - Path=/app-api/data/***
+          filters:
+            - RewritePath=/app-api/data/v3/api-docs, /v3/api-docs
+        ## evaluate-server 服务
+        - id: evaluate-admin-api # 路由的编号
+          uri: grayLb://evaluate-server
+          predicates: # 断言，作为路由的匹配条件
+            - Path=/admin-api/evaluate/**
+          filters:
+            - RewritePath=/admin-api/evaluate/v3/api-docs, /v3/api-docs # 转发到 /v3/api-docs
+
+        - id: evaluate-app-api # 路由的编号
+          uri: grayLb://evaluate-server
+          predicates: # 断言，作为路由的匹配条件
+            - Path=/app-api/evaluate/***
+          filters:
+            - RewritePath=/app-api/evaluate/v3/api-docs, /v3/api-docs
+        ## envirhealthServer 服务 ###########################
+        - id: envirhealth-admin-api
+          uri: grayLb://envirhealth-server
+          predicates:
+            - Path=/admin-api/envirhealth/**  # 改为全小写
+          filters:
+            - RewritePath=/admin-api/envirhealth/v3/api-docs, /v3/api-docs
+
+        - id: envirhealth-app-api
+          uri: grayLb://envirhealth-server
+          predicates:
+            - Path=/app-api/envirhealth/**  # 改为全小写
+          filters:
+            - RewritePath=/app-api/envirhealth/v3/api-docs, /v3/api-docs
+        ###########################################################
+
+        ## facility-server 服务
+        - id: facility-admin-api # 路由的编号
+          uri: grayLb://facility-server
+          predicates: # 断言，作为路由的匹配条件
+            - Path=/admin-api/facility/**
+          filters:
+            - RewritePath=/admin-api/facility/v3/api-docs, /v3/api-docs # 转发到 /v3/api-docs
+
+        - id: facility-app-api # 路由的编号
+          uri: grayLb://facility-server
+          predicates: # 断言，作为路由的匹配条件
+            - Path=/app-api/facility/***
+          filters:
+            - RewritePath=/app-api/facility/v3/api-docs, /v3/api-docs
+
       x-forwarded:
         prefix-enabled: false # 避免 Swagger 重复带上额外的 /admin-api/system 前缀
 
@@ -285,6 +358,25 @@ knife4j:
       - name: industry-server        # 自定义模块名字，可以随便写，但最好和服务名一致
         service-name: industry-server # 必须和 Gateway 路由 uri 对应的服务名一致
         url: /admin-api/industry/v3/api-docs # 对应模块 Swagger 文档路径
+      - name: park-server        # 自定义模块名字，可以随便写，但最好和服务名一致
+        service-name: park-server # 必须和 Gateway 路由 uri 对应的服务名一致
+        url: /admin-api/park/v3/api-docs # 对应模块 Swagger 文档路径
+      # envirHealthServer 的 Swagger 聚合配置 ###########################
+      - name: envirhealth-server
+        service-name: envirhealth-server
+        url: /admin-api/envirhealth/v3/api-docs  # 改为全小写
+      # evaluate 的 Swagger 聚合配置 ###########################
+      - name: evaluate-server
+        service-name: evaluate-server
+        url: /admin-api/evaluate/v3/api-docs  # 改为全小写
+      # facility 的 Swagger 聚合配置 ###########################
+      - name: facility-server        # 自定义模块名字，可以随便写，但最好和服务名一致
+        service-name: facility-server # 必须和 Gateway 路由 uri 对应的服务名一致
+        url: /admin-api/facility/v3/api-docs # 对应模块 Swagger 文档路径
+      # data 的 Swagger 聚合配置 ###########################
+      - name: data-server
+        service-name: data-server
+        url: /admin-api/data/v3/api-docs
 --- #################### 芋道相关配置 ####################
 
 yudao:

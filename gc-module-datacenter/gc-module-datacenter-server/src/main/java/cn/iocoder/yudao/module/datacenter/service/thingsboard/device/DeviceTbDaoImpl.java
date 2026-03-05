@@ -163,7 +163,7 @@ public class DeviceTbDaoImpl implements DeviceTbDao {
 
             ResponseEntity<DeviceInfo> response = restTemplate.exchange(
                     deviceUrl,
-                    org.springframework.http.HttpMethod.GET,
+                    HttpMethod.GET,
                     entity,
                     DeviceInfo.class
             );
@@ -212,7 +212,7 @@ public class DeviceTbDaoImpl implements DeviceTbDao {
 
             ResponseEntity<Device> response = restTemplate.exchange(
                     createDeviceUrl,
-                    org.springframework.http.HttpMethod.POST,
+                    HttpMethod.POST,
                     entity,
                     Device.class
             );
@@ -244,7 +244,7 @@ public class DeviceTbDaoImpl implements DeviceTbDao {
 
             restTemplate.exchange(
                     deleteDeviceUrl,
-                    org.springframework.http.HttpMethod.DELETE,
+                    HttpMethod.DELETE,
                     entity,
                     Void.class
             );
@@ -280,7 +280,7 @@ public class DeviceTbDaoImpl implements DeviceTbDao {
 
             ResponseEntity<Device> response = restTemplate.exchange(
                     updateDeviceUrl,
-                    org.springframework.http.HttpMethod.POST,
+                    HttpMethod.POST,
                     entity,
                     Device.class
             );
@@ -314,7 +314,7 @@ public class DeviceTbDaoImpl implements DeviceTbDao {
 
             ResponseEntity<List> response = restTemplate.exchange(
                     attributesUrl,
-                    org.springframework.http.HttpMethod.GET,
+                    HttpMethod.GET,
                     entity,
                     List.class
             );
@@ -423,9 +423,9 @@ public class DeviceTbDaoImpl implements DeviceTbDao {
 
             ResponseEntity<PageData<DeviceInfo>> response = restTemplate.exchange(
                     devicesUrl,
-                    org.springframework.http.HttpMethod.GET,
+                    HttpMethod.GET,
                     entity,
-                    new org.springframework.core.ParameterizedTypeReference<PageData<DeviceInfo>>() {}
+                    new ParameterizedTypeReference<PageData<DeviceInfo>>() {}
             );
 
             return response.getBody();
@@ -443,19 +443,19 @@ public class DeviceTbDaoImpl implements DeviceTbDao {
             String alarmsUrl = url + "api/alarms?pageSize=" + pageLink.getPageSize() + "&page=" + pageLink.getPage();
 
             // 创建请求头
-            org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+            HttpHeaders headers = new HttpHeaders();
             headers.set("X-Authorization", "Bearer " + token);
             headers.set("Content-Type", "application/json");
 
             // 创建请求实体
-            org.springframework.http.HttpEntity<String> entity = new org.springframework.http.HttpEntity<>(headers);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
 
             // 发送请求
-            org.springframework.http.ResponseEntity<PageData<AlarmInfo>> response = restTemplate.exchange(
+            ResponseEntity<PageData<AlarmInfo>> response = restTemplate.exchange(
                     alarmsUrl,
-                    org.springframework.http.HttpMethod.GET,
+                    HttpMethod.GET,
                     entity,
-                    new org.springframework.core.ParameterizedTypeReference<PageData<AlarmInfo>>() {}
+                    new ParameterizedTypeReference<PageData<AlarmInfo>>() {}
             );
 
             return response.getBody();

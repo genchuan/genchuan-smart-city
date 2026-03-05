@@ -54,7 +54,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import static cn.iocoder.yudao.module.industry.enums.ErrorCodeConstants.PARK_GUIDANCE_NOT_EXISTS;
 
 
-@Tag(name = "停车管理-订单 - 逃费订单")
+@Tag(name = "漳州停车管理-订单交易域 - 逃费订单")
 @RestController
 @RequestMapping("/industry/park-order-escape")
 @Validated

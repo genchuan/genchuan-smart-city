@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * BPM 流程定义的拓信息
- * 主要解决 Flowable {@link org.flowable.engine.repository.ProcessDefinition} 不支持拓展字段，所以新建该表
+ * 主要解决 Flowable {@link ProcessDefinition} 不支持拓展字段，所以新建该表
  *
  * @author 芋道源码
  */

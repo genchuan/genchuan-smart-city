@@ -1,4 +1,4 @@
-//package cn.iocoder.yudao.module.industry.client.datacenter.device.deviceinfo;
+package cn.iocoder.yudao.module.industry.client.datacenter.device.deviceinfo;//package cn.iocoder.yudao.module.industry.client.datacenter.device.deviceinfo;
 //
 //import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 //import cn.iocoder.yudao.framework.common.pojo.PageResult;

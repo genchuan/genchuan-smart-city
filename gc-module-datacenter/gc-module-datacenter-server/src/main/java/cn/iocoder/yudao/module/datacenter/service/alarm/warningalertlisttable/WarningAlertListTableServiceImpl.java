@@ -325,7 +325,7 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
 
                 // 4. 转换为Base64
                 byte[] fileBytes = files.getBytes();
-                String base64Data = java.util.Base64.getEncoder().encodeToString(fileBytes);
+                String base64Data = Base64.getEncoder().encodeToString(fileBytes);
                 String base64String = "data:" + mimeType + ";base64," + base64Data;
 
                 // 5. 验证Base64格式
@@ -525,7 +525,7 @@ public class WarningAlertListTableServiceImpl implements WarningAlertListTableSe
         }
 
         byte[] fileBytes = file.getBytes();
-        String base64Data = java.util.Base64.getEncoder().encodeToString(fileBytes);
+        String base64Data = Base64.getEncoder().encodeToString(fileBytes);
 
         // 根据MIME类型构建完整的Base64字符串
         String imageType = mimeType.substring(6); // 去掉"image/"
