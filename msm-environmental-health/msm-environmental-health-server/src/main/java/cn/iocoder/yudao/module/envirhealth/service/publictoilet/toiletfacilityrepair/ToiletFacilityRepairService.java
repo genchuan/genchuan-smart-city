@@ -7,6 +7,8 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ToiletFacilityRepairDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 
+import java.util.List;
+
 /**
  * 公厕设施维修 Service 接口
  *
@@ -35,6 +37,13 @@ public interface ToiletFacilityRepairService {
      * @param id 编号
      */
     void deleteToiletFacilityRepair(Long id);
+
+    /**
+     * 批量删除公厕设施维修
+     *
+     * @param ids 编号列表
+     */
+    void deleteToiletFacilityRepairBatch(List<Long> ids);
 
     /**
      * 获得公厕设施维修

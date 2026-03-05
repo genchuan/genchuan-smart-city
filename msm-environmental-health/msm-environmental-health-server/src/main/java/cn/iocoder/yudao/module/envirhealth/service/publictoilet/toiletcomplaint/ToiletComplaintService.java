@@ -7,6 +7,8 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ToiletComplaintDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 
+import java.util.List;
+
 /**
  * 公厕投诉 Service 接口
  *
@@ -35,6 +37,13 @@ public interface ToiletComplaintService {
      * @param id 编号
      */
     void deleteToiletComplaint(Long id);
+
+    /**
+     * 批量公厕投诉
+     *
+     * @param ids 编号列表
+     */
+    void deleteToiletComplaintBatch(List<Long> ids);
 
     /**
      * 获得公厕投诉

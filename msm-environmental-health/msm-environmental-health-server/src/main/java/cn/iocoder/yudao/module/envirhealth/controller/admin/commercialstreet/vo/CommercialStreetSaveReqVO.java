@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Data
 public class CommercialStreetSaveReqVO {
 
-    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "13724")
+    @Schema(description = "主键ID")
     private Long id;
 
     @Schema(description = "主键（UUID）", example = "979")

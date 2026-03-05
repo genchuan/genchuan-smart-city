@@ -1,5 +1,9 @@
 package cn.iocoder.yudao.module.envirhealth.service.operationstatus;
 
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.facility.FacilityDO;
+import cn.iocoder.yudao.module.envirhealth.util.options.vo.OptionVO;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -71,4 +75,21 @@ public class OperationStatusServiceImpl implements OperationStatusService {
         return operationStatusMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public List<OptionVO> getOperationStatusOptions() {
+
+        List<OperationStatusDO> list;
+        list = operationStatusMapper.selectList(
+                new LambdaQueryWrapperX<OperationStatusDO>()
+                        .eq(OperationStatusDO::getDeleted, 0)
+                        .orderByDesc(OperationStatusDO::getId)
+        );
+        // 将DO转换为下拉框VO（label=name，value=id）
+        return CollectionUtils.convertList(list, operationStatusDO -> {
+            OptionVO vo = new OptionVO();
+            vo.setLabel(operationStatusDO.getName());
+            vo.setValue(operationStatusDO.getSysOperationStatusId());
+            return vo;
+        });
+    }
 }

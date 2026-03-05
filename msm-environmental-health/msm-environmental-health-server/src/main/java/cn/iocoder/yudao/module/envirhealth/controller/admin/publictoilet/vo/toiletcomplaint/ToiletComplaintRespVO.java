@@ -11,20 +11,20 @@ import com.alibaba.excel.annotation.*;
 @ExcelIgnoreUnannotated
 public class ToiletComplaintRespVO {
 
-    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "12779")
+    @Schema(description = "主键ID")
     @ExcelProperty("主键ID")
     private Long id;
 
     @Schema(description = "投诉主键（UUID）", example = "31780")
-    @ExcelProperty("投诉主键（UUID）")
+    @ExcelProperty("投诉主键")
     private String complaintId;
 
     @Schema(description = "关联public_toilet.toilet_id", example = "20776")
-    @ExcelProperty("关联public_toilet.toilet_id")
+    @ExcelProperty("公厕编号")
     private String toiletId;
 
     @Schema(description = "关联sys_complaint_type.id", example = "24484")
-    @ExcelProperty("关联sys_complaint_type.id")
+    @ExcelProperty("投诉类型")
     private String complaintTypeId;
 
     @Schema(description = "投诉内容")
@@ -44,15 +44,15 @@ public class ToiletComplaintRespVO {
     private LocalDateTime complaintTime;
 
     @Schema(description = "派单状态：待派单/已派单/已处置", example = "2")
-    @ExcelProperty("派单状态：待派单/已派单/已处置")
+    @ExcelProperty("派单状态")
     private String dispatchStatus;
 
     @Schema(description = "关联sys_user.id", example = "17583")
-    @ExcelProperty("关联sys_user.id")
+    @ExcelProperty("处理人员")
     private String handlerId;
 
     @Schema(description = "是否超时：是/否")
-    @ExcelProperty("是否超时：是/否")
+    @ExcelProperty("超时")
     private String isTimeout;
 
     @Schema(description = "处置措施")
@@ -72,19 +72,19 @@ public class ToiletComplaintRespVO {
     private String feedbackContent;
 
     @Schema(description = "通用扩展字段1")
-    @ExcelProperty("通用扩展字段1")
+    @ExcelIgnore
     private String extCommon1;
 
     @Schema(description = "通用扩展字段2")
-    @ExcelProperty("通用扩展字段2")
+    @ExcelIgnore
     private String extCommon2;
 
     @Schema(description = "通用扩展字段3")
-    @ExcelProperty("通用扩展字段3")
+    @ExcelIgnore
     private String extCommon3;
 
     @Schema(description = "通用扩展字段4")
-    @ExcelProperty("通用扩展字段4")
+    @ExcelIgnore
     private String extCommon4;
 
     @Schema(description = "创建时间")

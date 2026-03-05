@@ -1,5 +1,10 @@
 package cn.iocoder.yudao.module.envirhealth.service.facility;
 
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.area.vo.AreaOptionVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.area.AreaDO;
+import cn.iocoder.yudao.module.envirhealth.util.options.vo.OptionVO;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -69,6 +74,24 @@ public class FacilityServiceImpl implements FacilityService {
     @Override
     public PageResult<FacilityDO> getFacilityPage(FacilityPageReqVO pageReqVO) {
         return facilityMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public List<OptionVO> getFacilityOptions() {
+
+        List<FacilityDO> list;
+        list = facilityMapper.selectList(
+                new LambdaQueryWrapperX<FacilityDO>()
+                        .eq(FacilityDO::getDeleted, 0)
+                        .orderByDesc(FacilityDO::getId)
+        );
+        // 将DO转换为下拉框VO（label=name，value=id）
+        return CollectionUtils.convertList(list, facilityDO -> {
+            OptionVO vo = new OptionVO();
+            vo.setLabel(facilityDO.getName());
+            vo.setValue(facilityDO.getSysFacilityId());
+            return vo;
+        });
     }
 
 }

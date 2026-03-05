@@ -2,8 +2,6 @@ package cn.iocoder.yudao.module.envirhealth.service.area;
 
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserOptionVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.UserDO;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;

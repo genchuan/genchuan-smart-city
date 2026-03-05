@@ -1,11 +1,9 @@
 package cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet;
 
-import cn.iocoder.yudao.module.envirhealth.controller.admin.area.vo.AreaOptionVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.GarbageCollectionPageReqVO;
+import cn.iocoder.yudao.module.envirhealth.util.statistics.StatisticsRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.publictoilet.PublicToiletPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.publictoilet.PublicToiletRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.publictoilet.PublicToiletSaveReqVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageCollectionDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.PublicToiletDetailDO;
 import cn.iocoder.yudao.module.envirhealth.util.options.vo.OptionVO;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +16,8 @@ import io.swagger.v3.oas.annotations.Operation;
 
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
+
+import java.net.URLEncoder;
 import java.util.*;
 import java.io.IOException;
 
@@ -68,6 +68,15 @@ public class PublicToiletController {
         return success(true);
     }
 
+    @DeleteMapping("/delete-batch")
+    @Operation(summary = "批量删除公厕")
+    @Parameter(name = "ids", description = "编号列表", required = true)
+    @PreAuthorize("@ss.hasPermission('health:public-toilet:delete')")
+    public CommonResult<Boolean> deletePublicToiletBatch(@RequestBody List<Long> ids) {
+        publicToiletService.deletePublicToiletBatch(ids);
+        return success(true);
+    }
+
     @GetMapping("/get")
     @Operation(summary = "获得公厕")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
@@ -90,12 +99,22 @@ public class PublicToiletController {
     @PreAuthorize("@ss.hasPermission('health:public-toilet:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportPublicToiletExcel(@Valid PublicToiletPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                        HttpServletResponse response) throws IOException {
+
+        // 1. 设置响应头
+        String fileName = "公厕.xls";
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setHeader("Content-Disposition",
+                "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
+        response.setCharacterEncoding("UTF-8");
+
+        // 2. 查询数据
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<PublicToiletDO> list = publicToiletService.getPublicToiletPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "公厕.xls", "数据", PublicToiletRespVO.class,
-                        BeanUtils.toBean(list, PublicToiletRespVO.class));
+
+        // 3. 导出 Excel
+        ExcelUtils.write(response, fileName, "数据", PublicToiletRespVO.class,
+                BeanUtils.toBean(list, PublicToiletRespVO.class));
     }
 
     @GetMapping("/detail-page")
@@ -118,5 +137,12 @@ public class PublicToiletController {
     @PreAuthorize("@ss.hasPermission('health:public-toilet:query')")
     public CommonResult<List<OptionVO>> getPublicToiletNameOptions() {
         return success(publicToiletService.getPublicToiletNameOptions());
+    }
+
+    @GetMapping("/chart/statistics")
+    @Operation(summary = "获取公厕统计数据(按状态分组)")
+    @PreAuthorize("@ss.hasPermission('health:public-toilet:query')")
+    public CommonResult<StatisticsRespVO> getPublicToiletStatistics() {
+        return success(publicToiletService.getPublicToiletStatistics());
     }
 }

@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.envirhealth.util.garbagecollection.vo;
+package cn.iocoder.yudao.module.envirhealth.util.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

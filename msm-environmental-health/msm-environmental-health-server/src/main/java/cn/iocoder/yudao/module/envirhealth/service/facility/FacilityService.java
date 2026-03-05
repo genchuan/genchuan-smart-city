@@ -1,6 +1,9 @@
 package cn.iocoder.yudao.module.envirhealth.service.facility;
 
 import java.util.*;
+
+import cn.iocoder.yudao.module.envirhealth.controller.admin.area.vo.AreaOptionVO;
+import cn.iocoder.yudao.module.envirhealth.util.options.vo.OptionVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.facility.vo.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.facility.FacilityDO;
@@ -52,4 +55,9 @@ public interface FacilityService {
      */
     PageResult<FacilityDO> getFacilityPage(FacilityPageReqVO pageReqVO);
 
+    /**
+     * 获得设施下拉框选项
+     * @return 下拉框选项列表
+     */
+    List<OptionVO> getFacilityOptions();
 }

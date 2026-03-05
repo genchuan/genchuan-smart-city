@@ -46,6 +46,97 @@
         LEFT JOIN sys_user u1 ON tfr.report_by = u1.user_id AND u1.deleted = 0
         LEFT JOIN sys_user u2 ON tfr.repair_by = u2.user_id AND u2.deleted = 0
         WHERE tfr.deleted = 0
+
+        <!-- 维修单号精确查询 -->
+        <if test="reqVO.repairId != null and reqVO.repairId != ''">
+            AND tfr.repair_id = #{reqVO.repairId}
+        </if>
+
+        <!-- 公厕ID精确查询 -->
+        <if test="reqVO.toiletId != null and reqVO.toiletId != ''">
+            AND tfr.toilet_id = #{reqVO.toiletId}
+        </if>
+
+        <!-- 公厕名称模糊查询 -->
+        <if test="reqVO.toiletName != null and reqVO.toiletName != ''">
+            AND pt.name LIKE CONCAT('%', #{reqVO.toiletName}, '%')
+        </if>
+
+        <!-- 设施ID精确查询 -->
+        <if test="reqVO.facilityId != null and reqVO.facilityId != ''">
+            AND tfr.facility_id = #{reqVO.facilityId}
+        </if>
+
+        <!-- 设施名称模糊查询 -->
+        <if test="reqVO.facilityName != null and reqVO.facilityName != ''">
+            AND sf.name LIKE CONCAT('%', #{reqVO.facilityName}, '%')
+        </if>
+
+        <!-- 损坏描述模糊查询 -->
+        <if test="reqVO.damageDesc != null and reqVO.damageDesc != ''">
+            AND tfr.damage_desc LIKE CONCAT('%', #{reqVO.damageDesc}, '%')
+        </if>
+
+        <!-- 上报人ID精确查询 -->
+        <if test="reqVO.reportBy != null and reqVO.reportBy != ''">
+            AND tfr.report_by = #{reqVO.reportBy}
+        </if>
+
+        <!-- 上报人姓名模糊查询 -->
+        <if test="reqVO.reportName != null and reqVO.reportName != ''">
+            AND u1.user_name LIKE CONCAT('%', #{reqVO.reportName}, '%')
+        </if>
+
+        <!-- 上报时间范围查询 -->
+        <if test="reqVO.reportTime != null and reqVO.reportTime.length == 2">
+            AND tfr.report_time BETWEEN #{reqVO.reportTime[0]} AND #{reqVO.reportTime[1]}
+        </if>
+
+        <!-- 维修人ID精确查询 -->
+        <if test="reqVO.repairBy != null and reqVO.repairBy != ''">
+            AND tfr.repair_by = #{reqVO.repairBy}
+        </if>
+
+        <!-- 维修人姓名模糊查询 -->
+        <if test="reqVO.repairName != null and reqVO.repairName != ''">
+            AND u2.user_name LIKE CONCAT('%', #{reqVO.repairName}, '%')
+        </if>
+
+        <!-- 维修状态精确查询 -->
+        <if test="reqVO.repairStatus != null and reqVO.repairStatus != ''">
+            AND tfr.repair_status = #{reqVO.repairStatus}
+        </if>
+
+        <!-- 预计完成时间范围查询 -->
+        <if test="reqVO.expectedCompleteTime != null and reqVO.expectedCompleteTime.length == 2">
+            AND tfr.expected_complete_time BETWEEN #{reqVO.expectedCompleteTime[0]} AND #{reqVO.expectedCompleteTime[1]}
+        </if>
+
+        <!-- 实际完成时间范围查询 -->
+        <if test="reqVO.actualCompleteTime != null and reqVO.actualCompleteTime.length == 2">
+            AND tfr.actual_complete_time BETWEEN #{reqVO.actualCompleteTime[0]} AND #{reqVO.actualCompleteTime[1]}
+        </if>
+
+        <!-- 验收结果精确查询 -->
+        <if test="reqVO.acceptResult != null and reqVO.acceptResult != ''">
+            AND tfr.accept_result = #{reqVO.acceptResult}
+        </if>
+
+        <!-- 验收意见模糊查询 -->
+        <if test="reqVO.acceptOpinion != null and reqVO.acceptOpinion != ''">
+            AND tfr.accept_opinion LIKE CONCAT('%', #{reqVO.acceptOpinion}, '%')
+        </if>
+
+        <!-- 创建时间范围查询 -->
+        <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+            AND tfr.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+        </if>
+
+        <!-- 更新时间范围查询 -->
+        <if test="reqVO.updateTime != null and reqVO.updateTime.length == 2">
+            AND tfr.update_time BETWEEN #{reqVO.updateTime[0]} AND #{reqVO.updateTime[1]}
+        </if>
+
         ORDER BY tfr.id DESC
         LIMIT #{reqVO.offset}, #{reqVO.pageSize}
     </select>
@@ -54,7 +145,101 @@
     <select id="selectCount" resultType="Long">
         SELECT COUNT(*)
         FROM public_toilet_facility_repair tfr
+        LEFT JOIN public_toilet pt ON tfr.toilet_id = pt.toilet_id AND pt.deleted = 0
+        LEFT JOIN sys_facility sf ON tfr.facility_id = sf.sys_facility_id AND sf.deleted = 0
+        LEFT JOIN sys_user u1 ON tfr.report_by = u1.user_id AND u1.deleted = 0
+        LEFT JOIN sys_user u2 ON tfr.repair_by = u2.user_id AND u2.deleted = 0
         WHERE tfr.deleted = 0
+
+        <!-- 维修单号精确查询 -->
+        <if test="reqVO.repairId != null and reqVO.repairId != ''">
+            AND tfr.repair_id = #{reqVO.repairId}
+        </if>
+
+        <!-- 公厕ID精确查询 -->
+        <if test="reqVO.toiletId != null and reqVO.toiletId != ''">
+            AND tfr.toilet_id = #{reqVO.toiletId}
+        </if>
+
+        <!-- 公厕名称模糊查询 -->
+        <if test="reqVO.toiletName != null and reqVO.toiletName != ''">
+            AND pt.name LIKE CONCAT('%', #{reqVO.toiletName}, '%')
+        </if>
+
+        <!-- 设施ID精确查询 -->
+        <if test="reqVO.facilityId != null and reqVO.facilityId != ''">
+            AND tfr.facility_id = #{reqVO.facilityId}
+        </if>
+
+        <!-- 设施名称模糊查询 -->
+        <if test="reqVO.facilityName != null and reqVO.facilityName != ''">
+            AND sf.name LIKE CONCAT('%', #{reqVO.facilityName}, '%')
+        </if>
+
+        <!-- 损坏描述模糊查询 -->
+        <if test="reqVO.damageDesc != null and reqVO.damageDesc != ''">
+            AND tfr.damage_desc LIKE CONCAT('%', #{reqVO.damageDesc}, '%')
+        </if>
+
+        <!-- 上报人ID精确查询 -->
+        <if test="reqVO.reportBy != null and reqVO.reportBy != ''">
+            AND tfr.report_by = #{reqVO.reportBy}
+        </if>
+
+        <!-- 上报人姓名模糊查询 -->
+        <if test="reqVO.reportName != null and reqVO.reportName != ''">
+            AND u1.user_name LIKE CONCAT('%', #{reqVO.reportName}, '%')
+        </if>
+
+        <!-- 上报时间范围查询 -->
+        <if test="reqVO.reportTime != null and reqVO.reportTime.length == 2">
+            AND tfr.report_time BETWEEN #{reqVO.reportTime[0]} AND #{reqVO.reportTime[1]}
+        </if>
+
+        <!-- 维修人ID精确查询 -->
+        <if test="reqVO.repairBy != null and reqVO.repairBy != ''">
+            AND tfr.repair_by = #{reqVO.repairBy}
+        </if>
+
+        <!-- 维修人姓名模糊查询 -->
+        <if test="reqVO.repairName != null and reqVO.repairName != ''">
+            AND u2.user_name LIKE CONCAT('%', #{reqVO.repairName}, '%')
+        </if>
+
+        <!-- 维修状态精确查询 -->
+        <if test="reqVO.repairStatus != null and reqVO.repairStatus != ''">
+            AND tfr.repair_status = #{reqVO.repairStatus}
+        </if>
+
+        <!-- 预计完成时间范围查询 -->
+        <if test="reqVO.expectedCompleteTime != null and reqVO.expectedCompleteTime.length == 2">
+            AND tfr.expected_complete_time BETWEEN #{reqVO.expectedCompleteTime[0]} AND #{reqVO.expectedCompleteTime[1]}
+        </if>
+
+        <!-- 实际完成时间范围查询 -->
+        <if test="reqVO.actualCompleteTime != null and reqVO.actualCompleteTime.length == 2">
+            AND tfr.actual_complete_time BETWEEN #{reqVO.actualCompleteTime[0]} AND #{reqVO.actualCompleteTime[1]}
+        </if>
+
+        <!-- 验收结果精确查询 -->
+        <if test="reqVO.acceptResult != null and reqVO.acceptResult != ''">
+            AND tfr.accept_result = #{reqVO.acceptResult}
+        </if>
+
+        <!-- 验收意见模糊查询 -->
+        <if test="reqVO.acceptOpinion != null and reqVO.acceptOpinion != ''">
+            AND tfr.accept_opinion LIKE CONCAT('%', #{reqVO.acceptOpinion}, '%')
+        </if>
+
+        <!-- 创建时间范围查询 -->
+        <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+            AND tfr.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+        </if>
+
+        <!-- 更新时间范围查询 -->
+        <if test="reqVO.updateTime != null and reqVO.updateTime.length == 2">
+            AND tfr.update_time BETWEEN #{reqVO.updateTime[0]} AND #{reqVO.updateTime[1]}
+        </if>
     </select>
 
 </mapper>

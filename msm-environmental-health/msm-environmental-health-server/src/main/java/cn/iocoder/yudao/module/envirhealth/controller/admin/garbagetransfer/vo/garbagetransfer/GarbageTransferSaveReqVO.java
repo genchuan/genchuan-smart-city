@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Data
 public class GarbageTransferSaveReqVO {
 
-    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "11765")
+    @Schema(description = "主键ID")
     private Long id;
 
     @Schema(description = "转运站主键（UUID）", example = "27803")

@@ -1,7 +1,5 @@
 package cn.iocoder.yudao.module.envirhealth.service.garbagecollection.garbagecollection;
 
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.GarbageCollectionImportReqVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.GarbageCollectionImportRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.GarbageCollectionPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.GarbageCollectionSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.card.all.GarbageCollectionCardAllVO;
@@ -13,14 +11,14 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.column.all.AreaCompletionRateColumnAllVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.column.completed.CollectionVolumeBarVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.column.pending.TimePeriodPendingColumnVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.statistics.GarbageCollectionStatisticsRespVO;
+import cn.iocoder.yudao.module.envirhealth.util.statistics.StatisticsRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.trend.completed.CompletionRateTrendVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.trend.executing.GarbageCollectionDailyTrendVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageCollectionDetailDO;
+import cn.iocoder.yudao.module.envirhealth.util.options.vo.OptionVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.GarbageCollectionDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import org.apache.ibatis.annotations.MapKey;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -79,6 +77,14 @@ public interface GarbageCollectionService {
     PageResult<GarbageCollectionDO> getGarbageCollectionPage(GarbageCollectionPageReqVO pageReqVO);
 
     /**
+     * 批量导入收运计划
+     *
+     * @param importList 导入数据列表
+     * @return Map包含成功数和失败数，如：{"success": 10, "fail": 2}
+     */
+    Map<String, Integer> importGarbageCollection(List<GarbageCollectionSaveReqVO> importList);
+
+    /**
      * 获得收运计划详情分页
      *
      * @param pageReqVO 分页查询
@@ -134,18 +140,10 @@ public interface GarbageCollectionService {
     List<TimePeriodPendingColumnVO> getTimePeriodPendingColumn();
 
     /**
-     * 批量导入收运计划
-     *
-     * @param importList 导入数据列表
-     * @return 导入结果
-     */
-    GarbageCollectionImportRespVO importGarbageCollection(List<GarbageCollectionImportReqVO> importList);
-
-    /**
      * 获取收运计划统计数据（按状态分组）
      * @return 统计数据
      */
-    GarbageCollectionStatisticsRespVO getGarbageCollectionStatistics();
+    StatisticsRespVO getGarbageCollectionStatistics();
 
     /**
      * 获取卡片统计数据（当前作业任务数、正常运行数、异常标记数）
@@ -191,4 +189,9 @@ public interface GarbageCollectionService {
      */
     Map<String, List<CollectionVolumeBarVO>> getCollectionVolumeComparison();
 
+    /**
+     * 获得计划编号下拉框选项
+     * @return 下拉框选项列表
+     */
+    List<OptionVO> getExecutingOptions();
 }

@@ -55,32 +55,18 @@ public class GarbageCollectionSaveReqVO {
     @Schema(description = "异常记录数", example = "21604")
     private Integer abnormalCount;
 
+    @JsonIgnore
     @Schema(description = "收运计划创建时间（原create_time）")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime abnormalCreateTime;
 
+    @JsonIgnore
     @Schema(description = "收运计划更新时间（原update_time）")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime abnormalUpdateTime;
 
     @Schema(description = "关联sys_user.id")
     private String createBy;
-
-    @JsonIgnore
-    @Schema(description = "通用扩展字段1")
-    private String extCommon1;
-
-    @JsonIgnore
-    @Schema(description = "通用扩展字段2")
-    private String extCommon2;
-
-    @JsonIgnore
-    @Schema(description = "通用扩展字段3")
-    private String extCommon3;
-
-    @JsonIgnore
-    @Schema(description = "通用扩展字段4")
-    private String extCommon4;
 
     @Schema(description = "当前进度（按点位完成率计算）", example = "85.50")
     private BigDecimal progress;

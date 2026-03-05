@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.toiletcomplaint;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
@@ -8,7 +9,7 @@ import java.time.LocalDateTime;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
-@Schema(description = "管理后台 - 公厕投诉分页 Request VO")
+@Schema(description = "环境卫生管理 - 公厕投诉分页 Request VO")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -20,8 +21,14 @@ public class ToiletComplaintPageReqVO extends PageParam {
     @Schema(description = "关联public_toilet.toilet_id", example = "20776")
     private String toiletId;
 
+    @Schema(description = "公厕名称", example = "人民广场公厕")
+    private String toiletName;
+
     @Schema(description = "关联sys_complaint_type.id", example = "24484")
     private String complaintTypeId;
+
+    @Schema(description = "投诉类型名称", example = "卫生不达标")
+    private String complaintTypeName;
 
     @Schema(description = "投诉内容")
     private String content;
@@ -42,6 +49,9 @@ public class ToiletComplaintPageReqVO extends PageParam {
     @Schema(description = "关联sys_user.id", example = "17583")
     private String handlerId;
 
+    @Schema(description = "处理人姓名", example = "张三")
+    private String handlerName;
+
     @Schema(description = "是否超时：是/否")
     private String isTimeout;
 
@@ -57,25 +67,19 @@ public class ToiletComplaintPageReqVO extends PageParam {
     @Schema(description = "反馈内容")
     private String feedbackContent;
 
-    @Schema(description = "通用扩展字段1")
-    private String extCommon1;
-
-    @Schema(description = "通用扩展字段2")
-    private String extCommon2;
-
-    @Schema(description = "通用扩展字段3")
-    private String extCommon3;
-
-    @Schema(description = "通用扩展字段4")
-    private String extCommon4;
-
     @Schema(description = "创建时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
 
+    @Schema(description = "更新时间")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime[] updateTime;
+
+    @JsonIgnore
     @Schema(hidden = true)
     private Integer offset;
 
+    @JsonIgnore
     @Schema(hidden = true)
     private Integer limit;
 

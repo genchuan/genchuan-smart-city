@@ -9,16 +9,14 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.column.all.AreaCompletionRateColumnAllVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.column.completed.CollectionVolumeBarVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.column.pending.TimePeriodPendingColumnVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.statistics.GarbageCollectionStatisticsRespVO;
+import cn.iocoder.yudao.module.envirhealth.util.statistics.StatisticsRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.trend.completed.CompletionRateTrendVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.trend.completed.GarbageCollectionTrendReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.trend.executing.GarbageCollectionDailyTrendVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageCollectionDetailDO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.circle.completed.GarbageCollectionCircleCompletedVO;
 import cn.iocoder.yudao.module.envirhealth.service.area.AreaService;
-import cn.iocoder.yudao.module.envirhealth.util.garbagecollection.ByteArrayMultipartFile;
+import cn.iocoder.yudao.module.envirhealth.util.options.vo.OptionVO;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -170,58 +168,29 @@ public class GarbageCollectionController {
     @PostMapping("/import-excel")
     @Operation(summary = "批量导入收运计划 Excel")
     @PreAuthorize("@ss.hasPermission('health:garbage-collection:import')")
-    public CommonResult<GarbageCollectionImportRespVO> importGarbageCollection(
+    public CommonResult<Map<String, Integer>> importGarbageCollection(
             @RequestPart("file") MultipartFile file) throws IOException {
+
         // 1. 基础校验
         if (file.isEmpty()) {
             return CommonResult.error(400, "导入文件不能为空");
         }
         String originalFilename = file.getOriginalFilename();
         if (originalFilename == null || (!originalFilename.endsWith(".xlsx") && !originalFilename.endsWith(".xls"))) {
-            return CommonResult.error(400, "仅支持.xlsx/.xls格式的Excel文件，请使用模板填写后导入");
+            return CommonResult.error(400, "仅支持.xlsx/.xls格式的Excel文件");
         }
 
-        // 2. 缓存文件流
-        byte[] fileBytes = StreamUtils.copyToByteArray(file.getInputStream());
-        MultipartFile cacheFile = new ByteArrayMultipartFile(
-                file.getName(), originalFilename, file.getContentType(), fileBytes
-        );
-
-        // 3. 解析Excel
-        List<GarbageCollectionImportReqVO> importList;
+        // 2. 解析Excel
+        List<GarbageCollectionSaveReqVO> importList;
         try {
-            importList = ExcelUtils.read(cacheFile, GarbageCollectionImportReqVO.class);
-
-            // ========== 在这里添加调试代码 ==========
-            System.out.println("========== Excel导入调试信息 ==========");
-            System.out.println("解析到 " + importList.size() + " 条数据");
-            System.out.println("Excel列名映射结果：");
-
-            if (!importList.isEmpty()) {
-                GarbageCollectionImportReqVO first = importList.get(0);
-                System.out.println("第一条数据详情：");
-                System.out.println("areaCode=" + first.getAreaCode());
-                System.out.println("garbageTypeId=" + first.getGarbageTypeId());
-                System.out.println("frequency=" + first.getFrequency());
-                System.out.println("timePeriod=" + first.getTimePeriod());
-                System.out.println("vehicleId=" + first.getVehicleId());
-                System.out.println("staffIds=" + first.getStaffIds());
-                System.out.println("pointIds=" + first.getPointIds());
-                System.out.println("planStatusId=" + first.getPlanStatusId());
-                System.out.println("completionRate=" + first.getCompletionRate());
-            } else {
-                System.out.println("警告：解析到的数据列表为空！");
-            }
-            System.out.println("=====================================");
-            // ========== 调试代码结束 ==========
-
+            importList = ExcelUtils.read(file, GarbageCollectionSaveReqVO.class);
         } catch (Exception e) {
-            e.printStackTrace();  // 打印异常堆栈
-            return CommonResult.error(500, "Excel解析失败：请检查文件格式是否与模板一致，" + e.getMessage());
+            e.printStackTrace();
+            return CommonResult.error(500, "Excel解析失败：" + e.getMessage());
         }
 
-        // 4. 执行导入
-        GarbageCollectionImportRespVO result = garbageCollectionService.importGarbageCollection(importList);
+        // 3. 执行导入
+        Map<String, Integer> result = garbageCollectionService.importGarbageCollection(importList);
         return CommonResult.success(result);
     }
 
@@ -309,7 +278,7 @@ public class GarbageCollectionController {
     @GetMapping("/chart/statistics")
     @Operation(summary = "获取收运计划统计数据(按状态分组)")
     @PreAuthorize("@ss.hasPermission('health:garbage-collection:query')")
-    public CommonResult<GarbageCollectionStatisticsRespVO> getGarbageCollectionStatistics() {
+    public CommonResult<StatisticsRespVO> getGarbageCollectionStatistics() {
         return success(garbageCollectionService.getGarbageCollectionStatistics());
     }
 
@@ -362,6 +331,17 @@ public class GarbageCollectionController {
     @PreAuthorize("@ss.hasPermission('health:garbage-collection:query')")
     public CommonResult<List<GarbageCollectionCircleCompletedVO>> getCompletedVolumeByGarbageType() {
         return success(garbageCollectionService.getCompletedVolumeByGarbageType());
+    }
+
+    /**
+     * 获得计划编号下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得计划编号(下拉框-执行中)")
+    @PreAuthorize("@ss.hasPermission('health:garbage-collection:query')")
+    public CommonResult<List<OptionVO>> getExecutingOptions() {
+        return success(garbageCollectionService.getExecutingOptions());
     }
 
 }

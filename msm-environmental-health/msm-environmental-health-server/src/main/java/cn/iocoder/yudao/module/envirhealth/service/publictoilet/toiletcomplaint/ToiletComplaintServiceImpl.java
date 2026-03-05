@@ -3,8 +3,10 @@ package cn.iocoder.yudao.module.envirhealth.service.publictoilet.toiletcomplaint
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.toiletcomplaint.ToiletComplaintPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.toiletcomplaint.ToiletComplaintSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.ToiletComplaintDetailDO;
+import cn.iocoder.yudao.module.envirhealth.util.publictoilet.codegenerator.ToiletComplaintCodeGenerator;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ToiletComplaintDO;
@@ -29,11 +31,16 @@ public class ToiletComplaintServiceImpl implements ToiletComplaintService {
 
     @Resource
     private ToiletComplaintMapper toiletComplaintMapper;
+    @Resource
+    private ToiletComplaintCodeGenerator codeGenerator;
 
     @Override
     public Long createToiletComplaint(ToiletComplaintSaveReqVO createReqVO) {
         // 插入
         ToiletComplaintDO toiletComplaint = BeanUtils.toBean(createReqVO, ToiletComplaintDO.class);
+
+        toiletComplaint.setComplaintId(codeGenerator.generateComplaintId());
+
         toiletComplaintMapper.insert(toiletComplaint);
         // 返回
         return toiletComplaint.getId();
@@ -54,6 +61,22 @@ public class ToiletComplaintServiceImpl implements ToiletComplaintService {
         validateToiletComplaintExists(id);
         // 删除
         toiletComplaintMapper.deleteById(id);
+    }
+
+    @Override
+    public void deleteToiletComplaintBatch(List<Long> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return;
+        }
+
+        // 校验所有计划是否存在
+        List<ToiletComplaintDO> toiletComplaints = toiletComplaintMapper.selectBatchIds(ids);
+        if (toiletComplaints.size() != ids.size()) {
+            throw exception(TOILET_COMPLAINT_NOT_EXISTS);
+        }
+
+        // 批量删除
+        toiletComplaintMapper.deleteBatchIds(ids);
     }
 
     private void validateToiletComplaintExists(Long id) {

@@ -1,7 +1,12 @@
 package cn.iocoder.yudao.module.envirhealth.service.publictoilet.complainttype;
 
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.area.vo.AreaOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.complainttype.ComplaintTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.complainttype.ComplaintTypeSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.area.AreaDO;
+import cn.iocoder.yudao.module.envirhealth.util.options.vo.OptionVO;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -11,6 +16,8 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.publictoilet.ComplaintTypeMapper;
+
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.*;
@@ -69,4 +76,21 @@ public class ComplaintTypeServiceImpl implements ComplaintTypeService {
         return complaintTypeMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public List<OptionVO> getComplaintTypeOptions() {
+
+        List<ComplaintTypeDO> list;
+        list = complaintTypeMapper.selectList(
+                new LambdaQueryWrapperX<ComplaintTypeDO>()
+                        .eq(ComplaintTypeDO::getDeleted, 0)
+                        .orderByDesc(ComplaintTypeDO::getId)
+        );
+        // 将DO转换为下拉框VO（label=name，value=id）
+        return CollectionUtils.convertList(list, complaintTypeDO -> {
+            OptionVO vo = new OptionVO();
+            vo.setLabel(complaintTypeDO.getComplaintName());
+            vo.setValue(complaintTypeDO.getComplaintTypeId());
+            return vo;
+        });
+    }
 }

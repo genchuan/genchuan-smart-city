@@ -12,7 +12,7 @@ import com.alibaba.excel.annotation.*;
 @ExcelIgnoreUnannotated
 public class GarbageTransferRespVO {
 
-    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "11765")
+    @Schema(description = "主键ID")
     @ExcelProperty("主键ID")
     private Long id;
 

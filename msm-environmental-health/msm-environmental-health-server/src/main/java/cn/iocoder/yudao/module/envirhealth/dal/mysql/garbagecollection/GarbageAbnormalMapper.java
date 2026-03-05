@@ -43,10 +43,6 @@ public interface GarbageAbnormalMapper extends BaseMapperX<GarbageAbnormalDO> {
                 .eqIfPresent(GarbageAbnormalDO::getReviewStatus, reqVO.getReviewStatus())
                 .eqIfPresent(GarbageAbnormalDO::getReviewBy, reqVO.getReviewBy())
                 .betweenIfPresent(GarbageAbnormalDO::getReviewTime, reqVO.getReviewTime())
-                .eqIfPresent(GarbageAbnormalDO::getExtCommon1, reqVO.getExtCommon1())
-                .eqIfPresent(GarbageAbnormalDO::getExtCommon2, reqVO.getExtCommon2())
-                .eqIfPresent(GarbageAbnormalDO::getExtCommon3, reqVO.getExtCommon3())
-                .eqIfPresent(GarbageAbnormalDO::getExtCommon4, reqVO.getExtCommon4())
                 .betweenIfPresent(GarbageAbnormalDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(GarbageAbnormalDO::getId));
     }

@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.statistics;
+package cn.iocoder.yudao.module.envirhealth.util.statistics;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -10,9 +10,9 @@ import java.util.Map;
  * 日期:2026/2/28 11:46
  */
 
-@Schema(description = "环境卫生管理 - 收运计划统计数据 Response VO")
+@Schema(description = "环境卫生管理 - 统计数据 Response VO")
 @Data
-public class GarbageCollectionStatisticsRespVO {
+public class StatisticsRespVO {
 
     @Schema(description = "总计划数", requiredMode = Schema.RequiredMode.REQUIRED, example = "35")
     private Integer total;

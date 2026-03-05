@@ -1,9 +1,9 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet;
 
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.complainttype.ComplaintTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.complainttype.ComplaintTypeRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.complainttype.ComplaintTypeSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.util.options.vo.OptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +31,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ComplaintTypeDO;
 import cn.iocoder.yudao.module.envirhealth.service.publictoilet.complainttype.ComplaintTypeService;
 
-@Tag(name = "管理后台 - 投诉类型字典")
+@Tag(name = "字典表 - 投诉类型")
 @RestController
 @RequestMapping("/envirhealth/complaint-type")
 @Validated
@@ -94,4 +94,14 @@ public class ComplaintTypeController {
                         BeanUtils.toBean(list, ComplaintTypeRespVO.class));
     }
 
-}*/
+    /**
+     * 获得投诉类型下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得投诉类型(下拉框)")
+    @PreAuthorize("@ss.hasPermission('health:complaint-type:query')")
+    public CommonResult<List<OptionVO>> getComplaintTypeOptions() {
+        return success(complaintTypeService.getComplaintTypeOptions());
+    }
+}

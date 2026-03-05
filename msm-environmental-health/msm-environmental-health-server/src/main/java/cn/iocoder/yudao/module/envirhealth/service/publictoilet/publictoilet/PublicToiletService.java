@@ -1,10 +1,8 @@
 package cn.iocoder.yudao.module.envirhealth.service.publictoilet.publictoilet;
 
-import cn.iocoder.yudao.module.envirhealth.controller.admin.area.vo.AreaOptionVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.GarbageCollectionPageReqVO;
+import cn.iocoder.yudao.module.envirhealth.util.statistics.StatisticsRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.publictoilet.PublicToiletPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.publictoilet.PublicToiletSaveReqVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageCollectionDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.PublicToiletDetailDO;
 import cn.iocoder.yudao.module.envirhealth.util.options.vo.OptionVO;
 import jakarta.validation.*;
@@ -43,6 +41,13 @@ public interface PublicToiletService {
     void deletePublicToilet(Long id);
 
     /**
+     * 批量删除公厕
+     *
+     * @param ids 编号列表
+     */
+    void deletePublicToiletBatch(List<Long> ids);
+
+    /**
      * 获得公厕
      *
      * @param id 编号
@@ -72,4 +77,12 @@ public interface PublicToiletService {
      * @return 下拉框选项列表
      */
     List<OptionVO> getPublicToiletNameOptions();
+
+
+    /**
+     * 获取公厕统计数据（按状态分组）
+     * @return 统计数据
+     */
+    StatisticsRespVO getPublicToiletStatistics();
+
 }

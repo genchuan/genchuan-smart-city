@@ -1,6 +1,6 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.operationstatus;
 
+import cn.iocoder.yudao.module.envirhealth.util.options.vo.OptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -30,7 +30,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.operationstatus.vo.*
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.operationstatus.OperationStatusDO;
 import cn.iocoder.yudao.module.envirhealth.service.operationstatus.OperationStatusService;
 
-@Tag(name = "环境卫生管理 - 运营状态字典")
+@Tag(name = "字典表 - 运营状态")
 @RestController
 @RequestMapping("/envirhealth/operation-status")
 @Validated
@@ -93,4 +93,14 @@ public class OperationStatusController {
                         BeanUtils.toBean(list, OperationStatusRespVO.class));
     }
 
-}*/
+    /**
+     * 获得运营状态下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得运营状态(下拉框)")
+    @PreAuthorize("@ss.hasPermission('health:operation-status:query')")
+    public CommonResult<List<OptionVO>> getOperationStatusOptions() {
+        return success(operationStatusService.getOperationStatusOptions());
+    }
+}

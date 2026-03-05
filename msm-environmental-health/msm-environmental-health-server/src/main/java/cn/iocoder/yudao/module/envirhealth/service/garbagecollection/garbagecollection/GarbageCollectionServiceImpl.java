@@ -1,7 +1,6 @@
 package cn.iocoder.yudao.module.envirhealth.service.garbagecollection.garbagecollection;
 
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.GarbageCollectionImportReqVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.GarbageCollectionImportRespVO;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.GarbageCollectionPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.GarbageCollectionSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.card.all.GarbageCollectionCardAllVO;
@@ -13,13 +12,14 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.column.all.AreaCompletionRateColumnAllVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.column.completed.CollectionVolumeBarVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.column.pending.TimePeriodPendingColumnVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.statistics.GarbageCollectionStatisticsRespVO;
+import cn.iocoder.yudao.module.envirhealth.util.statistics.StatisticsRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.trend.completed.CompletionRateTrendVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.trend.executing.GarbageCollectionDailyTrendVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageCollectionDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagecollection.GarbageAbnormalMapper;
 import cn.iocoder.yudao.module.envirhealth.util.garbagecollection.codegenerator.garbagecollection.GarbageCollectionCodeGenerator;
-import cn.iocoder.yudao.module.envirhealth.util.garbagecollection.vo.NameValueVO;
+import cn.iocoder.yudao.module.envirhealth.util.vo.NameValueVO;
+import cn.iocoder.yudao.module.envirhealth.util.options.vo.OptionVO;
 import jakarta.validation.ConstraintViolation;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -117,10 +117,73 @@ public class GarbageCollectionServiceImpl implements GarbageCollectionService {
         return garbageCollectionMapper.selectById(id);
     }
 
-
     @Override
     public PageResult<GarbageCollectionDO> getGarbageCollectionPage(GarbageCollectionPageReqVO pageReqVO) {
         return garbageCollectionMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public Map<String, Integer> importGarbageCollection(List<GarbageCollectionSaveReqVO> importList) {
+        Map<String, Integer> result = new HashMap<>();
+        result.put("success", 0);
+        result.put("fail", 0);
+
+        if (CollectionUtils.isEmpty(importList)) {
+            return result;
+        }
+
+        for (GarbageCollectionSaveReqVO saveReqVO : importList) {
+            try {
+                // 1. JSR380校验
+                Set<ConstraintViolation<GarbageCollectionSaveReqVO>> violations = validator.validate(saveReqVO);
+                if (!violations.isEmpty()) {
+                    result.put("fail", result.get("fail") + 1);
+                    continue;
+                }
+
+                // 2. 转换为DO并填充默认值
+                GarbageCollectionDO garbageCollection = BeanUtils.toBean(saveReqVO, GarbageCollectionDO.class);
+
+                // 自动生成业务主键和计划编号
+                if (garbageCollection.getCollectionId() == null) {
+                    garbageCollection.setCollectionId(codeGenerator.generateCollectionId());
+                }
+                if (garbageCollection.getPlanNo() == null) {
+                    garbageCollection.setPlanNo(codeGenerator.generatePlanNo());
+                }
+
+                // 填充默认值
+                if (garbageCollection.getPlanStatusId() == null) {
+                    garbageCollection.setPlanStatusId("uuid-plan-status-001");
+                }
+                if (garbageCollection.getCompletionRate() == null) {
+                    garbageCollection.setCompletionRate(BigDecimal.ZERO);
+                }
+                if (garbageCollection.getAbnormalCount() == null) {
+                    garbageCollection.setAbnormalCount(0);
+                }
+                if (garbageCollection.getCreateTime() == null) {
+                    garbageCollection.setCreateTime(LocalDateTime.now());
+                }
+
+                // JSON字段空值处理
+                if (garbageCollection.getStaffIds() == null || garbageCollection.getStaffIds().trim().isEmpty()) {
+                    garbageCollection.setStaffIds("[]");
+                }
+                if (garbageCollection.getPointIds() == null || garbageCollection.getPointIds().trim().isEmpty()) {
+                    garbageCollection.setPointIds("[]");
+                }
+
+                // 3. 插入数据库
+                garbageCollectionMapper.insert(garbageCollection);
+                result.put("success", result.get("success") + 1);
+
+            } catch (Exception e) {
+                result.put("fail", result.get("fail") + 1);
+            }
+        }
+
+        return result;
     }
 
     @Override
@@ -208,102 +271,8 @@ public class GarbageCollectionServiceImpl implements GarbageCollectionService {
     }
 
     @Override
-    public GarbageCollectionImportRespVO importGarbageCollection(List<GarbageCollectionImportReqVO> importList) {
-        if (CollectionUtils.isEmpty(importList)) {
-            return GarbageCollectionImportRespVO.builder()
-                    .successCount(0)
-                    .failCount(0)
-                    .errorDetails(new ArrayList<>())
-                    .build();
-        }
-
-        int successCount = 0;
-        int failCount = 0;
-        List<GarbageCollectionImportRespVO.ImportErrorDetail> errorDetails = new ArrayList<>();
-
-        // 示例：预加载字典/关联表数据（避免循环查询DB）
-        // Map<String, String> areaCodeMap = areaService.getAreaCodeToNameMap();
-        // Map<String, String> vehicleIdMap = vehicleService.getVehicleIdMap();
-
-        for (int i = 0; i < importList.size(); i++) {
-            GarbageCollectionImportReqVO importReqVO = importList.get(i);
-            int rowNum = i + 2; // Excel行号（表头行是1）
-
-            // 1. JSR380校验（必填字段）
-            Set<ConstraintViolation<GarbageCollectionImportReqVO>> violations = validator.validate(importReqVO);
-            if (!violations.isEmpty()) {
-                failCount++;
-                String errorMsg = violations.stream()
-                        .map(ConstraintViolation::getMessage)
-                        .reduce((msg1, msg2) -> msg1 + "；" + msg2)
-                        .orElse("数据格式校验失败");
-                errorDetails.add(GarbageCollectionImportRespVO.ImportErrorDetail.builder()
-                        .rowNum(rowNum)
-                        .errorMsg(errorMsg)
-                        .build());
-                continue;
-            }
-
-            try {
-                // 2. 业务校验（示例：校验区域编码是否存在）
-                // if (!areaCodeMap.containsKey(importReqVO.getAreaCode())) {
-                //     throw new IllegalArgumentException("区域编码不存在：" + importReqVO.getAreaCode());
-                // }
-                // if (!vehicleIdMap.containsKey(importReqVO.getVehicleId())) {
-                //     throw new IllegalArgumentException("车辆ID不存在：" + importReqVO.getVehicleId());
-                // }
-
-                // 3. 转换为DO并填充默认值/自动生成字段
-                GarbageCollectionDO garbageCollection = BeanUtils.toBean(importReqVO, GarbageCollectionDO.class);
-
-                // 自动生成业务主键和计划编号
-                garbageCollection.setCollectionId(codeGenerator.generateCollectionId());
-                garbageCollection.setPlanNo(codeGenerator.generatePlanNo());
-
-                // 填充默认值
-                if (garbageCollection.getPlanStatusId() == null || garbageCollection.getPlanStatusId().isEmpty()) {
-                    garbageCollection.setPlanStatusId("uuid-plan-status-001");
-                }
-                if (garbageCollection.getCompletionRate() == null) {
-                    garbageCollection.setCompletionRate(BigDecimal.ZERO);
-                }
-                if (garbageCollection.getAbnormalCount() == null) {
-                    garbageCollection.setAbnormalCount(0);
-                }
-                if (garbageCollection.getCreateTime() == null) {
-                    garbageCollection.setCreateTime(LocalDateTime.now());
-                }
-                // 空值处理：JSON字段默认空数组
-                if (garbageCollection.getStaffIds() == null || garbageCollection.getStaffIds().trim().isEmpty()) {
-                    garbageCollection.setStaffIds("[]");
-                }
-                if (garbageCollection.getPointIds() == null || garbageCollection.getPointIds().trim().isEmpty()) {
-                    garbageCollection.setPointIds("[]");
-                }
-
-                // 4. 插入数据库
-                garbageCollectionMapper.insert(garbageCollection);
-                successCount++;
-
-            } catch (Exception e) {
-                failCount++;
-                errorDetails.add(GarbageCollectionImportRespVO.ImportErrorDetail.builder()
-                        .rowNum(rowNum)
-                        .errorMsg("数据导入失败：" + e.getMessage())
-                        .build());
-            }
-        }
-
-        return GarbageCollectionImportRespVO.builder()
-                .successCount(successCount)
-                .failCount(failCount)
-                .errorDetails(errorDetails)
-                .build();
-    }
-
-    @Override
-    public GarbageCollectionStatisticsRespVO getGarbageCollectionStatistics() {
-        GarbageCollectionStatisticsRespVO respVO = new GarbageCollectionStatisticsRespVO();
+    public StatisticsRespVO getGarbageCollectionStatistics() {
+        StatisticsRespVO respVO = new StatisticsRespVO();
 
         // 1. 查询总计划数
         Long totalCount = garbageCollectionMapper.selectTotalCount();
@@ -474,5 +443,24 @@ public class GarbageCollectionServiceImpl implements GarbageCollectionService {
                     return item;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<OptionVO> getExecutingOptions() {
+
+        List<GarbageCollectionDO> list;
+        list = garbageCollectionMapper.selectList(
+                new LambdaQueryWrapperX<GarbageCollectionDO>()
+                        .eq(GarbageCollectionDO::getDeleted, 0)
+                        .eq(GarbageCollectionDO::getPlanStatusId, "uuid-plan-status-002")
+                        .orderByDesc(GarbageCollectionDO::getId)
+        );
+        // 将DO转换为下拉框VO（label=name，value=id）
+        return cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList(list, garbageCollectionDO -> {
+            OptionVO vo = new OptionVO();
+            vo.setLabel(garbageCollectionDO.getPlanStatusId());
+            vo.setValue(garbageCollectionDO.getPlanNo());
+            return vo;
+        });
     }
 }

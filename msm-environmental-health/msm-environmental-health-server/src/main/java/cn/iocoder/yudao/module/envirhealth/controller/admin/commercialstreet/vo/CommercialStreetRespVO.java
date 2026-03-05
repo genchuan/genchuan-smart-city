@@ -13,7 +13,7 @@ import com.alibaba.excel.annotation.*;
 @ExcelIgnoreUnannotated
 public class CommercialStreetRespVO {
 
-    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "13724")
+    @Schema(description = "主键ID")
     @ExcelProperty("主键ID")
     private Long id;
 

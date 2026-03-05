@@ -1,41 +1,28 @@
 package cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail;
 
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.PublicToiletDO;
-import cn.iocoder.yudao.module.envirhealth.util.json.StringSplitUtils;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-
-import java.util.List;
+import lombok.EqualsAndHashCode;
 
 /**
- * 功能:
- * 作者:SWE22008
- * 日期:2026/2/14 11:13
+ * 公厕详情DO
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class PublicToiletDetailDO extends PublicToiletDO {
+
     /**
-     * 关联sys_area.area_code
+     * 区域名称
      */
     private String areaName;
+
     /**
-     * 关联sys_operation_status.id
+     * 运营状态名称
      */
     private String operationStatusName;
+
     /**
-     * 关联sys_user.id
+     * 负责人名称
      */
     private String managerName;
-    /**
-     * 保洁人员IDs，JSON
-     */
-    @JsonIgnore
-    private String cleanersNameStr;
-
-    private List<String> cleanersName;
-
-    public void setCleanersNameStr(String cleanersNameStr) {
-        this.cleanersNameStr = cleanersNameStr;
-        this.cleanersName = StringSplitUtils.splitToStringList(cleanersNameStr);
-    }
 }

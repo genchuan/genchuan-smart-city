@@ -3,8 +3,10 @@ package cn.iocoder.yudao.module.envirhealth.service.publictoilet.toiletfacilityr
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.toiletfacilityrepair.ToiletFacilityRepairPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.toiletfacilityrepair.ToiletFacilityRepairSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.ToiletFacilityRepairDetailDO;
+import cn.iocoder.yudao.module.envirhealth.util.publictoilet.codegenerator.ToiletFacilityRepairCodeGenerator;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ToiletFacilityRepairDO;
@@ -30,10 +32,16 @@ public class ToiletFacilityRepairServiceImpl implements ToiletFacilityRepairServ
     @Resource
     private ToiletFacilityRepairMapper toiletFacilityRepairMapper;
 
+    @Resource
+    private ToiletFacilityRepairCodeGenerator codeGenerator;
+
     @Override
     public Long createToiletFacilityRepair(ToiletFacilityRepairSaveReqVO createReqVO) {
         // 插入
         ToiletFacilityRepairDO toiletFacilityRepair = BeanUtils.toBean(createReqVO, ToiletFacilityRepairDO.class);
+
+        toiletFacilityRepair.setRepairId(codeGenerator.generateRepairId());
+
         toiletFacilityRepairMapper.insert(toiletFacilityRepair);
         // 返回
         return toiletFacilityRepair.getId();
@@ -54,6 +62,22 @@ public class ToiletFacilityRepairServiceImpl implements ToiletFacilityRepairServ
         validateToiletFacilityRepairExists(id);
         // 删除
         toiletFacilityRepairMapper.deleteById(id);
+    }
+
+    @Override
+    public void deleteToiletFacilityRepairBatch(List<Long> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return;
+        }
+
+        // 校验所有计划是否存在
+        List<ToiletFacilityRepairDO> toiletFacilityRepairs = toiletFacilityRepairMapper.selectBatchIds(ids);
+        if (toiletFacilityRepairs.size() != ids.size()) {
+            throw exception(TOILET_COMPLAINT_NOT_EXISTS);
+        }
+
+        // 批量删除
+        toiletFacilityRepairMapper.deleteBatchIds(ids);
     }
 
     private void validateToiletFacilityRepairExists(Long id) {

@@ -10,6 +10,7 @@ import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.To
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.ToiletFacilityRepairDetailDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -35,15 +36,26 @@ public interface ToiletFacilityRepairMapper extends BaseMapperX<ToiletFacilityRe
                 .betweenIfPresent(ToiletFacilityRepairDO::getExpectedCompleteTime, reqVO.getExpectedCompleteTime())
                 .eqIfPresent(ToiletFacilityRepairDO::getAcceptResult, reqVO.getAcceptResult())
                 .eqIfPresent(ToiletFacilityRepairDO::getAcceptOpinion, reqVO.getAcceptOpinion())
-                .eqIfPresent(ToiletFacilityRepairDO::getExtCommon1, reqVO.getExtCommon1())
-                .eqIfPresent(ToiletFacilityRepairDO::getExtCommon2, reqVO.getExtCommon2())
-                .eqIfPresent(ToiletFacilityRepairDO::getExtCommon3, reqVO.getExtCommon3())
-                .eqIfPresent(ToiletFacilityRepairDO::getExtCommon4, reqVO.getExtCommon4())
                 .betweenIfPresent(ToiletFacilityRepairDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(ToiletFacilityRepairDO::getId));
     }
 
+    /**
+     * 查询全局最大序号（用于repair_id）
+     */
+    @Select("SELECT IFNULL(MAX(SUBSTRING_INDEX(repair_id, '-', -1)), 0) FROM public_toilet_facility_repair")
+    Integer selectMaxSeq();
+
     List<ToiletFacilityRepairDetailDO> selectDetailPage(@Param("reqVO") ToiletFacilityRepairPageReqVO pageReqVO);
 
     Long selectCount(@Param("reqVO") ToiletFacilityRepairPageReqVO pageReqVO);
+
+    /**
+     * 统计待维修的设施数量
+     * 待维修：repair_status IN ('待维修', '维修中', '不合格')
+     */
+    @Select("SELECT COUNT(*) FROM public_toilet_facility_repair " +
+            "WHERE deleted = 0 " +
+            "AND repair_status IN ('待维修', '维修中', '不合格')")
+    Long countPendingRepair();
 }

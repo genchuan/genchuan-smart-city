@@ -10,6 +10,7 @@ import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.Pu
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.ToiletComplaintDetailDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -37,15 +38,26 @@ public interface ToiletComplaintMapper extends BaseMapperX<ToiletComplaintDO> {
                 .eqIfPresent(ToiletComplaintDO::getHandleResult, reqVO.getHandleResult())
                 .eqIfPresent(ToiletComplaintDO::getReformPhoto, reqVO.getReformPhoto())
                 .eqIfPresent(ToiletComplaintDO::getFeedbackContent, reqVO.getFeedbackContent())
-                .eqIfPresent(ToiletComplaintDO::getExtCommon1, reqVO.getExtCommon1())
-                .eqIfPresent(ToiletComplaintDO::getExtCommon2, reqVO.getExtCommon2())
-                .eqIfPresent(ToiletComplaintDO::getExtCommon3, reqVO.getExtCommon3())
-                .eqIfPresent(ToiletComplaintDO::getExtCommon4, reqVO.getExtCommon4())
                 .betweenIfPresent(ToiletComplaintDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(ToiletComplaintDO::getId));
     }
 
+    /**
+     * 查询全局最大序号（用于complaint_id）
+     */
+    @Select("SELECT IFNULL(MAX(SUBSTRING_INDEX(complaint_id, '-', -1)), 0) FROM public_toilet_complaint")
+    Integer selectMaxSeq();
+
     List<ToiletComplaintDetailDO> selectDetailPage(@Param("reqVO") ToiletComplaintPageReqVO pageReqVO);
 
     Long selectCount(@Param("reqVO") ToiletComplaintPageReqVO pageReqVO);
+
+    /**
+     * 统计待处置的投诉数量
+     * 待处置：dispatch_status IN ('待派单', '已派单')
+     */
+    @Select("SELECT COUNT(*) FROM public_toilet_complaint " +
+            "WHERE deleted = 0 " +
+            "AND dispatch_status IN ('待派单', '已派单')")
+    Long countPendingDisposal();
 }

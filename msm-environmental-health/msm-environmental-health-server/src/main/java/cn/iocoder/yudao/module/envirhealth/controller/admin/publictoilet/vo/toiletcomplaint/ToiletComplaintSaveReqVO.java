@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 public class ToiletComplaintSaveReqVO {
 
-    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "12779")
+    @Schema(description = "主键ID")
     private Long id;
 
     @Schema(description = "投诉主键（UUID）", example = "31780")

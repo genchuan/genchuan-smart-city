@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.envirhealth.service.operationstatus;
 
 import java.util.*;
+
+import cn.iocoder.yudao.module.envirhealth.util.options.vo.OptionVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.operationstatus.vo.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.operationstatus.OperationStatusDO;
@@ -52,4 +54,9 @@ public interface OperationStatusService {
      */
     PageResult<OperationStatusDO> getOperationStatusPage(OperationStatusPageReqVO pageReqVO);
 
+    /**
+     * 获得运营状态下拉框选项
+     * @return 下拉框选项列表
+     */
+    List<OptionVO> getOperationStatusOptions();
 }

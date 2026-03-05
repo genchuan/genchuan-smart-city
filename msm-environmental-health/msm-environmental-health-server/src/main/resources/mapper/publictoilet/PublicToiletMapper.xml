@@ -2,8 +2,17 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.publictoilet.PublicToiletMapper">
 
-    <resultMap id="PublicToiletDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.PublicToiletDetailDO">
+    <resultMap id="PublicToiletDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.PublicToiletDetailDO"
+               extends="cn.iocoder.yudao.module.envirhealth.dal.mysql.publictoilet.PublicToiletMapper.BaseResultMap">
 
+        <!-- 关联查询的额外字段 -->
+        <result column="area_name" property="areaName"/>
+        <result column="operation_status_name" property="operationStatusName"/>
+        <result column="manager_name" property="managerName"/>
+    </resultMap>
+
+    <!-- 基础结果映射 -->
+    <resultMap id="BaseResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.PublicToiletDO">
         <id column="id" property="id"/>
         <result column="toilet_id" property="toiletId"/>
         <result column="name" property="name"/>
@@ -15,28 +24,8 @@
         <result column="manager_id" property="managerId"/>
         <result column="cleaning_rate" property="cleaningRate"/>
         <result column="complaint_rate" property="complaintRate"/>
-        <result column="warning_count" property="warningCount"/>
         <result column="facility_rate" property="facilityRate"/>
-        <result column="cleaning_frequency" property="cleaningFrequency"/>
-        <result column="cleaning_time" property="cleaningTime"/>
-        <result column="cleaning_content" property="cleaningContent"/>
-        <result column="cleaning_standard" property="cleaningStandard"/>
-        <result column="cleaner_ids" property="cleanerIds"/>
-        <result column="consumable_stock" property="consumableStock"/>
-        <result column="consumable_threshold" property="consumableThreshold"/>
-        <result column="consumable_gap" property="consumableGap"/>
-        <result column="last_supply_time" property="lastSupplyTime"/>
-        <result column="supply_cycle" property="supplyCycle"/>
-        <result column="ext_common1" property="extCommon1"/>
-        <result column="ext_common2" property="extCommon2"/>
-        <result column="ext_common3" property="extCommon3"/>
-        <result column="ext_common4" property="extCommon4"/>
-
-        <!-- 关联查询的额外字段 -->
-        <result column="area_name" property="areaName"/>
-        <result column="operation_status_name" property="operationStatusName"/>
-        <result column="manager_name" property="managerName"/>
-        <result column="cleaner_name" property="cleanerName"/>
+        <result column="warning_count" property="warningCount"/>
     </resultMap>
 
     <select id="selectDetailPage" resultMap="PublicToiletDetailResultMap">
@@ -44,19 +33,14 @@
         pt.*,
         a.area_name AS area_name,
         os.name AS operation_status_name,
-        u.user_name AS manager_name,
-        IFNULL(GROUP_CONCAT(DISTINCT u2.user_name), '') AS cleaners_name_str
+        u.user_name AS manager_name
         FROM public_toilet pt
         LEFT JOIN sys_area a ON pt.area_code = a.area_code AND a.deleted = 0
         LEFT JOIN sys_operation_status os ON pt.operation_status_id = os.sys_operation_status_id AND os.deleted = 0
         LEFT JOIN sys_user u ON pt.manager_id = u.user_id AND u.deleted = 0
-        LEFT JOIN sys_user u2 ON FIND_IN_SET(
-        u2.user_id,
-        REPLACE(REPLACE(REPLACE(REPLACE(pt.cleaner_ids, '[', ''), ']', ''), '"', ''), ' ', '')
-        ) AND u2.deleted = 0
         WHERE pt.deleted = 0
 
-        <!-- 基础字段过滤 -->
+        <!-- 查询条件 -->
         <if test="reqVO.toiletId != null and reqVO.toiletId != ''">
             AND pt.toilet_id = #{reqVO.toiletId}
         </if>
@@ -72,78 +56,34 @@
         <if test="reqVO.openHours != null and reqVO.openHours != ''">
             AND pt.open_hours LIKE CONCAT('%', #{reqVO.openHours}, '%')
         </if>
-
-        <!-- 蹲位数量范围过滤 -->
         <if test="reqVO.stallCount != null and reqVO.stallCount.length == 2">
             AND pt.stall_count BETWEEN #{reqVO.stallCount[0]} AND #{reqVO.stallCount[1]}
         </if>
-
-        <!-- 运营状态过滤 -->
         <if test="reqVO.operationStatusId != null and reqVO.operationStatusId != ''">
             AND pt.operation_status_id = #{reqVO.operationStatusId}
         </if>
-
-        <!-- 管理员过滤 -->
         <if test="reqVO.managerId != null and reqVO.managerId != ''">
             AND pt.manager_id = #{reqVO.managerId}
         </if>
-
-        <!-- 保洁人员过滤 -->
-        <if test="reqVO.cleanerIds != null and reqVO.cleanerIds != ''">
-            AND pt.cleaner_ids LIKE CONCAT('%', #{reqVO.cleanerIds}, '%')
-        </if>
-
-        <!-- 保洁达标率范围过滤 -->
         <if test="reqVO.cleaningRate != null and reqVO.cleaningRate.length == 2">
             AND pt.cleaning_rate BETWEEN #{reqVO.cleaningRate[0]} AND #{reqVO.cleaningRate[1]}
         </if>
-
-        <!-- 投诉办结率范围过滤 -->
         <if test="reqVO.complaintRate != null and reqVO.complaintRate.length == 2">
             AND pt.complaint_rate BETWEEN #{reqVO.complaintRate[0]} AND #{reqVO.complaintRate[1]}
         </if>
-
-        <!-- 预警数量过滤 -->
-        <if test="reqVO.warningCount != null">
-            AND pt.warning_count >= #{reqVO.warningCount}
-        </if>
-
-        <!-- 设施完好率范围过滤 -->
         <if test="reqVO.facilityRate != null and reqVO.facilityRate.length == 2">
             AND pt.facility_rate BETWEEN #{reqVO.facilityRate[0]} AND #{reqVO.facilityRate[1]}
         </if>
-
-        <!-- 保洁频次过滤 -->
-        <if test="reqVO.cleaningFrequency != null and reqVO.cleaningFrequency != ''">
-            AND pt.cleaning_frequency LIKE CONCAT('%', #{reqVO.cleaningFrequency}, '%')
+        <if test="reqVO.warningCountMin != null">
+            AND pt.warning_count >= #{reqVO.warningCountMin}
         </if>
-
-        <!-- 耗材阈值过滤 -->
-        <if test="reqVO.consumableThreshold != null">
-            AND pt.consumable_threshold >= #{reqVO.consumableThreshold}
-        </if>
-
-        <!-- 缺口数量过滤 -->
-        <if test="reqVO.hasConsumableGap != null and reqVO.hasConsumableGap == true">
-            AND pt.consumable_gap > 0
-        </if>
-
-        <!-- 上次补充时间范围过滤 -->
-        <if test="reqVO.lastSupplyTime != null and reqVO.lastSupplyTime.length == 2">
-            AND pt.last_supply_time BETWEEN #{reqVO.lastSupplyTime[0]} AND #{reqVO.lastSupplyTime[1]}
-        </if>
-
-        <!-- 创建时间范围过滤 -->
         <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
             AND pt.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
         </if>
-
-        <!-- 更新时间范围过滤 -->
         <if test="reqVO.updateTime != null and reqVO.updateTime.length == 2">
             AND pt.update_time BETWEEN #{reqVO.updateTime[0]} AND #{reqVO.updateTime[1]}
         </if>
 
-        GROUP BY pt.id, a.area_name, os.name, u.user_name
         ORDER BY pt.id DESC
         LIMIT #{reqVO.offset}, #{reqVO.limit}
     </select>
@@ -152,9 +92,6 @@
     <select id="selectCount" resultType="Long">
         SELECT COUNT(DISTINCT pt.id)
         FROM public_toilet pt
-        LEFT JOIN sys_area a ON pt.area_code = a.area_code AND a.deleted = 0
-        LEFT JOIN sys_operation_status os ON pt.operation_status_id = os.sys_operation_status_id AND os.deleted = 0
-        LEFT JOIN sys_user u ON pt.manager_id = u.user_id AND u.deleted = 0
         WHERE pt.deleted = 0
 
         <!-- 与分页查询一致的动态条件 -->
@@ -182,32 +119,17 @@
         <if test="reqVO.managerId != null and reqVO.managerId != ''">
             AND pt.manager_id = #{reqVO.managerId}
         </if>
-        <if test="reqVO.cleanerIds != null and reqVO.cleanerIds != ''">
-            AND pt.cleaner_ids LIKE CONCAT('%', #{reqVO.cleanerIds}, '%')
-        </if>
         <if test="reqVO.cleaningRate != null and reqVO.cleaningRate.length == 2">
             AND pt.cleaning_rate BETWEEN #{reqVO.cleaningRate[0]} AND #{reqVO.cleaningRate[1]}
         </if>
         <if test="reqVO.complaintRate != null and reqVO.complaintRate.length == 2">
             AND pt.complaint_rate BETWEEN #{reqVO.complaintRate[0]} AND #{reqVO.complaintRate[1]}
         </if>
-        <if test="reqVO.warningCount != null">
-            AND pt.warning_count >= #{reqVO.warningCount}
-        </if>
         <if test="reqVO.facilityRate != null and reqVO.facilityRate.length == 2">
             AND pt.facility_rate BETWEEN #{reqVO.facilityRate[0]} AND #{reqVO.facilityRate[1]}
         </if>
-        <if test="reqVO.cleaningFrequency != null and reqVO.cleaningFrequency != ''">
-            AND pt.cleaning_frequency LIKE CONCAT('%', #{reqVO.cleaningFrequency}, '%')
-        </if>
-        <if test="reqVO.consumableThreshold != null">
-            AND pt.consumable_threshold >= #{reqVO.consumableThreshold}
-        </if>
-        <if test="reqVO.hasConsumableGap != null and reqVO.hasConsumableGap == true">
-            AND pt.consumable_gap > 0
-        </if>
-        <if test="reqVO.lastSupplyTime != null and reqVO.lastSupplyTime.length == 2">
-            AND pt.last_supply_time BETWEEN #{reqVO.lastSupplyTime[0]} AND #{reqVO.lastSupplyTime[1]}
+        <if test="reqVO.warningCountMin != null">
+            AND pt.warning_count >= #{reqVO.warningCountMin}
         </if>
         <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
             AND pt.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}

@@ -1,11 +1,10 @@
 package cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.card.pending;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import cn.iocoder.yudao.module.envirhealth.util.garbagecollection.vo.NameValueVO;
+import cn.iocoder.yudao.module.envirhealth.util.vo.NameValueVO;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 功能:

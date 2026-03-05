@@ -1,6 +1,7 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.facility;
 
+import cn.iocoder.yudao.module.envirhealth.controller.admin.area.vo.AreaOptionVO;
+import cn.iocoder.yudao.module.envirhealth.util.options.vo.OptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -30,7 +31,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.facility.vo.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.facility.FacilityDO;
 import cn.iocoder.yudao.module.envirhealth.service.facility.FacilityService;
 
-@Tag(name = "环境卫生管理 - 设施字典")
+@Tag(name = "字典表 - 设施")
 @RestController
 @RequestMapping("/envirhealth/facility")
 @Validated
@@ -93,4 +94,15 @@ public class FacilityController {
                         BeanUtils.toBean(list, FacilityRespVO.class));
     }
 
-}*/
+    /**
+     * 获得区域编码下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得设施(下拉框)")
+    @PreAuthorize("@ss.hasPermission('health:facility:query')")
+    public CommonResult<List<OptionVO>> getFacilityOptions() {
+        return success(facilityService.getFacilityOptions());
+    }
+
+}

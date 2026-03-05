@@ -1,34 +1,31 @@
 package cn.iocoder.yudao.module.envirhealth.service.publictoilet.publictoilet;
 
-import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.area.vo.AreaOptionVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.GarbageCollectionPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.publictoilet.PublicToiletPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.publictoilet.PublicToiletSaveReqVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.area.AreaDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageCollectionDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.PublicToiletDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.mysql.publictoilet.*;
 import cn.iocoder.yudao.module.envirhealth.util.options.vo.OptionVO;
+import cn.iocoder.yudao.module.envirhealth.util.publictoilet.codegenerator.PublicToiletCodeGenerator;
+import cn.iocoder.yudao.module.envirhealth.util.statistics.StatisticsRespVO;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.PublicToiletDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
-import cn.iocoder.yudao.module.envirhealth.dal.mysql.publictoilet.PublicToiletMapper;
-
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.*;
 
 /**
  * 公厕 Service 实现类
- *
- * @author 芋道源码
  */
 @Service
 @Validated
@@ -36,41 +33,85 @@ public class PublicToiletServiceImpl implements PublicToiletService {
 
     @Resource
     private PublicToiletMapper publicToiletMapper;
+    @Resource
+    private ToiletComplaintMapper toiletComplaintMapper;
+    @Resource
+    private ToiletFacilityRepairMapper toiletFacilityRepairMapper;
+    @Resource
+    private ToiletCleaningTaskMapper toiletCleaningTaskMapper;
+    @Resource
+    private ToiletConsumableMapper toiletConsumableMapper;
+    @Resource
+    private PublicToiletCodeGenerator codeGenerator;
 
     @Override
     public Long createPublicToilet(PublicToiletSaveReqVO createReqVO) {
-        // 处理 cleaner_ids 字段：如果为空字符串，则设置为 null
-        if (createReqVO.getCleanerIds() != null && createReqVO.getCleanerIds().isEmpty()) {
-            createReqVO.setCleanerIds(null);
-        }
+        // 1. 检查名称是否重复
+        checkNameUnique(createReqVO.getName(), null);
 
-        // 插入
+        // 2. 插入
         PublicToiletDO publicToilet = BeanUtils.toBean(createReqVO, PublicToiletDO.class);
+
+        // 3. 自动生成toilet_id(覆盖手动填写的)
+        publicToilet.setToiletId(codeGenerator.generateToiletId());
+
         publicToiletMapper.insert(publicToilet);
-        // 返回
         return publicToilet.getId();
     }
 
     @Override
     public void updatePublicToilet(PublicToiletSaveReqVO updateReqVO) {
-        // 处理 cleaner_ids 字段：如果为空字符串，则设置为 null
-        if (updateReqVO.getCleanerIds() != null && updateReqVO.getCleanerIds().isEmpty()) {
-            updateReqVO.setCleanerIds(null);
-        }
+        // 1. 检查名称是否重复（排除自身）
+        checkNameUnique(updateReqVO.getName(), updateReqVO.getId());
 
-        // 校验存在
+        // 2. 校验存在
         validatePublicToiletExists(updateReqVO.getId());
-        // 更新
+
+        // 3. 更新
         PublicToiletDO updateObj = BeanUtils.toBean(updateReqVO, PublicToiletDO.class);
         publicToiletMapper.updateById(updateObj);
     }
 
+    /**
+     * 检查公厕名称是否唯一
+     */
+    private void checkNameUnique(String name, Long id) {
+        if (name == null || name.trim().isEmpty()) {
+            return;
+        }
+
+        LambdaQueryWrapperX<PublicToiletDO> query = new LambdaQueryWrapperX<PublicToiletDO>()
+                .eq(PublicToiletDO::getName, name)
+                .eq(PublicToiletDO::getDeleted, false);
+
+        if (id != null) {
+            query.ne(PublicToiletDO::getId, id);
+        }
+
+        PublicToiletDO existing = publicToiletMapper.selectOne(query);
+        if (existing != null) {
+            throw exception(PUBLIC_TOILET_NAME_DUPLICATE);
+        }
+    }
+
     @Override
     public void deletePublicToilet(Long id) {
-        // 校验存在
         validatePublicToiletExists(id);
-        // 删除
         publicToiletMapper.deleteById(id);
+    }
+
+    @Override
+    public void deletePublicToiletBatch(List<Long> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return;
+        }
+
+        List<PublicToiletDO> publicToilets = publicToiletMapper.selectBatchIds(ids);
+        if (publicToilets.size() != ids.size()) {
+            throw exception(PUBLIC_TOILET_NOT_EXISTS);
+        }
+
+        publicToiletMapper.deleteBatchIds(ids);
     }
 
     private void validatePublicToiletExists(Long id) {
@@ -104,19 +145,43 @@ public class PublicToiletServiceImpl implements PublicToiletService {
 
     @Override
     public List<OptionVO> getPublicToiletNameOptions() {
+        return publicToiletMapper.selectToiletOptions();
+    }
 
-        List<PublicToiletDO> list;
-        list = publicToiletMapper.selectList(
-                new LambdaQueryWrapperX<PublicToiletDO>()
-                        .eq(PublicToiletDO::getDeleted, 0)
-                        .orderByDesc(PublicToiletDO::getId)
-        );
-        // 将DO转换为下拉框VO（label=name，value=id）
-        return CollectionUtils.convertList(list, publicToiletDO -> {
-            OptionVO vo = new OptionVO();
-            vo.setLabel(publicToiletDO.getName());
-            vo.setValue(publicToiletDO.getToiletId());
-            return vo;
-        });
+    @Override
+    public StatisticsRespVO getPublicToiletStatistics() {
+        StatisticsRespVO respVO = new StatisticsRespVO();
+
+        // 1. 查询公厕总数量
+        Long totalCount = publicToiletMapper.selectTotalCount();
+        respVO.setTotal(totalCount == null ? 0 : totalCount.intValue());
+
+        // 2. 查询公厕计划状态统计
+        List<Map<String, Object>> statusStats = toiletCleaningTaskMapper.selectStatisticsByPlanStatus();
+
+        // 3. 转换为Map格式
+        Map<String, Integer> planStatusCounts = new LinkedHashMap<>();
+
+        // 4. 填充公厕计划的状态数据
+        for (Map<String, Object> stat : statusStats) {
+            String statusName = (String) stat.get("status_name");
+            Long count = (Long) stat.get("count");
+            planStatusCounts.put(statusName, count.intValue());
+        }
+
+        // 5. 查询投诉表数据，填充投诉待处置
+        Long complaintPendingCount = toiletComplaintMapper.countPendingDisposal();
+        planStatusCounts.put("投诉待处置", complaintPendingCount == null ? 0 : complaintPendingCount.intValue());
+
+        // 6. 查询设施维修表数据，填充待维修
+        Long repairPendingCount = toiletFacilityRepairMapper.countPendingRepair();
+        planStatusCounts.put("设施待维修", repairPendingCount == null ? 0 : repairPendingCount.intValue());
+
+        // 7. 物资待补充
+        Long consumableCount = toiletConsumableMapper.countConsumable();
+        planStatusCounts.put("物资待补充", consumableCount == null ? 0 : consumableCount.intValue());
+
+        respVO.setPlanStatusCounts(planStatusCounts);
+        return respVO;
     }
 }
