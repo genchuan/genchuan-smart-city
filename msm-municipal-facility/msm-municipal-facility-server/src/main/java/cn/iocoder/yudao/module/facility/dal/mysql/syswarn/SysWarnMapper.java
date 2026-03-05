@@ -55,5 +55,5 @@ public interface SysWarnMapper extends BaseMapperX<SysWarnDO> {
      * 通用预警分页查询
      */
 //    PageResult<SysWarnDO> selectPage(@Param("reqVO") SysWarnPageReqVO reqVO);
-    PageResult<SysWarnDO> getSysWarnPage(SysWarnPageReqVO reqVO);
+    List<SysWarnDO> getSysWarnPage(SysWarnPageReqVO reqVO);
 }

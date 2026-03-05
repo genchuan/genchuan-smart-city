@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.facility.controller.admin.road.warn.vo;
+package cn.iocoder.yudao.module.facility.controller.admin.road.roadwarn.vo;
 
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import io.swagger.v3.oas.annotations.media.Schema;

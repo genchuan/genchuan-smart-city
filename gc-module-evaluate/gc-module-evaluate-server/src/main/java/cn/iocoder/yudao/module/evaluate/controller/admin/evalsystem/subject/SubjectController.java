@@ -6,10 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.subject.vo.SubjectImportRespVO;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.subject.vo.SubjectPageReqVO;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.subject.vo.SubjectRespVO;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.subject.vo.SubjectSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.subject.vo.*;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.subject.SubjectDO;
 import cn.iocoder.yudao.module.evaluate.service.subject.SubjectService;
 import com.alibaba.nacos.api.model.v2.Result;
@@ -159,5 +156,11 @@ public class SubjectController {
             @RequestParam(required = false) Integer statusId) {
         SubjectRespVO respVO = subjectService.getStatusCount(statusId);
         return Result.success(respVO);
+    }
+
+    @GetMapping("/overview")
+    @Operation(summary = "获取评价主体全局概览数据**")
+    public CommonResult<EvalSubjectOverviewVO> getEvalSubjectOverview() {
+        return CommonResult.success(subjectService.getEvalSubjectOverview());
     }
 }

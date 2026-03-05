@@ -1,13 +1,13 @@
 package cn.iocoder.yudao.module.evaluate.dal.dataobject.subjecttype;
 
-import lombok.*;
-import java.util.*;
-import java.time.LocalDateTime;
-import java.time.LocalDateTime;
-import java.time.LocalDateTime;
-import java.time.LocalDateTime;
-import com.baomidou.mybatisplus.annotation.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
+import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 /**
  * 主体类型字典 DO
@@ -44,6 +44,7 @@ public class SubjectTypeDO extends BaseDO {
     /**
      * 类型描述
      */
+    @TableField("`desc`") // 关键点：加上反引号 `
     private String desc;
     /**
      * 业务创建时间

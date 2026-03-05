@@ -24,7 +24,13 @@ public class AppDemoTestController {
     @GetMapping("/get")
     @Operation(summary = "获取 test2 信息")
     public CommonResult<String> get() {
-        return success("true");
+        return success("2026");
+    }
+
+    @GetMapping("/get123")
+    @Operation(summary = "获取 test123 信息")
+    public CommonResult<String> get123() {
+        return success("2026");
     }
 
 }
