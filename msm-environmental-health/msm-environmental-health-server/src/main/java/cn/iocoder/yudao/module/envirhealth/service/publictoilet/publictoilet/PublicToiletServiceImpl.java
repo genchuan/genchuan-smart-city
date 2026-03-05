@@ -165,6 +165,12 @@ public class PublicToiletServiceImpl implements PublicToiletService {
         // 4. 填充公厕计划的状态数据
         for (Map<String, Object> stat : statusStats) {
             String statusName = (String) stat.get("status_name");
+            if ("执行中".equals(statusName)) {
+                statusName = "保洁作业中";
+            }
+            if ("待执行".equals(statusName)) {
+                statusName = "保洁待执行";
+            }
             Long count = (Long) stat.get("count");
             planStatusCounts.put(statusName, count.intValue());
         }
