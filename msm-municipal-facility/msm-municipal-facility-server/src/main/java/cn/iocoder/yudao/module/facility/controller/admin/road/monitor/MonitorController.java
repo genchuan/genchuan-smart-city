@@ -39,6 +39,14 @@ public class MonitorController {
     @Resource
     private MonitorService monitorService;
 
+    @PostMapping("/batch-update-monitor-status")
+    @Operation(summary = "批量修改-道路监测-运行监测状态")
+    @PreAuthorize("@ss.hasPermission('facility:monitor:batch-update-monitor-status')")
+    public CommonResult<Integer> batchUpdateMonitorStatus(@Valid @RequestBody BatchUpdateMonitorStatusReqVO reqVO) {
+        //返回成功修改记录数目
+        int resultNum = monitorService.batchUpdateMonitorStatus(reqVO);
+        return success(resultNum);
+    }
     @GetMapping("/realtime-page")
     @Operation(summary = "获得道路监测实时监测分页")
     @PreAuthorize("@ss.hasPermission('facility:monitor:realtime-page')")

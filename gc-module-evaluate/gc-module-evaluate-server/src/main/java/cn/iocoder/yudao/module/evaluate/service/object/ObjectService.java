@@ -1,6 +1,5 @@
 package cn.iocoder.yudao.module.evaluate.service.object;
 
-import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.object.vo.EvalObjectOverviewVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.object.vo.ObjectPageReqVO;
@@ -78,7 +77,7 @@ public interface ObjectService {
     /**
      * 校验评价对象名称在同一区域是否唯一
      */
-    CommonResult<String> validateNameUnique(String name, String areaCode, String excludeObjectId);
+    void validateNameUnique(String name, String areaCode, String excludeObjectId);
 
     //新
     PageResult<ObjectRespVO> getAllObjectPage(ObjectPageReqVO pageParam);

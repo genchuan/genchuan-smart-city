@@ -64,7 +64,7 @@ public class MonitorServiceImpl implements MonitorService {
 
         // 5. 是否预警（TODO：后续接入真实预警逻辑）
         monitor.setIsWarning(0);
-        monitor.setWarningId(null);
+        monitor.setWarningIdListStr(null);
 
         // 6. 监测状态（默认运行中）
         monitor.setMonitorStatus("运行中");
@@ -154,6 +154,67 @@ public class MonitorServiceImpl implements MonitorService {
         // 7. 构造并返回分页结果
         //    PageResult 包含列表数据和总记录数
         return new PageResult<>(list, total);
+    }
+
+    /**
+     * 批量修改道路运行监测状态
+     *
+     * <p>业务规则说明：</p>
+     * <ul>
+     *     <li>monitorStatus：必填，只允许“运行中 / 已停止”</li>
+     *     <li>roadIdList：
+     *          <ul>
+     *              <li>null：表示修改全部道路监测状态（⚠️高危操作）</li>
+     *              <li>非空集合：表示修改指定道路</li>
+     *              <li>空集合：非法参数，不允许</li>
+     *          </ul>
+     *     </li>
+     * </ul>
+     *
+     * @param reqVO 批量修改监测状态请求参数
+     * @return 实际受影响的记录条数
+     */
+    @Override
+    public int batchUpdateMonitorStatus(BatchUpdateMonitorStatusReqVO reqVO) {
+        // ==================== 1. 基础校验 ====================
+        if (reqVO == null) {
+            // 请求体不能为空，否则无法判断修改目标和状态
+            throw exception(500, "请求参数不能为空");
+        }
+
+        // ==================== 2. 校验监测状态（字符串） ====================
+        String monitorStatus = reqVO.getMonitorStatus();
+        if (monitorStatus == null || monitorStatus.isBlank()) {
+            // 运行监测状态是核心业务参数，不能为空
+            throw exception(500, "运行监测状态不能为空");
+        }
+
+        // ==================== 3. 校验状态值合法性 ====================
+        // 当前只允许两种状态：
+        //   - 运行中
+        //   - 已停止
+        // 注意：若后续新增状态（如：暂停、维护中），需同步调整此处校验逻辑
+        if (!"运行中".equals(monitorStatus)
+                && !"已停止".equals(monitorStatus)) {
+            throw exception(500, "运行监测状态不合法");
+        }
+
+        // ==================== 4. 处理道路ID列表 ====================
+        List<Long> roadIdList = reqVO.getRoadIdList();
+
+        // roadIdList == null：表示对【全部道路】执行修改操作（高风险）
+        // 必须通过明确的 null 语义触发，避免误操作
+        if (roadIdList == null) {
+            return monitorMapper.updateAllMonitorStatus(monitorStatus);
+        }
+
+        // roadIdList 为空集合：语义不明确，直接判定为非法参数
+        if (roadIdList.isEmpty()) {
+            throw exception(500, "道路ID列表不能为空");
+        }
+
+        // ==================== 5. 修改指定道路监测状态 ====================
+        return monitorMapper.batchUpdateMonitorStatus(roadIdList, monitorStatus);
     }
 
     /**

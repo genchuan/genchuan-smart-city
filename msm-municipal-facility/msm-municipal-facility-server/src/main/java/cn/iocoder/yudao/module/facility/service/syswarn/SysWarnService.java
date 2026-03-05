@@ -5,6 +5,7 @@ import java.util.*;
 import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnPageReqVO;
 import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnRespVO;
 import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnSaveReqVO;
+import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnUpdateReqVO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.syswarn.SysWarnDO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -30,7 +31,7 @@ public interface SysWarnService {
      *
      * @param updateReqVO 更新信息
      */
-    void updateSysWarn(@Valid SysWarnSaveReqVO updateReqVO);
+    void updateSysWarn(@Valid SysWarnUpdateReqVO updateReqVO);
 
     /**
      * 删除通用预警

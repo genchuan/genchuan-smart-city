@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.facility.controller.admin.road.monitor.vo;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -67,9 +68,9 @@ public class MonitorUpdateReqVO {
 //    @Schema(description = "[是否预警] 如:0-否/1-是")
     private Integer isWarning;
 
-    @Schema(hidden = true)
-//    @Schema(description = "[预警ID] 关联预警表ID", example = "30795")
-    private Long warningId;
+    @Schema(description = "[预警ID列表字符串]", example = "1,2")
+//    @ExcelProperty("[预警ID列表字符串]")
+    private String warningIdListStr;
 
 //    @Schema(hidden = true)
     @Schema(description = "[监测状态] 如:运行中/已停止", requiredMode = Schema.RequiredMode.REQUIRED, example = "运行中")

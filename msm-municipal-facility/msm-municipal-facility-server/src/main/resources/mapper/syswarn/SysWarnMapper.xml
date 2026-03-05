@@ -47,76 +47,76 @@
         FROM sys_warn
         WHERE deleted = 0
 
-        <if test="reqVO.warnNo != null and reqVO.warnNo != ''">
-            AND warn_no LIKE CONCAT('%', #{reqVO.warnNo}, '%')
+        <if test="warnNo != null and warnNo != ''">
+            AND warn_no LIKE CONCAT('%', #{warnNo}, '%')
         </if>
 
-        <if test="reqVO.facilityId != null">
-            AND facility_id = #{reqVO.facilityId}
+        <if test="facilityId != null">
+            AND facility_id = #{facilityId}
         </if>
 
-        <if test="reqVO.facilityName != null and reqVO.facilityName != ''">
-            AND facility_name LIKE CONCAT('%', #{reqVO.facilityName}, '%')
+        <if test="facilityName != null and facilityName != ''">
+            AND facility_name LIKE CONCAT('%', #{facilityName}, '%')
         </if>
 
-        <if test="reqVO.facilityCode != null and reqVO.facilityCode != ''">
-            AND facility_code = #{reqVO.facilityCode}
+        <if test="facilityCode != null and facilityCode != ''">
+            AND facility_code = #{facilityCode}
         </if>
 
-        <if test="reqVO.workOrderId != null">
-            AND work_order_id = #{reqVO.workOrderId}
+        <if test="workOrderId != null">
+            AND work_order_id = #{workOrderId}
         </if>
 
-        <if test="reqVO.workOrderCode != null and reqVO.workOrderCode != ''">
-            AND work_order_code = #{reqVO.workOrderCode}
+        <if test="workOrderCode != null and workOrderCode != ''">
+            AND work_order_code = #{workOrderCode}
         </if>
 
-        <if test="reqVO.deviceId != null">
-            AND device_id = #{reqVO.deviceId}
+        <if test="deviceId != null">
+            AND device_id = #{deviceId}
         </if>
 
-        <if test="reqVO.deviceCode != null and reqVO.deviceCode != ''">
-            AND device_code = #{reqVO.deviceCode}
+        <if test="deviceCode != null and deviceCode != ''">
+            AND device_code = #{deviceCode}
         </if>
 
-        <if test="reqVO.monitorId != null">
-            AND monitor_id = #{reqVO.monitorId}
+        <if test="monitorId != null">
+            AND monitor_id = #{monitorId}
         </if>
 
-        <if test="reqVO.monitorCode != null and reqVO.monitorCode != ''">
-            AND monitor_code = #{reqVO.monitorCode}
+        <if test="monitorCode != null and monitorCode != ''">
+            AND monitor_code = #{monitorCode}
         </if>
 
-        <if test="reqVO.status != null and reqVO.status != ''">
-            AND status = #{reqVO.status}
+        <if test="status != null and status != ''">
+            AND status = #{status}
         </if>
 
-        <if test="reqVO.assignStatus != null and reqVO.assignStatus != ''">
-            AND assign_status = #{reqVO.assignStatus}
+        <if test="assignStatus != null and assignStatus != ''">
+            AND assign_status = #{assignStatus}
         </if>
 
-        <if test="reqVO.facilityType != null and reqVO.facilityType != ''">
-            AND facility_type = #{reqVO.facilityType}
+        <if test="facilityType != null and facilityType != ''">
+            AND facility_type = #{facilityType}
         </if>
 
-        <if test="reqVO.type != null and reqVO.type != ''">
-            AND type = #{reqVO.type}
+        <if test="type != null and type != ''">
+            AND type = #{type}
         </if>
 
-        <if test="reqVO.wayType != null and reqVO.wayType != ''">
-            AND way_type = #{reqVO.wayType}
+        <if test="wayType != null and wayType != ''">
+            AND way_type = #{wayType}
         </if>
 
-        <if test="reqVO.level != null">
-            AND level = #{reqVO.level}
+        <if test="level != null">
+            AND level = #{level}
         </if>
 
-        <if test="reqVO.triggerTime != null and reqVO.triggerTime.length == 2">
-            AND trigger_time BETWEEN #{reqVO.triggerTime[0]} AND #{reqVO.triggerTime[1]}
+        <if test="triggerTime != null and triggerTime.length == 2">
+            AND trigger_time BETWEEN #{triggerTime[0]} AND #{triggerTime[1]}
         </if>
 
-        <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
-            AND create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+        <if test="createTime != null and createTime.length == 2">
+            AND create_time BETWEEN #{createTime[0]} AND #{createTime[1]}
         </if>
 
         ORDER BY create_time DESC

@@ -38,7 +38,7 @@ public interface RoadConfigMapper extends BaseMapperX<RoadConfigDO> {
                 .orderByDesc(RoadConfigDO::getId));
     }
 
-    PageResult<RoadConfigRespVO> selectPageWithRoad(
-            @Param("reqVO") RoadConfigPageReqVO reqVO
+    PageResult<RoadConfigRespVO> getRoadConfigPage(
+            RoadConfigPageReqVO reqVO
     );
 }

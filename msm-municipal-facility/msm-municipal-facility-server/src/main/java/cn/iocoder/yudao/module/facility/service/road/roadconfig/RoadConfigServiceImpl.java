@@ -81,6 +81,6 @@ public class RoadConfigServiceImpl implements RoadConfigService {
 
 //    @Override
 //    public PageResult<RoadConfigRespVO> getRoadConfigPage(RoadConfigPageReqVO pageReqVO) {
-//        return roadConfigMapper.selectPageWithRoad(pageReqVO);
+//        return roadConfigMapper.getRoadConfigPage(pageReqVO);
 //    }
 }

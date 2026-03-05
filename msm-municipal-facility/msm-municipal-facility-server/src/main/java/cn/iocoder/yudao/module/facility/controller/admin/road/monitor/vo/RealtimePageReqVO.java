@@ -86,8 +86,8 @@ public class RealtimePageReqVO {
     @Schema(description = "[是否预警] 如:0-否/1-是")
     private Integer isWarning;
 
-    @Schema(description = "[预警ID] 关联预警表ID", example = "30795")
-    private Long warningId;
+    @Schema(description = "[预警ID列表字符串]", example = "1,2")
+    private String warningIdListStr;
 
     @Schema(description = "[监测状态] 如:运行中/已停止", example = "运行中")
     private String monitorStatus;

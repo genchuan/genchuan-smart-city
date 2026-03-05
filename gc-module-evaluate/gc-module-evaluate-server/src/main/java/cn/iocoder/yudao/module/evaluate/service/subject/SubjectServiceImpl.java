@@ -9,7 +9,6 @@ import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.subject.vo.*
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.subject.SubjectDO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.subjecttype.SubjectTypeDO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.user.UserDO;
-import cn.iocoder.yudao.module.evaluate.dal.mysql.status.StatusMapper;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.subject.SubjectMapper;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.subjecttype.SubjectTypeMapper;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.user.UserMapper;
@@ -21,10 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -41,11 +37,14 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Resource
     private SubjectMapper subjectMapper;
-
+//    @Resource
+//    private SubjectMemberMapper subjectMemberMapper;
     @Override
     public Long createSubject(SubjectSaveReqVO createReqVO) {
         // 插入
         SubjectDO subject = BeanUtils.toBean(createReqVO, SubjectDO.class);
+        //object.setObjectId(UUID.randomUUID().toString());
+        subject.setSubjectId(UUID.randomUUID().toString());
         subjectMapper.insert(subject);
 
         // 返回
@@ -150,6 +149,17 @@ public class SubjectServiceImpl implements SubjectService {
     public PageResult<SubjectRespVO> getSubjectJoinPage(SubjectPageReqVO reqVO) {
         return subjectMapper.selectSubjectJoinPage(reqVO);
     }
+        //
+
+
+    // 辅助判断方法
+//    private boolean isManualSubject(SubjectRespVO vo) {
+//        // 根据你的业务判断，比如通过 subjectTypeName 或者 subjectTypeId
+//        // 示例：return "人工主体".equals(vo.getSubjectTypeName());
+//        return true; // 这里先默认都返回，你自己加判断
+//    }
+
+
 
     /**
      * 公共方法：构造基础查询条件（过滤deleted=1）
@@ -190,8 +200,8 @@ public class SubjectServiceImpl implements SubjectService {
     private UserMapper sysUserMapper;
     @Resource
     private SubjectTypeMapper sysSubjectTypeMapper;
-    @Resource
-    private StatusMapper sysStatusMapper;
+//    @Resource
+//    private StatusMapper sysStatusMapper;
 
     @Override
     public List<SubjectImportRespVO> importSubjectExcel(MultipartFile file) {
@@ -276,7 +286,7 @@ public class SubjectServiceImpl implements SubjectService {
             }
 
             // --- 3.3 判定结果 ---
-            if (errorMsg.length() > 0) {
+            if (!errorMsg.isEmpty()) {
                 // 失败
                 resultList.add(new SubjectImportRespVO(lineNo, excelVO.getName(), false, errorMsg.toString()));
             } else {
@@ -296,5 +306,26 @@ public class SubjectServiceImpl implements SubjectService {
         }
 
         return resultList;
+    }
+    @Override
+    public EvalSubjectOverviewVO getEvalSubjectOverview() {
+        EvalSubjectOverviewVO vo = new EvalSubjectOverviewVO();
+
+        // 1. 组装卡片核心数据
+        EvalSubjectOverviewVO.CardData cardData = subjectMapper.selectCardCoreData();
+        vo.setCardData(cardData);
+
+        // 2. 组装圆环图数据
+        List<EvalSubjectOverviewVO.PieChartItem> typePieChart = subjectMapper.selectTypePieChart();
+        vo.setTypePieChart(typePieChart);
+
+        List<EvalSubjectOverviewVO.PieChartItem> statusPieChart = subjectMapper.selectStatusPieChart();
+        vo.setStatusPieChart(statusPieChart);
+
+        // 3. 组装柱状图数据
+        List<EvalSubjectOverviewVO.BarChartItem> memberCountBarChart = subjectMapper.selectMemberCountBarChart();
+        vo.setMemberCountBarChart(memberCountBarChart);
+
+        return vo;
     }
 }

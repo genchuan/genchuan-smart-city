@@ -36,7 +36,7 @@
 <!--        </where>-->
 <!--        ORDER BY rc.id DESC-->
 <!--    </select>-->
-    <select id="selectPageWithRoad"
+    <select id="getRoadConfigPage"
             resultType="cn.iocoder.yudao.module.facility.controller.admin.road.roadconfig.vo.RoadConfigRespVO">
         SELECT
             rc.*,

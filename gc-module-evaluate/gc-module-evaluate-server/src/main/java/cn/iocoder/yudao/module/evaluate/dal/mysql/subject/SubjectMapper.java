@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.subject.vo.EvalSubjectOverviewVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.subject.vo.SubjectPageReqVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.subject.vo.SubjectRespVO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.subject.SubjectDO;
@@ -14,6 +15,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * 评价主体 Mapper
@@ -129,4 +133,54 @@ public interface SubjectMapper extends BaseMapperX<SubjectDO> {
         // 5. 返回分页结果
         return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
     }
+    // 辅助方法：判断是否为人工主体
+//    private boolean isManualSubject(SubjectRespVO vo) {
+//        // 这里根据你的实际业务逻辑判断
+//        // 比如：return "MANUAL".equals(vo.getSubjectTypeCode());
+//        // 或者简单点：只要 memberCount > 0 就显示
+//        return vo.getMemberCount() != null && vo.getMemberCount() > 0;
+//    }
+    // ========== 1. 卡片核心数据（总主体数、人工/系统主体数、启用主体数） ==========
+    @Select("SELECT " +
+            "COUNT(*) AS totalCount, " +
+            "SUM(CASE WHEN st.code = 'MANUAL' THEN 1 ELSE 0 END) AS manualSubjectCount, " + // 假设type_key区分人工/系统
+            "SUM(CASE WHEN st.code = 'SYSTEM' THEN 1 ELSE 0 END) AS systemSubjectCount, " +
+            "SUM(CASE WHEN s.status_id = 1 THEN 1 ELSE 0 END) AS enabledSubjectCount " + // 假设status_id=1为启用
+            "FROM eval_subject es " +
+            "LEFT JOIN sys_subject_type st ON es.subject_type_id = st.type_id " + // 关联主体类型字典表
+            "LEFT JOIN sys_status s ON es.status_id = s.status_id " + // 关联状态字典表
+            "WHERE es.deleted = 0")
+    EvalSubjectOverviewVO.CardData selectCardCoreData();
+
+    // ========== 2. 主体类型占比（圆环图，关联字典表获取类型名称） ==========
+    @Select("SELECT " +
+            "st.name AS name, " +
+            "COUNT(*) AS value " +
+            "FROM eval_subject es " +
+            "LEFT JOIN sys_subject_type st ON es.subject_type_id = st.type_id " +
+            "WHERE es.deleted = 0 " +
+            "GROUP BY es.subject_type_id, st.name")
+    List<EvalSubjectOverviewVO.PieChartItem> selectTypePieChart();
+
+    // ========== 3. 状态占比（圆环图，关联状态字典表获取名称） ==========
+    @Select("SELECT " +
+            "s.name AS name, " +
+            "COUNT(*) AS value " +
+            "FROM eval_subject es " +
+            "LEFT JOIN sys_status s ON es.status_id = s.status_id " +
+            "WHERE es.deleted = 0 " +
+            "GROUP BY es.status_id, s.name")
+    List<EvalSubjectOverviewVO.PieChartItem> selectStatusPieChart();
+
+    // ========== 4. 各主体成员数量对比（柱状图，限制前20条） ==========
+    @Select("SELECT " +
+            "es.name AS subjectName, " +
+            "es.member_count AS memberCount " +
+            "FROM eval_subject es " +
+            "WHERE es.deleted = 0 " +
+            "AND es.member_count > 0 " +
+            "ORDER BY es.member_count DESC " +
+            "LIMIT 20")
+    List<EvalSubjectOverviewVO.BarChartItem> selectMemberCountBarChart();
+
 }

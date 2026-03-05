@@ -2,9 +2,12 @@ package cn.iocoder.yudao.module.evaluate.service.subjecttype;
 
 import cn.iocoder.yudao.module.evaluate.controller.admin.sys.subjecttype.vo.SubjectTypePageReqVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.sys.subjecttype.vo.SubjectTypeSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.common.vo.SelectOptionRespVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.subjecttype.SubjectTypeDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+
+import java.util.List;
 
 /**
  * 主体类型字典 Service 接口
@@ -51,4 +54,5 @@ public interface SubjectTypeService {
      */
     PageResult<SubjectTypeDO> getSubjectTypePage(SubjectTypePageReqVO pageReqVO);
 
+    List<SelectOptionRespVO> getSubjectTypeSimpleList();
 }

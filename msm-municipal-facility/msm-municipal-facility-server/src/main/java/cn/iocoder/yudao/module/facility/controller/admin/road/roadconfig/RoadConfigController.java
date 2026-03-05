@@ -74,6 +74,14 @@ public class RoadConfigController {
         return success(BeanUtils.toBean(roadConfig, RoadConfigRespVO.class));
     }
 
+//    @GetMapping("/page")
+//    @Operation(summary = "获得道路监测配置分页")
+//    @PreAuthorize("@ss.hasPermission('facility:road-config:query')")
+//    public CommonResult<PageResult<RoadConfigRespVO>> getRoadConfigPage(@Valid RoadConfigPageReqVO pageReqVO) {
+//        PageResult<RoadConfigRespVO> pageResult = roadConfigService.getRoadConfigPage(pageReqVO);
+//        return success(pageResult);
+//    }
+
     @GetMapping("/page")
     @Operation(summary = "获得道路监测配置分页")
     @PreAuthorize("@ss.hasPermission('facility:road-config:query')")
@@ -81,6 +89,19 @@ public class RoadConfigController {
         PageResult<RoadConfigDO> pageResult = roadConfigService.getRoadConfigPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, RoadConfigRespVO.class));
     }
+
+//    @GetMapping("/export-excel")
+//    @Operation(summary = "导出道路监测配置 Excel")
+//    @PreAuthorize("@ss.hasPermission('facility:road-config:export')")
+//    @ApiAccessLog(operateType = EXPORT)
+//    public void exportRoadConfigExcel(@Valid RoadConfigPageReqVO pageReqVO,
+//              HttpServletResponse response) throws IOException {
+//        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+//        List<RoadConfigRespVO> list = roadConfigService.getRoadConfigPage(pageReqVO).getList();
+//        // 导出 Excel
+//        ExcelUtils.write(response, "道路监测配置.xls", "数据", RoadConfigRespVO.class,
+//                        BeanUtils.toBean(list, RoadConfigRespVO.class));
+//    }
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出道路监测配置 Excel")

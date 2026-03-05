@@ -17,4 +17,11 @@ public interface ErrorCodeConstants {
     // ========== 通用预警==========
     ErrorCode SYS_WARN_NOT_EXISTS = new ErrorCode(500, "通用预警不存在");
 
+    // ========== 道路设施==========
+    ErrorCode ROAD_FACILITY_NOT_EXISTS = new ErrorCode(500, "道路设施不存在");
+
+    // ========== 设备==========
+    ErrorCode SYS_DEVICE_NOT_EXISTS = new ErrorCode(500, "设备不存在");
+
+
 }

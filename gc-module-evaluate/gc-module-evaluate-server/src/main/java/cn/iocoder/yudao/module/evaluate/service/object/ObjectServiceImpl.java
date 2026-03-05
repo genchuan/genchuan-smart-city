@@ -2,7 +2,6 @@ package cn.iocoder.yudao.module.evaluate.service.object;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
-import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.object.vo.EvalObjectOverviewVO;
@@ -28,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -185,12 +185,12 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     @Override
-    public CommonResult<String> validateNameUnique(String name, String areaCode, String excludeObjectId) {
+    public void validateNameUnique(String name, String areaCode, String excludeObjectId) {
         ObjectDO object = objectMapper.selectByNameAndArea(name, areaCode);
-        if (object != null && !object.getObjectId().equals(excludeObjectId)) {
+        if (object != null && !Objects.equals(object.getObjectId(), excludeObjectId)) {
             throw exception(OBJECT_NAME_DUPLICATE);
         }
-        return CommonResult.success("评价对象唯一");
+        System.out.println("评价对象唯一");
     }
 //新
     @Override

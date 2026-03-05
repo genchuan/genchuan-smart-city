@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.facility.dal.dataobject.road.monitor;
 
+import com.alibaba.excel.annotation.ExcelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import java.util.*;
 import java.math.BigDecimal;
@@ -94,10 +96,9 @@ public class MonitorDO extends BaseDO {
      * [是否预警] 如:0-否/1-是
      */
     private Integer isWarning;
-    /**
-     * [预警ID] 关联预警表ID
-     */
-    private Long warningId;
+
+//    预警ID列表字符串
+    private String warningIdListStr;
     /**
      * [监测状态] 如:运行中/已停止
      */

@@ -1,18 +1,22 @@
 package cn.iocoder.yudao.module.evaluate.service.subjecttype;
 
-import cn.iocoder.yudao.module.evaluate.controller.admin.sys.subjecttype.vo.SubjectTypePageReqVO;
-import cn.iocoder.yudao.module.evaluate.controller.admin.sys.subjecttype.vo.SubjectTypeSaveReqVO;
-import org.springframework.stereotype.Service;
-import jakarta.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
-
-import cn.iocoder.yudao.module.evaluate.dal.dataobject.subjecttype.SubjectTypeDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.evaluate.controller.admin.sys.subjecttype.vo.SubjectTypePageReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.sys.subjecttype.vo.SubjectTypeSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.common.vo.SelectOptionRespVO;
+import cn.iocoder.yudao.module.evaluate.dal.dataobject.subjecttype.SubjectTypeDO;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.subjecttype.SubjectTypeMapper;
-import static cn.iocoder.yudao.module.evaluate.enums.ErrorCodeConstants.*;
+import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.module.evaluate.enums.ErrorCodeConstants.SUBJECT_TYPE_NOT_EXISTS;
 
 /**
  * 主体类型字典 Service 实现类
@@ -66,6 +70,17 @@ public class SubjectTypeServiceImpl implements SubjectTypeService {
     @Override
     public PageResult<SubjectTypeDO> getSubjectTypePage(SubjectTypePageReqVO pageReqVO) {
         return subjectTypeMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public List<SelectOptionRespVO> getSubjectTypeSimpleList() {
+        List<SubjectTypeDO> list = subjectTypeMapper.selectList(
+                new LambdaQueryWrapperX<SubjectTypeDO>().eq(SubjectTypeDO::getDeleted, 0)
+        );
+        // 转换：value存 area_code(String), label存 area_name
+        return list.stream()
+                .map(item -> new SelectOptionRespVO(item.getTypeId(), item.getName()))
+                .collect(Collectors.toList());
     }
 
 }

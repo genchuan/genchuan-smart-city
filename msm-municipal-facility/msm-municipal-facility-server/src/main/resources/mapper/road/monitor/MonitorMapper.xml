@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.iocoder.yudao.module.facility.dal.mysql.road.monitor.MonitorMapper">
+    <update id="updateAllMonitorStatus">
+        UPDATE road_monitor
+        SET monitor_status = #{monitorStatus}
+    </update>
+    <update id="batchUpdateMonitorStatus">
+        UPDATE road_monitor
+        SET monitor_status = #{monitorStatus}
+        WHERE road_id IN
+        <foreach collection="roadIdList"
+                 item="roadId"
+                 open="("
+                 separator=","
+                 close=")">
+            #{roadId}
+        </foreach>
+    </update>
 
     <!--
         一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
@@ -36,7 +52,7 @@
         rm.collect_frequency_snapshot,
 
         rm.is_warning,
-        rm.warning_id,
+        rm.warning_id_list_str,
         rm.monitor_status,
         rm.staff_id,
         rm.staff_name,

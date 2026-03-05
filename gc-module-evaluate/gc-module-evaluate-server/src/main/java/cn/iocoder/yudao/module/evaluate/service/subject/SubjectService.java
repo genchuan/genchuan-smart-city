@@ -1,10 +1,7 @@
 package cn.iocoder.yudao.module.evaluate.service.subject;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.subject.vo.SubjectImportRespVO;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.subject.vo.SubjectPageReqVO;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.subject.vo.SubjectRespVO;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.subject.vo.SubjectSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.subject.vo.*;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.subject.SubjectDO;
 import jakarta.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
@@ -117,6 +114,8 @@ public interface SubjectService {
     SubjectRespVO getStatusCount(Integer statusId);
 
     List<SubjectImportRespVO> importSubjectExcel(MultipartFile file);
+
+    EvalSubjectOverviewVO getEvalSubjectOverview();
     // 新增联表查询接口方法
 //    PageResult<SubjectRespVO> getSubjectPageWithJoin(SubjectPageReqVO pageReqVO);
 //    SubjectRespVO getSubjectDetailWithJoin(SubjectDetailReqVO detailReqVO);
