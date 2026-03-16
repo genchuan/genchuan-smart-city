@@ -23,7 +23,7 @@ BuildAndPush:
         # 登录Harbor仓库
         echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
         # 遍历所有模块并构建 Docker 镜像
-        for module in "yudao-gateway" "yudao-module-system-server" "yudao-module-infra-server" "yudao-module-bpm-server" "genchuan-module-envirhealth-server" "genchuan-module-facility-server" "genchuan-module-data-server"; do
+        for module in "yudao-gateway" "yudao-module-system-server" "yudao-module-infra-server" "yudao-module-bpm-server" "genchuan-module-envirhealth-server" "genchuan-module-facility-server" "genchuan-module-data-server" "genchuan-module-evaluate-server" "genchuan-module-park"; do
           case $module in
             # 宇道四个基础服务
             "yudao-gateway") jar_path="yudao-gateway" ;;
@@ -33,7 +33,10 @@ BuildAndPush:
             # genchuan 新服务      
             "genchuan-module-envirhealth-server") jar_path="genchuan-module-urban/genchuan-module-envirhealth/genchuan-module-envirhealth-server" ;;
             "genchuan-module-facility-server") jar_path="genchuan-module-urban/genchuan-module-facility/genchuan-module-facility-server" ;;
-            "genchuan-module-data-server" jar_path="genchuan-module-datahub/genchuan-module-data/genchuan-module-data-server 
+            "genchuan-module-data-server") jar_path="genchuan-module-datahub/genchuan-module-data/genchuan-module-data-server" ;;
+            "genchuan-module-evaluate-server") jar_path="genchuan-module-datahub/genchuan-module-evaluate/genchuan-module-evaluate-server" ;;
+            "genchuan-module-park-server") jar_path="genchuan-module-park/genchuan-module-park-server" ;;
+      
           esac
           docker build --build-arg MODULE_NAME="$module" --build-arg JAR_PATH="$jar_path" -t "$DOCKER_REGISTRY/sccsgl/$module:$POD_TAG" .
           docker push "$DOCKER_REGISTRY/sccsgl/$module:$POD_TAG"
