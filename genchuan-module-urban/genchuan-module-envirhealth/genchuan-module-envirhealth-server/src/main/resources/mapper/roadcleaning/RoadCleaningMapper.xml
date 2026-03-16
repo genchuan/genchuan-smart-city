@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.roadcleaning.RoadCleaningMapper">
+
+    <resultMap id="RoadCleaningDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning.Detail.RoadCleaningDetailDO">
+        <!-- 主表基础字段映射 -->
+        <id column="id" property="id"/>
+        <result column="cleaning_id" property="cleaningId"/>
+        <result column="plan_no" property="planNo"/>
+        <result column="road_id" property="roadId"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="frequency" property="frequency"/>
+        <result column="time_period" property="timePeriod"/>
+        <result column="staff_ids" property="staffIds"/>
+        <result column="plan_status_id" property="planStatusId"/>
+        <result column="quality_rate" property="qualityRate"/>
+        <result column="problem_count" property="problemCount"/>
+        <result column="attendance_rate" property="attendanceRate"/>
+        <result column="tool_ids" property="toolIds"/>
+        <result column="standard" property="standard"/>
+        <result column="checkin_time" property="checkinTime"/>
+        <result column="progress" property="progress"/>
+        <result column="operation_status" property="operationStatus"/>
+        <result column="track_coverage" property="trackCoverage"/>
+        <result column="last_report_time" property="lastReportTime"/>
+        <result column="is_abnormal" property="isAbnormal"/>
+        <result column="is_effective" property="isEffective"/>
+        <result column="complete_time" property="completeTime"/>
+        <result column="check_photo_url" property="checkPhotoUrl"/>
+        <result column="review_status" property="reviewStatus"/>
+        <result column="review_by" property="reviewBy"/>
+        <result column="review_time" property="reviewTime"/>
+        <result column="reform_require" property="reformRequire"/>
+
+        <result column="road_name" property="roadName"/>
+        <result column="area_name" property="areaName"/>
+        <result column="staffs_name_str" property="staffsNameStr"/>
+        <result column="plan_status_name" property="planStatusName"/>
+        <result column="tools_name_str" property="toolsNameStr"/>
+    </resultMap>
+
+    <!-- 通用查询条件片段 -->
+    <sql id="whereConditions">
+        <where>
+            rc.deleted = 0
+
+            <!-- 基础字段过滤 -->
+            <if test="reqVO.cleaningId != null and reqVO.cleaningId != ''">
+                AND rc.cleaning_id = #{reqVO.cleaningId}
+            </if>
+            <if test="reqVO.planNo != null and reqVO.planNo != ''">
+                AND rc.plan_no LIKE CONCAT('%', #{reqVO.planNo}, '%')
+            </if>
+            <if test="reqVO.roadId != null and reqVO.roadId != ''">
+                AND rc.road_id = #{reqVO.roadId}
+            </if>
+            <if test="reqVO.areaCode != null and reqVO.areaCode != ''">
+                AND rc.area_code = #{reqVO.areaCode}
+            </if>
+            <if test="reqVO.frequency != null and reqVO.frequency != ''">
+                AND rc.frequency = #{reqVO.frequency}
+            </if>
+            <if test="reqVO.timePeriod != null and reqVO.timePeriod != ''">
+                AND rc.time_period LIKE CONCAT('%', #{reqVO.timePeriod}, '%')
+            </if>
+            <if test="reqVO.staffIds != null and reqVO.staffIds != ''">
+                AND rc.staff_ids LIKE CONCAT('%', #{reqVO.staffIds}, '%')
+            </if>
+            <if test="reqVO.planStatusId != null and reqVO.planStatusId != ''">
+                AND rc.plan_status_id = #{reqVO.planStatusId}
+            </if>
+
+            <!-- 数值范围过滤 -->
+            <if test="reqVO.qualityRate != null">
+                AND rc.quality_rate = #{reqVO.qualityRate}
+            </if>
+            <if test="reqVO.problemCount != null">
+                AND rc.problem_count = #{reqVO.problemCount}
+            </if>
+            <if test="reqVO.attendanceRate != null">
+                AND rc.attendance_rate = #{reqVO.attendanceRate}
+            </if>
+
+            <if test="reqVO.toolIds != null and reqVO.toolIds != ''">
+                AND rc.tool_ids LIKE CONCAT('%', #{reqVO.toolIds}, '%')
+            </if>
+            <if test="reqVO.standard != null and reqVO.standard != ''">
+                AND rc.standard LIKE CONCAT('%', #{reqVO.standard}, '%')
+            </if>
+
+            <!-- 时间范围过滤 - 到岗时间 -->
+            <if test="reqVO.checkinTime != null and reqVO.checkinTime.length == 2">
+                <if test="reqVO.checkinTime[0] != null">
+                    AND rc.checkin_time >= #{reqVO.checkinTime[0]}
+                </if>
+                <if test="reqVO.checkinTime[1] != null">
+                    AND rc.checkin_time &lt;= #{reqVO.checkinTime[1]}
+                </if>
+            </if>
+
+            <if test="reqVO.progress != null and reqVO.progress != ''">
+                AND rc.progress LIKE CONCAT('%', #{reqVO.progress}, '%')
+            </if>
+            <if test="reqVO.operationStatus != null and reqVO.operationStatus != ''">
+                AND rc.operation_status = #{reqVO.operationStatus}
+            </if>
+            <if test="reqVO.trackCoverage != null and reqVO.trackCoverage != ''">
+                AND rc.track_coverage = #{reqVO.trackCoverage}
+            </if>
+
+            <!-- 最新上报时间范围过滤 -->
+            <if test="reqVO.lastReportTime != null and reqVO.lastReportTime.length == 2">
+                <if test="reqVO.lastReportTime[0] != null">
+                    AND rc.last_report_time >= #{reqVO.lastReportTime[0]}
+                </if>
+                <if test="reqVO.lastReportTime[1] != null">
+                    AND rc.last_report_time &lt;= #{reqVO.lastReportTime[1]}
+                </if>
+            </if>
+
+            <if test="reqVO.isAbnormal != null and reqVO.isAbnormal != ''">
+                AND rc.is_abnormal = #{reqVO.isAbnormal}
+            </if>
+
+            <!-- 完成时间范围过滤 -->
+            <if test="reqVO.completeTime != null and reqVO.completeTime.length == 2">
+                <if test="reqVO.completeTime[0] != null">
+                    AND rc.complete_time >= #{reqVO.completeTime[0]}
+                </if>
+                <if test="reqVO.completeTime[1] != null">
+                    AND rc.complete_time &lt;= #{reqVO.completeTime[1]}
+                </if>
+            </if>
+
+            <if test="reqVO.checkPhotoUrl != null and reqVO.checkPhotoUrl != ''">
+                AND rc.check_photo_url LIKE CONCAT('%', #{reqVO.checkPhotoUrl}, '%')
+            </if>
+            <if test="reqVO.reviewStatus != null and reqVO.reviewStatus != ''">
+                AND rc.review_status = #{reqVO.reviewStatus}
+            </if>
+            <if test="reqVO.reviewBy != null and reqVO.reviewBy != ''">
+                AND rc.review_by = #{reqVO.reviewBy}
+            </if>
+
+            <!-- 核查时间范围过滤 -->
+            <if test="reqVO.reviewTime != null and reqVO.reviewTime.length == 2">
+                <if test="reqVO.reviewTime[0] != null">
+                    AND rc.review_time >= #{reqVO.reviewTime[0]}
+                </if>
+                <if test="reqVO.reviewTime[1] != null">
+                    AND rc.review_time &lt;= #{reqVO.reviewTime[1]}
+                </if>
+            </if>
+
+            <if test="reqVO.reformRequire != null and reqVO.reformRequire != ''">
+                AND rc.reform_require LIKE CONCAT('%', #{reqVO.reformRequire}, '%')
+            </if>
+            <if test="reqVO.isEffective != null and reqVO.isEffective != ''">
+                AND rc.is_effective = #{reqVO.isEffective}
+            </if>
+
+            <!-- 创建时间范围过滤 -->
+            <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+                <if test="reqVO.createTime[0] != null">
+                    AND rc.create_time >= #{reqVO.createTime[0]}
+                </if>
+                <if test="reqVO.createTime[1] != null">
+                    AND rc.create_time &lt;= #{reqVO.createTime[1]}
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectDetailPage" resultMap="RoadCleaningDetailResultMap">
+        SELECT
+        rc.*,
+        r.road_name AS road_name,
+        a.area_name AS area_name,
+        ps.name AS plan_status_name,
+        IFNULL(GROUP_CONCAT(DISTINCT u.user_name), '') AS staffs_name_str,
+        IFNULL(GROUP_CONCAT(DISTINCT t.name SEPARATOR ','), '') AS tools_name_str
+        FROM road_cleaning rc
+        LEFT JOIN sys_road r ON rc.road_id = r.road_id AND r.deleted = 0
+        LEFT JOIN sys_area a ON rc.area_code = a.area_code AND a.deleted = 0
+        LEFT JOIN sys_plan_status ps ON rc.plan_status_id = ps.sys_plan_status_id AND ps.deleted = 0
+        LEFT JOIN sys_user u ON FIND_IN_SET(
+        u.user_id,
+        REPLACE(REPLACE(REPLACE(REPLACE(rc.staff_ids, '[', ''), ']', ''), '"', ''), ' ', '')
+        ) AND u.deleted = 0
+        LEFT JOIN sys_tool t ON FIND_IN_SET(
+        t.sys_tool_id,
+        REPLACE(REPLACE(REPLACE(REPLACE(rc.tool_ids, '[', ''), ']', ''), '"', ''), ' ', '')
+        ) AND t.deleted = 0
+        <include refid="whereConditions" />
+        GROUP BY rc.id, r.road_name, a.area_name, ps.name
+        ORDER BY rc.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.limit}
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Long">
+        SELECT COUNT(DISTINCT rc.id)
+        FROM road_cleaning rc
+        <include refid="whereConditions" />
+    </select>
+
+</mapper>

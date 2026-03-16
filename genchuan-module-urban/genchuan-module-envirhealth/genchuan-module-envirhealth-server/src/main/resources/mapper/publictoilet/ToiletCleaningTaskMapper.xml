@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.publictoilet.ToiletCleaningTaskMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="ToiletCleaningTaskWithJoinResultMap"
+               type="cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.toiletcleaningtask.ToiletCleaningTaskWithJoinRespVO">
+        <id column="id" property="id"/>
+        <result column="task_no" property="taskNo"/>
+        <result column="toilet_name" property="toiletName"/>
+        <result column="area_name" property="areaName"/>
+        <result column="cleaning_frequency" property="cleaningFrequency"/>
+        <result column="cleaning_time" property="cleaningTime"/>
+        <result column="cleaning_content" property="cleaningContent"/>
+        <result column="cleaning_standard" property="cleaningStandard"/>
+        <result column="cleaner_names" property="cleanerNames"/>
+        <result column="completion_rate" property="completionRate"/>
+        <result column="is_abnormal" property="isAbnormal"/>
+        <result column="abnormal_desc" property="abnormalDesc"/>
+        <result column="plan_status_name" property="planStatusName"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <!-- 联表查询分页 -->
+    <select id="selectJoinPage" resultMap="ToiletCleaningTaskWithJoinResultMap">
+        SELECT
+        t.id,
+        t.task_no,
+        p.name AS toilet_name,
+        a.area_name,
+        t.cleaning_frequency,
+        t.cleaning_time,
+        t.cleaning_content,
+        t.cleaning_standard,
+        sps.name AS plan_status_name,
+        GROUP_CONCAT(DISTINCT u.user_name SEPARATOR ',') AS cleaner_names,
+        t.completion_rate,
+        t.is_abnormal,
+        t.abnormal_desc,
+        t.create_time,
+        t.complete_time,
+        t.handle_result,
+        t.proof_urls,
+        t.handle_duration,
+        t.satisfaction,
+        t.stat_period
+        FROM public_toilet_cleaning_task t
+        LEFT JOIN public_toilet p ON t.toilet_id = p.toilet_id
+        LEFT JOIN sys_area a ON p.area_code = a.area_code
+        LEFT JOIN sys_plan_status sps ON t.plan_status_id = sps.sys_plan_status_id
+        LEFT JOIN sys_user u ON JSON_CONTAINS(t.cleaner_ids, CONCAT('"', u.user_id, '"'))
+        <where>
+            t.deleted = 0
+            <if test="reqVO.taskNo != null and reqVO.taskNo != ''">
+                AND t.task_no LIKE CONCAT('%', #{reqVO.taskNo}, '%')
+            </if>
+            <if test="reqVO.toiletId != null and reqVO.toiletId != ''">
+                AND t.toilet_id = #{reqVO.toiletId}
+            </if>
+            <if test="reqVO.isAbnormal != null">
+                AND t.is_abnormal = #{reqVO.isAbnormal}
+            </if>
+            <if test="reqVO.createTime != null and reqVO.createTime.size() == 2">
+                AND t.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+            <if test="reqVO.planStatusId != null and reqVO.planStatusId.length > 0">
+                AND t.plan_status_id IN
+                <foreach collection="reqVO.planStatusId" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="reqVO.completeTime != null and reqVO.completeTime.length == 2">
+                AND t.complete_time BETWEEN #{reqVO.completeTime[0]} AND #{reqVO.completeTime[1]}
+            </if>
+            <if test="reqVO.handleResult != null and reqVO.handleResult != ''">
+                AND t.handle_result LIKE CONCAT('%', #{reqVO.handleResult}, '%')
+            </if>
+            <if test="reqVO.handleDuration != null and reqVO.handleDuration.length == 2">
+                AND t.handle_duration BETWEEN #{reqVO.handleDuration[0]} AND #{reqVO.handleDuration[1]}
+            </if>
+            <if test="reqVO.satisfaction != null">
+                AND t.satisfaction = #{reqVO.satisfaction}
+            </if>
+            <if test="reqVO.statPeriod != null and reqVO.statPeriod != ''">
+                AND t.stat_period = #{reqVO.statPeriod}
+            </if>
+
+        </where>
+        GROUP BY t.id, t.task_no, p.name, a.area_name, t.cleaning_frequency, t.cleaning_time,
+        t.cleaning_content, t.cleaning_standard, sps.name, t.completion_rate,
+        t.is_abnormal, t.abnormal_desc, t.create_time
+        ORDER BY t.create_time DESC
+    </select>
+
+</mapper>

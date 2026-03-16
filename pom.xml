@@ -27,6 +27,7 @@
 <!--        <module>yudao-module-ai</module>-->
 <!--        <module>yudao-module-iot</module>-->
         <!--  genchuan 新服务 -->
+        <module>genchuan-module-urban</module>
 
 
     </modules>
