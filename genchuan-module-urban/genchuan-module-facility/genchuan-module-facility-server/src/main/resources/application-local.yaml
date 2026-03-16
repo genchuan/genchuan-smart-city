@@ -82,10 +82,10 @@ spring:
           #          username: root
           #          password: 123456
 
-          #          url: jdbc:mysql://127.0.0.1:3306/msm-municipal-facility?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
+          #          url: jdbc:mysql://127.0.0.1:3306/genchuan-module-munifacility?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
           #          username: root
           #          password: 123456
-          url: jdbc:mysql://192.168.8.67:3306/msm-municipal-facility?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true # MySQL Connector/J 8.X 连接的示例
+          url: jdbc:mysql://192.168.8.67:3306/genchuan-module-munifacility?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true # MySQL Connector/J 8.X 连接的示例
           username: root
           password: Cql@335533
         #          username: sa # SQL Server 连接的示例
@@ -94,10 +94,10 @@ spring:
         #          password: SYSDBA # DM 连接的示例
         slave: # 模拟从库，可根据自己需要修改
           lazy: true # 开启懒加载，保证启动速度
-          #          url: jdbc:mysql://127.0.0.1:3306/msm-municipal-facility?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
+          #          url: jdbc:mysql://127.0.0.1:3306/genchuan-module-munifacility?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
           #          username: root
           #          password: 123456
-          url: jdbc:mysql://192.168.8.67:3306/msm-municipal-facility?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true # MySQL Connector/J 8.X 连接的示例
+          url: jdbc:mysql://192.168.8.67:3306/genchuan-module-munifacility?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true # MySQL Connector/J 8.X 连接的示例
           username: root
           password: Cql@335533
 

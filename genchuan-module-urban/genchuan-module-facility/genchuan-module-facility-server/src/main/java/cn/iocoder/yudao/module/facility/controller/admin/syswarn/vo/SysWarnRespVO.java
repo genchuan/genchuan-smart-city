@@ -6,7 +6,7 @@ import java.util.*;
 import java.math.BigDecimal;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
-import com.alibaba.excel.annotation.*;
+import cn.idev.excel.annotation.*;
 
 @Schema(description = "管理后台 - 通用预警 Response VO")
 @Data

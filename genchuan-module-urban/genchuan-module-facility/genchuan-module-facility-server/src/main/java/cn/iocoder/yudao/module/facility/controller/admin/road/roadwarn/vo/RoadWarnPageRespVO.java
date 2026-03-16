@@ -1,7 +1,7 @@
 package cn.iocoder.yudao.module.facility.controller.admin.road.roadwarn.vo;
 
 import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnRespVO;
-import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
+import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

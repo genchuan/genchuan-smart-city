@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.iocoder.yudao.module.kitchen.dal.mysql.rectifyreview.RectifyReviewMapper">
+
+    <select id="selectLedgerPage"
+            resultType="cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.RectifyReviewLedgerRespVO">
+
+        SELECT
+        rr.id,
+        rr.ledger_code,
+        ei.ent_name,
+        itd.type_name AS illegal_type_name,
+        ild.level_name AS illegal_level_name,
+        rr.evidence_url,
+        rr.draft_time,
+
+        rr.review_status,
+        su.user_name AS review_user_name,
+        rr.review_time,
+
+        rn.issue_time,
+        rr.cancel_time,
+        rr.cancel_reason_id,
+
+        rn.receive_status,
+        err.rectify_status,
+
+        lrl.ledger_code AS law_review_ledger_code
+
+        FROM rectify_review rr
+
+        LEFT JOIN enterprise_info ei
+        ON rr.ent_id = ei.id
+
+        LEFT JOIN illegal_type_dict itd
+        ON rr.illegal_type_id = itd.id
+
+        LEFT JOIN illegal_level_dict ild
+        ON rr.illegal_level_id = ild.id
+
+        LEFT JOIN sys_user su
+        ON rr.review_by = su.id
+
+        LEFT JOIN rectify_notice rn
+        ON rn.rectify_review_id = rr.id
+
+        LEFT JOIN ent_rectify_record err
+        ON err.rectify_notice_id = rn.id
+
+        LEFT JOIN law_review_ledger lrl
+        ON lrl.rectify_review_id = rr.id
+
+        <where>
+
+            rr.deleted = b'0'
+
+            <!-- 使用 idList -->
+            <if test="idList != null and idList.size() > 0">
+                AND rr.id IN
+                <foreach collection="idList" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
+            <if test="ledgerCode != null and ledgerCode != ''">
+                AND rr.ledger_code LIKE CONCAT('%', #{ledgerCode}, '%')
+            </if>
+
+            <if test="entId != null">
+                AND rr.ent_id = #{entId}
+            </if>
+
+            <if test="entName != null and entName != ''">
+                AND ei.ent_name LIKE CONCAT('%', #{entName}, '%')
+            </if>
+
+            <if test="illegalTypeId != null">
+                AND rr.illegal_type_id = #{illegalTypeId}
+            </if>
+
+            <if test="illegalTypeName != null and illegalTypeName != ''">
+                AND itd.type_name = #{illegalTypeName}
+            </if>
+
+            <if test="illegalLevelId != null">
+                AND rr.illegal_level_id = #{illegalLevelId}
+            </if>
+
+            <if test="illegalLevelName != null and illegalLevelName != ''">
+                AND ild.level_name = #{illegalLevelName}
+            </if>
+
+            <if test="reviewStatus != null and reviewStatus != ''">
+                AND rr.review_status = #{reviewStatus}
+            </if>
+
+            <if test="reviewBy != null">
+                AND rr.review_by = #{reviewBy}
+            </if>
+
+            <if test="draftTimeStart != null">
+                AND rr.draft_time &gt;= #{draftTimeStart}
+            </if>
+
+            <if test="draftTimeEnd != null">
+                AND rr.draft_time &lt;= #{draftTimeEnd}
+            </if>
+
+            <if test="issueTimeStart != null">
+                AND rn.issue_time &gt;= #{issueTimeStart}
+            </if>
+
+            <if test="issueTimeEnd != null">
+                AND rn.issue_time &lt;= #{issueTimeEnd}
+            </if>
+
+            <if test="cancelTimeStart != null">
+                AND rr.cancel_time &gt;= #{cancelTimeStart}
+            </if>
+
+            <if test="cancelTimeEnd != null">
+                AND rr.cancel_time &lt;= #{cancelTimeEnd}
+            </if>
+        </where>
+
+        ORDER BY rr.id DESC,rr.create_time
+
+        <!-- 分页逻辑 -->
+        <if test="pageNo != null and pageSize != null and pageSize &gt; 0">
+            <!-- 先计算 offset -->
+            <bind name="offset" value="(pageNo - 1) * pageSize"/>
+            LIMIT #{pageSize} OFFSET #{offset}
+        </if>
+
+
+
+    </select>
+
+
+    <select id="selectLedgerPageCount" resultType="java.lang.Long">
+
+        SELECT
+        count(1)
+        FROM rectify_review rr
+
+        LEFT JOIN enterprise_info ei
+        ON rr.ent_id = ei.id
+
+        LEFT JOIN illegal_type_dict itd
+        ON rr.illegal_type_id = itd.id
+
+        LEFT JOIN illegal_level_dict ild
+        ON rr.illegal_level_id = ild.id
+
+        LEFT JOIN sys_user su
+        ON rr.review_by = su.id
+
+        LEFT JOIN rectify_notice rn
+        ON rn.rectify_review_id = rr.id
+
+        LEFT JOIN ent_rectify_record err
+        ON err.rectify_notice_id = rn.id
+
+        LEFT JOIN law_review_ledger lrl
+        ON lrl.rectify_review_id = rr.id
+
+        <where>
+
+            rr.deleted = b'0'
+
+            <!-- 使用 idList -->
+            <if test="idList != null and idList.size() > 0">
+                AND rr.id IN
+                <foreach collection="idList" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
+            <if test="ledgerCode != null and ledgerCode != ''">
+                AND rr.ledger_code LIKE CONCAT('%', #{ledgerCode}, '%')
+            </if>
+
+            <if test="entId != null">
+                AND rr.ent_id = #{entId}
+            </if>
+
+            <if test="entName != null and entName != ''">
+                AND ei.ent_name LIKE CONCAT('%', #{entName}, '%')
+            </if>
+
+            <if test="illegalTypeId != null">
+                AND rr.illegal_type_id = #{illegalTypeId}
+            </if>
+
+            <if test="illegalTypeName != null and illegalTypeName != ''">
+                AND itd.type_name = #{illegalTypeName}
+            </if>
+
+            <if test="illegalLevelId != null">
+                AND rr.illegal_level_id = #{illegalLevelId}
+            </if>
+
+            <if test="illegalLevelName != null and illegalLevelName != ''">
+                AND ild.level_name = #{illegalLevelName}
+            </if>
+
+            <if test="reviewStatus != null and reviewStatus != ''">
+                AND rr.review_status = #{reviewStatus}
+            </if>
+
+            <if test="reviewBy != null">
+                AND rr.review_by = #{reviewBy}
+            </if>
+
+            <if test="draftTimeStart != null">
+                AND rr.draft_time &gt;= #{draftTimeStart}
+            </if>
+
+            <if test="draftTimeEnd != null">
+                AND rr.draft_time &lt;= #{draftTimeEnd}
+            </if>
+
+            <if test="issueTimeStart != null">
+                AND rn.issue_time &gt;= #{issueTimeStart}
+            </if>
+
+            <if test="issueTimeEnd != null">
+                AND rn.issue_time &lt;= #{issueTimeEnd}
+            </if>
+
+            <if test="cancelTimeStart != null">
+                AND rr.cancel_time &gt;= #{cancelTimeStart}
+            </if>
+
+            <if test="cancelTimeEnd != null">
+                AND rr.cancel_time &lt;= #{cancelTimeEnd}
+            </if>
+        </where>
+
+    </select>
+    <select id="selectBatchEvidence" resultType="cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifyreview.RectifyReviewDO">
+        SELECT id, ledger_code, evidence_url
+        FROM rectify_review
+        WHERE id IN
+        <foreach collection="ledgerIdList" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        ORDER BY ledger_code
+
+        LIMIT #{pageSize} OFFSET #{offset}
+<!--        LIMIT ${offset}, ${limit}  &lt;!&ndash; 改为 ${} &ndash;&gt;-->
+    </select>
+</mapper>

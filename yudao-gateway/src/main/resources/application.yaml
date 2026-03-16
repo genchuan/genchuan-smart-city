@@ -196,20 +196,32 @@ spring:
               filters:
                 - RewritePath=/admin-api/iot/v3/api-docs, /v3/api-docs # 配置，保证转发到 /v3/api-docs
             ## genchuan-module-urban 服务
-              #genchuan-module-envirhealth
+              # genchuan-module-envirhealth
             - id: envirhealth-admin-api
               uri: grayLb://envirhealth-server
               predicates:
                 - Path=/admin-api/envirhealth/**
               filters:
                 - RewritePath=/admin-api/envirhealth/v3/api-docs, /v3/api-docs
-
             - id: envirhealth-app-api
               uri: grayLb://envirhealth-server
               predicates:
                 - Path=/app-api/envirhealth/**
               filters:
                 - RewritePath=/app-api/envirhealth/v3/api-docs, /v3/api-docs
+              # genchuan-module-facility-server
+            - id: facility-admin-api
+              uri: grayLb://facility-server
+              predicates:
+                - Path=/admin-api/facility/**
+              filters:
+                - RewritePath=/admin-api/facility/v3/api-docs, /v3/api-docs
+            - id: facility-app-api
+              uri: grayLb://facility-server
+              predicates:
+                - Path=/app-api/facility/***
+              filters:
+                - RewritePath=/app-api/facility/v3/api-docs, /v3/api-docs
 
           x-forwarded:
             prefix-enabled: false # 避免 Swagger 重复带上额外的 /admin-api/system 前缀
