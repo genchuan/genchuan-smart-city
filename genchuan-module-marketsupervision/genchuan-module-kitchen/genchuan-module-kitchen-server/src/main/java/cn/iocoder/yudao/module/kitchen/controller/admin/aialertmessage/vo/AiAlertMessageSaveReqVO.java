@@ -1,10 +1,8 @@
 package cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import java.util.*;
-import jakarta.validation.constraints.*;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.Data;
+
 import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - AI告警消息新增/修改 Request VO")

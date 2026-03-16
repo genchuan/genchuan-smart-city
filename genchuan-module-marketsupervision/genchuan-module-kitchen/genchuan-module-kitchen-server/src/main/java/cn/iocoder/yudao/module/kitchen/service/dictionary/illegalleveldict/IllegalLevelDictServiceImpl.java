@@ -1,22 +1,17 @@
 package cn.iocoder.yudao.module.kitchen.service.dictionary.illegalleveldict;
 
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.kitchen.controller.admin.dictionary.illegalleveldict.vo.IllegalLevelDictPageReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.dictionary.illegalleveldict.vo.IllegalLevelDictSaveReqVO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.dictionary.illegalleveldict.IllegalLevelDictDO;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.dictionary.illegalleveldict.IllegalLevelDictMapper;
-import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.module.kitchen.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.kitchen.enums.ErrorCodeConstants.ILLEGAL_LEVEL_DICT_NOT_EXISTS;
 
 /**
  * 违规等级字典 Service 实现类
