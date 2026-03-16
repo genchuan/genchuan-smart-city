@@ -37,7 +37,7 @@ spring:
       time-to-live: 1h # 设置过期时间为 1 小时
 
 server:
-  port: 58086
+  port: 58085
 
 logging:
   file:

@@ -56,9 +56,6 @@ spring:
       primary: master
       datasource:
         master:
-#          url: jdbc:mysql://192.168.8.67:3306/ruoyi-vue-pro?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true # MySQL Connector/J 8.X 连接的示例
-#          username: root
-#          password: Cql@335533
           url: jdbc:mysql://192.168.8.67:3306/ruoyi-vue-pro?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true # MySQL Connector/J 8.X 连接的示例
           username: root
           password: Cql@335533

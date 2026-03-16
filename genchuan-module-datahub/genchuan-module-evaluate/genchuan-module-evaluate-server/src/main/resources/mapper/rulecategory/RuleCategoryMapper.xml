@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.evaluate.dal.mysql.rulecategory.RuleCategoryMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+    <!-- 通用结果映射 -->
+    <resultMap id="RuleVOResultMap" type="cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.rulecategory.vo.RuleCategoryRespVO">
+        <!-- 评分规则字段 -->
+        <result property="ruleCategoryName" column="rule_category_name"/>
+        <result property="indexSystemName" column="index_system_name"/>
+        <result property="ruleItemName" column="rule_item_name"/>
+        <result property="indexItemName" column="index_item_name"/>
+        <result property="scoreLogic" column="score_logic"/>
+        <result property="fullScore" column="full_score"/>
+        <result property="ruleTypeName" column="rule_type_name"/>
+        <!-- 否决规则字段 -->
+        <result property="vetoItemName" column="veto_item_name"/>
+        <result property="objectTypeName" column="object_type_name"/>
+        <result property="vetoCondition" column="veto_condition"/>
+        <result property="validCycle" column="valid_cycle"/>
+        <!-- 公共字段 -->
+        <result property="statusName" column="status_name"/>
+        <result property="creatorName" column="creator_name"/>
+        <result property="createTime" column="create_time"/>
+        <result property="changeLog" column="change_log"/>
+        <result property="itemCount" column="item_count"/>
+        <result property="vetoCount" column="veto_count"/>
+        <result property="ruleType" column="rule_type"/>
+    </resultMap>
+
+    <select id="selectRuleCategoryPage" resultMap="RuleVOResultMap">
+        SELECT * FROM (
+        <!-- ========== 评分规则（以规则分类为主表） ==========-->
+        SELECT
+        rc.name                    AS rule_category_name,
+        isys.name                 AS index_system_name,
+        ri.name                   AS rule_item_name,
+        ii.name                   AS index_item_name,
+        ri.score_logic,
+        ri.full_score,
+        rt.name                   AS rule_type_name,
+        NULL                      AS veto_item_name,
+        NULL                      AS object_type_name,
+        NULL                      AS veto_condition,
+        NULL                      AS valid_cycle,
+        s.name                    AS status_name,
+        u.user_name               AS creator_name,
+        rc.create_time,
+        LEFT(rc.change_log, 50)    AS change_log,
+        rc.item_count,
+        NULL                      AS veto_count,
+        'SCORE'                   AS rule_type
+        FROM eval_rule_category rc
+        LEFT JOIN eval_rule_item ri ON rc.rule_category_id = ri.rule_category_id
+        LEFT JOIN eval_index_system isys ON rc.system_id = isys.system_id
+        LEFT JOIN eval_index_item ii ON ri.index_id = ii.item_id
+        LEFT JOIN sys_rule_type rt ON ri.rule_type_id = rt.type_id
+        LEFT JOIN sys_status s ON rc.status_id = s.status_id
+        LEFT JOIN sys_user u ON rc.create_by = u.user_id
+
+        UNION ALL
+
+        <!-- ========== 否决规则（保持独立） ==========-->
+        SELECT
+        NULL                      AS rule_category_name,
+        NULL                      AS index_system_name,
+        NULL                      AS rule_item_name,
+        NULL                      AS index_item_name,
+        NULL                      AS score_logic,
+        NULL                      AS full_score,
+        NULL                      AS rule_type_name,
+        vi.name                   AS veto_item_name,
+        ot.name                   AS object_type_name,
+        vi.`condition`            AS veto_condition,
+        vi.valid_cycle,
+        s.name                    AS status_name,
+        NULL                      AS creator_name,
+        NULL                      AS create_time,
+        NULL                      AS change_log,
+        NULL                      AS item_count,
+        vi.`count`                AS veto_count,
+        'VETO'                    AS rule_type
+        FROM eval_veto_item vi
+        LEFT JOIN sys_object_type ot ON vi.object_type_id = ot.type_id
+        LEFT JOIN sys_status s ON vi.status_id = s.status_id
+        ) t
+        <where>
+            <if test="query.statusName != null and query.statusName != ''">
+                AND t.status_name = #{query.statusName}
+            </if>
+            <if test="query.objectTypeName != null and query.objectTypeName != ''">
+                AND t.object_type_name = #{query.objectTypeName}
+            </if>
+            <if test="query.systemId != null and query.systemId != ''">
+                AND t.index_system_name IN (
+                SELECT name FROM eval_index_system WHERE system_id = #{query.systemId}
+                )
+            </if>
+            <if test="query.indexItemId != null and query.indexItemId != ''">
+                AND t.index_item_name IN (
+                SELECT name FROM eval_index_item WHERE item_id = #{query.indexItemId}
+                )
+            </if>
+        </where>
+        ORDER BY t.create_time DESC, t.rule_category_name
+    </select>
+
+</mapper>

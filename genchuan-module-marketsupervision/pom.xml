@@ -15,7 +15,7 @@
         <artifactId>yudao</artifactId>
         <version>${revision}</version>
     </parent>
-    <name>gc-module-marketsupervision</name>
+    <name>genchuan-module-marketsupervision</name>
     <url>http://maven.apache.org</url>
 
     <properties>
