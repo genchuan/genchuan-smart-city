@@ -1,8 +1,9 @@
 package cn.iocoder.yudao.module.facility.controller.admin.road.roadmonitor.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 

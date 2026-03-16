@@ -1,10 +1,8 @@
 package cn.iocoder.yudao.module.facility.dal.mysql.sysuser;
 
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.facility.controller.admin.sysuser.vo.SysUserPageReqVO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.sysuser.SysUserDO;
 import org.apache.ibatis.annotations.Mapper;

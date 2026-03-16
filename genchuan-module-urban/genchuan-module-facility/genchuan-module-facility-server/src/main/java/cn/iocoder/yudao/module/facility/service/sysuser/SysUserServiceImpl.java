@@ -1,22 +1,17 @@
 package cn.iocoder.yudao.module.facility.service.sysuser;
 
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.facility.controller.admin.sysuser.vo.SysUserPageReqVO;
 import cn.iocoder.yudao.module.facility.controller.admin.sysuser.vo.SysUserSaveReqVO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.sysuser.SysUserDO;
 import cn.iocoder.yudao.module.facility.dal.mysql.sysuser.SysUserMapper;
-import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.module.facility.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.facility.enums.ErrorCodeConstants.SYS_USER_NOT_EXISTS;
 
 /**
  * 系统用户 Service 实现类

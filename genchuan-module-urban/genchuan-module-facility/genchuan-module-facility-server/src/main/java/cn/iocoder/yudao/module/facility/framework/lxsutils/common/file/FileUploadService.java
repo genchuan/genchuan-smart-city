@@ -1,7 +1,6 @@
 package cn.iocoder.yudao.module.facility.framework.lxsutils.common.file;
 
 
-
 import cn.iocoder.yudao.module.facility.framework.lxsutils.common.file.config.MinioConfig;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
@@ -22,7 +21,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.module.facility.enums.ErrorCodeConstants.WORK_ORDER_NOT_EXISTS;
 
 @Service
 @Slf4j

@@ -1,13 +1,13 @@
 package cn.iocoder.yudao.module.facility.service.sysarchive;
 
-import java.io.IOException;
-import java.util.*;
-
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.facility.controller.admin.sysarchive.vo.*;
 import cn.iocoder.yudao.module.facility.dal.dataobject.sysarchive.SysArchiveDO;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.*;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import jakarta.validation.Valid;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * 归档 Service 接口

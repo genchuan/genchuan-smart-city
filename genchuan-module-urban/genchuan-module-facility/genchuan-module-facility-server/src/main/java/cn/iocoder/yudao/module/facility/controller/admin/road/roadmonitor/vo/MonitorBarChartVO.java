@@ -1,6 +1,5 @@
 package cn.iocoder.yudao.module.facility.controller.admin.road.roadmonitor.vo;
 
-import cn.iocoder.yudao.module.facility.controller.admin.road.roadmonitor.vo.BarChartItemVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

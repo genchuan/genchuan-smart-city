@@ -1,14 +1,14 @@
 package cn.iocoder.yudao.module.facility.dal.mysql.syswarn;
 
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnBatchUpdateReqVO;
 import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnPageReqVO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.syswarn.SysWarnDO;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * 通用预警 Mapper

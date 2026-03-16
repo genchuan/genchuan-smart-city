@@ -1,12 +1,11 @@
 package cn.iocoder.yudao.module.facility.controller.admin.road.roadfacility.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.Data;
 
-import java.time.LocalDate;
-import java.util.*;
-import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Schema(description = "管理后台 - 道路设施新增/修改 Request VO")
 @Data

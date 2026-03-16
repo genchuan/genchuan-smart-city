@@ -5,8 +5,6 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.util.List;
-
 @Schema(description = "管理后台 - 工单新增/修改 Request VO")
 @Data
 public class ReassignWorkOrderReqVO {

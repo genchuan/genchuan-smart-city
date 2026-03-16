@@ -2,7 +2,6 @@ package cn.iocoder.yudao.module.facility.service.road.roadwarn;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.facility.controller.admin.road.roadwarn.vo.*;
-import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnSaveReqVO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.road.roadwarn.RoadWarnDO;
 import jakarta.validation.Valid;
 

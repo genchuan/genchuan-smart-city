@@ -1,13 +1,10 @@
 package cn.iocoder.yudao.module.facility.service.sysdevice;
 
-import java.util.*;
-
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.facility.controller.admin.sysdevice.vo.SysDevicePageReqVO;
 import cn.iocoder.yudao.module.facility.controller.admin.sysdevice.vo.SysDeviceSaveReqVO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.sysdevice.SysDeviceDO;
-import jakarta.validation.*;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import jakarta.validation.Valid;
 
 /**
  * 设备 Service 接口

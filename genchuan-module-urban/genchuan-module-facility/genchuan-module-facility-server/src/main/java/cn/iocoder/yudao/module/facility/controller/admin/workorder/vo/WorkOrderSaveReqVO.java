@@ -1,15 +1,11 @@
 package cn.iocoder.yudao.module.facility.controller.admin.workorder.vo;
 
-import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
-import java.time.LocalDate;
-import java.util.*;
-import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
-import org.springframework.format.annotation.DateTimeFormat;
-import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 工单新增/修改 Request VO")
 @Data

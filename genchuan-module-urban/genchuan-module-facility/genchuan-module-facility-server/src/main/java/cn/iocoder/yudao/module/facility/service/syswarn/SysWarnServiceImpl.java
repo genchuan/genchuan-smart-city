@@ -1,14 +1,16 @@
 package cn.iocoder.yudao.module.facility.service.syswarn;
 
 import cn.hutool.core.util.RandomUtil;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.*;
 import cn.iocoder.yudao.module.facility.dal.dataobject.syswarn.SysWarnDO;
-import cn.iocoder.yudao.module.facility.dal.mysql.road.roadmonitor.RoadMonitorMapper;
 import cn.iocoder.yudao.module.facility.dal.mysql.road.roadfacility.RoadFacilityMapper;
+import cn.iocoder.yudao.module.facility.dal.mysql.road.roadmonitor.RoadMonitorMapper;
 import cn.iocoder.yudao.module.facility.dal.mysql.sysdevice.SysDeviceMapper;
 import cn.iocoder.yudao.module.facility.dal.mysql.syswarn.SysWarnMapper;
-import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
@@ -18,13 +20,12 @@ import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.module.facility.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.facility.enums.ErrorCodeConstants.SYS_WARN_NOT_EXISTS;
 
 /**
  * 通用预警 Service 实现类

@@ -1,27 +1,29 @@
 package cn.iocoder.yudao.module.facility.service.road.roadmonitor;
 
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.facility.controller.admin.road.roadmonitor.vo.*;
 import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnCandidate;
-import cn.iocoder.yudao.module.facility.dal.dataobject.road.roadmonitor.RoadMonitorDO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.road.roadconfig.RoadConfigDO;
-import cn.iocoder.yudao.module.facility.dal.mysql.road.roadmonitor.RoadMonitorMapper;
+import cn.iocoder.yudao.module.facility.dal.dataobject.road.roadmonitor.RoadMonitorDO;
 import cn.iocoder.yudao.module.facility.dal.mysql.road.roadconfig.RoadConfigMapper;
+import cn.iocoder.yudao.module.facility.dal.mysql.road.roadmonitor.RoadMonitorMapper;
 import cn.iocoder.yudao.module.facility.framework.lxsutils.road.RoadWarnUtil;
-import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.module.facility.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.facility.enums.ErrorCodeConstants.MONITOR_NOT_EXISTS;
 
 /**
  * 道路监测 Service 实现类

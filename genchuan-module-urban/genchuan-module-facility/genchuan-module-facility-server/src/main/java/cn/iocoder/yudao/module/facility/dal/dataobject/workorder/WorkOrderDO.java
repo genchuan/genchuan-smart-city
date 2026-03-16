@@ -1,17 +1,13 @@
 package cn.iocoder.yudao.module.facility.dal.dataobject.workorder;
 
-import cn.idev.excel.annotation.ExcelProperty;
-import io.swagger.v3.oas.annotations.media.Schema;
+import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
+import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
-import java.time.*;
-import java.util.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.LocalDateTime;
-import java.time.LocalDateTime;
-import com.baomidou.mybatisplus.annotation.*;
-import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 
 /**
  * 工单 DO

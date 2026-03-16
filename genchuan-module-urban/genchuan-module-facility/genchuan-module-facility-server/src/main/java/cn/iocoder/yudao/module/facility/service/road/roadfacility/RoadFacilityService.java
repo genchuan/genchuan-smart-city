@@ -1,13 +1,10 @@
 package cn.iocoder.yudao.module.facility.service.road.roadfacility;
 
-import java.util.*;
-
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.facility.controller.admin.road.roadfacility.vo.RoadFacilityPageReqVO;
 import cn.iocoder.yudao.module.facility.controller.admin.road.roadfacility.vo.RoadFacilitySaveReqVO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.road.roadfacility.RoadFacilityDO;
-import jakarta.validation.*;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import jakarta.validation.Valid;
 
 /**
  * 道路设施 Service 接口

@@ -1,13 +1,10 @@
 package cn.iocoder.yudao.module.facility.service.sysuser;
 
-import java.util.*;
-
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.facility.controller.admin.sysuser.vo.SysUserPageReqVO;
 import cn.iocoder.yudao.module.facility.controller.admin.sysuser.vo.SysUserSaveReqVO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.sysuser.SysUserDO;
-import jakarta.validation.*;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import jakarta.validation.Valid;
 
 /**
  * 系统用户 Service 接口

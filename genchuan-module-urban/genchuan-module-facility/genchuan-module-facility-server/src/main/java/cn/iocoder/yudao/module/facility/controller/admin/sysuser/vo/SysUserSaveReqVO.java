@@ -1,9 +1,9 @@
 package cn.iocoder.yudao.module.facility.controller.admin.sysuser.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import java.util.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 @Schema(description = "管理后台 - 系统用户新增/修改 Request VO")
 @Data

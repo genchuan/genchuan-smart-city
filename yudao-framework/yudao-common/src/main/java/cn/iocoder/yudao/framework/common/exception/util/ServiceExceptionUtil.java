@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * {@link ServiceException} 工具类
- *
  * 目的在于，格式化异常信息提示。
  * 考虑到 String.format 在参数不正确时会报错，因此使用 {} 作为占位符，并使用 {@link #doFormat(int, String, Object...)} 方法来格式化
  *
@@ -33,6 +32,17 @@ public class ServiceExceptionUtil {
 
     public static ServiceException invalidParamException(String messagePattern, Object... params) {
         return exception0(GlobalErrorCodeConstants.BAD_REQUEST.getCode(), messagePattern, params);
+    }
+
+    //   genchuan新封装
+    public static ServiceException exception(Integer code,String msg) {
+        ErrorCode errorCode = new ErrorCode(code,msg);
+        return exception0(errorCode.getCode(), errorCode.getMsg());
+    }
+
+    public static ServiceException exception(String msg) {
+        ErrorCode errorCode = new ErrorCode(500,msg);
+        return exception0(errorCode.getCode(), errorCode.getMsg());
     }
 
     // ========== 格式化方法 ==========

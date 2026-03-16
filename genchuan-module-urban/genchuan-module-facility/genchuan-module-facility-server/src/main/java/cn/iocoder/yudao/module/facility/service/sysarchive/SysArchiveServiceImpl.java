@@ -2,8 +2,8 @@ package cn.iocoder.yudao.module.facility.service.sysarchive;
 
 import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
-import cn.iocoder.yudao.framework.security.core.LoginUser;
-import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.facility.controller.admin.sysarchive.vo.*;
 import cn.iocoder.yudao.module.facility.dal.dataobject.sysarchive.SysArchiveDO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.sysuser.SysUserDO;
@@ -15,11 +15,11 @@ import cn.iocoder.yudao.module.facility.dal.mysql.syswarn.SysWarnMapper;
 import cn.iocoder.yudao.module.facility.dal.mysql.workorder.WorkOrderMapper;
 import cn.iocoder.yudao.module.facility.service.sysuser.SysUserService;
 import cn.iocoder.yudao.module.facility.service.workorder.WorkOrderService;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import jakarta.annotation.Resource;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
@@ -31,18 +31,16 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
-
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.module.facility.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.facility.enums.ErrorCodeConstants.SYS_ARCHIVE_NOT_EXISTS;
 
 /**
  * 归档 Service 实现类
