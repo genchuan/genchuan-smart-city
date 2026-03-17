@@ -1,12 +1,15 @@
 package cn.iocoder.yudao.module.kitchen.dal.dataobject.entrectifyrecord;
 
-import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
-import com.baomidou.mybatisplus.annotation.KeySequence;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import cn.idev.excel.annotation.ExcelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-
+import java.util.*;
 import java.time.LocalDateTime;
+import java.time.LocalDateTime;
+import java.time.LocalDateTime;
+import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.*;
+import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 
 /**
  * 企业整改记录 DO
@@ -28,6 +31,16 @@ public class EntRectifyRecordDO extends BaseDO {
      */
     @TableId
     private Long id;
+
+    private String uniCode;
+    /**
+     * [处罚复审台账id]
+     */
+    private Long punishReviewId;
+    /**
+     * [整改复审台账id]
+     */
+    private Long rectifyReviewId;
     /**
      * [整改通知书ID] 关联park_rectify_notice.id，唯一
      */
@@ -49,7 +62,7 @@ public class EntRectifyRecordDO extends BaseDO {
      */
     private String rectifyDesc;
     /**
-     * [整改佐证证据链接] JSON格式varchar，如["url1","url2"]，可为空
+     * [整改佐证证据链接] JSON格式varchar，如[{"name":"xxx.png","type":"image","url":"xx.png"}]，可为空
      */
     private String rectifyEvidenceUrl;
     /**

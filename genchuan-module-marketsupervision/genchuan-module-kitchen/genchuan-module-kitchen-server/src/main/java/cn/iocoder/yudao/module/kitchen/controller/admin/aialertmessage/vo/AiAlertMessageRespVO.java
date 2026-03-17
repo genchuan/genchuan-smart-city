@@ -16,6 +16,10 @@ public class AiAlertMessageRespVO {
     @ExcelProperty("[主键ID] 主键，告警记录唯一标识")
     private Long id;
 
+    @Schema(description = "[整改台账ID]", requiredMode = Schema.RequiredMode.REQUIRED, example = "7688")
+    @ExcelProperty("[整改台账ID]")
+    private Long rectifyReviewId;
+
     @Schema(description = "[设备关联用户ID列表] JSON格式存储的用户ID列表")
     @ExcelProperty("[设备关联用户ID列表] JSON格式存储的用户ID列表")
     private String userIds;

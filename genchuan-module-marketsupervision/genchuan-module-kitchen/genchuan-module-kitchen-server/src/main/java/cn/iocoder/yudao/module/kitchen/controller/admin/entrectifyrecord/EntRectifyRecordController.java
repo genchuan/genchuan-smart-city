@@ -1,31 +1,43 @@
 package cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord;
 
-import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
-import cn.iocoder.yudao.framework.common.pojo.CommonResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.EntRectifyRecordPageReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.EntRectifyRecordRespVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.EntRectifyRecordSaveReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.add.AddEntRectifyRecordReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.review.ReviewApproveReq;
+import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.review.ReviewRejectReq;
+import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.upload.UploadFileReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.upload.UploadFileRespVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileRespVO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.entrectifyrecord.EntRectifyRecordDO;
 import cn.iocoder.yudao.module.kitchen.service.entrectifyrecord.EntRectifyRecordService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import jakarta.annotation.Resource;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.security.access.prepost.PreAuthorize;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Operation;
 
+import jakarta.validation.constraints.*;
+import jakarta.validation.*;
+import jakarta.servlet.http.*;
+import java.util.*;
 import java.io.IOException;
-import java.util.List;
 
-import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
+
+import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+
+import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+import org.springframework.web.multipart.MultipartFile;
+
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 
 @Tag(name = "管理后台 - 企业整改记录")
@@ -37,8 +49,40 @@ public class EntRectifyRecordController {
     @Resource
     private EntRectifyRecordService entRectifyRecordService;
 
+    @PostMapping("/review-reject")
+    @Operation(summary = "审核不通过")
+    @PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:review-reject')")
+    public CommonResult<Boolean> reviewReject(
+            @Valid @RequestBody ReviewRejectReq reqVO) {
+        Boolean flag = entRectifyRecordService.reviewReject(reqVO);
+        return success(flag);
+    }
+    @PostMapping("/review-approve")
+    @Operation(summary = "审核通过")
+    @PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:review-approve')")
+    public CommonResult<Boolean> reviewApprove(
+            @Valid @RequestBody ReviewApproveReq reqVO) {
+        Boolean flag = entRectifyRecordService.reviewApprove(reqVO);
+        return success(flag);
+    }
+    @PostMapping("/upload-file")
+    @Operation(summary = "上传资料")
+    @PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:upload-file')")
+    public CommonResult<UploadFileRespVO> uploadEvidenceFile(
+            @RequestPart("file") MultipartFile file,
+            @Valid @ModelAttribute UploadFileReqVO reqVO) {
+        UploadFileRespVO respVO = entRectifyRecordService.uploadEvidenceFile(reqVO,file);
+        return success(respVO);
+    }
+    @PostMapping("/add")
+    @Operation(summary = "新增-企业整改记录")
+    @PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:create')")
+    public CommonResult<Long> addEntRectifyRecord(@Valid @RequestBody AddEntRectifyRecordReqVO createReqVO) {
+        Long id = entRectifyRecordService.addEntRectifyRecord(createReqVO);
+        return success(id);
+    }
     @PostMapping("/create")
-    @Operation(summary = "创建企业整改记录")
+    @Operation(summary = "（勿用）创建企业整改记录")
     @PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:create')")
     public CommonResult<Long> createEntRectifyRecord(@Valid @RequestBody EntRectifyRecordSaveReqVO createReqVO) {
         return success(entRectifyRecordService.createEntRectifyRecord(createReqVO));

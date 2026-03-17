@@ -17,6 +17,7 @@ public interface AiAlertMessageMapper extends BaseMapperX<AiAlertMessageDO> {
 
     default PageResult<AiAlertMessageDO> selectPage(AiAlertMessagePageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<AiAlertMessageDO>()
+                .eqIfPresent(AiAlertMessageDO::getRectifyReviewId,reqVO.getRectifyReviewId())
                 .eqIfPresent(AiAlertMessageDO::getUserIds, reqVO.getUserIds())
                 .eqIfPresent(AiAlertMessageDO::getSceneId, reqVO.getSceneId())
                 .eqIfPresent(AiAlertMessageDO::getAiAbilityCode, reqVO.getAiAbilityCode())

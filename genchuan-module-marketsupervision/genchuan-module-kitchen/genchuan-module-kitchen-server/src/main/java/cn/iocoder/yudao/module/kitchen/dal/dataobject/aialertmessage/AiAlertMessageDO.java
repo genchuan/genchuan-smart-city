@@ -29,6 +29,10 @@ public class AiAlertMessageDO extends BaseDO {
     @TableId
     private Long id;
     /**
+     * [整改台账ID]
+     */
+    private Long rectifyReviewId;
+    /**
      * [设备关联用户ID列表] JSON格式存储的用户ID列表
      */
     private String userIds;

@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo;
 
+import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -11,6 +12,9 @@ public class AiAlertMessageSaveReqVO {
 
     @Schema(description = "[主键ID] 主键，告警记录唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "7688")
     private Long id;
+
+    @Schema(description = "[整改台账ID]", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    private Long rectifyReviewId;
 
     @Schema(description = "[设备关联用户ID列表] JSON格式存储的用户ID列表")
     private String userIds;

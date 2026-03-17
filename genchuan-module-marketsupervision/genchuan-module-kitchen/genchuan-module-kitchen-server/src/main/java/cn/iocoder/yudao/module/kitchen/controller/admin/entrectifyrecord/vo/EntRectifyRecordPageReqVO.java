@@ -1,12 +1,10 @@
 package cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo;
 
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import lombok.*;
+import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import java.time.LocalDateTime;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
@@ -17,13 +15,22 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @ToString(callSuper = true)
 public class EntRectifyRecordPageReqVO extends PageParam {
 
-    @Schema(description = "[整改通知书ID] 关联park_rectify_notice.id，唯一", example = "1757")
+    @Schema(description = "[唯一标识code]", example = "ENT2")
+    private String uniCode;
+
+    @Schema(description = "[处罚复审台账id]", example = "8543")
+    private Long punishReviewId;
+
+    @Schema(description = "[整改复审台账id]", example = "29822")
+    private Long rectifyReviewId;
+
+    @Schema(description = "[整改通知书ID] 关联park_rectify_notice.id，唯一", example = "1130")
     private Long rectifyNoticeId;
 
-    @Schema(description = "[企业ID] 关联park_enterprise_info.id", example = "5748")
+    @Schema(description = "[企业ID] 关联park_enterprise_info.id", example = "19288")
     private Long entId;
 
-    @Schema(description = "[整改状态] 如：未整改/整改中/已完成/整改不合格", example = "1")
+    @Schema(description = "[整改状态] 如：未整改/整改中/已完成/整改不合格", example = "2")
     private String rectifyStatus;
 
     @Schema(description = "[整改完成时间] datetime格式，仅当状态为已完成或整改不合格时有值")
@@ -42,7 +49,7 @@ public class EntRectifyRecordPageReqVO extends PageParam {
     @Schema(description = "[整改审核人ID] 关联park_user.id，可为空")
     private Long auditBy;
 
-    @Schema(description = "[整改审核驳回原因] 文本，可为空", example = "不香")
+    @Schema(description = "[整改审核驳回原因] 文本，可为空", example = "不对")
     private String rejectReason;
 
     @Schema(description = "[整改审核时间] 可为空")

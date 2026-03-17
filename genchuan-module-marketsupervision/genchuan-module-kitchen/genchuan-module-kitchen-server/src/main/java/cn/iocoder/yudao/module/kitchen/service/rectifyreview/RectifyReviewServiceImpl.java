@@ -1,31 +1,40 @@
 package cn.iocoder.yudao.module.kitchen.service.rectifyreview;
 
 import cn.idev.excel.EasyExcel;
+import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifynotice.vo.RectifyNoticeSaveReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.*;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.add.AddRectifyReviewReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.cancel.CancelReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.issue.IssueReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileRespVO;
+import cn.iocoder.yudao.module.kitchen.dal.dataobject.aialertmessage.AiAlertMessageDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.dictionary.cancelreasondict.CancelReasonDictDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifyreview.RectifyReviewDO;
+import cn.iocoder.yudao.module.kitchen.dal.mysql.aialertmessage.AiAlertMessageMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.rectifynotice.RectifyNoticeMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.rectifyreview.RectifyReviewMapper;
+import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.file.FileUploadService;
+import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.name.NameUtil;
 import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.verify.VerifyUtil;
 import cn.iocoder.yudao.module.kitchen.service.dictionary.cancelreasondict.CancelReasonDictService;
 import cn.iocoder.yudao.module.kitchen.service.rectifynotice.RectifyNoticeService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -40,6 +49,7 @@ import static cn.iocoder.yudao.module.kitchen.enums.ErrorCodeConstants.RECTIFY_R
  */
 @Service
 @Validated
+@Slf4j
 public class RectifyReviewServiceImpl implements RectifyReviewService {
 
     @Resource
@@ -53,6 +63,12 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
 
     @Resource
     private RectifyNoticeMapper rectifyNoticeMapper;
+
+    @Resource
+    private AiAlertMessageMapper aiAlertMessageMapper;
+
+    @Resource
+    private FileUploadService fileUploadService;
 
     // 在类里定义 ObjectMapper 实例
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -266,6 +282,136 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
 
         //7.返回 通知书id
         return reviewDO.getId();
+    }
+
+    @Override
+    @Transactional
+    public Long reviewAdd(AddRectifyReviewReqVO reqVO) {
+
+        // ========= 0.基础校验 =========
+        // 这里只校验你真正依赖的字段，避免无意义校验
+        if (reqVO == null || reqVO.getEntId() == null) {
+            throw new IllegalArgumentException("企业ID不能为空");
+        }
+
+        // ========= 1.创建DO对象 =========
+        RectifyReviewDO insertDO = new RectifyReviewDO();
+
+        // ========= 2.台账编号（自动生成） =========
+        insertDO.setLedgerCode(NameUtil.generateCode("RECTIFY"));
+
+        // ========= 3.企业ID（前端传入） =========
+        insertDO.setEntId(reqVO.getEntId());
+
+        // ========= 4.违规类型（暂时写死，后续根据告警映射） =========
+        insertDO.setIllegalTypeId(1L);
+
+        // ========= 5.违规等级（暂时写死，后续根据告警映射） =========
+        insertDO.setIllegalLevelId(1L);
+
+        // ========= 6.违规证据（TODO：后续根据告警或上传） =========
+        // 这里建议统一用 JSON 数组格式字符串
+        // 示例：["url1","url2"]
+        insertDO.setEvidenceUrl("[{\"name\":\"Snipaste_2026-03-09_14-23-50.png\",\"type\":\"image\",\"url\":\"http://112.47.127.21:59000/shunchang/avatar/7dfda1f0-49eb-4ba6-bfb9-30560bdc4a21.png\"},{\"name\":\"Snipaste_2026-03-09_14-22-05.png\",\"type\":\"image\",\"url\":\"http://112.47.127.21:59000/shunchang/avatar/2eede5e1-6b48-41bc-8f03-b4b145a68681.png\"}]");
+
+        // ========= 7.草拟时间（当前时间） =========
+        insertDO.setDraftTime(LocalDateTime.now());
+
+        // ========= 8.复审状态（初始化） =========
+        insertDO.setReviewStatus("待复审");
+
+        // ========= 9.复审人（当前登录用户） =========
+        Long currentUserId = getLoginUserId();
+        insertDO.setReviewBy(currentUserId);
+
+        // ========= 10.执法复审台账编号（临时写死） =========
+        insertDO.setLawLedgerCode(NameUtil.generateCode("LAW"));
+
+        // ========= 11.入库 =========
+        rectifyReviewMapper.insert(insertDO);
+
+
+        //12.修改预警的绑定 整改复审id
+        AiAlertMessageDO updateAiAlertMessageDO = aiAlertMessageMapper.selectById(reqVO.getAiAlertMessageId());
+        VerifyUtil.verifyNotNullWithMsg(updateAiAlertMessageDO,"预警不存在数据库");
+
+        updateAiAlertMessageDO.setRectifyReviewId(insertDO.getId());
+        aiAlertMessageMapper.updateById(updateAiAlertMessageDO);
+
+        // ========= 13.返回主键 =========
+        return insertDO.getId();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public UploadEvidenceFileRespVO uploadEvidenceFile(UploadEvidenceFileReqVO reqVO, MultipartFile file) {
+        // 1. 校验整改复审台账是否存在
+        RectifyReviewDO rectifyReviewDO = rectifyReviewMapper.selectById(reqVO.getRectifyReviewId());
+        VerifyUtil.verifyNotNullWithMsg(rectifyReviewDO,"整改复审台账记录不存在数据库");
+
+
+        try {
+            // 2. 上传文件到 MinIO
+            String fileUrl = fileUploadService.uploadAvatar(file);
+
+            // 3. 构建文件信息对象
+            Map<String, String> fileInfo = new HashMap<>();
+            fileInfo.put("url", fileUrl);
+            fileInfo.put("name", file.getOriginalFilename());
+
+            // 根据后缀决定 type
+            String lowerName = file.getOriginalFilename().toLowerCase();
+            if (lowerName.endsWith(".png") || lowerName.endsWith(".jpg") || lowerName.endsWith(".jpeg") || lowerName.endsWith(".gif")) {
+                fileInfo.put("type", "image");
+            } else if (lowerName.endsWith(".xls") || lowerName.endsWith(".xlsx")) {
+                fileInfo.put("type", "excel");
+            } else if (lowerName.endsWith(".doc") || lowerName.endsWith(".docx")) {
+                fileInfo.put("type", "word");
+            } else {
+                fileInfo.put("type", "file"); // 其他通用文件
+            }
+
+            // 4. 获取原有 JSON
+            String oldJson = rectifyReviewDO.getEvidenceUrl();
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<Map<String, String>> fileList;
+
+            if (oldJson == null || oldJson.isEmpty()) {
+                fileList = new ArrayList<>();
+            } else {
+                // 解析原有 JSON
+                fileList = objectMapper.readValue(oldJson, new TypeReference<List<Map<String, String>>>() {});
+            }
+
+            // 5. 添加新文件
+            fileList.add(fileInfo);
+
+            // 6. 转成 JSON 字符串
+            String newJson = objectMapper.writeValueAsString(fileList);
+
+            // 7. 更新数据库
+            RectifyReviewDO updateRectifyReviewDO = new RectifyReviewDO();
+            updateRectifyReviewDO.setId(rectifyReviewDO.getId());
+            updateRectifyReviewDO.setEvidenceUrl(newJson);
+            rectifyReviewMapper.updateById(updateRectifyReviewDO);
+
+            // 8. 返回结果
+            UploadEvidenceFileRespVO respVO = new UploadEvidenceFileRespVO();
+            respVO.setRectifyReviewId(rectifyReviewDO.getId());
+            respVO.setFileUrl(fileUrl);
+            respVO.setFileName(file.getOriginalFilename());
+
+            return respVO;
+
+        } catch (Exception e) {
+            log.error("上传工单资料失败", e);
+
+            if (e instanceof ServiceException) {
+                throw (ServiceException) e;
+            }
+
+            throw new ServiceException(500, "上传文件失败");
+        }
     }
 
 

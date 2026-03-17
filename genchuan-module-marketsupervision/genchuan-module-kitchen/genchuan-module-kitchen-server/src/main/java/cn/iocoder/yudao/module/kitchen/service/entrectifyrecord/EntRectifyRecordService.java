@@ -1,10 +1,19 @@
 package cn.iocoder.yudao.module.kitchen.service.entrectifyrecord;
 
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import java.util.*;
+
 import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.EntRectifyRecordPageReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.EntRectifyRecordSaveReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.add.AddEntRectifyRecordReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.review.ReviewApproveReq;
+import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.review.ReviewRejectReq;
+import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.upload.UploadFileReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.upload.UploadFileRespVO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.entrectifyrecord.EntRectifyRecordDO;
-import jakarta.validation.Valid;
+import jakarta.validation.*;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 企业整改记录 Service 接口
@@ -51,4 +60,11 @@ public interface EntRectifyRecordService {
      */
     PageResult<EntRectifyRecordDO> getEntRectifyRecordPage(EntRectifyRecordPageReqVO pageReqVO);
 
+    Long addEntRectifyRecord(AddEntRectifyRecordReqVO createReqVO);
+
+    UploadFileRespVO uploadEvidenceFile(UploadFileReqVO reqVO, MultipartFile file);
+
+    Boolean reviewApprove(ReviewApproveReq reqVO);
+
+    Boolean reviewReject(ReviewRejectReq reqVO);
 }

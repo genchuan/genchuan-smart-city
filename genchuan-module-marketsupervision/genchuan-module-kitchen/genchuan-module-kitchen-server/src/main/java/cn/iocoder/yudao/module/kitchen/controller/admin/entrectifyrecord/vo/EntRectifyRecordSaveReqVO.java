@@ -1,28 +1,37 @@
 package cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo;
 
+import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-
+import lombok.*;
+import java.util.*;
+import jakarta.validation.constraints.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 企业整改记录新增/修改 Request VO")
 @Data
 public class EntRectifyRecordSaveReqVO {
 
-    @Schema(description = "[主键ID] 企业整改记录唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "28473")
+    @Schema(description = "[主键ID] 企业整改记录唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "22485")
     private Long id;
+    @Schema(description = "[唯一标识code]", example = "ENT2")
+    private String uniCode;
 
-    @Schema(description = "[整改通知书ID] 关联park_rectify_notice.id，唯一", requiredMode = Schema.RequiredMode.REQUIRED, example = "1757")
+    @Schema(description = "[处罚复审台账id]", example = "8543")
+    private Long punishReviewId;
+
+    @Schema(description = "[整改复审台账id]", example = "29822")
+    private Long rectifyReviewId;
+
+    @Schema(description = "[整改通知书ID] 关联park_rectify_notice.id，唯一", requiredMode = Schema.RequiredMode.REQUIRED, example = "1130")
     @NotNull(message = "[整改通知书ID] 关联park_rectify_notice.id，唯一不能为空")
     private Long rectifyNoticeId;
 
-    @Schema(description = "[企业ID] 关联park_enterprise_info.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "5748")
+    @Schema(description = "[企业ID] 关联park_enterprise_info.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "19288")
     @NotNull(message = "[企业ID] 关联park_enterprise_info.id不能为空")
     private Long entId;
 
-    @Schema(description = "[整改状态] 如：未整改/整改中/已完成/整改不合格", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @Schema(description = "[整改状态] 如：未整改/整改中/已完成/整改不合格", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
     @NotEmpty(message = "[整改状态] 如：未整改/整改中/已完成/整改不合格不能为空")
     private String rectifyStatus;
 
@@ -41,7 +50,7 @@ public class EntRectifyRecordSaveReqVO {
     @Schema(description = "[整改审核人ID] 关联park_user.id，可为空")
     private Long auditBy;
 
-    @Schema(description = "[整改审核驳回原因] 文本，可为空", example = "不香")
+    @Schema(description = "[整改审核驳回原因] 文本，可为空", example = "不对")
     private String rejectReason;
 
     @Schema(description = "[整改审核时间] 可为空")

@@ -26,6 +26,10 @@ public class RectifyNoticeTemplateReqVO {
     @NotEmpty(message = "[违规原因] 不能为空")
     private String illegalTypeName;
 
+    @Schema(description = "[整改通知书编号]", requiredMode = Schema.RequiredMode.REQUIRED, example = "福头企业")
+    @NotEmpty(message = "[整改通知书编号] 不能为空")
+    private String noticeCode;
+
     @Schema(description = "[联系人]", requiredMode = Schema.RequiredMode.REQUIRED, example = "福头企业")
     @NotEmpty(message = "[联系人] 不能为空")
     private String contactPerson;

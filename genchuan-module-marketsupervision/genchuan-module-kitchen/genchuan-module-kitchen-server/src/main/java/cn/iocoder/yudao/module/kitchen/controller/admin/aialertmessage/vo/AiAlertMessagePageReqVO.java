@@ -17,6 +17,9 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @ToString(callSuper = true)
 public class AiAlertMessagePageReqVO extends PageParam {
 
+    @Schema(description = "[整改台账ID]", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    private Long rectifyReviewId;
+
     @Schema(description = "[设备关联用户ID列表] JSON格式存储的用户ID列表")
     private String userIds;
 

@@ -2,10 +2,14 @@ package cn.iocoder.yudao.module.kitchen.service.rectifyreview;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.*;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.add.AddRectifyReviewReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.cancel.CancelReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.issue.IssueReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileRespVO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifyreview.RectifyReviewDO;
 import jakarta.validation.Valid;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -69,4 +73,8 @@ public interface RectifyReviewService {
     Long reviewIssue(IssueReqVO reqVO);
 
     Long reviewCancel(CancelReqVO reqVO);
+
+    Long reviewAdd(AddRectifyReviewReqVO reqVO);
+
+    UploadEvidenceFileRespVO uploadEvidenceFile(UploadEvidenceFileReqVO reqVO, MultipartFile file);
 }

@@ -7,8 +7,11 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.*;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.add.AddRectifyReviewReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.cancel.CancelReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.issue.IssueReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileRespVO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifyreview.RectifyReviewDO;
 import cn.iocoder.yudao.module.kitchen.service.rectifyreview.RectifyReviewService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +23,7 @@ import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -38,6 +42,25 @@ public class RectifyReviewController {
 
     @Resource
     private RectifyReviewService rectifyReviewService;
+
+    @PostMapping("/upload-evidence-file")
+    @Operation(summary = "上传证据资料")
+    @PreAuthorize("@ss.hasPermission('kitchen:rectify-review:upload-evidence-file')")
+    public CommonResult<UploadEvidenceFileRespVO> uploadEvidenceFile(
+            @RequestPart("file") MultipartFile file,
+            @Valid @ModelAttribute UploadEvidenceFileReqVO reqVO) {
+        UploadEvidenceFileRespVO respVO = rectifyReviewService.uploadEvidenceFile(reqVO,file);
+        return success(respVO);
+    }
+
+    //新增，从预警的“发送整改”
+    @PostMapping("/review-add")
+    @PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-add')")
+    @Operation(summary = "新增-整改通知书操作")
+    public CommonResult<Long> reviewAdd(@Valid @RequestBody AddRectifyReviewReqVO reqVO) {
+        Long id = rectifyReviewService.reviewAdd(reqVO);
+        return success(id);
+    }
 
     //撤销审核
     @PostMapping("/review-cancel")

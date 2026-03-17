@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.kitchen.controller.admin.rectifynotice.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,8 +27,9 @@ public class RectifyNoticeSaveReqVO {
 //    @NotNull(message = "[下发时间] 通知书正式下发时间不能为空")
     private LocalDateTime issueTime;
 
-    @Schema(description = "[整改期限] 要求完成整改的截止日期", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "[整改期限] 要求完成整改的截止日期", requiredMode = Schema.RequiredMode.REQUIRED,example = "2026-04-05")
     @NotNull(message = "[整改期限] 要求完成整改的截止日期不能为空")
+    @DateTimeFormat(pattern = "yyyy-MM-dd") // 用于 Spring MVC 参数绑定
     private LocalDate rectifyDeadline;
 
     //自动
