@@ -95,7 +95,7 @@ public interface RoadCleaningMapper extends BaseMapperX<RoadCleaningDO> {
     /** 质量待核查数 */
     @Select("""
             SELECT COUNT(1) FROM road_cleaning r
-            WHERE r.deleted = 0 AND r.review_status = '待核查'
+            WHERE r.deleted = 0 AND r.review_status <> '达标'
             """)
     Long selectPendingReviewCount();
 

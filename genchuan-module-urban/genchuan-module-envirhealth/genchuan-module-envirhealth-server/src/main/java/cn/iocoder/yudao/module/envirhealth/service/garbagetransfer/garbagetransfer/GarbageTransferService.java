@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.envirhealth.service.garbagetransfer.garbagetransfer;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferDashboardRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.GarbageTransferDO;
@@ -52,6 +53,18 @@ public interface GarbageTransferService {
      */
     PageResult<GarbageTransferDO> getGarbageTransferPage(GarbageTransferPageReqVO pageReqVO);
 
+    /**
+     * 获得垃圾转运站分页详情
+     *
+     * @param pageReqVO 分页查询
+     * @return 垃圾转运站分页
+     */
     PageResult<GarbageTransferDetailDO> getGarbageTransferDetailPage(GarbageTransferPageReqVO pageReqVO);
 
+    /**
+     * 获取垃圾转运站看板统计数据
+     *
+     * @return 看板统计数据
+     */
+    GarbageTransferDashboardRespVO getDashboardStats();
 }

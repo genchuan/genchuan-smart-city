@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.TransferReserveBatchSortReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.TransferReserveDashboardRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.TransferReservePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.TransferReserveSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferReserveDO;
@@ -150,5 +151,28 @@ public class TransferReserveServiceImpl implements TransferReserveService {
 
             transferReserveMapper.updateById(update);
         }
+    }
+
+    // 在 TransferReserveServiceImpl.java 中添加
+
+    @Override
+    public TransferReserveDashboardRespVO getDashboardStats() {
+        TransferReserveDashboardRespVO resp = new TransferReserveDashboardRespVO();
+
+        // 1. 卡片数据 - 直接从Mapper查询
+        resp.setPendingVehicles(transferReserveMapper.selectPendingVehicles());
+        resp.setSortedVehicles(transferReserveMapper.selectSortedVehicles());
+        resp.setTodayTotalReserves(transferReserveMapper.selectTodayTotalReserves());
+
+        // 2. 圆环图数据 - 垃圾品类分布
+        resp.setGarbageTypeDistribution(transferReserveMapper.selectGarbageTypePie());
+
+        // 3. 圆环图数据 - 区域分布
+        resp.setAreaDistribution(transferReserveMapper.selectAreaPie());
+
+        // 4. 柱状图数据 - 不同时段预约车辆数量对比
+        resp.setReserveCountByTimeSlot(transferReserveMapper.selectReserveCountByTimeSlot());
+
+        return resp;
     }
 }

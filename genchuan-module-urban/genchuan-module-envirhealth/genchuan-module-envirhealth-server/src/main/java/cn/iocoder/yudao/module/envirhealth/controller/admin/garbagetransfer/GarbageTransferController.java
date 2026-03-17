@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferDashboardRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferSaveReqVO;
@@ -110,5 +111,12 @@ public class GarbageTransferController {
                 garbageTransferService.getGarbageTransferDetailPage(pageReqVO);
 
         return success(pageResult);
+    }
+
+    @GetMapping("/chart/dashboard")
+    @Operation(summary = "卡片/圆环图/柱状图/折线图统计(全部)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:garbage-transfer:query')")
+    public CommonResult<GarbageTransferDashboardRespVO> getDashboardStats() {
+        return success(garbageTransferService.getDashboardStats());
     }
 }

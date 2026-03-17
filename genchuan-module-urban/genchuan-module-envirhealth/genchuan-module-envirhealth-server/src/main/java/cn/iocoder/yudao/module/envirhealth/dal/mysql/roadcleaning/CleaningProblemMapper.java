@@ -53,7 +53,7 @@ public interface CleaningProblemMapper extends BaseMapperX<CleaningProblemDO> {
      * 查询待处置问题总数
      */
     @Select("SELECT COUNT(*) FROM road_cleaning_problem " +
-            "WHERE deleted = 0 AND handle_status = '待处置'")
+            "WHERE deleted = 0")
     Long selectPendingProblemCount();
 
     /**

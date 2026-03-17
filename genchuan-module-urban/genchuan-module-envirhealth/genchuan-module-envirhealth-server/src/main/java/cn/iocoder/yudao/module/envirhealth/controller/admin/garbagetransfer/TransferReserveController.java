@@ -6,10 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.TransferReserveBatchSortReqVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.TransferReservePageReqVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.TransferReserveRespVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.TransferReserveSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferReserveDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.detail.TransferReserveDetailDO;
 import cn.iocoder.yudao.module.envirhealth.service.garbagetransfer.transferreserve.TransferReserveService;
@@ -120,5 +117,12 @@ public class TransferReserveController {
             @Valid @RequestBody TransferReserveBatchSortReqVO reqVO) {
         transferReserveService.batchSortTransferReserve(reqVO);
         return success(true);
+    }
+
+    @GetMapping("/chart/dashboard")
+    @Operation(summary = "卡片/圆环图/柱状图/统计(待进站)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:transfer-reserve:query')")
+    public CommonResult<TransferReserveDashboardRespVO> getDashboardStats() {
+        return success(transferReserveService.getDashboardStats());
     }
 }

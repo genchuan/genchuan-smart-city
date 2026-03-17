@@ -19,11 +19,55 @@
 
         <!-- 关联查询的额外字段 -->
         <result column="garbage_type_name" property="garbageTypeName"/>
-        <result column="vehicle_Name" property="vehicleName"/>
+        <result column="vehicle_name" property="vehicleName"/>
         <result column="area_name" property="areaName"/>
         <result column="handle_name" property="handleName"/>
     </resultMap>
 
+    <!-- 通用查询条件 SQL 片段 -->
+    <sql id="whereConditions">
+        <where>
+            tr.deleted = 0
+            <if test="reqVO.reserveId != null and reqVO.reserveId != ''">
+                AND tr.reserve_id = #{reqVO.reserveId}
+            </if>
+            <if test="reqVO.vehicleId != null and reqVO.vehicleId != ''">
+                AND tr.vehicle_id = #{reqVO.vehicleId}
+            </if>
+            <if test="reqVO.garbageTypeId != null and reqVO.garbageTypeId != ''">
+                AND tr.garbage_type_id = #{reqVO.garbageTypeId}
+            </if>
+            <if test="reqVO.garbageWeight != null">
+                AND tr.garbage_weight = #{reqVO.garbageWeight}
+            </if>
+            <if test="reqVO.areaCode != null and reqVO.areaCode != ''">
+                AND tr.area_code = #{reqVO.areaCode}
+            </if>
+            <if test="reqVO.reserveStatus != null and reqVO.reserveStatus != ''">
+                AND tr.reserve_status = #{reqVO.reserveStatus}
+            </if>
+            <if test="reqVO.sortNo != null">
+                AND tr.sort_no = #{reqVO.sortNo}
+            </if>
+            <if test="reqVO.handleBy != null and reqVO.handleBy != ''">
+                AND tr.handle_by = #{reqVO.handleBy}
+            </if>
+            <!-- 预计进站时间范围过滤 -->
+            <if test="reqVO.expectedTime != null and reqVO.expectedTime.length == 2">
+                AND tr.expected_time BETWEEN #{reqVO.expectedTime[0]} AND #{reqVO.expectedTime[1]}
+            </if>
+            <!-- 创建时间（业务字段）范围过滤 -->
+            <if test="reqVO.abnormalCreateTime != null and reqVO.abnormalCreateTime.length == 2">
+                AND tr.abnormal_create_time BETWEEN #{reqVO.abnormalCreateTime[0]} AND #{reqVO.abnormalCreateTime[1]}
+            </if>
+            <!-- 创建时间范围过滤 -->
+            <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+                AND tr.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询详情 -->
     <select id="selectDetailPage" resultMap="TransferReserveDetailResultMap">
         SELECT
         tr.*,
@@ -36,16 +80,16 @@
         LEFT JOIN sys_vehicle v ON tr.vehicle_id = v.sys_vehicle_id AND v.deleted = 0
         LEFT JOIN sys_area a ON tr.area_code = a.area_code AND a.deleted = 0
         LEFT JOIN sys_user u ON tr.handle_by = u.user_id AND u.deleted = 0
-        WHERE tr.deleted = 0
+        <include refid="whereConditions"/>
         ORDER BY tr.id DESC
         LIMIT #{reqVO.offset}, #{reqVO.pageSize}
     </select>
 
+    <!-- 查询总条数 -->
     <select id="selectCount" resultType="Long">
         SELECT COUNT(DISTINCT tr.id)
         FROM garbage_transfer_reserve tr
-        WHERE tr.deleted = 0
+        <include refid="whereConditions"/>
     </select>
-
 
 </mapper>

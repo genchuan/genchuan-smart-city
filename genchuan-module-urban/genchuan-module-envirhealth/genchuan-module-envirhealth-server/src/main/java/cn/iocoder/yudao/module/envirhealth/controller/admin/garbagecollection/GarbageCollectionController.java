@@ -10,7 +10,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo
 import cn.iocoder.yudao.module.envirhealth.controller.admin.importer.vo.ImportRespVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.GarbageCollectionDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageCollectionDetailDO;
-import cn.iocoder.yudao.module.envirhealth.service.area.AreaService;
+import cn.iocoder.yudao.module.envirhealth.service.dictionary.area.AreaService;
 import cn.iocoder.yudao.module.envirhealth.service.garbagecollection.garbagecollection.GarbageCollectionService;
 import cn.iocoder.yudao.module.envirhealth.util.importer.ImportUtils;
 import cn.iocoder.yudao.module.envirhealth.util.vo.OptionVO;

@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.envirhealth.service.garbagetransfer.transferrese
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.TransferReserveBatchSortReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.TransferReserveDashboardRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.TransferReservePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.TransferReserveSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferReserveDO;
@@ -62,4 +63,11 @@ public interface TransferReserveService {
      * 批量排序
      */
     void batchSortTransferReserve(TransferReserveBatchSortReqVO reqVO);
+
+    /**
+     * 获取进站预约看板统计数据
+     *
+     * @return 看板统计数据
+     */
+    TransferReserveDashboardRespVO getDashboardStats();
 }

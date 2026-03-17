@@ -15,10 +15,6 @@
         <result column="progress" property="progress"/>
         <result column="destination" property="destination"/>
         <result column="abnormal_is_abnormal" property="abnormalIsAbnormal"/>
-        <result column="ext_common1" property="extCommon1"/>
-        <result column="ext_common2" property="extCommon2"/>
-        <result column="ext_common3" property="extCommon3"/>
-        <result column="ext_common4" property="extCommon4"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="deleted" property="deleted"/>
@@ -27,10 +23,52 @@
         <result column="vehicle_name" property="vehicleName"/>
         <result column="garbage_type_name" property="garbageTypeName"/>
         <result column="plan_no" property="planNo"/>
-        <result column="points_Name_Str" property="pointsNameStr"/>
-        <result column="equipment_Status" property="equipmentStatus"/>
+        <result column="points_name_str" property="pointsNameStr"/>
     </resultMap>
 
+    <!-- 通用查询条件 SQL 片段 -->
+    <sql id="whereConditions">
+        <where>
+            gto.deleted = 0
+            <if test="reqVO.operationId != null and reqVO.operationId != ''">
+                AND gto.operation_id = #{reqVO.operationId}
+            </if>
+            <if test="reqVO.vehicleId != null and reqVO.vehicleId != ''">
+                AND gto.vehicle_id = #{reqVO.vehicleId}
+            </if>
+            <if test="reqVO.garbageTypeId != null and reqVO.garbageTypeId != ''">
+                AND gto.garbage_type_id = #{reqVO.garbageTypeId}
+            </if>
+            <if test="reqVO.garbageWeight != null">
+                AND gto.garbage_weight = #{reqVO.garbageWeight}
+            </if>
+            <if test="reqVO.planId != null and reqVO.planId != ''">
+                AND gto.plan_id = #{reqVO.planId}
+            </if>
+            <if test="reqVO.equipmentStatus != null and reqVO.equipmentStatus != ''">
+                AND gto.equipment_status = #{reqVO.equipmentStatus}
+            </if>
+            <if test="reqVO.progress != null and reqVO.progress != ''">
+                AND gto.progress = #{reqVO.progress}
+            </if>
+            <if test="reqVO.destination != null and reqVO.destination != ''">
+                AND gto.destination = #{reqVO.destination}
+            </if>
+            <if test="reqVO.abnormalIsAbnormal != null and reqVO.abnormalIsAbnormal != ''">
+                AND gto.abnormal_is_abnormal = #{reqVO.abnormalIsAbnormal}
+            </if>
+            <!-- 进站时间范围过滤 -->
+            <if test="reqVO.entryTime != null and reqVO.entryTime.length == 2">
+                AND gto.entry_time BETWEEN #{reqVO.entryTime[0]} AND #{reqVO.entryTime[1]}
+            </if>
+            <!-- 创建时间范围过滤 -->
+            <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+                AND gto.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询详情 -->
     <select id="selectDetailPage" resultMap="TransferOperationDetailResultMap">
         SELECT
         gto.*,
@@ -43,20 +81,19 @@
         LEFT JOIN sys_garbage_type gt ON gto.garbage_type_id = gt.sys_garbage_type_id AND gt.deleted = 0
         LEFT JOIN garbage_collection gc ON gto.plan_id = gc.collection_id AND gc.deleted = 0
         LEFT JOIN point p ON FIND_IN_SET(p.point_id,
-         REPLACE(REPLACE(REPLACE(REPLACE(gc.point_ids, '[', ''), ']', ''), '"', ''), ' ', '')
+        REPLACE(REPLACE(REPLACE(REPLACE(gc.point_ids, '[', ''), ']', ''), '"', ''), ' ', '')
         ) AND p.deleted = 0
-        LEFT JOIN garbage_transfer gt2 ON FIND_IN_SET(gt2.transfer_id,
-                                         REPLACE(REPLACE(REPLACE(REPLACE(gt2.equipment_ids, '[', ''), ']', ''), '"', ''), ' ', '')
-                             ) AND gt2.deleted = 0
-        WHERE gto.deleted = 0
+        <include refid="whereConditions"/>
         GROUP BY gto.id, v.license_plate, gt.name, gc.plan_no
         ORDER BY gto.id DESC
         LIMIT #{reqVO.offset}, #{reqVO.pageSize}
     </select>
 
+    <!-- 查询总条数 -->
     <select id="selectCount" resultType="Long">
-        SELECT COUNT(*)
+        SELECT COUNT(DISTINCT gto.id)
         FROM garbage_transfer_operation gto
-        WHERE gto.deleted = 0
+        <include refid="whereConditions"/>
     </select>
+
 </mapper>

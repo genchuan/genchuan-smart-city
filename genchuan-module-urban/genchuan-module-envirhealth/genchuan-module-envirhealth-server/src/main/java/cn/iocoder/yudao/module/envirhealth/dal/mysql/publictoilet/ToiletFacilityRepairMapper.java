@@ -64,7 +64,7 @@ public interface ToiletFacilityRepairMapper extends BaseMapperX<ToiletFacilityRe
      * 查询已派单维修数
      */
     @Select("SELECT COUNT(*) FROM public_toilet_facility_repair " +
-            "WHERE deleted = 0 AND repair_status = '已派单'")
+            "WHERE deleted = 0 AND repair_status = '维修中'")
     Long selectDispatchedTotal();
 
     /**

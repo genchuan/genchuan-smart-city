@@ -6,7 +6,6 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.checkresult.CheckResultPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.checkresult.CheckResultSaveReqVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.facility.FacilityDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.market.CheckResultDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.market.CheckResultMapper;
 import cn.iocoder.yudao.module.envirhealth.util.vo.OptionVO;

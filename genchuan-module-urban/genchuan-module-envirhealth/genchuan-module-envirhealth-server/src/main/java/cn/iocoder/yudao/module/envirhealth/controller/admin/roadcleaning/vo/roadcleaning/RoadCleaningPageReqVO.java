@@ -9,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
@@ -85,7 +86,7 @@ public class RoadCleaningPageReqVO extends PageParam {
     private String checkPhotoUrl;
 
     @Schema(description = "核查状态：待核查/达标/不达标", example = "2")
-    private String reviewStatus;
+    private List<String> reviewStatus;
 
     @Schema(description = "关联sys_user.id")
     private String reviewBy;

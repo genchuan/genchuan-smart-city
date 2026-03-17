@@ -135,8 +135,11 @@
             <if test="reqVO.checkPhotoUrl != null and reqVO.checkPhotoUrl != ''">
                 AND rc.check_photo_url LIKE CONCAT('%', #{reqVO.checkPhotoUrl}, '%')
             </if>
-            <if test="reqVO.reviewStatus != null and reqVO.reviewStatus != ''">
-                AND rc.review_status = #{reqVO.reviewStatus}
+            <if test="reqVO.reviewStatus != null and reqVO.reviewStatus.size() > 0">
+                AND rc.review_status IN
+                <foreach collection="reqVO.reviewStatus" item="status" open="(" separator="," close=")">
+                    #{status}
+                </foreach>
             </if>
             <if test="reqVO.reviewBy != null and reqVO.reviewBy != ''">
                 AND rc.review_by = #{reqVO.reviewBy}

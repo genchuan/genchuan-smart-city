@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.envirhealth.service.garbagetransfer.garbagetrans
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferDashboardRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.GarbageTransferDO;
@@ -137,5 +138,29 @@ public class GarbageTransferServiceImpl implements GarbageTransferService {
         return new PageResult<>(list, total);
     }
 
+    @Override
+    public GarbageTransferDashboardRespVO getDashboardStats() {
+        GarbageTransferDashboardRespVO resp = new GarbageTransferDashboardRespVO();
+
+        // 1. 卡片数据
+        resp.setTotalStations(garbageTransferMapper.selectTotalStations());
+        resp.setNormalOperationCount(garbageTransferMapper.selectNormalOperationCount());
+        resp.setEquipmentNormalCount(garbageTransferMapper.selectEquipmentNormalCount());
+        resp.setEnvironmentStandardCount(garbageTransferMapper.selectEnvironmentStandardCount());
+
+        // 2. 圆环图数据 - 运营状态分布
+        resp.setOperationStatusDistribution(garbageTransferMapper.selectOperationStatusPie());
+
+        // 3. 圆环图数据 - 区域分布
+        resp.setAreaDistribution(garbageTransferMapper.selectAreaPie());
+
+        // 4. 柱状图数据 - 日转运量对比
+        resp.setDailyTransferVolumeComparison(garbageTransferMapper.selectDailyTransferVolumeBar());
+
+        // 5. 折线图数据 - 近7日环境指标变化趋势
+//        resp.setEnvironmentTrend7Days(garbageTransferMapper.selectEnvironmentTrend7Days());
+
+        return resp;
+    }
 
 }
