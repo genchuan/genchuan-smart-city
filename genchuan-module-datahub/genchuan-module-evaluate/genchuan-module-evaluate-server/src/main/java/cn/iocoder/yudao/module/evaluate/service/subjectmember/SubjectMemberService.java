@@ -6,7 +6,7 @@ import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.subjectmembe
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.subjectmember.SubjectMemberDO;
 import jakarta.validation.Valid;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * 评价主体成员 Service 接口

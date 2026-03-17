@@ -67,4 +67,14 @@ public class CalcWayServiceImpl implements CalcWayService {
         return calcWayMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public CalcWayDO getCalcWayByWayId(String wayId) {
+        return calcWayMapper.selectByWayId(wayId);
+    }
+
+    @Override
+    public CalcWayDO getCalcWayByName(String name) {
+        return calcWayMapper.selectByName(name);
+    }
+
 }

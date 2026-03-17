@@ -51,4 +51,20 @@ public interface IndexTypeService {
      */
     PageResult<IndexTypeDO> getIndexTypePage(IndexTypePageReqVO pageReqVO);
 
+    /**
+     * 根据typeId获取指标类型
+     *
+     * @param typeId 类型ID
+     * @return 指标类型
+     */
+    IndexTypeDO getIndexTypeByTypeId(String typeId);
+
+    /**
+     * 根据name获取指标类型
+     *
+     * @param name 类型名称
+     * @return 指标类型
+     */
+    IndexTypeDO getIndexTypeByName(String name);
+
 }

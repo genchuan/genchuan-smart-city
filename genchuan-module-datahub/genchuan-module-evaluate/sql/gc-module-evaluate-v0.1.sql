@@ -3710,3 +3710,65 @@ INSERT INTO `sys_veto_check` VALUES (4, 'veto_check004', '合规否决', 'COMPLI
 INSERT INTO `sys_veto_check` VALUES (5, 'veto_check005', '信誉否决', 'CREDIT_VETO', '严重失信', '2024-02-01 23:00:00', NULL, NULL, NULL, NULL, NULL, '', '', b'0', 1, '2026-02-12 13:20:34', '2026-02-12 13:20:34');
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+
+create table eval_comment_statistic
+(
+    id             bigint auto_increment comment '主键ID'
+        primary key,
+    item_id        bigint                                null comment '指标项ID(关联指标项表的主键id  eval_index_item.id)',
+    object_id      bigint                                null comment '街道：评价对象ID (关联eval_object.id)',
+    count          bigint                                null comment '统计指标项数量',
+    score          bigint                                null comment '关联到规则中回填的分数',
+    address_coding char(36)                              null comment '地址编码',
+    ext_common1    varchar(100)                          null comment '通用扩展字段1',
+    ext_common2    varchar(100)                          null comment '通用扩展字段2',
+    ext_common3    varchar(100)                          null comment '通用扩展字段3',
+    ext_common4    varchar(100)                          null comment '通用扩展字段4',
+    creator        varchar(64) default ''                null comment '创建者',
+    updater        varchar(64) default ''                null comment '更新者',
+    deleted        bit         default b'0'              null comment '删除标识',
+    tenant_id      bigint      default 1                 null comment '租户ID',
+    create_time    datetime    default CURRENT_TIMESTAMP null comment '创建时间',
+    update_time    datetime    default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment '更新时间',
+    change_log     mediumtext                            null comment '变更日志',
+    status         varchar(20) default '1'               null comment '状态: 1：待审核中，2：审核通过，3：不用审核'
+)
+    comment '巡查巡检统计表' collate = utf8mb4_unicode_ci
+                         row_format = DYNAMIC;
+
+
+create table eval_patrol_inspection
+(
+    id             bigint auto_increment comment '主键ID'
+        primary key,
+    user_id        bigint                                null comment '巡检人ID(关联sys_user.id)',
+    system_id      bigint                                null comment '体系ID (关联eval_index_system.id)',
+    object_id      bigint                                null comment '评价对象ID (关联eval_object.id)',
+    item_id        bigint                                null comment '指标项ID(关联eval_index_item)',
+    category_id    bigint                                null comment '规则分类ID',
+    details        text                                  null comment '评价说明',
+    ext_common1    varchar(100)                          null comment '通用扩展字段1',
+    ext_common2    varchar(100)                          null comment '通用扩展字段2',
+    ext_common3    varchar(100)                          null comment '通用扩展字段3',
+    ext_common4    varchar(100)                          null comment '通用扩展字段4',
+    creator        varchar(64) default ''                null comment '创建者',
+    updater        varchar(64) default ''                null comment '更新者',
+    deleted        bit         default b'0'              null comment '删除标识',
+    tenant_id      bigint      default 1                 null comment '租户ID',
+    create_time    datetime    default CURRENT_TIMESTAMP null comment '创建时间',
+    update_time    datetime    default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment '更新时间',
+    change_log     mediumtext                            null comment '变更日志',
+    status         varchar(20) default '1'               null comment '状态: 1：待审核中，2：审核通过，3：不用审核',
+    image          blob                                  null comment '图片',
+    address_coding char(36)                              null comment '地址编码'
+)
+    comment '巡查巡检表' collate = utf8mb4_unicode_ci
+                         row_format = DYNAMIC;
+
+
+
+
+
+
+

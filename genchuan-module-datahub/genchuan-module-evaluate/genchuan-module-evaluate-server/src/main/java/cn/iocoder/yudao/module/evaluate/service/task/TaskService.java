@@ -7,7 +7,7 @@ import cn.iocoder.yudao.module.evaluate.controller.admin.task.vo.TaskSaveReqVO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.task.TaskDO;
 import jakarta.validation.Valid;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * 评价任务 Service 接口

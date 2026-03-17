@@ -67,4 +67,14 @@ public class IndexTypeServiceImpl implements IndexTypeService {
         return indexTypeMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public IndexTypeDO getIndexTypeByTypeId(String typeId) {
+        return indexTypeMapper.selectByTypeId(typeId);
+    }
+
+    @Override
+    public IndexTypeDO getIndexTypeByName(String name) {
+        return indexTypeMapper.selectByName(name);
+    }
+
 }

@@ -31,4 +31,14 @@ public interface CalcWayMapper extends BaseMapperX<CalcWayDO> {
                 .orderByDesc(CalcWayDO::getId));
     }
 
+    default CalcWayDO selectByWayId(String wayId) {
+        return selectOne(new LambdaQueryWrapperX<CalcWayDO>()
+                .eq(CalcWayDO::getWayId, wayId));
+    }
+
+    default CalcWayDO selectByName(String name) {
+        return selectOne(new LambdaQueryWrapperX<CalcWayDO>()
+                .eq(CalcWayDO::getName, name));
+    }
+
 }

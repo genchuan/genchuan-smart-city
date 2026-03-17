@@ -9,9 +9,9 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
-    <!-- 联表分页查询指标体系列表 -->
+    <!-- 联表分页查询指标体系列表（使用子查询确保分页计数准确） -->
     <select id="selectPageWithJoin" resultType="cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.indexsystem.vo.IndexSystemPageItemVO">
-        SELECT
+        SELECT distinct
         eis.id,
         eis.system_id AS systemId,
         eis.name,
@@ -32,6 +32,35 @@
         creator.user_name AS createByName
 
         FROM eval_index_system eis
+        <!-- 使用子查询先获取唯一的 systemId 列表，确保分页计数准确 -->
+        INNER JOIN (
+            SELECT DISTINCT system_id
+        FROM (
+        SELECT DISTINCT system_id
+        FROM eval_index_system
+        WHERE deleted = 0
+        AND tenant_id = #{reqVO.tenantId}
+        <if test="reqVO.name != null and reqVO.name != ''">
+            AND name LIKE CONCAT('%', #{reqVO.name}, '%')
+        </if>
+        <if test="reqVO.code != null and reqVO.code != ''">
+            AND code = #{reqVO.code}
+        </if>
+        <if test="reqVO.systemId != null and reqVO.systemId != ''">
+            AND system_id = #{reqVO.systemId}
+        </if>
+        <if test="reqVO.objectTypeId != null and reqVO.objectTypeId != ''">
+            AND object_type_id = #{reqVO.objectTypeId}
+        </if>
+        <if test="reqVO.statusId != null and reqVO.statusId != ''">
+            AND status_id = #{reqVO.statusId}
+        </if>
+        <if test="reqVO.version != null and reqVO.version != ''">
+            AND version = #{reqVO.version}
+        </if>
+        ) AS filtered_systems
+        ) AS unique_systems ON eis.system_id = unique_systems.system_id
+
         <!-- 注意：sys_object_type表用type_id字段关联 -->
         LEFT JOIN sys_object_type sot ON eis.object_type_id = sot.type_id
         <!-- 注意：sys_status表用status_id字段关联 -->
@@ -41,33 +70,42 @@
         WHERE eis.deleted = 0
         AND eis.tenant_id = #{reqVO.tenantId}
 
+        ORDER BY eis.biz_create_time DESC
+    </select>
+
+    <!-- 统计符合条件的唯一体系数量（用于分页计数） -->
+    <select id="selectCountWithJoin" resultType="java.lang.Long">
+        SELECT COUNT(DISTINCT system_id)
+        FROM eval_index_system
+        WHERE deleted = 0
+        AND tenant_id = #{reqVO.tenantId}
+
         <!-- 动态筛选条件 -->
         <if test="reqVO.name != null and reqVO.name != ''">
-            AND eis.name LIKE CONCAT('%', #{reqVO.name}, '%')
+            AND name LIKE CONCAT('%', #{reqVO.name}, '%')
         </if>
         <if test="reqVO.code != null and reqVO.code != ''">
-            AND eis.code = #{reqVO.code}
+            AND code = #{reqVO.code}
         </if>
         <if test="reqVO.systemId != null and reqVO.systemId != ''">
-            AND eis.system_id = #{reqVO.systemId}
+            AND system_id = #{reqVO.systemId}
         </if>
         <if test="reqVO.objectTypeId != null and reqVO.objectTypeId != ''">
-            AND eis.object_type_id = #{reqVO.objectTypeId}
+            AND object_type_id = #{reqVO.objectTypeId}
         </if>
         <if test="reqVO.statusId != null and reqVO.statusId != ''">
-            AND eis.status_id = #{reqVO.statusId}
+            AND status_id = #{reqVO.statusId}
         </if>
         <if test="reqVO.version != null and reqVO.version != ''">
-            AND eis.version = #{reqVO.version}
+            AND version = #{reqVO.version}
         </if>
-
-        ORDER BY eis.biz_create_time DESC
     </select>
 
     <!-- 查询指标体系基本信息（详情页） -->
     <select id="selectDetailBaseInfo" resultType="cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.indexsystem.vo.IndexSystemDetailVO$BaseInfo">
         SELECT
-        eis.system_id AS systemId,
+        eis.id AS systemId,
+        eis.system_id AS systemUuid,
         eis.name,
         eis.code,
         eis.version,
@@ -85,47 +123,52 @@
         LEFT JOIN sys_status ss ON eis.status_id = ss.status_id
         LEFT JOIN sys_user creator ON eis.create_by = creator.user_id
 
-        WHERE eis.system_id = #{systemId}
+        WHERE eis.id = #{id}
         AND eis.deleted = 0
     </select>
 
     <!-- 查询指标分类列表 -->
     <select id="selectCategoriesBySystemId" resultType="cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.indexsystem.vo.IndexSystemDetailVO$CategoryVO">
         SELECT
-            eic.category_id AS categoryId,
+            eic.id AS categoryId,
+            eic.category_id AS categoryUuid,
             eic.name,
             eic.sort_no,
             eic.weight
         FROM eval_index_category eic
-        WHERE eic.system_id = #{systemId}
+        WHERE eic.system_id = #{systemUuid}
           AND eic.deleted = 0
     </select>
 
     <!-- 查询指标项列表（批量查询） -->
     <select id="selectItemsByCategoryIds" resultType="cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.indexsystem.vo.IndexSystemDetailVO$IndexItemVO">
         SELECT
-        eii.item_id AS itemId,
-        eii.category_id AS categoryId,
+        eii.id AS itemId,
+        eii.item_id AS itemUuid,
+        eic.id AS categoryId,
         eii.name,
         eii.threshold,
         eii.weight,
+        eii.sort_no AS sortNo,
 
         <!-- 关联字典表的type_id/way_id字段（UUID），不是id字段-->
         sit.name AS indexTypeName,
         scw.name AS calcWayName
 
         FROM eval_index_item eii
+        <!-- 关联分类表获取主键ID -->
+        INNER JOIN eval_index_category eic ON eii.category_id = eic.category_id AND eic.deleted = 0
         <!-- 注意：关联sys_index_type表的type_id字段 -->
         LEFT JOIN sys_index_type sit ON eii.index_type_id = sit.type_id
         <!-- 注意：关联sys_calc_way表的way_id字段 -->
         LEFT JOIN sys_calc_way scw ON eii.calc_way_id = scw.way_id
 
-        WHERE eii.category_id IN
+        WHERE eic.id IN
         <foreach collection="categoryIds" item="categoryId" open="(" separator="," close=")">
             #{categoryId}
         </foreach>
         AND eii.deleted = 0
-       <!-- ORDER BY eii.sort_no ASC -->
+        ORDER BY eii.sort_no ASC
     </select>
 
     <!-- 校验分类权重总和 -->

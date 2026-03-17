@@ -1,6 +1,6 @@
 package cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.subject.vo;
 
-import cn.idev.excel.annotation.ExcelProperty;
+import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

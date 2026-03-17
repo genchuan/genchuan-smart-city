@@ -7,9 +7,10 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.*;
 
 /**
- * 规则分类 DO
+ * 规则分类管理 DO
  *
  * @author 亘川智城
  */
@@ -29,10 +30,6 @@ public class RuleCategoryDO extends BaseDO {
     @TableId
     private Long id;
     /**
-     * 规则分类ID（UUID）
-     */
-    private String ruleCategoryId;
-    /**
      * 规则分类名称
      */
     private String name;
@@ -40,10 +37,6 @@ public class RuleCategoryDO extends BaseDO {
      * 适用指标体系ID（关联eval_index_system.system_id）
      */
     private String systemId;
-    /**
-     * 否决项表D（关联eval_veto_item.veto_item_id）
-     */
-    private String vetoItemId;
     /**
      * 规则项数量
      */
@@ -53,48 +46,28 @@ public class RuleCategoryDO extends BaseDO {
      */
     private Integer statusId;
     /**
-     * 最近使用时间
-     */
-    private LocalDateTime lastUseTime;
-    /**
      * 使用次数
      */
     private Integer useCount;
     /**
-     * 更新人ID（关联sys_user.user_id）
+     * 最近使用时间
      */
-    private String updateBy;
+    private LocalDateTime lastUseTime;
     /**
-     * 创建人ID（关联sys_user.user_id）
-     */
-    private String createBy;
-    /**
-     * 创建时间（业务字段）
-     */
-    private LocalDateTime bizCreateTime;
-    /**
-     * 更新时间（业务字段）
-     */
-    private LocalDateTime bizUpdateTime;
-    /**
-     * 变更日志
+     * 变更日志关联“规则分类表”，截取前50字
      */
     private String changeLog;
     /**
-     * 通用扩展字段1
+     * 指标项名称ideval_rule_item.index_id关联“指标项表”
      */
-    private String extCommon1;
+    private Integer itemId;
     /**
-     * 通用扩展字段2
+     * 规则项id关联“规则类型字典表”sys_rule_type
      */
-    private String extCommon2;
+    private Integer ruleId;
     /**
-     * 通用扩展字段3
+     * 对象类型ID关联“对象类型字典表”sys_object_type
      */
-    private String extCommon3;
-    /**
-     * 通用扩展字段4
-     */
-    private String extCommon4;
+    private Integer objectTypeId;
 
 }

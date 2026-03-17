@@ -6,7 +6,7 @@ import cn.iocoder.yudao.module.evaluate.controller.admin.datacollect.question.vo
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.question.QuestionDO;
 import jakarta.validation.Valid;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * 题目 Service 接口

@@ -6,7 +6,7 @@ import cn.iocoder.yudao.module.evaluate.controller.admin.datacollect.data.vo.Dat
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.data.DataDO;
 import jakarta.validation.Valid;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * 上报数据 Service 接口

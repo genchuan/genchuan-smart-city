@@ -96,6 +96,10 @@ public class IndexSystemDO extends BaseDO {
      */
     private LocalDateTime bizUpdateTime;
     /**
+     * 变更日志
+     */
+    private String changeLog;
+    /**
      * 通用扩展字段1
      */
     private String extCommon1;

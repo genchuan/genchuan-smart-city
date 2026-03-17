@@ -81,14 +81,14 @@ public class IndexSystemController {
     @PreAuthorize("@ss.hasPermission('evaluate:index-system:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportIndexSystemExcel(@Valid IndexSystemPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                       HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<IndexSystemDO> list = indexSystemService.getIndexSystemPage(pageReqVO).getList();
         // 导出 Excel
         ExcelUtils.write(response, "指标体系.xls", "数据", IndexSystemRespVO.class,
-                        BeanUtils.toBean(list, IndexSystemRespVO.class));
+                BeanUtils.toBean(list, IndexSystemRespVO.class));
     }
-//-------------------------------新增--------------------------
+    //-------------------------------新增--------------------------
     @GetMapping("/page-with-join")
     @Operation(summary = "分页查询指标体系列表（带关联信息）")
     public CommonResult<PageResult<IndexSystemPageItemVO>> getIndexSystemPageWithJoin(@Valid IndexSystemPageReqVO pageVO) {
@@ -96,11 +96,11 @@ public class IndexSystemController {
         return success(pageResult);
     }
 
-    @GetMapping("/detail/{systemId}")
+    @GetMapping("/detail/{id}")
     @Operation(summary = "查询指标体系详情（树形结构）")
-    @Parameter(name = "systemId", description = "指标体系ID（UUID）", required = true, example = "system_001")
-    public CommonResult<IndexSystemDetailVO> getIndexSystemDetail(@PathVariable("systemId") String systemId) {
-        IndexSystemDetailVO detail = indexSystemService.getIndexSystemDetail(systemId);
+    @Parameter(name = "id", description = "指标体系主键ID", required = true, example = "1")
+    public CommonResult<IndexSystemDetailVO> getIndexSystemDetail(@PathVariable("id") Long id) {
+        IndexSystemDetailVO detail = indexSystemService.getIndexSystemDetail(id);
         return success(detail);
     }
 
@@ -129,5 +129,29 @@ public class IndexSystemController {
     @Operation(summary = "指标体系全局概览")
     public CommonResult<IndexSystemOverviewVO> getOverview() {
         return CommonResult.success(indexSystemService.getOverview());
+    }
+
+    @PostMapping("/save-full")
+    @Operation(summary = "完整保存指标体系（含分类和指标项）")
+    @PreAuthorize("@ss.hasPermission('evaluate:index-system:save')")
+    public CommonResult<String> saveFull(@Valid @RequestBody IndexSystemSaveFullReqVO saveFullReqVO) {
+        String systemId = indexSystemService.saveFull(saveFullReqVO);
+        return success(systemId);
+    }
+
+    @PostMapping("/create-full")
+    @Operation(summary = "完整新增指标体系（含分类和指标项）")
+    @PreAuthorize("@ss.hasPermission('evaluate:index-system:create')")
+    public CommonResult<String> createFull(@Valid @RequestBody IndexSystemSaveFullReqVO createReqVO) {
+        String systemId = indexSystemService.createFull(createReqVO);
+        return success(systemId);
+    }
+
+    @PutMapping("/update-full")
+    @Operation(summary = "完整更新指标体系（含分类和指标项）")
+    @PreAuthorize("@ss.hasPermission('evaluate:index-system:update')")
+    public CommonResult<Boolean> updateFull(@Valid @RequestBody IndexSystemSaveFullReqVO updateReqVO) {
+        indexSystemService.updateFull(updateReqVO);
+        return success(true);
     }
 }

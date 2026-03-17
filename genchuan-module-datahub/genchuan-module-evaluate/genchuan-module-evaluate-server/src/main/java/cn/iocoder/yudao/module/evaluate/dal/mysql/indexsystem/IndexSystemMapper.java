@@ -2,26 +2,26 @@ package cn.iocoder.yudao.module.evaluate.dal.mysql.indexsystem;
 
 import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.indexsystem.vo.*;
-import cn.iocoder.yudao.module.evaluate.dal.dataobject.calcway.CalcWayDO;
-import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexcategory.IndexCategoryDO;
-import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexitem.IndexItemDO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexsystem.IndexSystemDO;
-import cn.iocoder.yudao.module.evaluate.dal.dataobject.indextype.IndexTypeDO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.objecttype.ObjectTypeDO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.status.StatusDO;
-import cn.iocoder.yudao.module.evaluate.dal.dataobject.user.UserDO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 指标体系 Mapper
@@ -58,19 +58,24 @@ public interface IndexSystemMapper extends BaseMapperX<IndexSystemDO> {
     PageResult<IndexSystemPageItemVO> selectPageWithJoin(@Param("reqVO") IndexSystemPageReqVO reqVO);
 
     /**
-     * 根据体系ID查询体系详情（基本信息）
+     * 统计符合条件的唯一体系数量（用于分页计数）
      */
-    IndexSystemDetailVO.BaseInfo selectDetailBaseInfo(@Param("systemId") String systemId);
+    Long selectCountWithJoin(@Param("reqVO") IndexSystemPageReqVO reqVO);
+
+    /**
+     * 根据主键ID查询体系详情（基本信息）
+     */
+    IndexSystemDetailVO.BaseInfo selectDetailBaseInfo(@Param("id") Long id);
 
     /**
      * 查询指定体系下的所有分类
      */
-    List<IndexSystemDetailVO.CategoryVO> selectCategoriesBySystemId(@Param("systemId") String systemId);
+    List<IndexSystemDetailVO.CategoryVO> selectCategoriesBySystemId(@Param("systemUuid") String systemUuid);
 
     /**
      * 查询指定分类下的所有指标项（带字典信息）
      */
-    List<IndexSystemDetailVO.IndexItemVO> selectItemsByCategoryIds(@Param("categoryIds") List<String> categoryIds);
+    List<IndexSystemDetailVO.IndexItemVO> selectItemsByCategoryIds(@Param("categoryIds") List<Long> categoryIds);
 
     /**
      * 校验分类权重总和
@@ -81,85 +86,155 @@ public interface IndexSystemMapper extends BaseMapperX<IndexSystemDO> {
      * 校验指标项权重总和
      */
     Double selectItemWeightSum(@Param("categoryId") String categoryId);
+    /**
+     * 联表分页查询指标体系列表（先按主表分页，再关联查询）
+     * 分页逻辑：先按 eval_index_system 主表分页获取 system_id，再关联查询其他表数据
+     */
     default PageResult<IndexSystemRespVO> selectSystemJoinPage(IndexSystemPageReqVO reqVO) {
-        // 1. 构建分页对象
-        Page<IndexSystemRespVO> page = new Page<>(reqVO.getPageNo(), reqVO.getPageSize());
+        // 1. 先按主表分页查询，获取分页后的体系数据
+        Page<IndexSystemDO> page = new Page<>(reqVO.getPageNo(), reqVO.getPageSize());
 
-        // 2. 构建查询条件
-        MPJLambdaWrapper<IndexSystemDO> wrapper = new MPJLambdaWrapper<IndexSystemDO>()
-                .selectAll(IndexSystemDO.class)
-                // 关联适用对象类型表
-                .selectAs(ObjectTypeDO::getName, IndexSystemRespVO::getObjectTypeName)
-                .leftJoin(ObjectTypeDO.class, ObjectTypeDO::getTypeId, IndexSystemDO::getObjectTypeId)
-                // ========== 关联指标分类表 ==========
-                .selectAs(IndexCategoryDO::getName, IndexSystemRespVO::getCategoryName)
-                .selectAs(IndexCategoryDO::getWeight, IndexSystemRespVO::getCategoryWeight) // 分类权重
-                .selectAs(IndexCategoryDO::getSortNo, IndexSystemRespVO::getSortNo)
-                .leftJoin(IndexCategoryDO.class, IndexCategoryDO::getSystemId, IndexSystemDO::getSystemId) // 修正关联条件：分类表关联体系ID
+        // 构建主表查询条件
+        LambdaQueryWrapperX<IndexSystemDO> wrapper = new LambdaQueryWrapperX<IndexSystemDO>()
+                .likeIfPresent(IndexSystemDO::getName, reqVO.getName())
+                .eqIfPresent(IndexSystemDO::getCode, reqVO.getCode())
+                .eqIfPresent(IndexSystemDO::getObjectTypeId, reqVO.getObjectTypeId())
+                .eqIfPresent(IndexSystemDO::getStatusId, reqVO.getStatusId())
+                .eqIfPresent(IndexSystemDO::getVersion, reqVO.getVersion())
+                .eqIfPresent(IndexSystemDO::getCreateBy, reqVO.getCreateBy())
+                .betweenIfPresent(IndexSystemDO::getCreateTime, reqVO.getCreateTime())
+                .orderByDesc(IndexSystemDO::getCreateTime);
 
-                // ========== 关联指标项表 ==========
-                .selectAs(IndexItemDO::getName, IndexSystemRespVO::getItemName)
-                .selectAs(IndexItemDO::getThreshold, IndexSystemRespVO::getThreshold) // 达标阈值
-                .selectAs(IndexItemDO::getWeight, IndexSystemRespVO::getItemWeight) // 指标项权重
-                .leftJoin(IndexItemDO.class, IndexItemDO::getCategoryId, IndexCategoryDO::getCategoryId)
-
-                // ========== 关联指标类型字典表 ==========
-                .selectAs(IndexTypeDO::getName, IndexSystemRespVO::getIndexTypeName) // 指标类型名称
-                .leftJoin(IndexTypeDO.class, IndexTypeDO::getTypeId, IndexItemDO::getIndexTypeId)
-
-                // ========== 关联计算方式字典表 ==========
-                .selectAs(CalcWayDO::getName, IndexSystemRespVO::getCalcWayName) // 计算方式名称
-                .leftJoin(CalcWayDO.class, CalcWayDO::getWayId, IndexItemDO::getCalcWayId)
-                // 关联状态表
-                .selectAs(StatusDO::getName, IndexSystemRespVO::getStatusName)
-                .leftJoin(StatusDO.class, StatusDO::getStatusId, IndexSystemDO::getStatusId)
-                // 关联创建人用户表
-                .selectAs("creator", UserDO::getUserName, IndexSystemRespVO::getCreateUserName)
-                .leftJoin(UserDO.class, "creator", UserDO::getUserId, IndexSystemDO::getCreateBy)
-                // 关联更新人用户表
-                .selectAs("updater", UserDO::getUserName, IndexSystemRespVO::getUpdateUserName)
-                .leftJoin(UserDO.class, "updater", UserDO::getUserId, IndexSystemDO::getUpdateBy)
-                // 动态条件：体系本身字段
-                .like(StrUtil.isNotBlank(reqVO.getName()), IndexSystemDO::getName, reqVO.getName())
-                .eq(StrUtil.isNotBlank(reqVO.getCode()), IndexSystemDO::getCode, reqVO.getCode())
-                .eq(reqVO.getObjectTypeId() != null, IndexSystemDO::getObjectTypeId, reqVO.getObjectTypeId())
-                .eq(reqVO.getStatusId() != null, IndexSystemDO::getStatusId, reqVO.getStatusId())
-                .eq(StrUtil.isNotBlank(reqVO.getVersion()), IndexSystemDO::getVersion, reqVO.getVersion());
-
-        // 3. 分类名称筛选（使用 EXISTS 子查询）
+        // 分类名称筛选（使用子查询）
         if (StrUtil.isNotBlank(reqVO.getCategoryName())) {
-            wrapper.exists("SELECT 1 FROM eval_index_category c WHERE c.system_id = t.id AND c.name LIKE CONCAT('%', {0}, '%')",
+            wrapper.exists("SELECT 1 FROM eval_index_category c WHERE c.system_id = t.system_id AND c.deleted = 0 AND c.name LIKE CONCAT('%', {0}, '%')",
                     reqVO.getCategoryName());
         }
 
-        // 4. 指标项名称筛选（使用 EXISTS 子查询）
+        // 指标项名称筛选（使用子查询）
         if (StrUtil.isNotBlank(reqVO.getItemName())) {
-            wrapper.exists("SELECT 1 FROM eval_index_item i WHERE i.system_id = t.id AND i.name LIKE CONCAT('%', {0}, '%')",
+            wrapper.exists("SELECT 1 FROM eval_index_category c WHERE c.system_id = t.system_id AND c.deleted = 0 " +
+                    "AND EXISTS (SELECT 1 FROM eval_index_item i WHERE i.category_id = c.category_id AND i.deleted = 0 AND i.name LIKE CONCAT('%', {0}, '%'))",
                     reqVO.getItemName());
         }
 
-        // 5. 排序
-        wrapper.orderByDesc(IndexSystemDO::getCreateTime);
+        // 查询主表分页数据
+        IPage<IndexSystemDO> systemPage = selectPage(page, wrapper);
 
-        // 6. 执行查询
-        IPage<IndexSystemRespVO> resultPage = selectJoinPage(page, IndexSystemRespVO.class, wrapper);
+        // 如果没有数据，直接返回空结果
+        if (systemPage.getRecords() == null || systemPage.getRecords().isEmpty()) {
+            return new PageResult<>(new ArrayList<>(), systemPage.getTotal());
+        }
 
-        // 7. 后处理：变更日志截取前50字
-        resultPage.getRecords().forEach(vo -> {
-            if (vo.getChangeLog() != null) {
-                vo.setChangeLogShort(vo.getChangeLog().length() > 50
-                        ? vo.getChangeLog().substring(0, 50)
-                        : vo.getChangeLog());
-            }
+        // 2. 获取分页后的 systemId 列表，并批量更新统计字段
+        List<String> systemIds = systemPage.getRecords().stream()
+                .map(IndexSystemDO::getSystemId)
+                .filter(StrUtil::isNotBlank)
+                .collect(Collectors.toList());
+
+        if (!systemIds.isEmpty()) {
+            // 批量更新分类总数和指标项总数
+            batchUpdateCounts(systemIds);
+            // 重新查询更新后的数据
+            systemPage = selectPage(new Page<>(reqVO.getPageNo(), reqVO.getPageSize()),
+                    new LambdaQueryWrapperX<IndexSystemDO>()
+                            .in(IndexSystemDO::getSystemId, systemIds)
+                            .orderByDesc(IndexSystemDO::getCreateTime));
+        }
+
+        // 3. 收集需要查询的关联ID
+        List<String> objectTypeIds = systemPage.getRecords().stream()
+                .map(IndexSystemDO::getObjectTypeId)
+                .filter(StrUtil::isNotBlank)
+                .distinct()
+                .collect(Collectors.toList());
+
+        List<String> statusIds = systemPage.getRecords().stream()
+                .map(IndexSystemDO::getStatusId)
+                .filter(StrUtil::isNotBlank)
+                .distinct()
+                .collect(Collectors.toList());
+
+        // 3. 批量查询关联数据
+        // 3.1 查询适用对象类型
+        Map<String, String> objectTypeMap;
+        if (!objectTypeIds.isEmpty()) {
+            List<ObjectTypeDO> objectTypes = selectObjectTypeByIds(objectTypeIds);
+            objectTypeMap = objectTypes.stream()
+                    .collect(Collectors.toMap(ObjectTypeDO::getTypeId, ObjectTypeDO::getName, (a, b) -> a));
+        } else {
+            objectTypeMap = new HashMap<>();
+        }
+
+        // 3.2 查询状态
+        Map<String, String> statusMap;
+        if (!statusIds.isEmpty()) {
+            List<StatusDO> statusList = selectStatusByIds(statusIds);
+            statusMap = statusList.stream()
+                    .collect(Collectors.toMap(StatusDO::getStatusId, StatusDO::getName, (a, b) -> a));
+        } else {
+            statusMap = new HashMap<>();
+        }
+
+        // 4. 转换结果
+        List<IndexSystemRespVO> resultList = systemPage.getRecords().stream().map(system -> {
+            IndexSystemRespVO vo = BeanUtils.toBean(system, IndexSystemRespVO.class);
+
+            // 填充关联的字典数据
+            vo.setObjectTypeName(objectTypeMap.get(system.getObjectTypeId()));
+            vo.setStatusName(statusMap.get(system.getStatusId()));
+
             // 兜底：避免权重/阈值为null时前端报错
             if (vo.getCategoryWeight() == null) vo.setCategoryWeight(BigDecimal.ZERO);
             if (vo.getItemWeight() == null) vo.setItemWeight(BigDecimal.ZERO);
             if (vo.getThreshold() == null) vo.setThreshold(BigDecimal.ZERO);
-        });
 
-        // 8. 返回分页结果
-        return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
+            // 变更日志截取前50字
+            if (vo.getChangeLog() != null && vo.getChangeLog().length() > 50) {
+                vo.setChangeLogShort(vo.getChangeLog().substring(0, 50));
+            } else {
+                vo.setChangeLogShort(vo.getChangeLog());
+            }
+
+            return vo;
+        }).collect(Collectors.toList());
+
+        // 5. 返回分页结果
+        return new PageResult<>(resultList, systemPage.getTotal());
     }
+
+    // 批量查询适用对象类型
+    @Select("<script>" +
+            "SELECT type_id, name FROM sys_object_type WHERE deleted = 0 AND type_id IN " +
+            "<foreach collection='typeIds' item='id' open='(' separator=',' close=')'>" +
+            "#{id}" +
+            "</foreach>" +
+            "</script>")
+    List<ObjectTypeDO> selectObjectTypeByIds(@Param("typeIds") List<String> typeIds);
+
+    // 批量查询状态
+    @Select("<script>" +
+            "SELECT status_id, name FROM sys_status WHERE deleted = 0 AND status_id IN " +
+            "<foreach collection='statusIds' item='id' open='(' separator=',' close=')'>" +
+            "#{id}" +
+            "</foreach>" +
+            "</script>")
+    List<StatusDO> selectStatusByIds(@Param("statusIds") List<String> statusIds);
+
+    // 批量更新分类总数和指标项总数
+    @Update("<script>" +
+            "UPDATE eval_index_system s SET " +
+            "category_count = (SELECT COUNT(*) FROM eval_index_category c WHERE c.system_id = s.system_id AND c.deleted = 0), " +
+            "item_count = COALESCE((SELECT COUNT(*) FROM eval_index_category c " +
+            "   INNER JOIN eval_index_item i ON i.category_id = c.category_id AND i.deleted = 0 " +
+            "   WHERE c.system_id = s.system_id AND c.deleted = 0), 0) " +
+            "WHERE s.system_id IN " +
+            "<foreach collection='systemIds' item='id' open='(' separator=',' close=')'>" +
+            "#{id}" +
+            "</foreach>" +
+            " AND s.deleted = 0" +
+            "</script>")
+    void batchUpdateCounts(@Param("systemIds") List<String> systemIds);
 
     // ========== 1. 卡片核心数据（总体系数、启用体系数、指标项总数） ==========
     @Select("SELECT " +

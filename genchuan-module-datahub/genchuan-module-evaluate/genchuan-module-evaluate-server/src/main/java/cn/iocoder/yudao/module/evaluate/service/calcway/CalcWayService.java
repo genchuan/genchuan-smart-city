@@ -51,4 +51,20 @@ public interface CalcWayService {
      */
     PageResult<CalcWayDO> getCalcWayPage(CalcWayPageReqVO pageReqVO);
 
+    /**
+     * 根据wayId获取计算方式
+     *
+     * @param wayId 方式ID
+     * @return 计算方式
+     */
+    CalcWayDO getCalcWayByWayId(String wayId);
+
+    /**
+     * 根据name获取计算方式
+     *
+     * @param name 方式名称
+     * @return 计算方式
+     */
+    CalcWayDO getCalcWayByName(String name);
+
 }

@@ -61,5 +61,7 @@ public interface ErrorCodeConstants {
     ErrorCode INDEX_TYPE_NOT_EXISTS = new ErrorCode(325_547, "指标类型字典不存在");
 
     ErrorCode INDEX_WEIGHT_OVER_LIMIT = new ErrorCode(325_547, "指标项权重总和超过100%上限");
+    ErrorCode PATROL_INSPECTION_NOT_EXISTS = new ErrorCode(325_548, "巡查巡检不存在");
+    ErrorCode COMMENT_STATISTIC_NOT_EXISTS = new ErrorCode(325_549, "巡查巡检统计不存在");
 
 }

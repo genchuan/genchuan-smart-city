@@ -31,4 +31,14 @@ public interface IndexTypeMapper extends BaseMapperX<IndexTypeDO> {
                 .orderByDesc(IndexTypeDO::getId));
     }
 
+    default IndexTypeDO selectByTypeId(String typeId) {
+        return selectOne(new LambdaQueryWrapperX<IndexTypeDO>()
+                .eq(IndexTypeDO::getTypeId, typeId));
+    }
+
+    default IndexTypeDO selectByName(String name) {
+        return selectOne(new LambdaQueryWrapperX<IndexTypeDO>()
+                .eq(IndexTypeDO::getName, name));
+    }
+
 }

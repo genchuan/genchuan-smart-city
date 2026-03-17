@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.indexsystem.vo;
 
+import cn.iocoder.yudao.module.evaluate.framework.security.config.databind.LocalDateTimeStringSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -19,8 +21,11 @@ public class IndexSystemDetailVO {
     @Schema(description = "管理后台 - 指标体系基本信息")
     @Data
     public static class BaseInfo {
-        @Schema(description = "指标体系ID（UUID）", example = "12425")
-        private String systemId;
+        @Schema(description = "指标体系主键ID", example = "12425")
+        private Long systemId;
+
+        @Schema(description = "指标体系业务ID（UUID）", example = "system_001")
+        private String systemUuid;
 
         @Schema(description = "体系名称", example = "综合绩效评价指标体系")
         private String name;
@@ -40,22 +45,51 @@ public class IndexSystemDetailVO {
         @Schema(description = "状态名称", example = "启用")
         private String statusName;
 
+        @Schema(description = "创建人ID")
+        private String creator;
+
         @Schema(description = "创建人姓名", example = "张三")
-        private String createByName;
+        private String createUserName;
+
+        @Schema(description = "更新人ID")
+        private String updater;
+
+        @Schema(description = "更新人姓名", example = "李四")
+        private String updateUserName;
 
         @Schema(description = "创建时间（业务字段）")
+        @JsonSerialize(using = LocalDateTimeStringSerializer.class)
         private LocalDateTime bizCreateTime;
 
         @Schema(description = "更新时间（业务字段）")
+        @JsonSerialize(using = LocalDateTimeStringSerializer.class)
         private LocalDateTime bizUpdateTime;
+
+        @Schema(description = "最近使用时间")
+        @JsonSerialize(using = LocalDateTimeStringSerializer.class)
+        private LocalDateTime lastUseTime;
+
+        @Schema(description = "使用次数", example = "0")
+        private Integer useCount;
+
+        @Schema(description = "数据创建时间")
+        @JsonSerialize(using = LocalDateTimeStringSerializer.class)
+        private LocalDateTime createTime;
+
+        @Schema(description = "数据更新时间")
+        @JsonSerialize(using = LocalDateTimeStringSerializer.class)
+        private LocalDateTime updateTime;
 
     }
 
     @Schema(description = "管理后台 - 指标分类 VO")
     @Data
     public static class CategoryVO {
-        @Schema(description = "指标分类ID（UUID）", example = "cate001")
-        private String categoryId;
+        @Schema(description = "指标分类主键ID", example = "cate001")
+        private Long categoryId;
+
+        @Schema(description = "指标分类业务ID（UUID）", example = "cate_uuid_001")
+        private String categoryUuid;
 
         @Schema(description = "分类名称", example = "工作业绩")
         private String name;
@@ -73,10 +107,14 @@ public class IndexSystemDetailVO {
     @Schema(description = "管理后台 - 指标项 VO")
     @Data
     public static class IndexItemVO {
-        @Schema(description = "指标项ID（UUID）", example = "item001")
-        private String itemId;
-        @Schema(description = "所属分类ID（UUID）", example = "cate001")
-        private String categoryId;
+        @Schema(description = "指标项主键ID", example = "item001")
+        private Long itemId;
+
+        @Schema(description = "指标项业务ID（UUID）", example = "item_uuid_001")
+        private String itemUuid;
+
+        @Schema(description = "所属分类主键ID（UUID）", example = "cate001")
+        private Long categoryId;
         @Schema(description = "指标项名称", example = "任务完成率")
         private String name;
 

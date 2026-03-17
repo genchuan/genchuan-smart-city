@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * 规则项 DO
@@ -29,10 +28,6 @@ public class RuleItemDO extends BaseDO {
      */
     @TableId
     private Long id;
-    /**
-     * 规则项ID（UUID）
-     */
-    private String ruleItemId;
     /**
      * 规则分类ID（关联eval_rule_category.rule_category_id）
      */
@@ -57,37 +52,5 @@ public class RuleItemDO extends BaseDO {
      * 规则类型ID（关联sys_rule_type.type_id）
      */
     private String ruleTypeId;
-    /**
-     * 更新人ID（关联sys_user.user_id）
-     */
-    private String updateBy;
-    /**
-     * 创建人ID（关联sys_user.user_id）
-     */
-    private String createBy;
-    /**
-     * 创建时间（业务字段）
-     */
-    private LocalDateTime bizCreateTime;
-    /**
-     * 更新时间（业务字段）
-     */
-    private LocalDateTime bizUpdateTime;
-    /**
-     * 通用扩展字段1
-     */
-    private String extCommon1;
-    /**
-     * 通用扩展字段2
-     */
-    private String extCommon2;
-    /**
-     * 通用扩展字段3
-     */
-    private String extCommon3;
-    /**
-     * 通用扩展字段4
-     */
-    private String extCommon4;
 
 }

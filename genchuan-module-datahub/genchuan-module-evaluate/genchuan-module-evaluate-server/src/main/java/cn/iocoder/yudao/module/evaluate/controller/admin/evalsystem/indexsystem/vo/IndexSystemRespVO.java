@@ -1,7 +1,7 @@
 package cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.indexsystem.vo;
 
-import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
-import cn.idev.excel.annotation.ExcelProperty;
+import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -63,13 +63,13 @@ public class IndexSystemRespVO {
     @ExcelProperty("使用次数")
     private Integer useCount;
 
-    @Schema(description = "更新人ID（关联sys_user.user_id）")
-    @ExcelProperty("更新人ID（关联sys_user.user_id）")
-    private String updateBy;
+    @Schema(description = "框架创建人")
+    @ExcelProperty("框架创建人")
+    private String creator;
 
-    @Schema(description = "创建人ID（关联sys_user.user_id）")
-    @ExcelProperty("创建人ID（关联sys_user.user_id）")
-    private String createBy;
+    @Schema(description = "框架更新人")
+    @ExcelProperty("框架更新人")
+    private String updater;
 
     @Schema(description = "创建时间（业务字段）")
     @ExcelProperty("创建时间（业务字段）")

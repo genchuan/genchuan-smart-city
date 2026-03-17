@@ -6,6 +6,8 @@ import cn.iocoder.yudao.module.evaluate.controller.admin.platformreport.vo.Platf
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.platformreport.PlatformReportDO;
 import jakarta.validation.Valid;
 
+import java.util.*;
+
 /**
  * 平台上报 Service 接口
  *
