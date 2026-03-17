@@ -36,18 +36,9 @@ spring:
       time-to-live: 1h # 设置过期时间为 1 小时
 
 server:
-  port: 58087
-  tomcat:
-    connection-timeout: 120000
-    keep-alive-timeout: 30000
-    max-keep-alive-requests: 100
-    max-threads: 200
-    min-spare-threads: 10
+  port: 58086
 
 logging:
-  level:
-    org.springframework.web.context.request.async: WARN
-    org.apache.catalina.connector: WARN
   file:
     name: ${user.home}/logs/${spring.application.name}.log # 日志文件名，全路径
 
@@ -96,7 +87,7 @@ spring:
 
 # VO 转换（数据翻译）相关
 easy-trans:
-  is-enable-global: true # 启用全局翻译（拦截所有 SpringMVC ResponseBody 进行自动翻译 )。如果对于性能要求很高可关闭此配置，或通过 @IgnoreTrans 忽略某个接口
+  is-enable-global: false # 【默认禁用，对性能确认压力大】启用全局翻译（拦截所有 SpringMVC ResponseBody 进行自动翻译 )。如果对于性能要求很高可关闭此配置，或通过 @IgnoreTrans 忽略某个接口
 
 --- #################### RPC 远程调用相关配置 ####################
 
@@ -135,25 +126,6 @@ xxl:
       logpath: ${user.home}/logs/xxl-job/${spring.application.name} # 执行器运行日志文件存储磁盘路径
     accessToken: default_token # 执行器通讯TOKEN
 
---- #################### 验证码相关配置 ####################
-
-aj:
-  captcha:
-    jigsaw: classpath:images/jigsaw # 滑动验证，底图路径，不配置将使用默认图片；以 classpath: 开头，取 resource 目录下路径
-    pic-click: classpath:images/pic-click # 滑动验证，底图路径，不配置将使用默认图片；以 classpath: 开头，取 resource 目录下路径
-    cache-type: redis # 缓存 local/redis...
-    cache-number: 1000 # local 缓存的阈值,达到这个值，清除缓存
-    timing-clear: 180 # local定时清除过期缓存(单位秒),设置为0代表不执行
-    type: blockPuzzle # 验证码类型 default两种都实例化。 blockPuzzle 滑块拼图 clickWord 文字点选
-    water-mark: 亘川科技 # 右下角水印文字(我的水印)，可使用 https://tool.chinaz.com/tools/unicode.aspx 中文转 Unicode，Linux 可能需要转 unicode
-    interference-options: 0 # 滑动干扰项(0/1/2)
-    req-frequency-limit-enable: false # 接口请求次数一分钟限制是否开启 true|false
-    req-get-lock-limit: 5 # 验证失败5次，get接口锁定
-    req-get-lock-seconds: 10 # 验证失败后，锁定时间间隔
-    req-get-minute-limit: 30 # get 接口一分钟内请求数限制
-    req-check-minute-limit: 60 # check 接口一分钟内请求数限制
-    req-verify-minute-limit: 60 # verify 接口一分钟内请求数限制
-
 --- #################### 芋道相关配置 ####################
 
 yudao:
@@ -165,53 +137,36 @@ yudao:
       url: http://dashboard.yudao.iocoder.cn # Admin 管理后台 UI 的地址
   xss:
     enable: false
-    exclude-urls: # 如下 url，仅仅是为了演示，去掉配置也没关系
+    exclude-urls: # 如下两个 url，仅仅是为了演示，去掉配置也没关系
+      - ${spring.boot.admin.context-path}/** # 不处理 Spring Boot Admin 的请求
       - ${management.endpoints.web.base-path}/** # 不处理 Actuator 的请求
+  websocket:
+    enable: true # websocket的开关
+    path: /data/ws # 路径
+    sender-type: local # 消息发送的类型，可选值为 local、redis、rocketmq、kafka、rabbitmq
+    sender-rocketmq:
+      topic: ${spring.application.name}-websocket # 消息发送的 RocketMQ Topic
+      consumer-group: ${spring.application.name}-websocket-consumer # 消息发送的 RocketMQ Consumer Group
+    sender-rabbitmq:
+      exchange: ${spring.application.name}-websocket-exchange # 消息发送的 RabbitMQ Exchange
+      queue: ${spring.application.name}-websocket-queue # 消息发送的 RabbitMQ Queue
+    sender-kafka:
+      topic: ${spring.application.name}-websocket # 消息发送的 Kafka Topic
+      consumer-group: ${spring.application.name}-websocket-consumer # 消息发送的 Kafka Consumer Group
   swagger:
     title: 数据中枢
-    description: 提供数据中枢的所有功能
+    description: 提供数据中枢所有功能
     version: ${yudao.info.version}
+  codegen:
+    base-package: cn.iocoder.yudao
+    db-schemas: ${spring.datasource.dynamic.datasource.master.name}
+    front-type: 20 # 前端模版的类型，参见 CodegenFrontTypeEnum 枚举类
+    vo-type: 10 # VO 的类型，参见 CodegenVOTypeEnum 枚举类
+    delete-batch-enable: true # 是否生成批量删除接口
+    unit-test-enable: false # 是否生成单元测试
   tenant: # 多租户相关配置项
     enable: true
     ignore-urls:
-      - /admin-api/system/tenant/get-id-by-name # 基于名字获取租户，不许带租户编号
-      - /admin-api/system/tenant/get-by-website # 基于域名获取租户，不许带租户编号
-      - /admin-api/system/captcha/get-image # 获取图片验证码，和租户无关
-      - /admin-api/system/captcha/get # 获取图片验证码，和租户无关
-      - /admin-api/system/captcha/check # 校验图片验证码，和租户无关
-      - /admin-api/system/sms/callback/* # 短信回调接口，无法带上租户编号
-      - /rpc-api/system/tenant/valid # 防止递归。避免调用 /rpc-api/system/tenant/valid 接口时，又去触发 /rpc-api/system/tenant/valid 去校验
-      - /rpc-api/system/tenant/id-list # 获得租户列表的时候，无需传递租户编号
-      - /rpc-api/system/oauth2/token/check # 访问令牌校验时，无需传递租户编号；主要解决上传文件的场景，前端不会传递 tenant-id！
     ignore-tables:
-      - system_tenant
-      - system_tenant_package
-      - system_dict_data
-      - system_dict_type
-      - system_error_code
-      - system_menu
-      - system_sms_channel
-      - system_sms_template
-      - system_sms_log
-      - system_sensitive_word
-      - system_oauth2_client
-      - system_mail_account
-      - system_mail_template
-      - system_mail_log
-      - system_notify_template
-    ignore-caches:
-      - user_role_ids
-      - permission_menu_ids
-      - oauth_client
-      - notify_template
-      - mail_account
-      - mail_template
-      - sms_template
-  sms-code: # 短信验证码相关的配置项
-    expire-times: 10m
-    send-frequency: 1m
-    send-maximum-quantity-per-day: 10
-    begin-code: 9999 # 这里配置 9999 的原因是，测试方便。
-    end-code: 9999 # 这里配置 9999 的原因是，测试方便。
 
 debug: false
