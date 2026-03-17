@@ -1,12 +1,13 @@
 package cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.river;
 
+import cn.iocoder.yudao.module.envirhealth.util.json.JsonFieldUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 河道新增/修改 Request VO")
+@Schema(description = "环境卫生管理 - 河道新增/修改 Request VO")
 @Data
 public class RiverSaveReqVO {
 
@@ -109,7 +110,7 @@ public class RiverSaveReqVO {
     @Schema(description = "上报时间")
     private LocalDateTime reportTime;
 
-    @Schema(description = "现场照片/视频URL", example = "https://www.iocoder.cn")
+    @Schema(description = "现场照片/视频URL", example = "[\"https://www.iocoder.cn/photo1.jpg\", \"https://www.iocoder.cn/photo2.jpg\"]")
     private String problemMediaUrl;
 
     @Schema(description = "关联sys_dept.id", example = "16969")
@@ -127,16 +128,20 @@ public class RiverSaveReqVO {
     @Schema(description = "超时提醒：是/否")
     private String isTimeout;
 
-    @Schema(description = "通用扩展字段1")
-    private String extCommon1;
+    // 统一的 setter 方法
+    public void setProblemMediaUrl(String problemMediaUrl) {
+        this.problemMediaUrl = JsonFieldUtils.emptyToEmptyArray(problemMediaUrl);
+    }
 
-    @Schema(description = "通用扩展字段2")
-    private String extCommon2;
+    public void setMonitorIndicators(String monitorIndicators) {
+        this.monitorIndicators = JsonFieldUtils.emptyToEmptyArray(monitorIndicators);
+    }
 
-    @Schema(description = "通用扩展字段3")
-    private String extCommon3;
+    public void setToolIds(String toolIds) {
+        this.toolIds = JsonFieldUtils.emptyToEmptyArray(toolIds);
+    }
 
-    @Schema(description = "通用扩展字段4")
-    private String extCommon4;
-
+    public void setStaffIds(String staffIds) {
+        this.staffIds = JsonFieldUtils.emptyToEmptyArray(staffIds);
+    }
 }

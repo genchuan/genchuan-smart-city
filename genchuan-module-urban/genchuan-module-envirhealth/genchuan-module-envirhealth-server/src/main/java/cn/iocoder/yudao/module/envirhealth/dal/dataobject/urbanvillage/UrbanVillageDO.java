@@ -1,13 +1,11 @@
 package cn.iocoder.yudao.module.envirhealth.dal.dataobject.urbanvillage;
 
-import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
-import com.baomidou.mybatisplus.annotation.KeySequence;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.*;
+import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 
 /**
  * 城中村 DO
@@ -156,23 +154,33 @@ public class UrbanVillageDO extends BaseDO {
     /**
      * 通用扩展字段1
      */
+    @JsonIgnore
     private String extCommon1;
     /**
      * 通用扩展字段2
      */
+    @JsonIgnore
     private String extCommon2;
     /**
      * 通用扩展字段3
      */
+    @JsonIgnore
     private String extCommon3;
     /**
      * 通用扩展字段4
      */
+    @JsonIgnore
     private String extCommon4;
-
+    /**
+     * 计划状态编号
+     */
     private String planStatusId;
-
+    /**
+     * 问题类型编号
+     */
     private String problemTypeId;
-
+    /**
+     * 任务类型编号
+     */
     private String taskTypeId;
 }

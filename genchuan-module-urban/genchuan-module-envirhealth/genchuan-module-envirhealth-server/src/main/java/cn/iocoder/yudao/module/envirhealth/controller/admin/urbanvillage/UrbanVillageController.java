@@ -23,6 +23,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
@@ -86,6 +89,13 @@ public class UrbanVillageController {
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<UrbanVillageDO> list = urbanVillageService.getUrbanVillagePage(pageReqVO).getList();
+
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setHeader("Content-Disposition",
+                "attachment;filename=" + URLEncoder.encode("城中村_" +
+                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".xls", "UTF-8"));
+        response.setCharacterEncoding("UTF-8");
+
         // 导出 Excel
         ExcelUtils.write(response, "城中村.xls", "数据", UrbanVillageRespVO.class,
                         BeanUtils.toBean(list, UrbanVillageRespVO.class));

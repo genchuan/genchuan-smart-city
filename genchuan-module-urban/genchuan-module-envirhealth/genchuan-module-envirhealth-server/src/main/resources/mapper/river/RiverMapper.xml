@@ -67,7 +67,144 @@
         <result column="task_type_name" property="taskTypeName"/>
     </resultMap>
 
-    <!-- 分页查询河道详情（联表） -->
+    <!-- 通用查询条件 - 模仿urban_village的写法 -->
+    <sql id="whereConditions">
+        <where>
+            r.deleted = 0
+
+            <!-- 基础字段过滤 -->
+            <if test="reqVO.riverId != null and reqVO.riverId != ''">
+                AND r.river_id = #{reqVO.riverId}
+            </if>
+            <if test="reqVO.name != null and reqVO.name != ''">
+                AND r.name LIKE CONCAT('%', #{reqVO.name}, '%')
+            </if>
+            <if test="reqVO.responsibilitySection != null and reqVO.responsibilitySection != ''">
+                AND r.responsibility_section LIKE CONCAT('%', #{reqVO.responsibilitySection}, '%')
+            </if>
+            <if test="reqVO.areaCode != null and reqVO.areaCode != ''">
+                AND r.area_code = #{reqVO.areaCode}
+            </if>
+
+            <if test="reqVO.managerId != null and reqVO.managerId != ''">
+                AND r.manager_id = #{reqVO.managerId}
+            </if>
+            <if test="reqVO.operationStatusId != null and reqVO.operationStatusId != ''">
+                AND r.operation_status_id = #{reqVO.operationStatusId}
+            </if>
+
+            <if test="reqVO.cleaningTypeId != null and reqVO.cleaningTypeId != ''">
+                AND r.cleaning_type_id = #{reqVO.cleaningTypeId}
+            </if>
+            <if test="reqVO.waterCleaningFrequency != null and reqVO.waterCleaningFrequency != ''">
+                AND r.water_cleaning_frequency LIKE CONCAT('%', #{reqVO.waterCleaningFrequency}, '%')
+            </if>
+            <if test="reqVO.cleaningTime != null and reqVO.cleaningTime != ''">
+                AND r.cleaning_time LIKE CONCAT('%', #{reqVO.cleaningTime}, '%')
+            </if>
+
+            <!-- JSON字段模糊查询 -->
+            <if test="reqVO.staffIds != null and reqVO.staffIds != ''">
+                AND r.staff_ids LIKE CONCAT('%', #{reqVO.staffIds}, '%')
+            </if>
+            <if test="reqVO.toolIds != null and reqVO.toolIds != ''">
+                AND r.tool_ids LIKE CONCAT('%', #{reqVO.toolIds}, '%')
+            </if>
+
+            <if test="reqVO.wasteFishingEstimate != null">
+                AND r.waste_fishing_estimate = #{reqVO.wasteFishingEstimate}
+            </if>
+            <if test="reqVO.monitorTypeId != null and reqVO.monitorTypeId != ''">
+                AND r.monitor_type_id = #{reqVO.monitorTypeId}
+            </if>
+            <if test="reqVO.waterQualityCycle != null and reqVO.waterQualityCycle != ''">
+                AND r.water_quality_cycle LIKE CONCAT('%', #{reqVO.waterQualityCycle}, '%')
+            </if>
+
+            <!-- JSON字段模糊查询 -->
+            <if test="reqVO.monitorIndicators != null and reqVO.monitorIndicators != ''">
+                AND r.monitor_indicators LIKE CONCAT('%', #{reqVO.monitorIndicators}, '%')
+            </if>
+
+            <if test="reqVO.monitorBy != null and reqVO.monitorBy != ''">
+                AND r.monitor_by = #{reqVO.monitorBy}
+            </if>
+
+            <!-- 时间范围查询 -->
+            <if test="reqVO.planMonitorTime != null and reqVO.planMonitorTime.length == 2">
+                AND r.plan_monitor_time BETWEEN #{reqVO.planMonitorTime[0]} AND #{reqVO.planMonitorTime[1]}
+            </if>
+
+            <if test="reqVO.monitorStatusId != null and reqVO.monitorStatusId != ''">
+                AND r.monitor_status_id = #{reqVO.monitorStatusId}
+            </if>
+
+            <!-- 上次监测时间范围查询 -->
+            <if test="reqVO.lastMonitorTime != null and reqVO.lastMonitorTime.length == 2">
+                AND r.last_monitor_time BETWEEN #{reqVO.lastMonitorTime[0]} AND #{reqVO.lastMonitorTime[1]}
+            </if>
+
+            <!-- 下次监测提醒时间范围查询 -->
+            <if test="reqVO.nextMonitorRemindTime != null and reqVO.nextMonitorRemindTime.length == 2">
+                AND r.next_monitor_remind_time BETWEEN #{reqVO.nextMonitorRemindTime[0]} AND #{reqVO.nextMonitorRemindTime[1]}
+            </if>
+
+            <if test="reqVO.monitorDataQualifiedRate != null">
+                AND r.monitor_data_qualified_rate = #{reqVO.monitorDataQualifiedRate}
+            </if>
+            <if test="reqVO.warningCount != null">
+                AND r.warning_count = #{reqVO.warningCount}
+            </if>
+            <if test="reqVO.problemTypeId != null and reqVO.problemTypeId != ''">
+                AND r.problem_type_id = #{reqVO.problemTypeId}
+            </if>
+            <if test="reqVO.problemLocation != null and reqVO.problemLocation != ''">
+                AND r.problem_location LIKE CONCAT('%', #{reqVO.problemLocation}, '%')
+            </if>
+            <if test="reqVO.problemDesc != null and reqVO.problemDesc != ''">
+                AND r.problem_desc LIKE CONCAT('%', #{reqVO.problemDesc}, '%')
+            </if>
+            <if test="reqVO.reportBy != null and reqVO.reportBy != ''">
+                AND r.report_by = #{reqVO.reportBy}
+            </if>
+
+            <!-- 上报时间范围查询 -->
+            <if test="reqVO.reportTime != null and reqVO.reportTime.length == 2">
+                AND r.report_time BETWEEN #{reqVO.reportTime[0]} AND #{reqVO.reportTime[1]}
+            </if>
+
+            <!-- JSON字段模糊查询 -->
+            <if test="reqVO.problemMediaUrl != null and reqVO.problemMediaUrl != ''">
+                AND r.problem_media_url LIKE CONCAT('%', #{reqVO.problemMediaUrl}, '%')
+            </if>
+
+            <if test="reqVO.deptId != null and reqVO.deptId != ''">
+                AND r.dept_id = #{reqVO.deptId}
+            </if>
+            <if test="reqVO.handleBy != null and reqVO.handleBy != ''">
+                AND r.handle_by = #{reqVO.handleBy}
+            </if>
+
+            <!-- 派单时间范围查询 -->
+            <if test="reqVO.dispatchTime != null and reqVO.dispatchTime.length == 2">
+                AND r.dispatch_time BETWEEN #{reqVO.dispatchTime[0]} AND #{reqVO.dispatchTime[1]}
+            </if>
+
+            <if test="reqVO.handleStatusId != null and reqVO.handleStatusId != ''">
+                AND r.handle_status_id = #{reqVO.handleStatusId}
+            </if>
+            <if test="reqVO.isTimeout != null and reqVO.isTimeout != ''">
+                AND r.is_timeout = #{reqVO.isTimeout}
+            </if>
+
+            <!-- 创建时间范围查询 -->
+            <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+                AND r.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询河道详情 -->
     <select id="selectDetailPage" resultMap="RiverDetailResultMap">
         SELECT
         r.*,
@@ -75,19 +212,20 @@
         u1.user_name AS manager_name,
         os.name AS operation_status_name,
         ct.cleaning_name AS cleaning_type_name,
-        IFNULL(GROUP_CONCAT(DISTINCT u2.user_name), '') AS staffs_name_str,
-        IFNULL(GROUP_CONCAT(DISTINCT t.name), '') AS tools_name_str,
         mt.monitor_name AS monitor_type_name,
-        u3.user_name AS monitor_name,
+        u2.user_name AS monitor_name,
         mst.monitor_status_name AS monitor_status_name,
         pt.name AS problem_type_name,
-        u4.user_name AS report_name,
+        u3.user_name AS report_name,
         d.name AS dept_name,
-        u5.user_name AS handle_name,
+        u4.user_name AS handle_name,
         hs.name AS handle_status_name,
-        tt.name AS task_type_name
+        tt.name AS task_type_name,
+        IFNULL(GROUP_CONCAT(DISTINCT u5.user_name), '') AS staffs_name_str,
+        IFNULL(GROUP_CONCAT(DISTINCT t.name), '') AS tools_name_str
         FROM river r
         LEFT JOIN sys_area a ON r.area_code = a.area_code AND a.deleted = 0
+        LEFT JOIN sys_user u1 ON r.manager_id = u1.user_id AND u1.deleted = 0
         LEFT JOIN sys_operation_status os ON r.operation_status_id = os.sys_operation_status_id AND os.deleted = 0
         LEFT JOIN sys_cleaning_type ct ON r.cleaning_type_id = ct.cleaning_type_id AND ct.deleted = 0
         LEFT JOIN sys_monitor_type mt ON r.monitor_type_id = mt.monitor_type_id AND mt.deleted = 0
@@ -96,29 +234,61 @@
         LEFT JOIN sys_handle_status hs ON r.handle_status_id = hs.sys_handle_status_id AND hs.deleted = 0
         LEFT JOIN sys_task_type tt ON r.task_type_id = tt.sys_task_type_id AND tt.deleted = 0
         LEFT JOIN sys_dept d ON r.dept_id = d.sys_dept_id AND d.deleted = 0
-        LEFT JOIN sys_user u1 ON r.manager_id = u1.user_id AND u1.deleted = 0
-        LEFT JOIN sys_user u3 ON r.monitor_by = u3.user_id AND u3.deleted = 0
-        LEFT JOIN sys_user u4 ON r.report_by = u4.user_id AND u4.deleted = 0
-        LEFT JOIN sys_user u5 ON r.handle_by = u5.user_id AND u5.deleted = 0
-        LEFT JOIN sys_user u2 ON FIND_IN_SET(
-        u2.user_id,
+        LEFT JOIN sys_user u2 ON r.monitor_by = u2.user_id AND u2.deleted = 0
+        LEFT JOIN sys_user u3 ON r.report_by = u3.user_id AND u3.deleted = 0
+        LEFT JOIN sys_user u4 ON r.handle_by = u4.user_id AND u4.deleted = 0
+        -- 处理负责人员JSON解析
+        LEFT JOIN sys_user u5 ON FIND_IN_SET(
+        u5.user_id,
         REPLACE(REPLACE(REPLACE(REPLACE(r.staff_ids, '[', ''), ']', ''), '"', ''), ' ', '')
-        ) AND u2.deleted = 0
+        ) AND u5.deleted = 0
+        -- 处理保洁工具JSON解析
         LEFT JOIN sys_tool t ON FIND_IN_SET(
         t.sys_tool_id,
         REPLACE(REPLACE(REPLACE(REPLACE(r.tool_ids, '[', ''), ']', ''), '"', ''), ' ', '')
         ) AND t.deleted = 0
-        WHERE r.deleted = 0
-        GROUP BY r.id, a.area_name, os.name, ct.cleaning_name, mt.monitor_name, mst.monitor_status_name,
-        pt.name, hs.name, d.name, u1.user_name, u3.user_name, u4.user_name, u5.user_name, tt.name
+
+        <include refid="whereConditions" />
+
+        GROUP BY
+        r.id,
+        a.area_name,
+        u1.user_name,
+        os.name,
+        ct.cleaning_name,
+        mt.monitor_name,
+        u2.user_name,
+        mst.monitor_status_name,
+        pt.name,
+        u3.user_name,
+        d.name,
+        u4.user_name,
+        hs.name,
+        tt.name
+
         ORDER BY r.id DESC
         LIMIT #{reqVO.offset}, #{reqVO.pageSize}
     </select>
 
+    <!-- 查询符合条件的总记录数 -->
     <select id="selectCount" resultType="Long">
         SELECT COUNT(DISTINCT r.id)
         FROM river r
-        WHERE r.deleted = 0
+        LEFT JOIN sys_area a ON r.area_code = a.area_code AND a.deleted = 0
+        LEFT JOIN sys_user u1 ON r.manager_id = u1.user_id AND u1.deleted = 0
+        LEFT JOIN sys_operation_status os ON r.operation_status_id = os.sys_operation_status_id AND os.deleted = 0
+        LEFT JOIN sys_cleaning_type ct ON r.cleaning_type_id = ct.cleaning_type_id AND ct.deleted = 0
+        LEFT JOIN sys_monitor_type mt ON r.monitor_type_id = mt.monitor_type_id AND mt.deleted = 0
+        LEFT JOIN sys_monitor_status mst ON r.monitor_status_id = mst.monitor_status_id AND mst.deleted = 0
+        LEFT JOIN sys_problem_type pt ON r.problem_type_id = pt.sys_problem_type_id AND pt.deleted = 0
+        LEFT JOIN sys_handle_status hs ON r.handle_status_id = hs.sys_handle_status_id AND hs.deleted = 0
+        LEFT JOIN sys_task_type tt ON r.task_type_id = tt.sys_task_type_id AND tt.deleted = 0
+        LEFT JOIN sys_dept d ON r.dept_id = d.sys_dept_id AND d.deleted = 0
+        LEFT JOIN sys_user u2 ON r.monitor_by = u2.user_id AND u2.deleted = 0
+        LEFT JOIN sys_user u3 ON r.report_by = u3.user_id AND u3.deleted = 0
+        LEFT JOIN sys_user u4 ON r.handle_by = u4.user_id AND u4.deleted = 0
+
+        <include refid="whereConditions" />
     </select>
 
 </mapper>

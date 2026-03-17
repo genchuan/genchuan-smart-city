@@ -1,16 +1,16 @@
 package cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.urbanvillage;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 城中村新增/修改 Request VO")
+@Schema(description = "环境卫生管理 - 城中村新增/修改 Request VO")
 @Data
 public class UrbanVillageSaveReqVO {
 
-    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "10453")
+    @Schema(description = "主键ID")
     private Long id;
 
     @Schema(description = "主键（UUID）", example = "12009")
@@ -70,7 +70,7 @@ public class UrbanVillageSaveReqVO {
     @Schema(description = "上报时间")
     private LocalDateTime reportTime;
 
-    @Schema(description = "现场照片URL，JSON", example = "https://www.iocoder.cn")
+    @Schema(description = "现场照片URL，JSON", example = "[\"https://www.iocoder.cn/photo1.jpg\", \"https://www.iocoder.cn/photo2.jpg\"]")
     private String problemPhotoUrl;
 
     @Schema(description = "关联sys_dept.id", example = "11465")
@@ -91,7 +91,7 @@ public class UrbanVillageSaveReqVO {
     @Schema(description = "处置说明")
     private String handleDesc;
 
-    @Schema(description = "整改照片URL，JSON", example = "https://www.iocoder.cn")
+    @Schema(description = "整改照片URL，JSON", example = "[\"https://www.iocoder.cn/photo1.jpg\", \"https://www.iocoder.cn/photo2.jpg\"]")
     private String reformPhotoUrl;
 
     @Schema(description = "关联sys_user.id")
@@ -106,16 +106,15 @@ public class UrbanVillageSaveReqVO {
     @Schema(description = "复核意见")
     private String reviewOpinion;
 
-    @Schema(description = "通用扩展字段1")
-    private String extCommon1;
+    public void setStaffIds(String staffIds) {
+        this.staffIds = (staffIds == null || staffIds.trim().isEmpty()) ? "[]" : staffIds;
+    }
 
-    @Schema(description = "通用扩展字段2")
-    private String extCommon2;
+    public void setProblemPhotoUrl(String problemPhotoUrl) {
+        this.problemPhotoUrl = (problemPhotoUrl == null || problemPhotoUrl.trim().isEmpty()) ? "[]" : problemPhotoUrl;
+    }
 
-    @Schema(description = "通用扩展字段3")
-    private String extCommon3;
-
-    @Schema(description = "通用扩展字段4")
-    private String extCommon4;
-
+    public void setReformPhotoUrl(String reformPhotoUrl) {
+        this.reformPhotoUrl = (reformPhotoUrl == null || reformPhotoUrl.trim().isEmpty()) ? "[]" : reformPhotoUrl;
+    }
 }

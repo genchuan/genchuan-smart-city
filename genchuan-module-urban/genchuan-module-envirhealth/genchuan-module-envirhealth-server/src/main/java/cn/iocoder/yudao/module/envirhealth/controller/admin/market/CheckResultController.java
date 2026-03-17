@@ -1,9 +1,9 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.market;
 
 import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.checkresult.CheckResultPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.checkresult.CheckResultRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.checkresult.CheckResultSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.util.vo.OptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +31,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.market.CheckResultDO;
 import cn.iocoder.yudao.module.envirhealth.service.market.checkresult.CheckResultService;
 
-@Tag(name = "环境卫生管理 - 核查结果字典表")
+@Tag(name = "字典表 - 核查结果")
 @RestController
 @RequestMapping("/envirhealth/check-result")
 @Validated
@@ -94,4 +94,15 @@ public class CheckResultController {
                         BeanUtils.toBean(list, CheckResultRespVO.class));
     }
 
-}*/
+    /**
+     * 获得核查结果字典下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得核查结果(下拉框)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:check-result:query')")
+    public CommonResult<List<OptionVO>> getCheckResultOptions() {
+        return success(checkResultService.getCheckResultOptions());
+    }
+
+}

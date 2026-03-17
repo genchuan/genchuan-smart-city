@@ -17,6 +17,7 @@ import org.apache.ibatis.annotations.Select;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 道路清扫计划 Mapper
@@ -90,6 +91,13 @@ public interface RoadCleaningMapper extends BaseMapperX<RoadCleaningDO> {
             WHERE r.deleted = 0 AND r.review_status = '达标'
             """)
     Long countQualityQualified();
+
+    /** 质量待核查数 */
+    @Select("""
+            SELECT COUNT(1) FROM road_cleaning r
+            WHERE r.deleted = 0 AND r.review_status = '待核查'
+            """)
+    Long selectPendingReviewCount();
 
     /** 全勤人员数：执行中计划中涉及人员去重 */
     @Select("""
@@ -416,4 +424,27 @@ public interface RoadCleaningMapper extends BaseMapperX<RoadCleaningDO> {
             "GROUP BY su.user_id, su.user_name " +
             "ORDER BY value DESC")
     List<PieItemVO> selectStaffWorkloadDistribution();
+
+    /**
+     * 按计划状态统计
+     */
+    @Select("SELECT " +
+            "    CASE " +
+            "        WHEN rc.plan_status_id IN ('uuid-plan-status-001') THEN '清扫待执行' " +
+            "        WHEN rc.plan_status_id IN ('uuid-plan-status-002') THEN '作业进行中' " +
+            "        WHEN rc.plan_status_id = 'uuid-plan-status-003' THEN '已完成' " +
+            "        ELSE COALESCE(sps.name, '未设置') " +
+            "    END as status_name, " +
+            "    COUNT(rc.id) as count " +
+            "FROM road_cleaning rc " +
+            "LEFT JOIN sys_plan_status sps ON rc.plan_status_id = sps.sys_plan_status_id " +
+            "WHERE rc.deleted = 0 " +
+            "GROUP BY " +
+            "    CASE " +
+            "        WHEN rc.plan_status_id IN ('uuid-plan-status-001') THEN '清扫待执行' " +
+            "        WHEN rc.plan_status_id IN ('uuid-plan-status-002') THEN '作业进行中' " +
+            "        WHEN rc.plan_status_id = 'uuid-plan-status-003' THEN '已完成' " +
+            "        ELSE COALESCE(sps.name, '未设置') " +
+            "    END")
+    List<Map<String, Object>> selectStatisticsByPlanStatus();
 }

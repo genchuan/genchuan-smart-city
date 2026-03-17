@@ -7,13 +7,16 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.roadcleaning.vo.road
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning.Detail.RoadCleaningDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning.HourlyCompletionDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning.RoadCleaningDO;
+import cn.iocoder.yudao.module.envirhealth.dal.mysql.roadcleaning.CleaningProblemMapper;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.roadcleaning.RoadCleaningMapper;
 import cn.iocoder.yudao.module.envirhealth.util.codegenerator.roadcleaning.RoadCleaningCodeGenerator;
 import cn.iocoder.yudao.module.envirhealth.util.vo.BarItemVO;
 import cn.iocoder.yudao.module.envirhealth.util.vo.CompletionRatePointVO;
 import cn.iocoder.yudao.module.envirhealth.util.vo.OptionVO;
+import cn.iocoder.yudao.module.envirhealth.util.vo.StatisticsRespVO;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
@@ -40,6 +43,9 @@ public class RoadCleaningServiceImpl implements RoadCleaningService {
 
     @Resource
     private RoadCleaningCodeGenerator codeGenerator;
+
+    @Resource
+    private CleaningProblemMapper cleaningProblemMapper;
 
     @Override
     public Long createRoadCleaning(RoadCleaningSaveReqVO createReqVO) {
@@ -478,5 +484,39 @@ public class RoadCleaningServiceImpl implements RoadCleaningService {
         resp.setStaffWorkloadDistribution(roadCleaningMapper.selectStaffWorkloadDistribution());
 
         return resp;
+    }
+
+    @Override
+    public StatisticsRespVO getRoadCleaningStatistics() {
+
+        StatisticsRespVO respVO = new StatisticsRespVO();
+
+        // 1. 查询总数量
+        Long totalCount = roadCleaningMapper.countTotalPlan();
+        respVO.setTotal(totalCount == null ? 0 : totalCount.intValue());
+
+        // 2. 查询状态统计
+        List<Map<String, Object>> statusStats = roadCleaningMapper.selectStatisticsByPlanStatus();
+
+        // 3. 转换为Map格式
+        Map<String, Integer> planStatusCounts = new LinkedHashMap<>();
+
+        // 4. 填充状态数据
+        for (Map<String, Object> stat : statusStats) {
+            String statusName = (String) stat.get("status_name");
+            Long count = (Long) stat.get("count");
+            planStatusCounts.put(statusName, count.intValue());
+        }
+
+        // 5. 问题待处置
+        Long problemCount = cleaningProblemMapper.selectPendingProblemCount();
+        planStatusCounts.put("问题待处置", problemCount == null ? 0 : problemCount.intValue());
+
+        // 6. 质量待核查
+        Long reviewCount = roadCleaningMapper.selectPendingReviewCount();
+        planStatusCounts.put("质量待核查", reviewCount == null ? 0 : reviewCount.intValue());
+
+        respVO.setPlanStatusCounts(planStatusCounts);
+        return respVO;
     }
 }

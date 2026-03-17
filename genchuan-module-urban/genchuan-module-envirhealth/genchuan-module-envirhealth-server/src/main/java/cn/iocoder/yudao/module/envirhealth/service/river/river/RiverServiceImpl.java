@@ -7,6 +7,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.river.River
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.RiverDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.detail.RiverDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.river.RiverMapper;
+import cn.iocoder.yudao.module.envirhealth.util.codegenerator.river.RiverCodeGenerator;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -28,10 +29,17 @@ public class RiverServiceImpl implements RiverService {
     @Resource
     private RiverMapper riverMapper;
 
+    @Resource
+    private RiverCodeGenerator codeGenerator;
+
     @Override
     public Long createRiver(RiverSaveReqVO createReqVO) {
         // 插入
         RiverDO river = BeanUtils.toBean(createReqVO, RiverDO.class);
+
+        river.setId(null);
+        river.setRiverId(codeGenerator.generateRiverId());
+
         riverMapper.insert(river);
         // 返回
         return river.getId();

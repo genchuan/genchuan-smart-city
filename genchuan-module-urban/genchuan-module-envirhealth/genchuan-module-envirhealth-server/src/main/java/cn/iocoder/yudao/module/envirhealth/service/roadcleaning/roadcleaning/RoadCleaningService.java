@@ -5,6 +5,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.roadcleaning.vo.road
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning.Detail.RoadCleaningDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning.RoadCleaningDO;
 import cn.iocoder.yudao.module.envirhealth.util.vo.OptionVO;
+import cn.iocoder.yudao.module.envirhealth.util.vo.StatisticsRespVO;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -112,4 +113,9 @@ public interface RoadCleaningService {
      */
     RoadCleaningCompletedRespVO getCompletedData(String timeRange);
 
+    /**
+     * 获取道路清扫统计数据（按状态分组）
+     * @return 统计数据
+     */
+    StatisticsRespVO getRoadCleaningStatistics();
 }

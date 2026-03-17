@@ -4,7 +4,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.checkresult.CheckResultPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.checkresult.CheckResultSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.market.CheckResultDO;
+import cn.iocoder.yudao.module.envirhealth.util.vo.OptionVO;
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 核查结果字典表 Service 接口
@@ -51,4 +54,9 @@ public interface CheckResultService {
      */
     PageResult<CheckResultDO> getCheckResultPage(CheckResultPageReqVO pageReqVO);
 
+    /**
+     * 获得核查结果下拉框选项
+     * @return 下拉框选项列表
+     */
+    List<OptionVO> getCheckResultOptions();
 }

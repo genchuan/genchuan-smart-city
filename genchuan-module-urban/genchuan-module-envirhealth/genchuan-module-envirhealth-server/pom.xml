@@ -123,13 +123,6 @@
             <artifactId>yudao-spring-boot-starter-monitor</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.skywalking</groupId>
-            <artifactId>apm-toolkit-logback-1.x</artifactId>
-            <version>9.5.0</version>
-        </dependency>
-
-
     </dependencies>
 
     <build>

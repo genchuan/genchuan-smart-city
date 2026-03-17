@@ -8,6 +8,7 @@ import cn.iocoder.yudao.module.envirhealth.dal.dataobject.market.MarketDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.market.detail.MarketDetailDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -57,13 +58,15 @@ public interface MarketMapper extends BaseMapperX<MarketDO> {
                 .eqIfPresent(MarketDO::getUnqualifiedItemCount, reqVO.getUnqualifiedItemCount())
                 .eqIfPresent(MarketDO::getReformRequire, reqVO.getReformRequire())
                 .eqIfPresent(MarketDO::getReformDeadline, reqVO.getReformDeadline())
-                .eqIfPresent(MarketDO::getExtCommon1, reqVO.getExtCommon1())
-                .eqIfPresent(MarketDO::getExtCommon2, reqVO.getExtCommon2())
-                .eqIfPresent(MarketDO::getExtCommon3, reqVO.getExtCommon3())
-                .eqIfPresent(MarketDO::getExtCommon4, reqVO.getExtCommon4())
                 .betweenIfPresent(MarketDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(MarketDO::getId));
     }
+
+    /**
+     * 查询全局最大序号（用于market_id）
+     */
+    @Select("SELECT IFNULL(MAX(SUBSTRING_INDEX(market_id, '-', -1)), 0) FROM market")
+    Integer selectMaxSeq();
 
     List<MarketDetailDO> selectDetailPage(@Param("reqVO") MarketPageReqVO pageReqVO);
 

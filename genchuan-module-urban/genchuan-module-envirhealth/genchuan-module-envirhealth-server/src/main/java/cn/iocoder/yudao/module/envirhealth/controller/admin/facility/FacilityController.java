@@ -97,7 +97,7 @@ public class FacilityController {
      */
     @GetMapping("/options")
     @Operation(summary = "获得设施(下拉框)")
-    @PreAuthorize("@ss.hasPermission('health:facility:query')")
+    @PreAuthorize("@ss.hasPermission('envirhealth:facility:query')")
     public CommonResult<List<OptionVO>> getFacilityOptions() {
         return success(facilityService.getFacilityOptions());
     }

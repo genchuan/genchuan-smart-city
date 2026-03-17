@@ -8,6 +8,7 @@ import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.RiverDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.detail.RiverDetailDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -59,13 +60,15 @@ public interface RiverMapper extends BaseMapperX<RiverDO> {
                 .betweenIfPresent(RiverDO::getDispatchTime, reqVO.getDispatchTime())
                 .eqIfPresent(RiverDO::getHandleStatusId, reqVO.getHandleStatusId())
                 .eqIfPresent(RiverDO::getIsTimeout, reqVO.getIsTimeout())
-                .eqIfPresent(RiverDO::getExtCommon1, reqVO.getExtCommon1())
-                .eqIfPresent(RiverDO::getExtCommon2, reqVO.getExtCommon2())
-                .eqIfPresent(RiverDO::getExtCommon3, reqVO.getExtCommon3())
-                .eqIfPresent(RiverDO::getExtCommon4, reqVO.getExtCommon4())
                 .betweenIfPresent(RiverDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(RiverDO::getId));
     }
+
+    /**
+     * 查询全局最大序号（用于river_id）
+     */
+    @Select("SELECT IFNULL(MAX(SUBSTRING_INDEX(river_id, '-', -1)), 0) FROM river")
+    Integer selectMaxSeq();
 
     List<RiverDetailDO> selectDetailPage(@Param("reqVO") RiverPageReqVO pageReqVO);
 

@@ -6,7 +6,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 集贸市场新增/修改 Request VO")
+@Schema(description = "环境卫生管理 - 集贸市场新增/修改 Request VO")
 @Data
 public class MarketSaveReqVO {
 
@@ -121,16 +121,16 @@ public class MarketSaveReqVO {
     @Schema(description = "整改期限")
     private LocalDateTime reformDeadline;
 
-    @Schema(description = "通用扩展字段1")
-    private String extCommon1;
+    public void setCleaningTime(String cleaningTime) {
+        this.cleaningTime = (cleaningTime == null || cleaningTime.trim().isEmpty()) ? "[]" : cleaningTime;
+    }
 
-    @Schema(description = "通用扩展字段2")
-    private String extCommon2;
+    public void setStaffIds(String staffIds) {
+        this.staffIds = (staffIds == null || staffIds.trim().isEmpty()) ? "[]" : staffIds;
+    }
 
-    @Schema(description = "通用扩展字段3")
-    private String extCommon3;
-
-    @Schema(description = "通用扩展字段4")
-    private String extCommon4;
+    public void setGarbageTypeIds(String garbageTypeIds) {
+        this.garbageTypeIds = (garbageTypeIds == null || garbageTypeIds.trim().isEmpty()) ? "[]" : garbageTypeIds;
+    }
 
 }

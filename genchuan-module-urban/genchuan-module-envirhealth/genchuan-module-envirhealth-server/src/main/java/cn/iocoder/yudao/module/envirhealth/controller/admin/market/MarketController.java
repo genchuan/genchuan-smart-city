@@ -23,6 +23,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
@@ -86,6 +89,13 @@ public class MarketController {
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<MarketDO> list = marketService.getMarketPage(pageReqVO).getList();
+
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setHeader("Content-Disposition",
+                "attachment;filename=" + URLEncoder.encode("集贸市场_" +
+                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".xls", "UTF-8"));
+        response.setCharacterEncoding("UTF-8");
+
         // 导出 Excel
         ExcelUtils.write(response, "集贸市场.xls", "数据", MarketRespVO.class,
                         BeanUtils.toBean(list, MarketRespVO.class));

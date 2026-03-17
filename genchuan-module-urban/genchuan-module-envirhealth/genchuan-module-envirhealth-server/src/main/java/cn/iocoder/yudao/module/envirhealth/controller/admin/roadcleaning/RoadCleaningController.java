@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning.Detail.Ro
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning.RoadCleaningDO;
 import cn.iocoder.yudao.module.envirhealth.service.roadcleaning.roadcleaning.RoadCleaningService;
 import cn.iocoder.yudao.module.envirhealth.util.vo.OptionVO;
+import cn.iocoder.yudao.module.envirhealth.util.vo.StatisticsRespVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -170,13 +171,16 @@ public class RoadCleaningController {
 
     @GetMapping("/chart/completed")
     @Operation(summary = "卡片/柱状图/折线图/圆环图(已完成)")
-    @Parameters({
-            @Parameter(name = "timeRange", description = "时间范围：day-日周对比/week-周月对比/month-月年对比",
-                    example = "day", required = true)
-    })
+    @Parameters({@Parameter(name = "timeRange", description = "时间范围：day-日周对比/week-周月对比/month-月年对比", example = "day", required = true)})
     @PreAuthorize("@ss.hasPermission('envirhealth:road-cleaning:query')")
-    public CommonResult<RoadCleaningCompletedRespVO> getCompletedData(
-            @RequestParam(defaultValue = "day") String timeRange) {
+    public CommonResult<RoadCleaningCompletedRespVO> getCompletedData(@RequestParam(defaultValue = "day") String timeRange) {
         return success(roadCleaningService.getCompletedData(timeRange));
+    }
+
+    @GetMapping("/chart/statistics")
+    @Operation(summary = "获取道路清扫统计数据(按状态分组)")
+    @PreAuthorize("@ss.hasPermission('health:road-cleaning:query')")
+    public CommonResult<StatisticsRespVO> getRoadCleaningStatistics() {
+        return success(roadCleaningService.getRoadCleaningStatistics());
     }
 }

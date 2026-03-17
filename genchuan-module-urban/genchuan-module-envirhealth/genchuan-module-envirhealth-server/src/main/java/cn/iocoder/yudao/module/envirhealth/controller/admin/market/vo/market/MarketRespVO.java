@@ -8,7 +8,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 集贸市场 Response VO")
+@Schema(description = "环境卫生管理 - 集贸市场 Response VO")
 @Data
 @ExcelIgnoreUnannotated
 public class MarketRespVO {
@@ -18,7 +18,7 @@ public class MarketRespVO {
     private Long id;
 
     @Schema(description = "主键（UUID）", example = "11727")
-    @ExcelProperty("主键（UUID）")
+    @ExcelProperty("市场编号")
     private String marketId;
 
     @Schema(description = "市场名称", example = "赵六")
@@ -30,7 +30,7 @@ public class MarketRespVO {
     private String address;
 
     @Schema(description = "关联sys_area.area_code")
-    @ExcelProperty("关联sys_area.area_code")
+    @ExcelProperty("区域编码")
     private String areaCode;
 
     @Schema(description = "摊位数量", example = "11386")
@@ -38,11 +38,11 @@ public class MarketRespVO {
     private Integer stallCount;
 
     @Schema(description = "关联sys_user.id", example = "11292")
-    @ExcelProperty("关联sys_user.id")
+    @ExcelProperty("管理人员")
     private String managerId;
 
     @Schema(description = "关联sys_operation_status.id", example = "20957")
-    @ExcelProperty("关联sys_operation_status.id")
+    @ExcelProperty("运行状态编号")
     private String operationStatusId;
 
     @Schema(description = "卫生达标率")
@@ -66,7 +66,7 @@ public class MarketRespVO {
     private String cleaningFrequency;
 
     @Schema(description = "保洁时段，JSON")
-    @ExcelProperty("保洁时段，JSON")
+    @ExcelProperty("保洁时段")
     private String cleaningTime;
 
     @Schema(description = "保洁区域")
@@ -74,7 +74,7 @@ public class MarketRespVO {
     private String cleaningArea;
 
     @Schema(description = "负责人员IDs，JSON")
-    @ExcelProperty("负责人员IDs，JSON")
+    @ExcelProperty("负责人员")
     private String staffIds;
 
     @Schema(description = "保洁标准")
@@ -82,7 +82,7 @@ public class MarketRespVO {
     private String cleaningStandard;
 
     @Schema(description = "垃圾类型IDs，JSON")
-    @ExcelProperty("垃圾类型IDs，JSON")
+    @ExcelProperty("垃圾类型")
     private String garbageTypeIds;
 
     @Schema(description = "收集容器数量", example = "25100")
@@ -98,7 +98,7 @@ public class MarketRespVO {
     private String wasteTransferTime;
 
     @Schema(description = "关联sys_vehicle.id", example = "27857")
-    @ExcelProperty("关联sys_vehicle.id")
+    @ExcelProperty("车辆编号")
     private String vehicleId;
 
     @Schema(description = "污水排放区域")
@@ -134,7 +134,7 @@ public class MarketRespVO {
     private String hygieneCheckTime;
 
     @Schema(description = "关联sys_user.id")
-    @ExcelProperty("关联sys_user.id")
+    @ExcelProperty("检查人员")
     private String checkBy;
 
     @Schema(description = "核查日期")
@@ -160,22 +160,6 @@ public class MarketRespVO {
     @Schema(description = "整改期限")
     @ExcelProperty("整改期限")
     private LocalDateTime reformDeadline;
-
-    @Schema(description = "通用扩展字段1")
-    @ExcelProperty("通用扩展字段1")
-    private String extCommon1;
-
-    @Schema(description = "通用扩展字段2")
-    @ExcelProperty("通用扩展字段2")
-    private String extCommon2;
-
-    @Schema(description = "通用扩展字段3")
-    @ExcelProperty("通用扩展字段3")
-    private String extCommon3;
-
-    @Schema(description = "通用扩展字段4")
-    @ExcelProperty("通用扩展字段4")
-    private String extCommon4;
 
     @Schema(description = "创建时间")
     @ExcelProperty("创建时间")

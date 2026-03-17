@@ -7,6 +7,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.market.Mar
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.market.MarketDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.market.detail.MarketDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.market.MarketMapper;
+import cn.iocoder.yudao.module.envirhealth.util.codegenerator.market.MarketCodeGenerator;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -28,10 +29,17 @@ public class MarketServiceImpl implements MarketService {
     @Resource
     private MarketMapper marketMapper;
 
+    @Resource
+    private MarketCodeGenerator codeGenerator;
+
     @Override
     public Long createMarket(MarketSaveReqVO createReqVO) {
         // 插入
         MarketDO market = BeanUtils.toBean(createReqVO, MarketDO.class);
+
+        market.setId(null);
+        market.setMarketId(codeGenerator.generateMarketId());
+
         marketMapper.insert(market);
         // 返回
         return market.getId();
