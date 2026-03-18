@@ -18,7 +18,7 @@ BuildAndPush:
     - mvn clean package -Dmaven.test.skip=true
     - echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
     - |
-      if [ "$CI_COMMIT_BRANCH" == "genchuan-master-jdk17" ]; then
+      if [ "$CI_COMMIT_BRANCH" == "genchuan-openGauss" ]; then
         echo "当前分支是 $CI_COMMIT_BRANCH，开始构建并推送Docker镜像..."
         # 登录Harbor仓库
         echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
@@ -45,7 +45,7 @@ BuildAndPush:
         done
         echo "所有镜像构建并推送完成！"
       else
-        echo "当前分支不是 genchuan-master-jdk17（当前分支：$CI_COMMIT_BRANCH），跳过Docker镜像构建和推送步骤"
+        echo "当前分支不是 genchuan-openGauss（当前分支：$CI_COMMIT_BRANCH），跳过Docker镜像构建和推送步骤"
       fi
   retry:
     max: 2
