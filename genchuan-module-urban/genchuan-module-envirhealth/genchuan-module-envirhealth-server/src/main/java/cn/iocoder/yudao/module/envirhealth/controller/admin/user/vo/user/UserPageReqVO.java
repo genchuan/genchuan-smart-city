@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
-@Schema(description = "管理后台 - 系统用户分页 Request VO")
+@Schema(description = "环境卫生管理 - 系统用户分页 Request VO")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -27,8 +27,8 @@ public class UserPageReqVO extends PageParam {
     @Schema(description = "联系电话")
     private String userPhone;
 
-    @Schema(description = "所属部门名称", example = "李四")
-    private String deptName;
+    @Schema(description = "所属部门编号", example = "uuid-dept-001")
+    private String deptId;
 
     @Schema(description = "角色ID（关联角色表）", example = "10816")
     private String roleId;
@@ -76,20 +76,31 @@ public class UserPageReqVO extends PageParam {
     @Schema(description = "最近作业轨迹（JSON格式）")
     private String lastWorkTrace;
 
-    @Schema(description = "通用扩展字段1")
-    private String extCommon1;
-
-    @Schema(description = "通用扩展字段2")
-    private String extCommon2;
-
-    @Schema(description = "通用扩展字段3")
-    private String extCommon3;
-
-    @Schema(description = "通用扩展字段4")
-    private String extCommon4;
-
     @Schema(description = "创建时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
+
+    @Schema(hidden = true)
+    private Integer offset;
+
+    @Schema(hidden = true)
+    private Integer limit;
+
+    /**
+     * 设置分页偏移量和每页大小
+     */
+    public void setOffset(Integer pageNo, Integer pageSize) {
+        if (pageNo != null && pageSize != null && pageNo > 0) {
+            this.offset = (pageNo - 1) * pageSize;
+            this.limit = pageSize;
+        }
+    }
+
+    /**
+     * 获取分页大小
+     */
+    public Integer getLimit() {
+        return limit != null ? limit : getPageSize();
+    }
 
 }

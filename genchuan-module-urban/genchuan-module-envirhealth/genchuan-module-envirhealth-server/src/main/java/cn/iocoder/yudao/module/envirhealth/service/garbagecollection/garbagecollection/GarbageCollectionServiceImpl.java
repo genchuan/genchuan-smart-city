@@ -213,8 +213,8 @@ public class GarbageCollectionServiceImpl implements GarbageCollectionService {
         planStatusCounts.put("未开始", 0);
         planStatusCounts.put("进行中", 0);
         planStatusCounts.put("已完成", 0);
-        planStatusCounts.put("异常", 0); // 后续替换为异常表数据
-        planStatusCounts.put("待复核", 0); // 后续替换为异常表数据
+        planStatusCounts.put("异常", 0);
+        planStatusCounts.put("待复核", 0);
 
         // 4. 填充垃圾收集计划的状态数据（待执行/执行中/已完成）
         for (Map<String, Object> stat : statusStats) {

@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.envirhealth.service.dictionary.tasktype;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.tasktype.vo.TaskTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.tasktype.vo.TaskTypeSaveReqVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.tasktype.TaskTypeDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.TaskTypeDO;
 import jakarta.validation.Valid;
 
 /**

@@ -9,7 +9,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.institutiontype.vo.InstitutionTypeRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.institutiontype.vo.InstitutionTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.institutiontype.vo.InstitutionTypeSaveReqVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.institutiontype.InstitutionTypeDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.InstitutionTypeDO;
 import cn.iocoder.yudao.module.envirhealth.service.dictionary.institutiontype.InstitutionTypeService;
 import cn.iocoder.yudao.module.envirhealth.util.vo.OptionVO;
 import io.swagger.v3.oas.annotations.Operation;

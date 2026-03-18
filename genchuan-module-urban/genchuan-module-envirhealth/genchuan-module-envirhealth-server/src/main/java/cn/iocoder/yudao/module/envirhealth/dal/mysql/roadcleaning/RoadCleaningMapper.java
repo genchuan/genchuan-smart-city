@@ -54,6 +54,7 @@ public interface RoadCleaningMapper extends BaseMapperX<RoadCleaningDO> {
                 .eqIfPresent(RoadCleaningDO::getReviewBy, reqVO.getReviewBy())
                 .betweenIfPresent(RoadCleaningDO::getReviewTime, reqVO.getReviewTime())
                 .eqIfPresent(RoadCleaningDO::getReformRequire, reqVO.getReformRequire())
+                .eqIfPresent(RoadCleaningDO::getReviewDesc, reqVO.getReviewDesc())
                 .betweenIfPresent(RoadCleaningDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(RoadCleaningDO::getId));
     }

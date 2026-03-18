@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.envirhealth.service.dictionary.problemtype;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.problemtype.vo.ProblemTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.problemtype.vo.ProblemTypeSaveReqVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.problemtype.ProblemTypeDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.ProblemTypeDO;
 import cn.iocoder.yudao.module.envirhealth.util.vo.OptionVO;
 import jakarta.validation.Valid;
 

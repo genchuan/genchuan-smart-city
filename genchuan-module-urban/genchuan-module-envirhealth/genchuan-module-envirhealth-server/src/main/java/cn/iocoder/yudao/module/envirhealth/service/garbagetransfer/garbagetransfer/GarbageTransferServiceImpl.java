@@ -8,13 +8,16 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.g
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.GarbageTransferDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.detail.GarbageTransferDetailDO;
-import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.GarbageTransferMapper;
+import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.*;
 import cn.iocoder.yudao.module.envirhealth.util.codegenerator.garbagetransfer.GarbageTransferCodeGenerator;
+import cn.iocoder.yudao.module.envirhealth.util.vo.StatisticsRespVO;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.GARBAGE_TRANSFER_NOT_EXISTS;
@@ -31,6 +34,18 @@ public class GarbageTransferServiceImpl implements GarbageTransferService {
 
     @Resource
     private GarbageTransferMapper garbageTransferMapper;
+
+    @Resource
+    private TransferReserveMapper transferReserveMapper;
+
+    @Resource
+    private TransferOperationMapper transferOperationMapper;
+
+    @Resource
+    private TransferAlarmMapper transferAlarmMapper;
+
+    @Resource
+    private TransferMaintenanceMapper transferMaintenanceMapper;
 
     @Resource
     private GarbageTransferCodeGenerator codeGenerator;
@@ -163,4 +178,46 @@ public class GarbageTransferServiceImpl implements GarbageTransferService {
         return resp;
     }
 
+    @Override
+    public StatisticsRespVO getGarbageTransferStatistics() {
+        StatisticsRespVO respVO = new StatisticsRespVO();
+
+        // 1. 查询总数量
+        Long totalCount = garbageTransferMapper.selectTotalStations();
+
+        respVO.setTotal(totalCount == null ? 0 : totalCount.intValue());
+
+        // 2. 查询计划状态统计
+        List<Map<String, Object>> statusStats = transferOperationMapper.selectCompletedCountAsList();
+
+        // 3. 转换为Map格式
+        Map<String, Integer> planStatusCounts = new LinkedHashMap<>();
+
+        // 4. 填充状态数据
+        for (Map<String, Object> stat : statusStats) {
+            String statusName = (String) stat.get("status_name");
+            Long count = (Long) stat.get("count");
+            planStatusCounts.put(statusName, count.intValue());
+        }
+
+        // 5. 查询进站预约表的内容
+        Long carPendingCount = transferReserveMapper.selectAllCount();
+        planStatusCounts.put("车辆待进站", carPendingCount == null ? 0 : carPendingCount.intValue());
+
+        // 6. 查询转运作业表的内容
+        Long operationCount = transferOperationMapper.selectTotalCount();
+        planStatusCounts.put("作业进行中", operationCount == null ? 0 : operationCount.intValue());
+
+        // 7. 查询转运预警表的内容
+        Long alarmCount = transferAlarmMapper.selectAllCount();
+        planStatusCounts.put("预警待处理", alarmCount == null ? 0 : alarmCount.intValue());
+
+        // 8. 查询设备维护表的内容
+        Long maintenanceCount = transferMaintenanceMapper.selectAllCount();
+        planStatusCounts.put("设备待维护", maintenanceCount == null ? 0 : maintenanceCount.intValue());
+
+
+        respVO.setPlanStatusCounts(planStatusCounts);
+        return respVO;
+    }
 }

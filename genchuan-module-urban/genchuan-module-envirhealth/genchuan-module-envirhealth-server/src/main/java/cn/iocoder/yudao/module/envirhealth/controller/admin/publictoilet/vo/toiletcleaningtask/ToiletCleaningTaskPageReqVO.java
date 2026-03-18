@@ -75,4 +75,39 @@ public class ToiletCleaningTaskPageReqVO extends PageParam {
 
     @Schema(description = "统计周期")
     private String statPeriod;
+
+    @Schema(description = "复盘意见", example = "清扫十分干净")
+    private String reviewDesc;
+
+    @Schema(hidden = true)
+    private Integer offset;
+
+    @Schema(hidden = true)
+    private Integer limit;
+
+    /**
+     * 设置分页偏移量和每页大小
+     */
+    public void setOffset(Integer pageNo, Integer pageSize) {
+        if (pageNo != null && pageSize != null && pageNo > 0) {
+            this.offset = (pageNo - 1) * pageSize;
+            this.limit = pageSize;
+        }
+    }
+
+    /**
+     * 获取分页起始位置
+     */
+    public Integer getOffset() {
+        return offset;
+    }
+
+    /**
+     * 获取分页大小
+     */
+    public Integer getLimit() {
+        return limit != null ? limit : getPageSize();
+    }
+
+
 }

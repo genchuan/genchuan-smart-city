@@ -101,6 +101,9 @@ public class GarbageCollectionPageReqVO extends PageParam {
     @Schema(description = "异常办结率（自动计算）", example = "98.00")
     private BigDecimal abnormalCompleteRate;
 
+    @Schema(description = "复盘意见", example = "清扫十分干净")
+    private String reviewDesc;
+
     @Schema(hidden = true)
     private Integer offset;
 

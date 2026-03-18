@@ -8,6 +8,7 @@ import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.VehicleDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.detail.VehicleDetailDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -37,13 +38,15 @@ public interface VehicleMapper extends BaseMapperX<VehicleDO> {
                 .betweenIfPresent(VehicleDO::getLastMaintenanceTime, reqVO.getLastMaintenanceTime())
                 .eqIfPresent(VehicleDO::getAlarmCount, reqVO.getAlarmCount())
                 .eqIfPresent(VehicleDO::getVehiclePhotoUrl, reqVO.getVehiclePhotoUrl())
-                .eqIfPresent(VehicleDO::getExtCommon1, reqVO.getExtCommon1())
-                .eqIfPresent(VehicleDO::getExtCommon2, reqVO.getExtCommon2())
-                .eqIfPresent(VehicleDO::getExtCommon3, reqVO.getExtCommon3())
-                .eqIfPresent(VehicleDO::getExtCommon4, reqVO.getExtCommon4())
                 .betweenIfPresent(VehicleDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(VehicleDO::getId));
     }
+
+    /**
+     * 查询全局最大序号（用于sys_vehicle_id）
+     */
+    @Select("SELECT IFNULL(MAX(SUBSTRING_INDEX(sys_vehicle_id, '-', -1)), 0) FROM sys_vehicle")
+    Integer selectMaxSeq();
 
     List<VehicleDetailDO> selectDetailPage(@Param("reqVO") VehiclePageReqVO pageReqVO);
 

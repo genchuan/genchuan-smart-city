@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.envirhealth.service.dictionary.maintainstatus;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.maintainstatus.vo.MaintainStatusPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.maintainstatus.vo.MaintainStatusSaveReqVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.maintainstatus.MaintainStatusDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.MaintainStatusDO;
 import jakarta.validation.Valid;
 
 /**

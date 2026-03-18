@@ -47,6 +47,7 @@ public interface GarbageCollectionMapper extends BaseMapperX<GarbageCollectionDO
                 .eqIfPresent(GarbageCollectionDO::getIsAbnormal, reqVO.getIsAbnormal())
                 .eqIfPresent(GarbageCollectionDO::getAbnormalResult, reqVO.getAbnormalResult())
                 .eqIfPresent(GarbageCollectionDO::getAbnormalCompleteRate, reqVO.getAbnormalCompleteRate())
+                .eqIfPresent(GarbageCollectionDO::getReviewDesc, reqVO.getReviewDesc())
                 .betweenIfPresent(GarbageCollectionDO::getCompleteTime, reqVO.getCompleteTime())
                 .betweenIfPresent(GarbageCollectionDO::getLastReportTime, reqVO.getLastReportTime())
                 .betweenIfPresent(GarbageCollectionDO::getCreateTime, reqVO.getCreateTime())
@@ -271,10 +272,9 @@ public interface GarbageCollectionMapper extends BaseMapperX<GarbageCollectionDO
      * @return 统计结果Map
      */
     @Select("SELECT " +
-            "SUM(CASE WHEN plan_status_id = 'uuid-plan-status-002' AND abnormal_count = 0 THEN 1 ELSE 0 END) AS normal_running_count, " +
-            "SUM(CASE WHEN abnormal_count > 0 THEN 1 ELSE 0 END) AS abnormal_count " +
-            "FROM garbage_collection " +
-            "WHERE deleted = 0")
+            "SUM(CASE WHEN plan_status_id = 'uuid-plan-status-002' AND abnormal_count = 0 AND deleted = 0 THEN 1 ELSE 0 END) AS normal_running_count, " +
+            "SUM(CASE WHEN plan_status_id = 'uuid-plan-status-002' AND abnormal_count > 0 AND deleted = 0 THEN 1 ELSE 0 END) AS abnormal_count " +
+            "FROM garbage_collection ")
     Map<String, Object> selectCardExecuting();
 
     /**

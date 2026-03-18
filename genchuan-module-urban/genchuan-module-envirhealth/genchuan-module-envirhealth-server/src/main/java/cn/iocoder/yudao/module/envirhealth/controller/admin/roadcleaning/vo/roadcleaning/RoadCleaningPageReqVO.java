@@ -13,7 +13,7 @@ import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
-@Schema(description = "管理后台 - 道路清扫计划分页 Request VO")
+@Schema(description = "环境卫生管理 - 道路清扫计划分页 Request VO")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -104,6 +104,9 @@ public class RoadCleaningPageReqVO extends PageParam {
     @Schema(description = "创建时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
+
+    @Schema(description = "复盘意见")
+    private String reviewDesc;
 
     @Schema(hidden = true)
     private Integer offset;

@@ -5,6 +5,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserOpt
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.UserDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.detail.UserDetailDO;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -59,4 +60,14 @@ public interface UserService {
      * @return 下拉框选项列表
      */
     List<UserOptionVO> getUserOptions();
+
+
+    /**
+     * 获得系统用户分页
+     *
+     * @param pageReqVO 分页查询
+     * @return 系统用户分页
+     */
+    PageResult<UserDetailDO> getUserDetailPage(UserPageReqVO pageReqVO);
+
 }

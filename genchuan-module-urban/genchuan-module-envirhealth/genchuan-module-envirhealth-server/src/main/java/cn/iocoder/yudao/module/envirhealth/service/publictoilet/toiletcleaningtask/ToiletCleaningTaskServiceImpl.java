@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.envirhealth.api.file.FileFeignClient;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.toiletcleaningtask.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ToiletCleaningTaskDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.ToiletCleaningTaskDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.publictoilet.ToiletCleaningTaskMapper;
 import cn.iocoder.yudao.module.envirhealth.util.codegenerator.publictoilet.ToiletCleaningTaskCodeGenerator;
 import cn.iocoder.yudao.module.envirhealth.util.convert.UrlConvert;
@@ -123,8 +124,17 @@ public class ToiletCleaningTaskServiceImpl implements ToiletCleaningTaskService 
     }
 
     @Override
-    public PageResult<ToiletCleaningTaskWithJoinRespVO> getToiletCleaningTaskJoinPage(ToiletCleaningTaskPageReqVO pageReqVO) {
-        return toiletCleaningTaskMapper.selectJoinPage(pageReqVO);
+    public PageResult<ToiletCleaningTaskDetailDO> getToiletCleaningTaskDetailPage(ToiletCleaningTaskPageReqVO pageReqVO) {
+
+        Long total = toiletCleaningTaskMapper.selectCount(pageReqVO);
+        if (total == 0) {
+            return PageResult.empty();
+        }
+
+        pageReqVO.setOffset(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+
+        List<ToiletCleaningTaskDetailDO> list = toiletCleaningTaskMapper.selectDetailPage(pageReqVO);
+        return new PageResult<>(list, total);
     }
 
     @Override

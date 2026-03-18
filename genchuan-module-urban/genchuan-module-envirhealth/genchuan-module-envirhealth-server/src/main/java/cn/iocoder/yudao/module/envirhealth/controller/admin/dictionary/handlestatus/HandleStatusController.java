@@ -10,7 +10,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.handlesta
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.handlestatus.vo.HandleStatusSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.handlestatus.vo.HandleStatusOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.handlestatus.vo.HandleStatusPageReqVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.handlestatus.HandleStatusDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.HandleStatusDO;
 import cn.iocoder.yudao.module.envirhealth.service.dictionary.handlestatus.HandleStatusService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

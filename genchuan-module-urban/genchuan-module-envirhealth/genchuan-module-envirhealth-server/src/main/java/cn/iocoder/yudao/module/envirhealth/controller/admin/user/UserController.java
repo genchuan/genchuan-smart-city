@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserPag
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.UserDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.detail.UserDetailDO;
 import cn.iocoder.yudao.module.envirhealth.service.user.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -23,6 +24,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
@@ -86,9 +90,27 @@ public class UserController {
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<UserDO> list = userService.getUserPage(pageReqVO).getList();
+
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setHeader("Content-Disposition",
+                "attachment;filename=" + URLEncoder.encode("系统用户_" +
+                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".xls", "UTF-8"));
+        response.setCharacterEncoding("UTF-8");
+
         // 导出 Excel
         ExcelUtils.write(response, "系统用户.xls", "数据", UserRespVO.class,
                         BeanUtils.toBean(list, UserRespVO.class));
+    }
+
+    @GetMapping("/detail-page")
+    @Operation(summary = "获得系统用户详情(分页)")
+    @PreAuthorize("@ss.hasPermission('health:user:query')")
+    public CommonResult<PageResult<UserDetailDO>> getUserDetailPage(
+            @Valid UserPageReqVO pageReqVO) {
+        PageResult<UserDetailDO> pageResult =
+                userService.getUserDetailPage(pageReqVO);
+
+        return success(pageResult);
     }
 
     /**

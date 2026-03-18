@@ -60,14 +60,14 @@ public interface CleaningProblemMapper extends BaseMapperX<CleaningProblemDO> {
      * 查询高优先级问题数（待处置中）
      */
     @Select("SELECT COUNT(*) FROM road_cleaning_problem " +
-            "WHERE deleted = 0 AND handle_status = '待处置' AND problem_priority = '高'")
+            "WHERE deleted = 0 AND handle_status <> '已办结' AND problem_priority = '高'")
     Long selectHighPriorityCount();
 
     /**
      * 查询超时未处理数（待处置中且超时）
      */
     @Select("SELECT COUNT(*) FROM road_cleaning_problem " +
-            "WHERE deleted = 0 AND handle_status = '待处置' AND is_timeout = '是'")
+            "WHERE deleted = 0 AND handle_status <> '已办结' AND is_timeout = '是'")
     Long selectTimeoutCount();
 
     /**
@@ -78,13 +78,13 @@ public interface CleaningProblemMapper extends BaseMapperX<CleaningProblemDO> {
             "COUNT(1) AS value " +
             "FROM road_cleaning_problem p " +
             "LEFT JOIN sys_problem_type t ON p.problem_type_id = t.sys_problem_type_id " +
-            "WHERE p.deleted = 0 AND p.handle_status = '待处置' " +
+            "WHERE p.deleted = 0 AND p.handle_status <> '已办结' " +
             "GROUP BY COALESCE(NULLIF(TRIM(t.name), ''), '未知类型') " +
             "ORDER BY value DESC")
     List<PieItemVO> selectProblemTypeDistribution();
 
     /**
-     * 待处置问题-区域分布占比（从location字段提取区域信息）
+     * 待处置问题-区域分布占比
      * 这里使用CASE WHEN语句根据location关键字分类
      */
     @Select("SELECT " +
@@ -101,7 +101,7 @@ public interface CleaningProblemMapper extends BaseMapperX<CleaningProblemDO> {
             "END AS name, " +
             "COUNT(1) AS value " +
             "FROM road_cleaning_problem p " +
-            "WHERE p.deleted = 0 AND p.handle_status = '待处置' " +
+            "WHERE p.deleted = 0 AND p.handle_status <> '已办结' " +
             "GROUP BY name " +
             "ORDER BY value DESC")
     List<PieItemVO> selectAreaDistribution();
@@ -114,7 +114,7 @@ public interface CleaningProblemMapper extends BaseMapperX<CleaningProblemDO> {
             "COUNT(1) AS value " +
             "FROM road_cleaning_problem p " +
             "LEFT JOIN sys_team t ON p.team_id = t.sys_team_id " +
-            "WHERE p.deleted = 0 AND p.handle_status = '待处置' " +
+            "WHERE p.deleted = 0 AND p.handle_status <> '已办结' " +
             "AND p.team_id IS NOT NULL " +
             "GROUP BY COALESCE(NULLIF(TRIM(t.name), ''), '未知处置组') " +
             "ORDER BY value DESC")

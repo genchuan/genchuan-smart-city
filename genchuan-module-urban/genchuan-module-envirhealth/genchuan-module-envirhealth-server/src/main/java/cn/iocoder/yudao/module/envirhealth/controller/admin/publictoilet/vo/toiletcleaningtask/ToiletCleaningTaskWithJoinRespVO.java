@@ -69,4 +69,7 @@ public class ToiletCleaningTaskWithJoinRespVO {
 
     @Schema(description = "统计周期")
     private String statPeriod;
+
+    @Schema(description = "复盘意见")
+    private String reviewDesc;
 }

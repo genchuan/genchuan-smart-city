@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.envirhealth.service.dictionary.facility;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.facility.vo.FacilityPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.facility.vo.FacilitySaveReqVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.facility.FacilityDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.FacilityDO;
 import cn.iocoder.yudao.module.envirhealth.util.vo.OptionVO;
 import jakarta.validation.Valid;
 

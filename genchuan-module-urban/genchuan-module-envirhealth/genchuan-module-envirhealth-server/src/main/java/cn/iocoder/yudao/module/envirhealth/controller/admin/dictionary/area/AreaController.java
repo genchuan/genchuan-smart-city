@@ -10,7 +10,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.area.vo.A
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.area.vo.AreaPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.area.vo.AreaRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.area.vo.AreaSaveReqVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.area.AreaDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.AreaDO;
 import cn.iocoder.yudao.module.envirhealth.service.dictionary.area.AreaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

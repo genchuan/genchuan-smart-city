@@ -10,7 +10,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.planstatu
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.planstatus.vo.PlanStatusRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.planstatus.vo.PlanStatusSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.planstatus.vo.PlanStatusOptionVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.planstatus.PlanStatusDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.PlanStatusDO;
 import cn.iocoder.yudao.module.envirhealth.service.dictionary.planstatus.PlanStatusService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

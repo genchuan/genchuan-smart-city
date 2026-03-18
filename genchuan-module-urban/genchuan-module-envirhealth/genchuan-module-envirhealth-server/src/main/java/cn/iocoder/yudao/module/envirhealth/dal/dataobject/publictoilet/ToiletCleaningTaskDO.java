@@ -103,4 +103,9 @@ public class ToiletCleaningTaskDO extends BaseDO {
      * 统计周期，如2026-03
      */
     private String statPeriod;
+
+    /**
+     * 复盘意见
+     */
+    private String reviewDesc;
 }

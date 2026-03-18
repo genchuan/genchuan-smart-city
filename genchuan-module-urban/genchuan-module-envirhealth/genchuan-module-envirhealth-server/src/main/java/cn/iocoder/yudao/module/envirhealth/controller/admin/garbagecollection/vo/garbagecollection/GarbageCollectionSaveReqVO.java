@@ -91,6 +91,9 @@ public class GarbageCollectionSaveReqVO {
     @Schema(description = "异常办结率（自动计算）", example = "98")
     private Integer abnormalCompleteRate;
 
+    @Schema(description = "复盘意见", example = "清扫十分干净")
+    private String reviewDesc;
+
     // setter方法保持不变
     public void setStaffIds(String staffIds) {
         this.staffIds = (staffIds == null || staffIds.trim().isEmpty()) ? "[]" : staffIds;

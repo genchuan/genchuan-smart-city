@@ -4,7 +4,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.handlestatus.vo.HandleStatusOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.handlestatus.vo.HandleStatusPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.handlestatus.vo.HandleStatusSaveReqVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.handlestatus.HandleStatusDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.HandleStatusDO;
 import jakarta.validation.Valid;
 
 import java.util.List;

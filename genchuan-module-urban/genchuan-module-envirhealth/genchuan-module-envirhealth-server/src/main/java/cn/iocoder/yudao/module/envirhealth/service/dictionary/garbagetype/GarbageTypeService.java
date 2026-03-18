@@ -4,7 +4,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.garbagetype.vo.GarbageTypeOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.garbagetype.vo.GarbageTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.garbagetype.vo.GarbageTypeSaveReqVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.garbagetype.GarbageTypeDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.GarbageTypeDO;
 import jakarta.validation.Valid;
 
 import java.util.List;

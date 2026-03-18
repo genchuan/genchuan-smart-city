@@ -1,10 +1,12 @@
 package cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning;
 
+import cn.idev.excel.annotation.ExcelProperty;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -131,10 +133,9 @@ public class RoadCleaningDO extends BaseDO {
      */
     private String reformRequire;
     /**
-     * 通用扩展字段1
+     * 复盘意见
      */
-    @JsonIgnore
-    private String extCommon1;
+    private String reviewDesc;
     /**
      * 通用扩展字段2
      */

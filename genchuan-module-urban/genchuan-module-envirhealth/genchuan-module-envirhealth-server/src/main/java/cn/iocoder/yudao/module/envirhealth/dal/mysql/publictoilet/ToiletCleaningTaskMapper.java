@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.toiletcleaningtask.ToiletCleaningTaskPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.toiletcleaningtask.ToiletCleaningTaskWithJoinRespVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ToiletCleaningTaskDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.ToiletCleaningTaskDetailDO;
 import cn.iocoder.yudao.module.envirhealth.util.vo.BarItemVO;
 import cn.iocoder.yudao.module.envirhealth.util.vo.PieItemVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -46,6 +47,7 @@ public interface ToiletCleaningTaskMapper extends BaseMapperX<ToiletCleaningTask
                 .betweenIfPresent(ToiletCleaningTaskDO::getHandleDuration, reqVO.getHandleDuration())
                 .eqIfPresent(ToiletCleaningTaskDO::getSatisfaction, reqVO.getSatisfaction())
                 .eqIfPresent(ToiletCleaningTaskDO::getStatPeriod, reqVO.getStatPeriod())
+                .eqIfPresent(ToiletCleaningTaskDO::getReviewDesc, reqVO.getReviewDesc())
                 .orderByDesc(ToiletCleaningTaskDO::getId));
     }
 
@@ -55,19 +57,10 @@ public interface ToiletCleaningTaskMapper extends BaseMapperX<ToiletCleaningTask
     @Select("SELECT IFNULL(MAX(RIGHT(task_no, 3)), 0) FROM public_toilet_cleaning_task WHERE task_no LIKE CONCAT('PTCT', #{dateStr}, '%')")
     Integer selectMaxSeqByDate(@Param("dateStr") String dateStr);
 
-    /**
-     * 分页查询公厕保洁任务（带关联信息）
-     */
-    default PageResult<ToiletCleaningTaskWithJoinRespVO> selectJoinPage(ToiletCleaningTaskPageReqVO reqVO) {
-        Page<ToiletCleaningTaskWithJoinRespVO> page = new Page<>(reqVO.getPageNo(), reqVO.getPageSize());
-        IPage<ToiletCleaningTaskWithJoinRespVO> iPage = this.selectJoinPage(page, reqVO);
-        return new PageResult<>(iPage.getRecords(), iPage.getTotal());
-    }
+    List<ToiletCleaningTaskDetailDO> selectDetailPage(@Param("reqVO") ToiletCleaningTaskPageReqVO pageReqVO);
 
-    /**
-     * 联表查询分页
-     */
-    IPage<ToiletCleaningTaskWithJoinRespVO> selectJoinPage(Page<?> page, @Param("reqVO") ToiletCleaningTaskPageReqVO reqVO);
+    Long selectCount(@Param("reqVO") ToiletCleaningTaskPageReqVO pageReqVO);
+
 
     /**
      * 按计划状态统计

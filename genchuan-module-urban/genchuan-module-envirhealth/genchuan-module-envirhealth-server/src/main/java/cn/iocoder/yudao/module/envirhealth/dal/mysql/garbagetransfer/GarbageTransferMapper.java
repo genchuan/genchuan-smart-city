@@ -14,6 +14,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 垃圾转运站 Mapper
@@ -117,4 +118,8 @@ public interface GarbageTransferMapper extends BaseMapperX<GarbageTransferDO> {
     List<BarItemVO> selectDailyTransferVolumeBar();
 
 // ========== 折线图数据统计 ==========
+
+
+// ========== ==========
+
 }

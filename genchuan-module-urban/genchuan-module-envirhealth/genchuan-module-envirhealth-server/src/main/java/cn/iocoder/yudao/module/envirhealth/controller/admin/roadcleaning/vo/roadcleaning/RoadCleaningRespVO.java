@@ -8,7 +8,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 道路清扫计划 Response VO")
+@Schema(description = "环境卫生管理 - 道路清扫计划 Response VO")
 @Data
 @ExcelIgnoreUnannotated
 public class RoadCleaningRespVO {
@@ -124,5 +124,9 @@ public class RoadCleaningRespVO {
     @Schema(description = "创建时间")
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
+
+    @Schema(description = "复盘意见")
+    @ExcelProperty("复盘意见")
+    private String reviewDesc;
 
 }

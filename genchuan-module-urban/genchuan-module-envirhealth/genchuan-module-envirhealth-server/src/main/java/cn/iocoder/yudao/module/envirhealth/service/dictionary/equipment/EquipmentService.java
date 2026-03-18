@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.envirhealth.service.dictionary.equipment;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.equipment.vo.EquipmentPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.equipment.vo.EquipmentSaveReqVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.equipment.EquipmentDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.EquipmentDO;
 import jakarta.validation.Valid;
 
 /**

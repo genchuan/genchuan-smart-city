@@ -118,4 +118,8 @@ public class GarbageCollectionRespVO {
     @Schema(description = "异常办结率", example = "50")
     @ExcelProperty("异常办结率")
     private Integer abnormalCompleteRate;
+
+    @Schema(description = "复盘意见", example = "清扫十分干净")
+    @ExcelProperty("复盘意见")
+    private String reviewDesc;
 }

@@ -49,4 +49,8 @@ public interface TransferMaintenanceMapper extends BaseMapperX<TransferMaintenan
     List<TransferMaintenanceDetailDO> selectDetailPage(@Param("reqVO") TransferMaintenancePageReqVO pageReqVO);
 
     Long selectCount(@Param("reqVO") TransferMaintenancePageReqVO pageReqVO);
+
+    //查询设备维护表的数量
+    @Select("SELECT COUNT(*) FROM garbage_transfer_maintenance WHERE deleted = 0")
+    Long selectAllCount();
 }

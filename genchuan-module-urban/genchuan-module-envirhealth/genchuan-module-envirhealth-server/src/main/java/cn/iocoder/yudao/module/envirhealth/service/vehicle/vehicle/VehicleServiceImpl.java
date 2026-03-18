@@ -4,12 +4,14 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.VehicleController;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehicleOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehiclePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehicleSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.VehicleDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.detail.VehicleDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.vehicle.VehicleMapper;
+import cn.iocoder.yudao.module.envirhealth.util.codegenerator.vehicle.VehicleCodeGenerator;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -31,10 +33,17 @@ public class VehicleServiceImpl implements VehicleService {
     @Resource
     private VehicleMapper vehicleMapper;
 
+    @Resource
+    private VehicleCodeGenerator codeGenerator;
+
     @Override
     public Long createVehicle(VehicleSaveReqVO createReqVO) {
         // 插入
         VehicleDO vehicle = BeanUtils.toBean(createReqVO, VehicleDO.class);
+
+        vehicle.setId(null);
+        vehicle.setSysVehicleId(codeGenerator.generateVehicleId());
+
         vehicleMapper.insert(vehicle);
         // 返回
         return vehicle.getId();

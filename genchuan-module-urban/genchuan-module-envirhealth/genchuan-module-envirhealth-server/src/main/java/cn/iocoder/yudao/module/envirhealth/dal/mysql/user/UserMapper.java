@@ -4,8 +4,14 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserPageReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.UserDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.detail.UserDetailDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * 系统用户 Mapper
@@ -20,7 +26,7 @@ public interface UserMapper extends BaseMapperX<UserDO> {
                 .eqIfPresent(UserDO::getUserId, reqVO.getUserId())
                 .likeIfPresent(UserDO::getUserName, reqVO.getUserName())
                 .eqIfPresent(UserDO::getUserPhone, reqVO.getUserPhone())
-                .likeIfPresent(UserDO::getDeptName, reqVO.getDeptName())
+                .likeIfPresent(UserDO::getDeptId, reqVO.getDeptId())
                 .eqIfPresent(UserDO::getRoleId, reqVO.getRoleId())
                 .eqIfPresent(UserDO::getStatusId, reqVO.getStatusId())
                 .eqIfPresent(UserDO::getCreateBy, reqVO.getCreateBy())
@@ -36,12 +42,17 @@ public interface UserMapper extends BaseMapperX<UserDO> {
                 .eqIfPresent(UserDO::getTotalAttendanceDays, reqVO.getTotalAttendanceDays())
                 .eqIfPresent(UserDO::getAverageScore, reqVO.getAverageScore())
                 .eqIfPresent(UserDO::getLastWorkTrace, reqVO.getLastWorkTrace())
-                .eqIfPresent(UserDO::getExtCommon1, reqVO.getExtCommon1())
-                .eqIfPresent(UserDO::getExtCommon2, reqVO.getExtCommon2())
-                .eqIfPresent(UserDO::getExtCommon3, reqVO.getExtCommon3())
-                .eqIfPresent(UserDO::getExtCommon4, reqVO.getExtCommon4())
                 .betweenIfPresent(UserDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(UserDO::getId));
     }
 
+    /**
+     * 查询全局最大序号（用于user_id）
+     */
+    @Select("SELECT IFNULL(MAX(SUBSTRING_INDEX(user_id, '-', -1)), 0) FROM sys_user")
+    Integer selectMaxSeq();
+
+    List<UserDetailDO> selectDetailPage(@Param("reqVO") UserPageReqVO pageReqVO);
+
+    Long selectCount(@Param("reqVO") UserPageReqVO pageReqVO);
 }

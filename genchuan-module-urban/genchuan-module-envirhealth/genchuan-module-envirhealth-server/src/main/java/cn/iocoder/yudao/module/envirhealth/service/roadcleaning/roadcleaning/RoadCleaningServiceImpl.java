@@ -160,6 +160,7 @@ public class RoadCleaningServiceImpl implements RoadCleaningService {
     @Override
     public void batchAdjustRoadCleaning(RoadCleaningBatchAdjustReqVO adjustReqVO) {
 
+        //判断是否为空
         List<Long> cleaningIds = adjustReqVO.getIds();
         if (CollectionUtils.isEmpty(cleaningIds)) {
             return;
@@ -171,13 +172,16 @@ public class RoadCleaningServiceImpl implements RoadCleaningService {
                         .eq(RoadCleaningDO::getDeleted, 0)
         );
 
+        //判断存在
         if (roadCleanings.size() != cleaningIds.size()) {
             throw exception(ROAD_CLEANING_NOT_EXISTS);
         }
 
+        //获取调整维度和调整值
         String dimension = adjustReqVO.getAdjustDimension();
         String adjustValue = adjustReqVO.getAdjustValue();
 
+        //获取复核人员id和当前时间
         String reviewerId = String.valueOf(cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId());
         LocalDateTime now = LocalDateTime.now();
 

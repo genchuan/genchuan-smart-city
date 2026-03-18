@@ -57,6 +57,12 @@ public interface TransferReserveMapper extends BaseMapperX<TransferReserveDO> {
     // ========== 看板统计相关方法 ==========
 
     /**
+     * 统计待进站车辆数 (全部)
+     */
+    @Select("SELECT COUNT(*) FROM garbage_transfer_reserve WHERE deleted = 0")
+    Long selectAllCount();
+
+    /**
      * 统计待进站车辆数 (预约状态为'待排序')
      */
     @Select("SELECT COUNT(*) FROM garbage_transfer_reserve WHERE deleted = 0 AND reserve_status = '待排序'")

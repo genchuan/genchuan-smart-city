@@ -24,6 +24,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
@@ -87,6 +90,13 @@ public class VehicleController {
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<VehicleDO> list = vehicleService.getVehiclePage(pageReqVO).getList();
+
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setHeader("Content-Disposition",
+                "attachment;filename=" + URLEncoder.encode("车辆_" +
+                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".xls", "UTF-8"));
+        response.setCharacterEncoding("UTF-8");
+
         // 导出 Excel
         ExcelUtils.write(response, "车辆.xls", "数据", VehicleRespVO.class,
                         BeanUtils.toBean(list, VehicleRespVO.class));

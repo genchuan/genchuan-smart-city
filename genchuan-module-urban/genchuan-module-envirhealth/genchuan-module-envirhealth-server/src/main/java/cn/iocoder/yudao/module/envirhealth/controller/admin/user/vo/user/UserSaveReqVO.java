@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user;
 
+import cn.iocoder.yudao.module.envirhealth.util.json.JsonFieldUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
@@ -7,14 +8,14 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 系统用户新增/修改 Request VO")
+@Schema(description = "环境卫生管理 - 系统用户新增/修改 Request VO")
 @Data
 public class UserSaveReqVO {
 
-    @Schema(description = "自增主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "16863")
+    @Schema(description = "自增主键ID")
     private Long id;
 
-    @Schema(description = "业务主键（UUID）", requiredMode = Schema.RequiredMode.REQUIRED, example = "30453")
+    @Schema(description = "业务主键（UUID）")
     @NotEmpty(message = "业务主键（UUID）不能为空")
     private String userId;
 
@@ -24,8 +25,8 @@ public class UserSaveReqVO {
     @Schema(description = "联系电话")
     private String userPhone;
 
-    @Schema(description = "所属部门名称", example = "李四")
-    private String deptName;
+    @Schema(description = "所属部门编号", example = "uuid-dept-001")
+    private String deptId;
 
     @Schema(description = "角色ID（关联角色表）", example = "10816")
     private String roleId;
@@ -72,16 +73,15 @@ public class UserSaveReqVO {
     @Schema(description = "最近作业轨迹（JSON格式）")
     private String lastWorkTrace;
 
-    @Schema(description = "通用扩展字段1")
-    private String extCommon1;
+    public void setSkillTags(String skillTags) {
+        this.skillTags = JsonFieldUtils.emptyToEmptyArray(skillTags);
+    }
 
-    @Schema(description = "通用扩展字段2")
-    private String extCommon2;
+    public void setLastWorkTrace(String lastWorkTrace) {
+        this.lastWorkTrace = JsonFieldUtils.emptyToEmptyArray(lastWorkTrace);
+    }
 
-    @Schema(description = "通用扩展字段3")
-    private String extCommon3;
-
-    @Schema(description = "通用扩展字段4")
-    private String extCommon4;
-
+    public void setWorkTrajectoryId(String workTrajectoryId) {
+        this.workTrajectoryId = JsonFieldUtils.emptyToEmptyArray(workTrajectoryId);
+    }
 }

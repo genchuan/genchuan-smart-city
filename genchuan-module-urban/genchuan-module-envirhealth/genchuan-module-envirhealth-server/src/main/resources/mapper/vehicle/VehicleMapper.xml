@@ -21,10 +21,6 @@
         <result column="last_maintenance_time" property="lastMaintenanceTime"/>
         <result column="alarm_count" property="alarmCount"/>
         <result column="vehicle_photo_url" property="vehiclePhotoUrl"/>
-        <result column="ext_common1" property="extCommon1"/>
-        <result column="ext_common2" property="extCommon2"/>
-        <result column="ext_common3" property="extCommon3"/>
-        <result column="ext_common4" property="extCommon4"/>
         <result column="plan_status_id" property="planStatusId"/>
         <result column="work_status_id" property="workStatusId"/>
         <result column="violation_type_id" property="violationTypeId"/>
@@ -77,14 +73,95 @@
         LEFT JOIN sys_maintenance_type mt ON v.maintenance_type_id = mt.maintenance_type_id AND mt.deleted = 0
         LEFT JOIN sys_task_type tt ON v.task_type_id = tt.sys_task_type_id AND tt.deleted = 0
         WHERE v.deleted = 0
+        <!-- 动态过滤条件：非时间字段 -->
+        <if test="reqVO.sysVehicleId != null and reqVO.sysVehicleId != ''">
+            AND v.sys_vehicle_id = #{reqVO.sysVehicleId}
+        </if>
+        <if test="reqVO.licensePlate != null and reqVO.licensePlate != ''">
+            AND v.license_plate LIKE CONCAT('%', #{reqVO.licensePlate}, '%')
+        </if>
+        <if test="reqVO.vehicleTypeId != null and reqVO.vehicleTypeId != ''">
+            AND v.vehicle_type_id = #{reqVO.vehicleTypeId}
+        </if>
+        <if test="reqVO.model != null and reqVO.model != ''">
+            AND v.model LIKE CONCAT('%', #{reqVO.model}, '%')
+        </if>
+        <if test="reqVO.deptId != null and reqVO.deptId != ''">
+            AND v.dept_id = #{reqVO.deptId}
+        </if>
+        <if test="reqVO.routeId != null and reqVO.routeId != ''">
+            AND v.route_id = #{reqVO.routeId}
+        </if>
+        <if test="reqVO.maintenanceCycle != null">
+            AND v.maintenance_cycle = #{reqVO.maintenanceCycle}
+        </if>
+        <if test="reqVO.driverId != null and reqVO.driverId != ''">
+            AND v.driver_id = #{reqVO.driverId}
+        </if>
+        <if test="reqVO.vehicleStatusId != null and reqVO.vehicleStatusId != ''">
+            AND v.vehicle_status_id = #{reqVO.vehicleStatusId}
+        </if>
+        <if test="reqVO.createBy != null and reqVO.createBy != ''">
+            AND v.create_by = #{reqVO.createBy}
+        </if>
+        <if test="reqVO.totalWorkHours != null">
+            AND v.total_work_hours = #{reqVO.totalWorkHours}
+        </if>
+        <if test="reqVO.alarmCount != null">
+            AND v.alarm_count = #{reqVO.alarmCount}
+        </if>
+        <if test="reqVO.vehiclePhotoUrl != null and reqVO.vehiclePhotoUrl != ''">
+            AND v.vehicle_photo_url LIKE CONCAT('%', #{reqVO.vehiclePhotoUrl}, '%')
+        </if>
         ORDER BY v.id DESC
         LIMIT #{reqVO.offset}, #{reqVO.pageSize}
     </select>
 
+    <!-- 分页总数查询 - 同步新增过滤条件 -->
     <select id="selectCount" resultType="Long">
         SELECT COUNT(*)
         FROM sys_vehicle v
         WHERE v.deleted = 0
+        <!-- 动态过滤条件：与查询语句保持一致 -->
+        <if test="reqVO.sysVehicleId != null and reqVO.sysVehicleId != ''">
+            AND v.sys_vehicle_id = #{reqVO.sysVehicleId}
+        </if>
+        <if test="reqVO.licensePlate != null and reqVO.licensePlate != ''">
+            AND v.license_plate LIKE CONCAT('%', #{reqVO.licensePlate}, '%')
+        </if>
+        <if test="reqVO.vehicleTypeId != null and reqVO.vehicleTypeId != ''">
+            AND v.vehicle_type_id = #{reqVO.vehicleTypeId}
+        </if>
+        <if test="reqVO.model != null and reqVO.model != ''">
+            AND v.model LIKE CONCAT('%', #{reqVO.model}, '%')
+        </if>
+        <if test="reqVO.deptId != null and reqVO.deptId != ''">
+            AND v.dept_id = #{reqVO.deptId}
+        </if>
+        <if test="reqVO.routeId != null and reqVO.routeId != ''">
+            AND v.route_id = #{reqVO.routeId}
+        </if>
+        <if test="reqVO.maintenanceCycle != null">
+            AND v.maintenance_cycle = #{reqVO.maintenanceCycle}
+        </if>
+        <if test="reqVO.driverId != null and reqVO.driverId != ''">
+            AND v.driver_id = #{reqVO.driverId}
+        </if>
+        <if test="reqVO.vehicleStatusId != null and reqVO.vehicleStatusId != ''">
+            AND v.vehicle_status_id = #{reqVO.vehicleStatusId}
+        </if>
+        <if test="reqVO.createBy != null and reqVO.createBy != ''">
+            AND v.create_by = #{reqVO.createBy}
+        </if>
+        <if test="reqVO.totalWorkHours != null">
+            AND v.total_work_hours = #{reqVO.totalWorkHours}
+        </if>
+        <if test="reqVO.alarmCount != null">
+            AND v.alarm_count = #{reqVO.alarmCount}
+        </if>
+        <if test="reqVO.vehiclePhotoUrl != null and reqVO.vehiclePhotoUrl != ''">
+            AND v.vehicle_photo_url LIKE CONCAT('%', #{reqVO.vehiclePhotoUrl}, '%')
+        </if>
     </select>
 
 </mapper>

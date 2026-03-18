@@ -88,4 +88,8 @@ public class ToiletCleaningTaskRespVO {
     @Schema(description = "统计周期")
     @ExcelProperty("统计周期")
     private String statPeriod;
+
+    @Schema(description = "复盘意见", example = "清扫十分干净")
+    @ExcelProperty("复盘意见")
+    private String reviewDesc;
 }

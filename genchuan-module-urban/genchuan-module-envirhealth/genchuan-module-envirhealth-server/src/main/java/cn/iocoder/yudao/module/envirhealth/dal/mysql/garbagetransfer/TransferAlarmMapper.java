@@ -47,4 +47,8 @@ public interface TransferAlarmMapper extends BaseMapperX<TransferAlarmDO> {
     List<TransferAlarmDetailDO> selectDetailPage(@Param("reqVO") TransferAlarmPageReqVO pageReqVO);
 
     Long selectCount(@Param("reqVO") TransferAlarmPageReqVO pageReqVO);
+
+    //查询预警表的数量
+    @Select("SELECT COUNT(*) FROM garbage_transfer_alarm WHERE deleted = 0")
+    Long selectAllCount();
 }

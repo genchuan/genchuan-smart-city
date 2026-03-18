@@ -52,13 +52,11 @@ public class ToiletCleaningTaskSaveReqVO {
     @Pattern(regexp = "^$|^\\[.*\\]$", message = "proofUrls必须为JSON数组格式（如[]）")
     private String proofUrls;
 
-    // ============ 新增字段 ============
     @Schema(description = "完成时间")
     private LocalDateTime completeTime;
 
     @Schema(description = "处置结果")
     private String handleResult;
-
 
     @Schema(description = "任务耗时（分钟）")
     private Integer handleDuration;
@@ -68,4 +66,7 @@ public class ToiletCleaningTaskSaveReqVO {
 
     @Schema(description = "统计周期，如2026-03")
     private String statPeriod;
+
+    @Schema(description = "复盘意见", example = "清扫十分干净")
+    private String reviewDesc;
 }

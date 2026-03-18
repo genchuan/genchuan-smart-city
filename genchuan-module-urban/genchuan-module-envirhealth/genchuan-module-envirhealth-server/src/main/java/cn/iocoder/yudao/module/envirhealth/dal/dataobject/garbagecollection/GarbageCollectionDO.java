@@ -120,12 +120,6 @@ public class GarbageCollectionDO extends BaseDO {
      * 是否异常（系统自动标记）
      */
     private Boolean isAbnormal;
-
-    /**
-     * 通用扩展字段1
-     */
-    @JsonIgnore
-    private String extCommon1;
     /**
      * 通用扩展字段2
      */
@@ -161,5 +155,8 @@ public class GarbageCollectionDO extends BaseDO {
      * 异常办结率（自动计算）
      */
     private BigDecimal abnormalCompleteRate;
-
+    /**
+     * 复盘意见
+     */
+    private String reviewDesc;
 }

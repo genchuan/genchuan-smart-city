@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.envirhealth.service.publictoilet.toiletcleaningt
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.toiletcleaningtask.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ToiletCleaningTaskDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.ToiletCleaningTaskDetailDO;
 import jakarta.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -61,9 +62,12 @@ public interface ToiletCleaningTaskService {
     PageResult<ToiletCleaningTaskDO> getToiletCleaningTaskPage(ToiletCleaningTaskPageReqVO pageReqVO);
 
     /**
-     * 获得公厕保洁任务分页（带关联信息）
+     * 获得公厕保洁任务分页(详情)
+     *
+     * @param pageReqVO 分页查询
+     * @return 公厕保洁任务分页
      */
-    PageResult<ToiletCleaningTaskWithJoinRespVO> getToiletCleaningTaskJoinPage(ToiletCleaningTaskPageReqVO pageReqVO);
+    PageResult<ToiletCleaningTaskDetailDO> getToiletCleaningTaskDetailPage(ToiletCleaningTaskPageReqVO pageReqVO);
 
     /**
      * 上传多张图片

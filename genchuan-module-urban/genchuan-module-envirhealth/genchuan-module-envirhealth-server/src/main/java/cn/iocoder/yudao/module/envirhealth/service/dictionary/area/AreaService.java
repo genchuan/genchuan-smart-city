@@ -4,7 +4,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.area.vo.AreaOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.area.vo.AreaPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.area.vo.AreaSaveReqVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.area.AreaDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.AreaDO;
 import jakarta.validation.Valid;
 
 import java.util.List;

@@ -8,6 +8,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.toiletcleaningtask.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ToiletCleaningTaskDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.ToiletCleaningTaskDetailDO;
 import cn.iocoder.yudao.module.envirhealth.service.publictoilet.toiletcleaningtask.ToiletCleaningTaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -112,8 +113,11 @@ public class ToiletCleaningTaskController {
     @GetMapping("/detail-page")
     @Operation(summary = "获得公厕保洁任务详情(分页)")
     @PreAuthorize("@ss.hasPermission('envirhealth:toilet-cleaning-task:query')")
-    public CommonResult<PageResult<ToiletCleaningTaskWithJoinRespVO>> getToiletCleaningTaskPageDetail(@Valid ToiletCleaningTaskPageReqVO pageReqVO) {
-        PageResult<ToiletCleaningTaskWithJoinRespVO> pageResult = toiletCleaningTaskService.getToiletCleaningTaskJoinPage(pageReqVO);
+    public CommonResult<PageResult<ToiletCleaningTaskDetailDO>> getToiletCleaningTaskDetailPage(
+            @Valid ToiletCleaningTaskPageReqVO pageReqVO) {
+        PageResult<ToiletCleaningTaskDetailDO> pageResult =
+                toiletCleaningTaskService.getToiletCleaningTaskDetailPage(pageReqVO);
+
         return success(pageResult);
     }
 

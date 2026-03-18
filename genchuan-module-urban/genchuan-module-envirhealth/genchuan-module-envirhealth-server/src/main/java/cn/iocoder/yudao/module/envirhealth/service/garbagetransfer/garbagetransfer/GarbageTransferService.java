@@ -6,6 +6,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.g
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.GarbageTransferDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.detail.GarbageTransferDetailDO;
+import cn.iocoder.yudao.module.envirhealth.util.vo.StatisticsRespVO;
 import jakarta.validation.Valid;
 
 /**
@@ -67,4 +68,10 @@ public interface GarbageTransferService {
      * @return 看板统计数据
      */
     GarbageTransferDashboardRespVO getDashboardStats();
+
+    /**
+     * 获取垃圾转运站统计数据（按状态分组）
+     * @return 统计数据
+     */
+    StatisticsRespVO getGarbageTransferStatistics();
 }

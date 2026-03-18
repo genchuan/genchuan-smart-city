@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.envirhealth.service.garbagetransfer.transferoper
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferoperation.TransferOperationDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferoperation.TransferOperationPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferoperation.TransferOperationSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferOperationDO;
@@ -90,4 +91,23 @@ public class TransferOperationServiceImpl implements TransferOperationService {
         return new PageResult<>(list, total);
     }
 
+    @Override
+    public TransferOperationDashboardVO getDashboardStats() {
+        TransferOperationDashboardVO dashboardVO = new TransferOperationDashboardVO();
+
+        // 获取当前作业总数（所有未删除的作业）
+        Long totalCount = transferOperationMapper.selectTotalCount();
+
+        // 获取正常运行数（非异常）
+        Long normalCount = transferOperationMapper.selectNormalCount();
+
+        // 获取异常标记数
+        Long abnormalCount = transferOperationMapper.selectAbnormalCount();
+
+        dashboardVO.setTotalCount(totalCount);
+        dashboardVO.setNormalCount(normalCount);
+        dashboardVO.setAbnormalCount(abnormalCount);
+
+        return dashboardVO;
+    }
 }

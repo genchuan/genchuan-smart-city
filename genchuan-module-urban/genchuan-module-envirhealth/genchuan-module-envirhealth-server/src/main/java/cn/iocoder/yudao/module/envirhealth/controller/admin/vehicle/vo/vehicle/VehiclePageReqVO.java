@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
-@Schema(description = "管理后台 - 车辆分页 Request VO")
+@Schema(description = "环境卫生管理 - 车辆分页 Request VO")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -68,18 +68,6 @@ public class VehiclePageReqVO extends PageParam {
 
     @Schema(description = "车辆照片URL", example = "https://www.iocoder.cn")
     private String vehiclePhotoUrl;
-
-    @Schema(description = "通用扩展字段1")
-    private String extCommon1;
-
-    @Schema(description = "通用扩展字段2")
-    private String extCommon2;
-
-    @Schema(description = "通用扩展字段3")
-    private String extCommon3;
-
-    @Schema(description = "通用扩展字段4")
-    private String extCommon4;
 
     @Schema(description = "创建时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)

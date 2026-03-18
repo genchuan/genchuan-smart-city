@@ -34,4 +34,12 @@ public class UserDetailDO extends UserDO {
      * 更新人ID（关联sys_user.user_id）
      */
     private String updateName;
+    /**
+     * 所属部门名称
+     */
+    private String deptName;
+    /**
+     * 角色ID（关联角色表）
+     */
+    private String roleName;
 }

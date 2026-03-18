@@ -1,16 +1,17 @@
 package cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle;
 
+import cn.iocoder.yudao.module.envirhealth.util.json.JsonFieldUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 车辆新增/修改 Request VO")
+@Schema(description = "环境卫生管理 - 车辆新增/修改 Request VO")
 @Data
 public class VehicleSaveReqVO {
 
-    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "7773")
+    @Schema(description = "主键ID")
     private Long id;
 
     @Schema(description = "业务主键（UUID）", example = "21313")
@@ -58,19 +59,10 @@ public class VehicleSaveReqVO {
     @Schema(description = "违规告警次数", example = "13424")
     private Integer alarmCount;
 
-    @Schema(description = "车辆照片URL", example = "https://www.iocoder.cn")
+    @Schema(description = "车辆照片URL")
     private String vehiclePhotoUrl;
 
-    @Schema(description = "通用扩展字段1")
-    private String extCommon1;
-
-    @Schema(description = "通用扩展字段2")
-    private String extCommon2;
-
-    @Schema(description = "通用扩展字段3")
-    private String extCommon3;
-
-    @Schema(description = "通用扩展字段4")
-    private String extCommon4;
-
+    public void setVehiclePhotoUrl(String vehiclePhotoUrl) {
+        this.vehiclePhotoUrl = JsonFieldUtils.emptyToEmptyArray(vehiclePhotoUrl);
+    }
 }

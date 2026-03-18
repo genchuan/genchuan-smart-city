@@ -10,7 +10,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.garbagety
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.garbagetype.vo.GarbageTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.garbagetype.vo.GarbageTypeSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.garbagetype.vo.GarbageTypeRespVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.garbagetype.GarbageTypeDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.GarbageTypeDO;
 import cn.iocoder.yudao.module.envirhealth.service.dictionary.garbagetype.GarbageTypeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 转运作业 Mapper
@@ -45,4 +46,38 @@ public interface TransferOperationMapper extends BaseMapperX<TransferOperationDO
     List<TransferOperationDetailDO> selectDetailPage(@Param("reqVO") TransferOperationPageReqVO pageReqVO);
 
     Long selectCount(@Param("reqVO") TransferOperationPageReqVO pageReqVO);
+
+    /**
+     * 统计当前作业总数
+     */
+    @Select("SELECT COUNT(*) FROM garbage_transfer_operation WHERE deleted = 0")
+    Long selectTotalCount();
+
+    /**
+     * 统计正常运行数
+     */
+    @Select("SELECT COUNT(*) FROM garbage_transfer_operation WHERE deleted = 0 AND abnormal_is_abnormal = '否'")
+    Long selectNormalCount();
+
+    /**
+     * 统计异常标记数
+     */
+    @Select("SELECT COUNT(*) FROM garbage_transfer_operation WHERE deleted = 0 AND abnormal_is_abnormal = '是'")
+    Long selectAbnormalCount();
+
+    /**
+     * 查询已完成转运作业数量（返回List<Map>格式）
+     *
+     * @return 包含已完成数量的List<Map>
+     */
+    @Select("SELECT " +
+            "    '已完成' as status_name, " +
+            "    COUNT(DISTINCT gto.id) as count " +
+            "FROM garbage_transfer_operation gto " +
+            "INNER JOIN garbage_collection gc ON gto.plan_id = gc.collection_id " +
+            "WHERE gto.deleted = 0 " +
+            "  AND gc.deleted = 0 " +
+            "  AND gc.plan_status_id = 'uuid-plan-status-003' " +
+            "GROUP BY '已完成'")
+    List<Map<String, Object>> selectCompletedCountAsList();
 }
