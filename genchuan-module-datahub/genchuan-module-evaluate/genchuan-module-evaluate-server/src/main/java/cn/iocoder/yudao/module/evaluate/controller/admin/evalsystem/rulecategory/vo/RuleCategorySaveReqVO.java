@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.rulecategory.vo;
 
+import cn.iocoder.yudao.module.evaluate.controller.admin.commentrule.vo.CommentRuleSaveReqVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -29,5 +30,8 @@ public class RuleCategorySaveReqVO {
 
     @Schema(description = "对象类型ID关联“对象类型字典表”sys_object_type", example = "26110")
     private Integer objectTypeId;
+
+    @Schema(description = "评分规则列表")
+    private List<CommentRuleSaveReqVO> commentRules;
 
 }

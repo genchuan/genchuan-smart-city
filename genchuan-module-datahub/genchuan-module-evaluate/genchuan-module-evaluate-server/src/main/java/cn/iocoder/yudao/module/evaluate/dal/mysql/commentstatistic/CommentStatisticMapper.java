@@ -18,6 +18,11 @@ import java.util.List;
 @Mapper
 public interface CommentStatisticMapper extends BaseMapperX<CommentStatisticDO> {
 
+    /**
+     * 清空统计表所有数据
+     */
+    void deleteAll();
+
     default PageResult<CommentStatisticDO> selectPage(CommentStatisticPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<CommentStatisticDO>()
                 .eqIfPresent(CommentStatisticDO::getItemId, reqVO.getItemId())
@@ -43,5 +48,15 @@ public interface CommentStatisticMapper extends BaseMapperX<CommentStatisticDO> 
      * @return 统计数量
      */
     Long selectCountByItemIdAndObjectId(@Param("itemId") Long itemId, @Param("objectId") Long objectId);
+
+    /**
+     * 根据 systemId、itemId 和 objectId 从巡查巡检表动态统计数量
+     *
+     * @param systemId 体系ID
+     * @param itemId 指标项ID
+     * @param objectId 评价对象ID
+     * @return 统计数量
+     */
+    Long selectCountBySystemIdAndItemIdAndObjectId(@Param("systemId") Long systemId, @Param("itemId") Long itemId, @Param("objectId") Long objectId);
 
 }

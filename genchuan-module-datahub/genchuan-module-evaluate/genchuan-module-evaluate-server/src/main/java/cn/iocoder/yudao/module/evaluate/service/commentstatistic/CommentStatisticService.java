@@ -55,29 +55,43 @@ public interface CommentStatisticService {
      * 根据指标项ID和评价对象ID增加统计数量
      * 如果记录不存在则创建新记录，count默认为1
      *
+     * @param systemId 体系ID
      * @param itemId 指标项ID
      * @param objectId 评价对象ID
      * @param addressCoding 地址编码（可选）
      */
-    void incrementCount(Long itemId, Long objectId, String addressCoding);
+    void incrementCount(Long systemId, Long itemId, Long objectId, String addressCoding);
 
     /**
      * 根据指标项ID和评价对象ID减少统计数量
      * 如果count为0则删除该统计记录
      *
+     * @param systemId 体系ID
      * @param itemId 指标项ID
      * @param objectId 评价对象ID
      */
-    void decrementCount(Long itemId, Long objectId);
+    void decrementCount(Long systemId, Long itemId, Long objectId);
 
     /**
      * 同步统计数量
-     * 根据itemId和objectId从巡查表重新统计数量并更新
+     * 根据systemId、itemId和objectId从巡查表重新统计数量并更新
      *
+     * @param systemId 体系ID
      * @param itemId 指标项ID
      * @param objectId 评价对象ID
      * @param addressCoding 地址编码（可选）
      */
-    void syncCount(Long itemId, Long objectId, String addressCoding);
+    void syncCount(Long systemId, Long itemId, Long objectId, String addressCoding);
+
+    /**
+     * 更新统计记录的 ruleId
+     *
+     * @param systemId 体系ID
+     * @param itemId 指标项ID
+     * @param objectId 评价对象ID
+     * @param ruleId 规则ID
+     * @param addressCoding 地址编码（可选）
+     */
+    void updateRuleId(Long systemId, Long itemId, Long objectId, Long ruleId, String addressCoding);
 
 }

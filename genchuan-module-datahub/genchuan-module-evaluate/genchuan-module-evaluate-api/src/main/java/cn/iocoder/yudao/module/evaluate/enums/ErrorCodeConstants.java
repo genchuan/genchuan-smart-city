@@ -34,6 +34,7 @@ public interface ErrorCodeConstants {
     ErrorCode STANDARD_CATEGORY_NOT_EXISTS = new ErrorCode(102_300, "标准分类不存在");
     ErrorCode RULE_ITEM_NOT_EXISTS = new ErrorCode(103_100, "规则项不存在");
     ErrorCode RULE_CATEGORY_NOT_EXISTS = new ErrorCode(103_200, "规则分类不存在");
+    ErrorCode RULE_CATEGORY_NAME_DUPLICATE = new ErrorCode(103_201, "同一指标体系下已存在同名的规则分类");
     ErrorCode RELATED_OBJECT_NOT_EXISTS = new ErrorCode(104_100, "关联对象不存在");
     ErrorCode OBJECT_NOT_EXISTS = new ErrorCode(105_100, "评价对象不存在");
     ErrorCode AREA_NOT_EXISTS = new ErrorCode(100_333, "区域编码不存在");
@@ -63,5 +64,6 @@ public interface ErrorCodeConstants {
     ErrorCode INDEX_WEIGHT_OVER_LIMIT = new ErrorCode(325_547, "指标项权重总和超过100%上限");
     ErrorCode PATROL_INSPECTION_NOT_EXISTS = new ErrorCode(325_548, "巡查巡检不存在");
     ErrorCode COMMENT_STATISTIC_NOT_EXISTS = new ErrorCode(325_549, "巡查巡检统计不存在");
-
+    ErrorCode COMMENT_RULE_NOT_EXISTS = new ErrorCode(325_550, "评分规则不存在");
+    ErrorCode RULE_DETAIL_NOT_EXISTS = new ErrorCode(325_551, "评分规则明细不存在");
 }

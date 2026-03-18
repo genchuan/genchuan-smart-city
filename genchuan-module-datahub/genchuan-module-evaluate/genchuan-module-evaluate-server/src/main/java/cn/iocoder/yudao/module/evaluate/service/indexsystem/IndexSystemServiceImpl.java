@@ -183,7 +183,7 @@ public class IndexSystemServiceImpl implements IndexSystemService {
     public PageResult<IndexSystemDO> getIndexSystemPage(IndexSystemPageReqVO pageReqVO) {
         return indexSystemMapper.selectPage(pageReqVO);
     }
-    //---------------------------------新增---------------------------------------------
+//---------------------------------新增---------------------------------------------
     @Override
     public PageResult<IndexSystemPageItemVO> getIndexSystemPageWithJoin(IndexSystemPageReqVO pageReqVO) {
         // 1. 先查询符合条件的唯一体系数量（确保分页计数准确）
@@ -757,9 +757,9 @@ public class IndexSystemServiceImpl implements IndexSystemService {
     private void cleanOrphanData() {
         // 1. 获取所有有效的 systemId
         List<String> validSystemIds = indexSystemMapper.selectList(
-                        new LambdaQueryWrapper<IndexSystemDO>()
-                                .eq(IndexSystemDO::getDeleted, 0)
-                ).stream()
+                new LambdaQueryWrapper<IndexSystemDO>()
+                        .eq(IndexSystemDO::getDeleted, 0)
+        ).stream()
                 .map(IndexSystemDO::getSystemId)
                 .collect(Collectors.toList());
 
@@ -780,9 +780,9 @@ public class IndexSystemServiceImpl implements IndexSystemService {
 
         // 3. 获取所有有效的 categoryId
         List<String> validCategoryIds = indexCategoryMapper.selectList(
-                        new LambdaQueryWrapper<IndexCategoryDO>()
-                                .eq(IndexCategoryDO::getDeleted, 0)
-                ).stream()
+                new LambdaQueryWrapper<IndexCategoryDO>()
+                        .eq(IndexCategoryDO::getDeleted, 0)
+        ).stream()
                 .map(IndexCategoryDO::getCategoryId)
                 .collect(Collectors.toList());
 

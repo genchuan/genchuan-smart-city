@@ -3765,10 +3765,72 @@ create table eval_patrol_inspection
 )
     comment '巡查巡检表' collate = utf8mb4_unicode_ci
                          row_format = DYNAMIC;
+CREATE TABLE eval_comment_rule (
+                           id BIGINT AUTO_INCREMENT COMMENT '主键ID' PRIMARY KEY,
+                           system_id BIGINT NOT NULL COMMENT '指标体系ID(关联eval_index_system)',
+                           rule_category_id BIGINT NOT NULL COMMENT '规则分类ID(关联eval_rule_category)',
+                           item_id BIGINT NOT NULL COMMENT '指标项ID(关联eval_index_item)',
+                           rule_name VARCHAR(100) NOT NULL COMMENT '规则名称',
+                           rule_type TINYINT DEFAULT 0 NULL COMMENT '规则类型（1=加分，2=扣分）',
+                           status TINYINT DEFAULT 1 NULL COMMENT '状态（1=启用，2=停用）',
+                           apply_object_type VARCHAR(50) NULL COMMENT '适用对象类型（如：网格/企业/个人）',
+                           effective_start_time DATETIME NULL COMMENT '生效开始时间',
+                           effective_end_time DATETIME NULL COMMENT '生效结束时间',
+                           status_change_remark VARCHAR(200) NULL COMMENT '状态变更备注',
+                           creator VARCHAR(64) DEFAULT '' NULL COMMENT '创建者',
+                           updater VARCHAR(64) DEFAULT '' NULL COMMENT '更新者',
+                           deleted BIT DEFAULT b'0' NULL COMMENT '删除标识',
+                           tenant_id BIGINT DEFAULT 1 NULL COMMENT '租户ID',
+                           create_time DATETIME DEFAULT CURRENT_TIMESTAMP NULL COMMENT '创建时间',
+                           update_time DATETIME DEFAULT CURRENT_TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                           operation_log MEDIUMTEXT NULL COMMENT '操作变更日志'
+) COMMENT '评分规则主表' COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
+-- 索引优化
+CREATE INDEX idx_system_category_status ON eval_comment_rule (system_id, rule_category_id, status);
 
+INSERT INTO eval_comment_rule (
+    system_id, rule_category_id, item_id, rule_name, rule_type, status,
+    apply_object_type, effective_start_time, effective_end_time, creator, updater
+) VALUES
+-- 市政道路-环境卫生类-明显垃圾 评分规则
+(1, 1, 10001, '市政道路-明显垃圾评分规则', 2, 1,
+ '网格', '2025-01-01 00:00:00', '2025-12-31 23:59:59', 'admin', 'admin'),
+-- 市政道路-环境卫生类-零星垃圾 评分规则
+(1, 1, 10002, '市政道路-零星垃圾评分规则', 2, 1,
+ '网格', '2025-01-01 00:00:00', '2025-12-31 23:59:59', 'admin', 'admin');
+CREATE TABLE eval_rule_detail (
+                                  id BIGINT AUTO_INCREMENT COMMENT '主键ID' PRIMARY KEY,
+                                  rule_id BIGINT NOT NULL COMMENT '规则ID(eval_comment_rule.id)',
+                                  min_value DECIMAL(18,6) NULL COMMENT '区间最小值（null表示无下限）',
+                                  max_value DECIMAL(18,6) NULL COMMENT '区间最大值（null表示无上限）',
+                                  operator_min VARCHAR(10) DEFAULT '>=' NULL COMMENT '最小值运算符（>=、>）',
+                                  operator_max VARCHAR(10) DEFAULT '<=' NULL COMMENT '最大值运算符（<=、<）',
+                                  score DECIMAL(10,2) NOT NULL COMMENT '该区间对应的分数',
+                                  sort_order INT DEFAULT 0 NULL COMMENT '排序优先级（值越小越优先匹配）',
+                                  remark VARCHAR(200) NULL COMMENT '规则描述（如：=0、>1且<5）',
+                                  creator VARCHAR(64) DEFAULT '' NULL COMMENT '创建者',
+                                  updater VARCHAR(64) DEFAULT '' NULL COMMENT '更新者',
+                                  deleted BIT DEFAULT b'0' NULL COMMENT '删除标识',
+                                  create_time DATETIME DEFAULT CURRENT_TIMESTAMP NULL COMMENT '创建时间',
+                                  update_time DATETIME DEFAULT CURRENT_TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) COMMENT '评分规则明细表' COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
 
+-- 索引优化
+CREATE INDEX idx_rule_id ON eval_rule_detail (rule_id);
+CREATE INDEX idx_rule_sort ON eval_rule_detail (rule_id, sort_order);
+INSERT INTO eval_rule_detail (
+    rule_id, min_value, max_value, operator_min, operator_max, score, sort_order, remark
+) VALUES
+-- 规则ID=1（明显垃圾）的明细
+(1, NULL, 0, NULL, '=', 100.00, 1, '=0 得100分'),
+(1, 1, 5, '>', '<', 70.00, 2, '>1 且 <5 得70分'),
+(1, 5, NULL, '>=', NULL, 0.00, 3, '>=5 得0分'),
 
-
+-- 规则ID=2（零星垃圾）的明细
+(2, NULL, 0, NULL, '=', 100.00, 1, '=0 得100分'),
+(2, 1, 3, '>', '<=', 80.00, 2, '>1 且 <=3 得80分'),
+(2, 3, 5, '>', '<=', 50.00, 3, '>3 且 <=5 得50分'),
+(2, 5, NULL, '>', NULL, 0.00, 4, '>5 得0分');
 
 

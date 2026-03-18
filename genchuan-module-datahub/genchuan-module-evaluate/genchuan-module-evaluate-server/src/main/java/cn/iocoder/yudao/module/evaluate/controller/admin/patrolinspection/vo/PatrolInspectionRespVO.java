@@ -80,12 +80,16 @@ public class PatrolInspectionRespVO {
     @ExcelProperty("状态: 1：待审核中，2：审核通过，3：不用审核")
     private String status;
 
-    @Schema(description = "图片")
-    @ExcelProperty("图片")
-    private byte[] image;
+    @Schema(description = "图片URL")
+    @ExcelProperty("图片URL")
+    private String imageUrl;
 
     @Schema(description = "地址编码")
     @ExcelProperty("地址编码")
     private String addressCoding;
+
+    @Schema(description = "评分规则ID(关联eval_comment_rule.id)")
+    @ExcelProperty("评分规则ID")
+    private Long ruleId;
 
 }

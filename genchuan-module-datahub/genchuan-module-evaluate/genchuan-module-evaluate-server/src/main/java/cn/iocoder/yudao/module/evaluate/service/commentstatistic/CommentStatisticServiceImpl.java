@@ -13,8 +13,11 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.evaluate.dal.mysql.commentstatistic.CommentStatisticMapper;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.patrolinspection.PatrolInspectionMapper;
+import cn.iocoder.yudao.module.evaluate.service.commentrule.CommentRuleService;
+import cn.iocoder.yudao.module.evaluate.service.ruledetail.RuleDetailService;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +38,12 @@ public class CommentStatisticServiceImpl implements CommentStatisticService {
 
     @Resource
     private PatrolInspectionMapper patrolInspectionMapper;
+
+    @Resource
+    private CommentRuleService commentRuleService;
+
+    @Resource
+    private RuleDetailService ruleDetailService;
 
     @Override
     public Long createCommentStatistic(CommentStatisticSaveReqVO createReqVO) {
@@ -75,42 +84,42 @@ public class CommentStatisticServiceImpl implements CommentStatisticService {
 
     @Override
     public PageResult<CommentStatisticDO> getCommentStatisticPage(CommentStatisticPageReqVO pageReqVO) {
-        // 先查询去重后的 item_id 和 object_id 组合（用于分页）
+        // 先查询去重后的 system_id + item_id + object_id 组合（用于分页）
         List<PatrolInspectionDO> patrolList = selectPatrolGroupList(pageReqVO);
 
         if (patrolList.isEmpty()) {
             return PageResult.empty();
         }
 
-        // 统计每个组合的数量，并保存到数据库
+        // 清空统计表
+        commentStatisticMapper.deleteAll();
+
+        // 实时统计每个组合的数量，并保存到数据库
         List<CommentStatisticDO> resultList = new ArrayList<>();
         for (PatrolInspectionDO patrol : patrolList) {
-            // 查询是否已存在记录
-            CommentStatisticDO existRecord = commentStatisticMapper.selectOne(
-                    new LambdaQueryWrapperX<CommentStatisticDO>()
-                            .eq(CommentStatisticDO::getItemId, patrol.getItemId())
-                            .eq(CommentStatisticDO::getObjectId, patrol.getObjectId()));
-
-            Long count = commentStatisticMapper.selectCountByItemIdAndObjectId(patrol.getItemId(), patrol.getObjectId());
+            // 实时统计该组合的数量
+            Long count = commentStatisticMapper.selectCountBySystemIdAndItemIdAndObjectId(
+                    patrol.getSystemId(), patrol.getItemId(), patrol.getObjectId());
             count = count != null ? count : 0L;
 
-            if (existRecord != null) {
-                // 更新现有记录
-                existRecord.setCount(count);
-                existRecord.setAddressCoding(patrol.getAddressCoding());
-                commentStatisticMapper.updateById(existRecord);
-                resultList.add(existRecord);
-            } else {
-                // 创建新记录
-                CommentStatisticDO statistic = new CommentStatisticDO();
-                statistic.setItemId(patrol.getItemId());
-                statistic.setObjectId(patrol.getObjectId());
-                statistic.setAddressCoding(patrol.getAddressCoding());
-                statistic.setCount(count);
-                statistic.setStatus("1");
-                commentStatisticMapper.insert(statistic);
-                resultList.add(statistic);
-            }
+            // 查询ruleId
+            Long ruleId = commentRuleService.getCommentRuleIdBySystemIdAndItemId(patrol.getSystemId(), patrol.getItemId());
+
+            // 根据 count 和 ruleId 计算分数
+            BigDecimal scoreDecimal = ruleDetailService.calculateScoreByCount(ruleId, count);
+            Long score = scoreDecimal != null ? scoreDecimal.longValue() : null;
+
+            // 保存到数据库
+            CommentStatisticDO statistic = new CommentStatisticDO();
+            statistic.setSystemId(patrol.getSystemId());
+            statistic.setItemId(patrol.getItemId());
+            statistic.setObjectId(patrol.getObjectId());
+            statistic.setCount(count);
+            statistic.setRuleId(ruleId);
+            statistic.setScore(score);
+            statistic.setStatus("1");
+            commentStatisticMapper.insert(statistic);
+            resultList.add(statistic);
         }
 
         // 查询总数
@@ -144,61 +153,74 @@ public class CommentStatisticServiceImpl implements CommentStatisticService {
     }
 
     @Override
-    public void incrementCount(Long itemId, Long objectId, String addressCoding) {
-        // 查询是否存在对应的统计记录
+    public void incrementCount(Long systemId, Long itemId, Long objectId, String addressCoding) {
+        // 查询是否存在对应的统计记录（增加systemId条件）
         CommentStatisticDO existRecord = commentStatisticMapper.selectOne(new LambdaQueryWrapperX<CommentStatisticDO>()
+                .eq(CommentStatisticDO::getSystemId, systemId)
                 .eq(CommentStatisticDO::getItemId, itemId)
                 .eq(CommentStatisticDO::getObjectId, objectId));
+
+        // 查询ruleId
+        Long ruleId = commentRuleService.getCommentRuleIdBySystemIdAndItemId(systemId, itemId);
 
         if (existRecord != null) {
             // 记录存在，count + 1
             CommentStatisticDO updateRecord = new CommentStatisticDO();
             updateRecord.setId(existRecord.getId());
             updateRecord.setCount(existRecord.getCount() + 1);
+            updateRecord.setRuleId(ruleId);
             commentStatisticMapper.updateById(updateRecord);
         } else {
             // 记录不存在，创建新记录，count = 1
             CommentStatisticDO newRecord = new CommentStatisticDO();
+            newRecord.setSystemId(systemId);
             newRecord.setItemId(itemId);
             newRecord.setObjectId(objectId);
             newRecord.setCount(1L);
             newRecord.setAddressCoding(addressCoding);
             newRecord.setStatus("1"); // 默认待审核状态
+            newRecord.setRuleId(ruleId);
             commentStatisticMapper.insert(newRecord);
         }
     }
 
     @Override
-    public void decrementCount(Long itemId, Long objectId) {
-        // 查询是否存在对应的统计记录
+    public void decrementCount(Long systemId, Long itemId, Long objectId) {
+        // 查询是否存在对应的统计记录（添加systemId条件避免返回多条记录）
         CommentStatisticDO existRecord = commentStatisticMapper.selectOne(new LambdaQueryWrapperX<CommentStatisticDO>()
+                .eq(CommentStatisticDO::getSystemId, systemId)
                 .eq(CommentStatisticDO::getItemId, itemId)
                 .eq(CommentStatisticDO::getObjectId, objectId));
 
         if (existRecord != null) {
-            if (existRecord.getCount() <= 1) {
-                // count小于等于1，删除该记录
+            Long currentCount = existRecord.getCount();
+            if (currentCount == null || currentCount <= 1) {
+                // count为空或小于等于1，删除该记录
                 commentStatisticMapper.deleteById(existRecord.getId());
             } else {
                 // count > 1，count - 1
                 CommentStatisticDO updateRecord = new CommentStatisticDO();
                 updateRecord.setId(existRecord.getId());
-                updateRecord.setCount(existRecord.getCount() - 1);
+                updateRecord.setCount(currentCount - 1);
                 commentStatisticMapper.updateById(updateRecord);
             }
         }
     }
 
     @Override
-    public void syncCount(Long itemId, Long objectId, String addressCoding) {
+    public void syncCount(Long systemId, Long itemId, Long objectId, String addressCoding) {
         // 从巡查表重新统计数量
-        Long count = commentStatisticMapper.selectCountByItemIdAndObjectId(itemId, objectId);
+        Long count = commentStatisticMapper.selectCountBySystemIdAndItemIdAndObjectId(systemId, itemId, objectId);
         count = count != null ? count : 0L;
 
-        // 查询是否存在对应的统计记录
+        // 查询是否存在对应的统计记录（添加systemId条件避免返回多条记录）
         CommentStatisticDO existRecord = commentStatisticMapper.selectOne(new LambdaQueryWrapperX<CommentStatisticDO>()
+                .eq(CommentStatisticDO::getSystemId, systemId)
                 .eq(CommentStatisticDO::getItemId, itemId)
                 .eq(CommentStatisticDO::getObjectId, objectId));
+
+        // 查询ruleId
+        Long ruleId = commentRuleService.getCommentRuleIdBySystemIdAndItemId(systemId, itemId);
 
         if (existRecord != null) {
             if (count == 0) {
@@ -208,6 +230,8 @@ public class CommentStatisticServiceImpl implements CommentStatisticService {
                 // 更新统计数量
                 existRecord.setCount(count);
                 existRecord.setAddressCoding(addressCoding);
+                existRecord.setRuleId(ruleId);
+                existRecord.setSystemId(systemId);
                 commentStatisticMapper.updateById(existRecord);
             }
         } else if (count > 0) {
@@ -218,7 +242,26 @@ public class CommentStatisticServiceImpl implements CommentStatisticService {
             newRecord.setCount(count);
             newRecord.setAddressCoding(addressCoding);
             newRecord.setStatus("1");
+            newRecord.setRuleId(ruleId);
+            newRecord.setSystemId(systemId);
             commentStatisticMapper.insert(newRecord);
+        }
+    }
+
+    @Override
+    public void updateRuleId(Long systemId, Long itemId, Long objectId, Long ruleId, String addressCoding) {
+        // 查询对应的统计记录
+        CommentStatisticDO existRecord = commentStatisticMapper.selectOne(new LambdaQueryWrapperX<CommentStatisticDO>()
+                .eq(CommentStatisticDO::getSystemId, systemId)
+                .eq(CommentStatisticDO::getItemId, itemId)
+                .eq(CommentStatisticDO::getObjectId, objectId));
+
+        if (existRecord != null) {
+            // 更新 ruleId
+            CommentStatisticDO updateRecord = new CommentStatisticDO();
+            updateRecord.setId(existRecord.getId());
+            updateRecord.setRuleId(ruleId);
+            commentStatisticMapper.updateById(updateRecord);
         }
     }
 

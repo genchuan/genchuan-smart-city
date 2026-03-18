@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.evaluate.controller.admin.patrolinspection.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -45,8 +46,11 @@ public class PatrolInspectionSaveReqVO {
     @Schema(description = "状态: 1：待审核中，2：审核通过，3：不用审核", example = "2")
     private String status;
 
-    @Schema(description = "图片")
-    private byte[] image;
+    @Schema(description = "图片文件")
+    private MultipartFile[] files;
+
+    @Schema(description = "图片URL")
+    private String imageUrl;
 
     @Schema(description = "地址编码")
     private String addressCoding;

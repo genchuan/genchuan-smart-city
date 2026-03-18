@@ -37,12 +37,15 @@ public class PatrolInspectionServiceImpl implements PatrolInspectionService {
         PatrolInspectionDO patrolInspection = BeanUtils.toBean(createReqVO, PatrolInspectionDO.class);
         patrolInspectionMapper.insert(patrolInspection);
 
-        // 创建巡查巡检后，增加评价统计数量
-        commentStatisticService.incrementCount(
-                patrolInspection.getItemId(),
-                patrolInspection.getObjectId(),
-                patrolInspection.getAddressCoding()
-        );
+        // 创建巡查巡检后，增加评价统计数量（只有当itemId和objectId都不为null时才执行）
+        if (patrolInspection.getItemId() != null && patrolInspection.getObjectId() != null) {
+            commentStatisticService.incrementCount(
+                    patrolInspection.getSystemId(),
+                    patrolInspection.getItemId(),
+                    patrolInspection.getObjectId(),
+                    patrolInspection.getAddressCoding()
+            );
+        }
 
         // 返回
         return patrolInspection.getId();
@@ -56,6 +59,8 @@ public class PatrolInspectionServiceImpl implements PatrolInspectionService {
         // 更新前的itemId和objectId（用于统计）
         Long oldItemId = existPatrol.getItemId();
         Long oldObjectId = existPatrol.getObjectId();
+        Long oldSystemId = existPatrol.getSystemId();
+        String oldAddressCoding = existPatrol.getAddressCoding();
 
         // 更新
         PatrolInspectionDO updateObj = BeanUtils.toBean(updateReqVO, PatrolInspectionDO.class);
@@ -64,15 +69,24 @@ public class PatrolInspectionServiceImpl implements PatrolInspectionService {
         // 如果itemId或objectId发生变化，需要同步更新统计
         Long newItemId = updateReqVO.getItemId();
         Long newObjectId = updateReqVO.getObjectId();
+        Long newSystemId = updateReqVO.getSystemId();
+        String newAddressCoding = updateReqVO.getAddressCoding();
 
-        if (!oldItemId.equals(newItemId) || !oldObjectId.equals(newObjectId)) {
+        // 使用 Objects.equals 处理 null 情况
+        if (!Objects.equals(oldItemId, newItemId) || !Objects.equals(oldObjectId, newObjectId)) {
             // 原组合count - 1
-            commentStatisticService.decrementCount(oldItemId, oldObjectId);
+            if (oldItemId != null && oldObjectId != null) {
+                commentStatisticService.decrementCount(oldSystemId, oldItemId, oldObjectId);
+            }
             // 新组合count + 1
-            commentStatisticService.incrementCount(newItemId, newObjectId, updateReqVO.getAddressCoding());
-        } else {
-            // 如果itemId和objectId没变，但addressCoding变了，同步统计
-            commentStatisticService.syncCount(newItemId, newObjectId, updateReqVO.getAddressCoding());
+            if (newItemId != null && newObjectId != null) {
+                commentStatisticService.incrementCount(newSystemId, newItemId, newObjectId, newAddressCoding);
+            }
+        } else if (!Objects.equals(oldSystemId, newSystemId) || !Objects.equals(oldAddressCoding, newAddressCoding)) {
+            // 如果systemId或addressCoding变化，同步统计
+            if (newItemId != null && newObjectId != null) {
+                commentStatisticService.syncCount(newSystemId, newItemId, newObjectId, newAddressCoding);
+            }
         }
     }
 
@@ -84,8 +98,10 @@ public class PatrolInspectionServiceImpl implements PatrolInspectionService {
         // 删除
         patrolInspectionMapper.deleteById(id);
 
-        // 删除后，减少对应统计数量
-        commentStatisticService.decrementCount(existPatrol.getItemId(), existPatrol.getObjectId());
+        // 删除后，减少对应统计数量（只有当itemId和objectId都不为null时才执行）
+        if (existPatrol.getItemId() != null && existPatrol.getObjectId() != null) {
+            commentStatisticService.decrementCount(existPatrol.getSystemId(), existPatrol.getItemId(), existPatrol.getObjectId());
+        }
     }
 
     private PatrolInspectionDO validatePatrolInspectionExists(Long id) {

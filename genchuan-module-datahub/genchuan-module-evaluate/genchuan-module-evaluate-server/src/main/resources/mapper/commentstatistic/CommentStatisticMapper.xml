@@ -9,10 +9,30 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
     -->
 
+    <!-- 清空统计表所有数据 -->
+    <delete id="deleteAll">
+        DELETE FROM eval_comment_statistic
+    </delete>
+
     <!-- 根据 itemId 和 objectId 从巡查巡检表动态统计数量 -->
     <select id="selectCountByItemIdAndObjectId" resultType="java.lang.Long">
         SELECT COUNT(*) FROM eval_patrol_inspection
         WHERE deleted = 0
+        <if test="itemId != null">
+            AND item_id = #{itemId}
+        </if>
+        <if test="objectId != null">
+            AND object_id = #{objectId}
+        </if>
+    </select>
+
+    <!-- 根据 systemId、itemId 和 objectId 从巡查巡检表动态统计数量 -->
+    <select id="selectCountBySystemIdAndItemIdAndObjectId" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM eval_patrol_inspection
+        WHERE deleted = 0
+        <if test="systemId != null">
+            AND system_id = #{systemId}
+        </if>
         <if test="itemId != null">
             AND item_id = #{itemId}
         </if>

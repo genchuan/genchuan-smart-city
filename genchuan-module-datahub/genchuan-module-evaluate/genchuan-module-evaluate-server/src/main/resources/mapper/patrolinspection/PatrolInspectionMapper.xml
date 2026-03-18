@@ -9,32 +9,29 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
     -->
 
-    <!-- 查询去重后的 item_id 和 object_id 组合列表（用于分页） -->
+    <!-- 查询去重后的 system_id + item_id + object_id 组合列表（用于分页） -->
     <select id="selectPatrolGroupList" resultType="cn.iocoder.yudao.module.evaluate.dal.dataobject.patrolinspection.PatrolInspectionDO">
-        SELECT item_id, object_id, address_coding
-        FROM (
-            SELECT item_id, object_id, address_coding, MAX(id) as max_id
-            FROM eval_patrol_inspection
-            WHERE deleted = 0
-            <if test="itemId != null">
-                AND item_id = #{itemId}
-            </if>
-            <if test="objectId != null">
-                AND object_id = #{objectId}
-            </if>
-            <if test="addressCoding != null">
-                AND address_coding = #{addressCoding}
-            </if>
-            GROUP BY item_id, object_id, address_coding
-        ) AS grouped
+        SELECT system_id, item_id, object_id, MAX(id) as max_id
+        FROM eval_patrol_inspection
+        WHERE deleted = 0
+        <if test="itemId != null">
+            AND item_id = #{itemId}
+        </if>
+        <if test="objectId != null">
+            AND object_id = #{objectId}
+        </if>
+        <if test="addressCoding != null">
+            AND address_coding = #{addressCoding}
+        </if>
+        GROUP BY system_id, item_id, object_id
         ORDER BY max_id DESC
         LIMIT #{pageSize} OFFSET #{offset}
     </select>
 
-    <!-- 统计去重后的 item_id 和 object_id 组合总数 -->
+    <!-- 统计去重后的 system_id + item_id + object_id 组合总数 -->
     <select id="selectPatrolGroupCount" resultType="java.lang.Long">
         SELECT COUNT(*) FROM (
-            SELECT item_id, object_id
+            SELECT system_id, item_id, object_id
             FROM eval_patrol_inspection
             WHERE deleted = 0
             <if test="itemId != null">
@@ -46,7 +43,7 @@
             <if test="addressCoding != null">
                 AND address_coding = #{addressCoding}
             </if>
-            GROUP BY item_id, object_id
+            GROUP BY system_id, item_id, object_id
         ) AS grouped
     </select>
 
