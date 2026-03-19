@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.river.RiverDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.river.RiverPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.river.RiverRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.river.RiverSaveReqVO;
@@ -110,5 +111,12 @@ public class RiverController {
                 riverService.getRiverDetailPage(pageReqVO);
 
         return success(pageResult);
+    }
+
+    @GetMapping("/chart/dashboard")
+    @Operation(summary = "卡片/圆环图/柱状图/统计(全部)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:river:query')")
+    public CommonResult<RiverDashboardVO> getRiverDashboard() {
+        return success(riverService.getRiverDashboard());
     }
 }

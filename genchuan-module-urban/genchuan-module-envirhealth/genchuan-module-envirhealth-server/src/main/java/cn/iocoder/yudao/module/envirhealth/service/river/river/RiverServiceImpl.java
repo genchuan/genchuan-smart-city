@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.envirhealth.service.river.river;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.river.RiverDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.river.RiverPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.river.RiverSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.RiverDO;
@@ -89,5 +90,25 @@ public class RiverServiceImpl implements RiverService {
 
         List<RiverDetailDO> list = riverMapper.selectDetailPage(pageReqVO);
         return new PageResult<>(list, total);
+    }
+
+    @Override
+    public RiverDashboardVO getRiverDashboard() {
+        RiverDashboardVO vo = new RiverDashboardVO();
+
+        // 1. 卡片数据
+        vo.setTotalRiverCount(riverMapper.selectTotalRiverCount());
+        vo.setCleaningCoverageMetCount(riverMapper.selectCleaningCoverageMetCount());
+        vo.setWaterQualityMetCount(riverMapper.selectWaterQualityMetCount());
+        vo.setProblemCompletedCount(riverMapper.selectProblemCompletedCount());
+
+        // 2. 圆环图数据
+        vo.setAreaDistribution(riverMapper.selectAreaDistribution());
+        vo.setOperationStatusDistribution(riverMapper.selectOperationStatusDistribution());
+
+        // 3. 柱状图数据
+        vo.setWaterQualityRateByRiver(riverMapper.selectWaterQualityRateByRiver());
+
+        return vo;
     }
 }

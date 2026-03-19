@@ -6,6 +6,8 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.river.RiverPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.RiverDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.RiverDetailDO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.BarItemVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.PieItemVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -73,4 +75,58 @@ public interface RiverMapper extends BaseMapperX<RiverDO> {
     List<RiverDetailDO> selectDetailPage(@Param("reqVO") RiverPageReqVO pageReqVO);
 
     Long selectCount(@Param("reqVO") RiverPageReqVO pageReqVO);
+
+    /**
+     * 查询总河道数
+     */
+    @Select("SELECT COUNT(*) FROM river WHERE deleted = 0")
+    Long selectTotalRiverCount();
+
+    /**
+     * 查询保洁覆盖达标数
+     */
+    @Select("SELECT COUNT(*) FROM river WHERE deleted = 0 AND cleaning_coverage >= 90")
+    Long selectCleaningCoverageMetCount();
+
+    /**
+     * 查询水质达标数
+     */
+    @Select("SELECT COUNT(*) FROM river WHERE deleted = 0 AND water_quality_rate >= 85")
+    Long selectWaterQualityMetCount();
+
+    /**
+     * 查询问题办结数
+     */
+    @Select("SELECT COUNT(*) FROM river WHERE deleted = 0 AND problem_complete_rate >= 95")
+    Long selectProblemCompletedCount();
+
+    /**
+     * 查询所属区域分布
+     */
+    @Select("SELECT COALESCE(a.area_name, '未知') as name, COUNT(*) as value " +
+            "FROM river r " +
+            "   LEFT JOIN sys_area a ON a.area_code = r.area_code " +
+            "WHERE r.deleted = 0 " +
+            "GROUP BY COALESCE(a.area_code, 'unknown'), COALESCE(a.area_name, '未知')")
+    List<PieItemVO> selectAreaDistribution();
+
+    /**
+     * 查询运营状态分布
+     */
+    @Select("SELECT COALESCE(os.name, '未知') as name, COUNT(*) as value " +
+            "FROM river r " +
+            "   LEFT JOIN sys_operation_status os ON os.sys_operation_status_id = r.operation_status_id " +
+            "WHERE r.deleted = 0 " +
+            "GROUP BY COALESCE(r.operation_status_id, 'unknown'), COALESCE(os.name, '未知')")
+    List<PieItemVO> selectOperationStatusDistribution();
+
+    /**
+     * 查询不同河道水质达标率
+     */
+    @Select("SELECT COALESCE(name, '未知') as name, " +
+            "       COALESCE(water_quality_rate, 0) as value " +
+            "FROM river " +
+            "WHERE deleted = 0 " +
+            "ORDER BY water_quality_rate DESC NULLS LAST")
+    List<BarItemVO> selectWaterQualityRateByRiver();
 }
