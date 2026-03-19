@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.MarketDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.MarketPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.MarketRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.MarketSaveReqVO;
@@ -110,5 +111,12 @@ public class MarketController {
                 marketService.getMarketDetailPage(pageReqVO);
 
         return success(pageResult);
+    }
+
+    @GetMapping("/chart/dashboard")
+    @Operation(summary = "卡片/圆环图/柱状图/统计(全部)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:market:query')")
+    public CommonResult<MarketDashboardVO> getMarketDashboard() {
+        return success(marketService.getMarketDashboardData());
     }
 }

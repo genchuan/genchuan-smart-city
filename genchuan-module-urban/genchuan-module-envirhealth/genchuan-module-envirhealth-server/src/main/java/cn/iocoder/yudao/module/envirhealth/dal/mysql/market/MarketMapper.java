@@ -6,6 +6,8 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.MarketPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.market.MarketDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.MarketDetailDO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.BarItemVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.PieItemVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -71,4 +73,70 @@ public interface MarketMapper extends BaseMapperX<MarketDO> {
     List<MarketDetailDO> selectDetailPage(@Param("reqVO") MarketPageReqVO pageReqVO);
 
     Long selectCount(@Param("reqVO") MarketPageReqVO pageReqVO);
+
+    // ========== 仪表盘新增方法 ==========
+    /**
+     * 统计集贸市场总数
+     */
+    @Select("SELECT COUNT(*) FROM market")
+    Long selectTotalMarketCount();
+
+    /**
+     * 统计卫生达标的集贸市场数量
+     * 注：hygiene_rate >= 90
+     */
+    @Select("SELECT COUNT(*) FROM market WHERE hygiene_rate >= 90")
+    Long selectHygieneStandardMetCount();
+
+    /**
+     * 统计垃圾转运达标的集贸市场数量
+     */
+    @Select("SELECT COUNT(*) FROM market WHERE waste_transfer_rate >= 90")
+    Long selectWasteTransferStandardMetCount();
+
+    /**
+     * 统计污水排放达标的集贸市场数量
+     */
+    @Select("SELECT COUNT(*) FROM market WHERE sewage_rate >= 90")
+    Long selectSewageDischargeStandardMetCount();
+
+    /**
+     * 查询运营状态分布（饼图）
+     */
+    @Select("""
+            SELECT
+                os.name AS name,
+                COUNT(*) AS value
+            FROM market m
+                LEFT JOIN sys_operation_status os ON os.sys_operation_status_id = m.operation_status_id
+            GROUP BY m.operation_status_id, m.id ,os.name
+            ORDER BY m.id
+            """)
+    List<PieItemVO> selectOperationStatusDistribution();
+
+    /**
+     * 查询区域分布（饼图）
+     */
+    @Select("""
+            SELECT
+                a.area_name AS name,
+                COUNT(*) AS value
+            FROM market m
+                LEFT JOIN sys_area a ON a.area_code = m.area_code
+            GROUP BY m.area_code, m.id, a.area_name
+            ORDER BY m.id
+            """)
+    List<PieItemVO> selectAreaDistribution();
+
+    /**
+     * 查询各市场卫生合规率
+     */
+    @Select("""
+            SELECT
+                name AS name,
+                hygiene_rate AS value
+            FROM market
+            WHERE hygiene_rate IS NOT NULL
+            """)
+    List<BarItemVO> selectHygieneComplianceRateByMarket();
 }

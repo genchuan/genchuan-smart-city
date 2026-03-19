@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.envirhealth.service.market;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.MarketDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.MarketPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.MarketSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.market.MarketDO;
@@ -52,6 +53,18 @@ public interface MarketService {
      */
     PageResult<MarketDO> getMarketPage(MarketPageReqVO pageReqVO);
 
+    /**
+     * 获得集贸市场分页
+     *
+     * @param pageReqVO 分页查询
+     * @return 集贸市场分页
+     */
     PageResult<MarketDetailDO> getMarketDetailPage(MarketPageReqVO pageReqVO);
 
+    /**
+     * 获取集贸市场看板统计数据
+     *
+     * @return 看板统计VO
+     */
+    MarketDashboardVO getMarketDashboardData();
 }
