@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.evaluate.controller.admin.sys.cycletype.vo;
 
-import com.alibaba.excel.annotation.*;
+
+import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
+import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
