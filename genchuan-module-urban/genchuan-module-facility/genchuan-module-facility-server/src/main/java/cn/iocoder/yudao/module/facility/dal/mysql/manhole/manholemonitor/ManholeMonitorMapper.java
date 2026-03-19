@@ -3,11 +3,14 @@ package cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholemonitor;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeMonitorHourTrendVO;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeMonitorPageReqVO;
+import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeMonitorStatsRespVO;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeMonitorVO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholemonitor.ManholeMonitorDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -67,6 +70,13 @@ public interface ManholeMonitorMapper extends BaseMapperX<ManholeMonitorDO> {
     ManholeMonitorVO selectManholeDetailByCoverNo(@Param("coverNo") String coverNo);
 
     /**
+     * 按井盖id查询详情
+     * @param coverId 井盖编号
+     * @return 窨井盖详情
+     */
+    ManholeMonitorVO selectManholeDetailByCoverId(@Param("coverId") Long coverId);
+
+    /**
      * 批量更新窨井盖监测状态
      *
      * @param coverIds 窨井盖 ID 列表
@@ -85,5 +95,47 @@ public interface ManholeMonitorMapper extends BaseMapperX<ManholeMonitorDO> {
      */
     Integer batchUpdateDeviceStatus(@Param("coverIds") List<Long> coverIds,
                                     @Param("onlineStatus") String onlineStatus);
+
+    /**
+     * 查询近 24 小时监测统计数据（基于你的 SQL）
+     */
+    @Select("SELECT " +
+            "COUNT(m.id) AS totalRecords, " +
+            "COUNT(DISTINCT m.cover_id) AS coverCount, " +
+            "ROUND(AVG(m.tilt_angle), 2) AS avgTiltAngle, " +
+            "MAX(m.tilt_angle) AS maxTiltAngle, " +
+            "MIN(m.tilt_angle) AS minTiltAngle, " +
+            "ROUND(AVG(m.vibration_data), 2) AS avgVibration, " +
+            "MAX(m.vibration_data) AS maxVibration, " +
+            "MIN(m.vibration_data) AS minVibration, " +
+            "COUNT(CASE WHEN m.monitor_status = '运行中' THEN 1 END) AS runningCount, " +
+            "COUNT(CASE WHEN m.monitor_status = '已停止' THEN 1 END) AS stoppedCount, " +
+            "(NOW() - INTERVAL 24 HOUR) AS startTime, " +
+            "NOW() AS endTime " +
+            "FROM manhole_monitor m " +
+            "WHERE m.deleted = 0 " +
+            "AND m.cover_id = #{coverId} " +
+            "AND m.create_time >= (NOW() - INTERVAL 24 HOUR)")
+    ManholeMonitorStatsRespVO select24HourStats(@Param("coverId") Long coverId);
+
+    /**
+     * 查询近 24 小时按小时分组的变化趋势数据（用于绘制曲线）
+     */
+    @Select("SELECT " +
+            "DATE_FORMAT(m.create_time, '%Y-%m-%d %H:00:00') AS hourTime, " +
+            "ROUND(AVG(m.tilt_angle), 2) AS avgTiltAngle, " +
+            "MAX(m.tilt_angle) AS maxTiltAngle, " +
+            "MIN(m.tilt_angle) AS minTiltAngle, " +
+            "ROUND(AVG(m.vibration_data), 2) AS avgVibration, " +
+            "MAX(m.vibration_data) AS maxVibration, " +
+            "MIN(m.vibration_data) AS minVibration, " +
+            "COUNT(m.id) AS recordCount " +
+            "FROM manhole_monitor m " +
+            "WHERE m.deleted = 0 " +
+            "AND m.cover_id = #{coverId} " +
+            "AND m.create_time >= (NOW() - INTERVAL 24 HOUR) " +
+            "GROUP BY DATE_FORMAT(m.create_time, '%Y-%m-%d %H:00:00') " +
+            "ORDER BY hourTime ASC")
+    List<ManholeMonitorHourTrendVO> select24HourTrend(@Param("coverId") Long coverId);
 
 }

@@ -1,9 +1,7 @@
 package cn.iocoder.yudao.module.facility.service.manhole.manholemonitor;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeMonitorPageReqVO;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeMonitorSaveReqVO;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeMonitorVO;
+import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.*;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholemonitor.ManholeMonitorDO;
 import jakarta.validation.Valid;
 
@@ -69,7 +67,7 @@ public interface ManholeMonitorService {
                                                  Integer abnormalVibrationFlag);
 
     /**
-     * 更加井盖编号查询
+     * 根据井盖编号查询
      */
 
     ManholeMonitorVO getManholeDetailByCoverNo(String coverNo);
@@ -82,4 +80,20 @@ public interface ManholeMonitorService {
      * @return 更新成功的记录数
      */
     Integer batchUpdateMonitorStatus(List<Long> coverIds, String monitorStatus);
+
+    /**
+     * 查询近 24 小时统计数据
+     *
+     * @param id 编号
+     * @return 统计数据
+     */
+    ManholeMonitorStatsRespVO get24HourStats(Long id);
+
+    /**
+     * 查询近 24 小时变化趋势
+     *
+     * @param id 编号
+     * @return 趋势数据列表
+     */
+    List<ManholeMonitorHourTrendVO> get24HourTrend(Long id);
 }

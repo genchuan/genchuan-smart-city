@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.facility.service.manhole.manholecover;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholecover.vo.ManholeCoverDetailRespVO;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholecover.vo.ManholeCoverPageReqVO;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholecover.vo.ManholeCoverSaveReqVO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholecover.ManholeCoverDO;
@@ -50,5 +51,7 @@ public interface ManholeCoverService {
      * @return 窨井盖设施分页
      */
     PageResult<ManholeCoverDO> getCoverPage(ManholeCoverPageReqVO pageReqVO);
+
+    ManholeCoverDetailRespVO getCoverDetail(Long id);
 
 }

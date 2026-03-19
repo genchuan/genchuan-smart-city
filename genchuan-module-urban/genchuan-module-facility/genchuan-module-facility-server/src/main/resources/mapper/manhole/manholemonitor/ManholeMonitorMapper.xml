@@ -139,6 +139,51 @@
     </resultMap>
 
     <!-- 修复：删除重复租户条件 + 明确参数名 -->
+    <select id="selectManholeDetailByCoverId" resultMap="ManholeDetailResultMap">
+        SELECT
+        mc.id AS cover_id,
+        mc.cover_no,
+        rf.id AS road_id,
+        rf.road_name,
+        sos.id AS open_status_id,
+        COALESCE(sos.status_name, '未配置状态') AS open_status_name,  -- PostgreSQL替换IFNULL为COALESCE
+        mm.tilt_angle,
+        mm.vibration_data,
+        mm.risk_level_id,
+        COALESCE(srl.level_name, '未配置') AS risk_level_name,        -- PostgreSQL替换IFNULL为COALESCE
+        mm.monitor_status,
+        sd.id AS device_id,
+        COALESCE(sd.device_code, '未关联设备') AS device_code,        -- PostgreSQL替换IFNULL为COALESCE
+        COALESCE(sd.online_status, '未知状态') AS device_online_status,-- PostgreSQL替换IFNULL为COALESCE
+        COALESCE(su.username, '未分配运维员') AS staff_name,          -- PostgreSQL替换IFNULL为COALESCE
+        COALESCE(mhc.collect_frequency, 0) AS collect_frequency,      -- PostgreSQL替换IFNULL为COALESCE
+        COALESCE(mhc.tilt_angle_threshold, 0.00) AS tilt_angle_threshold, -- PostgreSQL替换IFNULL为COALESCE
+        TO_CHAR(mm.update_time, 'YYYY-MM-DD HH24:MI:SS') AS update_time_str  -- PostgreSQL替换DATE_FORMAT
+        FROM munifacility.manhole_cover mc  -- 补充模式前缀
+        INNER JOIN munifacility.manhole_monitor mm  -- 补充模式前缀
+        ON mc.id = mm.cover_id
+        AND mm.deleted = B'0'  -- PostgreSQL bit类型判断
+        AND mc.tenant_id = 1
+        LEFT JOIN munifacility.road_facility rf  -- 补充模式前缀
+        ON mc.road_id = rf.id
+        AND rf.tenant_id = 1
+        LEFT JOIN munifacility.sys_open_status sos  -- 补充模式前缀
+        ON mm.open_status_id = sos.id
+        LEFT JOIN munifacility.sys_risk_level srl  -- 补充模式前缀
+        ON mm.risk_level_id = srl.id
+        LEFT JOIN munifacility.sys_device sd  -- 补充模式前缀
+        ON mm.device_id = sd.id
+        AND sd.tenant_id = 1
+        LEFT JOIN munifacility.sys_user su  -- 补充模式前缀
+        ON mm.staff_id = su.id
+        AND su.tenant_id = 1
+        LEFT JOIN munifacility.manhole_config mhc  -- 补充模式前缀
+        ON mc.id = mhc.cover_id
+        WHERE mc.id = #{coverId}  <!-- 核心修改：cover_no → id（cover_id） -->
+        AND mc.deleted = B'0'  -- PostgreSQL bit类型判断
+        AND mc.tenant_id = 1
+    </select>
+
     <select id="selectManholeDetailByCoverNo" resultMap="ManholeDetailResultMap">
         SELECT
         mc.id AS cover_id,

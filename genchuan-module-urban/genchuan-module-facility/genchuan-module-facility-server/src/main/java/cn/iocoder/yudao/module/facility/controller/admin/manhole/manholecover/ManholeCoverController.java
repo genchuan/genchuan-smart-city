@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholecover.vo.ManholeCoverDetailRespVO;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholecover.vo.ManholeCoverPageReqVO;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholecover.vo.ManholeCoverRespVO;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholecover.vo.ManholeCoverSaveReqVO;
@@ -89,6 +90,14 @@ public class ManholeCoverController {
         // 导出 Excel
         ExcelUtils.write(response, "窨井盖设施.xls", "数据", ManholeCoverRespVO.class,
                         BeanUtils.toBean(list, ManholeCoverRespVO.class));
+    }
+
+    @GetMapping("/detail")
+    @Operation(summary = "获得窨井盖设施详情（包含近 24 小时统计、故障记录）")
+    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+    @PreAuthorize("@ss.hasPermission('manhole:cover:query')")
+    public CommonResult<ManholeCoverDetailRespVO> getCoverDetail(@RequestParam("id") Long id) {
+        return success(coverService.getCoverDetail(id));
     }
 
 }

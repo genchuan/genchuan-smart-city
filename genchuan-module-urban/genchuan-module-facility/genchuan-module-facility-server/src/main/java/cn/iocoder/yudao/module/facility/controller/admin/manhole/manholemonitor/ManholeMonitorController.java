@@ -130,4 +130,20 @@ public class ManholeMonitorController {
         Integer count = monitorService.batchUpdateMonitorStatus(batchVO.getCoverIds(), batchVO.getStatus());
         return success(count);
     }
+
+    @GetMapping("/stats/24hour")
+    @Operation(summary = "查询近 24 小时统计数据")
+    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+    @PreAuthorize("@ss.hasPermission('manhole:cover:query')")
+    public CommonResult<ManholeMonitorStatsRespVO> get24HourStats(@RequestParam("id") Long id) {
+        return success(monitorService.get24HourStats(id));
+    }
+
+    @GetMapping("/trend/24hour")
+    @Operation(summary = "查询近 24 小时变化趋势")
+    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+    @PreAuthorize("@ss.hasPermission('manhole:cover:query')")
+    public CommonResult<List<ManholeMonitorHourTrendVO>> get24HourTrend(@RequestParam("id") Long id) {
+        return success(monitorService.get24HourTrend(id));
+    }
 }

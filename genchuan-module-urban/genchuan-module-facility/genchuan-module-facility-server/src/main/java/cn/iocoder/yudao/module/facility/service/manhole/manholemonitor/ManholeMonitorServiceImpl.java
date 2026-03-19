@@ -4,10 +4,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.BatchMonitorStatusReqVO;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeMonitorPageReqVO;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeMonitorSaveReqVO;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeMonitorVO;
+import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.*;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholemonitor.ManholeMonitorDO;
 import cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholemonitor.ManholeMonitorMapper;
 import jakarta.annotation.Resource;
@@ -15,6 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -121,5 +121,34 @@ public class ManholeMonitorServiceImpl implements ManholeMonitorService {
         return count;
     }
 
+    @Override
+    public ManholeMonitorStatsRespVO get24HourStats(Long id) {
+
+        ManholeMonitorStatsRespVO stats = monitorMapper.select24HourStats(id);
+
+        if (stats == null) {
+            stats = new ManholeMonitorStatsRespVO();
+            stats.setAvgTiltAngle(BigDecimal.ZERO);
+            stats.setMaxTiltAngle(BigDecimal.ZERO);
+            stats.setMinTiltAngle(BigDecimal.ZERO);
+            stats.setAvgVibration(BigDecimal.ZERO);
+            stats.setMaxVibration(BigDecimal.ZERO);
+            stats.setMinVibration(BigDecimal.ZERO);
+        }
+
+        return stats;
+    }
+
+    @Override
+    public List<ManholeMonitorHourTrendVO> get24HourTrend(Long id) {
+
+        List<ManholeMonitorHourTrendVO> trendList = monitorMapper.select24HourTrend(id);
+
+        if (trendList == null) {
+            return new ArrayList<>();
+        }
+
+        return trendList;
+    }
 
 }
