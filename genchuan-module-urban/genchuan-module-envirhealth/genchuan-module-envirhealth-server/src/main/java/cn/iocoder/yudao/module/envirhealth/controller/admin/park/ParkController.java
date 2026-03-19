@@ -12,7 +12,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.ParkRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.ParkSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.park.ParkDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.park.ParkDetailDO;
-import cn.iocoder.yudao.module.envirhealth.service.park.park.ParkService;
+import cn.iocoder.yudao.module.envirhealth.service.park.ParkService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

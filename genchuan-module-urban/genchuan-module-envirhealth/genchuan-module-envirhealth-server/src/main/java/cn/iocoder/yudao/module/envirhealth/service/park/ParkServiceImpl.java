@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.envirhealth.service.park.park;
+package cn.iocoder.yudao.module.envirhealth.service.park;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
