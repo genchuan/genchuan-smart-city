@@ -1,14 +1,20 @@
 package cn.iocoder.yudao.module.envirhealth.service.dept;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dept.vo.DeptPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dept.vo.DeptSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dept.DeptDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.FacilityDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.dept.DeptMapper;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.DEPT_NOT_EXISTS;
@@ -67,4 +73,21 @@ public class DeptServiceImpl implements DeptService {
         return deptMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public List<OptionVO> getDeptOptions() {
+
+        List<DeptDO> list;
+        list = deptMapper.selectList(
+                new LambdaQueryWrapperX<DeptDO>()
+                        .eq(DeptDO::getDeleted, 0)
+                        .orderByDesc(DeptDO::getId)
+        );
+        // 将DO转换为下拉框VO（label=name，value=id）
+        return CollectionUtils.convertList(list, deptDO -> {
+            OptionVO vo = new OptionVO();
+            vo.setLabel(deptDO.getName());
+            vo.setValue(deptDO.getSysDeptId());
+            return vo;
+        });
+    }
 }
