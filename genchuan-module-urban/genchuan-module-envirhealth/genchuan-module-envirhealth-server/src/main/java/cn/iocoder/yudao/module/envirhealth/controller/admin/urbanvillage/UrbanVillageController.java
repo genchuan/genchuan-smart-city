@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.UrbanVillageDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.UrbanVillagePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.UrbanVillageRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.UrbanVillageSaveReqVO;
@@ -112,4 +113,10 @@ public class UrbanVillageController {
         return success(pageResult);
     }
 
+    @GetMapping("/chart/dashboard")
+    @Operation(summary = "卡片/圆环图/柱状图/统计(全部)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:urban-village:query')")
+    public CommonResult<UrbanVillageDashboardVO> getUrbanVillageDashboard() {
+        return CommonResult.success(urbanVillageService.getUrbanVillageDashboard());
+    }
 }

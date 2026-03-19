@@ -1,9 +1,10 @@
 package cn.iocoder.yudao.module.envirhealth.service.urbanvillage;
 
+import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.UrbanVillageDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.UrbanVillagePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.UrbanVillageSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.urbanvillage.detail.UrbanVillageDetailDO;
-import cn.iocoder.yudao.module.envirhealth.util.codegenerator.urbanvillage.UrbanVillageCodeGenerator;
+import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.urbanvillage.UrbanVillageCodeGenerator;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -93,4 +94,24 @@ public class UrbanVillageServiceImpl implements UrbanVillageService {
         return new PageResult<>(list, total);
     }
 
+    @Override
+    public UrbanVillageDashboardVO getUrbanVillageDashboard() {
+        UrbanVillageDashboardVO vo = new UrbanVillageDashboardVO();
+
+        // 1. 卡片数据
+        vo.setTotalVillageCount(urbanVillageMapper.selectTotalVillageCount());
+        vo.setNormalOperationCount(urbanVillageMapper.selectNormalOperationCount());
+        vo.setCleaningStandardMetCount(urbanVillageMapper.selectCleaningStandardMetCount());
+        vo.setProblemHandledCount(urbanVillageMapper.selectProblemHandledCount());
+        vo.setReviewPassedCount(urbanVillageMapper.selectReviewPassedCount());
+
+        // 2. 圆环图数据
+        vo.setOperationStatusDistribution(urbanVillageMapper.selectOperationStatusDistribution());
+        vo.setAreaDistribution(urbanVillageMapper.selectAreaDistribution());
+
+        // 3. 柱状图数据
+        vo.setAssessmentScoreByVillage(urbanVillageMapper.selectAssessmentScoreByVillage());
+
+        return vo;
+    }
 }
