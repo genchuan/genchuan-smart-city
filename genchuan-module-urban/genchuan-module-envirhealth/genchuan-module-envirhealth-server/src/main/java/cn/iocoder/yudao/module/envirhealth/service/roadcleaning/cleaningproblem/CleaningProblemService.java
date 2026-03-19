@@ -6,7 +6,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.roadcleaning.vo.clea
 import cn.iocoder.yudao.module.envirhealth.controller.admin.roadcleaning.vo.cleaningproblem.CleaningProblemPendingRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.roadcleaning.vo.cleaningproblem.CleaningProblemSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning.CleaningProblemDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning.Detail.CleaningProblemDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning.CleaningProblemDetailDO;
 import jakarta.validation.Valid;
 
 /**

@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.envirhealth.service.publictoilet.toiletcleaningt
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.toiletcleaningtask.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ToiletCleaningTaskDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.ToiletCleaningTaskDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ToiletCleaningTaskDetailDO;
 import jakarta.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
 

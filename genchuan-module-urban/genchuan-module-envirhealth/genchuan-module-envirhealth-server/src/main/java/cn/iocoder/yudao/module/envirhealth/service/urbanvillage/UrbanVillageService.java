@@ -5,7 +5,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.Urba
 import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.UrbanVillagePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.UrbanVillageSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.urbanvillage.UrbanVillageDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.urbanvillage.detail.UrbanVillageDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.urbanvillage.UrbanVillageDetailDO;
 import jakarta.validation.Valid;
 
 /**

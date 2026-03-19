@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.envirhealth.service.urbanvillage;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.UrbanVillageDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.UrbanVillagePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.UrbanVillageSaveReqVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.urbanvillage.detail.UrbanVillageDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.urbanvillage.UrbanVillageDetailDO;
 import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.urbanvillage.UrbanVillageCodeGenerator;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;

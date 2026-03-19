@@ -5,7 +5,7 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.UrbanVillagePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.urbanvillage.UrbanVillageDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.urbanvillage.detail.UrbanVillageDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.urbanvillage.UrbanVillageDetailDO;
 import cn.iocoder.yudao.module.envirhealth.framework.util.vo.BarItemVO;
 import cn.iocoder.yudao.module.envirhealth.framework.util.vo.PieItemVO;
 import org.apache.ibatis.annotations.Mapper;

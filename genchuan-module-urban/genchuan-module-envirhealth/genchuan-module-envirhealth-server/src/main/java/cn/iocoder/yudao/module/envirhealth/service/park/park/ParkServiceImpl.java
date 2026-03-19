@@ -2,11 +2,11 @@ package cn.iocoder.yudao.module.envirhealth.service.park.park;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.park.ParkDashboardVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.park.ParkPageReqVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.park.ParkSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.ParkDashboardVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.ParkPageReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.ParkSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.park.ParkDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.park.detail.ParkDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.park.ParkDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.park.ParkMapper;
 import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.park.ParkCodeGenerator;
 import jakarta.annotation.Resource;

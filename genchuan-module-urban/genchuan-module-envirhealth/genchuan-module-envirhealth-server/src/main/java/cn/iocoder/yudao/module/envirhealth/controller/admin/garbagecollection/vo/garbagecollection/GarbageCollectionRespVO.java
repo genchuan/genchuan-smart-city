@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.v
 import cn.idev.excel.annotation.ExcelIgnore;
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
-import cn.iocoder.yudao.module.envirhealth.util.convert.LocalDateTimeConverter;
+import cn.iocoder.yudao.module.envirhealth.framework.util.convert.LocalDateTimeConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

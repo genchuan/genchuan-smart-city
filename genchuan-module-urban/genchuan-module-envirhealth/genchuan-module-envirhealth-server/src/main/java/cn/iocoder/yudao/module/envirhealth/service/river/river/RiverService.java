@@ -4,7 +4,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.river.RiverPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.river.RiverSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.RiverDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.detail.RiverDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.RiverDetailDO;
 import jakarta.validation.Valid;
 
 /**

@@ -11,7 +11,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserPag
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.UserDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.detail.UserDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.UserDetailDO;
 import cn.iocoder.yudao.module.envirhealth.service.user.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

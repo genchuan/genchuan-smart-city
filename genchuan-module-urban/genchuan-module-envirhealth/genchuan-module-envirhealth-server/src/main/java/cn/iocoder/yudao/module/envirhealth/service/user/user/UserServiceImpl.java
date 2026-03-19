@@ -8,9 +8,9 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserOpt
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.UserDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.detail.UserDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.UserDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.user.UserMapper;
-import cn.iocoder.yudao.module.envirhealth.util.codegenerator.user.UserCodeGenerator;
+import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.user.UserCodeGenerator;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;

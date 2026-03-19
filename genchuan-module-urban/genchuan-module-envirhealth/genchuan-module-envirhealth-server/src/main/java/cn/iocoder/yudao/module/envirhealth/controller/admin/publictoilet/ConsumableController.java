@@ -11,7 +11,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.cons
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.consumable.ConsumableSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ConsumableDO;
 import cn.iocoder.yudao.module.envirhealth.service.publictoilet.consumable.ConsumableService;
-import cn.iocoder.yudao.module.envirhealth.util.vo.OptionVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

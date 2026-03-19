@@ -4,7 +4,7 @@
 <mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.publicinstitution.PublicInstitutionMapper">
 
     <!-- 公共机构详情查询结果映射 -->
-    <resultMap id="PublicInstitutionDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.publicinstitution.detail.PublicInstitutionDetailDO">
+    <resultMap id="PublicInstitutionDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.publicinstitution.PublicInstitutionDetailDO">
         <!-- 继承PublicInstitutionDO的基础字段 -->
         <id column="id" property="id"/>
         <result column="institution_id" property="institutionId"/>
@@ -78,7 +78,6 @@
                 AND pi.address LIKE '%' || #{reqVO.address} || '%'
             </if>
             <if test="reqVO.cleanerIds != null and reqVO.cleanerIds != ''">
-                <!-- 这里也要加 ::TEXT，避免JSON类型模糊查询报错 -->
                 AND pi.cleaner_ids::TEXT LIKE '%' || #{reqVO.cleanerIds} || '%'
             </if>
         </where>
@@ -99,26 +98,14 @@
         LEFT JOIN sys_user u ON pi.manager_id = u.user_id AND u.deleted = 0 AND u.tenant_id = 1
         LEFT JOIN sys_operation_status os ON pi.operation_status_id = os.sys_operation_status_id AND os.deleted = 0 AND os.tenant_id = 1
         LEFT JOIN sys_user cu ON cu.user_id::TEXT = ANY (
-        string_to_array(
-        regexp_replace(
-        regexp_replace(
-        regexp_replace(
-        regexp_replace(pi.cleaner_ids::TEXT, '\[|\]', '', 'g'), -- 关键：JSON转字符串
-        '"', '', 'g'
-        ),
-        ' ', '', 'g'
-        ),
-        ',', '|', 'g'
-        ),
-        '|'
-        )
-        ) AND cu.deleted = 0 AND cu.tenant_id = 1
+        ARRAY(SELECT json_array_elements_text(pi.cleaner_ids::TEXT::json)::TEXT)
+        ) AND cu.deleted = 0
         <include refid="whereConditions" />
         GROUP BY
         pi.id,
         it.name, a.area_name, u.user_name, os.name
         ORDER BY pi.id DESC
-        LIMIT #{reqVO.offset}, #{reqVO.pageSize}
+        LIMIT #{reqVO.pageSize} OFFSET #{reqVO.offset}
     </select>
 
     <!-- 查询符合条件的总数 -->

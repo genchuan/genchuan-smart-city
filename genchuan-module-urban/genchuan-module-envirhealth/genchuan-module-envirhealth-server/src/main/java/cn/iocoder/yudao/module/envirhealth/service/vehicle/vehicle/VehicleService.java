@@ -5,7 +5,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.V
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehiclePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehicleSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.VehicleDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.detail.VehicleDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.VehicleDetailDO;
 import jakarta.validation.Valid;
 
 import java.util.List;

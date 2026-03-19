@@ -7,9 +7,9 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.publicinstitution.vo
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publicinstitution.vo.publicinstitution.PublicInstitutionPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publicinstitution.vo.publicinstitution.PublicInstitutionSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publicinstitution.PublicInstitutionDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publicinstitution.detail.PublicInstitutionDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publicinstitution.PublicInstitutionDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.publicinstitution.PublicInstitutionMapper;
-import cn.iocoder.yudao.module.envirhealth.util.codegenerator.publicinstitution.PublicInstitutionCodeGenerator;
+import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.publicinstitution.PublicInstitutionCodeGenerator;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;

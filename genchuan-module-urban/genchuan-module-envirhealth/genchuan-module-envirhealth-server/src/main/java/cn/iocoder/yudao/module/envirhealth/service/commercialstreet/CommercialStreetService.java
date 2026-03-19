@@ -5,7 +5,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.commercialstreet.vo.
 import cn.iocoder.yudao.module.envirhealth.controller.admin.commercialstreet.vo.CommercialStreetPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.commercialstreet.vo.CommercialStreetSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.commercialstreet.CommercialStreetDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.commercialstreet.detail.CommercialStreetDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.commercialstreet.CommercialStreetDetailDO;
 import jakarta.validation.Valid;
 
 /**

@@ -11,7 +11,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.commercialstreet.vo.
 import cn.iocoder.yudao.module.envirhealth.controller.admin.commercialstreet.vo.CommercialStreetRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.commercialstreet.vo.CommercialStreetSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.commercialstreet.CommercialStreetDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.commercialstreet.detail.CommercialStreetDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.commercialstreet.CommercialStreetDetailDO;
 import cn.iocoder.yudao.module.envirhealth.service.commercialstreet.CommercialStreetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

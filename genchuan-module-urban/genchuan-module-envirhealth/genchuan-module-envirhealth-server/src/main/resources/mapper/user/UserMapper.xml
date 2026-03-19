@@ -3,7 +3,7 @@
 <mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.user.UserMapper">
 
     <!-- 用户详情结果映射 -->
-    <resultMap id="UserDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.detail.UserDetailDO">
+    <resultMap id="UserDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.UserDetailDO">
         <!-- 基础字段（继承UserDO） -->
         <id column="id" property="id"/>
         <result column="user_id" property="userId"/>

@@ -5,9 +5,9 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.task.vo.TaskPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.TaskDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.detail.TaskDetailWithGarbageTransferDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.detail.TaskDetailWithPublicInstitutionDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.detail.TaskDetailWithPublicToiletDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.TaskDetailWithGarbageTransferDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.TaskDetailWithPublicInstitutionDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.TaskDetailWithPublicToiletDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

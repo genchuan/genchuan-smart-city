@@ -1,9 +1,9 @@
 package cn.iocoder.yudao.module.envirhealth.service.image;
 
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
-import cn.iocoder.yudao.module.envirhealth.api.file.FileFeignClient;
-import cn.iocoder.yudao.module.envirhealth.util.convert.UrlConvert;
-import cn.iocoder.yudao.module.envirhealth.util.vo.ImageUploadRespVO;
+import cn.iocoder.yudao.module.envirhealth.framework.file.FileFeignClient;
+import cn.iocoder.yudao.module.envirhealth.framework.util.convert.UrlConvert;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.image.vo.ImageUploadRespVO;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

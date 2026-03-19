@@ -3,7 +3,7 @@
 <mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.publicinstitution.InstitutionInspectionMapper">
 
     <!-- 公共机构核查详情结果映射 -->
-    <resultMap id="InstitutionInspectionDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.publicinstitution.detail.InstitutionInspectionDetailDO">
+    <resultMap id="InstitutionInspectionDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.publicinstitution.InstitutionInspectionDetailDO">
         <!-- 基础字段（继承自InstitutionInspectionDO） -->
         <id column="id" property="id"/>
         <result column="inspection_id" property="inspectionId"/>

@@ -10,7 +10,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.river.River
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.river.RiverRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.river.RiverSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.RiverDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.detail.RiverDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.RiverDetailDO;
 import cn.iocoder.yudao.module.envirhealth.service.river.river.RiverService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

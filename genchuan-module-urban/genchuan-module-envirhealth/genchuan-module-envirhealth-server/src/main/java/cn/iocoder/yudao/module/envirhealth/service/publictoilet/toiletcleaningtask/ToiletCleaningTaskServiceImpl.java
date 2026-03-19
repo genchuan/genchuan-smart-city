@@ -3,13 +3,13 @@ package cn.iocoder.yudao.module.envirhealth.service.publictoilet.toiletcleaningt
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import cn.iocoder.yudao.module.envirhealth.api.file.FileFeignClient;
+import cn.iocoder.yudao.module.envirhealth.framework.file.FileFeignClient;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.toiletcleaningtask.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ToiletCleaningTaskDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.ToiletCleaningTaskDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ToiletCleaningTaskDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.publictoilet.ToiletCleaningTaskMapper;
-import cn.iocoder.yudao.module.envirhealth.util.codegenerator.publictoilet.ToiletCleaningTaskCodeGenerator;
-import cn.iocoder.yudao.module.envirhealth.util.convert.UrlConvert;
+import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.publictoilet.ToiletCleaningTaskCodeGenerator;
+import cn.iocoder.yudao.module.envirhealth.framework.util.convert.UrlConvert;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import jakarta.annotation.Resource;
