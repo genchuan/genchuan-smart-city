@@ -7,7 +7,6 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dept.vo.DeptPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dept.vo.DeptSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dept.DeptDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.FacilityDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.dept.DeptMapper;
 import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import jakarta.annotation.Resource;

@@ -1,5 +1,6 @@
-package cn.iocoder.yudao.module.envirhealth.dal.dataobject.market;
+package cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary;
 
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.market.MarketDO;
 import cn.iocoder.yudao.module.envirhealth.framework.util.json.StringSplitUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;

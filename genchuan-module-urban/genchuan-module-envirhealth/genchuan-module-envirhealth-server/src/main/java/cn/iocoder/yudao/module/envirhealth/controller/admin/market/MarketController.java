@@ -10,7 +10,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.MarketPage
 import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.MarketRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.MarketSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.market.MarketDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.market.MarketDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.MarketDetailDO;
 import cn.iocoder.yudao.module.envirhealth.service.market.MarketService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

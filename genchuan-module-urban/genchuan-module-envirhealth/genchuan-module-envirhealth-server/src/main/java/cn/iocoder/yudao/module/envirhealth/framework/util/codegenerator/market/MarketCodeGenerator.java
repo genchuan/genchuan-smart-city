@@ -1,7 +1,6 @@
 package cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.market;
 
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.market.MarketMapper;
-import cn.iocoder.yudao.module.envirhealth.dal.mysql.park.ParkMapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 

@@ -5,7 +5,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.MarketPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.MarketSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.market.MarketDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.market.MarketDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.MarketDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.market.MarketMapper;
 import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.market.MarketCodeGenerator;
 import jakarta.annotation.Resource;

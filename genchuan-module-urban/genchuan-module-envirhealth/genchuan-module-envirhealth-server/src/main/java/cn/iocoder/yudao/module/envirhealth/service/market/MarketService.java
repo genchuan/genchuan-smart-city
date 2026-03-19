@@ -4,7 +4,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.MarketPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.MarketSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.market.MarketDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.market.MarketDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.MarketDetailDO;
 import jakarta.validation.Valid;
 
 /**
