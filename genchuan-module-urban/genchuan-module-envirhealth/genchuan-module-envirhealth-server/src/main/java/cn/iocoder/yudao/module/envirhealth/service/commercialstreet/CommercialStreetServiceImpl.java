@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.envirhealth.service.commercialstreet;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.commercialstreet.vo.CommercialStreetDashboardRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.commercialstreet.vo.CommercialStreetPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.commercialstreet.vo.CommercialStreetSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.commercialstreet.CommercialStreetDO;
@@ -88,5 +89,25 @@ public class CommercialStreetServiceImpl implements CommercialStreetService {
 
         List<CommercialStreetDetailDO> list = commercialStreetMapper.selectDetailPage(pageReqVO);
         return new PageResult<>(list, total);
+    }
+
+    @Override
+    public CommercialStreetDashboardRespVO getCommercialStreetDashboard() {
+        CommercialStreetDashboardRespVO resp = new CommercialStreetDashboardRespVO();
+
+        // 1. 卡片数据
+        resp.setTotalStreetCount(commercialStreetMapper.selectTotalStreetCount());
+        resp.setCleaningCoverageMetCount(commercialStreetMapper.selectCleaningCoverageMetCount());
+        resp.setFacilityIntactCount(commercialStreetMapper.selectFacilityIntactCount());
+        resp.setCollectionCompletedCount(commercialStreetMapper.selectCollectionCompletedCount());
+
+        // 2. 圆环图数据
+        resp.setAreaDistribution(commercialStreetMapper.selectAreaDistributionPie());
+        resp.setOperationStatusDistribution(commercialStreetMapper.selectOperationStatusDistributionPie());
+
+        // 3. 柱状图数据
+        resp.setProblemDisposalDurationByStreet(commercialStreetMapper.selectProblemDisposalDurationByStreetBar());
+
+        return resp;
     }
 }

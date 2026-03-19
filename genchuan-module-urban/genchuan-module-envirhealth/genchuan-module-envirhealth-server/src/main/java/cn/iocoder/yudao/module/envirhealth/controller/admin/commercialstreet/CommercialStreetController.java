@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.commercialstreet.vo.CommercialStreetDashboardRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.commercialstreet.vo.CommercialStreetPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.commercialstreet.vo.CommercialStreetRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.commercialstreet.vo.CommercialStreetSaveReqVO;
@@ -110,5 +111,11 @@ public class CommercialStreetController {
                 commercialStreetService.getCommercialStreetDetailPage(pageReqVO);
 
         return success(pageResult);
+    }
+
+    @GetMapping
+    @Operation(summary = "卡片/圆环图/柱状图/统计(全部)")
+    public CommonResult<CommercialStreetDashboardRespVO> getCommercialStreetDashboard() {
+        return success(commercialStreetService.getCommercialStreetDashboard());
     }
 }
