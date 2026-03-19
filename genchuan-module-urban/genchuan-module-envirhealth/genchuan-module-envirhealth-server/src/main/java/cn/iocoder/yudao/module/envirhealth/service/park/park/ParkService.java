@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.envirhealth.service.park.park;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.park.ParkDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.park.ParkPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.park.ParkSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.park.ParkDO;
@@ -52,6 +53,17 @@ public interface ParkService {
      */
     PageResult<ParkDO> getParkPage(ParkPageReqVO pageReqVO);
 
+    /**
+     * 获得公园分页
+     *
+     * @param pageReqVO 分页查询
+     * @return 公园分页
+     */
     PageResult<ParkDetailDO> getParkDetailPage(ParkPageReqVO pageReqVO);
 
+    /**
+     * 获取公园看板统计数据
+     * @return 看板统计VO
+     */
+    ParkDashboardVO getParkDashboardDashboard();
 }

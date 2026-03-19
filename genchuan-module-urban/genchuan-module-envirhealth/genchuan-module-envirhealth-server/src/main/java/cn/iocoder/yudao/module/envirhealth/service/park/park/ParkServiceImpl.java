@@ -2,12 +2,13 @@ package cn.iocoder.yudao.module.envirhealth.service.park.park;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.park.ParkDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.park.ParkPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.park.ParkSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.park.ParkDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.park.detail.ParkDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.park.ParkMapper;
-import cn.iocoder.yudao.module.envirhealth.util.codegenerator.park.ParkCodeGenerator;
+import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.park.ParkCodeGenerator;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -88,5 +89,26 @@ public class ParkServiceImpl implements ParkService {
 
         List<ParkDetailDO> list = parkMapper.selectDetailPage(pageReqVO);
         return new PageResult<>(list, total);
+    }
+
+    @Override
+    public ParkDashboardVO getParkDashboardDashboard() {
+        ParkDashboardVO vo = new ParkDashboardVO();
+
+        // 1. 卡片数据
+        vo.setTotalParkCount(parkMapper.selectTotalParkCount());
+        vo.setNormalOperationCount(parkMapper.selectNormalOperationCount());
+        vo.setCleaningStandardMetCount(parkMapper.selectCleaningStandardMetCount());
+        vo.setGreeningSurvivalStandardMetCount(parkMapper.selectGreeningSurvivalStandardMetCount());
+        vo.setFacilityIntactCount(parkMapper.selectFacilityIntactCount());
+
+        // 2. 圆环图数据
+        vo.setOperationStatusDistribution(parkMapper.selectOperationStatusDistribution());
+        vo.setAreaDistribution(parkMapper.selectAreaDistribution());
+
+        // 3. 柱状图数据
+        vo.setEnvironmentComplianceRateByPark(parkMapper.selectEnvironmentComplianceRateByPark());
+
+        return vo;
     }
 }

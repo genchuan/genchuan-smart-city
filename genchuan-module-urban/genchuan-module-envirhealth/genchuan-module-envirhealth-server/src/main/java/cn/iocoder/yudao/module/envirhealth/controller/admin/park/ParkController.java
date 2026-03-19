@@ -6,9 +6,11 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.park.ParkDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.park.ParkPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.park.ParkRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.park.ParkSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.publicinstitution.vo.publicinstitution.PublicInstitutionDashboardRespVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.park.ParkDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.park.detail.ParkDetailDO;
 import cn.iocoder.yudao.module.envirhealth.service.park.park.ParkService;
@@ -108,5 +110,12 @@ public class ParkController {
     public CommonResult<PageResult<ParkDetailDO>> getParkDetailPage(@Valid ParkPageReqVO pageReqVO) {
         PageResult<ParkDetailDO> pageResult = parkService.getParkDetailPage(pageReqVO);
         return success(pageResult);
+    }
+
+    @GetMapping("/chart/dashboard")
+    @Operation(summary = "卡片/圆环图/柱状图/统计(全部)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:park:query')")
+    public CommonResult<ParkDashboardVO> getParkDashboardDashboard() {
+        return success(parkService.getParkDashboardDashboard());
     }
 }
