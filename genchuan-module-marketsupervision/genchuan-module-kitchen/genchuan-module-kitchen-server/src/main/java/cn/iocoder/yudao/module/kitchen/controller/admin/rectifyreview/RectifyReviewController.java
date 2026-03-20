@@ -65,7 +65,7 @@ public class RectifyReviewController {
         return success(respVO);
     }
 
-    //新增，从预警的“发送整改”
+    //新增.即预警页面的“生成复审台账”
     @PostMapping("/review-add")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-add')")
     @Operation(summary = "新增-整改通知复审记录操作")

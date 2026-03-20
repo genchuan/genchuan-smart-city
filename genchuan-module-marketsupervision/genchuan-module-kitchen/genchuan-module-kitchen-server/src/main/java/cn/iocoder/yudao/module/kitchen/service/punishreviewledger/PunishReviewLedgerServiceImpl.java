@@ -257,9 +257,6 @@ public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService 
         // =========================
         punishReviewLedgerMapper.updateById(ledgerDO);
 
-
-//        6.调用处罚通知书生成接口 TODO
-        // =========================
         // 6. 返回台账ID
         // =========================
         return ledgerDO.getId();

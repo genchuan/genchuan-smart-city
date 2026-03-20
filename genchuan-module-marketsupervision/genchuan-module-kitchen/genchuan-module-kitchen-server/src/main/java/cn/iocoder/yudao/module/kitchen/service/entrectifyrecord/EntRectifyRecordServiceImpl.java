@@ -117,6 +117,9 @@ public class EntRectifyRecordServiceImpl implements EntRectifyRecordService {
         //1.获取整改通知书
         RectifyNoticeDO rectifyNoticeDO = rectifyNoticeMapper.selectById(createReqVO.getRectifyNoticeId());
         VerifyUtil.verifyNotNullWithMsg(rectifyNoticeDO,"整改通知书不存在数据库");
+        if (!"待送达".equals(rectifyNoticeDO.getReceiveStatus())){
+            throw exception("只有处于待送达的整改通知书才能产生企业记录");
+        }
 
         insertDO.setRectifyNoticeId(createReqVO.getRectifyNoticeId());
 

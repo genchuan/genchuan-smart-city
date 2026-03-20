@@ -28,7 +28,10 @@
         rn.receive_status,
         err.rectify_status,
 
-        lrl.ledger_code AS law_review_ledger_code
+        lrl.ledger_code AS law_review_ledger_code,
+
+        rr.create_time,
+        rr.update_time
 
         FROM rectify_review rr
 

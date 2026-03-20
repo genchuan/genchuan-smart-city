@@ -12,14 +12,14 @@ public class AddAiAlertMessageReq {
     @Schema(description = "[设备关联用户ID列表] JSON格式存储的用户ID列表",example = "[100,101]",hidden = true)
     private String userIds;
 
-    @Schema(description = "[场景实例ID] 场景实例ID", example = "54",hidden = true)
-    private String sceneId;
+    @Schema(description = "[场景实例ID] 场景实例ID", example = "scene_088930")
+    private String sceneId ;
 
-    @Schema(description = "[功能算法编码] 功能算法编码",example = "100200")
+    @Schema(description = "[功能算法编码] 功能算法编码",example = "100600")
     private String aiAbilityCode;
 
     //TODO 联通字典表
-    @Schema(description = "[告警类型] 告警类型", example = "1",hidden = true)
+    @Schema(description = "[告警类型] 告警类型", example = "13")
     private Integer alertType;
 
     @Schema(description = "[消息产生时间] 消息产生时间(特别注意）",hidden = true)
@@ -35,7 +35,7 @@ public class AddAiAlertMessageReq {
     private Integer alertSource = 6;
 
     //TODO 先自己上传图片
-    @Schema(description = "[图片地址] 通用图片地址或视频地址（人脸布控和车牌布控时为空），时光缩影下为视频下载地址", example = "https://www.iocoder.cn")
+    @Schema(description = "[图片地址] 通用图片地址或视频地址（人脸布控和车牌布控时为空），时光缩影下为视频下载地址", example = "http://112.47.127.21:59000/shunchang/avatar/29904d39-8a4f-4c15-ac28-5b34c3781f11.png")
     private String srcUrl;
 
     @Schema(description = "[图片刷新token] 	通用图片刷新token（人脸布控和车牌布控时为空）时光缩影下为视频刷新token",hidden = true)

@@ -13,8 +13,10 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileRespVO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.aialertmessage.AiAlertMessageDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.dictionary.cancelreasondict.CancelReasonDictDO;
+import cn.iocoder.yudao.module.kitchen.dal.dataobject.dictionary.illegaltypedict.IllegalTypeDictDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifyreview.RectifyReviewDO;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.aialertmessage.AiAlertMessageMapper;
+import cn.iocoder.yudao.module.kitchen.dal.mysql.dictionary.illegaltypedict.IllegalTypeDictMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.rectifynotice.RectifyNoticeMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.rectifyreview.RectifyReviewMapper;
 import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.file.FileUploadService;
@@ -22,6 +24,7 @@ import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.name.NameUtil;
 import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.verify.VerifyUtil;
 import cn.iocoder.yudao.module.kitchen.service.dictionary.cancelreasondict.CancelReasonDictService;
 import cn.iocoder.yudao.module.kitchen.service.rectifynotice.RectifyNoticeService;
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
@@ -69,6 +72,9 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
 
     @Resource
     private FileUploadService fileUploadService;
+
+    @Resource
+    private IllegalTypeDictMapper illegalTypeDictMapper;
 
     // 在类里定义 ObjectMapper 实例
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -121,7 +127,6 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
         PageResult<RectifyReviewLedgerRespVO> pageResult= new PageResult<>();
         pageResult.setList(list);
 
-//        TODO 总条数
         Long count = rectifyReviewMapper.selectLedgerPageCount(reqVO);
         pageResult.setTotal(count);
         return pageResult;
@@ -230,7 +235,7 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
 
         rectifyReviewMapper.updateById(reviewDO);        // 保存复审信息
 
-        // 5. 调用整改通知书生成接口 TODO
+        // 5. 调用整改通知书生成接口
         RectifyNoticeSaveReqVO rectifyNoticeSaveReqVO =new RectifyNoticeSaveReqVO();
         //构造 通知书 的 插入VO
         rectifyNoticeSaveReqVO.setRectifyReviewId(reviewDO.getId());
@@ -293,6 +298,17 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
         if (reqVO == null || reqVO.getEntId() == null) {
             throw new IllegalArgumentException("企业ID不能为空");
         }
+        //校验预警
+        VerifyUtil.verifyNotNullWithMsg(reqVO.getAiAlertMessageId(),"预警id不能为空");
+        AiAlertMessageDO aiAlertMessageDO = aiAlertMessageMapper.selectById(reqVO.getAiAlertMessageId());
+        VerifyUtil.verifyNotNullWithMsg(aiAlertMessageDO,"Ai预警不存在");
+        if (aiAlertMessageDO.getRectifyReviewId()!=null){
+            throw exception("该预警已产生整改台账记录，请勿重复发送");
+        }
+        //校验违规类型字典
+        VerifyUtil.verifyNotNullWithMsg(aiAlertMessageDO.getAiAbilityCode(),"违规类型不存在");
+        IllegalTypeDictDO illegalTypeDictDO = illegalTypeDictMapper.selectByTypeCode(aiAlertMessageDO.getAiAbilityCode());
+        VerifyUtil.verifyNotNullWithMsg(illegalTypeDictDO,"违规类型字典不存在");
 
         // ========= 1.创建DO对象 =========
         RectifyReviewDO insertDO = new RectifyReviewDO();
@@ -304,14 +320,49 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
         insertDO.setEntId(reqVO.getEntId());
 
         // ========= 4.违规类型（暂时写死，后续根据告警映射） =========
-        insertDO.setIllegalTypeId(1L);
+        insertDO.setIllegalTypeId(illegalTypeDictDO.getId());
 
-        // ========= 5.违规等级（暂时写死，后续根据告警映射） =========
+        // ========= 5.违规等级（暂时写死，后续根据告警映射）TODO =========
         insertDO.setIllegalLevelId(1L);
 
-        // ========= 6.违规证据（TODO：后续根据告警或上传） =========
+        // ========= 6.违规证据（根据AI预警的 违规图片或 保底图片） =========
         // 统一用 JSON 数组格式字符串
-        insertDO.setEvidenceUrl("[{\"name\":\"Snipaste_2026-03-09_14-23-50.png\",\"type\":\"image\",\"url\":\"http://112.47.127.21:59000/shunchang/avatar/7dfda1f0-49eb-4ba6-bfb9-30560bdc4a21.png\"},{\"name\":\"Snipaste_2026-03-09_14-22-05.png\",\"type\":\"image\",\"url\":\"http://112.47.127.21:59000/shunchang/avatar/2eede5e1-6b48-41bc-8f03-b4b145a68681.png\"}]");
+        if (aiAlertMessageDO.getSrcUrl() != null && !aiAlertMessageDO.getSrcUrl().isEmpty()) {
+            // 1. 按逗号分割 URL 字符串，得到 URL 数组
+            String[] urlArray = aiAlertMessageDO.getSrcUrl().split(",");
+
+            // 2. 构建包含每个 URL 信息的 Map 列表
+            List<Map<String, String>> evidenceList = new ArrayList<>();
+            for (String url : urlArray) {
+                url = url.trim(); // 去除可能存在的空格
+                if (url.isEmpty()) {
+                    continue; // 跳过空字符串
+                }
+
+                Map<String, String> item = new LinkedHashMap<>(); // 保持顺序
+                // 从 URL 中提取文件名（例如 http://xxx.com/abc.png -> abc.png）
+                String fileName = url.substring(url.lastIndexOf('/') + 1);
+                // 如果文件名后带查询参数，则去除（如 abc.png?t=123 -> abc.png）
+                if (fileName.contains("?")) {
+                    fileName = fileName.substring(0, fileName.indexOf('?'));
+                }
+
+                item.put("name", fileName);
+                item.put("type", "image");    // 默认类型为图片
+                item.put("url", url);
+                evidenceList.add(item);
+            }
+
+            // 3. 将 List 转换为 JSON 字符串（使用 Fastjson 或 Jackson）
+            String evidenceUrlJson = JSON.toJSONString(evidenceList); // Fastjson
+            // 如果使用 Jackson，则为：new ObjectMapper().writeValueAsString(evidenceList);
+
+            // 4. 设置到插入对象
+            insertDO.setEvidenceUrl(evidenceUrlJson);
+        } else {
+            // 没有 srcUrl 时使用默认的 JSON 字符串
+            insertDO.setEvidenceUrl("[{\"name\":\"违规图片1.png\",\"type\":\"image\",\"url\":\"http://112.47.127.21:59000/shunchang/avatar/676ab23c-47c0-4d20-860a-c0d2021861e1.png\"},{\"name\":\"违规图片2.png\",\"type\":\"image\",\"url\":\"http://112.47.127.21:59000/shunchang/avatar/29904d39-8a4f-4c15-ac28-5b34c3781f11.png\"}]");
+        }
 
         // ========= 7.草拟时间（当前时间） =========
         insertDO.setDraftTime(LocalDateTime.now());
