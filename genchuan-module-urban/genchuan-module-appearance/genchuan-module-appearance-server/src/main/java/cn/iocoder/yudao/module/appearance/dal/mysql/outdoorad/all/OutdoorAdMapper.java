@@ -1,11 +1,11 @@
-package cn.iocoder.yudao.module.appearance.dal.mysql.outdoorad;
+package cn.iocoder.yudao.module.appearance.dal.mysql.outdoorad.all;
 
 import java.util.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
-import cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.OutdoorAdDO;
+import cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.all.OutdoorAdDO;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.all.vo.*;
 

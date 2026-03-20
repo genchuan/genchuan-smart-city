@@ -30,8 +30,8 @@ import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 import cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.all.vo.*;
-import cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.OutdoorAdDO;
-import cn.iocoder.yudao.module.appearance.service.outdoorad.OutdoorAdService;
+import cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.all.OutdoorAdDO;
+import cn.iocoder.yudao.module.appearance.service.outdoorad.all.OutdoorAdService;
 
 @Tag(name = "管理后台 - 户外广告 - 全部")
 @RestController

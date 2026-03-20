@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.appearance.service.outdoorad;
+package cn.iocoder.yudao.module.appearance.service.outdoorad.all;
 
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -7,11 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.all.vo.*;
-import cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.OutdoorAdDO;
+import cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.all.OutdoorAdDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
-import cn.iocoder.yudao.module.appearance.dal.mysql.outdoorad.OutdoorAdMapper;
+import cn.iocoder.yudao.module.appearance.dal.mysql.outdoorad.all.OutdoorAdMapper;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.appearance.enums.ErrorCodeConstants.*;
@@ -200,5 +200,4 @@ public class OutdoorAdServiceImpl implements OutdoorAdService {
     public List<Map<String, Object>> getReviewResultDistribution() {
         return outdoorAdMapper.getReviewResultDistribution();
     }
-
 }

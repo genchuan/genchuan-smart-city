@@ -1,11 +1,10 @@
-package cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad;
+package cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.all;
 
 import lombok.*;
-import java.util.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.LocalDateTime;
-import java.time.LocalDateTime;
+
 import com.baomidou.mybatisplus.annotation.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 
