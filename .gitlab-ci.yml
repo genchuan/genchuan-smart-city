@@ -57,10 +57,10 @@ archive_jar:
     # 2. 循环复制每个模块的JAR包（Shell数组循环）
     - for module in $MODULES; do
       # 获取模块的JAR路径
-      jarPath=${JAR_PATH_MAP[$module]}
+        jarPath=${JAR_PATH_MAP[$module]}
       # 拼接完整的JAR文件路径（Shell通配符匹配最新JAR）
-      jarFile="jarPath/target/$module.jar"
-      cp -f "$jarFile" "$ARCHIVE_ROOT/$jarFile.jar"
+        jarFile="jarPath/target/$module.jar"
+        cp -f "$jarFile" "$ARCHIVE_ROOT/$jarFile.jar"
       done
   dependencies:
     - build  # 依赖build阶段的产物
