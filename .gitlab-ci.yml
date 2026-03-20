@@ -1,55 +1,65 @@
 stages:
-  - BuildAndPush
-
+  - build
+  - archive_jar
 variables:
-  DOCKER_REGISTRY: "harbor.genchuan.cn"
-  DOCKER_USERNAME: "guoyuanhong"
-  DOCKER_PASSWORD: "Gyh12345"
-  MAVEN_IMAGE: "harbor.genchuan.cn/library/maven:3.9.6-alpine-jdk17-docker"
-  DOCKER_BUILDKIT: "1"  # 启用 Docker BuildKit 提高构建速度
-  POD_TAG: "$CI_COMMIT_BRANCH"  # Podman 镜像标签
-
-BuildAndPush:
-  stage: BuildAndPush
-  image: $MAVEN_IMAGE
-  variables:
-    DOCKER_BUILDKIT: "0"
+  MAVEN_SKIP_TEST: "-Dmaven.test.skip=true"
+  ARCHIVE_ROOT: "/home/data/java/$(date +%Y-%m-%d)"
+  MODULES: "yudao-gateway yudao-module-system-server yudao-module-infra-server yudao-module-bpm-server genchuan-module-envirhealth-server genchuan-module-facility-server genchuan-module-data-server genchuan-module-evaluate-server genchuan-module-park-server genchuan-module-kitchen-server"
+build:
+  stage: build
+  tags:
+    - genchuan-cloud
   script:
-    - mvn clean package -Dmaven.test.skip=true
-    - echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
-    - |
-      if [ "$CI_COMMIT_BRANCH" == "genchuan-openGauss" ]; then
-        echo "当前分支是 $CI_COMMIT_BRANCH，开始构建并推送Docker镜像..."
-        # 登录Harbor仓库
-        echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
-        # 遍历所有模块并构建 Docker 镜像
-        for module in "yudao-gateway" "yudao-module-system-server" "yudao-module-infra-server" "yudao-module-bpm-server" "genchuan-module-envirhealth-server" "genchuan-module-facility-server" "genchuan-module-data-server" "genchuan-module-evaluate-server" "genchuan-module-park-server" "genchuan-module-kitchen-server"; do
-          case $module in
-            # 宇道四个基础服务
-            "yudao-gateway") jar_path="yudao-gateway" ;;
-            "yudao-module-system-server") jar_path="yudao-module-system/yudao-module-system-server" ;;
-            "yudao-module-infra-server") jar_path="yudao-module-infra/yudao-module-infra-server" ;;
-            "yudao-module-bpm-server") jar_path="yudao-module-bpm/yudao-module-bpm-server" ;;
-            # genchuan 新服务      
-            "genchuan-module-envirhealth-server") jar_path="genchuan-module-urban/genchuan-module-envirhealth/genchuan-module-envirhealth-server" ;;
-            "genchuan-module-facility-server") jar_path="genchuan-module-urban/genchuan-module-facility/genchuan-module-facility-server" ;;
-            "genchuan-module-data-server") jar_path="genchuan-module-datahub/genchuan-module-data/genchuan-module-data-server" ;;
-            "genchuan-module-evaluate-server") jar_path="genchuan-module-datahub/genchuan-module-evaluate/genchuan-module-evaluate-server" ;;
-            "genchuan-module-park-server") jar_path="genchuan-module-park/genchuan-module-park-server" ;;
-            "genchuan-module-kitchen-server") jar_path="genchuan-module-marketsupervision/genchuan-module-kitchen/genchuan-module-kitchen-server" ;;
-      
-      
-          esac
-          docker build --build-arg MODULE_NAME="$module" --build-arg JAR_PATH="$jar_path" -t "$DOCKER_REGISTRY/sccsgl/$module:$POD_TAG" .
-          docker push "$DOCKER_REGISTRY/sccsgl/$module:$POD_TAG"
-        done
-        echo "所有镜像构建并推送完成！"
-      else
-        echo "当前分支不是 genchuan-openGauss（当前分支：$CI_COMMIT_BRANCH），跳过Docker镜像构建和推送步骤"
-      fi
+    - echo "===== 开始编译 ====="
+    - mvn clean package $MAVEN_SKIP_TEST -U | tee maven-build.log
+    - echo "===== 编译完成 ====="
+  artifacts:
+    paths:
+      - "**/target/*.jar" 
+      - maven-build.log
+    expire_in: 1h
   retry:
     max: 2
     when:
       - runner_system_failure
       - stuck_or_timeout_failure
       - unknown_failure
+
+archive_jar:
+  stage: archive_jar
+  tags:
+    - genchuan-cloud
+  script:
+    - mkdir -p $ARCHIVE_ROOT
+    - chown -R gitlab-runner:gitlab-runner $ARCHIVE_ROOT
+    - declare -A JAR_PATH_MAP=(
+        ["yudao-gateway"]="yudao-gateway"
+        ["yudao-module-system-server"]="yudao-module-system/yudao-module-system-server"
+        ["yudao-module-infra-server"]="yudao-module-infra/yudao-module-infra-server"
+        ["yudao-module-bpm-server"]="yudao-module-bpm/yudao-module-bpm-server"
+        ["genchuan-module-envirhealth-server"]="genchuan-module-urban/genchuan-module-envirhealth/genchuan-module-envirhealth-server"
+        ["genchuan-module-facility-server"]="genchuan-module-urban/genchuan-module-facility/genchuan-module-facility-server"
+        ["genchuan-module-data-server"]="genchuan-module-datahub/genchuan-module-data/genchuan-module-data-server"
+        ["genchuan-module-evaluate-server"]="genchuan-module-datahub/genchuan-module-evaluate/genchuan-module-evaluate-server"
+        ["genchuan-module-park-server"]="genchuan-module-park/genchuan-module-park-server"
+        ["genchuan-module-kitchen-server"]="genchuan-module-marketsupervision/genchuan-module-kitchen/genchuan-module-kitchen-server"
+      )
+    - for module in $MODULES; do
+      jarPath=${JAR_PATH_MAP[$module]}
+      jarFile="${jarPath}/target/${module}.jar"
+      cp -f "$jarFile" "$ARCHIVE_ROOT/${module}.jar"
+      done
+    - echo "===== 归档完成，当前目录文件列表 ====="
+    - ls -lh $ARCHIVE_ROOT
+    - echo "===== JAR包归档完成 ====="
+  dependencies:
+    - build
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+      - unknown_failure
+  only:
+    - genchuan-opengauss-master
+
