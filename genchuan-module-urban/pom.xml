@@ -11,7 +11,7 @@
     <packaging>pom</packaging>
 
     <modules>
-<!--        <module>genchuan-module-envirhealth</module>-->
+        <module>genchuan-module-envirhealth</module>
         <module>genchuan-module-facility</module>
         <module>genchuan-module-appearance</module>
     </modules>
