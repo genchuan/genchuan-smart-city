@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.object.vo;
 
-import com.alibaba.excel.annotation.ExcelProperty;
+
+import cn.idev.excel.annotation.ExcelProperty;
 import lombok.Data;
 
 @Data
