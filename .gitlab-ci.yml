@@ -13,6 +13,13 @@ Build:
   script:
     - echo "===== 开始Maven打包 ====="
     - mvn clean package -Dmaven.test.skip=true
+    # 增强日志：查找所有 JAR 包，打印完整路径
+    - echo "===== 所有生成的 JAR 包 ====="
+    - find . -name "*.jar" -type f -print  # 递归查找所有 JAR 包
+    # 打印关键模块的 target 目录内容
+    - echo "===== 检查设施模块 target 目录 ====="
+    - ls -l genchuan-module-urban/genchuan-module-facility/genchuan-module-facility-server/target/ || echo "该目录不存在"
+    - ls -l  # 保留原有日志
   retry:
     max: 2
     when:
@@ -27,8 +34,9 @@ Push:
     - genchuan-opengauss-master
   dependencies:
     - Build
+  variables:
+    DOCKER_BUILDKIT: "0"  # 临时关闭 BuildKit，避免路径解析问题
   script:
-    # 修复点1：数组定义后加分号，且整段循环逻辑用单引号包裹成一个bash脚本执行
     - |
       declare -A MODULE_JAR_MAP=(
         ["yudao-gateway"]="yudao-gateway"
@@ -46,12 +54,13 @@ Push:
       for module in "${!MODULE_JAR_MAP[@]}"; do
         jarPath=${MODULE_JAR_MAP[$module]}
         imageFullName="${DOCKER_REGISTRY}/${IMAGE_NAMESPACE}/${module}:${POD_TAG}"
-        # 打印构建信息，方便调试
-        echo "正在构建镜像: ${imageFullName} (JAR路径: ${jarPath})"
-        docker build --build-arg MODULE_NAME="$module" --build-arg JAR_PATH="$jarPath" -t "${imageFullName}" .
+        # 调试：构建前先验证路径是否存在、是否有 JAR 包
+        echo "===== 验证 ${module} 路径 ====="
+        - if [ -d "${jarPath}/target" ]; then ls -l "${jarPath}/target/"; else echo "路径不存在: ${jarPath}/target"; fi
+        # 构建镜像（增加 --no-cache 避免缓存干扰，增加调试日志）
+        docker build --no-cache --progress=plain --build-arg MODULE_NAME="$module" --build-arg JAR_PATH="$jarPath" -t "${imageFullName}" .
         docker push "${imageFullName}"
       done
-    # 4. 推送完成验证
     - echo "===== 所有镜像推送完成 ====="
   retry:
     max: 2
