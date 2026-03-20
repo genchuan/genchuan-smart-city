@@ -3,8 +3,9 @@ package cn.iocoder.yudao.module.kitchen.controller.admin.dictionary.illegaltyped
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-
+import lombok.*;
+import java.util.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 违规类型字典 Response VO")
@@ -12,17 +13,29 @@ import java.time.LocalDateTime;
 @ExcelIgnoreUnannotated
 public class IllegalTypeDictRespVO {
 
-    @Schema(description = "[主键ID] 违规类型唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "2210")
+    @Schema(description = "[主键ID] 违规类型唯一标识", requiredMode = Schema.RequiredMode.REQUIRED, example = "16832")
     @ExcelProperty("[主键ID] 违规类型唯一标识")
     private Long id;
 
-    @Schema(description = "[违规类型编码] 唯一编码", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("[违规类型编码] 唯一编码")
+    @Schema(description = "[分类编码]对应AI场景告警字典的告警类型编码(alertType不唯一)")
+    @ExcelProperty("[分类编码]对应AI场景告警字典的告警类型编码(alertType不唯一)")
+    private String typeCategory;
+
+    @Schema(description = "[违规类型唯一编码] 对应AI场景告警字典的算法编码（aiAbilityCode唯一）", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("[违规类型唯一编码] 对应AI场景告警字典的算法编码（aiAbilityCode唯一）")
     private String typeCode;
 
-    @Schema(description = "[违规类型名称] 如：未佩戴工牌/未穿工作服/从业人员未持健康证/操作区卫生不达标/食材存放不规范/设备未定期检修/操作流程不规范", requiredMode = Schema.RequiredMode.REQUIRED, example = "李四")
-    @ExcelProperty("[违规类型名称] 如：未佩戴工牌/未穿工作服/从业人员未持健康证/操作区卫生不达标/食材存放不规范/设备未定期检修/操作流程不规范")
+    @Schema(description = "[违规类型名称] 对应AI场景告警字典的场景名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "李四")
+    @ExcelProperty("[违规类型名称] 对应AI场景告警字典的场景名称")
     private String typeName;
+
+    @Schema(description = "[违法行为说明]补充type_name说明", example = "随便")
+    @ExcelProperty("[违法行为说明]补充type_name说明")
+    private String illegalBehaviorDescription;
+
+    @Schema(description = "[告警设备说明]对应AI场景告警字典的告警设备说明", example = "你猜")
+    @ExcelProperty("[告警设备说明]对应AI场景告警字典的告警设备说明")
+    private String alarmDeviceDescription;
 
     @Schema(description = "[排序序号] 数值越小越靠前")
     @ExcelProperty("[排序序号] 数值越小越靠前")

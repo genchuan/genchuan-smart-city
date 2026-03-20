@@ -8,6 +8,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.rulecategory.vo.RuleCategoryPageReqVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.rulecategory.vo.RuleCategoryRespVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.rulecategory.vo.RuleCategorySaveFullReqVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.rulecategory.vo.RuleCategorySaveReqVO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.rulecategory.RuleCategoryDO;
 import cn.iocoder.yudao.module.evaluate.service.rulecategory.RuleCategoryService;
@@ -44,10 +45,10 @@ public class RuleCategoryController {
     }
 
     @PutMapping("/update")
-    @Operation(summary = "更新规则分类管理")
+    @Operation(summary = "更新规则分类管理（含树形结构）")
     @PreAuthorize("@ss.hasPermission('evaluate:rule-category:update')")
     public CommonResult<Boolean> updateRuleCategory(@Valid @RequestBody RuleCategorySaveReqVO updateReqVO) {
-        ruleCategoryService.updateRuleCategory(updateReqVO);
+        ruleCategoryService.updateRuleCategoryWithRules(updateReqVO);
         return success(true);
     }
 
@@ -61,12 +62,12 @@ public class RuleCategoryController {
     }
 
     @GetMapping("/get")
-    @Operation(summary = "获得规则分类管理")
+    @Operation(summary = "获得规则分类管理（含树形结构）")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('evaluate:rule-category:query')")
     public CommonResult<RuleCategoryRespVO> getRuleCategory(@RequestParam("id") Long id) {
-        RuleCategoryDO ruleCategory = ruleCategoryService.getRuleCategory(id);
-        return success(BeanUtils.toBean(ruleCategory, RuleCategoryRespVO.class));
+        RuleCategoryRespVO respVO = ruleCategoryService.getRuleCategoryTree(id);
+        return success(respVO);
     }
 
     @GetMapping("/page")
@@ -83,6 +84,14 @@ public class RuleCategoryController {
     public CommonResult<PageResult<RuleCategoryRespVO>> getRuleCategoryJoinPage(@Valid RuleCategoryPageReqVO pageReqVO) {
         PageResult<RuleCategoryRespVO> pageResult = ruleCategoryService.getRuleCategoryJoinPage(pageReqVO);
         return success(pageResult);
+    }
+
+    @PostMapping("/save-full")
+    @Operation(summary = "完整保存规则分类（含评分规则和明细）")
+    @PreAuthorize("@ss.hasPermission('evaluate:rule-category:save')")
+    public CommonResult<Long> saveFull(@Valid @RequestBody RuleCategorySaveFullReqVO saveFullReqVO) {
+        Long categoryId = ruleCategoryService.saveFull(saveFullReqVO);
+        return success(categoryId);
     }
 
     @GetMapping("/export-excel")

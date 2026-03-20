@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 巡查巡检 Mapper
@@ -55,5 +56,13 @@ public interface PatrolInspectionMapper extends BaseMapperX<PatrolInspectionDO> 
     Long selectPatrolGroupCount(@Param("itemId") Long itemId,
                                 @Param("objectId") Long objectId,
                                 @Param("addressCoding") String addressCoding);
+
+    /**
+     * 从巡查表按 (systemId, itemId, objectId) 分组统计每个组合的真实数量
+     * 用于全量对账，将统计表与巡查表进行对比修正
+     *
+     * @return 每组组合的 systemId/itemId/objectId 及对应数量的映射列表
+     */
+    List<Map<String, Object>> selectPatrolCountGroupByKeys();
 
 }

@@ -9,6 +9,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.AiAlertMessagePageReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.AiAlertMessageRespVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.AiAlertMessageSaveReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.add.AddAiAlertMessageReq;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.aialertmessage.AiAlertMessageDO;
 import cn.iocoder.yudao.module.kitchen.service.aialertmessage.AiAlertMessageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,8 +38,15 @@ public class AiAlertMessageController {
     @Resource
     private AiAlertMessageService aiAlertMessageService;
 
+    @PostMapping("/add")
+    @Operation(summary = "新增AI告警消息")
+    @PreAuthorize("@ss.hasPermission('kitchen:ai-alert-message:add')")
+    public CommonResult<Long> addAiAlertMessage(@Valid @RequestBody AddAiAlertMessageReq reqVO) {
+        Long id = aiAlertMessageService.addAiAlertMessage(reqVO);
+        return success(id);
+    }
     @PostMapping("/create")
-    @Operation(summary = "创建AI告警消息")
+    @Operation(summary = "(勿用)创建AI告警消息")
     @PreAuthorize("@ss.hasPermission('kitchen:ai-alert-message:create')")
     public CommonResult<Long> createAiAlertMessage(@Valid @RequestBody AiAlertMessageSaveReqVO createReqVO) {
         return success(aiAlertMessageService.createAiAlertMessage(createReqVO));

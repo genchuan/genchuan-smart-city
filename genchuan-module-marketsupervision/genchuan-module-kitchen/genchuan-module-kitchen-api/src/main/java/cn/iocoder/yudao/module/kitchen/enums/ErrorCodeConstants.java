@@ -27,5 +27,10 @@ public interface ErrorCodeConstants {
     ErrorCode ENT_RECTIFY_RECORD_NOT_EXISTS = new ErrorCode(500, "企业整改记录不存在");
     // ========== 执法复审总台账==========
     ErrorCode LAW_REVIEW_LEDGER_NOT_EXISTS = new ErrorCode(500, "执法复审总台账不存在");
+    // ========== 处罚通知书复审台账==========
+    ErrorCode PUNISH_REVIEW_LEDGER_NOT_EXISTS = new ErrorCode(500, "处罚通知书复审台账不存在");
+    // ========== 处罚通知书==========
+    ErrorCode PUNISH_NOTICE_NOT_EXISTS = new ErrorCode(500, "处罚通知书不存在");
+
 
 }

@@ -1,10 +1,13 @@
 package cn.iocoder.yudao.module.kitchen.service.dictionary.illegaltypedict;
 
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import java.util.*;
+
 import cn.iocoder.yudao.module.kitchen.controller.admin.dictionary.illegaltypedict.vo.IllegalTypeDictPageReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.dictionary.illegaltypedict.vo.IllegalTypeDictSaveReqVO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.dictionary.illegaltypedict.IllegalTypeDictDO;
-import jakarta.validation.Valid;
+import jakarta.validation.*;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 违规类型字典 Service 接口

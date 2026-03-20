@@ -1,10 +1,11 @@
 package cn.iocoder.yudao.module.kitchen.dal.dataobject.dictionary.illegaltypedict;
 
-import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
-import com.baomidou.mybatisplus.annotation.KeySequence;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
+import java.util.*;
+import java.time.LocalDateTime;
+import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.*;
+import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 
 /**
  * 违规类型字典 DO
@@ -27,13 +28,25 @@ public class IllegalTypeDictDO extends BaseDO {
     @TableId
     private Long id;
     /**
-     * [违规类型编码] 唯一编码
+     * [分类编码]对应AI场景告警字典的告警类型编码(alertType不唯一)
+     */
+    private String typeCategory;
+    /**
+     * [违规类型唯一编码] 对应AI场景告警字典的算法编码（aiAbilityCode唯一）
      */
     private String typeCode;
     /**
-     * [违规类型名称] 如：未佩戴工牌/未穿工作服/从业人员未持健康证/操作区卫生不达标/食材存放不规范/设备未定期检修/操作流程不规范
+     * [违规类型名称] 对应AI场景告警字典的场景名称
      */
     private String typeName;
+    /**
+     * [违法行为说明]补充type_name说明
+     */
+    private String illegalBehaviorDescription;
+    /**
+     * [告警设备说明]对应AI场景告警字典的告警设备说明
+     */
+    private String alarmDeviceDescription;
     /**
      * [排序序号] 数值越小越靠前
      */

@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.publicinstitution.vo.publicinstitution.PublicInstitutionDashboardRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publicinstitution.vo.publicinstitution.PublicInstitutionPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publicinstitution.vo.publicinstitution.PublicInstitutionRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publicinstitution.vo.publicinstitution.PublicInstitutionSaveReqVO;
@@ -110,5 +111,12 @@ public class PublicInstitutionController {
                 publicInstitutionService.getPublicInstitutionDetailPage(pageReqVO);
 
         return success(pageResult);
+    }
+
+    @GetMapping("/chart/dashboard")
+    @Operation(summary = "卡片/圆环图/柱状图/统计(全部)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:public-institution:query')")
+    public CommonResult<PublicInstitutionDashboardRespVO> getPublicInstitutionDashboard() {
+        return success(publicInstitutionService.getPublicInstitutionDashboard());
     }
 }

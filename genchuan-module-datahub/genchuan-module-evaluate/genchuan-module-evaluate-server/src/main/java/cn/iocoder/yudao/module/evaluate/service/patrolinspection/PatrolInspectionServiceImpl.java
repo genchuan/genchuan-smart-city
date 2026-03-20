@@ -4,9 +4,12 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.evaluate.controller.admin.patrolinspection.vo.PatrolInspectionPageReqVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.patrolinspection.vo.PatrolInspectionSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexitem.IndexItemDO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.patrolinspection.PatrolInspectionDO;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.patrolinspection.PatrolInspectionMapper;
+import cn.iocoder.yudao.module.evaluate.service.objectscore.ObjectScoreService;
 import cn.iocoder.yudao.module.evaluate.service.commentstatistic.CommentStatisticService;
+import cn.iocoder.yudao.module.evaluate.service.indexitem.IndexItemService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -31,18 +34,43 @@ public class PatrolInspectionServiceImpl implements PatrolInspectionService {
     @Resource
     private CommentStatisticService commentStatisticService;
 
+    @Resource
+    private IndexItemService indexItemService;
+
+    @Resource
+    private ObjectScoreService objectScoreService;
+
     @Override
     public Long createPatrolInspection(PatrolInspectionSaveReqVO createReqVO) {
+        // 通过 itemId 查询指标项，填充 ruleId 和 categoryId
+        if (createReqVO.getItemId() != null) {
+            IndexItemDO indexItem = indexItemService.getIndexItem(createReqVO.getItemId());
+            if (indexItem != null) {
+                // 优先使用指标项中的 commentRuleId 作为 ruleId
+                if (indexItem.getCommentRuleId() != null) {
+                    createReqVO.setRuleId(indexItem.getCommentRuleId());
+                }
+            }
+        }
+
         // 插入
         PatrolInspectionDO patrolInspection = BeanUtils.toBean(createReqVO, PatrolInspectionDO.class);
         patrolInspectionMapper.insert(patrolInspection);
 
-        // 创建巡查巡检后，增加评价统计数量
-        commentStatisticService.incrementCount(
-                patrolInspection.getItemId(),
-                patrolInspection.getObjectId(),
-                patrolInspection.getAddressCoding()
-        );
+        // 创建巡查巡检后，增加评价统计数量（只有当itemId和objectId都不为null时才执行）
+        if (patrolInspection.getItemId() != null && patrolInspection.getObjectId() != null) {
+            commentStatisticService.incrementCount(
+                    patrolInspection.getSystemId(),
+                    patrolInspection.getItemId(),
+                    patrolInspection.getObjectId(),
+                    patrolInspection.getAddressCoding()
+            );
+        }
+
+        // 同步 userId 到公司得分表（systemId 和 objectId 均不为空时才执行）
+        if (patrolInspection.getSystemId() != null && patrolInspection.getObjectId() != null) {
+            objectScoreService.recalculateScore(patrolInspection.getSystemId(), patrolInspection.getObjectId());
+        }
 
         // 返回
         return patrolInspection.getId();
@@ -56,6 +84,8 @@ public class PatrolInspectionServiceImpl implements PatrolInspectionService {
         // 更新前的itemId和objectId（用于统计）
         Long oldItemId = existPatrol.getItemId();
         Long oldObjectId = existPatrol.getObjectId();
+        Long oldSystemId = existPatrol.getSystemId();
+        String oldAddressCoding = existPatrol.getAddressCoding();
 
         // 更新
         PatrolInspectionDO updateObj = BeanUtils.toBean(updateReqVO, PatrolInspectionDO.class);
@@ -64,15 +94,29 @@ public class PatrolInspectionServiceImpl implements PatrolInspectionService {
         // 如果itemId或objectId发生变化，需要同步更新统计
         Long newItemId = updateReqVO.getItemId();
         Long newObjectId = updateReqVO.getObjectId();
+        Long newSystemId = updateReqVO.getSystemId();
+        String newAddressCoding = updateReqVO.getAddressCoding();
 
-        if (!oldItemId.equals(newItemId) || !oldObjectId.equals(newObjectId)) {
+        // 使用 Objects.equals 处理 null 情况
+        if (!Objects.equals(oldItemId, newItemId) || !Objects.equals(oldObjectId, newObjectId)) {
             // 原组合count - 1
-            commentStatisticService.decrementCount(oldItemId, oldObjectId);
+            if (oldItemId != null && oldObjectId != null) {
+                commentStatisticService.decrementCount(oldSystemId, oldItemId, oldObjectId);
+            }
             // 新组合count + 1
-            commentStatisticService.incrementCount(newItemId, newObjectId, updateReqVO.getAddressCoding());
-        } else {
-            // 如果itemId和objectId没变，但addressCoding变了，同步统计
-            commentStatisticService.syncCount(newItemId, newObjectId, updateReqVO.getAddressCoding());
+            if (newItemId != null && newObjectId != null) {
+                commentStatisticService.incrementCount(newSystemId, newItemId, newObjectId, newAddressCoding);
+            }
+        } else if (!Objects.equals(oldSystemId, newSystemId) || !Objects.equals(oldAddressCoding, newAddressCoding)) {
+            // 如果systemId或addressCoding变化，同步统计
+            if (newItemId != null && newObjectId != null) {
+                commentStatisticService.syncCount(newSystemId, newItemId, newObjectId, newAddressCoding);
+            }
+        }
+
+        // 同步 userId 到公司得分表
+        if (newSystemId != null && newObjectId != null) {
+            objectScoreService.recalculateScore(newSystemId, newObjectId);
         }
     }
 
@@ -84,8 +128,12 @@ public class PatrolInspectionServiceImpl implements PatrolInspectionService {
         // 删除
         patrolInspectionMapper.deleteById(id);
 
-        // 删除后，减少对应统计数量
-        commentStatisticService.decrementCount(existPatrol.getItemId(), existPatrol.getObjectId());
+        // 删除后，减少对应统计数量（只有当itemId和objectId都不为null时才执行）
+        if (existPatrol.getItemId() != null && existPatrol.getObjectId() != null) {
+            commentStatisticService.decrementCount(existPatrol.getSystemId(), existPatrol.getItemId(), existPatrol.getObjectId());
+            // 重新计算得分
+            objectScoreService.recalculateScore(existPatrol.getSystemId(), existPatrol.getObjectId());
+        }
     }
 
     private PatrolInspectionDO validatePatrolInspectionExists(Long id) {

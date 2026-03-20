@@ -68,4 +68,28 @@ public class CommentStatisticRespVO {
     @ExcelProperty("状态: 1：待审核中，2：审核通过，3：不用审核")
     private String status;
 
+    @Schema(description = "统计规则ID（关联eval_comment_rule.id)")
+    @ExcelProperty("统计规则ID")
+    private Long ruleId;
+
+    @Schema(description = "体系id（关联体系表主键id）")
+    @ExcelProperty("体系id")
+    private Long systemId;
+
+    @Schema(description = "指标项名称")
+    @ExcelProperty("指标项名称")
+    private String itemName;
+
+    @Schema(description = "评价对象名称")
+    @ExcelProperty("评价对象名称")
+    private String objectName;
+
+    @Schema(description = "规则名称")
+    @ExcelProperty("规则名称")
+    private String ruleName;
+
+    @Schema(description = "体系名称")
+    @ExcelProperty("体系名称")
+    private String systemName;
+
 }
