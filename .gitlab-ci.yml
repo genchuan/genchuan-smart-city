@@ -7,6 +7,7 @@ variables:
   DOCKER_BUILDKIT: "1"  # 启用 BuildKit 加速构建
   POD_TAG: "$CI_COMMIT_BRANCH"
   IMAGE_NAMESPACE: "genchuan"
+
 Build:
   stage: Build
   script:
@@ -27,25 +28,28 @@ Push:
   dependencies:
     - Build
   script:
-    # 2. 定义模块列表（与 Build 阶段保持一致）
-    - declare -A MODULE_JAR_MAP=(
-      ["yudao-gateway"]="yudao-gateway"
-      ["yudao-module-system-server"]="yudao-module-system/yudao-module-system-server"
-      ["yudao-module-infra-server"]="yudao-module-infra/yudao-module-infra-server"
-      ["yudao-module-bpm-server"]="yudao-module-bpm/yudao-module-bpm-server"
-      ["genchuan-module-envirhealth-server"]="genchuan-module-urban/genchuan-module-envirhealth/genchuan-module-envirhealth-server"
-      ["genchuan-module-facility-server"]="genchuan-module-urban/genchuan-module-facility/genchuan-module-facility-server"
-      ["genchuan-module-data-server"]="genchuan-module-datahub/genchuan-module-data/genchuan-module-data-server"
-      ["genchuan-module-evaluate-server"]="genchuan-module-datahub/genchuan-module-evaluate/genchuan-module-evaluate-server"
-      ["genchuan-module-park-server"]="genchuan-module-park/genchuan-module-park-server"
-      ["genchuan-module-kitchen-server"]="genchuan-module-marketsupervision/genchuan-module-kitchen/genchuan-module-kitchen-server"
+    # 修复点1：数组定义后加分号，且整段循环逻辑用单引号包裹成一个bash脚本执行
+    - |
+      declare -A MODULE_JAR_MAP=(
+        ["yudao-gateway"]="yudao-gateway"
+        ["yudao-module-system-server"]="yudao-module-system/yudao-module-system-server"
+        ["yudao-module-infra-server"]="yudao-module-infra/yudao-module-infra-server"
+        ["yudao-module-bpm-server"]="yudao-module-bpm/yudao-module-bpm-server"
+        ["genchuan-module-envirhealth-server"]="genchuan-module-urban/genchuan-module-envirhealth/genchuan-module-envirhealth-server"
+        ["genchuan-module-facility-server"]="genchuan-module-urban/genchuan-module-facility/genchuan-module-facility-server"
+        ["genchuan-module-data-server"]="genchuan-module-datahub/genchuan-module-data/genchuan-module-data-server"
+        ["genchuan-module-evaluate-server"]="genchuan-module-datahub/genchuan-module-evaluate/genchuan-module-evaluate-server"
+        ["genchuan-module-park-server"]="genchuan-module-park/genchuan-module-park-server"
+        ["genchuan-module-kitchen-server"]="genchuan-module-marketsupervision/genchuan-module-kitchen/genchuan-module-kitchen-server"
       )
-      - echo "===== 开始构建所有镜像 ====="
-      - for module in "${!MODULE_JAR_MAP[@]}"; do
-      jarPath=${MODULE_JAR_MAP[$module]}
-      imageFullName="${DOCKER_REGISTRY}/${IMAGE_NAMESPACE}/${module}:${POD_TAG}"
-      docker build --build-arg MODULE_NAME="$module" --build-arg JAR_PATH="$jarPath" -t "${imageFullName}" .
-      docker push "${imageFullName}"
+      echo "===== 开始构建所有镜像 ====="
+      for module in "${!MODULE_JAR_MAP[@]}"; do
+        jarPath=${MODULE_JAR_MAP[$module]}
+        imageFullName="${DOCKER_REGISTRY}/${IMAGE_NAMESPACE}/${module}:${POD_TAG}"
+        # 打印构建信息，方便调试
+        echo "正在构建镜像: ${imageFullName} (JAR路径: ${jarPath})"
+        docker build --build-arg MODULE_NAME="$module" --build-arg JAR_PATH="$jarPath" -t "${imageFullName}" .
+        docker push "${imageFullName}"
       done
     # 4. 推送完成验证
     - echo "===== 所有镜像推送完成 ====="
