@@ -205,6 +205,7 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
 
     //下发操作
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Long reviewIssue(IssueReqVO reqVO) {
         // 1. 查询台账
         RectifyReviewDO reviewDO = rectifyReviewMapper.selectById(reqVO.getId());
@@ -232,7 +233,7 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
         // 5. 调用整改通知书生成接口 TODO
         RectifyNoticeSaveReqVO rectifyNoticeSaveReqVO =new RectifyNoticeSaveReqVO();
         //构造 通知书 的 插入VO
-        rectifyNoticeSaveReqVO.setRectifyReviewId(reqVO.getId());
+        rectifyNoticeSaveReqVO.setRectifyReviewId(reviewDO.getId());
         //通知书 整改截止时间为当前时间30天后
         rectifyNoticeSaveReqVO.setRectifyDeadline(LocalDate.from(LocalDateTime.now().plusDays(30)));
         Long noticeId = rectifyNoticeService.createRectifyNotice(rectifyNoticeSaveReqVO);

@@ -9,6 +9,7 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.ca
 
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.issue.IssueReqVO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.punishreviewledger.PunishReviewLedgerDO;
+import cn.iocoder.yudao.module.kitchen.framework.lxsutils.procom.aop.sysope.SysOpeLog;
 import cn.iocoder.yudao.module.kitchen.service.punishreviewledger.PunishReviewLedgerService;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
@@ -49,8 +50,9 @@ public class PunishReviewLedgerController {
      * 下发处罚通知书
      */
     @PostMapping("/review-issue")
-    @PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:review-issue')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:review-issue')")
     @Operation(summary = "下发处罚通知书操作")
+    @SysOpeLog
     public CommonResult<Long> reviewIssue(@Valid @RequestBody IssueReqVO reqVO) {
         Long punishNoticeId = punishReviewLedgerService.reviewIssue(reqVO);
         return success(punishNoticeId);
@@ -60,28 +62,32 @@ public class PunishReviewLedgerController {
      */
     @PostMapping("/review-cancel")
     @Operation(summary = "撤销-处罚复审台账操作")
-    @PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:review-cancel')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:review-cancel')")
+    @SysOpeLog
     public CommonResult<Long> reviewCancel(@Valid @RequestBody CancelReqVO reqVO) {
         Long id = punishReviewLedgerService.reviewCancel(reqVO);
         return success(id);
     }
     @PostMapping("/add")
     @Operation(summary = "创建处罚通知书复审台账（精简入参，自动补全）")
-    @PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:create')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:create')")
+    @SysOpeLog
     public CommonResult<Long> addPunishReviewLedger(@Valid @RequestBody AddPunishReviewLedgerReq reqVO) {
         Long id = punishReviewLedgerService.addPunishReviewLedger(reqVO);
         return success(id);
     }
     @PostMapping("/create")
     @Operation(summary = "（勿用）创建处罚通知书复审台账")
-    @PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:create')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:create')")
+    @SysOpeLog
     public CommonResult<Long> createPunishReviewLedger(@Valid @RequestBody PunishReviewLedgerSaveReqVO createReqVO) {
         return success(punishReviewLedgerService.createPunishReviewLedger(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新处罚通知书复审台账")
-    @PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:update')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:update')")
+    @SysOpeLog
     public CommonResult<Boolean> updatePunishReviewLedger(@Valid @RequestBody PunishReviewLedgerSaveReqVO updateReqVO) {
         punishReviewLedgerService.updatePunishReviewLedger(updateReqVO);
         return success(true);
@@ -90,7 +96,8 @@ public class PunishReviewLedgerController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除处罚通知书复审台账")
     @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:delete')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:delete')")
+    @SysOpeLog
     public CommonResult<Boolean> deletePunishReviewLedger(@RequestParam("id") Long id) {
         punishReviewLedgerService.deletePunishReviewLedger(id);
         return success(true);
@@ -99,7 +106,8 @@ public class PunishReviewLedgerController {
     @GetMapping("/get")
     @Operation(summary = "获得处罚通知书复审台账")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:query')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:query')")
+    @SysOpeLog
     public CommonResult<PunishReviewLedgerRespVO> getPunishReviewLedger(@RequestParam("id") Long id) {
         PunishReviewLedgerDO punishReviewLedger = punishReviewLedgerService.getPunishReviewLedger(id);
         return success(BeanUtils.toBean(punishReviewLedger, PunishReviewLedgerRespVO.class));
@@ -107,7 +115,8 @@ public class PunishReviewLedgerController {
 
     @GetMapping("/page")
     @Operation(summary = "获得处罚通知书复审台账分页")
-    @PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:query')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:query')")
+    @SysOpeLog
     public CommonResult<PageResult<PunishReviewLedgerRespVO>> getPunishReviewLedgerPage(@Valid PunishReviewLedgerPageReqVO pageReqVO) {
         PageResult<PunishReviewLedgerDO> pageResult = punishReviewLedgerService.getPunishReviewLedgerPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, PunishReviewLedgerRespVO.class));
@@ -115,8 +124,9 @@ public class PunishReviewLedgerController {
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出处罚通知书复审台账 Excel")
-    @PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:export')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:export')")
     @ApiAccessLog(operateType = EXPORT)
+    @SysOpeLog
     public void exportPunishReviewLedgerExcel(@Valid PunishReviewLedgerPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);

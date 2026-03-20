@@ -108,6 +108,7 @@ public class EntRectifyRecordServiceImpl implements EntRectifyRecordService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Long addEntRectifyRecord(AddEntRectifyRecordReqVO createReqVO) {
 
         //0. 插入实体
@@ -138,6 +139,12 @@ public class EntRectifyRecordServiceImpl implements EntRectifyRecordService {
 
         //6.插入
         Long id = (long) entRectifyRecordMapper.insert(insertDO);
+
+        //7.更新 整改通知 的 送达时间和 送达状态
+        rectifyNoticeDO.setReceiveTime(LocalDateTime.now());
+        rectifyNoticeDO.setReceiveStatus("已送达");
+
+        rectifyNoticeMapper.updateById(rectifyNoticeDO);
 
         //7.返回id
         return insertDO.getId();

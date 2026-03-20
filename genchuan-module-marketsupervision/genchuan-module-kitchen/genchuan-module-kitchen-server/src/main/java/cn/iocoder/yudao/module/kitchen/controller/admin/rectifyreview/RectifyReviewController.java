@@ -13,18 +13,28 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.issue.I
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileRespVO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifyreview.RectifyReviewDO;
+import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.pdf.PdfGenerator;
+import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.verify.VerifyUtil;
+import cn.iocoder.yudao.module.kitchen.framework.lxsutils.procom.aop.sysope.SysOpeLog;
+import cn.iocoder.yudao.module.kitchen.framework.lxsutils.procom.aop.sysope.SysOpeModule;
 import cn.iocoder.yudao.module.kitchen.service.rectifyreview.RectifyReviewService;
+import com.itextpdf.html2pdf.ConverterProperties;
+import com.itextpdf.html2pdf.HtmlConverter;
+import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -43,9 +53,11 @@ public class RectifyReviewController {
     @Resource
     private RectifyReviewService rectifyReviewService;
 
+
     @PostMapping("/upload-evidence-file")
     @Operation(summary = "上传证据资料")
-    @PreAuthorize("@ss.hasPermission('kitchen:rectify-review:upload-evidence-file')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:upload-evidence-file')")
+    @SysOpeLog
     public CommonResult<UploadEvidenceFileRespVO> uploadEvidenceFile(
             @RequestPart("file") MultipartFile file,
             @Valid @ModelAttribute UploadEvidenceFileReqVO reqVO) {
@@ -55,8 +67,9 @@ public class RectifyReviewController {
 
     //新增，从预警的“发送整改”
     @PostMapping("/review-add")
-    @PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-add')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-add')")
     @Operation(summary = "新增-整改通知复审记录操作")
+    @SysOpeLog
     public CommonResult<Long> reviewAdd(@Valid @RequestBody AddRectifyReviewReqVO reqVO) {
         Long id = rectifyReviewService.reviewAdd(reqVO);
         return success(id);
@@ -64,8 +77,9 @@ public class RectifyReviewController {
 
     //撤销审核
     @PostMapping("/review-cancel")
-    @PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-cancel')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-cancel')")
     @Operation(summary = "撤销-整改通知书操作")
+    @SysOpeLog
     public CommonResult<Long> reviewCancel(@Valid @RequestBody CancelReqVO reqVO) {
         Long id = rectifyReviewService.reviewCancel(reqVO);
         return success(id);
@@ -73,8 +87,9 @@ public class RectifyReviewController {
 
     //下发整改通知书，返回增改通知书表的记录
     @PostMapping("/review-issue")
-    @PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-issue')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-issue')")
     @Operation(summary = "下发整改通知书操作")
+    @SysOpeLog
     public CommonResult<Long> reviewIssue(@Valid @RequestBody IssueReqVO reqVO) {
         Long rectifyNoticeId = rectifyReviewService.reviewIssue(reqVO);
         return success(rectifyNoticeId);
@@ -82,8 +97,9 @@ public class RectifyReviewController {
 
 
     @Operation(summary = "批量查看整改复审台账证据分页")
-    @PreAuthorize("@ss.hasPermission('kitchen:rectify-review:batch-view-evidence')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:batch-view-evidence')")
     @PostMapping("/batch-view-evidence")
+    @SysOpeLog
     public CommonResult<PageResult<RectifyEvidenceVO>> getBatchEvidence(
             @Valid @RequestBody BatchEvidenceRequestVO reqVO) {
 
@@ -95,8 +111,9 @@ public class RectifyReviewController {
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出 Excel")
-    @PreAuthorize("@ss.hasPermission('kitchen:rectify-review:export')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:export')")
     @ApiAccessLog(operateType = EXPORT)
+    @SysOpeLog
     public void exportRoadArchiveExcel(@Valid RectifyReviewLedgerPageReqVO pageReqVO,
                                        HttpServletResponse response) throws IOException {
         // 0. 配置
@@ -123,6 +140,8 @@ public class RectifyReviewController {
     @GetMapping("/ledger-page")
     @Operation(summary = "分页-整改通知书复审台账表")
     @PreAuthorize("@ss.hasPermission('kitchen:rectify-review:query')")
+//    @SysOpeLog(operType = "审核", operObject = "企业整改记录", operDesc = "整改审核通过")
+    @SysOpeLog
     public CommonResult<PageResult<RectifyReviewLedgerRespVO>> getRectifyReviewLedgerPage(
             @Valid RectifyReviewLedgerPageReqVO reqVO) {
 
@@ -133,14 +152,16 @@ public class RectifyReviewController {
     }
     @PostMapping("/create")
     @Operation(summary = "创建整改通知书复审台账")
-    @PreAuthorize("@ss.hasPermission('kitchen:rectify-review:create')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:create')")
+    @SysOpeLog
     public CommonResult<Long> createRectifyReview(@Valid @RequestBody RectifyReviewSaveReqVO createReqVO) {
         return success(rectifyReviewService.createRectifyReview(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新整改通知书复审台账")
-    @PreAuthorize("@ss.hasPermission('kitchen:rectify-review:update')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:update')")
+    @SysOpeLog
     public CommonResult<Boolean> updateRectifyReview(@Valid @RequestBody RectifyReviewSaveReqVO updateReqVO) {
         rectifyReviewService.updateRectifyReview(updateReqVO);
         return success(true);
@@ -149,7 +170,8 @@ public class RectifyReviewController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除整改通知书复审台账")
     @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('kitchen:rectify-review:delete')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:delete')")
+    @SysOpeLog
     public CommonResult<Boolean> deleteRectifyReview(@RequestParam("id") Long id) {
         rectifyReviewService.deleteRectifyReview(id);
         return success(true);
@@ -158,15 +180,17 @@ public class RectifyReviewController {
     @GetMapping("/get")
     @Operation(summary = "获得整改通知书复审台账")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('kitchen:rectify-review:query')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:query')")
+    @SysOpeLog
     public CommonResult<RectifyReviewRespVO> getRectifyReview(@RequestParam("id") Long id) {
         RectifyReviewDO rectifyReview = rectifyReviewService.getRectifyReview(id);
         return success(BeanUtils.toBean(rectifyReview, RectifyReviewRespVO.class));
     }
 
     @GetMapping("/page")
-    @Operation(summary = "获得整改通知书复审台账分页")
-    @PreAuthorize("@ss.hasPermission('kitchen:rectify-review:query')")
+    @Operation(summary = "(勿用）获得整改通知书复审台账分页")
+    //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:query')")
+    @SysOpeLog
     public CommonResult<PageResult<RectifyReviewRespVO>> getRectifyReviewPage(@Valid RectifyReviewPageReqVO pageReqVO) {
         PageResult<RectifyReviewDO> pageResult = rectifyReviewService.getRectifyReviewPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, RectifyReviewRespVO.class));
@@ -174,7 +198,7 @@ public class RectifyReviewController {
 
 //    @GetMapping("/export-excel")
 //    @Operation(summary = "导出整改通知书复审台账 Excel")
-//    @PreAuthorize("@ss.hasPermission('kitchen:rectify-review:export')")
+//    //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:export')")
 //    @ApiAccessLog(operateType = EXPORT)
 //    public void exportRectifyReviewExcel(@Valid RectifyReviewPageReqVO pageReqVO,
 //              HttpServletResponse response) throws IOException {

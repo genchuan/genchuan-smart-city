@@ -10,6 +10,7 @@ import cn.iocoder.yudao.module.kitchen.dal.dataobject.punishnotice.PunishNoticeD
 import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import org.springframework.http.ResponseEntity;
 
 /**
  * 处罚通知书 Service 接口
@@ -59,4 +60,6 @@ public interface PunishNoticeService {
     Long addPunishNotice(AddPunishNoticeReq reqVO);
 
     String generatePunishNoticeDraft(DraftPunishNoticeReq reqVO);
+
+    ResponseEntity<byte[]> downloadRectifyNoticePdf(Long punishNoticeId);
 }

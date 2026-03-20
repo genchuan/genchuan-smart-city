@@ -51,7 +51,7 @@ public class EntRectifyRecordController {
 
     @PostMapping("/review-reject")
     @Operation(summary = "审核不通过")
-    @PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:review-reject')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:review-reject')")
     public CommonResult<Boolean> reviewReject(
             @Valid @RequestBody ReviewRejectReq reqVO) {
         Boolean flag = entRectifyRecordService.reviewReject(reqVO);
@@ -59,7 +59,7 @@ public class EntRectifyRecordController {
     }
     @PostMapping("/review-approve")
     @Operation(summary = "审核通过")
-    @PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:review-approve')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:review-approve')")
     public CommonResult<Boolean> reviewApprove(
             @Valid @RequestBody ReviewApproveReq reqVO) {
         Boolean flag = entRectifyRecordService.reviewApprove(reqVO);
@@ -67,7 +67,7 @@ public class EntRectifyRecordController {
     }
     @PostMapping("/upload-file")
     @Operation(summary = "上传资料")
-    @PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:upload-file')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:upload-file')")
     public CommonResult<UploadFileRespVO> uploadEvidenceFile(
             @RequestPart("file") MultipartFile file,
             @Valid @ModelAttribute UploadFileReqVO reqVO) {
@@ -76,21 +76,21 @@ public class EntRectifyRecordController {
     }
     @PostMapping("/add")
     @Operation(summary = "新增-企业整改记录")
-    @PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:create')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:create')")
     public CommonResult<Long> addEntRectifyRecord(@Valid @RequestBody AddEntRectifyRecordReqVO createReqVO) {
         Long id = entRectifyRecordService.addEntRectifyRecord(createReqVO);
         return success(id);
     }
     @PostMapping("/create")
     @Operation(summary = "（勿用）创建企业整改记录")
-    @PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:create')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:create')")
     public CommonResult<Long> createEntRectifyRecord(@Valid @RequestBody EntRectifyRecordSaveReqVO createReqVO) {
         return success(entRectifyRecordService.createEntRectifyRecord(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新企业整改记录")
-    @PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:update')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:update')")
     public CommonResult<Boolean> updateEntRectifyRecord(@Valid @RequestBody EntRectifyRecordSaveReqVO updateReqVO) {
         entRectifyRecordService.updateEntRectifyRecord(updateReqVO);
         return success(true);
@@ -99,7 +99,7 @@ public class EntRectifyRecordController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除企业整改记录")
     @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:delete')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:delete')")
     public CommonResult<Boolean> deleteEntRectifyRecord(@RequestParam("id") Long id) {
         entRectifyRecordService.deleteEntRectifyRecord(id);
         return success(true);
@@ -108,7 +108,7 @@ public class EntRectifyRecordController {
     @GetMapping("/get")
     @Operation(summary = "获得企业整改记录")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:query')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:query')")
     public CommonResult<EntRectifyRecordRespVO> getEntRectifyRecord(@RequestParam("id") Long id) {
         EntRectifyRecordDO entRectifyRecord = entRectifyRecordService.getEntRectifyRecord(id);
         return success(BeanUtils.toBean(entRectifyRecord, EntRectifyRecordRespVO.class));
@@ -116,7 +116,7 @@ public class EntRectifyRecordController {
 
     @GetMapping("/page")
     @Operation(summary = "获得企业整改记录分页")
-    @PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:query')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:query')")
     public CommonResult<PageResult<EntRectifyRecordRespVO>> getEntRectifyRecordPage(@Valid EntRectifyRecordPageReqVO pageReqVO) {
         PageResult<EntRectifyRecordDO> pageResult = entRectifyRecordService.getEntRectifyRecordPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, EntRectifyRecordRespVO.class));
@@ -124,7 +124,7 @@ public class EntRectifyRecordController {
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出企业整改记录 Excel")
-    @PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:export')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportEntRectifyRecordExcel(@Valid EntRectifyRecordPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {

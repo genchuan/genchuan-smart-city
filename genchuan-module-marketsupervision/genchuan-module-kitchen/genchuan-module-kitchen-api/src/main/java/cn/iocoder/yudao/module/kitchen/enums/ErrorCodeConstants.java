@@ -31,6 +31,8 @@ public interface ErrorCodeConstants {
     ErrorCode PUNISH_REVIEW_LEDGER_NOT_EXISTS = new ErrorCode(500, "处罚通知书复审台账不存在");
     // ========== 处罚通知书==========
     ErrorCode PUNISH_NOTICE_NOT_EXISTS = new ErrorCode(500, "处罚通知书不存在");
+    // ========== 系统操作审计日志表，存储平台全模块所有操作的审计日志信息==========
+    ErrorCode SYS_OPERATION_LOG_NOT_EXISTS = new ErrorCode(500, "系统操作审计日志表，存储平台全模块所有操作的审计日志信息不存在");
 
 
 }

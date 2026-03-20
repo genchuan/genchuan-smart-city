@@ -13,9 +13,11 @@ import cn.iocoder.yudao.module.kitchen.dal.mysql.enterpriseinfo.EnterpriseInfoMa
 import cn.iocoder.yudao.module.kitchen.dal.mysql.rectifynotice.RectifyNoticeMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.rectifyreview.RectifyReviewMapper;
 import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.name.NameUtil;
+import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.pdf.PdfGenerator;
 import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.verify.VerifyUtil;
 import cn.iocoder.yudao.module.kitchen.service.rectifyreview.RectifyReviewService;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -24,6 +26,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -68,6 +71,8 @@ public class RectifyNoticeServiceImpl implements RectifyNoticeService {
     @Override
     public Long createRectifyNotice(@Valid RectifyNoticeSaveReqVO createReqVO) {
 
+
+        System.out.println("cs2026-03-19 10:53:12:"+createReqVO);
         // ----------- 1. 校验复审台账 -----------
         RectifyReviewDO rectifyReviewDO = validateRectifyReview(createReqVO.getRectifyReviewId());
 
@@ -79,17 +84,25 @@ public class RectifyNoticeServiceImpl implements RectifyNoticeService {
         notice.setRectifyDeadline(createReqVO.getRectifyDeadline());
         notice.setReceiveStatus("未送达");
 
-        // ----------- 3. 生成通知书HTML内容 -----------
+        // ----------- 3. 生成通知书HTML内容 TODO独立出来接口-----------
 
+        //先插入
         //生成模版req
-        RectifyNoticeTemplateReqVO rectifyNoticeTemplateReqVO =  getNoticeTemplateReq(createReqVO.getRectifyReviewId());
-        notice.setNoticeContent(buildNoticeContent(rectifyNoticeTemplateReqVO));
+//        RectifyNoticeTemplateReqVO rectifyNoticeTemplateReqVO =  getNoticeTemplateReq(createReqVO.getRectifyReviewId());
+//        notice.setNoticeContent(buildNoticeContent(rectifyNoticeTemplateReqVO));
 
         // ----------- 4. 保存到数据库 -----------
         rectifyNoticeMapper.insert(notice);
 
         //TODO 回返绑定id到RectifyReview
 
+        // ----------- 3. 生成通知书HTML内容 TODO独立出来接口-----------
+
+        //先插入
+        //生成模版req
+        RectifyNoticeTemplateReqVO rectifyNoticeTemplateReqVO =  getNoticeTemplateReq(createReqVO.getRectifyReviewId());
+        notice.setNoticeContent(buildNoticeContent(rectifyNoticeTemplateReqVO));
+        rectifyNoticeMapper.updateById(notice);
 
         // 返回通知书ID
 //        11111
@@ -229,6 +242,7 @@ public class RectifyNoticeServiceImpl implements RectifyNoticeService {
      * @return 模板参数
      */
     public RectifyNoticeTemplateReqVO getNoticeTemplateReq(Long rectifyReviewId) {
+        System.out.println("cs2026-03-19 10:56:09:"+rectifyReviewId);
 
         // 1.查询复审台账
         RectifyReviewDO review = rectifyReviewMapper.selectById(rectifyReviewId);
@@ -444,6 +458,21 @@ public class RectifyNoticeServiceImpl implements RectifyNoticeService {
     @Override
     public PageResult<RectifyNoticeDO> getRectifyNoticePage(RectifyNoticePageReqVO pageReqVO) {
         return rectifyNoticeMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public ResponseEntity<byte[]> downloadRectifyNoticePdf(Long rectifyNoticeId) throws IOException {
+        // 1. 根据 ID 获取整改复审记录
+        RectifyNoticeDO rectifyNoticeDO = rectifyNoticeMapper.selectById(rectifyNoticeId);
+        VerifyUtil.verifyNotNullWithMsg(rectifyNoticeDO,"通知书不存在");
+
+        // 2. 根据记录生成 HTML 内容（这里示例固定模板，可根据 review 动态替换）
+        String htmlStr = rectifyNoticeDO.getNoticeContent();
+        VerifyUtil.verifyNotNullWithMsg(htmlStr,"HTML内容为空，请进行检查");
+
+        // 3. 调用 PdfGenerator 生成 PDF 响应
+        PdfGenerator pdfGenerator = new PdfGenerator();
+        return pdfGenerator.generatePdfResponse(htmlStr);
     }
 
 }
