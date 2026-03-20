@@ -7,6 +7,7 @@ variables:
   MODULES: "yudao-gateway yudao-module-system-server yudao-module-infra-server yudao-module-bpm-server genchuan-module-envirhealth-server genchuan-module-facility-server genchuan-module-data-server genchuan-module-evaluate-server genchuan-module-park-server genchuan-module-kitchen-server"
 build:
   stage: build
+  tag: gitlab-runner-cloud
   script:
     - echo "===== 开始编译 ====="
     - mvn clean package $MAVEN_SKIP_TEST -U | tee maven-build.log
@@ -25,6 +26,7 @@ build:
 
 archive_jar:
   stage: archive_jar
+  tag: gitlab-runner-cloud
   script:
     - mkdir -p $ARCHIVE_ROOT
     - chown -R gitlab-runner:gitlab-runner $ARCHIVE_ROOT
