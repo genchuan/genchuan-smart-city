@@ -1,8 +1,6 @@
-# 定义流水线阶段（精简且符合执行逻辑）
 stages:
-  - build          # 编译打包JAR
-  - archive_jar    # 归档JAR到指定目录
-
+  - build
+  - archive_jar
 # 全局变量（Shell环境适配，统一管理）
 variables:
   # 跳过测试（统一变量，便于修改）
@@ -11,8 +9,6 @@ variables:
   ARCHIVE_ROOT: "/home/data/java/$(date +%Y-%m-%d)"
   # 需要构建的模块列表（Shell数组格式，便于循环）
   MODULES: "yudao-gateway yudao-module-system-server yudao-module-infra-server yudao-module-bpm-server genchuan-module-envirhealth-server genchuan-module-facility-server genchuan-module-data-server genchuan-module-evaluate-server genchuan-module-park-server genchuan-module-kitchen-server"
-  # JAR路径映射（Shell关联数组，比JSON更适配Shell环境）
-
 # 阶段1：编译打包所有模块（Shell环境优化）
 build:
   stage: build
@@ -20,14 +16,14 @@ build:
     - git-runner  # 指定你的Runner标签，确保匹配
   script:
     - echo "===== 开始编译 ====="
-    - mvn clean package $MAVEN_SKIP_TEST
+    # 强制刷新依赖+保留构建日志，便于排查问题
+    - mvn clean package $MAVEN_SKIP_TEST -U | tee maven-build.log
     - echo "===== 编译完成 ====="
-
   artifacts:
     paths:
       - "**/target/*.jar"          # 捕获所有JAR包
       - maven-build.log            # 保留构建日志，便于排查
-    expire_in: 24h                 # 延长产物有效期
+    expire_in: 1h                 # 延长产物有效期
   retry:
     max: 2
     when:
@@ -35,13 +31,17 @@ build:
       - stuck_or_timeout_failure
       - unknown_failure
 
-# 阶段2：归档JAR到指定目录（Shell环境专属优化）
+# 阶段2：归档JAR到指定目录（修复所有语法/逻辑错误）
 archive_jar:
   stage: archive_jar
   tags:
     - git-runner
   script:
     - echo "===== 开始归档JAR包到 $ARCHIVE_ROOT ====="
+    # 1. 创建归档目录（确保目录存在，避免复制失败）
+    - mkdir -p $ARCHIVE_ROOT
+    - chown -R gitlab-runner:gitlab-runner $ARCHIVE_ROOT
+    # 2. 定义模块与JAR路径的映射（Shell关联数组，缩进统一）
     - declare -A JAR_PATH_MAP=(
       ["yudao-gateway"]="yudao-gateway"
       ["yudao-module-system-server"]="yudao-module-system/yudao-module-system-server"
@@ -54,16 +54,26 @@ archive_jar:
       ["genchuan-module-park-server"]="genchuan-module-park/genchuan-module-park-server"
       ["genchuan-module-kitchen-server"]="genchuan-module-marketsupervision/genchuan-module-kitchen/genchuan-module-kitchen-server"
       )
-    # 2. 循环复制每个模块的JAR包（Shell数组循环）
+    # 3. 循环复制每个模块的JAR包（修复变量拼接+增加存在性检查）
     - for module in $MODULES; do
       # 获取模块的JAR路径
-        jarPath=${JAR_PATH_MAP[$module]}
-      # 拼接完整的JAR文件路径（Shell通配符匹配最新JAR）
-        jarFile="jarPath/target/$module.jar"
-        cp -f "$jarFile" "$ARCHIVE_ROOT/$jarFile.jar"
+      jarPath=${JAR_PATH_MAP[$module]}
+      # 拼接完整的JAR文件路径（修复变量拼接+补全路径分隔符）
+      jarFile="${jarPath}/target/${module}.jar"
+      # 检查JAR包是否存在，避免复制失败
+      if [ -f "$jarFile" ]; then
+      cp -f "$jarFile" "$ARCHIVE_ROOT/${module}.jar"
+      echo "成功归档：$module -> $ARCHIVE_ROOT/${module}.jar"
+      else
+      echo "警告：模块 $module 的JAR包未找到！路径：$jarFile"
+      fi
       done
+    # 4. 输出归档结果，便于验证
+    - echo "===== 归档完成，当前目录文件列表 ====="
+    - ls -lh $ARCHIVE_ROOT
+    - echo "===== JAR包归档完成 ====="
   dependencies:
-    - build  # 依赖build阶段的产物
+    - build
   retry:
     max: 2
     when:
@@ -71,4 +81,5 @@ archive_jar:
       - stuck_or_timeout_failure
       - unknown_failure
   only:
-    - genchuan-openGauss
+    - genchuan-opengauss-master
+
