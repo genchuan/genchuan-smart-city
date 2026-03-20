@@ -8,7 +8,7 @@ variables:
   # 跳过测试（统一变量，便于修改）
   MAVEN_SKIP_TEST: "-Dmaven.test.skip=true"
   # 归档根目录（按当前日期生成，格式：YYYY-MM-DD，Shell环境直接解析）
-  ARCHIVE_ROOT: "/home/data/$(date +%Y-%m-%d)"
+  ARCHIVE_ROOT: "/home/data/java/$(date +%Y-%m-%d)"
   # 需要构建的模块列表（Shell数组格式，便于循环）
   MODULES: "yudao-gateway yudao-module-system-server yudao-module-infra-server yudao-module-bpm-server genchuan-module-envirhealth-server genchuan-module-facility-server genchuan-module-data-server genchuan-module-evaluate-server genchuan-module-park-server genchuan-module-kitchen-server"
   # JAR路径映射（Shell关联数组，比JSON更适配Shell环境）
