@@ -3,20 +3,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>cn.iocoder.cloud</groupId>
-        <artifactId>yudao</artifactId>
+        <artifactId>genchuan-module-appearance</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <artifactId>genchuan-module-urban</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>genchuan-module-appearance-api</artifactId>
+    <packaging>jar</packaging>
 
-    <modules>
-        <module>genchuan-module-envirhealth</module>
-        <module>genchuan-module-facility</module>
-        <module>genchuan-module-appearance</module>
-    </modules>
-
-    <name>genchuan-module-urban</name>
+    <name>${project.artifactId}</name>
+    <description>
+        市容秩序监管模块API，暴露给其它模块调用。
+    </description>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -25,10 +22,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
+            <groupId>cn.iocoder.cloud</groupId>
+            <artifactId>yudao-common</artifactId>
         </dependency>
     </dependencies>
 </project>

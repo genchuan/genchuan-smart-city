@@ -3,21 +3,22 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>cn.iocoder.cloud</groupId>
-        <artifactId>yudao</artifactId>
+        <artifactId>genchuan-module-urban</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <artifactId>genchuan-module-urban</artifactId>
+    <artifactId>genchuan-module-appearance</artifactId>
     <packaging>pom</packaging>
 
-    <modules>
-        <module>genchuan-module-envirhealth</module>
-        <module>genchuan-module-facility</module>
-        <module>genchuan-module-appearance</module>
-    </modules>
-
-    <name>genchuan-module-urban</name>
+    <name>${project.artifactId}</name>
+    <description>
+        市容秩序监管模块，主要实现户外广告监管，渣土清运监管，占道经营监管，乱贴乱画监管，车辆停放监管以及分析决策支持。
+    </description>
     <url>http://maven.apache.org</url>
+    <modules>
+        <module>genchuan-module-appearance-api</module>
+        <module>genchuan-module-appearance-server</module>
+    </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
