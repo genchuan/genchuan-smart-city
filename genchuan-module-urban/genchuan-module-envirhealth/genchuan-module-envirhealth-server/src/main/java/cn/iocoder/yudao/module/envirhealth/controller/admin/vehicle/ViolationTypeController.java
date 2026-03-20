@@ -29,7 +29,7 @@ import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.ViolationTypeDO;
-import cn.iocoder.yudao.module.envirhealth.service.vehicle.violationstatus.ViolationTypeService;
+import cn.iocoder.yudao.module.envirhealth.service.vehicle.violationtype.ViolationTypeService;
 
 @Tag(name = "字典表 - 违规类型")
 @RestController

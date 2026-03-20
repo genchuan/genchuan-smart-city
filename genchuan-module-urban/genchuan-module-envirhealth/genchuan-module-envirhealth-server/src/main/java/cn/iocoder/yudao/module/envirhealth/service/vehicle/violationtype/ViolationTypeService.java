@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.envirhealth.service.vehicle.violationstatus;
+package cn.iocoder.yudao.module.envirhealth.service.vehicle.violationtype;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.violationtype.ViolationTypePageReqVO;

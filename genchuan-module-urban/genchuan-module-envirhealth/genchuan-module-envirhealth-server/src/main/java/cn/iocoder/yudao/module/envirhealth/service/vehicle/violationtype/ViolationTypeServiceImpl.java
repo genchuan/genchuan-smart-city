@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.envirhealth.service.vehicle.workstatus;
+package cn.iocoder.yudao.module.envirhealth.service.vehicle.violationtype;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
@@ -6,11 +6,9 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.violationtype.ViolationTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.violationtype.ViolationTypeSaveReqVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.ViolationStatusDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.ViolationTypeDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.vehicle.ViolationTypeMapper;
 import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
-import cn.iocoder.yudao.module.envirhealth.service.vehicle.violationstatus.ViolationTypeService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;

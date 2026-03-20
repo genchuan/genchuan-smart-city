@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicletype.VehicleTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicletype.VehicleTypeRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicletype.VehicleTypeSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.service.vehicle.vehicletype.VehicleTypeService;
 import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
@@ -29,7 +30,6 @@ import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.VehicleTypeDO;
-import cn.iocoder.yudao.module.envirhealth.service.vehicle.vehicletype.VehicleTypeService;
 
 @Tag(name = "字典表 - 车辆类型")
 @RestController

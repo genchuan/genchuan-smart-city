@@ -6,7 +6,6 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.workstatus.WorkStatusPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.workstatus.WorkStatusSaveReqVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.ViolationTypeDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.WorkStatusDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.vehicle.WorkStatusMapper;
 import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
