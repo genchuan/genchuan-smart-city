@@ -55,10 +55,6 @@ Push:
       for module in "${!MODULE_JAR_MAP[@]}"; do
         jarPath=${MODULE_JAR_MAP[$module]}
         imageFullName="${DOCKER_REGISTRY}/${IMAGE_NAMESPACE}/${module}:${POD_TAG}"
-        # 调试：构建前先验证路径是否存在、是否有 JAR 包
-        echo "===== 验证 ${module} 路径 ====="
-        - if [ -d "${jarPath}/target" ]; then ls -l "${jarPath}/target/"; else echo "路径不存在: ${jarPath}/target"; fi
-        # 构建镜像（增加 --no-cache 避免缓存干扰，增加调试日志）
         docker build --no-cache --progress=plain --build-arg MODULE_NAME="$module" --build-arg JAR_PATH="$jarPath" -t "${imageFullName}" .
         docker push "${imageFullName}"
       done
