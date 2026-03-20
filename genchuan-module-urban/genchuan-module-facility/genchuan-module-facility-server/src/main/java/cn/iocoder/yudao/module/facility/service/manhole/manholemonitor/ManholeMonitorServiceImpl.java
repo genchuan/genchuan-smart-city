@@ -151,4 +151,23 @@ public class ManholeMonitorServiceImpl implements ManholeMonitorService {
         return trendList;
     }
 
+    /**
+     * 查询窨井盖预警监测列表（基于 sys_warn 表）
+     */
+    @Override
+    public PageResult<ManholeMonitorWarningRespVO> getWarningMonitorPage(ManholeMonitorWarningPageReqVO pageReqVO) {
+
+        // 2. 查询分页数据
+        List<ManholeMonitorWarningRespVO> list = monitorMapper.selectWarningMonitorPageData(pageReqVO);
+
+        // 3. 查询总条数
+        Long total = monitorMapper.selectWarningMonitorPageCount(pageReqVO);
+
+        // 4. 组装分页响应结果
+        return new PageResult<ManholeMonitorWarningRespVO>(
+              list, total
+        );
+    }
+
+
 }

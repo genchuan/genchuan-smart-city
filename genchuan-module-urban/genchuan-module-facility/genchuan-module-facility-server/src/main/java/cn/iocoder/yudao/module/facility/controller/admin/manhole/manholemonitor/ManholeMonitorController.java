@@ -146,4 +146,17 @@ public class ManholeMonitorController {
     public CommonResult<List<ManholeMonitorHourTrendVO>> get24HourTrend(@RequestParam("id") Long id) {
         return success(monitorService.get24HourTrend(id));
     }
+
+    /**
+     * 查询窨井盖预警监测列表
+     * 包含预警编号、井盖编号、路段名称、异常类型、开合状态、倾斜角度、振动数据、
+     * 处置时限、剩余处置时间、派单状态、风险等级、处置建议
+     */
+    @GetMapping("/warning-list")
+    @Operation(summary = "查询窨井盖预警监测列表（分页）")
+    public CommonResult<PageResult<ManholeMonitorWarningRespVO>> getWarningMonitorList(
+            @Valid ManholeMonitorWarningPageReqVO pageReqVO) {
+        PageResult<ManholeMonitorWarningRespVO> pageResult = monitorService.getWarningMonitorPage(pageReqVO);
+        return CommonResult.success(pageResult);
+    }
 }

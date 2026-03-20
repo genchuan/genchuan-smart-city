@@ -96,4 +96,13 @@ public interface ManholeMonitorService {
      * @return 趋势数据列表
      */
     List<ManholeMonitorHourTrendVO> get24HourTrend(Long id);
+
+    /**
+     * 查询窨井盖预警监测列表（基于 sys_warn 表）
+     * 包含预警编号、井盖编号、路段名称、异常类型、开合状态、倾斜角度、振动数据、
+     * 处置时限、剩余处置时间、派单状态、风险等级、处置建议
+     *
+     * @return 窨井盖预警监测列表
+     */
+    PageResult<ManholeMonitorWarningRespVO> getWarningMonitorPage(ManholeMonitorWarningPageReqVO pageReqVO);
 }

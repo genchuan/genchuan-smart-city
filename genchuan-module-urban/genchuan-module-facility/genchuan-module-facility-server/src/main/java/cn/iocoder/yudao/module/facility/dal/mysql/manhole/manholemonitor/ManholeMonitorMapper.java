@@ -3,10 +3,7 @@ package cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholemonitor;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeMonitorHourTrendVO;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeMonitorPageReqVO;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeMonitorStatsRespVO;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeMonitorVO;
+import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.*;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholemonitor.ManholeMonitorDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -137,5 +134,17 @@ public interface ManholeMonitorMapper extends BaseMapperX<ManholeMonitorDO> {
             "GROUP BY DATE_FORMAT(m.create_time, '%Y-%m-%d %H:00:00') " +
             "ORDER BY hourTime ASC")
     List<ManholeMonitorHourTrendVO> select24HourTrend(@Param("coverId") Long coverId);
+
+    /**
+     * 查询分页数据（手动拼接 LIMIT/OFFSET）
+     */
+    List<ManholeMonitorWarningRespVO> selectWarningMonitorPageData(
+            @Param("reqVO") ManholeMonitorWarningPageReqVO reqVO);
+
+    /**
+     * 查询总条数（用于计算分页总数）
+     */
+    Long selectWarningMonitorPageCount(
+            @Param("reqVO") ManholeMonitorWarningPageReqVO reqVO);
 
 }
