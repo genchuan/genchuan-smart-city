@@ -8,13 +8,18 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import cn.iocoder.yudao.module.evaluate.controller.admin.commentrule.vo.*;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.commentrule.CommentRuleDO;
+import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexitem.IndexItemDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.evaluate.dal.mysql.commentrule.CommentRuleMapper;
+import cn.iocoder.yudao.module.evaluate.dal.mysql.indexitem.IndexItemMapper;
+import cn.iocoder.yudao.module.evaluate.dal.mysql.indexsystem.IndexSystemMapper;
+import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexsystem.IndexSystemDO;
 import cn.iocoder.yudao.module.evaluate.service.ruledetail.RuleDetailService;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.ruledetail.RuleDetailDO;
 
@@ -34,6 +39,12 @@ public class CommentRuleServiceImpl implements CommentRuleService {
 
     @Resource
     private CommentRuleMapper commentRuleMapper;
+
+    @Resource
+    private IndexItemMapper indexItemMapper;
+
+    @Resource
+    private IndexSystemMapper indexSystemMapper;
 
     @Resource
     private RuleDetailService ruleDetailService;
@@ -94,6 +105,15 @@ public class CommentRuleServiceImpl implements CommentRuleService {
         // 转换为RespVO
         CommentRuleRespVO respVO = BeanUtils.toBean(commentRule, CommentRuleRespVO.class);
 
+        // 填充指标体系信息（systemId → IndexSystemDO）
+        if (commentRule.getSystemId() != null) {
+            IndexSystemDO system = indexSystemMapper.selectById(commentRule.getSystemId());
+            if (system != null) {
+                respVO.setSystemIdPk(system.getSystemId());
+                respVO.setSystemName(system.getName());
+            }
+        }
+
         // 查询明细列表
         List<RuleDetailDO> details = ruleDetailService.getRuleDetailListByRuleId(id);
         respVO.setDetails(BeanUtils.toBean(details, RuleDetailRespVO.class));
@@ -102,13 +122,46 @@ public class CommentRuleServiceImpl implements CommentRuleService {
     }
 
     @Override
-    public PageResult<CommentRuleDO> getCommentRulePage(CommentRulePageReqVO pageReqVO) {
-        return commentRuleMapper.selectPage(pageReqVO);
+    public PageResult<CommentRuleRespVO> getCommentRulePage(CommentRulePageReqVO pageReqVO) {
+        PageResult<CommentRuleDO> pageResult = commentRuleMapper.selectPage(pageReqVO);
+        if (pageResult.getList() == null || pageResult.getList().isEmpty()) {
+            return new PageResult<>(new ArrayList<>(), pageResult.getTotal());
+        }
+
+        // 收集所有 systemId 并批量查询体系信息
+        List<Long> systemIds = pageResult.getList().stream()
+                .map(CommentRuleDO::getSystemId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+
+        Map<Long, IndexSystemDO> systemMap;
+        if (!systemIds.isEmpty()) {
+            List<IndexSystemDO> systems = indexSystemMapper.selectBatchIds(systemIds);
+            systemMap = systems.stream()
+                    .collect(Collectors.toMap(IndexSystemDO::getId, s -> s));
+        } else {
+            systemMap = new HashMap<>();
+        }
+
+        // 转换为 RespVO 并填充关联字段
+        List<CommentRuleRespVO> voList = pageResult.getList().stream().map(rule -> {
+            CommentRuleRespVO vo = BeanUtils.toBean(rule, CommentRuleRespVO.class);
+            IndexSystemDO system = systemMap.get(rule.getSystemId());
+            if (system != null) {
+                vo.setSystemIdPk(system.getSystemId());
+                vo.setSystemName(system.getName());
+            }
+            return vo;
+        }).collect(Collectors.toList());
+
+        return new PageResult<>(voList, pageResult.getTotal());
     }
 
     @Override
     public Long getCommentRuleIdBySystemIdAndItemId(Long systemId, Long itemId) {
-        return commentRuleMapper.selectIdBySystemIdAndItemId(systemId, itemId);
+        IndexItemDO item = indexItemMapper.selectById(itemId);
+        return item != null ? item.getCommentRuleId() : null;
     }
 
 }

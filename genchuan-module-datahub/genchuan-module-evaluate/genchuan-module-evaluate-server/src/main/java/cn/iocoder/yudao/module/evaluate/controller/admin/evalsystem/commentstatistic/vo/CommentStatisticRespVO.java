@@ -76,4 +76,20 @@ public class CommentStatisticRespVO {
     @ExcelProperty("体系id")
     private Long systemId;
 
+    @Schema(description = "指标项名称")
+    @ExcelProperty("指标项名称")
+    private String itemName;
+
+    @Schema(description = "评价对象名称")
+    @ExcelProperty("评价对象名称")
+    private String objectName;
+
+    @Schema(description = "规则名称")
+    @ExcelProperty("规则名称")
+    private String ruleName;
+
+    @Schema(description = "体系名称")
+    @ExcelProperty("体系名称")
+    private String systemName;
+
 }

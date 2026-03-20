@@ -21,6 +21,14 @@ public class CommentRuleRespVO {
     @ExcelProperty("指标体系ID(关联eval_index_system)")
     private Long systemId;
 
+    @Schema(description = "指标体系UUID", example = "15590")
+    @ExcelIgnore
+    private String systemIdPk;
+
+    @Schema(description = "指标体系名称", example = "市政道路评分体系")
+    @ExcelIgnore
+    private String systemName;
+
     @Schema(description = "规则分类ID(关联eval_rule_category)", requiredMode = Schema.RequiredMode.REQUIRED, example = "24205")
     @ExcelProperty("规则分类ID(关联eval_rule_category)")
     private Long ruleCategoryId;

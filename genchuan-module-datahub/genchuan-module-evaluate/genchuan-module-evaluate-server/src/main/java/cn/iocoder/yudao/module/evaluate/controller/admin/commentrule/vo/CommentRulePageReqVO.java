@@ -19,9 +19,6 @@ public class CommentRulePageReqVO extends PageParam {
     @Schema(description = "规则分类ID(关联eval_rule_category)", example = "24205")
     private Long ruleCategoryId;
 
-    @Schema(description = "指标项ID(关联eval_index_item)", example = "15670")
-    private Long itemId;
-
     @Schema(description = "规则名称", example = "芋艿")
     private String ruleName;
 

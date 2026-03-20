@@ -3789,16 +3789,6 @@ CREATE TABLE eval_comment_rule (
 -- 索引优化
 CREATE INDEX idx_system_category_status ON eval_comment_rule (system_id, rule_category_id, status);
 
-INSERT INTO eval_comment_rule (
-    system_id, rule_category_id, item_id, rule_name, rule_type, status,
-    apply_object_type, effective_start_time, effective_end_time, creator, updater
-) VALUES
--- 市政道路-环境卫生类-明显垃圾 评分规则
-(1, 1, 10001, '市政道路-明显垃圾评分规则', 2, 1,
- '网格', '2025-01-01 00:00:00', '2025-12-31 23:59:59', 'admin', 'admin'),
--- 市政道路-环境卫生类-零星垃圾 评分规则
-(1, 1, 10002, '市政道路-零星垃圾评分规则', 2, 1,
- '网格', '2025-01-01 00:00:00', '2025-12-31 23:59:59', 'admin', 'admin');
 CREATE TABLE eval_rule_detail (
                                   id BIGINT AUTO_INCREMENT COMMENT '主键ID' PRIMARY KEY,
                                   rule_id BIGINT NOT NULL COMMENT '规则ID(eval_comment_rule.id)',
@@ -3819,18 +3809,26 @@ CREATE TABLE eval_rule_detail (
 -- 索引优化
 CREATE INDEX idx_rule_id ON eval_rule_detail (rule_id);
 CREATE INDEX idx_rule_sort ON eval_rule_detail (rule_id, sort_order);
-INSERT INTO eval_rule_detail (
-    rule_id, min_value, max_value, operator_min, operator_max, score, sort_order, remark
-) VALUES
--- 规则ID=1（明显垃圾）的明细
-(1, NULL, 0, NULL, '=', 100.00, 1, '=0 得100分'),
-(1, 1, 5, '>', '<', 70.00, 2, '>1 且 <5 得70分'),
-(1, 5, NULL, '>=', NULL, 0.00, 3, '>=5 得0分'),
 
--- 规则ID=2（零星垃圾）的明细
-(2, NULL, 0, NULL, '=', 100.00, 1, '=0 得100分'),
-(2, 1, 3, '>', '<=', 80.00, 2, '>1 且 <=3 得80分'),
-(2, 3, 5, '>', '<=', 50.00, 3, '>3 且 <=5 得50分'),
-(2, 5, NULL, '>', NULL, 0.00, 4, '>5 得0分');
 
+create table eval_object_score
+(
+    id          bigint auto_increment comment '主键ID'
+        primary key,
+    object_id   bigint                                null comment '对象ID (关联eval_object.id)',
+    system_id   bigint                                null comment '体系ID (关联eval_index_system.id)',
+    user_id     bigint                                null comment '巡检人ID(关联sys_user.id)',
+    score       bigint                                null comment '总得分',
+    status      varchar(20) default '1'               null comment '状态: 1：待审核中，2：审核通过，3：不用审核',
+    details     text                                  null comment '评价说明',
+    creator     varchar(64) default ''                null comment '创建者',
+    updater     varchar(64) default ''                null comment '更新者',
+    deleted     bit         default b'0'              null comment '删除标识',
+    tenant_id   bigint      default 1                 null comment '租户ID',
+    create_time datetime    default CURRENT_TIMESTAMP null comment '创建时间',
+    update_time datetime    default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment '更新时间',
+    change_log  mediumtext                            null comment '变更日志'
+)
+    comment '公司得分表' collate = utf8mb4_unicode_ci
+                         row_format = DYNAMIC;
 

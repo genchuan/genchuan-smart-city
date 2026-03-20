@@ -4,9 +4,12 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.evaluate.controller.admin.patrolinspection.vo.PatrolInspectionPageReqVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.patrolinspection.vo.PatrolInspectionSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexitem.IndexItemDO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.patrolinspection.PatrolInspectionDO;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.patrolinspection.PatrolInspectionMapper;
+import cn.iocoder.yudao.module.evaluate.service.objectscore.ObjectScoreService;
 import cn.iocoder.yudao.module.evaluate.service.commentstatistic.CommentStatisticService;
+import cn.iocoder.yudao.module.evaluate.service.indexitem.IndexItemService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -31,8 +34,25 @@ public class PatrolInspectionServiceImpl implements PatrolInspectionService {
     @Resource
     private CommentStatisticService commentStatisticService;
 
+    @Resource
+    private IndexItemService indexItemService;
+
+    @Resource
+    private ObjectScoreService objectScoreService;
+
     @Override
     public Long createPatrolInspection(PatrolInspectionSaveReqVO createReqVO) {
+        // 通过 itemId 查询指标项，填充 ruleId 和 categoryId
+        if (createReqVO.getItemId() != null) {
+            IndexItemDO indexItem = indexItemService.getIndexItem(createReqVO.getItemId());
+            if (indexItem != null) {
+                // 优先使用指标项中的 commentRuleId 作为 ruleId
+                if (indexItem.getCommentRuleId() != null) {
+                    createReqVO.setRuleId(indexItem.getCommentRuleId());
+                }
+            }
+        }
+
         // 插入
         PatrolInspectionDO patrolInspection = BeanUtils.toBean(createReqVO, PatrolInspectionDO.class);
         patrolInspectionMapper.insert(patrolInspection);
@@ -45,6 +65,11 @@ public class PatrolInspectionServiceImpl implements PatrolInspectionService {
                     patrolInspection.getObjectId(),
                     patrolInspection.getAddressCoding()
             );
+        }
+
+        // 同步 userId 到公司得分表（systemId 和 objectId 均不为空时才执行）
+        if (patrolInspection.getSystemId() != null && patrolInspection.getObjectId() != null) {
+            objectScoreService.recalculateScore(patrolInspection.getSystemId(), patrolInspection.getObjectId());
         }
 
         // 返回
@@ -88,6 +113,11 @@ public class PatrolInspectionServiceImpl implements PatrolInspectionService {
                 commentStatisticService.syncCount(newSystemId, newItemId, newObjectId, newAddressCoding);
             }
         }
+
+        // 同步 userId 到公司得分表
+        if (newSystemId != null && newObjectId != null) {
+            objectScoreService.recalculateScore(newSystemId, newObjectId);
+        }
     }
 
     @Override
@@ -101,6 +131,8 @@ public class PatrolInspectionServiceImpl implements PatrolInspectionService {
         // 删除后，减少对应统计数量（只有当itemId和objectId都不为null时才执行）
         if (existPatrol.getItemId() != null && existPatrol.getObjectId() != null) {
             commentStatisticService.decrementCount(existPatrol.getSystemId(), existPatrol.getItemId(), existPatrol.getObjectId());
+            // 重新计算得分
+            objectScoreService.recalculateScore(existPatrol.getSystemId(), existPatrol.getObjectId());
         }
     }
 
