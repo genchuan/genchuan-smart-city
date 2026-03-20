@@ -4,7 +4,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.monitortype.MonitorTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.monitortype.MonitorTypeSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.MonitorTypeDO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 监测类型字典表 Service 接口
@@ -51,4 +54,9 @@ public interface MonitorTypeService {
      */
     PageResult<MonitorTypeDO> getMonitorTypePage(MonitorTypePageReqVO pageReqVO);
 
+    /**
+     * 获得监测类型下拉框选项
+     * @return 下拉框选项列表
+     */
+    List<OptionVO> getMonitorTypeOptions();
 }

@@ -8,7 +8,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.problemty
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.problemtype.vo.ProblemTypeSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.ProblemTypeDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.dictionary.ProblemTypeMapper;
-import cn.iocoder.yudao.module.envirhealth.util.vo.OptionVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;

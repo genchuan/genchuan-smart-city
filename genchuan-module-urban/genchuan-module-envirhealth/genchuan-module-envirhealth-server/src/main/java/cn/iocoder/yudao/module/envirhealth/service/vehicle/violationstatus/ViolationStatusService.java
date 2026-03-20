@@ -4,7 +4,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.violationstatus.ViolationStatusPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.violationstatus.ViolationStatusSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.ViolationStatusDO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 违规状态字典表【通用复用】 Service 接口
@@ -51,4 +54,9 @@ public interface ViolationStatusService {
      */
     PageResult<ViolationStatusDO> getViolationStatusPage(ViolationStatusPageReqVO pageReqVO);
 
+    /**
+     * 获得违规状态字典表【通用复用】下拉框选项
+     * @return 下拉框选项列表
+     */
+    List<OptionVO> getViolationStatusOptions();
 }

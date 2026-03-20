@@ -3,10 +3,10 @@ package cn.iocoder.yudao.module.envirhealth.service.publictoilet.publictoilet;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.publictoilet.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.PublicToiletDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.PublicToiletDetailDO;
-import cn.iocoder.yudao.module.envirhealth.util.vo.BarItemVO;
-import cn.iocoder.yudao.module.envirhealth.util.vo.OptionVO;
-import cn.iocoder.yudao.module.envirhealth.util.vo.StatisticsRespVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.PublicToiletDetailDO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.BarItemVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.StatisticsRespVO;
 import jakarta.validation.Valid;
 
 import java.util.List;

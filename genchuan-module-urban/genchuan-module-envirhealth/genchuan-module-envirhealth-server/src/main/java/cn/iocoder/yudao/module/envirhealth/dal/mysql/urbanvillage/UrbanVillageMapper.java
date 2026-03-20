@@ -5,7 +5,9 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.UrbanVillagePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.urbanvillage.UrbanVillageDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.urbanvillage.detail.UrbanVillageDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.urbanvillage.UrbanVillageDetailDO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.BarItemVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.PieItemVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -66,4 +68,100 @@ public interface UrbanVillageMapper extends BaseMapperX<UrbanVillageDO> {
     List<UrbanVillageDetailDO> selectDetailPage(@Param("reqVO") UrbanVillagePageReqVO pageReqVO);
 
     Long selectCount(@Param("reqVO") UrbanVillagePageReqVO pageReqVO);
+
+    // ====================== 卡片数据 SQL ======================
+    /**
+     * 查询总城中村数
+     */
+    @Select("SELECT COUNT(id) FROM urban_village WHERE deleted = 0")
+    Long selectTotalVillageCount();
+
+    /**
+     * 查询正常运营数
+     */
+    @Select("""
+            SELECT COUNT(uv.id)
+            FROM urban_village uv
+            LEFT JOIN sys_operation_status sos ON uv.operation_status_id = sos.sys_operation_status_id
+            WHERE uv.deleted = 0
+            AND uv.operation_status_id = 'uuid-op-status-001'
+            """)
+    Long selectNormalOperationCount();
+
+    /**
+     * 查询保洁达标数（≥95视为达标）
+     */
+    @Select("SELECT COUNT(id) FROM urban_village WHERE deleted = 0 AND cleaning_rate >= 95")
+    Long selectCleaningStandardMetCount();
+
+    /**
+     * 查询问题处置完成数
+     */
+    @Select("""
+            SELECT COUNT(uv.id)
+            FROM urban_village uv
+                LEFT JOIN sys_handle_status hs ON uv.handle_status_id = hs.sys_handle_status_id
+            WHERE uv.deleted = 0
+            AND handle_status_id = 'uuid-handle-003'
+            """)
+    Long selectProblemHandledCount();
+
+    /**
+     * 查询复核通过数
+     */
+    @Select("""
+            SELECT COUNT(uv.id)
+            FROM urban_village uv
+                LEFT JOIN sys_review_result r ON r.review_result_id = uv.review_result_id
+            WHERE uv.deleted = 0
+            AND uv.review_result_id = 'uuid-review-001'
+            """)
+    Long selectReviewPassedCount();
+
+    // ====================== 圆环图数据 SQL ======================
+    /**
+     * 查询运营状态分布占比
+     */
+    @Select("""
+        SELECT 
+            IFNULL(sos.name, '未知') AS name,
+            COUNT(uv.id) AS value
+        FROM urban_village uv
+        LEFT JOIN sys_operation_status sos 
+            ON uv.operation_status_id = sos.sys_operation_status_id
+        WHERE uv.deleted = 0 
+        GROUP BY IFNULL(sos.name, '未知'), sos.sys_operation_status_id, sos.id
+        ORDER BY sos.id desc
+        """)
+    List<PieItemVO> selectOperationStatusDistribution();
+
+    /**
+     * 查询所属区域分布占比
+     */
+    @Select("""
+            SELECT
+                IFNULL(sa.area_name, '未知') AS name,
+                COUNT(uv.id) AS value
+            FROM urban_village uv
+            LEFT JOIN sys_area sa
+                ON uv.area_code = sa.area_code
+            WHERE uv.deleted = 0
+            GROUP BY IFNULL(sa.area_name, '未知'), sa.area_code
+            """)
+    List<PieItemVO> selectAreaDistribution();
+
+    // ====================== 柱状图数据 SQL ======================
+    /**
+     * 查询不同城中村考核得分对比
+     */
+    @Select("""
+            SELECT 
+                uv.name AS name,
+                ROUND(IFNULL(uv.assessment_score, 0.0), 1) AS value
+            FROM urban_village uv
+            WHERE uv.deleted = 0
+            AND uv.name IS NOT NULL
+            ORDER BY uv.assessment_score DESC
+            """)
+    List<BarItemVO> selectAssessmentScoreByVillage();
 }

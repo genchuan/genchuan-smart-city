@@ -2,10 +2,10 @@ package cn.iocoder.yudao.module.envirhealth.service.roadcleaning.roadcleaning;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.roadcleaning.vo.roadcleaning.*;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning.Detail.RoadCleaningDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning.RoadCleaningDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning.RoadCleaningDO;
-import cn.iocoder.yudao.module.envirhealth.util.vo.OptionVO;
-import cn.iocoder.yudao.module.envirhealth.util.vo.StatisticsRespVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.StatisticsRespVO;
 import jakarta.validation.Valid;
 
 import java.util.List;

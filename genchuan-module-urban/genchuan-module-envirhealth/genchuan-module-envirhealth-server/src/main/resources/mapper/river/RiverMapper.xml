@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.river.RiverMapper">
 
-    <resultMap id="RiverDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.detail.RiverDetailDO">
+    <resultMap id="RiverDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.RiverDetailDO">
         <!-- 基础字段（继承RiverDO） -->
         <id column="id" property="id"/>
         <result column="river_id" property="riverId"/>

@@ -4,7 +4,7 @@
 <mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.publicinstitution.PublicInstitutionMapper">
 
     <!-- 公共机构详情查询结果映射 -->
-    <resultMap id="PublicInstitutionDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.publicinstitution.detail.PublicInstitutionDetailDO">
+    <resultMap id="PublicInstitutionDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.publicinstitution.PublicInstitutionDetailDO">
         <!-- 继承PublicInstitutionDO的基础字段 -->
         <id column="id" property="id"/>
         <result column="institution_id" property="institutionId"/>
@@ -72,13 +72,13 @@
 
             <!-- 模糊查询字段 -->
             <if test="reqVO.name != null and reqVO.name != ''">
-                AND pi.name LIKE CONCAT('%', #{reqVO.name}, '%')
+                AND pi.name LIKE '%' || #{reqVO.name} || '%'
             </if>
             <if test="reqVO.address != null and reqVO.address != ''">
-                AND pi.address LIKE CONCAT('%', #{reqVO.address}, '%')
+                AND pi.address LIKE '%' || #{reqVO.address} || '%'
             </if>
             <if test="reqVO.cleanerIds != null and reqVO.cleanerIds != ''">
-                AND pi.cleaner_ids LIKE CONCAT('%', #{reqVO.cleanerIds}, '%')
+                AND pi.cleaner_ids::TEXT LIKE '%' || #{reqVO.cleanerIds} || '%'
             </if>
         </where>
     </sql>
@@ -91,32 +91,31 @@
         a.area_name AS area_name,
         u.user_name AS manager_name,
         os.name AS operation_status_name,
-        IFNULL(GROUP_CONCAT(DISTINCT cu.user_name), '') AS cleaners_name_str
+        COALESCE(STRING_AGG(DISTINCT cu.user_name, ','), '') AS cleaners_name_str
         FROM public_institution pi
-        LEFT JOIN sys_institution_type it ON pi.institution_type_id = it.sys_institution_type_id AND it.deleted = 0
-        LEFT JOIN sys_area a ON pi.area_code = a.area_code AND a.deleted = 0
-        LEFT JOIN sys_user u ON pi.manager_id = u.user_id AND u.deleted = 0
-        LEFT JOIN sys_operation_status os ON pi.operation_status_id = os.sys_operation_status_id AND os.deleted = 0
-        LEFT JOIN sys_user cu ON FIND_IN_SET(
-        cu.user_id,
-        REPLACE(REPLACE(REPLACE(REPLACE(pi.cleaner_ids, '[', ''), ']', ''), '"', ''), ' ', '')
+        LEFT JOIN sys_institution_type it ON pi.institution_type_id = it.sys_institution_type_id AND it.deleted = 0 AND it.tenant_id = 1
+        LEFT JOIN sys_area a ON pi.area_code = a.area_code AND a.deleted = 0 AND a.tenant_id = 1
+        LEFT JOIN sys_user u ON pi.manager_id = u.user_id AND u.deleted = 0 AND u.tenant_id = 1
+        LEFT JOIN sys_operation_status os ON pi.operation_status_id = os.sys_operation_status_id AND os.deleted = 0 AND os.tenant_id = 1
+        LEFT JOIN sys_user cu ON cu.user_id::TEXT = ANY (
+        ARRAY(SELECT json_array_elements_text(pi.cleaner_ids::TEXT::json)::TEXT)
         ) AND cu.deleted = 0
         <include refid="whereConditions" />
         GROUP BY
         pi.id,
         it.name, a.area_name, u.user_name, os.name
         ORDER BY pi.id DESC
-        LIMIT #{reqVO.offset}, #{reqVO.pageSize}
+        LIMIT #{reqVO.pageSize} OFFSET #{reqVO.offset}
     </select>
 
     <!-- 查询符合条件的总数 -->
     <select id="selectCount" resultType="java.lang.Long">
         SELECT COUNT(DISTINCT pi.id)
         FROM public_institution pi
-        LEFT JOIN sys_institution_type it ON pi.institution_type_id = it.sys_institution_type_id AND it.deleted = 0
-        LEFT JOIN sys_area a ON pi.area_code = a.area_code AND a.deleted = 0
-        LEFT JOIN sys_user u ON pi.manager_id = u.user_id AND u.deleted = 0
-        LEFT JOIN sys_operation_status os ON pi.operation_status_id = os.sys_operation_status_id AND os.deleted = 0
+        LEFT JOIN sys_institution_type it ON pi.institution_type_id = it.sys_institution_type_id AND it.deleted = 0 AND it.tenant_id = 1
+        LEFT JOIN sys_area a ON pi.area_code = a.area_code AND a.deleted = 0 AND a.tenant_id = 1
+        LEFT JOIN sys_user u ON pi.manager_id = u.user_id AND u.deleted = 0 AND u.tenant_id = 1
+        LEFT JOIN sys_operation_status os ON pi.operation_status_id = os.sys_operation_status_id AND os.deleted = 0 AND os.tenant_id = 1
         <include refid="whereConditions" />
     </select>
 

@@ -2,7 +2,7 @@ package cn.iocoder.yudao.module.envirhealth.controller.admin.image;
 
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.module.envirhealth.service.image.ImageUploadService;
-import cn.iocoder.yudao.module.envirhealth.util.vo.ImageUploadRespVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.image.vo.ImageUploadRespVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;

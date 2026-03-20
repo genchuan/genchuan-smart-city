@@ -1,7 +1,7 @@
 package cn.iocoder.yudao.module.envirhealth.controller.admin.publicinstitution.vo.publicinstitution;
 
-import cn.iocoder.yudao.module.envirhealth.util.vo.BarItemVO;
-import cn.iocoder.yudao.module.envirhealth.util.vo.PieItemVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.BarItemVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.PieItemVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

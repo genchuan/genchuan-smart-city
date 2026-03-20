@@ -8,7 +8,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.cons
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.consumable.ConsumableSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ConsumableDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.publictoilet.ConsumableMapper;
-import cn.iocoder.yudao.module.envirhealth.util.vo.OptionVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
