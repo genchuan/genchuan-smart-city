@@ -22,12 +22,10 @@ Build:
 # ===================== 阶段2：Push（推送镜像） =====================
 Push:
   stage: Push
-  image: $MAVEN_IMAGE
-  # 仅 genchuan-master-jdk17 分支执行，且依赖 Build 阶段成功
   only:
     - genchuan-opengauss-master
   dependencies:
-    - Build  # 依赖 Build 阶段（确保镜像已构建）
+    - Build
   script:
     # 2. 定义模块列表（与 Build 阶段保持一致）
     - declare -A MODULE_JAR_MAP=(
