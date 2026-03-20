@@ -78,26 +78,26 @@ public interface MarketMapper extends BaseMapperX<MarketDO> {
     /**
      * 统计集贸市场总数
      */
-    @Select("SELECT COUNT(*) FROM market")
+    @Select("SELECT COUNT(*) FROM market WHERE deleted = 0")
     Long selectTotalMarketCount();
 
     /**
      * 统计卫生达标的集贸市场数量
      * 注：hygiene_rate >= 90
      */
-    @Select("SELECT COUNT(*) FROM market WHERE hygiene_rate >= 90")
+    @Select("SELECT COUNT(*) FROM market WHERE hygiene_rate >= 90 AND deleted = 0")
     Long selectHygieneStandardMetCount();
 
     /**
      * 统计垃圾转运达标的集贸市场数量
      */
-    @Select("SELECT COUNT(*) FROM market WHERE waste_transfer_rate >= 90")
+    @Select("SELECT COUNT(*) FROM market WHERE waste_transfer_rate >= 90 AND deleted = 0")
     Long selectWasteTransferStandardMetCount();
 
     /**
      * 统计污水排放达标的集贸市场数量
      */
-    @Select("SELECT COUNT(*) FROM market WHERE sewage_rate >= 90")
+    @Select("SELECT COUNT(*) FROM market WHERE sewage_rate >= 90 AND deleted = 0")
     Long selectSewageDischargeStandardMetCount();
 
     /**
@@ -109,6 +109,7 @@ public interface MarketMapper extends BaseMapperX<MarketDO> {
                 COUNT(*) AS value
             FROM market m
                 LEFT JOIN sys_operation_status os ON os.sys_operation_status_id = m.operation_status_id
+            WHERE m.deleted = 0
             GROUP BY m.operation_status_id, m.id ,os.name
             ORDER BY m.id
             """)
@@ -123,6 +124,7 @@ public interface MarketMapper extends BaseMapperX<MarketDO> {
                 COUNT(*) AS value
             FROM market m
                 LEFT JOIN sys_area a ON a.area_code = m.area_code
+            WHERE m.deleted = 0
             GROUP BY m.area_code, m.id, a.area_name
             ORDER BY m.id
             """)
@@ -136,7 +138,7 @@ public interface MarketMapper extends BaseMapperX<MarketDO> {
                 name AS name,
                 hygiene_rate AS value
             FROM market
-            WHERE hygiene_rate IS NOT NULL
+            WHERE hygiene_rate IS NOT NULL AND deleted = 0
             """)
     List<BarItemVO> selectHygieneComplianceRateByMarket();
 }

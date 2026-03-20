@@ -1,9 +1,9 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.river;
 
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.monitorstatus.MonitorStatusPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.monitorstatus.MonitorStatusRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.monitorstatus.MonitorStatusSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +31,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.MonitorStatusDO;
 import cn.iocoder.yudao.module.envirhealth.service.river.monitorstatus.MonitorStatusService;
 
-@Tag(name = "管理后台 - 监测状态字典表")
+@Tag(name = "字典表 - 监测状态")
 @RestController
 @RequestMapping("/envirhealth/monitor-status")
 @Validated
@@ -94,4 +94,14 @@ public class MonitorStatusController {
                         BeanUtils.toBean(list, MonitorStatusRespVO.class));
     }
 
-}*/
+    /**
+     * 获得监测状态字典下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得监测状态(下拉框)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:monitor-status:query')")
+    public CommonResult<List<OptionVO>> getMonitorStatusOptions() {
+        return success(monitorStatusService.getMonitorStatusOptions());
+    }
+}

@@ -1,14 +1,20 @@
 package cn.iocoder.yudao.module.envirhealth.service.river.monitorstatus;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.monitorstatus.MonitorStatusPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.monitorstatus.MonitorStatusSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.CleaningTypeDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.MonitorStatusDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.river.MonitorStatusMapper;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.MONITOR_STATUS_NOT_EXISTS;
@@ -67,4 +73,21 @@ public class MonitorStatusServiceImpl implements MonitorStatusService {
         return monitorStatusMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public List<OptionVO> getMonitorStatusOptions() {
+
+        List<MonitorStatusDO> list;
+        list = monitorStatusMapper.selectList(
+                new LambdaQueryWrapperX<MonitorStatusDO>()
+                        .eq(MonitorStatusDO::getDeleted, 0)
+                        .orderByDesc(MonitorStatusDO::getId)
+        );
+        // 将DO转换为下拉框VO（label=name，value=id）
+        return CollectionUtils.convertList(list, monitorStatusDO -> {
+            OptionVO vo = new OptionVO();
+            vo.setLabel(monitorStatusDO.getMonitorStatusName());
+            vo.setValue(monitorStatusDO.getMonitorStatusId());
+            return vo;
+        });
+    }
 }
