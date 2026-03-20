@@ -15,6 +15,9 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @ToString(callSuper = true)
 public class CommentStatisticPageReqVO extends PageParam {
 
+    @Schema(description = "体系ID (关联体系表主键id)", example = "1")
+    private Long systemId;
+
     @Schema(description = "指标项ID(关联指标项表的主键id  eval_index_item.id)", example = "12354")
     private Long itemId;
 

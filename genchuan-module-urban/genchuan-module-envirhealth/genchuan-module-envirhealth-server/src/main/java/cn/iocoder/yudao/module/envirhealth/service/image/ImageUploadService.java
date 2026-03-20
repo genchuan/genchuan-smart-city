@@ -1,6 +1,6 @@
 package cn.iocoder.yudao.module.envirhealth.service.image;
 
-import cn.iocoder.yudao.module.envirhealth.util.vo.ImageUploadRespVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.image.vo.ImageUploadRespVO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

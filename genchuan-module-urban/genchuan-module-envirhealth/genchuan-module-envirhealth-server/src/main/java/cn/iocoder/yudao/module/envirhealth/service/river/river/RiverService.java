@@ -1,10 +1,11 @@
 package cn.iocoder.yudao.module.envirhealth.service.river.river;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.river.RiverDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.river.RiverPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.river.RiverSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.RiverDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.detail.RiverDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.RiverDetailDO;
 import jakarta.validation.Valid;
 
 /**
@@ -52,6 +53,18 @@ public interface RiverService {
      */
     PageResult<RiverDO> getRiverPage(RiverPageReqVO pageReqVO);
 
+    /**
+     * 获得河道分页
+     *
+     * @param pageReqVO 分页查询
+     * @return 河道分页
+     */
     PageResult<RiverDetailDO> getRiverDetailPage(RiverPageReqVO pageReqVO);
 
+    /**
+     * 获得河道看板统计数据
+     *
+     * @return 河道看板统计数据
+     */
+    RiverDashboardVO getRiverDashboard();
 }

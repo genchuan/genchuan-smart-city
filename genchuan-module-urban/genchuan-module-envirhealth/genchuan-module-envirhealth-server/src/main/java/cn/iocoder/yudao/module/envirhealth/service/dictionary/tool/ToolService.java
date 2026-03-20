@@ -4,7 +4,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.tool.vo.ToolPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.tool.vo.ToolSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.ToolDO;
-import cn.iocoder.yudao.module.envirhealth.util.vo.OptionVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import jakarta.validation.Valid;
 
 import java.util.List;

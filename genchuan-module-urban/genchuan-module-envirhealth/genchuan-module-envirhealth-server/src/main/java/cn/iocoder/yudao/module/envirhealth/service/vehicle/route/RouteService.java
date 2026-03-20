@@ -4,7 +4,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.route.RoutePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.route.RouteSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.RouteDO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 路线 Service 接口
@@ -51,4 +54,9 @@ public interface RouteService {
      */
     PageResult<RouteDO> getRoutePage(RoutePageReqVO pageReqVO);
 
+    /**
+     * 获得路线下拉框选项
+     * @return 下拉框选项列表
+     */
+    List<OptionVO> getRouteOptions();
 }

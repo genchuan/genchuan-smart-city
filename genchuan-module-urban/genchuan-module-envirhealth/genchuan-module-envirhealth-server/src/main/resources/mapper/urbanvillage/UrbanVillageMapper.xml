@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.urbanvillage.UrbanVillageMapper">
 
-    <resultMap id="UrbanVillageDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.urbanvillage.detail.UrbanVillageDetailDO">
+    <resultMap id="UrbanVillageDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.urbanvillage.UrbanVillageDetailDO">
         <id column="id" property="id"/>
         <result column="village_id" property="villageId"/>
         <result column="name" property="name"/>

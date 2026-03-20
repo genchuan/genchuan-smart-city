@@ -10,7 +10,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.publicinstitution.vo
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publicinstitution.vo.institutionproblem.InstitutionProblemRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publicinstitution.vo.institutionproblem.InstitutionProblemSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publicinstitution.InstitutionProblemDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publicinstitution.detail.InstitutionProblemDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publicinstitution.InstitutionProblemDetailDO;
 import cn.iocoder.yudao.module.envirhealth.service.publicinstitution.institutionproblem.InstitutionProblemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

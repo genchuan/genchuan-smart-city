@@ -81,6 +81,10 @@ public class IndexItemRespVO {
     @ExcelProperty("通用扩展字段4")
     private String extCommon4;
 
+    @Schema(description = "评价规则id(关联eval_comment_rule.id)", example = "1")
+    @ExcelProperty("评价规则id(关联eval_comment_rule.id)")
+    private Long commentRuleId;
+
     @Schema(description = "创建时间")
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;

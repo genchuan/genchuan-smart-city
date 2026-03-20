@@ -1,10 +1,11 @@
 package cn.iocoder.yudao.module.envirhealth.service.publicinstitution.publicinstitution;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.publicinstitution.vo.publicinstitution.PublicInstitutionDashboardRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publicinstitution.vo.publicinstitution.PublicInstitutionPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publicinstitution.vo.publicinstitution.PublicInstitutionSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publicinstitution.PublicInstitutionDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publicinstitution.detail.PublicInstitutionDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publicinstitution.PublicInstitutionDetailDO;
 import jakarta.validation.Valid;
 
 /**
@@ -52,6 +53,18 @@ public interface PublicInstitutionService {
      */
     PageResult<PublicInstitutionDO> getPublicInstitutionPage(PublicInstitutionPageReqVO pageReqVO);
 
+    /**
+     * 获得公共机构分页(详情)
+     *
+     * @param pageReqVO 分页查询
+     * @return 公共机构分页
+     */
     PageResult<PublicInstitutionDetailDO> getPublicInstitutionDetailPage(PublicInstitutionPageReqVO pageReqVO);
 
+    /**
+     * 获取公共机构看板统计数据
+     *
+     * @return 看板统计数据
+     */
+    PublicInstitutionDashboardRespVO getPublicInstitutionDashboard();
 }

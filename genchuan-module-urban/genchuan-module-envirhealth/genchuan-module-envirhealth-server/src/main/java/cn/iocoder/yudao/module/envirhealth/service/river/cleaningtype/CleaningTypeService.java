@@ -4,7 +4,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.cleaningtype.CleaningTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.cleaningtype.CleaningTypeSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.CleaningTypeDO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 保洁类型字典表 Service 接口
@@ -51,4 +54,9 @@ public interface CleaningTypeService {
      */
     PageResult<CleaningTypeDO> getCleaningTypePage(CleaningTypePageReqVO pageReqVO);
 
+    /**
+     * 获得保洁类型下拉框选项
+     * @return 下拉框选项列表
+     */
+    List<OptionVO> getCleaningTypeOptions();
 }

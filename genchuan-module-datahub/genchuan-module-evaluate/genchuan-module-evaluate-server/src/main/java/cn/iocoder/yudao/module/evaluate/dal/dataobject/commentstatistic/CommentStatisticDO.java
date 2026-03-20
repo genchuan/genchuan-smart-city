@@ -71,5 +71,13 @@ public class CommentStatisticDO extends BaseDO {
      * 状态: 1：待审核中，2：审核通过，3：不用审核
      */
     private String status;
+    /**
+     * 统计规则ID（关联eval_comment_rule.id)
+     */
+    private Long ruleId;
+    /**
+     * 体系id（关联体系表主键id）
+     */
+    private Long systemId;
 
 }
