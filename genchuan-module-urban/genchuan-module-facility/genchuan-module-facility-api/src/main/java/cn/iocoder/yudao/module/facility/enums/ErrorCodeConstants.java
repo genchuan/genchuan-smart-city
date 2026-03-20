@@ -11,6 +11,12 @@ public interface ErrorCodeConstants {
     ErrorCode MONITOR_NOT_EXISTS = new ErrorCode(500, "道路监测不存在");
     // ========== 道路监测配置==========
     ErrorCode ROAD_CONFIG_NOT_EXISTS = new ErrorCode(500, "道路监测配置不存在");
+    // ========== 窨井盖==========
+    ErrorCode COVER_NOT_EXISTS = new ErrorCode(500, "窨井盖不存在");
+    // ========== 窨井盖配置==========
+    ErrorCode MANHOLE_CONFIG_NOT_EXISTS = new ErrorCode(500, "窨井盖配置不存在");
+    // ========== 处置工单==========
+    ErrorCode ORDER_NOT_EXISTS = new ErrorCode(500, "处置工单不存在");
     // ========== 预警==========
     ErrorCode WARN_NOT_EXISTS = new ErrorCode(500, "预警不存在");
 
