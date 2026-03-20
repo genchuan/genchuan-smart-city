@@ -6,6 +6,9 @@ import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.indexitem.vo
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexitem.IndexItemDO;
 import jakarta.validation.Valid;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * 指标项 Service 接口
  *
@@ -50,5 +53,28 @@ public interface IndexItemService {
      * @return 指标项分页
      */
     PageResult<IndexItemDO> getIndexItemPage(IndexItemPageReqVO pageReqVO);
+
+    /**
+     * 根据业务UUID查询指标项（兜底）
+     *
+     * @param itemId 指标项业务ID（UUID）
+     * @return 指标项
+     */
+    IndexItemDO getIndexItemByItemId(String itemId);
+
+    /**
+     * 批量更新指标项的权重（用于计算时自动归一化）
+     *
+     * @param itemWeights itemId -> 归一化后的权重
+     */
+    void updateBatchItemWeight(Map<Long, java.math.BigDecimal> itemWeights);
+
+    /**
+     * 根据 systemUuid 获取指标项列表
+     *
+     * @param systemUuid 体系UUID
+     * @return 指标项列表
+     */
+    List<IndexItemDO> getItemListBySystemIdFromCache(String systemUuid);
 
 }

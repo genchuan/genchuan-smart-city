@@ -1,9 +1,9 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle;
 
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.route.RoutePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.route.RouteRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.route.RouteSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +31,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.RouteDO;
 import cn.iocoder.yudao.module.envirhealth.service.vehicle.route.RouteService;
 
-@Tag(name = "管理后台 - 路线")
+@Tag(name = "字典表 - 路线")
 @RestController
 @RequestMapping("/envirhealth/route")
 @Validated
@@ -94,4 +94,14 @@ public class RouteController {
                         BeanUtils.toBean(list, RouteRespVO.class));
     }
 
-}*/
+    /**
+     * 获得维护类型字典下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得路线(下拉框)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:route:query')")
+    public CommonResult<List<OptionVO>> getRouteOptions() {
+        return success(routeService.getRouteOptions());
+    }
+}

@@ -6,12 +6,9 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserOptionVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserPageReqVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserRespVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.UserDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.detail.UserDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.UserDetailDO;
 import cn.iocoder.yudao.module.envirhealth.service.user.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -122,5 +119,13 @@ public class UserController {
     @PreAuthorize("@ss.hasPermission('health:user:query')")
     public CommonResult<List<UserOptionVO>> getUserOptions() {
         return success(userService.getUserOptions());
+    }
+
+    @GetMapping("/chart/dashboard")
+    @Operation(summary = "卡片/圆环图/柱状图/统计(全部)")
+    @PreAuthorize("@ss.hasPermission('health:user:query')")
+    public CommonResult<UserDashboardVO> getUserDashboard() {
+        UserDashboardVO dashboardVO = userService.getUserDashboard();
+        return success(dashboardVO);
     }
 }

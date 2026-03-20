@@ -1,6 +1,6 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.dept;
 
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 
-import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import java.util.*;
@@ -30,7 +29,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.dept.vo.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dept.DeptDO;
 import cn.iocoder.yudao.module.envirhealth.service.dept.DeptService;
 
-@Tag(name = "环境卫生管理 - 部门")
+@Tag(name = "字典表 - 部门")
 @RestController
 @RequestMapping("/envirhealth/dept")
 @Validated
@@ -93,4 +92,14 @@ public class DeptController {
                         BeanUtils.toBean(list, DeptRespVO.class));
     }
 
-}*/
+    /**
+     * 获得部门字典下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得部门(下拉框)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:dept:query')")
+    public CommonResult<List<OptionVO>> getDeptOptions() {
+        return success(deptService.getDeptOptions());
+    }
+}

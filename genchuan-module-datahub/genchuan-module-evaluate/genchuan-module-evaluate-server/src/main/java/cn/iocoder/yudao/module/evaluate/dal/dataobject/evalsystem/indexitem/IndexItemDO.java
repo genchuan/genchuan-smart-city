@@ -93,5 +93,14 @@ public class IndexItemDO extends BaseDO {
      * 通用扩展字段4
      */
     private String extCommon4;
+    /**
+     * 评价规则id(关联eval_comment_rule.id)
+     */
+    private Long commentRuleId;
+
+    /**
+     * 规则分类id(关联eval_rule_category主键id)
+     */
+    private Long commentCategoryId;
 
 }

@@ -86,6 +86,14 @@ public interface IndexSystemMapper extends BaseMapperX<IndexSystemDO> {
      * 校验指标项权重总和
      */
     Double selectItemWeightSum(@Param("categoryId") String categoryId);
+
+    /**
+     * 根据主键ID查询体系的业务UUID（systemId字段）
+     *
+     * @param id 主键ID（Long）
+     * @return 体系UUID（String）
+     */
+    String selectSystemIdById(@Param("id") Long id);
     /**
      * 联表分页查询指标体系列表（先按主表分页，再关联查询）
      * 分页逻辑：先按 eval_index_system 主表分页获取 system_id，再关联查询其他表数据

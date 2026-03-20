@@ -1,12 +1,10 @@
 package cn.iocoder.yudao.module.kitchen.controller.admin.dictionary.illegaltypedict.vo;
 
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import lombok.*;
+import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import java.time.LocalDateTime;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
@@ -17,11 +15,20 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @ToString(callSuper = true)
 public class IllegalTypeDictPageReqVO extends PageParam {
 
-    @Schema(description = "[违规类型编码] 唯一编码")
+    @Schema(description = "[分类编码]对应AI场景告警字典的告警类型编码(alertType不唯一)")
+    private String typeCategory;
+
+    @Schema(description = "[违规类型唯一编码] 对应AI场景告警字典的算法编码（aiAbilityCode唯一）")
     private String typeCode;
 
-    @Schema(description = "[违规类型名称] 如：未佩戴工牌/未穿工作服/从业人员未持健康证/操作区卫生不达标/食材存放不规范/设备未定期检修/操作流程不规范", example = "李四")
+    @Schema(description = "[违规类型名称] 对应AI场景告警字典的场景名称", example = "李四")
     private String typeName;
+
+    @Schema(description = "[违法行为说明]补充type_name说明", example = "随便")
+    private String illegalBehaviorDescription;
+
+    @Schema(description = "[告警设备说明]对应AI场景告警字典的告警设备说明", example = "你猜")
+    private String alarmDeviceDescription;
 
     @Schema(description = "[排序序号] 数值越小越靠前")
     private Integer sort;

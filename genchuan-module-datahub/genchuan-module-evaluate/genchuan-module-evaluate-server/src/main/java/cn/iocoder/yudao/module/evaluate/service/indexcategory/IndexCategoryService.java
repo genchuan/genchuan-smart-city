@@ -6,6 +6,10 @@ import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.indexcategor
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexcategory.IndexCategoryDO;
 import jakarta.validation.Valid;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
 /**
  * 指标分类 Service 接口
  *
@@ -13,42 +17,24 @@ import jakarta.validation.Valid;
  */
 public interface IndexCategoryService {
 
-    /**
-     * 创建指标分类
-     *
-     * @param createReqVO 创建信息
-     * @return 编号
-     */
     Long createIndexCategory(@Valid IndexCategorySaveReqVO createReqVO);
 
-    /**
-     * 更新指标分类
-     *
-     * @param updateReqVO 更新信息
-     */
     void updateIndexCategory(@Valid IndexCategorySaveReqVO updateReqVO);
 
-    /**
-     * 删除指标分类
-     *
-     * @param id 编号
-     */
     void deleteIndexCategory(Long id);
 
-    /**
-     * 获得指标分类
-     *
-     * @param id 编号
-     * @return 指标分类
-     */
     IndexCategoryDO getIndexCategory(Long id);
 
-    /**
-     * 获得指标分类分页
-     *
-     * @param pageReqVO 分页查询
-     * @return 指标分类分页
-     */
     PageResult<IndexCategoryDO> getIndexCategoryPage(IndexCategoryPageReqVO pageReqVO);
+
+    void updateBatchCategoryWeight(Map<String, BigDecimal> categoryWeights);
+
+    /**
+     * 根据 systemUuid 获取分类列表
+     *
+     * @param systemUuid 体系UUID
+     * @return 分类列表
+     */
+    List<IndexCategoryDO> getCategoryListBySystemIdFromCache(String systemUuid);
 
 }

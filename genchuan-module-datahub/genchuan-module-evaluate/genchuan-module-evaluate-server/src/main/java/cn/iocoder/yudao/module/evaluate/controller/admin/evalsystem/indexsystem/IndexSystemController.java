@@ -139,19 +139,4 @@ public class IndexSystemController {
         return success(systemId);
     }
 
-    @PostMapping("/create-full")
-    @Operation(summary = "完整新增指标体系（含分类和指标项）")
-    @PreAuthorize("@ss.hasPermission('evaluate:index-system:create')")
-    public CommonResult<String> createFull(@Valid @RequestBody IndexSystemSaveFullReqVO createReqVO) {
-        String systemId = indexSystemService.createFull(createReqVO);
-        return success(systemId);
-    }
-
-    @PutMapping("/update-full")
-    @Operation(summary = "完整更新指标体系（含分类和指标项）")
-    @PreAuthorize("@ss.hasPermission('evaluate:index-system:update')")
-    public CommonResult<Boolean> updateFull(@Valid @RequestBody IndexSystemSaveFullReqVO updateReqVO) {
-        indexSystemService.updateFull(updateReqVO);
-        return success(true);
-    }
 }

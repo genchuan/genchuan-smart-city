@@ -4,14 +4,14 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.VehicleController;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.VehicleDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehicleOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehiclePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehicleSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.VehicleDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.detail.VehicleDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.VehicleDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.vehicle.VehicleMapper;
-import cn.iocoder.yudao.module.envirhealth.util.codegenerator.vehicle.VehicleCodeGenerator;
+import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.vehicle.VehicleCodeGenerator;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -111,5 +111,28 @@ public class VehicleServiceImpl implements VehicleService {
             vo.setValue(vehicleDO.getSysVehicleId());
             return vo;
         });
+    }
+
+    @Override
+    public VehicleDashboardVO getVehicleDashboard() {
+        VehicleDashboardVO vo = new VehicleDashboardVO();
+
+        // 1. 卡片数据
+        vo.setTotalVehicleCount(vehicleMapper.selectTotalVehicleCount());
+        vo.setNormalOperationCount(vehicleMapper.selectNormalOperationCount());
+        vo.setMaintenanceCount(vehicleMapper.selectMaintenanceCount());
+        vo.setViolationAlertCount(vehicleMapper.selectViolationAlertCount());
+        vo.setPendingWorkCount(vehicleMapper.selectPendingWorkCount());
+
+        // 2. 圆环图数据
+        vo.setVehicleTypeDistribution(vehicleMapper.selectVehicleTypeDistribution());
+        vo.setVehicleStatusDistribution(vehicleMapper.selectVehicleStatusDistribution());
+        vo.setDeptDistribution(vehicleMapper.selectDeptDistribution());
+
+        // 3. 柱状图数据
+        vo.setVehicleCountByDept(vehicleMapper.selectVehicleCountByDept());
+        vo.setVehicleIntegrityRateByType(vehicleMapper.selectVehicleIntegrityRateByType());
+
+        return vo;
     }
 }

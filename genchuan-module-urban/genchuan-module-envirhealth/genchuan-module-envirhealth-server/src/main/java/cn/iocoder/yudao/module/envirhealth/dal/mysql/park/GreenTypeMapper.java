@@ -3,8 +3,8 @@ package cn.iocoder.yudao.module.envirhealth.dal.mysql.park;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.greentype.GreenTypePageReqVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.park.GreenTypeDO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.greentype.vo.GreenTypePageReqVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.GreenTypeDO;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

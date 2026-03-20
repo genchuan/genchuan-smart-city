@@ -7,10 +7,10 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.g
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.GarbageTransferDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.detail.GarbageTransferDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.GarbageTransferDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.*;
-import cn.iocoder.yudao.module.envirhealth.util.codegenerator.garbagetransfer.GarbageTransferCodeGenerator;
-import cn.iocoder.yudao.module.envirhealth.util.vo.StatisticsRespVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.garbagetransfer.GarbageTransferCodeGenerator;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.StatisticsRespVO;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;

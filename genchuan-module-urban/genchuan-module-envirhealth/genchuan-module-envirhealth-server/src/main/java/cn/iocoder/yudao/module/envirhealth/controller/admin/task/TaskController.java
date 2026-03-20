@@ -10,9 +10,9 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.task.vo.TaskPageReqV
 import cn.iocoder.yudao.module.envirhealth.controller.admin.task.vo.TaskRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.task.vo.TaskSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.TaskDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.detail.TaskDetailWithGarbageTransferDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.detail.TaskDetailWithPublicInstitutionDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.detail.TaskDetailWithPublicToiletDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.TaskDetailWithGarbageTransferDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.TaskDetailWithPublicInstitutionDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.TaskDetailWithPublicToiletDO;
 import cn.iocoder.yudao.module.envirhealth.service.task.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

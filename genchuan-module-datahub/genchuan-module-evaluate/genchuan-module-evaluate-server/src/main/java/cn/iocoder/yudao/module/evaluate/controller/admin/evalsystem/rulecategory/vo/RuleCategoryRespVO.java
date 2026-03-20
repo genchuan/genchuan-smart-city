@@ -1,8 +1,7 @@
 package cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.rulecategory.vo;
 
-
-import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
-import cn.idev.excel.annotation.ExcelProperty;
+import cn.iocoder.yudao.module.evaluate.controller.admin.commentrule.vo.CommentRuleRespVO;
+import com.alibaba.excel.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -74,6 +73,27 @@ public class RuleCategoryRespVO {
     @ExcelProperty("对象类型ID关联对象类型字典表sys_object_type")
     private Integer objectTypeId;
 
+    // ========== 关联表的主键ID ==========
+    @Schema(description = "指标体系主键ID", example = "1")
+    @ExcelProperty("指标体系主键ID")
+    private Long systemIdPk;
+
+    @Schema(description = "状态表主键ID", example = "1")
+    @ExcelProperty("状态表主键ID")
+    private Long statusIdPk;
+
+    @Schema(description = "指标项表主键ID", example = "1")
+    @ExcelProperty("指标项表主键ID")
+    private Long itemIdPk;
+
+    @Schema(description = "规则类型表主键ID", example = "1")
+    @ExcelProperty("规则类型表主键ID")
+    private Long ruleIdPk;
+
+    @Schema(description = "对象类型表主键ID", example = "1")
+    @ExcelProperty("对象类型表主键ID")
+    private Long objectTypeIdPk;
+
     // ========== 关联表查询的name字段 ==========
     @Schema(description = "适用指标体系名称")
     @ExcelProperty("适用指标体系名称")
@@ -102,5 +122,9 @@ public class RuleCategoryRespVO {
     @Schema(description = "更新人姓名")
     @ExcelProperty("更新人姓名")
     private String updateUserName;
+
+    // ========== 树形结构字段 ==========
+    @Schema(description = "评分规则列表")
+    private List<CommentRuleRespVO> commentRules;
 
 }

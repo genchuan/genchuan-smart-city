@@ -29,11 +29,11 @@ public class RuleItemDO extends BaseDO {
     @TableId
     private Long id;
     /**
-     * 规则分类ID（关联eval_rule_category.rule_category_id）
+     * 规则分类ID（关联eval_rule_category.id）
      */
     private String ruleCategoryId;
     /**
-     * 关联指标项ID（关联eval_index_item.item_id）
+     * 关联指标项ID（关联eval_index_item.id）
      */
     private String indexId;
     /**
@@ -49,7 +49,7 @@ public class RuleItemDO extends BaseDO {
      */
     private BigDecimal fullScore;
     /**
-     * 规则类型ID（关联sys_rule_type.type_id）
+     * 规则类型ID（关联sys_rule_type.id）
      */
     private String ruleTypeId;
 

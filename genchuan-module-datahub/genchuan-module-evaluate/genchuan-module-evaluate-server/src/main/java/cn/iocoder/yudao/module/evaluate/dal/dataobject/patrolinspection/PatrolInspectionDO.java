@@ -81,6 +81,10 @@ public class PatrolInspectionDO extends BaseDO {
      */
     private byte[] image;
     /**
+     * 图片URL
+     */
+    private String imageUrl;
+    /**
      * 地址编码
      */
     private String addressCoding;

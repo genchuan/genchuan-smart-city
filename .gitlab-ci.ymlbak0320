@@ -2,10 +2,9 @@ stages:
   - BuildAndPush
 
 variables:
-  DOCKER_REGISTRY: "harbor.genchuan.cn"
+  DOCKER_REGISTRY: "192.168.8.14"
   DOCKER_USERNAME: "guoyuanhong"
-  DOCKER_PASSWORD: "Gyh12345"
-  MAVEN_IMAGE: "harbor.genchuan.cn/library/maven:3.9.6-alpine-jdk17-docker"
+  DOCKER_PASSWORD: "Gyh-12345"
   DOCKER_BUILDKIT: "1"  # 启用 Docker BuildKit 提高构建速度
   POD_TAG: "$CI_COMMIT_BRANCH"  # Podman 镜像标签
 
@@ -38,7 +37,7 @@ BuildAndPush:
             "genchuan-module-park-server") jar_path="genchuan-module-park/genchuan-module-park-server" ;;
             "genchuan-module-kitchen-server") jar_path="genchuan-module-marketsupervision/genchuan-module-kitchen/genchuan-module-kitchen-server" ;;
       
-      
+
           esac
           docker build --build-arg MODULE_NAME="$module" --build-arg JAR_PATH="$jar_path" -t "$DOCKER_REGISTRY/sccsgl/$module:$POD_TAG" .
           docker push "$DOCKER_REGISTRY/sccsgl/$module:$POD_TAG"

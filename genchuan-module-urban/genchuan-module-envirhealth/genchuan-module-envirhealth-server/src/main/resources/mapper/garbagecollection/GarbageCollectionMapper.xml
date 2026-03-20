@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagecollection.GarbageCollectionMapper">
 
-    <resultMap id="GarbageCollectionDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageCollectionDetailDO">
+    <resultMap id="GarbageCollectionDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.GarbageCollectionDetailDO">
         <id column="id" property="id"/>
         <result column="collection_id" property="collectionId"/>
         <result column="plan_no" property="planNo"/>

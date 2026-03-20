@@ -8,7 +8,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.reviewsta
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.reviewstatus.vo.ReviewStatusSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.ReviewStatusDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.dictionary.ReviewStatusMapper;
-import cn.iocoder.yudao.module.envirhealth.util.vo.OptionVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;

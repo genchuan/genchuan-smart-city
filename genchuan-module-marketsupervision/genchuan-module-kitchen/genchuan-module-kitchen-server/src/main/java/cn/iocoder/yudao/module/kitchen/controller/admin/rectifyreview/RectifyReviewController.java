@@ -56,7 +56,7 @@ public class RectifyReviewController {
     //新增，从预警的“发送整改”
     @PostMapping("/review-add")
     @PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-add')")
-    @Operation(summary = "新增-整改通知书操作")
+    @Operation(summary = "新增-整改通知复审记录操作")
     public CommonResult<Long> reviewAdd(@Valid @RequestBody AddRectifyReviewReqVO reqVO) {
         Long id = rectifyReviewService.reviewAdd(reqVO);
         return success(id);
