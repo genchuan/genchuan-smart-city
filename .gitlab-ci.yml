@@ -8,7 +8,7 @@ variables:
 build:
   stage: build
   tags:
-    - gitlab-runner-cloud
+    - genchuan-cloud
   script:
     - echo "===== 开始编译 ====="
     - mvn clean package $MAVEN_SKIP_TEST -U | tee maven-build.log
@@ -28,7 +28,7 @@ build:
 archive_jar:
   stage: archive_jar
   tags:
-    - gitlab-runner-cloud
+    - genchuan-cloud
   script:
     - mkdir -p $ARCHIVE_ROOT
     - chown -R gitlab-runner:gitlab-runner $ARCHIVE_ROOT
