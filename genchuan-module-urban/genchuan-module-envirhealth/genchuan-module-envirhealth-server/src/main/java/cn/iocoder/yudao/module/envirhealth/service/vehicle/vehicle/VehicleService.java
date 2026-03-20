@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.envirhealth.service.vehicle.vehicle;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.VehicleDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehicleOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehiclePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehicleSaveReqVO;
@@ -55,6 +56,12 @@ public interface VehicleService {
      */
     PageResult<VehicleDO> getVehiclePage(VehiclePageReqVO pageReqVO);
 
+    /**
+     * 获得车辆分页
+     *
+     * @param pageReqVO 分页查询
+     * @return 车辆分页
+     */
     PageResult<VehicleDetailDO> getVehicleDetailPage(VehiclePageReqVO pageReqVO);
 
     /**
@@ -62,4 +69,11 @@ public interface VehicleService {
      * @return 下拉框选项列表
      */
     List<VehicleOptionVO> getVehicleOptions();
+
+    /**
+     * 获取车辆看板统计数据
+     *
+     * @return 车辆看板统计VO
+     */
+    VehicleDashboardVO getVehicleDashboard();
 }

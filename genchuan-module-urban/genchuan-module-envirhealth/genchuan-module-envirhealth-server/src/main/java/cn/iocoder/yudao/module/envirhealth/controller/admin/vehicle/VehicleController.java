@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.urbanvillage.vo.VehicleDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehicleOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehiclePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicle.VehicleRespVO;
@@ -122,5 +123,13 @@ public class VehicleController {
     @PreAuthorize("@ss.hasPermission('health:vehicle:query')")
     public CommonResult<List<VehicleOptionVO>> getVehicleOptions() {
         return success(vehicleService.getVehicleOptions());
+    }
+
+    @GetMapping("/chart/dashboard")
+    @Operation(summary = "卡片/圆环图/柱状图/统计(全部)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:vehicle:query')")
+    public CommonResult<VehicleDashboardVO> getVehicleDashboard() {
+        VehicleDashboardVO dashboardVO = vehicleService.getVehicleDashboard();
+        return success(dashboardVO);
     }
 }
