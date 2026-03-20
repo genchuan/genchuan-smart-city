@@ -1,5 +1,5 @@
 stages:
-  - Build
+  - BuildAndPush
   - Push
 
 variables:
@@ -9,33 +9,10 @@ variables:
   IMAGE_NAMESPACE: "genchuan"
 
 Build:
-  stage: Build
+  stage: BuildAndPush
   script:
     - echo "===== 开始Maven打包 ====="
     - mvn clean package -Dmaven.test.skip=true
-    # 增强日志：查找所有 JAR 包，打印完整路径
-    - echo "===== 所有生成的 JAR 包 ====="
-    - find . -name "*.jar" -type f -print  # 递归查找所有 JAR 包
-    # 打印关键模块的 target 目录内容
-    - echo "===== 检查设施模块 target 目录 ====="
-    - ls -l genchuan-module-urban/genchuan-module-facility/genchuan-module-facility-server/target/ || echo "该目录不存在"
-    - ls -l  # 保留原有日志
-  retry:
-    max: 2
-    when:
-      - runner_system_failure
-      - stuck_or_timeout_failure
-      - unknown_failure
-
-# ===================== 阶段2：Push（推送镜像） =====================
-Push:
-  stage: Push
-  only:
-    - genchuan-opengauss-master
-  dependencies:
-    - Build
-  script:
-    # 整段 bash 逻辑用 | 包裹，确保语法正确
     - |
       declare -A MODULE_JAR_MAP=(
         ["yudao-gateway"]="yudao-gateway"
@@ -54,16 +31,7 @@ Push:
       for module in "${!MODULE_JAR_MAP[@]}"; do
         jarPath=${MODULE_JAR_MAP[$module]}
         imageFullName="${DOCKER_REGISTRY}/${IMAGE_NAMESPACE}/${module}:${POD_TAG}"
-        # 验证路径是否存在，打印日志便于排查
-        echo "===== 正在处理模块: ${module} ====="
-        echo "JAR 路径: ${jarPath}"
-        if [ -d "${jarPath}/target" ]; then
-          echo "target 目录存在，内容如下："
-          ls -l "${jarPath}/target/"
-        else
-          echo "ERROR: target 目录不存在 - ${jarPath}/target"
-          exit 1  # 路径不存在则终止构建
-        fi
+
         # 构建镜像（关闭缓存+显示详细进度）
         docker build  --progress=plain --build-arg MODULE_NAME="$module" --build-arg JAR_PATH="$jarPath" -t "${imageFullName}" .
         # 推送镜像
@@ -76,3 +44,4 @@ Push:
       - runner_system_failure
       - stuck_or_timeout_failure
       - unknown_failure
+
