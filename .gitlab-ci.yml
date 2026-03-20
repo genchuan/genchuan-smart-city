@@ -27,13 +27,11 @@ Build:
         ["genchuan-module-kitchen-server"]="genchuan-module-marketsupervision/genchuan-module-kitchen/genchuan-module-kitchen-server"
       )
       echo "===== 开始构建所有镜像 ====="
-      # 循环中增加路径验证（无语法错误）
       for module in "${!MODULE_JAR_MAP[@]}"; do
         jarPath=${MODULE_JAR_MAP[$module]}
         imageFullName="${DOCKER_REGISTRY}/${IMAGE_NAMESPACE}/${module}:${POD_TAG}"
 
-        # 构建镜像（关闭缓存+显示详细进度）
-        docker build  --progress=plain --build-arg MODULE_NAME="$module" --build-arg JAR_PATH="$jarPath" -t "${imageFullName}" .
+        docker build --build-arg MODULE_NAME="$module" --build-arg JAR_PATH="$jarPath" -t "${imageFullName}" .
         # 推送镜像
         docker push "${imageFullName}"
       done
