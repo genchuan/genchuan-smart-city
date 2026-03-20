@@ -292,13 +292,13 @@ public interface GarbageCollectionMapper extends BaseMapperX<GarbageCollectionDO
             "ORDER BY timePoint ASC")*/
 
     @Select("SELECT " +
-            "DATE_FORMAT(create_time, '%H:00') AS timePoint, " +
+            "TO_CHAR(create_time, 'HH24:00') AS timePoint, " +
             "SUM(collected_volume) AS collectedVolume, " +
-            "@cumulative := @cumulative + SUM(collected_volume) AS cumulativeVolume " +
-            "FROM garbage_collection, (SELECT @cumulative := 0) AS temp " +
+            "SUM(SUM(collected_volume)) OVER (ORDER BY TO_CHAR(create_time, 'HH24:00')) AS cumulativeVolume " +
+            "FROM garbage_collection " +
             "WHERE deleted = 0 " +
             "AND DATE(create_time) = '2026-02-26' " +
-            "GROUP BY DATE_FORMAT(create_time, '%H:00') " +
+            "GROUP BY TO_CHAR(create_time, 'HH24:00') " +
             "ORDER BY timePoint ASC")
     List<GarbageCollectionDailyTrendVO> selectDailyCollectionVolumeTrend();
 
@@ -328,12 +328,12 @@ public interface GarbageCollectionMapper extends BaseMapperX<GarbageCollectionDO
             "GROUP BY DATE_FORMAT(create_time, '%H:00') " +
             "ORDER BY timeDimension ASC")*/
     @Select("SELECT " +
-            "DATE_FORMAT(create_time, '%H:00') AS timeDimension, " +
-            "IFNULL(SUM(collected_volume), 0) AS collectedVolume " +
+            "TO_CHAR(create_time, 'HH24:00') AS timeDimension, " +
+            "COALESCE(SUM(collected_volume), 0) AS collectedVolume " +
             "FROM garbage_collection " +
             "WHERE deleted = 0 " +
-            "AND DATE(create_time) = '2026-02-26' " +  // 固定日期
-            "GROUP BY DATE_FORMAT(create_time, '%H:00') " +
+            "AND DATE(create_time) = '2026-02-26' " +
+            "GROUP BY TO_CHAR(create_time, 'HH24:00') " +
             "ORDER BY timeDimension ASC")
     List<CollectionVolumeBarVO> selectTodayCollectionVolume();
 
