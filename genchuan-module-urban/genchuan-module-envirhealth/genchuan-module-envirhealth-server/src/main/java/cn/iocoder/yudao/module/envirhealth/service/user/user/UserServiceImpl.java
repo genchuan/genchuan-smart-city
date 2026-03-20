@@ -4,6 +4,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserSaveReqVO;
@@ -111,5 +112,28 @@ public class UserServiceImpl implements UserService {
 
         List<UserDetailDO> list = userMapper.selectDetailPage(pageReqVO);
         return new PageResult<>(list, total);
+    }
+
+    @Override
+    public UserDashboardVO getUserDashboard() {
+        UserDashboardVO vo = new UserDashboardVO();
+
+       /* // 1. 卡片数据
+        vo.setTotalUserCount(userMapper.selectTotalUserCount());
+        vo.setOnDutyCount(userMapper.selectOnDutyCount());
+        vo.setFullAttendanceCount(userMapper.selectFullAttendanceCount());
+        vo.setExcellentAssessmentCount(userMapper.selectExcellentAssessmentCount());
+        vo.setPendingScheduleCount(userMapper.selectPendingScheduleCount());
+
+        // 2. 圆环图数据
+        vo.setPositionTypeDistribution(userMapper.selectPositionTypeDistribution());
+        vo.setUserStatusDistribution(userMapper.selectUserStatusDistribution());
+        vo.setTeamDistribution(userMapper.selectTeamDistribution());
+
+        // 3. 柱状图数据
+        vo.setUserCountByTeam(userMapper.selectUserCountByTeam());
+        vo.setAvgAssessmentScoreByPosition(userMapper.selectAvgAssessmentScoreByPosition());*/
+
+        return vo;
     }
 }

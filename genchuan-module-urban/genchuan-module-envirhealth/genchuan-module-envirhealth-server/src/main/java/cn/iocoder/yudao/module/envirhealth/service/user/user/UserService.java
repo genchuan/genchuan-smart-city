@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.envirhealth.service.user.user;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserOptionVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.user.UserSaveReqVO;
@@ -70,4 +71,10 @@ public interface UserService {
      */
     PageResult<UserDetailDO> getUserDetailPage(UserPageReqVO pageReqVO);
 
+    /**
+     * 获取用户看板统计数据
+     *
+     * @return 用户看板统计VO
+     */
+    UserDashboardVO getUserDashboard();
 }
