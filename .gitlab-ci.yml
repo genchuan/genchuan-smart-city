@@ -1,55 +1,74 @@
+# 定义流水线阶段（精简且符合执行逻辑）
 stages:
-  - BuildAndPush
+  - build          # 编译打包JAR
+  - archive_jar    # 归档JAR到指定目录
 
+# 全局变量（Shell环境适配，统一管理）
 variables:
-  DOCKER_REGISTRY: "harbor.genchuan.cn"
-  DOCKER_USERNAME: "guoyuanhong"
-  DOCKER_PASSWORD: "Gyh12345"
-  MAVEN_IMAGE: "harbor.genchuan.cn/library/maven:3.9.6-alpine-jdk17-docker"
-  DOCKER_BUILDKIT: "1"  # 启用 Docker BuildKit 提高构建速度
-  POD_TAG: "$CI_COMMIT_BRANCH"  # Podman 镜像标签
+  # 跳过测试（统一变量，便于修改）
+  MAVEN_SKIP_TEST: "-Dmaven.test.skip=true"
+  # 归档根目录（按当前日期生成，格式：YYYY-MM-DD，Shell环境直接解析）
+  ARCHIVE_ROOT: "/home/data/$(date +%Y-%m-%d)"
+  # 需要构建的模块列表（Shell数组格式，便于循环）
+  MODULES: "yudao-gateway yudao-module-system-server yudao-module-infra-server yudao-module-bpm-server genchuan-module-envirhealth-server genchuan-module-facility-server genchuan-module-data-server genchuan-module-evaluate-server genchuan-module-park-server genchuan-module-kitchen-server"
+  # JAR路径映射（Shell关联数组，比JSON更适配Shell环境）
 
-BuildAndPush:
-  stage: BuildAndPush
-  image: $MAVEN_IMAGE
-  variables:
-    DOCKER_BUILDKIT: "0"
+# 阶段1：编译打包所有模块（Shell环境优化）
+build:
+  stage: build
+  tags:
+    - git-runner  # 指定你的Runner标签，确保匹配
   script:
-    - mvn clean package -Dmaven.test.skip=true
-    - echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
-    - |
-      if [ "$CI_COMMIT_BRANCH" == "genchuan-openGauss" ]; then
-        echo "当前分支是 $CI_COMMIT_BRANCH，开始构建并推送Docker镜像..."
-        # 登录Harbor仓库
-        echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
-        # 遍历所有模块并构建 Docker 镜像
-        for module in "yudao-gateway" "yudao-module-system-server" "yudao-module-infra-server" "yudao-module-bpm-server" "genchuan-module-envirhealth-server" "genchuan-module-facility-server" "genchuan-module-data-server" "genchuan-module-evaluate-server" "genchuan-module-park-server" "genchuan-module-kitchen-server"; do
-          case $module in
-            # 宇道四个基础服务
-            "yudao-gateway") jar_path="yudao-gateway" ;;
-            "yudao-module-system-server") jar_path="yudao-module-system/yudao-module-system-server" ;;
-            "yudao-module-infra-server") jar_path="yudao-module-infra/yudao-module-infra-server" ;;
-            "yudao-module-bpm-server") jar_path="yudao-module-bpm/yudao-module-bpm-server" ;;
-            # genchuan 新服务      
-            "genchuan-module-envirhealth-server") jar_path="genchuan-module-urban/genchuan-module-envirhealth/genchuan-module-envirhealth-server" ;;
-            "genchuan-module-facility-server") jar_path="genchuan-module-urban/genchuan-module-facility/genchuan-module-facility-server" ;;
-            "genchuan-module-data-server") jar_path="genchuan-module-datahub/genchuan-module-data/genchuan-module-data-server" ;;
-            "genchuan-module-evaluate-server") jar_path="genchuan-module-datahub/genchuan-module-evaluate/genchuan-module-evaluate-server" ;;
-            "genchuan-module-park-server") jar_path="genchuan-module-park/genchuan-module-park-server" ;;
-            "genchuan-module-kitchen-server") jar_path="genchuan-module-marketsupervision/genchuan-module-kitchen/genchuan-module-kitchen-server" ;;
-      
-      
-          esac
-          docker build --build-arg MODULE_NAME="$module" --build-arg JAR_PATH="$jar_path" -t "$DOCKER_REGISTRY/sccsgl/$module:$POD_TAG" .
-          docker push "$DOCKER_REGISTRY/sccsgl/$module:$POD_TAG"
-        done
-        echo "所有镜像构建并推送完成！"
-      else
-        echo "当前分支不是 genchuan-openGauss（当前分支：$CI_COMMIT_BRANCH），跳过Docker镜像构建和推送步骤"
-      fi
+    - echo "===== 开始编译 ====="
+    - mvn clean package $MAVEN_SKIP_TEST
+    - echo "===== 编译完成 ====="
+
+  artifacts:
+    paths:
+      - "**/target/*.jar"          # 捕获所有JAR包
+      - maven-build.log            # 保留构建日志，便于排查
+    expire_in: 24h                 # 延长产物有效期
   retry:
     max: 2
     when:
       - runner_system_failure
       - stuck_or_timeout_failure
       - unknown_failure
+
+# 阶段2：归档JAR到指定目录（Shell环境专属优化）
+archive_jar:
+  stage: archive_jar
+  tags:
+    - git-runner
+  script:
+    - echo "===== 开始归档JAR包到 $ARCHIVE_ROOT ====="
+    - declare -A JAR_PATH_MAP=(
+      ["yudao-gateway"]="yudao-gateway"
+      ["yudao-module-system-server"]="yudao-module-system/yudao-module-system-server"
+      ["yudao-module-infra-server"]="yudao-module-infra/yudao-module-infra-server"
+      ["yudao-module-bpm-server"]="yudao-module-bpm/yudao-module-bpm-server"
+      ["genchuan-module-envirhealth-server"]="genchuan-module-urban/genchuan-module-envirhealth/genchuan-module-envirhealth-server"
+      ["genchuan-module-facility-server"]="genchuan-module-urban/genchuan-module-facility/genchuan-module-facility-server"
+      ["genchuan-module-data-server"]="genchuan-module-datahub/genchuan-module-data/genchuan-module-data-server"
+      ["genchuan-module-evaluate-server"]="genchuan-module-datahub/genchuan-module-evaluate/genchuan-module-evaluate-server"
+      ["genchuan-module-park-server"]="genchuan-module-park/genchuan-module-park-server"
+      ["genchuan-module-kitchen-server"]="genchuan-module-marketsupervision/genchuan-module-kitchen/genchuan-module-kitchen-server"
+      )
+    # 2. 循环复制每个模块的JAR包（Shell数组循环）
+    - for module in $MODULES; do
+      # 获取模块的JAR路径
+      jarPath=${JAR_PATH_MAP[$module]}
+      # 拼接完整的JAR文件路径（Shell通配符匹配最新JAR）
+      jarFile="jarPath/target/$module.jar"
+      cp -f "$jarFile" "$ARCHIVE_ROOT/$jarFile.jar"
+      done
+  dependencies:
+    - build  # 依赖build阶段的产物
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+      - unknown_failure
+  only:
+    - genchuan-openGauss
