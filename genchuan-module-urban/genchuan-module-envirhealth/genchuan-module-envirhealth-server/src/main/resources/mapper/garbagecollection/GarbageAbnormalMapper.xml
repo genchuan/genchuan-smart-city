@@ -28,6 +28,7 @@
         <result column="abnormal_name" property="abnormalName"/>
         <result column="area_name" property="areaName"/>
         <result column="report_name" property="reportName"/>
+        <result column="handle_name" property="handleName"/>
     </resultMap>
 
     <!-- 分页查询（带条件过滤） -->
@@ -37,12 +38,14 @@
         gc.plan_no AS plan_no,
         sat.abnormal_name AS abnormal_name,
         sa.area_name AS area_name,
-        su.user_name AS report_name
+        su.user_name AS report_name,
+        su1.user_name AS handle_name
         FROM garbage_abnormal ga
         LEFT JOIN garbage_collection gc ON ga.plan_id = gc.plan_no AND gc.deleted = 0
         LEFT JOIN sys_abnormal_type sat ON ga.abnormal_type_id = sat.abnormal_type_id AND sat.deleted = 0
         LEFT JOIN sys_area sa ON ga.area_code = sa.area_code AND sa.deleted = 0
         LEFT JOIN sys_user su ON ga.report_by = su.user_id AND su.deleted = 0
+        LEFT JOIN sys_user su1 ON ga.handler_id = su1.user_id AND su1.deleted = 0
         WHERE ga.deleted = 0
         <!-- 动态条件过滤 -->
         <if test="reqVO.abnormalId != null and reqVO.abnormalId != ''">
@@ -102,6 +105,7 @@
         LEFT JOIN sys_abnormal_type sat ON ga.abnormal_type_id = sat.abnormal_type_id AND sat.deleted = 0
         LEFT JOIN sys_area sa ON ga.area_code = sa.area_code AND sa.deleted = 0
         LEFT JOIN sys_user su ON ga.report_by = su.user_id AND su.deleted = 0
+        LEFT JOIN sys_user su1 ON ga.handler_id = su.user_id AND su.deleted = 0
         WHERE ga.deleted = 0
         <!-- 与分页查询一致的动态条件 -->
         <if test="reqVO.abnormalId != null and reqVO.abnormalId != ''">

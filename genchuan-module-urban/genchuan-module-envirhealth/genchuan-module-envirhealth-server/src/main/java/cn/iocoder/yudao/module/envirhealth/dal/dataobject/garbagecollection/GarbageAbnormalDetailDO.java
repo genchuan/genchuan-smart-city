@@ -25,4 +25,8 @@ public class GarbageAbnormalDetailDO extends GarbageAbnormalDO {
      * 关联sys_user.id
      */
     private String reportName;
+    /**
+     * 关联sys_user.id
+     */
+    private String handleName;
 }
