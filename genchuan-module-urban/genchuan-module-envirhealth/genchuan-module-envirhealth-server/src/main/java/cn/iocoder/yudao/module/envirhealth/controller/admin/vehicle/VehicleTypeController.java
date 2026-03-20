@@ -1,9 +1,9 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle;
 
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicletype.VehicleTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicletype.VehicleTypeRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicletype.VehicleTypeSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +31,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.VehicleTypeDO;
 import cn.iocoder.yudao.module.envirhealth.service.vehicle.vehicletype.VehicleTypeService;
 
-@Tag(name = "管理后台 - 车辆类型字典")
+@Tag(name = "字典表 - 车辆类型")
 @RestController
 @RequestMapping("/envirhealth/vehicle-type")
 @Validated
@@ -94,4 +94,14 @@ public class VehicleTypeController {
                         BeanUtils.toBean(list, VehicleTypeRespVO.class));
     }
 
-}*/
+    /**
+     * 获得维护类型字典下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得车辆类型字典(下拉框)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:vehicle-type:query')")
+    public CommonResult<List<OptionVO>> getVehicleTypeOptions() {
+        return success(vehicleTypeService.getVehicleTypeOptions());
+    }
+}

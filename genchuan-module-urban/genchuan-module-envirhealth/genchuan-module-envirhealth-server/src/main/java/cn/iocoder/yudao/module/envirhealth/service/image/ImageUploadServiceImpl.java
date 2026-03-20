@@ -33,31 +33,66 @@ public class ImageUploadServiceImpl implements ImageUploadService {
             return results;
         }
 
-        for (MultipartFile file : files) {
+        log.info("开始批量上传图片，文件数量：{}", files.length);
+
+        for (int i = 0; i < files.length; i++) {
+            MultipartFile file = files[i];
+            log.info("处理第{}个文件，文件名：{}，文件大小：{}字节，ContentType：{}",
+                    i + 1,
+                    file.getOriginalFilename(),
+                    file.getSize(),
+                    file.getContentType());
+
             try {
                 // 校验文件合法性
                 validateImageFile(file);
+                log.info("文件校验通过：{}", file.getOriginalFilename());
 
                 // 调用文件服务上传
+                log.info("开始调用文件服务上传：{}", file.getOriginalFilename());
                 CommonResult<String> uploadResult = fileFeignClient.uploadFile(file);
 
+                // 打印FeignClient返回的完整结果
+                log.info("文件服务返回结果 - success: {}, data: {}, msg: {}, code: {}",
+                        uploadResult.isSuccess(),
+                        uploadResult.getData(),
+                        uploadResult.getMsg(),
+                        uploadResult.getCode());
+
                 if (uploadResult.isSuccess()) {
+                    // 检查返回的data是否为null
+                    if (uploadResult.getData() == null) {
+                        log.error("文件服务返回成功但data为null，文件名：{}", file.getOriginalFilename());
+                        continue;
+                    }
+
                     // 转换为公共可访问的URL
                     String publicUrl = UrlConvert.toPublicUrl(uploadResult.getData());
+                    log.info("URL转换 - 原始URL: {}, 转换后URL: {}", uploadResult.getData(), publicUrl);
+
                     // 构建返回结果
-                    results.add(ImageUploadRespVO.builder()
+                    ImageUploadRespVO respVO = ImageUploadRespVO.builder()
                             .url(publicUrl)
                             .fileName(file.getOriginalFilename())
                             .fileSize(file.getSize())
-                            .build());
+                            .build();
+
+                    log.info("构建响应VO成功: {}", respVO);
+                    results.add(respVO);
                 } else {
-                    log.warn("文件上传失败: {}, 原因: {}", file.getOriginalFilename(), uploadResult.getMsg());
+                    log.warn("文件上传失败: {}, 原因: {}, code: {}",
+                            file.getOriginalFilename(),
+                            uploadResult.getMsg(),
+                            uploadResult.getCode());
                 }
+            } catch (IllegalArgumentException e) {
+                log.error("文件校验失败: {}, 错误: {}", file.getOriginalFilename(), e.getMessage());
             } catch (Exception e) {
                 log.error("处理文件异常: {}", file.getOriginalFilename(), e);
             }
         }
 
+        log.info("批量上传完成，成功上传{}个文件，共{}个文件", results.size(), files.length);
         return results;
     }
 

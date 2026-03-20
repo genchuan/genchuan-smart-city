@@ -1,9 +1,9 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle;
 
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.violationtype.ViolationTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.violationtype.ViolationTypeRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.violationtype.ViolationTypeSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +31,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.ViolationTypeDO;
 import cn.iocoder.yudao.module.envirhealth.service.vehicle.violationstatus.ViolationTypeService;
 
-@Tag(name = "管理后台 - 违规类型字典表")
+@Tag(name = "字典表 - 违规类型")
 @RestController
 @RequestMapping("/envirhealth/violation-type")
 @Validated
@@ -94,4 +94,14 @@ public class ViolationTypeController {
                         BeanUtils.toBean(list, ViolationTypeRespVO.class));
     }
 
-}*/
+    /**
+     * 获得违规类型字典下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得违规类型字典(下拉框)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:violation-type:query')")
+    public CommonResult<List<OptionVO>> getViolationTypeOptions() {
+        return success(violationTypeService.getViolationTypeOptions());
+    }
+}

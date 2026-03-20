@@ -4,7 +4,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.maintenancetype.MaintenanceTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.maintenancetype.MaintenanceTypeSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.MaintenanceTypeDO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 维护类型字典表【通用复用】 Service 接口
@@ -51,4 +54,9 @@ public interface MaintenanceTypeService {
      */
     PageResult<MaintenanceTypeDO> getMaintenanceTypePage(MaintenanceTypePageReqVO pageReqVO);
 
+    /**
+     * 获得维护类型下拉框选项
+     * @return 下拉框选项列表
+     */
+    List<OptionVO> getMaintenanceTypeOptions();
 }

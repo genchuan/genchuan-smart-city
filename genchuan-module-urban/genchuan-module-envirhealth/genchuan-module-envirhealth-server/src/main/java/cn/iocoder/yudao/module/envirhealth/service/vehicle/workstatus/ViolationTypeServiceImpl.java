@@ -1,15 +1,21 @@
 package cn.iocoder.yudao.module.envirhealth.service.vehicle.workstatus;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.violationtype.ViolationTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.violationtype.ViolationTypeSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.ViolationStatusDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.ViolationTypeDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.vehicle.ViolationTypeMapper;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import cn.iocoder.yudao.module.envirhealth.service.vehicle.violationstatus.ViolationTypeService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.VIOLATION_TYPE_NOT_EXISTS;
@@ -68,4 +74,21 @@ public class ViolationTypeServiceImpl implements ViolationTypeService {
         return violationTypeMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public List<OptionVO> getViolationTypeOptions() {
+
+        List<ViolationTypeDO> list;
+        list = violationTypeMapper.selectList(
+                new LambdaQueryWrapperX<ViolationTypeDO>()
+                        .eq(ViolationTypeDO::getDeleted, 0)
+                        .orderByDesc(ViolationTypeDO::getId)
+        );
+        // 将DO转换为下拉框VO（label=name，value=id）
+        return CollectionUtils.convertList(list, violationTypeDO -> {
+            OptionVO vo = new OptionVO();
+            vo.setLabel(violationTypeDO.getViolationName());
+            vo.setValue(violationTypeDO.getViolationTypeId());
+            return vo;
+        });
+    }
 }
