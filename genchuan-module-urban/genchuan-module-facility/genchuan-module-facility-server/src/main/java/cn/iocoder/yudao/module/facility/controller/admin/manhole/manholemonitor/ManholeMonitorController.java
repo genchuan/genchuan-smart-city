@@ -15,11 +15,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
@@ -158,5 +160,29 @@ public class ManholeMonitorController {
             @Valid ManholeMonitorWarningPageReqVO pageReqVO) {
         PageResult<ManholeMonitorWarningRespVO> pageResult = monitorService.getWarningMonitorPage(pageReqVO);
         return CommonResult.success(pageResult);
+    }
+
+    /**
+     * 单井盖监测数据详情
+     * @param coverId 井盖ID（路径参数）
+     * @param tenantId 租户ID（请求参数）
+     * @return 统一分页格式响应
+     */
+    @GetMapping("/detail/{coverId}")
+    @Operation(summary = "查询单井盖监测数据详情")
+    public CommonResult<PageResult<ManholeCoverRealTimeDetailRespVO>> getDetail(
+            @PathVariable @NotBlank(message = "井盖ID不能为空") String coverId,
+            @RequestParam @NotBlank(message = "租户ID不能为空") String tenantId) {
+            // 1. 查询井盖详情
+            ManholeCoverRealTimeDetailRespVO detail = monitorService.getRealTimeDetail(coverId, tenantId);
+
+            // 2. 封装为分页结果（单条数据）
+            PageResult<ManholeCoverRealTimeDetailRespVO> pageResult = new PageResult<>();
+            pageResult.setList(Collections.singletonList(detail)); // 单条数据封装为列表
+            pageResult.setTotal(1L); // 总数为1
+
+            // 3. 返回统一格式
+            return CommonResult.success(pageResult);
+
     }
 }

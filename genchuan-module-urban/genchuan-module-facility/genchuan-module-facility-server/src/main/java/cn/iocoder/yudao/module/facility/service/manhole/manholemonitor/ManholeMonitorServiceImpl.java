@@ -169,5 +169,15 @@ public class ManholeMonitorServiceImpl implements ManholeMonitorService {
         );
     }
 
+    @Override
+    public ManholeCoverRealTimeDetailRespVO getRealTimeDetail(String coverId, String tenantId) {
+        // 查询详情
+        ManholeCoverRealTimeDetailRespVO detail = monitorMapper.selectRealTimeDetail(coverId, tenantId);
+        if (detail == null) {
+            throw exception("MONITOR_NOT_EXISTS");
+        }
+        return detail;
+    }
+
 
 }

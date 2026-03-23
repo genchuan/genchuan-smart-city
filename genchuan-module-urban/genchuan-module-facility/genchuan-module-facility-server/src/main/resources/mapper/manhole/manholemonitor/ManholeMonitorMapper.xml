@@ -345,4 +345,117 @@
         </if>
     </select>
 
+    <resultMap id="RealTimeDetailResultMap" type="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeCoverRealTimeDetailRespVO">
+        <id column="cover_id" property="coverId"/>
+        <result column="cover_code" property="coverCode"/>
+        <result column="cover_name" property="coverName"/>
+        <result column="area_id" property="areaId"/>
+        <result column="area_name" property="areaName"/>
+        <result column="address" property="address"/>
+        <result column="longitude" property="longitude"/>
+        <result column="latitude" property="latitude"/>
+        <result column="cover_type" property="coverType"/>
+        <result column="cover_status" property="coverStatus"/>
+        <result column="cover_status_name" property="coverStatusName"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="chain_hash" property="chainHash"/>
+        <result column="chain_query_url" property="chainQueryUrl"/>
+
+        <!-- 实时数据子对象 -->
+        <association property="realTimeData" javaType="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.RealTimeDataVO">
+            <result column="tilt_angle" property="tiltAngle"/>
+            <result column="displacement" property="displacement"/>
+            <result column="water_level" property="waterLevel"/>
+            <result column="is_open" property="isOpen"/>
+            <result column="collect_time" property="collectTime"/>
+        </association>
+
+        <!-- 设备信息子对象 -->
+        <association property="deviceInfo" javaType="cn.iocoder.yudao.module.facility.controller.admin.sysdevice.vo.DeviceInfoVO">
+            <result column="device_id" property="deviceId"/>
+            <result column="device_model" property="deviceModel"/>
+            <result column="battery_level" property="batteryLevel"/>
+            <result column="signal_strength" property="signalStrength"/>
+            <result column="online_status" property="onlineStatus"/>
+        </association>
+    </resultMap>
+
+    <select id="selectRealTimeDetail" resultMap="RealTimeDetailResultMap">
+        SELECT
+            mc.id AS cover_id,
+            mc.cover_no AS cover_code,
+            -- 井盖名称：拼接道路名称 + "井盖"
+            CONCAT(COALESCE(rf.road_name, ''), '井盖') AS cover_name,
+            sa.id AS area_id,
+            sa.name AS area_name,
+            -- 详细地址：拼接区域+道路
+            CONCAT(
+                    COALESCE(sa.name, ''),
+                    COALESCE(rf.road_name, '')
+            ) AS address,
+            -- 经纬度：默认值兜底
+            COALESCE(mc.ext_common1, '116.403874') AS longitude,
+            COALESCE(mc.ext_common2, '39.914885') AS latitude,
+            -- 井盖类型
+            mc.cover_type AS cover_type,
+            -- 井盖状态：数字编码转换
+            CASE mc.status
+                WHEN '正常' THEN 1
+                WHEN '异常' THEN 2
+                WHEN '维修中' THEN 3
+                ELSE 0 END AS cover_status,
+            mc.status AS cover_status_name,
+            -- 实时监测数据
+            CONCAT(COALESCE(mm.tilt_angle::TEXT, '0'), '°') AS tilt_angle,
+            CONCAT(COALESCE(mm.ext_common1, '0'), 'cm') AS displacement,
+            CONCAT(COALESCE(mm.ext_common2, '0'), 'cm') AS water_level,
+            -- 开合状态转换
+            CASE sos.status_code
+                WHEN 'OPEN' THEN 1
+                ELSE 0 END AS is_open,
+            -- 采集时间格式化
+            TO_CHAR(mm.create_time, 'YYYY-MM-DD HH24:MI:SS') AS collect_time,
+            -- 设备信息
+            sd.id AS device_id,
+            COALESCE(sd.name, 'MC-Monitor V2.0') AS device_model,
+            COALESCE(sd.ext_common1::INTEGER, 85) AS battery_level,
+            COALESCE(sd.ext_common2, '-75dBm') AS signal_strength,
+            -- 设备在线状态转换
+            CASE sd.online_status
+                WHEN '在线' THEN 1
+                ELSE 0 END AS online_status,
+            mc.tenant_id AS tenant_id,
+            -- 区块链存证信息（示例值）
+            '0x123abc456def789ghi012jkl345mno678pqr901' AS chain_hash,
+            CONCAT('https://chain.genchuan.com/query/', '0x123abc456def789ghi012jkl345mno678pqr901') AS chain_query_url
+        FROM munifacility.manhole_cover mc
+                 -- 关联道路表
+                 LEFT JOIN munifacility.road_facility rf
+                           ON mc.road_id = rf.id
+                               AND rf.deleted = B'0'
+            -- 关联区域表
+                 LEFT JOIN munifacility.sys_area sa
+                           ON mc.area_code = sa.full_code
+                               AND sa.deleted = B'0'
+            -- 关联最新监测数据
+                 LEFT JOIN (
+            SELECT * FROM munifacility.manhole_monitor
+            WHERE deleted = B'0'
+            ORDER BY create_time DESC
+        ) mm
+                           ON mc.id = mm.cover_id
+            -- 关联设备表
+                 LEFT JOIN munifacility.sys_device sd
+                           ON mm.device_id = sd.id
+                               AND sd.deleted = B'0'
+            -- 关联开合状态字典表
+                 LEFT JOIN munifacility.sys_open_status sos
+                           ON mm.open_status_id = sos.id
+        -- 筛选条件（使用 MyBatis 参数）
+        WHERE mc.id = #{coverId}
+          AND mc.tenant_id = #{tenantId}
+          AND mc.deleted = B'0'
+            LIMIT 1;
+    </select>
+
 </mapper>

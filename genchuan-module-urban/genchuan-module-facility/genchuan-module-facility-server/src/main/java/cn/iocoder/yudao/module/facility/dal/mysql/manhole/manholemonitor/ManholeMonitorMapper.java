@@ -147,4 +147,13 @@ public interface ManholeMonitorMapper extends BaseMapperX<ManholeMonitorDO> {
     Long selectWarningMonitorPageCount(
             @Param("reqVO") ManholeMonitorWarningPageReqVO reqVO);
 
+    /**
+     * 查询井盖实时详情
+     * @param coverId 井盖ID
+     * @param tenantId 租户ID
+     * @return 详情数据
+     */
+    ManholeCoverRealTimeDetailRespVO selectRealTimeDetail(@Param("coverId") String coverId,
+                                                          @Param("tenantId") String tenantId);
+
 }

@@ -105,4 +105,12 @@ public interface ManholeMonitorService {
      * @return 窨井盖预警监测列表
      */
     PageResult<ManholeMonitorWarningRespVO> getWarningMonitorPage(ManholeMonitorWarningPageReqVO pageReqVO);
+
+    /**
+     * 获取井盖实时详情
+     * @param coverId 井盖ID
+     * @param tenantId 租户ID
+     * @return 详情数据
+     */
+    ManholeCoverRealTimeDetailRespVO getRealTimeDetail(String coverId, String tenantId);
 }
