@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.envirhealth.service.garbagetransfer.transferoper
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferoperation.TransferOperationCompletedDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferoperation.TransferOperationDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferoperation.TransferOperationPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferoperation.TransferOperationSaveReqVO;
@@ -9,6 +10,7 @@ import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.Transf
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferOperationDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.TransferOperationMapper;
 import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.garbagetransfer.TransferOperationCodeGenerator;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.BarItemVO;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -109,5 +111,47 @@ public class TransferOperationServiceImpl implements TransferOperationService {
         dashboardVO.setAbnormalCount(abnormalCount);
 
         return dashboardVO;
+    }
+
+    @Override
+    public TransferOperationCompletedDashboardVO getTransferOperationDashboard(String timeDimension) {
+        TransferOperationCompletedDashboardVO respVO = new TransferOperationCompletedDashboardVO();
+
+        // 默认按日统计
+        String finalDimension = (timeDimension == null || !List.of("day", "week", "month").contains(timeDimension))
+                ? "day" : timeDimension;
+
+        // 1. 填充卡片数据
+        respVO.setTotalCompletedTasks(transferOperationMapper.selectTotalCompletedTasks());
+        respVO.setTotalInboundVolume(transferOperationMapper.selectTotalInboundVolume());
+//        respVO.setEquipmentHealthRate(transferOperationMapper.selectEquipmentHealthRate());
+        respVO.setEnvironmentComplianceRate(transferOperationMapper.selectEnvironmentComplianceRate());
+
+        // 2. 填充柱状图：按时间维度进站量
+        List<BarItemVO> inboundVolumeData;
+        switch (finalDimension) {
+            case "week":
+                // 调用按周统计的方法
+                inboundVolumeData = transferOperationMapper.selectInboundVolumeByWeek();
+                break;
+            case "month":
+                // 调用按月统计的方法
+                inboundVolumeData = transferOperationMapper.selectInboundVolumeByMonth();
+                break;
+            default: // day（默认）
+                // 调用按日统计的方法
+                inboundVolumeData = transferOperationMapper.selectInboundVolumeByDay();
+                break;
+        }
+        respVO.setInboundVolumeByTimeDimension(inboundVolumeData);
+
+        // 3. 填充折线图：设备完好率近30天趋势
+//        respVO.setEquipmentHealthRateTrend(transferOperationMapper.selectEquipmentHealthRateTrend());
+
+        // 4. 填充圆环图：任务类型占比 + 转运站完成量占比
+        respVO.setTaskTypeDistribution(transferOperationMapper.selectTaskTypeDistribution());
+        respVO.setStationCompletionDistribution(transferOperationMapper.selectStationCompletionDistribution());
+
+        return respVO;
     }
 }
