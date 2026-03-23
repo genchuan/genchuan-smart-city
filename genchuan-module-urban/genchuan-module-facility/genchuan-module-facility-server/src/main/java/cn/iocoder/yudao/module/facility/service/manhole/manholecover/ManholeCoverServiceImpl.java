@@ -3,20 +3,17 @@ package cn.iocoder.yudao.module.facility.service.manhole.manholecover;
 import cn.hutool.core.util.ObjectUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholecover.vo.ManholeCoverDetailRespVO;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholecover.vo.ManholeCoverPageReqVO;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholecover.vo.ManholeCoverSaveReqVO;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeMonitorStatsRespVO;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeMonitorVO;
+import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeCoverRealTimePageRespVO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.disposalorder.DisposalOrderDO;
-import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholeconfig.ManholeConfigDO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholecover.ManholeCoverDO;
 import cn.iocoder.yudao.module.facility.dal.mysql.manhole.disposalorder.DisposalOrderMapper;
 import cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholecover.ManholeCoverMapper;
 import cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholemonitor.ManholeMonitorMapper;
 import jakarta.annotation.Resource;
-import lombok.val;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -90,7 +87,7 @@ public class ManholeCoverServiceImpl implements ManholeCoverService {
 
     @Override
     public ManholeCoverDetailRespVO getCoverDetail(Long id) {
-        ManholeMonitorVO cover = monitorMapper.selectManholeDetailByCoverId(id);
+        ManholeCoverRealTimePageRespVO cover = monitorMapper.selectManholeDetailByCoverId(id);
         if (ObjectUtil.isNull(cover)) {
             throw exception(COVER_NOT_EXISTS);
         }

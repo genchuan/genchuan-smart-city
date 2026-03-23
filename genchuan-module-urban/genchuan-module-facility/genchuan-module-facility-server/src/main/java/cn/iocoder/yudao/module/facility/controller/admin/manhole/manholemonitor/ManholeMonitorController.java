@@ -91,23 +91,15 @@ public class ManholeMonitorController {
     }
 
     // 列表查询（支持所有筛选条件）
-    @GetMapping("/list")
-    @Operation(summary = "获取窨井盖监测列表")
-    public CommonResult<List<ManholeMonitorVO>> getManholeMonitorList(
-            // 原有筛选参数
-            @Parameter(description = "井盖编号") @RequestParam(required = false) String coverNo,
-            @Parameter(description = "路段名称") @RequestParam(required = false) String roadName,
-            @Parameter(description = "开合状态") @RequestParam(required = false) String statusName,
-            @Parameter(description = "设备在线状态") @RequestParam(required = false) String onlineStatus,
-            // 新增筛选参数
-            @Parameter(description = "监测状态") @RequestParam(required = false) String monitorStatus,
-            @Parameter(description = "安全风险等级") @RequestParam(required = false) String riskLevel,
-            @Parameter(description = "异常振动标识（1=是/0=否）") @RequestParam(required = false) Integer abnormalVibrationFlag
-    ) {
-        List<ManholeMonitorVO> list = monitorService.getManholeMonitorList(
-                coverNo, roadName, statusName, onlineStatus, monitorStatus, riskLevel, abnormalVibrationFlag);
-        return CommonResult.success(list);
+    @Operation(summary = "窨井盖监测数据分页查询")
+    @GetMapping("/realtime/page")
+    public CommonResult<PageResult<ManholeCoverRealTimePageRespVO>> selectRealTimePage(
+            @Parameter(description = "分页查询参数") ManholeCoverRealTimePageReqVO reqVO) {
+        PageResult<ManholeCoverRealTimePageRespVO> pageResult = monitorService.getRealTimePage(reqVO);
+        return CommonResult.success(pageResult);
     }
+
+
 
     /**
      * 按井盖编号查询详情（支持钻取，弹窗专用）
@@ -115,7 +107,7 @@ public class ManholeMonitorController {
      */
     @GetMapping("/by-cover-no")
     @Operation(summary = "按井盖编号查询详情", description = "用于井盖编号钻取，点击跳转详情弹窗")
-    public CommonResult<ManholeMonitorVO> getManholeDetailByCoverNo(
+    public CommonResult<ManholeCoverRealTimePageRespVO> getManholeDetailByCoverNo(
             @Parameter(description = "井盖编号", required = true)
             @RequestParam("coverNo") String coverNo) {
         return success(monitorService.getManholeDetailByCoverNo(coverNo));

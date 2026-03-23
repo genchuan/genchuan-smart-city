@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.*;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholemonitor.ManholeMonitorDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -38,40 +39,27 @@ public interface ManholeMonitorMapper extends BaseMapperX<ManholeMonitorDO> {
     }
 
     /**
-     * 查询窨井盖监测列表（支持所有筛选条件）
-     *
-     * @param coverNo 井盖编号
-     * @param roadName 路段名称
-     * @param statusName 开合状态
-     * @param onlineStatus 设备在线状态
-     * @param monitorStatus 监测状态
-     * @param riskLevel 安全风险等级
-     * @param abnormalVibrationFlag 异常振动标识（1=是/0=否）
-     * @return 监测列表
+     * 井盖实时详情
+     * @param page
+     * @param reqVO
+     * @return
      */
-    List<ManholeMonitorVO> selectManholeMonitorList(
-            @Param("coverNo") String coverNo,
-            @Param("roadName") String roadName,
-            @Param("statusName") String statusName,
-            @Param("onlineStatus") String onlineStatus,
-            @Param("monitorStatus") String monitorStatus,
-            @Param("riskLevel") String riskLevel,
-            @Param("abnormalVibrationFlag") Integer abnormalVibrationFlag
-    );
+    IPage<ManholeCoverRealTimePageRespVO> selectRealTimePage(IPage<ManholeCoverRealTimePageRespVO> page,
+                                                             @Param("reqVO") ManholeCoverRealTimePageReqVO reqVO);
 
     /**
      * 按井盖编号查询详情
      * @param coverNo 井盖编号
      * @return 窨井盖详情
      */
-    ManholeMonitorVO selectManholeDetailByCoverNo(@Param("coverNo") String coverNo);
+    ManholeCoverRealTimePageRespVO selectManholeDetailByCoverNo(@Param("coverNo") String coverNo);
 
     /**
      * 按井盖id查询详情
      * @param coverId 井盖编号
      * @return 窨井盖详情
      */
-    ManholeMonitorVO selectManholeDetailByCoverId(@Param("coverId") Long coverId);
+    ManholeCoverRealTimePageRespVO selectManholeDetailByCoverId(@Param("coverId") Long coverId);
 
     /**
      * 批量更新窨井盖监测状态

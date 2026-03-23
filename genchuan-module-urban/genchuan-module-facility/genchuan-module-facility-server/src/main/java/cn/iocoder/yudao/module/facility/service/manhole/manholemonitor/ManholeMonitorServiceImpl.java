@@ -2,18 +2,17 @@ package cn.iocoder.yudao.module.facility.service.manhole.manholemonitor;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import cn.iocoder.yudao.framework.security.core.LoginUser;
-import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.*;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholemonitor.ManholeMonitorDO;
 import cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholemonitor.ManholeMonitorMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,24 +75,28 @@ public class ManholeMonitorServiceImpl implements ManholeMonitorService {
 
 
     @Override
-    public List<ManholeMonitorVO> getManholeMonitorList(String coverNo, String roadName, String statusName,
-                                                        String onlineStatus, String monitorStatus, String riskLevel,
-                                                        Integer abnormalVibrationFlag) {
-        return monitorMapper.selectManholeMonitorList(coverNo, roadName, statusName, onlineStatus,
-                monitorStatus, riskLevel, abnormalVibrationFlag);
+    public PageResult<ManholeCoverRealTimePageRespVO> getRealTimePage(ManholeCoverRealTimePageReqVO reqVO) {
+        // 创建分页对象
+        IPage<ManholeCoverRealTimePageRespVO> mpPage = new Page<>(reqVO.getPageNo(), reqVO.getPageSize());
+
+        // 执行分页查询（MyBatis Plus 分页插件会自动拦截并添加 LIMIT/OFFSET）
+        IPage<ManholeCoverRealTimePageRespVO> result = monitorMapper.selectRealTimePage(mpPage, reqVO);
+
+        // 转换为 PageResult 返回
+        return new PageResult<>(result.getRecords(), result.getTotal());
     }
 
     /**
      * 按井盖编号查询详情（用于钻取弹窗）
      */
     @Override
-    public ManholeMonitorVO getManholeDetailByCoverNo(String coverNo) {
+    public ManholeCoverRealTimePageRespVO getManholeDetailByCoverNo(String coverNo) {
         // 1. 参数校验
         if (coverNo == null || coverNo.trim().isEmpty()) {
             throw exception(MONITOR_NOT_EXISTS);
         }
         // 2. 查询详情
-        ManholeMonitorVO detail = monitorMapper.selectManholeDetailByCoverNo(coverNo);
+        ManholeCoverRealTimePageRespVO detail = monitorMapper.selectManholeDetailByCoverNo(coverNo);
         // 3. 无数据兜底
         if (detail == null) {
             throw exception(MONITOR_NOT_EXISTS);

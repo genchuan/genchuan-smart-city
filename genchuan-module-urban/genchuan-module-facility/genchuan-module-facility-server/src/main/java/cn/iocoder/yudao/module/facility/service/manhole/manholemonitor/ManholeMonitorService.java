@@ -62,15 +62,13 @@ public interface ManholeMonitorService {
      */
 
 
-    List<ManholeMonitorVO> getManholeMonitorList(String coverNo, String roadName, String statusName,
-                                                 String onlineStatus, String monitorStatus, String riskLevel,
-                                                 Integer abnormalVibrationFlag);
+    PageResult<ManholeCoverRealTimePageRespVO> getRealTimePage(ManholeCoverRealTimePageReqVO reqVO);
 
     /**
      * 根据井盖编号查询
      */
 
-    ManholeMonitorVO getManholeDetailByCoverNo(String coverNo);
+    ManholeCoverRealTimePageRespVO getManholeDetailByCoverNo(String coverNo);
 
     /**
      * 批量更新窨井盖监测状态
