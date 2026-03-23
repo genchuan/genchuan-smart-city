@@ -52,6 +52,6 @@ public interface ManholeCoverService {
      */
     PageResult<ManholeCoverDO> getCoverPage(ManholeCoverPageReqVO pageReqVO);
 
-    ManholeCoverDetailRespVO getCoverDetail(Long id);
+//    ManholeCoverDetailRespVO getCoverDetail(Long id);
 
 }

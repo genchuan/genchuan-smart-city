@@ -105,13 +105,13 @@ public class ManholeMonitorController {
      * 按井盖编号查询详情（支持钻取，弹窗专用）
      * @param coverNo 井盖编号
      */
-    @GetMapping("/by-cover-no")
-    @Operation(summary = "按井盖编号查询详情", description = "用于井盖编号钻取，点击跳转详情弹窗")
-    public CommonResult<ManholeCoverRealTimePageRespVO> getManholeDetailByCoverNo(
-            @Parameter(description = "井盖编号", required = true)
-            @RequestParam("coverNo") String coverNo) {
-        return success(monitorService.getManholeDetailByCoverNo(coverNo));
-    }
+//    @GetMapping("/by-cover-no")
+//    @Operation(summary = "按井盖编号查询详情", description = "用于井盖编号钻取，点击跳转详情弹窗")
+//    public CommonResult<ManholeCoverRealTimePageRespVO> getManholeDetailByCoverNo(
+//            @Parameter(description = "井盖编号", required = true)
+//            @RequestParam("coverNo") String coverNo) {
+//        return success(monitorService.getManholeDetailByCoverNo(coverNo));
+//    }
 
     /**
      * 批量更新监测状态
@@ -125,21 +125,21 @@ public class ManholeMonitorController {
         return success(count);
     }
 
-    @GetMapping("/stats/24hour")
-    @Operation(summary = "查询近 24 小时统计数据")
-    @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('manhole:cover:query')")
-    public CommonResult<ManholeMonitorStatsRespVO> get24HourStats(@RequestParam("id") Long id) {
-        return success(monitorService.get24HourStats(id));
-    }
+//    @GetMapping("/stats/24hour")
+//    @Operation(summary = "查询近 24 小时统计数据")
+//    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+//    @PreAuthorize("@ss.hasPermission('manhole:cover:query')")
+//    public CommonResult<ManholeMonitorStatsRespVO> get24HourStats(@RequestParam("id") Long id) {
+//        return success(monitorService.get24HourStats(id));
+//    }
 
-    @GetMapping("/trend/24hour")
-    @Operation(summary = "查询近 24 小时变化趋势")
-    @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('manhole:cover:query')")
-    public CommonResult<List<ManholeMonitorHourTrendVO>> get24HourTrend(@RequestParam("id") Long id) {
-        return success(monitorService.get24HourTrend(id));
-    }
+//    @GetMapping("/trend/24hour")
+//    @Operation(summary = "查询近 24 小时变化趋势")
+//    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+//    @PreAuthorize("@ss.hasPermission('manhole:cover:query')")
+//    public CommonResult<List<ManholeMonitorHourTrendVO>> get24HourTrend(@RequestParam("id") Long id) {
+//        return success(monitorService.get24HourTrend(id));
+//    }
 
     /**
      * 查询窨井盖预警监测列表
@@ -176,5 +176,12 @@ public class ManholeMonitorController {
             // 3. 返回统一格式
             return CommonResult.success(pageResult);
 
+    }
+
+    @GetMapping("/{coverId}")
+    public CommonResult<ManholeCoverRealTimeTrendRespVO> getRealTimeTrend(
+            @PathVariable("coverId") String coverId,
+            @Valid ManholeCoverRealTimeTrendReqVO reqVO) {
+        return CommonResult.success(monitorService.getRealTimeTrend(coverId, reqVO));
     }
 }

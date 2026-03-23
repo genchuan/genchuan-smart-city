@@ -55,9 +55,6 @@ public interface ManholeMonitorService {
     /**
      * 分页查询窨井盖监测数据（支持动态筛选）
      *
-     * @param roadName 路段名称（模糊查询）
-     * @param statusName 开合状态名称
-     * @param onlineStatus 设备在线状态
      * @return 窨井盖监测数据列表
      */
 
@@ -68,7 +65,7 @@ public interface ManholeMonitorService {
      * 根据井盖编号查询
      */
 
-    ManholeCoverRealTimePageRespVO getManholeDetailByCoverNo(String coverNo);
+//    ManholeCoverRealTimePageRespVO getManholeDetailByCoverNo(String coverNo);
 
     /**
      * 批量更新窨井盖监测状态
@@ -85,7 +82,7 @@ public interface ManholeMonitorService {
      * @param id 编号
      * @return 统计数据
      */
-    ManholeMonitorStatsRespVO get24HourStats(Long id);
+//    ManholeMonitorStatsRespVO get24HourStats(Long id);
 
     /**
      * 查询近 24 小时变化趋势
@@ -93,7 +90,7 @@ public interface ManholeMonitorService {
      * @param id 编号
      * @return 趋势数据列表
      */
-    List<ManholeMonitorHourTrendVO> get24HourTrend(Long id);
+//    List<ManholeMonitorHourTrendVO> get24HourTrend(Long id);
 
     /**
      * 查询窨井盖预警监测列表（基于 sys_warn 表）
@@ -111,4 +108,6 @@ public interface ManholeMonitorService {
      * @return 详情数据
      */
     ManholeCoverRealTimeDetailRespVO getRealTimeDetail(String coverId, String tenantId);
+
+    ManholeCoverRealTimeTrendRespVO getRealTimeTrend(String coverId, ManholeCoverRealTimeTrendReqVO reqVO);
 }

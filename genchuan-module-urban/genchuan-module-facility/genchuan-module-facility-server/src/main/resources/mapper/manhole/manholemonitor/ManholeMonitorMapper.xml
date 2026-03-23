@@ -363,6 +363,19 @@
         </association>
     </resultMap>
 
+    <!-- 查询井盖基础信息 -->
+    <select id="selectCoverBaseInfo" resultType="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeCoverRealTimeTrendRespVO">
+        SELECT
+            mc.id AS coverId,
+            COALESCE(mc.ext_common1, rf.road_name) AS coverName,
+            #{tenantId} AS tenantId
+        FROM munifacility.manhole_cover mc
+                 LEFT JOIN munifacility.road_facility rf ON mc.road_id = rf.id
+        WHERE mc.id = #{coverId}
+          AND mc.tenant_id = #{tenantId}
+          AND mc.deleted = B'0'
+    </select>
+
     <select id="selectRealTimeDetail" resultMap="RealTimeDetailResultMap">
         SELECT
             mc.id AS cover_id,
@@ -439,6 +452,43 @@
           AND mc.tenant_id = #{tenantId}
           AND mc.deleted = B'0'
             LIMIT 1;
+    </select>
+
+
+    <!-- 查询近24小时按小时聚合的监测数据 -->
+    <select id="selectHourlyMonitorData" resultType="java.util.Map">
+        SELECT
+            -- 提取小时（00-23）
+            TO_CHAR(mm.create_time, 'HH24') AS hour,
+            -- 根据指标类型取对应字段
+            CASE #{indicatorType}
+            WHEN 0 THEN AVG(mm.tilt_angle) -- 倾斜角度：取平均值
+            WHEN 1 THEN AVG(mm.ext_common1::numeric) -- 位移距离：扩展字段1
+            WHEN 2 THEN AVG(mm.ext_common2::numeric) -- 井内水位：扩展字段2
+        END AS indicator_value
+        FROM munifacility.manhole_monitor mm
+        WHERE mm.cover_id = #{coverId}
+        AND mm.tenant_id = #{tenantId}
+        AND mm.deleted = B'0'
+        AND mm.create_time >= NOW() - INTERVAL '24 hours' -- 近24小时
+        GROUP BY TO_CHAR(mm.create_time, 'HH24')
+        ORDER BY hour ASC
+    </select>
+
+    <!-- 查询指标阈值 -->
+    <!-- 修复selectIndicatorThreshold的SQL，参数名对齐 -->
+    <select id="selectIndicatorThreshold" resultType="java.math.BigDecimal">
+        SELECT
+            CASE #{indicatorType}
+                WHEN 0 THEN mc.tilt_angle_threshold -- 倾斜角度阈值：配置表
+                WHEN 1 THEN COALESCE(mc.ext_common1::numeric, 50) -- 位移阈值：扩展字段1（默认50cm）
+                WHEN 2 THEN COALESCE(mc.ext_common2::numeric, 30) -- 水位阈值：扩展字段2（默认30cm）
+                END AS threshold
+        FROM munifacility.manhole_config mc
+        WHERE mc.cover_id = #{coverId}
+          AND mc.tenant_id = #{tenantId} -- 确保参数名是tenantId
+          AND mc.deleted = B'0'
+            LIMIT 1
     </select>
 
 </mapper>

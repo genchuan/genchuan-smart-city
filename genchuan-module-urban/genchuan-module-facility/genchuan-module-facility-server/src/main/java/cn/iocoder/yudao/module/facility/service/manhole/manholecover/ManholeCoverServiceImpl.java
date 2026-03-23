@@ -85,15 +85,15 @@ public class ManholeCoverServiceImpl implements ManholeCoverService {
         return coverMapper.selectPage(pageReqVO);
     }
 
-    @Override
-    public ManholeCoverDetailRespVO getCoverDetail(Long id) {
-        ManholeCoverRealTimePageRespVO cover = monitorMapper.selectManholeDetailByCoverId(id);
-        if (ObjectUtil.isNull(cover)) {
-            throw exception(COVER_NOT_EXISTS);
-        }
+//    @Override
+//    public ManholeCoverDetailRespVO getCoverDetail(Long id) {
+//        ManholeCoverRealTimePageRespVO cover = monitorMapper.selectManholeDetailByCoverId(id);
+//        if (ObjectUtil.isNull(cover)) {
+//            throw exception(COVER_NOT_EXISTS);
+//        }
 
-        ManholeCoverDetailRespVO detail = new ManholeCoverDetailRespVO();
-        BeanUtils.copyProperties(cover, detail);
+//        ManholeCoverDetailRespVO detail = new ManholeCoverDetailRespVO();
+//        BeanUtils.copyProperties(cover, detail);
 
 //        ManholeMonitorVO latestMonitor = monitorMapper.selectManholeDetailByCoverId(id);
 //        if (latestMonitor != null) {
@@ -106,27 +106,27 @@ public class ManholeCoverServiceImpl implements ManholeCoverService {
 //            detail.setCollectFrequency(config.getCollectFrequency());
 //        }
 
-        ManholeMonitorStatsRespVO stats = monitorMapper.select24HourStats(id);
-        if (stats == null) {
-            stats = new ManholeMonitorStatsRespVO();
-            stats.setAvgTiltAngle(BigDecimal.ZERO);
-            stats.setMaxTiltAngle(BigDecimal.ZERO);
-            stats.setMinTiltAngle(BigDecimal.ZERO);
-            stats.setAvgVibration(BigDecimal.ZERO);
-            stats.setMaxVibration(BigDecimal.ZERO);
-            stats.setMinVibration(BigDecimal.ZERO);
-        }
-        detail.setManholeMonitorStatsRespVO(stats);
-
-        List<DisposalOrderDO> faultRecords = disposalOrderMapper.selectFaultRecordsByCoverId(id);
-
-        System.out.println(faultRecords);
-
-        if (faultRecords == null) {
-            faultRecords = new ArrayList<>();
-        }
-        detail.setDisposalOrderDOList(faultRecords);
-
-        return detail;
-    }
+//        ManholeMonitorStatsRespVO stats = monitorMapper.select24HourStats(id);
+//        if (stats == null) {
+//            stats = new ManholeMonitorStatsRespVO();
+//            stats.setAvgTiltAngle(BigDecimal.ZERO);
+//            stats.setMaxTiltAngle(BigDecimal.ZERO);
+//            stats.setMinTiltAngle(BigDecimal.ZERO);
+//            stats.setAvgVibration(BigDecimal.ZERO);
+//            stats.setMaxVibration(BigDecimal.ZERO);
+//            stats.setMinVibration(BigDecimal.ZERO);
+//        }
+//        detail.setManholeMonitorStatsRespVO(stats);
+//
+//        List<DisposalOrderDO> faultRecords = disposalOrderMapper.selectFaultRecordsByCoverId(id);
+//
+//        System.out.println(faultRecords);
+//
+//        if (faultRecords == null) {
+//            faultRecords = new ArrayList<>();
+//        }
+//        detail.setDisposalOrderDOList(faultRecords);
+//
+//        return detail;
+//    }
 }
