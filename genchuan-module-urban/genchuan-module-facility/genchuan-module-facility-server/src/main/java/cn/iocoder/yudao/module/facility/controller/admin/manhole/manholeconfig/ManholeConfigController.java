@@ -115,4 +115,15 @@ public class ManholeConfigController {
         return CommonResult.success(pageResult);
     }
 
+    /**
+     * 获取窨井盖配置详情
+     */
+    @GetMapping("/get/{id}/{tenantId}")
+    @Operation(summary = "获取窨井盖配置详情")
+    public CommonResult<ManholeCoverConfigDetailRespVO> getDetail(
+            @Parameter(description = "配置ID") @PathVariable Long id,
+            @Parameter(description = "租户ID") @PathVariable Long tenantId) {
+        return CommonResult.success(manholeConfigService.getDetail(id, tenantId));
+    }
+
 }
