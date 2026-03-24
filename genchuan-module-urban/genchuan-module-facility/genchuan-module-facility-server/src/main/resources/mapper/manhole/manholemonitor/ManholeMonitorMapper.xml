@@ -491,4 +491,18 @@
             LIMIT 1
     </select>
 
+
+    <select id="selectLatestByCoverId" resultType="cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholemonitor.ManholeMonitorDO">
+        SELECT id, cover_id, device_id, tilt_angle, vibration_data, ext_common1, create_time
+        FROM munifacility.manhole_monitor
+        WHERE cover_id = #{coverId} AND deleted = B'0'
+        ORDER BY create_time DESC LIMIT 1
+    </select>
+
+    <select id="selectDeviceOnlineStatus" resultType="java.lang.String">
+        SELECT online_status FROM munifacility.sys_device
+        WHERE id = #{deviceId} AND deleted = B'0'
+    </select>
+
+
 </mapper>

@@ -173,4 +173,14 @@ public interface ManholeMonitorMapper extends BaseMapperX<ManholeMonitorDO> {
             @Param("indicatorType") Integer indicatorType,
             @Param("tenantId") String tenantId);
 
+    /**
+     * 查询井盖最新监测数据
+     */
+    ManholeMonitorDO selectLatestByCoverId(@Param("coverId") Long coverId);
+
+    /**
+     * 查询设备在线状态
+     */
+    String selectDeviceOnlineStatus(@Param("deviceId") Long deviceId);
+
 }

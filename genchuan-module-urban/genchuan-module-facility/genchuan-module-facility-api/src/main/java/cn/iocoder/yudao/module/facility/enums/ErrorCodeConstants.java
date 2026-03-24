@@ -15,6 +15,8 @@ public interface ErrorCodeConstants {
     ErrorCode COVER_NOT_EXISTS = new ErrorCode(500, "窨井盖不存在");
     // ========== 窨井盖配置==========
     ErrorCode MANHOLE_CONFIG_NOT_EXISTS = new ErrorCode(500, "窨井盖配置不存在");
+    // ========== 井盖ID:{} 不存在或不属于租户:{}
+    ErrorCode COVER_NOT_EXISTS_OR_NOT_BELONG_TO_TENANT = new ErrorCode(500, "窨井盖ID:{} 不存在或不属于租户:{}");
     // ========== 处置工单==========
     ErrorCode ORDER_NOT_EXISTS = new ErrorCode(500, "处置工单不存在");
     // ========== 预警==========

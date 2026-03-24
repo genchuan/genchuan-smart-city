@@ -8,6 +8,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.*;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholemonitor.ManholeMonitorDO;
+import cn.iocoder.yudao.module.facility.service.manhole.manholecover.ManholeCoverService;
 import cn.iocoder.yudao.module.facility.service.manhole.manholemonitor.ManholeMonitorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -35,6 +36,9 @@ public class ManholeMonitorController {
 
     @Resource
     private ManholeMonitorService monitorService;
+
+    @Resource
+    private ManholeCoverService coverService;
 
     @PostMapping("/create")
     @Operation(summary = "创建窨井盖监测")
@@ -179,9 +183,20 @@ public class ManholeMonitorController {
     }
 
     @GetMapping("/{coverId}")
+    @Operation(summary = "单井盖指标近24小时趋势查询")
     public CommonResult<ManholeCoverRealTimeTrendRespVO> getRealTimeTrend(
             @PathVariable("coverId") String coverId,
             @Valid ManholeCoverRealTimeTrendReqVO reqVO) {
         return CommonResult.success(monitorService.getRealTimeTrend(coverId, reqVO));
     }
+
+
+    @Operation(summary = "井盖实时数据刷新")
+    @GetMapping("/refresh")
+    public CommonResult<List<ManholeCoverRealTimeRefreshRespVO>> refreshRealTimeData(
+            @Parameter(description = "刷新请求参数") @Validated ManholeCoverRealTimeRefreshReqVO reqVO) {
+        List<ManholeCoverRealTimeRefreshRespVO> result =coverService.refreshRealTimeData(reqVO);
+        return CommonResult.success(result);
+    }
+
 }
