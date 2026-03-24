@@ -6,7 +6,6 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.jobtype.JobTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.jobtype.JobTypeSaveReqVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.EquipmentDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.JobTypeDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.user.JobTypeMapper;
 import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;

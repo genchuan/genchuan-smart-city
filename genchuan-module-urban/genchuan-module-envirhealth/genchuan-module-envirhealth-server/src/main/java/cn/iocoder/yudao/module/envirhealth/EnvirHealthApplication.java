@@ -12,7 +12,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  */
 @SpringBootApplication
 @MapperScan("cn.iocoder.yudao.module.envirhealth.dal.mysql.**")
-@EnableFeignClients(basePackages = "cn.iocoder.yudao.module.envirhealth.framework.file")
+@EnableFeignClients(basePackages = "cn.iocoder.yudao.module.infra.api")
 public class EnvirHealthApplication {
 
     public static void main(String[] args) {
