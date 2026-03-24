@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
+
 /**
  * 岗位类型字典 DO
  *
@@ -29,38 +30,13 @@ public class JobTypeDO extends BaseDO {
     /**
      * 业务主键（UUID）
      */
-    private String sysJobTypeId;
+    private String jobTypeId;
     /**
      * 岗位名称（可选值：清扫工/保洁员/督导员/驾驶员/维修工/管理员/考核员/转运工）
      */
     private String name;
     /**
-     * 岗位编码
-     */
-    private String code;
-    /**
-     * 状态（可选值：0-禁用/1-启用）
-     */
-    private Integer status;
-    /**
      * 备注
      */
     private String remark;
-    /**
-     * 通用扩展字段1
-     */
-    private String extCommon1;
-    /**
-     * 通用扩展字段2
-     */
-    private String extCommon2;
-    /**
-     * 通用扩展字段3
-     */
-    private String extCommon3;
-    /**
-     * 通用扩展字段4
-     */
-    private String extCommon4;
-
 }

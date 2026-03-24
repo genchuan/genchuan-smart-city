@@ -1,14 +1,20 @@
 package cn.iocoder.yudao.module.envirhealth.service.user.jobtype;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.jobtype.JobTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.jobtype.JobTypeSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.EquipmentDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.JobTypeDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.user.JobTypeMapper;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.JOB_TYPE_NOT_EXISTS;
@@ -67,4 +73,26 @@ public class JobTypeServiceImpl implements JobTypeService {
         return jobTypeMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public List<OptionVO> getJobTypeOptions() {
+
+        List<JobTypeDO> list;
+        list = jobTypeMapper.selectList(
+                new LambdaQueryWrapperX<JobTypeDO>()
+                        .select(
+                                JobTypeDO::getId,
+                                JobTypeDO::getJobTypeId,
+                                JobTypeDO::getName
+                        )
+                        .eq(JobTypeDO::getDeleted, 0)
+                        .orderByDesc(JobTypeDO::getId)
+        );
+        // 将DO转换为下拉框VO（label=name，value=id）
+        return CollectionUtils.convertList(list, jobTypeDO -> {
+            OptionVO vo = new OptionVO();
+            vo.setLabel(jobTypeDO.getName());
+            vo.setValue(jobTypeDO.getJobTypeId());
+            return vo;
+        });
+    }
 }

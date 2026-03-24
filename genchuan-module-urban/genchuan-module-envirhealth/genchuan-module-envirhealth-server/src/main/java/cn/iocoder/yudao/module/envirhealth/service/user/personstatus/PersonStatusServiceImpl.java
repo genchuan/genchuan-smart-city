@@ -1,14 +1,21 @@
 package cn.iocoder.yudao.module.envirhealth.service.user.personstatus;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.personstatus.PersonStatusPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.personstatus.PersonStatusSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.EquipmentDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.JobTypeDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.PersonStatusDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.user.PersonStatusMapper;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.PERSON_STATUS_NOT_EXISTS;
@@ -67,4 +74,26 @@ public class PersonStatusServiceImpl implements PersonStatusService {
         return personStatusMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public List<OptionVO> getPersonStatusOptions() {
+
+        List<PersonStatusDO> list;
+        list = personStatusMapper.selectList(
+                new LambdaQueryWrapperX<PersonStatusDO>()
+                        .select(
+                                PersonStatusDO::getId,
+                                PersonStatusDO::getPersonStatusId,
+                                PersonStatusDO::getName
+                        )
+                        .eq(PersonStatusDO::getDeleted, 0)
+                        .orderByDesc(PersonStatusDO::getId)
+        );
+        // 将DO转换为下拉框VO（label=name，value=id）
+        return CollectionUtils.convertList(list, personStatusDO -> {
+            OptionVO vo = new OptionVO();
+            vo.setLabel(personStatusDO.getName());
+            vo.setValue(personStatusDO.getPersonStatusId());
+            return vo;
+        });
+    }
 }
