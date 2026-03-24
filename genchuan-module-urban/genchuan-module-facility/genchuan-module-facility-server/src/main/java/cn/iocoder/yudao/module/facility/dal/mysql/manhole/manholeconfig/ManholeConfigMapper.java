@@ -34,6 +34,7 @@ public interface ManholeConfigMapper extends BaseMapperX<ManholeConfigDO> {
     IPage<ManholeCoverConfigPageRespVO> selectConfigPage(
             IPage<ManholeCoverConfigPageRespVO> page,
             @Param("coverId") String coverId,
+            @Param("configStatus") Integer configStatus,
             @Param("tenantId") String tenantId
     );
 

@@ -21,8 +21,11 @@ public class ManholeCoverConfigPageRespVO {
     @Schema(description = "井盖编号")
     private String coverCode;
 
-//    @Schema(description = "井盖名称")
-//    private String coverName;
+    @Schema(description = "配置状态")
+    private Integer configStatus;
+
+    @Schema(description = "配置状态名称")
+    private String configStatusName;
 
     @Schema(description = "创建时间")
     private LocalDateTime createTime;
@@ -30,7 +33,7 @@ public class ManholeCoverConfigPageRespVO {
     @Schema(description = "更新时间")
     private LocalDateTime updateTime;
 
-    @Schema(description = "操作人")
+    @Schema(description = "最后操作人姓名")
     private String operateUserName;
 
     @Schema(description = "租户ID")
@@ -45,29 +48,40 @@ public class ManholeCoverConfigPageRespVO {
     @Schema(description = "报警配置")
     private AlarmConfig alarmConfig;
 
+    // ===================== 内部VO =====================
     @Data
     @Schema(description = "阈值配置")
     public static class ThresholdConfig {
-        @Schema(description = "倾斜角度阈值")
-        private String tiltAngleThreshold;
-        @Schema(description = "位移阈值")
-        private String displacementThreshold;
-        @Schema(description = "水位阈值")
-        private String waterLevelThreshold;
+        @Schema(description = "倾斜角度阈值°")
+        private BigDecimal tiltAngleThreshold;
+
+        @Schema(description = "位移距离阈值cm")
+        private BigDecimal displacementThreshold;
+
+        @Schema(description = "水位阈值cm")
+        private BigDecimal waterLevelThreshold;
+
+        @Schema(description = "开启时长阈值分钟")
+        private BigDecimal openDurationThreshold;
     }
 
     @Data
     @Schema(description = "采集配置")
     public static class CollectConfig {
-        @Schema(description = "采集频率")
+        @Schema(description = "采集频率秒")
         private Integer collectFrequency;
+
+        @Schema(description = "离线超时时间分钟")
+        private Integer offlineTimeout;
     }
 
     @Data
     @Schema(description = "报警配置")
     public static class AlarmConfig {
-        @Schema(description = "报警类型")
-        private String alarmType;
+        @Schema(description = "报警方式 0-平台 1-短信 2-电话")
+        @TableField(typeHandler = JacksonTypeHandler.class)
+        private List<Integer> alarmType;
+
         @Schema(description = "报警接收人")
         @TableField(typeHandler = JacksonTypeHandler.class)
         private List<String> alarmRecipient;

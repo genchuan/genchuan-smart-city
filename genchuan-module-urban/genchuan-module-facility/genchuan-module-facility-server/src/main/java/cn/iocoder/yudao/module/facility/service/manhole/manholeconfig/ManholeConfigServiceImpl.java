@@ -158,14 +158,9 @@ public class ManholeConfigServiceImpl implements ManholeConfigService {
     }
 
     @Override
-    public PageResult<ManholeCoverConfigPageRespVO> getConfigPage(String coverId, String tenantId, Integer pageNo, Integer pageSize) {
-        // 创建分页对象
+    public PageResult<ManholeCoverConfigPageRespVO> getConfigPage(String coverId, Integer configStatus, String tenantId, Integer pageNo, Integer pageSize) {
         IPage<ManholeCoverConfigPageRespVO> mpPage = new Page<>(pageNo, pageSize);
-
-        // 执行分页查询
-        IPage<ManholeCoverConfigPageRespVO> result = manholeConfigMapper.selectConfigPage(mpPage, coverId, tenantId);
-
-        // 转换为 PageResult 返回
+        IPage<ManholeCoverConfigPageRespVO> result = manholeConfigMapper.selectConfigPage(mpPage, coverId, configStatus, tenantId);
         return new PageResult<>(result.getRecords(), result.getTotal());
     }
 

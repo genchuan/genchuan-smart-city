@@ -106,11 +106,12 @@ public class ManholeConfigController {
     @GetMapping("/cover-config-page")
     public CommonResult<PageResult<ManholeCoverConfigPageRespVO>> selectConfigPage(
             @Parameter(description = "井盖ID") @RequestParam(required = false) String coverId,
+            @Parameter(description = "配置状态 0-未生效 1-已生效 2-已停用") @RequestParam(required = false) Integer configStatus,
             @Parameter(description = "租户ID", required = true) @RequestParam String tenantId,
             @Parameter(description = "页码") @RequestParam(defaultValue = "1") Integer pageNo,
             @Parameter(description = "每页条数") @RequestParam(defaultValue = "10") Integer pageSize) {
 
-        PageResult<ManholeCoverConfigPageRespVO> pageResult = manholeConfigService.getConfigPage(coverId, tenantId, pageNo, pageSize);
+        PageResult<ManholeCoverConfigPageRespVO> pageResult = manholeConfigService.getConfigPage(coverId, configStatus, tenantId, pageNo, pageSize);
         return CommonResult.success(pageResult);
     }
 

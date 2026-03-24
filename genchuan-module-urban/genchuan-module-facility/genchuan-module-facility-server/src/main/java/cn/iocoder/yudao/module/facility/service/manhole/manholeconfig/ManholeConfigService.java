@@ -59,6 +59,6 @@ public interface ManholeConfigService {
      * 获得窨井盖监测配置分页
      * @return 窨井盖监测配置分页
      */
-    PageResult<ManholeCoverConfigPageRespVO> getConfigPage(String coverId, String tenantId, Integer pageNo, Integer pageSize);
+    PageResult<ManholeCoverConfigPageRespVO> getConfigPage(String coverId, Integer configStatus, String tenantId, Integer pageNo, Integer pageSize);
 
 }
