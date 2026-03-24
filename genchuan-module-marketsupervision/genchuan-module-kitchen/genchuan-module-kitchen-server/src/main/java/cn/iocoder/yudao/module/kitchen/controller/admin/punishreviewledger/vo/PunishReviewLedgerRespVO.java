@@ -23,9 +23,22 @@ public class PunishReviewLedgerRespVO {
     @ExcelProperty("[台账编号] 唯一编号")
     private String ledgerCode;
 
+    @Schema(description = "逾期标识")
+    @ExcelProperty("逾期标识")
+    private Integer overdueFlag;
+
+
+    @Schema(description = "缴费截止时间")
+    @ExcelProperty("缴费截止时间")
+    private LocalDateTime paymentDeadlineTime;
+
     @Schema(description = "[企业ID] 关联enterprise_info.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "32251")
     @ExcelProperty("[企业ID] 关联enterprise_info.id")
     private Long entId;
+
+    @Schema(description = "[企业名称] 企业名称", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("[企业名称] 企业名称")
+    private String entName;
 
     @Schema(description = "[违规类型ID] 关联illegal_type_dict.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "28353")
     @ExcelProperty("[违规类型ID] 关联illegal_type_dict.id")

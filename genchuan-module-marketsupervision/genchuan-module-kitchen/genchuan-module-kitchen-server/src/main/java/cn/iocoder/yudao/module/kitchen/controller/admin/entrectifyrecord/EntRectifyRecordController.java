@@ -54,6 +54,7 @@ public class EntRectifyRecordController {
     //@PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:review-reject')")
     public CommonResult<Boolean> reviewReject(
             @Valid @RequestBody ReviewRejectReq reqVO) {
+        System.out.println("cs2026-03-24 09:03:49:req"+reqVO);
         Boolean flag = entRectifyRecordService.reviewReject(reqVO);
         return success(flag);
     }

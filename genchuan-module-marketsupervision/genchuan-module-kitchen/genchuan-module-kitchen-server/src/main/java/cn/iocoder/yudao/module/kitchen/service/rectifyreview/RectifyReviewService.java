@@ -3,14 +3,17 @@ package cn.iocoder.yudao.module.kitchen.service.rectifyreview;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.*;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.add.AddRectifyReviewReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.add.AddRectifyReviewReqVO2;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.cancel.CancelReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.issue.IssueReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileRespVO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifyreview.RectifyReviewDO;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -77,4 +80,10 @@ public interface RectifyReviewService {
     Long reviewAdd(AddRectifyReviewReqVO reqVO);
 
     UploadEvidenceFileRespVO uploadEvidenceFile(UploadEvidenceFileReqVO reqVO, MultipartFile file);
+
+    Long reviewAdd2(AddRectifyReviewReqVO2 reqVO);
+
+    ResponseEntity<byte[]> downloadRectifyNoticePdfBatch(List<Long> rectifyNoticeIds) throws IOException;
+
+    Long reviewIssue2(IssueReqVO reqVO);
 }

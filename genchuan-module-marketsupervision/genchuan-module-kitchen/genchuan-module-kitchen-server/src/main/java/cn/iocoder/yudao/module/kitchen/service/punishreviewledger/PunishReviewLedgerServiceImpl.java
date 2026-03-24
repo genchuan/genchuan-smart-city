@@ -1,33 +1,60 @@
 package cn.iocoder.yudao.module.kitchen.service.punishreviewledger;
 
+import cn.iocoder.yudao.framework.common.exception.ServiceException;
+import cn.iocoder.yudao.module.kitchen.controller.admin.punishnotice.vo.add.AddPunishNoticeReq;
+import cn.iocoder.yudao.module.kitchen.controller.admin.punishnotice.vo.template.DraftPunishNoticeReq;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.PunishReviewLedgerPageReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.PunishReviewLedgerRespVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.PunishReviewLedgerSaveReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.add.AddPunishReviewLedgerReq;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.cancel.CancelReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.issue.IssueReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.upload.UploadFileReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.upload.UploadFileRespVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.RectifyReviewLedgerRespVO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.dictionary.cancelreasondict.CancelReasonDictDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.entrectifyrecord.EntRectifyRecordDO;
+import cn.iocoder.yudao.module.kitchen.dal.dataobject.punishnotice.PunishNoticeDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.punishreviewledger.PunishReviewLedgerDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifynotice.RectifyNoticeDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifyreview.RectifyReviewDO;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.dictionary.cancelreasondict.CancelReasonDictMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.entrectifyrecord.EntRectifyRecordMapper;
+import cn.iocoder.yudao.module.kitchen.dal.mysql.punishnotice.PunishNoticeMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.punishreviewledger.PunishReviewLedgerMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.rectifynotice.RectifyNoticeMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.rectifyreview.RectifyReviewMapper;
+import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.file.FileUploadService;
 import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.name.NameUtil;
+import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.pdf.PdfGenerator;
 import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.verify.VerifyUtil;
+import cn.iocoder.yudao.module.kitchen.service.punishnotice.PunishNoticeService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -41,8 +68,11 @@ import static cn.iocoder.yudao.module.kitchen.enums.ErrorCodeConstants.*;
  */
 @Service
 @Validated
+@Slf4j
 public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService {
 
+    @Resource
+    private PunishNoticeMapper punishNoticeMapper;
     @Resource
     private PunishReviewLedgerMapper punishReviewLedgerMapper;
 
@@ -56,6 +86,12 @@ public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService 
 
     @Resource
     private CancelReasonDictMapper cancelReasonDictMapper;
+
+    @Resource
+    private PunishNoticeService punishNoticeService;
+
+    @Resource
+    private FileUploadService fileUploadService;
     @Override
     public Long createPunishReviewLedger(PunishReviewLedgerSaveReqVO createReqVO) {
         // 插入
@@ -94,11 +130,46 @@ public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService 
     }
 
     @Override
-    public PageResult<PunishReviewLedgerDO> getPunishReviewLedgerPage(PunishReviewLedgerPageReqVO pageReqVO) {
-        return punishReviewLedgerMapper.selectPage(pageReqVO);
+    public PageResult<PunishReviewLedgerRespVO> getPunishReviewLedgerPage(PunishReviewLedgerPageReqVO pageReqVO) {
+        PageResult<PunishReviewLedgerRespVO> punishReviewLedgerDOPageResult = new PageResult<>();
+        List<PunishReviewLedgerRespVO> punishReviewLedgerRespVOList = punishReviewLedgerMapper.selectLedgerPage(pageReqVO);
+
+        // 当前时间（只取一次，避免循环内多次调用）
+        LocalDateTime now = LocalDateTime.now();
+
+        // 2. 计算逾期标识
+        for (PunishReviewLedgerRespVO item : punishReviewLedgerRespVOList) {
+
+            // 默认未逾期
+            item.setOverdueFlag(0);
+
+            // 判空（非常关键，避免 NPE）
+            if (item.getPaymentDeadlineTime() == null || item.getReviewStatus() == null) {
+                continue;
+            }
+
+            // 判断是否“已下发”
+            if ("已下发".equals(item.getReviewStatus())) {
+
+                // 判断是否超过缴费截止时间
+                if (now.isAfter(item.getPaymentDeadlineTime())) {
+                    item.setOverdueFlag(1);
+                }
+            }
+        }
+
+//        pageResult.setList(punishReviewLedgerRespVOList);
+
+        //配置 分页参数
+        punishReviewLedgerDOPageResult.setList(punishReviewLedgerRespVOList);
+        punishReviewLedgerDOPageResult.setTotal(punishReviewLedgerMapper.selectLedgerPageCount(pageReqVO));
+
+//        PageResult<PunishReviewLedgerRespVO> result =BeanUtils.toBean(punishReviewLedgerDOPageResult,PunishReviewLedgerRespVO.class);
+        return punishReviewLedgerDOPageResult;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Long addPunishReviewLedger(AddPunishReviewLedgerReq reqVO) {
 
         // =========================
@@ -138,10 +209,13 @@ public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService 
 
         // ===== 前端字段 =====
         punishLedger.setDraftPunishAmt(reqVO.getDraftPunishAmt());
-        punishLedger.setLegalBasis(reqVO.getLegalBasis());
+
         punishLedger.setEntRectifyRecordId(reqVO.getEntRectifyRecordId());
 
         // ===== 后端自动字段 =====
+        reqVO.setLegalBasis("《中华人民共和国食品安全法》第三十条");
+        punishLedger.setLegalBasis(reqVO.getLegalBasis());
+
         punishLedger.setLedgerCode(NameUtil.generateCode("PNRL")); // 台账编号
         punishLedger.setEntId(entId);
         punishLedger.setIllegalTypeId(ledger.getIllegalTypeId());
@@ -154,6 +228,9 @@ public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService 
         // =========================
         punishLedger.setDraftTime(LocalDateTime.now());
 
+        //6.缴费截止时间
+        punishLedger.setPaymentDeadlineTime(LocalDateTime.now().plusDays(30));
+
         // =========================
         // 6. 入库
         // =========================
@@ -162,6 +239,16 @@ public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService 
         //7.回绑处罚台账id到对应的企业整改记录
         record.setPunishReviewId(punishLedger.getId());
         entRectifyRecordMapper.updateById(record);
+
+        //8.TODO 生成处罚决定书
+        AddPunishNoticeReq addPunishNoticeReq =new AddPunishNoticeReq();
+        addPunishNoticeReq.setPunishReviewId(punishLedger.getId());
+        Long punishNoticeId = punishNoticeService.addPunishNotice(addPunishNoticeReq);
+
+        //9.草拟处罚决定书
+        DraftPunishNoticeReq draftPunishNoticeReq = new DraftPunishNoticeReq();
+        draftPunishNoticeReq.setPunishReviewNoticeId(punishNoticeId);
+        punishNoticeService.generatePunishNoticeDraft(draftPunishNoticeReq);
 
         return punishLedger.getId();
     }
@@ -260,6 +347,140 @@ public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService 
         // 6. 返回台账ID
         // =========================
         return ledgerDO.getId();
+    }
+
+    @Override
+    public UploadFileRespVO uploadEvidenceFile(UploadFileReqVO reqVO, MultipartFile file) {
+        // 1. 校验整改复审台账是否存在
+//        EntRectifyRecordDO entRectifyRecordDO = entRectifyRecordMapper.selectById(reqVO.getEntRectifyRecordId());
+        PunishReviewLedgerDO punishReviewLedgerDO = punishReviewLedgerMapper.selectById(reqVO.getPunishReviewLedgerId());
+        VerifyUtil.verifyNotNullWithMsg(punishReviewLedgerDO,"处罚台账记录不存在数据库");
+
+
+        try {
+            // 2. 上传文件到 MinIO
+            String fileUrl = fileUploadService.uploadAvatar(file);
+
+            // 3. 构建文件信息对象
+            Map<String, String> fileInfo = new HashMap<>();
+            fileInfo.put("url", fileUrl);
+            fileInfo.put("name", file.getOriginalFilename());
+
+            // 根据后缀决定 type
+            String lowerName = file.getOriginalFilename().toLowerCase();
+            if (lowerName.endsWith(".png") || lowerName.endsWith(".jpg") || lowerName.endsWith(".jpeg") || lowerName.endsWith(".gif")) {
+                fileInfo.put("type", "image");
+            } else if (lowerName.endsWith(".xls") || lowerName.endsWith(".xlsx")) {
+                fileInfo.put("type", "excel");
+            } else if (lowerName.endsWith(".doc") || lowerName.endsWith(".docx")) {
+                fileInfo.put("type", "word");
+            } else {
+                fileInfo.put("type", "file"); // 其他通用文件
+            }
+
+            // 4. 获取原有 JSON
+            String oldJson = punishReviewLedgerDO.getEvidenceUrl();
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<Map<String, String>> fileList;
+
+            if (oldJson == null || oldJson.isEmpty()) {
+                fileList = new ArrayList<>();
+            } else {
+                // 解析原有 JSON
+                fileList = objectMapper.readValue(oldJson, new TypeReference<List<Map<String, String>>>() {});
+            }
+
+            // 5. 添加新文件
+            fileList.add(fileInfo);
+
+            // 6. 转成 JSON 字符串
+            String newJson = objectMapper.writeValueAsString(fileList);
+
+            // 7. 更新数据库
+            punishReviewLedgerDO.setEvidenceUrl(newJson);
+
+            punishReviewLedgerMapper.updateById(punishReviewLedgerDO);
+
+//            //修改状态 为 整改中
+//            entRectifyRecordDO.setRectifyStatus("整改中");
+//            entRectifyRecordDO.setRectifyDesc(reqVO.getRectifyDesc()!=null?
+//                    reqVO.getRectifyDesc():"已进行整改");
+
+//            entRectifyRecordMapper.updateById(entRectifyRecordDO);
+
+            // 8. 返回结果
+            UploadFileRespVO respVO = new UploadFileRespVO();
+            respVO.setBizDataId(punishReviewLedgerDO.getId());
+            respVO.setFileUrl(fileUrl);
+            respVO.setFileName(file.getOriginalFilename());
+
+            return respVO;
+
+        } catch (Exception e) {
+            log.error("上传文件资料失败", e);
+
+            if (e instanceof ServiceException) {
+                throw (ServiceException) e;
+            }
+
+            throw new ServiceException(500, "上传文件失败");
+        }
+    }
+
+    @Override
+    public ResponseEntity<byte[]> downloadRectifyNoticePdfBatch(List<Long> punishNoticeIds) throws IOException {
+        System.out.println("cs2026-03-24 10:23:09:6586");
+        VerifyUtil.verifyNotNullWithMsg(punishNoticeIds, "ID不能为空");
+
+        // 1. 查询通知书数据
+        List<PunishNoticeDO> list = punishNoticeMapper.selectBatchIds(punishNoticeIds);
+        log.info("批量通知书id："+punishNoticeIds);
+        VerifyUtil.verifyNotNullWithMsg(list, "通知书不存在");
+
+        // 2. 创建ZIP流
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(baos);
+
+        for (PunishNoticeDO item : list) {
+            String html = item.getDecisionContent();
+            if (html == null) {
+                continue;
+            }
+
+            // 3. HTML → PDF
+            PdfGenerator pdfGenerator = new PdfGenerator();
+            byte[] pdfBytes = pdfGenerator.generatePdfResponse(html).getBody();
+            if (pdfBytes == null || pdfBytes.length == 0) {
+                log.warn("PDF生成失败，处罚决定书ID：{}", item.getId());
+                continue;
+            }
+
+            // 4. 写入ZIP（文件名使用UTF-8，避免中文乱码）
+            String fileName = "处罚决定书_" + item.getId() + ".pdf";
+            // ZIP内部文件名使用UTF-8编码
+            ZipEntry entry = new ZipEntry(fileName);
+//            ZipEntry entry = new ZipEntry(new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1));
+            zos.putNextEntry(entry);
+            zos.write(pdfBytes);
+            zos.closeEntry();
+        }
+
+        zos.close();
+
+        // 5. 返回ZIP（修复中文文件名编码问题）
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+        // 使用RFC 5987标准编码中文文件名
+        String fileName = "处罚决定书.zip";
+        String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString())
+                .replace("+", "%20"); // 替换空格编码
+        headers.add("Content-Disposition",
+                String.format("attachment; filename=\"%s\"; filename*=%s",
+                        new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1),
+                        encodedFileName));
+
+        return new ResponseEntity<>(baos.toByteArray(), headers, HttpStatus.OK);
     }
 
 }

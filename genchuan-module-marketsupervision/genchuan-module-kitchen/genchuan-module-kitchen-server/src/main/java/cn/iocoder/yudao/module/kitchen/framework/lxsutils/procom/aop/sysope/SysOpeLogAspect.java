@@ -88,6 +88,16 @@ public class SysOpeLogAspect {
         for (Object arg : args) {
             if (arg == null) continue;
 
+            // ========== 核心修改1：跳过JDK核心类（如ArrayList） ==========
+            Class<?> argClass = arg.getClass();
+            if (argClass.getName().startsWith("java.") || argClass.getName().startsWith("javax.") || argClass.getName().startsWith("jakarta.")) {
+                log.debug("跳过JDK核心类的字段解析：{}", argClass.getName());
+                // 如果是集合类型（如List），直接序列化返回，不解析内部字段
+                if (arg instanceof java.util.Collection || arg.getClass().isArray()) {
+                    return toJson(arg);
+                }
+                continue;
+            }
             // 2.优先查找带 @BatchIdField 注解的字段
             for (java.lang.reflect.Field field : arg.getClass().getDeclaredFields()) {
                 if (field.isAnnotationPresent(BatchIdField.class)) {

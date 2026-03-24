@@ -10,17 +10,35 @@ import java.time.LocalDateTime;
 @Schema(description = "整改通知书复审执法台账 Response VO")
 public class RectifyReviewLedgerRespVO {
 
+
+
     @Schema(description = "台账ID")
     @ExcelProperty("台账ID")
     private Long id;
+
+    @Schema(description = "整改通知书ID")
+    @ExcelProperty("整改通知书ID")
+    private Long rectifyNoticeId;
 
     @Schema(description = "台账编号")
     @ExcelProperty("台账编号")
     private String ledgerCode;
 
+    @Schema(description = "逾期标识")
+    @ExcelProperty("逾期标识")
+    private Integer overdueFlag;
+
+    @Schema(description = "[企业ID] 关联park_enterprise_info.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "4078")
+    @ExcelProperty("[企业ID] 关联park_enterprise_info.id")
+    private Long entId;
+
     @Schema(description = "企业名称")
     @ExcelProperty("企业名称")
     private String entName;
+
+    @Schema(description = "[违规类型ID] 关联park_illegal_type_dict.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "16642")
+    @ExcelProperty("[违规类型ID] 关联park_illegal_type_dict.id")
+    private Long illegalTypeId;
 
     @Schema(description = "违规类型")
     @ExcelProperty("违规类型")
@@ -37,6 +55,10 @@ public class RectifyReviewLedgerRespVO {
     @Schema(description = "草拟时间")
     @ExcelProperty("草拟时间")
     private LocalDateTime draftTime;
+
+    @Schema(description = "整改截止时间")
+    @ExcelProperty("整改截止时间")
+    private LocalDateTime rectifyDeadlineTime;
 
     @Schema(description = "复审状态")
     @ExcelProperty("复审状态")

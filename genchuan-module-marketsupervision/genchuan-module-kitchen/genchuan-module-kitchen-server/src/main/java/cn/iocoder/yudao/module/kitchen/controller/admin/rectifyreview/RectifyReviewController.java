@@ -8,6 +8,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.*;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.add.AddRectifyReviewReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.add.AddRectifyReviewReqVO2;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.cancel.CancelReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.issue.IssueReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileReqVO;
@@ -38,7 +39,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
@@ -54,6 +57,23 @@ public class RectifyReviewController {
     private RectifyReviewService rectifyReviewService;
 
 
+
+    @GetMapping("/download-notice-pdf-batch")
+    @Operation(summary = "批量下载整改通知书PDF")
+    @SysOpeLog(operObject = "整改复审台账")
+    public ResponseEntity<byte[]> downloadRectifyNoticePdfBatch(@RequestParam("rectifyNoticeIds") List<Long> rectifyNoticeIds) throws IOException {
+        return rectifyReviewService.downloadRectifyNoticePdfBatch(rectifyNoticeIds);
+    }
+
+    //新增.即预警页面的“生成复审台账”
+    @PostMapping("/review-add2")
+    //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-add')")
+    @Operation(summary = "23新增2-整改通知复审记录操作")
+    @SysOpeLog
+    public CommonResult<Long> reviewAdd2(@Valid @RequestBody AddRectifyReviewReqVO2 reqVO) {
+        Long id = rectifyReviewService.reviewAdd2(reqVO);
+        return success(id);
+    }
     @PostMapping("/upload-evidence-file")
     @Operation(summary = "上传证据资料")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:upload-evidence-file')")
@@ -86,9 +106,18 @@ public class RectifyReviewController {
     }
 
     //下发整改通知书，返回增改通知书表的记录
+    @PostMapping("/review-issue2")
+    //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-issue')")
+    @Operation(summary = "23下发整改通知书操作2")
+    @SysOpeLog
+    public CommonResult<Long> reviewIssue2(@Valid @RequestBody IssueReqVO reqVO) {
+        Long rectifyNoticeId = rectifyReviewService.reviewIssue2(reqVO);
+        return success(rectifyNoticeId);
+    }
+    //下发整改通知书，返回增改通知书表的记录
     @PostMapping("/review-issue")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-issue')")
-    @Operation(summary = "下发整改通知书操作")
+    @Operation(summary = "（勿用）下发整改通知书操作")
     @SysOpeLog
     public CommonResult<Long> reviewIssue(@Valid @RequestBody IssueReqVO reqVO) {
         Long rectifyNoticeId = rectifyReviewService.reviewIssue(reqVO);
@@ -113,9 +142,19 @@ public class RectifyReviewController {
     @Operation(summary = "导出 Excel")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:export')")
     @ApiAccessLog(operateType = EXPORT)
-    @SysOpeLog
+    @SysOpeLog(operObject = "整改复审台账",operType = "批量操作")
     public void exportRoadArchiveExcel(@Valid RectifyReviewLedgerPageReqVO pageReqVO,
                                        HttpServletResponse response) throws IOException {
+//        // 假设前端传的是逗号分隔的字符串
+//        if (pageReqVO.getIdList() != null && pageReqVO.getIdList().size() == 1) {
+//            String s = pageReqVO.getIdList().get(0).toString();
+//            if (s.contains(",")) {
+//                List<Long> list = Arrays.stream(s.split(","))
+//                        .map(Long::parseLong)
+//                        .collect(Collectors.toList());
+//                pageReqVO.setIdList(list);
+//            }
+//        }
         // 0. 配置
         String inputFileName = "导出Excel文件_";
 
