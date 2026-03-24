@@ -6,12 +6,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeConfigPageReqVO;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeConfigReqVO;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeConfigRespVO;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeConfigSaveReqVO;
+import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.*;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholeconfig.ManholeConfigDO;
 import cn.iocoder.yudao.module.facility.service.manhole.manholeconfig.ManholeConfigService;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -99,6 +97,21 @@ public class ManholeConfigController {
     public CommonResult<String> saveConfig(@Valid @RequestBody ManholeConfigReqVO configVO) {
         manholeConfigService.saveConfig(configVO);
         return CommonResult.success("配置保存成功！");
+    }
+
+    /**
+     * 井盖配置分页查询
+     */
+    @Operation(summary = "窨井盖配置分页查询")
+    @GetMapping("/cover-config-page")
+    public CommonResult<PageResult<ManholeCoverConfigPageRespVO>> selectConfigPage(
+            @Parameter(description = "井盖ID") @RequestParam(required = false) String coverId,
+            @Parameter(description = "租户ID", required = true) @RequestParam String tenantId,
+            @Parameter(description = "页码") @RequestParam(defaultValue = "1") Integer pageNo,
+            @Parameter(description = "每页条数") @RequestParam(defaultValue = "10") Integer pageSize) {
+
+        PageResult<ManholeCoverConfigPageRespVO> pageResult = manholeConfigService.getConfigPage(coverId, tenantId, pageNo, pageSize);
+        return CommonResult.success(pageResult);
     }
 
 }

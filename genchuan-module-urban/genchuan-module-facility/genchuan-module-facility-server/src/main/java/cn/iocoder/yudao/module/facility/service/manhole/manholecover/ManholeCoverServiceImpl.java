@@ -219,7 +219,7 @@ public class ManholeCoverServiceImpl implements ManholeCoverService {
         // 安全转换字符串 -> BigDecimal，防止非数字报错
         BigDecimal waterLevel;
         try {
-            waterLevel = new BigDecimal(monitorDO.getExtCommon1().trim());
+            waterLevel = new BigDecimal(monitorDO.getExtCommon2().trim());
         } catch (Exception e) {
             waterLevel = BigDecimal.ZERO;
         }

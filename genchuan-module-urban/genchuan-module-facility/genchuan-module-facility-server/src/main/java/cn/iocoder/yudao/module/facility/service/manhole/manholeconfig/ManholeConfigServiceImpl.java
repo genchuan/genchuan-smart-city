@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeConfigPageReqVO;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeConfigReqVO;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeConfigSaveReqVO;
+import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeCoverConfigPageRespVO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholeconfig.ManholeConfigDO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholecover.ManholeCoverDO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholemonitor.ManholeMonitorDO;
@@ -14,6 +15,8 @@ import cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholeconfig.ManholeC
 import cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholecover.ManholeCoverMapper;
 import cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholemonitor.ManholeMonitorMapper;
 import cn.iocoder.yudao.module.facility.dal.mysql.sysdevice.SysDeviceMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -152,6 +155,18 @@ public class ManholeConfigServiceImpl implements ManholeConfigService {
             monitor.setId(configVO.getId());
             monitorMapper.updateById(monitor);
         }
+    }
+
+    @Override
+    public PageResult<ManholeCoverConfigPageRespVO> getConfigPage(String coverId, String tenantId, Integer pageNo, Integer pageSize) {
+        // 创建分页对象
+        IPage<ManholeCoverConfigPageRespVO> mpPage = new Page<>(pageNo, pageSize);
+
+        // 执行分页查询
+        IPage<ManholeCoverConfigPageRespVO> result = manholeConfigMapper.selectConfigPage(mpPage, coverId, tenantId);
+
+        // 转换为 PageResult 返回
+        return new PageResult<>(result.getRecords(), result.getTotal());
     }
 
 }

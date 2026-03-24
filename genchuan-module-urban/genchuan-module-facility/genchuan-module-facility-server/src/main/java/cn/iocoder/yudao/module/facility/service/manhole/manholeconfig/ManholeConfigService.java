@@ -4,7 +4,9 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeConfigPageReqVO;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeConfigReqVO;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeConfigSaveReqVO;
+import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeCoverConfigPageRespVO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholeconfig.ManholeConfigDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.validation.Valid;
 
 /**
@@ -53,5 +55,10 @@ public interface ManholeConfigService {
     PageResult<ManholeConfigDO> getManholeConfigPage(ManholeConfigPageReqVO pageReqVO);
 
     void saveConfig(ManholeConfigReqVO configVO);
+    /**
+     * 获得窨井盖监测配置分页
+     * @return 窨井盖监测配置分页
+     */
+    PageResult<ManholeCoverConfigPageRespVO> getConfigPage(String coverId, String tenantId, Integer pageNo, Integer pageSize);
 
 }

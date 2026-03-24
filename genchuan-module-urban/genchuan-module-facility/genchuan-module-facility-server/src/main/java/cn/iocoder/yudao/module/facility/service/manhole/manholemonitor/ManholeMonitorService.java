@@ -109,5 +109,10 @@ public interface ManholeMonitorService {
      */
     ManholeCoverRealTimeDetailRespVO getRealTimeDetail(String coverId, String tenantId);
 
+    /**
+     * 获取 24 小时变化趋势
+     * @param coverId 井盖ID
+     * @return 详情数据
+     */
     ManholeCoverRealTimeTrendRespVO getRealTimeTrend(String coverId, ManholeCoverRealTimeTrendReqVO reqVO);
 }

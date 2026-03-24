@@ -414,7 +414,7 @@
             -- 设备信息
             sd.id AS device_id,
             COALESCE(sd.name, 'MC-Monitor V2.0') AS device_model,
-            COALESCE(sd.ext_common1::INTEGER, 85) AS battery_level,
+            COALESCE(sd.ext_common1, 85) AS battery_level,
             COALESCE(sd.ext_common2, '-75dBm') AS signal_strength,
             -- 设备在线状态转换
             CASE sd.online_status

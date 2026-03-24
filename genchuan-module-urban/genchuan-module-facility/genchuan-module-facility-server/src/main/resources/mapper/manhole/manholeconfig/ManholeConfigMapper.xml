@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholeconfig.ManholeConfigMapper">
+
+    <resultMap id="ConfigPageResultMap" type="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeCoverConfigPageRespVO">
+        <result property="configId" column="configId"/>
+        <result property="coverId" column="coverId"/>
+        <result property="coverCode" column="coverCode"/>
+        <result property="coverName" column="coverName"/>
+        <result property="createTime" column="createTime"/>
+        <result property="updateTime" column="updateTime"/>
+        <result property="operateUserName" column="operateUserName"/>
+        <result property="tenantId" column="tenantId"/>
+
+        <association property="thresholdConfig" javaType="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeCoverConfigPageRespVO$ThresholdConfig">
+            <result property="tiltAngleThreshold" column="tiltAngleThreshold"/>
+            <result property="displacementThreshold" column="displacementThreshold"/>
+            <result property="waterLevelThreshold" column="waterLevelThreshold"/>
+        </association>
+
+        <association property="collectConfig" javaType="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeCoverConfigPageRespVO$CollectConfig">
+            <result property="collectFrequency" column="collectFrequency"/>
+        </association>
+
+        <association property="alarmConfig" javaType="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeCoverConfigPageRespVO$AlarmConfig">
+            <result property="alarmType" column="alarmType"/>
+            <result property="alarmRecipient" column="alarmRecipient" typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        </association>
+    </resultMap>
+
+    <select id="selectConfigPage" resultMap="ConfigPageResultMap">
+        SELECT
+        mc.id                  AS configId,
+        mc.cover_id            AS coverId,
+        mcv.cover_no           AS coverCode,
+--         mcv.cover_name         AS coverName,
+
+        mc.tilt_angle_threshold        AS tiltAngleThreshold,
+        mc.ext_common1                 AS displacementThreshold,
+        mc.ext_common2                 AS waterLevelThreshold,
+        mc.collect_frequency           AS collectFrequency,
+        mc.ext_common3                 AS alarmType,
+        mc.ext_common4                 AS alarmRecipient,
+
+        mc.create_time                 AS createTime,
+        mc.update_time                 AS updateTime,
+        mc.updater                     AS operateUserName,
+        mc.tenant_id                   AS tenantId
+
+        FROM munifacility.manhole_config mc
+        LEFT JOIN munifacility.manhole_cover mcv
+        ON mc.cover_id = mcv.id
+
+        WHERE
+        mc.deleted = '0'
+        AND mc.tenant_id = #{tenantId}
+
+        <if test="coverId != null and coverId != ''">
+            AND mc.cover_id = #{coverId}
+        </if>
+
+        ORDER BY mc.create_time DESC
+    </select>
+
+</mapper>
