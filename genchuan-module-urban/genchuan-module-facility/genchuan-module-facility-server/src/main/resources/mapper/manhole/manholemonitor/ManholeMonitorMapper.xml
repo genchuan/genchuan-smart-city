@@ -3,230 +3,213 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholemonitor.ManholeMonitorMapper">
 
-    <resultMap id="ManholeMonitorResultMap" type="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeMonitorVO">
-        <!-- 窨井盖基础信息 -->
+
+<!--    <resultMap id="ManholeDetailResultMap" type="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeCoverRealTimePageRespVO">-->
+<!--        <result column="cover_id" property="coverId"/>-->
+<!--        <result column="cover_no" property="coverNo"/>-->
+<!--        <result column="road_id" property="roadId"/>-->
+<!--        <result column="road_name" property="roadName"/>-->
+<!--        <result column="open_status_id" property="openStatusId"/>-->
+<!--        <result column="open_status_name" property="openStatus"/>-->
+<!--        <result column="tilt_angle" property="tiltAngle"/>-->
+<!--        <result column="vibration_data" property="vibrationData"/>-->
+<!--        <result column="risk_level_id" property="riskLevelId"/>-->
+<!--        <result column="risk_level_name" property="riskLevel"/>-->
+<!--        <result column="monitor_status" property="monitorStatus"/>-->
+<!--        <result column="device_id" property="deviceId"/>-->
+<!--        <result column="device_code" property="deviceCode"/>-->
+<!--        <result column="device_online_status" property="deviceOnlineStatus"/>-->
+<!--        <result column="staff_name" property="staffName"/>-->
+<!--        <result column="collect_frequency" property="collectFrequency"/>-->
+<!--        <result column="tilt_angle_threshold" property="tiltAngleThreshold"/>-->
+<!--        <result column="update_time_str" property="updateTime"/>-->
+<!--    </resultMap>-->
+
+<!--    &lt;!&ndash; 修复：删除重复租户条件 + 明确参数名 &ndash;&gt;-->
+<!--    <select id="selectManholeDetailByCoverId" resultMap="ManholeDetailResultMap">-->
+<!--        SELECT-->
+<!--        mc.id AS cover_id,-->
+<!--        mc.cover_no,-->
+<!--        rf.id AS road_id,-->
+<!--        rf.road_name,-->
+<!--        sos.id AS open_status_id,-->
+<!--        COALESCE(sos.status_name, '未配置状态') AS open_status_name,  &#45;&#45; PostgreSQL替换IFNULL为COALESCE-->
+<!--        mm.tilt_angle,-->
+<!--        mm.vibration_data,-->
+<!--        mm.risk_level_id,-->
+<!--        COALESCE(srl.level_name, '未配置') AS risk_level_name,        &#45;&#45; PostgreSQL替换IFNULL为COALESCE-->
+<!--        mm.monitor_status,-->
+<!--        sd.id AS device_id,-->
+<!--        COALESCE(sd.device_code, '未关联设备') AS device_code,        &#45;&#45; PostgreSQL替换IFNULL为COALESCE-->
+<!--        COALESCE(sd.online_status, '未知状态') AS device_online_status,&#45;&#45; PostgreSQL替换IFNULL为COALESCE-->
+<!--        COALESCE(su.username, '未分配运维员') AS staff_name,          &#45;&#45; PostgreSQL替换IFNULL为COALESCE-->
+<!--        COALESCE(mhc.collect_frequency, 0) AS collect_frequency,      &#45;&#45; PostgreSQL替换IFNULL为COALESCE-->
+<!--        COALESCE(mhc.tilt_angle_threshold, 0.00) AS tilt_angle_threshold, &#45;&#45; PostgreSQL替换IFNULL为COALESCE-->
+<!--        TO_CHAR(mm.update_time, 'YYYY-MM-DD HH24:MI:SS') AS update_time_str  &#45;&#45; PostgreSQL替换DATE_FORMAT-->
+<!--        FROM munifacility.manhole_cover mc  &#45;&#45; 补充模式前缀-->
+<!--        INNER JOIN munifacility.manhole_monitor mm  &#45;&#45; 补充模式前缀-->
+<!--        ON mc.id = mm.cover_id-->
+<!--        AND mm.deleted = B'0'  &#45;&#45; PostgreSQL bit类型判断-->
+<!--        AND mc.tenant_id = 1-->
+<!--        LEFT JOIN munifacility.road_facility rf  &#45;&#45; 补充模式前缀-->
+<!--        ON mc.road_id = rf.id-->
+<!--        AND rf.tenant_id = 1-->
+<!--        LEFT JOIN munifacility.sys_open_status sos  &#45;&#45; 补充模式前缀-->
+<!--        ON mm.open_status_id = sos.id-->
+<!--        LEFT JOIN munifacility.sys_risk_level srl  &#45;&#45; 补充模式前缀-->
+<!--        ON mm.risk_level_id = srl.id-->
+<!--        LEFT JOIN munifacility.sys_device sd  &#45;&#45; 补充模式前缀-->
+<!--        ON mm.device_id = sd.id-->
+<!--        AND sd.tenant_id = 1-->
+<!--        LEFT JOIN munifacility.sys_user su  &#45;&#45; 补充模式前缀-->
+<!--        ON mm.staff_id = su.id-->
+<!--        AND su.tenant_id = 1-->
+<!--        LEFT JOIN munifacility.manhole_config mhc  &#45;&#45; 补充模式前缀-->
+<!--        ON mc.id = mhc.cover_id-->
+<!--        WHERE mc.id = #{coverId}  &lt;!&ndash; 核心修改：cover_no → id（cover_id） &ndash;&gt;-->
+<!--        AND mc.deleted = B'0'  &#45;&#45; PostgreSQL bit类型判断-->
+<!--        AND mc.tenant_id = 1-->
+<!--    </select>-->
+
+<!--    <select id="selectManholeDetailByCoverNo" resultMap="ManholeDetailResultMap">-->
+<!--        SELECT-->
+<!--        mc.id AS cover_id,-->
+<!--        mc.cover_no,-->
+<!--        rf.id AS road_id,-->
+<!--        rf.road_name,-->
+<!--        sos.id AS open_status_id,-->
+<!--        IFNULL(sos.status_name, '未配置状态') AS open_status_name,-->
+<!--        mm.tilt_angle,-->
+<!--        mm.vibration_data,-->
+<!--        mm.risk_level_id,-->
+<!--        IFNULL(srl.level_name, '未配置') AS risk_level_name,-->
+<!--        mm.monitor_status,-->
+<!--        sd.id AS device_id,-->
+<!--        IFNULL(sd.device_code, '未关联设备') AS device_code,-->
+<!--        IFNULL(sd.online_status, '未知状态') AS device_online_status,-->
+<!--        IFNULL(su.username, '未分配运维员') AS staff_name,-->
+<!--        IFNULL(mhc.collect_frequency, 0) AS collect_frequency,-->
+<!--        IFNULL(mhc.tilt_angle_threshold, 0.00) AS tilt_angle_threshold,-->
+<!--        DATE_FORMAT(mm.update_time, '%Y-%m-%d %H:%i:%s') AS update_time_str-->
+<!--        FROM manhole_cover mc-->
+<!--        INNER JOIN manhole_monitor mm-->
+<!--        ON mc.id = mm.cover_id-->
+<!--        AND mm.deleted = 0-->
+<!--        AND mc.tenant_id = 1-->
+<!--        LEFT JOIN road_facility rf-->
+<!--        ON mc.road_id = rf.id-->
+<!--        AND rf.tenant_id = 1-->
+<!--        LEFT JOIN sys_open_status sos-->
+<!--        ON mm.open_status_id = sos.id-->
+<!--        LEFT JOIN sys_risk_level srl-->
+<!--        ON mm.risk_level_id = srl.id-->
+<!--        LEFT JOIN sys_device sd-->
+<!--        ON mm.device_id = sd.id-->
+<!--        AND sd.tenant_id = 1-->
+<!--        LEFT JOIN sys_user su-->
+<!--        ON mm.staff_id = su.id-->
+<!--        AND su.tenant_id = 1-->
+<!--        LEFT JOIN manhole_config mhc-->
+<!--        ON mc.id = mhc.cover_id-->
+<!--        WHERE mc.cover_no = #{coverNo}  &lt;!&ndash; 明确绑定参数名 &ndash;&gt;-->
+<!--        AND mc.deleted = 0-->
+<!--        AND mc.tenant_id = 1-->
+<!--    </select>-->
+
+    <resultMap id="RealTimePageResultMap" type="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeCoverRealTimePageRespVO">
+        <id column="id" property="id"/>
         <result column="cover_id" property="coverId"/>
-        <result column="cover_no" property="coverNo"/>
-        <result column="road_id" property="roadId"/>
-        <result column="road_name" property="roadName"/>
-        <!-- 开合状态 -->
-        <result column="open_status_id" property="openStatusId"/>
-        <result column="open_status_name" property="openStatus"/>
-        <!-- 监测数据 -->
+        <result column="cover_code" property="coverCode"/>
+        <result column="cover_name" property="coverName"/>
+        <result column="area_id" property="areaId"/>
+        <result column="area_name" property="areaName"/>
+        <result column="cover_status" property="coverStatus"/>
+        <result column="cover_status_name" property="coverStatusName"/>
         <result column="tilt_angle" property="tiltAngle"/>
-        <result column="vibration_data" property="vibrationData"/>
-        <!-- 风险等级 -->
-        <result column="risk_level_id" property="riskLevelId"/>
-        <result column="risk_level_name" property="riskLevel"/>
-        <!-- 设备信息 -->
-        <result column="device_id" property="deviceId"/>
-        <result column="device_code" property="deviceCode"/>
-        <result column="device_online_status" property="deviceOnlineStatus"/>
-        <!-- 运维人员 -->
-        <result column="user_name" property="staffName"/>
-        <!-- 配置信息 -->
-        <result column="collect_frequency" property="collectFrequency"/>
-        <result column="tilt_angle_threshold" property="tiltAngleThreshold"/>
-        <!-- 监测状态 & 时间 -->
-        <result column="monitor_status" property="monitorStatus"/>
-        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="displacement" property="displacement"/>
+        <result column="water_level" property="waterLevel"/>
+        <result column="is_open" property="isOpen"/>
+        <result column="battery_level" property="batteryLevel"/>
+        <result column="signal_strength" property="signalStrength"/>
+        <result column="collect_time" property="collectTime"/>
+        <result column="chain_hash" property="chainHash"/>
+        <result column="tenant_id" property="tenantId"/>
     </resultMap>
 
-    <sql id="Base_Column_List">
-        -- 窨井盖表字段
-        mc.id AS cover_id,
-        mc.cover_no,
-        -- 道路设施表字段
-        rf.id AS road_id,
-        rf.road_name,
-        -- 开合状态表字段
-        sos.id AS open_status_id,
-        IFNULL(sos.status_name, '未配置状态') AS open_status_name,
-        -- 监测表核心字段（数据库实际存在）
-        mm.tilt_angle,
-        mm.vibration_data,
-        mm.risk_level_id,
-        srl.level_name AS risk_level_name,
-        mm.monitor_status,
-        -- 设备表字段
-        sd.id AS device_id,
-        IFNULL(sd.device_code, '未关联设备') AS device_code,
-        IFNULL(sd.online_status, '未知状态') AS device_online_status,
-        -- 运维人员字段
-        IFNULL(su.username, '未分配运维员') AS user_name,
-        -- 配置表字段
-        IFNULL(mhc.collect_frequency, 0) AS collect_frequency,
-        IFNULL(mhc.tilt_angle_threshold, 0.00) AS tilt_angle_threshold,
-        -- 最后更新时间
-        mm.update_time
-    </sql>
-
-    <select id="selectManholeMonitorList" resultMap="ManholeMonitorResultMap">
+    <select id="selectRealTimePage" resultMap="RealTimePageResultMap">
         SELECT
-        <include refid="Base_Column_List"/>
-        FROM manhole_cover mc
-        -- 关联监测表（核心）
-        INNER JOIN manhole_monitor mm
-        ON mc.id = mm.cover_id
-        AND mm.deleted = 0
-        AND mm.tenant_id = 1
-        -- 关联道路表
-        LEFT JOIN road_facility rf
-        ON mc.road_id = rf.id
-        AND rf.tenant_id = 1
-        -- 关联开合状态字典表
-        LEFT JOIN sys_open_status sos
-        ON mm.open_status_id = sos.id
-        -- 关联风险等级字典表
-        LEFT JOIN sys_risk_level srl
-        ON mm.risk_level_id = srl.id
-        -- 关联设备表
-        LEFT JOIN sys_device sd
-        ON mm.device_id = sd.id
-        AND sd.tenant_id = 1
-        -- 关联运维人员表
-        LEFT JOIN sys_user su
-        ON mm.staff_id = su.id
-        AND su.tenant_id = 1
-        -- 关联配置表
-        LEFT JOIN manhole_config mhc
-        ON mc.id = mhc.cover_id
-        WHERE 1=1
-        AND mc.deleted = 0
-        AND mc.tenant_id = 1
-        <!-- 动态筛选条件（参数名与实际传入的保持一致） -->
-        <if test="roadName != null and roadName != ''">
-            AND rf.road_name LIKE CONCAT('%', #{roadName}, '%')
+        mm.id,
+        mm.cover_id,
+        mc.cover_no AS cover_code,
+        -- 修正：manhole_cover无name字段，优先用扩展字段ext_common1，无值则关联道路名称
+        COALESCE(mc.ext_common1, rf.road_name) AS cover_name,
+        sa.id AS area_id,
+        sa.name AS area_name,
+        -- 井盖状态映射（适配实际表字段 + 扩展字段，保留原状态编码逻辑）
+        CASE
+        WHEN mm.tilt_angle > 0 THEN 1
+        WHEN mm.ext_common1 > 0 THEN 2  -- 位移：用manhole_monitor扩展字段ext_common1替代
+        WHEN sos.status_code = 'OPEN' THEN 3  -- 开合状态：关联字典表替代is_open字段
+        WHEN mm.ext_common2 > 0 THEN 4  -- 水淹：用manhole_monitor扩展字段ext_common2替代
+        WHEN sd.online_status = '离线' THEN 5  -- 设备离线：匹配sys_device的online_status文本值
+        ELSE 0 END AS cover_status,
+        -- 井盖状态名称（与状态编码一一对应）
+        CASE
+        WHEN mm.tilt_angle > 0 THEN '倾斜'
+        WHEN mm.ext_common1 > 0 THEN '位移'
+        WHEN sos.status_code = 'OPEN' THEN '开启'
+        WHEN mm.ext_common2 > 0 THEN '水淹'
+        WHEN sd.online_status = '离线' THEN '设备离线'
+        ELSE '正常' END AS cover_status_name,
+        CONCAT(COALESCE(mm.tilt_angle::TEXT, '0'), '°') AS tilt_angle,
+        -- 位移：用manhole_monitor扩展字段ext_common1替代
+        CONCAT(COALESCE(mm.ext_common1::TEXT, '0'), 'cm') AS displacement,
+        -- 水淹水位：用manhole_monitor扩展字段ext_common2替代
+        CONCAT(COALESCE(mm.ext_common2::TEXT, '0'), 'cm') AS water_level,
+        -- 开合状态：关联sys_open_status字典表获取状态名称（替代原is_open字段）
+        sos.status_name AS is_open,
+        -- 电池电量：用sys_device扩展字段ext_common1替代
+        COALESCE(sd.ext_common1, '85') AS battery_level,
+        -- 信号强度：用sys_device扩展字段ext_common2替代
+        COALESCE(sd.ext_common2, '-75dBm') AS signal_strength,
+        TO_CHAR(mm.create_time, 'YYYY-MM-DD HH24:MI:SS') AS collect_time,
+        -- 区块链哈希：用manhole_monitor扩展字段ext_common3替代
+        COALESCE(mm.ext_common3, '0x123abc456def789ghi012jkl345mno678pqr901') AS chain_hash,
+        mm.tenant_id
+        FROM munifacility.manhole_monitor mm
+        LEFT JOIN munifacility.manhole_cover mc ON mm.cover_id = mc.id AND mc.deleted = B'0'
+        LEFT JOIN munifacility.road_facility rf ON mc.road_id = rf.id AND rf.deleted = B'0'  -- 关联道路表获取井盖所属名称
+        LEFT JOIN munifacility.sys_area sa ON mc.area_code = sa.full_code AND sa.deleted = B'0'
+        LEFT JOIN munifacility.sys_device sd ON mm.device_id = sd.id AND sd.deleted = B'0'
+        LEFT JOIN munifacility.sys_open_status sos ON mm.open_status_id = sos.id  -- 关联开合状态字典表
+        WHERE mm.deleted = B'0'
+        AND mm.tenant_id = #{reqVO.tenantId}
+        <!-- 井盖ID筛选 -->
+        <if test="reqVO.coverId != null and reqVO.coverId != ''">
+            AND mm.cover_id = #{reqVO.coverId}
         </if>
-        <if test="statusName != null and statusName != ''">
-            AND sos.status_name = #{statusName}
+        <!-- 区域ID筛选 -->
+        <if test="reqVO.areaId != null and reqVO.areaId != ''">
+            AND sa.id = #{reqVO.areaId}
         </if>
-        <if test="onlineStatus != null and onlineStatus != ''">
-            AND sd.online_status = #{onlineStatus}
+        <!-- 井盖状态筛选（同步修正状态判断逻辑） -->
+        <if test="reqVO.coverStatus != null">
+            AND CASE
+            WHEN mm.tilt_angle > 0 THEN 1
+            WHEN mm.ext_common1 > 0 THEN 2
+            WHEN sos.status_code = 'OPEN' THEN 3
+            WHEN mm.ext_common2 > 0 THEN 4
+            WHEN sd.online_status = '离线' THEN 5
+            ELSE 0 END = #{reqVO.coverStatus}
         </if>
-        <if test="coverNo != null and coverNo != ''">
-            AND mc.cover_no LIKE CONCAT('%', #{coverNo}, '%')
+        <!-- 时间范围筛选 -->
+        <if test="reqVO.monitorTimeStart != null">
+            AND mm.create_time >= #{reqVO.monitorTimeStart}
         </if>
-        <if test="monitorStatus != null and monitorStatus != ''">
-            AND mm.monitor_status = #{monitorStatus}
+        <if test="reqVO.monitorTimeEnd != null">
+            AND mm.create_time &lt;= #{reqVO.monitorTimeEnd}
         </if>
-        <!-- 关键修正：参数名从 riskLevelId 改为 riskLevel -->
-        <if test="riskLevel != null">
-            AND mm.risk_level_id = #{riskLevel}
-        </if>
-        ORDER BY mm.update_time DESC
-    </select>
-
-    <resultMap id="ManholeDetailResultMap" type="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeMonitorVO">
-        <result column="cover_id" property="coverId"/>
-        <result column="cover_no" property="coverNo"/>
-        <result column="road_id" property="roadId"/>
-        <result column="road_name" property="roadName"/>
-        <result column="open_status_id" property="openStatusId"/>
-        <result column="open_status_name" property="openStatus"/>
-        <result column="tilt_angle" property="tiltAngle"/>
-        <result column="vibration_data" property="vibrationData"/>
-        <result column="risk_level_id" property="riskLevelId"/>
-        <result column="risk_level_name" property="riskLevel"/>
-        <result column="monitor_status" property="monitorStatus"/>
-        <result column="device_id" property="deviceId"/>
-        <result column="device_code" property="deviceCode"/>
-        <result column="device_online_status" property="deviceOnlineStatus"/>
-        <result column="staff_name" property="staffName"/>
-        <result column="collect_frequency" property="collectFrequency"/>
-        <result column="tilt_angle_threshold" property="tiltAngleThreshold"/>
-        <result column="update_time_str" property="updateTime"/>
-    </resultMap>
-
-    <!-- 修复：删除重复租户条件 + 明确参数名 -->
-    <select id="selectManholeDetailByCoverId" resultMap="ManholeDetailResultMap">
-        SELECT
-        mc.id AS cover_id,
-        mc.cover_no,
-        rf.id AS road_id,
-        rf.road_name,
-        sos.id AS open_status_id,
-        COALESCE(sos.status_name, '未配置状态') AS open_status_name,  -- PostgreSQL替换IFNULL为COALESCE
-        mm.tilt_angle,
-        mm.vibration_data,
-        mm.risk_level_id,
-        COALESCE(srl.level_name, '未配置') AS risk_level_name,        -- PostgreSQL替换IFNULL为COALESCE
-        mm.monitor_status,
-        sd.id AS device_id,
-        COALESCE(sd.device_code, '未关联设备') AS device_code,        -- PostgreSQL替换IFNULL为COALESCE
-        COALESCE(sd.online_status, '未知状态') AS device_online_status,-- PostgreSQL替换IFNULL为COALESCE
-        COALESCE(su.username, '未分配运维员') AS staff_name,          -- PostgreSQL替换IFNULL为COALESCE
-        COALESCE(mhc.collect_frequency, 0) AS collect_frequency,      -- PostgreSQL替换IFNULL为COALESCE
-        COALESCE(mhc.tilt_angle_threshold, 0.00) AS tilt_angle_threshold, -- PostgreSQL替换IFNULL为COALESCE
-        TO_CHAR(mm.update_time, 'YYYY-MM-DD HH24:MI:SS') AS update_time_str  -- PostgreSQL替换DATE_FORMAT
-        FROM munifacility.manhole_cover mc  -- 补充模式前缀
-        INNER JOIN munifacility.manhole_monitor mm  -- 补充模式前缀
-        ON mc.id = mm.cover_id
-        AND mm.deleted = B'0'  -- PostgreSQL bit类型判断
-        AND mc.tenant_id = 1
-        LEFT JOIN munifacility.road_facility rf  -- 补充模式前缀
-        ON mc.road_id = rf.id
-        AND rf.tenant_id = 1
-        LEFT JOIN munifacility.sys_open_status sos  -- 补充模式前缀
-        ON mm.open_status_id = sos.id
-        LEFT JOIN munifacility.sys_risk_level srl  -- 补充模式前缀
-        ON mm.risk_level_id = srl.id
-        LEFT JOIN munifacility.sys_device sd  -- 补充模式前缀
-        ON mm.device_id = sd.id
-        AND sd.tenant_id = 1
-        LEFT JOIN munifacility.sys_user su  -- 补充模式前缀
-        ON mm.staff_id = su.id
-        AND su.tenant_id = 1
-        LEFT JOIN munifacility.manhole_config mhc  -- 补充模式前缀
-        ON mc.id = mhc.cover_id
-        WHERE mc.id = #{coverId}  <!-- 核心修改：cover_no → id（cover_id） -->
-        AND mc.deleted = B'0'  -- PostgreSQL bit类型判断
-        AND mc.tenant_id = 1
-    </select>
-
-    <select id="selectManholeDetailByCoverNo" resultMap="ManholeDetailResultMap">
-        SELECT
-        mc.id AS cover_id,
-        mc.cover_no,
-        rf.id AS road_id,
-        rf.road_name,
-        sos.id AS open_status_id,
-        IFNULL(sos.status_name, '未配置状态') AS open_status_name,
-        mm.tilt_angle,
-        mm.vibration_data,
-        mm.risk_level_id,
-        IFNULL(srl.level_name, '未配置') AS risk_level_name,
-        mm.monitor_status,
-        sd.id AS device_id,
-        IFNULL(sd.device_code, '未关联设备') AS device_code,
-        IFNULL(sd.online_status, '未知状态') AS device_online_status,
-        IFNULL(su.username, '未分配运维员') AS staff_name,
-        IFNULL(mhc.collect_frequency, 0) AS collect_frequency,
-        IFNULL(mhc.tilt_angle_threshold, 0.00) AS tilt_angle_threshold,
-        DATE_FORMAT(mm.update_time, '%Y-%m-%d %H:%i:%s') AS update_time_str
-        FROM manhole_cover mc
-        INNER JOIN manhole_monitor mm
-        ON mc.id = mm.cover_id
-        AND mm.deleted = 0
-        AND mc.tenant_id = 1
-        LEFT JOIN road_facility rf
-        ON mc.road_id = rf.id
-        AND rf.tenant_id = 1
-        LEFT JOIN sys_open_status sos
-        ON mm.open_status_id = sos.id
-        LEFT JOIN sys_risk_level srl
-        ON mm.risk_level_id = srl.id
-        LEFT JOIN sys_device sd
-        ON mm.device_id = sd.id
-        AND sd.tenant_id = 1
-        LEFT JOIN sys_user su
-        ON mm.staff_id = su.id
-        AND su.tenant_id = 1
-        LEFT JOIN manhole_config mhc
-        ON mc.id = mhc.cover_id
-        WHERE mc.cover_no = #{coverNo}  <!-- 明确绑定参数名 -->
-        AND mc.deleted = 0
-        AND mc.tenant_id = 1
+        ORDER BY mm.create_time DESC
     </select>
 
     <!-- 批量更新窨井盖监测状态 -->
@@ -344,5 +327,182 @@
             AND srl.level_name = #{reqVO.riskLevel}
         </if>
     </select>
+
+    <resultMap id="RealTimeDetailResultMap" type="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeCoverRealTimeDetailRespVO">
+        <id column="cover_id" property="coverId"/>
+        <result column="cover_code" property="coverCode"/>
+        <result column="cover_name" property="coverName"/>
+        <result column="area_id" property="areaId"/>
+        <result column="area_name" property="areaName"/>
+        <result column="address" property="address"/>
+        <result column="longitude" property="longitude"/>
+        <result column="latitude" property="latitude"/>
+        <result column="cover_type" property="coverType"/>
+        <result column="cover_status" property="coverStatus"/>
+        <result column="cover_status_name" property="coverStatusName"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="chain_hash" property="chainHash"/>
+        <result column="chain_query_url" property="chainQueryUrl"/>
+
+        <!-- 实时数据子对象 -->
+        <association property="realTimeData" javaType="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.RealTimeDataVO">
+            <result column="tilt_angle" property="tiltAngle"/>
+            <result column="displacement" property="displacement"/>
+            <result column="water_level" property="waterLevel"/>
+            <result column="is_open" property="isOpen"/>
+            <result column="collect_time" property="collectTime"/>
+        </association>
+
+        <!-- 设备信息子对象 -->
+        <association property="deviceInfo" javaType="cn.iocoder.yudao.module.facility.controller.admin.sysdevice.vo.DeviceInfoVO">
+            <result column="device_id" property="deviceId"/>
+            <result column="device_model" property="deviceModel"/>
+            <result column="battery_level" property="batteryLevel"/>
+            <result column="signal_strength" property="signalStrength"/>
+            <result column="online_status" property="onlineStatus"/>
+        </association>
+    </resultMap>
+
+    <!-- 查询井盖基础信息 -->
+    <select id="selectCoverBaseInfo" resultType="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeCoverRealTimeTrendRespVO">
+        SELECT
+            mc.id AS coverId,
+            COALESCE(mc.ext_common1, rf.road_name) AS coverName,
+            #{tenantId} AS tenantId
+        FROM munifacility.manhole_cover mc
+                 LEFT JOIN munifacility.road_facility rf ON mc.road_id = rf.id
+        WHERE mc.id = #{coverId}
+          AND mc.tenant_id = #{tenantId}
+          AND mc.deleted = B'0'
+    </select>
+
+    <select id="selectRealTimeDetail" resultMap="RealTimeDetailResultMap">
+        SELECT
+            mc.id AS cover_id,
+            mc.cover_no AS cover_code,
+            -- 井盖名称：拼接道路名称 + "井盖"
+            CONCAT(COALESCE(rf.road_name, ''), '井盖') AS cover_name,
+            sa.id AS area_id,
+            sa.name AS area_name,
+            -- 详细地址：拼接区域+道路
+            CONCAT(
+                    COALESCE(sa.name, ''),
+                    COALESCE(rf.road_name, '')
+            ) AS address,
+            -- 经纬度：默认值兜底
+            COALESCE(mc.ext_common1, '116.403874') AS longitude,
+            COALESCE(mc.ext_common2, '39.914885') AS latitude,
+            -- 井盖类型
+            mc.cover_type AS cover_type,
+            -- 井盖状态：数字编码转换
+            CASE mc.status
+                WHEN '正常' THEN 1
+                WHEN '异常' THEN 2
+                WHEN '维修中' THEN 3
+                ELSE 0 END AS cover_status,
+            mc.status AS cover_status_name,
+            -- 实时监测数据
+            CONCAT(COALESCE(mm.tilt_angle::TEXT, '0'), '°') AS tilt_angle,
+            CONCAT(COALESCE(mm.ext_common1, '0'), 'cm') AS displacement,
+            CONCAT(COALESCE(mm.ext_common2, '0'), 'cm') AS water_level,
+            -- 开合状态转换
+            CASE sos.status_code
+                WHEN 'OPEN' THEN 1
+                ELSE 0 END AS is_open,
+            -- 采集时间格式化
+            TO_CHAR(mm.create_time, 'YYYY-MM-DD HH24:MI:SS') AS collect_time,
+            -- 设备信息
+            sd.id AS device_id,
+            COALESCE(sd.name, 'MC-Monitor V2.0') AS device_model,
+            COALESCE(sd.ext_common1, 85) AS battery_level,
+            COALESCE(sd.ext_common2, '-75dBm') AS signal_strength,
+            -- 设备在线状态转换
+            CASE sd.online_status
+                WHEN '在线' THEN 1
+                ELSE 0 END AS online_status,
+            mc.tenant_id AS tenant_id,
+            -- 区块链存证信息（示例值）
+            '0x123abc456def789ghi012jkl345mno678pqr901' AS chain_hash,
+            CONCAT('https://chain.genchuan.com/query/', '0x123abc456def789ghi012jkl345mno678pqr901') AS chain_query_url
+        FROM munifacility.manhole_cover mc
+                 -- 关联道路表
+                 LEFT JOIN munifacility.road_facility rf
+                           ON mc.road_id = rf.id
+                               AND rf.deleted = B'0'
+            -- 关联区域表
+                 LEFT JOIN munifacility.sys_area sa
+                           ON mc.area_code = sa.full_code
+                               AND sa.deleted = B'0'
+            -- 关联最新监测数据
+                 LEFT JOIN (
+            SELECT * FROM munifacility.manhole_monitor
+            WHERE deleted = B'0'
+            ORDER BY create_time DESC
+        ) mm
+                           ON mc.id = mm.cover_id
+            -- 关联设备表
+                 LEFT JOIN munifacility.sys_device sd
+                           ON mm.device_id = sd.id
+                               AND sd.deleted = B'0'
+            -- 关联开合状态字典表
+                 LEFT JOIN munifacility.sys_open_status sos
+                           ON mm.open_status_id = sos.id
+        -- 筛选条件（使用 MyBatis 参数）
+        WHERE mc.id = #{coverId}
+          AND mc.tenant_id = #{tenantId}
+          AND mc.deleted = B'0'
+            LIMIT 1;
+    </select>
+
+
+    <!-- 查询近24小时按小时聚合的监测数据 -->
+    <select id="selectHourlyMonitorData" resultType="java.util.Map">
+        SELECT
+            -- 提取小时（00-23）
+            TO_CHAR(mm.create_time, 'HH24') AS hour,
+            -- 根据指标类型取对应字段
+            CASE #{indicatorType}
+            WHEN 0 THEN AVG(mm.tilt_angle) -- 倾斜角度：取平均值
+            WHEN 1 THEN AVG(mm.ext_common1::numeric) -- 位移距离：扩展字段1
+            WHEN 2 THEN AVG(mm.ext_common2::numeric) -- 井内水位：扩展字段2
+        END AS indicator_value
+        FROM munifacility.manhole_monitor mm
+        WHERE mm.cover_id = #{coverId}
+        AND mm.tenant_id = #{tenantId}
+        AND mm.deleted = B'0'
+        AND mm.create_time >= NOW() - INTERVAL '24 hours' -- 近24小时
+        GROUP BY TO_CHAR(mm.create_time, 'HH24')
+        ORDER BY hour ASC
+    </select>
+
+    <!-- 查询指标阈值 -->
+    <!-- 修复selectIndicatorThreshold的SQL，参数名对齐 -->
+    <select id="selectIndicatorThreshold" resultType="java.math.BigDecimal">
+        SELECT
+            CASE #{indicatorType}
+                WHEN 0 THEN mc.tilt_angle_threshold -- 倾斜角度阈值：配置表
+                WHEN 1 THEN COALESCE(mc.ext_common1::numeric, 50) -- 位移阈值：扩展字段1（默认50cm）
+                WHEN 2 THEN COALESCE(mc.ext_common2::numeric, 30) -- 水位阈值：扩展字段2（默认30cm）
+                END AS threshold
+        FROM munifacility.manhole_config mc
+        WHERE mc.cover_id = #{coverId}
+          AND mc.tenant_id = #{tenantId} -- 确保参数名是tenantId
+          AND mc.deleted = B'0'
+            LIMIT 1
+    </select>
+
+
+    <select id="selectLatestByCoverId" resultType="cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholemonitor.ManholeMonitorDO">
+        SELECT id, cover_id, device_id, tilt_angle, vibration_data, ext_common1, create_time
+        FROM munifacility.manhole_monitor
+        WHERE cover_id = #{coverId} AND deleted = B'0'
+        ORDER BY create_time DESC LIMIT 1
+    </select>
+
+    <select id="selectDeviceOnlineStatus" resultType="java.lang.String">
+        SELECT online_status FROM munifacility.sys_device
+        WHERE id = #{deviceId} AND deleted = B'0'
+    </select>
+
 
 </mapper>

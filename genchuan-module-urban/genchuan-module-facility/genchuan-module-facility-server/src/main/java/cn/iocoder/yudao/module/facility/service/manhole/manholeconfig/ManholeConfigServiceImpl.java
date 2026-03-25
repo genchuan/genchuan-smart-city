@@ -1,11 +1,11 @@
 package cn.iocoder.yudao.module.facility.service.manhole.manholeconfig;
 
+import cn.hutool.core.util.IdUtil;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeConfigPageReqVO;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeConfigReqVO;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeConfigSaveReqVO;
+import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.*;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholeconfig.ManholeConfigDO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholecover.ManholeCoverDO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholemonitor.ManholeMonitorDO;
@@ -14,6 +14,8 @@ import cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholeconfig.ManholeC
 import cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholecover.ManholeCoverMapper;
 import cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholemonitor.ManholeMonitorMapper;
 import cn.iocoder.yudao.module.facility.dal.mysql.sysdevice.SysDeviceMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,7 @@ import org.springframework.validation.annotation.Validated;
 import java.math.BigDecimal;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.module.facility.enums.ErrorCodeConstants.MANHOLE_CONFIG_EXISTS;
 import static cn.iocoder.yudao.module.facility.enums.ErrorCodeConstants.MANHOLE_CONFIG_NOT_EXISTS;
 
 /**
@@ -90,68 +93,142 @@ public class ManholeConfigServiceImpl implements ManholeConfigService {
     /**
      * 保存监测配置（新增/编辑）
      */
+//    @Transactional(rollbackFor = Exception.class)
+//    public void saveConfig(ManholeConfigReqVO configVO) {
+//
+//        validateManholeConfigExists(configVO.getId());
+//
+//        LambdaQueryWrapperX<ManholeCoverDO> lambdaQueryWrapperX = new LambdaQueryWrapperX();
+//        lambdaQueryWrapperX.eq(ManholeCoverDO::getCoverNo,configVO.getCoverNo());
+//        ManholeCoverDO rs = manholeCoverMapper.selectOne(lambdaQueryWrapperX);
+//        // 1. 唯一性校验
+//        if (rs != null) {
+//            throw exception("井盖编号已存在！");
+//        }
+//
+//        LambdaQueryWrapperX<SysDeviceDO> sysDeviceDOLambdaQueryWrapperX = new LambdaQueryWrapperX();
+//        sysDeviceDOLambdaQueryWrapperX.eq(SysDeviceDO::getDeviceCode,configVO.getDeviceCode());
+//        SysDeviceDO sysDeviceDO  = sysDeviceMapper.selectOne(sysDeviceDOLambdaQueryWrapperX);
+//
+//        if (sysDeviceDO != null) {
+//            throw exception("设备编号号已存在！");
+//        }
+//
+//        // 2. 阈值合理性校验
+//        if (configVO.getTiltAngleThreshold().compareTo(BigDecimal.ZERO) <= 0
+//                || configVO.getTiltAngleThreshold().compareTo(BigDecimal.valueOf(90)) >= 0) {
+//            throw exception("倾斜角度阈值需在0-90度之间！");
+//        }
+//
+//        // 3. 保存井盖基础信息
+//        ManholeCoverDO cover = new ManholeCoverDO();
+//        cover.setCoverNo(configVO.getCoverNo());
+//        cover.setRoadId(configVO.getRoadId());
+//        if (configVO.getId() == null) {
+//            manholeCoverMapper.insert(cover);
+//        } else {
+//            cover.setId(configVO.getId());
+//            manholeCoverMapper.updateById(cover);
+//        }
+//
+//        // 4. 保存监测配置
+//        ManholeConfigDO config = new ManholeConfigDO();
+//        config.setCoverId(cover.getId());
+//        config.setCollectFrequency(configVO.getCollectFrequency());
+//        config.setTiltAngleThreshold(configVO.getTiltAngleThreshold());
+//        if (configVO.getConfigId() == null) {
+//            manholeConfigMapper.insert(config);
+//        } else {
+//            config.setId(configVO.getConfigId());
+//            manholeConfigMapper.updateById(config);
+//        }
+//
+//        // 5. 保存监测主表
+//        ManholeMonitorDO monitor = new ManholeMonitorDO();
+//        monitor.setCoverId(cover.getId());
+//        monitor.setDeviceId(configVO.getDeviceId());
+//        monitor.setStaffId(configVO.getStaffId());
+//        monitor.setRiskLevelId(configVO.getRiskLevelId());
+//        if (configVO.getId() == null) {
+//            monitorMapper.insert(monitor);
+//        } else {
+//            monitor.setId(configVO.getId());
+//            monitorMapper.updateById(monitor);
+//        }
+//    }
+
+    @Override
+    public PageResult<ManholeCoverConfigPageRespVO> getConfigPage(String coverId, Integer configStatus, String tenantId, Integer pageNo, Integer pageSize) {
+        IPage<ManholeCoverConfigPageRespVO> mpPage = new Page<>(pageNo, pageSize);
+        IPage<ManholeCoverConfigPageRespVO> result = manholeConfigMapper.selectConfigPage(mpPage, coverId, configStatus, tenantId);
+        return new PageResult<>(result.getRecords(), result.getTotal());
+    }
+
+    @Override
+    public ManholeCoverConfigDetailRespVO getDetail(Long id, Long tenantId) {
+        // 直接调用你自定义 XML 的 SQL → 正确执行关联查询 + 嵌套映射
+        ManholeCoverConfigDetailRespVO detail = manholeConfigMapper.selectDetailById(id, tenantId);
+        return detail;
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveConfig(ManholeConfigReqVO configVO) {
+    public CommonResult<ManholeCoverConfigAddRespVO> addManholeCoverConfig(ManholeCoverConfigAddReqVO reqVO) {
 
-        validateManholeConfigExists(configVO.getId());
-
-        LambdaQueryWrapperX<ManholeCoverDO> lambdaQueryWrapperX = new LambdaQueryWrapperX();
-        lambdaQueryWrapperX.eq(ManholeCoverDO::getCoverNo,configVO.getCoverNo());
-        ManholeCoverDO rs = manholeCoverMapper.selectOne(lambdaQueryWrapperX);
-        // 1. 唯一性校验
-        if (rs != null) {
-            throw exception("井盖编号已存在！");
+        LambdaQueryWrapperX<ManholeCoverDO> lq = new LambdaQueryWrapperX();
+        lq.eq(ManholeCoverDO::getId, reqVO.getCoverId());
+        ManholeCoverDO manholeCoverDO = manholeCoverMapper.selectOne(lq);
+        if(manholeCoverDO == null){
+            throw exception(MANHOLE_CONFIG_NOT_EXISTS);
         }
-
-        LambdaQueryWrapperX<SysDeviceDO> sysDeviceDOLambdaQueryWrapperX = new LambdaQueryWrapperX();
-        sysDeviceDOLambdaQueryWrapperX.eq(SysDeviceDO::getDeviceCode,configVO.getDeviceCode());
-        SysDeviceDO sysDeviceDO  = sysDeviceMapper.selectOne(sysDeviceDOLambdaQueryWrapperX);
-
-        if (sysDeviceDO != null) {
-            throw exception("设备编号号已存在！");
+        LambdaQueryWrapperX<ManholeConfigDO> lq2 = new LambdaQueryWrapperX();
+        lq2.eq(ManholeConfigDO::getCoverId, reqVO.getCoverId());
+        ManholeConfigDO manholeConfigDO =manholeConfigMapper.selectOne(lq2);
+        if (manholeConfigDO != null){
+            throw exception(MANHOLE_CONFIG_EXISTS);
         }
+        ManholeConfigDO configDO = new ManholeConfigDO();
 
-        // 2. 阈值合理性校验
-        if (configVO.getTiltAngleThreshold().compareTo(BigDecimal.ZERO) <= 0
-                || configVO.getTiltAngleThreshold().compareTo(BigDecimal.valueOf(90)) >= 0) {
-            throw exception("倾斜角度阈值需在0-90度之间！");
-        }
+        // 1. 主键 & 井盖ID
+        configDO.setCoverId(Long.valueOf(reqVO.getCoverId()));
 
-        // 3. 保存井盖基础信息
-        ManholeCoverDO cover = new ManholeCoverDO();
-        cover.setCoverNo(configVO.getCoverNo());
-        cover.setRoadId(configVO.getRoadId());
-        if (configVO.getId() == null) {
-            manholeCoverMapper.insert(cover);
-        } else {
-            cover.setId(configVO.getId());
-            manholeCoverMapper.updateById(cover);
-        }
+        // 2. 阈值配置
+        ManholeCoverConfigAddReqVO.ThresholdConfig threshold = reqVO.getThresholdConfig();
+        configDO.setTiltAngleThreshold(BigDecimal.valueOf(threshold.getTiltAngleThreshold()));
+        configDO.setOpenDurationThreshold(BigDecimal.valueOf(threshold.getOpenDurationThreshold()));
+        configDO.setExtCommon1(String.valueOf(threshold.getDisplacementThreshold()));
+        configDO.setExtCommon2(String.valueOf(threshold.getWaterLevelThreshold()));
 
-        // 4. 保存监测配置
-        ManholeConfigDO config = new ManholeConfigDO();
-        config.setCoverId(cover.getId());
-        config.setCollectFrequency(configVO.getCollectFrequency());
-        config.setTiltAngleThreshold(configVO.getTiltAngleThreshold());
-        if (configVO.getConfigId() == null) {
-            manholeConfigMapper.insert(config);
-        } else {
-            config.setId(configVO.getConfigId());
-            manholeConfigMapper.updateById(config);
-        }
+        // 3. 采集配置
+        ManholeCoverConfigAddReqVO.CollectConfig collect = reqVO.getCollectConfig();
+        configDO.setCollectFrequency(collect.getCollectFrequency());
+        configDO.setOfflineTimeout(collect.getOfflineTimeout());
+        configDO.setDataUploadMode(collect.getDataUploadMode() == null ? 0 : collect.getDataUploadMode());
 
-        // 5. 保存监测主表
-        ManholeMonitorDO monitor = new ManholeMonitorDO();
-        monitor.setCoverId(cover.getId());
-        monitor.setDeviceId(configVO.getDeviceId());
-        monitor.setStaffId(configVO.getStaffId());
-        monitor.setRiskLevelId(configVO.getRiskLevelId());
-        if (configVO.getId() == null) {
-            monitorMapper.insert(monitor);
-        } else {
-            monitor.setId(configVO.getId());
-            monitorMapper.updateById(monitor);
-        }
+        // 4. 报警配置 → 直接赋值 List，适配你的 DO！
+        ManholeCoverConfigAddReqVO.AlarmConfig alarm = reqVO.getAlarmConfig();
+        configDO.setAlarmLevel(alarm.getAlarmLevel() == null ? 1 : alarm.getAlarmLevel());
+        configDO.setAlarmDelay(alarm.getAlarmDelay() == null ? 30 : alarm.getAlarmDelay());
+        configDO.setExtCommon3(alarm.getAlarmType());  // 直接 List<Integer>
+        configDO.setExtCommon4(alarm.getAlarmRecipient()); // 直接 List<String>
+
+        // 5. 状态 & 租户
+        Integer configStatus = reqVO.getConfigStatus() == null ? 0 : reqVO.getConfigStatus();
+        configDO.setConfigStatus(configStatus);
+        configDO.setConfigStatusName(configStatus == 0 ? "未生效" : "已生效");
+        configDO.setTenantId(Long.valueOf(reqVO.getTenantId()));
+        configDO.setChainHash("0x" + IdUtil.randomUUID().replace("-", ""));
+
+        // 6. 保存
+        manholeConfigMapper.insert(configDO);
+
+        // 7. 返回
+        ManholeCoverConfigAddRespVO respVO = BeanUtils.toBean(configDO, ManholeCoverConfigAddRespVO.class);
+        respVO.setConfigId(configDO.getId().toString());
+        respVO.setCoverId(reqVO.getCoverId());
+        respVO.setTenantId(reqVO.getTenantId());
+
+        return CommonResult.success(respVO);
     }
 
 }
