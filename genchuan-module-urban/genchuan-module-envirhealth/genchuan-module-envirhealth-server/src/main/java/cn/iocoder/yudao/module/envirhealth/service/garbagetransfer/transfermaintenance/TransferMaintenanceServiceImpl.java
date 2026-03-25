@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.envirhealth.service.garbagetransfer.transfermain
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transfermaintenance.TransferMaintenanceDashboardRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transfermaintenance.TransferMaintenancePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transfermaintenance.TransferMaintenanceSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferMaintenanceDO;
@@ -90,4 +91,22 @@ public class TransferMaintenanceServiceImpl implements TransferMaintenanceServic
         return new PageResult<>(list, total);
     }
 
+    @Override
+    public TransferMaintenanceDashboardRespVO getMaintenanceDashboard() {
+        TransferMaintenanceDashboardRespVO respVO = new TransferMaintenanceDashboardRespVO();
+
+        // 1. 卡片数据
+        respVO.setTotalPendingMaintenance(transferMaintenanceMapper.selectTotalPendingMaintenance());
+        respVO.setTypePendingMaintenance(transferMaintenanceMapper.selectTypePendingMaintenance());
+        respVO.setTimeoutUnmaintainedCount(transferMaintenanceMapper.selectTimeoutUnmaintainedCount());
+
+        // 2. 圆环图数据
+        respVO.setEquipmentTypeDistribution(transferMaintenanceMapper.selectEquipmentTypeDistribution());
+        respVO.setMaintenanceStatusDistribution(transferMaintenanceMapper.selectMaintenanceStatusDistribution());
+
+        // 3. 柱状图数据
+        respVO.setStationPendingMaintenanceComparison(transferMaintenanceMapper.selectStationPendingMaintenanceComparison());
+
+        return respVO;
+    }
 }

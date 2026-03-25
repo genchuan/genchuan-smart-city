@@ -97,4 +97,10 @@ public class RoadCleaningSaveReqVO {
 
     @Schema(description = "复盘意见")
     private String reviewDesc;
+
+    @Schema(description = "现场照片URL，JSON", example = "[\"https://www.iocoder.cn/1.jpg\", \"https://www.iocoder.cn/2.jpg\"]")
+    private String localePhotoUrl;
+
+    @Schema(description = "核查照片URL，JSON", example = "[\"https://www.iocoder.cn/1.jpg\", \"https://www.iocoder.cn/2.jpg\"]")
+    private String reviewPhotoUrl;
 }

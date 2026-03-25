@@ -29,7 +29,7 @@ public class PersonStatusDO extends BaseDO {
     /**
      * 业务主键（UUID）
      */
-    private String sysPersonStatusId;
+    private String personStatusId;
     /**
      * 状态名称（可选值：在岗/休假/请假/离职/待入职/调岗/停薪留职）
      */
@@ -37,30 +37,9 @@ public class PersonStatusDO extends BaseDO {
     /**
      * 状态编码
      */
-    private String code;
-    /**
-     * 状态（可选值：0-禁用/1-启用）
-     */
-    private Integer status;
+    private String statusCode;
     /**
      * 排序号
      */
     private Integer sort;
-    /**
-     * 通用扩展字段1
-     */
-    private String extCommon1;
-    /**
-     * 通用扩展字段2
-     */
-    private String extCommon2;
-    /**
-     * 通用扩展字段3
-     */
-    private String extCommon3;
-    /**
-     * 通用扩展字段4
-     */
-    private String extCommon4;
-
 }

@@ -74,10 +74,9 @@ public class CleaningProblemDO extends BaseDO {
      */
     private String handleResult;
     /**
-     * 通用扩展字段1
+     * 现场照片URL
      */
-    @JsonIgnore
-    private String extCommon1;
+    private String localePhotoUrl;
     /**
      * 通用扩展字段2
      */

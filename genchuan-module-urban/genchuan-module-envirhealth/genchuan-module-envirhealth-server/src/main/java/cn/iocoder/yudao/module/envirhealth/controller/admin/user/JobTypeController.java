@@ -1,9 +1,9 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.user;
 
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.jobtype.JobTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.jobtype.JobTypeRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.jobtype.JobTypeSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +31,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.JobTypeDO;
 import cn.iocoder.yudao.module.envirhealth.service.user.jobtype.JobTypeService;
 
-@Tag(name = "管理后台 - 岗位类型字典")
+@Tag(name = "字典表 - 岗位类型")
 @RestController
 @RequestMapping("/envirhealth/job-type")
 @Validated
@@ -94,4 +94,14 @@ public class JobTypeController {
                         BeanUtils.toBean(list, JobTypeRespVO.class));
     }
 
-}*/
+    /**
+     * 获得岗位类型下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得岗位类型(下拉框)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:equipment:query')")
+    public CommonResult<List<OptionVO>> getJobTypeOptions() {
+        return success(jobTypeService.getJobTypeOptions());
+    }
+}

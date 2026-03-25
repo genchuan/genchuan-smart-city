@@ -50,4 +50,7 @@ public class GarbageTransferSaveReqVO {
 
     @Schema(description = "实时环境数据，JSON")
     private String environmentData;
+
+    @Schema(description = "流程状态")
+    private String progressStatus;
 }

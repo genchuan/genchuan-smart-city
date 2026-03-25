@@ -82,10 +82,9 @@ public class GarbageTransferDO extends BaseDO {
      */
     private String environmentData;
     /**
-     * 通用扩展字段1
+     * 流程状态
      */
-    @JsonIgnore
-    private String extCommon1;
+    private String progressStatus;
     /**
      * 通用扩展字段2
      */

@@ -1,9 +1,9 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.user;
 
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.personstatus.PersonStatusPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.personstatus.PersonStatusRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.personstatus.PersonStatusSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +31,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.PersonStatusDO;
 import cn.iocoder.yudao.module.envirhealth.service.user.personstatus.PersonStatusService;
 
-@Tag(name = "管理后台 - 人员状态字典")
+@Tag(name = "字典表 - 人员状态")
 @RestController
 @RequestMapping("/envirhealth/person-status")
 @Validated
@@ -94,4 +94,14 @@ public class PersonStatusController {
                         BeanUtils.toBean(list, PersonStatusRespVO.class));
     }
 
-}*/
+    /**
+     * 获得人员状态下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得人员状态(下拉框)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:person-status:query')")
+    public CommonResult<List<OptionVO>> getPersonStatusOptions() {
+        return success(personStatusService.getPersonStatusOptions());
+    }
+}

@@ -55,6 +55,9 @@ public class CleaningProblemPageReqVO extends PageParam {
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
 
+    @Schema(description = "现场照片URL")
+    private String localePhotoUrl;
+
     @Schema(hidden = true)
     private Integer offset;
 
