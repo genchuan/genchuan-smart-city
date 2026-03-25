@@ -347,7 +347,7 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
 
         // ========= 0.基础校验 =========
         if (reqVO == null || reqVO.getEntId() == null) {
-            throw new IllegalArgumentException("企业ID不能为空");
+            throw exception("企业ID不能为空");
         }
         //校验预警
         VerifyUtil.verifyNotNullWithMsg(reqVO.getAiAlertMessageId(),"预警id不能为空");
@@ -524,10 +524,10 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
         //1.自动产生预警
         //配置新增预警参数
         AddAiAlertMessageReq addAiAlertMessageReq =new AddAiAlertMessageReq();
-        addAiAlertMessageReq.setSceneId("scene_088930");
-        addAiAlertMessageReq.setAiAbilityCode("100600");
-        addAiAlertMessageReq.setAlertType(13);
-        addAiAlertMessageReq.setSrcUrl("http://112.47.127.21:59000/shunchang/avatar/29904d39-8a4f-4c15-ac28-5b34c3781f11.png");
+//        addAiAlertMessageReq.setSceneId("scene_088930");
+//        addAiAlertMessageReq.setAiAbilityCode("100600");
+//        addAiAlertMessageReq.setAlertType(13);
+//        addAiAlertMessageReq.setSrcUrl("http://112.47.127.21:59000/shunchang/avatar/29904d39-8a4f-4c15-ac28-5b34c3781f11.png");
         Long aiAlertMessageId =  aiAlertMessageService.addAiAlertMessage(addAiAlertMessageReq);
 
         log.info("[整改流程] 预警生成成功 aiAlertMessageId={}", aiAlertMessageId);
