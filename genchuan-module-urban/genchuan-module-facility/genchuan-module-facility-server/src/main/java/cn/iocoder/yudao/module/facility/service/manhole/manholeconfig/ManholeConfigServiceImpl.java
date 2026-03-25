@@ -21,10 +21,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.module.facility.enums.ErrorCodeConstants.MANHOLE_CONFIG_EXISTS;
-import static cn.iocoder.yudao.module.facility.enums.ErrorCodeConstants.MANHOLE_CONFIG_NOT_EXISTS;
+import static cn.iocoder.yudao.module.facility.enums.ErrorCodeConstants.*;
 
 /**
  * 窨井盖监测配置 Service 实现类
@@ -363,4 +364,94 @@ public class ManholeConfigServiceImpl implements ManholeConfigService {
         return CommonResult.success(configId);
     }
 
+    /**
+     * 开始监听
+     *
+     * @param coverId 井盖ID
+     * @param tenantId 租户ID
+     * @param operateUserId 操作人ID
+     * @return 监听结果
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult<ManholeMonitorOperateRespVO> startMonitor(String coverId, String tenantId, String operateUserId) {
+        Long coverIdLong = Long.valueOf(coverId);
+        Long tenantIdLong = Long.valueOf(tenantId);
+
+        // 1. 校验井盖存在
+        ManholeCoverDO cover = manholeCoverMapper.selectOne(new LambdaQueryWrapperX<ManholeCoverDO>()
+                .eq(ManholeCoverDO::getId, coverIdLong));
+        if (cover == null) {
+            throw exception(COVER_NOT_EXISTS);
+        }
+
+        // 2. 校验配置存在
+        ManholeConfigDO config = manholeConfigMapper.selectOne(new LambdaQueryWrapperX<ManholeConfigDO>()
+                .eq(ManholeConfigDO::getCoverId, coverIdLong)
+                .eq(ManholeConfigDO::getTenantId, tenantIdLong));
+        if (config == null) {
+            throw exception(MANHOLE_CONFIG_NOT_EXISTS);
+        }
+
+        // 3. 启动监测 = 修改配置状态为 已生效(1)
+        config.setConfigStatus(1);
+        config.setConfigStatusName("已生效");
+        config.setUpdater(operateUserId);
+        manholeConfigMapper.updateById(config);
+
+        // 4. 组装返回
+        ManholeMonitorOperateRespVO resp = new ManholeMonitorOperateRespVO();
+        resp.setCoverId(coverId);
+        resp.setMonitorStatus(1);
+        resp.setOperateTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        resp.setTenantId(tenantId);
+
+        return CommonResult.success(resp);
+    }
+
+    /**
+     * 停止监听
+     *
+     * @param coverId 井盖ID
+     * @param stopReason 停止原因
+     * @param tenantId 租户ID
+     * @param operateUserId 操作人ID
+     * @return 停止结果
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult<ManholeMonitorOperateRespVO> stopMonitor(String coverId, String stopReason, String tenantId, String operateUserId) {
+        Long coverIdLong = Long.valueOf(coverId);
+        Long tenantIdLong = Long.valueOf(tenantId);
+
+        // 1. 校验井盖存在
+        ManholeCoverDO cover = manholeCoverMapper.selectOne(new LambdaQueryWrapperX<ManholeCoverDO>()
+                .eq(ManholeCoverDO::getId, coverIdLong));
+        if (cover == null) {
+            throw exception(COVER_NOT_EXISTS);
+        }
+
+        // 2. 校验配置存在
+        ManholeConfigDO config = manholeConfigMapper.selectOne(new LambdaQueryWrapperX<ManholeConfigDO>()
+                .eq(ManholeConfigDO::getCoverId, coverIdLong)
+                .eq(ManholeConfigDO::getTenantId, tenantIdLong));
+        if (config == null) {
+            throw exception(MANHOLE_CONFIG_NOT_EXISTS);
+        }
+
+        // 3. 核心：停止监测 = 修改配置状态为【已停用(2)】
+        config.setConfigStatus(2);
+        config.setConfigStatusName("已停用");
+        config.setUpdater(operateUserId);
+        manholeConfigMapper.updateById(config);
+
+        // 4. 组装返回结果
+        ManholeMonitorOperateRespVO resp = new ManholeMonitorOperateRespVO();
+        resp.setCoverId(coverId);
+        resp.setMonitorStatus(0); // 接口要求：0-已停止
+        resp.setOperateTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        resp.setTenantId(tenantId);
+
+        return CommonResult.success(resp);
+    }
 }

@@ -4,7 +4,6 @@ import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.*;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholeconfig.ManholeConfigDO;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.validation.Valid;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,4 +75,10 @@ public interface ManholeConfigService {
 
     @Transactional(rollbackFor = Exception.class)
     CommonResult<String> deleteManholeCoverConfig(String configId, ManholeCoverConfigDeleteReqVO reqVO);
+
+    @Transactional(rollbackFor = Exception.class)
+    CommonResult<ManholeMonitorOperateRespVO> startMonitor(String coverId, String tenantId, String operateUserId);
+
+    @Transactional(rollbackFor = Exception.class)
+    CommonResult<ManholeMonitorOperateRespVO> stopMonitor(String coverId, String stopReason, String tenantId, String operateUserId);
 }
