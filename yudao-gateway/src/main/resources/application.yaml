@@ -222,6 +222,19 @@ spring:
                 - Path=/app-api/facility/***
               filters:
                 - RewritePath=/app-api/facility/v3/api-docs, /v3/api-docs
+              # genchuan-module-appearance-server
+            - id: appearance-admin-api
+              uri: grayLb://appearance-server
+              predicates:
+                - Path=/admin-api/appearance/**
+              filters:
+                - RewritePath=/admin-api/appearance/v3/api-docs, /v3/api-docs
+            - id: appearance-app-api
+              uri: grayLb://appearance-server
+              predicates:
+                - Path=/app-api/appearance/**
+              filters:
+                - RewritePath=/app-api/appearance/v3/api-docs, /v3/api-docs
             ## genchuan-module-marketsupervision 服务
               # genchuan-module-kitchen
             - id: kitchen-admin-api # 路由的编号
@@ -331,6 +344,10 @@ knife4j:
       - name: facility-server        # 自定义模块名字，可以随便写，但最好和服务名一致
         service-name: facility-server # 必须和 Gateway 路由 uri 对应的服务名一致
         url: /admin-api/facility/v3/api-docs # 对应模块 Swagger 文档路径
+        # genchuan-module-appearance
+      - name: appearance-server
+        service-name: appearance-server
+        url: /admin-api/appearance/v3/api-docs
       # genchuan-module-marketsupervision
         # genchuan-module-kitchen
       - name: kitchen-server        # 自定义模块名字，可以随便写，但最好和服务名一致
