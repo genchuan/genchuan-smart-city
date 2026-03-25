@@ -1,9 +1,9 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle;
 
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.maintenancetype.MaintenanceTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.maintenancetype.MaintenanceTypeRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.maintenancetype.MaintenanceTypeSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +31,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.MaintenanceTypeDO;
 import cn.iocoder.yudao.module.envirhealth.service.vehicle.maintenancetype.MaintenanceTypeService;
 
-@Tag(name = "管理后台 - 维护类型字典表")
+@Tag(name = "字典表 - 维护类型")
 @RestController
 @RequestMapping("/envirhealth/maintenance-type")
 @Validated
@@ -94,4 +94,15 @@ public class MaintenanceTypeController {
                         BeanUtils.toBean(list, MaintenanceTypeRespVO.class));
     }
 
-}*/
+    /**
+     * 获得维护类型字典下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得维护类型(下拉框)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:maintenance-type:query')")
+    public CommonResult<List<OptionVO>> getMaintenanceTypeOptions() {
+        return success(maintenanceTypeService.getMaintenanceTypeOptions());
+    }
+
+}

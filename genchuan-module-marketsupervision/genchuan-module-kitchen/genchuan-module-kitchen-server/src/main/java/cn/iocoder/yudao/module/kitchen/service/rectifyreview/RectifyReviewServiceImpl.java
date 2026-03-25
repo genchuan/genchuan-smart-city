@@ -289,7 +289,6 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
     public Long reviewAdd(AddRectifyReviewReqVO reqVO) {
 
         // ========= 0.基础校验 =========
-        // 这里只校验你真正依赖的字段，避免无意义校验
         if (reqVO == null || reqVO.getEntId() == null) {
             throw new IllegalArgumentException("企业ID不能为空");
         }
@@ -310,8 +309,7 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
         insertDO.setIllegalLevelId(1L);
 
         // ========= 6.违规证据（TODO：后续根据告警或上传） =========
-        // 这里建议统一用 JSON 数组格式字符串
-        // 示例：["url1","url2"]
+        // 统一用 JSON 数组格式字符串
         insertDO.setEvidenceUrl("[{\"name\":\"Snipaste_2026-03-09_14-23-50.png\",\"type\":\"image\",\"url\":\"http://112.47.127.21:59000/shunchang/avatar/7dfda1f0-49eb-4ba6-bfb9-30560bdc4a21.png\"},{\"name\":\"Snipaste_2026-03-09_14-22-05.png\",\"type\":\"image\",\"url\":\"http://112.47.127.21:59000/shunchang/avatar/2eede5e1-6b48-41bc-8f03-b4b145a68681.png\"}]");
 
         // ========= 7.草拟时间（当前时间） =========
@@ -404,7 +402,7 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
             return respVO;
 
         } catch (Exception e) {
-            log.error("上传工单资料失败", e);
+            log.error("上传资料失败", e);
 
             if (e instanceof ServiceException) {
                 throw (ServiceException) e;

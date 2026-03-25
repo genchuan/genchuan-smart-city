@@ -48,4 +48,7 @@ public interface RectifyReviewMapper extends BaseMapperX<RectifyReviewDO> {
 
 
     List<RectifyReviewDO> selectBatchEvidence(List<Long> ledgerIdList, int offset, Long pageSize);
+
+
+    RectifyReviewDO selectByLedgerCode(String code);
 }

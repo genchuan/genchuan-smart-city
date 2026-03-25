@@ -1,38 +1,20 @@
 stages:
-  - build
-  - archive_jar
-variables:
-  MAVEN_SKIP_TEST: "-Dmaven.test.skip=true"
-  ARCHIVE_ROOT: "/home/data/java/$(date +%Y-%m-%d)"
-  MODULES: "yudao-gateway yudao-module-system-server yudao-module-infra-server yudao-module-bpm-server genchuan-module-envirhealth-server genchuan-module-facility-server genchuan-module-data-server genchuan-module-evaluate-server genchuan-module-park-server genchuan-module-kitchen-server"
-build:
-  stage: build
-  tags:
-    - genchuan-cloud
-  script:
-    - echo "===== 开始编译 ====="
-    - mvn clean package $MAVEN_SKIP_TEST -U | tee maven-build.log
-    - echo "===== 编译完成 ====="
-  artifacts:
-    paths:
-      - "**/target/*.jar" 
-      - maven-build.log
-    expire_in: 1h
-  retry:
-    max: 2
-    when:
-      - runner_system_failure
-      - stuck_or_timeout_failure
-      - unknown_failure
+  - BuildAndPush
+  - Push
 
-archive_jar:
-  stage: archive_jar
-  tags:
-    - genchuan-cloud
+variables:
+  DOCKER_REGISTRY: "192.168.8.14"
+  DOCKER_BUILDKIT: "0"  # 关闭 BuildKit 避免路径解析问题（全局生效）
+  POD_TAG: "$CI_COMMIT_BRANCH"
+  IMAGE_NAMESPACE: "genchuan"
+
+Build:
+  stage: BuildAndPush
   script:
-    - mkdir -p $ARCHIVE_ROOT
-    - chown -R gitlab-runner:gitlab-runner $ARCHIVE_ROOT
-    - declare -A JAR_PATH_MAP=(
+    - echo "===== 开始Maven打包 ====="
+    - mvn clean package -Dmaven.test.skip=true
+    - |
+      declare -A MODULE_JAR_MAP=(
         ["yudao-gateway"]="yudao-gateway"
         ["yudao-module-system-server"]="yudao-module-system/yudao-module-system-server"
         ["yudao-module-infra-server"]="yudao-module-infra/yudao-module-infra-server"
@@ -44,22 +26,20 @@ archive_jar:
         ["genchuan-module-park-server"]="genchuan-module-park/genchuan-module-park-server"
         ["genchuan-module-kitchen-server"]="genchuan-module-marketsupervision/genchuan-module-kitchen/genchuan-module-kitchen-server"
       )
-    - for module in $MODULES; do
-      jarPath=${JAR_PATH_MAP[$module]}
-      jarFile="${jarPath}/target/${module}.jar"
-      cp -f "$jarFile" "$ARCHIVE_ROOT/${module}.jar"
+      echo "===== 开始构建所有镜像 ====="
+      for module in "${!MODULE_JAR_MAP[@]}"; do
+        jarPath=${MODULE_JAR_MAP[$module]}
+        imageFullName="${DOCKER_REGISTRY}/${IMAGE_NAMESPACE}/${module}:${POD_TAG}"
+
+        docker build --build-arg MODULE_NAME="$module" --build-arg JAR_PATH="$jarPath" -t "${imageFullName}" .
+        # 推送镜像
+        docker push "${imageFullName}"
       done
-    - echo "===== 归档完成，当前目录文件列表 ====="
-    - ls -lh $ARCHIVE_ROOT
-    - echo "===== JAR包归档完成 ====="
-  dependencies:
-    - build
+    - echo "===== 所有镜像推送完成 ====="
   retry:
     max: 2
     when:
       - runner_system_failure
       - stuck_or_timeout_failure
       - unknown_failure
-  only:
-    - genchuan-opengauss-master
 

@@ -4,6 +4,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.AiAlertMessagePageReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.AiAlertMessageSaveReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.add.AddAiAlertMessageReq;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.aialertmessage.AiAlertMessageDO;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.aialertmessage.AiAlertMessageMapper;
 import jakarta.annotation.Resource;
@@ -65,6 +66,12 @@ public class AiAlertMessageServiceImpl implements AiAlertMessageService {
     @Override
     public PageResult<AiAlertMessageDO> getAiAlertMessagePage(AiAlertMessagePageReqVO pageReqVO) {
         return aiAlertMessageMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public Long addAiAlertMessage(AddAiAlertMessageReq reqVO) {
+        //处理参数
+        return null;
     }
 
 }

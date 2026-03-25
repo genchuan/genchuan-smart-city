@@ -11,10 +11,10 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.publ
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.publictoilet.PublicToiletRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.publictoilet.PublicToiletSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.PublicToiletDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.PublicToiletDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.PublicToiletDetailDO;
 import cn.iocoder.yudao.module.envirhealth.service.publictoilet.publictoilet.PublicToiletService;
-import cn.iocoder.yudao.module.envirhealth.util.vo.OptionVO;
-import cn.iocoder.yudao.module.envirhealth.util.vo.StatisticsRespVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.StatisticsRespVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

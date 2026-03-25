@@ -3,8 +3,8 @@ package cn.iocoder.yudao.module.envirhealth.dal.mysql.publictoilet;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.complainttype.ComplaintTypePageReqVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ComplaintTypeDO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.complainttype.vo.ComplaintTypePageReqVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.ComplaintTypeDO;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.vehicle.VehicleMapper">
 
-    <resultMap id="VehicleDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.detail.VehicleDetailDO">
+    <resultMap id="VehicleDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.VehicleDetailDO">
         <!-- 主表 sys_vehicle 基础字段（继承自 VehicleDO） -->
         <id column="id" property="id"/>
         <result column="sys_vehicle_id" property="sysVehicleId"/>

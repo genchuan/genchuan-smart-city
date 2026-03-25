@@ -132,5 +132,17 @@ public class IndexSystemDetailVO {
 
         @Schema(description = "排序序号", example = "1")
         private Integer sortNo;
+
+        @Schema(description = "评价规则id(关联eval_comment_rule.id)", example = "1")
+        private Long commentRuleId;
+
+        @Schema(description = "评价规则名称", example = "优秀规则")
+        private String ruleName;
+
+        @Schema(description = "规则分类id(关联eval_rule_category主键id)", example = "1")
+        private Long commentCategoryId;
+
+        @Schema(description = "规则分类名称", example = "优秀分类")
+        private String commentCategoryName;
     }
 }

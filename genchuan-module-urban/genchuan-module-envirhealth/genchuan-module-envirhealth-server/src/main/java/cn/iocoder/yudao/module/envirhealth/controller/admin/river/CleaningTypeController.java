@@ -1,9 +1,9 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.river;
 
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.cleaningtype.CleaningTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.cleaningtype.CleaningTypeRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.cleaningtype.CleaningTypeSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +31,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.CleaningTypeDO;
 import cn.iocoder.yudao.module.envirhealth.service.river.cleaningtype.CleaningTypeService;
 
-@Tag(name = "管理后台 - 保洁类型字典表")
+@Tag(name = "字典表 - 保洁类型")
 @RestController
 @RequestMapping("/envirhealth/cleaning-type")
 @Validated
@@ -94,4 +94,14 @@ public class CleaningTypeController {
                         BeanUtils.toBean(list, CleaningTypeRespVO.class));
     }
 
-}*/
+    /**
+     * 获得保洁类型字典下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得保洁类型(下拉框)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:cleaning-type:query')")
+    public CommonResult<List<OptionVO>> getCleaningTypeOptions() {
+        return success(cleaningTypeService.getCleaningTypeOptions());
+    }
+}

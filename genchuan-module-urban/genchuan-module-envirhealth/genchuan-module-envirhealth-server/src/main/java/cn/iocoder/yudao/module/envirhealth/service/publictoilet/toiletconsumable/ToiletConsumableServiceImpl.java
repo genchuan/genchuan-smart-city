@@ -7,7 +7,7 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.toiletconsumable.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ToiletConsumableDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.detail.ToiletConsumableDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ToiletConsumableDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.publictoilet.ToiletConsumableMapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;

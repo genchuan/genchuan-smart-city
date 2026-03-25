@@ -18,8 +18,10 @@ import cn.iocoder.yudao.module.kitchen.dal.mysql.rectifyreview.RectifyReviewMapp
 import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.file.FileUploadService;
 import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.name.NameUtil;
 import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.verify.VerifyUtil;
+import cn.iocoder.yudao.module.kitchen.service.punishreviewledger.PunishReviewLedgerService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -59,6 +61,9 @@ public class EntRectifyRecordServiceImpl implements EntRectifyRecordService {
 
     @Resource
     private FileUploadService fileUploadService;
+
+    @Resource
+    private PunishReviewLedgerService punishReviewLedgerService;
 
     @Override
     public Long createEntRectifyRecord(EntRectifyRecordSaveReqVO createReqVO) {
@@ -304,8 +309,6 @@ public class EntRectifyRecordServiceImpl implements EntRectifyRecordService {
 
         // 更新数据库
         entRectifyRecordMapper.updateById(updateObj);
-
-        //TODO 1.产生处罚台账记录。2.绑定处罚台账记录到企业整改记录
 
         return true;
     }

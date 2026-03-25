@@ -1,9 +1,9 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.river;
 
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.monitortype.MonitorTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.monitortype.MonitorTypeRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.monitortype.MonitorTypeSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +31,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.MonitorTypeDO;
 import cn.iocoder.yudao.module.envirhealth.service.river.monitortype.MonitorTypeService;
 
-@Tag(name = "管理后台 - 监测类型字典表")
+@Tag(name = "字典表 - 监测类型")
 @RestController
 @RequestMapping("/envirhealth/monitor-type")
 @Validated
@@ -94,4 +94,14 @@ public class MonitorTypeController {
                         BeanUtils.toBean(list, MonitorTypeRespVO.class));
     }
 
-}*/
+    /**
+     * 获得监测类型字典下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得监测类型(下拉框)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:monitor-type:query')")
+    public CommonResult<List<OptionVO>> getMonitorTypeOptions() {
+        return success(monitorTypeService.getMonitorTypeOptions());
+    }
+}

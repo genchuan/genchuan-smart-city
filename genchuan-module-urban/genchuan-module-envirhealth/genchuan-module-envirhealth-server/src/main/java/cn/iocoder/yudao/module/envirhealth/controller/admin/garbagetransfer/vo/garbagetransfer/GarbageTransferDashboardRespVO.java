@@ -1,8 +1,8 @@
 package cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer;
 
-import cn.iocoder.yudao.module.envirhealth.util.vo.BarItemVO;
-import cn.iocoder.yudao.module.envirhealth.util.vo.LineItemVO;
-import cn.iocoder.yudao.module.envirhealth.util.vo.PieItemVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.BarItemVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.LineItemVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.PieItemVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
