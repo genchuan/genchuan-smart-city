@@ -81,4 +81,12 @@ public interface ManholeConfigService {
 
     @Transactional(rollbackFor = Exception.class)
     CommonResult<ManholeMonitorOperateRespVO> stopMonitor(String coverId, String stopReason, String tenantId, String operateUserId);
+
+    /**
+     * 井盖监测 批量启动/停止 通用操作
+     */
+    /**
+     * 井盖监测 批量启动/停止
+     */
+    CommonResult<ManholeCoverMonitorBatchOperateRespVO> batchOperateMonitor(ManholeCoverMonitorBatchOperateReqVO reqVO);
 }

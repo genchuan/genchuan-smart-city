@@ -120,14 +120,14 @@ public class ManholeMonitorController {
     /**
      * 批量更新监测状态
      */
-    @PostMapping("/batch-update-monitor-status")
-    @Operation(summary = "批量更新监测状态")
-    @PreAuthorize("@ss.hasPermission('manhole:monitor:update')")
-    public CommonResult<Integer> batchUpdateMonitorStatus(@Valid @RequestBody BatchMonitorStatusReqVO batchVO) {
-        // 调用服务层执行批量更新，同步更新监测状态、操作人和更新时间
-        Integer count = monitorService.batchUpdateMonitorStatus(batchVO.getCoverIds(), batchVO.getStatus());
-        return success(count);
-    }
+//    @PostMapping("/batch-update-monitor-status")
+//    @Operation(summary = "批量更新监测状态")
+//    @PreAuthorize("@ss.hasPermission('manhole:monitor:update')")
+//    public CommonResult<Integer> batchUpdateMonitorStatus(@Valid @RequestBody BatchMonitorStatusReqVO batchVO) {
+//        // 调用服务层执行批量更新，同步更新监测状态、操作人和更新时间
+//        Integer count = monitorService.batchUpdateMonitorStatus(batchVO.getCoverIds(), batchVO.getStatus());
+//        return success(count);
+//    }
 
 //    @GetMapping("/stats/24hour")
 //    @Operation(summary = "查询近 24 小时统计数据")

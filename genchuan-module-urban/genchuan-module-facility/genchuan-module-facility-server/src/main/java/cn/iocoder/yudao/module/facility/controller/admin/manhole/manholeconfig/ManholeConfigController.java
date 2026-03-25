@@ -181,4 +181,12 @@ public class ManholeConfigController {
             @RequestParam @NotBlank String operateUserId) {
         return manholeConfigService.stopMonitor(coverId, stopReason, tenantId, operateUserId);
     }
+
+    // ==================== 批量井盖启停 ====================
+    @PostMapping("/batch-operate")
+    @Operation(summary = "井盖监测 批量启动/停止")
+    public CommonResult<ManholeCoverMonitorBatchOperateRespVO> batchOperateMonitor(
+            @RequestBody @Valid ManholeCoverMonitorBatchOperateReqVO reqVO) {
+        return manholeConfigService.batchOperateMonitor(reqVO);
+    }
 }

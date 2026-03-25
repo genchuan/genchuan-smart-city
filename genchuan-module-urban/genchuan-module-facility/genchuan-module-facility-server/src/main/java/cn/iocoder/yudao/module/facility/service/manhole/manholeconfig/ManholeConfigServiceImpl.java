@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.facility.service.manhole.manholeconfig;
 
 import cn.hutool.core.util.IdUtil;
+import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
@@ -12,6 +13,7 @@ import cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholeconfig.ManholeC
 import cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholecover.ManholeCoverMapper;
 import cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholemonitor.ManholeMonitorMapper;
 import cn.iocoder.yudao.module.facility.dal.mysql.sysdevice.SysDeviceMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -23,6 +25,8 @@ import org.springframework.validation.annotation.Validated;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.facility.enums.ErrorCodeConstants.*;
@@ -450,6 +454,83 @@ public class ManholeConfigServiceImpl implements ManholeConfigService {
         resp.setCoverId(coverId);
         resp.setMonitorStatus(0); // 接口要求：0-已停止
         resp.setOperateTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        resp.setTenantId(tenantId);
+
+        return CommonResult.success(resp);
+    }
+
+    // ==================== 批量井盖启停 ====================
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult<ManholeCoverMonitorBatchOperateRespVO> batchOperateMonitor(ManholeCoverMonitorBatchOperateReqVO reqVO) {
+        List<String> coverIds = reqVO.getCoverIds();
+        Integer operateType = reqVO.getOperateType();
+        String tenantId = reqVO.getTenantId();
+        String operateUserId = reqVO.getOperateUserId();
+        Long tenantIdLong = Long.parseLong(tenantId);
+
+        // 统计变量
+        int successCount = 0;
+        List<String> failCovers = new ArrayList<>();
+        String operateName;
+
+        // 校验操作类型
+        if (operateType == 1) {
+            operateName = "启动";
+        } else if (operateType == 0) {
+            operateName = "停止";
+        } else {
+            throw exception(MANHOLE_CONFIG_NOT_EXISTS);
+        }
+
+        // 批量遍历处理
+        for (String coverId : coverIds) {
+            try {
+                Long coverIdLong = Long.parseLong(coverId);
+
+                // 1. 校验井盖存在
+                ManholeCoverDO cover = manholeCoverMapper.selectOne(new LambdaQueryWrapper<ManholeCoverDO>()
+                        .eq(ManholeCoverDO::getId, coverIdLong)
+                        .eq(ManholeCoverDO::getDeleted, Boolean.FALSE));
+                if (cover == null) {
+                    failCovers.add(coverId);
+                    continue;
+                }
+
+                // 2. 校验配置存在
+                ManholeConfigDO config = manholeConfigMapper.selectOne(new LambdaQueryWrapper<ManholeConfigDO>()
+                        .eq(ManholeConfigDO::getCoverId, coverIdLong)
+                        .eq(ManholeConfigDO::getTenantId, tenantIdLong)
+                        .eq(ManholeConfigDO::getDeleted, 0));
+                if (config == null) {
+                    failCovers.add(coverId);
+                    continue;
+                }
+
+                // 3. 执行启停操作
+                if (operateType == 1) {
+                    // 启动
+                    config.setConfigStatus(1);
+                    config.setConfigStatusName("已生效");
+                } else {
+                    // 停止
+                    config.setConfigStatus(2);
+                    config.setConfigStatusName("已停用");
+                }
+                config.setUpdater(operateUserId);
+                manholeConfigMapper.updateById(config);
+
+                successCount++;
+            } catch (Exception e) {
+                failCovers.add(coverId);
+            }
+        }
+
+        // 组装响应
+        ManholeCoverMonitorBatchOperateRespVO resp = new ManholeCoverMonitorBatchOperateRespVO();
+        resp.setSuccessCount(successCount);
+        resp.setFailCount(failCovers.size());
+        resp.setFailCovers(failCovers);
         resp.setTenantId(tenantId);
 
         return CommonResult.success(resp);

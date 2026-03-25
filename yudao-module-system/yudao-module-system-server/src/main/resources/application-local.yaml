@@ -3,9 +3,9 @@
 spring:
   cloud:
     nacos:
-      server-addr: 192.168.8.11:8848 # Nacos 服务器地址
-      username: # Nacos 账号
-      password: # Nacos 密码
+      server-addr: 127.0.0.1:8848 # Nacos 服务器地址
+      username: nacos
+      password: nacos
       discovery: # 【配置中心】配置项
         namespace: # 命名空间
         group: DEFAULT_GROUP # 使用的 Nacos 配置分组，默认为 DEFAULT_GROUP
@@ -57,7 +57,7 @@ spring:
       primary: master
       datasource:
         master:
-          url: jdbc:mysql://192.168.8.68:3306/ruoyi-vue-pro?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true # MySQL Connector/J 8.X 连接的示例
+          url: jdbc:mysql://192.168.8.68:3306/genchuan-module-munifacility?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true # MySQL Connector/J 8.X 连接的示例
           #          url: jdbc:mysql://192.168.8.68:3306/ruoyi-vue-pro?useSSL=true&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true # MySQL Connector/J 5.X 连接的示例
           #          url: jdbc:postgresql://127.0.0.1:5432/ruoyi-vue-pro # PostgreSQL 连接的示例
           #          url: jdbc:oracle:thin:@127.0.0.1:1521:xe # Oracle 连接的示例
