@@ -56,12 +56,12 @@
         mc.updater                     AS operateUserName,
         mc.tenant_id                   AS tenantId
 
-        FROM munifacility.manhole_config mc
-        LEFT JOIN munifacility.manhole_cover mcv
+        FROM manhole_config mc
+        LEFT JOIN manhole_cover mcv
         ON mc.cover_id = mcv.id
 
         WHERE
-        mc.deleted = '0'
+        mc.deleted = 0
         AND mc.tenant_id = #{tenantId}
 
         <if test="coverId != null and coverId != ''">
@@ -120,10 +120,11 @@
             mc.config_status_name,
             mc.create_time AS createTime,
             mc.creator AS createUserId,
-            split_part(mc.creator, ':', 2) AS createUserName,
+            -- MySQL 替换 PG 的 split_part 函数，截取:后的用户名
+            SUBSTRING_INDEX(mc.creator, ':', -1) AS createUserName,
             mc.update_time AS updateTime,
             mc.updater AS updateUserId,
-            split_part(mc.updater, ':', 2) AS updateUserName,
+            SUBSTRING_INDEX(mc.updater, ':', -1) AS updateUserName,
             mc.chain_hash AS chainHash,
             mc.tenant_id AS tenantId,
             mc.tilt_angle_threshold,
@@ -135,11 +136,11 @@
             mc.alarm_delay,
             mc.ext_common3 AS alarmType,
             mc.ext_common4 AS alarmRecipient
-        FROM munifacility.manhole_config mc
-                 LEFT JOIN munifacility.manhole_cover mcv ON mc.cover_id = mcv.id
+        FROM manhole_config mc
+                 LEFT JOIN manhole_cover mcv ON mc.cover_id = mcv.id
         WHERE mc.id = #{id}
           AND mc.tenant_id = #{tenantId}
-          AND mc.deleted = false
+          AND mc.deleted = 0
     </select>
 
 </mapper>
