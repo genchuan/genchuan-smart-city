@@ -72,6 +72,7 @@ public class RoadCleaningServiceImpl implements RoadCleaningService {
         }
         // 插入
         RoadCleaningDO roadCleaning = BeanUtils.toBean(createReqVO, RoadCleaningDO.class);
+        roadCleaning.setId(null);
 
         //自动生成编号
         roadCleaning.setPlanNo(codeGenerator.generatePlanNo());
