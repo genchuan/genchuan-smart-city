@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.kitchen.dal.dataobject.punishreviewledger;
 
+import cn.idev.excel.annotation.ExcelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import java.util.*;
 import java.math.BigDecimal;
@@ -35,6 +37,10 @@ public class PunishReviewLedgerDO extends BaseDO {
      * [台账编号] 唯一编号
      */
     private String ledgerCode;
+
+//    "缴费截止时间"
+
+    private LocalDateTime paymentDeadlineTime;
     /**
      * [企业ID] 关联enterprise_info.id
      */

@@ -113,8 +113,14 @@ public class PunishNoticeServiceImpl implements PunishNoticeService {
         notice.setNoticeCode(NameUtil.generateCode("PNTC")); // 编号自动生成
         notice.setPunishReviewId(reqVO.getPunishReviewId());
         notice.setIssueTime(LocalDateTime.now());
+
+        //处罚期限
+        reqVO.setPayDeadline(punishReviewDO.getPaymentDeadlineTime());
         notice.setPayDeadline(reqVO.getPayDeadline());
         notice.setReceiveStatus("未送达");
+
+        //处罚金额
+        reqVO.setActualPunishAmt(punishReviewDO.getDraftPunishAmt());
         notice.setActualPunishAmt(reqVO.getActualPunishAmt());
 
 //        // 富文本内容不在这里生成，可在前端调用单独接口生成
@@ -135,6 +141,7 @@ public class PunishNoticeServiceImpl implements PunishNoticeService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String generatePunishNoticeDraft(DraftPunishNoticeReq reqVO) {
+        System.out.println("cs2026-03-24 10:21:12:1556");
         VerifyUtil.verifyNotNullSimple(reqVO.getPunishReviewNoticeId());
         //1.获取处罚通知书
         PunishNoticeDO punishNoticeDO = punishNoticeMapper.selectById(reqVO.getPunishReviewNoticeId());
@@ -168,7 +175,7 @@ public class PunishNoticeServiceImpl implements PunishNoticeService {
         template.setContactPhone(enterpriseInfoDO.getContactPhone());
 
         // 3. 违法行为（字典 + 台账）
-        template.setIllegalBehavior(illegalTypeDictDO.getTypeName());
+        template.setIllegalBehavior(illegalTypeDictDO.getIllegalBehaviorDescription());
         // 如果台账里有补充描述，可以拼接：
         // template.setIllegalBehavior(illegalTypeDictDO.getName() + "，" + punishReviewLedgerDO.getIllegalDesc());
 

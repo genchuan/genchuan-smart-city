@@ -8,4 +8,11 @@
         代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
+    <select id="selectByTypeCode"
+            resultType="cn.iocoder.yudao.module.kitchen.dal.dataobject.dictionary.illegaltypedict.IllegalTypeDictDO">
+        select *
+        from illegal_type_dict
+        where deleted = b'0'
+        and type_code = #{typeCode}
+    </select>
 </mapper>

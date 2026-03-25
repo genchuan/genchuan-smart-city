@@ -57,9 +57,9 @@ public interface PunishNoticeService {
      */
     PageResult<PunishNoticeDO> getPunishNoticePage(PunishNoticePageReqVO pageReqVO);
 
-    Long addPunishNotice(AddPunishNoticeReq reqVO);
+    Long addPunishNotice(@Valid AddPunishNoticeReq reqVO);
 
-    String generatePunishNoticeDraft(DraftPunishNoticeReq reqVO);
+    String generatePunishNoticeDraft(@Valid DraftPunishNoticeReq reqVO);
 
     ResponseEntity<byte[]> downloadRectifyNoticePdf(Long punishNoticeId);
 }

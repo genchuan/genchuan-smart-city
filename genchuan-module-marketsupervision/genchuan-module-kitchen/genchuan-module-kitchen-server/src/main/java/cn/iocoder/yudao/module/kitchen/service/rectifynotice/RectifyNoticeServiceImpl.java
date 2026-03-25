@@ -281,7 +281,8 @@ public class RectifyNoticeServiceImpl implements RectifyNoticeService {
         req.setContactAddress(enterprise.getAddress());
 
         // 违规原因
-        req.setIllegalTypeName(illegalTypeDictDO.getTypeName());
+        req.setIllegalTypeName(illegalTypeDictDO.getIllegalBehaviorDescription()!=null?
+                illegalTypeDictDO.getIllegalBehaviorDescription():illegalTypeDictDO.getTypeName());
 
         return req;
     }

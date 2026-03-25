@@ -33,4 +33,5 @@ public interface IllegalTypeDictMapper extends BaseMapperX<IllegalTypeDictDO> {
                 .orderByDesc(IllegalTypeDictDO::getId));
     }
 
+    IllegalTypeDictDO selectByTypeCode(String aiAbilityCode);
 }

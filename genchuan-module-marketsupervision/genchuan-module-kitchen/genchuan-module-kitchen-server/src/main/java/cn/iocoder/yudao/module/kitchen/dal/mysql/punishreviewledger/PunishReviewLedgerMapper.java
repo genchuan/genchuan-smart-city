@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.PunishReviewLedgerPageReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.PunishReviewLedgerRespVO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.punishreviewledger.PunishReviewLedgerDO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -43,4 +44,7 @@ public interface PunishReviewLedgerMapper extends BaseMapperX<PunishReviewLedger
                 .orderByDesc(PunishReviewLedgerDO::getId));
     }
 
+    List<PunishReviewLedgerRespVO> selectLedgerPage(PunishReviewLedgerPageReqVO pageReqVO);
+
+    Long selectLedgerPageCount(PunishReviewLedgerPageReqVO pageReqVO);
 }

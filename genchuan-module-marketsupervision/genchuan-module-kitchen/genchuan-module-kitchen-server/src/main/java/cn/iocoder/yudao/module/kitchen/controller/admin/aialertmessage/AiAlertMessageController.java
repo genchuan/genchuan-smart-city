@@ -38,7 +38,7 @@ public class AiAlertMessageController {
     @Resource
     private AiAlertMessageService aiAlertMessageService;
 
-    //模拟数据 TODO
+    //TODO 模拟数据 后续接了三方后进行修改或者新建
     @PostMapping("/add")
     @Operation(summary = "(模拟）新增AI告警消息")
     //@PreAuthorize("@ss.hasPermission('kitchen:ai-alert-message:add')")

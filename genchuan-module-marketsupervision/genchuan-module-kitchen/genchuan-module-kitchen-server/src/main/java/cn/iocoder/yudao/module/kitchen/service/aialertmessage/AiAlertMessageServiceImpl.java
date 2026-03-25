@@ -184,6 +184,11 @@ public class AiAlertMessageServiceImpl implements AiAlertMessageService {
                 reqVO.setSceneId("scene_" + RandomUtil.randomNumbers(6));
             }
         }
+        // ================== 2.1 生成图片 ==================
+        if (reqVO.getSrcUrl() == null) {
+            String imageUrl = getRandomImage(reqVO.getAiAbilityCode());
+            reqVO.setSrcUrl(imageUrl);
+        }
 
         //设备编码
         if (reqVO.getDeviceCode()==null){
@@ -232,6 +237,53 @@ public class AiAlertMessageServiceImpl implements AiAlertMessageService {
         return aiAlertMessage.getId();
     }
 
+    /**
+     * 不同违规类型对应的图片
+     */
+    private static final Map<String, List<String>> ALERT_IMAGE_MAP = new HashMap<>();
+
+    static {
+        // ================== 未戴口罩（100200） ==================
+        ALERT_IMAGE_MAP.put("100200", Arrays.asList(
+                "http://112.47.127.21:59000/shunchang/avatar/35347711-8f8a-46f8-94e2-50f3f05b574b.png", // 未戴口罩-场景1
+                "http://112.47.127.21:59000/shunchang/avatar/f2ae4384-2c7b-4e90-b2eb-991d721e80f3.png", // 未戴口罩-场景1
+                "http://112.47.127.21:59000/shunchang/avatar/0b0a4b5e-fe37-48d5-a6f3-ab468f82c9cc.png"  // 未戴口罩-场景2
+
+
+        ));
+
+        // ================== 抽烟（100500） ==================
+        ALERT_IMAGE_MAP.put("100500", Arrays.asList(
+                "http://112.47.127.21:59000/shunchang/avatar/4137080e-6033-4251-98c1-ad661a683573.png",   // 抽烟-厨房内
+                "http://112.47.127.21:59000/shunchang/avatar/ad4f94a8-4919-4ee5-9214-65f45bd9af4d.png",   // 抽烟-厨房内
+                "http://112.47.127.21:59000/shunchang/avatar/4f81c8a6-eb2b-4f20-af47-96e30441a9df.png"    // 抽烟-角落区域
+        ));
+
+        // ================== 未戴厨师帽（100600） ==================
+        ALERT_IMAGE_MAP.put("100600", Arrays.asList(
+                "http://112.47.127.21:59000/shunchang/avatar/1b7457c0-12ac-403a-8c5a-0a5e4d405b93.png",  // 未戴厨师帽
+                "http://112.47.127.21:59000/shunchang/avatar/c9a19c4b-647f-46b4-bf6a-813f38cce4b8.png",  // 未戴厨师帽
+                "http://112.47.127.21:59000/shunchang/avatar/dc220592-3102-4e5a-8f53-3f4ab7b8b75f.png"  // 未戴厨师帽
+        ));
+
+        // ================== 老鼠识别（102300） ==================
+        ALERT_IMAGE_MAP.put("102300", Arrays.asList(
+                "http://112.47.127.21:59000/shunchang/avatar/9ea8f6dc-faa3-4b58-ae12-4116f0337b01.png",    // 厨房老鼠出现
+                "http://112.47.127.21:59000/shunchang/avatar/4dfc4029-4d33-4cb2-822b-36c8a431dee8.png",    // 厨房老鼠出现
+                "http://112.47.127.21:59000/shunchang/avatar/502f1c2c-8b70-4383-abfb-6a4898c7f495.png"    // 厨房老鼠出现
+        ));
+    }
+
+    /**
+     * 根据违规类型随机获取图片
+     */
+    private String getRandomImage(String aiAbilityCode) {
+        List<String> images = ALERT_IMAGE_MAP.get(aiAbilityCode);
+        if (CollUtil.isEmpty(images)) {
+            return "http://112.47.127.21:59000/shunchang/avatar/29904d39-8a4f-4c15-ac28-5b34c3781f11.png";
+        }
+        return images.get(RandomUtil.randomInt(images.size()));
+    }
 
     /**
      * 生成随机手机号

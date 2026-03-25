@@ -16,11 +16,35 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @ToString(callSuper = true)
 public class PunishReviewLedgerPageReqVO extends PageParam {
 
+    @Schema(description = "id列表")
+    private List<Long> idList;
+
     @Schema(description = "[台账编号] 唯一编号")
     private String ledgerCode;
 
     @Schema(description = "[企业ID] 关联enterprise_info.id", example = "32251")
     private Long entId;
+
+    // 起草时间
+    @Schema(description = "起草时间-开始")
+    private LocalDateTime draftTimeStart;
+    @Schema(description = "起草时间-结束")
+    private LocalDateTime draftTimeEnd;
+
+    // 复审时间（XML用到，必须加！）
+    @Schema(description = "复审时间-开始")
+    private LocalDateTime reviewTimeStart;
+    @Schema(description = "复审时间-结束")
+    private LocalDateTime reviewTimeEnd;
+
+    // 撤销时间（XML用到，必须加！）
+    @Schema(description = "撤销时间-开始")
+    private LocalDateTime cancelTimeStart;
+    @Schema(description = "撤销时间-结束")
+    private LocalDateTime cancelTimeEnd;
+
+    @Schema(description = "[企业名称]", example = "32251")
+    private String entName;
 
     @Schema(description = "[违规类型ID] 关联illegal_type_dict.id", example = "28353")
     private Long illegalTypeId;

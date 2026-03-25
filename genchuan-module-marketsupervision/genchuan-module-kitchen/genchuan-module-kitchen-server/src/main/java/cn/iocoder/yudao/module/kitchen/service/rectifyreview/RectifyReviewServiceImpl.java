@@ -4,44 +4,63 @@ import cn.idev.excel.EasyExcel;
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.add.AddAiAlertMessageReq;
+import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.add.AddEntRectifyRecordReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifynotice.vo.RectifyNoticeSaveReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.*;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.add.AddRectifyReviewReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.add.AddRectifyReviewReqVO2;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.cancel.CancelReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.issue.IssueReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileRespVO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.aialertmessage.AiAlertMessageDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.dictionary.cancelreasondict.CancelReasonDictDO;
+import cn.iocoder.yudao.module.kitchen.dal.dataobject.dictionary.illegaltypedict.IllegalTypeDictDO;
+import cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifynotice.RectifyNoticeDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifyreview.RectifyReviewDO;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.aialertmessage.AiAlertMessageMapper;
+import cn.iocoder.yudao.module.kitchen.dal.mysql.dictionary.illegaltypedict.IllegalTypeDictMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.rectifynotice.RectifyNoticeMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.rectifyreview.RectifyReviewMapper;
 import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.file.FileUploadService;
 import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.name.NameUtil;
+import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.pdf.PdfGenerator;
 import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.verify.VerifyUtil;
+import cn.iocoder.yudao.module.kitchen.service.aialertmessage.AiAlertMessageService;
 import cn.iocoder.yudao.module.kitchen.service.dictionary.cancelreasondict.CancelReasonDictService;
+import cn.iocoder.yudao.module.kitchen.service.entrectifyrecord.EntRectifyRecordService;
 import cn.iocoder.yudao.module.kitchen.service.rectifynotice.RectifyNoticeService;
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId;
 import static cn.iocoder.yudao.module.kitchen.enums.ErrorCodeConstants.RECTIFY_REVIEW_NOT_EXISTS;
 
-
+import org.springframework.http.HttpHeaders;
 /**
  * 整改通知书复审台账 Service 实现类
  *
@@ -69,6 +88,15 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
 
     @Resource
     private FileUploadService fileUploadService;
+
+    @Resource
+    private IllegalTypeDictMapper illegalTypeDictMapper;
+
+    @Resource
+    private AiAlertMessageService aiAlertMessageService;
+
+    @Resource
+    private EntRectifyRecordService entRectifyRecordService;
 
     // 在类里定义 ObjectMapper 实例
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -119,9 +147,34 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
     public PageResult<RectifyReviewLedgerRespVO> getRectifyReviewLedgerPage(RectifyReviewLedgerPageReqVO reqVO) {
         List<RectifyReviewLedgerRespVO> list = rectifyReviewMapper.selectLedgerPage(reqVO);
         PageResult<RectifyReviewLedgerRespVO> pageResult= new PageResult<>();
-        pageResult.setList(list);
 
-//        TODO 总条数
+
+        // 当前时间（只取一次，避免循环内多次调用）
+        LocalDateTime now = LocalDateTime.now();
+
+        // 2. 计算逾期标识
+        for (RectifyReviewLedgerRespVO item : list) {
+
+            // 默认未逾期
+            item.setOverdueFlag(0);
+
+            // 判空（非常关键，避免 NPE）
+            if (item.getRectifyDeadlineTime() == null || item.getReviewStatus() == null) {
+                continue;
+            }
+
+            // 判断是否“已下发”
+            if ("已下发".equals(item.getReviewStatus())) {
+
+                // 判断是否超过截止时间
+                if (now.isAfter(item.getRectifyDeadlineTime())) {
+                    item.setOverdueFlag(1);
+                }
+            }
+        }
+
+        pageResult.setList(list);
+        //2.查询条目数量
         Long count = rectifyReviewMapper.selectLedgerPageCount(reqVO);
         pageResult.setTotal(count);
         return pageResult;
@@ -230,16 +283,19 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
 
         rectifyReviewMapper.updateById(reviewDO);        // 保存复审信息
 
-        // 5. 调用整改通知书生成接口 TODO
-        RectifyNoticeSaveReqVO rectifyNoticeSaveReqVO =new RectifyNoticeSaveReqVO();
-        //构造 通知书 的 插入VO
-        rectifyNoticeSaveReqVO.setRectifyReviewId(reviewDO.getId());
-        //通知书 整改截止时间为当前时间30天后
-        rectifyNoticeSaveReqVO.setRectifyDeadline(LocalDate.from(LocalDateTime.now().plusDays(30)));
-        Long noticeId = rectifyNoticeService.createRectifyNotice(rectifyNoticeSaveReqVO);
+        // 5.(已经产生了） 调用整改通知书生成接口
+//        RectifyNoticeSaveReqVO rectifyNoticeSaveReqVO =new RectifyNoticeSaveReqVO();
+//        //构造 通知书 的 插入VO
+//        rectifyNoticeSaveReqVO.setRectifyReviewId(reviewDO.getId());
+//        //通知书 整改截止时间为当前时间30天后
+//        rectifyNoticeSaveReqVO.setRectifyDeadline(LocalDate.from(LocalDateTime.now().plusDays(30)));
+//        Long noticeId = rectifyNoticeService.createRectifyNotice(rectifyNoticeSaveReqVO);
 
-        //6.返回 通知书id
-        return noticeId;
+        //5.更新整改通知书接口
+
+
+        //6.返回 整改台账id
+        return reviewDO.getId();
     }
 
 
@@ -291,8 +347,19 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
 
         // ========= 0.基础校验 =========
         if (reqVO == null || reqVO.getEntId() == null) {
-            throw new IllegalArgumentException("企业ID不能为空");
+            throw exception("企业ID不能为空");
         }
+        //校验预警
+        VerifyUtil.verifyNotNullWithMsg(reqVO.getAiAlertMessageId(),"预警id不能为空");
+        AiAlertMessageDO aiAlertMessageDO = aiAlertMessageMapper.selectById(reqVO.getAiAlertMessageId());
+        VerifyUtil.verifyNotNullWithMsg(aiAlertMessageDO,"Ai预警不存在");
+        if (aiAlertMessageDO.getRectifyReviewId()!=null){
+            throw exception("该预警已产生整改台账记录，请勿重复发送");
+        }
+        //校验违规类型字典
+        VerifyUtil.verifyNotNullWithMsg(aiAlertMessageDO.getAiAbilityCode(),"违规类型不存在");
+        IllegalTypeDictDO illegalTypeDictDO = illegalTypeDictMapper.selectByTypeCode(aiAlertMessageDO.getAiAbilityCode());
+        VerifyUtil.verifyNotNullWithMsg(illegalTypeDictDO,"违规类型字典不存在");
 
         // ========= 1.创建DO对象 =========
         RectifyReviewDO insertDO = new RectifyReviewDO();
@@ -304,14 +371,51 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
         insertDO.setEntId(reqVO.getEntId());
 
         // ========= 4.违规类型（暂时写死，后续根据告警映射） =========
-        insertDO.setIllegalTypeId(1L);
+        insertDO.setIllegalTypeId(illegalTypeDictDO.getId());
 
-        // ========= 5.违规等级（暂时写死，后续根据告警映射） =========
+        // ========= 5.违规等级（暂时写死，后续根据告警映射）TODO =========
         insertDO.setIllegalLevelId(1L);
 
-        // ========= 6.违规证据（TODO：后续根据告警或上传） =========
+        // ========= 6.违规证据（根据AI预警的 违规图片或 保底图片） =========
         // 统一用 JSON 数组格式字符串
-        insertDO.setEvidenceUrl("[{\"name\":\"Snipaste_2026-03-09_14-23-50.png\",\"type\":\"image\",\"url\":\"http://112.47.127.21:59000/shunchang/avatar/7dfda1f0-49eb-4ba6-bfb9-30560bdc4a21.png\"},{\"name\":\"Snipaste_2026-03-09_14-22-05.png\",\"type\":\"image\",\"url\":\"http://112.47.127.21:59000/shunchang/avatar/2eede5e1-6b48-41bc-8f03-b4b145a68681.png\"}]");
+        if (aiAlertMessageDO.getSrcUrl() != null && !aiAlertMessageDO.getSrcUrl().isEmpty()) {
+            // 1. 按逗号分割 URL 字符串，得到 URL 数组
+            String[] urlArray = aiAlertMessageDO.getSrcUrl().split(",");
+
+            // 2. 构建包含每个 URL 信息的 Map 列表
+            List<Map<String, String>> evidenceList = new ArrayList<>();
+            for (String url : urlArray) {
+                url = url.trim(); // 去除可能存在的空格
+                if (url.isEmpty()) {
+                    continue; // 跳过空字符串
+                }
+
+                Map<String, String> item = new LinkedHashMap<>(); // 保持顺序
+                // 从 URL 中提取文件名（例如 http://xxx.com/abc.png -> abc.png）
+                String fileName = url.substring(url.lastIndexOf('/') + 1);
+                // 如果文件名后带查询参数，则去除（如 abc.png?t=123 -> abc.png）
+                if (fileName.contains("?")) {
+                    fileName = fileName.substring(0, fileName.indexOf('?'));
+                }
+
+                item.put("name", fileName);
+                item.put("type", "image");    // 默认类型为图片
+                item.put("url", url);
+                evidenceList.add(item);
+            }
+
+            // 3. 将 List 转换为 JSON 字符串（使用 Fastjson 或 Jackson）
+            String evidenceUrlJson = JSON.toJSONString(evidenceList); // Fastjson
+            // 如果使用 Jackson，则为：new ObjectMapper().writeValueAsString(evidenceList);
+
+            //4. 整改截止时间为 10天
+            insertDO.setRectifyDeadlineTime(LocalDateTime.now().plusDays(10));
+            // 4. 设置到插入对象
+            insertDO.setEvidenceUrl(evidenceUrlJson);
+        } else {
+            // 没有 srcUrl 时使用默认的 JSON 字符串
+            insertDO.setEvidenceUrl("[{\"name\":\"违规图片1.png\",\"type\":\"image\",\"url\":\"http://112.47.127.21:59000/shunchang/avatar/676ab23c-47c0-4d20-860a-c0d2021861e1.png\"},{\"name\":\"违规图片2.png\",\"type\":\"image\",\"url\":\"http://112.47.127.21:59000/shunchang/avatar/29904d39-8a4f-4c15-ac28-5b34c3781f11.png\"}]");
+        }
 
         // ========= 7.草拟时间（当前时间） =========
         insertDO.setDraftTime(LocalDateTime.now());
@@ -412,6 +516,159 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
             throw new ServiceException(500, "上传文件失败");
         }
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long reviewAdd2(AddRectifyReviewReqVO2 reqVO) {
+
+        //1.自动产生预警
+        //配置新增预警参数
+        AddAiAlertMessageReq addAiAlertMessageReq =new AddAiAlertMessageReq();
+//        addAiAlertMessageReq.setSceneId("scene_088930");
+//        addAiAlertMessageReq.setAiAbilityCode("100600");
+//        addAiAlertMessageReq.setAlertType(13);
+//        addAiAlertMessageReq.setSrcUrl("http://112.47.127.21:59000/shunchang/avatar/29904d39-8a4f-4c15-ac28-5b34c3781f11.png");
+        Long aiAlertMessageId =  aiAlertMessageService.addAiAlertMessage(addAiAlertMessageReq);
+
+        log.info("[整改流程] 预警生成成功 aiAlertMessageId={}", aiAlertMessageId);
+
+        //2.利用预警产生整改台账
+        reqVO.setAiAlertMessageId(aiAlertMessageId);
+        reqVO.setEntId(1L);
+
+        AddRectifyReviewReqVO addRectifyReviewReqVO = BeanUtils.toBean(reqVO,AddRectifyReviewReqVO.class);
+        Long rectifyReviewId =  this.reviewAdd(addRectifyReviewReqVO);
+
+        log.info("[整改流程] 台账生成成功 rectifyReviewId={}", rectifyReviewId);
+
+        //获取整改台账
+        RectifyReviewDO rectifyReviewDO = rectifyReviewMapper.selectById(rectifyReviewId);
+        VerifyUtil.verifyNotNullWithMsg(rectifyReviewDO,"整改台账不存在");
+
+
+
+        //3. TODO 产生整改通知书
+        RectifyNoticeSaveReqVO rectifyNoticeSaveReqVO =new RectifyNoticeSaveReqVO();
+        rectifyNoticeSaveReqVO.setRectifyReviewId(rectifyReviewDO.getId());
+        rectifyNoticeSaveReqVO.setRectifyDeadline(rectifyReviewDO.getRectifyDeadlineTime().toLocalDate());
+        Long rectifyNoticeId = rectifyNoticeService.createRectifyNotice(rectifyNoticeSaveReqVO);
+
+        log.info("[整改流程] 通知书生成成功 rectifyNoticeId={}", rectifyNoticeId);
+
+        //4. 整改台账设置整改通知书id
+        rectifyReviewDO.setRectifyNoticeId(rectifyNoticeId);
+        rectifyReviewMapper.updateById(rectifyReviewDO);
+
+        // ================== 4. 汇总日志（重点） ==================
+        log.info("[整改流程完成] aiAlertMessageId={}, rectifyReviewId={}, rectifyNoticeId={}",
+                aiAlertMessageId, rectifyReviewId, rectifyNoticeId);
+        // ========= 13.返回主键 =========
+        return rectifyReviewDO.getId();
+    }
+
+    @Override
+    public ResponseEntity<byte[]> downloadRectifyNoticePdfBatch(List<Long> rectifyNoticeIds) throws IOException {
+        VerifyUtil.verifyNotNullWithMsg(rectifyNoticeIds, "ID不能为空");
+
+        // 1. 查询通知书数据
+        List<RectifyNoticeDO> list = rectifyNoticeMapper.selectBatchIds(rectifyNoticeIds);
+        log.info("批量通知书id："+rectifyNoticeIds);
+        VerifyUtil.verifyNotNullWithMsg(list, "通知书不存在");
+
+        // 2. 创建ZIP流
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ZipOutputStream zos = new ZipOutputStream(baos);
+
+        for (RectifyNoticeDO item : list) {
+            String html = item.getNoticeContent();
+            if (html == null) {
+                continue;
+            }
+
+            // 3. HTML → PDF
+            PdfGenerator pdfGenerator = new PdfGenerator();
+            byte[] pdfBytes = pdfGenerator.generatePdfResponse(html).getBody();
+            if (pdfBytes == null || pdfBytes.length == 0) {
+                log.warn("PDF生成失败，通知书ID：{}", item.getId());
+                continue;
+            }
+
+            // 4. 写入ZIP（文件名使用UTF-8，避免中文乱码）
+            String fileName = "整改通知书_" + item.getId() + ".pdf";
+            // ZIP内部文件名使用UTF-8编码
+            ZipEntry entry = new ZipEntry(fileName);
+//            ZipEntry entry = new ZipEntry(new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1));
+            zos.putNextEntry(entry);
+            zos.write(pdfBytes);
+            zos.closeEntry();
+        }
+
+        zos.close();
+
+        // 5. 返回ZIP（修复中文文件名编码问题）
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+        // 使用RFC 5987标准编码中文文件名
+        String fileName = "整改通知书.zip";
+        String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString())
+                .replace("+", "%20"); // 替换空格编码
+        headers.add("Content-Disposition",
+                String.format("attachment; filename=\"%s\"; filename*=%s",
+                        new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1),
+                        encodedFileName));
+
+        return new ResponseEntity<>(baos.toByteArray(), headers, HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long reviewIssue2(IssueReqVO reqVO) {
+        // 1. 查询台账
+        RectifyReviewDO reviewDO = rectifyReviewMapper.selectById(reqVO.getId());
+        if (reviewDO == null) {
+            throw exception("台账不存在");
+        }
+
+        // 2. 校验当前状态
+        if (!"待复审".equals(reviewDO.getReviewStatus())) {
+            throw exception("当前台账状态不是待复审，无法操作");
+        }
+
+        // 3. 校验 evidence_url 不为空
+//        if (reviewDO.getEvidenceUrl() == null || reviewDO.getEvidenceUrl().trim().isEmpty()) {
+//            throw exception("违规证据不能为空，无法审核通过");
+//        }
+
+        // 4. 更新复审状态、复审人、复审时间
+        reviewDO.setReviewStatus("已下发");               // 状态更新
+        reviewDO.setReviewBy(getLoginUserId());        // 当前登录用户ID
+        reviewDO.setReviewTime(LocalDateTime.now());     // 当前时间
+
+        rectifyReviewMapper.updateById(reviewDO);        // 保存复审信息
+
+        // 5.(已经产生了） 调用整改通知书生成接口
+//        RectifyNoticeSaveReqVO rectifyNoticeSaveReqVO =new RectifyNoticeSaveReqVO();
+//        //构造 通知书 的 插入VO
+//        rectifyNoticeSaveReqVO.setRectifyReviewId(reviewDO.getId());
+//        //通知书 整改截止时间为当前时间30天后
+//        rectifyNoticeSaveReqVO.setRectifyDeadline(LocalDate.from(LocalDateTime.now().plusDays(30)));
+//        Long noticeId = rectifyNoticeService.createRectifyNotice(rectifyNoticeSaveReqVO);
+
+        //5.创建企业整改记录
+        VerifyUtil.verifyNotNullWithMsg(reviewDO.getRectifyNoticeId(),"整改通知书不存在");
+        AddEntRectifyRecordReqVO addEntRectifyRecordReqVO = new AddEntRectifyRecordReqVO();
+        addEntRectifyRecordReqVO.setRectifyNoticeId(reviewDO.getRectifyNoticeId());
+
+        entRectifyRecordService.addEntRectifyRecord(addEntRectifyRecordReqVO);
+
+
+        //6.返回 整改台账id
+        return reviewDO.getId();
+    }
+
+//    private byte[] generatePdfBytes(String html) {
+//    }
 
 
     //    private List<EvidenceItem> parseEvidence(String evidenceUrl) {
