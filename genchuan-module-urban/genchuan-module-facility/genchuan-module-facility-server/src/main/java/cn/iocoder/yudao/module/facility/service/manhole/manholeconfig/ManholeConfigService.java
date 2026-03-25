@@ -1,10 +1,12 @@
 package cn.iocoder.yudao.module.facility.service.manhole.manholeconfig;
 
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.*;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholeconfig.ManholeConfigDO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jakarta.validation.Valid;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 窨井盖监测配置 Service 接口
@@ -63,4 +65,6 @@ public interface ManholeConfigService {
      */
     ManholeCoverConfigDetailRespVO getDetail(Long id, Long tenantId);
 
+    @Transactional(rollbackFor = Exception.class)
+    CommonResult<ManholeCoverConfigAddRespVO> addManholeCoverConfig(ManholeCoverConfigAddReqVO reqVO);
 }

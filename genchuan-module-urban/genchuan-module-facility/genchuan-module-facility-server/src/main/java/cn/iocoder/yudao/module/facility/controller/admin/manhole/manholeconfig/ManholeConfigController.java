@@ -126,4 +126,10 @@ public class ManholeConfigController {
         return CommonResult.success(manholeConfigService.getDetail(id, tenantId));
     }
 
+    @PostMapping("/add")
+    @Operation(summary = "新增窨井盖监测配置")
+    public CommonResult<ManholeCoverConfigAddRespVO> addConfig(@Validated @RequestBody ManholeCoverConfigAddReqVO reqVO) {
+        return manholeConfigService.addManholeCoverConfig(reqVO);
+    }
+
 }

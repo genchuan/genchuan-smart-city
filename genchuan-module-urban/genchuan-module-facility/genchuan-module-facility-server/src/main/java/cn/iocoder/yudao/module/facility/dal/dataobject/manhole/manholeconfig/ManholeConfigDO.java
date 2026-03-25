@@ -1,10 +1,7 @@
 package cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholeconfig;
 
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
-import com.baomidou.mybatisplus.annotation.KeySequence;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -27,7 +24,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ManholeConfigDO extends BaseDO {
 
-    @TableId
+    @TableId(type = IdType.AUTO)
     @Schema(description = "主键", requiredMode = Schema.RequiredMode.REQUIRED, example = "21008")
     private Long id;
 
