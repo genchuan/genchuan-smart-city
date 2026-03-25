@@ -1,6 +1,5 @@
 stages:
   - BuildAndPush
-  - Push
 
 variables:
   DOCKER_REGISTRY: "192.168.8.14"
