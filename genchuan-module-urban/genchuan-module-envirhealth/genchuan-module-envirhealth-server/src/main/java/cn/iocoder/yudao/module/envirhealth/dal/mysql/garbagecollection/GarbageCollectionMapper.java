@@ -299,7 +299,7 @@ public interface GarbageCollectionMapper extends BaseMapperX<GarbageCollectionDO
             "WHERE deleted = 0 " +
             "AND DATE(create_time) = '2026-02-26' " +
             "GROUP BY TO_CHAR(create_time, 'HH24:00') " +
-            "ORDER BY timePoint ASC")
+            "ORDER BY timePoint DESC")
     List<GarbageCollectionDailyTrendVO> selectDailyCollectionVolumeTrend();
 
     /**

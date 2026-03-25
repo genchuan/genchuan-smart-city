@@ -61,6 +61,9 @@ public class GarbageTransferPageReqVO extends PageParam {
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
 
+    @Schema(description = "流程状态")
+    private String progressStatus;
+
     @Schema(hidden = true)
     private Integer offset;
 

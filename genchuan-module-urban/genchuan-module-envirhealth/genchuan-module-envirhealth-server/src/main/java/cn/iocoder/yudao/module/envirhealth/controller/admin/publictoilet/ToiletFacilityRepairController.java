@@ -114,7 +114,7 @@ public class ToiletFacilityRepairController {
         return success(pageResult);
     }
 
-    @PostMapping("/upload-photos")
+    /*@PostMapping("/upload-photos")
     @Operation(summary = "上传多张图片")
     @PreAuthorize("@ss.hasPermission('envirhealth:toilet-facility-repair:update')")
     public CommonResult<List<String>> uploadPhotos(
@@ -140,7 +140,7 @@ public class ToiletFacilityRepairController {
             @RequestParam("photoUrl") String photoUrl) {
         toiletFacilityRepairService.deletePhoto(id, photoUrl);
         return success(true);
-    }
+    }*/
 
     @Operation(summary = "卡片/圆环图/柱状图统计(待维修)")
     @GetMapping("/chart/pending")

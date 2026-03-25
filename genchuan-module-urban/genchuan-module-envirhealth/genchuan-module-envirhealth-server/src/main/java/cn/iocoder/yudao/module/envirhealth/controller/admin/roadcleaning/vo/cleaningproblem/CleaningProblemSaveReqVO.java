@@ -45,4 +45,7 @@ public class CleaningProblemSaveReqVO {
     @Schema(description = "处置结果")
     private String handleResult;
 
+    @Schema(description = "现场照片URL")
+    private String localePhotoUrl;
+
 }
