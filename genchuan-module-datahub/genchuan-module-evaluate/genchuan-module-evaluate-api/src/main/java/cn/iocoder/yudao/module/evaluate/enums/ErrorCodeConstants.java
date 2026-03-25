@@ -66,4 +66,8 @@ public interface ErrorCodeConstants {
     ErrorCode COMMENT_STATISTIC_NOT_EXISTS = new ErrorCode(325_549, "巡查巡检统计不存在");
     ErrorCode COMMENT_RULE_NOT_EXISTS = new ErrorCode(325_550, "评分规则不存在");
     ErrorCode RULE_DETAIL_NOT_EXISTS = new ErrorCode(325_551, "评分规则明细不存在");
+    ErrorCode OBJECT_SCORE_NOT_EXISTS = new ErrorCode(325_552, "公司得分不存在");
+
+
+
 }

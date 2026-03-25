@@ -47,4 +47,18 @@
         ) AS grouped
     </select>
 
+    <!-- 从巡查表按 (systemId, itemId, objectId) 分组统计每个组合的真实数量，用于全量对账 -->
+    <select id="selectPatrolCountGroupByKeys" resultType="java.util.Map">
+        SELECT system_id AS systemId,
+               item_id AS itemId,
+               object_id AS objectId,
+               COUNT(*) AS count
+        FROM eval_patrol_inspection
+        WHERE deleted = 0
+          AND system_id IS NOT NULL
+          AND item_id IS NOT NULL
+          AND object_id IS NOT NULL
+        GROUP BY system_id, item_id, object_id
+    </select>
+
 </mapper>

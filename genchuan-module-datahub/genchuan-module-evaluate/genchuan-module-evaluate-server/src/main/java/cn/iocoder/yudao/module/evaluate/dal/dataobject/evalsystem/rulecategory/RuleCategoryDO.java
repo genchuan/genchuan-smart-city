@@ -34,7 +34,7 @@ public class RuleCategoryDO extends BaseDO {
      */
     private String name;
     /**
-     * 适用指标体系ID（关联eval_index_system.system_id）
+     * 适用指标体系ID（关联eval_index_system.id）
      */
     private String systemId;
     /**
@@ -42,7 +42,7 @@ public class RuleCategoryDO extends BaseDO {
      */
     private Integer itemCount;
     /**
-     * 状态ID（关联sys_status.status_id）
+     * 状态ID（关联sys_status.id）
      */
     private Integer statusId;
     /**
@@ -58,7 +58,7 @@ public class RuleCategoryDO extends BaseDO {
      */
     private String changeLog;
     /**
-     * 指标项名称ideval_rule_item.index_id关联“指标项表”
+     * 指标项名称ideval_rule_item.id关联“指标项表”
      */
     private Integer itemId;
     /**

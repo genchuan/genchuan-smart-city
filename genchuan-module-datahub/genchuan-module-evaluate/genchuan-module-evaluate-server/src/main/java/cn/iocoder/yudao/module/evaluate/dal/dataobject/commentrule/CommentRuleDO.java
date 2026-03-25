@@ -38,10 +38,6 @@ public class CommentRuleDO extends BaseDO {
      */
     private Long ruleCategoryId;
     /**
-     * 指标项ID(关联eval_index_item)
-     */
-    private Long itemId;
-    /**
      * 规则名称
      */
     private String ruleName;

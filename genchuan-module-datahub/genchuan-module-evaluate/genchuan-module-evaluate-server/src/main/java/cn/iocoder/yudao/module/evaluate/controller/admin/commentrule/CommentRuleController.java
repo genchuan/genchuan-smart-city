@@ -84,8 +84,7 @@ public class CommentRuleController {
     @Operation(summary = "获得评分规则主分页")
     @PreAuthorize("@ss.hasPermission('evaluate:comment-rule:query')")
     public CommonResult<PageResult<CommentRuleRespVO>> getCommentRulePage(@Valid CommentRulePageReqVO pageReqVO) {
-        PageResult<CommentRuleDO> pageResult = commentRuleService.getCommentRulePage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, CommentRuleRespVO.class));
+        return success(commentRuleService.getCommentRulePage(pageReqVO));
     }
 
     @GetMapping("/export-excel")
@@ -95,10 +94,9 @@ public class CommentRuleController {
     public void exportCommentRuleExcel(@Valid CommentRulePageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<CommentRuleDO> list = commentRuleService.getCommentRulePage(pageReqVO).getList();
+        List<CommentRuleRespVO> list = commentRuleService.getCommentRulePage(pageReqVO).getList();
         // 导出 Excel
-        ExcelUtils.write(response, "评分规则主.xls", "数据", CommentRuleRespVO.class,
-                        BeanUtils.toBean(list, CommentRuleRespVO.class));
+        ExcelUtils.write(response, "评分规则主.xls", "数据", CommentRuleRespVO.class, list);
     }
 
 }

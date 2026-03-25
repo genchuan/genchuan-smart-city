@@ -41,4 +41,67 @@
         </if>
     </select>
 
+    <!-- 根据体系ID和对象ID查询所有统计记录 -->
+    <select id="selectListBySystemIdAndObjectId" resultType="cn.iocoder.yudao.module.evaluate.dal.dataobject.commentstatistic.CommentStatisticDO">
+        SELECT * FROM eval_comment_statistic
+        WHERE deleted = 0
+        <if test="systemId != null">
+            AND system_id = #{systemId}
+        </if>
+        <if test="objectId != null">
+            AND object_id = #{objectId}
+        </if>
+    </select>
+
+    <!-- 查询统计表中所有不重复的 (systemId, objectId) 组合 -->
+    <select id="selectDistinctSystemIdAndObjectId" resultType="cn.iocoder.yudao.module.evaluate.dal.dataobject.commentstatistic.CommentStatisticDO">
+        SELECT system_id AS systemId, object_id AS objectId
+        FROM eval_comment_statistic
+        WHERE deleted = 0
+          AND system_id IS NOT NULL
+          AND object_id IS NOT NULL
+        GROUP BY system_id, object_id
+    </select>
+
+    <!-- 根据体系ID和对象ID查询统计记录，返回以 itemId 为键的 Map -->
+    <select id="selectMapBySystemIdAndObjectId" resultType="cn.iocoder.yudao.module.evaluate.dal.dataobject.commentstatistic.CommentStatisticDO">
+        SELECT * FROM eval_comment_statistic
+        WHERE deleted = 0
+          AND system_id = #{systemId}
+          AND object_id = #{objectId}
+    </select>
+
+    <!-- 查询每个(systemId, objectId)组合下最近一条巡查记录的userId -->
+    <select id="selectLatestUserIdBySystemIdAndObjectId" resultType="java.util.Map">
+        SELECT
+            pi.system_id AS systemId,
+            pi.object_id AS objectId,
+            pi.user_id AS userId
+        FROM eval_patrol_inspection pi
+        INNER JOIN (
+            SELECT system_id, object_id, MAX(create_time) AS max_create_time
+            FROM eval_patrol_inspection
+            WHERE deleted = 0
+              AND system_id IS NOT NULL
+              AND object_id IS NOT NULL
+            <if test="systemIds != null and systemIds.size() > 0">
+                AND system_id IN
+                <foreach collection="systemIds" item="sid" open="(" separator="," close=")">
+                    #{sid}
+                </foreach>
+            </if>
+            <if test="objectIds != null and objectIds.size() > 0">
+                AND object_id IN
+                <foreach collection="objectIds" item="oid" open="(" separator="," close=")">
+                    #{oid}
+                </foreach>
+            </if>
+            GROUP BY system_id, object_id
+        ) latest ON pi.system_id = latest.system_id
+                  AND pi.object_id = latest.object_id
+                  AND pi.create_time = latest.max_create_time
+        WHERE pi.deleted = 0
+          AND pi.system_id IS NOT NULL
+          AND pi.object_id IS NOT NULL
+    </select>
 </mapper>

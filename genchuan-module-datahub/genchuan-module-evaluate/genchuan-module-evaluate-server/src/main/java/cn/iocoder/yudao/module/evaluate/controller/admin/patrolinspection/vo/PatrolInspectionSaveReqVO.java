@@ -55,4 +55,7 @@ public class PatrolInspectionSaveReqVO {
     @Schema(description = "地址编码")
     private String addressCoding;
 
+    @Schema(description = "关联评价规则ID(关联eval_comment_rule.id)")
+    private Long ruleId;
+
 }

@@ -7,8 +7,13 @@ import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.indexcategor
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexcategory.IndexCategoryDO;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.indexcategory.IndexCategoryMapper;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.evaluate.enums.ErrorCodeConstants.INDEX_CATEGORY_NOT_EXISTS;
@@ -20,6 +25,7 @@ import static cn.iocoder.yudao.module.evaluate.enums.ErrorCodeConstants.INDEX_CA
  */
 @Service
 @Validated
+@Slf4j
 public class IndexCategoryServiceImpl implements IndexCategoryService {
 
     @Resource
@@ -27,27 +33,21 @@ public class IndexCategoryServiceImpl implements IndexCategoryService {
 
     @Override
     public Long createIndexCategory(IndexCategorySaveReqVO createReqVO) {
-        // 插入
         IndexCategoryDO indexCategory = BeanUtils.toBean(createReqVO, IndexCategoryDO.class);
         indexCategoryMapper.insert(indexCategory);
-        // 返回
         return indexCategory.getId();
     }
 
     @Override
     public void updateIndexCategory(IndexCategorySaveReqVO updateReqVO) {
-        // 校验存在
         validateIndexCategoryExists(updateReqVO.getId());
-        // 更新
         IndexCategoryDO updateObj = BeanUtils.toBean(updateReqVO, IndexCategoryDO.class);
         indexCategoryMapper.updateById(updateObj);
     }
 
     @Override
     public void deleteIndexCategory(Long id) {
-        // 校验存在
         validateIndexCategoryExists(id);
-        // 删除
         indexCategoryMapper.deleteById(id);
     }
 
@@ -65,6 +65,22 @@ public class IndexCategoryServiceImpl implements IndexCategoryService {
     @Override
     public PageResult<IndexCategoryDO> getIndexCategoryPage(IndexCategoryPageReqVO pageReqVO) {
         return indexCategoryMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public void updateBatchCategoryWeight(Map<String, BigDecimal> categoryWeights) {
+        if (categoryWeights == null || categoryWeights.isEmpty()) {
+            return;
+        }
+        indexCategoryMapper.updateBatchCategoryWeight(categoryWeights);
+    }
+
+    @Override
+    public List<IndexCategoryDO> getCategoryListBySystemIdFromCache(String systemUuid) {
+        if (systemUuid == null || systemUuid.isEmpty()) {
+            return List.of();
+        }
+        return indexCategoryMapper.selectListBySystemId(systemUuid);
     }
 
 }

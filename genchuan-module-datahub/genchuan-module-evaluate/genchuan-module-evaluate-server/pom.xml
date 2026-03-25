@@ -54,6 +54,11 @@
             <version>${revision}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>3.3.4</version> <!-- 请使用最新稳定版本 -->
+        </dependency>
         <!-- 业务组件 -->
         <dependency>
             <groupId>cn.iocoder.cloud</groupId>

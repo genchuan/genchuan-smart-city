@@ -212,34 +212,78 @@ public class IndexSystemServiceImpl implements IndexSystemService {
             throw exception(INDEX_SYSTEM_NOT_EXISTS);
         }
 
-        // 2. 查询分类列表（使用体系的 UUID 查询）
+        // 2. 回填创建人和更新人姓名
+        fillUserNames(baseInfo);
+
+        // 3. 查询分类列表（使用体系的 UUID 查询）
         List<IndexSystemDetailVO.CategoryVO> categories = indexSystemMapper.selectCategoriesBySystemId(baseInfo.getSystemUuid());
 
-        // 3. 提取分类ID列表（主键ID）
+        // 4. 提取分类ID列表（主键ID）
         List<Long> categoryIds = categories.stream()
                 .map(IndexSystemDetailVO.CategoryVO::getCategoryId)
                 .collect(Collectors.toList());
 
-        // 4. 批量查询指标项
+        // 5. 批量查询指标项
         if (!categoryIds.isEmpty()) {
             List<IndexSystemDetailVO.IndexItemVO> allItems = indexSystemMapper.selectItemsByCategoryIds(categoryIds);
 
-            // 5. 按分类ID分组
+            // 6. 按分类ID分组
             Map<Long, List<IndexSystemDetailVO.IndexItemVO>> itemsByCategory = allItems.stream()
                     .collect(Collectors.groupingBy(IndexSystemDetailVO.IndexItemVO::getCategoryId));
 
-            // 6. 将指标项设置到对应的分类中
+            // 7. 将指标项设置到对应的分类中
             categories.forEach(category ->
                     category.setItems(itemsByCategory.get(category.getCategoryId()))
             );
         }
 
-        // 7. 组装返回结果
+        // 8. 组装返回结果
         IndexSystemDetailVO detailVO = new IndexSystemDetailVO();
         detailVO.setBaseInfo(baseInfo);
         detailVO.setCategories(categories);
 
         return detailVO;
+    }
+
+    /**
+     * 回填创建人和更新人姓名
+     */
+    private void fillUserNames(IndexSystemDetailVO.BaseInfo baseInfo) {
+        List<String> userIds = new ArrayList<>();
+        if (StrUtil.isNotBlank(baseInfo.getCreator())) {
+            userIds.add(baseInfo.getCreator());
+        }
+        if (StrUtil.isNotBlank(baseInfo.getUpdater())) {
+            userIds.add(baseInfo.getUpdater());
+        }
+        if (userIds.isEmpty()) {
+            return;
+        }
+
+        // 转换为 Long 类型批量查询用户
+        List<Long> userIdLongs = userIds.stream()
+                .map(id -> Convert.toLong(id, null))
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+
+        if (!userIdLongs.isEmpty()) {
+            Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIdLongs);
+            if (StrUtil.isNotBlank(baseInfo.getCreator())) {
+                Long creatorId = Convert.toLong(baseInfo.getCreator());
+                AdminUserRespDTO creator = userMap.get(creatorId);
+                if (creator != null) {
+                    baseInfo.setCreateUserName(creator.getNickname());
+                }
+            }
+            if (StrUtil.isNotBlank(baseInfo.getUpdater())) {
+                Long updaterId = Convert.toLong(baseInfo.getUpdater());
+                AdminUserRespDTO updater = userMap.get(updaterId);
+                if (updater != null) {
+                    baseInfo.setUpdateUserName(updater.getNickname());
+                }
+            }
+        }
     }
 
     @Override

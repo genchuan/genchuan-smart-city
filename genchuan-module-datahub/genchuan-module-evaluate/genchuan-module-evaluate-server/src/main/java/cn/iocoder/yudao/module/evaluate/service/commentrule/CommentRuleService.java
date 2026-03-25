@@ -66,7 +66,7 @@ public interface CommentRuleService {
      * @param pageReqVO 分页查询
      * @return 评分规则主分页
      */
-    PageResult<CommentRuleDO> getCommentRulePage(CommentRulePageReqVO pageReqVO);
+    PageResult<CommentRuleRespVO> getCommentRulePage(CommentRulePageReqVO pageReqVO);
 
     /**
      * 根据 systemId 和 itemId 查询评分规则ID
