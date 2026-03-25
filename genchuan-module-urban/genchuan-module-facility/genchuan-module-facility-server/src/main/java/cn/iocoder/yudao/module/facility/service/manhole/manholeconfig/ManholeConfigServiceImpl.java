@@ -24,6 +24,7 @@ import org.springframework.validation.annotation.Validated;
 import java.math.BigDecimal;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.module.facility.enums.ErrorCodeConstants.MANHOLE_CONFIG_EXISTS;
 import static cn.iocoder.yudao.module.facility.enums.ErrorCodeConstants.MANHOLE_CONFIG_NOT_EXISTS;
 
 /**
@@ -92,69 +93,69 @@ public class ManholeConfigServiceImpl implements ManholeConfigService {
     /**
      * 保存监测配置（新增/编辑）
      */
-    @Transactional(rollbackFor = Exception.class)
-    public void saveConfig(ManholeConfigReqVO configVO) {
-
-        validateManholeConfigExists(configVO.getId());
-
-        LambdaQueryWrapperX<ManholeCoverDO> lambdaQueryWrapperX = new LambdaQueryWrapperX();
-        lambdaQueryWrapperX.eq(ManholeCoverDO::getCoverNo,configVO.getCoverNo());
-        ManholeCoverDO rs = manholeCoverMapper.selectOne(lambdaQueryWrapperX);
-        // 1. 唯一性校验
-        if (rs != null) {
-            throw exception("井盖编号已存在！");
-        }
-
-        LambdaQueryWrapperX<SysDeviceDO> sysDeviceDOLambdaQueryWrapperX = new LambdaQueryWrapperX();
-        sysDeviceDOLambdaQueryWrapperX.eq(SysDeviceDO::getDeviceCode,configVO.getDeviceCode());
-        SysDeviceDO sysDeviceDO  = sysDeviceMapper.selectOne(sysDeviceDOLambdaQueryWrapperX);
-
-        if (sysDeviceDO != null) {
-            throw exception("设备编号号已存在！");
-        }
-
-        // 2. 阈值合理性校验
-        if (configVO.getTiltAngleThreshold().compareTo(BigDecimal.ZERO) <= 0
-                || configVO.getTiltAngleThreshold().compareTo(BigDecimal.valueOf(90)) >= 0) {
-            throw exception("倾斜角度阈值需在0-90度之间！");
-        }
-
-        // 3. 保存井盖基础信息
-        ManholeCoverDO cover = new ManholeCoverDO();
-        cover.setCoverNo(configVO.getCoverNo());
-        cover.setRoadId(configVO.getRoadId());
-        if (configVO.getId() == null) {
-            manholeCoverMapper.insert(cover);
-        } else {
-            cover.setId(configVO.getId());
-            manholeCoverMapper.updateById(cover);
-        }
-
-        // 4. 保存监测配置
-        ManholeConfigDO config = new ManholeConfigDO();
-        config.setCoverId(cover.getId());
-        config.setCollectFrequency(configVO.getCollectFrequency());
-        config.setTiltAngleThreshold(configVO.getTiltAngleThreshold());
-        if (configVO.getConfigId() == null) {
-            manholeConfigMapper.insert(config);
-        } else {
-            config.setId(configVO.getConfigId());
-            manholeConfigMapper.updateById(config);
-        }
-
-        // 5. 保存监测主表
-        ManholeMonitorDO monitor = new ManholeMonitorDO();
-        monitor.setCoverId(cover.getId());
-        monitor.setDeviceId(configVO.getDeviceId());
-        monitor.setStaffId(configVO.getStaffId());
-        monitor.setRiskLevelId(configVO.getRiskLevelId());
-        if (configVO.getId() == null) {
-            monitorMapper.insert(monitor);
-        } else {
-            monitor.setId(configVO.getId());
-            monitorMapper.updateById(monitor);
-        }
-    }
+//    @Transactional(rollbackFor = Exception.class)
+//    public void saveConfig(ManholeConfigReqVO configVO) {
+//
+//        validateManholeConfigExists(configVO.getId());
+//
+//        LambdaQueryWrapperX<ManholeCoverDO> lambdaQueryWrapperX = new LambdaQueryWrapperX();
+//        lambdaQueryWrapperX.eq(ManholeCoverDO::getCoverNo,configVO.getCoverNo());
+//        ManholeCoverDO rs = manholeCoverMapper.selectOne(lambdaQueryWrapperX);
+//        // 1. 唯一性校验
+//        if (rs != null) {
+//            throw exception("井盖编号已存在！");
+//        }
+//
+//        LambdaQueryWrapperX<SysDeviceDO> sysDeviceDOLambdaQueryWrapperX = new LambdaQueryWrapperX();
+//        sysDeviceDOLambdaQueryWrapperX.eq(SysDeviceDO::getDeviceCode,configVO.getDeviceCode());
+//        SysDeviceDO sysDeviceDO  = sysDeviceMapper.selectOne(sysDeviceDOLambdaQueryWrapperX);
+//
+//        if (sysDeviceDO != null) {
+//            throw exception("设备编号号已存在！");
+//        }
+//
+//        // 2. 阈值合理性校验
+//        if (configVO.getTiltAngleThreshold().compareTo(BigDecimal.ZERO) <= 0
+//                || configVO.getTiltAngleThreshold().compareTo(BigDecimal.valueOf(90)) >= 0) {
+//            throw exception("倾斜角度阈值需在0-90度之间！");
+//        }
+//
+//        // 3. 保存井盖基础信息
+//        ManholeCoverDO cover = new ManholeCoverDO();
+//        cover.setCoverNo(configVO.getCoverNo());
+//        cover.setRoadId(configVO.getRoadId());
+//        if (configVO.getId() == null) {
+//            manholeCoverMapper.insert(cover);
+//        } else {
+//            cover.setId(configVO.getId());
+//            manholeCoverMapper.updateById(cover);
+//        }
+//
+//        // 4. 保存监测配置
+//        ManholeConfigDO config = new ManholeConfigDO();
+//        config.setCoverId(cover.getId());
+//        config.setCollectFrequency(configVO.getCollectFrequency());
+//        config.setTiltAngleThreshold(configVO.getTiltAngleThreshold());
+//        if (configVO.getConfigId() == null) {
+//            manholeConfigMapper.insert(config);
+//        } else {
+//            config.setId(configVO.getConfigId());
+//            manholeConfigMapper.updateById(config);
+//        }
+//
+//        // 5. 保存监测主表
+//        ManholeMonitorDO monitor = new ManholeMonitorDO();
+//        monitor.setCoverId(cover.getId());
+//        monitor.setDeviceId(configVO.getDeviceId());
+//        monitor.setStaffId(configVO.getStaffId());
+//        monitor.setRiskLevelId(configVO.getRiskLevelId());
+//        if (configVO.getId() == null) {
+//            monitorMapper.insert(monitor);
+//        } else {
+//            monitor.setId(configVO.getId());
+//            monitorMapper.updateById(monitor);
+//        }
+//    }
 
     @Override
     public PageResult<ManholeCoverConfigPageRespVO> getConfigPage(String coverId, Integer configStatus, String tenantId, Integer pageNo, Integer pageSize) {
@@ -173,6 +174,19 @@ public class ManholeConfigServiceImpl implements ManholeConfigService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CommonResult<ManholeCoverConfigAddRespVO> addManholeCoverConfig(ManholeCoverConfigAddReqVO reqVO) {
+
+        LambdaQueryWrapperX<ManholeCoverDO> lq = new LambdaQueryWrapperX();
+        lq.eq(ManholeCoverDO::getId, reqVO.getCoverId());
+        ManholeCoverDO manholeCoverDO = manholeCoverMapper.selectOne(lq);
+        if(manholeCoverDO == null){
+            throw exception(MANHOLE_CONFIG_NOT_EXISTS);
+        }
+        LambdaQueryWrapperX<ManholeConfigDO> lq2 = new LambdaQueryWrapperX();
+        lq2.eq(ManholeConfigDO::getCoverId, reqVO.getCoverId());
+        ManholeConfigDO manholeConfigDO =manholeConfigMapper.selectOne(lq2);
+        if (manholeConfigDO != null){
+            throw exception(MANHOLE_CONFIG_EXISTS);
+        }
         ManholeConfigDO configDO = new ManholeConfigDO();
 
         // 1. 主键 & 井盖ID

@@ -92,12 +92,12 @@ public class ManholeConfigController {
     /**
      * 保存监测配置
      */
-    @PostMapping("/saveConfig")
-    @Operation(summary = "保存监测配置", description = "新增/编辑窨井盖监测参数配置")
-    public CommonResult<String> saveConfig(@Valid @RequestBody ManholeConfigReqVO configVO) {
-        manholeConfigService.saveConfig(configVO);
-        return CommonResult.success("配置保存成功！");
-    }
+//    @PostMapping("/saveConfig")
+//    @Operation(summary = "保存监测配置", description = "新增/编辑窨井盖监测参数配置")
+//    public CommonResult<String> saveConfig(@Valid @RequestBody ManholeConfigReqVO configVO) {
+//        manholeConfigService.saveConfig(configVO);
+//        return CommonResult.success("配置保存成功！");
+//    }
 
     /**
      * 井盖配置分页查询

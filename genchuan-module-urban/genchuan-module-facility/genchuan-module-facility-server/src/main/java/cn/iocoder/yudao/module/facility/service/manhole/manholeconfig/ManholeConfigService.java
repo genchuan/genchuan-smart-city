@@ -53,7 +53,7 @@ public interface ManholeConfigService {
      */
     PageResult<ManholeConfigDO> getManholeConfigPage(ManholeConfigPageReqVO pageReqVO);
 
-    void saveConfig(ManholeConfigReqVO configVO);
+//    void saveConfig(ManholeConfigReqVO configVO);
     /**
      * 获得窨井盖监测配置分页
      * @return 窨井盖监测配置分页
@@ -64,7 +64,10 @@ public interface ManholeConfigService {
      * @return 窨井盖监测配置详情
      */
     ManholeCoverConfigDetailRespVO getDetail(Long id, Long tenantId);
-
+    /**
+     * 添加窨井盖监测配置
+     * @return 窨井盖监测配置详情
+     */
     @Transactional(rollbackFor = Exception.class)
     CommonResult<ManholeCoverConfigAddRespVO> addManholeCoverConfig(ManholeCoverConfigAddReqVO reqVO);
 }
