@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.TransferOperationMapper">
 
-    <resultMap id="TransferOperationDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.detail.TransferOperationDetailDO">
+    <resultMap id="TransferOperationDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferOperationDetailDO">
         <!-- 基础字段（继承TransferOperationDO） -->
         <id column="id" property="id"/>
         <result column="operation_id" property="operationId"/>

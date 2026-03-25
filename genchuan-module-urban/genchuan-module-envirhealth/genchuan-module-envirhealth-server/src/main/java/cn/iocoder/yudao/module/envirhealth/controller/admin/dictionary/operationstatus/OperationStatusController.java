@@ -11,7 +11,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.operation
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.operationstatus.vo.OperationStatusSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.OperationStatusDO;
 import cn.iocoder.yudao.module.envirhealth.service.dictionary.operationstatus.OperationStatusService;
-import cn.iocoder.yudao.module.envirhealth.util.vo.OptionVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

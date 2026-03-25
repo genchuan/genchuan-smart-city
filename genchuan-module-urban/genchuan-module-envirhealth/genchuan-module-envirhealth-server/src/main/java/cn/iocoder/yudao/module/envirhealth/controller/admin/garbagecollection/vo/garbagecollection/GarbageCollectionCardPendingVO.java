@@ -1,6 +1,6 @@
 package cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection;
 
-import cn.iocoder.yudao.module.envirhealth.util.vo.NameValueVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.NameValueVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

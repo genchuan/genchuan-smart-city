@@ -1,9 +1,9 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle;
 
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.violationstatus.ViolationStatusPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.violationstatus.ViolationStatusRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.violationstatus.ViolationStatusSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +31,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.ViolationStatusDO;
 import cn.iocoder.yudao.module.envirhealth.service.vehicle.violationstatus.ViolationStatusService;
 
-@Tag(name = "管理后台 - 违规状态字典表")
+@Tag(name = "字典表 - 违规状态")
 @RestController
 @RequestMapping("/envirhealth/violation-status")
 @Validated
@@ -94,4 +94,14 @@ public class ViolationStatusController {
                         BeanUtils.toBean(list, ViolationStatusRespVO.class));
     }
 
-}*/
+    /**
+     * 获得违规状态字典下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得违规状态字典(下拉框)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:violation-status:query')")
+    public CommonResult<List<OptionVO>> getViolationStatusOptions() {
+        return success(violationStatusService.getViolationStatusOptions());
+    }
+}

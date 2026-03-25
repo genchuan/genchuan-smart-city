@@ -9,9 +9,9 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.t
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.TransferReservePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.TransferReserveSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferReserveDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.detail.TransferReserveDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferReserveDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.TransferReserveMapper;
-import cn.iocoder.yudao.module.envirhealth.util.codegenerator.garbagetransfer.TransferReserveCodeGenerator;
+import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.garbagetransfer.TransferReserveCodeGenerator;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

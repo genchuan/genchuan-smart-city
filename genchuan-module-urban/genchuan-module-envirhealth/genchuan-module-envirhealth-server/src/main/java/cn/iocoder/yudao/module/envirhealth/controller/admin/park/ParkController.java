@@ -6,12 +6,13 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.park.ParkPageReqVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.park.ParkRespVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.park.ParkSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.ParkDashboardVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.ParkPageReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.ParkRespVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.park.vo.ParkSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.park.ParkDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.park.detail.ParkDetailDO;
-import cn.iocoder.yudao.module.envirhealth.service.park.park.ParkService;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.park.ParkDetailDO;
+import cn.iocoder.yudao.module.envirhealth.service.park.ParkService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -94,7 +96,7 @@ public class ParkController {
         response.setContentType("application/vnd.ms-excel;charset=UTF-8");
         response.setHeader("Content-Disposition",
                 "attachment;filename=" + URLEncoder.encode("公园_" +
-                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".xls", "UTF-8"));
+                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".xls", StandardCharsets.UTF_8));
         response.setCharacterEncoding("UTF-8");
 
         // 导出 Excel
@@ -108,5 +110,12 @@ public class ParkController {
     public CommonResult<PageResult<ParkDetailDO>> getParkDetailPage(@Valid ParkPageReqVO pageReqVO) {
         PageResult<ParkDetailDO> pageResult = parkService.getParkDetailPage(pageReqVO);
         return success(pageResult);
+    }
+
+    @GetMapping("/chart/dashboard")
+    @Operation(summary = "卡片/圆环图/柱状图/统计(全部)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:park:query')")
+    public CommonResult<ParkDashboardVO> getParkDashboardDashboard() {
+        return success(parkService.getParkDashboardDashboard());
     }
 }

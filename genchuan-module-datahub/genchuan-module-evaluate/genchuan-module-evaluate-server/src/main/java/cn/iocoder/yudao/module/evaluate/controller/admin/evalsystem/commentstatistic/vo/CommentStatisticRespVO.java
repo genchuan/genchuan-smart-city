@@ -1,11 +1,13 @@
 package cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.commentstatistic.vo;
 
+import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
+import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import java.util.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
-import com.alibaba.excel.annotation.*;
+
 
 @Schema(description = "管理后台 - 巡查巡检统计 Response VO")
 @Data
@@ -67,5 +69,29 @@ public class CommentStatisticRespVO {
     @Schema(description = "状态: 1：待审核中，2：审核通过，3：不用审核", example = "1")
     @ExcelProperty("状态: 1：待审核中，2：审核通过，3：不用审核")
     private String status;
+
+    @Schema(description = "统计规则ID（关联eval_comment_rule.id)")
+    @ExcelProperty("统计规则ID")
+    private Long ruleId;
+
+    @Schema(description = "体系id（关联体系表主键id）")
+    @ExcelProperty("体系id")
+    private Long systemId;
+
+    @Schema(description = "指标项名称")
+    @ExcelProperty("指标项名称")
+    private String itemName;
+
+    @Schema(description = "评价对象名称")
+    @ExcelProperty("评价对象名称")
+    private String objectName;
+
+    @Schema(description = "规则名称")
+    @ExcelProperty("规则名称")
+    private String ruleName;
+
+    @Schema(description = "体系名称")
+    @ExcelProperty("体系名称")
+    private String systemName;
 
 }

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.task.TaskMapper">
 
-    <resultMap id="TaskDetailWithPublicToiletResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.detail.TaskDetailWithPublicToiletDO">
+    <resultMap id="TaskDetailWithPublicToiletResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.TaskDetailWithPublicToiletDO">
 
         <id column="id" property="id"/>
         <result column="task_id" property="taskId"/>
@@ -60,7 +60,7 @@
     </select>
 
 
-    <resultMap id="TaskDetailWithGarbageTransferResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.detail.TaskDetailWithGarbageTransferDO">
+    <resultMap id="TaskDetailWithGarbageTransferResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.TaskDetailWithGarbageTransferDO">
         <!-- 继承TaskDO的基础字段 -->
         <id column="id" property="id"/>
         <result column="task_id" property="taskId"/>
@@ -130,7 +130,7 @@
 
 
     <resultMap id="TaskDetailWithPublicInstitutionResultMap"
-               type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.detail.TaskDetailWithPublicInstitutionDO">
+               type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.TaskDetailWithPublicInstitutionDO">
         <id column="id" property="id"/>
         <result column="task_id" property="taskId"/>
         <result column="task_type_id" property="taskTypeId"/>

@@ -31,8 +31,6 @@
         <module>genchuan-module-marketsupervision</module>
         <module>genchuan-module-datahub</module>
         <module>genchuan-module-park</module>
-
-
     </modules>
 
     <name>${project.artifactId}</name>

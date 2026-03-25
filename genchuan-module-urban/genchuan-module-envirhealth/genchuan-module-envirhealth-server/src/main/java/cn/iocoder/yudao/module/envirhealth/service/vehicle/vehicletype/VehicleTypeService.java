@@ -4,7 +4,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicletype.VehicleTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehicletype.VehicleTypeSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.VehicleTypeDO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 车辆类型字典 Service 接口
@@ -51,4 +54,9 @@ public interface VehicleTypeService {
      */
     PageResult<VehicleTypeDO> getVehicleTypePage(VehicleTypePageReqVO pageReqVO);
 
+    /**
+     * 获得车辆类型字典下拉框选项
+     * @return 下拉框选项列表
+     */
+    List<OptionVO> getVehicleTypeOptions();
 }

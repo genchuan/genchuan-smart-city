@@ -7,11 +7,15 @@ import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.indexitem.vo
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexitem.IndexItemDO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * 指标项 Mapper
@@ -80,4 +84,52 @@ public interface IndexItemMapper extends BaseMapperX<IndexItemDO> {
         // 此处仅做占位，避免编译错误
         return 1;
     }
+
+    // ========== 按业务UUID查询指标项（itemId 是 String 类型） ==========
+    default IndexItemDO selectByItemId(String itemId) {
+        if (itemId == null) {
+            return null;
+        }
+        return selectOne(new LambdaQueryWrapper<IndexItemDO>()
+                .eq(IndexItemDO::getItemId, itemId)
+                .eq(IndexItemDO::getDeleted, 0));
+    }
+
+    // ========== 批量按业务UUID查询指标项 ==========
+    default List<IndexItemDO> selectByItemIds(List<String> itemIds) {
+        if (itemIds == null || itemIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return selectList(new LambdaQueryWrapper<IndexItemDO>()
+                .in(IndexItemDO::getItemId, itemIds)
+                .eq(IndexItemDO::getDeleted, 0));
+    }
+
+    /**
+     * 根据分类ID集合批量查询指标项
+     *
+     * @param categoryIds 分类ID集合
+     * @return 指标项列表
+     */
+    List<IndexItemDO> selectListByCategoryIds(@Param("categoryIds") Set<String> categoryIds);
+
+    /**
+     * 批量更新指标项的权重（用于计算时自动归一化）
+     *
+     * @param itemWeights itemId -> 归一化后的权重
+     */
+    default void updateBatchItemWeight(Map<Long, BigDecimal> itemWeights) {
+        if (itemWeights == null || itemWeights.isEmpty()) {
+            return;
+        }
+        for (Map.Entry<Long, BigDecimal> entry : itemWeights.entrySet()) {
+            updateItemWeightById(entry.getKey(), entry.getValue());
+        }
+    }
+
+    /**
+     * 根据主键ID更新权重
+     */
+    int updateItemWeightById(@Param("id") Long id, @Param("weight") BigDecimal weight);
+
 }

@@ -8,9 +8,9 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.roadcleaning.vo.clea
 import cn.iocoder.yudao.module.envirhealth.controller.admin.roadcleaning.vo.cleaningproblem.CleaningProblemPendingRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.roadcleaning.vo.cleaningproblem.CleaningProblemSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning.CleaningProblemDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning.Detail.CleaningProblemDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning.CleaningProblemDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.roadcleaning.CleaningProblemMapper;
-import cn.iocoder.yudao.module.envirhealth.util.codegenerator.roadcleaning.CleaningProblemCodeGenerator;
+import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.roadcleaning.CleaningProblemCodeGenerator;
 import com.alibaba.nacos.client.naming.utils.CollectionUtils;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;

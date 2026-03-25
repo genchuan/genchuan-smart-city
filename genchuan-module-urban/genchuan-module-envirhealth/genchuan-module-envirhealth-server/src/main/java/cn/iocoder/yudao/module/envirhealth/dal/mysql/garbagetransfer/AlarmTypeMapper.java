@@ -3,8 +3,8 @@ package cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.alarmtype.AlarmTypePageReqVO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.AlarmTypeDO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.alarmtype.vo.AlarmTypePageReqVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.AlarmTypeDO;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

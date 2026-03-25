@@ -8,7 +8,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.facility.
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.facility.vo.FacilitySaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.FacilityDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.dictionary.FacilityMapper;
-import cn.iocoder.yudao.module.envirhealth.util.vo.OptionVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;

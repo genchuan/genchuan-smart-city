@@ -5,16 +5,14 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.GarbageTransferDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.detail.GarbageTransferDetailDO;
-import cn.iocoder.yudao.module.envirhealth.util.vo.BarItemVO;
-import cn.iocoder.yudao.module.envirhealth.util.vo.LineItemVO;
-import cn.iocoder.yudao.module.envirhealth.util.vo.PieItemVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.GarbageTransferDetailDO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.BarItemVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.PieItemVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 垃圾转运站 Mapper

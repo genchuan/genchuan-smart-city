@@ -1,9 +1,9 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle;
 
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.workstatus.WorkStatusPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.workstatus.WorkStatusRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.workstatus.WorkStatusSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +31,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.WorkStatusDO;
 import cn.iocoder.yudao.module.envirhealth.service.vehicle.workstatus.WorkStatusService;
 
-@Tag(name = "管理后台 - 作业状态字典表")
+@Tag(name = "字典表 - 作业状态")
 @RestController
 @RequestMapping("/envirhealth/work-status")
 @Validated
@@ -94,4 +94,14 @@ public class WorkStatusController {
                         BeanUtils.toBean(list, WorkStatusRespVO.class));
     }
 
-}*/
+    /**
+     * 获得作业状态字典下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得作业状态字典(下拉框)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:work-status:query')")
+    public CommonResult<List<OptionVO>> getWorkStatusOptions() {
+        return success(workStatusService.getWorkStatusOptions());
+    }
+}
