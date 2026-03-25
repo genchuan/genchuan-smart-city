@@ -12,6 +12,7 @@ import cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholeconfig.ManholeC
 import cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholecover.ManholeCoverMapper;
 import cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholemonitor.ManholeMonitorMapper;
 import cn.iocoder.yudao.module.facility.dal.mysql.sysdevice.SysDeviceMapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
@@ -326,6 +327,40 @@ public class ManholeConfigServiceImpl implements ManholeConfigService {
         respVO.setTenantId(reqVO.getTenantId());
 
         return CommonResult.success(respVO);
+    }
+    /**
+     * 删除窨井盖配置
+     *
+     * @param configId 配置ID
+     * @param reqVO 删除信息
+     * @return 删除结果
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult<String> deleteManholeCoverConfig(String configId, ManholeCoverConfigDeleteReqVO reqVO) {
+        // 1. 校验配置是否存在（租户隔离）
+        LambdaQueryWrapperX<ManholeConfigDO> queryWrapper = new LambdaQueryWrapperX<>();
+        queryWrapper.eq(ManholeConfigDO::getId, Long.valueOf(configId));
+        queryWrapper.eq(ManholeConfigDO::getTenantId, Long.valueOf(reqVO.getTenantId()));
+        ManholeConfigDO configDO = manholeConfigMapper.selectOne(queryWrapper);
+
+        // 2. 不存在抛异常
+        if (configDO == null) {
+            throw exception(MANHOLE_CONFIG_NOT_EXISTS);
+        }
+
+        // 3. 🔥 核心修复：手动逻辑删除（绕过插件，强制更新deleted=1）
+        LambdaUpdateWrapper<ManholeConfigDO> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(ManholeConfigDO::getId, configId);
+        updateWrapper.eq(ManholeConfigDO::getTenantId, reqVO.getTenantId());
+        // 强制设置删除标志
+        updateWrapper.set(ManholeConfigDO::getDeleted, true);
+
+        // 执行更新
+        manholeConfigMapper.update(null, updateWrapper);
+
+        // 4. 返回成功
+        return CommonResult.success(configId);
     }
 
 }

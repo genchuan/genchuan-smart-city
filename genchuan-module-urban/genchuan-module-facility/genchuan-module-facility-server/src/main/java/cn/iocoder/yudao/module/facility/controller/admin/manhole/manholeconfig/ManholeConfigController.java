@@ -144,4 +144,15 @@ public class ManholeConfigController {
         return manholeConfigService.editManholeCoverConfig(reqVO);
     }
 
+    /**
+     * 窨井盖监测配置删除
+     */
+    @DeleteMapping("delete/{configId}")
+    @Operation(summary = "窨井盖监测配置删除")
+    public CommonResult<String> deleteManholeConfig(
+            @PathVariable("configId") String configId,
+            @Validated ManholeCoverConfigDeleteReqVO reqVO) {
+        return manholeConfigService.deleteManholeCoverConfig(configId, reqVO);
+    }
+
 }
