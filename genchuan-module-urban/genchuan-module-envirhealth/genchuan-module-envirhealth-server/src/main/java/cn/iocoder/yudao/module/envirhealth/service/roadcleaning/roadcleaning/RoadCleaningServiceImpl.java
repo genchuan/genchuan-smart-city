@@ -1,19 +1,25 @@
 package cn.iocoder.yudao.module.envirhealth.service.roadcleaning.roadcleaning;
 
+import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.roadcleaning.vo.roadcleaning.*;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.ToolDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning.RoadCleaningDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning.HourlyCompletionDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning.RoadCleaningDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.UserDO;
+import cn.iocoder.yudao.module.envirhealth.dal.mysql.dictionary.ToolMapper;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.roadcleaning.CleaningProblemMapper;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.roadcleaning.RoadCleaningMapper;
+import cn.iocoder.yudao.module.envirhealth.dal.mysql.user.UserMapper;
 import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.roadcleaning.RoadCleaningCodeGenerator;
 import cn.iocoder.yudao.module.envirhealth.framework.util.vo.BarItemVO;
 import cn.iocoder.yudao.module.envirhealth.framework.util.vo.CompletionRatePointVO;
 import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import cn.iocoder.yudao.module.envirhealth.framework.util.vo.StatisticsRespVO;
+import com.alibaba.fastjson.JSON;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,6 +28,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.ROAD_CLEANING_BATCH_ADJUST_DIMENSION_INVALID;
@@ -45,6 +52,12 @@ public class RoadCleaningServiceImpl implements RoadCleaningService {
 
     @Resource
     private CleaningProblemMapper cleaningProblemMapper;
+
+    @Resource
+    private UserMapper userMapper;
+
+    @Resource
+    private ToolMapper toolMapper;
 
     @Override
     public Long createRoadCleaning(RoadCleaningSaveReqVO createReqVO) {
@@ -133,8 +146,78 @@ public class RoadCleaningServiceImpl implements RoadCleaningService {
         }
 
         pageReqVO.setOffset(pageReqVO.getPageNo(), pageReqVO.getPageSize());
-
         List<RoadCleaningDetailDO> list = roadCleaningMapper.selectDetailPage(pageReqVO);
+
+        // ====================== 核心逻辑：Java层处理JSON ======================
+        // 1. 收集所有人员ID、工具ID
+        Set<String> allStaffIds = new HashSet<>();
+        Set<String> allToolIds = new HashSet<>();
+
+        for (RoadCleaningDetailDO detail : list) {
+            // 解析人员 JSON 数组
+            String staffIdsJson = detail.getStaffIds();
+            if (staffIdsJson != null && !staffIdsJson.isEmpty()) {
+                try {
+                    List<String> staffIds = JSON.parseArray(staffIdsJson, String.class);
+                    allStaffIds.addAll(staffIds);
+                } catch (Exception ignored) {}
+            }
+
+            // 解析工具 JSON 数组
+            String toolIdsJson = detail.getToolIds();
+            if (toolIdsJson != null && !toolIdsJson.isEmpty()) {
+                try {
+                    List<String> toolIds = JSON.parseArray(toolIdsJson, String.class);
+                    allToolIds.addAll(toolIds);
+                } catch (Exception ignored) {}
+            }
+        }
+
+        // 2. 批量查询名称（性能最优）
+        Map<String, String> staffNameMap = new HashMap<>();
+        if (!CollectionUtils.isEmpty(allStaffIds)) {
+            List<UserDO> users = userMapper.selectList(
+                    new LambdaQueryWrapperX<UserDO>()
+                            .in(UserDO::getUserId, allStaffIds)
+                            .eq(UserDO::getDeleted, 0)
+            );
+            for (UserDO user : users) {
+                staffNameMap.put(user.getUserId().toString(), user.getUserName());
+            }
+        }
+
+        Map<String, String> toolNameMap = new HashMap<>();
+        if (!CollectionUtils.isEmpty(allToolIds)) {
+            List<ToolDO> tools = toolMapper.selectList(
+                    new LambdaQueryWrapperX<ToolDO>()
+                            .in(ToolDO::getSysToolId, allToolIds)
+                            .eq(ToolDO::getDeleted, 0)
+            );
+            for (ToolDO tool : tools) {
+                toolNameMap.put(tool.getSysToolId().toString(), tool.getName());
+            }
+        }
+
+        // 3. 循环赋值名称字符串
+        for (RoadCleaningDetailDO detail : list) {
+            // 拼接人员名称
+            List<String> staffIds = JSON.parseArray(detail.getStaffIds(), String.class);
+            String staffNames = staffIds.stream()
+                    .map(id -> staffNameMap.getOrDefault(id, ""))
+                    .filter(StrUtil::isNotBlank)
+                    .collect(Collectors.joining(","));
+            detail.setStaffsNameStr(staffNames);
+
+            // 拼接工具名称
+            List<String> toolIds = JSON.parseArray(detail.getToolIds(), String.class);
+            String toolNames = toolIds.stream()
+                    .map(id -> toolNameMap.getOrDefault(id, ""))
+                    .filter(StrUtil::isNotBlank)
+                    .collect(Collectors.joining(","));
+            detail.setToolsNameStr(toolNames);
+        }
+        // ====================================================================
+
         return new PageResult<>(list, total);
     }
 
