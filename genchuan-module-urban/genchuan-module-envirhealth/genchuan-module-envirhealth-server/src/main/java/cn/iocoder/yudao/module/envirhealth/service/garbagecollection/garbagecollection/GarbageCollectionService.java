@@ -4,9 +4,9 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagecollection.vo.garbagecollection.*;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.importer.vo.ImportRespVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.GarbageCollectionDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.detail.GarbageCollectionDetailDO;
-import cn.iocoder.yudao.module.envirhealth.util.vo.OptionVO;
-import cn.iocoder.yudao.module.envirhealth.util.vo.StatisticsRespVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.GarbageCollectionDetailDO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.StatisticsRespVO;
 import jakarta.validation.Valid;
 
 import java.time.LocalDateTime;

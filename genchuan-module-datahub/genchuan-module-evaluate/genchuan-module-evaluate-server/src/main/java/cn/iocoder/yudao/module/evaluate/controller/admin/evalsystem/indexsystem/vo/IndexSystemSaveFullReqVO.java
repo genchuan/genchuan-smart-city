@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 public class IndexSystemSaveFullReqVO {
 
-    @Schema(description = "指标体系ID（UUID），新增时为空，修改时必填", example = "system_005")
+    @Schema(description = "指标体系ID（主键id），新增时为空，修改时必填", example = "1")
     private String systemId;
 
     @Schema(description = "体系名称", example = "社会组织评估体系")
@@ -38,7 +38,7 @@ public class IndexSystemSaveFullReqVO {
     @Schema(description = "管理后台 - 指标分类（含指标项）VO")
     @Data
     public static class CategoryVO {
-        @Schema(description = "指标分类ID（UUID），新增时为空，修改时必填", example = "cate_005")
+        @Schema(description = "指标分类ID（指标分类表中主键id），新增时为空，修改时必填", example = "1")
         private String categoryId;
 
         @Schema(description = "分类名称", example = "内部治理")
@@ -58,7 +58,7 @@ public class IndexSystemSaveFullReqVO {
     @Schema(description = "管理后台 - 指标项 VO")
     @Data
     public static class IndexItemVO {
-        @Schema(description = "指标项ID（UUID），新增时为空，修改时必填", example = "item_005")
+        @Schema(description = "指标项ID（指标表中主键id），新增时为空，修改时必填", example = "1")
         private String itemId;
 
         @Schema(description = "指标项名称", example = "章程制度完善度")
@@ -78,5 +78,11 @@ public class IndexSystemSaveFullReqVO {
 
         @Schema(description = "排序序号", example = "1")
         private Integer sortNo;
+
+        @Schema(description = "规则分类ID(关联eval_rule_category主键id)", example = "1")
+        private Long commentCategoryId;
+
+        @Schema(description = "评价规则ID(关联eval_comment_rule主键id)", example = "1")
+        private Long commentRuleId;
     }
 }

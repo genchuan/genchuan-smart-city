@@ -3765,10 +3765,70 @@ create table eval_patrol_inspection
 )
     comment '巡查巡检表' collate = utf8mb4_unicode_ci
                          row_format = DYNAMIC;
+CREATE TABLE eval_comment_rule (
+                           id BIGINT AUTO_INCREMENT COMMENT '主键ID' PRIMARY KEY,
+                           system_id BIGINT NOT NULL COMMENT '指标体系ID(关联eval_index_system)',
+                           rule_category_id BIGINT NOT NULL COMMENT '规则分类ID(关联eval_rule_category)',
+                           item_id BIGINT NOT NULL COMMENT '指标项ID(关联eval_index_item)',
+                           rule_name VARCHAR(100) NOT NULL COMMENT '规则名称',
+                           rule_type TINYINT DEFAULT 0 NULL COMMENT '规则类型（1=加分，2=扣分）',
+                           status TINYINT DEFAULT 1 NULL COMMENT '状态（1=启用，2=停用）',
+                           apply_object_type VARCHAR(50) NULL COMMENT '适用对象类型（如：网格/企业/个人）',
+                           effective_start_time DATETIME NULL COMMENT '生效开始时间',
+                           effective_end_time DATETIME NULL COMMENT '生效结束时间',
+                           status_change_remark VARCHAR(200) NULL COMMENT '状态变更备注',
+                           creator VARCHAR(64) DEFAULT '' NULL COMMENT '创建者',
+                           updater VARCHAR(64) DEFAULT '' NULL COMMENT '更新者',
+                           deleted BIT DEFAULT b'0' NULL COMMENT '删除标识',
+                           tenant_id BIGINT DEFAULT 1 NULL COMMENT '租户ID',
+                           create_time DATETIME DEFAULT CURRENT_TIMESTAMP NULL COMMENT '创建时间',
+                           update_time DATETIME DEFAULT CURRENT_TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                           operation_log MEDIUMTEXT NULL COMMENT '操作变更日志'
+) COMMENT '评分规则主表' COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
+
+-- 索引优化
+CREATE INDEX idx_system_category_status ON eval_comment_rule (system_id, rule_category_id, status);
+
+CREATE TABLE eval_rule_detail (
+                                  id BIGINT AUTO_INCREMENT COMMENT '主键ID' PRIMARY KEY,
+                                  rule_id BIGINT NOT NULL COMMENT '规则ID(eval_comment_rule.id)',
+                                  min_value DECIMAL(18,6) NULL COMMENT '区间最小值（null表示无下限）',
+                                  max_value DECIMAL(18,6) NULL COMMENT '区间最大值（null表示无上限）',
+                                  operator_min VARCHAR(10) DEFAULT '>=' NULL COMMENT '最小值运算符（>=、>）',
+                                  operator_max VARCHAR(10) DEFAULT '<=' NULL COMMENT '最大值运算符（<=、<）',
+                                  score DECIMAL(10,2) NOT NULL COMMENT '该区间对应的分数',
+                                  sort_order INT DEFAULT 0 NULL COMMENT '排序优先级（值越小越优先匹配）',
+                                  remark VARCHAR(200) NULL COMMENT '规则描述（如：=0、>1且<5）',
+                                  creator VARCHAR(64) DEFAULT '' NULL COMMENT '创建者',
+                                  updater VARCHAR(64) DEFAULT '' NULL COMMENT '更新者',
+                                  deleted BIT DEFAULT b'0' NULL COMMENT '删除标识',
+                                  create_time DATETIME DEFAULT CURRENT_TIMESTAMP NULL COMMENT '创建时间',
+                                  update_time DATETIME DEFAULT CURRENT_TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) COMMENT '评分规则明细表' COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC;
+
+-- 索引优化
+CREATE INDEX idx_rule_id ON eval_rule_detail (rule_id);
+CREATE INDEX idx_rule_sort ON eval_rule_detail (rule_id, sort_order);
 
 
-
-
-
-
+create table eval_object_score
+(
+    id          bigint auto_increment comment '主键ID'
+        primary key,
+    object_id   bigint                                null comment '对象ID (关联eval_object.id)',
+    system_id   bigint                                null comment '体系ID (关联eval_index_system.id)',
+    user_id     bigint                                null comment '巡检人ID(关联sys_user.id)',
+    score       bigint                                null comment '总得分',
+    status      varchar(20) default '1'               null comment '状态: 1：待审核中，2：审核通过，3：不用审核',
+    details     text                                  null comment '评价说明',
+    creator     varchar(64) default ''                null comment '创建者',
+    updater     varchar(64) default ''                null comment '更新者',
+    deleted     bit         default b'0'              null comment '删除标识',
+    tenant_id   bigint      default 1                 null comment '租户ID',
+    create_time datetime    default CURRENT_TIMESTAMP null comment '创建时间',
+    update_time datetime    default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP comment '更新时间',
+    change_log  mediumtext                            null comment '变更日志'
+)
+    comment '公司得分表' collate = utf8mb4_unicode_ci
+                         row_format = DYNAMIC;
 

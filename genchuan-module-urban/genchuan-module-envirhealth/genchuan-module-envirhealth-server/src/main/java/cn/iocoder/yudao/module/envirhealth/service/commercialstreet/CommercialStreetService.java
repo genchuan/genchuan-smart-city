@@ -1,10 +1,11 @@
 package cn.iocoder.yudao.module.envirhealth.service.commercialstreet;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.commercialstreet.vo.CommercialStreetDashboardRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.commercialstreet.vo.CommercialStreetPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.commercialstreet.vo.CommercialStreetSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.commercialstreet.CommercialStreetDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.commercialstreet.detail.CommercialStreetDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.commercialstreet.CommercialStreetDetailDO;
 import jakarta.validation.Valid;
 
 /**
@@ -52,6 +53,16 @@ public interface CommercialStreetService {
      */
     PageResult<CommercialStreetDO> getCommercialStreetPage(CommercialStreetPageReqVO pageReqVO);
 
+    /**
+     * 获得商业街分页
+     *
+     * @param pageReqVO 分页查询
+     * @return 商业街分页
+     */
     PageResult<CommercialStreetDetailDO> getCommercialStreetDetailPage(CommercialStreetPageReqVO pageReqVO);
 
+    /**
+     * 获取商业街看板统计数据
+     */
+    CommercialStreetDashboardRespVO getCommercialStreetDashboard();
 }

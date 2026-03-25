@@ -1,6 +1,6 @@
 package cn.iocoder.yudao.module.envirhealth.controller.admin.roadcleaning.vo.roadcleaning;
 
-import cn.iocoder.yudao.module.envirhealth.util.vo.CompletionRatePointVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.CompletionRatePointVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

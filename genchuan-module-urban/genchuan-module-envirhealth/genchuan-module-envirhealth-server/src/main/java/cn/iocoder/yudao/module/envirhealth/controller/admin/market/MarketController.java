@@ -6,12 +6,13 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.market.MarketPageReqVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.market.MarketRespVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.market.MarketSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.MarketDashboardVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.MarketPageReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.MarketRespVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.market.vo.MarketSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.market.MarketDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.market.detail.MarketDetailDO;
-import cn.iocoder.yudao.module.envirhealth.service.market.market.MarketService;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.MarketDetailDO;
+import cn.iocoder.yudao.module.envirhealth.service.market.MarketService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -110,5 +111,12 @@ public class MarketController {
                 marketService.getMarketDetailPage(pageReqVO);
 
         return success(pageResult);
+    }
+
+    @GetMapping("/chart/dashboard")
+    @Operation(summary = "卡片/圆环图/柱状图/统计(全部)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:market:query')")
+    public CommonResult<MarketDashboardVO> getMarketDashboard() {
+        return success(marketService.getMarketDashboardData());
     }
 }

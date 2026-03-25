@@ -112,16 +112,20 @@
         eis.desc AS description,
         eis.biz_create_time AS bizCreateTime,
         eis.biz_update_time AS bizUpdateTime,
+        eis.last_use_time AS lastUseTime,
+        eis.use_count AS useCount,
+        eis.creator,
+        eis.updater,
+        eis.create_time AS createTime,
+        eis.update_time AS updateTime,
 
         sot.name AS objectTypeName,
-        ss.name AS statusName,
-        creator.user_name AS createByName
+        ss.name AS statusName
 
         FROM eval_index_system eis
         <!-- 注意：关联字典表的业务ID字段 -->
         LEFT JOIN sys_object_type sot ON eis.object_type_id = sot.type_id
         LEFT JOIN sys_status ss ON eis.status_id = ss.status_id
-        LEFT JOIN sys_user creator ON eis.create_by = creator.user_id
 
         WHERE eis.id = #{id}
         AND eis.deleted = 0
@@ -150,6 +154,10 @@
         eii.threshold,
         eii.weight,
         eii.sort_no AS sortNo,
+        eii.comment_rule_id AS commentRuleId,
+        eii.comment_category_id AS commentCategoryId,
+        erc.name AS commentCategoryName,
+        ecr.rule_name AS ruleName,
 
         <!-- 关联字典表的type_id/way_id字段（UUID），不是id字段-->
         sit.name AS indexTypeName,
@@ -158,6 +166,10 @@
         FROM eval_index_item eii
         <!-- 关联分类表获取主键ID -->
         INNER JOIN eval_index_category eic ON eii.category_id = eic.category_id AND eic.deleted = 0
+        <!-- 关联评分规则表：通过comment_rule_id直接关联 -->
+        LEFT JOIN eval_comment_rule ecr ON eii.comment_rule_id = ecr.id AND ecr.deleted = 0
+        <!-- 关联规则分类表 -->
+        LEFT JOIN eval_rule_category erc ON eii.comment_category_id = erc.id AND erc.deleted = 0
         <!-- 注意：关联sys_index_type表的type_id字段 -->
         LEFT JOIN sys_index_type sit ON eii.index_type_id = sit.type_id
         <!-- 注意：关联sys_calc_way表的way_id字段 -->
@@ -184,6 +196,13 @@
         SELECT SUM(weight)
         FROM eval_index_item
         WHERE category_id = #{categoryId}
+          AND deleted = 0
+    </select>
+
+    <!-- 根据主键ID查询体系的业务UUID（systemId字段） -->
+    <select id="selectSystemIdById" resultType="java.lang.String">
+        SELECT system_id FROM eval_index_system
+        WHERE id = #{id}
           AND deleted = 0
     </select>
 

@@ -15,6 +15,7 @@ import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import java.util.*;
 import java.io.IOException;
+import java.util.List;
 
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -76,8 +77,7 @@ public class CommentStatisticController {
     @Operation(summary = "获得巡查巡检统计分页")
     @PreAuthorize("@ss.hasPermission('evaluate:comment-statistic:query')")
     public CommonResult<PageResult<CommentStatisticRespVO>> getCommentStatisticPage(@Valid CommentStatisticPageReqVO pageReqVO) {
-        PageResult<CommentStatisticDO> pageResult = commentStatisticService.getCommentStatisticPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, CommentStatisticRespVO.class));
+        return success(commentStatisticService.getCommentStatisticPage(pageReqVO));
     }
 
     @GetMapping("/export-excel")
@@ -86,11 +86,16 @@ public class CommentStatisticController {
     @ApiAccessLog(operateType = EXPORT)
     public void exportCommentStatisticExcel(@Valid CommentStatisticPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
-        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<CommentStatisticDO> list = commentStatisticService.getCommentStatisticPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "巡查巡检统计.xls", "数据", CommentStatisticRespVO.class,
-                        BeanUtils.toBean(list, CommentStatisticRespVO.class));
+        List<CommentStatisticRespVO> list = commentStatisticService.getAllCommentStatisticList(pageReqVO);
+        ExcelUtils.write(response, "巡查巡检统计.xls", "数据", CommentStatisticRespVO.class, list);
+    }
+
+    @PostMapping("/reconcile")
+    @Operation(summary = "全量对账：修正统计表与巡查表数据一致性")
+    @PreAuthorize("@ss.hasPermission('evaluate:comment-statistic:reconcile')")
+    public CommonResult<Integer> reconcileCommentStatistic() {
+        int fixedCount = commentStatisticService.reconcileAll();
+        return success(fixedCount);
     }
 
 }

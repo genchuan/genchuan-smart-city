@@ -66,4 +66,7 @@ public class IndexItemSaveReqVO {
     @Schema(description = "通用扩展字段4")
     private String extCommon4;
 
+    @Schema(description = "评价规则id(关联eval_comment_rule.id)", example = "1")
+    private Long commentRuleId;
+
 }

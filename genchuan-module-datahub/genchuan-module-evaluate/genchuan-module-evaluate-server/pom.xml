@@ -29,7 +29,13 @@
             <groupId>cn.iocoder.cloud</groupId>
             <artifactId>yudao-spring-boot-starter-env</artifactId>
         </dependency>
-
+        <!-- EasyExcel 核心依赖（阿里Excel处理框架） -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <!-- 使用稳定版本，推荐 3.3.2（和SpringBoot 2.x/3.x兼容） -->
+            <version>3.3.2</version>
+        </dependency>
         <!-- 依赖服务 -->
         <dependency>
             <groupId>cn.iocoder.cloud</groupId>
@@ -48,6 +54,11 @@
             <version>${revision}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>3.3.4</version> <!-- 请使用最新稳定版本 -->
+        </dependency>
         <!-- 业务组件 -->
         <dependency>
             <groupId>cn.iocoder.cloud</groupId>
@@ -96,6 +107,12 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+
+        <!-- Feign 远程调用相关 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
 
         <!-- Job 定时任务相关 -->
@@ -158,13 +175,11 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
-
-        <!-- EasyExcel 核心依赖（阿里Excel处理框架） -->
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>easyexcel</artifactId>
-            <!-- 使用稳定版本，推荐 3.3.2（和SpringBoot 2.x/3.x兼容） -->
-            <version>3.3.2</version>
+            <groupId>cn.iocoder.cloud</groupId>
+            <artifactId>yudao-module-infra-server</artifactId>
+            <version>2026.01-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

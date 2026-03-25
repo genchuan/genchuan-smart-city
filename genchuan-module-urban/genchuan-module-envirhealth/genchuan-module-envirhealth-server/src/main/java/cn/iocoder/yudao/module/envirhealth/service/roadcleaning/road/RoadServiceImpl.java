@@ -8,7 +8,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.roadcleaning.vo.road
 import cn.iocoder.yudao.module.envirhealth.controller.admin.roadcleaning.vo.road.RoadSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.roadcleaning.RoadDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.roadcleaning.RoadMapper;
-import cn.iocoder.yudao.module.envirhealth.util.vo.OptionVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;

@@ -5,7 +5,9 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.commercialstreet.vo.CommercialStreetPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.commercialstreet.CommercialStreetDO;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.commercialstreet.detail.CommercialStreetDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.commercialstreet.CommercialStreetDetailDO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.BarItemVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.PieItemVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -68,4 +70,63 @@ public interface CommercialStreetMapper extends BaseMapperX<CommercialStreetDO> 
     List<CommercialStreetDetailDO> selectDetailPage(@Param("reqVO") CommercialStreetPageReqVO pageReqVO);
 
     Long selectCount(@Param("reqVO") CommercialStreetPageReqVO pageReqVO);
+
+    // ========== 卡片数据查询 ==========
+    /**
+     * 查询总商业街数
+     */
+    @Select("SELECT COUNT(id) FROM commercial_street WHERE deleted = 0")
+    Long selectTotalStreetCount();
+
+    /**
+     * 查询保洁覆盖达标数（保洁覆盖率≥达标阈值的商业街数）
+     */
+    @Select("SELECT COUNT(id) FROM commercial_street WHERE deleted = 0 AND cleaning_coverage >= 90")
+    Long selectCleaningCoverageMetCount();
+
+    /**
+     * 查询设施完好数（设施完好率≥达标阈值的商业街数）
+     */
+    @Select("SELECT COUNT(id) FROM commercial_street WHERE deleted = 0 AND facility_rate >= 90")
+    Long selectFacilityIntactCount();
+
+    /**
+     * 查询收运完成数（收运完成率≥达标阈值的商业街数）
+     */
+    @Select("SELECT COUNT(id) FROM commercial_street WHERE deleted = 0 AND collection_complete_rate >= 90")
+    Long selectCollectionCompletedCount();
+
+    // ========== 圆环图数据查询 ==========
+    /**
+     * 查询商业街区域分布占比
+     */
+    @Select("""
+            SELECT sa.area_name AS name, COUNT(cs.id) AS value 
+            FROM commercial_street cs
+            LEFT JOIN sys_area sa ON cs.area_code = sa.area_code
+            WHERE cs.deleted = 0
+            GROUP BY sa.id, sa.area_name
+            ORDER BY value DESC
+        """)
+    List<PieItemVO> selectAreaDistributionPie();
+
+    /**
+     * 查询商业街运营状态占比
+     */
+    @Select("""
+            SELECT sos.name AS name, COUNT(cs.id) AS value 
+            FROM commercial_street cs
+            LEFT JOIN sys_operation_status sos ON cs.operation_status_id = sos.sys_operation_status_id
+            WHERE cs.deleted = 0
+            GROUP BY sos.sys_operation_status_id, sos.name
+            ORDER BY value DESC
+        """)
+    List<PieItemVO> selectOperationStatusDistributionPie();
+
+    // ========== 柱状图数据查询 ==========
+    /**
+     * 查询不同商业街问题处置时长对比
+     */
+    @Select("SELECT name AS name, AVG(disposal_duration) AS value FROM commercial_street WHERE deleted = 0 GROUP BY name")
+    List<BarItemVO> selectProblemDisposalDurationByStreetBar();
 }

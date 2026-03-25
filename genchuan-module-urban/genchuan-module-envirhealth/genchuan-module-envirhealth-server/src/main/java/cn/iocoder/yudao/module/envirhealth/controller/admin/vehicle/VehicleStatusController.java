@@ -1,9 +1,9 @@
-/*
 package cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle;
 
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehiclestatus.VehicleStatusPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehiclestatus.VehicleStatusRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.vehicle.vo.vehiclestatus.VehicleStatusSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +31,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.vehicle.VehicleStatusDO;
 import cn.iocoder.yudao.module.envirhealth.service.vehicle.vehiclestatus.VehicleStatusService;
 
-@Tag(name = "管理后台 - 车辆状态字典")
+@Tag(name = "字典表 - 车辆状态")
 @RestController
 @RequestMapping("/envirhealth/vehicle-status")
 @Validated
@@ -94,4 +94,14 @@ public class VehicleStatusController {
                         BeanUtils.toBean(list, VehicleStatusRespVO.class));
     }
 
-}*/
+    /**
+     * 获得维护类型字典下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得车辆状态字典(下拉框)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:vehicle-status:query')")
+    public CommonResult<List<OptionVO>> getVehicleStatusOptions() {
+        return success(vehicleStatusService.getVehicleStatusOptions());
+    }
+}
