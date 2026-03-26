@@ -19,7 +19,7 @@ public interface EntRectifyRecordMapper extends BaseMapperX<EntRectifyRecordDO> 
 
     default PageResult<EntRectifyRecordDO> selectPage(EntRectifyRecordPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<EntRectifyRecordDO>()
-                .eqIfPresent(EntRectifyRecordDO::getUniCode,reqVO)
+                .eqIfPresent(EntRectifyRecordDO::getUniCode,reqVO.getUniCode())
                 .eqIfPresent(EntRectifyRecordDO::getPunishReviewId, reqVO.getPunishReviewId())
                 .eqIfPresent(EntRectifyRecordDO::getRectifyReviewId, reqVO.getRectifyReviewId())
                 .eqIfPresent(EntRectifyRecordDO::getRectifyNoticeId, reqVO.getRectifyNoticeId())

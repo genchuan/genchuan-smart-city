@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholeconfig.ManholeConfigMapper">
+
+    <resultMap id="ConfigPageResultMap" type="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeCoverConfigPageRespVO">
+        <result property="configId" column="configId"/>
+        <result property="coverId" column="coverId"/>
+        <result property="coverCode" column="coverCode"/>
+        <result property="configStatus" column="configStatus"/>
+        <result property="configStatusName" column="configStatusName"/>
+        <result property="createTime" column="createTime"/>
+        <result property="updateTime" column="updateTime"/>
+        <result property="operateUserName" column="operateUserName"/>
+        <result property="tenantId" column="tenantId"/>
+
+        <association property="thresholdConfig" javaType="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeCoverConfigPageRespVO$ThresholdConfig">
+            <result property="tiltAngleThreshold" column="tiltAngleThreshold"/>
+            <result property="displacementThreshold" column="displacementThreshold"/>
+            <result property="waterLevelThreshold" column="waterLevelThreshold"/>
+            <result property="openDurationThreshold" column="openDurationThreshold"/>
+        </association>
+
+        <association property="collectConfig" javaType="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeCoverConfigPageRespVO$CollectConfig">
+            <result property="collectFrequency" column="collectFrequency"/>
+            <result property="offlineTimeout" column="offlineTimeout"/>
+        </association>
+
+        <association property="alarmConfig" javaType="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeCoverConfigPageRespVO$AlarmConfig">
+            <result property="alarmType" column="alarmType" typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+            <result property="alarmRecipient" column="alarmRecipient" typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        </association>
+    </resultMap>
+
+    <select id="selectConfigPage" resultMap="ConfigPageResultMap">
+        SELECT
+        mc.id                  AS configId,
+        mc.cover_id            AS coverId,
+        mcv.cover_no           AS coverCode,
+        mc.config_status       AS configStatus,
+        mc.config_status_name  AS configStatusName,
+
+        mc.tilt_angle_threshold        AS tiltAngleThreshold,
+        mc.ext_common1                 AS displacementThreshold,
+        mc.ext_common2                 AS waterLevelThreshold,
+        mc.open_duration_threshold     AS openDurationThreshold,
+
+        mc.collect_frequency           AS collectFrequency,
+        mc.offline_timeout             AS offlineTimeout,
+
+        mc.ext_common3                 AS alarmType,
+        mc.ext_common4                 AS alarmRecipient,
+
+        mc.create_time                 AS createTime,
+        mc.update_time                 AS updateTime,
+        mc.updater                     AS operateUserName,
+        mc.tenant_id                   AS tenantId
+
+        FROM manhole_config mc
+        LEFT JOIN manhole_cover mcv
+        ON mc.cover_id = mcv.id
+
+        WHERE
+        mc.deleted = 0
+        AND mc.tenant_id = #{tenantId}
+
+        <if test="coverId != null and coverId != ''">
+            AND mc.cover_id = #{coverId}
+        </if>
+        <if test="configStatus != null">
+            AND mc.config_status = #{configStatus}
+        </if>
+
+        ORDER BY mc.create_time DESC
+    </select>
+
+    <resultMap id="ManholeConfigResultMap" type="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeCoverConfigDetailRespVO">
+        <id property="configId" column="configId"/>
+        <result property="coverId" column="coverId"/>
+        <result property="coverCode" column="coverCode"/>
+        <result property="configStatus" column="config_status"/>
+        <result property="configStatusName" column="config_status_name"/>
+        <result property="createTime" column="createTime"/>
+        <result property="createUserId" column="createUserId"/>
+        <result property="createUserName" column="createUserName"/>
+        <result property="updateTime" column="updateTime"/>
+        <result property="updateUserId" column="updateUserId"/>
+        <result property="updateUserName" column="updateUserName"/>
+        <result property="chainHash" column="chainHash"/>
+        <result property="tenantId" column="tenantId"/>
+
+        <!-- 阈值配置 -->
+        <association property="thresholdConfig" javaType="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeCoverConfigDetailRespVO$ThresholdConfig">
+            <result property="tiltAngleThreshold" column="tilt_angle_threshold"/>
+            <result property="openDurationThreshold" column="open_duration_threshold"/>
+            <result property="waterLevelThreshold" column="offline_timeout"/>
+        </association>
+
+        <!-- 采集配置 -->
+        <association property="collectConfig" javaType="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeCoverConfigDetailRespVO$CollectConfig">
+            <result property="collectFrequency" column="collect_frequency"/>
+            <result property="dataUploadMode" column="data_upload_mode"/>
+        </association>
+
+        <!-- 报警配置 → 保留你需要的 JacksonTypeHandler -->
+        <association property="alarmConfig" javaType="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.ManholeCoverConfigDetailRespVO$AlarmConfig">
+            <result property="alarmType" column="alarmType" typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+            <result property="alarmRecipient" column="alarmRecipient" typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+            <result property="alarmLevel" column="alarm_level"/>
+            <result property="alarmDelay" column="alarm_delay"/>
+        </association>
+    </resultMap>
+
+    <select id="selectDetailById" resultMap="ManholeConfigResultMap">
+        SELECT
+            mc.id AS configId,
+            mc.cover_id AS coverId,
+            mcv.cover_no AS coverCode,
+            mc.config_status,
+            mc.config_status_name,
+            mc.create_time AS createTime,
+            mc.creator AS createUserId,
+            -- MySQL 替换 PG 的 split_part 函数，截取:后的用户名
+            SUBSTRING_INDEX(mc.creator, ':', -1) AS createUserName,
+            mc.update_time AS updateTime,
+            mc.updater AS updateUserId,
+            SUBSTRING_INDEX(mc.updater, ':', -1) AS updateUserName,
+            mc.chain_hash AS chainHash,
+            mc.tenant_id AS tenantId,
+            mc.tilt_angle_threshold,
+            mc.open_duration_threshold,
+            mc.offline_timeout,
+            mc.collect_frequency,
+            mc.data_upload_mode,
+            mc.alarm_level,
+            mc.alarm_delay,
+            mc.ext_common3 AS alarmType,
+            mc.ext_common4 AS alarmRecipient
+        FROM manhole_config mc
+                 LEFT JOIN manhole_cover mcv ON mc.cover_id = mcv.id
+        WHERE mc.id = #{id}
+          AND mc.tenant_id = #{tenantId}
+          AND mc.deleted = 0
+    </select>
+
+</mapper>

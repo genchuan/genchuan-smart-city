@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.kitchen.service.aialertmessage;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.AiAlertMessagePageReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.AiAlertMessageRespVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.AiAlertMessageSaveReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.add.AddAiAlertMessageReq;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.aialertmessage.AiAlertMessageDO;
@@ -50,7 +51,7 @@ public interface AiAlertMessageService {
      * @param pageReqVO 分页查询
      * @return AI告警消息分页
      */
-    PageResult<AiAlertMessageDO> getAiAlertMessagePage(AiAlertMessagePageReqVO pageReqVO);
+    PageResult<AiAlertMessageRespVO> getAiAlertMessagePage(AiAlertMessagePageReqVO pageReqVO);
 
     Long addAiAlertMessage(AddAiAlertMessageReq reqVO);
 }

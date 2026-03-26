@@ -4,8 +4,12 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholecover.vo.ManholeCoverDetailRespVO;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholecover.vo.ManholeCoverPageReqVO;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholecover.vo.ManholeCoverSaveReqVO;
+import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeCoverRealTimeRefreshReqVO;
+import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.ManholeCoverRealTimeRefreshRespVO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholecover.ManholeCoverDO;
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 窨井盖设施 Service 接口
@@ -52,6 +56,18 @@ public interface ManholeCoverService {
      */
     PageResult<ManholeCoverDO> getCoverPage(ManholeCoverPageReqVO pageReqVO);
 
-    ManholeCoverDetailRespVO getCoverDetail(Long id);
+//    ManholeCoverDetailRespVO getCoverDetail(Long id);
+
+    /**
+     * 刷新井盖实时数据
+     * @param reqVO 请求参数
+     * @return 实时数据列表
+     */
+    /**
+     * 刷新井盖实时数据
+     * @param reqVO 请求参数
+     * @return 实时数据列表
+     */
+    List<ManholeCoverRealTimeRefreshRespVO> refreshRealTimeData(ManholeCoverRealTimeRefreshReqVO reqVO);
 
 }

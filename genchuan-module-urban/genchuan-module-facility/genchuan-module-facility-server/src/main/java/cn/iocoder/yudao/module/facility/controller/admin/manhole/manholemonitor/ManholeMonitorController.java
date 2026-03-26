@@ -8,6 +8,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholemonitor.vo.*;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholemonitor.ManholeMonitorDO;
+import cn.iocoder.yudao.module.facility.service.manhole.manholecover.ManholeCoverService;
 import cn.iocoder.yudao.module.facility.service.manhole.manholemonitor.ManholeMonitorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,11 +16,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
@@ -33,6 +36,9 @@ public class ManholeMonitorController {
 
     @Resource
     private ManholeMonitorService monitorService;
+
+    @Resource
+    private ManholeCoverService coverService;
 
     @PostMapping("/create")
     @Operation(summary = "创建窨井盖监测")
@@ -89,35 +95,27 @@ public class ManholeMonitorController {
     }
 
     // 列表查询（支持所有筛选条件）
-    @GetMapping("/list")
-    @Operation(summary = "获取窨井盖监测列表")
-    public CommonResult<List<ManholeMonitorVO>> getManholeMonitorList(
-            // 原有筛选参数
-            @Parameter(description = "井盖编号") @RequestParam(required = false) String coverNo,
-            @Parameter(description = "路段名称") @RequestParam(required = false) String roadName,
-            @Parameter(description = "开合状态") @RequestParam(required = false) String statusName,
-            @Parameter(description = "设备在线状态") @RequestParam(required = false) String onlineStatus,
-            // 新增筛选参数
-            @Parameter(description = "监测状态") @RequestParam(required = false) String monitorStatus,
-            @Parameter(description = "安全风险等级") @RequestParam(required = false) String riskLevel,
-            @Parameter(description = "异常振动标识（1=是/0=否）") @RequestParam(required = false) Integer abnormalVibrationFlag
-    ) {
-        List<ManholeMonitorVO> list = monitorService.getManholeMonitorList(
-                coverNo, roadName, statusName, onlineStatus, monitorStatus, riskLevel, abnormalVibrationFlag);
-        return CommonResult.success(list);
+    @Operation(summary = "窨井盖监测数据分页查询")
+    @GetMapping("/realtime/page")
+    public CommonResult<PageResult<ManholeCoverRealTimePageRespVO>> selectRealTimePage(
+            @Parameter(description = "分页查询参数") ManholeCoverRealTimePageReqVO reqVO) {
+        PageResult<ManholeCoverRealTimePageRespVO> pageResult = monitorService.getRealTimePage(reqVO);
+        return CommonResult.success(pageResult);
     }
+
+
 
     /**
      * 按井盖编号查询详情（支持钻取，弹窗专用）
      * @param coverNo 井盖编号
      */
-    @GetMapping("/by-cover-no")
-    @Operation(summary = "按井盖编号查询详情", description = "用于井盖编号钻取，点击跳转详情弹窗")
-    public CommonResult<ManholeMonitorVO> getManholeDetailByCoverNo(
-            @Parameter(description = "井盖编号", required = true)
-            @RequestParam("coverNo") String coverNo) {
-        return success(monitorService.getManholeDetailByCoverNo(coverNo));
-    }
+//    @GetMapping("/by-cover-no")
+//    @Operation(summary = "按井盖编号查询详情", description = "用于井盖编号钻取，点击跳转详情弹窗")
+//    public CommonResult<ManholeCoverRealTimePageRespVO> getManholeDetailByCoverNo(
+//            @Parameter(description = "井盖编号", required = true)
+//            @RequestParam("coverNo") String coverNo) {
+//        return success(monitorService.getManholeDetailByCoverNo(coverNo));
+//    }
 
     /**
      * 批量更新监测状态
@@ -131,21 +129,21 @@ public class ManholeMonitorController {
         return success(count);
     }
 
-    @GetMapping("/stats/24hour")
-    @Operation(summary = "查询近 24 小时统计数据")
-    @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('manhole:cover:query')")
-    public CommonResult<ManholeMonitorStatsRespVO> get24HourStats(@RequestParam("id") Long id) {
-        return success(monitorService.get24HourStats(id));
-    }
+//    @GetMapping("/stats/24hour")
+//    @Operation(summary = "查询近 24 小时统计数据")
+//    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+//    @PreAuthorize("@ss.hasPermission('manhole:cover:query')")
+//    public CommonResult<ManholeMonitorStatsRespVO> get24HourStats(@RequestParam("id") Long id) {
+//        return success(monitorService.get24HourStats(id));
+//    }
 
-    @GetMapping("/trend/24hour")
-    @Operation(summary = "查询近 24 小时变化趋势")
-    @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('manhole:cover:query')")
-    public CommonResult<List<ManholeMonitorHourTrendVO>> get24HourTrend(@RequestParam("id") Long id) {
-        return success(monitorService.get24HourTrend(id));
-    }
+//    @GetMapping("/trend/24hour")
+//    @Operation(summary = "查询近 24 小时变化趋势")
+//    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+//    @PreAuthorize("@ss.hasPermission('manhole:cover:query')")
+//    public CommonResult<List<ManholeMonitorHourTrendVO>> get24HourTrend(@RequestParam("id") Long id) {
+//        return success(monitorService.get24HourTrend(id));
+//    }
 
     /**
      * 查询窨井盖预警监测列表
@@ -159,4 +157,46 @@ public class ManholeMonitorController {
         PageResult<ManholeMonitorWarningRespVO> pageResult = monitorService.getWarningMonitorPage(pageReqVO);
         return CommonResult.success(pageResult);
     }
+
+    /**
+     * 单井盖监测数据详情
+     * @param coverId 井盖ID（路径参数）
+     * @param tenantId 租户ID（请求参数）
+     * @return 统一分页格式响应
+     */
+    @GetMapping("/detail/{coverId}")
+    @Operation(summary = "查询单井盖监测数据详情")
+    public CommonResult<PageResult<ManholeCoverRealTimeDetailRespVO>> getDetail(
+            @PathVariable @NotBlank(message = "井盖ID不能为空") String coverId,
+            @RequestParam @NotBlank(message = "租户ID不能为空") String tenantId) {
+            // 1. 查询井盖详情
+            ManholeCoverRealTimeDetailRespVO detail = monitorService.getRealTimeDetail(coverId, tenantId);
+
+            // 2. 封装为分页结果（单条数据）
+            PageResult<ManholeCoverRealTimeDetailRespVO> pageResult = new PageResult<>();
+            pageResult.setList(Collections.singletonList(detail)); // 单条数据封装为列表
+            pageResult.setTotal(1L); // 总数为1
+
+            // 3. 返回统一格式
+            return CommonResult.success(pageResult);
+
+    }
+
+    @GetMapping("/{coverId}")
+    @Operation(summary = "单井盖指标近24小时趋势查询")
+    public CommonResult<ManholeCoverRealTimeTrendRespVO> getRealTimeTrend(
+            @PathVariable("coverId") String coverId,
+            @Valid ManholeCoverRealTimeTrendReqVO reqVO) {
+        return CommonResult.success(monitorService.getRealTimeTrend(coverId, reqVO));
+    }
+
+
+    @Operation(summary = "井盖实时数据刷新")
+    @GetMapping("/refresh")
+    public CommonResult<List<ManholeCoverRealTimeRefreshRespVO>> refreshRealTimeData(
+            @Parameter(description = "刷新请求参数") @Validated ManholeCoverRealTimeRefreshReqVO reqVO) {
+        List<ManholeCoverRealTimeRefreshRespVO> result =coverService.refreshRealTimeData(reqVO);
+        return CommonResult.success(result);
+    }
+
 }

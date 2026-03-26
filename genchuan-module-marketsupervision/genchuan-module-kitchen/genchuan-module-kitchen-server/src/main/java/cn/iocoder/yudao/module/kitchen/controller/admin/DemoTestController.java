@@ -18,13 +18,13 @@ public class DemoTestController {
 
     // 这个构造方法，只是方便大家，验证 Controller 有生效
     public DemoTestController() {
-        System.out.println(getClass() + "生效啦！！！");
+        System.out.println(getClass() + "生效啦03261553！！！");
     }
 
     @GetMapping("/get")
     @Operation(summary = "获取 test 信息")
     public CommonResult<String> get() {
-        return success("true4526");
+        return success("true4526032615532");
     }
 
 }

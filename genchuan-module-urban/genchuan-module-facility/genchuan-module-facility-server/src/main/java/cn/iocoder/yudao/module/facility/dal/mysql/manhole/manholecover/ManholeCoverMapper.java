@@ -33,4 +33,15 @@ public interface ManholeCoverMapper extends BaseMapperX<ManholeCoverDO> {
                 .orderByDesc(ManholeCoverDO::getId));
     }
 
+    /**
+     * 根据租户ID查询所有井盖ID
+     */
+    List<Long> selectCoverIdsByTenantId(@Param("tenantId") Long tenantId);
+
+    /**
+     * 根据井盖ID列表和租户ID查询井盖信息
+     */
+    List<ManholeCoverDO> selectListByCoverIdsAndTenantId(@Param("coverIds") List<Long> coverIds, @Param("tenantId") Long tenantId);
+
+
 }

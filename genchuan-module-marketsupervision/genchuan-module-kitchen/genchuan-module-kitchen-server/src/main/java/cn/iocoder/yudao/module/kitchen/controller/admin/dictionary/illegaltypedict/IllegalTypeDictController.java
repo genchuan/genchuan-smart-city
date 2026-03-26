@@ -42,14 +42,14 @@ public class IllegalTypeDictController {
 
     @PostMapping("/create")
     @Operation(summary = "创建违规类型字典")
-    @PreAuthorize("@ss.hasPermission('kitchen:illegal-type-dict:create')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:illegal-type-dict:create')")
     public CommonResult<Long> createIllegalTypeDict(@Valid @RequestBody IllegalTypeDictSaveReqVO createReqVO) {
         return success(illegalTypeDictService.createIllegalTypeDict(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新违规类型字典")
-    @PreAuthorize("@ss.hasPermission('kitchen:illegal-type-dict:update')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:illegal-type-dict:update')")
     public CommonResult<Boolean> updateIllegalTypeDict(@Valid @RequestBody IllegalTypeDictSaveReqVO updateReqVO) {
         illegalTypeDictService.updateIllegalTypeDict(updateReqVO);
         return success(true);
@@ -58,7 +58,7 @@ public class IllegalTypeDictController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除违规类型字典")
     @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('kitchen:illegal-type-dict:delete')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:illegal-type-dict:delete')")
     public CommonResult<Boolean> deleteIllegalTypeDict(@RequestParam("id") Long id) {
         illegalTypeDictService.deleteIllegalTypeDict(id);
         return success(true);
@@ -67,7 +67,7 @@ public class IllegalTypeDictController {
     @GetMapping("/get")
     @Operation(summary = "获得违规类型字典")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('kitchen:illegal-type-dict:query')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:illegal-type-dict:query')")
     public CommonResult<IllegalTypeDictRespVO> getIllegalTypeDict(@RequestParam("id") Long id) {
         IllegalTypeDictDO illegalTypeDict = illegalTypeDictService.getIllegalTypeDict(id);
         return success(BeanUtils.toBean(illegalTypeDict, IllegalTypeDictRespVO.class));
@@ -75,7 +75,7 @@ public class IllegalTypeDictController {
 
     @GetMapping("/page")
     @Operation(summary = "获得违规类型字典分页")
-    @PreAuthorize("@ss.hasPermission('kitchen:illegal-type-dict:query')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:illegal-type-dict:query')")
     public CommonResult<PageResult<IllegalTypeDictRespVO>> getIllegalTypeDictPage(@Valid IllegalTypeDictPageReqVO pageReqVO) {
         PageResult<IllegalTypeDictDO> pageResult = illegalTypeDictService.getIllegalTypeDictPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, IllegalTypeDictRespVO.class));
@@ -83,7 +83,7 @@ public class IllegalTypeDictController {
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出违规类型字典 Excel")
-    @PreAuthorize("@ss.hasPermission('kitchen:illegal-type-dict:export')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:illegal-type-dict:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportIllegalTypeDictExcel(@Valid IllegalTypeDictPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {

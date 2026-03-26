@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholecover.ManholeCoverMapper">
+
+    <select id="selectCoverIdsByTenantId" resultType="java.lang.Long">
+        SELECT id FROM manhole_cover
+        WHERE tenant_id = #{tenantId} AND deleted = 0
+    </select>
+
+    <select id="selectListByCoverIdsAndTenantId" resultType="cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholecover.ManholeCoverDO">
+        SELECT id, cover_no, status, tenant_id
+        FROM manhole_cover
+        WHERE id IN
+        <foreach collection="coverIds" item="coverId" open="(" separator="," close=")">
+            #{coverId}
+        </foreach>
+        AND tenant_id = #{tenantId} AND deleted = 0
+    </select>
+
+</mapper>
