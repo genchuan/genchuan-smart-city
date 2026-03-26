@@ -41,10 +41,10 @@ public interface OutdoorAdService {
     /**
      * 获得户外广告
      *
-     * @param id 编号
+     * @param getReqVO 查询参数
      * @return 户外广告
      */
-    OutdoorAdDO getOutdoorAd( Long id );
+    OutdoorAdDO getOutdoorAd( OutdoorAdGetReqVO getReqVO );
 
     /**
      * 获得户外广告分页
