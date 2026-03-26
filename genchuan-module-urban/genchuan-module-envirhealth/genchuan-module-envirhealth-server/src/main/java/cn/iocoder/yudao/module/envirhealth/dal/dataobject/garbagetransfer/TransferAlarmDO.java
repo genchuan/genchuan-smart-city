@@ -82,10 +82,9 @@ public class TransferAlarmDO extends BaseDO {
      */
     private String proofMaterial;
     /**
-     * 通用扩展字段1
+     * 优先级
      */
-    @JsonIgnore
-    private String extCommon1;
+    private String priority;
     /**
      * 通用扩展字段2
      */

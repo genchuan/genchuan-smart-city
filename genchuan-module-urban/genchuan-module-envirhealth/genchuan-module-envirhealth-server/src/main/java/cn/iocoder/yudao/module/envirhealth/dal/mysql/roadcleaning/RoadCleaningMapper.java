@@ -204,8 +204,8 @@ public interface RoadCleaningMapper extends BaseMapperX<RoadCleaningDO> {
             "  SELECT " +
             "    CASE " +
             "      WHEN r.time_period REGEXP '^(0[0-5]|06):' THEN '凌晨' " + //(00:00-06:00)
-            "      WHEN r.time_period REGEXP '^(0[6-9]|1[0-1]):' AND SPLIT_PART(r.time_period, '-', 1) < '12:00' THEN '上午' " + //(06:00-12:00)
-            "      WHEN r.time_period REGEXP '^(1[2-7]):' AND SPLIT_PART(r.time_period, '-', 1) < '18:00' THEN '下午' " +  //(12:00-18:00)
+            "      WHEN r.time_period REGEXP '^(0[6-9]|1[0-1]):' AND SUBSTRING_INDEX(r.time_period, '-', 1) < '12:00' THEN '上午' " + //(06:00-12:00)
+            "      WHEN r.time_period REGEXP '^(1[2-7]):' AND SUBSTRING_INDEX(r.time_period, '-', 1) < '18:00' THEN '下午' " +  //(12:00-18:00)
             "      WHEN r.time_period REGEXP '^(1[8-9]|2[0-3]):' THEN '晚上' " +  //(18:00-24:00)
             "      ELSE '其他' " +
             "    END AS time_period_name " +

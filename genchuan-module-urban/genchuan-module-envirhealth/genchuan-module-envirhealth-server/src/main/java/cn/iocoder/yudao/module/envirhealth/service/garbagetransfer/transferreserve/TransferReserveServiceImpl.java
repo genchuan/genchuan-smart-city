@@ -4,14 +4,12 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.TransferReserveBatchSortReqVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.TransferReserveDashboardRespVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.TransferReservePageReqVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.TransferReserveSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferReserveDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferReserveDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.TransferReserveMapper;
 import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.garbagetransfer.TransferReserveCodeGenerator;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -153,8 +151,6 @@ public class TransferReserveServiceImpl implements TransferReserveService {
         }
     }
 
-    // 在 TransferReserveServiceImpl.java 中添加
-
     @Override
     public TransferReserveDashboardRespVO getDashboardStats() {
         TransferReserveDashboardRespVO resp = new TransferReserveDashboardRespVO();
@@ -174,5 +170,43 @@ public class TransferReserveServiceImpl implements TransferReserveService {
         resp.setReserveCountByTimeSlot(transferReserveMapper.selectReserveCountByTimeSlot());
 
         return resp;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void sortTransferReserve(TransferReserveSortReqVO reqVO) {
+        // 1. 根据前端传递的预约ID，查询对应的预约记录
+        Long reserveId = reqVO.getId();
+        TransferReserveDO reserve = transferReserveMapper.selectById(reserveId);
+        if (reserve == null) {
+            throw exception(TRANSFER_RESERVE_NOT_EXISTS); // “预约不存在”
+        }
+        // 校验：仅允许对“待排序”的预约排号
+        if (!"待排序".equals(reserve.getReserveStatus())) {
+            throw exception("仅支持对「待排序」状态的预约进行排号");
+        }
+
+        // 2. 从预约记录中提取转运站ID
+        String transferId = reserve.getTransferId();
+
+        // 3. 查询该转运站下已排序的最大序号
+        Integer maxSortNo = transferReserveMapper.selectMaxSortNoByTransferId(transferId);
+        int nextSortNo = (maxSortNo == null ? 1 : maxSortNo + 1); // 无已排序则从1开始
+
+        // 4. 补充登录人、时间等审计字段
+        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
+        String username = loginUser != null ? String.valueOf(loginUser.getId()) : null;
+        LocalDateTime now = LocalDateTime.now();
+
+        // 5. 更新该预约的排号和状态
+        TransferReserveDO updateObj = new TransferReserveDO();
+        updateObj.setId(reserveId);
+        updateObj.setSortNo(nextSortNo);
+        updateObj.setReserveStatus("已排序"); // 标记为已排序
+        updateObj.setHandleBy(username);     // 处理人
+        updateObj.setUpdater(username);      // 更新人
+        updateObj.setAbnormalCreateTime(now); // 排序时间
+
+        transferReserveMapper.updateById(updateObj);
     }
 }

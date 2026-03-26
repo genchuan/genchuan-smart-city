@@ -126,4 +126,14 @@ public class TransferOperationController {
             @RequestParam(required = false, defaultValue = "day") String timeDimension) {
         return success(transferOperationService.getTransferOperationDashboard(timeDimension));
     }
+
+    @PutMapping("/pause")
+    @Operation(summary = "暂停转运作业")
+    @PreAuthorize("@ss.hasPermission('envirhealth:transfer-operation:update')")
+    public CommonResult<Boolean> pauseTransferOperation(
+            @RequestParam("id") Long operationId,
+            @RequestParam(value = "pauseStatusId", defaultValue = "uuid-plan-status-004") String pauseStatusId) {
+        transferOperationService.pauseTransferOperation(operationId, pauseStatusId);
+        return success(true);
+    }
 }

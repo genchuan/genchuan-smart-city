@@ -34,8 +34,9 @@
 
         <result column="road_name" property="roadName"/>
         <result column="area_name" property="areaName"/>
-        <result column="staffs_name_str" property="staffsNameStr"/>
         <result column="plan_status_name" property="planStatusName"/>
+        <!-- 这两个字段不在SQL查询，由Java层赋值 -->
+        <result column="staffs_name_str" property="staffsNameStr"/>
         <result column="tools_name_str" property="toolsNameStr"/>
     </resultMap>
 
@@ -174,34 +175,24 @@
         </where>
     </sql>
 
+    <!-- 精简SQL：只关联基础表，不处理JSON -->
     <select id="selectDetailPage" resultMap="RoadCleaningDetailResultMap">
         SELECT
         rc.*,
         r.road_name AS road_name,
         a.area_name AS area_name,
-        ps.name AS plan_status_name,
-        COALESCE(STRING_AGG(DISTINCT u.user_name, ','), '') AS staffs_name_str,
-        COALESCE(STRING_AGG(DISTINCT t.name, ','), '') AS tools_name_str
+        ps.name AS plan_status_name
         FROM road_cleaning rc
         LEFT JOIN sys_road r ON rc.road_id = r.road_id AND r.deleted = 0 AND r.tenant_id = 1
         LEFT JOIN sys_area a ON rc.area_code = a.area_code AND a.deleted = 0 AND a.tenant_id = 1
         LEFT JOIN sys_plan_status ps ON rc.plan_status_id = ps.sys_plan_status_id AND ps.deleted = 0 AND ps.tenant_id = 1
-        LEFT JOIN sys_user u ON u.user_id::TEXT = ANY (
-        ARRAY(SELECT json_array_elements_text(rc.staff_ids::TEXT::json)::TEXT)
-        ) AND u.deleted = 0
-        LEFT JOIN sys_tool t ON t.sys_tool_id::TEXT = ANY (
-        ARRAY(SELECT json_array_elements_text(rc.tool_ids::TEXT::json)::TEXT)
-        ) AND t.deleted = 0
         <include refid="whereConditions" />
-        GROUP BY
-        rc.id,
-        r.road_name, a.area_name, ps.name
         ORDER BY rc.id DESC
         LIMIT #{reqVO.limit} OFFSET #{reqVO.offset}
     </select>
 
     <select id="selectCount" resultType="java.lang.Long">
-        SELECT COUNT(DISTINCT rc.id)
+        SELECT COUNT(rc.id)
         FROM road_cleaning rc
         <include refid="whereConditions" />
     </select>

@@ -31,6 +31,9 @@
             ta.deleted = 0
 
             <!-- 基础字段过滤 -->
+            <if test="reqVO.id != null and reqVO.id != ''">
+                AND ta.id = #{reqVO.id}
+            </if>
             <if test="reqVO.alarmId != null and reqVO.alarmId != ''">
                 AND ta.alarm_id = #{reqVO.alarmId}
             </if>

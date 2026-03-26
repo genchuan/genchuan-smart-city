@@ -28,6 +28,9 @@
     <sql id="whereConditions">
         <where>
             tr.deleted = 0
+            <if test="reqVO.id != null and reqVO.id != ''">
+                AND tr.id = #{reqVO.id}
+            </if>
             <if test="reqVO.reserveId != null and reqVO.reserveId != ''">
                 AND tr.reserve_id = #{reqVO.reserveId}
             </if>

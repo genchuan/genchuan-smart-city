@@ -120,4 +120,13 @@ public class TransferAlarmController {
     public CommonResult<TransferAlarmDashboardRespVO> getTransferAlarmDashboard() {
         return success(transferAlarmService.getTransferAlarmDashboard());
     }
+
+    @PutMapping("/relieve")
+    @Operation(summary = "解除预警")
+    @PreAuthorize("@ss.hasPermission('envirhealth:transfer-alarm:update')")
+    public CommonResult<Boolean> relieveTransferAlarm(
+            @RequestParam("id") Long alarmId) {
+        transferAlarmService.relieveTransferAlarm(alarmId);
+        return success(true);
+    }
 }

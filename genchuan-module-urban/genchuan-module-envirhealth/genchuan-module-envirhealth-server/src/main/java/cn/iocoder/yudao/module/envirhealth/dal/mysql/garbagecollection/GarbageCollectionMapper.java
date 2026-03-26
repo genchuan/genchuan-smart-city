@@ -449,4 +449,10 @@ public interface GarbageCollectionMapper extends BaseMapperX<GarbageCollectionDO
             "GROUP BY gc.garbage_type_id, g.name, total.total_volume " +
             "ORDER BY value DESC")
     List<GarbageCollectionCircleCompletedVO> selectCompletedVolumeByGarbageType();
+
+    /**
+     * 根据collectionId查询收运计划
+     */
+    @Select("SELECT * FROM garbage_collection WHERE collection_id = #{collectionId} AND deleted = 0 LIMIT 1")
+    GarbageCollectionDO selectByCollectionId(String collectionId);
 }

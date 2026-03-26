@@ -126,23 +126,23 @@ public interface TransferOperationMapper extends BaseMapperX<TransferOperationDO
      * 按日统计进站量
      */
     @Select("SELECT " +
-            "TO_CHAR(gto.create_time, 'YYYY-MM-DD') AS name, " +
+            "DATE_FORMAT(gto.create_time, 'YYYY-MM-DD') AS name, " +
             "COALESCE(SUM(gto.garbage_weight), 0) AS value " +
             "FROM garbage_transfer_operation gto " +
             "WHERE gto.deleted = false " +
-            "GROUP BY TO_CHAR(gto.create_time, 'YYYY-MM-DD') " +
-            "ORDER BY name ASC")
+            "GROUP BY DATE_FORMAT(gto.create_time, 'YYYY-MM-DD') " +
+            "ORDER BY name DESC ")
     List<BarItemVO> selectInboundVolumeByDay();
 
     /**
      * 按周统计进站量
      */
     @Select("SELECT " +
-            "TO_CHAR(gto.create_time, 'YYYY-\"W\"WW') AS name, " +
+            "DATE_FORMAT(gto.create_time, 'YYYY-\"W\"WW') AS name, " +
             "COALESCE(SUM(gto.garbage_weight), 0) AS value " +
             "FROM garbage_transfer_operation gto " +
             "WHERE gto.deleted = false " +
-            "GROUP BY TO_CHAR(gto.create_time, 'YYYY-\"W\"WW') " +
+            "GROUP BY DATE_FORMAT(gto.create_time, 'YYYY-\"W\"WW') " +
             "ORDER BY name DESC")
     List<BarItemVO> selectInboundVolumeByWeek();
 
@@ -150,11 +150,11 @@ public interface TransferOperationMapper extends BaseMapperX<TransferOperationDO
      * 按月统计进站量
      */
     @Select("SELECT " +
-            "TO_CHAR(gto.create_time, 'YYYY-MM') AS name, " +
+            "DATE_FORMAT(gto.create_time, 'YYYY-MM') AS name, " +
             "COALESCE(SUM(gto.garbage_weight), 0) AS value " +
             "FROM garbage_transfer_operation gto " +
             "WHERE gto.deleted = false " +
-            "GROUP BY TO_CHAR(gto.create_time, 'YYYY-MM') " +
+            "GROUP BY DATE_FORMAT(gto.create_time, 'YYYY-MM') " +
             "ORDER BY name DESC")
     List<BarItemVO> selectInboundVolumeByMonth();
 

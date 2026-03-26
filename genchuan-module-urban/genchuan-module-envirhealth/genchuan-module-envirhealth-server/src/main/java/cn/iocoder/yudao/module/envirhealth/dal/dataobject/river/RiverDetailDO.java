@@ -1,10 +1,6 @@
 package cn.iocoder.yudao.module.envirhealth.dal.dataobject.river;
 
-import cn.iocoder.yudao.module.envirhealth.framework.util.json.StringSplitUtils;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-
-import java.util.List;
 
 /**
  * 功能:
@@ -32,18 +28,11 @@ public class RiverDetailDO extends RiverDO {
     /**
      * 负责人员IDs，JSON
      */
-    @JsonIgnore
     private String staffsNameStr;
-
-    private List<String> staffsName;
-
     /**
      * 保洁工具IDs，JSON
      */
-    @JsonIgnore
     private String toolsNameStr;
-
-    private List<String> toolsName;
 
     /**
      * 关联sys_monitor_type.id
@@ -90,13 +79,4 @@ public class RiverDetailDO extends RiverDO {
      */
     private String taskTypeName;
 
-    public void setStaffsNameStr(String staffsNameStr) {
-        this.staffsNameStr = staffsNameStr;
-        this.staffsName = StringSplitUtils.splitToStringList(staffsNameStr);
-    }
-
-    public void setToolsNameStr(String toolsNameStr) {
-        this.toolsNameStr = toolsNameStr;
-        this.toolsName = StringSplitUtils.splitToStringList(toolsNameStr);
-    }
 }

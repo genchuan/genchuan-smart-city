@@ -57,6 +57,9 @@
             <if test="reqVO.pendingMaintenanceCount != null">
                 AND gt.pending_maintenance_count = #{reqVO.pendingMaintenanceCount}
             </if>
+            <if test="reqVO.progressStatus != null">
+                AND gt.progress_status = #{reqVO.progressStatus}
+            </if>
             <if test="reqVO.createTime != null">
                 AND gt.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
             </if>
@@ -68,26 +71,19 @@
         gt.*,
         a.area_name AS area_name,
         os.name AS operation_status_name,
-        u.user_name AS manager_name,
-        COALESCE(string_agg(DISTINCT e.name, ','), '') AS equipments_name_str
+        u.user_name AS manager_name
         FROM garbage_transfer gt
         LEFT JOIN sys_area a ON gt.area_code = a.area_code AND a.deleted = 0
         LEFT JOIN sys_operation_status os ON gt.operation_status_id = os.sys_operation_status_id AND os.deleted = 0
         LEFT JOIN sys_user u ON gt.manager_id = u.user_id AND u.deleted = 0
-        LEFT JOIN sys_equipment e
-        ON e.sys_equipment_id::TEXT = ANY (
-        ARRAY(SELECT json_array_elements_text(gt.equipment_ids::json)::TEXT)
-        )
-        AND e.deleted = 0
         <include refid="whereConditions"/>
-        GROUP BY gt.id, a.area_name, os.name, u.user_name
         ORDER BY gt.id DESC
         LIMIT #{reqVO.pageSize} OFFSET #{reqVO.offset}
     </select>
 
     <!-- 查询总条数 -->
     <select id="selectCount" resultType="Long">
-        SELECT COUNT(DISTINCT gt.id)
+        SELECT COUNT(gt.id)
         FROM garbage_transfer gt
         <include refid="whereConditions"/>
     </select>

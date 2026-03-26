@@ -61,4 +61,7 @@ public class TransferReserveRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
+    @Schema(description = "转运站编号")
+    @ExcelProperty("转运站编号")
+    private String transferId;
 }
