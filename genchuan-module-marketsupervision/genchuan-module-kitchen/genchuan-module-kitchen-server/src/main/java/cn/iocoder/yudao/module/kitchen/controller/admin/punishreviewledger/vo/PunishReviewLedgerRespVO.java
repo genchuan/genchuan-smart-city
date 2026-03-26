@@ -76,9 +76,13 @@ public class PunishReviewLedgerRespVO {
     @ExcelProperty("[复审状态] 如：待复审/已下发/已撤销")
     private String reviewStatus;
 
-    @Schema(description = "[复审人] 关联park_user.id")
-    @ExcelProperty("[复审人] 关联park_user.id")
+    @Schema(description = "[复审人] ")
+    @ExcelProperty("[复审人]")
     private Long reviewBy;
+
+    @Schema(description = "[复审人名称]")
+    @ExcelProperty("[复审人名称]")
+    private String reviewByName;
 
     @Schema(description = "[撤销原因ID] 关联cancel_reason_dict.id，仅已撤销状态赋值", example = "15547")
     @ExcelProperty("[撤销原因ID] 关联cancel_reason_dict.id，仅已撤销状态赋值")

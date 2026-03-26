@@ -96,7 +96,7 @@ public class SysOperationLogServiceImpl implements SysOperationLogService {
         Long userId = getLoginUserId();
         log.setOperUserId(userId);
 
-        String username = SecurityFrameworkUtils.getLoginUserNickname()!=null?SecurityFrameworkUtils.getLoginUserNickname():"亘川";
+        String username = SecurityFrameworkUtils.getLoginUserNickname()!=null?SecurityFrameworkUtils.getLoginUserNickname():"张文芳";
         log.setOperUserName(username);
 
         // IP
