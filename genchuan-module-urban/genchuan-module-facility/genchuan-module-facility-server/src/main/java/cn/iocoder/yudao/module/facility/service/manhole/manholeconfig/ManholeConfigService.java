@@ -70,4 +70,10 @@ public interface ManholeConfigService {
      */
     @Transactional(rollbackFor = Exception.class)
     CommonResult<ManholeCoverConfigAddRespVO> addManholeCoverConfig(ManholeCoverConfigAddReqVO reqVO);
+
+    @Transactional(rollbackFor = Exception.class)
+    CommonResult<ManholeCoverConfigEditRespVO> editManholeCoverConfig(ManholeCoverConfigEditReqVO reqVO);
+
+    @Transactional(rollbackFor = Exception.class)
+    CommonResult<String> deleteManholeCoverConfig(String configId, ManholeCoverConfigDeleteReqVO reqVO);
 }

@@ -161,28 +161,30 @@
         WHEN mm.ext_common2 > 0 THEN '水淹'
         WHEN sd.online_status = '离线' THEN '设备离线'
         ELSE '正常' END AS cover_status_name,
-        CONCAT(COALESCE(mm.tilt_angle::TEXT, '0'), '°') AS tilt_angle,
+        -- 🔥 MySQL 类型转换：替换 PG 的 ::TEXT
+        CONCAT(COALESCE(CAST(mm.tilt_angle AS CHAR), '0'), '°') AS tilt_angle,
         -- 位移：用manhole_monitor扩展字段ext_common1替代
-        CONCAT(COALESCE(mm.ext_common1::TEXT, '0'), 'cm') AS displacement,
+        CONCAT(COALESCE(CAST(mm.ext_common1 AS CHAR), '0'), 'cm') AS displacement,
         -- 水淹水位：用manhole_monitor扩展字段ext_common2替代
-        CONCAT(COALESCE(mm.ext_common2::TEXT, '0'), 'cm') AS water_level,
+        CONCAT(COALESCE(CAST(mm.ext_common2 AS CHAR), '0'), 'cm') AS water_level,
         -- 开合状态：关联sys_open_status字典表获取状态名称（替代原is_open字段）
         sos.status_name AS is_open,
         -- 电池电量：用sys_device扩展字段ext_common1替代
         COALESCE(sd.ext_common1, '85') AS battery_level,
         -- 信号强度：用sys_device扩展字段ext_common2替代
         COALESCE(sd.ext_common2, '-75dBm') AS signal_strength,
-        TO_CHAR(mm.create_time, 'YYYY-MM-DD HH24:MI:SS') AS collect_time,
+        -- 🔥 MySQL 时间格式化：替换 PG 的 TO_CHAR
+        DATE_FORMAT(mm.create_time, '%Y-%m-%d %H:%i:%s') AS collect_time,
         -- 区块链哈希：用manhole_monitor扩展字段ext_common3替代
         COALESCE(mm.ext_common3, '0x123abc456def789ghi012jkl345mno678pqr901') AS chain_hash,
         mm.tenant_id
-        FROM munifacility.manhole_monitor mm
-        LEFT JOIN munifacility.manhole_cover mc ON mm.cover_id = mc.id AND mc.deleted = B'0'
-        LEFT JOIN munifacility.road_facility rf ON mc.road_id = rf.id AND rf.deleted = B'0'  -- 关联道路表获取井盖所属名称
-        LEFT JOIN munifacility.sys_area sa ON mc.area_code = sa.full_code AND sa.deleted = B'0'
-        LEFT JOIN munifacility.sys_device sd ON mm.device_id = sd.id AND sd.deleted = B'0'
-        LEFT JOIN munifacility.sys_open_status sos ON mm.open_status_id = sos.id  -- 关联开合状态字典表
-        WHERE mm.deleted = B'0'
+        FROM manhole_monitor mm
+        LEFT JOIN manhole_cover mc ON mm.cover_id = mc.id AND mc.deleted = 0
+        LEFT JOIN road_facility rf ON mc.road_id = rf.id AND rf.deleted = 0  -- 关联道路表获取井盖所属名称
+        LEFT JOIN sys_area sa ON mc.area_code = sa.full_code AND sa.deleted = 0
+        LEFT JOIN sys_device sd ON mm.device_id = sd.id AND sd.deleted = 0
+        LEFT JOIN sys_open_status sos ON mm.open_status_id = sos.id  -- 关联开合状态字典表
+        WHERE mm.deleted = 0
         AND mm.tenant_id = #{reqVO.tenantId}
         <!-- 井盖ID筛选 -->
         <if test="reqVO.coverId != null and reqVO.coverId != ''">
@@ -268,18 +270,23 @@
         COALESCE(mm.vibration_data, 0.00) AS vibration_data,
         sw.create_time,
         COALESCE(sw.deal_limit, 0.0) AS deal_limit,
-        COALESCE(ROUND((sw.deal_limit - EXTRACT(EPOCH FROM (NOW() - sw.create_time)) / 3600), 1), 0.0) AS remaining_time,
+        -- 🔥 MySQL 替换 PG 时间计算函数
+        COALESCE(ROUND((sw.deal_limit - TIMESTAMPDIFF(SECOND, sw.create_time, NOW()) / 3600), 1), 0.0) AS remaining_time,
         COALESCE(sw.assign_status, '无派单状态') AS assign_status,
         COALESCE(srl.level_name, '无风险等级') AS level_name,
         COALESCE(sw.suggest, '无处置建议') AS suggest
-        FROM munifacility.sys_warn sw
-        LEFT JOIN munifacility.disposal_order do1 ON sw.id = do1.warn_id AND do1.deleted = B'0' AND do1.tenant_id = 1
-        LEFT JOIN munifacility.manhole_cover mc ON sw.facility_id = mc.id AND mc.deleted = B'0' AND mc.tenant_id = 1
-        LEFT JOIN munifacility.road_facility rf ON mc.road_id = rf.id AND rf.deleted = B'0' AND rf.tenant_id = 1
-        LEFT JOIN munifacility.manhole_monitor mm ON mc.id = mm.cover_id AND mm.deleted = B'0' AND mm.tenant_id = 1
-        LEFT JOIN munifacility.sys_open_status sos ON mm.open_status_id = sos.id
-        LEFT JOIN munifacility.sys_risk_level srl ON do1.risk_level_id = srl.id
-        WHERE sw.deleted = B'0'
+        FROM sys_warn sw
+        LEFT JOIN disposal_order do1
+        ON sw.id = do1.warn_id AND do1.deleted = 0 AND do1.tenant_id = 1
+        LEFT JOIN manhole_cover mc
+        ON sw.facility_id = mc.id AND mc.deleted = 0 AND mc.tenant_id = 1
+        LEFT JOIN road_facility rf
+        ON mc.road_id = rf.id AND rf.deleted = 0 AND rf.tenant_id = 1
+        LEFT JOIN manhole_monitor mm
+        ON mc.id = mm.cover_id AND mm.deleted = 0 AND mm.tenant_id = 1
+        LEFT JOIN sys_open_status sos ON mm.open_status_id = sos.id
+        LEFT JOIN sys_risk_level srl ON do1.risk_level_id = srl.id
+        WHERE sw.deleted = 0
         AND sw.facility_type = '窨井盖'
         AND sw.tenant_id = 1
         <!-- 动态条件筛选 -->
@@ -296,21 +303,25 @@
             AND srl.level_name = #{reqVO.riskLevel}
         </if>
         ORDER BY sw.create_time DESC
-        <!-- 手动分页核心：LIMIT + OFFSET -->
+        <!-- 手动分页核心：MySQL 原生支持 LIMIT + OFFSET -->
         LIMIT #{reqVO.pageSize} OFFSET #{reqVO.offset}
     </select>
 
     <!-- 2. 查询总条数（WHERE 条件和分页查询完全一致） -->
     <select id="selectWarningMonitorPageCount" resultType="java.lang.Long">
         SELECT COUNT(1)
-        FROM munifacility.sys_warn sw
-        LEFT JOIN munifacility.disposal_order do1 ON sw.id = do1.warn_id AND do1.deleted = B'0' AND do1.tenant_id = 1
-        LEFT JOIN munifacility.manhole_cover mc ON sw.facility_id = mc.id AND mc.deleted = B'0' AND mc.tenant_id = 1
-        LEFT JOIN munifacility.road_facility rf ON mc.road_id = rf.id AND rf.deleted = B'0' AND rf.tenant_id = 1
-        LEFT JOIN munifacility.manhole_monitor mm ON mc.id = mm.cover_id AND mm.deleted = B'0' AND mm.tenant_id = 1
-        LEFT JOIN munifacility.sys_open_status sos ON mm.open_status_id = sos.id
-        LEFT JOIN munifacility.sys_risk_level srl ON do1.risk_level_id = srl.id
-        WHERE sw.deleted = B'0'
+        FROM sys_warn sw
+        LEFT JOIN disposal_order do1
+        ON sw.id = do1.warn_id AND do1.deleted = 0 AND do1.tenant_id = 1
+        LEFT JOIN manhole_cover mc
+        ON sw.facility_id = mc.id AND mc.deleted = 0 AND mc.tenant_id = 1
+        LEFT JOIN road_facility rf
+        ON mc.road_id = rf.id AND rf.deleted = 0 AND rf.tenant_id = 1
+        LEFT JOIN manhole_monitor mm
+        ON mc.id = mm.cover_id AND mm.deleted = 0 AND mm.tenant_id = 1
+        LEFT JOIN sys_open_status sos ON mm.open_status_id = sos.id
+        LEFT JOIN sys_risk_level srl ON do1.risk_level_id = srl.id
+        WHERE sw.deleted = 0
         AND sw.facility_type = '窨井盖'
         AND sw.tenant_id = 1
         <!-- 动态条件筛选（和分页查询保持一致） -->
@@ -369,11 +380,11 @@
             mc.id AS coverId,
             COALESCE(mc.ext_common1, rf.road_name) AS coverName,
             #{tenantId} AS tenantId
-        FROM munifacility.manhole_cover mc
-                 LEFT JOIN munifacility.road_facility rf ON mc.road_id = rf.id
+        FROM manhole_cover mc
+                 LEFT JOIN road_facility rf ON mc.road_id = rf.id
         WHERE mc.id = #{coverId}
           AND mc.tenant_id = #{tenantId}
-          AND mc.deleted = B'0'
+          AND mc.deleted = 0
     </select>
 
     <select id="selectRealTimeDetail" resultMap="RealTimeDetailResultMap">
@@ -402,7 +413,7 @@
                 ELSE 0 END AS cover_status,
             mc.status AS cover_status_name,
             -- 实时监测数据
-            CONCAT(COALESCE(mm.tilt_angle::TEXT, '0'), '°') AS tilt_angle,
+            CONCAT(COALESCE(CAST(mm.tilt_angle AS CHAR), '0'), '°') AS tilt_angle,
             CONCAT(COALESCE(mm.ext_common1, '0'), 'cm') AS displacement,
             CONCAT(COALESCE(mm.ext_common2, '0'), 'cm') AS water_level,
             -- 开合状态转换
@@ -410,7 +421,7 @@
                 WHEN 'OPEN' THEN 1
                 ELSE 0 END AS is_open,
             -- 采集时间格式化
-            TO_CHAR(mm.create_time, 'YYYY-MM-DD HH24:MI:SS') AS collect_time,
+            DATE_FORMAT(mm.create_time, '%Y-%m-%d %H:%i:%s') AS collect_time,
             -- 设备信息
             sd.id AS device_id,
             COALESCE(sd.name, 'MC-Monitor V2.0') AS device_model,
@@ -424,33 +435,33 @@
             -- 区块链存证信息（示例值）
             '0x123abc456def789ghi012jkl345mno678pqr901' AS chain_hash,
             CONCAT('https://chain.genchuan.com/query/', '0x123abc456def789ghi012jkl345mno678pqr901') AS chain_query_url
-        FROM munifacility.manhole_cover mc
-                 -- 关联道路表
-                 LEFT JOIN munifacility.road_facility rf
+        FROM manhole_cover mc
+-- 关联道路表
+                 LEFT JOIN road_facility rf
                            ON mc.road_id = rf.id
-                               AND rf.deleted = B'0'
-            -- 关联区域表
-                 LEFT JOIN munifacility.sys_area sa
+                               AND rf.deleted = 0
+-- 关联区域表
+                 LEFT JOIN sys_area sa
                            ON mc.area_code = sa.full_code
-                               AND sa.deleted = B'0'
-            -- 关联最新监测数据
+                               AND sa.deleted = 0
+-- 关联最新监测数据
                  LEFT JOIN (
-            SELECT * FROM munifacility.manhole_monitor
-            WHERE deleted = B'0'
+            SELECT * FROM manhole_monitor
+            WHERE deleted = 0
             ORDER BY create_time DESC
         ) mm
                            ON mc.id = mm.cover_id
-            -- 关联设备表
-                 LEFT JOIN munifacility.sys_device sd
+-- 关联设备表
+                 LEFT JOIN sys_device sd
                            ON mm.device_id = sd.id
-                               AND sd.deleted = B'0'
-            -- 关联开合状态字典表
-                 LEFT JOIN munifacility.sys_open_status sos
+                               AND sd.deleted = 0
+-- 关联开合状态字典表
+                 LEFT JOIN sys_open_status sos
                            ON mm.open_status_id = sos.id
-        -- 筛选条件（使用 MyBatis 参数）
+-- 筛选条件（使用 MyBatis 参数）
         WHERE mc.id = #{coverId}
           AND mc.tenant_id = #{tenantId}
-          AND mc.deleted = B'0'
+          AND mc.deleted = 0
             LIMIT 1;
     </select>
 
@@ -458,20 +469,21 @@
     <!-- 查询近24小时按小时聚合的监测数据 -->
     <select id="selectHourlyMonitorData" resultType="java.util.Map">
         SELECT
-            -- 提取小时（00-23）
-            TO_CHAR(mm.create_time, 'HH24') AS hour,
-            -- 根据指标类型取对应字段
-            CASE #{indicatorType}
+            -- 提取小时（00-23）MySQL 替换 PG 的 TO_CHAR
+            DATE_FORMAT(mm.create_time, '%H') AS hour,
+    -- 根据指标类型取对应字段
+        CASE #{indicatorType}
             WHEN 0 THEN AVG(mm.tilt_angle) -- 倾斜角度：取平均值
-            WHEN 1 THEN AVG(mm.ext_common1::numeric) -- 位移距离：扩展字段1
-            WHEN 2 THEN AVG(mm.ext_common2::numeric) -- 井内水位：扩展字段2
+            WHEN 1 THEN AVG(mm.ext_common1) -- 位移距离：扩展字段1（移除PG类型转换）
+            WHEN 2 THEN AVG(mm.ext_common2) -- 井内水位：扩展字段2（移除PG类型转换）
         END AS indicator_value
-        FROM munifacility.manhole_monitor mm
+        FROM manhole_monitor mm
         WHERE mm.cover_id = #{coverId}
         AND mm.tenant_id = #{tenantId}
-        AND mm.deleted = B'0'
-        AND mm.create_time >= NOW() - INTERVAL '24 hours' -- 近24小时
-        GROUP BY TO_CHAR(mm.create_time, 'HH24')
+        AND mm.deleted = 0 -- PG B'0' 改为 MySQL 0
+        -- 近24小时 MySQL 标准语法
+        AND mm.create_time >= NOW() - INTERVAL 24 HOUR
+        GROUP BY DATE_FORMAT(mm.create_time, '%H')
         ORDER BY hour ASC
     </select>
 
@@ -481,27 +493,27 @@
         SELECT
             CASE #{indicatorType}
                 WHEN 0 THEN mc.tilt_angle_threshold -- 倾斜角度阈值：配置表
-                WHEN 1 THEN COALESCE(mc.ext_common1::numeric, 50) -- 位移阈值：扩展字段1（默认50cm）
-                WHEN 2 THEN COALESCE(mc.ext_common2::numeric, 30) -- 水位阈值：扩展字段2（默认30cm）
+                WHEN 1 THEN COALESCE(mc.ext_common1, 50) -- 位移阈值：扩展字段1（默认50cm）
+                WHEN 2 THEN COALESCE(mc.ext_common2, 30) -- 水位阈值：扩展字段2（默认30cm）
                 END AS threshold
-        FROM munifacility.manhole_config mc
+        FROM manhole_config mc
         WHERE mc.cover_id = #{coverId}
-          AND mc.tenant_id = #{tenantId} -- 确保参数名是tenantId
-          AND mc.deleted = B'0'
+          AND mc.tenant_id = #{tenantId}
+          AND mc.deleted = 0
             LIMIT 1
     </select>
 
 
     <select id="selectLatestByCoverId" resultType="cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholemonitor.ManholeMonitorDO">
         SELECT id, cover_id, device_id, tilt_angle, vibration_data, ext_common1, create_time
-        FROM munifacility.manhole_monitor
-        WHERE cover_id = #{coverId} AND deleted = B'0'
+        FROM manhole_monitor
+        WHERE cover_id = #{coverId} AND deleted = 0
         ORDER BY create_time DESC LIMIT 1
     </select>
 
     <select id="selectDeviceOnlineStatus" resultType="java.lang.String">
-        SELECT online_status FROM munifacility.sys_device
-        WHERE id = #{deviceId} AND deleted = B'0'
+        SELECT online_status FROM sys_device
+        WHERE id = #{deviceId} AND deleted = 0
     </select>
 
 
