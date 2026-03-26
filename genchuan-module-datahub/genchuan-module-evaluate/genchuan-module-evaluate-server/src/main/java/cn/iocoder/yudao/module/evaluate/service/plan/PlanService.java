@@ -6,7 +6,7 @@ import cn.iocoder.yudao.module.evaluate.controller.admin.inspection.plan.vo.Plan
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.plan.PlanDO;
 import jakarta.validation.Valid;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * 考察计划 Service 接口

@@ -1,8 +1,7 @@
-package cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.standarditem.vo;
+package cn.iocoder.yudao.module.evaluate.controller.admin.standarditem.vo;
 
-
-import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
-import cn.idev.excel.annotation.ExcelProperty;
+import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
+import com.alibaba.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -44,6 +43,22 @@ public class StandardItemRespVO {
     @Schema(description = "创建人ID（关联sys_user.user_id）")
     @ExcelProperty("创建人ID（关联sys_user.user_id）")
     private String createBy;
+
+    @Schema(description = "创建人ID")
+    @ExcelProperty("创建人ID")
+    private String creator;
+
+    @Schema(description = "更新人ID")
+    @ExcelProperty("更新人ID")
+    private String updater;
+
+    @Schema(description = "创建人姓名")
+    @ExcelProperty("创建人姓名")
+    private String creatorName;
+
+    @Schema(description = "更新人姓名")
+    @ExcelProperty("更新人姓名")
+    private String updaterName;
 
     @Schema(description = "创建时间（业务字段）")
     @ExcelProperty("创建时间（业务字段）")

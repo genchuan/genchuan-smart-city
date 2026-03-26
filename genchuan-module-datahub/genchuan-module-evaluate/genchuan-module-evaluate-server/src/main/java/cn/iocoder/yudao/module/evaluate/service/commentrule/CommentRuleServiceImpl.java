@@ -1,32 +1,28 @@
 package cn.iocoder.yudao.module.evaluate.service.commentrule;
 
-import cn.hutool.core.collection.CollUtil;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.module.evaluate.controller.admin.commentrule.vo.CommentRulePageReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.commentrule.vo.CommentRuleRespVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.commentrule.vo.CommentRuleSaveReqVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.ruledetail.vo.RuleDetailRespVO;
-import org.springframework.stereotype.Service;
-import jakarta.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
-import java.util.stream.Collectors;
-import cn.iocoder.yudao.module.evaluate.controller.admin.commentrule.vo.*;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.commentrule.CommentRuleDO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexitem.IndexItemDO;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
+import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexsystem.IndexSystemDO;
+import cn.iocoder.yudao.module.evaluate.dal.dataobject.ruledetail.RuleDetailDO;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.commentrule.CommentRuleMapper;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.indexitem.IndexItemMapper;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.indexsystem.IndexSystemMapper;
-import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexsystem.IndexSystemDO;
 import cn.iocoder.yudao.module.evaluate.service.ruledetail.RuleDetailService;
-import cn.iocoder.yudao.module.evaluate.dal.dataobject.ruledetail.RuleDetailDO;
+import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
-import static cn.iocoder.yudao.module.evaluate.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.evaluate.enums.ErrorCodeConstants.COMMENT_RULE_NOT_EXISTS;
 
 /**
  * 评分规则主 Service 实现类

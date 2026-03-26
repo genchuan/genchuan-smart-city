@@ -1,13 +1,11 @@
 package cn.iocoder.yudao.module.evaluate.dal.mysql.commentrule;
 
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.evaluate.controller.admin.commentrule.vo.CommentRulePageReqVO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.commentrule.CommentRuleDO;
 import org.apache.ibatis.annotations.Mapper;
-import cn.iocoder.yudao.module.evaluate.controller.admin.commentrule.vo.*;
 
 /**
  * 评分规则主 Mapper

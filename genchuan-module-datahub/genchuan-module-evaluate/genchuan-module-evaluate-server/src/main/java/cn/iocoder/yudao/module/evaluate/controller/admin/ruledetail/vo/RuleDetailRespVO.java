@@ -1,12 +1,12 @@
 package cn.iocoder.yudao.module.evaluate.controller.admin.ruledetail.vo;
 
+import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
+import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import java.util.*;
+import lombok.Data;
+
 import java.math.BigDecimal;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
-import cn.idev.excel.annotation.*;
 
 @Schema(description = "管理后台 - 评分规则明细 Response VO")
 @Data
@@ -65,4 +65,4 @@ public class RuleDetailRespVO {
     @ExcelProperty("更新时间")
     private LocalDateTime updateTime;
 
-}
+}

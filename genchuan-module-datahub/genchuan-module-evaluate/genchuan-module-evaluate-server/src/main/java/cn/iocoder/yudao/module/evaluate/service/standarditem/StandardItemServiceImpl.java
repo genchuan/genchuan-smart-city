@@ -1,14 +1,17 @@
 package cn.iocoder.yudao.module.evaluate.service.standarditem;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.standarditem.vo.StandardItemPageReqVO;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.standarditem.vo.StandardItemSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.standarditem.vo.StandardItemPageReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.standarditem.vo.StandardItemSaveReqVO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.standarditem.StandardItemDO;
-import cn.iocoder.yudao.module.evaluate.dal.mysql.standarditem.StandardItemMapper;
+import cn.iocoder.yudao.module.evaluate.dal.mysql.evalsystem.standarditem.StandardItemMapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.evaluate.enums.ErrorCodeConstants.STANDARD_ITEM_NOT_EXISTS;
@@ -30,6 +33,7 @@ public class StandardItemServiceImpl implements StandardItemService {
         // 插入
         StandardItemDO standardItem = BeanUtils.toBean(createReqVO, StandardItemDO.class);
         standardItemMapper.insert(standardItem);
+
         // 返回
         return standardItem.getId();
     }
@@ -51,6 +55,13 @@ public class StandardItemServiceImpl implements StandardItemService {
         standardItemMapper.deleteById(id);
     }
 
+    @Override
+        public void deleteStandardItemListByIds(List<Long> ids) {
+        // 删除
+        standardItemMapper.deleteByIds(ids);
+        }
+
+
     private void validateStandardItemExists(Long id) {
         if (standardItemMapper.selectById(id) == null) {
             throw exception(STANDARD_ITEM_NOT_EXISTS);
@@ -65,6 +76,14 @@ public class StandardItemServiceImpl implements StandardItemService {
     @Override
     public PageResult<StandardItemDO> getStandardItemPage(StandardItemPageReqVO pageReqVO) {
         return standardItemMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public void deleteStandardItemListByStandardCategoryIds(List<Long> standardCategoryIds) {
+        if (CollUtil.isEmpty(standardCategoryIds)) {
+            return;
+        }
+        standardItemMapper.deleteByStandardCategoryIds(standardCategoryIds);
     }
 
 }

@@ -12,11 +12,11 @@ import cn.iocoder.yudao.module.evaluate.controller.admin.patrolinspection.vo.Pat
 import cn.iocoder.yudao.module.evaluate.controller.admin.patrolinspection.vo.PatrolInspectionSaveReqVO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexitem.IndexItemDO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.patrolinspection.PatrolInspectionDO;
-import cn.iocoder.yudao.module.evaluate.service.patrolinspection.PatrolInspectionService;
 import cn.iocoder.yudao.module.evaluate.service.commentrule.CommentRuleService;
-import cn.iocoder.yudao.module.evaluate.service.indexsystem.IndexSystemService;
 import cn.iocoder.yudao.module.evaluate.service.indexitem.IndexItemService;
+import cn.iocoder.yudao.module.evaluate.service.indexsystem.IndexSystemService;
 import cn.iocoder.yudao.module.evaluate.service.object.ObjectService;
+import cn.iocoder.yudao.module.evaluate.service.patrolinspection.PatrolInspectionService;
 import cn.iocoder.yudao.module.evaluate.service.rulecategory.RuleCategoryService;
 import cn.iocoder.yudao.module.evaluate.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +30,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;

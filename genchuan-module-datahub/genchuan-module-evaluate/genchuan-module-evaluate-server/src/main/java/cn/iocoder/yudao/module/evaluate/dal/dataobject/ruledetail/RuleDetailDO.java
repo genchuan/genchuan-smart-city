@@ -1,14 +1,12 @@
 package cn.iocoder.yudao.module.evaluate.dal.dataobject.ruledetail;
 
-import lombok.*;
-import java.util.*;
-import java.math.BigDecimal;
-import java.math.BigDecimal;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.LocalDateTime;
-import com.baomidou.mybatisplus.annotation.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
+import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.*;
+
+import java.math.BigDecimal;
 
 /**
  * 评分规则明细 DO
@@ -64,4 +62,4 @@ public class RuleDetailDO extends BaseDO {
     private String remark;
 
 
-}
+}

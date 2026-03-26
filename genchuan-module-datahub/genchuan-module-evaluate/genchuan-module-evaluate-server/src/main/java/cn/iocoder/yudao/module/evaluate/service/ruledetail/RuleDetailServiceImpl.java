@@ -1,25 +1,21 @@
 package cn.iocoder.yudao.module.evaluate.service.ruledetail;
 
-import cn.hutool.core.collection.CollUtil;
-import org.springframework.stereotype.Service;
-import jakarta.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
-import java.math.BigDecimal;
-import cn.iocoder.yudao.module.evaluate.controller.admin.ruledetail.vo.*;
-import cn.iocoder.yudao.module.evaluate.dal.dataobject.ruledetail.RuleDetailDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
+import cn.iocoder.yudao.module.evaluate.controller.admin.ruledetail.vo.RuleDetailPageReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.ruledetail.vo.RuleDetailSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.dal.dataobject.ruledetail.RuleDetailDO;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.ruledetail.RuleDetailMapper;
+import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+
+import java.math.BigDecimal;
+import java.util.Comparator;
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
-import static cn.iocoder.yudao.module.evaluate.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.evaluate.enums.ErrorCodeConstants.RULE_DETAIL_NOT_EXISTS;
 
 /**
  * 评分规则明细 Service 实现类

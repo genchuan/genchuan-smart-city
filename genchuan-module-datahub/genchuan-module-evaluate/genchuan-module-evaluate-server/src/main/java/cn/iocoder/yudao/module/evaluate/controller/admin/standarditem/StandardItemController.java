@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.standarditem;
+package cn.iocoder.yudao.module.evaluate.controller.admin.standarditem;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
@@ -6,9 +6,9 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.standarditem.vo.StandardItemPageReqVO;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.standarditem.vo.StandardItemRespVO;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.standarditem.vo.StandardItemSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.standarditem.vo.StandardItemPageReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.standarditem.vo.StandardItemRespVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.standarditem.vo.StandardItemSaveReqVO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.standarditem.StandardItemDO;
 import cn.iocoder.yudao.module.evaluate.service.standarditem.StandardItemService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,6 +57,15 @@ public class StandardItemController {
     @PreAuthorize("@ss.hasPermission('evaluate:standard-item:delete')")
     public CommonResult<Boolean> deleteStandardItem(@RequestParam("id") Long id) {
         standardItemService.deleteStandardItem(id);
+        return success(true);
+    }
+
+    @DeleteMapping("/delete-list")
+    @Parameter(name = "ids", description = "编号", required = true)
+    @Operation(summary = "批量删除标准项")
+                @PreAuthorize("@ss.hasPermission('evaluate:standard-item:delete')")
+    public CommonResult<Boolean> deleteStandardItemList(@RequestParam("ids") List<Long> ids) {
+        standardItemService.deleteStandardItemListByIds(ids);
         return success(true);
     }
 
