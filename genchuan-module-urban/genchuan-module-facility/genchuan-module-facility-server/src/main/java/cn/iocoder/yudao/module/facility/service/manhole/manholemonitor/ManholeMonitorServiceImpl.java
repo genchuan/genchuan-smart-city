@@ -180,7 +180,7 @@ public class ManholeMonitorServiceImpl implements ManholeMonitorService {
         // 查询详情
         ManholeCoverRealTimeDetailRespVO detail = monitorMapper.selectRealTimeDetail(coverId, tenantId);
         if (detail == null) {
-            throw exception("MONITOR_NOT_EXISTS");
+            throw exception(MONITOR_NOT_EXISTS);
         }
         return detail;
     }

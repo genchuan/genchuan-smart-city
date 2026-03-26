@@ -1,10 +1,8 @@
 package cn.iocoder.yudao.module.facility.service.manhole.manholewarn;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholewarn.vo.ManholeCoverWarnDetailReqVO;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholewarn.vo.ManholeCoverWarnDetailRespVO;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholewarn.vo.ManholeCoverWarnPageReqVO;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholewarn.vo.ManholeCoverWarnPageRespVO;
+import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholewarn.vo.*;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface ManholeCoverWarnService {
     /**
@@ -21,4 +19,14 @@ public interface ManholeCoverWarnService {
      * @return 窨井盖预警数据详情
      */
     ManholeCoverWarnDetailRespVO getWarnDetail(ManholeCoverWarnDetailReqVO reqVO);
+
+    /**
+     * 触发异常联动报警
+     *
+     * @param coverId 窨井盖ID
+     * @param reqVO 触发参数
+     * @return 触发结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    ManholeCoverWarnTriggerAlarmRespVO triggerAlarm(String coverId, ManholeCoverWarnTriggerAlarmReqVO reqVO);
 }

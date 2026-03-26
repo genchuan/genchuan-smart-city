@@ -2,14 +2,13 @@ package cn.iocoder.yudao.module.facility.controller.admin.manhole.manholewarn;
 
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholewarn.vo.ManholeCoverWarnDetailReqVO;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholewarn.vo.ManholeCoverWarnDetailRespVO;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholewarn.vo.ManholeCoverWarnPageReqVO;
-import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholewarn.vo.ManholeCoverWarnPageRespVO;
+import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholewarn.vo.*;
 import cn.iocoder.yudao.module.facility.service.manhole.manholewarn.ManholeCoverWarnService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,5 +36,15 @@ public class ManholeCoverWarnController {
         ManholeCoverWarnDetailReqVO reqVO = new ManholeCoverWarnDetailReqVO();
         reqVO.setWarnId(warnId);
         return success(manholeCoverWarnService.getWarnDetail(reqVO));
+    }
+
+    @Operation(summary = "异常联动报警触发", description = "根据井盖ID触发报警")
+    @PostMapping("/trigger-alarm/{coverId}")
+    public CommonResult<ManholeCoverWarnTriggerAlarmRespVO> triggerAlarm(
+            @Schema(description = "窨井盖唯一ID", example = "c1d2e3f4-g5h6-7890-cdef-0123456789ab")
+            @PathVariable String coverId,
+
+            @RequestBody @Valid ManholeCoverWarnTriggerAlarmReqVO req) {
+        return success(manholeCoverWarnService.triggerAlarm(coverId, req));
     }
 }
