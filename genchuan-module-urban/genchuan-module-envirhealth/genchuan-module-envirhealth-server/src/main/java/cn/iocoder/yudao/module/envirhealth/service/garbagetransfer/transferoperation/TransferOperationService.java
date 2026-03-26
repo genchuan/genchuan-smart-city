@@ -75,4 +75,12 @@ public interface TransferOperationService {
      * @return 仪表盘统计数据
      */
     TransferOperationCompletedDashboardVO getTransferOperationDashboard(String timeDimension);
+
+    /**
+     * 暂停转运作业
+     *
+     * @param operationId 转运作业ID
+     * @param pauseStatusId 暂停状态ID（uuid-plan-status-004）
+     */
+    void pauseTransferOperation(Long operationId, String pauseStatusId);
 }

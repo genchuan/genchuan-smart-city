@@ -111,4 +111,6 @@ public interface ErrorCodeConstants {
     ErrorCode CLEANING_PROBLEM_STATUS_REQUIRED = new ErrorCode(500, "目标状态不能为空");
     ErrorCode TRANSFER_RESERVE_SORT_TYPE_INVALID = new ErrorCode(500, "排序类型错误");
     ErrorCode TRANSFER_ID_NOT_EXISTS = new ErrorCode(500, "转运站ID不存在");
+    ErrorCode COLLECTION_NOT_EXISTS = new ErrorCode(500, "收运计划不存在");
+    ErrorCode TRANSFER_OPERATION_PLAN_ID_EMPTY = new ErrorCode(500, "转运作业关联的收运计划ID为空，无法暂停");
 }
