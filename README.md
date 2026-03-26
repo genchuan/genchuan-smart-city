@@ -15,7 +15,7 @@
 
 此前本项目以后端服务为主，许多开发者下载后无法看到实际界面。**本次更新正式发布前端 UI 系统**。
 ### 📸 看看效果
-![前端界面预览](images/%E3%80%90%E5%90%8E%E5%8F%B0%E3%80%91%E5%9F%8E%E5%B8%82%E7%94%9F%E5%91%BD%E7%BA%BF%E2%80%94%E2%80%94%E5%9F%8E%E7%AE%A1%E4%BD%8F%E5%BB%BA.png).png)  
+![前端界面预览](images/%E3%80%90%E5%90%8E%E5%8F%B0%E3%80%91%E5%9F%8E%E5%B8%82%E7%94%9F%E5%91%BD%E7%BA%BF%E2%80%94%E2%80%94%E5%9F%8E%E7%AE%A1%E4%BD%8F%E5%BB%BA.png) 
 *前端仓库地址*：https://gitee.com/genchuan/genchuan-smart-city-ui
 
 ## 一、平台简介
