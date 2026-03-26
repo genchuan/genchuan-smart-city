@@ -312,4 +312,20 @@ public class GarbageTransferServiceImpl implements GarbageTransferService {
     public void decrementUnhandledAlarmCount(String transferId) {
         garbageTransferMapper.decrementUnhandledAlarmCount(transferId);
     }
+
+    @Override
+    public void incrementPendingMaintenanceCount(String transferId) {
+        // 先校验存在
+        validateTransferIdExists(transferId);
+        // 直接 +1
+        garbageTransferMapper.incrementPendingMaintenanceCount(transferId);
+    }
+
+    @Override
+    public void decrementPendingMaintenanceCount(String transferId) {
+        // 先校验存在
+        validateTransferIdExists(transferId);
+        // 直接 -1（确保不会 < 0）
+        garbageTransferMapper.decrementPendingMaintenanceCount(transferId);
+    }
 }

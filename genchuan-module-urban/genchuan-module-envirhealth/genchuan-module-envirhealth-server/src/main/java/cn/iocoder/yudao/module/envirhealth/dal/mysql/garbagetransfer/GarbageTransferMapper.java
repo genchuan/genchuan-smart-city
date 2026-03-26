@@ -140,4 +140,20 @@ public interface GarbageTransferMapper extends BaseMapperX<GarbageTransferDO> {
             "SET unhandled_alarm_count = GREATEST(unhandled_alarm_count - 1, 0) " +
             "WHERE transfer_id = #{transferId}")
     int decrementUnhandledAlarmCount(@Param("transferId") String transferId);
+
+    /**
+     * 待维修数量 +1
+     */
+    @Update("UPDATE garbage_transfer " +
+            "SET pending_maintenance_count = pending_maintenance_count + 1 " +
+            "WHERE transfer_id = #{transferId} AND deleted = 0")
+    int incrementPendingMaintenanceCount(@Param("transferId") String transferId);
+
+    /**
+     * 待维修数量 -1（确保不小于0）
+     */
+    @Update("UPDATE garbage_transfer " +
+            "SET pending_maintenance_count = GREATEST(pending_maintenance_count - 1, 0) " +
+            "WHERE transfer_id = #{transferId} AND deleted = 0")
+    int decrementPendingMaintenanceCount(@Param("transferId") String transferId);
 }

@@ -98,4 +98,14 @@ public interface GarbageTransferService {
      * 未处理预警数-1
      */
     void decrementUnhandledAlarmCount(String transferId);
+
+    /**
+     * 待维修数量 +1
+     */
+    void incrementPendingMaintenanceCount(String transferId);
+
+    /**
+     * 待维修数量 -1（确保不小于0）
+     */
+    void decrementPendingMaintenanceCount(String transferId);
 }

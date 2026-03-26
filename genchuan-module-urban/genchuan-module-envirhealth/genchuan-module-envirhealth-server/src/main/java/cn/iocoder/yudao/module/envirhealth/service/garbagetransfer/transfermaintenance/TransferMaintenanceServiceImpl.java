@@ -9,6 +9,7 @@ import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.Transf
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferMaintenanceDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.TransferMaintenanceMapper;
 import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.garbagetransfer.TransferMaintenanceCodeGenerator;
+import cn.iocoder.yudao.module.envirhealth.service.garbagetransfer.garbagetransfer.GarbageTransferService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -31,17 +32,27 @@ public class TransferMaintenanceServiceImpl implements TransferMaintenanceServic
     private TransferMaintenanceMapper transferMaintenanceMapper;
 
     @Resource
+    private GarbageTransferService garbageTransferService;
+
+    @Resource
     private TransferMaintenanceCodeGenerator codeGenerator;
 
     @Override
     public Long createTransferMaintenance(TransferMaintenanceSaveReqVO createReqVO) {
-        // 插入
-        TransferMaintenanceDO transferMaintenance = BeanUtils.toBean(createReqVO, TransferMaintenanceDO.class);
+        // 1. 校验转运站是否存在
+        garbageTransferService.validateTransferIdExists(createReqVO.getTransferId());
 
+        // 2. 转换并生成维修单号
+        TransferMaintenanceDO transferMaintenance = BeanUtils.toBean(createReqVO, TransferMaintenanceDO.class);
+        transferMaintenance.setId(null);
         transferMaintenance.setMaintenanceId(codeGenerator.generateMaintainId());
 
+        // 3. 插入维修单
         transferMaintenanceMapper.insert(transferMaintenance);
-        // 返回
+
+        // 4. 待维修数量 +1
+        garbageTransferService.incrementPendingMaintenanceCount(createReqVO.getTransferId());
+
         return transferMaintenance.getId();
     }
 
@@ -58,8 +69,15 @@ public class TransferMaintenanceServiceImpl implements TransferMaintenanceServic
     public void deleteTransferMaintenance(Long id) {
         // 校验存在
         validateTransferMaintenanceExists(id);
-        // 删除
+
+        // 1. 获取维修单（拿到 transferId）
+        TransferMaintenanceDO maintenance = getTransferMaintenance(id);
+
+        // 2. 删除维修单
         transferMaintenanceMapper.deleteById(id);
+
+        // 3. 待维修数量 -1
+        garbageTransferService.decrementPendingMaintenanceCount(maintenance.getTransferId());
     }
 
     private void validateTransferMaintenanceExists(Long id) {
