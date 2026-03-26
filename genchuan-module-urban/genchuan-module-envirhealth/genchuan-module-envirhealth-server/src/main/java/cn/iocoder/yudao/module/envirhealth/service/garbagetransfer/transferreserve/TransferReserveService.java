@@ -1,10 +1,7 @@
 package cn.iocoder.yudao.module.envirhealth.service.garbagetransfer.transferreserve;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.TransferReserveBatchSortReqVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.TransferReserveDashboardRespVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.TransferReservePageReqVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.TransferReserveSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferReserveDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferReserveDetailDO;
 import jakarta.validation.Valid;
@@ -70,4 +67,9 @@ public interface TransferReserveService {
      * @return 看板统计数据
      */
     TransferReserveDashboardRespVO getDashboardStats();
+
+    /**
+     * 预约排号
+     */
+    void sortTransferReserve(TransferReserveSortReqVO reqVO);
 }
