@@ -86,8 +86,8 @@ public class PunishReviewLedgerDO extends BaseDO {
      */
     private Long reviewBy;
 
-//    复审人名称
-    private String reviewByName;
+////    复审人名称
+//    private String reviewByName;
     /**
      * [撤销原因ID] 关联cancel_reason_dict.id，仅已撤销状态赋值
      */
