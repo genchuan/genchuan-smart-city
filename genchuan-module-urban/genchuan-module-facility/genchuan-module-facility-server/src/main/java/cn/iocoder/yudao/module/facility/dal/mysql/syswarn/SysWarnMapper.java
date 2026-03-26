@@ -4,6 +4,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholewarn.vo.ManholeCoverWarnDetailRespVO;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholewarn.vo.ManholeCoverWarnPageReqVO;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholewarn.vo.ManholeCoverWarnPageRespVO;
 import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnBatchUpdateReqVO;
@@ -81,4 +82,11 @@ public interface SysWarnMapper extends BaseMapperX<SysWarnDO> {
      * 统计总数
      */
     Long selectManholeCoverWarnCount(ManholeCoverWarnPageReqVO reqVO);
+
+    /**
+     * 窨井盖预警详情查询
+     */
+    ManholeCoverWarnDetailRespVO selectManholeCoverWarnDetail(
+            @Param("warnId") String warnId
+    );
 }

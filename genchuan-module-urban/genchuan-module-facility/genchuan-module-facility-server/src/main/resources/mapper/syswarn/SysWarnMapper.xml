@@ -329,6 +329,69 @@
         </if>
     </select>
 
+    <select id="selectManholeCoverWarnDetail" resultType="cn.iocoder.yudao.module.facility.controller.admin.manhole.manholewarn.vo.ManholeCoverWarnDetailRespVO">
+        SELECT
+            w.id AS warnId,
+            c.id AS coverId,
+            c.cover_no AS coverCode,
+            CONCAT(c.cover_no, '号井盖') AS coverName,
+            '' AS address,
+            -- 👇 这里改成扩展字段 1、2
+            IFNULL(c.ext_common1, '') AS longitude,
+            IFNULL(c.ext_common2, '') AS latitude,
+            w.type AS warnType,
+
+-- 告警类型名称：根据数字匹配文字（和level写法完全一样）
+            CASE w.type
+                WHEN 0 THEN '倾斜'
+                WHEN 1 THEN '振动'
+                WHEN 2 THEN '水位超标'
+                WHEN 3 THEN '开合异常'
+                ELSE '未知'
+                END AS warnTypeName,
+            w.level AS warnLevel,
+            CASE w.level
+                WHEN 0 THEN '一般'
+                WHEN 1 THEN '重要'
+                WHEN 2 THEN '紧急'
+                ELSE '未知'
+                END AS warnLevelName,
+            IFNULL(w.over_value, '') AS warnValue,
+            IFNULL(w.threshold_value, '') AS thresholdValue,
+            DATE_FORMAT(w.trigger_time, '%Y-%m-%d %H:%i:%s') AS warnTime,
+            JSON_ARRAYAGG(w.ext_common3) AS alarmRecord_alarmType,
+            DATE_FORMAT(w.trigger_time, '%Y-%m-%d %H:%i:%s') AS alarmRecord_alarmTime,
+            JSON_ARRAYAGG(w.ext_common4) AS alarmRecord_alarmRecipient,
+            MAX(wo.assign_staff_id) AS handleRecord_handleUserId,
+            MAX(wo.assign_staff_name) AS handleRecord_handleUserName,
+            MAX(DATE_FORMAT(wo.complete_time, '%Y-%m-%d %H:%i:%s')) AS handleRecord_handleTime,
+            MAX(wo.deal_content) AS handleRecord_handleRemark,
+            CASE
+                WHEN MAX(wo.process_status) IS NULL THEN 0
+                WHEN MAX(wo.process_status) = '待处置' THEN 0
+                WHEN MAX(wo.process_status) = '处置中' THEN 1
+                WHEN MAX(wo.process_status) = '处置完成' THEN 2
+                ELSE 0
+                END AS warnStatus,
+            CASE
+                WHEN MAX(wo.process_status) IS NULL THEN '未处理'
+                WHEN MAX(wo.process_status) = '待处置' THEN '未处理'
+                WHEN MAX(wo.process_status) = '处置中' THEN '处理中'
+                WHEN MAX(wo.process_status) = '处置完成' THEN '已处理'
+                ELSE '未处理'
+                END AS warnStatusName,
+            '' AS chainHash,
+            w.tenant_id AS tenantId
+        FROM sys_warn w
+                 LEFT JOIN manhole_cover c ON w.facility_id = c.id
+                 LEFT JOIN manhole_config cfg ON c.id = cfg.cover_id
+                 LEFT JOIN work_order wo ON w.id = wo.warn_id
+        WHERE w.deleted = 0
+          AND w.id = #{warnId}
+        GROUP BY w.id
+            LIMIT 1
+    </select>
+
 
 
 </mapper>
