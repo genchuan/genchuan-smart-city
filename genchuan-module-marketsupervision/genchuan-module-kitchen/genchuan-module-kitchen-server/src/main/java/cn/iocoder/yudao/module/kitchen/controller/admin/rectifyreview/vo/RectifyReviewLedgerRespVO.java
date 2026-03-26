@@ -96,16 +96,16 @@ public class RectifyReviewLedgerRespVO {
     @ExcelProperty("送达状态")
     private String receiveStatus;
 
-    @Schema(description = "企业整改反馈状态")
-    @ExcelProperty("企业整改反馈状态")
-    private String rectifyStatus;
+//    @Schema(description = "企业整改反馈状态")
+//    @ExcelProperty("企业整改反馈状态")
+//    private String rectifyStatus;
 
-    @Schema(description = "执法复审台账编号")
-    @ExcelProperty("执法复审台账编号")
-    private String lawReviewLedgerCode;
+//    @Schema(description = "执法复审台账编号")
+//    @ExcelProperty("执法复审台账编号")
+//    private String lawReviewLedgerCode;
 
-    @Schema(description = "整改通知书编号")
-    @ExcelProperty("整改通知书编号")
-    private String rectifyNoticeCode;
+//    @Schema(description = "整改通知书编号")
+//    @ExcelProperty("整改通知书编号")
+//    private String rectifyNoticeCode;
 
 }

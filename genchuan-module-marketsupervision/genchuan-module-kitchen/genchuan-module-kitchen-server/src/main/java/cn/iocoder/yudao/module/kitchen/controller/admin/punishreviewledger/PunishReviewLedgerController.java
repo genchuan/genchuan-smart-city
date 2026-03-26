@@ -14,6 +14,7 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.up
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.RectifyReviewLedgerPageReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.RectifyReviewLedgerRespVO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.punishreviewledger.PunishReviewLedgerDO;
+import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.codeutils.CodeQueryUtils;
 import cn.iocoder.yudao.module.kitchen.framework.lxsutils.procom.aop.sysope.SysOpeLog;
 import cn.iocoder.yudao.module.kitchen.service.punishreviewledger.PunishReviewLedgerService;
 import org.springframework.http.ResponseEntity;
@@ -107,7 +108,7 @@ public class PunishReviewLedgerController {
     @PostMapping("/review-issue")
     //@PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:review-issue')")
     @Operation(summary = "下发处罚通知书操作")
-    @SysOpeLog(operType = "处罚复审台账")
+    @SysOpeLog(operObject = "处罚复审台账")
     public CommonResult<Long> reviewIssue(@Valid @RequestBody IssueReqVO reqVO) {
         Long punishNoticeId = punishReviewLedgerService.reviewIssue(reqVO);
         return success(punishNoticeId);

@@ -45,7 +45,7 @@ public class RectifyNoticeController {
 
     @GetMapping("/download-pdf")
     @Operation(summary = "下载整改通知书 PDF")
-    @SysOpeLog
+
     public ResponseEntity<byte[]> downloadRectifyNoticePdf(@RequestParam("rectifyNoticeId") Long rectifyNoticeId) throws IOException {
         ResponseEntity<byte[]> byteResult = rectifyNoticeService.downloadRectifyNoticePdf(rectifyNoticeId);
 
@@ -54,7 +54,7 @@ public class RectifyNoticeController {
     @PostMapping("/create")
     @Operation(summary = "创建整改通知书")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-notice:create')")
-    @SysOpeLog
+
     public CommonResult<Long> createRectifyNotice(@Valid @RequestBody RectifyNoticeSaveReqVO createReqVO) {
         return success(rectifyNoticeService.createRectifyNotice(createReqVO));
     }
@@ -62,7 +62,7 @@ public class RectifyNoticeController {
     @PutMapping("/update")
     @Operation(summary = "更新整改通知书")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-notice:update')")
-    @SysOpeLog
+
     public CommonResult<Boolean> updateRectifyNotice(@Valid @RequestBody RectifyNoticeUpdateReqVO updateReqVO) {
         rectifyNoticeService.updateRectifyNotice(updateReqVO);
         return success(true);
@@ -72,7 +72,7 @@ public class RectifyNoticeController {
     @Operation(summary = "删除整改通知书")
     @Parameter(name = "id", description = "编号", required = true)
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-notice:delete')")
-    @SysOpeLog
+
     public CommonResult<Boolean> deleteRectifyNotice(@RequestParam("id") Long id) {
         rectifyNoticeService.deleteRectifyNotice(id);
         return success(true);
@@ -82,7 +82,7 @@ public class RectifyNoticeController {
     @Operation(summary = "获得整改通知书")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-notice:query')")
-    @SysOpeLog
+
     public CommonResult<RectifyNoticeRespVO> getRectifyNotice(@RequestParam("id") Long id) {
         RectifyNoticeDO rectifyNotice = rectifyNoticeService.getRectifyNotice(id);
         return success(BeanUtils.toBean(rectifyNotice, RectifyNoticeRespVO.class));
@@ -91,7 +91,7 @@ public class RectifyNoticeController {
     @GetMapping("/page")
     @Operation(summary = "获得整改通知书分页")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-notice:query')")
-    @SysOpeLog
+
     public CommonResult<PageResult<RectifyNoticeRespVO>> getRectifyNoticePage(@Valid RectifyNoticePageReqVO pageReqVO) {
         PageResult<RectifyNoticeDO> pageResult = rectifyNoticeService.getRectifyNoticePage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, RectifyNoticeRespVO.class));
@@ -101,7 +101,7 @@ public class RectifyNoticeController {
     @Operation(summary = "导出整改通知书 Excel")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-notice:export')")
     @ApiAccessLog(operateType = EXPORT)
-    @SysOpeLog
+
     public void exportRectifyNoticeExcel(@Valid RectifyNoticePageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);

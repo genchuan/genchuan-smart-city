@@ -24,6 +24,7 @@ import cn.iocoder.yudao.module.kitchen.dal.mysql.punishnotice.PunishNoticeMapper
 import cn.iocoder.yudao.module.kitchen.dal.mysql.punishreviewledger.PunishReviewLedgerMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.rectifynotice.RectifyNoticeMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.rectifyreview.RectifyReviewMapper;
+import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.codeutils.CodeQueryUtils;
 import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.file.FileUploadService;
 import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.name.NameUtil;
 import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.pdf.PdfGenerator;
@@ -228,11 +229,11 @@ public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService 
         // =========================
         punishLedger.setDraftTime(LocalDateTime.now());
 
-        //6.缴费截止时间
+        //6.缴费截止时间 TODO 下发才产生
         punishLedger.setPaymentDeadlineTime(LocalDateTime.now().plusDays(30));
 
         // =========================
-        // 6. 入库
+        // 7. 入库
         // =========================
         punishReviewLedgerMapper.insert(punishLedger);
 
@@ -338,6 +339,9 @@ public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService 
         ledgerDO.setReviewStatus("已下发");          // 状态：已下发
         ledgerDO.setReviewBy(getLoginUserId());    // 当前登录用户
         ledgerDO.setReviewTime(LocalDateTime.now()); // 当前时间
+
+        //5.TODO 更新缴费日期
+//        ledgerDO.setPaymentDeadlineTime(LocalDateTime.now().plusDays(30));
 
         // =========================
         // 5. 更新数据库
