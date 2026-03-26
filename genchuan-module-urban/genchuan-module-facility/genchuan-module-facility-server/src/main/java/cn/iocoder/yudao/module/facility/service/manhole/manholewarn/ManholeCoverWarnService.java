@@ -29,4 +29,14 @@ public interface ManholeCoverWarnService {
      */
     @Transactional(rollbackFor = Exception.class)
     ManholeCoverWarnTriggerAlarmRespVO triggerAlarm(String coverId, ManholeCoverWarnTriggerAlarmReqVO reqVO);
+
+    /**
+     * 更新窨井盖预警状态
+     *
+     * @param warnId 预警ID
+     * @param reqVO 请求参数
+     * @return 响应结果
+     */
+    ManholeCoverWarnUpdateStatusRespVO updateWarnStatus(String warnId, ManholeCoverWarnUpdateStatusReqVO reqVO);
+
 }

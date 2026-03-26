@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.facility.service.manhole.manholewarn;
 
+import cn.hutool.core.util.StrUtil;
+import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholewarn.vo.*;
@@ -13,10 +15,11 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.module.facility.enums.ErrorCodeConstants.COVER_NOT_EXISTS;
+import static cn.iocoder.yudao.module.facility.enums.ErrorCodeConstants.*;
 
 @Service
 public class ManholeCoverWarnServiceImpl implements ManholeCoverWarnService {
@@ -80,7 +83,6 @@ public class ManholeCoverWarnServiceImpl implements ManholeCoverWarnService {
         // 3. 插入预警表
         sysWarnMapper.insert(warn);
 
-        // TODO 待完善：自动生成处置工单 work_order / disposal_order
 
         // 4. 构造返回
         ManholeCoverWarnTriggerAlarmRespVO resp = new ManholeCoverWarnTriggerAlarmRespVO();
@@ -90,4 +92,41 @@ public class ManholeCoverWarnServiceImpl implements ManholeCoverWarnService {
         resp.setTenantId(reqVO.getTenantId());
         return resp;
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ManholeCoverWarnUpdateStatusRespVO updateWarnStatus(String warnId, ManholeCoverWarnUpdateStatusReqVO reqVO) {
+
+        System.out.println("warnId: " + warnId);
+
+        // 1. 查询预警
+        SysWarnDO warnDO = sysWarnMapper.selectById(warnId);
+        if (warnDO == null) {
+            throw exception(WARN_NOT_EXISTS);
+        }
+
+        // 3. 校验状态合法性
+        Integer status = reqVO.getWarnStatus();
+        if (status == null || (status != 1 && status != 2 && status != 3)) {
+            throw exception(STATUS_NOT_SUPPORT);
+        }
+
+        // 4. 直接更新数字状态，不做任何转换
+        warnDO.setStatus(status.toString()); // 如果数据库是varchar就用toString，是int就直接set
+        // warnDO.setStatus(status); // 如果你的DO里status是Integer类型，用这行
+
+        warnDO.setUpdater(reqVO.getOperateUserId());
+        warnDO.setUpdateTime(LocalDateTime.now());
+        warnDO.setExtCommon1(reqVO.getHandleRemark()); // 备注
+
+        sysWarnMapper.updateById(warnDO);
+
+        // 5. 构建返回
+        ManholeCoverWarnUpdateStatusRespVO resp = new ManholeCoverWarnUpdateStatusRespVO();
+        resp.setWarnId(warnDO.getId().toString());
+        resp.setWarnStatus(reqVO.getWarnStatus()); // 直接返回传入的数字
+        resp.setUpdateTime(warnDO.getUpdateTime());
+        return resp;
+    }
+
 }

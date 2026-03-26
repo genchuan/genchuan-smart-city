@@ -47,4 +47,17 @@ public class ManholeCoverWarnController {
             @RequestBody @Valid ManholeCoverWarnTriggerAlarmReqVO req) {
         return success(manholeCoverWarnService.triggerAlarm(coverId, req));
     }
+
+
+    @PutMapping("/update-status/{warnId}")
+    @Operation(summary = "更新窨井盖预警状态")
+    public CommonResult<ManholeCoverWarnUpdateStatusRespVO> updateWarnStatus(
+            @PathVariable String warnId,
+            @Validated @RequestBody ManholeCoverWarnUpdateStatusReqVO reqVO) {
+
+        ManholeCoverWarnUpdateStatusRespVO respVO = manholeCoverWarnService.updateWarnStatus(warnId, reqVO);
+
+        return CommonResult.success(respVO);
+    }
+
 }
