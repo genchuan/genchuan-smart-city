@@ -25,8 +25,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.GARBAGE_TRANSFER_NOT_EXISTS;
-import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.TRANSFER_NAME_EXISTS;
+import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.*;
 import static com.alibaba.fastjson.JSON.parseArray;
 
 /**
@@ -295,5 +294,22 @@ public class GarbageTransferServiceImpl implements GarbageTransferService {
             vo.setValue(garbageTransferDO.getTransferId());
             return vo;
         });
+    }
+
+    @Override
+    public void validateTransferIdExists(String transferId) {
+        if (garbageTransferMapper.countByTransferId(transferId) == 0) {
+            throw exception(TRANSFER_ID_NOT_EXISTS);
+        }
+    }
+
+    @Override
+    public void incrementUnhandledAlarmCount(String transferId) {
+        garbageTransferMapper.incrementUnhandledAlarmCount(transferId);
+    }
+
+    @Override
+    public void decrementUnhandledAlarmCount(String transferId) {
+        garbageTransferMapper.decrementUnhandledAlarmCount(transferId);
     }
 }

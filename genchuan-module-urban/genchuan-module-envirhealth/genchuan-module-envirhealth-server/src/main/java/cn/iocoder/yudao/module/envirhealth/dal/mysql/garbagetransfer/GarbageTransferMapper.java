@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.envirhealth.framework.util.vo.PieItemVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -120,4 +121,23 @@ public interface GarbageTransferMapper extends BaseMapperX<GarbageTransferDO> {
 
 // ========== ==========
 
+    /**
+     * 校验transferId是否存在
+     */
+    @Select("SELECT COUNT(*) FROM garbage_transfer WHERE transfer_id = #{transferId}")
+    Integer countByTransferId(@Param("transferId") String transferId);
+
+    /**
+     * 未处理预警数+1
+     */
+    @Update("UPDATE garbage_transfer SET unhandled_alarm_count = unhandled_alarm_count + 1 WHERE transfer_id = #{transferId}")
+    int incrementUnhandledAlarmCount(@Param("transferId") String transferId);
+
+    /**
+     * 未处理预警数-1
+     */
+    @Update("UPDATE garbage_transfer " +
+            "SET unhandled_alarm_count = GREATEST(unhandled_alarm_count - 1, 0) " +
+            "WHERE transfer_id = #{transferId}")
+    int decrementUnhandledAlarmCount(@Param("transferId") String transferId);
 }

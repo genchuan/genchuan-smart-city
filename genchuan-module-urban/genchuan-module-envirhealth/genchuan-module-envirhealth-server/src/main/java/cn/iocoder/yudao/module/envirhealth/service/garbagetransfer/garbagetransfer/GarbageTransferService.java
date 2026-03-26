@@ -83,4 +83,19 @@ public interface GarbageTransferService {
      * @return 下拉框选项列表
      */
     List<OptionVO> getGarbageTransferOptions();
+
+    /**
+     * 校验transferId是否存在
+     */
+    void validateTransferIdExists(String transferId);
+
+    /**
+     * 未处理预警数+1
+     */
+    void incrementUnhandledAlarmCount(String transferId);
+
+    /**
+     * 未处理预警数-1
+     */
+    void decrementUnhandledAlarmCount(String transferId);
 }

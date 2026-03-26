@@ -110,4 +110,5 @@ public interface ErrorCodeConstants {
     ErrorCode CLEANING_PROBLEM_DISPATCH_USER_REQUIRED = new ErrorCode(500, "派发人员不能为空");
     ErrorCode CLEANING_PROBLEM_STATUS_REQUIRED = new ErrorCode(500, "目标状态不能为空");
     ErrorCode TRANSFER_RESERVE_SORT_TYPE_INVALID = new ErrorCode(500, "排序类型错误");
+    ErrorCode TRANSFER_ID_NOT_EXISTS = new ErrorCode(500, "转运站ID不存在");
 }
