@@ -30,6 +30,10 @@
     <sql id="whereConditions">
         <where>
             gto.deleted = 0
+
+            <if test="reqVO.id != null and reqVO.id != ''">
+                AND gto.id = #{reqVO.id}
+            </if>
             <if test="reqVO.operationId != null and reqVO.operationId != ''">
                 AND gto.operation_id = #{reqVO.operationId}
             </if>

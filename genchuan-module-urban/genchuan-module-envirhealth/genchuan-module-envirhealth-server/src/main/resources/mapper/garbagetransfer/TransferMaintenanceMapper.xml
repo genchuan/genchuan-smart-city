@@ -32,6 +32,9 @@
             tm.deleted = 0
 
             <!-- 基础字段过滤 -->
+            <if test="reqVO.id != null and reqVO.id != ''">
+                AND tm.id = #{reqVO.id}
+            </if>
             <if test="reqVO.maintenanceId != null and reqVO.maintenanceId != ''">
                 AND tm.maintenance_id = #{reqVO.maintenanceId}
             </if>
