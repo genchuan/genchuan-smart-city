@@ -53,4 +53,16 @@ public class GarbageTransferSaveReqVO {
 
     @Schema(description = "流程状态")
     private String progressStatus;
+
+    @Schema(description = "预约编号")
+    private String reserveId;
+
+    @Schema(description = "作业编号")
+    private String operationId;
+
+    @Schema(description = "预警编号")
+    private String alarmId;
+
+    @Schema(description = "维护编号")
+    private String maintenanceId;
 }

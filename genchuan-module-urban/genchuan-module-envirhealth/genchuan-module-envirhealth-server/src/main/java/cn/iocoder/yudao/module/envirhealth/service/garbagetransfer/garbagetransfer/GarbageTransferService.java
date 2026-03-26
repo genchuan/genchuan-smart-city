@@ -6,8 +6,11 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.g
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.GarbageTransferDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.GarbageTransferDetailDO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import cn.iocoder.yudao.module.envirhealth.framework.util.vo.StatisticsRespVO;
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 垃圾转运站 Service 接口
@@ -74,4 +77,10 @@ public interface GarbageTransferService {
      * @return 统计数据
      */
     StatisticsRespVO getGarbageTransferStatistics();
+
+    /**
+     * 获得垃圾转运站下拉框选项
+     * @return 下拉框选项列表
+     */
+    List<OptionVO> getGarbageTransferOptions();
 }

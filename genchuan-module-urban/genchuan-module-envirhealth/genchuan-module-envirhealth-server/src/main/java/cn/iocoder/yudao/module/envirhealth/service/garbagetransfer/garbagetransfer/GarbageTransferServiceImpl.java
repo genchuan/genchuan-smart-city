@@ -14,6 +14,7 @@ import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.Garbag
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.dictionary.EquipmentMapper;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.*;
 import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.garbagetransfer.GarbageTransferCodeGenerator;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import cn.iocoder.yudao.module.envirhealth.framework.util.vo.StatisticsRespVO;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -276,5 +277,23 @@ public class GarbageTransferServiceImpl implements GarbageTransferService {
 
         respVO.setPlanStatusCounts(planStatusCounts);
         return respVO;
+    }
+
+    @Override
+    public List<OptionVO> getGarbageTransferOptions() {
+
+        List<GarbageTransferDO> list;
+        list = garbageTransferMapper.selectList(
+                new LambdaQueryWrapperX<GarbageTransferDO>()
+                        .eq(GarbageTransferDO::getDeleted, 0)
+                        .orderByDesc(GarbageTransferDO::getId)
+        );
+        // 将DO转换为下拉框VO（label=name，value=id）
+        return cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList(list, garbageTransferDO -> {
+            OptionVO vo = new OptionVO();
+            vo.setLabel(garbageTransferDO.getName());
+            vo.setValue(garbageTransferDO.getTransferId());
+            return vo;
+        });
     }
 }
