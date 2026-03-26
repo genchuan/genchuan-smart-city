@@ -26,9 +26,9 @@ public class OutdoorAdRespVO {
     @ExcelProperty("广告名称")
     private String name;
 
-    @Schema(description = "广告位置")
-    @ExcelProperty("广告位置")
-    private String location;
+    @Schema(description = "广告类型")
+    @ExcelProperty("广告类型")
+    private String type;
 
     @Schema(description = "审批尺寸")
     @ExcelProperty("审批尺寸")
@@ -38,33 +38,42 @@ public class OutdoorAdRespVO {
     @ExcelProperty("实际尺寸")
     private String actualSize;
 
-    @Schema(description = "倾斜角度")
-    @ExcelProperty("倾斜角度")
-    private BigDecimal tiltAngle;
+    @Schema(description = "广告位置")
+    @ExcelProperty("广告位置")
+    private String location;
 
-    @Schema(description = "破损状态", example = "10496")
-    @ExcelProperty("破损状态")
-    private String damageStatusId;
 
-    @Schema(description = "广告状态", example = "27560")
-    @ExcelProperty("广告状态")
-    private String adStatusId;
+    @Schema(description = "点位经度")
+    @ExcelProperty("点位经度")
+    private String lng;
+
+
+    @Schema(description = "点位纬度")
+    @ExcelProperty("点位纬度")
+    private String lat;
+
+    @Schema(description = "区域ID")
+    @ExcelProperty("区域ID")
+    private Long areaCode;
 
     @Schema(description = "所属区域")
     @ExcelProperty("所属区域")
-    private String areaCode;
+    private String areaName;
 
-    @Schema(description = "监管员", example = "4257")
-    @ExcelProperty("监管员")
-    private String supervisorId;
+    @Schema(description = "网格ID")
+    private Long gridId;
 
-    @Schema(description = "预警类型", example = "23563")
-    @ExcelProperty("预警类型")
-    private String warningTypeId;
+    @Schema(description = "审批状态")
+    @ExcelProperty("审批状态")
+    private String approvalStatus;
 
-    @Schema(description = "预警时间")
-    @ExcelProperty("预警时间")
-    private LocalDateTime warningTime;
+    @Schema(description = "审批意见")
+    @ExcelProperty("审批意见")
+    private String approvedDesc;
+
+    @Schema(description = "审批人")
+    @ExcelProperty("审批人")
+    private Long approvalBy;
 
     @Schema(description = "通用扩展字段1")
     @ExcelProperty("通用扩展字段1")
@@ -94,10 +103,6 @@ public class OutdoorAdRespVO {
     @Schema(description = "广告状态名称")
     @ExcelProperty("广告状态名称")
     private String adStatusName;
-
-    @Schema(description = "区域名称")
-    @ExcelProperty("区域名称")
-    private String areaName;
 
     @Schema(description = "监管员名称")
     @ExcelProperty("监管员名称")
