@@ -142,4 +142,28 @@ public class TransferAlarmServiceImpl implements TransferAlarmService {
 
         return respVO;
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void relieveTransferAlarm(Long alarmId) {
+        // 1. 校验预警ID是否存在
+        TransferAlarmDO alarmDO = transferAlarmMapper.selectById(alarmId);
+        if (alarmDO == null) {
+            throw ServiceExceptionUtil.exception(TRANSFER_ALARM_NOT_EXISTS);
+        }
+
+        // 2. 校验当前状态是否为未解除（避免重复操作）
+        if ("已解除".equals(alarmDO.getHandleStatus())) {
+            return; // 已解除则直接返回，无需处理
+        }
+
+        // 3. 更新预警状态为「已解除」
+        TransferAlarmDO updateDO = new TransferAlarmDO();
+        updateDO.setId(alarmId);
+        updateDO.setHandleStatus("已解除");
+        transferAlarmMapper.updateById(updateDO);
+
+        // 4. 垃圾转运站未处理预警数减1
+        garbageTransferService.decrementUnhandledAlarmCount(alarmDO.getTransferId());
+    }
 }
