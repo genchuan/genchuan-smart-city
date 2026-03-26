@@ -17,7 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.TRANSFER_MAINTENANCE_NOT_EXISTS;
+import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.*;
 
 /**
  * 设备维护 Service 实现类
@@ -126,5 +126,37 @@ public class TransferMaintenanceServiceImpl implements TransferMaintenanceServic
         respVO.setStationPendingMaintenanceComparison(transferMaintenanceMapper.selectStationPendingMaintenanceComparison());
 
         return respVO;
+    }
+
+    @Override
+    public void reviewTransferMaintenance(Long maintenanceId, String result) {
+        // 1. 校验维护单是否存在
+        TransferMaintenanceDO maintenance = getTransferMaintenance(maintenanceId);
+        if (maintenance == null) {
+            throw exception(TRANSFER_MAINTENANCE_NOT_EXISTS);
+        }
+
+        // 只有 维护中 状态，才允许验收
+        if (!"维护中".equals(maintenance.getMaintenanceStatus())) {
+            throw exception(MAINTENANCE_NOT_IN_REPAIRING);
+        }
+
+        // 2. 根据验收结果更新状态
+        if ("合格".equals(result)) {
+            // 合格 → 状态改为【已完成】
+            maintenance.setMaintenanceStatus("已完成");
+
+            // 待维护数量 -1
+            garbageTransferService.decrementPendingMaintenanceCount(maintenance.getTransferId());
+        } else if ("不合格".equals(result)) {
+            // 不合格 → 状态改为【待维修】
+            maintenance.setMaintenanceStatus("待维修");
+        } else {
+            // 非法参数
+            throw exception(UNKNOWN_REVIEW_RESULT);
+        }
+
+        // 3. 更新数据库
+        transferMaintenanceMapper.updateById(maintenance);
     }
 }

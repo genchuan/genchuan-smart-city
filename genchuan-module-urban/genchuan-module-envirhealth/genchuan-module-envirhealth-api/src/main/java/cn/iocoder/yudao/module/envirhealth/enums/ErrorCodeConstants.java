@@ -113,4 +113,6 @@ public interface ErrorCodeConstants {
     ErrorCode TRANSFER_ID_NOT_EXISTS = new ErrorCode(500, "转运站ID不存在");
     ErrorCode COLLECTION_NOT_EXISTS = new ErrorCode(500, "收运计划不存在");
     ErrorCode TRANSFER_OPERATION_PLAN_ID_EMPTY = new ErrorCode(500, "转运作业关联的收运计划ID为空，无法暂停");
+    ErrorCode UNKNOWN_REVIEW_RESULT = new ErrorCode(500, "未知的验收结果");
+    ErrorCode MAINTENANCE_NOT_IN_REPAIRING = new ErrorCode(500, "维护单状态不是维护中，不能验收");
 }

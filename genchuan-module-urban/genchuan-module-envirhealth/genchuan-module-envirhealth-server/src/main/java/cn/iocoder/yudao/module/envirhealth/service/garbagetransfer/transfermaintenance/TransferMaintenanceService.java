@@ -59,4 +59,12 @@ public interface TransferMaintenanceService {
      * 获取设备维护看板统计数据
      */
     TransferMaintenanceDashboardRespVO getMaintenanceDashboard();
+
+    /**
+     * 审核/验收设备维护
+     *
+     * @param maintenanceId 维护单ID
+     * @param result 验收结果：合格/不合格
+     */
+    void reviewTransferMaintenance(Long maintenanceId, String result);
 }

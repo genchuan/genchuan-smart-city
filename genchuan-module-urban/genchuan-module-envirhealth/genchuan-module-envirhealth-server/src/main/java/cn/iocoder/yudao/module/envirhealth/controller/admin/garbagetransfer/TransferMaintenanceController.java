@@ -119,4 +119,14 @@ public class TransferMaintenanceController {
     public CommonResult<TransferMaintenanceDashboardRespVO> getMaintenanceDashboard() {
         return success(transferMaintenanceService.getMaintenanceDashboard());
     }
+
+    @PutMapping("/review")
+    @Operation(summary = "审核设备维护")
+    @PreAuthorize("@ss.hasPermission('envirhealth:transfer-maintenance:update')")
+    public CommonResult<Boolean> reviewTransferMaintenance(
+            @RequestParam("id") Long maintenanceId,
+            @RequestParam("result") String result) {
+        transferMaintenanceService.reviewTransferMaintenance(maintenanceId, result);
+        return success(true);
+    }
 }
