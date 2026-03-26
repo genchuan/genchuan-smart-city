@@ -97,6 +97,7 @@ public class PunishNoticeServiceImpl implements PunishNoticeService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Long addPunishNotice(AddPunishNoticeReq reqVO) {
 
         // 1. 校验处罚复审台账是否存在

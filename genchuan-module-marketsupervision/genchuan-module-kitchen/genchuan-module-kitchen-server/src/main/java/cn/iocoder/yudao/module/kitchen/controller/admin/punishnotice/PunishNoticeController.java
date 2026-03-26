@@ -46,7 +46,7 @@ public class PunishNoticeController {
 
     @GetMapping("/download-pdf")
     @Operation(summary = "下载整改通知书 PDF")
-    @SysOpeLog
+
     public ResponseEntity<byte[]> downloadPunishNoticePdf(@RequestParam("punishNoticeId") Long punishNoticeId) throws IOException {
         ResponseEntity<byte[]> byteResult = punishNoticeService.downloadRectifyNoticePdf(punishNoticeId);
 
@@ -57,7 +57,7 @@ public class PunishNoticeController {
     @PostMapping("/draft")
     @Operation(summary = "草拟通知书（HTML）")
     //@PreAuthorize("@ss.hasPermission('kitchen:punish-notice:draft')")
-    @SysOpeLog
+
     public CommonResult<String> draftPunishNotice(@Valid @RequestBody DraftPunishNoticeReq reqVO) {
         // 调用 Service 生成草稿 HTML
         String draftHtml = punishNoticeService.generatePunishNoticeDraft(reqVO);
@@ -67,7 +67,7 @@ public class PunishNoticeController {
     @PostMapping("/add")
     @Operation(summary = "新增处罚通知书（精简入参，自动补全）")
     //@PreAuthorize("@ss.hasPermission('kitchen:punish-notice:create')")
-    @SysOpeLog
+
     public CommonResult<Long> addPunishNotice(@Valid @RequestBody AddPunishNoticeReq reqVO) {
         Long id = punishNoticeService.addPunishNotice(reqVO);
         return success(id);
@@ -75,7 +75,7 @@ public class PunishNoticeController {
     @PostMapping("/create")
     @Operation(summary = "（勿用）创建处罚通知书")
     //@PreAuthorize("@ss.hasPermission('kitchen:punish-notice:create')")
-    @SysOpeLog
+
     public CommonResult<Long> createPunishNotice(@Valid @RequestBody PunishNoticeSaveReqVO createReqVO) {
         return success(punishNoticeService.createPunishNotice(createReqVO));
     }
@@ -83,7 +83,7 @@ public class PunishNoticeController {
     @PutMapping("/update")
     @Operation(summary = "更新处罚通知书")
     //@PreAuthorize("@ss.hasPermission('kitchen:punish-notice:update')")
-    @SysOpeLog
+
     public CommonResult<Boolean> updatePunishNotice(@Valid @RequestBody PunishNoticeSaveReqVO updateReqVO) {
         punishNoticeService.updatePunishNotice(updateReqVO);
         return success(true);
@@ -93,7 +93,7 @@ public class PunishNoticeController {
     @Operation(summary = "删除处罚通知书")
     @Parameter(name = "id", description = "编号", required = true)
     //@PreAuthorize("@ss.hasPermission('kitchen:punish-notice:delete')")
-    @SysOpeLog
+
     public CommonResult<Boolean> deletePunishNotice(@RequestParam("id") Long id) {
         punishNoticeService.deletePunishNotice(id);
         return success(true);
@@ -103,7 +103,7 @@ public class PunishNoticeController {
     @Operation(summary = "获得处罚通知书")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     //@PreAuthorize("@ss.hasPermission('kitchen:punish-notice:query')")
-    @SysOpeLog
+
     public CommonResult<PunishNoticeRespVO> getPunishNotice(@RequestParam("id") Long id) {
         PunishNoticeDO punishNotice = punishNoticeService.getPunishNotice(id);
         return success(BeanUtils.toBean(punishNotice, PunishNoticeRespVO.class));
@@ -112,7 +112,7 @@ public class PunishNoticeController {
     @GetMapping("/page")
     @Operation(summary = "获得处罚通知书分页")
     //@PreAuthorize("@ss.hasPermission('kitchen:punish-notice:query')")
-    @SysOpeLog
+
     public CommonResult<PageResult<PunishNoticeRespVO>> getPunishNoticePage(@Valid PunishNoticePageReqVO pageReqVO) {
         PageResult<PunishNoticeDO> pageResult = punishNoticeService.getPunishNoticePage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, PunishNoticeRespVO.class));
@@ -122,7 +122,7 @@ public class PunishNoticeController {
     @Operation(summary = "导出处罚通知书 Excel")
     //@PreAuthorize("@ss.hasPermission('kitchen:punish-notice:export')")
     @ApiAccessLog(operateType = EXPORT)
-    @SysOpeLog
+
     public void exportPunishNoticeExcel(@Valid PunishNoticePageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);

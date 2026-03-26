@@ -69,7 +69,7 @@ public class RectifyReviewController {
     @PostMapping("/review-add2")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-add')")
     @Operation(summary = "23新增2-整改通知复审记录操作")
-    @SysOpeLog
+    @SysOpeLog(operObject = "整改复审台账")
     public CommonResult<Long> reviewAdd2(@Valid @RequestBody AddRectifyReviewReqVO2 reqVO) {
         Long id = rectifyReviewService.reviewAdd2(reqVO);
         return success(id);
@@ -88,7 +88,7 @@ public class RectifyReviewController {
     //新增.即预警页面的“生成复审台账”
     @PostMapping("/review-add")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-add')")
-    @Operation(summary = "新增-整改通知复审记录操作")
+    @Operation(summary = "（勿用）新增-整改通知复审记录操作")
     @SysOpeLog
     public CommonResult<Long> reviewAdd(@Valid @RequestBody AddRectifyReviewReqVO reqVO) {
         Long id = rectifyReviewService.reviewAdd(reqVO);
@@ -178,7 +178,7 @@ public class RectifyReviewController {
 
     @GetMapping("/ledger-page")
     @Operation(summary = "分页-整改通知书复审台账表")
-    @PreAuthorize("@ss.hasPermission('kitchen:rectify-review:query')")
+//    @PreAuthorize("@ss.hasPermission('kitchen:rectify-review:query')")
 //    @SysOpeLog(operType = "审核", operObject = "企业整改记录", operDesc = "整改审核通过")
     @SysOpeLog
     public CommonResult<PageResult<RectifyReviewLedgerRespVO>> getRectifyReviewLedgerPage(
@@ -190,7 +190,7 @@ public class RectifyReviewController {
         return success(pageResult);
     }
     @PostMapping("/create")
-    @Operation(summary = "创建整改通知书复审台账")
+    @Operation(summary = "（勿用）创建整改通知书复审台账")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:create')")
     @SysOpeLog
     public CommonResult<Long> createRectifyReview(@Valid @RequestBody RectifyReviewSaveReqVO createReqVO) {
