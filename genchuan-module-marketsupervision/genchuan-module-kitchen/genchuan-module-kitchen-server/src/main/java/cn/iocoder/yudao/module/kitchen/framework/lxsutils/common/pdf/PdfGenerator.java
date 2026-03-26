@@ -9,6 +9,7 @@ import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.layout.font.FontProvider;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,37 +18,84 @@ import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+@Slf4j
 public class PdfGenerator {
+    /**
+     * 生成 PDF 字节数组并包装为 ResponseEntity（供接口下载使用）
+     */
     public ResponseEntity<byte[]> generatePdfResponse(String htmlContent) {
-        try {
-            // 内存输出流
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-            // 配置转换属性
-            ConverterProperties converterProperties = new ConverterProperties();
-
-            // 使用项目内 SimSun 字体
-            URL fontUrl = PdfGenerator.class.getClassLoader()
-                    .getResource("fonts/simsun.ttf"); // 放在 resources/fonts/
-            if (fontUrl == null) {
-                throw new RuntimeException("字体文件未找到，请检查 resources/fonts/simsun.ttf 是否存在");
+        long start = System.currentTimeMillis();
+        // 禁止返回 null！出现异常直接抛错
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            // 1. 校验 HTML 内容
+            if (htmlContent == null || htmlContent.isBlank()) {
+                log.error("生成PDF失败：HTML 内容为空或 null");
+                throw exception("生成PDF失败：HTML 内容不能为空");
             }
-            String fontPath = new File(fontUrl.toURI()).getAbsolutePath();
+            if (htmlContent.isBlank()) {
+                log.error("生成PDF失败：HTML 内容为空字符串");
+                throw exception("生成PDF失败：HTML 内容为空字符串");
+            }
 
-            // 创建 FontProvider 并注册字体
+            // 2. 配置字体
+            ConverterProperties converterProperties = new ConverterProperties();
+//            URL fontUrl = getClass().getClassLoader().getResource("fonts/simsun.ttf");
+//            if (fontUrl == null) {
+//                throw exception("生成PDF失败：字体文件未找到，请检查 resources/fonts/simsun.ttf");
+//            }
+//
+//            String fontPath = new File(fontUrl.toURI()).getAbsolutePath();
+//            if (fontPath==null){
+//                throw exception("生成PDF失败：fontPath为空");
+//            }
+//            FontProvider fontProvider = new FontProvider();
+//            fontProvider.addFont(fontPath);
+// 创建 FontProvider
+// 从 jar 内读取字体流
             FontProvider fontProvider = new FontProvider();
-            fontProvider.addFont(fontPath); // 添加项目内字体
+            try (InputStream fontStream = getClass().getClassLoader().getResourceAsStream("fonts/simsun.ttf")) {
+                if (fontStream == null) {
+                    log.error("生成PDF失败：字体文件未找到，请检查 resources/fonts/simsun.ttf");
+                    throw exception("生成PDF失败：字体文件未找到，请检查 resources/fonts/simsun.ttf");
+                }
 
-            // 设置给 ConverterProperties
+                // 创建临时文件
+                File tempFontFile = File.createTempFile("simsun", ".ttf");
+                tempFontFile.deleteOnExit(); // JVM 退出时删除
+
+                // 写入临时文件
+                try (OutputStream out = new FileOutputStream(tempFontFile)) {
+                    byte[] buffer = new byte[1024];
+                    int len;
+                    while ((len = fontStream.read(buffer)) != -1) {
+                        out.write(buffer, 0, len);
+                    }
+                }
+
+                // 注册字体
+                fontProvider.addFont(tempFontFile.getAbsolutePath());
+            }catch (IOException ioe) {
+                ioe.printStackTrace();
+                log.error("字体加载/写入临时文件异常", ioe);
+                throw exception("生成PDF失败：字体加载/写入临时文件异常 | " + ioe.getMessage());
+            }
+
             converterProperties.setFontProvider(fontProvider);
 
-            // 强制 HTML 使用字体（可选）
+            // 3. 强制使用宋体
             htmlContent = "<style>body { font-family: 'SimSun'; }</style>" + htmlContent;
 
-            // 转换 HTML 为 PDF
-            HtmlConverter.convertToPdf(htmlContent, baos, converterProperties);
+            // 4. 转换 HTML 为 PDF
+            try {
+                HtmlConverter.convertToPdf(htmlContent, baos, converterProperties);
+            } catch (Exception pdfEx) {
+                pdfEx.printStackTrace();
+                log.error("HTML 转 PDF 异常", pdfEx);
+                throw exception("生成PDF失败：HTML 转 PDF 异常 | " + pdfEx.getMessage());
+            }
 
-            // 设置响应头，让浏览器下载 PDF
+            // 5. 构建下载响应头
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
             headers.setContentDispositionFormData("attachment", "notice.pdf");
@@ -57,72 +105,15 @@ public class PdfGenerator {
                     .body(baos.toByteArray());
 
         } catch (Exception e) {
-            e.printStackTrace();
+            // 关键：异常不捕获后静默返回 null，而是抛出异常，方便排查
+            log.error("生成PDF失败，总体异常", e);
+            e.printStackTrace(); // 控制台打印完整堆栈
+            Throwable cause = e.getCause();
+            String causeMsg = (cause != null) ? cause.toString() : "无根本原因";
+            throw exception("生成PDF失败：" + e.getMessage() + " | 根本原因：" + causeMsg);
         }
-        return null;
     }
-//    public ResponseEntity<byte[]> generatePdfResponse(String htmlContent) {
-//        try {
-//            // 内存输出流，不写磁盘
-//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//
-//            // 配置转换属性
-//            ConverterProperties converterProperties = new ConverterProperties();
-//
-////            // 初始化字体提供者，注册系统字体和 PDF 标准字体
-////            DefaultFontProvider fontProvider = new DefaultFontProvider(true, true, true);
-////
-////            // 如果不确保资源字体存在，可以先注释掉
-////             fontProvider.addFont(PdfGenerator.class.getResourceAsStream("/fonts/SourceHanSerifSC-Regular.otf"));
-//
-//// 初始化字体提供者（不要再用true,true,true）
-//            DefaultFontProvider fontProvider = new DefaultFontProvider(false, false, false);
-//
-//            // 获取字体文件路径（关键）
-//            String fontPath = PdfGenerator.class
-//                    .getClassLoader()
-//                    .getResource("fonts/simsun.ttf")
-//                    .toExternalForm();
-////                    .getPath();
-//
-//
-//            // 加载字体
-//            fontProvider.addFont(fontPath, "SourceHanSerifCN");
-//
-//// 读取字体到 byte[]
-//            InputStream fontStream = PdfGenerator.class.getClassLoader()
-//                    .getResourceAsStream("fonts/simsun.ttf");
-//            byte[] fontBytes = fontStream.readAllBytes(); // JDK9+，JDK8用 ByteArrayOutputStream
-//
-//// 创建字体对象
-//            FontProgram fontProgram = FontProgramFactory.createFont(fontBytes);
-//
-//// 注册字体
-//            fontProvider.addFont(fontProgram);
-//
-//// 设置给 ConverterProperties
-//
-//            // 设置字体
-//            converterProperties.setFontProvider(fontProvider);
-//
-////            // 强制HTML使用字体
-////            htmlContent = "<style>body { font-family: SourceHanSerifCN; }</style>" + htmlContent;
-//            // 转换 HTML 为 PDF
-//            HtmlConverter.convertToPdf(htmlContent, baos, converterProperties);
-//
-//            // 设置响应头，让浏览器下载 PDF
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(MediaType.APPLICATION_PDF);
-//            headers.setContentDispositionFormData("attachment", "notice.pdf");
-//
-//            return ResponseEntity.ok()
-//                    .headers(headers)
-//                    .body(baos.toByteArray());
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
+
 
     /**
      * 将 HTML 字符串生成 PDF（项目内 SimSun 字体）
