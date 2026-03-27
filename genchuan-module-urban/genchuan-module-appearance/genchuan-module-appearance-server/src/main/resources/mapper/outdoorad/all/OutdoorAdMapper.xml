@@ -12,258 +12,77 @@
     <!-- 通用查询条件 -->
     <sql id="queryConditions">
         <where>
-            <if test="outdoorAdId != null">
-                AND outdoor_ad_id = #{outdoorAdId}
+            <if test="adName != null and adName != ''">
+                AND o.name LIKE CONCAT('%', #{adName}, '%')
             </if>
-            <if test="name != null and name != ''">
-                AND name LIKE CONCAT('%', #{name}, '%')
-            </if>
-            <if test="location != null and location != ''">
-                AND location LIKE CONCAT('%', #{location}, '%')
+            <if test="adType != null and adType != ''">
+                AND o.type = #{adType}
             </if>
             <if test="areaCode != null and areaCode != ''">
-                AND area_code = #{areaCode}
+                AND o.area_id = #{areaCode}
             </if>
-            <if test="warningTypeId != null and warningTypeId != ''">
-                AND warning_type_id = #{warningTypeId}
+            <if test="gridCode != null and gridCode != ''">
+                AND g.grid_code = #{gridCode}
             </if>
-            <if test="adStatusId != null and adStatusId != ''">
-                AND ad_status_id = #{adStatusId}
+            <if test="approvalStatus != null and approvalStatus != ''">
+                AND o.approval_status = #{approvalStatus}
             </if>
-            <if test="damageStatusId != null and damageStatusId != ''">
-                AND damage_status_id = #{damageStatusId}
+            <if test="dataStatus != null">
+                AND o.data_status = #{dataStatus}
             </if>
-            <if test="warningTime != null and warningTime.size() == 2">
-                AND warning_time BETWEEN #{warningTime[0]} AND #{warningTime[1]}
+            <if test="startApprovalTime != null">
+                AND o.start_approval_time &gt;= #{startApprovalTime}
             </if>
-            <if test="createTime != null and createTime.size() == 2">
-                AND create_time BETWEEN #{createTime[0]} AND #{createTime[1]}
+            <if test="endApprovalTime != null">
+                AND o.end_approval_time &lt;= #{endApprovalTime}
             </if>
         </where>
     </sql>
 
-    <!-- 关联查询 -->
+    <!-- 分页关联查询（用于列表） -->
     <select id="selectPageWithRelations" resultType="cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.all.OutdoorAdDO">
         SELECT
-            o.*,
-            d.name AS damageStatusName,
-            a.name AS adStatusName,
-            ar.area_name AS areaName,
-            u.user_name AS supervisorName,
-            w.name AS warningTypeName,
-            r.order_no AS orderNo,
-            os.name AS orderStatusName,
-            ur.user_name AS dealByName,
-            rr.name AS reviewResultName
+        o.*,
+        ar.area_code AS areaCode,
+        ar.area_name AS areaName,
+        g.grid_code AS gridCode,
+        g.grid_name AS gridName,
+        u1.user_name AS approvalName,
+        u2.user_name AS createName,
+        u3.user_name AS updateName
         FROM
-            outdoor_ad o
-        LEFT JOIN sys_damage_status d ON o.damage_status_id = d.damage_status_id
-        LEFT JOIN sys_ad_status a ON o.ad_status_id = a.ad_status_id
-        LEFT JOIN sys_area ar ON o.area_code = ar.area_code
-        LEFT JOIN sys_user u ON o.supervisor_id = u.user_id
-        LEFT JOIN sys_warning_type w ON o.warning_type_id = w.warning_type_id
-        LEFT JOIN rectification_order r ON o.outdoor_ad_id = r.outdoor_ad_id
-        LEFT JOIN sys_order_status os ON r.order_status_id = os.order_status_id
-        LEFT JOIN sys_user ur ON r.deal_by = ur.user_id
-        LEFT JOIN sys_review_result rr ON r.review_result_id = rr.review_result_id
+        outdoor_ad o
+        LEFT JOIN sys_area ar ON o.area_id = ar.id
+        LEFT JOIN sys_grid g ON o.grid_id = g.id
+        LEFT JOIN sys_user u1 ON o.approval_by = u1.id
+        LEFT JOIN sys_user u2 ON o.creator = u2.id
+        LEFT JOIN sys_user u3 ON o.updater = u3.id
         <include refid="queryConditions"/>
         ORDER BY o.create_time DESC
     </select>
 
-    <!-- 统计查询 -->
-    <select id="countTotalAds" resultType="java.lang.Integer">
-        SELECT COUNT(*) FROM outdoor_ad
-    </select>
-
-    <select id="countWarningAds" resultType="java.lang.Integer">
-        SELECT COUNT(*) FROM outdoor_ad WHERE ad_status_id IN (
-            SELECT ad_status_id FROM sys_ad_status WHERE name = '预警'
-        )
-    </select>
-
-    <select id="countPendingOrders" resultType="java.lang.Integer">
-        SELECT COUNT(*) FROM rectification_order WHERE order_status_id IN (
-            SELECT order_status_id FROM sys_order_status WHERE name IN ('待处置', '待派单', '处置中', '待复核')
-        )
-    </select>
-
-    <select id="countClosedOrders" resultType="java.lang.Integer">
-        SELECT COUNT(*) FROM rectification_order WHERE order_status_id IN (
-            SELECT order_status_id FROM sys_order_status WHERE name = '已闭环'
-        )
-    </select>
-
-    <!-- 区域预警趋势 -->
-    <select id="getAreaWarningTrend" resultType="java.util.Map">
-        SELECT
-            ar.area_name AS areaName,
-            COUNT(*) AS warningCount
-        FROM
-            outdoor_ad o
-        LEFT JOIN sys_area ar ON o.area_code = ar.area_code
-        WHERE
-            o.warning_time BETWEEN DATE_SUB(NOW(), INTERVAL 30 DAY) AND NOW()
-        GROUP BY
-            ar.area_name
-        ORDER BY
-            warningCount DESC
-    </select>
-
-    <!-- 近30日预警趋势 -->
-    <select id="getRecentWarningTrend" resultType="java.util.Map">
-        SELECT
-            DATE(warning_time) AS date,
-            COUNT(*) AS warningCount
-        FROM
-            outdoor_ad
-        WHERE
-            warning_time BETWEEN DATE_SUB(NOW(), INTERVAL 30 DAY) AND NOW()
-        GROUP BY
-            DATE(warning_time)
-        ORDER BY
-            date ASC
-    </select>
-
-    <!-- 状态占比 -->
-    <select id="getAdStatusDistribution" resultType="java.util.Map">
-        SELECT
-            a.name AS statusName,
-            COUNT(*) AS count
-        FROM
-            outdoor_ad o
-        LEFT JOIN sys_ad_status a ON o.ad_status_id = a.ad_status_id
-        GROUP BY
-            a.name
-    </select>
-
-    <select id="getWarningTypeDistribution" resultType="java.util.Map">
-        SELECT
-            w.name AS typeName,
-            COUNT(*) AS count
-        FROM
-            outdoor_ad o
-        LEFT JOIN sys_warning_type w ON o.warning_type_id = w.warning_type_id
-        GROUP BY
-            w.name
-    </select>
-
-    <select id="getReviewResultDistribution" resultType="java.util.Map">
-        SELECT
-            rr.name AS resultName,
-            COUNT(*) AS count
-        FROM
-            rectification_order r
-        LEFT JOIN sys_review_result rr ON r.review_result_id = rr.review_result_id
-        GROUP BY
-            rr.name
-    </select>
-
-    <!-- 待处置相关查询 -->
-    <select id="selectPendingDisposalPage" resultType="cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.all.OutdoorAdDO">
+    <!-- 单条详情关联查询 -->
+    <select id="selectOneWithRelations" resultType="cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.all.OutdoorAdDO">
         SELECT
             o.*,
-            d.name AS damageStatusName,
-            a.name AS adStatusName,
+            ar.area_code AS areaCode,
             ar.area_name AS areaName,
-            u.user_name AS supervisorName,
-            w.name AS warningTypeName,
-            r.order_no AS orderNo,
-            os.name AS orderStatusName,
-            ur.user_name AS dealByName,
-            r.create_time AS orderCreateTime
+            g.grid_code AS gridCode,
+            g.grid_name AS gridName,
+            u1.user_name AS approvalName,
+            af.file_url AS fileUrl,
+            af.file_name AS fileName,
+            af.file_type AS fileType,
+            u2.user_name AS createName,
+            u3.user_name AS updateName
         FROM
             outdoor_ad o
-        LEFT JOIN sys_damage_status d ON o.damage_status_id = d.damage_status_id
-        LEFT JOIN sys_ad_status a ON o.ad_status_id = a.ad_status_id
-        LEFT JOIN sys_area ar ON o.area_code = ar.area_code
-        LEFT JOIN sys_user u ON o.supervisor_id = u.user_id
-        LEFT JOIN sys_warning_type w ON o.warning_type_id = w.warning_type_id
-        LEFT JOIN rectification_order r ON o.outdoor_ad_id = r.outdoor_ad_id
-        LEFT JOIN sys_order_status os ON r.order_status_id = os.order_status_id
-        LEFT JOIN sys_user ur ON r.deal_by = ur.user_id
-        WHERE
-            o.ad_status_id IN (
-                SELECT ad_status_id FROM sys_ad_status WHERE name = '预警'
-            )
-        <include refid="queryConditions"/>
-        ORDER BY o.warning_time DESC
-        LIMIT #{pageSize} OFFSET #{offset}
+                LEFT JOIN sys_area ar ON o.area_id = ar.id
+                LEFT JOIN sys_grid g ON o.grid_id = g.id
+                LEFT JOIN sys_user u1 ON o.approval_by = u1.id
+                LEFT JOIN sys_attach_file af ON o.attach_file_id = af.id
+                LEFT JOIN sys_user u2 ON o.creator = u2.id
+                LEFT JOIN sys_user u3 ON o.updater = u3.id
+        WHERE o.id = #{reqVO.id}
     </select>
-
-    <select id="countPendingDisposal" resultType="java.lang.Long">
-        SELECT COUNT(*)
-        FROM
-            outdoor_ad o
-        WHERE
-            o.ad_status_id IN (
-                SELECT ad_status_id FROM sys_ad_status WHERE name = '预警'
-            )
-        <include refid="queryConditions"/>
-    </select>
-
-    <select id="countTodayPendingDisposal" resultType="java.lang.Integer">
-        SELECT COUNT(*)
-        FROM
-            outdoor_ad o
-        WHERE
-            o.ad_status_id IN (
-                SELECT ad_status_id FROM sys_ad_status WHERE name = '预警'
-            )
-        AND DATE(o.warning_time) = CURRENT_DATE
-    </select>
-
-    <select id="countAssignedOrders" resultType="java.lang.Integer">
-        SELECT COUNT(*)
-        FROM
-            rectification_order r
-        WHERE
-            r.order_status_id IN (
-                SELECT order_status_id FROM sys_order_status WHERE name IN ('处置中', '待复核')
-            )
-        AND DATE(r.create_time) = CURRENT_DATE
-    </select>
-
-    <select id="countInvalidWarnings" resultType="java.lang.Integer">
-        SELECT COUNT(*)
-        FROM
-            outdoor_ad o
-        WHERE
-            o.ad_status_id IN (
-                SELECT ad_status_id FROM sys_ad_status WHERE name = '无效'
-            )
-        AND DATE(o.update_time) = CURRENT_DATE
-    </select>
-
-    <select id="getPendingDisposalWarningTypeDistribution" resultType="java.util.Map">
-        SELECT
-            w.name AS typeName,
-            COUNT(*) AS count
-        FROM
-            outdoor_ad o
-        LEFT JOIN sys_warning_type w ON o.warning_type_id = w.warning_type_id
-        WHERE
-            o.ad_status_id IN (
-                SELECT ad_status_id FROM sys_ad_status WHERE name = '预警'
-            )
-        GROUP BY
-            w.name
-    </select>
-
-    <select id="getPendingDisposalAreaDistribution" resultType="java.util.Map">
-        SELECT
-            ar.area_name AS areaName,
-            COUNT(*) AS count
-        FROM
-            outdoor_ad o
-        LEFT JOIN sys_area ar ON o.area_code = ar.area_code
-        WHERE
-            o.ad_status_id IN (
-                SELECT ad_status_id FROM sys_ad_status WHERE name = '预警'
-            )
-        GROUP BY
-            ar.area_name
-        ORDER BY
-            count DESC
-    </select>
-
 </mapper>

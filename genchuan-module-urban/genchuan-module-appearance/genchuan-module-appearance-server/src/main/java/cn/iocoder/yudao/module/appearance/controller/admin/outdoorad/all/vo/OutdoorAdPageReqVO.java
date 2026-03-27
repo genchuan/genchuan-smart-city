@@ -1,10 +1,12 @@
 package cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.all.vo;
 
-import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import java.math.BigDecimal;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
+
 import java.time.LocalDateTime;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
@@ -15,57 +17,29 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @ToString(callSuper = true)
 public class OutdoorAdPageReqVO extends PageParam {
 
-    @Schema(description = "广告ID", example = "24013")
-    private String outdoorAdId;
+    @Schema(description = "广告名称，支持模糊查询")
+    private String adName;
 
-    @Schema(description = "广告名称", example = "芋艿")
-    private String name;
+    @Schema(description = "广告类型（立柱/墙面/灯箱/电子屏），精准匹配")
+    private String adType;
 
-    @Schema(description = "广告位置")
-    private String location;
-
-    @Schema(description = "审批尺寸")
-    private String approvedSize;
-
-    @Schema(description = "实际尺寸")
-    private String actualSize;
-
-    @Schema(description = "倾斜角度")
-    private BigDecimal tiltAngle;
-
-    @Schema(description = "破损状态", example = "10496")
-    private String damageStatusId;
-
-    @Schema(description = "广告状态", example = "27560")
-    private String adStatusId;
-
-    @Schema(description = "所属区域")
+    @Schema(description = "所属区域编码，精准匹配")
     private String areaCode;
 
-    @Schema(description = "监管员", example = "4257")
-    private String supervisorId;
+    @Schema(description = "所属网格编码，精准匹配")
+    private String gridCode;
 
-    @Schema(description = "预警类型", example = "23563")
-    private String warningTypeId;
+    @Schema(description = "审批状态（待审批/已审批/已驳回），精准匹配")
+    private String approvalStatus;
 
-    @Schema(description = "预警时间")
+    @Schema(description = "数据状态 (0-未启用，1-已启用，2-已归档)")
+    private Integer dataStatus;
+
+    @Schema(description = "审批开始时间，格式yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDateTime[] warningTime;
+    private LocalDateTime startApprovalTime;
 
-    @Schema(description = "通用扩展字段1")
-    private String extCommon1;
-
-    @Schema(description = "通用扩展字段2")
-    private String extCommon2;
-
-    @Schema(description = "通用扩展字段3")
-    private String extCommon3;
-
-    @Schema(description = "通用扩展字段4")
-    private String extCommon4;
-
-    @Schema(description = "创建时间")
+    @Schema(description = "审批结束时间，格式yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDateTime[] createTime;
-
+    private LocalDateTime endApprovalTime;
 }

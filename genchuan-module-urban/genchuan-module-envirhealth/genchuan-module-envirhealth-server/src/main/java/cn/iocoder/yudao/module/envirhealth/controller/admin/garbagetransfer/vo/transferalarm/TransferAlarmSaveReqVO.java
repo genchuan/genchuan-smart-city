@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferalarm;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -9,13 +10,14 @@ import java.time.LocalDateTime;
 @Data
 public class TransferAlarmSaveReqVO {
 
-    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "21")
+    @Schema(description = "主键ID")
     private Long id;
 
     @Schema(description = "预警主键（UUID）", example = "3038")
     private String alarmId;
 
-    @Schema(description = "关联garbage_transfer.transfer_id", example = "5796")
+    @Schema(description = "关联garbage_transfer.transfer_id", requiredMode = Schema.RequiredMode.REQUIRED, example = "5796")
+    @NotBlank(message = "转运站ID（transferId）不能为空")
     private String transferId;
 
     @Schema(description = "关联sys_alarm_type.id", example = "643")

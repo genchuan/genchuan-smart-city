@@ -107,10 +107,9 @@ public class UserDO extends BaseDO {
      */
     private String lastWorkTrace;
     /**
-     * 通用扩展字段1
+     * 全勤标记（是否全勤）
      */
-    @JsonIgnore
-    private String extCommon1;
+    private Boolean month_full_attendance;
     /**
      * 通用扩展字段2
      */

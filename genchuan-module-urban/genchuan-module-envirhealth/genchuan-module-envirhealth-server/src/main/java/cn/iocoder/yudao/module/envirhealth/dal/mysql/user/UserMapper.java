@@ -174,10 +174,10 @@ public interface UserMapper extends BaseMapperX<UserDO> {
             ON TRIM(sa.job_type_id) = TRIM(jt.job_type_id)
         WHERE
             sa.deleted = '0'
-            AND jt.deleted = B'0'::bit(1)
+            AND jt.deleted = 0
             -- 按创建时间筛选本月数据
-            AND sa.create_time >= DATE_TRUNC('month', CURRENT_DATE)
-            AND sa.create_time < DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month'
+            AND sa.create_time >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
+            AND sa.create_time < DATE_FORMAT(CURDATE(), '%Y-%m-01') + INTERVAL 1 month
         GROUP BY
             jt.name
         ORDER BY

@@ -43,6 +43,7 @@ public class CleaningProblemServiceImpl implements CleaningProblemService {
         // 插入
         CleaningProblemDO cleaningProblem = BeanUtils.toBean(createReqVO, CleaningProblemDO.class);
 
+        cleaningProblem.setId(null);
         cleaningProblem.setProblemId(codeGenerator.generateProblemId());
 
         cleaningProblemMapper.insert(cleaningProblem);

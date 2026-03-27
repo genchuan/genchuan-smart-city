@@ -126,10 +126,33 @@ public class ManholeConfigController {
         return CommonResult.success(manholeConfigService.getDetail(id, tenantId));
     }
 
+    /**
+     * 新增窨井盖监测配置
+     */
     @PostMapping("/add")
     @Operation(summary = "新增窨井盖监测配置")
     public CommonResult<ManholeCoverConfigAddRespVO> addConfig(@Validated @RequestBody ManholeCoverConfigAddReqVO reqVO) {
         return manholeConfigService.addManholeCoverConfig(reqVO);
+    }
+
+    /**
+     * 编辑窨井盖监测配置
+     */
+    @PutMapping("/edit")
+    @Operation(summary = "编辑窨井盖监测配置")
+    public CommonResult<ManholeCoverConfigEditRespVO> editConfig(@Validated @RequestBody ManholeCoverConfigEditReqVO reqVO) {
+        return manholeConfigService.editManholeCoverConfig(reqVO);
+    }
+
+    /**
+     * 窨井盖监测配置删除
+     */
+    @DeleteMapping("delete/{configId}")
+    @Operation(summary = "窨井盖监测配置删除")
+    public CommonResult<String> deleteManholeConfig(
+            @PathVariable("configId") String configId,
+            @Validated ManholeCoverConfigDeleteReqVO reqVO) {
+        return manholeConfigService.deleteManholeCoverConfig(configId, reqVO);
     }
 
 }

@@ -60,7 +60,7 @@ public class RectifyReviewController {
 
     @GetMapping("/download-notice-pdf-batch")
     @Operation(summary = "批量下载整改通知书PDF")
-    @SysOpeLog(operObject = "整改复审台账")
+    @SysOpeLog(operObject = "整改复审台账",operType = "批量下载PDF")
     public ResponseEntity<byte[]> downloadRectifyNoticePdfBatch(@RequestParam("rectifyNoticeIds") List<Long> rectifyNoticeIds) throws IOException {
         return rectifyReviewService.downloadRectifyNoticePdfBatch(rectifyNoticeIds);
     }
@@ -69,7 +69,7 @@ public class RectifyReviewController {
     @PostMapping("/review-add2")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-add')")
     @Operation(summary = "23新增2-整改通知复审记录操作")
-    @SysOpeLog
+    @SysOpeLog(operObject = "整改复审台账",operType = "新增")
     public CommonResult<Long> reviewAdd2(@Valid @RequestBody AddRectifyReviewReqVO2 reqVO) {
         Long id = rectifyReviewService.reviewAdd2(reqVO);
         return success(id);
@@ -77,7 +77,7 @@ public class RectifyReviewController {
     @PostMapping("/upload-evidence-file")
     @Operation(summary = "上传证据资料")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:upload-evidence-file')")
-    @SysOpeLog
+    @SysOpeLog(operObject = "整改复审台账",operType = "上传证据资料")
     public CommonResult<UploadEvidenceFileRespVO> uploadEvidenceFile(
             @RequestPart("file") MultipartFile file,
             @Valid @ModelAttribute UploadEvidenceFileReqVO reqVO) {
@@ -88,8 +88,8 @@ public class RectifyReviewController {
     //新增.即预警页面的“生成复审台账”
     @PostMapping("/review-add")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-add')")
-    @Operation(summary = "新增-整改通知复审记录操作")
-    @SysOpeLog
+    @Operation(summary = "（勿用）新增-整改通知复审记录操作")
+    @SysOpeLog(operObject = "整改复审台账",operType = "新增")
     public CommonResult<Long> reviewAdd(@Valid @RequestBody AddRectifyReviewReqVO reqVO) {
         Long id = rectifyReviewService.reviewAdd(reqVO);
         return success(id);
@@ -99,7 +99,7 @@ public class RectifyReviewController {
     @PostMapping("/review-cancel")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-cancel')")
     @Operation(summary = "撤销-整改通知书操作")
-    @SysOpeLog
+    @SysOpeLog(operObject = "整改复审台账",operType = "撤销")
     public CommonResult<Long> reviewCancel(@Valid @RequestBody CancelReqVO reqVO) {
         Long id = rectifyReviewService.reviewCancel(reqVO);
         return success(id);
@@ -109,7 +109,7 @@ public class RectifyReviewController {
     @PostMapping("/review-issue2")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-issue')")
     @Operation(summary = "23下发整改通知书操作2")
-    @SysOpeLog
+    @SysOpeLog(operObject = "整改复审台账",operType = "下发")
     public CommonResult<Long> reviewIssue2(@Valid @RequestBody IssueReqVO reqVO) {
         Long rectifyNoticeId = rectifyReviewService.reviewIssue2(reqVO);
         return success(rectifyNoticeId);
@@ -118,7 +118,7 @@ public class RectifyReviewController {
     @PostMapping("/review-issue")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-issue')")
     @Operation(summary = "（勿用）下发整改通知书操作")
-    @SysOpeLog
+    @SysOpeLog(operObject = "整改复审台账",operType = "下发")
     public CommonResult<Long> reviewIssue(@Valid @RequestBody IssueReqVO reqVO) {
         Long rectifyNoticeId = rectifyReviewService.reviewIssue(reqVO);
         return success(rectifyNoticeId);
@@ -128,7 +128,7 @@ public class RectifyReviewController {
     @Operation(summary = "批量查看整改复审台账证据分页")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:batch-view-evidence')")
     @PostMapping("/batch-view-evidence")
-    @SysOpeLog
+    @SysOpeLog(operObject = "整改复审台账",operType = "批量查看整改证据")
     public CommonResult<PageResult<RectifyEvidenceVO>> getBatchEvidence(
             @Valid @RequestBody BatchEvidenceRequestVO reqVO) {
 
@@ -142,7 +142,7 @@ public class RectifyReviewController {
     @Operation(summary = "导出 Excel")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:export')")
     @ApiAccessLog(operateType = EXPORT)
-    @SysOpeLog(operObject = "整改复审台账",operType = "批量操作")
+    @SysOpeLog(operObject = "整改复审台账",operType = "批量导出")
     public void exportRoadArchiveExcel(@Valid RectifyReviewLedgerPageReqVO pageReqVO,
                                        HttpServletResponse response) throws IOException {
 //        // 假设前端传的是逗号分隔的字符串
@@ -178,9 +178,9 @@ public class RectifyReviewController {
 
     @GetMapping("/ledger-page")
     @Operation(summary = "分页-整改通知书复审台账表")
-    @PreAuthorize("@ss.hasPermission('kitchen:rectify-review:query')")
+//    @PreAuthorize("@ss.hasPermission('kitchen:rectify-review:query')")
 //    @SysOpeLog(operType = "审核", operObject = "企业整改记录", operDesc = "整改审核通过")
-    @SysOpeLog
+    @SysOpeLog(operObject = "整改复审台账",operType = "分页查看")
     public CommonResult<PageResult<RectifyReviewLedgerRespVO>> getRectifyReviewLedgerPage(
             @Valid RectifyReviewLedgerPageReqVO reqVO) {
 
@@ -190,7 +190,7 @@ public class RectifyReviewController {
         return success(pageResult);
     }
     @PostMapping("/create")
-    @Operation(summary = "创建整改通知书复审台账")
+    @Operation(summary = "（勿用）创建整改通知书复审台账")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:create')")
     @SysOpeLog
     public CommonResult<Long> createRectifyReview(@Valid @RequestBody RectifyReviewSaveReqVO createReqVO) {
@@ -210,7 +210,7 @@ public class RectifyReviewController {
     @Operation(summary = "删除整改通知书复审台账")
     @Parameter(name = "id", description = "编号", required = true)
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:delete')")
-    @SysOpeLog
+    @SysOpeLog(operObject = "整改复审台账",operType = "删除")
     public CommonResult<Boolean> deleteRectifyReview(@RequestParam("id") Long id) {
         rectifyReviewService.deleteRectifyReview(id);
         return success(true);
@@ -220,7 +220,7 @@ public class RectifyReviewController {
     @Operation(summary = "获得整改通知书复审台账")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:query')")
-    @SysOpeLog
+    @SysOpeLog(operObject = "整改复审台账",operType = "查看")
     public CommonResult<RectifyReviewRespVO> getRectifyReview(@RequestParam("id") Long id) {
         RectifyReviewDO rectifyReview = rectifyReviewService.getRectifyReview(id);
         return success(BeanUtils.toBean(rectifyReview, RectifyReviewRespVO.class));

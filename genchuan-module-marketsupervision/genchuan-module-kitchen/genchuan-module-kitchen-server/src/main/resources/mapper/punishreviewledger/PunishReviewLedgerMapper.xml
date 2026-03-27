@@ -37,6 +37,7 @@
 
         prl.review_status,
         prl.review_by,
+        su.user_name as review_by_name,
         prl.review_time,
 
         prl.cancel_reason_id,
@@ -63,6 +64,8 @@
 
         LEFT JOIN punish_notice pn
         ON prl.punish_notice_id = pn.id
+        LEFT JOIN sys_user su
+        ON prl.review_by = su.id
 
         <where>
             prl.deleted = b'0'

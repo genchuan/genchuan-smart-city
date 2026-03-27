@@ -59,4 +59,11 @@ public interface TransferAlarmService {
      * 获取预警看板统计数据
      */
     TransferAlarmDashboardRespVO getTransferAlarmDashboard();
+
+    /**
+     * 解除预警
+     *
+     * @param alarmId 预警ID
+     */
+    void relieveTransferAlarm(Long alarmId);
 }

@@ -8,12 +8,11 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.*;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholeconfig.ManholeConfigDO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholecover.ManholeCoverDO;
-import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholemonitor.ManholeMonitorDO;
-import cn.iocoder.yudao.module.facility.dal.dataobject.sysdevice.SysDeviceDO;
 import cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholeconfig.ManholeConfigMapper;
 import cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholecover.ManholeCoverMapper;
 import cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholemonitor.ManholeMonitorMapper;
 import cn.iocoder.yudao.module.facility.dal.mysql.sysdevice.SysDeviceMapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
@@ -170,7 +169,9 @@ public class ManholeConfigServiceImpl implements ManholeConfigService {
         ManholeCoverConfigDetailRespVO detail = manholeConfigMapper.selectDetailById(id, tenantId);
         return detail;
     }
-
+    /**
+     * 添加监测配置
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CommonResult<ManholeCoverConfigAddRespVO> addManholeCoverConfig(ManholeCoverConfigAddReqVO reqVO) {
@@ -229,6 +230,137 @@ public class ManholeConfigServiceImpl implements ManholeConfigService {
         respVO.setTenantId(reqVO.getTenantId());
 
         return CommonResult.success(respVO);
+    }
+
+   /**
+     * 编辑窨井盖配置
+     *
+     * @param reqVO 配置信息
+     * @return 配置信息
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult<ManholeCoverConfigEditRespVO> editManholeCoverConfig(ManholeCoverConfigEditReqVO reqVO) {
+        // 1. 校验窨井盖是否存在
+        LambdaQueryWrapperX<ManholeCoverDO> coverLq = new LambdaQueryWrapperX<>();
+        coverLq.eq(ManholeCoverDO::getId, reqVO.getCoverId());
+        ManholeCoverDO manholeCoverDO = manholeCoverMapper.selectOne(coverLq);
+        if (manholeCoverDO == null) {
+            throw exception(MANHOLE_CONFIG_NOT_EXISTS);
+        }
+
+        // 2. 校验配置是否存在
+        LambdaQueryWrapperX<ManholeConfigDO> configLq = new LambdaQueryWrapperX<>();
+        configLq.eq(ManholeConfigDO::getCoverId, reqVO.getCoverId());
+        ManholeConfigDO configDO = manholeConfigMapper.selectOne(configLq);
+        if (configDO == null) {
+            throw exception(MANHOLE_CONFIG_NOT_EXISTS);
+        }
+
+        // 3. 动态更新字段（仅更新传入的非空字段，不覆盖原有数据）
+        // 3.1 阈值配置
+        ManholeCoverConfigEditReqVO.ThresholdConfig threshold = reqVO.getThresholdConfig();
+        if (threshold != null) {
+            if (threshold.getTiltAngleThreshold() != null) {
+                configDO.setTiltAngleThreshold(BigDecimal.valueOf(threshold.getTiltAngleThreshold()));
+            }
+            if (threshold.getOpenDurationThreshold() != null) {
+                configDO.setOpenDurationThreshold(BigDecimal.valueOf(threshold.getOpenDurationThreshold()));
+            }
+            if (threshold.getDisplacementThreshold() != null) {
+                configDO.setExtCommon1(String.valueOf(threshold.getDisplacementThreshold()));
+            }
+            if (threshold.getWaterLevelThreshold() != null) {
+                configDO.setExtCommon2(String.valueOf(threshold.getWaterLevelThreshold()));
+            }
+        }
+
+        // 3.2 采集配置
+        ManholeCoverConfigEditReqVO.CollectConfig collect = reqVO.getCollectConfig();
+        if (collect != null) {
+            if (collect.getCollectFrequency() != null) {
+                configDO.setCollectFrequency(collect.getCollectFrequency());
+            }
+            if (collect.getOfflineTimeout() != null) {
+                configDO.setOfflineTimeout(collect.getOfflineTimeout());
+            }
+            if (collect.getDataUploadMode() != null) {
+                configDO.setDataUploadMode(collect.getDataUploadMode());
+            }
+        }
+
+        // 3.3 报警配置（List类型直接赋值，DO已配置Jackson类型处理器）
+        ManholeCoverConfigEditReqVO.AlarmConfig alarm = reqVO.getAlarmConfig();
+        if (alarm != null) {
+            if (alarm.getAlarmLevel() != null) {
+                configDO.setAlarmLevel(alarm.getAlarmLevel());
+            }
+            if (alarm.getAlarmDelay() != null) {
+                configDO.setAlarmDelay(alarm.getAlarmDelay());
+            }
+            if (alarm.getAlarmType() != null) {
+                configDO.setExtCommon3(alarm.getAlarmType());
+            }
+            if (alarm.getAlarmRecipient() != null) {
+                configDO.setExtCommon4(alarm.getAlarmRecipient());
+            }
+        }
+
+        // 3.4 配置状态 + 状态名称
+        if (reqVO.getConfigStatus() != null) {
+            configDO.setConfigStatus(reqVO.getConfigStatus());
+            configDO.setConfigStatusName(reqVO.getConfigStatus() == 0 ? "未生效" : "已生效");
+        }
+
+        // 4. 租户一致性校验（可选，和你新增逻辑保持一致）
+        configDO.setTenantId(Long.valueOf(reqVO.getTenantId()));
+        // 重新生成区块链哈希（和新增逻辑一致）
+        configDO.setChainHash("0x" + IdUtil.randomUUID().replace("-", ""));
+
+        // 5. 更新数据库
+        manholeConfigMapper.updateById(configDO);
+
+        // 6. 封装返回结果
+        ManholeCoverConfigEditRespVO respVO = BeanUtils.toBean(configDO, ManholeCoverConfigEditRespVO.class);
+        respVO.setConfigId(configDO.getId());
+        respVO.setCoverId(reqVO.getCoverId());
+        respVO.setTenantId(reqVO.getTenantId());
+
+        return CommonResult.success(respVO);
+    }
+    /**
+     * 删除窨井盖配置
+     *
+     * @param configId 配置ID
+     * @param reqVO 删除信息
+     * @return 删除结果
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult<String> deleteManholeCoverConfig(String configId, ManholeCoverConfigDeleteReqVO reqVO) {
+        // 1. 校验配置是否存在（租户隔离）
+        LambdaQueryWrapperX<ManholeConfigDO> queryWrapper = new LambdaQueryWrapperX<>();
+        queryWrapper.eq(ManholeConfigDO::getId, Long.valueOf(configId));
+        queryWrapper.eq(ManholeConfigDO::getTenantId, Long.valueOf(reqVO.getTenantId()));
+        ManholeConfigDO configDO = manholeConfigMapper.selectOne(queryWrapper);
+
+        // 2. 不存在抛异常
+        if (configDO == null) {
+            throw exception(MANHOLE_CONFIG_NOT_EXISTS);
+        }
+
+        // 3. 🔥 核心修复：手动逻辑删除（绕过插件，强制更新deleted=1）
+        LambdaUpdateWrapper<ManholeConfigDO> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(ManholeConfigDO::getId, configId);
+        updateWrapper.eq(ManholeConfigDO::getTenantId, reqVO.getTenantId());
+        // 强制设置删除标志
+        updateWrapper.set(ManholeConfigDO::getDeleted, true);
+
+        // 执行更新
+        manholeConfigMapper.update(null, updateWrapper);
+
+        // 4. 返回成功
+        return CommonResult.success(configId);
     }
 
 }

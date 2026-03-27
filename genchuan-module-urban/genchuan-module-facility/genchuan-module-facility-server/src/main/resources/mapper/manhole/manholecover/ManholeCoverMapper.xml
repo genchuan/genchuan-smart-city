@@ -3,18 +3,18 @@
 <mapper namespace="cn.iocoder.yudao.module.facility.dal.mysql.manhole.manholecover.ManholeCoverMapper">
 
     <select id="selectCoverIdsByTenantId" resultType="java.lang.Long">
-        SELECT id FROM munifacility.manhole_cover
-        WHERE tenant_id = #{tenantId} AND deleted = B'0'
+        SELECT id FROM manhole_cover
+        WHERE tenant_id = #{tenantId} AND deleted = 0
     </select>
 
     <select id="selectListByCoverIdsAndTenantId" resultType="cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholecover.ManholeCoverDO">
         SELECT id, cover_no, status, tenant_id
-        FROM munifacility.manhole_cover
+        FROM manhole_cover
         WHERE id IN
         <foreach collection="coverIds" item="coverId" open="(" separator="," close=")">
             #{coverId}
         </foreach>
-        AND tenant_id = #{tenantId} AND deleted = B'0'
+        AND tenant_id = #{tenantId} AND deleted = 0
     </select>
 
 </mapper>

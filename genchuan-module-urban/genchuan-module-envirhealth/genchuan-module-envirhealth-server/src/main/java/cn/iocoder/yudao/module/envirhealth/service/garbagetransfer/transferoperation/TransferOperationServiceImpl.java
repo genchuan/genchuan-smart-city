@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.Transf
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.TransferOperationMapper;
 import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.garbagetransfer.TransferOperationCodeGenerator;
 import cn.iocoder.yudao.module.envirhealth.framework.util.vo.BarItemVO;
+import cn.iocoder.yudao.module.envirhealth.service.garbagecollection.garbagecollection.GarbageCollectionService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.TRANSFER_OPERATION_NOT_EXISTS;
+import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.TRANSFER_OPERATION_PLAN_ID_EMPTY;
 
 /**
  * 转运作业 Service 实现类
@@ -31,6 +33,9 @@ public class TransferOperationServiceImpl implements TransferOperationService {
 
     @Resource
     private TransferOperationMapper transferOperationMapper;
+
+    @Resource
+    private GarbageCollectionService garbageCollectionService;
 
     @Resource
     private TransferOperationCodeGenerator codeGenerator;
@@ -153,5 +158,23 @@ public class TransferOperationServiceImpl implements TransferOperationService {
         respVO.setStationCompletionDistribution(transferOperationMapper.selectStationCompletionDistribution());
 
         return respVO;
+    }
+
+    @Override
+    public void pauseTransferOperation(Long operationId, String pauseStatusId) {
+        // 1. 校验转运作业是否存在
+        TransferOperationDO operation = getTransferOperation(operationId);
+        if (operation == null) {
+            throw exception(TRANSFER_OPERATION_NOT_EXISTS);
+        }
+
+        // 2. 获取转运作业关联的planId
+        String planId = operation.getPlanId();
+        if (planId == null || planId.isEmpty()) {
+            throw exception(TRANSFER_OPERATION_PLAN_ID_EMPTY);
+        }
+
+        // 3. 更新收运计划状态为「已暂停」
+        garbageCollectionService.updatePlanStatus(planId, pauseStatusId);
     }
 }

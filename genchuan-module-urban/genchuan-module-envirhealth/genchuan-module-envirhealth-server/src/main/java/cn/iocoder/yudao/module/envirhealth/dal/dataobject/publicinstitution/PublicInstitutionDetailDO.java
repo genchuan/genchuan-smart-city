@@ -1,10 +1,6 @@
 package cn.iocoder.yudao.module.envirhealth.dal.dataobject.publicinstitution;
 
-import cn.iocoder.yudao.module.envirhealth.framework.util.json.StringSplitUtils;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-
-import java.util.List;
 
 /**
  * 功能:
@@ -33,13 +29,5 @@ public class PublicInstitutionDetailDO extends PublicInstitutionDO {
     /**
      * 关联sys_user.id
      */
-    @JsonIgnore
     private String cleanersNameStr;
-
-    private List<String> cleanersName;
-
-    public void setCleanersNameStr(String cleanersNameStr) {
-        this.cleanersNameStr = cleanersNameStr;
-        this.cleanersName = StringSplitUtils.splitToStringList(cleanersNameStr);
-    }
 }

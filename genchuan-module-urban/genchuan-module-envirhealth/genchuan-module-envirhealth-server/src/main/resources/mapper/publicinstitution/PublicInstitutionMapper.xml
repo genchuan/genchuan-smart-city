@@ -90,20 +90,14 @@
         it.name AS institution_type_name,
         a.area_name AS area_name,
         u.user_name AS manager_name,
-        os.name AS operation_status_name,
-        COALESCE(STRING_AGG(DISTINCT cu.user_name, ','), '') AS cleaners_name_str
+        os.name AS operation_status_name
         FROM public_institution pi
-        LEFT JOIN sys_institution_type it ON pi.institution_type_id = it.sys_institution_type_id AND it.deleted = 0 AND it.tenant_id = 1
-        LEFT JOIN sys_area a ON pi.area_code = a.area_code AND a.deleted = 0 AND a.tenant_id = 1
-        LEFT JOIN sys_user u ON pi.manager_id = u.user_id AND u.deleted = 0 AND u.tenant_id = 1
-        LEFT JOIN sys_operation_status os ON pi.operation_status_id = os.sys_operation_status_id AND os.deleted = 0 AND os.tenant_id = 1
-        LEFT JOIN sys_user cu ON cu.user_id::TEXT = ANY (
-        ARRAY(SELECT json_array_elements_text(pi.cleaner_ids::TEXT::json)::TEXT)
-        ) AND cu.deleted = 0
+        LEFT JOIN sys_institution_type it ON pi.institution_type_id = it.sys_institution_type_id AND it.deleted = 0
+        LEFT JOIN sys_area a ON pi.area_code = a.area_code AND a.deleted = 0
+        LEFT JOIN sys_user u ON pi.manager_id = u.user_id AND u.deleted = 0
+        LEFT JOIN sys_operation_status os ON pi.operation_status_id = os.sys_operation_status_id AND os.deleted = 0
         <include refid="whereConditions" />
-        GROUP BY
-        pi.id,
-        it.name, a.area_name, u.user_name, os.name
+        GROUP BY pi.id, it.name, a.area_name, u.user_name, os.name
         ORDER BY pi.id DESC
         LIMIT #{reqVO.pageSize} OFFSET #{reqVO.offset}
     </select>
@@ -113,8 +107,8 @@
         SELECT COUNT(DISTINCT pi.id)
         FROM public_institution pi
         LEFT JOIN sys_institution_type it ON pi.institution_type_id = it.sys_institution_type_id AND it.deleted = 0 AND it.tenant_id = 1
-        LEFT JOIN sys_area a ON pi.area_code = a.area_code AND a.deleted = 0 AND a.tenant_id = 1
-        LEFT JOIN sys_user u ON pi.manager_id = u.user_id AND u.deleted = 0 AND u.tenant_id = 1
+        LEFT JOIN sys_area a ON pi.area_code = a.area_code AND a.deleted = 0
+        LEFT JOIN sys_user u ON pi.manager_id = u.user_id AND u.deleted = 0
         LEFT JOIN sys_operation_status os ON pi.operation_status_id = os.sys_operation_status_id AND os.deleted = 0 AND os.tenant_id = 1
         <include refid="whereConditions" />
     </select>

@@ -56,7 +56,7 @@ public class SysOpeLogAspect {
                 vo.setOperDesc(operDesc);
 
                 // ===== 新增：批量操作选中条目，仅批量操作类型才记录 =====
-                if ("批量操作".equals(operType)) {
+                if (operType != null && operType.contains("批量")) {
                     vo.setBatchSelectInfo(resolveBatchSelectInfo(joinPoint, sysOpeLog.batchSelectInfo()));
                 }
 

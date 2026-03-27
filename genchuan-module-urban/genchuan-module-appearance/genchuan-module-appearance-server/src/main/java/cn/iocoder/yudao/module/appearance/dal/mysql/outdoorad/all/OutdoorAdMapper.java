@@ -8,6 +8,7 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.all.OutdoorAdDO;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.all.vo.*;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 户外广告 Mapper
@@ -19,14 +20,11 @@ public interface OutdoorAdMapper extends BaseMapperX<OutdoorAdDO> {
 
     default PageResult<OutdoorAdDO> selectPage( OutdoorAdPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<OutdoorAdDO>()
-                .likeIfPresent(OutdoorAdDO::getName, reqVO.getName())
-                .likeIfPresent(OutdoorAdDO::getLocation, reqVO.getLocation())//eqif被修改为likeif
-                .eqIfPresent(OutdoorAdDO::getAreaCode, reqVO.getAreaCode())
-                .eqIfPresent(OutdoorAdDO::getWarningTypeId, reqVO.getWarningTypeId())
-                .eqIfPresent(OutdoorAdDO::getAdStatusId, reqVO.getAdStatusId())
-                .eqIfPresent(OutdoorAdDO::getDamageStatusId, reqVO.getDamageStatusId())
-                .betweenIfPresent(OutdoorAdDO::getWarningTime, reqVO.getWarningTime())
-                .betweenIfPresent(OutdoorAdDO::getCreateTime, reqVO.getCreateTime())
+                .likeIfPresent(OutdoorAdDO::getName, reqVO.getAdName())
+                .eqIfPresent(OutdoorAdDO::getType, reqVO.getAdType())
+                .eqIfPresent(OutdoorAdDO::getApprovalStatus, reqVO.getApprovalStatus())
+                .geIfPresent(OutdoorAdDO::getStartApprovalTime, reqVO.getStartApprovalTime())
+                .leIfPresent(OutdoorAdDO::getEndApprovalTime, reqVO.getEndApprovalTime())
                 .orderByDesc(OutdoorAdDO::getId));
     }
 
@@ -34,6 +32,11 @@ public interface OutdoorAdMapper extends BaseMapperX<OutdoorAdDO> {
      * 关联查询户外广告列表
      */
     List<OutdoorAdDO> selectPageWithRelations( OutdoorAdPageReqVO reqVO);
+
+    /**
+     * 关联查询户外广告详情
+     */
+    OutdoorAdDO selectOneWithRelations( @Param("reqVO") OutdoorAdGetReqVO reqVO);
 
     /**
      * 统计总广告数

@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.envirhealth.service.publicinstitution.publicinstitution;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
@@ -8,13 +10,17 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.publicinstitution.vo
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publicinstitution.vo.publicinstitution.PublicInstitutionSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publicinstitution.PublicInstitutionDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publicinstitution.PublicInstitutionDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.UserDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.publicinstitution.PublicInstitutionMapper;
+import cn.iocoder.yudao.module.envirhealth.dal.mysql.user.UserMapper;
 import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.publicinstitution.PublicInstitutionCodeGenerator;
+import com.alibaba.fastjson.JSON;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.PUBLIC_INSTITUTION_NAME_DUPLICATE;
@@ -31,6 +37,9 @@ public class PublicInstitutionServiceImpl implements PublicInstitutionService {
 
     @Resource
     private PublicInstitutionMapper publicInstitutionMapper;
+
+    @Resource
+    private UserMapper userMapper;
 
     @Resource
     private PublicInstitutionCodeGenerator codeGenerator;
@@ -115,14 +124,67 @@ public class PublicInstitutionServiceImpl implements PublicInstitutionService {
 
     @Override
     public PageResult<PublicInstitutionDetailDO> getPublicInstitutionDetailPage(PublicInstitutionPageReqVO pageReqVO) {
+        // 1. 查询总数
         Long total = publicInstitutionMapper.selectCount(pageReqVO);
         if (total == 0) {
             return PageResult.empty();
         }
 
+        // 2. 分页查询列表
         pageReqVO.setOffset(pageReqVO.getPageNo(), pageReqVO.getPageSize());
-
         List<PublicInstitutionDetailDO> list = publicInstitutionMapper.selectDetailPage(pageReqVO);
+
+        // ====================== 核心处理：JSON保洁员ID → 姓名 ======================
+        // 3. 提取所有不重复的保洁员ID
+        Set<String> allCleanerIds = new HashSet<>();
+        for (PublicInstitutionDetailDO detail : list) {
+            String cleanerIdsJson = detail.getCleanerIds();
+            if (StrUtil.isBlank(cleanerIdsJson)) {
+                continue;
+            }
+            try {
+                List<String> ids = JSON.parseArray(cleanerIdsJson, String.class);
+                allCleanerIds.addAll(ids);
+            } catch (Exception ignored) {}
+        }
+
+        // 4. 一次性查询所有用户，生成 ID -> 姓名 Map
+        Map<String, String> cleanerNameMap = new HashMap<>();
+        if (CollUtil.isNotEmpty(allCleanerIds)) {
+            // 根据ID批量查询用户
+            List<UserDO> userList = userMapper.selectList(
+                    new LambdaQueryWrapperX<UserDO>()
+                            .in(UserDO::getUserId, allCleanerIds)
+                            .eq(UserDO::getDeleted, 0)
+            );
+            // 封装成Map
+            for (UserDO user : userList) {
+                cleanerNameMap.put(user.getUserId(), user.getUserName());
+            }
+        }
+
+        // 5. 遍历列表，把JSON ID 转成 姓名拼接字符串
+        for (PublicInstitutionDetailDO detail : list) {
+            String cleanerIdsJson = detail.getCleanerIds();
+            if (StrUtil.isBlank(cleanerIdsJson)) {
+                detail.setCleanersNameStr("");
+                continue;
+            }
+
+            try {
+                List<String> cleanerIds = JSON.parseArray(cleanerIdsJson, String.class);
+                // ID 转名称，用逗号拼接
+                String nameStr = cleanerIds.stream()
+                        .map(id -> cleanerNameMap.getOrDefault(id, ""))
+                        .filter(StrUtil::isNotBlank)
+                        .collect(Collectors.joining(","));
+                detail.setCleanersNameStr(nameStr);
+            } catch (Exception e) {
+                detail.setCleanersNameStr("");
+            }
+        }
+        // ======================================================================
+
         return new PageResult<>(list, total);
     }
 

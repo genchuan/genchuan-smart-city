@@ -5,6 +5,9 @@ import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.add.AddAiAlertMessageReq;
+import cn.iocoder.yudao.module.kitchen.controller.admin.dictionary.illegalleveldict.vo.IllegalLevelDictPageReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.enterpriseinfo.vo.EnterpriseInfoPageReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.enterpriseinfo.vo.EnterpriseInfoRespVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.add.AddEntRectifyRecordReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifynotice.vo.RectifyNoticeSaveReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.*;
@@ -16,7 +19,9 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileRespVO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.aialertmessage.AiAlertMessageDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.dictionary.cancelreasondict.CancelReasonDictDO;
+import cn.iocoder.yudao.module.kitchen.dal.dataobject.dictionary.illegalleveldict.IllegalLevelDictDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.dictionary.illegaltypedict.IllegalTypeDictDO;
+import cn.iocoder.yudao.module.kitchen.dal.dataobject.enterpriseinfo.EnterpriseInfoDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifynotice.RectifyNoticeDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifyreview.RectifyReviewDO;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.aialertmessage.AiAlertMessageMapper;
@@ -29,6 +34,8 @@ import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.pdf.PdfGenerato
 import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.verify.VerifyUtil;
 import cn.iocoder.yudao.module.kitchen.service.aialertmessage.AiAlertMessageService;
 import cn.iocoder.yudao.module.kitchen.service.dictionary.cancelreasondict.CancelReasonDictService;
+import cn.iocoder.yudao.module.kitchen.service.dictionary.illegalleveldict.IllegalLevelDictService;
+import cn.iocoder.yudao.module.kitchen.service.enterpriseinfo.EnterpriseInfoService;
 import cn.iocoder.yudao.module.kitchen.service.entrectifyrecord.EntRectifyRecordService;
 import cn.iocoder.yudao.module.kitchen.service.rectifynotice.RectifyNoticeService;
 import com.alibaba.fastjson.JSON;
@@ -97,6 +104,12 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
 
     @Resource
     private EntRectifyRecordService entRectifyRecordService;
+
+    @Resource
+    private EnterpriseInfoService enterpriseInfoService;
+
+    @Resource
+    private IllegalLevelDictService illegalLevelDictService;
 
     // 在类里定义 ObjectMapper 实例
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -374,7 +387,27 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
         insertDO.setIllegalTypeId(illegalTypeDictDO.getId());
 
         // ========= 5.违规等级（暂时写死，后续根据告警映射）TODO =========
-        insertDO.setIllegalLevelId(1L);
+// ========= 5.违规等级（随机选取） =========
+
+// 查询违规等级列表（建议你有一个 dictService 或 mapper）
+        List<IllegalLevelDictDO> illegalLevelList
+                = illegalLevelDictService.getIllegalLevelDictPage(new IllegalLevelDictPageReqVO()).getList();
+// 如果你没有 list()，就用你现有的查询方法（比如 selectList / page）
+
+// 判空
+        if (illegalLevelList == null || illegalLevelList.isEmpty()) {
+            throw new RuntimeException("违规等级字典为空，无法随机选取");
+        }
+
+// 随机
+        Random random = new Random();
+        int index = random.nextInt(illegalLevelList.size());
+
+// 获取随机等级
+        IllegalLevelDictDO level = illegalLevelList.get(index);
+
+// 设置
+        insertDO.setIllegalLevelId(level.getId());
 
         // ========= 6.违规证据（根据AI预警的 违规图片或 保底图片） =========
         // 统一用 JSON 数组格式字符串
@@ -534,8 +567,26 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
 
         //2.利用预警产生整改台账
         reqVO.setAiAlertMessageId(aiAlertMessageId);
-        reqVO.setEntId(1L);
 
+        //3.从当前企业列表随机选取一个
+        List<EnterpriseInfoDO> enterpriseInfoRespVOList
+                = enterpriseInfoService.getEnterpriseInfoPage(new EnterpriseInfoPageReqVO()).getList();
+        // 判空（非常重要，避免空指针）
+        if (enterpriseInfoRespVOList == null || enterpriseInfoRespVOList.isEmpty()) {
+            throw exception("企业列表为空，无法随机选取企业");
+        }
+
+        // 使用 Random 随机
+        Random random = new Random();
+        int index = random.nextInt(enterpriseInfoRespVOList.size());
+
+        // 获取随机企业
+        EnterpriseInfoDO randomEnterprise = enterpriseInfoRespVOList.get(index);
+
+        // 设置企业ID
+        reqVO.setEntId(randomEnterprise.getId());
+
+        //4.生成整改台账
         AddRectifyReviewReqVO addRectifyReviewReqVO = BeanUtils.toBean(reqVO,AddRectifyReviewReqVO.class);
         Long rectifyReviewId =  this.reviewAdd(addRectifyReviewReqVO);
 
