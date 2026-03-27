@@ -136,4 +136,14 @@ public class TransferOperationController {
         transferOperationService.pauseTransferOperation(operationId, pauseStatusId);
         return success(true);
     }
+
+    @PutMapping("/start")
+    @Operation(summary = "启动转运作业")
+    @PreAuthorize("@ss.hasPermission('envirhealth:transfer-operation:update')")
+    public CommonResult<Boolean> startTransferOperation(
+            @RequestParam("id") Long operationId,
+            @RequestParam(value = "startStatusId", defaultValue = "uuid-plan-status-002") String startStatusId) {
+        transferOperationService.startTransferOperation(operationId, startStatusId);
+        return success(true);
+    }
 }

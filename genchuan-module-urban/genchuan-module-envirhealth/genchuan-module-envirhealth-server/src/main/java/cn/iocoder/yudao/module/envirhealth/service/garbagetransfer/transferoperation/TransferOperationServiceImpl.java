@@ -19,8 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.TRANSFER_OPERATION_NOT_EXISTS;
-import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.TRANSFER_OPERATION_PLAN_ID_EMPTY;
+import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.*;
 
 /**
  * 转运作业 Service 实现类
@@ -182,6 +181,35 @@ public class TransferOperationServiceImpl implements TransferOperationService {
         TransferOperationDO updateOperation = new TransferOperationDO();
         updateOperation.setId(operationId);
         updateOperation.setOperationStatus("暂停"); // 作业状态设为暂停
+        transferOperationMapper.updateById(updateOperation);
+    }
+
+    @Override
+    public void startTransferOperation(Long operationId, String startStatusId) {
+        // 1. 校验转运作业是否存在
+        TransferOperationDO operation = getTransferOperation(operationId);
+        if (operation == null) {
+            throw exception(TRANSFER_OPERATION_NOT_EXISTS);
+        }
+
+        String currentStatus = operation.getOperationStatus();
+        if (!"暂停".equals(currentStatus)) {
+            throw exception(TRANSFER_OPERATION_CANNOT_START_NOT_PAUSED); // 自定义异常：只有暂停状态可启动
+        }
+
+        // 2. 获取转运作业关联的planId
+        String planId = operation.getPlanId();
+        if (planId == null || planId.isEmpty()) {
+            throw exception(TRANSFER_OPERATION_PLAN_ID_EMPTY);
+        }
+
+        // 3. 更新收运计划状态为「已启动」
+        garbageCollectionService.updatePlanStatus(planId, startStatusId);
+
+        //4. 更新垃圾收运表状态为「已启动」
+        TransferOperationDO updateOperation = new TransferOperationDO();
+        updateOperation.setId(operationId);
+        updateOperation.setOperationStatus("运行"); // 作业状态设为运行
         transferOperationMapper.updateById(updateOperation);
     }
 }
