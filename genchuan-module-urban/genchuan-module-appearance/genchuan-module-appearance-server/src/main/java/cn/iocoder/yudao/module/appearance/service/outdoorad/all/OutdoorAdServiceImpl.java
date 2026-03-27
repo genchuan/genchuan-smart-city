@@ -61,8 +61,8 @@ public class OutdoorAdServiceImpl implements OutdoorAdService {
     }
 
     @Override
-    public OutdoorAdDO getOutdoorAd(Long id) {
-        return outdoorAdMapper.selectById(id);
+    public OutdoorAdDO getOutdoorAd(OutdoorAdGetReqVO getReqVO) {
+        return outdoorAdMapper.selectOneWithRelations(getReqVO);
     }
 
     @Override
