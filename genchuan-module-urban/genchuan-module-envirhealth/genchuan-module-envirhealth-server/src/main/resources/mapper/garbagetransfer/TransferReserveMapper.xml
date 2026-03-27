@@ -68,6 +68,9 @@
             <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
                 AND tr.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
             </if>
+            <if test="reqVO.transferId != null and reqVO.transferId != ''">
+                AND tr.transfer_id = #{reqVO.transferId}
+            </if>
         </where>
     </sql>
 

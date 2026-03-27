@@ -6,14 +6,18 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.t
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferoperation.TransferOperationDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferoperation.TransferOperationPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferoperation.TransferOperationSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.GarbageTransferDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferOperationDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferOperationDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.GarbageTransferMapper;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.TransferOperationMapper;
 import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.garbagetransfer.TransferOperationCodeGenerator;
 import cn.iocoder.yudao.module.envirhealth.framework.util.vo.BarItemVO;
 import cn.iocoder.yudao.module.envirhealth.service.garbagecollection.garbagecollection.GarbageCollectionService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
@@ -37,16 +41,26 @@ public class TransferOperationServiceImpl implements TransferOperationService {
     private GarbageCollectionService garbageCollectionService;
 
     @Resource
+    private GarbageTransferMapper garbageTransferMapper;
+
+    @Resource
     private TransferOperationCodeGenerator codeGenerator;
 
     @Override
+    @Transactional(rollbackFor = Exception.class) // 新增事务，和预约一致
     public Long createTransferOperation(TransferOperationSaveReqVO createReqVO) {
         // 插入
         TransferOperationDO transferOperation = BeanUtils.toBean(createReqVO, TransferOperationDO.class);
-
+        transferOperation.setId(null);
         transferOperation.setOperationId(codeGenerator.generateOperationId());
 
         transferOperationMapper.insert(transferOperation);
+
+        // ======================== 同步新增 garbage_transfer 数据 ========================
+        Long newOperationId = transferOperation.getId();
+        String transferId = transferOperation.getTransferId();
+        syncAddNewGarbageTransferByOperation(transferId, newOperationId);
+
         // 返回
         return transferOperation.getId();
     }
@@ -61,17 +75,26 @@ public class TransferOperationServiceImpl implements TransferOperationService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class) // 新增事务
     public void deleteTransferOperation(Long id) {
-        // 校验存在
-        validateTransferOperationExists(id);
-        // 删除
+        // 1. 校验存在，拿到作业信息
+        TransferOperationDO operation = validateTransferOperationExists(id);
+        String transferId = operation.getTransferId();
+
+        // 2. 同步删除 garbage_transfer 对应数据
+        syncDeleteTransferByOperationId(transferId, id);
+
+        // 3. 删除作业
         transferOperationMapper.deleteById(id);
     }
 
-    private void validateTransferOperationExists(Long id) {
-        if (transferOperationMapper.selectById(id) == null) {
+    // 改成返回DO，和预约的validate一致，方便拿数据
+    private TransferOperationDO validateTransferOperationExists(Long id) {
+        TransferOperationDO operation = transferOperationMapper.selectById(id);
+        if (operation == null) {
             throw exception(TRANSFER_OPERATION_NOT_EXISTS);
         }
+        return operation;
     }
 
     @Override
@@ -211,5 +234,52 @@ public class TransferOperationServiceImpl implements TransferOperationService {
         updateOperation.setId(operationId);
         updateOperation.setOperationStatus("运行"); // 作业状态设为运行
         transferOperationMapper.updateById(updateOperation);
+    }
+
+    /**
+     * 新增作业时 → 新增一条 garbage_transfer 记录
+     * 1. 从现有 transferId 复制基础数据
+     * 2. reserve_id 设为当前作业ID
+     * 3. 状态改为 作业待启动（可根据业务调整）
+     */
+    private void syncAddNewGarbageTransferByOperation(String transferId, Long operationId) {
+        if (transferId == null || operationId == null) {
+            return;
+        }
+
+        // 1. 查询该转运站的任意一条原始数据（用来复制）
+        GarbageTransferDO original = garbageTransferMapper.selectOne(
+                new LambdaQueryWrapper<GarbageTransferDO>()
+                        .eq(GarbageTransferDO::getTransferId, transferId)
+                        .last("LIMIT 1")
+        );
+        if (original == null) {
+            return;
+        }
+
+        // 2. 复制基础信息
+        GarbageTransferDO newTransfer = BeanUtils.toBean(original, GarbageTransferDO.class);
+        newTransfer.setId(null); // 清空ID，自动生成新主键
+
+        // 3. 设置关键数据
+        newTransfer.setReserveId(operationId);        // 绑定本次作业ID
+        newTransfer.setProgressStatus("作业待启动"); // 固定状态，可根据业务修改
+
+        // 4. 插入新记录
+        garbageTransferMapper.insert(newTransfer);
+    }
+
+    /**
+     * 根据 transferId + operationId 删除对应的 garbage_transfer 记录
+     */
+    private void syncDeleteTransferByOperationId(String transferId, Long operationId) {
+        if (transferId == null || operationId == null) {
+            return;
+        }
+        garbageTransferMapper.delete(
+                new LambdaQueryWrapper<GarbageTransferDO>()
+                        .eq(GarbageTransferDO::getTransferId, transferId)
+                        .eq(GarbageTransferDO::getReserveId, operationId)
+        );
     }
 }
