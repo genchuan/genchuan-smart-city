@@ -1,8 +1,6 @@
-package cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.all;
+package cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad;
 
-import cn.idev.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.*;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 
@@ -137,6 +135,10 @@ public class OutdoorAdDO extends BaseDO {
      * 预警时间
      */
     private LocalDateTime warningTime;
+    /**
+     * 备注
+     */
+    private String remark;
     /**
      * 通用扩展字段1
      */

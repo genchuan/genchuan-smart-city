@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.all.vo;
+package cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.vo;
 
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
