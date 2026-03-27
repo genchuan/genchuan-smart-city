@@ -12,9 +12,12 @@ import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.rulecategory
 import cn.iocoder.yudao.module.evaluate.controller.admin.ruledetail.vo.RuleDetailRespVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.ruledetail.vo.RuleDetailSaveReqVO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.commentrule.CommentRuleDO;
+import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexitem.IndexItemDO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexsystem.IndexSystemDO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.rulecategory.RuleCategoryDO;
+import cn.iocoder.yudao.module.evaluate.dal.dataobject.objecttype.ObjectTypeDO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.ruledetail.RuleDetailDO;
+import cn.iocoder.yudao.module.evaluate.dal.dataobject.sys.ruletype.RuleTypeDO;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.commentrule.CommentRuleMapper;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.objecttype.ObjectTypeMapper;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.rulecategory.RuleCategoryMapper;
@@ -22,6 +25,7 @@ import cn.iocoder.yudao.module.evaluate.dal.mysql.ruledetail.RuleDetailMapper;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.ruletype.RuleTypeMapper;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.status.StatusMapper;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Lazy;
@@ -35,6 +39,8 @@ import java.util.stream.Collectors;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.evaluate.enums.ErrorCodeConstants.RULE_CATEGORY_NAME_DUPLICATE;
 import static cn.iocoder.yudao.module.evaluate.enums.ErrorCodeConstants.RULE_CATEGORY_NOT_EXISTS;
+import static cn.iocoder.yudao.module.evaluate.util.ChangeLogUtils.appendLog;
+import static cn.iocoder.yudao.module.evaluate.util.ChangeLogUtils.buildLog;
 
 /**
  * 规则分类管理 Service 实现类
@@ -59,6 +65,10 @@ public class RuleCategoryServiceImpl implements RuleCategoryService {
     @Resource
     private cn.iocoder.yudao.module.evaluate.dal.mysql.ruleitem.RuleItemMapper ruleItemMapper;
 
+    @Lazy
+    @Resource
+    private cn.iocoder.yudao.module.evaluate.dal.mysql.indexitem.IndexItemMapper indexItemMapper;
+
     @Resource
     private AdminUserApi adminUserApi;
 
@@ -82,6 +92,10 @@ public class RuleCategoryServiceImpl implements RuleCategoryService {
 
         // 插入
         RuleCategoryDO ruleCategory = BeanUtils.toBean(createReqVO, RuleCategoryDO.class);
+        // 追加变更日志（insert 之前设置，一次 DB 操作完成）
+        String log = buildLog("【新增规则分类】",
+                StrUtil.format("新增规则分类「{}」", ruleCategory.getName()));
+        ruleCategory.setChangeLog(log);
         ruleCategoryMapper.insert(ruleCategory);
         // 返回
         return ruleCategory.getId();
@@ -96,6 +110,25 @@ public class RuleCategoryServiceImpl implements RuleCategoryService {
         // 更新
         RuleCategoryDO updateObj = BeanUtils.toBean(updateReqVO, RuleCategoryDO.class);
         ruleCategoryMapper.updateById(updateObj);
+        // 追加变更日志
+        RuleCategoryDO old = ruleCategoryMapper.selectById(updateReqVO.getId());
+        StringBuilder changeContent = new StringBuilder();
+        if (!Objects.equals(old.getName(), updateReqVO.getName())) {
+            changeContent.append(StrUtil.format("规则分类名称由「{}」改为「{}」",
+                    old.getName(), updateReqVO.getName()));
+        }
+        if (!Objects.equals(old.getStatusId(), updateReqVO.getStatusId())) {
+            if (changeContent.length() > 0) {
+                changeContent.append("；");
+            }
+            changeContent.append(StrUtil.format("状态由「{}」改为「{}」",
+                    getStatusName(old.getStatusId()), getStatusName(updateReqVO.getStatusId())));
+        }
+        if (changeContent.length() > 0) {
+            RuleCategoryDO cat = ruleCategoryMapper.selectById(updateReqVO.getId());
+            cat.setChangeLog(appendLog(cat.getChangeLog(), "", changeContent.toString()));
+            ruleCategoryMapper.updateById(cat);
+        }
     }
 
     private void validateNameUnique(String name, String systemId, Long excludeId) {
@@ -111,7 +144,16 @@ public class RuleCategoryServiceImpl implements RuleCategoryService {
     @Override
     public void deleteRuleCategory(Long id) {
         // 校验存在
-        validateRuleCategoryExists(id);
+        RuleCategoryDO oldCategory = ruleCategoryMapper.selectById(id);
+        if (oldCategory == null) {
+            throw exception(RULE_CATEGORY_NOT_EXISTS);
+        }
+        // 追加变更日志
+        String log = buildLog("【删除规则分类】",
+                StrUtil.format("删除规则分类「{}」", oldCategory.getName()));
+        oldCategory.setChangeLog(appendLog(oldCategory.getChangeLog(), "【删除规则分类】",
+                StrUtil.format("删除规则分类「{}」", oldCategory.getName())));
+        ruleCategoryMapper.updateById(oldCategory);
         // 删除
         ruleCategoryMapper.deleteById(id);
     }
@@ -120,6 +162,50 @@ public class RuleCategoryServiceImpl implements RuleCategoryService {
         if (ruleCategoryMapper.selectById(id) == null) {
             throw exception(RULE_CATEGORY_NOT_EXISTS);
         }
+    }
+
+    private String getStatusName(Integer statusId) {
+        if (statusId == null) {
+            return "未知";
+        }
+        cn.iocoder.yudao.module.evaluate.dal.dataobject.status.StatusDO status =
+                statusMapper.selectById(statusId.longValue());
+        return status != null ? status.getName() : "未知";
+    }
+
+    private String getSystemName(String systemId) {
+        if (systemId == null) {
+            return "未知";
+        }
+        IndexSystemDO system = indexSystemMapper.selectOne(
+                new LambdaQueryWrapperX<IndexSystemDO>()
+                        .eq(IndexSystemDO::getSystemId, systemId)
+                        .eq(IndexSystemDO::getDeleted, 0));
+        return system != null ? system.getName() : "未知";
+    }
+
+    private String getItemName(Integer itemId) {
+        if (itemId == null) {
+            return "未知";
+        }
+        IndexItemDO item = indexItemMapper.selectById(itemId.longValue());
+        return item != null ? item.getName() : "未知";
+    }
+
+    private String getRuleTypeName(Integer ruleId) {
+        if (ruleId == null) {
+            return "未知";
+        }
+        RuleTypeDO ruleType = ruleTypeMapper.selectById(ruleId.longValue());
+        return ruleType != null ? ruleType.getName() : "未知";
+    }
+
+    private String getObjectTypeName(Integer objectTypeId) {
+        if (objectTypeId == null) {
+            return "未知";
+        }
+        ObjectTypeDO objectType = objectTypeMapper.selectById(objectTypeId.longValue());
+        return objectType != null ? objectType.getName() : "未知";
     }
 
     @Override
@@ -259,27 +345,24 @@ public class RuleCategoryServiceImpl implements RuleCategoryService {
         Map<Long, cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO> userMap =
                 CollUtil.isNotEmpty(userIds) ? adminUserApi.getUserMap(userIds) : new HashMap<>();
 
-        // ========== 统计每个规则分类下的规则项数量 ==========
-        List<String> categoryIds = pageResult.getList().stream()
-                .map(vo -> String.valueOf(vo.getId()))
+        // ========== 统计每个规则分类下的规则数量（eval_comment_rule 表） ==========
+        List<Long> categoryIds = pageResult.getList().stream()
+                .map(vo -> vo.getId())
                 .filter(Objects::nonNull)
                 .distinct()
                 .collect(Collectors.toList());
 
-        Map<String, Long> itemCountMap = new HashMap<>();
+        Map<Long, Long> ruleCountMap = new HashMap<>();
         if (CollUtil.isNotEmpty(categoryIds)) {
-            LambdaQueryWrapperX<cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.ruleitem.RuleItemDO> countWrapper
-                    = new LambdaQueryWrapperX<cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.ruleitem.RuleItemDO>()
-                    .in(cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.ruleitem.RuleItemDO::getRuleCategoryId, categoryIds)
-                    .eq(cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.ruleitem.RuleItemDO::getDeleted, false);
-
-            List<cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.ruleitem.RuleItemDO> ruleItems =
-                    ruleItemMapper.selectList(countWrapper);
-
-            itemCountMap = ruleItems.stream()
-                    .collect(Collectors.groupingBy(
-                            cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.ruleitem.RuleItemDO::getRuleCategoryId,
-                            Collectors.counting()));
+            List<Map<String, Object>> ruleCountList =
+                    commentRuleMapper.selectRuleCountGroupByCategoryId(categoryIds);
+            for (Map<String, Object> item : ruleCountList) {
+                Object catIdObj = item.get("rule_category_id");
+                Object countObj = item.get("ruleCount");
+                if (catIdObj != null && countObj != null) {
+                    ruleCountMap.put(((Number) catIdObj).longValue(), ((Number) countObj).longValue());
+                }
+            }
         }
 
         // ========== 回填所有关联数据 ==========
@@ -288,7 +371,7 @@ public class RuleCategoryServiceImpl implements RuleCategoryService {
         Map<Long, String> finalItemNameMap = itemNameMap;
         Map<Long, String> finalRuleNameMap = ruleNameMap;
         Map<Long, String> finalObjectTypeNameMap = objectTypeNameMap;
-        Map<String, Long> finalItemCountMap = itemCountMap;
+        Map<Long, Long> finalRuleCountMap = ruleCountMap;
         pageResult.getList().forEach(vo -> {
             // 回填体系名称
             if (StrUtil.isBlank(vo.getSystemName()) && vo.getSystemIdPk() != null) {
@@ -326,10 +409,22 @@ public class RuleCategoryServiceImpl implements RuleCategoryService {
                     vo.setUpdateUserName(updaterUser.getNickname());
                 }
             }
-            // 回填规则项数量
-            Long count = finalItemCountMap.get(String.valueOf(vo.getId()));
-            vo.setItemCount(count != null ? count.intValue() : 0);
+            // 回填规则数量
+            Long ruleCount = finalRuleCountMap.get(vo.getId());
+            vo.setItemCount(ruleCount != null ? ruleCount.intValue() : 0);
         });
+
+        // ========== 批量将计算后的 item_count 写回 eval_rule_category 表 ==========
+        if (CollUtil.isNotEmpty(categoryIds)) {
+            categoryIds.forEach(catId -> {
+                Long count = finalRuleCountMap.get(catId);
+                ruleCategoryMapper.update(null,
+                        new LambdaUpdateWrapper<RuleCategoryDO>()
+                                .eq(RuleCategoryDO::getId, catId)
+                                .set(RuleCategoryDO::getItemCount, count != null ? count.intValue() : 0)
+                );
+            });
+        }
 
         return pageResult;
     }
@@ -397,6 +492,11 @@ public class RuleCategoryServiceImpl implements RuleCategoryService {
             // 插入规则分类
             RuleCategoryDO newCategory = BeanUtils.toBean(updateReqVO, RuleCategoryDO.class);
             ruleCategoryMapper.insert(newCategory);
+            // 追加变更日志
+            String log = buildLog("【新增规则分类】",
+                    StrUtil.format("新增规则分类「{}」", newCategory.getName()));
+            newCategory.setChangeLog(log);
+            ruleCategoryMapper.updateById(newCategory);
             categoryId = newCategory.getId();
         } else {
             // ========== 修改场景 ==========
@@ -404,9 +504,58 @@ public class RuleCategoryServiceImpl implements RuleCategoryService {
             validateRuleCategoryExists(updateReqVO.getId());
             // 校验名称在同一体系下唯一
             validateNameUnique(updateReqVO.getName(), updateReqVO.getSystemId(), updateReqVO.getId());
+            // 先查询旧数据（必须在 updateById 之前）
+            RuleCategoryDO oldCategory = ruleCategoryMapper.selectById(updateReqVO.getId());
             // 更新规则分类基本信息
             RuleCategoryDO updateObj = BeanUtils.toBean(updateReqVO, RuleCategoryDO.class);
             ruleCategoryMapper.updateById(updateObj);
+
+            // 追加变更日志（使用前面查询的旧数据）
+            StringBuilder changeContent = new StringBuilder();
+            if (updateReqVO.getName() != null && !Objects.equals(oldCategory.getName(), updateReqVO.getName())) {
+                changeContent.append(StrUtil.format("规则分类名称由「{}」改为「{}」",
+                        oldCategory.getName(), updateReqVO.getName()));
+            }
+            if (updateReqVO.getSystemId() != null && !Objects.equals(oldCategory.getSystemId(), updateReqVO.getSystemId())) {
+                if (changeContent.length() > 0) {
+                    changeContent.append("；");
+                }
+                changeContent.append(StrUtil.format("适用体系由「{}」改为「{}」",
+                        getSystemName(oldCategory.getSystemId()), getSystemName(updateReqVO.getSystemId())));
+            }
+            if (updateReqVO.getStatusId() != null && !Objects.equals(oldCategory.getStatusId(), updateReqVO.getStatusId())) {
+                if (changeContent.length() > 0) {
+                    changeContent.append("；");
+                }
+                changeContent.append(StrUtil.format("状态由「{}」改为「{}」",
+                        getStatusName(oldCategory.getStatusId()), getStatusName(updateReqVO.getStatusId())));
+            }
+            if (updateReqVO.getItemId() != null && !Objects.equals(oldCategory.getItemId(), updateReqVO.getItemId())) {
+                if (changeContent.length() > 0) {
+                    changeContent.append("；");
+                }
+                changeContent.append(StrUtil.format("指标项由「{}」改为「{}」",
+                        getItemName(oldCategory.getItemId()), getItemName(updateReqVO.getItemId())));
+            }
+            if (updateReqVO.getRuleId() != null && !Objects.equals(oldCategory.getRuleId(), updateReqVO.getRuleId())) {
+                if (changeContent.length() > 0) {
+                    changeContent.append("；");
+                }
+                changeContent.append(StrUtil.format("规则类型由「{}」改为「{}」",
+                        getRuleTypeName(oldCategory.getRuleId()), getRuleTypeName(updateReqVO.getRuleId())));
+            }
+            if (updateReqVO.getObjectTypeId() != null && !Objects.equals(oldCategory.getObjectTypeId(), updateReqVO.getObjectTypeId())) {
+                if (changeContent.length() > 0) {
+                    changeContent.append("；");
+                }
+                changeContent.append(StrUtil.format("对象类型由「{}」改为「{}」",
+                        getObjectTypeName(oldCategory.getObjectTypeId()), getObjectTypeName(updateReqVO.getObjectTypeId())));
+            }
+            if (changeContent.length() > 0) {
+                RuleCategoryDO cat = ruleCategoryMapper.selectById(updateReqVO.getId());
+                cat.setChangeLog(appendLog(cat.getChangeLog(), "", changeContent.toString()));
+                ruleCategoryMapper.updateById(cat);
+            }
             categoryId = updateReqVO.getId();
         }
 
@@ -545,10 +694,34 @@ public class RuleCategoryServiceImpl implements RuleCategoryService {
             // 更新基本信息
             RuleCategoryDO updateObj = BeanUtils.toBean(saveFullReqVO, RuleCategoryDO.class);
             ruleCategoryMapper.updateById(updateObj);
+
+            // 追加变更日志
+            StringBuilder changeContent = new StringBuilder();
+            if (!Objects.equals(existing.getName(), saveFullReqVO.getName())) {
+                changeContent.append(StrUtil.format("规则分类名称由「{}」改为「{}」",
+                        existing.getName(), saveFullReqVO.getName()));
+            }
+            if (!Objects.equals(existing.getStatusId(), saveFullReqVO.getStatusId())) {
+                if (changeContent.length() > 0) {
+                    changeContent.append("；");
+                }
+                changeContent.append(StrUtil.format("状态由「{}」改为「{}」",
+                        getStatusName(existing.getStatusId()), getStatusName(saveFullReqVO.getStatusId())));
+            }
+            if (changeContent.length() > 0) {
+                RuleCategoryDO cat = ruleCategoryMapper.selectById(categoryId);
+                cat.setChangeLog(appendLog(cat.getChangeLog(), "", changeContent.toString()));
+                ruleCategoryMapper.updateById(cat);
+            }
         } else {
             // 新增规则分类
             RuleCategoryDO newCategory = BeanUtils.toBean(saveFullReqVO, RuleCategoryDO.class);
             ruleCategoryMapper.insert(newCategory);
+            // 追加变更日志
+            String log = buildLog("【新增规则分类】",
+                    StrUtil.format("新增规则分类「{}」", newCategory.getName()));
+            newCategory.setChangeLog(log);
+            ruleCategoryMapper.updateById(newCategory);
             categoryId = newCategory.getId();
         }
 
@@ -862,7 +1035,19 @@ public class RuleCategoryServiceImpl implements RuleCategoryService {
             }
         }
 
-        // ========== 10. 批量查询体系名称 ==========
+        // ========== 10. 直接从数据库读取各分类的 item_count ==========
+        List<Long> categoryIds = categories.stream().map(RuleCategoryDO::getId).collect(Collectors.toList());
+        List<Map<String, Object>> categoryItemCountList = ruleCategoryMapper.selectItemCountByCategoryIds(categoryIds);
+        Map<Long, Long> categoryItemCountMap = new HashMap<>();
+        for (Map<String, Object> item : categoryItemCountList) {
+            Object catIdObj = item.get("id");
+            Object countObj = item.get("itemCount");
+            if (catIdObj != null && countObj != null) {
+                categoryItemCountMap.put(((Number) catIdObj).longValue(), ((Number) countObj).longValue());
+            }
+        }
+
+        // ========== 11. 批量查询体系名称 ==========
         Set<Long> systemIds = categories.stream()
                 .map(c -> {
                     try {
@@ -876,7 +1061,7 @@ public class RuleCategoryServiceImpl implements RuleCategoryService {
 
         Map<Long, String> systemNameMap = new HashMap<>();
         if (CollUtil.isNotEmpty(systemIds)) {
-            List<IndexSystemDO> systems = indexSystemMapper.selectBatchIds(systemIds);
+            List<IndexSystemDO> systems = indexSystemMapper.selectByIds(systemIds);
             if (systems != null) {
                 systemNameMap = systems.stream()
                         .collect(Collectors.toMap(IndexSystemDO::getId, IndexSystemDO::getName, (a, b) -> a));
@@ -885,6 +1070,7 @@ public class RuleCategoryServiceImpl implements RuleCategoryService {
 
         // ========== 11. 组装明细数据 ==========
         final Map<Long, String> finalSystemNameMap = systemNameMap;
+        final Map<Long, Long> finalCategoryItemCountMap = categoryItemCountMap;
         List<RuleCategoryStatisticsVO.CategoryStatistics> categoryStatisticsList = categories.stream()
                 .map(category -> {
                     RuleCategoryStatisticsVO.CategoryStatistics catStat = new RuleCategoryStatisticsVO.CategoryStatistics();
@@ -902,10 +1088,8 @@ public class RuleCategoryServiceImpl implements RuleCategoryService {
                     List<CommentRuleDO> categoryRules = rulesByCategory.getOrDefault(category.getId(), Collections.emptyList());
                     catStat.setRuleCount((long) categoryRules.size());
 
-                    long totalIndexCount = categoryRules.stream()
-                            .mapToLong(rule -> ruleIndexCountMap.getOrDefault(rule.getId(), 0L))
-                            .sum();
-                    catStat.setIndexItemCount(totalIndexCount);
+                    Long dbItemCount = finalCategoryItemCountMap.getOrDefault(category.getId(), 0L);
+                    catStat.setIndexItemCount(dbItemCount);
 
                     List<RuleCategoryStatisticsVO.RuleStatistics> ruleStatisticsList = categoryRules.stream()
                             .map(rule -> {

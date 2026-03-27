@@ -63,6 +63,9 @@ public class StandardCategoryRespVO {
     @ExcelProperty("变更日志")
     private String changeLog;
 
+    @Schema(description = "变更日志（截取前50字）")
+    private String changeLogShort;
+
     @Schema(description = "通用扩展字段1")
     @ExcelProperty("通用扩展字段1")
     private String extCommon1;

@@ -211,4 +211,18 @@ public interface RuleCategoryMapper extends BaseMapperX<RuleCategoryDO> {
             "GROUP BY rule_category_id")
     List<Map<String, Object>> selectCategoryRuleCount();
 
+    /**
+     * 批量查询规则分类的 item_count（直接从 eval_rule_category 表读取）
+     */
+    @Select("<script>" +
+            "SELECT id, IFNULL(item_count, 0) AS itemCount " +
+            "FROM eval_rule_category " +
+            "WHERE deleted = 0 " +
+            "<if test='categoryIds != null and categoryIds.size() > 0'>" +
+            "  AND id IN " +
+            "  <foreach collection='categoryIds' item='cid' open='(' separator=',' close=')'>#{cid}</foreach>" +
+            "</if>" +
+            "</script>")
+    List<Map<String, Object>> selectItemCountByCategoryIds(@Param("categoryIds") List<Long> categoryIds);
+
 }

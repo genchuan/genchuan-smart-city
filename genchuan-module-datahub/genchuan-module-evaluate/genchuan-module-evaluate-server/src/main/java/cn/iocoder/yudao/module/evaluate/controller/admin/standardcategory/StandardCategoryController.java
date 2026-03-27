@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.UPDATE;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 @Tag(name = "管理后台 - 标准分类")
@@ -44,6 +45,7 @@ public class StandardCategoryController {
     @PutMapping("/update")
     @Operation(summary = "更新标准分类（含标准项批量更新）")
     @PreAuthorize("@ss.hasPermission('evaluate:standard-category:update')")
+    @ApiAccessLog(operateType = UPDATE)
     public CommonResult<Boolean> updateStandardCategory(@Valid @RequestBody StandardCategorySaveReqVO updateReqVO) {
         standardCategoryService.updateStandardCategoryWithItems(updateReqVO);
         return success(true);

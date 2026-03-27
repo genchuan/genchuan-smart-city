@@ -16,13 +16,9 @@ public class StandardItemRespVO {
     @ExcelProperty("主键ID")
     private Long id;
 
-    @Schema(description = "标准项ID（UUID）", example = "17710")
-    @ExcelProperty("标准项ID（UUID）")
-    private String standardItemId;
-
-    @Schema(description = "标准分类ID（关联eval_standard_category.standard_category_id）", example = "21735")
-    @ExcelProperty("标准分类ID（关联eval_standard_category.standard_category_id）")
-    private String standardCategoryId;
+    @Schema(description = "标准分类ID（关联eval_standard_category.id）", example = "21735")
+    @ExcelProperty("标准分类ID（关联eval_standard_category.id）")
+    private Long standardCategoryId;
 
     @Schema(description = "标准项等级")
     @ExcelProperty("标准项等级")
@@ -35,14 +31,6 @@ public class StandardItemRespVO {
     @Schema(description = "排序序号")
     @ExcelProperty("排序序号")
     private Integer sortNo;
-
-    @Schema(description = "更新人ID（关联sys_user.user_id）")
-    @ExcelProperty("更新人ID（关联sys_user.user_id）")
-    private String updateBy;
-
-    @Schema(description = "创建人ID（关联sys_user.user_id）")
-    @ExcelProperty("创建人ID（关联sys_user.user_id）")
-    private String createBy;
 
     @Schema(description = "创建人ID")
     @ExcelProperty("创建人ID")

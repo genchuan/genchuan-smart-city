@@ -20,6 +20,7 @@ import cn.iocoder.yudao.module.evaluate.dal.mysql.status.StatusMapper;
 import cn.iocoder.yudao.module.evaluate.service.standarditem.StandardItemService;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
@@ -28,9 +29,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.*;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static cn.iocoder.yudao.module.evaluate.util.ChangeLogUtils.appendLog;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.evaluate.enums.ErrorCodeConstants.STANDARD_CATEGORY_NOT_EXISTS;
 
@@ -74,7 +77,7 @@ public class StandardCategoryServiceImpl implements StandardCategoryService {
         if (CollUtil.isNotEmpty(items)) {
             for (StandardItemSaveReqVO itemVO : items) {
                 StandardItemDO itemDO = BeanUtils.toBean(itemVO, StandardItemDO.class);
-                itemDO.setStandardCategoryId(String.valueOf(categoryId));
+                itemDO.setStandardCategoryId(categoryId);
                 standardItemMapper.insert(itemDO);
             }
         }
@@ -89,9 +92,40 @@ public class StandardCategoryServiceImpl implements StandardCategoryService {
         // 校验分类存在
         validateStandardCategoryExists(categoryId);
 
+        // 查询旧数据（必须在 updateById 之前）
+        StandardCategoryDO oldCategory = standardCategoryMapper.selectById(categoryId);
+
         // 更新分类基本信息
         StandardCategoryDO updateObj = BeanUtils.toBean(updateReqVO, StandardCategoryDO.class);
+        // 确保第一步更新不覆盖 changeLog 字段
+        updateObj.setChangeLog(null);
         standardCategoryMapper.updateById(updateObj);
+
+        // 追加变更日志
+        StringBuilder changeContent = new StringBuilder();
+        if (updateReqVO.getName() != null && !Objects.equals(oldCategory.getName(), updateReqVO.getName())) {
+            changeContent.append(StrUtil.format("标准分类名称由「{}」改为「{}」",
+                    oldCategory.getName(), updateReqVO.getName()));
+        }
+        if (updateReqVO.getSystemId() != null && !Objects.equals(oldCategory.getSystemId(), updateReqVO.getSystemId())) {
+            if (changeContent.length() > 0) {
+                changeContent.append("；");
+            }
+            changeContent.append(StrUtil.format("适用体系由「{}」改为「{}」",
+                    getSystemName(oldCategory.getSystemId()), getSystemName(updateReqVO.getSystemId())));
+        }
+        if (updateReqVO.getStatusId() != null && !Objects.equals(oldCategory.getStatusId(), updateReqVO.getStatusId())) {
+            if (changeContent.length() > 0) {
+                changeContent.append("；");
+            }
+            changeContent.append(StrUtil.format("状态由「{}」改为「{}」",
+                    getStatusName(oldCategory.getStatusId()), getStatusName(updateReqVO.getStatusId())));
+        }
+        if (changeContent.length() > 0) {
+            StandardCategoryDO cat = standardCategoryMapper.selectById(categoryId);
+            cat.setChangeLog(appendLog(cat.getChangeLog(), "", changeContent.toString()));
+            standardCategoryMapper.updateById(cat);
+        }
 
         // 处理标准项列表（先删后插）
         List<StandardItemSaveReqVO> items = updateReqVO.getItems();
@@ -130,7 +164,7 @@ public class StandardCategoryServiceImpl implements StandardCategoryService {
             for (StandardItemSaveReqVO itemVO : items) {
                 if (itemVO.getId() == null) {
                     StandardItemDO itemDO = BeanUtils.toBean(itemVO, StandardItemDO.class);
-                    itemDO.setStandardCategoryId(String.valueOf(categoryId));
+                    itemDO.setStandardCategoryId(categoryId);
                     standardItemMapper.insert(itemDO);
                 } else {
                     standardItemMapper.updateById(BeanUtils.toBean(itemVO, StandardItemDO.class));
@@ -166,6 +200,22 @@ public class StandardCategoryServiceImpl implements StandardCategoryService {
         if (standardCategoryMapper.selectById(id) == null) {
             throw exception(STANDARD_CATEGORY_NOT_EXISTS);
         }
+    }
+
+    private String getStatusName(Integer statusId) {
+        if (statusId == null) {
+            return "未知";
+        }
+        StatusDO status = statusMapper.selectById(statusId.longValue());
+        return status != null ? status.getName() : "未知";
+    }
+
+    private String getSystemName(Long systemId) {
+        if (systemId == null) {
+            return "未知";
+        }
+        IndexSystemDO system = indexSystemMapper.selectById(systemId);
+        return system != null ? system.getName() : "未知";
     }
 
     /**
@@ -211,6 +261,44 @@ public class StandardCategoryServiceImpl implements StandardCategoryService {
                 pageReqVO.getPageSize() != null ? pageReqVO.getPageSize() : 10
         );
         IPage<StandardCategoryRespVO> resultPage = standardCategoryMapper.selectJoinPage(page, pageReqVO);
+        if (resultPage != null && CollUtil.isNotEmpty(resultPage.getRecords())) {
+            resultPage.getRecords().forEach(vo -> {
+                if (StrUtil.isNotBlank(vo.getChangeLog())) {
+                    vo.setChangeLogShort(vo.getChangeLog().length() > 50
+                            ? vo.getChangeLog().substring(0, 50) + "..."
+                            : vo.getChangeLog());
+                }
+            });
+
+            // 从 eval_standard_item 表实时统计 itemCount
+            List<Map<String, Object>> itemCountList = standardCategoryMapper.selectCategoryItemCount();
+            Map<Long, Integer> itemCountMap = new HashMap<>();
+            for (Map<String, Object> item : itemCountList) {
+                Object catIdObj = item.get("standard_category_id");
+                Object countObj = item.get("itemCount");
+                if (catIdObj != null && countObj != null) {
+                    itemCountMap.put(((Number) catIdObj).longValue(), ((Number) countObj).intValue());
+                }
+            }
+            // 回填并写回数据库
+            List<Long> categoryIds = new ArrayList<>();
+            for (StandardCategoryRespVO vo : resultPage.getRecords()) {
+                Integer cnt = itemCountMap.getOrDefault(vo.getId(), 0);
+                vo.setItemCount(cnt);
+                categoryIds.add(vo.getId());
+            }
+            // 批量更新 eval_standard_category.item_count
+            for (Long catId : categoryIds) {
+                standardCategoryMapper.update(null,
+                        new LambdaUpdateWrapper<StandardCategoryDO>()
+                                .eq(StandardCategoryDO::getId, catId)
+                                .set(StandardCategoryDO::getItemCount, itemCountMap.getOrDefault(catId, 0))
+                );
+            }
+
+            // 通过框架 API 解析创建人/更新人姓名
+            resolveUserNames(resultPage.getRecords());
+        }
         return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
     }
 
@@ -448,7 +536,7 @@ public class StandardCategoryServiceImpl implements StandardCategoryService {
                 new LambdaQueryWrapperX<StandardItemDO>()
                         .eq(StandardItemDO::getDeleted, false)
         );
-        Map<String, List<StandardItemDO>> itemsByCategory = allItems.stream()
+        Map<Long, List<StandardItemDO>> itemsByCategory = allItems.stream()
                 .collect(Collectors.groupingBy(StandardItemDO::getStandardCategoryId));
 
         // ========== 9. 组装明细数据 ==========
@@ -461,7 +549,7 @@ public class StandardCategoryServiceImpl implements StandardCategoryService {
                     catStat.setCategoryName(category.getName());
                     catStat.setSystemName(finalSystemNameByIdMap.get(category.getSystemId()));
                     catStat.setStatusName(finalStatusNameByIdMap.get(category.getStatusId() != null ? category.getStatusId().longValue() : null));
-                    List<StandardItemDO> categoryItems = itemsByCategory.getOrDefault(String.valueOf(category.getId()), Collections.emptyList());
+                    List<StandardItemDO> categoryItems = itemsByCategory.getOrDefault(category.getId(), Collections.emptyList());
                     catStat.setItemCount((long) categoryItems.size());
                     List<StandardCategoryStatisticsVO.ItemStatistics> itemStatisticsList = categoryItems.stream()
                             .map(item -> {
@@ -524,7 +612,7 @@ public class StandardCategoryServiceImpl implements StandardCategoryService {
         List<StandardItemDO> allItems = standardItemMapper.selectByStandardCategoryIds(categoryIds);
 
         // 4. 按分类 ID 分组
-        Map<String, List<StandardItemDO>> itemsByCategory = allItems.stream()
+        Map<Long, List<StandardItemDO>> itemsByCategory = allItems.stream()
                 .collect(Collectors.groupingBy(StandardItemDO::getStandardCategoryId));
 
         // 5. 转换标准项用户姓名
@@ -534,7 +622,7 @@ public class StandardCategoryServiceImpl implements StandardCategoryService {
         }
 
         // 6. 按分类 ID 分组标准项 VO
-        Map<String, List<StandardItemRespVO>> itemVOsByCategory = allItemVOs.stream()
+        Map<Long, List<StandardItemRespVO>> itemVOsByCategory = allItemVOs.stream()
                 .collect(Collectors.groupingBy(StandardItemRespVO::getStandardCategoryId));
 
         // 7. 组装导出 VO
@@ -545,7 +633,7 @@ public class StandardCategoryServiceImpl implements StandardCategoryService {
             exportVO.setSystemName(finalSystemNameMap.get(category.getSystemId()));
             exportVO.setStatusName(finalStatusNameMap.get(
                     category.getStatusId() != null ? category.getStatusId().longValue() : null));
-            List<StandardItemRespVO> catItems = itemVOsByCategory.getOrDefault(String.valueOf(category.getId()), Collections.emptyList());
+            List<StandardItemRespVO> catItems = itemVOsByCategory.getOrDefault(category.getId(), Collections.emptyList());
             // 将标准项列表格式化为字符串
             String itemDetails = catItems.stream()
                     .map(item -> String.format("%s(等级:%s, 分数:%s)",

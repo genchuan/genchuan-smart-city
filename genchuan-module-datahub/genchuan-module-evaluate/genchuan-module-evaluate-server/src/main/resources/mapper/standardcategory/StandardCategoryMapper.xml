@@ -33,8 +33,6 @@
         <!-- 关联字段 -->
         <result column="system_name" property="systemName"/>
         <result column="status_name" property="statusName"/>
-        <result column="creator_name" property="creatorName"/>
-        <result column="updater_name" property="updaterName"/>
     </resultMap>
 
     <!-- 联表分页查询 -->
@@ -59,14 +57,10 @@
             esc.create_time,
             esc.update_time,
             eis.name AS system_name,
-            ss.name AS status_name,
-            creator_user.user_name AS creator_name,
-            updater_user.user_name AS updater_name
+            ss.name AS status_name
         FROM eval_standard_category esc
         LEFT JOIN eval_index_system eis ON esc.system_id = eis.id AND eis.deleted = 0
         LEFT JOIN sys_status ss ON esc.status_id = ss.id AND ss.deleted = 0
-        LEFT JOIN sys_user creator_user ON esc.creator = creator_user.user_id AND creator_user.deleted = 0
-        LEFT JOIN sys_user updater_user ON esc.updater = updater_user.user_id AND updater_user.deleted = 0
         WHERE esc.deleted = 0
         <if test="reqVO.name != null and reqVO.name != ''">
             AND esc.name LIKE CONCAT('%', #{reqVO.name}, '%')
@@ -83,20 +77,17 @@
         <if test="reqVO.creator != null and reqVO.creator != ''">
             AND esc.creator = #{reqVO.creator}
         </if>
-        <if test="reqVO.creatorName != null and reqVO.creatorName != ''">
-            AND creator_user.user_name LIKE CONCAT('%', #{reqVO.creatorName}, '%')
-        </if>
         <if test="reqVO.updater != null and reqVO.updater != ''">
             AND esc.updater = #{reqVO.updater}
-        </if>
-        <if test="reqVO.updaterName != null and reqVO.updaterName != ''">
-            AND updater_user.user_name LIKE CONCAT('%', #{reqVO.updaterName}, '%')
         </if>
         <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
             AND esc.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
         </if>
         <if test="reqVO.updateTime != null and reqVO.updateTime.length == 2">
             AND esc.update_time BETWEEN #{reqVO.updateTime[0]} AND #{reqVO.updateTime[1]}
+        </if>
+        <if test="reqVO.changeLog != null and reqVO.changeLog != ''">
+            AND esc.change_log LIKE CONCAT('%', #{reqVO.changeLog}, '%')
         </if>
         ORDER BY esc.id DESC
     </select>

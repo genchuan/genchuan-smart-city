@@ -8,6 +8,7 @@ import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexitem.Inde
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -127,5 +128,37 @@ public interface IndexItemMapper extends BaseMapperX<IndexItemDO> {
      * 根据主键ID更新权重
      */
     int updateItemWeightById(@Param("id") Long id, @Param("weight") BigDecimal weight);
+
+    /**
+     * 按规则ID集合统计指标项数量（用于规则分类管理页面展示规则项被多少指标项引用）
+     */
+    @Select("<script>" +
+            "SELECT ii.comment_rule_id, COUNT(*) AS itemCount " +
+            "FROM eval_index_item ii " +
+            "INNER JOIN eval_comment_rule cr ON ii.comment_rule_id = cr.id AND cr.deleted = 0 " +
+            "WHERE ii.deleted = 0 AND ii.comment_rule_id IS NOT NULL " +
+            "<if test='ruleIds != null and ruleIds.size() > 0'>" +
+            "  AND ii.comment_rule_id IN " +
+            "  <foreach collection='ruleIds' item='ruleId' open='(' separator=',' close=')'>#{ruleId}</foreach>" +
+            "</if>" +
+            "GROUP BY ii.comment_rule_id" +
+            "</script>")
+    List<Map<String, Object>> selectItemCountGroupByRuleId(@Param("ruleIds") List<Long> ruleIds);
+
+    /**
+     * 按规则分类ID集合统计指标项数量（直接关联路径）
+     */
+    @Select("<script>" +
+            "SELECT ii.comment_category_id, COUNT(*) AS itemCount " +
+            "FROM eval_index_item ii " +
+            "INNER JOIN eval_rule_category rc ON ii.comment_category_id = rc.id AND rc.deleted = 0 " +
+            "WHERE ii.deleted = 0 AND ii.comment_category_id IS NOT NULL " +
+            "<if test='categoryIds != null and categoryIds.size() > 0'>" +
+            "  AND ii.comment_category_id IN " +
+            "  <foreach collection='categoryIds' item='cid' open='(' separator=',' close=')'>#{cid}</foreach>" +
+            "</if>" +
+            "GROUP BY ii.comment_category_id" +
+            "</script>")
+    List<Map<String, Object>> selectItemCountGroupByCategoryId(@Param("categoryIds") List<Long> categoryIds);
 
 }
