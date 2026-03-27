@@ -97,4 +97,12 @@ public class DisposalOrderController {
         return CommonResult.success(orderService.page(reqVO));
     }
 
+    @PostMapping("/add")
+    @Operation(summary = "窨井盖维修工单新增")
+    public CommonResult<ManholeCoverRepairOrderAddRespVO> addRepairOrder(
+            @Validated @RequestBody ManholeCoverRepairOrderAddReqVO reqVO) {
+        ManholeCoverRepairOrderAddRespVO respVO = orderService.addRepairOrder(reqVO);
+        return CommonResult.success(respVO);
+    }
+
 }
