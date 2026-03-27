@@ -1,5 +1,8 @@
 package cn.iocoder.yudao.module.facility.service.manhole.disposalorder;
 
+import com.alipay.easysdk.kernel.util.PageUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -66,6 +69,13 @@ public class DisposalOrderServiceImpl implements DisposalOrderService {
     @Override
     public PageResult<DisposalOrderDO> getOrderPage(DisposalOrderPageReqVO pageReqVO) {
         return orderMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public PageResult<ManholeCoverRepairOrderPageRespVO> page(ManholeCoverRepairOrderPageReqVO reqVO) {
+        Page<ManholeCoverRepairOrderPageRespVO> page = new Page<>(reqVO.getPageNo(), reqVO.getPageSize());
+        IPage<ManholeCoverRepairOrderPageRespVO> resultPage = orderMapper.selectRepairOrderPage(page, reqVO);
+        return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
     }
 
 }

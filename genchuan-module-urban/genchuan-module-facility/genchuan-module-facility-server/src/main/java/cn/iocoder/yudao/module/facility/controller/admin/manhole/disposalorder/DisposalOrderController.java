@@ -91,4 +91,10 @@ public class DisposalOrderController {
                         BeanUtils.toBean(list, DisposalOrderRespVO.class));
     }
 
+    @GetMapping("order/page")
+    @Operation(summary = "窨井盖维修工单分页查询")
+    public CommonResult<PageResult<ManholeCoverRepairOrderPageRespVO>> page(ManholeCoverRepairOrderPageReqVO reqVO) {
+        return CommonResult.success(orderService.page(reqVO));
+    }
+
 }

@@ -50,4 +50,12 @@ public interface DisposalOrderService {
      */
     PageResult<DisposalOrderDO> getOrderPage(DisposalOrderPageReqVO pageReqVO);
 
+    /**
+     * 获取工单列表
+     *
+     * @param reqVO 列表查询
+     * @return 工单列表
+     */
+    PageResult<ManholeCoverRepairOrderPageRespVO> page(ManholeCoverRepairOrderPageReqVO reqVO);
+
 }
