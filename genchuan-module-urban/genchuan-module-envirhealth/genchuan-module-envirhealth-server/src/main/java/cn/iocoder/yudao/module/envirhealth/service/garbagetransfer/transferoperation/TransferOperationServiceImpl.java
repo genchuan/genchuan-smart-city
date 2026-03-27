@@ -87,6 +87,7 @@ public class TransferOperationServiceImpl implements TransferOperationService {
 
     @Override
     public PageResult<TransferOperationDetailDO> getTransferOperationDetailPage(TransferOperationPageReqVO pageReqVO) {
+
         Long total = transferOperationMapper.selectCount(pageReqVO);
         if (total == 0) {
             return PageResult.empty();

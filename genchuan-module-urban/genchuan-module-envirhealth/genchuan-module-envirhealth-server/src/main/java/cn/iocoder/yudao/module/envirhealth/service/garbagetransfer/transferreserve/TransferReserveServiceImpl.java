@@ -9,6 +9,7 @@ import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.Transf
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferReserveDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.TransferReserveMapper;
 import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.garbagetransfer.TransferReserveCodeGenerator;
+import cn.iocoder.yudao.module.envirhealth.framework.util.json.StringSplitUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,7 @@ public class TransferReserveServiceImpl implements TransferReserveService {
         // 插入
         TransferReserveDO transferReserve = BeanUtils.toBean(createReqVO, TransferReserveDO.class);
 
+        transferReserve.setId(null);
         transferReserve.setReserveId(codeGenerator.generateReserveId());
 
         transferReserveMapper.insert(transferReserve);
@@ -85,6 +87,26 @@ public class TransferReserveServiceImpl implements TransferReserveService {
 
     @Override
     public PageResult<TransferReserveDetailDO> getTransferReserveDetailPage(TransferReservePageReqVO pageReqVO) {
+
+        // ====== 【工具类清洗：自动处理 [1,2,3] / [] / 空 / null】 ======
+        String idStr = pageReqVO.getIdStr();
+        if (idStr != null) {
+            // 1. 工具类解析
+            List<Long> ids = StringSplitUtils.splitToLongList(idStr);
+
+            // 2. 如果解析后是空 → 直接返回空列表
+            if (ids.isEmpty()) {
+                return PageResult.empty();
+            }
+
+            // 3. 有值 → 拼接成 1,2,3
+            String jsonStr = ids.stream()
+                    .map(String::valueOf)
+                    .reduce((a, b) -> a + "," + b)
+                    .orElse(null);
+            pageReqVO.setIdStr(jsonStr);
+        }
+
         Long total = transferReserveMapper.selectCount(pageReqVO);
         if (total == 0) {
             return PageResult.empty();
@@ -203,7 +225,6 @@ public class TransferReserveServiceImpl implements TransferReserveService {
         updateObj.setId(reserveId);
         updateObj.setSortNo(nextSortNo);
         updateObj.setReserveStatus("已排序"); // 标记为已排序
-        updateObj.setHandleBy(username);     // 处理人
         updateObj.setUpdater(username);      // 更新人
         updateObj.setAbnormalCreateTime(now); // 排序时间
 

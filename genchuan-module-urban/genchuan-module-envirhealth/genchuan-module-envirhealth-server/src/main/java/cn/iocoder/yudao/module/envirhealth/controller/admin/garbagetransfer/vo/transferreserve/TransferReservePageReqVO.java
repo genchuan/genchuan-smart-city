@@ -21,6 +21,9 @@ public class TransferReservePageReqVO extends PageParam {
     @Schema(description = "主键ID")
     private Long id;
 
+    @Schema(description = "主键ID，支持多值：1,2,3 或 [1,2,3]")
+    private String idStr;
+
     @Schema(description = "预约主键（UUID）", example = "15220")
     private String reserveId;
 
