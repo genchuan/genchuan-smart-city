@@ -176,5 +176,11 @@ public class TransferOperationServiceImpl implements TransferOperationService {
 
         // 3. 更新收运计划状态为「已暂停」
         garbageCollectionService.updatePlanStatus(planId, pauseStatusId);
+
+        //4. 更新垃圾收运表状态为「已暂停」
+        TransferOperationDO updateOperation = new TransferOperationDO();
+        updateOperation.setId(operationId);
+        updateOperation.setOperationStatus("暂停"); // 作业状态设为暂停
+        transferOperationMapper.updateById(updateOperation);
     }
 }

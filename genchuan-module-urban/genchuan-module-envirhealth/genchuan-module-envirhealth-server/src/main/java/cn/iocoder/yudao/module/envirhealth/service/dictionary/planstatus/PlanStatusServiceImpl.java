@@ -79,7 +79,7 @@ public class PlanStatusServiceImpl implements PlanStatusService {
         list = planStatusMapper.selectList(
                 new LambdaQueryWrapperX<PlanStatusDO>()
                         .eq(PlanStatusDO::getDeleted, 0)
-                        .in(PlanStatusDO::getName, "未开始", "进行中", "已完成")
+                        .in(PlanStatusDO::getName, "未开始", "进行中", "已完成","已暂停")
                         .orderByDesc(PlanStatusDO::getId)
         );
         // 将DO转换为下拉框VO（label=name，value=id）
