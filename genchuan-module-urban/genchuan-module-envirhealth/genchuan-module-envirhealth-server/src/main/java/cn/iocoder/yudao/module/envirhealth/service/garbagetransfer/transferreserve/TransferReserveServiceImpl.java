@@ -5,10 +5,13 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.*;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.GarbageTransferDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferReserveDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferReserveDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.GarbageTransferMapper;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.TransferReserveMapper;
 import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.garbagetransfer.TransferReserveCodeGenerator;
+import cn.iocoder.yudao.module.envirhealth.framework.util.json.JsonArrayUtils;
 import cn.iocoder.yudao.module.envirhealth.framework.util.json.StringSplitUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.annotation.Resource;
@@ -37,19 +40,43 @@ public class TransferReserveServiceImpl implements TransferReserveService {
     private TransferReserveMapper transferReserveMapper;
 
     @Resource
+    private GarbageTransferMapper garbageTransferMapper;
+
+    @Resource
     private TransferReserveCodeGenerator codeGenerator;
 
     @Override
+    @Transactional(rollbackFor = Exception.class) // 新增事务注解
     public Long createTransferReserve(TransferReserveSaveReqVO createReqVO) {
-        // 插入
+        // 1. 构建预约DO
         TransferReserveDO transferReserve = BeanUtils.toBean(createReqVO, TransferReserveDO.class);
-
         transferReserve.setId(null);
-        transferReserve.setReserveId(codeGenerator.generateReserveId());
+        String reserveId = codeGenerator.generateReserveId();
+        transferReserve.setReserveId(reserveId);
 
+        // 2. 插入预约记录
         transferReserveMapper.insert(transferReserve);
-        // 返回
+
+        // 3. 同步更新垃圾转运站的reserve_id（仅progress_status=车辆待进站）
+        syncAddReserveIdToTransfer(createReqVO.getTransferId(), transferReserve.getId());
+
+        // 返回主键
         return transferReserve.getId();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class) // 新增事务注解
+    public void deleteTransferReserve(Long id) {
+        // 1. 校验预约存在
+        TransferReserveDO reserve = validateTransferReserveExists(id);
+        String transferId = reserve.getTransferId();
+        Long reserveId = reserve.getId();
+
+        // 2. 先同步移除垃圾转运站的关联ID
+        syncRemoveReserveIdFromTransfer(transferId, reserveId);
+
+        // 3. 再删除预约记录
+        transferReserveMapper.deleteById(id);
     }
 
     @Override
@@ -61,18 +88,12 @@ public class TransferReserveServiceImpl implements TransferReserveService {
         transferReserveMapper.updateById(updateObj);
     }
 
-    @Override
-    public void deleteTransferReserve(Long id) {
-        // 校验存在
-        validateTransferReserveExists(id);
-        // 删除
-        transferReserveMapper.deleteById(id);
-    }
-
-    private void validateTransferReserveExists(Long id) {
-        if (transferReserveMapper.selectById(id) == null) {
+    private TransferReserveDO validateTransferReserveExists(Long id) {
+        TransferReserveDO reserve = transferReserveMapper.selectById(id);
+        if (reserve == null) {
             throw exception(TRANSFER_RESERVE_NOT_EXISTS);
         }
+        return reserve;
     }
 
     @Override
@@ -229,5 +250,38 @@ public class TransferReserveServiceImpl implements TransferReserveService {
         updateObj.setAbnormalCreateTime(now); // 排序时间
 
         transferReserveMapper.updateById(updateObj);
+    }
+
+    // ========== 私有方法：同步添加reserve_id到垃圾转运站 ==========
+    private void syncAddReserveIdToTransfer(String transferId, Long reserveId) {
+        if (transferId == null || reserveId == null) {
+            return;
+        }
+
+        // 1. 直接查询 reserve_id 字符串
+        String oldReserveIds = garbageTransferMapper.selectReserveIdByTransferId(transferId);
+        if (oldReserveIds == null) {
+            return;
+        }
+        // 2. 拼接去重
+        String newReserveIds = JsonArrayUtils.addElement(oldReserveIds, reserveId);
+        // 3. 更新
+        garbageTransferMapper.updateReserveIdsByTransferId(transferId, newReserveIds);
+    }
+
+    // ========== 私有方法：同步移除reserve_id从垃圾转运站 ==========
+    private void syncRemoveReserveIdFromTransfer(String transferId, Long reserveId) {
+        if (transferId == null || reserveId == null) {
+            return;
+        }
+        // 1. 查询转运站当前的reserve_id
+        String oldReserveIds = garbageTransferMapper.selectReserveIdByTransferId(transferId);
+        if (oldReserveIds == null) {
+            return;
+        }
+        // 2. 移除指定reserve_id
+        String newReserveIds = JsonArrayUtils.removeElement(oldReserveIds, reserveId);
+        // 3. 更新转运站的reserve_id
+        garbageTransferMapper.updateReserveIdsByTransferId(transferId, newReserveIds);
     }
 }

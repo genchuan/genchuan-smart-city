@@ -156,4 +156,18 @@ public interface GarbageTransferMapper extends BaseMapperX<GarbageTransferDO> {
             "SET pending_maintenance_count = GREATEST(pending_maintenance_count - 1, 0) " +
             "WHERE transfer_id = #{transferId} AND deleted = 0")
     int decrementPendingMaintenanceCount(@Param("transferId") String transferId);
+
+    /**
+     * 根据转运站ID更新reserve_id字段
+     */
+    @Update("UPDATE garbage_transfer SET reserve_id = #{newReserveIds}, update_time = NOW() " +
+            "WHERE transfer_id = #{transferId} AND progress_status = '车辆待进站'")
+    int updateReserveIdsByTransferId(@Param("transferId") String transferId,
+                                     @Param("newReserveIds") String newReserveIds);
+
+    /**
+     * 根据转运站ID查询 reserve_id 字符串（单条）
+     */
+    @Select("SELECT reserve_id FROM garbage_transfer WHERE transfer_id = #{transferId} AND deleted = 0 LIMIT 1")
+    String selectReserveIdByTransferId(@Param("transferId") String transferId);
 }
