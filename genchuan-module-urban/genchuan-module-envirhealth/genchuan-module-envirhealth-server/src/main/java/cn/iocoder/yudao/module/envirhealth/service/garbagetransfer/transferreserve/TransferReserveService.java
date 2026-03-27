@@ -72,4 +72,10 @@ public interface TransferReserveService {
      * 预约排号
      */
     void sortTransferReserve(TransferReserveSortReqVO reqVO);
+
+    /**
+     * 确认进站
+     * @param reqVO 确认进站请求参数
+     */
+    void confirmTransferReserve(TransferReserveConfirmReqVO reqVO);
 }

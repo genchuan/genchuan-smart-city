@@ -170,4 +170,12 @@ public interface GarbageTransferMapper extends BaseMapperX<GarbageTransferDO> {
      */
     @Select("SELECT reserve_id FROM garbage_transfer WHERE transfer_id = #{transferId} AND deleted = 0 LIMIT 1")
     String selectReserveIdByTransferId(@Param("transferId") String transferId);
+
+    /**
+     * 根据转运站ID查询记录
+     * @param transferId 转运站ID
+     * @return 垃圾转运站DO
+     */
+    @Select("SELECT * FROM garbage_transfer WHERE transfer_id = #{transferId} AND deleted = 0 LIMIT 1")
+    GarbageTransferDO selectByTransferId(@Param("transferId") String transferId);
 }

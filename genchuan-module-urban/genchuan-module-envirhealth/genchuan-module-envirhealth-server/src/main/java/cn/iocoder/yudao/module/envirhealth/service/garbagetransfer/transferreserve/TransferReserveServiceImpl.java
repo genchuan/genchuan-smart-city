@@ -284,4 +284,42 @@ public class TransferReserveServiceImpl implements TransferReserveService {
         // 3. 更新转运站的reserve_id
         garbageTransferMapper.updateReserveIdsByTransferId(transferId, newReserveIds);
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void confirmTransferReserve(TransferReserveConfirmReqVO reqVO) {
+        // 1. 校验预约存在
+        Long reserveId = reqVO.getId();
+        TransferReserveDO reserve = validateTransferReserveExists(reserveId);
+
+        // 2. 校验预约状态为「已排序」
+        if (!"已排序".equals(reserve.getReserveStatus())) {
+            throw exception("仅支持对「已排序」状态的预约执行确认进站操作");
+        }
+
+        // 3. 更新预约状态为「已进站」
+        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
+        String username = loginUser != null ? String.valueOf(loginUser.getId()) : null;
+        LocalDateTime now = LocalDateTime.now();
+
+        TransferReserveDO updateObj = new TransferReserveDO();
+        updateObj.setId(reserveId);
+        updateObj.setReserveStatus("已进站");
+        updateObj.setUpdater(username);
+        updateObj.setUpdateTime(now);
+        transferReserveMapper.updateById(updateObj);
+
+        // 4. 删除garbage_transfer中「车辆待进站」状态的reserve_id
+        String transferId = reserve.getTransferId();
+        if (transferId != null) {
+            // 4.1 查询垃圾转运站记录（校验状态为「车辆待进站」）
+            GarbageTransferDO garbageTransfer = garbageTransferMapper.selectByTransferId(transferId);
+            if (garbageTransfer != null && "车辆待进站".equals(garbageTransfer.getProgressStatus())) {
+                // 4.2 移除该reserve_id
+                String oldReserveIds = garbageTransferMapper.selectReserveIdByTransferId(transferId);
+                String newReserveIds = JsonArrayUtils.removeElement(oldReserveIds, reserveId);
+                garbageTransferMapper.updateReserveIdsByTransferId(transferId, newReserveIds);
+            }
+        }
+    }
 }

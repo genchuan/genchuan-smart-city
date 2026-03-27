@@ -134,4 +134,13 @@ public class TransferReserveController {
         transferReserveService.sortTransferReserve(reqVO);
         return success(true);
     }
+
+    @PostMapping("/confirm")
+    @Operation(summary = "确认进站")
+    @PreAuthorize("@ss.hasPermission('envirhealth:transfer-reserve:update')")
+    public CommonResult<Boolean> confirmTransferReserve(
+            @Valid @RequestBody TransferReserveConfirmReqVO reqVO) {
+        transferReserveService.confirmTransferReserve(reqVO);
+        return success(true);
+    }
 }
