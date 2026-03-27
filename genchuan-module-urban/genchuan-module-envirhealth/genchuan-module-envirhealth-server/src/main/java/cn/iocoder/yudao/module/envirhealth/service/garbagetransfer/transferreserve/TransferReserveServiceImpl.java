@@ -22,6 +22,8 @@ import org.springframework.validation.annotation.Validated;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.TRANSFER_RESERVE_NOT_EXISTS;
@@ -156,13 +158,16 @@ public class TransferReserveServiceImpl implements TransferReserveService {
         if (list.isEmpty()) {
             return;
         }
+
         // 2. 根据排序规则在内存中排序
         switch (reqVO.getSortType()) {
             case "time":
+            case "EXPECTED_TIME":
                 // 按预计进站时间从早到晚
                 list.sort(Comparator.comparing(TransferReserveDO::getExpectedTime));
                 break;
             case "type":
+            case "GARBAGE_TYPE_TIME":
                 // 先按垃圾品类，再按预计时间
                 list.sort(Comparator
                         .comparing(TransferReserveDO::getGarbageTypeId, Comparator.nullsLast(String::compareTo))
@@ -175,22 +180,33 @@ public class TransferReserveServiceImpl implements TransferReserveService {
         // 当前登录用户，作为处理人/更新人
         LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
         String username = loginUser != null ? String.valueOf(loginUser.getId()) : null;
-
-        // 3. 生成排序号，从 已排序的最大值 开始
-        Integer maxSortNo = transferReserveMapper.selectMaxSortNo();
-        int sortNo = (maxSortNo != null ? maxSortNo : 0) + 1;
-
         LocalDateTime now = LocalDateTime.now();
-        for (TransferReserveDO reserve : list) {
-            TransferReserveDO update = new TransferReserveDO();
-            update.setId(reserve.getId());
-            update.setSortNo(sortNo++);
-            update.setReserveStatus("已排序");
-            update.setHandleBy(username);    // 记录处理人
-            update.setUpdater(username);     // 审计字段
-            update.setAbnormalCreateTime(now);
 
-            transferReserveMapper.updateById(update);
+        // 3. 按转运站分组，每个转运站独立生成排序号
+        Map<String, List<TransferReserveDO>> transferGroupMap = list.stream()
+                .collect(Collectors.groupingBy(TransferReserveDO::getTransferId));
+
+        // 遍历每个转运站的预约列表
+        for (Map.Entry<String, List<TransferReserveDO>> entry : transferGroupMap.entrySet()) {
+            String transferId = entry.getKey();
+            List<TransferReserveDO> reserveList = entry.getValue();
+
+            // 查询【当前转运站】下已排序的最大序号
+            Integer maxSortNo = transferReserveMapper.selectMaxSortNoByTransferId(transferId);
+            int sortNo = (maxSortNo == null ? 1 : maxSortNo + 1);
+
+            // 给当前转运站的预约依次设置排序号
+            for (TransferReserveDO reserve : reserveList) {
+                TransferReserveDO update = new TransferReserveDO();
+                update.setId(reserve.getId());
+                update.setSortNo(sortNo++);
+                update.setReserveStatus("已排序");
+                update.setHandleBy(username);
+                update.setUpdater(username);
+                update.setAbnormalCreateTime(now);
+
+                transferReserveMapper.updateById(update);
+            }
         }
     }
 
