@@ -184,7 +184,6 @@ public class TransferReserveServiceImpl implements TransferReserveService {
                 update.setId(reserve.getId());
                 update.setSortNo(sortNo++);
                 update.setReserveStatus("已排序");
-                update.setHandleBy(username);
                 update.setUpdater(username);
                 update.setAbnormalCreateTime(now);
 
@@ -322,5 +321,33 @@ public class TransferReserveServiceImpl implements TransferReserveService {
         // 4. 直接删除 garbage_transfer 中 对应这条预约 的数据
         String transferId = reserve.getTransferId();
         syncDeleteTransferByReserveId(transferId, reserveId);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void cancelTransferReserve(Long id) {
+        // 1. 校验预约存在
+        TransferReserveDO reserve = validateTransferReserveExists(id);
+
+        // ====================== 状态校验：只有 待排序 / 已排序 可以取消 ======================
+        String status = reserve.getReserveStatus();
+        if (!"待排序".equals(status) && !"已排序".equals(status)) {
+            throw exception("仅允许对【待排序】或【已排序】状态的预约进行取消操作");
+        }
+
+        // 2. 修改预约状态为 已取消
+        TransferReserveDO updateObj = new TransferReserveDO();
+        updateObj.setId(id);
+        updateObj.setReserveStatus("已取消");
+
+        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
+        String username = loginUser != null ? String.valueOf(loginUser.getId()) : null;
+        updateObj.setUpdater(username);
+        updateObj.setUpdateTime(LocalDateTime.now());
+
+        transferReserveMapper.updateById(updateObj);
+
+        // 3. 同步删除 garbage_transfer 对应的那条数据
+        syncDeleteTransferByReserveId(reserve.getTransferId(), id);
     }
 }

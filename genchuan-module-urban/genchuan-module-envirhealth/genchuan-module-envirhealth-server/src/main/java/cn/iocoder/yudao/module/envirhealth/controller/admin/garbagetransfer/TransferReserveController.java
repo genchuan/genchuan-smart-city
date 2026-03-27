@@ -143,4 +143,12 @@ public class TransferReserveController {
         transferReserveService.confirmTransferReserve(reqVO);
         return success(true);
     }
+
+    @PostMapping("/cancel")
+    @Operation(summary = "取消预约")
+    @Parameter(name = "id", description = "预约ID", required = true)
+    public CommonResult<Boolean> cancelTransferReserve(@RequestParam("id") Long id) {
+        transferReserveService.cancelTransferReserve(id);
+        return success(true);
+    }
 }

@@ -78,4 +78,11 @@ public interface TransferReserveService {
      * @param reqVO 确认进站请求参数
      */
     void confirmTransferReserve(TransferReserveConfirmReqVO reqVO);
+
+    /**
+     * 取消预约
+     *
+     * @param id 预约ID
+     */
+    void cancelTransferReserve(Long id);
 }
