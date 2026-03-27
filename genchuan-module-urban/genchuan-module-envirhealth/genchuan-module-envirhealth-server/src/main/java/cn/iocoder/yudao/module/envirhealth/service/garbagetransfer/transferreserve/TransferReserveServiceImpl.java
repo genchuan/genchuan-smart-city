@@ -55,12 +55,16 @@ public class TransferReserveServiceImpl implements TransferReserveService {
         transferReserve.setId(null);
         String reserveId = codeGenerator.generateReserveId();
         transferReserve.setReserveId(reserveId);
+        transferReserve.setReserveStatus("待排序");
 
         // 2. 插入预约记录
         transferReserveMapper.insert(transferReserve);
 
         // 3. 同步更新垃圾转运站的reserve_id（仅progress_status=车辆待进站）
-        syncAddReserveIdToTransfer(createReqVO.getTransferId(), transferReserve.getId());
+        Long newReserveId = transferReserve.getId(); // 拿到新增预约的主键
+
+        // 根据 transferId 复制一条 garbage_transfer 记录
+        syncAddNewGarbageTransferByReserve(createReqVO.getTransferId(), newReserveId);
 
         // 返回主键
         return transferReserve.getId();
@@ -69,15 +73,13 @@ public class TransferReserveServiceImpl implements TransferReserveService {
     @Override
     @Transactional(rollbackFor = Exception.class) // 新增事务注解
     public void deleteTransferReserve(Long id) {
-        // 1. 校验预约存在
         TransferReserveDO reserve = validateTransferReserveExists(id);
         String transferId = reserve.getTransferId();
         Long reserveId = reserve.getId();
 
-        // 2. 先同步移除垃圾转运站的关联ID
-        syncRemoveReserveIdFromTransfer(transferId, reserveId);
+        // 直接删除对应预约的 garbage_transfer 记录
+        syncDeleteTransferByReserveId(transferId, reserveId);
 
-        // 3. 再删除预约记录
         transferReserveMapper.deleteById(id);
     }
 
@@ -110,25 +112,6 @@ public class TransferReserveServiceImpl implements TransferReserveService {
 
     @Override
     public PageResult<TransferReserveDetailDO> getTransferReserveDetailPage(TransferReservePageReqVO pageReqVO) {
-
-        // ====== 【工具类清洗：自动处理 [1,2,3] / [] / 空 / null】 ======
-        String idStr = pageReqVO.getIdStr();
-        if (idStr != null) {
-            // 1. 工具类解析
-            List<Long> ids = StringSplitUtils.splitToLongList(idStr);
-
-            // 2. 如果解析后是空 → 直接返回空列表
-            if (ids.isEmpty()) {
-                return PageResult.empty();
-            }
-
-            // 3. 有值 → 拼接成 1,2,3
-            String jsonStr = ids.stream()
-                    .map(String::valueOf)
-                    .reduce((a, b) -> a + "," + b)
-                    .orElse(null);
-            pageReqVO.setIdStr(jsonStr);
-        }
 
         Long total = transferReserveMapper.selectCount(pageReqVO);
         if (total == 0) {
@@ -268,37 +251,48 @@ public class TransferReserveServiceImpl implements TransferReserveService {
         transferReserveMapper.updateById(updateObj);
     }
 
-    // ========== 私有方法：同步添加reserve_id到垃圾转运站 ==========
-    private void syncAddReserveIdToTransfer(String transferId, Long reserveId) {
+    /**
+     * 新增预约时 → 新增一条 garbage_transfer 记录
+     * 1. 从现有 transferId 复制基础数据
+     * 2. reserve_id 设为当前预约ID
+     * 3. 状态改为 车辆待进站
+     */
+    private void syncAddNewGarbageTransferByReserve(String transferId, Long reserveId) {
         if (transferId == null || reserveId == null) {
             return;
         }
 
-        // 1. 直接查询 reserve_id 字符串
-        String oldReserveIds = garbageTransferMapper.selectReserveIdByTransferId(transferId);
-        if (oldReserveIds == null) {
+        // 1. 查询该转运站的任意一条原始数据（用来复制）
+        GarbageTransferDO original = garbageTransferMapper.selectOne(
+                new LambdaQueryWrapper<GarbageTransferDO>()
+                        .eq(GarbageTransferDO::getTransferId, transferId)
+                        .last("LIMIT 1")
+        );
+        if (original == null) {
             return;
         }
-        // 2. 拼接去重
-        String newReserveIds = JsonArrayUtils.addElement(oldReserveIds, reserveId);
-        // 3. 更新
-        garbageTransferMapper.updateReserveIdsByTransferId(transferId, newReserveIds);
+
+        // 2. 复制基础信息
+        GarbageTransferDO newTransfer = BeanUtils.toBean(original, GarbageTransferDO.class);
+        newTransfer.setId(null); // 清空ID，自动生成新主键
+
+        // 3. 设置关键数据
+        newTransfer.setReserveId(reserveId);        // 绑定本次预约ID
+        newTransfer.setProgressStatus("车辆待进站"); // 固定状态
+
+        // 4. 插入新记录
+        garbageTransferMapper.insert(newTransfer);
     }
 
-    // ========== 私有方法：同步移除reserve_id从垃圾转运站 ==========
-    private void syncRemoveReserveIdFromTransfer(String transferId, Long reserveId) {
+    private void syncDeleteTransferByReserveId(String transferId, Long reserveId) {
         if (transferId == null || reserveId == null) {
             return;
         }
-        // 1. 查询转运站当前的reserve_id
-        String oldReserveIds = garbageTransferMapper.selectReserveIdByTransferId(transferId);
-        if (oldReserveIds == null) {
-            return;
-        }
-        // 2. 移除指定reserve_id
-        String newReserveIds = JsonArrayUtils.removeElement(oldReserveIds, reserveId);
-        // 3. 更新转运站的reserve_id
-        garbageTransferMapper.updateReserveIdsByTransferId(transferId, newReserveIds);
+        garbageTransferMapper.delete(
+                new LambdaQueryWrapper<GarbageTransferDO>()
+                        .eq(GarbageTransferDO::getTransferId, transferId)
+                        .eq(GarbageTransferDO::getReserveId, reserveId)
+        );
     }
 
     @Override
@@ -325,17 +319,8 @@ public class TransferReserveServiceImpl implements TransferReserveService {
         updateObj.setUpdateTime(now);
         transferReserveMapper.updateById(updateObj);
 
-        // 4. 删除garbage_transfer中「车辆待进站」状态的reserve_id
+        // 4. 直接删除 garbage_transfer 中 对应这条预约 的数据
         String transferId = reserve.getTransferId();
-        if (transferId != null) {
-            // 4.1 查询垃圾转运站记录（校验状态为「车辆待进站」）
-            GarbageTransferDO garbageTransfer = garbageTransferMapper.selectByTransferId(transferId);
-            if (garbageTransfer != null && "车辆待进站".equals(garbageTransfer.getProgressStatus())) {
-                // 4.2 移除该reserve_id
-                String oldReserveIds = garbageTransferMapper.selectReserveIdByTransferId(transferId);
-                String newReserveIds = JsonArrayUtils.removeElement(oldReserveIds, reserveId);
-                garbageTransferMapper.updateReserveIdsByTransferId(transferId, newReserveIds);
-            }
-        }
+        syncDeleteTransferByReserveId(transferId, reserveId);
     }
 }

@@ -32,9 +32,6 @@
             <if test="reqVO.id != null">
                 AND tr.id = #{reqVO.id}
             </if>
-            <if test="reqVO.idStr != null and reqVO.idStr != ''">
-                AND tr.id IN (${reqVO.idStr})
-            </if>
             <if test="reqVO.reserveId != null and reqVO.reserveId != ''">
                 AND tr.reserve_id = #{reqVO.reserveId}
             </if>
