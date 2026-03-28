@@ -1,12 +1,17 @@
 package cn.iocoder.yudao.module.facility.dal.mysql.syswarn;
 
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholewarn.vo.ManholeCoverWarnDetailRespVO;
+import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholewarn.vo.ManholeCoverWarnPageReqVO;
+import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholewarn.vo.ManholeCoverWarnPageRespVO;
 import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnBatchUpdateReqVO;
 import cn.iocoder.yudao.module.facility.controller.admin.syswarn.vo.SysWarnPageReqVO;
 import cn.iocoder.yudao.module.facility.dal.dataobject.syswarn.SysWarnDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -63,4 +68,25 @@ public interface SysWarnMapper extends BaseMapperX<SysWarnDO> {
     Long countSysWarnPage(SysWarnPageReqVO pageReqVO);
 
     SysWarnDO selectByWarnNo(String warnNo);
+
+
+    /**
+     * 窨井盖预警分页查询（纯 MyBatis XML）
+     */
+    List<ManholeCoverWarnPageRespVO> selectManholeCoverWarnPage(
+            @Param("reqVO") ManholeCoverWarnPageReqVO reqVO,
+            @Param("pageParam") PageParam pageParam
+    );
+
+    /**
+     * 统计总数
+     */
+    Long selectManholeCoverWarnCount(ManholeCoverWarnPageReqVO reqVO);
+
+    /**
+     * 窨井盖预警详情查询
+     */
+    ManholeCoverWarnDetailRespVO selectManholeCoverWarnDetail(
+            @Param("warnId") String warnId
+    );
 }

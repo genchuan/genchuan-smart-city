@@ -9,13 +9,13 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.facility.controller.admin.manhole.manholeconfig.vo.*;
 import cn.iocoder.yudao.module.facility.dal.dataobject.manhole.manholeconfig.ManholeConfigDO;
 import cn.iocoder.yudao.module.facility.service.manhole.manholeconfig.ManholeConfigService;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -154,5 +154,39 @@ public class ManholeConfigController {
             @Validated ManholeCoverConfigDeleteReqVO reqVO) {
         return manholeConfigService.deleteManholeCoverConfig(configId, reqVO);
     }
+    /**
+     * 单井盖监测启动
+     */
+    @PostMapping("/start/{coverId}")
+    @Operation(summary = "单井盖监测启动")
+    public CommonResult<ManholeMonitorOperateRespVO> startMonitor(
+            // 路径参数：井盖ID
+            @PathVariable("coverId") @NotBlank(message = "井盖ID不能为空") String coverId,
+            // 请求参数：租户ID
+            @RequestParam("tenantId") @NotBlank(message = "租户ID不能为空") String tenantId,
+            // 请求参数：操作人ID
+            @RequestParam("operateUserId") @NotBlank(message = "操作人ID不能为空") String operateUserId) {
+        return manholeConfigService.startMonitor(coverId, tenantId, operateUserId);
+    }
 
+    // ==================== 监测停止接口 ====================
+    @PostMapping("/stop/{coverId}")
+    @Operation(summary = "单井盖监测停止")
+    public CommonResult<ManholeMonitorOperateRespVO> stopMonitor(
+            // 路径参数
+            @PathVariable("coverId") @NotBlank String coverId,
+            // 请求体参数（直接接收，无多余VO）
+            @RequestParam(required = false) String stopReason,
+            @RequestParam @NotBlank String tenantId,
+            @RequestParam @NotBlank String operateUserId) {
+        return manholeConfigService.stopMonitor(coverId, stopReason, tenantId, operateUserId);
+    }
+
+    // ==================== 批量井盖启停 ====================
+    @PostMapping("/batch-operate")
+    @Operation(summary = "井盖监测 批量启动/停止")
+    public CommonResult<ManholeCoverMonitorBatchOperateRespVO> batchOperateMonitor(
+            @RequestBody @Valid ManholeCoverMonitorBatchOperateReqVO reqVO) {
+        return manholeConfigService.batchOperateMonitor(reqVO);
+    }
 }

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.facility.dal.mysql.manhole.disposalorder.DisposalOrderMapper">
+
+    <select id="selectRepairOrderPage" resultType="cn.iocoder.yudao.module.facility.controller.admin.manhole.disposalorder.vo.ManholeCoverRepairOrderPageRespVO">
+        SELECT
+        do.id AS orderId,
+        CONCAT('MC-REPAIR-', DATE_FORMAT(do.create_time, '%Y%m'), '-', LPAD(do.id, 5, '0')) AS orderNo,
+        do.cover_id AS coverId,
+        mc.cover_no AS coverCode,
+        mc.cover_no AS coverName,
+        do.warn_id AS warnId,
+        CASE WHEN do.abnormal_type IN ('倾斜','振动','开合异常') THEN 1 ELSE 0 END AS orderType,
+        CASE WHEN do.abnormal_type IN ('倾斜','振动','开合异常') THEN '异常维修' ELSE '日常检修' END AS orderTypeName,
+        CONCAT('井盖异常：', do.abnormal_type) AS problemDesc,
+        CASE
+        WHEN do.process_status = '待处置' THEN 0
+        WHEN do.process_status = '现场处置' THEN 1
+        WHEN do.process_status = '处置中' THEN 2
+        WHEN do.process_status = '已完成' THEN 3
+        ELSE 0
+        END AS orderStatus,
+        do.process_status AS orderStatusName,
+        do.creator AS assignUserId,
+        su1.nickname AS assignUserName,
+        do.create_time AS assignTime,
+        do.assign_staff_id AS repairUserId,
+        su2.nickname AS repairUserName,
+        do.create_time AS repairStartTime,
+        do.complete_time AS repairEndTime,
+        do.process_status AS processRemark,
+        do.create_time AS createTime,
+        '' AS chainHash,
+        do.tenant_id AS tenantId
+        FROM disposal_order do
+        LEFT JOIN manhole_cover mc ON do.cover_id = mc.id
+        LEFT JOIN sys_user su1 ON do.creator = su1.id
+        LEFT JOIN sys_user su2 ON do.assign_staff_id = su2.id
+        WHERE do.deleted = 0
+        <if test="reqVO.orderNo != null and reqVO.orderNo != ''">
+            AND CONCAT('MC-REPAIR-', DATE_FORMAT(do.create_time, '%Y%m'), '-', LPAD(do.id, 5, '0')) = #{reqVO.orderNo}
+        </if>
+        <if test="reqVO.coverId != null and reqVO.coverId != ''">
+            AND do.cover_id = #{reqVO.coverId}
+        </if>
+        <if test="reqVO.warnId != null">
+            AND do.warn_id = #{reqVO.warnId}
+        </if>
+        <if test="reqVO.orderStatus != null">
+            <choose>
+                <when test="reqVO.orderStatus == 0">AND do.process_status = '待处置'</when>
+                <when test="reqVO.orderStatus == 1">AND do.process_status = '现场处置'</when>
+                <when test="reqVO.orderStatus == 2">AND do.process_status = '处置中'</when>
+                <when test="reqVO.orderStatus == 3">AND do.process_status = '已完成'</when>
+            </choose>
+        </if>
+        <if test="reqVO.createTimeStart != null">
+            AND do.create_time >= #{reqVO.createTimeStart}
+        </if>
+        <if test="reqVO.createTimeEnd != null">
+            AND do.create_time &lt;= #{reqVO.createTimeEnd}
+        </if>
+        <if test="reqVO.assignUserId != null and reqVO.assignUserId != ''">
+            AND do.creator = #{reqVO.assignUserId}
+        </if>
+        <if test="reqVO.repairUserId != null and reqVO.repairUserId != ''">
+            AND do.assign_staff_id = #{reqVO.repairUserId}
+        </if>
+        ORDER BY do.create_time DESC
+    </select>
+
+</mapper>

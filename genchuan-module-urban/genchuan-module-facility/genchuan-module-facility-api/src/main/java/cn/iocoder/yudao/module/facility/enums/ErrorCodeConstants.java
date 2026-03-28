@@ -13,8 +13,13 @@ public interface ErrorCodeConstants {
     ErrorCode ROAD_CONFIG_NOT_EXISTS = new ErrorCode(500, "道路监测配置不存在");
     // ========== 窨井盖==========
     ErrorCode COVER_NOT_EXISTS = new ErrorCode(500, "窨井盖不存在");
+    // ========== 状态不合法 ==========
+    ErrorCode STATUS_NOT_SUPPORT = new ErrorCode(500, "状态不支持");
     // ========== 窨井盖配置==========
     ErrorCode MANHOLE_CONFIG_NOT_EXISTS = new ErrorCode(500, "窨井盖配置不存在");
+
+    // ================= 操作类型不合法，仅支持 0-停止、1-启动
+    ErrorCode OPERATION_TYPE_NOT_SUPPORT = new ErrorCode(500, "操作类型不支持");
     // ========== 窨井盖配置已存在==========
      ErrorCode MANHOLE_CONFIG_EXISTS = new ErrorCode(500, "窨井盖配置已存在");
     // ========== 配置不存在或无权限 ========
