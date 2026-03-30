@@ -10,10 +10,10 @@ import jakarta.validation.constraints.*;
  * @author 亘川智城
  */
 @Data
-public class OutdoorAdGetReqVO {
+public class OutdoorAdOrderGetReqVO {
 
-    @Schema(description = "户外广告主键ID（UUID）", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "广告ID不能为空")
+    @Schema(description = "工单主键ID（UUID）", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "工单ID不能为空")
     private String id;
 
 }

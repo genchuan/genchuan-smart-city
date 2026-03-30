@@ -2,9 +2,13 @@ package cn.iocoder.yudao.module.appearance.dal.mysql.outdoorad;
 
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.vo.OutdoorAdGetReqVO;
+import cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.vo.OutdoorAdOrderGetReqVO;
+import cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.vo.OutdoorAdOrderPageReqVO;
 import cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.vo.OutdoorAdPageReqVO;
 import cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.OutdoorAdDO;
+import cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.OutdoorAdOrderDO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -45,4 +49,14 @@ public interface OutdoorAdMapper extends BaseMapperX<OutdoorAdDO> {
      * @return
      */
     Long getIdByOutdoorAdId( String outdoorAdId );
+
+    /**
+     * 关联查询户外广告订单列表
+     */
+    IPage<OutdoorAdOrderDO> selectOrderPageVO( Page<OutdoorAdOrderDO> page, OutdoorAdOrderPageReqVO pageReqVO );
+
+    /**
+     * 关联查询户外广告订单详情
+     */
+    OutdoorAdOrderDO selectOneOrder( @Param("reqVO") OutdoorAdOrderGetReqVO reqVO );
 }
