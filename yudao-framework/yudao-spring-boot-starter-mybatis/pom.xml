@@ -27,7 +27,6 @@
             <artifactId>yudao-spring-boot-starter-security</artifactId>
             <scope>provided</scope> <!-- 设置为 provided，只有 DefaultDBFieldHandler 使用到 -->
         </dependency>
-
         <!-- DB 相关 -->
         <dependency>
             <groupId>com.mysql</groupId>
