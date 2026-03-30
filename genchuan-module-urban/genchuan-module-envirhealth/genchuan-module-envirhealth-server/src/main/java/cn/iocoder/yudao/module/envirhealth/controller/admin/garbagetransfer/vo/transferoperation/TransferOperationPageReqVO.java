@@ -56,6 +56,9 @@ public class TransferOperationPageReqVO extends PageParam {
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
 
+    @Schema(description = "运行状态")
+    private String operationStatus;
+
     @Schema(hidden = true)
     private Integer offset;
 
