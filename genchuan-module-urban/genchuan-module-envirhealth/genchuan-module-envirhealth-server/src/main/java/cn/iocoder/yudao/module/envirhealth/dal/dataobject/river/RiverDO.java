@@ -4,6 +4,7 @@ import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -184,18 +185,22 @@ public class RiverDO extends BaseDO {
     /**
      * 通用扩展字段1
      */
+    @JsonIgnore
     private String extCommon1;
     /**
      * 通用扩展字段2
      */
+    @JsonIgnore
     private String extCommon2;
     /**
      * 通用扩展字段3
      */
+    @JsonIgnore
     private String extCommon3;
     /**
      * 通用扩展字段4
      */
+    @JsonIgnore
     private String extCommon4;
 
     private String taskTypeId;

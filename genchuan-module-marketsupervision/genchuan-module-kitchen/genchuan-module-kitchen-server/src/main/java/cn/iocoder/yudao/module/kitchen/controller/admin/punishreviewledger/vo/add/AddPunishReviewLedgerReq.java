@@ -29,8 +29,8 @@ public class AddPunishReviewLedgerReq {
      * 处罚法律依据
      * 说明：用户填写的处罚依据（法规/条例等）
      */
-    @Schema(description = "[处罚法律依据]", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotEmpty(message = "[处罚法律依据]不能为空")
+    @Schema(description = "[处罚法律依据]", requiredMode = Schema.RequiredMode.REQUIRED,hidden = true)
+//    @NotEmpty(message = "[处罚法律依据]不能为空")
     private String legalBasis;
 
     /**

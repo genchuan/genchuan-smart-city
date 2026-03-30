@@ -73,4 +73,7 @@ public class GarbageTransferRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
+    @Schema(description = "流程状态")
+    @ExcelProperty("流程状态")
+    private String progressStatus;
 }

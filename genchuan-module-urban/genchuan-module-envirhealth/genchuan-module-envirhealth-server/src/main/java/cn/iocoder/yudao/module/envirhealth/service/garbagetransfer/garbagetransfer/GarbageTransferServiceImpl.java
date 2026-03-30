@@ -1,27 +1,33 @@
 package cn.iocoder.yudao.module.envirhealth.service.garbagetransfer.garbagetransfer;
 
+import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferDashboardRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.EquipmentDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.GarbageCollectionDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.GarbageTransferDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.GarbageTransferDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.mysql.dictionary.EquipmentMapper;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.*;
 import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.garbagetransfer.GarbageTransferCodeGenerator;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import cn.iocoder.yudao.module.envirhealth.framework.util.vo.StatisticsRespVO;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.GARBAGE_TRANSFER_NOT_EXISTS;
-import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.TRANSFER_NAME_EXISTS;
+import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.*;
+import static com.alibaba.fastjson.JSON.parseArray;
 
 /**
  * 垃圾转运站 Service 实现类
@@ -46,6 +52,9 @@ public class GarbageTransferServiceImpl implements GarbageTransferService {
 
     @Resource
     private TransferMaintenanceMapper transferMaintenanceMapper;
+
+    @Resource
+    private EquipmentMapper equipmentMapper;
 
     @Resource
     private GarbageTransferCodeGenerator codeGenerator;
@@ -102,6 +111,22 @@ public class GarbageTransferServiceImpl implements GarbageTransferService {
         garbageTransferMapper.deleteById(id);
     }
 
+    @Override
+    public void deleteGarbageTransferBatch(List<Long> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return;
+        }
+
+        // 校验所有计划是否存在
+        List<GarbageTransferDO> garbageTransfers = garbageTransferMapper.selectBatchIds(ids);
+        if (garbageTransfers.size() != ids.size()) {
+            throw exception(GARBAGE_TRANSFER_NOT_EXISTS);
+        }
+
+        // 批量删除
+        garbageTransferMapper.deleteBatchIds(ids);
+    }
+
     private void validateGarbageTransferExists(Long id) {
         if (garbageTransferMapper.selectById(id) == null) {
             throw exception(GARBAGE_TRANSFER_NOT_EXISTS);
@@ -148,8 +173,57 @@ public class GarbageTransferServiceImpl implements GarbageTransferService {
         }
 
         pageReqVO.setOffset(pageReqVO.getPageNo(), pageReqVO.getPageSize());
-
         List<GarbageTransferDetailDO> list = garbageTransferMapper.selectDetailPage(pageReqVO);
+
+        // ====================== 处理 equipment_ids JSON ======================
+        // 1. 收集所有设备ID
+        Set<String> allEquipmentIds = new HashSet<>();
+        for (GarbageTransferDetailDO detail : list) {
+            String equipmentIdsJson = detail.getEquipmentIds();
+            if (equipmentIdsJson == null || equipmentIdsJson.isEmpty()) {
+                continue;
+            }
+            try {
+                List<String> ids = parseArray(equipmentIdsJson, String.class);
+                allEquipmentIds.addAll(ids);
+            } catch (Exception ignored) {
+            }
+        }
+
+        // 2. 批量查询设备名称（性能最优）
+        Map<String, String> equipmentNameMap = new HashMap<>();
+        if (!CollectionUtils.isEmpty(allEquipmentIds)) {
+            List<EquipmentDO> equipmentList = equipmentMapper.selectList(
+                    new LambdaQueryWrapperX<EquipmentDO>()
+                            .in(EquipmentDO::getSysEquipmentId, allEquipmentIds)
+                            .eq(EquipmentDO::getDeleted, 0)
+            );
+            for (EquipmentDO equipment : equipmentList) {
+                equipmentNameMap.put(equipment.getSysEquipmentId(), equipment.getName());
+            }
+        }
+
+        // 3. 拼接设备名称字符串
+        for (GarbageTransferDetailDO detail : list) {
+            String equipmentIdsJson = detail.getEquipmentIds();
+            if (equipmentIdsJson == null || equipmentIdsJson.isEmpty()) {
+                detail.setEquipmentsNameStr("");
+                continue;
+            }
+
+            try {
+                List<String> equipmentIds = parseArray(equipmentIdsJson, String.class);
+                String equipmentNames = equipmentIds.stream()
+                        .map(id -> equipmentNameMap.getOrDefault(id, ""))
+                        .filter(StrUtil::isNotBlank)
+                        .collect(Collectors.joining(","));
+                detail.setEquipmentsNameStr(equipmentNames);
+            } catch (Exception e) {
+                detail.setEquipmentsNameStr("");
+            }
+        }
+        // ============================================================================
+
         return new PageResult<>(list, total);
     }
 
@@ -219,5 +293,56 @@ public class GarbageTransferServiceImpl implements GarbageTransferService {
 
         respVO.setPlanStatusCounts(planStatusCounts);
         return respVO;
+    }
+
+    @Override
+    public List<OptionVO> getGarbageTransferOptions() {
+
+        List<GarbageTransferDO> list;
+        list = garbageTransferMapper.selectList(
+                new LambdaQueryWrapperX<GarbageTransferDO>()
+                        .eq(GarbageTransferDO::getDeleted, 0)
+                        .orderByDesc(GarbageTransferDO::getId)
+        );
+        // 将DO转换为下拉框VO（label=name，value=id）
+        return cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList(list, garbageTransferDO -> {
+            OptionVO vo = new OptionVO();
+            vo.setLabel(garbageTransferDO.getName());
+            vo.setValue(garbageTransferDO.getTransferId());
+            return vo;
+        });
+    }
+
+    @Override
+    public void validateTransferIdExists(String transferId) {
+        if (garbageTransferMapper.countByTransferId(transferId) == 0) {
+            throw exception(TRANSFER_ID_NOT_EXISTS);
+        }
+    }
+
+    @Override
+    public void incrementUnhandledAlarmCount(String transferId) {
+        garbageTransferMapper.incrementUnhandledAlarmCount(transferId);
+    }
+
+    @Override
+    public void decrementUnhandledAlarmCount(String transferId) {
+        garbageTransferMapper.decrementUnhandledAlarmCount(transferId);
+    }
+
+    @Override
+    public void incrementPendingMaintenanceCount(String transferId) {
+        // 先校验存在
+        validateTransferIdExists(transferId);
+        // 直接 +1
+        garbageTransferMapper.incrementPendingMaintenanceCount(transferId);
+    }
+
+    @Override
+    public void decrementPendingMaintenanceCount(String transferId) {
+        // 先校验存在
+        validateTransferIdExists(transferId);
+        // 直接 -1（确保不会 < 0）
+        garbageTransferMapper.decrementPendingMaintenanceCount(transferId);
     }
 }

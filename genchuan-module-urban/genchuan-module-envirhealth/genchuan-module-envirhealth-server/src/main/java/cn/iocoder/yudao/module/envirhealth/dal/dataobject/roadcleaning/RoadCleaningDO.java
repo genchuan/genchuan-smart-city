@@ -137,24 +137,22 @@ public class RoadCleaningDO extends BaseDO {
      */
     private String reviewDesc;
     /**
-     * 通用扩展字段2
+     * 是否异常：是/否
      */
-    @JsonIgnore
-    private String extCommon2;
+    private String isEffective;
+
     /**
-     * 通用扩展字段3
+     * 现场照片URL，JSON
      */
-    @JsonIgnore
-    private String extCommon3;
+    private String localePhotoUrl;
+
+    /**
+     * 核查照片URL，JSON
+     */
+    private String reviewPhotoUrl;
     /**
      * 通用扩展字段4
      */
     @JsonIgnore
     private String extCommon4;
-
-    /**
-     * 是否异常：是/否
-     */
-    private String isEffective;
-
 }

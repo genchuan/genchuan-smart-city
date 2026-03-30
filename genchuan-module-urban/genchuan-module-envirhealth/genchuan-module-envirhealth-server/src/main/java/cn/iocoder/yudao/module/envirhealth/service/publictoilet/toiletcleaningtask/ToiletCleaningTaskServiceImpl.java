@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.envirhealth.service.publictoilet.toiletcleaningt
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import cn.iocoder.yudao.module.envirhealth.framework.file.FileFeignClient;
+import cn.iocoder.yudao.module.envirhealth.framework.file.FileClient;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.toiletcleaningtask.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ToiletCleaningTaskDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ToiletCleaningTaskDetailDO;
@@ -45,7 +45,7 @@ public class ToiletCleaningTaskServiceImpl implements ToiletCleaningTaskService 
     private ToiletCleaningTaskCodeGenerator codeGenerator;
 
     @Resource
-    private FileFeignClient fileFeignClient;
+    private FileClient fileClient;
 
     @Resource
     private UrlConvert urlConvertUtil;
@@ -145,14 +145,13 @@ public class ToiletCleaningTaskServiceImpl implements ToiletCleaningTaskService 
         List<String> photoUrls = new ArrayList<>();
 
         for (MultipartFile file : files) {
-            CommonResult<String> result = fileFeignClient.uploadFile(file);
-            if (result.isError()) {
-                throw new RuntimeException("图片上传失败：" + result.getMsg());
+            try {
+                String url = fileClient.uploadFile(file);
+                String publicUrl = urlConvertUtil.convertToPublicUrl(url);
+                photoUrls.add(publicUrl);
+            } catch (Exception e) {
+                throw new RuntimeException("图片上传失败：" + e.getMessage());
             }
-
-            // 转换为公网地址
-            String publicUrl = urlConvertUtil.convertToPublicUrl(result.getData());
-            photoUrls.add(publicUrl);
         }
 
         // 获取当前任务记录

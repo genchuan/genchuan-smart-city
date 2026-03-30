@@ -18,6 +18,9 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @ToString(callSuper = true)
 public class TransferOperationPageReqVO extends PageParam {
 
+    @Schema(description = "主键ID")
+    private Long id;
+
     @Schema(description = "作业主键（UUID）", example = "21564")
     private String operationId;
 
@@ -52,6 +55,9 @@ public class TransferOperationPageReqVO extends PageParam {
     @Schema(description = "创建时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
+
+    @Schema(description = "运行状态")
+    private String operationStatus;
 
     @Schema(hidden = true)
     private Integer offset;

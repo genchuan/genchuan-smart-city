@@ -6,7 +6,9 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.punishnotice.vo.PunishNo
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishnotice.vo.add.AddPunishNoticeReq;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishnotice.vo.template.DraftPunishNoticeReq;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.punishnotice.PunishNoticeDO;
+import cn.iocoder.yudao.module.kitchen.framework.lxsutils.procom.aop.sysope.SysOpeLog;
 import cn.iocoder.yudao.module.kitchen.service.punishnotice.PunishNoticeService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -42,10 +44,20 @@ public class PunishNoticeController {
     @Resource
     private PunishNoticeService punishNoticeService;
 
+    @GetMapping("/download-pdf")
+    @Operation(summary = "下载整改通知书 PDF")
+
+    public ResponseEntity<byte[]> downloadPunishNoticePdf(@RequestParam("punishNoticeId") Long punishNoticeId) throws IOException {
+        ResponseEntity<byte[]> byteResult = punishNoticeService.downloadRectifyNoticePdf(punishNoticeId);
+
+        return byteResult;
+    }
+
     //草拟通知书
     @PostMapping("/draft")
     @Operation(summary = "草拟通知书（HTML）")
-    @PreAuthorize("@ss.hasPermission('kitchen:punish-notice:draft')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:punish-notice:draft')")
+
     public CommonResult<String> draftPunishNotice(@Valid @RequestBody DraftPunishNoticeReq reqVO) {
         // 调用 Service 生成草稿 HTML
         String draftHtml = punishNoticeService.generatePunishNoticeDraft(reqVO);
@@ -54,21 +66,24 @@ public class PunishNoticeController {
     // 新增（区分系统默认 create）
     @PostMapping("/add")
     @Operation(summary = "新增处罚通知书（精简入参，自动补全）")
-    @PreAuthorize("@ss.hasPermission('kitchen:punish-notice:create')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:punish-notice:create')")
+
     public CommonResult<Long> addPunishNotice(@Valid @RequestBody AddPunishNoticeReq reqVO) {
         Long id = punishNoticeService.addPunishNotice(reqVO);
         return success(id);
     }
     @PostMapping("/create")
     @Operation(summary = "（勿用）创建处罚通知书")
-    @PreAuthorize("@ss.hasPermission('kitchen:punish-notice:create')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:punish-notice:create')")
+
     public CommonResult<Long> createPunishNotice(@Valid @RequestBody PunishNoticeSaveReqVO createReqVO) {
         return success(punishNoticeService.createPunishNotice(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新处罚通知书")
-    @PreAuthorize("@ss.hasPermission('kitchen:punish-notice:update')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:punish-notice:update')")
+
     public CommonResult<Boolean> updatePunishNotice(@Valid @RequestBody PunishNoticeSaveReqVO updateReqVO) {
         punishNoticeService.updatePunishNotice(updateReqVO);
         return success(true);
@@ -77,7 +92,8 @@ public class PunishNoticeController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除处罚通知书")
     @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('kitchen:punish-notice:delete')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:punish-notice:delete')")
+
     public CommonResult<Boolean> deletePunishNotice(@RequestParam("id") Long id) {
         punishNoticeService.deletePunishNotice(id);
         return success(true);
@@ -86,7 +102,8 @@ public class PunishNoticeController {
     @GetMapping("/get")
     @Operation(summary = "获得处罚通知书")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('kitchen:punish-notice:query')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:punish-notice:query')")
+
     public CommonResult<PunishNoticeRespVO> getPunishNotice(@RequestParam("id") Long id) {
         PunishNoticeDO punishNotice = punishNoticeService.getPunishNotice(id);
         return success(BeanUtils.toBean(punishNotice, PunishNoticeRespVO.class));
@@ -94,7 +111,8 @@ public class PunishNoticeController {
 
     @GetMapping("/page")
     @Operation(summary = "获得处罚通知书分页")
-    @PreAuthorize("@ss.hasPermission('kitchen:punish-notice:query')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:punish-notice:query')")
+
     public CommonResult<PageResult<PunishNoticeRespVO>> getPunishNoticePage(@Valid PunishNoticePageReqVO pageReqVO) {
         PageResult<PunishNoticeDO> pageResult = punishNoticeService.getPunishNoticePage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, PunishNoticeRespVO.class));
@@ -102,8 +120,9 @@ public class PunishNoticeController {
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出处罚通知书 Excel")
-    @PreAuthorize("@ss.hasPermission('kitchen:punish-notice:export')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:punish-notice:export')")
     @ApiAccessLog(operateType = EXPORT)
+
     public void exportPunishNoticeExcel(@Valid PunishNoticePageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);

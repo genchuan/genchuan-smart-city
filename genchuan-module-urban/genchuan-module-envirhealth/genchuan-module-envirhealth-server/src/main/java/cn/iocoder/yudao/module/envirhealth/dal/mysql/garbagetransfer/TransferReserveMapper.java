@@ -132,4 +132,11 @@ public interface TransferReserveMapper extends BaseMapperX<TransferReserveDO> {
             "END " +
             "ORDER BY MIN(HOUR(expected_time))")
     List<BarItemVO> selectReserveCountByTimeSlot();
+
+    /**
+     * 根据转运站ID，查询该站最大的排号
+     */
+    @Select("SELECT MAX(sort_no) FROM garbage_transfer_reserve " +
+            "WHERE deleted = 0 AND transfer_id = #{transferId}")
+    Integer selectMaxSortNoByTransferId(@Param("transferId") String transferId);
 }

@@ -3,15 +3,17 @@ package cn.iocoder.yudao.module.envirhealth.controller.admin.file;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.module.envirhealth.api.FileApi;
 import cn.iocoder.yudao.module.envirhealth.framework.file.FileUploadService;
+import cn.iocoder.yudao.module.envirhealth.framework.file.config.MinioConfig;
+import io.minio.MinioClient;
+import io.minio.RemoveObjectArgs;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,15 +21,21 @@ import java.util.List;
 @Tag(name = "环境卫生管理 - 文件上传")
 @RestController
 @Validated
-@RequestMapping("/envirhealth/file") // 这里定义了HTTP访问路径，与ApiConstants.PREFIX通常组合使用
+@RequestMapping("/envirhealth/file")
 @Slf4j
-public class FileController implements FileApi { // 实现 FileApi 接口
+public class FileController implements FileApi {
 
     @Resource
     private FileUploadService fileUploadService;
 
+    @Resource
+    private MinioClient minioClient;
+
+    @Resource
+    private MinioConfig.MinioProperties minioProperties;
+
     @Override
-    @PostMapping("/upload-file") // 这里的路径与 FileApi 中 PREFIX 之后的部分拼接
+    @PostMapping("/upload-file")
     @Operation(summary = "上传文件")
     public CommonResult<String> uploadAvatar(@RequestPart("file") MultipartFile file) {
         try {
@@ -35,8 +43,6 @@ public class FileController implements FileApi { // 实现 FileApi 接口
             return CommonResult.success(url);
         } catch (Exception e) {
             log.error("上传文件失败", e);
-            // 这里可以更精细地捕获异常，返回不同的错误码。
-            // 例如，捕获文件类型不合法的异常，返回 CommonResult.error(400, "文件类型不支持");
             return CommonResult.error(500, "文件上传失败: " + e.getMessage());
         }
     }
@@ -48,12 +54,9 @@ public class FileController implements FileApi { // 实现 FileApi 接口
     @Operation(summary = "上传多张图片")
     public CommonResult<List<String>> uploadMultipleImages(@RequestParam("files") MultipartFile[] files) {
         try {
-            // 验证文件数组不为空
             if (files == null || files.length == 0) {
                 return CommonResult.error(400, "请选择要上传的图片");
             }
-
-            // 验证文件数量
             if (files.length > 10) {
                 return CommonResult.error(400, "最多只能上传10张图片");
             }
@@ -64,14 +67,11 @@ public class FileController implements FileApi { // 实现 FileApi 接口
             for (int i = 0; i < files.length; i++) {
                 MultipartFile file = files[i];
                 try {
-                    // 验证是否为图片
                     String contentType = file.getContentType();
                     if (contentType == null || !contentType.startsWith("image/")) {
                         errors.add(String.format("第%d个文件不是图片类型", i + 1));
                         continue;
                     }
-
-                    // 上传图片
                     String url = fileUploadService.uploadAvatar(file);
                     urls.add(url);
                 } catch (Exception e) {
@@ -80,23 +80,56 @@ public class FileController implements FileApi { // 实现 FileApi 接口
                 }
             }
 
-            // 如果有错误但部分成功
             if (!errors.isEmpty() && !urls.isEmpty()) {
                 log.warn("部分图片上传失败: {}", String.join("; ", errors));
                 return CommonResult.success(urls);
             }
-
-            // 全部失败
             if (urls.isEmpty() && !errors.isEmpty()) {
                 return CommonResult.error(500, "所有图片上传失败: " + String.join("; ", errors));
             }
-
-            // 全部成功
             return CommonResult.success(urls);
 
         } catch (Exception e) {
             log.error("上传多张图片失败", e);
             return CommonResult.error(500, "上传多张图片失败: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/delete-file")
+    @Operation(summary = "删除文件")
+    public CommonResult<Boolean> deleteFile(@RequestParam("fileUrl") String fileUrl) {
+        try {
+            // 1. 空值判断
+            if (fileUrl == null || fileUrl.isBlank()) {
+                return CommonResult.error(400, "文件URL不能为空");
+            }
+
+            String bucketName = minioProperties.getBucket();
+            String bucketPrefix = "/" + bucketName + "/";
+
+            // 2. 校验URL是否合法
+            if (!fileUrl.contains(bucketPrefix)) {
+                log.error("文件URL格式错误，无法解析：{}", fileUrl);
+                return CommonResult.error(400, "文件URL格式错误");
+            }
+
+            // 3. 解析文件名
+            String fileName = fileUrl.substring(fileUrl.indexOf(bucketPrefix) + bucketPrefix.length());
+
+            // 4. 执行删除
+            minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(fileName)
+                            .build()
+            );
+
+            log.info("编辑功能删除文件成功 → URL：{}，文件名：{}", fileUrl, fileName);
+            return CommonResult.success(true);
+
+        } catch (Exception e) {
+            log.error("编辑功能删除文件失败 URL：{}", fileUrl, e);
+            return CommonResult.error(500, "删除文件失败：" + e.getMessage());
         }
     }
 }

@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.envirhealth.service.garbagetransfer.transferoperation;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferoperation.TransferOperationCompletedDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferoperation.TransferOperationDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferoperation.TransferOperationPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferoperation.TransferOperationSaveReqVO;
@@ -67,4 +68,27 @@ public interface TransferOperationService {
      * @return 仪表盘统计数据
      */
     TransferOperationDashboardVO getDashboardStats();
+
+    /**
+     * 获取转运作业仪表盘统计数据(已完成)
+     *
+     * @return 仪表盘统计数据
+     */
+    TransferOperationCompletedDashboardVO getTransferOperationDashboard(String timeDimension);
+
+    /**
+     * 暂停转运作业
+     *
+     * @param operationId 转运作业ID
+     * @param pauseStatusId 暂停状态ID（uuid-plan-status-004）
+     */
+    void pauseTransferOperation(Long operationId, String pauseStatusId);
+
+    /**
+     * 暂停转运作业
+     *
+     * @param operationId 转运作业ID
+     * @param startStatusId 启动状态ID（uuid-plan-status-002）
+     */
+    void startTransferOperation(Long operationId, String startStatusId);
 }

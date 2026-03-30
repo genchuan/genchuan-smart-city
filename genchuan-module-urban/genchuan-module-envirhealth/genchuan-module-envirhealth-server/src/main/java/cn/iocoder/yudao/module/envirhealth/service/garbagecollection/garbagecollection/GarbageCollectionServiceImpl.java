@@ -56,6 +56,7 @@ public class GarbageCollectionServiceImpl implements GarbageCollectionService {
         // 插入
         GarbageCollectionDO garbageCollection = BeanUtils.toBean(createReqVO, GarbageCollectionDO.class);
 
+        garbageCollection.setId(null);
         garbageCollection.setPlanNo(codeGenerator.generatePlanNo());
         garbageCollection.setCollectionId(codeGenerator.generateCollectionId());
 
@@ -615,5 +616,25 @@ public class GarbageCollectionServiceImpl implements GarbageCollectionService {
             log.error("转换为JSON数组失败", e);
             return "[]";
         }
+    }
+
+    @Override
+    public void updatePlanStatus(String collectionId, String planStatusId) {
+        // 1. 校验收运计划是否存在
+        GarbageCollectionDO collection = getCollectionByCollectionId(collectionId);
+        if (collection == null) {
+            throw exception(COLLECTION_NOT_EXISTS);
+        }
+
+        // 2. 更新计划状态
+        GarbageCollectionDO updateObj = new GarbageCollectionDO();
+        updateObj.setId(collection.getId());
+        updateObj.setPlanStatusId(planStatusId);
+        garbageCollectionMapper.updateById(updateObj);
+    }
+
+    @Override
+    public GarbageCollectionDO getCollectionByCollectionId(String collectionId) {
+        return garbageCollectionMapper.selectByCollectionId(collectionId);
     }
 }

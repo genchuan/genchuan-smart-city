@@ -6,8 +6,11 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.g
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.GarbageTransferDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.GarbageTransferDetailDO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import cn.iocoder.yudao.module.envirhealth.framework.util.vo.StatisticsRespVO;
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 垃圾转运站 Service 接口
@@ -38,6 +41,12 @@ public interface GarbageTransferService {
      */
     void deleteGarbageTransfer(Long id);
 
+    /**
+     * 批量删除收运计划
+     *
+     * @param ids 编号列表
+     */
+    void deleteGarbageTransferBatch(List<Long> ids);
     /**
      * 获得垃圾转运站
      *
@@ -74,4 +83,35 @@ public interface GarbageTransferService {
      * @return 统计数据
      */
     StatisticsRespVO getGarbageTransferStatistics();
+
+    /**
+     * 获得垃圾转运站下拉框选项
+     * @return 下拉框选项列表
+     */
+    List<OptionVO> getGarbageTransferOptions();
+
+    /**
+     * 校验transferId是否存在
+     */
+    void validateTransferIdExists(String transferId);
+
+    /**
+     * 未处理预警数+1
+     */
+    void incrementUnhandledAlarmCount(String transferId);
+
+    /**
+     * 未处理预警数-1
+     */
+    void decrementUnhandledAlarmCount(String transferId);
+
+    /**
+     * 待维修数量 +1
+     */
+    void incrementPendingMaintenanceCount(String transferId);
+
+    /**
+     * 待维修数量 -1（确保不小于0）
+     */
+    void decrementPendingMaintenanceCount(String transferId);
 }

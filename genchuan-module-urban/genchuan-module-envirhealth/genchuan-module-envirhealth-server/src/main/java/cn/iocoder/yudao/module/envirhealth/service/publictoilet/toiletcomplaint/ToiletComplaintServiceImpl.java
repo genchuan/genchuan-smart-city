@@ -3,7 +3,6 @@ package cn.iocoder.yudao.module.envirhealth.service.publictoilet.toiletcomplaint
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import cn.iocoder.yudao.module.envirhealth.framework.file.FileFeignClient;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.toiletcomplaint.ToiletComplaintBatchHandleReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.toiletcomplaint.ToiletComplaintPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.toiletcomplaint.ToiletComplaintPendingRespVO;
@@ -11,6 +10,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.toil
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ToiletComplaintDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ToiletComplaintDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.publictoilet.ToiletComplaintMapper;
+import cn.iocoder.yudao.module.envirhealth.framework.file.FileClient;
 import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.publictoilet.ToiletComplaintCodeGenerator;
 import cn.iocoder.yudao.module.envirhealth.framework.util.convert.UrlConvert;
 import com.alibaba.fastjson.JSON;
@@ -43,7 +43,7 @@ public class ToiletComplaintServiceImpl implements ToiletComplaintService {
     private ToiletComplaintCodeGenerator codeGenerator;
 
     @Resource
-    private FileFeignClient fileFeignClient;
+    private FileClient fileClient;
 
     @Resource
     private UrlConvert urlConvertUtil;
@@ -130,13 +130,9 @@ public class ToiletComplaintServiceImpl implements ToiletComplaintService {
         List<String> photoUrls = new ArrayList<>();
 
         for (MultipartFile file : files) {
-            CommonResult<String> result = fileFeignClient.uploadFile(file);
-            if (result.isError()) {
-                throw new RuntimeException("图片上传失败：" + result.getMsg());
-            }
-
+            String url = fileClient.uploadFile(file);
             // 转换为公网地址
-            String publicUrl = urlConvertUtil.convertToPublicUrl(result.getData());
+            String publicUrl = urlConvertUtil.convertToPublicUrl(url);
             photoUrls.add(publicUrl);
         }
 

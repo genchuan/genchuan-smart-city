@@ -38,7 +38,7 @@ public class ComUploadController {
 
     @PostMapping("/upload-file")
     @Operation(summary = "上传资料")
-    @PreAuthorize("@ss.hasPermission('kitchen:common-upload:upload-file')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:common-upload:upload-file')")
     public CommonResult<UploadFileRespVO> uploadEvidenceFile(
             @RequestPart("file") MultipartFile file,
             @Valid @ModelAttribute UploadFileReqVO reqVO) {

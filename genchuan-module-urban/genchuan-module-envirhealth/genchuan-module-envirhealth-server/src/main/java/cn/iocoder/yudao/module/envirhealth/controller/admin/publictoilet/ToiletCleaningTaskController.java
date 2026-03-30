@@ -121,7 +121,7 @@ public class ToiletCleaningTaskController {
         return success(pageResult);
     }
 
-    @PostMapping("/upload-photos")
+    /*@PostMapping("/upload-photos")
     @Operation(summary = "上传多张图片")
     @PreAuthorize("@ss.hasPermission('envirhealth:toilet-cleaning-task:update')")
     public CommonResult<List<String>> uploadPhotos(
@@ -147,7 +147,7 @@ public class ToiletCleaningTaskController {
             @RequestParam("photoUrl") String photoUrl) {
         toiletCleaningTaskService.deletePhoto(id, photoUrl);
         return success(true);
-    }
+    }*/
 
     @PutMapping("/batch-adjust")
     @Operation(summary = "批量调整公厕保洁任务")

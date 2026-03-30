@@ -39,14 +39,14 @@ public class IllegalLevelDictController {
 
     @PostMapping("/create")
     @Operation(summary = "创建违规等级字典")
-    @PreAuthorize("@ss.hasPermission('kitchen:illegal-level-dict:create')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:illegal-level-dict:create')")
     public CommonResult<Long> createIllegalLevelDict(@Valid @RequestBody IllegalLevelDictSaveReqVO createReqVO) {
         return success(illegalLevelDictService.createIllegalLevelDict(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新违规等级字典")
-    @PreAuthorize("@ss.hasPermission('kitchen:illegal-level-dict:update')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:illegal-level-dict:update')")
     public CommonResult<Boolean> updateIllegalLevelDict(@Valid @RequestBody IllegalLevelDictSaveReqVO updateReqVO) {
         illegalLevelDictService.updateIllegalLevelDict(updateReqVO);
         return success(true);
@@ -55,7 +55,7 @@ public class IllegalLevelDictController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除违规等级字典")
     @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('kitchen:illegal-level-dict:delete')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:illegal-level-dict:delete')")
     public CommonResult<Boolean> deleteIllegalLevelDict(@RequestParam("id") Long id) {
         illegalLevelDictService.deleteIllegalLevelDict(id);
         return success(true);
@@ -64,7 +64,7 @@ public class IllegalLevelDictController {
     @GetMapping("/get")
     @Operation(summary = "获得违规等级字典")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('kitchen:illegal-level-dict:query')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:illegal-level-dict:query')")
     public CommonResult<IllegalLevelDictRespVO> getIllegalLevelDict(@RequestParam("id") Long id) {
         IllegalLevelDictDO illegalLevelDict = illegalLevelDictService.getIllegalLevelDict(id);
         return success(BeanUtils.toBean(illegalLevelDict, IllegalLevelDictRespVO.class));
@@ -72,7 +72,7 @@ public class IllegalLevelDictController {
 
     @GetMapping("/page")
     @Operation(summary = "获得违规等级字典分页")
-    @PreAuthorize("@ss.hasPermission('kitchen:illegal-level-dict:query')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:illegal-level-dict:query')")
     public CommonResult<PageResult<IllegalLevelDictRespVO>> getIllegalLevelDictPage(@Valid IllegalLevelDictPageReqVO pageReqVO) {
         PageResult<IllegalLevelDictDO> pageResult = illegalLevelDictService.getIllegalLevelDictPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, IllegalLevelDictRespVO.class));
@@ -80,7 +80,7 @@ public class IllegalLevelDictController {
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出违规等级字典 Excel")
-    @PreAuthorize("@ss.hasPermission('kitchen:illegal-level-dict:export')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:illegal-level-dict:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportIllegalLevelDictExcel(@Valid IllegalLevelDictPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {

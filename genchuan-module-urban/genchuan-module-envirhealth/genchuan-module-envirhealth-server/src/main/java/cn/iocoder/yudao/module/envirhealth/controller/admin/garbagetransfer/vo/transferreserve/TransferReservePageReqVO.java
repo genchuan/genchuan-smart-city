@@ -18,6 +18,9 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @ToString(callSuper = true)
 public class TransferReservePageReqVO extends PageParam {
 
+    @Schema(description = "主键ID")
+    private Long id;
+
     @Schema(description = "预约主键（UUID）", example = "15220")
     private String reserveId;
 
@@ -53,6 +56,9 @@ public class TransferReservePageReqVO extends PageParam {
     @Schema(description = "创建时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
+
+    @Schema(description = "转运站编号")
+    private String transferId;
 
     @Schema(hidden = true)
     private Integer offset;

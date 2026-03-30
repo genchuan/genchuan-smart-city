@@ -17,15 +17,10 @@ public interface PersonStatusMapper extends BaseMapperX<PersonStatusDO> {
 
     default PageResult<PersonStatusDO> selectPage(PersonStatusPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<PersonStatusDO>()
-                .eqIfPresent(PersonStatusDO::getSysPersonStatusId, reqVO.getSysPersonStatusId())
+                .eqIfPresent(PersonStatusDO::getPersonStatusId, reqVO.getPersonStatusId())
                 .likeIfPresent(PersonStatusDO::getName, reqVO.getName())
-                .eqIfPresent(PersonStatusDO::getCode, reqVO.getCode())
-                .eqIfPresent(PersonStatusDO::getStatus, reqVO.getStatus())
+                .eqIfPresent(PersonStatusDO::getStatusCode, reqVO.getStatusCode())
                 .eqIfPresent(PersonStatusDO::getSort, reqVO.getSort())
-                .eqIfPresent(PersonStatusDO::getExtCommon1, reqVO.getExtCommon1())
-                .eqIfPresent(PersonStatusDO::getExtCommon2, reqVO.getExtCommon2())
-                .eqIfPresent(PersonStatusDO::getExtCommon3, reqVO.getExtCommon3())
-                .eqIfPresent(PersonStatusDO::getExtCommon4, reqVO.getExtCommon4())
                 .betweenIfPresent(PersonStatusDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(PersonStatusDO::getId));
     }

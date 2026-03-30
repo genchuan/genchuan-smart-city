@@ -92,12 +92,12 @@ public class ManholeCoverController {
                         BeanUtils.toBean(list, ManholeCoverRespVO.class));
     }
 
-    @GetMapping("/detail")
-    @Operation(summary = "获得窨井盖设施详情（包含近 24 小时统计、故障记录）")
-    @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('manhole:cover:query')")
-    public CommonResult<ManholeCoverDetailRespVO> getCoverDetail(@RequestParam("id") Long id) {
-        return success(coverService.getCoverDetail(id));
-    }
+//    @GetMapping("/detail")
+//    @Operation(summary = "获得窨井盖设施详情（包含近 24 小时统计、故障记录）")
+//    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+//    @PreAuthorize("@ss.hasPermission('manhole:cover:query')")
+//    public CommonResult<ManholeCoverDetailRespVO> getCoverDetail(@RequestParam("id") Long id) {
+//        return success(coverService.getCoverDetail(id));
+//    }
 
 }

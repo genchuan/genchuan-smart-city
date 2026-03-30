@@ -18,6 +18,9 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @ToString(callSuper = true)
 public class TransferMaintenancePageReqVO extends PageParam {
 
+    @Schema(description = "主键ID")
+    private Long id;
+
     @Schema(description = "维护主键（UUID）", example = "560")
     private String maintenanceId;
 

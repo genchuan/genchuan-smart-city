@@ -187,4 +187,21 @@ public interface GarbageCollectionService {
      * @param reqVO 批量更新请求
      */
     void batchUpdateGarbageCollection(GarbageCollectionBatchUpdateReqVO reqVO);
+
+    /**
+     * 根据收运计划ID更新计划状态
+     *
+     * @param collectionId 收运计划ID（对应garbage_collection.collection_id）
+     * @param planStatusId 目标状态ID（对应sys_plan_status.id）
+     */
+    void updatePlanStatus(String collectionId, String planStatusId);
+
+    /**
+     * 根据collectionId查询收运计划
+     *
+     * @param collectionId 收运计划ID
+     * @return 收运计划DO
+     */
+    GarbageCollectionDO getCollectionByCollectionId(String collectionId);
+
 }
