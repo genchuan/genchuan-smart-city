@@ -91,4 +91,11 @@ public interface TransferOperationService {
      * @param startStatusId 启动状态ID（uuid-plan-status-002）
      */
     void startTransferOperation(Long operationId, String startStatusId);
+
+    /**
+     * 归档转运作业
+     *
+     * @param operationId 转运作业ID
+     */
+    void completeTransferOperation(Long operationId);
 }
