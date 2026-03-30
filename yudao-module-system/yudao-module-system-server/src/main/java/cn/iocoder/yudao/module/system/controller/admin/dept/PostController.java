@@ -64,6 +64,14 @@ public class PostController {
         return success(true);
     }
 
+    @DeleteMapping("delete-list")
+    @Operation(summary = "批量删除岗位")
+    @PreAuthorize("@ss.hasPermission('system:post:delete')")
+    public CommonResult<Boolean> deletePostList(@RequestParam("ids") List<Long> ids) {
+        postService.deletePostList(ids);
+        return success(true);
+    }
+
     @GetMapping(value = "/get")
     @Operation(summary = "获得岗位信息")
     @Parameter(name = "id", description = "岗位编号", required = true, example = "1024")
@@ -91,7 +99,7 @@ public class PostController {
         return success(BeanUtils.toBean(pageResult, PostRespVO.class));
     }
 
-    @GetMapping("/export")
+    @GetMapping("/export-excel")
     @Operation(summary = "岗位管理")
     @PreAuthorize("@ss.hasPermission('system:post:export')")
     @ApiAccessLog(operateType = EXPORT)

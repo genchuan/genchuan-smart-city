@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.publictoilet.ToiletCleaningTaskMapper">
+
+    <!-- 保洁任务详情结果映射 -->
+    <resultMap id="ToiletCleaningTaskDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ToiletCleaningTaskDetailDO">
+        <!-- 基础任务字段 -->
+        <id column="id" property="id"/>
+        <result column="toilet_id" property="toiletId"/>
+        <result column="task_no" property="taskNo"/>
+        <result column="cleaning_frequency" property="cleaningFrequency"/>
+        <result column="cleaning_time" property="cleaningTime"/>
+        <result column="cleaning_content" property="cleaningContent"/>
+        <result column="cleaning_standard" property="cleaningStandard"/>
+        <result column="cleaner_ids" property="cleanerIds"/>
+        <result column="plan_status_id" property="planStatusId"/>
+        <result column="completion_rate" property="completionRate"/>
+        <result column="is_abnormal" property="isAbnormal"/>
+        <result column="abnormal_desc" property="abnormalDesc"/>
+        <result column="proof_urls" property="proofUrls"/>
+        <result column="complete_time" property="completeTime"/>
+        <result column="handle_result" property="handleResult"/>
+        <result column="handle_duration" property="handleDuration"/>
+        <result column="satisfaction" property="satisfaction"/>
+        <result column="stat_period" property="statPeriod"/>
+        <result column="review_desc" property="reviewDesc"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+
+        <!-- 关联查询的扩展字段 -->
+        <result column="toilet_name" property="toiletName"/>
+        <result column="plan_status_name" property="planStatusName"/>
+        <result column="cleaner_name_str" property="cleanerNameStr"/>
+        <result column="area_name" property="areaName"/>
+    </resultMap>
+
+    <!-- 保洁任务详情分页查询 -->
+    <select id="selectDetailPage" resultMap="ToiletCleaningTaskDetailResultMap">
+        SELECT
+        t.*,
+        pt.name AS toilet_name,
+        sps.name AS plan_status_name,
+        sa.area_name AS area_name,
+        IFNULL(GROUP_CONCAT(DISTINCT su.user_name), '') AS cleaners_name_str
+        FROM public_toilet_cleaning_task t
+        LEFT JOIN public_toilet pt ON t.toilet_id = pt.toilet_id AND pt.deleted = 0
+        LEFT JOIN sys_area sa ON pt.area_code = sa.area_code AND sa.deleted = 0
+        LEFT JOIN sys_plan_status sps ON t.plan_status_id = sps.sys_plan_status_id AND sps.deleted = 0
+        LEFT JOIN sys_user su ON FIND_IN_SET(
+        su.user_id,
+        REPLACE(REPLACE(REPLACE(REPLACE(t.cleaner_ids, '[', ''), ']', ''), '"', ''), ' ', '')
+        ) AND su.deleted = 0
+        <where>
+            t.deleted = 0
+
+            <!-- 1. 基础字段过滤 -->
+            <if test="reqVO.toiletId != null and reqVO.toiletId != ''">
+                AND t.toilet_id = #{reqVO.toiletId}
+            </if>
+            <if test="reqVO.taskNo != null and reqVO.taskNo != ''">
+                AND t.task_no LIKE CONCAT('%', #{reqVO.taskNo}, '%')
+            </if>
+            <if test="reqVO.cleaningFrequency != null and reqVO.cleaningFrequency != ''">
+                AND t.cleaning_frequency = #{reqVO.cleaningFrequency}
+            </if>
+
+            <!-- 保洁时段：时间范围过滤（匹配VO的LocalDateTime[]类型） -->
+            <if test="reqVO.cleaningTime != null and reqVO.cleaningTime.length == 2">
+                AND t.cleaning_time BETWEEN #{reqVO.cleaningTime[0]} AND #{reqVO.cleaningTime[1]}
+            </if>
+
+            <if test="reqVO.cleaningContent != null and reqVO.cleaningContent != ''">
+                AND t.cleaning_content LIKE CONCAT('%', #{reqVO.cleaningContent}, '%')
+            </if>
+            <if test="reqVO.cleaningStandard != null and reqVO.cleaningStandard != ''">
+                AND t.cleaning_standard LIKE CONCAT('%', #{reqVO.cleaningStandard}, '%')
+            </if>
+
+            <!-- 2. 保洁人员IDs过滤（JSON数组） -->
+            <if test="reqVO.cleanerIds != null and reqVO.cleanerIds != ''">
+                AND FIND_IN_SET(
+                #{reqVO.cleanerIds},
+                REPLACE(REPLACE(REPLACE(REPLACE(t.cleaner_ids, '[', ''), ']', ''), '"', ''), ' ', '')
+                ) > 0
+            </if>
+
+            <!-- 3. 计划状态ID：数组多值匹配 -->
+            <if test="reqVO.planStatusId != null and reqVO.planStatusId.length > 0">
+                AND t.plan_status_id IN
+                <foreach collection="reqVO.planStatusId" item="status" open="(" separator="," close=")">
+                    #{status}
+                </foreach>
+            </if>
+
+            <!-- 4. 完成率过滤（BigDecimal精确匹配/范围） -->
+            <if test="reqVO.completionRate != null">
+                AND t.completion_rate = #{reqVO.completionRate}
+            </if>
+
+            <!-- 5. 是否异常过滤 -->
+            <if test="reqVO.isAbnormal != null">
+                AND t.is_abnormal = #{reqVO.isAbnormal}
+            </if>
+
+            <!-- 6. 异常描述过滤 -->
+            <if test="reqVO.abnormalDesc != null and reqVO.abnormalDesc != ''">
+                AND t.abnormal_desc LIKE CONCAT('%', #{reqVO.abnormalDesc}, '%')
+            </if>
+
+            <!-- 7. 佐证材料URL过滤（JSON数组） -->
+            <if test="reqVO.proofUrls != null and reqVO.proofUrls != ''">
+                AND FIND_IN_SET(
+                #{reqVO.proofUrls},
+                REPLACE(REPLACE(REPLACE(REPLACE(t.proof_urls, '[', ''), ']', ''), '"', ''), ' ', '')
+                ) > 0
+            </if>
+
+            <!-- 8. 完成时间范围过滤 -->
+            <if test="reqVO.completeTime != null and reqVO.completeTime.length == 2">
+                AND t.complete_time BETWEEN #{reqVO.completeTime[0]} AND #{reqVO.completeTime[1]}
+            </if>
+
+            <!-- 9. 处置结果过滤 -->
+            <if test="reqVO.handleResult != null and reqVO.handleResult != ''">
+                AND t.handle_result LIKE CONCAT('%', #{reqVO.handleResult}, '%')
+            </if>
+
+            <!-- 10. 任务耗时：数组范围过滤（匹配VO的Integer[]类型） -->
+            <if test="reqVO.handleDuration != null and reqVO.handleDuration.length == 2">
+                AND t.handle_duration BETWEEN #{reqVO.handleDuration[0]} AND #{reqVO.handleDuration[1]}
+            </if>
+
+            <!-- 11. 满意度过滤 -->
+            <if test="reqVO.satisfaction != null and reqVO.satisfaction != ''">
+                AND t.satisfaction LIKE CONCAT('%', #{reqVO.satisfaction}, '%')
+            </if>
+
+            <!-- 12. 统计周期过滤 -->
+            <if test="reqVO.statPeriod != null and reqVO.statPeriod != ''">
+                AND t.stat_period = #{reqVO.statPeriod}
+            </if>
+
+            <!-- 13. 复盘意见过滤 -->
+            <if test="reqVO.reviewDesc != null and reqVO.reviewDesc != ''">
+                AND t.review_desc LIKE CONCAT('%', #{reqVO.reviewDesc}, '%')
+            </if>
+
+            <!-- 14. 创建时间范围过滤 -->
+            <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+                AND t.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+        </where>
+        GROUP BY
+        t.id,
+        pt.toilet_id, pt.name, sa.area_name,
+        sps.sys_plan_status_id, sps.name
+        ORDER BY t.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.limit}
+    </select>
+
+    <!-- 查询总记录数 -->
+    <select id="selectCount" resultType="Long">
+        SELECT COUNT(DISTINCT t.id)
+        FROM public_toilet_cleaning_task t
+        LEFT JOIN public_toilet pt ON t.toilet_id = pt.toilet_id AND pt.deleted = 0
+        LEFT JOIN sys_area sa ON pt.area_code = sa.area_code AND sa.deleted = 0
+        LEFT JOIN sys_plan_status sps ON t.plan_status_id = sps.sys_plan_status_id AND sps.deleted = 0
+        LEFT JOIN sys_user su ON FIND_IN_SET(
+        su.user_id,
+        REPLACE(REPLACE(REPLACE(REPLACE(t.cleaner_ids, '[', ''), ']', ''), '"', ''), ' ', '')
+        ) AND su.deleted = 0
+        <where>
+            t.deleted = 0
+
+            <!-- 与分页查询完全一致的过滤条件 -->
+            <if test="reqVO.toiletId != null and reqVO.toiletId != ''">
+                AND t.toilet_id = #{reqVO.toiletId}
+            </if>
+            <if test="reqVO.taskNo != null and reqVO.taskNo != ''">
+                AND t.task_no LIKE CONCAT('%', #{reqVO.taskNo}, '%')
+            </if>
+            <if test="reqVO.cleaningFrequency != null and reqVO.cleaningFrequency != ''">
+                AND t.cleaning_frequency = #{reqVO.cleaningFrequency}
+            </if>
+            <if test="reqVO.cleaningTime != null and reqVO.cleaningTime.length == 2">
+                AND t.cleaning_time BETWEEN #{reqVO.cleaningTime[0]} AND #{reqVO.cleaningTime[1]}
+            </if>
+            <if test="reqVO.cleaningContent != null and reqVO.cleaningContent != ''">
+                AND t.cleaning_content LIKE CONCAT('%', #{reqVO.cleaningContent}, '%')
+            </if>
+            <if test="reqVO.cleaningStandard != null and reqVO.cleaningStandard != ''">
+                AND t.cleaning_standard LIKE CONCAT('%', #{reqVO.cleaningStandard}, '%')
+            </if>
+            <if test="reqVO.cleanerIds != null and reqVO.cleanerIds != ''">
+                AND FIND_IN_SET(
+                #{reqVO.cleanerIds},
+                REPLACE(REPLACE(REPLACE(REPLACE(t.cleaner_ids, '[', ''), ']', ''), '"', ''), ' ', '')
+                ) > 0
+            </if>
+            <if test="reqVO.planStatusId != null and reqVO.planStatusId.length > 0">
+                AND t.plan_status_id IN
+                <foreach collection="reqVO.planStatusId" item="status" open="(" separator="," close=")">
+                    #{status}
+                </foreach>
+            </if>
+            <if test="reqVO.completionRate != null">
+                AND t.completion_rate = #{reqVO.completionRate}
+            </if>
+            <if test="reqVO.isAbnormal != null">
+                AND t.is_abnormal = #{reqVO.isAbnormal}
+            </if>
+            <if test="reqVO.abnormalDesc != null and reqVO.abnormalDesc != ''">
+                AND t.abnormal_desc LIKE CONCAT('%', #{reqVO.abnormalDesc}, '%')
+            </if>
+            <if test="reqVO.proofUrls != null and reqVO.proofUrls != ''">
+                AND FIND_IN_SET(
+                #{reqVO.proofUrls},
+                REPLACE(REPLACE(REPLACE(REPLACE(t.proof_urls, '[', ''), ']', ''), '"', ''), ' ', '')
+                ) > 0
+            </if>
+            <if test="reqVO.completeTime != null and reqVO.completeTime.length == 2">
+                AND t.complete_time BETWEEN #{reqVO.completeTime[0]} AND #{reqVO.completeTime[1]}
+            </if>
+            <if test="reqVO.handleResult != null and reqVO.handleResult != ''">
+                AND t.handle_result LIKE CONCAT('%', #{reqVO.handleResult}, '%')
+            </if>
+            <if test="reqVO.handleDuration != null and reqVO.handleDuration.length == 2">
+                AND t.handle_duration BETWEEN #{reqVO.handleDuration[0]} AND #{reqVO.handleDuration[1]}
+            </if>
+            <if test="reqVO.satisfaction != null and reqVO.satisfaction != ''">
+                AND t.satisfaction LIKE CONCAT('%', #{reqVO.satisfaction}, '%')
+            </if>
+            <if test="reqVO.statPeriod != null and reqVO.statPeriod != ''">
+                AND t.stat_period = #{reqVO.statPeriod}
+            </if>
+            <if test="reqVO.reviewDesc != null and reqVO.reviewDesc != ''">
+                AND t.review_desc LIKE CONCAT('%', #{reqVO.reviewDesc}, '%')
+            </if>
+            <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+                AND t.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+        </where>
+    </select>
+
+</mapper>

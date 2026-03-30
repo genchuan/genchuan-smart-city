@@ -1,49 +1,44 @@
 stages:
   - BuildAndPush
-  
+
 variables:
-  DOCKER_REGISTRY: "" #私有的或者公有的仓库地址
-  DOCKER_USERNAME: "" #账号
-  DOCKER_PASSWORD: "" #密码
-  MAVEN_IMAGE: "maven:3.9.6-alpine-jdk17-docker"
-  DOCKER_BUILDKIT: "1"  # 启用 Docker BuildKit 提高构建速度
-  POD_TAG: "$CI_COMMIT_BRANCH"  # Podman 镜像标签
+  DOCKER_REGISTRY: "192.168.8.14"
+  DOCKER_BUILDKIT: "0"  # 关闭 BuildKit 避免路径解析问题（全局生效）
+  POD_TAG: "$CI_COMMIT_BRANCH"
+  IMAGE_NAMESPACE: "genchuan"
 
-BuildAndPush:
+Build:
   stage: BuildAndPush
-  image: $MAVEN_IMAGE
-  variables:
-    DOCKER_BUILDKIT: "0"
-#  rules: # 新增只有master分支才进行构建
-#    - if: $CI_COMMIT_BRANCH == "master"
-#      when: always
-#    - when: never
   script:
+    - echo "===== 开始Maven打包 ====="
     - mvn clean package -Dmaven.test.skip=true
-    - echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
     - |
-      # 遍历所有模块并构建 Docker 镜像
-      for module in "yudao-gateway" "gc-module-datacenter-server" "gc-module-industry-server" "yudao-module-bpm-server" "yudao-module-infra-server" "yudao-module-system-server"; do
-        case $module in
-          "yudao-gateway") jar_path="yudao-gateway" ;;
-          "gc-module-datacenter-server") jar_path="gc-module-datacenter/gc-module-datacenter-server" ;;
-          "gc-module-industry-server") jar_path="gc-module-industry/gc-module-industry-server" ;;
-          "yudao-module-bpm-server") jar_path="yudao-module-bpm/yudao-module-bpm-server" ;;
-          "yudao-module-infra-server") jar_path="yudao-module-infra/yudao-module-infra-server" ;;
-          "yudao-module-system-server") jar_path="yudao-module-system/yudao-module-system-server" ;;
-        esac
-        
-        docker build \
-          --build-arg MODULE_NAME="$module" \
-          --build-arg JAR_PATH="$jar_path" \
-          -t "$DOCKER_REGISTRY/sccsgl/$module:$POD_TAG" .
-        # 推送镜像到仓库
-        docker push "$DOCKER_REGISTRY/sccsgl/$module:$POD_TAG"
-      done
+      declare -A MODULE_JAR_MAP=(
+        ["yudao-gateway"]="yudao-gateway"
+        ["yudao-module-system-server"]="yudao-module-system/yudao-module-system-server"
+        ["yudao-module-infra-server"]="yudao-module-infra/yudao-module-infra-server"
+        ["yudao-module-bpm-server"]="yudao-module-bpm/yudao-module-bpm-server"
+        ["genchuan-module-envirhealth-server"]="genchuan-module-urban/genchuan-module-envirhealth/genchuan-module-envirhealth-server"
+        ["genchuan-module-facility-server"]="genchuan-module-urban/genchuan-module-facility/genchuan-module-facility-server"
+        ["genchuan-module-data-server"]="genchuan-module-datahub/genchuan-module-data/genchuan-module-data-server"
+        ["genchuan-module-evaluate-server"]="genchuan-module-datahub/genchuan-module-evaluate/genchuan-module-evaluate-server"
+        ["genchuan-module-park-server"]="genchuan-module-park/genchuan-module-park-server"
+        ["genchuan-module-kitchen-server"]="genchuan-module-marketsupervision/genchuan-module-kitchen/genchuan-module-kitchen-server"
+      )
+      echo "===== 开始构建所有镜像 ====="
+      for module in "${!MODULE_JAR_MAP[@]}"; do
+        jarPath=${MODULE_JAR_MAP[$module]}
+        imageFullName="${DOCKER_REGISTRY}/${IMAGE_NAMESPACE}/${module}:${POD_TAG}"
 
+        docker build --build-arg MODULE_NAME="$module" --build-arg JAR_PATH="$jarPath" -t "${imageFullName}" .
+        # 推送镜像
+        docker push "${imageFullName}"
+      done
+    - echo "===== 所有镜像推送完成 ====="
   retry:
     max: 2
     when:
       - runner_system_failure
       - stuck_or_timeout_failure
       - unknown_failure
+

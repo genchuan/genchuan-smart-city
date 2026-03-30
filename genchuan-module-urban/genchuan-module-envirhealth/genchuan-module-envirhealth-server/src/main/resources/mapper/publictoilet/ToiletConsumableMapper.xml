@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.publictoilet.ToiletConsumableMapper">
+
+    <resultMap id="ToiletConsumableDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ToiletConsumableDetailDO"
+               extends="cn.iocoder.yudao.module.envirhealth.dal.mysql.publictoilet.ToiletConsumableMapper.BaseResultMap">
+        <!-- 原有关联字段 -->
+        <result column="consumable_name" property="consumableName"/>
+        <result column="manager_name" property="managerName"/>
+        <result column="toilet_name" property="toiletName"/>
+        <result column="area_name" property="areaName"/>
+    </resultMap>
+
+    <!-- 基础结果映射 -->
+    <resultMap id="BaseResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ToiletConsumableDO">
+        <id column="id" property="id"/>
+        <result column="toilet_id" property="toiletId"/>
+        <result column="consumable_id" property="consumableId"/>
+        <result column="consumable_stock" property="consumableStock"/>
+        <result column="consumable_threshold" property="consumableThreshold"/>
+        <result column="consumable_warning" property="consumableWarning"/>
+        <result column="last_supply_time" property="lastSupplyTime"/>
+        <result column="supply_cycle" property="supplyCycle"/>
+        <result column="consumable_gap" property="consumableGap"/>
+        <result column="manager_id" property="managerId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 分页查询（带关联字段：新增区域名称关联） -->
+    <select id="selectDetailPage" resultMap="ToiletConsumableDetailResultMap">
+        SELECT
+        tc.*,
+        sc.consumable_name AS consumable_name,
+        su.user_name AS manager_name,
+        pt.name AS toilet_name,
+        sa.area_name AS area_name
+        FROM public_toilet_consumable tc
+        -- 1. 关联耗材表（核心表）
+        LEFT JOIN sys_consumable sc ON tc.consumable_id = sc.consumable_id AND sc.deleted = 0
+        -- 2. 关联公厕表（耗材表关联公厕表，获取 areacode）
+        LEFT JOIN public_toilet pt ON tc.toilet_id = pt.toilet_id AND pt.deleted = 0
+        -- 3. 新增：关联区域编码表（通过公厕表的 areacode 获取区域名称）
+        LEFT JOIN sys_area sa ON pt.area_code = sa.area_code AND sa.deleted = 0
+        -- 4. 关联负责人表
+        LEFT JOIN sys_user su ON tc.manager_id = su.user_id AND su.deleted = 0
+        WHERE tc.deleted = 0
+
+        <!-- 动态查询条件 -->
+        <if test="reqVO.toiletId != null and reqVO.toiletId != ''">
+            AND tc.toilet_id = #{reqVO.toiletId}
+        </if>
+        <if test="reqVO.consumableId != null and reqVO.consumableId != ''">
+            AND tc.consumable_id = #{reqVO.consumableId}
+        </if>
+        <if test="reqVO.consumableStock != null and reqVO.consumableStock.length == 2">
+            AND tc.consumable_stock BETWEEN #{reqVO.consumableStock[0]} AND #{reqVO.consumableStock[1]}
+        </if>
+        <if test="reqVO.consumableThreshold != null and reqVO.consumableThreshold.length == 2">
+            AND tc.consumable_threshold BETWEEN #{reqVO.consumableThreshold[0]} AND #{reqVO.consumableThreshold[1]}
+        </if>
+        <if test="reqVO.consumableWarning != null and reqVO.consumableWarning != ''">
+            AND tc.consumable_warning = #{reqVO.consumableWarning}
+        </if>
+        <if test="reqVO.lastSupplyTime != null and reqVO.lastSupplyTime.length == 2">
+            AND tc.last_supply_time BETWEEN #{reqVO.lastSupplyTime[0]} AND #{reqVO.lastSupplyTime[1]}
+        </if>
+        <if test="reqVO.supplyCycle != null and reqVO.supplyCycle.length == 2">
+            AND tc.supply_cycle BETWEEN #{reqVO.supplyCycle[0]} AND #{reqVO.supplyCycle[1]}
+        </if>
+        <if test="reqVO.consumableGap != null and reqVO.consumableGap.length == 2">
+            AND tc.consumable_gap BETWEEN #{reqVO.consumableGap[0]} AND #{reqVO.consumableGap[1]}
+        </if>
+        <if test="reqVO.managerId != null and reqVO.managerId != ''">
+            AND tc.manager_id = #{reqVO.managerId}
+        </if>
+
+        ORDER BY tc.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.limit}
+    </select>
+
+    <!-- 总数查询（同步新增区域表关联，保证总数准确） -->
+    <select id="selectCount" resultType="Long">
+        SELECT COUNT(DISTINCT tc.id)
+        FROM public_toilet_consumable tc
+        LEFT JOIN sys_consumable sc ON tc.consumable_id = sc.consumable_id AND sc.deleted = 0
+        LEFT JOIN public_toilet pt ON tc.toilet_id = pt.toilet_id AND pt.deleted = 0
+        LEFT JOIN sys_area sa ON pt.area_code = sa.area_code AND sa.deleted = 0
+        LEFT JOIN sys_user su ON tc.manager_id = su.user_id AND su.deleted = 0
+        WHERE tc.deleted = 0
+
+        <!-- 动态查询条件 -->
+        <if test="reqVO.toiletId != null and reqVO.toiletId != ''">
+            AND tc.toilet_id = #{reqVO.toiletId}
+        </if>
+        <if test="reqVO.consumableId != null and reqVO.consumableId != ''">
+            AND tc.consumable_id = #{reqVO.consumableId}
+        </if>
+        <if test="reqVO.consumableStock != null and reqVO.consumableStock.length == 2">
+            AND tc.consumable_stock BETWEEN #{reqVO.consumableStock[0]} AND #{reqVO.consumableStock[1]}
+        </if>
+        <if test="reqVO.consumableThreshold != null and reqVO.consumableThreshold.length == 2">
+            AND tc.consumable_threshold BETWEEN #{reqVO.consumableThreshold[0]} AND #{reqVO.consumableThreshold[1]}
+        </if>
+        <if test="reqVO.consumableWarning != null and reqVO.consumableWarning != ''">
+            AND tc.consumable_warning = #{reqVO.consumableWarning}
+        </if>
+        <if test="reqVO.lastSupplyTime != null and reqVO.lastSupplyTime.length == 2">
+            AND tc.last_supply_time BETWEEN #{reqVO.lastSupplyTime[0]} AND #{reqVO.lastSupplyTime[1]}
+        </if>
+        <if test="reqVO.supplyCycle != null and reqVO.supplyCycle.length == 2">
+            AND tc.supply_cycle BETWEEN #{reqVO.supplyCycle[0]} AND #{reqVO.supplyCycle[1]}
+        </if>
+        <if test="reqVO.consumableGap != null and reqVO.consumableGap.length == 2">
+            AND tc.consumable_gap BETWEEN #{reqVO.consumableGap[0]} AND #{reqVO.consumableGap[1]}
+        </if>
+        <if test="reqVO.managerId != null and reqVO.managerId != ''">
+            AND tc.manager_id = #{reqVO.managerId}
+        </if>
+    </select>
+
+</mapper>

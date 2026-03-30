@@ -4,12 +4,14 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.mybatis.core.util.JdbcUtils;
 import cn.iocoder.yudao.module.infra.controller.admin.codegen.vo.CodegenCreateListReqVO;
 import cn.iocoder.yudao.module.infra.controller.admin.codegen.vo.CodegenUpdateReqVO;
 import cn.iocoder.yudao.module.infra.controller.admin.codegen.vo.table.CodegenTablePageReqVO;
 import cn.iocoder.yudao.module.infra.controller.admin.codegen.vo.table.DatabaseTableRespVO;
 import cn.iocoder.yudao.module.infra.dal.dataobject.codegen.CodegenColumnDO;
 import cn.iocoder.yudao.module.infra.dal.dataobject.codegen.CodegenTableDO;
+import cn.iocoder.yudao.module.infra.dal.dataobject.db.DataSourceConfigDO;
 import cn.iocoder.yudao.module.infra.dal.mysql.codegen.CodegenColumnMapper;
 import cn.iocoder.yudao.module.infra.dal.mysql.codegen.CodegenTableMapper;
 import cn.iocoder.yudao.module.infra.enums.codegen.CodegenSceneEnum;
@@ -17,7 +19,9 @@ import cn.iocoder.yudao.module.infra.enums.codegen.CodegenTemplateTypeEnum;
 import cn.iocoder.yudao.module.infra.framework.codegen.config.CodegenProperties;
 import cn.iocoder.yudao.module.infra.service.codegen.inner.CodegenBuilder;
 import cn.iocoder.yudao.module.infra.service.codegen.inner.CodegenEngine;
+import cn.iocoder.yudao.module.infra.service.db.DataSourceConfigService;
 import cn.iocoder.yudao.module.infra.service.db.DatabaseTableService;
+import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.generator.config.po.TableField;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.google.common.annotations.VisibleForTesting;
@@ -45,6 +49,8 @@ public class CodegenServiceImpl implements CodegenService {
 
     @Resource
     private DatabaseTableService databaseTableService;
+    @Resource
+    private DataSourceConfigService dataSourceConfigService;
 
     @Resource
     private CodegenTableMapper codegenTableMapper;
@@ -204,7 +210,7 @@ public class CodegenServiceImpl implements CodegenService {
         codegenColumnMapper.insertBatch(columns);
         // 4.2 删除不存在的字段
         if (CollUtil.isNotEmpty(deleteColumnIds)) {
-            codegenColumnMapper.deleteBatchIds(deleteColumnIds);
+            codegenColumnMapper.deleteByIds(deleteColumnIds);
         }
     }
 
@@ -220,6 +226,15 @@ public class CodegenServiceImpl implements CodegenService {
         codegenTableMapper.deleteById(tableId);
         // 删除 column 字段定义
         codegenColumnMapper.deleteListByTableId(tableId);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteCodegenList(List<Long> tableIds) {
+        // 批量删除 table 表定义
+        codegenTableMapper.deleteByIds(tableIds);
+        // 批量删除 column 字段定义
+        codegenColumnMapper.deleteListByTableId(tableIds);
     }
 
     @Override
@@ -275,8 +290,11 @@ public class CodegenServiceImpl implements CodegenService {
             }
         }
 
+        // 获取数据源对应的数据库类型
+        DataSourceConfigDO dataSourceConfig = dataSourceConfigService.getDataSourceConfig(table.getDataSourceConfigId());
+        DbType dbType = JdbcUtils.getDbType(dataSourceConfig.getUrl());
         // 执行生成
-        return codegenEngine.execute(table, columns, subTables, subColumnsList);
+        return codegenEngine.execute(dbType, table, columns, subTables, subColumnsList);
     }
 
     @Override

@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.urbanvillage.UrbanVillageMapper">
+
+    <resultMap id="UrbanVillageDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.urbanvillage.UrbanVillageDetailDO">
+        <id column="id" property="id"/>
+        <result column="village_id" property="villageId"/>
+        <result column="name" property="name"/>
+        <result column="address" property="address"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="responsibility_areas" property="responsibilityAreas"/>
+        <result column="road_cleaning_frequency" property="roadCleaningFrequency"/>
+        <result column="manager_id" property="managerId"/>
+        <result column="operation_status_id" property="operationStatusId"/>
+        <result column="cleaning_rate" property="cleaningRate"/>
+        <result column="problem_rate" property="problemRate"/>
+        <result column="review_pass_rate" property="reviewPassRate"/>
+        <result column="assessment_score" property="assessmentScore"/>
+        <result column="responsibility_area_name" property="responsibilityAreaName"/>
+        <result column="cleaning_standard" property="cleaningStandard"/>
+        <result column="staff_ids" property="staffIds"/>
+        <result column="problem_location" property="problemLocation"/>
+        <result column="problem_desc" property="problemDesc"/>
+        <result column="report_by" property="reportBy"/>
+        <result column="report_time" property="reportTime"/>
+        <result column="problem_photo_url" property="problemPhotoUrl"/>
+        <result column="dept_id" property="deptId"/>
+        <result column="handle_by" property="handleBy"/>
+        <result column="dispatch_time" property="dispatchTime"/>
+        <result column="handle_status_id" property="handleStatusId"/>
+        <result column="is_timeout" property="isTimeout"/>
+        <result column="handle_desc" property="handleDesc"/>
+        <result column="reform_photo_url" property="reformPhotoUrl"/>
+        <result column="review_by" property="reviewBy"/>
+        <result column="review_time" property="reviewTime"/>
+        <result column="review_result_id" property="reviewResultId"/>
+        <result column="review_opinion" property="reviewOpinion"/>
+        <result column="plan_status_id" property="planStatusId"/>
+        <result column="problem_type_id" property="problemTypeId"/>
+        <result column="task_type_id" property="taskTypeId"/>
+
+        <!-- 关联查询的额外字段 -->
+        <result column="area_name" property="areaName"/>
+        <result column="manager_name" property="managerName"/>
+        <result column="operation_status_name" property="operationStatusName"/>
+        <result column="staffs_name_str" property="staffsNameStr"/>
+        <result column="report_name" property="reportName"/>
+        <result column="dept_name" property="deptName"/>
+        <result column="handle_name" property="handleName"/>
+        <result column="handle_status_name" property="handleStatusName"/>
+        <result column="review_name" property="reviewName"/>
+        <result column="review_result_name" property="reviewResultName"/>
+        <result column="plan_status_name" property="planStatusName"/>
+        <result column="problem_type_name" property="problemTypeName"/>
+        <result column="task_type_name" property="taskTypeName"/>
+    </resultMap>
+
+    <!-- 通用查询条件 -->
+    <sql id="whereConditions">
+        <where>
+            uv.deleted = 0
+
+            <!-- 基础字段过滤 -->
+            <if test="reqVO.villageId != null and reqVO.villageId != ''">
+                AND uv.village_id = #{reqVO.villageId}
+            </if>
+            <if test="reqVO.name != null and reqVO.name != ''">
+                AND uv.name LIKE CONCAT('%', #{reqVO.name}, '%')
+            </if>
+            <if test="reqVO.address != null and reqVO.address != ''">
+                AND uv.address LIKE CONCAT('%', #{reqVO.address}, '%')
+            </if>
+            <if test="reqVO.areaCode != null and reqVO.areaCode != ''">
+                AND uv.area_code = #{reqVO.areaCode}
+            </if>
+            <if test="reqVO.responsibilityAreas != null">
+                AND uv.responsibility_areas = #{reqVO.responsibilityAreas}
+            </if>
+            <if test="reqVO.roadCleaningFrequency != null and reqVO.roadCleaningFrequency != ''">
+                AND uv.road_cleaning_frequency LIKE CONCAT('%', #{reqVO.roadCleaningFrequency}, '%')
+            </if>
+            <if test="reqVO.managerId != null and reqVO.managerId != ''">
+                AND uv.manager_id = #{reqVO.managerId}
+            </if>
+            <if test="reqVO.operationStatusId != null and reqVO.operationStatusId != ''">
+                AND uv.operation_status_id = #{reqVO.operationStatusId}
+            </if>
+
+            <!-- 数值范围查询 -->
+            <if test="reqVO.cleaningRate != null">
+                AND uv.cleaning_rate = #{reqVO.cleaningRate}
+            </if>
+            <if test="reqVO.problemRate != null">
+                AND uv.problem_rate = #{reqVO.problemRate}
+            </if>
+            <if test="reqVO.reviewPassRate != null">
+                AND uv.review_pass_rate = #{reqVO.reviewPassRate}
+            </if>
+            <if test="reqVO.assessmentScore != null">
+                AND uv.assessment_score = #{reqVO.assessmentScore}
+            </if>
+
+            <if test="reqVO.responsibilityAreaName != null and reqVO.responsibilityAreaName != ''">
+                AND uv.responsibility_area_name LIKE CONCAT('%', #{reqVO.responsibilityAreaName}, '%')
+            </if>
+            <if test="reqVO.cleaningStandard != null and reqVO.cleaningStandard != ''">
+                AND uv.cleaning_standard LIKE CONCAT('%', #{reqVO.cleaningStandard}, '%')
+            </if>
+            <if test="reqVO.staffIds != null and reqVO.staffIds != ''">
+                AND uv.staff_ids LIKE CONCAT('%', #{reqVO.staffIds}, '%')
+            </if>
+            <if test="reqVO.problemLocation != null and reqVO.problemLocation != ''">
+                AND uv.problem_location LIKE CONCAT('%', #{reqVO.problemLocation}, '%')
+            </if>
+            <if test="reqVO.problemDesc != null and reqVO.problemDesc != ''">
+                AND uv.problem_desc LIKE CONCAT('%', #{reqVO.problemDesc}, '%')
+            </if>
+            <if test="reqVO.reportBy != null and reqVO.reportBy != ''">
+                AND uv.report_by = #{reqVO.reportBy}
+            </if>
+
+            <!-- 时间范围查询 -->
+            <if test="reqVO.reportTime != null and reqVO.reportTime.length == 2">
+                AND uv.report_time BETWEEN #{reqVO.reportTime[0]} AND #{reqVO.reportTime[1]}
+            </if>
+
+            <if test="reqVO.problemPhotoUrl != null and reqVO.problemPhotoUrl != ''">
+                AND uv.problem_photo_url LIKE CONCAT('%', #{reqVO.problemPhotoUrl}, '%')
+            </if>
+            <if test="reqVO.deptId != null and reqVO.deptId != ''">
+                AND uv.dept_id = #{reqVO.deptId}
+            </if>
+            <if test="reqVO.handleBy != null and reqVO.handleBy != ''">
+                AND uv.handle_by = #{reqVO.handleBy}
+            </if>
+
+            <if test="reqVO.dispatchTime != null and reqVO.dispatchTime.length == 2">
+                AND uv.dispatch_time BETWEEN #{reqVO.dispatchTime[0]} AND #{reqVO.dispatchTime[1]}
+            </if>
+
+            <if test="reqVO.handleStatusId != null and reqVO.handleStatusId != ''">
+                AND uv.handle_status_id = #{reqVO.handleStatusId}
+            </if>
+            <if test="reqVO.isTimeout != null and reqVO.isTimeout != ''">
+                AND uv.is_timeout = #{reqVO.isTimeout}
+            </if>
+            <if test="reqVO.handleDesc != null and reqVO.handleDesc != ''">
+                AND uv.handle_desc LIKE CONCAT('%', #{reqVO.handleDesc}, '%')
+            </if>
+            <if test="reqVO.reformPhotoUrl != null and reqVO.reformPhotoUrl != ''">
+                AND uv.reform_photo_url LIKE CONCAT('%', #{reqVO.reformPhotoUrl}, '%')
+            </if>
+            <if test="reqVO.reviewBy != null and reqVO.reviewBy != ''">
+                AND uv.review_by = #{reqVO.reviewBy}
+            </if>
+
+            <if test="reqVO.reviewTime != null and reqVO.reviewTime.length == 2">
+                AND uv.review_time BETWEEN #{reqVO.reviewTime[0]} AND #{reqVO.reviewTime[1]}
+            </if>
+
+            <if test="reqVO.reviewResultId != null and reqVO.reviewResultId != ''">
+                AND uv.review_result_id = #{reqVO.reviewResultId}
+            </if>
+            <if test="reqVO.reviewOpinion != null and reqVO.reviewOpinion != ''">
+                AND uv.review_opinion LIKE CONCAT('%', #{reqVO.reviewOpinion}, '%')
+            </if>
+
+            <!-- 创建时间范围查询 -->
+            <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+                AND uv.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询详情 -->
+    <select id="selectDetailPage" resultMap="UrbanVillageDetailResultMap">
+        SELECT
+        uv.*,
+        a.area_name AS area_name,
+        u1.user_name AS manager_name,
+        os.name AS operation_status_name,
+        u2.user_name AS report_name,
+        d.name AS dept_name,
+        u3.user_name AS handle_name,
+        hs.name AS handle_status_name,
+        u4.user_name AS review_name,
+        rr.review_result_name AS review_result_name,
+        ps.name AS plan_status_name,
+        pt.name AS problem_type_name,
+        tt.name AS task_type_name,
+        IFNULL(GROUP_CONCAT(DISTINCT u5.user_name), '') AS staffs_name_str
+        FROM urban_village uv
+        LEFT JOIN sys_area a ON uv.area_code = a.area_code AND a.deleted = 0
+        LEFT JOIN sys_user u1 ON uv.manager_id = u1.user_id AND u1.deleted = 0
+        LEFT JOIN sys_operation_status os ON uv.operation_status_id = os.sys_operation_status_id AND os.deleted = 0
+        LEFT JOIN sys_user u2 ON uv.report_by = u2.user_id AND u2.deleted = 0
+        LEFT JOIN sys_dept d ON uv.dept_id = d.sys_dept_id AND d.deleted = 0
+        LEFT JOIN sys_user u3 ON uv.handle_by = u3.user_id AND u3.deleted = 0
+        LEFT JOIN sys_handle_status hs ON uv.handle_status_id = hs.sys_handle_status_id AND hs.deleted = 0
+        LEFT JOIN sys_user u4 ON uv.review_by = u4.user_id AND u4.deleted = 0
+        LEFT JOIN sys_review_result rr ON uv.review_result_id = rr.review_result_id AND rr.deleted = 0
+        LEFT JOIN sys_plan_status ps ON uv.plan_status_id = ps.sys_plan_status_id AND ps.deleted = 0
+        LEFT JOIN sys_problem_type pt ON uv.problem_type_id = pt.sys_problem_type_id AND pt.deleted = 0
+        LEFT JOIN sys_task_type tt ON uv.task_type_id = tt.sys_task_type_id AND tt.deleted = 0
+        -- 处理负责人员JSON解析
+        LEFT JOIN sys_user u5 ON FIND_IN_SET(
+        u5.user_id,
+        REPLACE(REPLACE(REPLACE(REPLACE(uv.staff_ids, '[', ''), ']', ''), '"', ''), ' ', '')
+        ) AND u5.deleted = 0
+
+        <include refid="whereConditions" />
+
+        GROUP BY
+        uv.id,
+        a.area_name, u1.user_name, os.name, u2.user_name, d.name,
+        u3.user_name, hs.name, u4.user_name, rr.review_result_name,
+        ps.name, pt.name, tt.name
+
+        ORDER BY uv.id DESC
+    </select>
+
+    <!-- 查询符合条件的总记录数 -->
+    <select id="selectCount" resultType="Long">
+        SELECT COUNT(DISTINCT uv.id)
+        FROM urban_village uv
+        LEFT JOIN sys_area a ON uv.area_code = a.area_code AND a.deleted = 0
+        LEFT JOIN sys_user u1 ON uv.manager_id = u1.user_id AND u1.deleted = 0
+        LEFT JOIN sys_operation_status os ON uv.operation_status_id = os.sys_operation_status_id AND os.deleted = 0
+        LEFT JOIN sys_user u2 ON uv.report_by = u2.user_id AND u2.deleted = 0
+        LEFT JOIN sys_dept d ON uv.dept_id = d.sys_dept_id AND d.deleted = 0
+        LEFT JOIN sys_user u3 ON uv.handle_by = u3.user_id AND u3.deleted = 0
+        LEFT JOIN sys_handle_status hs ON uv.handle_status_id = hs.sys_handle_status_id AND hs.deleted = 0
+        LEFT JOIN sys_user u4 ON uv.review_by = u4.user_id AND u4.deleted = 0
+        LEFT JOIN sys_review_result rr ON uv.review_result_id = rr.review_result_id AND rr.deleted = 0
+        LEFT JOIN sys_plan_status ps ON uv.plan_status_id = ps.sys_plan_status_id AND ps.deleted = 0
+        LEFT JOIN sys_problem_type pt ON uv.problem_type_id = pt.sys_problem_type_id AND pt.deleted = 0
+        LEFT JOIN sys_task_type tt ON uv.task_type_id = tt.sys_task_type_id AND tt.deleted = 0
+
+        <include refid="whereConditions" />
+    </select>
+
+</mapper>

@@ -16,15 +16,16 @@ import cn.iocoder.yudao.module.infra.framework.file.core.client.FileClientFactor
 import cn.iocoder.yudao.module.infra.framework.file.core.enums.FileStorageEnum;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import jakarta.annotation.Resource;
+import jakarta.validation.Validator;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import jakarta.annotation.Resource;
-import jakarta.validation.Validator;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -134,10 +135,27 @@ public class FileConfigServiceImpl implements FileConfigService {
         clearCache(id, null);
     }
 
+    @Override
+    public void deleteFileConfigList(List<Long> ids) {
+        // 校验是否有主配置
+        List<FileConfigDO> configs = fileConfigMapper.selectByIds(ids);
+        for (FileConfigDO config : configs) {
+            if (Boolean.TRUE.equals(config.getMaster())) {
+                throw exception(FILE_CONFIG_DELETE_FAIL_MASTER);
+            }
+        }
+
+        // 批量删除
+        fileConfigMapper.deleteByIds(ids);
+
+        // 清空缓存
+        ids.forEach(id -> clearCache(id, null));
+    }
+
     /**
      * 清空指定文件配置
      *
-     * @param id 配置编号
+     * @param id     配置编号
      * @param master 是否主配置
      */
     private void clearCache(Long id, Boolean master) {

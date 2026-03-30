@@ -176,6 +176,14 @@ public interface BpmTaskService {
      */
     List<HistoricActivityInstance> getHistoricActivityListByExecutionId(String executionId);
 
+    /**
+     * 获得指定流程实例的已完成的流程任务列表，不包含取消状态
+     *
+     * @param processInstanceId 流程实例的编号
+     * @return 流程任务列表
+     */
+    List<HistoricTaskInstance> getFinishedTaskListByProcessInstanceIdWithoutCancel(String processInstanceId);
+
     // ========== Update 写入相关方法 ==========
 
     /**
@@ -249,6 +257,14 @@ public interface BpmTaskService {
      * @param reqVO  通过请求
      */
     void copyTask(Long userId, @Valid BpmTaskCopyReqVO reqVO);
+
+    /**
+     * 撤回任务
+     *
+     * @param userId 用户编号
+     * @param taskId 任务编号
+     */
+    void withdrawTask(Long userId, String taskId);
 
     // ========== Event 事件相关方法 ==========
 

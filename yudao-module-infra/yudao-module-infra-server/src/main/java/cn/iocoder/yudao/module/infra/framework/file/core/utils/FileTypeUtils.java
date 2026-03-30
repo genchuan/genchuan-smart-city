@@ -3,7 +3,6 @@ package cn.iocoder.yudao.module.infra.framework.file.core.utils;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.util.http.HttpUtils;
-import com.alibaba.ttl.TransmittableThreadLocal;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +20,7 @@ import java.io.IOException;
 @Slf4j
 public class FileTypeUtils {
 
-    private static final ThreadLocal<Tika> TIKA = TransmittableThreadLocal.withInitial(Tika::new);
+    private static final Tika TIKA = new Tika();
 
     /**
      * 获得文件的 mineType，对于 doc，jar 等文件会有误差
@@ -31,7 +30,7 @@ public class FileTypeUtils {
      */
     @SneakyThrows
     public static String getMineType(byte[] data) {
-        return TIKA.get().detect(data);
+        return TIKA.detect(data);
     }
 
     /**
@@ -41,7 +40,7 @@ public class FileTypeUtils {
      * @return mineType 无法识别时会返回“application/octet-stream”
      */
     public static String getMineType(String name) {
-        return TIKA.get().detect(name);
+        return TIKA.detect(name);
     }
 
     /**
@@ -52,7 +51,7 @@ public class FileTypeUtils {
      * @return mineType 无法识别时会返回“application/octet-stream”
      */
     public static String getMineType(byte[] data, String name) {
-        return TIKA.get().detect(data, name);
+        return TIKA.detect(data, name);
     }
 
     /**
@@ -81,17 +80,32 @@ public class FileTypeUtils {
      */
     public static void writeAttachment(HttpServletResponse response, String filename, byte[] content) throws IOException {
         // 设置 header 和 contentType
-        response.setHeader("Content-Disposition", "attachment;filename=" + HttpUtils.encodeUtf8(filename));
-        String contentType = getMineType(content, filename);
-        response.setContentType(contentType);
+        String mineType = getMineType(content, filename);
+        response.setContentType(mineType);
+        // 设置内容显示、下载文件名：https://www.cnblogs.com/wq-9/articles/12165056.html
+        if (isImage(mineType)) {
+            // 参见 https://github.com/YunaiV/ruoyi-vue-pro/issues/692 讨论
+            response.setHeader("Content-Disposition", "inline;filename=" + HttpUtils.encodeUtf8(filename));
+        } else {
+            response.setHeader("Content-Disposition", "attachment;filename=" + HttpUtils.encodeUtf8(filename));
+        }
         // 针对 video 的特殊处理，解决视频地址在移动端播放的兼容性问题
-        if (StrUtil.containsIgnoreCase(contentType, "video")) {
-            response.setHeader("Content-Length", String.valueOf(content.length - 1));
-            response.setHeader("Content-Range", String.valueOf(content.length - 1));
+        if (StrUtil.containsIgnoreCase(mineType, "video")) {
             response.setHeader("Accept-Ranges", "bytes");
+            response.setHeader("Content-Length", String.valueOf(content.length));
         }
         // 输出附件
         IoUtil.write(response.getOutputStream(), false, content);
+    }
+
+    /**
+     * 判断是否是图片
+     *
+     * @param mineType 类型
+     * @return 是否是图片
+     */
+    public static boolean isImage(String mineType) {
+        return StrUtil.startWith(mineType, "image/");
     }
 
 }

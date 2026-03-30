@@ -11,13 +11,13 @@ import cn.iocoder.yudao.module.system.dal.dataobject.dept.DeptDO;
 import cn.iocoder.yudao.module.system.dal.mysql.dept.DeptMapper;
 import cn.iocoder.yudao.module.system.dal.redis.RedisKeyConstants;
 import com.google.common.annotations.VisibleForTesting;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import jakarta.annotation.Resource;
 import java.util.*;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -86,6 +86,21 @@ public class DeptServiceImpl implements DeptService {
         }
         // 删除部门
         deptMapper.deleteById(id);
+    }
+
+    @Override
+    @CacheEvict(cacheNames = RedisKeyConstants.DEPT_CHILDREN_ID_LIST,
+            allEntries = true) // allEntries 清空所有缓存，因为操作一个部门，涉及到多个缓存
+    public void deleteDeptList(List<Long> ids) {
+        // 校验是否有子部门
+        for (Long id : ids) {
+            if (deptMapper.selectCountByParentId(id) > 0) {
+                throw exception(DEPT_EXITS_CHILDREN);
+            }
+        }
+
+        // 批量删除部门
+        deptMapper.deleteByIds(ids);
     }
 
     @VisibleForTesting
@@ -159,7 +174,7 @@ public class DeptServiceImpl implements DeptService {
         if (CollUtil.isEmpty(ids)) {
             return Collections.emptyList();
         }
-        return deptMapper.selectBatchIds(ids);
+        return deptMapper.selectByIds(ids);
     }
 
     @Override

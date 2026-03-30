@@ -51,7 +51,7 @@ public class BpmProcessDefinitionController {
 
     @GetMapping("/page")
     @Operation(summary = "获得流程定义分页")
-    // @PreAuthorize("@ss.hasPermission('bpm:process-definition:query')")
+    @PreAuthorize("@ss.hasPermission('bpm:process-definition:query')")
     public CommonResult<PageResult<BpmProcessDefinitionRespVO>> getProcessDefinitionPage(
             BpmProcessDefinitionPageReqVO pageReqVO) {
         PageResult<ProcessDefinition> pageResult = processDefinitionService.getProcessDefinitionPage(pageReqVO);

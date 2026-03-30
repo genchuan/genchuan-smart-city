@@ -35,14 +35,14 @@ public class BpmCategoryController {
 
     @PostMapping("/create")
     @Operation(summary = "创建流程分类")
-    // @PreAuthorize("@ss.hasPermission('bpm:category:create')")
+    @PreAuthorize("@ss.hasPermission('bpm:category:create')")
     public CommonResult<Long> createCategory(@Valid @RequestBody BpmCategorySaveReqVO createReqVO) {
         return success(categoryService.createCategory(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新流程分类")
-    // @PreAuthorize("@ss.hasPermission('bpm:category:update')")
+    @PreAuthorize("@ss.hasPermission('bpm:category:update')")
     public CommonResult<Boolean> updateCategory(@Valid @RequestBody BpmCategorySaveReqVO updateReqVO) {
         categoryService.updateCategory(updateReqVO);
         return success(true);
@@ -51,7 +51,7 @@ public class BpmCategoryController {
     @PutMapping("/update-sort-batch")
     @Operation(summary = "批量更新流程分类的排序")
     @Parameter(name = "ids", description = "分类编号列表", required = true, example = "1,2,3")
-    // @PreAuthorize("@ss.hasPermission('bpm:category:update')")
+    @PreAuthorize("@ss.hasPermission('bpm:category:update')")
     public CommonResult<Boolean> updateCategorySortBatch(@RequestParam("ids") List<Long> ids) {
         categoryService.updateCategorySortBatch(ids);
         return success(true);
@@ -60,7 +60,7 @@ public class BpmCategoryController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除流程分类")
     @Parameter(name = "id", description = "编号", required = true)
-    // @PreAuthorize("@ss.hasPermission('bpm:category:delete')")
+    @PreAuthorize("@ss.hasPermission('bpm:category:delete')")
     public CommonResult<Boolean> deleteCategory(@RequestParam("id") Long id) {
         categoryService.deleteCategory(id);
         return success(true);
@@ -69,7 +69,7 @@ public class BpmCategoryController {
     @GetMapping("/get")
     @Operation(summary = "获得流程分类")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    // @PreAuthorize("@ss.hasPermission('bpm:category:query')")
+    @PreAuthorize("@ss.hasPermission('bpm:category:query')")
     public CommonResult<BpmCategoryRespVO> getCategory(@RequestParam("id") Long id) {
         BpmCategoryDO category = categoryService.getCategory(id);
         return success(BeanUtils.toBean(category, BpmCategoryRespVO.class));
@@ -77,7 +77,7 @@ public class BpmCategoryController {
 
     @GetMapping("/page")
     @Operation(summary = "获得流程分类分页")
-    // @PreAuthorize("@ss.hasPermission('bpm:category:query')")
+    @PreAuthorize("@ss.hasPermission('bpm:category:query')")
     public CommonResult<PageResult<BpmCategoryRespVO>> getCategoryPage(@Valid BpmCategoryPageReqVO pageReqVO) {
         PageResult<BpmCategoryDO> pageResult = categoryService.getCategoryPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, BpmCategoryRespVO.class));

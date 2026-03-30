@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.market.MarketMapper">
+
+    <resultMap id="MarketDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.MarketDetailDO">
+        <!-- 基础字段（继承自 MarketDO） -->
+        <id column="id" property="id"/>
+        <result column="market_id" property="marketId"/>
+        <result column="name" property="name"/>
+        <result column="address" property="address"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="stall_count" property="stallCount"/>
+        <result column="manager_id" property="managerId"/>
+        <result column="operation_status_id" property="operationStatusId"/>
+        <result column="hygiene_rate" property="hygieneRate"/>
+        <result column="waste_transfer_rate" property="wasteTransferRate"/>
+        <result column="sewage_rate" property="sewageRate"/>
+        <result column="unfinished_task_count" property="unfinishedTaskCount"/>
+        <result column="cleaning_frequency" property="cleaningFrequency"/>
+        <result column="cleaning_time" property="cleaningTime"/>
+        <result column="cleaning_area" property="cleaningArea"/>
+        <result column="staff_ids" property="staffIds"/>
+        <result column="cleaning_standard" property="cleaningStandard"/>
+        <result column="garbage_type_ids" property="garbageTypeIds"/>
+        <result column="garbage_container_count" property="garbageContainerCount"/>
+        <result column="waste_transfer_interval" property="wasteTransferInterval"/>
+        <result column="waste_transfer_time" property="wasteTransferTime"/>
+        <result column="vehicle_id" property="vehicleId"/>
+        <result column="sewage_discharge_area" property="sewageDischargeArea"/>
+        <result column="sewage_disposal_way" property="sewageDisposalWay"/>
+        <result column="sewage_cleaning_frequency" property="sewageCleaningFrequency"/>
+        <result column="sewage_problem_desc" property="sewageProblemDesc"/>
+        <result column="last_sewage_cleaning_time" property="lastSewageCleaningTime"/>
+        <result column="next_sewage_cleaning_time" property="nextSewageCleaningTime"/>
+        <result column="sewage_disposal_log" property="sewageDisposalLog"/>
+        <result column="hygiene_check_time" property="hygieneCheckTime"/>
+        <result column="check_by" property="checkBy"/>
+        <result column="hygiene_check_date" property="hygieneCheckDate"/>
+        <result column="previous_problem" property="previousProblem"/>
+        <result column="qualified_item_count" property="qualifiedItemCount"/>
+        <result column="unqualified_item_count" property="unqualifiedItemCount"/>
+        <result column="reform_require" property="reformRequire"/>
+        <result column="reform_deadline" property="reformDeadline"/>
+        <result column="handle_status_id" property="handleStatusId"/>
+        <result column="check_result_id" property="checkResultId"/>
+        <result column="task_type_id" property="taskTypeId"/>
+        <result column="ext_common1" property="extCommon1"/>
+        <result column="ext_common2" property="extCommon2"/>
+        <result column="ext_common3" property="extCommon3"/>
+        <result column="ext_common4" property="extCommon4"/>
+
+        <!-- 关联查询的扩展字段 -->
+        <result column="area_name" property="areaName"/>
+        <result column="manager_name" property="managerName"/>
+        <result column="operation_status_name" property="operationStatusName"/>
+        <result column="staffs_name_str" property="staffsNameStr"/>
+        <result column="garbage_types_name_str" property="garbageTypesNameStr"/>
+        <result column="vehicle_name" property="vehicleName"/>
+        <result column="check_name" property="checkName"/>
+        <result column="handle_status_name" property="handleStatusName"/>
+        <result column="check_result_name" property="checkResultName"/>
+        <result column="task_type_name" property="taskTypeName"/>
+    </resultMap>
+
+    <!-- 通用查询条件 -->
+    <sql id="whereConditions">
+        <where>
+            m.deleted = 0
+
+            <!-- 基础字段过滤 -->
+            <if test="reqVO.marketId != null and reqVO.marketId != ''">
+                AND m.market_id = #{reqVO.marketId}
+            </if>
+            <if test="reqVO.name != null and reqVO.name != ''">
+                AND m.name LIKE CONCAT('%', #{reqVO.name}, '%')
+            </if>
+            <if test="reqVO.address != null and reqVO.address != ''">
+                AND m.address LIKE CONCAT('%', #{reqVO.address}, '%')
+            </if>
+            <if test="reqVO.areaCode != null and reqVO.areaCode != ''">
+                AND m.area_code = #{reqVO.areaCode}
+            </if>
+            <if test="reqVO.stallCount != null">
+                AND m.stall_count = #{reqVO.stallCount}
+            </if>
+            <if test="reqVO.managerId != null and reqVO.managerId != ''">
+                AND m.manager_id = #{reqVO.managerId}
+            </if>
+            <if test="reqVO.operationStatusId != null and reqVO.operationStatusId != ''">
+                AND m.operation_status_id = #{reqVO.operationStatusId}
+            </if>
+
+            <!-- 数值范围查询（可根据需要改为范围查询） -->
+            <if test="reqVO.hygieneRate != null">
+                AND m.hygiene_rate = #{reqVO.hygieneRate}
+            </if>
+            <if test="reqVO.wasteTransferRate != null">
+                AND m.waste_transfer_rate = #{reqVO.wasteTransferRate}
+            </if>
+            <if test="reqVO.sewageRate != null">
+                AND m.sewage_rate = #{reqVO.sewageRate}
+            </if>
+            <if test="reqVO.unfinishedTaskCount != null">
+                AND m.unfinished_task_count = #{reqVO.unfinishedTaskCount}
+            </if>
+
+            <!-- 文本字段模糊查询 -->
+            <if test="reqVO.cleaningFrequency != null and reqVO.cleaningFrequency != ''">
+                AND m.cleaning_frequency LIKE CONCAT('%', #{reqVO.cleaningFrequency}, '%')
+            </if>
+            <if test="reqVO.cleaningTime != null and reqVO.cleaningTime.length > 0">
+                <!-- cleaning_time是JSON字段，使用JSON查询 -->
+                AND m.cleaning_time LIKE CONCAT('%', #{reqVO.cleaningTime[0]}, '%')
+            </if>
+            <if test="reqVO.cleaningArea != null and reqVO.cleaningArea != ''">
+                AND m.cleaning_area LIKE CONCAT('%', #{reqVO.cleaningArea}, '%')
+            </if>
+            <if test="reqVO.staffIds != null and reqVO.staffIds != ''">
+                AND m.staff_ids LIKE CONCAT('%', #{reqVO.staffIds}, '%')
+            </if>
+            <if test="reqVO.cleaningStandard != null and reqVO.cleaningStandard != ''">
+                AND m.cleaning_standard LIKE CONCAT('%', #{reqVO.cleaningStandard}, '%')
+            </if>
+            <if test="reqVO.garbageTypeIds != null and reqVO.garbageTypeIds != ''">
+                AND m.garbage_type_ids LIKE CONCAT('%', #{reqVO.garbageTypeIds}, '%')
+            </if>
+            <if test="reqVO.garbageContainerCount != null">
+                AND m.garbage_container_count = #{reqVO.garbageContainerCount}
+            </if>
+            <if test="reqVO.wasteTransferInterval != null and reqVO.wasteTransferInterval != ''">
+                AND m.waste_transfer_interval LIKE CONCAT('%', #{reqVO.wasteTransferInterval}, '%')
+            </if>
+            <if test="reqVO.wasteTransferTime != null and reqVO.wasteTransferTime.length > 0">
+                AND m.waste_transfer_time LIKE CONCAT('%', #{reqVO.wasteTransferTime[0]}, '%')
+            </if>
+            <if test="reqVO.vehicleId != null and reqVO.vehicleId != ''">
+                AND m.vehicle_id = #{reqVO.vehicleId}
+            </if>
+            <if test="reqVO.sewageDischargeArea != null and reqVO.sewageDischargeArea != ''">
+                AND m.sewage_discharge_area LIKE CONCAT('%', #{reqVO.sewageDischargeArea}, '%')
+            </if>
+            <if test="reqVO.sewageDisposalWay != null and reqVO.sewageDisposalWay != ''">
+                AND m.sewage_disposal_way LIKE CONCAT('%', #{reqVO.sewageDisposalWay}, '%')
+            </if>
+            <if test="reqVO.sewageCleaningFrequency != null and reqVO.sewageCleaningFrequency != ''">
+                AND m.sewage_cleaning_frequency LIKE CONCAT('%', #{reqVO.sewageCleaningFrequency}, '%')
+            </if>
+            <if test="reqVO.sewageProblemDesc != null and reqVO.sewageProblemDesc != ''">
+                AND m.sewage_problem_desc LIKE CONCAT('%', #{reqVO.sewageProblemDesc}, '%')
+            </if>
+
+            <!-- 时间范围查询 -->
+            <if test="reqVO.lastSewageCleaningTime != null and reqVO.lastSewageCleaningTime.length == 2">
+                AND m.last_sewage_cleaning_time BETWEEN #{reqVO.lastSewageCleaningTime[0]} AND #{reqVO.lastSewageCleaningTime[1]}
+            </if>
+            <if test="reqVO.nextSewageCleaningTime != null and reqVO.nextSewageCleaningTime.length == 2">
+                AND m.next_sewage_cleaning_time BETWEEN #{reqVO.nextSewageCleaningTime[0]} AND #{reqVO.nextSewageCleaningTime[1]}
+            </if>
+
+            <if test="reqVO.sewageDisposalLog != null and reqVO.sewageDisposalLog != ''">
+                AND m.sewage_disposal_log LIKE CONCAT('%', #{reqVO.sewageDisposalLog}, '%')
+            </if>
+
+            <if test="reqVO.hygieneCheckTime != null and reqVO.hygieneCheckTime.length > 0">
+                AND m.hygiene_check_time LIKE CONCAT('%', #{reqVO.hygieneCheckTime[0]}, '%')
+            </if>
+
+            <if test="reqVO.checkBy != null and reqVO.checkBy != ''">
+                AND m.check_by = #{reqVO.checkBy}
+            </if>
+
+            <if test="reqVO.hygieneCheckDate != null and reqVO.hygieneCheckDate.length == 2">
+                AND m.hygiene_check_date BETWEEN #{reqVO.hygieneCheckDate[0]} AND #{reqVO.hygieneCheckDate[1]}
+            </if>
+
+            <if test="reqVO.previousProblem != null and reqVO.previousProblem != ''">
+                AND m.previous_problem LIKE CONCAT('%', #{reqVO.previousProblem}, '%')
+            </if>
+            <if test="reqVO.qualifiedItemCount != null">
+                AND m.qualified_item_count = #{reqVO.qualifiedItemCount}
+            </if>
+            <if test="reqVO.unqualifiedItemCount != null">
+                AND m.unqualified_item_count = #{reqVO.unqualifiedItemCount}
+            </if>
+            <if test="reqVO.reformRequire != null and reqVO.reformRequire != ''">
+                AND m.reform_require LIKE CONCAT('%', #{reqVO.reformRequire}, '%')
+            </if>
+            <if test="reqVO.reformDeadline != null">
+                AND DATE(m.reform_deadline) = DATE(#{reqVO.reformDeadline})
+            </if>
+
+            <!-- 创建时间范围查询 -->
+            <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+                AND m.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询详情 -->
+    <select id="selectDetailPage" resultMap="MarketDetailResultMap">
+        SELECT
+        m.*,
+        a.area_name AS area_name,
+        u1.user_name AS manager_name,
+        os.name AS operation_status_name,
+        IFNULL(GROUP_CONCAT(DISTINCT u2.user_name), '') AS staffs_name_str,
+        IFNULL(GROUP_CONCAT(DISTINCT gt.name), '') AS garbage_types_name_str,
+        v.license_plate AS vehicle_name,
+        u3.user_name AS check_name,
+        hs.name AS handle_status_name,
+        cr.check_result_name AS check_result_name,
+        tt.name AS task_type_name
+        FROM market m
+        LEFT JOIN sys_area a ON m.area_code = a.area_code AND a.deleted = 0
+        LEFT JOIN sys_operation_status os ON m.operation_status_id = os.sys_operation_status_id AND os.deleted = 0
+        LEFT JOIN sys_user u1 ON m.manager_id = u1.user_id AND u1.deleted = 0
+        LEFT JOIN sys_user u2 ON FIND_IN_SET(
+        u2.user_id,
+        REPLACE(REPLACE(REPLACE(REPLACE(m.staff_ids, '[', ''), ']', ''), '"', ''), ' ', '')
+        ) AND u2.deleted = 0
+        LEFT JOIN sys_garbage_type gt ON FIND_IN_SET(
+        gt.sys_garbage_type_id,
+        REPLACE(REPLACE(REPLACE(REPLACE(m.garbage_type_ids, '[', ''), ']', ''), '"', ''), ' ', '')
+        ) AND gt.deleted = 0
+        LEFT JOIN sys_vehicle v ON m.vehicle_id = v.sys_vehicle_id AND v.deleted = 0
+        LEFT JOIN sys_user u3 ON m.check_by = u3.user_id AND u3.deleted = 0
+        LEFT JOIN sys_handle_status hs ON m.handle_status_id = hs.sys_handle_status_id AND hs.deleted = 0
+        LEFT JOIN sys_check_result cr ON m.check_result_id = cr.check_result_id AND cr.deleted = 0
+        LEFT JOIN sys_task_type tt ON m.task_type_id = tt.sys_task_type_id AND tt.deleted = 0
+
+        <include refid="whereConditions" />
+
+        GROUP BY
+        m.id, a.area_name, os.name, u1.user_name, v.license_plate,
+        u3.user_name, hs.name, cr.check_result_name, tt.name
+
+        ORDER BY m.id DESC
+    </select>
+
+    <!-- 查询符合条件的总记录数 -->
+    <select id="selectCount" resultType="Long">
+        SELECT COUNT(DISTINCT m.id)
+        FROM market m
+        LEFT JOIN sys_area a ON m.area_code = a.area_code AND a.deleted = 0
+        LEFT JOIN sys_operation_status os ON m.operation_status_id = os.sys_operation_status_id AND os.deleted = 0
+        LEFT JOIN sys_user u1 ON m.manager_id = u1.user_id AND u1.deleted = 0
+        LEFT JOIN sys_user u2 ON FIND_IN_SET(
+        u2.user_id,
+        REPLACE(REPLACE(REPLACE(REPLACE(m.staff_ids, '[', ''), ']', ''), '"', ''), ' ', '')
+        ) AND u2.deleted = 0
+        LEFT JOIN sys_garbage_type gt ON FIND_IN_SET(
+        gt.sys_garbage_type_id,
+        REPLACE(REPLACE(REPLACE(REPLACE(m.garbage_type_ids, '[', ''), ']', ''), '"', ''), ' ', '')
+        ) AND gt.deleted = 0
+        LEFT JOIN sys_vehicle v ON m.vehicle_id = v.sys_vehicle_id AND v.deleted = 0
+        LEFT JOIN sys_user u3 ON m.check_by = u3.user_id AND u3.deleted = 0
+        LEFT JOIN sys_handle_status hs ON m.handle_status_id = hs.sys_handle_status_id AND hs.deleted = 0
+        LEFT JOIN sys_check_result cr ON m.check_result_id = cr.check_result_id AND cr.deleted = 0
+        LEFT JOIN sys_task_type tt ON m.task_type_id = tt.sys_task_type_id AND tt.deleted = 0
+
+        <include refid="whereConditions" />
+    </select>
+
+</mapper>

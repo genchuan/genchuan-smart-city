@@ -3,7 +3,6 @@ package cn.iocoder.yudao.module.system.service.tenant;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
@@ -31,13 +30,13 @@ import cn.iocoder.yudao.module.system.service.tenant.handler.TenantInfoHandler;
 import cn.iocoder.yudao.module.system.service.tenant.handler.TenantMenuHandler;
 import cn.iocoder.yudao.module.system.service.user.AdminUserService;
 import com.baomidou.dynamic.datasource.annotation.DSTransactional;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import jakarta.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -102,7 +101,7 @@ public class TenantServiceImpl implements TenantService {
         // 校验租户名称是否重复
         validTenantNameDuplicate(createReqVO.getName(), null);
         // 校验租户域名是否重复
-        validTenantWebsiteDuplicate(createReqVO.getWebsite(), null);
+        validTenantWebsiteDuplicate(createReqVO.getWebsites(), null);
         // 校验套餐被禁用
         TenantPackageDO tenantPackage = tenantPackageService.validTenantPackage(createReqVO.getPackageId());
 
@@ -148,7 +147,7 @@ public class TenantServiceImpl implements TenantService {
         // 校验租户名称是否重复
         validTenantNameDuplicate(updateReqVO.getName(), updateReqVO.getId());
         // 校验租户域名是否重复
-        validTenantWebsiteDuplicate(updateReqVO.getWebsite(), updateReqVO.getId());
+        validTenantWebsiteDuplicate(updateReqVO.getWebsites(), updateReqVO.getId());
         // 校验套餐被禁用
         TenantPackageDO tenantPackage = tenantPackageService.validTenantPackage(updateReqVO.getPackageId());
 
@@ -175,21 +174,19 @@ public class TenantServiceImpl implements TenantService {
         }
     }
 
-    private void validTenantWebsiteDuplicate(String website, Long id) {
-        if (StrUtil.isEmpty(website)) {
+    private void validTenantWebsiteDuplicate(List<String> websites, Long excludeId) {
+        if (CollUtil.isEmpty(websites)) {
             return;
         }
-        TenantDO tenant = tenantMapper.selectByWebsite(website);
-        if (tenant == null) {
-            return;
-        }
-        // 如果 id 为空，说明不用比较是否为相同名字的租户
-        if (id == null) {
-            throw exception(TENANT_WEBSITE_DUPLICATE, website);
-        }
-        if (!tenant.getId().equals(id)) {
-            throw exception(TENANT_WEBSITE_DUPLICATE, website);
-        }
+        websites.forEach(website -> {
+            List<TenantDO> tenants = tenantMapper.selectListByWebsite(website);
+            if (excludeId != null) {
+                tenants.removeIf(tenant -> tenant.getId().equals(excludeId));
+            }
+            if (CollUtil.isNotEmpty(tenants)) {
+                throw exception(TENANT_WEBSITE_DUPLICATE, website);
+            }
+        });
     }
 
     @Override
@@ -225,6 +222,15 @@ public class TenantServiceImpl implements TenantService {
         tenantMapper.deleteById(id);
     }
 
+    @Override
+    public void deleteTenantList(List<Long> ids) {
+        // 1. 校验存在
+        ids.forEach(this::validateUpdateTenant);
+
+        // 2. 批量删除
+        tenantMapper.deleteByIds(ids);
+    }
+
     private TenantDO validateUpdateTenant(Long id) {
         TenantDO tenant = tenantMapper.selectById(id);
         if (tenant == null) {
@@ -254,7 +260,8 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public TenantDO getTenantByWebsite(String website) {
-        return tenantMapper.selectByWebsite(website);
+        List<TenantDO> tenants = tenantMapper.selectListByWebsite(website);
+        return CollUtil.getFirst(tenants);
     }
 
     @Override

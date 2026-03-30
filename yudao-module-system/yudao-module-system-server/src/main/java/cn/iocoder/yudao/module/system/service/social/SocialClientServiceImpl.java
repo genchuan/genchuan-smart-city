@@ -11,7 +11,6 @@ import cn.binarywang.wx.miniapp.config.impl.WxMaRedisBetterConfigImpl;
 import cn.binarywang.wx.miniapp.constant.WxMaConstants;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.DesensitizedUtil;
 import cn.hutool.core.util.ObjUtil;
@@ -52,8 +51,10 @@ import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.model.AuthCallback;
 import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.model.AuthUser;
+import me.zhyd.oauth.request.AuthAlipayRequest;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.utils.AuthStateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -68,6 +69,7 @@ import java.util.Objects;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.MapUtils.findAndThen;
 import static cn.iocoder.yudao.framework.common.util.date.LocalDateTimeUtils.UTC_MS_WITH_XXX_OFFSET_FORMATTER;
+import static cn.iocoder.yudao.framework.common.util.date.LocalDateTimeUtils.toEpochSecond;
 import static cn.iocoder.yudao.framework.common.util.json.JsonUtils.toJsonString;
 import static cn.iocoder.yudao.module.system.enums.ErrorCodeConstants.*;
 import static java.util.Collections.singletonList;
@@ -100,7 +102,21 @@ public class SocialClientServiceImpl implements SocialClientService {
     @Value("${yudao.wxa-subscribe-message.miniprogram-state:formal}")
     public String miniprogramState;
 
-    @Resource
+    /**
+     * 上传发货信息重试次数
+     */
+    private static final int UPLOAD_SHIPPING_INFO_MAX_RETRIES = 5;
+    /**
+     * 上传发货信息重试间隔
+     */
+    private static final Duration UPLOAD_SHIPPING_INFO_RETRY_INTERVAL = Duration.ofMillis(500L);
+    /**
+     * 微信错误码：支付单不存在
+     */
+    private static final int WX_ERR_CODE_PAY_ORDER_NOT_EXIST = 10060001;
+
+    @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
+    @Autowired(required = false) // 由于 justauth.enable 配置项，可以关闭 AuthRequestFactory 的功能，所以这里只能不强制注入
     private AuthRequestFactory authRequestFactory;
 
     @Resource
@@ -166,7 +182,7 @@ public class SocialClientServiceImpl implements SocialClientService {
     public AuthUser getAuthUser(Integer socialType, Integer userType, String code, String state) {
         // 构建请求
         AuthRequest authRequest = buildAuthRequest(socialType, userType);
-        AuthCallback authCallback = AuthCallback.builder().code(code).state(state).build();
+        AuthCallback authCallback = AuthCallback.builder().code(code).auth_code(code).state(state).build();
         // 执行请求
         AuthResponse<?> authResponse = authRequest.login(authCallback);
         log.info("[getAuthUser][请求社交平台 type({}) request({}) response({})]", socialType,
@@ -203,6 +219,10 @@ public class SocialClientServiceImpl implements SocialClientService {
                 newAuthConfig.setAgentId(client.getAgentId());
             }
             // 2.3 设置会 request 里，进行后续使用
+            if (SocialTypeEnum.ALIPAY_MINI_PROGRAM.getType().equals(socialType)) {
+                // 特殊：如果是支付宝的小程序，多了 publicKey 属性，可见 AuthConfig 里的 alipayPublicKey 字段说明
+                return new AuthAlipayRequest(newAuthConfig, client.getPublicKey());
+            }
             ReflectUtil.setFieldValue(request, "config", newAuthConfig);
         }
         return request;
@@ -262,9 +282,9 @@ public class SocialClientServiceImpl implements SocialClientService {
     public WxMaPhoneNumberInfo getWxMaPhoneNumberInfo(Integer userType, String phoneCode) {
         WxMaService service = getWxMaService(userType);
         try {
-            return service.getUserService().getPhoneNoInfo(phoneCode);
+            return service.getUserService().getPhoneNumber(phoneCode);
         } catch (WxErrorException e) {
-            log.error("[getPhoneNoInfo][userType({}) phoneCode({}) 获得手机号失败]", userType, phoneCode, e);
+            log.error("[getPhoneNumber][userType({}) phoneCode({}) 获得手机号失败]", userType, phoneCode, e);
             throw exception(SOCIAL_CLIENT_WEIXIN_MINI_APP_PHONE_CODE_ERROR);
         }
     }
@@ -361,16 +381,34 @@ public class SocialClientServiceImpl implements SocialClientService {
                 .payer(PayerBean.builder().openid(reqDTO.getOpenid()).build())
                 .uploadTime(ZonedDateTime.now().format(UTC_MS_WITH_XXX_OFFSET_FORMATTER))
                 .build();
-        try {
-            WxMaOrderShippingInfoBaseResponse response = service.getWxMaOrderShippingService().upload(request);
-            if (response.getErrCode() != 0) {
+        // 重试机制：解决支付回调与订单信息上传之间的时间差导致的 10060001 错误
+        // 对应 ISSUE：https://gitee.com/zhijiantianya/yudao-cloud/pulls/230
+        for (int attempt = 1; attempt <= UPLOAD_SHIPPING_INFO_MAX_RETRIES; attempt++) {
+            try {
+                WxMaOrderShippingInfoBaseResponse response = service.getWxMaOrderShippingService().upload(request);
+                // 成功，直接返回
+                if (response.getErrCode() == 0) {
+                    log.info("[uploadWxaOrderShippingInfo][上传微信小程序发货信息成功：request({}) response({})]", request, response);
+                    return;
+                }
+                // 如果是 10060001 错误（支付单不存在）且还有重试次数，则等待后重试
+                if (response.getErrCode() == WX_ERR_CODE_PAY_ORDER_NOT_EXIST && attempt < UPLOAD_SHIPPING_INFO_MAX_RETRIES) {
+                    log.warn("[uploadWxaOrderShippingInfo][第 {} 次尝试失败，支付单不存在，{} 后重试：request({}) response({})]",
+                            attempt, UPLOAD_SHIPPING_INFO_RETRY_INTERVAL, request, response);
+                    Thread.sleep(UPLOAD_SHIPPING_INFO_RETRY_INTERVAL.toMillis());
+                    continue;
+                }
+                // 其他错误或重试次数用尽，抛出异常
                 log.error("[uploadWxaOrderShippingInfo][上传微信小程序发货信息失败：request({}) response({})]", request, response);
                 throw exception(SOCIAL_CLIENT_WEIXIN_MINI_APP_ORDER_UPLOAD_SHIPPING_INFO_ERROR, response.getErrMsg());
+            } catch (WxErrorException ex) {
+                log.error("[uploadWxaOrderShippingInfo][上传微信小程序发货信息失败：request({})]", request, ex);
+                throw exception(SOCIAL_CLIENT_WEIXIN_MINI_APP_ORDER_UPLOAD_SHIPPING_INFO_ERROR, ex.getError().getErrorMsg());
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                log.error("[uploadWxaOrderShippingInfo][重试等待被中断：request({})]", request, ex);
+                throw exception(SOCIAL_CLIENT_WEIXIN_MINI_APP_ORDER_UPLOAD_SHIPPING_INFO_ERROR, "重试等待被中断");
             }
-            log.info("[uploadWxaOrderShippingInfo][上传微信小程序发货信息成功：request({}) response({})]", request, response);
-        } catch (WxErrorException ex) {
-            log.error("[uploadWxaOrderShippingInfo][上传微信小程序发货信息失败：request({})]", request, ex);
-            throw exception(SOCIAL_CLIENT_WEIXIN_MINI_APP_ORDER_UPLOAD_SHIPPING_INFO_ERROR, ex.getError().getErrorMsg());
         }
     }
 
@@ -379,7 +417,7 @@ public class SocialClientServiceImpl implements SocialClientService {
         WxMaService service = getWxMaService(userType);
         WxMaOrderShippingInfoNotifyConfirmRequest request = WxMaOrderShippingInfoNotifyConfirmRequest.builder()
                 .transactionId(reqDTO.getTransactionId())
-                .receivedTime(LocalDateTimeUtil.toEpochMilli(reqDTO.getReceivedTime()))
+                .receivedTime(toEpochSecond(reqDTO.getReceivedTime()))
                 .build();
         try {
             WxMaOrderShippingInfoBaseResponse response = service.getWxMaOrderShippingService().notifyConfirmReceive(request);
@@ -466,6 +504,11 @@ public class SocialClientServiceImpl implements SocialClientService {
         socialClientMapper.deleteById(id);
     }
 
+    @Override
+    public void deleteSocialClientList(List<Long> ids) {
+        socialClientMapper.deleteByIds(ids);
+    }
+
     private void validateSocialClientExists(Long id) {
         if (socialClientMapper.selectById(id) == null) {
             throw exception(SOCIAL_CLIENT_NOT_EXISTS);
@@ -474,7 +517,6 @@ public class SocialClientServiceImpl implements SocialClientService {
 
     /**
      * 校验社交应用是否重复，需要保证 userType + socialType 唯一
-     *
      * 原因是，不同端（userType）选择某个社交登录（socialType）时，需要通过 {@link #buildAuthRequest(Integer, Integer)} 构建对应的请求
      *
      * @param id         编号

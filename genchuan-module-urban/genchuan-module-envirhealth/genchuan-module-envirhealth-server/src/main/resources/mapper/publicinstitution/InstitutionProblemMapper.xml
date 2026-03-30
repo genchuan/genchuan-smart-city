@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.publicinstitution.InstitutionProblemMapper">
+
+    <!-- 公共机构问题详情查询结果映射 -->
+    <resultMap id="InstitutionProblemDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.publicinstitution.InstitutionProblemDetailDO">
+        <!-- 继承InstitutionProblemDO的基础字段 -->
+        <result column="id" property="id"/>
+        <result column="problem_id" property="problemId"/>
+        <result column="institution_id" property="institutionId"/>
+        <result column="problem_type_id" property="problemTypeId"/>
+        <result column="location" property="location"/>
+        <result column="report_by" property="reportBy"/>
+        <result column="report_time" property="reportTime"/>
+        <result column="desc" property="desc"/>
+        <result column="dispatch_status" property="dispatchStatus"/>
+        <result column="dept_id" property="deptId"/>
+        <result column="handle_by" property="handleBy"/>
+        <result column="is_timeout" property="isTimeout"/>
+        <result column="handle_result" property="handleResult"/>
+        <result column="ext_common1" property="extCommon1"/>
+        <result column="ext_common2" property="extCommon2"/>
+        <result column="ext_common3" property="extCommon3"/>
+        <result column="ext_common4" property="extCommon4"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+
+        <!-- 关联表字段 -->
+        <result column="institution_name" property="institutionName"/>
+        <result column="problem_type_name" property="problemTypeName"/>
+        <result column="report_name" property="reportName"/>
+        <result column="dept_name" property="deptName"/>
+        <result column="handle_name" property="handleName"/>
+    </resultMap>
+
+    <!-- 联表查询公共机构问题详情列表 -->
+    <select id="selectDetailPage" resultMap="InstitutionProblemDetailResultMap">
+        SELECT
+        ip.*,
+        pi.name AS institution_name,
+        ptype.name AS problem_type_name,
+        ruser.user_name AS report_name,
+        dept.name AS dept_name,
+        huser.user_name AS handle_name
+        FROM public_institution_problem ip
+        LEFT JOIN public_institution pi ON ip.institution_id = pi.institution_id
+        LEFT JOIN sys_problem_type ptype ON ip.problem_type_id = ptype.sys_problem_type_id
+        LEFT JOIN sys_user ruser ON ip.report_by = ruser.user_id
+        LEFT JOIN sys_dept dept ON ip.dept_id = dept.sys_dept_id
+        LEFT JOIN sys_user huser ON ip.handle_by = huser.user_id
+        WHERE ip.deleted = 0
+        ORDER BY ip.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.pageSize}
+    </select>
+
+    <!-- 联表查询公共机构问题总数 -->
+    <select id="selectCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM public_institution_problem ip
+        WHERE ip.deleted = 0
+    </select>
+
+</mapper>

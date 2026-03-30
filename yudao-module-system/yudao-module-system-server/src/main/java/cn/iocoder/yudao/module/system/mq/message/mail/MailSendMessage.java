@@ -1,9 +1,11 @@
 package cn.iocoder.yudao.module.system.mq.message.mail;
 
-import lombok.Data;
-
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
+import java.io.File;
+import java.util.Collection;
 
 /**
  * 邮箱发送消息
@@ -21,8 +23,16 @@ public class MailSendMessage {
     /**
      * 接收邮件地址
      */
-    @NotNull(message = "接收邮件地址不能为空")
-    private String mail;
+    @NotEmpty(message = "接收邮件地址不能为空")
+    private Collection<String> toMails;
+    /**
+     * 抄送邮件地址
+     */
+    private Collection<String> ccMails;
+    /**
+     * 密送邮件地址
+     */
+    private Collection<String> bccMails;
     /**
      * 邮件账号编号
      */
@@ -43,5 +53,10 @@ public class MailSendMessage {
      */
     @NotEmpty(message = "邮件内容不能为空")
     private String content;
+
+    /**
+     * 附件
+     */
+    private File[] attachments;
 
 }

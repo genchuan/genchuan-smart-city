@@ -14,9 +14,9 @@ import cn.iocoder.yudao.module.bpm.service.task.BpmProcessInstanceService;
 import jakarta.annotation.Resource;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.flowable.common.engine.api.delegate.Expression;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.ExecutionListener;
-import org.flowable.engine.impl.el.FixedValue;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +34,7 @@ public class BpmCallActivityListener implements ExecutionListener {
     public static final String DELEGATE_EXPRESSION = "${bpmCallActivityListener}";
 
     @Setter
-    private FixedValue listenerConfig;
+    private Expression listenerConfig;
 
     @Resource
     private BpmProcessDefinitionService processDefinitionService;
@@ -85,10 +85,15 @@ public class BpmCallActivityListener implements ExecutionListener {
             // 2.2 使用表单值，并兜底字符串转 Long 失败时使用主流程发起人
             try {
                 FlowableUtils.setAuthenticatedUserId(Long.parseLong(formFieldValue));
-            } catch (Exception e) {
-                log.error("[notify][监听器：{}，子流程监听器设置流程的发起人字符串转 Long 失败，字符串：{}]",
-                        DELEGATE_EXPRESSION, formFieldValue);
-                FlowableUtils.setAuthenticatedUserId(Long.parseLong(processInstance.getStartUserId()));
+            } catch (NumberFormatException ex) {
+                try {
+                    List<Long> formFieldValues = JsonUtils.parseArray(formFieldValue, Long.class);
+                    FlowableUtils.setAuthenticatedUserId(formFieldValues.get(0));
+                } catch (Exception e) {
+                    log.error("[notify][监听器：{}，子流程监听器设置流程的发起人字符串转 Long 失败，字符串：{}]",
+                            DELEGATE_EXPRESSION, formFieldValue);
+                    FlowableUtils.setAuthenticatedUserId(Long.parseLong(processInstance.getStartUserId()));
+                }
             }
         }
     }

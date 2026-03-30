@@ -1,0 +1,162 @@
+package cn.iocoder.yudao.module.envirhealth.service.garbagetransfer.transfermaintenance;
+
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transfermaintenance.TransferMaintenanceDashboardRespVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transfermaintenance.TransferMaintenancePageReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transfermaintenance.TransferMaintenanceSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferMaintenanceDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferMaintenanceDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.TransferMaintenanceMapper;
+import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.garbagetransfer.TransferMaintenanceCodeGenerator;
+import cn.iocoder.yudao.module.envirhealth.service.garbagetransfer.garbagetransfer.GarbageTransferService;
+import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+
+import java.util.List;
+
+import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.*;
+
+/**
+ * 设备维护 Service 实现类
+ *
+ * @author 芋道源码
+ */
+@Service
+@Validated
+public class TransferMaintenanceServiceImpl implements TransferMaintenanceService {
+
+    @Resource
+    private TransferMaintenanceMapper transferMaintenanceMapper;
+
+    @Resource
+    private GarbageTransferService garbageTransferService;
+
+    @Resource
+    private TransferMaintenanceCodeGenerator codeGenerator;
+
+    @Override
+    public Long createTransferMaintenance(TransferMaintenanceSaveReqVO createReqVO) {
+        // 1. 校验转运站是否存在
+        garbageTransferService.validateTransferIdExists(createReqVO.getTransferId());
+
+        // 2. 转换并生成维修单号
+        TransferMaintenanceDO transferMaintenance = BeanUtils.toBean(createReqVO, TransferMaintenanceDO.class);
+        transferMaintenance.setId(null);
+        transferMaintenance.setMaintenanceId(codeGenerator.generateMaintainId());
+
+        // 3. 插入维修单
+        transferMaintenanceMapper.insert(transferMaintenance);
+
+        // 4. 待维修数量 +1
+        garbageTransferService.incrementPendingMaintenanceCount(createReqVO.getTransferId());
+
+        return transferMaintenance.getId();
+    }
+
+    @Override
+    public void updateTransferMaintenance(TransferMaintenanceSaveReqVO updateReqVO) {
+        // 校验存在
+        validateTransferMaintenanceExists(updateReqVO.getId());
+        // 更新
+        TransferMaintenanceDO updateObj = BeanUtils.toBean(updateReqVO, TransferMaintenanceDO.class);
+        transferMaintenanceMapper.updateById(updateObj);
+    }
+
+    @Override
+    public void deleteTransferMaintenance(Long id) {
+        // 校验存在
+        validateTransferMaintenanceExists(id);
+
+        // 1. 获取维修单（拿到 transferId）
+        TransferMaintenanceDO maintenance = getTransferMaintenance(id);
+
+        // 2. 删除维修单
+        transferMaintenanceMapper.deleteById(id);
+
+        // 3. 待维修数量 -1
+        garbageTransferService.decrementPendingMaintenanceCount(maintenance.getTransferId());
+    }
+
+    private void validateTransferMaintenanceExists(Long id) {
+        if (transferMaintenanceMapper.selectById(id) == null) {
+            throw exception(TRANSFER_MAINTENANCE_NOT_EXISTS);
+        }
+    }
+
+    @Override
+    public TransferMaintenanceDO getTransferMaintenance(Long id) {
+        return transferMaintenanceMapper.selectById(id);
+    }
+
+    @Override
+    public PageResult<TransferMaintenanceDO> getTransferMaintenancePage(TransferMaintenancePageReqVO pageReqVO) {
+        return transferMaintenanceMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public PageResult<TransferMaintenanceDetailDO> getTransferMaintenanceDetailPage(TransferMaintenancePageReqVO pageReqVO) {
+        Long total = transferMaintenanceMapper.selectCount(pageReqVO);
+        if (total == 0) {
+            return PageResult.empty();
+        }
+
+        pageReqVO.setOffset(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+
+        List<TransferMaintenanceDetailDO> list = transferMaintenanceMapper.selectDetailPage(pageReqVO);
+        return new PageResult<>(list, total);
+    }
+
+    @Override
+    public TransferMaintenanceDashboardRespVO getMaintenanceDashboard() {
+        TransferMaintenanceDashboardRespVO respVO = new TransferMaintenanceDashboardRespVO();
+
+        // 1. 卡片数据
+        respVO.setTotalPendingMaintenance(transferMaintenanceMapper.selectTotalPendingMaintenance());
+        respVO.setTypePendingMaintenance(transferMaintenanceMapper.selectTypePendingMaintenance());
+        respVO.setTimeoutUnmaintainedCount(transferMaintenanceMapper.selectTimeoutUnmaintainedCount());
+
+        // 2. 圆环图数据
+        respVO.setEquipmentTypeDistribution(transferMaintenanceMapper.selectEquipmentTypeDistribution());
+        respVO.setMaintenanceStatusDistribution(transferMaintenanceMapper.selectMaintenanceStatusDistribution());
+
+        // 3. 柱状图数据
+        respVO.setStationPendingMaintenanceComparison(transferMaintenanceMapper.selectStationPendingMaintenanceComparison());
+
+        return respVO;
+    }
+
+    @Override
+    public void reviewTransferMaintenance(Long maintenanceId, String result) {
+        // 1. 校验维护单是否存在
+        TransferMaintenanceDO maintenance = getTransferMaintenance(maintenanceId);
+        if (maintenance == null) {
+            throw exception(TRANSFER_MAINTENANCE_NOT_EXISTS);
+        }
+
+        // 只有 维护中 状态，才允许验收
+        if (!"维护中".equals(maintenance.getMaintenanceStatus())) {
+            throw exception(MAINTENANCE_NOT_IN_REPAIRING);
+        }
+
+        // 2. 根据验收结果更新状态
+        if ("合格".equals(result)) {
+            // 合格 → 状态改为【已完成】
+            maintenance.setMaintenanceStatus("已完成");
+
+            // 待维护数量 -1
+            garbageTransferService.decrementPendingMaintenanceCount(maintenance.getTransferId());
+        } else if ("不合格".equals(result)) {
+            // 不合格 → 状态改为【待维修】
+            maintenance.setMaintenanceStatus("待维修");
+        } else {
+            // 非法参数
+            throw exception(UNKNOWN_REVIEW_RESULT);
+        }
+
+        // 3. 更新数据库
+        transferMaintenanceMapper.updateById(maintenance);
+    }
+}

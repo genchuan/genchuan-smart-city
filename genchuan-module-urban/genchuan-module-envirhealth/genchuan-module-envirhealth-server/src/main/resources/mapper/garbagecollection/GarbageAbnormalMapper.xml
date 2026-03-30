@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagecollection.GarbageAbnormalMapper">
+
+    <resultMap id="GarbageAbnormalDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.GarbageAbnormalDetailDO">
+        <id column="id" property="id"/>
+        <result column="abnormal_id" property="abnormalId"/>
+        <result column="plan_id" property="planId"/>
+        <result column="abnormal_type_id" property="abnormalTypeId"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="report_by" property="reportBy"/>
+        <result column="report_time" property="reportTime"/>
+        <result column="priority" property="priority"/>
+        <result column="handler_id" property="handlerId"/>
+        <result column="handle_status" property="handleStatus"/>
+        <result column="is_timeout" property="isTimeout"/>
+        <result column="handle_desc" property="handleDesc"/>
+        <result column="handle_photo_url" property="handlePhotoUrl"/>
+        <result column="review_status" property="reviewStatus"/>
+        <result column="review_by" property="reviewBy"/>
+        <result column="review_time" property="reviewTime"/>
+        <result column="ext_common1" property="extCommon1"/>
+        <result column="ext_common2" property="extCommon2"/>
+        <result column="ext_common3" property="extCommon3"/>
+        <result column="ext_common4" property="extCommon4"/>
+
+        <result column="plan_no" property="planNo"/>
+        <result column="abnormal_name" property="abnormalName"/>
+        <result column="area_name" property="areaName"/>
+        <result column="report_name" property="reportName"/>
+        <result column="handle_name" property="handleName"/>
+    </resultMap>
+
+    <!-- 分页查询（带条件过滤） -->
+    <select id="selectDetailPage" resultMap="GarbageAbnormalDetailResultMap">
+        SELECT
+        ga.*,
+        gc.plan_no AS plan_no,
+        sat.abnormal_name AS abnormal_name,
+        sa.area_name AS area_name,
+        su.user_name AS report_name,
+        su1.user_name AS handle_name
+        FROM garbage_abnormal ga
+        LEFT JOIN garbage_collection gc ON ga.plan_id = gc.plan_no AND gc.deleted = 0
+        LEFT JOIN sys_abnormal_type sat ON ga.abnormal_type_id = sat.abnormal_type_id AND sat.deleted = 0
+        LEFT JOIN sys_area sa ON ga.area_code = sa.area_code AND sa.deleted = 0
+        LEFT JOIN sys_user su ON ga.report_by = su.user_id AND su.deleted = 0
+        LEFT JOIN sys_user su1 ON ga.handler_id = su1.user_id AND su1.deleted = 0
+        WHERE ga.deleted = 0
+        <!-- 动态条件过滤 -->
+        <if test="reqVO.abnormalId != null and reqVO.abnormalId != ''">
+            AND ga.abnormal_id = #{reqVO.abnormalId}
+        </if>
+        <if test="reqVO.planId != null and reqVO.planId != ''">
+            AND ga.plan_id = #{reqVO.planId}
+        </if>
+        <if test="reqVO.abnormalTypeId != null and reqVO.abnormalTypeId != ''">
+            AND ga.abnormal_type_id = #{reqVO.abnormalTypeId}
+        </if>
+        <if test="reqVO.areaCode != null and reqVO.areaCode != ''">
+            AND ga.area_code = #{reqVO.areaCode}
+        </if>
+        <if test="reqVO.reportBy != null and reqVO.reportBy != ''">
+            AND ga.report_by = #{reqVO.reportBy}
+        </if>
+        <!-- 上报时间范围过滤 -->
+        <if test="reqVO.reportTime != null and reqVO.reportTime.length == 2">
+            AND ga.report_time BETWEEN #{reqVO.reportTime[0]} AND #{reqVO.reportTime[1]}
+        </if>
+        <if test="reqVO.priority != null and reqVO.priority != ''">
+            AND ga.priority = #{reqVO.priority}
+        </if>
+        <if test="reqVO.handlerId != null and reqVO.handlerId != ''">
+            AND ga.handler_id = #{reqVO.handlerId}
+        </if>
+        <if test="reqVO.handleStatus != null and reqVO.handleStatus != ''">
+            AND ga.handle_status = #{reqVO.handleStatus}
+        </if>
+        <if test="reqVO.isTimeout != null and reqVO.isTimeout != ''">
+            AND ga.is_timeout = #{reqVO.isTimeout}
+        </if>
+        <if test="reqVO.reviewStatus != null and reqVO.reviewStatus != ''">
+            AND ga.review_status = #{reqVO.reviewStatus}
+        </if>
+        <if test="reqVO.reviewBy != null and reqVO.reviewBy != ''">
+            AND ga.review_by = #{reqVO.reviewBy}
+        </if>
+        <!-- 复核时间范围过滤 -->
+        <if test="reqVO.reviewTime != null and reqVO.reviewTime.length == 2">
+            AND ga.review_time BETWEEN #{reqVO.reviewTime[0]} AND #{reqVO.reviewTime[1]}
+        </if>
+        <!-- 创建时间范围过滤 -->
+        <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+            AND ga.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+        </if>
+        ORDER BY ga.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.limit}
+    </select>
+
+    <!-- 总数查询（同步条件过滤） -->
+    <select id="selectCount" resultType="Long">
+        SELECT COUNT(*)
+        FROM garbage_abnormal ga
+        LEFT JOIN garbage_collection gc ON ga.plan_id = gc.plan_no AND gc.deleted = 0
+        LEFT JOIN sys_abnormal_type sat ON ga.abnormal_type_id = sat.abnormal_type_id AND sat.deleted = 0
+        LEFT JOIN sys_area sa ON ga.area_code = sa.area_code AND sa.deleted = 0
+        LEFT JOIN sys_user su ON ga.report_by = su.user_id AND su.deleted = 0
+        LEFT JOIN sys_user su1 ON ga.handler_id = su.user_id AND su.deleted = 0
+        WHERE ga.deleted = 0
+        <!-- 与分页查询一致的动态条件 -->
+        <if test="reqVO.abnormalId != null and reqVO.abnormalId != ''">
+            AND ga.abnormal_id = #{reqVO.abnormalId}
+        </if>
+        <if test="reqVO.planId != null and reqVO.planId != ''">
+            AND ga.plan_id = #{reqVO.planId}
+        </if>
+        <if test="reqVO.abnormalTypeId != null and reqVO.abnormalTypeId != ''">
+            AND ga.abnormal_type_id = #{reqVO.abnormalTypeId}
+        </if>
+        <if test="reqVO.areaCode != null and reqVO.areaCode != ''">
+            AND ga.area_code = #{reqVO.areaCode}
+        </if>
+        <if test="reqVO.reportBy != null and reqVO.reportBy != ''">
+            AND ga.report_by = #{reqVO.reportBy}
+        </if>
+        <if test="reqVO.reportTime != null and reqVO.reportTime.length == 2">
+            AND ga.report_time BETWEEN #{reqVO.reportTime[0]} AND #{reqVO.reportTime[1]}
+        </if>
+        <if test="reqVO.priority != null and reqVO.priority != ''">
+            AND ga.priority = #{reqVO.priority}
+        </if>
+        <if test="reqVO.handlerId != null and reqVO.handlerId != ''">
+            AND ga.handler_id = #{reqVO.handlerId}
+        </if>
+        <if test="reqVO.handleStatus != null and reqVO.handleStatus != ''">
+            AND ga.handle_status = #{reqVO.handleStatus}
+        </if>
+        <if test="reqVO.isTimeout != null and reqVO.isTimeout != ''">
+            AND ga.is_timeout = #{reqVO.isTimeout}
+        </if>
+        <if test="reqVO.reviewStatus != null and reqVO.reviewStatus != ''">
+            AND ga.review_status = #{reqVO.reviewStatus}
+        </if>
+        <if test="reqVO.reviewBy != null and reqVO.reviewBy != ''">
+            AND ga.review_by = #{reqVO.reviewBy}
+        </if>
+        <if test="reqVO.reviewTime != null and reqVO.reviewTime.length == 2">
+            AND ga.review_time BETWEEN #{reqVO.reviewTime[0]} AND #{reqVO.reviewTime[1]}
+        </if>
+        <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+            AND ga.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+        </if>
+    </select>
+
+</mapper>

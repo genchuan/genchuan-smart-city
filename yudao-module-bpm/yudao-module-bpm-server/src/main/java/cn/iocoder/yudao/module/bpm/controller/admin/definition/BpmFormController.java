@@ -33,14 +33,14 @@ public class BpmFormController {
 
     @PostMapping("/create")
     @Operation(summary = "创建动态表单")
-    // @PreAuthorize("@ss.hasPermission('bpm:form:create')")
+    @PreAuthorize("@ss.hasPermission('bpm:form:create')")
     public CommonResult<Long> createForm(@Valid @RequestBody BpmFormSaveReqVO createReqVO) {
         return success(formService.createForm(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新动态表单")
-    // @PreAuthorize("@ss.hasPermission('bpm:form:update')")
+    @PreAuthorize("@ss.hasPermission('bpm:form:update')")
     public CommonResult<Boolean> updateForm(@Valid @RequestBody BpmFormSaveReqVO updateReqVO) {
         formService.updateForm(updateReqVO);
         return success(true);
@@ -49,7 +49,7 @@ public class BpmFormController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除动态表单")
     @Parameter(name = "id", description = "编号", required = true)
-    // @PreAuthorize("@ss.hasPermission('bpm:form:delete')")
+    @PreAuthorize("@ss.hasPermission('bpm:form:delete')")
     public CommonResult<Boolean> deleteForm(@RequestParam("id") Long id) {
         formService.deleteForm(id);
         return success(true);
@@ -58,7 +58,7 @@ public class BpmFormController {
     @GetMapping("/get")
     @Operation(summary = "获得动态表单")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    // @PreAuthorize("@ss.hasPermission('bpm:form:query')")
+    @PreAuthorize("@ss.hasPermission('bpm:form:query')")
     public CommonResult<BpmFormRespVO> getForm(@RequestParam("id") Long id) {
         BpmFormDO form = formService.getForm(id);
         return success(BeanUtils.toBean(form, BpmFormRespVO.class));
@@ -74,7 +74,7 @@ public class BpmFormController {
 
     @GetMapping("/page")
     @Operation(summary = "获得动态表单分页")
-    // @PreAuthorize("@ss.hasPermission('bpm:form:query')")
+    @PreAuthorize("@ss.hasPermission('bpm:form:query')")
     public CommonResult<PageResult<BpmFormRespVO>> getFormPage(@Valid BpmFormPageReqVO pageVO) {
         PageResult<BpmFormDO> pageResult = formService.getFormPage(pageVO);
         return success(BeanUtils.toBean(pageResult, BpmFormRespVO.class));

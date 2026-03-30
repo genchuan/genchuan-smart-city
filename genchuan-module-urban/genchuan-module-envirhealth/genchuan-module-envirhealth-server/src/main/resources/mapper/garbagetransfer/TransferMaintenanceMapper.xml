@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.TransferMaintenanceMapper">
+
+    <resultMap id="TransferMaintenanceDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferMaintenanceDetailDO">
+        <!-- 基础字段 -->
+        <id column="id" property="id"/>
+        <result column="maintenance_id" property="maintenanceId"/>
+        <result column="transfer_id" property="transferId"/>
+        <result column="equipment_id" property="equipmentId"/>
+        <result column="maintenance_cycle" property="maintenanceCycle"/>
+        <result column="last_maintenance_time" property="lastMaintenanceTime"/>
+        <result column="maintenance_content" property="maintenanceContent"/>
+        <result column="handle_by" property="handleBy"/>
+        <result column="maintenance_status" property="maintenanceStatus"/>
+        <result column="expected_complete_time" property="expectedCompleteTime"/>
+        <result column="abnormal_is_timeout" property="abnormalIsTimeout"/>
+        <result column="maintenance_time" property="maintenanceTime"/>
+        <result column="replace_parts" property="replaceParts"/>
+        <result column="maintenance_cost" property="maintenanceCost"/>
+        <result column="maintenance_photo" property="maintenancePhoto"/>
+
+        <!-- 关联查询字段 -->
+        <result column="transfer_name" property="transferName"/>
+        <result column="equipment_name" property="equipmentName"/>
+        <result column="handle_name" property="handleName"/>
+    </resultMap>
+
+    <!-- 通用查询条件 - 全字段过滤 -->
+    <sql id="whereConditions">
+        <where>
+            tm.deleted = 0
+
+            <!-- 基础字段过滤 -->
+            <if test="reqVO.id != null and reqVO.id != ''">
+                AND tm.id = #{reqVO.id}
+            </if>
+            <if test="reqVO.maintenanceId != null and reqVO.maintenanceId != ''">
+                AND tm.maintenance_id = #{reqVO.maintenanceId}
+            </if>
+            <if test="reqVO.transferId != null and reqVO.transferId != ''">
+                AND tm.transfer_id = #{reqVO.transferId}
+            </if>
+            <if test="reqVO.equipmentId != null and reqVO.equipmentId != ''">
+                AND tm.equipment_id = #{reqVO.equipmentId}
+            </if>
+
+            <!-- 维护周期模糊查询 -->
+            <if test="reqVO.maintenanceCycle != null and reqVO.maintenanceCycle != ''">
+                AND tm.maintenance_cycle LIKE CONCAT('%', #{reqVO.maintenanceCycle}, '%')
+            </if>
+
+            <!-- 上次维护时间范围查询 -->
+            <if test="reqVO.lastMaintenanceTime != null and reqVO.lastMaintenanceTime.length == 2">
+                AND tm.last_maintenance_time BETWEEN #{reqVO.lastMaintenanceTime[0]} AND #{reqVO.lastMaintenanceTime[1]}
+            </if>
+
+            <!-- 维护内容模糊查询 -->
+            <if test="reqVO.maintenanceContent != null and reqVO.maintenanceContent != ''">
+                AND tm.maintenance_content LIKE CONCAT('%', #{reqVO.maintenanceContent}, '%')
+            </if>
+
+            <!-- 维护人精确查询 -->
+            <if test="reqVO.handleBy != null and reqVO.handleBy != ''">
+                AND tm.handle_by = #{reqVO.handleBy}
+            </if>
+
+            <!-- 维护状态精确查询 -->
+            <if test="reqVO.maintenanceStatus != null and reqVO.maintenanceStatus != ''">
+                AND tm.maintenance_status = #{reqVO.maintenanceStatus}
+            </if>
+
+            <!-- 预计完成时间范围查询 -->
+            <if test="reqVO.expectedCompleteTime != null and reqVO.expectedCompleteTime.length == 2">
+                AND tm.expected_complete_time BETWEEN #{reqVO.expectedCompleteTime[0]} AND #{reqVO.expectedCompleteTime[1]}
+            </if>
+
+            <!-- 超时提醒精确查询 -->
+            <if test="reqVO.abnormalIsTimeout != null and reqVO.abnormalIsTimeout != ''">
+                AND tm.abnormal_is_timeout = #{reqVO.abnormalIsTimeout}
+            </if>
+
+            <!-- 维护时间范围查询 -->
+            <if test="reqVO.maintenanceTime != null and reqVO.maintenanceTime.length == 2">
+                AND tm.maintenance_time BETWEEN #{reqVO.maintenanceTime[0]} AND #{reqVO.maintenanceTime[1]}
+            </if>
+
+            <!-- 更换配件模糊查询 -->
+            <if test="reqVO.replaceParts != null and reqVO.replaceParts != ''">
+                AND tm.replace_parts LIKE CONCAT('%', #{reqVO.replaceParts}, '%')
+            </if>
+
+            <!-- 维护费用精确查询 -->
+            <if test="reqVO.maintenanceCost != null">
+                AND tm.maintenance_cost = #{reqVO.maintenanceCost}
+            </if>
+
+            <!-- 维护照片JSON模糊查询 -->
+            <if test="reqVO.maintenancePhoto != null and reqVO.maintenancePhoto != ''">
+                AND tm.maintenance_photo LIKE CONCAT('%', #{reqVO.maintenancePhoto}, '%')
+            </if>
+
+            <!-- 创建时间范围查询 -->
+            <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+                AND tm.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询详情（联表） -->
+    <select id="selectDetailPage" resultMap="TransferMaintenanceDetailResultMap">
+        SELECT
+        tm.*,
+        gt.name AS transfer_name,
+        se.name AS equipment_name,
+        su.user_name AS handle_name
+        FROM garbage_transfer_maintenance tm
+        LEFT JOIN garbage_transfer gt ON tm.transfer_id = gt.transfer_id AND gt.deleted = 0
+        LEFT JOIN sys_equipment se ON tm.equipment_id = se.sys_equipment_id AND se.deleted = 0
+        LEFT JOIN sys_user su ON tm.handle_by = su.user_id AND su.deleted = 0
+
+        <include refid="whereConditions" />
+
+        ORDER BY tm.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.pageSize}
+    </select>
+
+    <!-- 统计总数（匹配分页条件） -->
+    <select id="selectCount" resultType="Long">
+        SELECT COUNT(*)
+        FROM garbage_transfer_maintenance tm
+        LEFT JOIN garbage_transfer gt ON tm.transfer_id = gt.transfer_id AND gt.deleted = 0
+        LEFT JOIN sys_equipment se ON tm.equipment_id = se.sys_equipment_id AND se.deleted = 0
+        LEFT JOIN sys_user su ON tm.handle_by = su.user_id AND su.deleted = 0
+
+        <include refid="whereConditions" />
+    </select>
+
+</mapper>

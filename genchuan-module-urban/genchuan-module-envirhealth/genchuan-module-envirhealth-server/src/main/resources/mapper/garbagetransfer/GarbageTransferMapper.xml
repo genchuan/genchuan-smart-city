@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.GarbageTransferMapper">
+
+    <resultMap id="GarbageTransferDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.GarbageTransferDetailDO">
+        <id column="id" property="id"/>
+        <result column="transfer_id" property="transferId"/>
+        <result column="name" property="name"/>
+        <result column="location" property="location"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="equipment_ids" property="equipmentIds"/>
+        <result column="operation_status_id" property="operationStatusId"/>
+        <result column="manager_id" property="managerId"/>
+        <result column="daily_transfer_volume" property="dailyTransferVolume"/>
+        <result column="equipment_rate" property="equipmentRate"/>
+        <result column="environment_rate" property="environmentRate"/>
+        <result column="unhandled_alarm_count" property="unhandledAlarmCount"/>
+        <result column="pending_maintenance_count" property="pendingMaintenanceCount"/>
+        <result column="environment_data" property="environmentData"/>
+        <result column="area_name" property="areaName"/>
+        <result column="equipments_name_str" property="equipmentsNameStr"/>
+        <result column="operation_status_name" property="operationStatusName"/>
+        <result column="manager_name" property="managerName"/>
+    </resultMap>
+
+    <!-- 通用查询条件 SQL 片段 -->
+    <sql id="whereConditions">
+        <where>
+            gt.deleted = 0
+            <if test="reqVO.name != null and reqVO.name != ''">
+                AND gt.name LIKE CONCAT('%', #{reqVO.name}, '%')
+            </if>
+            <if test="reqVO.location != null and reqVO.location != ''">
+                AND gt.location LIKE CONCAT('%', #{reqVO.location}, '%')
+            </if>
+            <if test="reqVO.areaCode != null and reqVO.areaCode != ''">
+                AND gt.area_code = #{reqVO.areaCode}
+            </if>
+            <if test="reqVO.operationStatusId != null and reqVO.operationStatusId != ''">
+                AND gt.operation_status_id = #{reqVO.operationStatusId}
+            </if>
+            <if test="reqVO.managerId != null and reqVO.managerId != ''">
+                AND gt.manager_id = #{reqVO.managerId}
+            </if>
+            <if test="reqVO.dailyTransferVolume != null">
+                AND gt.daily_transfer_volume = #{reqVO.dailyTransferVolume}
+            </if>
+            <if test="reqVO.equipmentRate != null">
+                AND gt.equipment_rate = #{reqVO.equipmentRate}
+            </if>
+            <if test="reqVO.environmentRate != null">
+                AND gt.environment_rate = #{reqVO.environmentRate}
+            </if>
+            <if test="reqVO.unhandledAlarmCount != null">
+                AND gt.unhandled_alarm_count = #{reqVO.unhandledAlarmCount}
+            </if>
+            <if test="reqVO.pendingMaintenanceCount != null">
+                AND gt.pending_maintenance_count = #{reqVO.pendingMaintenanceCount}
+            </if>
+            <if test="reqVO.progressStatus != null">
+                AND gt.progress_status = #{reqVO.progressStatus}
+            </if>
+            <if test="reqVO.createTime != null">
+                AND gt.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectDetailPage" resultMap="GarbageTransferDetailResultMap">
+        SELECT
+        gt.*,
+        a.area_name AS area_name,
+        os.name AS operation_status_name,
+        u.user_name AS manager_name
+        FROM garbage_transfer gt
+        LEFT JOIN sys_area a ON gt.area_code = a.area_code AND a.deleted = 0
+        LEFT JOIN sys_operation_status os ON gt.operation_status_id = os.sys_operation_status_id AND os.deleted = 0
+        LEFT JOIN sys_user u ON gt.manager_id = u.user_id AND u.deleted = 0
+        <include refid="whereConditions"/>
+        ORDER BY gt.id DESC
+        LIMIT #{reqVO.pageSize} OFFSET #{reqVO.offset}
+    </select>
+
+    <!-- 查询总条数 -->
+    <select id="selectCount" resultType="Long">
+        SELECT COUNT(gt.id)
+        FROM garbage_transfer gt
+        <include refid="whereConditions"/>
+    </select>
+
+</mapper>

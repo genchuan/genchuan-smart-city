@@ -19,8 +19,12 @@ public enum CodegenFrontTypeEnum {
     VUE3_VBEN2_ANTD_SCHEMA(30), // Vue3 VBEN2 + ANTD + Schema 模版
 
     VUE3_VBEN5_ANTD_SCHEMA(40), // Vue3 VBEN5 + ANTD + schema 模版
-
     VUE3_VBEN5_ANTD_GENERAL(41), // Vue3 VBEN5 + ANTD 标准模版
+
+    VUE3_VBEN5_EP_SCHEMA(50), // Vue3 VBEN5 + EP + schema 模版
+    VUE3_VBEN5_EP_GENERAL(51), // Vue3 VBEN5 + EP 标准模版
+
+    VUE3_ADMIN_UNIAPP_WOT(60), // Vue3 Admin + Uniapp + WOT 标准模版
     ;
 
     /**

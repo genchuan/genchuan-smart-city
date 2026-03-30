@@ -33,8 +33,4 @@ public interface MenuMapper extends BaseMapperX<MenuDO> {
         return selectOne(MenuDO::getComponentName, componentName);
     }
 
-//    default List<MenuDO> selectBatchIds(List<Long> ids) {
-//        return selectList(MenuDO::getId, ids);
-//    }
-
 }

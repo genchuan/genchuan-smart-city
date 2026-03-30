@@ -32,8 +32,6 @@
             <version>${revision}</version>
         </dependency>
 
-
-
         <!-- 会员中心。默认注释，保证编译速度 -->
 <!--        <dependency>-->
 <!--            <groupId>cn.iocoder.cloud</groupId>-->
@@ -47,12 +45,12 @@
 <!--            <artifactId>yudao-module-report-server</artifactId>-->
 <!--            <version>${revision}</version>-->
 <!--        </dependency>-->
-<!--         工作流。默认注释，保证编译速度-->
-        <dependency>
-            <groupId>cn.iocoder.cloud</groupId>
-            <artifactId>yudao-module-bpm-server</artifactId>
-            <version>${revision}</version>
-        </dependency>
+        <!-- 工作流。默认注释，保证编译速度 -->
+<!--        <dependency>-->
+<!--            <groupId>cn.iocoder.cloud</groupId>-->
+<!--            <artifactId>yudao-module-bpm-server</artifactId>-->
+<!--            <version>${revision}</version>-->
+<!--        </dependency>-->
         <!-- 支付服务。默认注释，保证编译速度 -->
 <!--        <dependency>-->
 <!--            <groupId>cn.iocoder.cloud</groupId>-->
@@ -113,7 +111,7 @@
         <!-- IoT 物联网相关模块。默认注释，保证编译速度 -->
 <!--        <dependency>-->
 <!--            <groupId>cn.iocoder.cloud</groupId>-->
-<!--            <artifactId>yudao-module-iot-biz</artifactId>-->
+<!--            <artifactId>yudao-module-iot-server</artifactId>-->
 <!--            <version>${revision}</version>-->
 <!--        </dependency>-->
 

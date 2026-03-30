@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.user.UserMapper">
+
+    <!-- 用户详情结果映射 -->
+    <resultMap id="UserDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.UserDetailDO">
+        <!-- 基础字段（继承UserDO） -->
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="user_name" property="userName"/>
+        <result column="user_phone" property="userPhone"/>
+        <result column="dept_id" property="deptId"/>
+        <result column="role_id" property="roleId"/>
+        <result column="status_id" property="statusId"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="skill_tags" property="skillTags"/>
+        <result column="work_trajectory_id" property="workTrajectoryId"/>
+        <result column="team_id" property="teamId"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="job_type_id" property="jobTypeId"/>
+        <result column="person_status_id" property="personStatusId"/>
+        <result column="phone" property="phone"/>
+        <result column="entry_time" property="entryTime"/>
+        <result column="total_attendance_days" property="totalAttendanceDays"/>
+        <result column="average_score" property="averageScore"/>
+        <result column="last_work_trace" property="lastWorkTrace"/>
+
+        <!-- 关联查询的扩展字段 -->
+        <result column="job_type_name" property="jobTypeName"/>
+        <result column="team_name" property="teamName"/>
+        <result column="person_status_name" property="personStatusName"/>
+        <result column="area_name" property="areaName"/>
+        <result column="create_name" property="createName"/>
+        <result column="update_name" property="updateName"/>
+        <result column="dept_name" property="deptName"/>
+        <result column="role_name" property="roleName"/>
+    </resultMap>
+
+    <!-- 通用查询条件 -->
+    <sql id="whereConditions">
+        <where>
+            su.deleted = 0
+
+            <!-- 基础字段过滤 -->
+            <if test="reqVO.userId != null and reqVO.userId != ''">
+                AND su.user_id = #{reqVO.userId}
+            </if>
+            <if test="reqVO.userName != null and reqVO.userName != ''">
+                AND su.user_name LIKE CONCAT('%', #{reqVO.userName}, '%')
+            </if>
+            <if test="reqVO.userPhone != null and reqVO.userPhone != ''">
+                AND su.user_phone = #{reqVO.userPhone}
+            </if>
+            <if test="reqVO.deptId != null and reqVO.deptId != ''">
+                AND su.dept_id = #{reqVO.deptId}
+            </if>
+            <if test="reqVO.roleId != null and reqVO.roleId != ''">
+                AND su.role_id = #{reqVO.roleId}
+            </if>
+            <if test="reqVO.statusId != null and reqVO.statusId != ''">
+                AND su.status_id = #{reqVO.statusId}
+            </if>
+            <if test="reqVO.createBy != null and reqVO.createBy != ''">
+                AND su.create_by = #{reqVO.createBy}
+            </if>
+            <if test="reqVO.updateBy != null and reqVO.updateBy != ''">
+                AND su.update_by = #{reqVO.updateBy}
+            </if>
+            <if test="reqVO.skillTags != null and reqVO.skillTags != ''">
+                AND su.skill_tags LIKE CONCAT('%', #{reqVO.skillTags}, '%')
+            </if>
+            <if test="reqVO.workTrajectoryId != null and reqVO.workTrajectoryId != ''">
+                AND su.work_trajectory_id = #{reqVO.workTrajectoryId}
+            </if>
+            <if test="reqVO.teamId != null and reqVO.teamId != ''">
+                AND su.team_id = #{reqVO.teamId}
+            </if>
+            <if test="reqVO.areaCode != null and reqVO.areaCode != ''">
+                AND su.area_code = #{reqVO.areaCode}
+            </if>
+            <if test="reqVO.jobTypeId != null and reqVO.jobTypeId != ''">
+                AND su.job_type_id = #{reqVO.jobTypeId}
+            </if>
+            <if test="reqVO.personStatusId != null and reqVO.personStatusId != ''">
+                AND su.person_status_id = #{reqVO.personStatusId}
+            </if>
+            <if test="reqVO.phone != null and reqVO.phone != ''">
+                AND su.phone = #{reqVO.phone}
+            </if>
+
+            <!-- 时间范围查询 -->
+            <if test="reqVO.entryTime != null and reqVO.entryTime.length == 2">
+                AND su.entry_time BETWEEN #{reqVO.entryTime[0]} AND #{reqVO.entryTime[1]}
+            </if>
+
+            <!-- 数值字段过滤 -->
+            <if test="reqVO.totalAttendanceDays != null">
+                AND su.total_attendance_days = #{reqVO.totalAttendanceDays}
+            </if>
+            <if test="reqVO.averageScore != null">
+                AND su.average_score = #{reqVO.averageScore}
+            </if>
+
+            <if test="reqVO.lastWorkTrace != null and reqVO.lastWorkTrace != ''">
+                AND su.last_work_trace LIKE CONCAT('%', #{reqVO.lastWorkTrace}, '%')
+            </if>
+
+            <!-- 创建时间范围查询 -->
+            <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+                AND su.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询用户详情（联表） -->
+    <select id="selectDetailPage" resultMap="UserDetailResultMap">
+        SELECT
+        su.*,
+        sjt.name AS job_type_name,
+        st.name AS team_name,
+        sps.name AS person_status_name,
+        sa.area_name AS area_name,
+        u1.user_name AS create_name,
+        u2.user_name AS update_name,
+        sd.name AS dept_name,
+        sr.role_name AS role_name
+        FROM sys_user su
+        -- 关联岗位类型表
+        LEFT JOIN sys_job_type sjt ON su.job_type_id = sjt.job_type_id AND sjt.deleted = 0
+        -- 关联班组表
+        LEFT JOIN sys_team st ON su.team_id = st.sys_team_id AND st.deleted = 0
+        -- 关联人员状态表
+        LEFT JOIN sys_person_status sps ON su.person_status_id = sps.person_status_id AND sps.deleted = 0
+        -- 关联区域表
+        LEFT JOIN sys_area sa ON su.area_code = sa.area_code AND sa.deleted = 0
+        -- 关联创建人
+        LEFT JOIN sys_user u1 ON su.create_by = u1.user_id AND u1.deleted = 0
+        -- 关联更新人
+        LEFT JOIN sys_user u2 ON su.update_by = u2.user_id AND u2.deleted = 0
+        -- 关联部门表
+        LEFT JOIN sys_dept sd ON su.dept_id = sd.sys_dept_id AND sd.deleted = 0
+        -- 关联角色表
+        LEFT JOIN sys_role sr ON su.role_id = sr.role_id AND sr.deleted = 0
+
+        <include refid="whereConditions" />
+
+        ORDER BY su.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.limit}
+    </select>
+
+    <!-- 查询符合条件的总记录数 -->
+    <select id="selectCount" resultType="Long">
+        SELECT COUNT(DISTINCT su.id)
+        FROM sys_user su
+        -- 关联关联表
+        LEFT JOIN sys_job_type sjt ON su.job_type_id = sjt.job_type_id AND sjt.deleted = 0
+        LEFT JOIN sys_team st ON su.team_id = st.sys_team_id AND st.deleted = 0
+        LEFT JOIN sys_person_status sps ON su.person_status_id = sps.person_status_id AND sps.deleted = 0
+        LEFT JOIN sys_area sa ON su.area_code = sa.area_code AND sa.deleted = 0
+        LEFT JOIN sys_user u1 ON su.create_by = u1.user_id AND u1.deleted = 0
+        LEFT JOIN sys_user u2 ON su.update_by = u2.user_id AND u2.deleted = 0
+        LEFT JOIN sys_dept sd ON su.dept_id = sd.sys_dept_id AND sd.deleted = 0
+        LEFT JOIN sys_role sr ON su.role_id = sr.role_id AND sr.deleted = 0
+
+        <include refid="whereConditions" />
+    </select>
+
+</mapper>

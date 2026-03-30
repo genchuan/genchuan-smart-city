@@ -105,6 +105,24 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = RedisKeyConstants.PERMISSION_MENU_ID_LIST,
+            allEntries = true) // allEntries 清空所有缓存，因为 Spring Cache 不支持按照 ids 批量删除
+    public void deleteMenuList(List<Long> ids) {
+        // 校验是否还有子菜单
+        ids.forEach(id -> {
+            if (menuMapper.selectCountByParentId(id) > 0) {
+                throw exception(MENU_EXISTS_CHILDREN);
+            }
+        });
+
+        // 标记删除
+        menuMapper.deleteByIds(ids);
+        // 删除授予给角色的权限
+        ids.forEach(id -> permissionService.processMenuDeleted(id));
+    }
+
+    @Override
     public List<MenuDO> getMenuList() {
         return menuMapper.selectList();
     }
@@ -187,18 +205,7 @@ public class MenuServiceImpl implements MenuService {
         if (CollUtil.isEmpty(ids)) {
             return Lists.newArrayList();
         }
-        return menuMapper.selectBatchIds(ids);
-    }
-
-    @Override
-    public List<MenuDO> getMenuListByIds(List<Long> ids) {
-        log.info("查询菜单列表，IDs: {}", ids);
-        if (CollUtil.isEmpty(ids)) {
-            return Collections.emptyList();
-        }
-        List<MenuDO> result = menuMapper.selectBatchIds(ids);
-        log.info("查询结果数量: {}", result.size());
-        return result;
+        return menuMapper.selectByIds(ids);
     }
 
     /**
@@ -273,7 +280,7 @@ public class MenuServiceImpl implements MenuService {
         }
         // 如果 id 为空，说明不用比较是否为相同 id 的菜单
         if (id == null) {
-            return;
+            throw exception(MENU_COMPONENT_NAME_DUPLICATE);
         }
         if (!menu.getId().equals(id)) {
             throw exception(MENU_COMPONENT_NAME_DUPLICATE);

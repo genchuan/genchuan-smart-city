@@ -54,7 +54,7 @@ public class SocialUserServiceImpl implements SocialUserService {
             return Collections.emptyList();
         }
         // 获得社交用户
-        return socialUserMapper.selectBatchIds(convertSet(socialUserBinds, SocialUserBindDO::getSocialUserId));
+        return socialUserMapper.selectByIds(convertSet(socialUserBinds, SocialUserBindDO::getSocialUserId));
     }
 
     @Override
@@ -153,6 +153,7 @@ public class SocialUserServiceImpl implements SocialUserService {
         if (socialUser.getId() == null) {
             socialUserMapper.insert(socialUser);
         } else {
+            socialUser.clean(); // 避免 updateTime 不更新：https://gitee.com/yudaocode/yudao-boot-mini/issues/ID7FUL
             socialUserMapper.updateById(socialUser);
         }
         return socialUser;

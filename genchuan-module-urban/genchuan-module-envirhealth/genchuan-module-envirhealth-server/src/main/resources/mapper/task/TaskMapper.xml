@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.task.TaskMapper">
+
+    <resultMap id="TaskDetailWithPublicToiletResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.TaskDetailWithPublicToiletDO">
+
+        <id column="id" property="id"/>
+        <result column="task_id" property="taskId"/>
+        <result column="task_type_id" property="taskTypeId"/>
+        <result column="toilet_id" property="toiletId"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="handle_by" property="handleBy"/>
+        <result column="handle_result" property="handleResult"/>
+        <result column="proof_url" property="proofUrl"/>
+        <result column="complete_time" property="completeTime"/>
+        <result column="handle_duration" property="handleDuration"/>
+        <result column="stat_period" property="statPeriod"/>
+        <result column="cleaning_qualified_rate" property="cleaningQualifiedRate"/>
+        <result column="problem_complete_rate" property="problemCompleteRate"/>
+        <result column="inspection_pass_rate" property="inspectionPassRate"/>
+        <result column="total_entry_volume" property="totalEntryVolume"/>
+        <result column="equipment_intact_rate" property="equipmentIntactRate"/>
+        <result column="environment_qualified_rate" property="environmentQualifiedRate"/>
+        <result column="satisfaction" property="satisfaction"/>
+
+        <!-- 关联扩展字段 -->
+        <result column="task_type_name" property="taskTypeName"/>
+        <result column="toilet_name" property="toiletName"/>
+        <result column="area_name" property="areaName"/>
+        <result column="handle_name" property="handleName"/>
+    </resultMap>
+
+    <select id="selectDetailPageWithPublicToilet" resultMap="TaskDetailWithPublicToiletResultMap">
+        SELECT
+        t.*,
+        ttp.name AS task_type_name,
+        pt.name AS toilet_name,
+        sa.area_name AS area_name,
+        su.user_name AS handle_name
+        FROM task t
+            INNER JOIN public_toilet pt ON t.toilet_id = pt.toilet_id
+            LEFT JOIN sys_task_type ttp ON t.task_type_id = ttp.sys_task_type_id
+            LEFT JOIN sys_area sa ON t.area_code = sa.area_code
+            LEFT JOIN sys_user su ON t.handle_by = su.user_id
+        WHERE t.deleted = 0
+          AND t.toilet_id IS NOT NULL
+          AND t.toilet_id != ''
+        ORDER BY t.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.pageSize}
+    </select>
+
+    <select id="selectCountWithPublicToilet" resultType="java.lang.Long">
+        SELECT COUNT(DISTINCT t.id)
+        FROM task t
+        INNER JOIN public_toilet pt
+        ON t.toilet_id = pt.toilet_id
+        WHERE t.deleted = 0
+        AND t.toilet_id IS NOT NULL
+        AND t.toilet_id != ''
+    </select>
+
+
+    <resultMap id="TaskDetailWithGarbageTransferResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.TaskDetailWithGarbageTransferDO">
+        <!-- 继承TaskDO的基础字段 -->
+        <id column="id" property="id"/>
+        <result column="task_id" property="taskId"/>
+        <result column="task_type_id" property="taskTypeId"/>
+        <result column="toilet_id" property="toiletId"/>
+        <result column="transfer_id" property="transferId"/>
+        <result column="institution_id" property="institutionId"/>
+        <result column="street_id" property="streetId"/>
+        <result column="park_id" property="parkId"/>
+        <result column="village_id" property="villageId"/>
+        <result column="market_id" property="marketId"/>
+        <result column="river_id" property="riverId"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="handle_by" property="handleBy"/>
+        <result column="handle_result" property="handleResult"/>
+        <result column="proof_url" property="proofUrl"/>
+        <result column="complete_time" property="completeTime"/>
+        <result column="handle_duration" property="handleDuration"/>
+        <result column="stat_period" property="statPeriod"/>
+        <result column="cleaning_qualified_rate" property="cleaningQualifiedRate"/>
+        <result column="problem_complete_rate" property="problemCompleteRate"/>
+        <result column="inspection_pass_rate" property="inspectionPassRate"/>
+        <result column="total_entry_volume" property="totalEntryVolume"/>
+        <result column="equipment_intact_rate" property="equipmentIntactRate"/>
+        <result column="environment_qualified_rate" property="environmentQualifiedRate"/>
+        <result column="satisfaction" property="satisfaction"/>
+        <result column="ext_common1" property="extCommon1"/>
+        <result column="ext_common2" property="extCommon2"/>
+        <result column="ext_common3" property="extCommon3"/>
+        <result column="ext_common4" property="extCommon4"/>
+
+        <!-- 关联查询的扩展字段 -->
+        <result column="task_type_name" property="taskTypeName"/>
+        <result column="transfer_name" property="transferName"/>
+        <result column="area_name" property="areaName"/>
+        <result column="handle_name" property="handleName"/>
+    </resultMap>
+
+    <select id="selectDetailPageWithGarbageTransfer" resultMap="TaskDetailWithGarbageTransferResultMap">
+        SELECT
+        t.*,
+        tt.name AS task_type_name,
+        gt.name AS transfer_name,
+        a.area_name AS area_name,
+        u.user_name AS handle_name
+        FROM task t
+        LEFT JOIN sys_task_type tt ON t.task_type_id = tt.sys_task_type_id AND tt.deleted = 0
+        LEFT JOIN garbage_transfer gt ON t.transfer_id = gt.transfer_id AND gt.deleted = 0
+        LEFT JOIN sys_area a ON t.area_code = a.area_code AND a.deleted = 0
+        LEFT JOIN sys_user u ON t.handle_by = u.user_id AND u.deleted = 0
+        WHERE t.deleted = 0
+          AND t.transfer_id IS NOT NULL
+          AND t.transfer_id != ''
+        ORDER BY t.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.pageSize}
+    </select>
+
+    <select id="selectCountWithGarbageTransfer" resultType="java.lang.Long">
+        SELECT COUNT(DISTINCT t.id)
+        FROM task t
+        INNER JOIN garbage_transfer gt
+        ON t.transfer_id = gt.transfer_id
+        WHERE t.deleted = 0
+          AND t.transfer_id IS NOT NULL
+          AND t.transfer_id != ''
+    </select>
+
+
+    <resultMap id="TaskDetailWithPublicInstitutionResultMap"
+               type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.task.TaskDetailWithPublicInstitutionDO">
+        <id column="id" property="id"/>
+        <result column="task_id" property="taskId"/>
+        <result column="task_type_id" property="taskTypeId"/>
+        <result column="institution_id" property="institutionId"/>
+        <result column="toilet_id" property="toiletId"/>
+        <result column="transfer_id" property="transferId"/>
+        <result column="street_id" property="streetId"/>
+        <result column="park_id" property="parkId"/>
+        <result column="village_id" property="villageId"/>
+        <result column="market_id" property="marketId"/>
+        <result column="river_id" property="riverId"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="handle_by" property="handleBy"/>
+        <result column="handle_result" property="handleResult"/>
+        <result column="proof_url" property="proofUrl"/>
+        <result column="complete_time" property="completeTime"/>
+        <result column="handle_duration" property="handleDuration"/>
+        <result column="stat_period" property="statPeriod"/>
+        <result column="cleaning_qualified_rate" property="cleaningQualifiedRate"/>
+        <result column="problem_complete_rate" property="problemCompleteRate"/>
+        <result column="inspection_pass_rate" property="inspectionPassRate"/>
+        <result column="total_entry_volume" property="totalEntryVolume"/>
+        <result column="equipment_intact_rate" property="equipmentIntactRate"/>
+        <result column="environment_qualified_rate" property="environmentQualifiedRate"/>
+        <result column="satisfaction" property="satisfaction"/>
+        <result column="ext_common1" property="extCommon1"/>
+        <result column="ext_common2" property="extCommon2"/>
+        <result column="ext_common3" property="extCommon3"/>
+        <result column="ext_common4" property="extCommon4"/>
+
+        <result column="task_type_name" property="taskTypeName"/>
+        <result column="institution_name" property="institutionName"/>
+        <result column="area_name" property="areaName"/>
+        <result column="handle_name" property="handleName"/>
+    </resultMap>
+
+    <select id="selectDetailPageWithPublicInstitution" resultMap="TaskDetailWithPublicInstitutionResultMap">
+        SELECT
+        t.*,
+        tt.name AS task_type_name,
+        a.area_name AS area_name,
+        u.user_name AS handle_name,
+        pi.name AS institution_name
+        FROM task t
+        LEFT JOIN sys_task_type tt ON t.task_type_id = tt.sys_task_type_id AND tt.deleted = 0
+        LEFT JOIN sys_area a ON t.area_code = a.area_code AND a.deleted = 0
+        LEFT JOIN sys_user u ON t.handle_by = u.user_id AND u.deleted = 0
+        LEFT JOIN public_institution pi ON t.institution_id = pi.institution_id AND pi.deleted = 0
+        WHERE t.deleted = 0
+          AND t.institution_id IS NOT NULL
+          AND t.institution_id != ''
+        ORDER BY t.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.pageSize}
+    </select>
+
+    <select id="selectCountWithPublicInstitution" resultType="Long">
+        SELECT COUNT(DISTINCT t.id)
+        FROM task t
+        INNER JOIN public_institution pi
+        ON t.institution_id = pi.institution_id
+        WHERE t.deleted = 0
+          AND t.institution_id IS NOT NULL
+          AND t.institution_id != ''
+    </select>
+</mapper>

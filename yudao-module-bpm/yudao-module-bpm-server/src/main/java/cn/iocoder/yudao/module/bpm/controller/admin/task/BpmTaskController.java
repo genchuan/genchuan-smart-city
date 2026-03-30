@@ -62,7 +62,7 @@ public class BpmTaskController {
 
     @GetMapping("todo-page")
     @Operation(summary = "获取 Todo 待办任务分页")
-    // @PreAuthorize("@ss.hasPermission('bpm:task:query')")
+    @PreAuthorize("@ss.hasPermission('bpm:task:query')")
     public CommonResult<PageResult<BpmTaskRespVO>> getTaskTodoPage(@Valid BpmTaskPageReqVO pageVO) {
         PageResult<Task> pageResult = taskService.getTaskTodoPage(getLoginUserId(), pageVO);
         if (CollUtil.isEmpty(pageResult.getList())) {
@@ -81,7 +81,7 @@ public class BpmTaskController {
 
     @GetMapping("done-page")
     @Operation(summary = "获取 Done 已办任务分页")
-    // @PreAuthorize("@ss.hasPermission('bpm:task:query')")
+    @PreAuthorize("@ss.hasPermission('bpm:task:query')")
     public CommonResult<PageResult<BpmTaskRespVO>> getTaskDonePage(@Valid BpmTaskPageReqVO pageVO) {
         PageResult<HistoricTaskInstance> pageResult = taskService.getTaskDonePage(getLoginUserId(), pageVO);
         if (CollUtil.isEmpty(pageResult.getList())) {
@@ -100,7 +100,7 @@ public class BpmTaskController {
 
     @GetMapping("manager-page")
     @Operation(summary = "获取全部任务的分页", description = "用于【流程任务】菜单")
-    // @PreAuthorize("@ss.hasPermission('bpm:task:mananger-query')")
+    @PreAuthorize("@ss.hasPermission('bpm:task:manager-query')")
     public CommonResult<PageResult<BpmTaskRespVO>> getTaskManagerPage(@Valid BpmTaskPageReqVO pageVO) {
         PageResult<HistoricTaskInstance> pageResult = taskService.getTaskPage(getLoginUserId(), pageVO);
         if (CollUtil.isEmpty(pageResult.getList())) {
@@ -124,7 +124,7 @@ public class BpmTaskController {
     @GetMapping("/list-by-process-instance-id")
     @Operation(summary = "获得指定流程实例的任务列表", description = "包括完成的、未完成的")
     @Parameter(name = "processInstanceId", description = "流程实例的编号", required = true)
-    // @PreAuthorize("@ss.hasPermission('bpm:task:query')")
+    @PreAuthorize("@ss.hasPermission('bpm:task:query')")
     public CommonResult<List<BpmTaskRespVO>> getTaskListByProcessInstanceId(
             @RequestParam("processInstanceId") String processInstanceId) {
         List<HistoricTaskInstance> taskList = taskService.getTaskListByProcessInstanceId(processInstanceId, true);
@@ -147,7 +147,7 @@ public class BpmTaskController {
 
     @PutMapping("/approve")
     @Operation(summary = "通过任务")
-    // @PreAuthorize("@ss.hasPermission('bpm:task:update')")
+    @PreAuthorize("@ss.hasPermission('bpm:task:update')")
     public CommonResult<Boolean> approveTask(@Valid @RequestBody BpmTaskApproveReqVO reqVO) {
         taskService.approveTask(getLoginUserId(), reqVO);
         return success(true);
@@ -155,7 +155,7 @@ public class BpmTaskController {
 
     @PutMapping("/reject")
     @Operation(summary = "不通过任务")
-    // @PreAuthorize("@ss.hasPermission('bpm:task:update')")
+    @PreAuthorize("@ss.hasPermission('bpm:task:update')")
     public CommonResult<Boolean> rejectTask(@Valid @RequestBody BpmTaskRejectReqVO reqVO) {
         taskService.rejectTask(getLoginUserId(), reqVO);
         return success(true);
@@ -164,7 +164,7 @@ public class BpmTaskController {
     @GetMapping("/list-by-return")
     @Operation(summary = "获取所有可退回的节点", description = "用于【流程详情】的【退回】按钮")
     @Parameter(name = "taskId", description = "当前任务ID", required = true)
-    // @PreAuthorize("@ss.hasPermission('bpm:task:update')")
+    @PreAuthorize("@ss.hasPermission('bpm:task:update')")
     public CommonResult<List<BpmTaskRespVO>> getTaskListByReturn(@RequestParam("id") String id) {
         List<UserTask> userTaskList = taskService.getUserTaskListByReturn(id);
         return success(convertList(userTaskList, userTask -> // 只返回 id 和 name
@@ -173,7 +173,7 @@ public class BpmTaskController {
 
     @PutMapping("/return")
     @Operation(summary = "退回任务", description = "用于【流程详情】的【退回】按钮")
-    // @PreAuthorize("@ss.hasPermission('bpm:task:update')")
+    @PreAuthorize("@ss.hasPermission('bpm:task:update')")
     public CommonResult<Boolean> returnTask(@Valid @RequestBody BpmTaskReturnReqVO reqVO) {
         taskService.returnTask(getLoginUserId(), reqVO);
         return success(true);
@@ -181,7 +181,7 @@ public class BpmTaskController {
 
     @PutMapping("/delegate")
     @Operation(summary = "委派任务", description = "用于【流程详情】的【委派】按钮")
-    // @PreAuthorize("@ss.hasPermission('bpm:task:update')")
+    @PreAuthorize("@ss.hasPermission('bpm:task:update')")
     public CommonResult<Boolean> delegateTask(@Valid @RequestBody BpmTaskDelegateReqVO reqVO) {
         taskService.delegateTask(getLoginUserId(), reqVO);
         return success(true);
@@ -189,7 +189,7 @@ public class BpmTaskController {
 
     @PutMapping("/transfer")
     @Operation(summary = "转派任务", description = "用于【流程详情】的【转派】按钮")
-    // @PreAuthorize("@ss.hasPermission('bpm:task:update')")
+    @PreAuthorize("@ss.hasPermission('bpm:task:update')")
     public CommonResult<Boolean> transferTask(@Valid @RequestBody BpmTaskTransferReqVO reqVO) {
         taskService.transferTask(getLoginUserId(), reqVO);
         return success(true);
@@ -197,7 +197,7 @@ public class BpmTaskController {
 
     @PutMapping("/create-sign")
     @Operation(summary = "加签", description = "before 前加签，after 后加签")
-    // @PreAuthorize("@ss.hasPermission('bpm:task:update')")
+    @PreAuthorize("@ss.hasPermission('bpm:task:update')")
     public CommonResult<Boolean> createSignTask(@Valid @RequestBody BpmTaskSignCreateReqVO reqVO) {
         taskService.createSignTask(getLoginUserId(), reqVO);
         return success(true);
@@ -205,7 +205,7 @@ public class BpmTaskController {
 
     @DeleteMapping("/delete-sign")
     @Operation(summary = "减签")
-    // @PreAuthorize("@ss.hasPermission('bpm:task:update')")
+    @PreAuthorize("@ss.hasPermission('bpm:task:update')")
     public CommonResult<Boolean> deleteSignTask(@Valid @RequestBody BpmTaskSignDeleteReqVO reqVO) {
         taskService.deleteSignTask(getLoginUserId(), reqVO);
         return success(true);
@@ -213,16 +213,24 @@ public class BpmTaskController {
 
     @PutMapping("/copy")
     @Operation(summary = "抄送任务")
-    // @PreAuthorize("@ss.hasPermission('bpm:task:update')")
+    @PreAuthorize("@ss.hasPermission('bpm:task:update')")
     public CommonResult<Boolean> copyTask(@Valid @RequestBody BpmTaskCopyReqVO reqVO) {
         taskService.copyTask(getLoginUserId(), reqVO);
+        return success(true);
+    }
+
+    @PutMapping("/withdraw")
+    @Operation(summary = "撤回任务")
+    @PreAuthorize("@ss.hasPermission('bpm:task:update')")
+    public CommonResult<Boolean> withdrawTask(@RequestParam("taskId") String taskId) {
+        taskService.withdrawTask(getLoginUserId(), taskId);
         return success(true);
     }
 
     @GetMapping("/list-by-parent-task-id")
     @Operation(summary = "获得指定父级任务的子任务列表") // 目前用于，减签的时候，获得子任务列表
     @Parameter(name = "parentTaskId", description = "父级任务编号", required = true)
-    // @PreAuthorize("@ss.hasPermission('bpm:task:query')")
+    @PreAuthorize("@ss.hasPermission('bpm:task:query')")
     public CommonResult<List<BpmTaskRespVO>> getTaskListByParentTaskId(@RequestParam("parentTaskId") String parentTaskId) {
         List<Task> taskList = taskService.getTaskListByParentTaskId(parentTaskId);
         if (CollUtil.isEmpty(taskList)) {

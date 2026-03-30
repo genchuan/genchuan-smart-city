@@ -20,10 +20,6 @@ public interface LogRecordConstants {
     String SYSTEM_USER_UPDATE_PASSWORD_SUB_TYPE = "重置用户密码";
     String SYSTEM_USER_UPDATE_PASSWORD_SUCCESS = "将用户【{{#user.nickname}}】的密码从【{{#user.password}}】重置为【{{#newPassword}}】";
 
-    // 在相应的日志常量类中添加（如果不存在需要创建）
-    String SYSTEM_USER_UPDATE_AVATAR_SUB_TYPE = "update-avatar";
-    String SYSTEM_USER_UPDATE_AVATAR_SUCCESS = "更新用户头像成功，用户编号为「{{#id}}」，头像地址为「{{#avatarUrl}}」";
-
     // ======================= SYSTEM_ROLE 角色 =======================
 
     String SYSTEM_ROLE_TYPE = "SYSTEM 角色";

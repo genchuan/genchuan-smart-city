@@ -118,10 +118,10 @@
             <artifactId>yudao-spring-boot-starter-monitor</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>de.codecentric</groupId>
-            <artifactId>spring-boot-admin-starter-server</artifactId> <!-- 实现 Spring Boot Admin Server 服务端 -->
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>de.codecentric</groupId>-->
+<!--            <artifactId>spring-boot-admin-starter-server</artifactId> &lt;!&ndash; 实现 Spring Boot Admin Server 服务端 &ndash;&gt;-->
+<!--        </dependency>-->
 
         <!-- 三方云服务相关 -->
         <dependency>
@@ -129,7 +129,7 @@
             <artifactId>commons-net</artifactId> <!-- 文件客户端：解决 ftp 连接 -->
         </dependency>
         <dependency>
-            <groupId>com.jcraft</groupId>
+            <groupId>com.github.mwiede</groupId>
             <artifactId>jsch</artifactId> <!-- 文件客户端：解决 sftp 连接 -->
         </dependency>
         <dependency>
@@ -141,11 +141,17 @@
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId> <!-- 文件客户端：文件类型的识别 -->
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-        </dependency>
 
+        <!--        mysql数据库-->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+        </dependency>
+        <!--        postgresql数据库-->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <!-- 设置构建的 jar 包名 -->

@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * BPM 流程定义的拓信息
- * 主要解决 Flowable {@link ProcessDefinition} 不支持拓展字段，所以新建该表
+ * 主要解决 Flowable {@link org.flowable.engine.repository.ProcessDefinition} 不支持拓展字段，所以新建该表
  *
  * @author 芋道源码
  */
@@ -173,6 +173,11 @@ public class BpmProcessDefinitionInfoDO extends BaseDO {
     private Boolean allowCancelRunningProcess;
 
     /**
+     * 是否允许审批人撤回任务
+     */
+    private Boolean allowWithdrawTask;
+
+    /**
      * 流程 ID 规则
      */
     @TableField(typeHandler = JacksonTypeHandler.class)
@@ -218,5 +223,11 @@ public class BpmProcessDefinitionInfoDO extends BaseDO {
      */
     @TableField(typeHandler = JacksonTypeHandler.class)
     private BpmModelMetaInfoVO.HttpRequestSetting taskAfterTriggerSetting;
+
+    /**
+     * 自定义打印模板设置
+     */
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private BpmModelMetaInfoVO.PrintTemplateSetting printTemplateSetting;
 
 }

@@ -15,6 +15,7 @@ import java.util.function.Consumer;
  * <p>
  * 1. 拼接条件的方法，增加 xxxIfPresent 方法，用于判断值不存在的时候，不要拼接到条件中。
  * 2. SFunction<S, ?> column + <S> 泛型：支持任意类字段（主表、子表、三表），推荐写法, 让编译器自动推断 S 类型
+ *
  * @param <T> 数据类型
  */
 public class MPJLambdaWrapperX<T> extends MPJLambdaWrapper<T> {
@@ -118,8 +119,13 @@ public class MPJLambdaWrapperX<T> extends MPJLambdaWrapper<T> {
 
     @Override
     public <X> MPJLambdaWrapperX<T> orderByDesc(SFunction<X, ?> column) {
-        //noinspection unchecked
         super.orderByDesc(true, column);
+        return this;
+    }
+
+    @Override
+    public <X> MPJLambdaWrapperX<T> orderByAsc(SFunction<X, ?> column) {
+        super.orderByAsc(true, column);
         return this;
     }
 
@@ -208,7 +214,7 @@ public class MPJLambdaWrapperX<T> extends MPJLambdaWrapper<T> {
     }
 
     @Override
-    public <S, X> MPJLambdaWrapperX<T> selectCount(SFunction<S, ?> column, String alias) {
+    public <S> MPJLambdaWrapperX<T> selectCount(SFunction<S, ?> column, String alias) {
         super.selectCount(column, alias);
         return this;
     }
@@ -226,7 +232,7 @@ public class MPJLambdaWrapperX<T> extends MPJLambdaWrapper<T> {
     }
 
     @Override
-    public <S, X> MPJLambdaWrapperX<T> selectSum(SFunction<S, ?> column, String alias) {
+    public <S> MPJLambdaWrapperX<T> selectSum(SFunction<S, ?> column, String alias) {
         super.selectSum(column, alias);
         return this;
     }
@@ -244,7 +250,7 @@ public class MPJLambdaWrapperX<T> extends MPJLambdaWrapper<T> {
     }
 
     @Override
-    public <S, X> MPJLambdaWrapperX<T> selectMax(SFunction<S, ?> column, String alias) {
+    public <S> MPJLambdaWrapperX<T> selectMax(SFunction<S, ?> column, String alias) {
         super.selectMax(column, alias);
         return this;
     }
@@ -262,7 +268,7 @@ public class MPJLambdaWrapperX<T> extends MPJLambdaWrapper<T> {
     }
 
     @Override
-    public <S, X> MPJLambdaWrapperX<T> selectMin(SFunction<S, ?> column, String alias) {
+    public <S> MPJLambdaWrapperX<T> selectMin(SFunction<S, ?> column, String alias) {
         super.selectMin(column, alias);
         return this;
     }
@@ -280,7 +286,7 @@ public class MPJLambdaWrapperX<T> extends MPJLambdaWrapper<T> {
     }
 
     @Override
-    public <S, X> MPJLambdaWrapperX<T> selectAvg(SFunction<S, ?> column, String alias) {
+    public <S> MPJLambdaWrapperX<T> selectAvg(SFunction<S, ?> column, String alias) {
         super.selectAvg(column, alias);
         return this;
     }
@@ -298,7 +304,7 @@ public class MPJLambdaWrapperX<T> extends MPJLambdaWrapper<T> {
     }
 
     @Override
-    public <S, X> MPJLambdaWrapperX<T> selectLen(SFunction<S, ?> column, String alias) {
+    public <S> MPJLambdaWrapperX<T> selectLen(SFunction<S, ?> column, String alias) {
         super.selectLen(column, alias);
         return this;
     }

@@ -53,7 +53,7 @@ public class BpmProcessInstanceCopyController {
 
     @GetMapping("/page")
     @Operation(summary = "获得抄送流程分页列表")
-    // @PreAuthorize("@ss.hasPermission('bpm:process-instance-cc:query')")
+    @PreAuthorize("@ss.hasPermission('bpm:process-instance-cc:query')")
     public CommonResult<PageResult<BpmProcessInstanceCopyRespVO>> getProcessInstanceCopyPage(
             @Valid BpmProcessInstanceCopyPageReqVO pageReqVO) {
         PageResult<BpmProcessInstanceCopyDO> pageResult = processInstanceCopyService.getProcessInstanceCopyPage(

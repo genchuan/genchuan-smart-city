@@ -30,14 +30,14 @@ public class BpmProcessListenerController {
 
     @PostMapping("/create")
     @Operation(summary = "创建流程监听器")
-    // @PreAuthorize("@ss.hasPermission('bpm:process-listener:create')")
+    @PreAuthorize("@ss.hasPermission('bpm:process-listener:create')")
     public CommonResult<Long> createProcessListener(@Valid @RequestBody BpmProcessListenerSaveReqVO createReqVO) {
         return success(processListenerService.createProcessListener(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新流程监听器")
-    // @PreAuthorize("@ss.hasPermission('bpm:process-listener:update')")
+    @PreAuthorize("@ss.hasPermission('bpm:process-listener:update')")
     public CommonResult<Boolean> updateProcessListener(@Valid @RequestBody BpmProcessListenerSaveReqVO updateReqVO) {
         processListenerService.updateProcessListener(updateReqVO);
         return success(true);
@@ -46,7 +46,7 @@ public class BpmProcessListenerController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除流程监听器")
     @Parameter(name = "id", description = "编号", required = true)
-    // @PreAuthorize("@ss.hasPermission('bpm:process-listener:delete')")
+    @PreAuthorize("@ss.hasPermission('bpm:process-listener:delete')")
     public CommonResult<Boolean> deleteProcessListener(@RequestParam("id") Long id) {
         processListenerService.deleteProcessListener(id);
         return success(true);
@@ -55,7 +55,7 @@ public class BpmProcessListenerController {
     @GetMapping("/get")
     @Operation(summary = "获得流程监听器")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    // @PreAuthorize("@ss.hasPermission('bpm:process-listener:query')")
+    @PreAuthorize("@ss.hasPermission('bpm:process-listener:query')")
     public CommonResult<BpmProcessListenerRespVO> getProcessListener(@RequestParam("id") Long id) {
         BpmProcessListenerDO processListener = processListenerService.getProcessListener(id);
         return success(BeanUtils.toBean(processListener, BpmProcessListenerRespVO.class));
@@ -63,7 +63,7 @@ public class BpmProcessListenerController {
 
     @GetMapping("/page")
     @Operation(summary = "获得流程监听器分页")
-    // @PreAuthorize("@ss.hasPermission('bpm:process-listener:query')")
+    @PreAuthorize("@ss.hasPermission('bpm:process-listener:query')")
     public CommonResult<PageResult<BpmProcessListenerRespVO>> getProcessListenerPage(
             @Valid BpmProcessListenerPageReqVO pageReqVO) {
         PageResult<BpmProcessListenerDO> pageResult = processListenerService.getProcessListenerPage(pageReqVO);

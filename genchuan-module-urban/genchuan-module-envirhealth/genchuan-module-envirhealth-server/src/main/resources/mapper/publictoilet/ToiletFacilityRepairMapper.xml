@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.publictoilet.ToiletFacilityRepairMapper">
+
+    <resultMap id="ToiletFacilityRepairDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.publictoilet.ToiletFacilityRepairDetailDO">
+        <!-- 基础维修字段 -->
+        <id column="id" property="id"/>
+        <result column="repair_id" property="repairId"/>
+        <result column="toilet_id" property="toiletId"/>
+        <result column="facility_id" property="facilityId"/>
+        <result column="damage_desc" property="damageDesc"/>
+        <result column="report_by" property="reportBy"/>
+        <result column="report_time" property="reportTime"/>
+        <result column="photo_url" property="photoUrl"/>
+        <result column="repair_by" property="repairBy"/>
+        <result column="repair_status" property="repairStatus"/>
+        <result column="expected_complete_time" property="expectedCompleteTime"/>
+        <result column="actual_complete_time" property="actualCompleteTime"/>
+        <result column="accept_result" property="acceptResult"/>
+        <result column="accept_opinion" property="acceptOpinion"/>
+        <result column="ext_common1" property="extCommon1"/>
+        <result column="ext_common2" property="extCommon2"/>
+        <result column="ext_common3" property="extCommon3"/>
+        <result column="ext_common4" property="extCommon4"/>
+        <result column="deleted" property="deleted"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+
+        <!-- 关联查询的扩展字段 -->
+        <result column="toilet_name" property="toiletName"/>       <!-- 公厕名称 -->
+        <result column="facility_name" property="facilityName"/>   <!-- 设施名称 -->
+        <result column="report_name" property="reportName"/>       <!-- 上报人姓名 -->
+        <result column="repair_name" property="repairName"/>       <!-- 维修人姓名 -->
+    </resultMap>
+
+    <select id="selectDetailPage" resultMap="ToiletFacilityRepairDetailResultMap">
+        SELECT
+        tfr.*,
+        pt.name AS toilet_name,
+        sf.name AS facility_name,
+        u1.user_name AS report_name,
+        u2.user_name AS repair_name
+        FROM public_toilet_facility_repair tfr
+        LEFT JOIN public_toilet pt ON tfr.toilet_id = pt.toilet_id AND pt.deleted = 0
+        LEFT JOIN sys_facility sf ON tfr.facility_id = sf.sys_facility_id AND sf.deleted = 0
+        LEFT JOIN sys_user u1 ON tfr.report_by = u1.user_id AND u1.deleted = 0
+        LEFT JOIN sys_user u2 ON tfr.repair_by = u2.user_id AND u2.deleted = 0
+        WHERE tfr.deleted = 0
+
+        <!-- 维修单号精确查询 -->
+        <if test="reqVO.repairId != null and reqVO.repairId != ''">
+            AND tfr.repair_id = #{reqVO.repairId}
+        </if>
+
+        <!-- 公厕ID精确查询 -->
+        <if test="reqVO.toiletId != null and reqVO.toiletId != ''">
+            AND tfr.toilet_id = #{reqVO.toiletId}
+        </if>
+
+        <!-- 公厕名称模糊查询 -->
+        <if test="reqVO.toiletName != null and reqVO.toiletName != ''">
+            AND pt.name LIKE CONCAT('%', #{reqVO.toiletName}, '%')
+        </if>
+
+        <!-- 设施ID精确查询 -->
+        <if test="reqVO.facilityId != null and reqVO.facilityId != ''">
+            AND tfr.facility_id = #{reqVO.facilityId}
+        </if>
+
+        <!-- 设施名称模糊查询 -->
+        <if test="reqVO.facilityName != null and reqVO.facilityName != ''">
+            AND sf.name LIKE CONCAT('%', #{reqVO.facilityName}, '%')
+        </if>
+
+        <!-- 损坏描述模糊查询 -->
+        <if test="reqVO.damageDesc != null and reqVO.damageDesc != ''">
+            AND tfr.damage_desc LIKE CONCAT('%', #{reqVO.damageDesc}, '%')
+        </if>
+
+        <!-- 上报人ID精确查询 -->
+        <if test="reqVO.reportBy != null and reqVO.reportBy != ''">
+            AND tfr.report_by = #{reqVO.reportBy}
+        </if>
+
+        <!-- 上报人姓名模糊查询 -->
+        <if test="reqVO.reportName != null and reqVO.reportName != ''">
+            AND u1.user_name LIKE CONCAT('%', #{reqVO.reportName}, '%')
+        </if>
+
+        <!-- 上报时间范围查询 -->
+        <if test="reqVO.reportTime != null and reqVO.reportTime.length == 2">
+            AND tfr.report_time BETWEEN #{reqVO.reportTime[0]} AND #{reqVO.reportTime[1]}
+        </if>
+
+        <!-- 维修人ID精确查询 -->
+        <if test="reqVO.repairBy != null and reqVO.repairBy != ''">
+            AND tfr.repair_by = #{reqVO.repairBy}
+        </if>
+
+        <!-- 维修人姓名模糊查询 -->
+        <if test="reqVO.repairName != null and reqVO.repairName != ''">
+            AND u2.user_name LIKE CONCAT('%', #{reqVO.repairName}, '%')
+        </if>
+
+        <!-- 维修状态精确查询 -->
+        <if test="reqVO.repairStatus != null and reqVO.repairStatus.size() > 0">
+            AND tfr.repair_status IN
+            <foreach collection="reqVO.repairStatus" item="status" open="(" separator="," close=")">
+                #{status}
+            </foreach>
+        </if>
+
+        <!-- 预计完成时间范围查询 -->
+        <if test="reqVO.expectedCompleteTime != null and reqVO.expectedCompleteTime.length == 2">
+            AND tfr.expected_complete_time BETWEEN #{reqVO.expectedCompleteTime[0]} AND #{reqVO.expectedCompleteTime[1]}
+        </if>
+
+        <!-- 实际完成时间范围查询 -->
+        <if test="reqVO.actualCompleteTime != null and reqVO.actualCompleteTime.length == 2">
+            AND tfr.actual_complete_time BETWEEN #{reqVO.actualCompleteTime[0]} AND #{reqVO.actualCompleteTime[1]}
+        </if>
+
+        <!-- 验收结果精确查询 -->
+        <if test="reqVO.acceptResult != null and reqVO.acceptResult != ''">
+            AND tfr.accept_result = #{reqVO.acceptResult}
+        </if>
+
+        <!-- 验收意见模糊查询 -->
+        <if test="reqVO.acceptOpinion != null and reqVO.acceptOpinion != ''">
+            AND tfr.accept_opinion LIKE CONCAT('%', #{reqVO.acceptOpinion}, '%')
+        </if>
+
+        <!-- 创建时间范围查询 -->
+        <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+            AND tfr.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+        </if>
+
+        <!-- 更新时间范围查询 -->
+        <if test="reqVO.updateTime != null and reqVO.updateTime.length == 2">
+            AND tfr.update_time BETWEEN #{reqVO.updateTime[0]} AND #{reqVO.updateTime[1]}
+        </if>
+
+        ORDER BY tfr.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.pageSize}
+    </select>
+
+    <!-- 查询维修总条数（带条件） -->
+    <select id="selectCount" resultType="Long">
+        SELECT COUNT(*)
+        FROM public_toilet_facility_repair tfr
+        LEFT JOIN public_toilet pt ON tfr.toilet_id = pt.toilet_id AND pt.deleted = 0
+        LEFT JOIN sys_facility sf ON tfr.facility_id = sf.sys_facility_id AND sf.deleted = 0
+        LEFT JOIN sys_user u1 ON tfr.report_by = u1.user_id AND u1.deleted = 0
+        LEFT JOIN sys_user u2 ON tfr.repair_by = u2.user_id AND u2.deleted = 0
+        WHERE tfr.deleted = 0
+
+        <!-- 维修单号精确查询 -->
+        <if test="reqVO.repairId != null and reqVO.repairId != ''">
+            AND tfr.repair_id = #{reqVO.repairId}
+        </if>
+
+        <!-- 公厕ID精确查询 -->
+        <if test="reqVO.toiletId != null and reqVO.toiletId != ''">
+            AND tfr.toilet_id = #{reqVO.toiletId}
+        </if>
+
+        <!-- 公厕名称模糊查询 -->
+        <if test="reqVO.toiletName != null and reqVO.toiletName != ''">
+            AND pt.name LIKE CONCAT('%', #{reqVO.toiletName}, '%')
+        </if>
+
+        <!-- 设施ID精确查询 -->
+        <if test="reqVO.facilityId != null and reqVO.facilityId != ''">
+            AND tfr.facility_id = #{reqVO.facilityId}
+        </if>
+
+        <!-- 设施名称模糊查询 -->
+        <if test="reqVO.facilityName != null and reqVO.facilityName != ''">
+            AND sf.name LIKE CONCAT('%', #{reqVO.facilityName}, '%')
+        </if>
+
+        <!-- 损坏描述模糊查询 -->
+        <if test="reqVO.damageDesc != null and reqVO.damageDesc != ''">
+            AND tfr.damage_desc LIKE CONCAT('%', #{reqVO.damageDesc}, '%')
+        </if>
+
+        <!-- 上报人ID精确查询 -->
+        <if test="reqVO.reportBy != null and reqVO.reportBy != ''">
+            AND tfr.report_by = #{reqVO.reportBy}
+        </if>
+
+        <!-- 上报人姓名模糊查询 -->
+        <if test="reqVO.reportName != null and reqVO.reportName != ''">
+            AND u1.user_name LIKE CONCAT('%', #{reqVO.reportName}, '%')
+        </if>
+
+        <!-- 上报时间范围查询 -->
+        <if test="reqVO.reportTime != null and reqVO.reportTime.length == 2">
+            AND tfr.report_time BETWEEN #{reqVO.reportTime[0]} AND #{reqVO.reportTime[1]}
+        </if>
+
+        <!-- 维修人ID精确查询 -->
+        <if test="reqVO.repairBy != null and reqVO.repairBy != ''">
+            AND tfr.repair_by = #{reqVO.repairBy}
+        </if>
+
+        <!-- 维修人姓名模糊查询 -->
+        <if test="reqVO.repairName != null and reqVO.repairName != ''">
+            AND u2.user_name LIKE CONCAT('%', #{reqVO.repairName}, '%')
+        </if>
+
+        <!-- 维修状态精确查询 -->
+        <if test="reqVO.repairStatus != null and reqVO.repairStatus.size() > 0">
+            AND tfr.repair_status IN
+            <foreach collection="reqVO.repairStatus" item="status" open="(" separator="," close=")">
+                #{status}
+            </foreach>
+        </if>
+
+        <!-- 预计完成时间范围查询 -->
+        <if test="reqVO.expectedCompleteTime != null and reqVO.expectedCompleteTime.length == 2">
+            AND tfr.expected_complete_time BETWEEN #{reqVO.expectedCompleteTime[0]} AND #{reqVO.expectedCompleteTime[1]}
+        </if>
+
+        <!-- 实际完成时间范围查询 -->
+        <if test="reqVO.actualCompleteTime != null and reqVO.actualCompleteTime.length == 2">
+            AND tfr.actual_complete_time BETWEEN #{reqVO.actualCompleteTime[0]} AND #{reqVO.actualCompleteTime[1]}
+        </if>
+
+        <!-- 验收结果精确查询 -->
+        <if test="reqVO.acceptResult != null and reqVO.acceptResult != ''">
+            AND tfr.accept_result = #{reqVO.acceptResult}
+        </if>
+
+        <!-- 验收意见模糊查询 -->
+        <if test="reqVO.acceptOpinion != null and reqVO.acceptOpinion != ''">
+            AND tfr.accept_opinion LIKE CONCAT('%', #{reqVO.acceptOpinion}, '%')
+        </if>
+
+        <!-- 创建时间范围查询 -->
+        <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+            AND tfr.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+        </if>
+
+        <!-- 更新时间范围查询 -->
+        <if test="reqVO.updateTime != null and reqVO.updateTime.length == 2">
+            AND tfr.update_time BETWEEN #{reqVO.updateTime[0]} AND #{reqVO.updateTime[1]}
+        </if>
+    </select>
+
+</mapper>

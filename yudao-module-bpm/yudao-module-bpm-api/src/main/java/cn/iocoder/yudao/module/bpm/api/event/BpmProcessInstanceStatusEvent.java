@@ -29,10 +29,20 @@ public class BpmProcessInstanceStatusEvent extends ApplicationEvent {
     @NotNull(message = "流程实例的状态不能为空")
     private Integer status;
     /**
+     * 流程实例结束的原因
+     */
+    private String reason;
+
+    /**
      * 流程实例对应的业务标识
      * 例如说，请假
      */
     private String businessKey;
+
+    public BpmProcessInstanceStatusEvent() {
+        // new Object() 保证非空
+        super(new Object());
+    }
 
     public BpmProcessInstanceStatusEvent(Object source) {
         super(source);

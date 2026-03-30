@@ -10,7 +10,7 @@ import jakarta.validation.constraints.NotEmpty;
 @Data
 public class UserProfileUpdateAvatarReqVO {
 
-    @Schema(description = "头像URL", requiredMode = Schema.RequiredMode.REQUIRED, example = "http://192.168.8.68:9000/shunchang/avatar/xxx.jpg")
+    @Schema(description = "头像URL", requiredMode = Schema.RequiredMode.REQUIRED, example = "http://127.0.0.1:9000/shunchang/avatar/xxx.jpg")
     @NotEmpty(message = "头像URL不能为空")
     @URL(message = "头像地址格式不正确")
     private String avatarUrl;

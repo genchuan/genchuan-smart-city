@@ -96,6 +96,13 @@ public interface AdminUserService {
     void deleteUser(Long id);
 
     /**
+     * 批量删除用户
+     *
+     * @param ids 用户编号数组
+     */
+    void deleteUserList(List<Long> ids);
+
+    /**
      * 通过用户名查询用户
      *
      * @param username 用户名
@@ -206,13 +213,5 @@ public interface AdminUserService {
      * @return 是否匹配
      */
     boolean isPasswordMatch(String rawPassword, String encodedPassword);
-
-    /**
-     * 更新用户头像
-     *
-     * @param id 用户编号
-     * @param avatarUrl 头像URL
-     */
-    void updateUserAvatar(Long id, String avatarUrl);
 
 }

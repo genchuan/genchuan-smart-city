@@ -37,6 +37,13 @@ public interface MenuService {
     void deleteMenu(Long id);
 
     /**
+     * 批量删除菜单
+     *
+     * @param ids 菜单编号数组
+     */
+    void deleteMenuList(List<Long> ids);
+
+    /**
      * 获得所有菜单列表
      *
      * @return 菜单列表
@@ -92,11 +99,4 @@ public interface MenuService {
      */
     List<MenuDO> getMenuList(Collection<Long> ids);
 
-    /**
-     * 根据菜单编号列表获取菜单列表
-     *
-     * @param ids 菜单编号列表
-     * @return 菜单列表
-     */
-    List<MenuDO> getMenuListByIds(List<Long> ids);
 }

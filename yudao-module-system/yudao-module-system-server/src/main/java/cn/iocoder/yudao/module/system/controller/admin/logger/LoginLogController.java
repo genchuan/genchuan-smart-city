@@ -36,6 +36,14 @@ public class LoginLogController {
     @Resource
     private LoginLogService loginLogService;
 
+    @GetMapping("/get")
+    @Operation(summary = "获得登录日志")
+    @PreAuthorize("@ss.hasPermission('system:login-log:query')")
+    public CommonResult<LoginLogRespVO> getLoginLog(Long id) {
+        LoginLogDO loginLog = loginLogService.getLoginLog(id);
+        return success(BeanUtils.toBean(loginLog, LoginLogRespVO.class));
+    }
+
     @GetMapping("/page")
     @Operation(summary = "获得登录日志分页列表")
     @PreAuthorize("@ss.hasPermission('system:login-log:query')")
@@ -44,7 +52,7 @@ public class LoginLogController {
         return success(BeanUtils.toBean(pageResult, LoginLogRespVO.class));
     }
 
-    @GetMapping("/export")
+    @GetMapping("/export-excel")
     @Operation(summary = "导出登录日志 Excel")
     @PreAuthorize("@ss.hasPermission('system:login-log:export')")
     @ApiAccessLog(operateType = EXPORT)

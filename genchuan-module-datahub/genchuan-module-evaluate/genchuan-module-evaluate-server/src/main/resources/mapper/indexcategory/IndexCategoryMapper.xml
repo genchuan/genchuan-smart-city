@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.evaluate.dal.mysql.indexcategory.IndexCategoryMapper">
+
+    <!-- 根据体系ID查询所有分类，按排序序号升序排列 -->
+    <select id="selectListBySystemId" resultType="cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexcategory.IndexCategoryDO">
+        SELECT * FROM eval_index_category
+        WHERE deleted = 0
+          AND system_id = #{systemId}
+        ORDER BY sort_no ASC
+    </select>
+
+    <!-- 批量更新分类的权重（用于计算时自动归一化） -->
+    <update id="updateCategoryWeightByCategoryId">
+        UPDATE eval_index_category
+        SET weight = #{weight},
+            update_time = NOW()
+        WHERE category_id = #{categoryId}
+          AND deleted = 0
+    </update>
+
+</mapper>

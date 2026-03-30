@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.kitchen.dal.mysql.punishreviewledger.PunishReviewLedgerMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+    <select id="selectLedgerPage"
+            resultType="cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.PunishReviewLedgerRespVO">
+
+        SELECT
+        prl.id,
+        prl.ledger_code,
+        prl.payment_deadline_time,
+        prl.ent_id,
+        ei.ent_name,
+
+        prl.illegal_type_id,
+        itd.type_name AS illegal_type_name,
+
+        prl.illegal_level_id,
+        ild.level_name AS illegal_level_name,
+
+        prl.ent_rectify_record_id,
+        err.rectify_status,
+
+        prl.punish_notice_id,
+        pn.notice_code,
+
+        prl.draft_punish_amt,
+        prl.legal_basis,
+        prl.evidence_url,
+
+        prl.review_status,
+        prl.review_by,
+        su.user_name as review_by_name,
+        prl.review_time,
+
+        prl.cancel_reason_id,
+        prl.cancel_time,
+
+        prl.draft_time,
+
+        prl.create_time,
+        prl.update_time
+
+        FROM punish_review_ledger prl
+
+        LEFT JOIN enterprise_info ei
+        ON prl.ent_id = ei.id
+
+        LEFT JOIN illegal_type_dict itd
+        ON prl.illegal_type_id = itd.id
+
+        LEFT JOIN illegal_level_dict ild
+        ON prl.illegal_level_id = ild.id
+
+        LEFT JOIN ent_rectify_record err
+        ON prl.ent_rectify_record_id = err.id
+
+        LEFT JOIN punish_notice pn
+        ON prl.punish_notice_id = pn.id
+        LEFT JOIN sys_user su
+        ON prl.review_by = su.id
+
+        <where>
+            prl.deleted = b'0'
+
+            <if test="idList != null and idList.size() > 0">
+                AND prl.id IN
+                <foreach collection="idList" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
+            <if test="ledgerCode != null and ledgerCode != ''">
+                AND prl.ledger_code LIKE CONCAT('%', #{ledgerCode}, '%')
+            </if>
+
+            <if test="entId != null">
+                AND prl.ent_id = #{entId}
+            </if>
+
+            <if test="entName != null and entName != ''">
+                AND ei.ent_name LIKE CONCAT('%', #{entName}, '%')
+            </if>
+
+            <if test="illegalTypeId != null">
+                AND prl.illegal_type_id = #{illegalTypeId}
+            </if>
+
+            <if test="illegalLevelId != null">
+                AND prl.illegal_level_id = #{illegalLevelId}
+            </if>
+
+            <if test="reviewStatus != null and reviewStatus != ''">
+                AND prl.review_status = #{reviewStatus}
+            </if>
+
+            <if test="draftTimeStart != null">
+                AND prl.draft_time &gt;= #{draftTimeStart}
+            </if>
+
+            <if test="draftTimeEnd != null">
+                AND prl.draft_time &lt;= #{draftTimeEnd}
+            </if>
+
+            <if test="reviewTimeStart != null">
+                AND prl.review_time &gt;= #{reviewTimeStart}
+            </if>
+
+            <if test="reviewTimeEnd != null">
+                AND prl.review_time &lt;= #{reviewTimeEnd}
+            </if>
+
+            <if test="cancelTimeStart != null">
+                AND prl.cancel_time &gt;= #{cancelTimeStart}
+            </if>
+
+            <if test="cancelTimeEnd != null">
+                AND prl.cancel_time &lt;= #{cancelTimeEnd}
+            </if>
+
+        </where>
+
+        ORDER BY prl.id DESC, prl.create_time DESC
+
+        <if test="pageNo != null and pageSize != null and pageSize > 0">
+            <bind name="offset" value="(pageNo - 1) * pageSize"/>
+            LIMIT #{pageSize} OFFSET #{offset}
+        </if>
+
+    </select>
+
+    <select id="selectLedgerPageCount" resultType="java.lang.Long">
+
+        SELECT COUNT(1)
+        FROM punish_review_ledger prl
+
+        LEFT JOIN enterprise_info ei
+        ON prl.ent_id = ei.id
+
+        LEFT JOIN illegal_type_dict itd
+        ON prl.illegal_type_id = itd.id
+
+        LEFT JOIN illegal_level_dict ild
+        ON prl.illegal_level_id = ild.id
+
+        LEFT JOIN ent_rectify_record err
+        ON prl.ent_rectify_record_id = err.id
+
+        LEFT JOIN punish_notice pn
+        ON prl.punish_notice_id = pn.id
+
+        <where>
+            prl.deleted = b'0'
+
+            <if test="idList != null and idList.size() > 0">
+                AND prl.id IN
+                <foreach collection="idList" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
+            <if test="ledgerCode != null and ledgerCode != ''">
+                AND prl.ledger_code LIKE CONCAT('%', #{ledgerCode}, '%')
+            </if>
+
+            <if test="entId != null">
+                AND prl.ent_id = #{entId}
+            </if>
+
+            <if test="entName != null and entName != ''">
+                AND ei.ent_name LIKE CONCAT('%', #{entName}, '%')
+            </if>
+
+            <if test="illegalTypeId != null">
+                AND prl.illegal_type_id = #{illegalTypeId}
+            </if>
+
+            <if test="illegalLevelId != null">
+                AND prl.illegal_level_id = #{illegalLevelId}
+            </if>
+
+            <if test="reviewStatus != null and reviewStatus != ''">
+                AND prl.review_status = #{reviewStatus}
+            </if>
+
+        </where>
+
+    </select>
+</mapper>

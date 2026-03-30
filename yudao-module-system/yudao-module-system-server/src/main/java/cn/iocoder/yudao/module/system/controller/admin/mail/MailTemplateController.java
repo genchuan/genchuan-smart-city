@@ -10,11 +10,11 @@ import cn.iocoder.yudao.module.system.service.mail.MailTemplateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.annotation.Resource;
-import jakarta.validation.Valid;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
@@ -54,6 +54,15 @@ public class MailTemplateController {
         return success(true);
     }
 
+    @DeleteMapping("/delete-list")
+    @Operation(summary = "批量删除邮件模版")
+    @Parameter(name = "ids", description = "编号列表", required = true)
+    @PreAuthorize("@ss.hasPermission('system:mail-template:delete')")
+    public CommonResult<Boolean> deleteMailTemplateList(@RequestParam("ids") List<Long> ids) {
+        mailTempleService.deleteMailTemplateList(ids);
+        return success(true);
+    }
+
     @GetMapping("/get")
     @Operation(summary = "获得邮件模版")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
@@ -82,7 +91,8 @@ public class MailTemplateController {
     @Operation(summary = "发送短信")
     @PreAuthorize("@ss.hasPermission('system:mail-template:send-mail')")
     public CommonResult<Long> sendMail(@Valid @RequestBody MailTemplateSendReqVO sendReqVO) {
-        return success(mailSendService.sendSingleMailToAdmin(sendReqVO.getMail(), getLoginUserId(),
+        return success(mailSendService.sendSingleMailToAdmin(getLoginUserId(),
+                sendReqVO.getToMails(), sendReqVO.getCcMails(), sendReqVO.getBccMails(),
                 sendReqVO.getTemplateCode(), sendReqVO.getTemplateParams()));
     }
 

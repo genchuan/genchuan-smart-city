@@ -10,12 +10,12 @@ import cn.iocoder.yudao.module.system.dal.dataobject.permission.RoleDO;
 import cn.iocoder.yudao.module.system.dal.mysql.permission.RoleMapper;
 import cn.iocoder.yudao.module.system.enums.permission.DataScopeEnum;
 import cn.iocoder.yudao.module.system.enums.permission.RoleTypeEnum;
+import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import jakarta.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -44,7 +44,7 @@ public class RoleServiceImplTest extends BaseDbUnitTest {
     @Resource
     private RoleMapper roleMapper;
 
-    @MockBean
+    @MockitoBean
     private PermissionService permissionService;
 
     @Test
@@ -148,7 +148,7 @@ public class RoleServiceImplTest extends BaseDbUnitTest {
 
     @Test
     public void testValidateUpdateRole_success() {
-        RoleDO roleDO = randomPojo(RoleDO.class);
+        RoleDO roleDO = randomPojo(RoleDO.class, o -> o.setType(RoleTypeEnum.CUSTOM.getType()));
         roleMapper.insert(roleDO);
         // 准备参数
         Long id = roleDO.getId();

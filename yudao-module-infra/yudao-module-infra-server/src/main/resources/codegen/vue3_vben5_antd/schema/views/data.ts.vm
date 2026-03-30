@@ -1,18 +1,16 @@
+#set ($apiName = "${table.moduleName.substring(0,1).toUpperCase()}${table.moduleName.substring(1)}${simpleClassName}Api")
 import type { VbenFormSchema } from '#/adapter/form';
-import type { OnActionClickFn, VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { ${simpleClassName}Api } from '#/api/${table.moduleName}/${table.businessName}';
+import type { VxeTableGridOptions } from '#/adapter/vxe-table';
+import type { ${apiName} } from '#/api/${table.moduleName}/${table.businessName}';
 
-import { z } from '#/adapter/form';
-import { getRangePickerDefaultProps } from '#/utils/date';
-import { DICT_TYPE, getDictOptions } from '#/utils/dict';
-
+import { DICT_TYPE } from '@vben/constants';
+import { getDictOptions } from '@vben/hooks';
 #if(${table.templateType} == 2)## 树表需要导入这些
 import { get${simpleClassName}List } from '#/api/${table.moduleName}/${table.businessName}';
 import { handleTree } from '@vben/utils';
 #end
-import { useAccess } from '@vben/access';
 
-const { hasAccessByCodes } = useAccess();
+import { getRangePickerDefaultProps } from '#/utils';
 
 /** 新增/修改的表单 */
 export function useFormSchema(): VbenFormSchema[] {
@@ -126,7 +124,6 @@ export function useFormSchema(): VbenFormSchema[] {
       component: 'InputNumber',
       componentProps: {
         min: 0,
-        controlsPosition: 'right',
         placeholder: '请输入${comment}',
       },
   #end
@@ -187,10 +184,11 @@ export function useGridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function useGridColumns(
-  onActionClick?: OnActionClickFn<${simpleClassName}Api.${simpleClassName}>,
-): VxeTableGridOptions<${simpleClassName}Api.${simpleClassName}>['columns'] {
+export function useGridColumns(): VxeTableGridOptions<${apiName}.${simpleClassName}>['columns'] {
   return [
+#if ($table.templateType != 2 && $deleteBatchEnable)
+  { type: 'checkbox', width: 40 },
+#end
 #if ($table.templateType == 12) ## 内嵌情况
       { type: 'expand', width: 80, slots: { content: 'expand_content' } },
 #end
@@ -218,43 +216,10 @@ export function useGridColumns(
 #end
 #end
     {
-      field: 'operation',
       title: '操作',
-      minWidth: 200,
-      align: 'center',
+      width: 200,
       fixed: 'right',
-      headerAlign: 'center',
-      showOverflow: false,
-      cellRender: {
-        attrs: {
-          nameField: '${columns[0].javaField}',
-          nameTitle: '${table.classComment}',
-          onClick: onActionClick,
-        },
-        name: 'CellOperation',
-        options: [
-#if (${table.templateType} == 2)## 树表特有操作
-          {
-            code: 'append',
-            text: '新增下级',
-            show: hasAccessByCodes(['${table.moduleName}:${simpleClassName_strikeCase}:create']),
-          },
-#end
-          {
-            code: 'edit',
-            show: hasAccessByCodes(['${table.moduleName}:${simpleClassName_strikeCase}:update']),
-          },
-          {
-            code: 'delete',
-            show: hasAccessByCodes(['${table.moduleName}:${simpleClassName_strikeCase}:delete']),
-#if (${table.templateType} == 2)## 树表禁止删除带有子节点的数据
-            disabled: (row: ${simpleClassName}Api.${simpleClassName}) => {
-                return !!(row.children && row.children.length > 0);
-            },
-#end
-          },
-        ],
-      },
+      slots: { default: 'actions' },
     },
   ];
 }
@@ -360,7 +325,6 @@ export function use${subSimpleClassName}FormSchema(): VbenFormSchema[] {
                                 component: 'InputNumber',
                                 componentProps: {
                                     min: 0,
-                                    controlsPosition: 'right',
                                     placeholder: '请输入${comment}',
                                 },
                             #end
@@ -422,10 +386,11 @@ export function use${subSimpleClassName}GridFormSchema(): VbenFormSchema[] {
 }
 
 /** 列表的字段 */
-export function use${subSimpleClassName}GridColumns(
-    onActionClick?: OnActionClickFn<${simpleClassName}Api.${subSimpleClassName}>,
-): VxeTableGridOptions<${simpleClassName}Api.${subSimpleClassName}>['columns'] {
+export function use${subSimpleClassName}GridColumns(): VxeTableGridOptions<${apiName}.${subSimpleClassName}>['columns'] {
     return [
+        #if ($table.templateType != 2 && $deleteBatchEnable)
+            { type: 'checkbox', width: 40 },
+        #end
         #foreach($column in $subColumns)
             #if ($column.listOperationResult)
                 #set ($dictType = $column.dictType)
@@ -447,31 +412,10 @@ export function use${subSimpleClassName}GridColumns(
             #end
         #end
         {
-            field: 'operation',
             title: '操作',
-            minWidth: 200,
-            align: 'center',
+            width: 200,
             fixed: 'right',
-            headerAlign: 'center',
-            showOverflow: false,
-            cellRender: {
-                attrs: {
-                    nameField: '${columns[0].javaField}',
-                    nameTitle: '${subTable.classComment}',
-                    onClick: onActionClick,
-                },
-                name: 'CellOperation',
-                options: [
-                    {
-                        code: 'edit',
-                        show: hasAccessByCodes(['${table.moduleName}:${simpleClassName_strikeCase}:update']),
-                    },
-                    {
-                        code: 'delete',
-                        show: hasAccessByCodes(['${table.moduleName}:${simpleClassName_strikeCase}:delete']),
-                    },
-                ],
-            },
+            slots: { default: 'actions' },
         },
     ];
 }
@@ -479,9 +423,7 @@ export function use${subSimpleClassName}GridColumns(
 #else
     #if ($subTable.subJoinMany) ## 一对多
     /** 新增/修改列表的字段 */
-    export function use${subSimpleClassName}GridEditColumns(
-        onActionClick?: OnActionClickFn<${simpleClassName}Api.${subSimpleClassName}>,
-    ): VxeTableGridOptions<${simpleClassName}Api.${subSimpleClassName}>['columns'] {
+    export function use${subSimpleClassName}GridEditColumns(): VxeTableGridOptions<${apiName}.${subSimpleClassName}>['columns'] {
         return [
             #foreach($column in $subColumns)
                 #if ($column.createOperation || $column.updateOperation)
@@ -517,27 +459,10 @@ export function use${subSimpleClassName}GridColumns(
                 #end
             #end
             {
-                field: 'operation',
                 title: '操作',
-                minWidth: 60,
-                align: 'center',
+                width: 200,
                 fixed: 'right',
-                headerAlign: 'center',
-                showOverflow: false,
-                cellRender: {
-                    attrs: {
-                        nameField: '${columns[0].javaField}',
-                        nameTitle: '${table.classComment}',
-                        onClick: onActionClick,
-                    },
-                    name: 'CellOperation',
-                    options: [
-                        {
-                            code: 'delete',
-                            show: hasAccessByCodes(['${table.moduleName}:${simpleClassName_strikeCase}:delete']),
-                        },
-                    ],
-                },
+                slots: { default: 'actions' },
             },
         ];
     }
@@ -633,7 +558,6 @@ export function use${subSimpleClassName}GridColumns(
                                     component: 'InputNumber',
                                     componentProps: {
                                         min: 0,
-                                        controlsPosition: 'right',
                                         placeholder: '请输入${comment}',
                                     },
                                 #end
@@ -672,7 +596,6 @@ export function use${subSimpleClassName}GridColumns(
             #end
         ];
     }
-
     #end
 #end
 #end

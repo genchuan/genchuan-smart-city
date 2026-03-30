@@ -20,7 +20,9 @@ import jakarta.annotation.Resource;
 import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -33,6 +35,7 @@ import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.
 @Tag(name = "管理后台 - 租户")
 @RestController
 @RequestMapping("/system/tenant")
+@Validated
 public class TenantController {
 
     @Resource
@@ -63,7 +66,8 @@ public class TenantController {
     @TenantIgnore
     @Operation(summary = "使用域名，获得租户信息", description = "登录界面，根据用户的域名，获得租户信息")
     @Parameter(name = "website", description = "域名", required = true, example = "www.iocoder.cn")
-    public CommonResult<TenantRespVO> getTenantByWebsite(@RequestParam("website") String website) {
+    public CommonResult<TenantRespVO> getTenantByWebsite(
+            @RequestParam("website") @Pattern(regexp = "^[a-zA-Z0-9.-]+$", message = "网站域名格式不正确") String website) {
         TenantDO tenant = tenantService.getTenantByWebsite(website);
         if (tenant == null || CommonStatusEnum.isDisable(tenant.getStatus())) {
             return success(null);
@@ -92,6 +96,15 @@ public class TenantController {
     @PreAuthorize("@ss.hasPermission('system:tenant:delete')")
     public CommonResult<Boolean> deleteTenant(@RequestParam("id") Long id) {
         tenantService.deleteTenant(id);
+        return success(true);
+    }
+
+    @DeleteMapping("/delete-list")
+    @Parameter(name = "ids", description = "编号列表", required = true)
+    @Operation(summary = "批量删除租户")
+    @PreAuthorize("@ss.hasPermission('system:tenant:delete')")
+    public CommonResult<Boolean> deleteTenantList(@RequestParam("ids") List<Long> ids) {
+        tenantService.deleteTenantList(ids);
         return success(true);
     }
 

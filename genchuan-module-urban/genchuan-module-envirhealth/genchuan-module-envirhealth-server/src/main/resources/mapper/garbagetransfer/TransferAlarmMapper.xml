@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.TransferAlarmMapper">
+
+    <resultMap id="TransferAlarmDetailResultMap" type="cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferAlarmDetailDO">
+        <id column="id" property="id"/>
+        <result column="alarm_id" property="alarmId"/>
+        <result column="transfer_id" property="transferId"/>
+        <result column="alarm_type_id" property="alarmTypeId"/>
+        <result column="alarm_time" property="alarmTime"/>
+        <result column="alarm_content" property="alarmContent"/>
+        <result column="relevant_info" property="relevantInfo"/>
+        <result column="handle_status" property="handleStatus"/>
+        <result column="handle_by" property="handleBy"/>
+        <result column="abnormal_is_timeout" property="abnormalIsTimeout"/>
+        <result column="handle_progress" property="handleProgress"/>
+        <result column="handle_result" property="handleResult"/>
+        <result column="proof_material" property="proofMaterial"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+
+        <!-- 关联查询的额外字段 -->
+        <result column="transfer_name" property="transferName"/>
+        <result column="alarm_type_name" property="alarmTypeName"/>
+        <result column="handle_name" property="handleName"/>
+    </resultMap>
+
+    <!-- 通用查询条件 - 全字段过滤（时间字段不参与过滤） -->
+    <sql id="whereConditions">
+        <where>
+            ta.deleted = 0
+
+            <!-- 基础字段过滤 -->
+            <if test="reqVO.id != null and reqVO.id != ''">
+                AND ta.id = #{reqVO.id}
+            </if>
+            <if test="reqVO.alarmId != null and reqVO.alarmId != ''">
+                AND ta.alarm_id = #{reqVO.alarmId}
+            </if>
+            <if test="reqVO.transferId != null and reqVO.transferId != ''">
+                AND ta.transfer_id = #{reqVO.transferId}
+            </if>
+            <if test="reqVO.alarmTypeId != null and reqVO.alarmTypeId != ''">
+                AND ta.alarm_type_id = #{reqVO.alarmTypeId}
+            </if>
+
+            <!-- 预警内容模糊查询 -->
+            <if test="reqVO.alarmContent != null and reqVO.alarmContent != ''">
+                AND ta.alarm_content LIKE CONCAT('%', #{reqVO.alarmContent}, '%')
+            </if>
+
+            <!-- 预警照片JSON模糊查询 -->
+            <if test="reqVO.alarmPhoto != null and reqVO.alarmPhoto != ''">
+                AND ta.alarm_photo LIKE CONCAT('%', #{reqVO.alarmPhoto}, '%')
+            </if>
+
+            <!-- 关联设备/区域模糊查询 -->
+            <if test="reqVO.relevantInfo != null and reqVO.relevantInfo != ''">
+                AND ta.relevant_info LIKE CONCAT('%', #{reqVO.relevantInfo}, '%')
+            </if>
+
+            <!-- 处置状态精确查询 -->
+            <if test="reqVO.handleStatus != null and reqVO.handleStatus != ''">
+                AND ta.handle_status = #{reqVO.handleStatus}
+            </if>
+
+            <!-- 处置人精确查询 -->
+            <if test="reqVO.handleBy != null and reqVO.handleBy != ''">
+                AND ta.handle_by = #{reqVO.handleBy}
+            </if>
+
+            <!-- 超时提醒精确查询 -->
+            <if test="reqVO.abnormalIsTimeout != null and reqVO.abnormalIsTimeout != ''">
+                AND ta.abnormal_is_timeout = #{reqVO.abnormalIsTimeout}
+            </if>
+
+            <!-- 处置进度模糊查询 -->
+            <if test="reqVO.handleProgress != null and reqVO.handleProgress != ''">
+                AND ta.handle_progress LIKE CONCAT('%', #{reqVO.handleProgress}, '%')
+            </if>
+
+            <!-- 处置结果模糊查询 -->
+            <if test="reqVO.handleResult != null and reqVO.handleResult != ''">
+                AND ta.handle_result LIKE CONCAT('%', #{reqVO.handleResult}, '%')
+            </if>
+
+            <!-- 佐证材料JSON模糊查询 -->
+            <if test="reqVO.proofMaterial != null and reqVO.proofMaterial != ''">
+                AND ta.proof_material LIKE CONCAT('%', #{reqVO.proofMaterial}, '%')
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询详情 - 联表查询 -->
+    <select id="selectDetailPage" resultMap="TransferAlarmDetailResultMap">
+        SELECT
+        ta.*,
+        gt.name AS transfer_name,
+        sat.alarm_name AS alarm_type_name,
+        su.user_name AS handle_name
+        FROM garbage_transfer_alarm ta
+        LEFT JOIN garbage_transfer gt ON ta.transfer_id = gt.transfer_id AND gt.deleted = 0
+        LEFT JOIN sys_alarm_type sat ON ta.alarm_type_id = sat.alarm_type_id AND sat.deleted = 0
+        LEFT JOIN sys_user su ON ta.handle_by = su.user_id AND su.deleted = 0
+
+        <include refid="whereConditions" />
+
+        ORDER BY ta.id DESC
+        LIMIT #{reqVO.offset}, #{reqVO.pageSize}
+    </select>
+
+    <!-- 查询符合条件的总记录数 - 复用查询条件 -->
+    <select id="selectCount" resultType="Long">
+        SELECT COUNT(*)
+        FROM garbage_transfer_alarm ta
+        LEFT JOIN garbage_transfer gt ON ta.transfer_id = gt.transfer_id AND gt.deleted = 0
+        LEFT JOIN sys_alarm_type sat ON ta.alarm_type_id = sat.alarm_type_id AND sat.deleted = 0
+        LEFT JOIN sys_user su ON ta.handle_by = su.user_id AND su.deleted = 0
+
+        <include refid="whereConditions" />
+    </select>
+</mapper>
