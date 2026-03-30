@@ -1,13 +1,11 @@
-package cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.all.vo;
+package cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.vo;
 
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-// import com.alibaba.excel.annotation.*;
 
 @Schema(description = "管理后台 - 户外广告 Response VO")
 @Data
