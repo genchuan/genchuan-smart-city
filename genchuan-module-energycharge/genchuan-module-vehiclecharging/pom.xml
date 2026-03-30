@@ -3,23 +3,23 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>cn.iocoder.cloud</groupId>
-        <artifactId>yudao</artifactId>
+        <artifactId>genchuan-module-energycharge</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <modules>
-        <module>genchuan-module-vehiclecharging</module>
-    </modules>
-
-    <description> <!-- 4. 新增 description 为该模块的描述 -->
-        demo 模块，主要实现 XXX、YYY、ZZZ 等功能0。
-    </description>
-
-    <artifactId>genchuan-module-energycharge</artifactId>
+    <artifactId>genchuan-module-vehiclecharging</artifactId>
     <packaging>pom</packaging>
 
-    <name>genchuan-module-energycharge</name>
+    <name>genchuan-module-vehiclecharging</name>
     <url>http://maven.apache.org</url>
+    <modules>
+        <module>genchuan-module-vehiclecharging-api</module>
+        <module>genchuan-module-vehiclecharging-server</module>
+    </modules>
+
+    <description>
+        vehiclecharging 模块，主要实现 XXX、YYY、ZZZ 等功能0。
+    </description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
