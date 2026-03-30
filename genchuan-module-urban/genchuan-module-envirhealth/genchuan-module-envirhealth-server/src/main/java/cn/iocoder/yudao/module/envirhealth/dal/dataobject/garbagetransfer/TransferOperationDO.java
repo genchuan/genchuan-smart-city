@@ -75,10 +75,9 @@ public class TransferOperationDO extends BaseDO {
      */
     private String transferId;
     /**
-     * 通用扩展字段2
+     * 运行状态
      */
-    @JsonIgnore
-    private String extCommon2;
+    private String operationStatus;
     /**
      * 通用扩展字段3
      */

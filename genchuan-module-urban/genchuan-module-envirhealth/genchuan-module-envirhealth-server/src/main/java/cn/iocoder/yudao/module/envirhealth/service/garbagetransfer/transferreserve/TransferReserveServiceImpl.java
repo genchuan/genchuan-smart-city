@@ -5,8 +5,10 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferreserve.*;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.GarbageTransferDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferReserveDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferReserveDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.GarbageTransferMapper;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.garbagetransfer.TransferReserveMapper;
 import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.garbagetransfer.TransferReserveCodeGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -18,6 +20,8 @@ import org.springframework.validation.annotation.Validated;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.TRANSFER_RESERVE_NOT_EXISTS;
@@ -36,18 +40,45 @@ public class TransferReserveServiceImpl implements TransferReserveService {
     private TransferReserveMapper transferReserveMapper;
 
     @Resource
+    private GarbageTransferMapper garbageTransferMapper;
+
+    @Resource
     private TransferReserveCodeGenerator codeGenerator;
 
     @Override
+    @Transactional(rollbackFor = Exception.class) // 新增事务注解
     public Long createTransferReserve(TransferReserveSaveReqVO createReqVO) {
-        // 插入
+        // 1. 构建预约DO
         TransferReserveDO transferReserve = BeanUtils.toBean(createReqVO, TransferReserveDO.class);
+        transferReserve.setId(null);
+        String reserveId = codeGenerator.generateReserveId();
+        transferReserve.setReserveId(reserveId);
+        transferReserve.setReserveStatus("待排序");
 
-        transferReserve.setReserveId(codeGenerator.generateReserveId());
-
+        // 2. 插入预约记录
         transferReserveMapper.insert(transferReserve);
-        // 返回
+
+        // 3. 同步更新垃圾转运站的reserve_id（仅progress_status=车辆待进站）
+        Long newReserveId = transferReserve.getId(); // 拿到新增预约的主键
+
+        // 根据 transferId 复制一条 garbage_transfer 记录
+        syncAddNewGarbageTransferByReserve(createReqVO.getTransferId(), newReserveId);
+
+        // 返回主键
         return transferReserve.getId();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class) // 新增事务注解
+    public void deleteTransferReserve(Long id) {
+        TransferReserveDO reserve = validateTransferReserveExists(id);
+        String transferId = reserve.getTransferId();
+        Long reserveId = reserve.getId();
+
+        // 直接删除对应预约的 garbage_transfer 记录
+        syncDeleteTransferByReserveId(transferId, reserveId);
+
+        transferReserveMapper.deleteById(id);
     }
 
     @Override
@@ -59,18 +90,12 @@ public class TransferReserveServiceImpl implements TransferReserveService {
         transferReserveMapper.updateById(updateObj);
     }
 
-    @Override
-    public void deleteTransferReserve(Long id) {
-        // 校验存在
-        validateTransferReserveExists(id);
-        // 删除
-        transferReserveMapper.deleteById(id);
-    }
-
-    private void validateTransferReserveExists(Long id) {
-        if (transferReserveMapper.selectById(id) == null) {
+    private TransferReserveDO validateTransferReserveExists(Long id) {
+        TransferReserveDO reserve = transferReserveMapper.selectById(id);
+        if (reserve == null) {
             throw exception(TRANSFER_RESERVE_NOT_EXISTS);
         }
+        return reserve;
     }
 
     @Override
@@ -85,6 +110,7 @@ public class TransferReserveServiceImpl implements TransferReserveService {
 
     @Override
     public PageResult<TransferReserveDetailDO> getTransferReserveDetailPage(TransferReservePageReqVO pageReqVO) {
+
         Long total = transferReserveMapper.selectCount(pageReqVO);
         if (total == 0) {
             return PageResult.empty();
@@ -113,13 +139,16 @@ public class TransferReserveServiceImpl implements TransferReserveService {
         if (list.isEmpty()) {
             return;
         }
+
         // 2. 根据排序规则在内存中排序
         switch (reqVO.getSortType()) {
             case "time":
+            case "EXPECTED_TIME":
                 // 按预计进站时间从早到晚
                 list.sort(Comparator.comparing(TransferReserveDO::getExpectedTime));
                 break;
             case "type":
+            case "GARBAGE_TYPE_TIME":
                 // 先按垃圾品类，再按预计时间
                 list.sort(Comparator
                         .comparing(TransferReserveDO::getGarbageTypeId, Comparator.nullsLast(String::compareTo))
@@ -132,22 +161,32 @@ public class TransferReserveServiceImpl implements TransferReserveService {
         // 当前登录用户，作为处理人/更新人
         LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
         String username = loginUser != null ? String.valueOf(loginUser.getId()) : null;
-
-        // 3. 生成排序号，从 已排序的最大值 开始
-        Integer maxSortNo = transferReserveMapper.selectMaxSortNo();
-        int sortNo = (maxSortNo != null ? maxSortNo : 0) + 1;
-
         LocalDateTime now = LocalDateTime.now();
-        for (TransferReserveDO reserve : list) {
-            TransferReserveDO update = new TransferReserveDO();
-            update.setId(reserve.getId());
-            update.setSortNo(sortNo++);
-            update.setReserveStatus("已排序");
-            update.setHandleBy(username);    // 记录处理人
-            update.setUpdater(username);     // 审计字段
-            update.setAbnormalCreateTime(now);
 
-            transferReserveMapper.updateById(update);
+        // 3. 按转运站分组，每个转运站独立生成排序号
+        Map<String, List<TransferReserveDO>> transferGroupMap = list.stream()
+                .collect(Collectors.groupingBy(TransferReserveDO::getTransferId));
+
+        // 遍历每个转运站的预约列表
+        for (Map.Entry<String, List<TransferReserveDO>> entry : transferGroupMap.entrySet()) {
+            String transferId = entry.getKey();
+            List<TransferReserveDO> reserveList = entry.getValue();
+
+            // 查询【当前转运站】下已排序的最大序号
+            Integer maxSortNo = transferReserveMapper.selectMaxSortNoByTransferId(transferId);
+            int sortNo = (maxSortNo == null ? 1 : maxSortNo + 1);
+
+            // 给当前转运站的预约依次设置排序号
+            for (TransferReserveDO reserve : reserveList) {
+                TransferReserveDO update = new TransferReserveDO();
+                update.setId(reserve.getId());
+                update.setSortNo(sortNo++);
+                update.setReserveStatus("已排序");
+                update.setUpdater(username);
+                update.setAbnormalCreateTime(now);
+
+                transferReserveMapper.updateById(update);
+            }
         }
     }
 
@@ -203,10 +242,110 @@ public class TransferReserveServiceImpl implements TransferReserveService {
         updateObj.setId(reserveId);
         updateObj.setSortNo(nextSortNo);
         updateObj.setReserveStatus("已排序"); // 标记为已排序
-        updateObj.setHandleBy(username);     // 处理人
         updateObj.setUpdater(username);      // 更新人
         updateObj.setAbnormalCreateTime(now); // 排序时间
 
         transferReserveMapper.updateById(updateObj);
+    }
+
+    /**
+     * 新增预约时 → 新增一条 garbage_transfer 记录
+     * 1. 从现有 transferId 复制基础数据
+     * 2. reserve_id 设为当前预约ID
+     * 3. 状态改为 车辆待进站
+     */
+    private void syncAddNewGarbageTransferByReserve(String transferId, Long reserveId) {
+        if (transferId == null || reserveId == null) {
+            return;
+        }
+
+        // 1. 查询该转运站的任意一条原始数据（用来复制）
+        GarbageTransferDO original = garbageTransferMapper.selectOne(
+                new LambdaQueryWrapper<GarbageTransferDO>()
+                        .eq(GarbageTransferDO::getTransferId, transferId)
+                        .last("LIMIT 1")
+        );
+        if (original == null) {
+            return;
+        }
+
+        // 2. 复制基础信息
+        GarbageTransferDO newTransfer = BeanUtils.toBean(original, GarbageTransferDO.class);
+        newTransfer.setId(null); // 清空ID，自动生成新主键
+
+        // 3. 设置关键数据
+        newTransfer.setReserveId(reserveId);        // 绑定本次预约ID
+        newTransfer.setProgressStatus("车辆待进站"); // 固定状态
+
+        // 4. 插入新记录
+        garbageTransferMapper.insert(newTransfer);
+    }
+
+    private void syncDeleteTransferByReserveId(String transferId, Long reserveId) {
+        if (transferId == null || reserveId == null) {
+            return;
+        }
+        garbageTransferMapper.delete(
+                new LambdaQueryWrapper<GarbageTransferDO>()
+                        .eq(GarbageTransferDO::getTransferId, transferId)
+                        .eq(GarbageTransferDO::getReserveId, reserveId)
+        );
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void confirmTransferReserve(TransferReserveConfirmReqVO reqVO) {
+        // 1. 校验预约存在
+        Long reserveId = reqVO.getId();
+        TransferReserveDO reserve = validateTransferReserveExists(reserveId);
+
+        // 2. 校验预约状态为「已排序」
+        if (!"已排序".equals(reserve.getReserveStatus())) {
+            throw exception("仅支持对「已排序」状态的预约执行确认进站操作");
+        }
+
+        // 3. 更新预约状态为「已进站」
+        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
+        String username = loginUser != null ? String.valueOf(loginUser.getId()) : null;
+        LocalDateTime now = LocalDateTime.now();
+
+        TransferReserveDO updateObj = new TransferReserveDO();
+        updateObj.setId(reserveId);
+        updateObj.setReserveStatus("已进站");
+        updateObj.setUpdater(username);
+        updateObj.setUpdateTime(now);
+        transferReserveMapper.updateById(updateObj);
+
+        // 4. 直接删除 garbage_transfer 中 对应这条预约 的数据
+        String transferId = reserve.getTransferId();
+        syncDeleteTransferByReserveId(transferId, reserveId);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void cancelTransferReserve(Long id) {
+        // 1. 校验预约存在
+        TransferReserveDO reserve = validateTransferReserveExists(id);
+
+        // ====================== 状态校验：只有 待排序 / 已排序 可以取消 ======================
+        String status = reserve.getReserveStatus();
+        if (!"待排序".equals(status) && !"已排序".equals(status)) {
+            throw exception("仅允许对【待排序】或【已排序】状态的预约进行取消操作");
+        }
+
+        // 2. 修改预约状态为 已取消
+        TransferReserveDO updateObj = new TransferReserveDO();
+        updateObj.setId(id);
+        updateObj.setReserveStatus("已取消");
+
+        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
+        String username = loginUser != null ? String.valueOf(loginUser.getId()) : null;
+        updateObj.setUpdater(username);
+        updateObj.setUpdateTime(LocalDateTime.now());
+
+        transferReserveMapper.updateById(updateObj);
+
+        // 3. 同步删除 garbage_transfer 对应的那条数据
+        syncDeleteTransferByReserveId(reserve.getTransferId(), id);
     }
 }

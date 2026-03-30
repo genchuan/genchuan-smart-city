@@ -9,6 +9,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.g
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.EquipmentDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagecollection.GarbageCollectionDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.GarbageTransferDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.GarbageTransferDetailDO;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.dictionary.EquipmentMapper;
@@ -108,6 +109,22 @@ public class GarbageTransferServiceImpl implements GarbageTransferService {
         validateGarbageTransferExists(id);
         // 删除
         garbageTransferMapper.deleteById(id);
+    }
+
+    @Override
+    public void deleteGarbageTransferBatch(List<Long> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return;
+        }
+
+        // 校验所有计划是否存在
+        List<GarbageTransferDO> garbageTransfers = garbageTransferMapper.selectBatchIds(ids);
+        if (garbageTransfers.size() != ids.size()) {
+            throw exception(GARBAGE_TRANSFER_NOT_EXISTS);
+        }
+
+        // 批量删除
+        garbageTransferMapper.deleteBatchIds(ids);
     }
 
     private void validateGarbageTransferExists(Long id) {

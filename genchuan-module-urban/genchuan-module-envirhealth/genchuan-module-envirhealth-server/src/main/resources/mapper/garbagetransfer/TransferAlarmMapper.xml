@@ -91,15 +91,15 @@
         </where>
     </sql>
 
-    <!-- 分页查询详情 - 联表查询 -->
+    <!-- 分页查询详情 - 联表查询 不再左连接garbage_transfer全表，避免重复 -->
     <select id="selectDetailPage" resultMap="TransferAlarmDetailResultMap">
         SELECT
         ta.*,
-        gt.name AS transfer_name,
+        -- 子查询只拿转运站名字，不会关联多条gt记录
+        (SELECT name FROM garbage_transfer WHERE transfer_id = ta.transfer_id AND deleted = 0 LIMIT 1) AS transfer_name,
         sat.alarm_name AS alarm_type_name,
         su.user_name AS handle_name
         FROM garbage_transfer_alarm ta
-        LEFT JOIN garbage_transfer gt ON ta.transfer_id = gt.transfer_id AND gt.deleted = 0
         LEFT JOIN sys_alarm_type sat ON ta.alarm_type_id = sat.alarm_type_id AND sat.deleted = 0
         LEFT JOIN sys_user su ON ta.handle_by = su.user_id AND su.deleted = 0
 
@@ -109,13 +109,10 @@
         LIMIT #{reqVO.offset}, #{reqVO.pageSize}
     </select>
 
-    <!-- 查询符合条件的总记录数 - 复用查询条件 -->
+    <!-- 查询符合条件的总记录数 -->
     <select id="selectCount" resultType="Long">
         SELECT COUNT(*)
         FROM garbage_transfer_alarm ta
-        LEFT JOIN garbage_transfer gt ON ta.transfer_id = gt.transfer_id AND gt.deleted = 0
-        LEFT JOIN sys_alarm_type sat ON ta.alarm_type_id = sat.alarm_type_id AND sat.deleted = 0
-        LEFT JOIN sys_user su ON ta.handle_by = su.user_id AND su.deleted = 0
 
         <include refid="whereConditions" />
     </select>

@@ -42,6 +42,12 @@ public interface GarbageTransferService {
     void deleteGarbageTransfer(Long id);
 
     /**
+     * 批量删除收运计划
+     *
+     * @param ids 编号列表
+     */
+    void deleteGarbageTransferBatch(List<Long> ids);
+    /**
      * 获得垃圾转运站
      *
      * @param id 编号

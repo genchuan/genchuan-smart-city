@@ -115,4 +115,5 @@ public interface ErrorCodeConstants {
     ErrorCode TRANSFER_OPERATION_PLAN_ID_EMPTY = new ErrorCode(500, "转运作业关联的收运计划ID为空，无法暂停");
     ErrorCode UNKNOWN_REVIEW_RESULT = new ErrorCode(500, "未知的验收结果");
     ErrorCode MAINTENANCE_NOT_IN_REPAIRING = new ErrorCode(500, "维护单状态不是维护中，不能验收");
+    ErrorCode TRANSFER_OPERATION_CANNOT_START_NOT_PAUSED = new ErrorCode(500, "只有暂停状态可启动");
 }
