@@ -83,4 +83,19 @@ public interface TransferOperationService {
      * @param pauseStatusId 暂停状态ID（uuid-plan-status-004）
      */
     void pauseTransferOperation(Long operationId, String pauseStatusId);
+
+    /**
+     * 暂停转运作业
+     *
+     * @param operationId 转运作业ID
+     * @param startStatusId 启动状态ID（uuid-plan-status-002）
+     */
+    void startTransferOperation(Long operationId, String startStatusId);
+
+    /**
+     * 归档转运作业
+     *
+     * @param operationId 转运作业ID
+     */
+    void completeTransferOperation(Long operationId);
 }

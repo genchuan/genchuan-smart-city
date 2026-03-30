@@ -88,17 +88,17 @@ public class GarbageTransferDO extends BaseDO {
     /**
      * 预约编号
      */
-    private String reserveId;
+    private Long reserveId;
     /**
      * 作业编号
      */
-    private String operationId;
+    private Long operationId;
     /**
      * 预警编号
      */
-    private String alarmId;
+    private Long alarmId;
     /**
      * 维护编号
      */
-    private String maintenanceId;
+    private Long maintenanceId;
 }

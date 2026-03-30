@@ -24,6 +24,7 @@ Build:
         ["genchuan-module-evaluate-server"]="genchuan-module-datahub/genchuan-module-evaluate/genchuan-module-evaluate-server"
         ["genchuan-module-park-server"]="genchuan-module-park/genchuan-module-park-server"
         ["genchuan-module-kitchen-server"]="genchuan-module-marketsupervision/genchuan-module-kitchen/genchuan-module-kitchen-server"
+        ["genchuan-module-vehiclecharging-server"]="genchuan-module-energycharge/genchuan-module-vehiclecharging/genchuan-module-vehiclecharging-server"
       )
       echo "===== 开始构建所有镜像 ====="
       for module in "${!MODULE_JAR_MAP[@]}"; do
