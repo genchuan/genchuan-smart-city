@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.all;
+package cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.*;

@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.all.vo;
+package cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.vo;
 
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
@@ -11,10 +11,6 @@ import java.util.List;
 @Data
 @ExcelIgnoreUnannotated
 public class OutdoorAdGetRespVO {
-//    @Schema(description = "主键ID（UUID）")
-//    @ExcelProperty("主键ID")
-//    private String id;
-
     @Schema(description = "广告主键ID")
     @ExcelProperty("广告主键ID")
     private String outdoorAdId;

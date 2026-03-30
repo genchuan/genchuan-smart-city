@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.all.vo;
+package cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
