@@ -15,6 +15,7 @@ import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.garbaget
 import cn.iocoder.yudao.module.envirhealth.framework.util.vo.BarItemVO;
 import cn.iocoder.yudao.module.envirhealth.service.garbagecollection.garbagecollection.GarbageCollectionService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -281,5 +282,44 @@ public class TransferOperationServiceImpl implements TransferOperationService {
                         .eq(GarbageTransferDO::getTransferId, transferId)
                         .eq(GarbageTransferDO::getReserveId, operationId)
         );
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void completeTransferOperation(Long operationId) {
+        // 1. 校验转运作业是否存在
+        TransferOperationDO operation = validateTransferOperationExists(operationId);
+
+        // 2. 获取 planId
+        String planId = operation.getPlanId();
+        if (planId == null || planId.isEmpty()) {
+            throw exception(TRANSFER_OPERATION_PLAN_ID_EMPTY);
+        }
+
+        // ===================== 校验：必须是 003 状态才能归档 =====================
+        // 获取当前计划状态
+        String currentPlanStatus = garbageCollectionService.getPlanStatus(planId);
+
+        // 必须等于 uuid-plan-status-003 才能继续
+        if (!"uuid-plan-status-003".equals(currentPlanStatus)) {
+            throw exception(TRANSFER_OPERATION_CANNOT_COMPLETE_NOT_IN_RUNNING); // 自定义异常：非运行中不能完成
+        }
+
+        // ===================== 状态更新 =====================
+        // 1. 更新【转运作业】状态为：归档
+        TransferOperationDO updateOperation = new TransferOperationDO();
+        updateOperation.setId(operationId);
+        updateOperation.setOperationStatus("归档");
+        transferOperationMapper.updateById(updateOperation);
+
+        LambdaUpdateWrapper<GarbageTransferDO> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(GarbageTransferDO::getTransferId, operation.getTransferId())
+                .eq(GarbageTransferDO::getOperationId, operationId)
+                .set(GarbageTransferDO::getProgressStatus, "已归档");
+        garbageTransferMapper.update(null, updateWrapper);
+
+        // 2. 更新【收运计划】状态为：uuid-plan-status-006
+        garbageCollectionService.updatePlanStatus(planId, "uuid-plan-status-006");
+
     }
 }

@@ -455,4 +455,10 @@ public interface GarbageCollectionMapper extends BaseMapperX<GarbageCollectionDO
      */
     @Select("SELECT * FROM garbage_collection WHERE collection_id = #{collectionId} AND deleted = 0 LIMIT 1")
     GarbageCollectionDO selectByCollectionId(String collectionId);
+
+    /**
+     * 根据 planId 查询收运计划状态
+     */
+    @Select("SELECT plan_status_id FROM garbage_collection WHERE collection_id = #{planId} AND deleted = 0")
+    String selectPlanStatusByPlanId(@Param("planId") String planId);
 }
