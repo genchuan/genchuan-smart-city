@@ -32,6 +32,7 @@
         <module>genchuan-module-datahub</module>
         <module>genchuan-module-park</module>
         <module>genchuan-module-wateraffairs</module>
+        <module>genchuan-module-energycharge</module>
     </modules>
 
     <name>${project.artifactId}</name>

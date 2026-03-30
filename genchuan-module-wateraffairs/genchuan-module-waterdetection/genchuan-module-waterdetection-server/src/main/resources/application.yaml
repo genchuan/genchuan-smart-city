@@ -165,6 +165,7 @@ yudao:
   tenant: # 多租户相关配置项
     enable: true
     ignore-urls:
+      - /admin-api/waterdetection/device/upload/** # 设备接收数据接口，无需传递租户编号
       - /admin-api/system/tenant/get-id-by-name # 基于名字获取租户，不许带租户编号
       - /admin-api/system/tenant/get-by-website # 基于域名获取租户，不许带租户编号
       - /admin-api/system/captcha/get-image # 获取图片验证码，和租户无关

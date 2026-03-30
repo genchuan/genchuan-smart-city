@@ -237,6 +237,7 @@ public class WaterSampleTestSummaryServiceImpl implements WaterSampleTestSummary
         // 检测项目到数据库字段的映射
         switch (jiancexiangmu) {
             case "pH":
+            case "pH值":
                 waterSample.setPhValue(jiancezhi);
                 break;
             case "氨氮":

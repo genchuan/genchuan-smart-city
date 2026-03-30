@@ -38,8 +38,7 @@ public class WaterDeviceController {
     @Parameter(name = "modelJson", description = "设备数据JSON字符串", required = true)
     public String uploadDeviceData( // 修改返回类型为 String
                                     @RequestParam("modelJson") String modelJson) {
-        // 设置默认租户ID为1
-        TenantContextHolder.setTenantId(1L);
+
         try {
             // 解析JSON字符串
             WaterDeviceDataReqVO deviceData = objectMapper.readValue(modelJson, WaterDeviceDataReqVO.class);

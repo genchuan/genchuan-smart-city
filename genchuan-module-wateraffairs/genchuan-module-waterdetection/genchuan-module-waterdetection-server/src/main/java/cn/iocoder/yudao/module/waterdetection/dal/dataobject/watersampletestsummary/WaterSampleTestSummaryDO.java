@@ -128,6 +128,7 @@ public class WaterSampleTestSummaryDO extends BaseDO {
     /**
      * 铅(mg/L)
      */
+    @TableField("`lead`")
     private String lead;
     /**
      * 氰化物(mg/L)

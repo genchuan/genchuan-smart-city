@@ -112,26 +112,6 @@ public class WaterSampleTestSummaryController {
         return success(waterSampleTestSummaryService.importWaterSampleList(list,updateSupport));
     }
 
-//    @PostMapping("/device/receive")
-//    @Operation(summary = "接收设备数据")
-//    @Parameters({
-//            @Parameter(name = "modelJson", description = "设备数据JSON字符串", required = true)
-//    })
-//    @PreAuthorize("@ss.hasPermission('waterdetection:water-sample-test-summary:create')")
-//    public CommonResult<WaterDeviceDataRespVO> receiveDeviceData(
-//            @RequestParam("modelJson") String modelJson) {
-//
-//        // 解析JSON字符串
-//        try {
-//            WaterDeviceDataReqVO deviceData = objectMapper.readValue(modelJson, WaterDeviceDataReqVO.class);
-//            return success(waterSampleTestSummaryService.receiveDeviceData(deviceData));
-//        } catch (JsonProcessingException e) {
-//            // 处理JSON解析错误
-//            log.error("设备数据解析失败", e);
-//            return CommonResult.error(new ErrorCode(400, "设备数据格式错误"));
-//        }
-//    }
-
     @PostMapping("/upload")
     @Operation(summary = "接收设备数据")
     @Parameter(name = "modelJson", description = "设备数据JSON字符串", required = true)
