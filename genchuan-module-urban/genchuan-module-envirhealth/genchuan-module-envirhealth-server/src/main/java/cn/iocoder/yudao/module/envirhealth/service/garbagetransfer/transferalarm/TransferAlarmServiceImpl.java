@@ -192,27 +192,32 @@ public class TransferAlarmServiceImpl implements TransferAlarmService {
             return;
         }
 
-        // 1. 查询该转运站的任意一条原始数据（用来复制）
+        GarbageTransferDO newTransfer;
+        // 1. 查询该转运站的任意一条原始数据
         GarbageTransferDO original = garbageTransferMapper.selectOne(
                 new LambdaQueryWrapper<GarbageTransferDO>()
                         .eq(GarbageTransferDO::getTransferId, transferId)
+                        .eq(GarbageTransferDO::getDeleted, 0)
                         .last("LIMIT 1")
         );
-        if (original == null) {
-            return;
-        }
 
-        // 2. 复制基础信息
-        GarbageTransferDO newTransfer = BeanUtils.toBean(original, GarbageTransferDO.class);
-        newTransfer.setId(null); // 清空ID，自动生成新主键
-        newTransfer.setReserveId(null);
-        newTransfer.setAlarmId(null);
-        newTransfer.setOperationId(null);
-        newTransfer.setMaintenanceId(null);
+        if (original != null) {
+            // 有数据 → 复制
+            newTransfer = BeanUtils.toBean(original, GarbageTransferDO.class);
+            newTransfer.setId(null);
+            newTransfer.setReserveId(null);
+            newTransfer.setAlarmId(null);
+            newTransfer.setOperationId(null);
+            newTransfer.setMaintenanceId(null);
+        } else {
+            // 无数据 → 手动新建
+            newTransfer = new GarbageTransferDO();
+            newTransfer.setTransferId(transferId); // 必须字段
+        }
 
         // 3. 设置关键数据
         newTransfer.setAlarmId(alarmId);        // 绑定本次预警ID
-        newTransfer.setProgressStatus("预警待处理"); // 固定状态，和预约/作业的状态对应
+        newTransfer.setProgressStatus("预警待处理"); // 固定状态
 
         // 4. 插入新记录
         garbageTransferMapper.insert(newTransfer);
