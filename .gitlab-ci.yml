@@ -3,7 +3,7 @@ stages:
 
 variables:
   DOCKER_REGISTRY: "192.168.8.14"
-  DOCKER_BUILDKIT: "0"  # 关闭 BuildKit 避免路径解析问题（全局生效）
+  DOCKER_BUILDKIT: "0"
   POD_TAG: "$CI_COMMIT_BRANCH"
   IMAGE_NAMESPACE: "genchuan"
 
@@ -25,6 +25,9 @@ Build:
         ["genchuan-module-park-server"]="genchuan-module-park/genchuan-module-park-server"
         ["genchuan-module-kitchen-server"]="genchuan-module-marketsupervision/genchuan-module-kitchen/genchuan-module-kitchen-server"
         ["genchuan-module-vehiclecharging-server"]="genchuan-module-energycharge/genchuan-module-vehiclecharging/genchuan-module-vehiclecharging-server"
+        ["genchuan-module-appearance-server"]="genchuan-module-urban/genchuan-module-appearance/genchuan-module-appearance-server"
+        ["genchuan-module-smartcity-server"]="genchuan-module-urban/genchuan-module-smartcity/genchuan-module-smartcity-server"
+        ["genchuan-module-waterdetection-server"]="genchuan-module-wateraffairs/genchuan-module-waterdetection/genchuan-module-waterdetection-server"
       )
       echo "===== 开始构建所有镜像 ====="
       for module in "${!MODULE_JAR_MAP[@]}"; do
