@@ -204,4 +204,8 @@ public interface GarbageCollectionService {
      */
     GarbageCollectionDO getCollectionByCollectionId(String collectionId);
 
+    /**
+     * 获取当前收运计划状态
+     */
+    String getPlanStatus(String planId);
 }

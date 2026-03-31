@@ -116,4 +116,5 @@ public interface ErrorCodeConstants {
     ErrorCode UNKNOWN_REVIEW_RESULT = new ErrorCode(500, "未知的验收结果");
     ErrorCode MAINTENANCE_NOT_IN_REPAIRING = new ErrorCode(500, "维护单状态不是维护中，不能验收");
     ErrorCode TRANSFER_OPERATION_CANNOT_START_NOT_PAUSED = new ErrorCode(500, "只有暂停状态可启动");
+    ErrorCode TRANSFER_OPERATION_CANNOT_COMPLETE_NOT_IN_RUNNING = new ErrorCode(500, "只有已完成的作业才能标记为已归档");
 }

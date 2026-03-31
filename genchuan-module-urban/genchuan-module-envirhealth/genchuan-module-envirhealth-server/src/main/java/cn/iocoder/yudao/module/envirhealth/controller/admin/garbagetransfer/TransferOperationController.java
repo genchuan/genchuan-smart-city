@@ -146,4 +146,13 @@ public class TransferOperationController {
         transferOperationService.startTransferOperation(operationId, startStatusId);
         return success(true);
     }
+
+    @PutMapping("/complete")
+    @Operation(summary = "归档转运作业")
+    @Parameter(name = "operationId", description = "作业ID", required = true)
+    @PreAuthorize("@ss.hasPermission('envirhealth:transfer-operation:update')")
+    public CommonResult<Boolean> completeTransferOperation(@RequestParam("operationId") Long operationId) {
+        transferOperationService.completeTransferOperation(operationId);
+        return success(true);
+    }
 }

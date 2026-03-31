@@ -109,15 +109,21 @@
 
     <!-- 分页查询详情（联表） -->
     <select id="selectDetailPage" resultMap="TransferMaintenanceDetailResultMap">
-        SELECT
+        SELECT DISTINCT
         tm.*,
         gt.name AS transfer_name,
         se.name AS equipment_name,
         su.user_name AS handle_name
         FROM garbage_transfer_maintenance tm
-        LEFT JOIN garbage_transfer gt ON tm.transfer_id = gt.transfer_id AND gt.deleted = 0
-        LEFT JOIN sys_equipment se ON tm.equipment_id = se.sys_equipment_id AND se.deleted = 0
-        LEFT JOIN sys_user su ON tm.handle_by = su.user_id AND su.deleted = 0
+        LEFT JOIN garbage_transfer gt
+        ON tm.transfer_id = gt.transfer_id
+        AND gt.deleted = 0  <!-- 只关联未删除 -->
+        LEFT JOIN sys_equipment se
+        ON tm.equipment_id = se.sys_equipment_id
+        AND se.deleted = 0  <!-- 只关联未删除 -->
+        LEFT JOIN sys_user su
+        ON tm.handle_by = su.user_id
+        AND su.deleted = 0  <!-- 只关联未删除 -->
 
         <include refid="whereConditions" />
 
@@ -125,13 +131,19 @@
         LIMIT #{reqVO.offset}, #{reqVO.pageSize}
     </select>
 
-    <!-- 统计总数（匹配分页条件） -->
+    <!-- 统计总数（匹配分页条件）【修复重复统计】 -->
     <select id="selectCount" resultType="Long">
-        SELECT COUNT(*)
+        SELECT COUNT(DISTINCT tm.id)  <!-- 关键：只统计唯一维护单ID -->
         FROM garbage_transfer_maintenance tm
-        LEFT JOIN garbage_transfer gt ON tm.transfer_id = gt.transfer_id AND gt.deleted = 0
-        LEFT JOIN sys_equipment se ON tm.equipment_id = se.sys_equipment_id AND se.deleted = 0
-        LEFT JOIN sys_user su ON tm.handle_by = su.user_id AND su.deleted = 0
+        LEFT JOIN garbage_transfer gt
+        ON tm.transfer_id = gt.transfer_id
+        AND gt.deleted = 0
+        LEFT JOIN sys_equipment se
+        ON tm.equipment_id = se.sys_equipment_id
+        AND se.deleted = 0
+        LEFT JOIN sys_user su
+        ON tm.handle_by = su.user_id
+        AND su.deleted = 0
 
         <include refid="whereConditions" />
     </select>

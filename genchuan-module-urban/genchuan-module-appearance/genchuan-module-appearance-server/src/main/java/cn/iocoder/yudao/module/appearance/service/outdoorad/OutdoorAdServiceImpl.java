@@ -2,10 +2,8 @@ package cn.iocoder.yudao.module.appearance.service.outdoorad;
 
 import cn.hutool.core.util.IdUtil;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.vo.OutdoorAdAddReqVO;
-import cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.vo.OutdoorAdEditReqVO;
-import cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.vo.OutdoorAdGetReqVO;
-import cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.vo.OutdoorAdPageReqVO;
+import cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.vo.*;
+import cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.OutdoorAdOrderDO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
@@ -88,6 +86,32 @@ public class OutdoorAdServiceImpl implements OutdoorAdService {
         // 返回
         return rows > 0;
     }
+
+    @Override
+    public Boolean removeOutdoorAd( OutdoorAdRemoveReqVO removeReqVO ) {
+        // 删除
+        OutdoorAdDO outdoorAd = BeanUtils.toBean(removeReqVO, OutdoorAdDO.class);
+
+        outdoorAd.setId(outdoorAdMapper.getIdByOutdoorAdId(outdoorAd.getOutdoorAdId()));
+
+        int rows = outdoorAdMapper.deleteById(outdoorAd.getId());
+        // 返回
+        return rows > 0;
+    }
+
+    @Override
+    public PageResult<OutdoorAdOrderDO> getOutdoorAdOrderPage( OutdoorAdOrderPageReqVO pageReqVO ) {
+        Page<OutdoorAdOrderDO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        // 直接调用自定义分页方法，传入 reqVO
+        IPage<OutdoorAdOrderDO> pageResult = outdoorAdMapper.selectOrderPageVO(page, pageReqVO);
+        return new PageResult<>(pageResult.getRecords(), pageResult.getTotal());
+    }
+
+    @Override
+    public OutdoorAdOrderDO getOutdoorAdOrder( OutdoorAdOrderGetReqVO getReqVO ) {
+        return outdoorAdMapper.selectOneOrder(getReqVO);
+    }
+
 
     /**
      * 生成广告编码

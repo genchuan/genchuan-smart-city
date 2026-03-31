@@ -637,4 +637,12 @@ public class GarbageCollectionServiceImpl implements GarbageCollectionService {
     public GarbageCollectionDO getCollectionByCollectionId(String collectionId) {
         return garbageCollectionMapper.selectByCollectionId(collectionId);
     }
+
+    @Override
+    public String getPlanStatus(String planId) {
+        if (planId == null || planId.isEmpty()) {
+            return null;
+        }
+        return garbageCollectionMapper.selectPlanStatusByPlanId(planId);
+    }
 }

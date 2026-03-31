@@ -87,10 +87,6 @@ public class OutdoorAdGetRespVO {
     @ExcelProperty("归档版本号")
     private String archiveVersion;
 
-    @Schema(description = "文件ID")
-    @ExcelProperty("文件ID")
-    private Long attachFileId;
-
     @Schema(description = "附件文件列表")
     @ExcelProperty("附件文件列表")
     private List<AttachFileVO> attachFileList;
@@ -128,18 +124,18 @@ public class OutdoorAdGetRespVO {
 
         @Schema(description = "文件ID")
         @ExcelProperty("文件ID")
-        private Long attachFileId;
+        private String fileId;   // ✅ 改
 
         @Schema(description = "文件URL")
         @ExcelProperty("文件URL")
-        private String attachFileUrl;
+        private String fileUrl;  // ✅ 改
 
         @Schema(description = "文件名")
         @ExcelProperty("文件名")
-        private String attachFileName;
+        private String fileName; // ✅ 改
 
         @Schema(description = "文件类型")
         @ExcelProperty("文件类型")
-        private String attachFileType;
+        private String fileType; // ✅ 改
     }
 }
