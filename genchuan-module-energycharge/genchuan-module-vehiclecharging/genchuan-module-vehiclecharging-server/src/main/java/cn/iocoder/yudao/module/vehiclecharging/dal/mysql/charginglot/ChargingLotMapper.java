@@ -22,10 +22,8 @@ public interface ChargingLotMapper extends BaseMapperX<ChargingLotDO> {
     default PageResult<ChargingLotDO> selectPage(ChargingLotPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<ChargingLotDO>()
                 .eqIfPresent(ChargingLotDO::getLotCode, reqVO.getLotCode())
-                .eqIfPresent(ChargingLotDO::getStationCode, reqVO.getStationCode())
                 .eqIfPresent(ChargingLotDO::getStationId, reqVO.getStationId())
                 .eqIfPresent(ChargingLotDO::getLotType, reqVO.getLotType())
-                .eqIfPresent(ChargingLotDO::getPileCode, reqVO.getPileCode())
                 .eqIfPresent(ChargingLotDO::getPileId, reqVO.getPileId())
                 .betweenIfPresent(ChargingLotDO::getOccupyTime, reqVO.getOccupyTime())
                 .eqIfPresent(ChargingLotDO::getLotStatus, reqVO.getLotStatus())

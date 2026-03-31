@@ -122,10 +122,9 @@ public class ChargingLotServiceImpl implements ChargingLotService {
 
             // 3.3 按场站统计
             // 使用stationCode作为场站标识，如果stationCode为空，归到“未知场站”
-            String stationKey = lot.getStationCode() != null ? lot.getStationCode() : "未知场站";
+            String stationKey = lot.getLotType() != null ? lot.getLotCode() : "未知场站";
             ChargingLotChartRespVO.StationLot stationStat = stationLotMap.computeIfAbsent(stationKey, k -> {
                 ChargingLotChartRespVO.StationLot newStat = new ChargingLotChartRespVO.StationLot();
-                newStat.setStationName(stationKey); // 这里用编码作为名称，可替换为从其他服务查询的名称
                 newStat.setTotalCount(0);
                 newStat.setIdleCount(0);
                 newStat.setOccupiedCount(0);

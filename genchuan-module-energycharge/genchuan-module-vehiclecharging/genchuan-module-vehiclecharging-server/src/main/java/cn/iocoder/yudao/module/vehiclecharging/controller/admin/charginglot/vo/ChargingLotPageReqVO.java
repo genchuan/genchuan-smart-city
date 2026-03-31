@@ -16,17 +16,11 @@ public class ChargingLotPageReqVO extends PageParam {
     @Schema(description = "车位编号")
     private String lotCode;
 
-    @Schema(description = "所属场站编码")
-    private String stationCode;
-
     @Schema(description = "所属场站ID")
     private Long stationId;
 
     @Schema(description = "车位类型")
     private String lotType;
-
-    @Schema(description = "关联充电桩编号")
-    private String pileCode;
 
     @Schema(description = "关联充电桩ID")
     private Long pileId;
