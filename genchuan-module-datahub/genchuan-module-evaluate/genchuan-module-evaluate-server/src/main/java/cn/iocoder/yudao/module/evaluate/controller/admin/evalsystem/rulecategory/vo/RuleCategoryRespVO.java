@@ -1,12 +1,13 @@
 package cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.rulecategory.vo;
 
 import cn.iocoder.yudao.module.evaluate.controller.admin.commentrule.vo.CommentRuleRespVO;
-import cn.idev.excel.annotation.*;
+import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
+import com.alibaba.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
 
 @Schema(description = "管理后台 - 规则分类管理 Response VO")
 @Data

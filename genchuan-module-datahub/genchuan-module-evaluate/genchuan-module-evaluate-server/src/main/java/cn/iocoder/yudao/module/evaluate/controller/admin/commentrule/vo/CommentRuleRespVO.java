@@ -1,12 +1,14 @@
 package cn.iocoder.yudao.module.evaluate.controller.admin.commentrule.vo;
 
+import cn.idev.excel.annotation.ExcelIgnore;
+import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
+import cn.idev.excel.annotation.ExcelProperty;
 import cn.iocoder.yudao.module.evaluate.controller.admin.ruledetail.vo.RuleDetailRespVO;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import java.util.*;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.Data;
+
 import java.time.LocalDateTime;
-import cn.idev.excel.annotation.*;
+import java.util.List;
 
 @Schema(description = "管理后台 - 评分规则主 Response VO")
 @Data

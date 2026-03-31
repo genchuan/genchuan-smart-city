@@ -29,13 +29,9 @@ public class StandardItemDO extends BaseDO {
     @TableId
     private Long id;
     /**
-     * 标准项ID（UUID）
+     * 标准分类ID（关联eval_standard_category.id）
      */
-    private String standardItemId;
-    /**
-     * 标准分类ID（关联eval_standard_category.standard_category_id）
-     */
-    private String standardCategoryId;
+    private Long standardCategoryId;
     /**
      * 标准项等级
      */
@@ -48,14 +44,6 @@ public class StandardItemDO extends BaseDO {
      * 排序序号
      */
     private Integer sortNo;
-    /**
-     * 更新人ID（关联sys_user.user_id）
-     */
-    private String updateBy;
-    /**
-     * 创建人ID（关联sys_user.user_id）
-     */
-    private String createBy;
     /**
      * 创建时间（业务字段）
      */

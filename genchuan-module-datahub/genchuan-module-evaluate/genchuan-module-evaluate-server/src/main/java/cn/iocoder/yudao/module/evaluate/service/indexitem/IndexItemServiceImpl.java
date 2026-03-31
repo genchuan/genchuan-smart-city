@@ -23,11 +23,7 @@ import org.springframework.validation.annotation.Validated;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -221,7 +217,7 @@ public class IndexItemServiceImpl implements IndexItemService {
     }
 
     @Override
-    public void updateBatchItemWeight(Map<Long, java.math.BigDecimal> itemWeights) {
+    public void updateBatchItemWeight(Map<Long, BigDecimal> itemWeights) {
         if (itemWeights == null || itemWeights.isEmpty()) {
             return;
         }

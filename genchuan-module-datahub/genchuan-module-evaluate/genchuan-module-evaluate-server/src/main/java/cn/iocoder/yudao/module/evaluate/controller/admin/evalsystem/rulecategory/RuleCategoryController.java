@@ -6,10 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.rulecategory.vo.RuleCategoryPageReqVO;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.rulecategory.vo.RuleCategoryRespVO;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.rulecategory.vo.RuleCategorySaveFullReqVO;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.rulecategory.vo.RuleCategorySaveReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.rulecategory.vo.*;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.rulecategory.RuleCategoryDO;
 import cn.iocoder.yudao.module.evaluate.service.rulecategory.RuleCategoryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,9 +20,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
 
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.CREATE;
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.DELETE;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.UPDATE;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 @Tag(name = "管理后台 - 规则分类管理")
@@ -40,22 +40,24 @@ public class RuleCategoryController {
     @PostMapping("/create")
     @Operation(summary = "创建规则分类管理")
     @PreAuthorize("@ss.hasPermission('evaluate:rule-category:create')")
+    @ApiAccessLog(operateType = CREATE)
     public CommonResult<Long> createRuleCategory(@Valid @RequestBody RuleCategorySaveReqVO createReqVO) {
         return success(ruleCategoryService.createRuleCategory(createReqVO));
     }
 
     @PutMapping("/update")
-    @Operation(summary = "更新规则分类管理（含树形结构）")
+    @Operation(summary = "更新/新增规则分类管理（含树形结构）")
     @PreAuthorize("@ss.hasPermission('evaluate:rule-category:update')")
-    public CommonResult<Boolean> updateRuleCategory(@Valid @RequestBody RuleCategorySaveReqVO updateReqVO) {
-        ruleCategoryService.updateRuleCategoryWithRules(updateReqVO);
-        return success(true);
+    @ApiAccessLog(operateType = UPDATE)
+    public CommonResult<Long> updateRuleCategory(@Valid @RequestBody RuleCategorySaveReqVO updateReqVO) {
+        return success(ruleCategoryService.updateRuleCategoryWithRules(updateReqVO));
     }
 
     @DeleteMapping("/delete")
     @Operation(summary = "删除规则分类管理")
     @Parameter(name = "id", description = "编号", required = true)
     @PreAuthorize("@ss.hasPermission('evaluate:rule-category:delete')")
+    @ApiAccessLog(operateType = DELETE)
     public CommonResult<Boolean> deleteRuleCategory(@RequestParam("id") Long id) {
         ruleCategoryService.deleteRuleCategory(id);
         return success(true);
@@ -68,6 +70,13 @@ public class RuleCategoryController {
     public CommonResult<RuleCategoryRespVO> getRuleCategory(@RequestParam("id") Long id) {
         RuleCategoryRespVO respVO = ruleCategoryService.getRuleCategoryTree(id);
         return success(respVO);
+    }
+
+    @GetMapping("/statistics")
+    @Operation(summary = "获取规则分类统计数据")
+    @PreAuthorize("@ss.hasPermission('evaluate:rule-category:query')")
+    public CommonResult<RuleCategoryStatisticsVO> getRuleCategoryStatistics() {
+        return success(ruleCategoryService.getRuleCategoryStatistics());
     }
 
     @GetMapping("/page")
@@ -89,6 +98,7 @@ public class RuleCategoryController {
     @PostMapping("/save-full")
     @Operation(summary = "完整保存规则分类（含评分规则和明细）")
     @PreAuthorize("@ss.hasPermission('evaluate:rule-category:save')")
+    @ApiAccessLog(operateType = CREATE)
     public CommonResult<Long> saveFull(@Valid @RequestBody RuleCategorySaveFullReqVO saveFullReqVO) {
         Long categoryId = ruleCategoryService.saveFull(saveFullReqVO);
         return success(categoryId);

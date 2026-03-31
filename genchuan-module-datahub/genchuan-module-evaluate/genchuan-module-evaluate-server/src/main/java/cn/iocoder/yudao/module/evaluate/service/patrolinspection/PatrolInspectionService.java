@@ -6,8 +6,6 @@ import cn.iocoder.yudao.module.evaluate.controller.admin.patrolinspection.vo.Pat
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.patrolinspection.PatrolInspectionDO;
 import jakarta.validation.Valid;
 
-import java.util.*;
-
 /**
  * 巡查巡检 Service 接口
  *
