@@ -7,14 +7,14 @@ import cn.iocoder.yudao.module.evaluate.controller.admin.patrolinspection.vo.Pat
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexitem.IndexItemDO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.patrolinspection.PatrolInspectionDO;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.patrolinspection.PatrolInspectionMapper;
-import cn.iocoder.yudao.module.evaluate.service.objectscore.ObjectScoreService;
 import cn.iocoder.yudao.module.evaluate.service.commentstatistic.CommentStatisticService;
 import cn.iocoder.yudao.module.evaluate.service.indexitem.IndexItemService;
+import cn.iocoder.yudao.module.evaluate.service.objectscore.ObjectScoreService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.*;
+import java.util.Objects;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.evaluate.enums.ErrorCodeConstants.PATROL_INSPECTION_NOT_EXISTS;

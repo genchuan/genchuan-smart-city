@@ -1,12 +1,13 @@
 package cn.iocoder.yudao.module.evaluate.service.ruledetail;
 
-import java.math.BigDecimal;
-import java.util.*;
-import jakarta.validation.*;
-import cn.iocoder.yudao.module.evaluate.controller.admin.ruledetail.vo.*;
-import cn.iocoder.yudao.module.evaluate.dal.dataobject.ruledetail.RuleDetailDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import cn.iocoder.yudao.module.evaluate.controller.admin.ruledetail.vo.RuleDetailPageReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.ruledetail.vo.RuleDetailSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.dal.dataobject.ruledetail.RuleDetailDO;
+import jakarta.validation.Valid;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 评分规则明细 Service 接口

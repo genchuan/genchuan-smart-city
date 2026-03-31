@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.*;
 
 @Schema(description = "管理后台 - 指标类型字典 Response VO")
 @Data

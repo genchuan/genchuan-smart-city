@@ -1,9 +1,7 @@
 package cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.commentstatistic.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import java.util.*;
-import jakarta.validation.constraints.*;
+import lombok.Data;
 
 @Schema(description = "管理后台 - 巡查巡检统计新增/修改 Request VO")
 @Data

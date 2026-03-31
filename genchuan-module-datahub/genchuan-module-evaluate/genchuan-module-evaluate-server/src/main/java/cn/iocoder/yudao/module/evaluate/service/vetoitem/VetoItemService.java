@@ -6,7 +6,7 @@ import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.vetoitem.vo.
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.vetoitem.VetoItemDO;
 import jakarta.validation.Valid;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * 否决项 Service 接口

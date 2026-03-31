@@ -1,11 +1,14 @@
 package cn.iocoder.yudao.module.evaluate.service.objectscore;
 
-import java.util.*;
-import jakarta.validation.*;
-import cn.iocoder.yudao.module.evaluate.controller.admin.objectscore.vo.*;
-import cn.iocoder.yudao.module.evaluate.dal.dataobject.objectscore.ObjectScoreDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import cn.iocoder.yudao.module.evaluate.controller.admin.objectscore.vo.ObjectScoreCalculateRespVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.objectscore.vo.ObjectScorePageReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.objectscore.vo.ObjectScoreRespVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.objectscore.vo.ObjectScoreSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.dal.dataobject.objectscore.ObjectScoreDO;
+import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 公司得分 Service 接口
