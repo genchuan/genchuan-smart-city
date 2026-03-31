@@ -1,15 +1,15 @@
 package cn.iocoder.yudao.module.evaluate.dal.mysql.ruledetail;
 
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.evaluate.controller.admin.ruledetail.vo.RuleDetailPageReqVO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.ruledetail.RuleDetailDO;
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
-import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
-import cn.iocoder.yudao.module.evaluate.controller.admin.ruledetail.vo.*;
+
+import java.util.List;
 
 /**
  * 评分规则明细 Mapper

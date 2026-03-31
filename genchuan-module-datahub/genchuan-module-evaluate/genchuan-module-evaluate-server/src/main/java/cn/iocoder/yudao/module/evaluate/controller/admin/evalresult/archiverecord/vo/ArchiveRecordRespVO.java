@@ -7,7 +7,6 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
 
 @Schema(description = "管理后台 - 评价结果存档 Response VO")
 @Data

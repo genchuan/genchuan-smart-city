@@ -1,31 +1,28 @@
 package cn.iocoder.yudao.module.evaluate.service.commentstatistic;
 
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.commentstatistic.vo.CommentStatisticPageReqVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.commentstatistic.vo.CommentStatisticRespVO;
 import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.commentstatistic.vo.CommentStatisticSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.dal.dataobject.commentstatistic.CommentStatisticDO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexitem.IndexItemDO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexsystem.IndexSystemDO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.object.ObjectDO;
+import cn.iocoder.yudao.module.evaluate.dal.dataobject.patrolinspection.PatrolInspectionDO;
+import cn.iocoder.yudao.module.evaluate.dal.mysql.commentrule.CommentRuleMapper;
+import cn.iocoder.yudao.module.evaluate.dal.mysql.commentstatistic.CommentStatisticMapper;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.indexitem.IndexItemMapper;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.indexsystem.IndexSystemMapper;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.object.ObjectMapper;
-import org.springframework.stereotype.Service;
-import jakarta.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
-
-import cn.iocoder.yudao.module.evaluate.dal.dataobject.commentstatistic.CommentStatisticDO;
-import cn.iocoder.yudao.module.evaluate.dal.dataobject.patrolinspection.PatrolInspectionDO;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
-import cn.iocoder.yudao.module.evaluate.dal.mysql.commentstatistic.CommentStatisticMapper;
-import cn.iocoder.yudao.module.evaluate.dal.mysql.commentrule.CommentRuleMapper;
 import cn.iocoder.yudao.module.evaluate.dal.mysql.patrolinspection.PatrolInspectionMapper;
 import cn.iocoder.yudao.module.evaluate.service.commentrule.CommentRuleService;
 import cn.iocoder.yudao.module.evaluate.service.objectscore.ObjectScoreService;
 import cn.iocoder.yudao.module.evaluate.service.ruledetail.RuleDetailService;
-import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -34,7 +31,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.module.evaluate.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.evaluate.enums.ErrorCodeConstants.COMMENT_STATISTIC_NOT_EXISTS;
 
 /**
  * 巡查巡检统计 Service 实现类

@@ -1,5 +1,4 @@
-package cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.standarditem.vo;
-
+package cn.iocoder.yudao.module.evaluate.controller.admin.standarditem.vo;
 
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
@@ -8,22 +7,14 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 标准项 Response VO")
+@Schema(description = "管理后台 - 标准项导出 Excel VO")
 @Data
 @ExcelIgnoreUnannotated
-public class StandardItemRespVO {
+public class StandardItemExportVO {
 
-    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "16705")
-    @ExcelProperty("主键ID")
+    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "30162")
+    @ExcelProperty("标准项主键ID")
     private Long id;
-
-    @Schema(description = "标准项ID（UUID）", example = "17710")
-    @ExcelProperty("标准项ID（UUID）")
-    private String standardItemId;
-
-    @Schema(description = "标准分类ID（关联eval_standard_category.standard_category_id）", example = "21735")
-    @ExcelProperty("标准分类ID（关联eval_standard_category.standard_category_id）")
-    private String standardCategoryId;
 
     @Schema(description = "标准项等级")
     @ExcelProperty("标准项等级")
@@ -36,14 +27,6 @@ public class StandardItemRespVO {
     @Schema(description = "排序序号")
     @ExcelProperty("排序序号")
     private Integer sortNo;
-
-    @Schema(description = "更新人ID（关联sys_user.user_id）")
-    @ExcelProperty("更新人ID（关联sys_user.user_id）")
-    private String updateBy;
-
-    @Schema(description = "创建人ID（关联sys_user.user_id）")
-    @ExcelProperty("创建人ID（关联sys_user.user_id）")
-    private String createBy;
 
     @Schema(description = "创建时间（业务字段）")
     @ExcelProperty("创建时间（业务字段）")
@@ -69,8 +52,19 @@ public class StandardItemRespVO {
     @ExcelProperty("通用扩展字段4")
     private String extCommon4;
 
+    @Schema(description = "创建人姓名")
+    @ExcelProperty("创建人姓名")
+    private String creatorName;
+
+    @Schema(description = "更新人姓名")
+    @ExcelProperty("更新人姓名")
+    private String updaterName;
+
     @Schema(description = "创建时间")
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
+    @Schema(description = "更新时间")
+    @ExcelProperty("更新时间")
+    private LocalDateTime updateTime;
 }

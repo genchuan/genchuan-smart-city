@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.standarditem.vo;
+package cn.iocoder.yudao.module.evaluate.controller.admin.standarditem.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -9,14 +9,11 @@ import java.time.LocalDateTime;
 @Data
 public class StandardItemSaveReqVO {
 
-    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "16705")
+    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "30162")
     private Long id;
 
-    @Schema(description = "标准项ID（UUID）", example = "17710")
-    private String standardItemId;
-
-    @Schema(description = "标准分类ID（关联eval_standard_category.standard_category_id）", example = "21735")
-    private String standardCategoryId;
+    @Schema(description = "标准分类ID（关联eval_standard_category.id）", example = "20535")
+    private Long standardCategoryId;
 
     @Schema(description = "标准项等级")
     private String grade;
@@ -26,12 +23,6 @@ public class StandardItemSaveReqVO {
 
     @Schema(description = "排序序号")
     private Integer sortNo;
-
-    @Schema(description = "更新人ID（关联sys_user.user_id）")
-    private String updateBy;
-
-    @Schema(description = "创建人ID（关联sys_user.user_id）")
-    private String createBy;
 
     @Schema(description = "创建时间（业务字段）")
     private LocalDateTime bizCreateTime;

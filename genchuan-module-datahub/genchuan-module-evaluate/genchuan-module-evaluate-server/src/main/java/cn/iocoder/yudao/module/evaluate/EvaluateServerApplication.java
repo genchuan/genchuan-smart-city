@@ -10,7 +10,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * @author 芋道源码
  */
 @SpringBootApplication
-@EnableFeignClients(basePackages = {"cn.iocoder.yudao.module.system.api", "cn.iocoder.yudao.module.evaluate.api"}) // 微服务版注解，自动扫描所有Feign接口
+@EnableFeignClients(basePackages = {"cn.iocoder.yudao.module.system.api", "cn.iocoder.yudao.module.evaluate.file"}) // 微服务版注解，自动扫描所有Feign接口
 public class EvaluateServerApplication {
     public static void main(String[] args) {
         SpringApplication.run(EvaluateServerApplication.class, args);
