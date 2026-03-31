@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 户外广告 DO
@@ -205,10 +206,14 @@ public class OutdoorAdDO extends BaseDO {
      * 文件ID
      */
     @TableField(exist = false)
-    private Long fileId;
+    private String fileId;
     /**
      * 关联 sys_grid.id，网格编码
      */
     @TableField(exist = false)
     private String gridCode;
+
+    // 附件文件列表
+    @TableField(exist = false)
+    private List<SysAttachFileDO> attachFileList;
 }
