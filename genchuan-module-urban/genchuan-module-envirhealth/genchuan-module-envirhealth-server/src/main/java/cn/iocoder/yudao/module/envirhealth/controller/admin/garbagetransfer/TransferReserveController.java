@@ -125,4 +125,30 @@ public class TransferReserveController {
     public CommonResult<TransferReserveDashboardRespVO> getDashboardStats() {
         return success(transferReserveService.getDashboardStats());
     }
+
+    @PostMapping("/sort")
+    @Operation(summary = "预约排号")
+    @PreAuthorize("@ss.hasPermission('envirhealth:transfer-reserve:update')")
+    public CommonResult<Boolean> sortTransferReserve(
+            @Valid @RequestBody TransferReserveSortReqVO reqVO) {
+        transferReserveService.sortTransferReserve(reqVO);
+        return success(true);
+    }
+
+    @PostMapping("/confirm")
+    @Operation(summary = "确认进站")
+    @PreAuthorize("@ss.hasPermission('envirhealth:transfer-reserve:update')")
+    public CommonResult<Boolean> confirmTransferReserve(
+            @Valid @RequestBody TransferReserveConfirmReqVO reqVO) {
+        transferReserveService.confirmTransferReserve(reqVO);
+        return success(true);
+    }
+
+    @PostMapping("/cancel")
+    @Operation(summary = "取消预约")
+    @Parameter(name = "id", description = "预约ID", required = true)
+    public CommonResult<Boolean> cancelTransferReserve(@RequestParam("id") Long id) {
+        transferReserveService.cancelTransferReserve(id);
+        return success(true);
+    }
 }

@@ -1,6 +1,11 @@
-/*
-package cn.iocoder.yudao.module.envirhealth.controller.admin.equipment;
+package cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.equipment;
 
+import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.equipment.vo.EquipmentPageReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.equipment.vo.EquipmentRespVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.equipment.vo.EquipmentSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.EquipmentDO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
+import cn.iocoder.yudao.module.envirhealth.service.dictionary.equipment.EquipmentService;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -9,7 +14,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 
-import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import java.util.*;
@@ -26,11 +30,8 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
-import cn.iocoder.yudao.module.envirhealth.controller.admin.equipment.vo.*;
-import cn.iocoder.yudao.module.envirhealth.dal.dataobject.equipment.EquipmentDO;
-import cn.iocoder.yudao.module.envirhealth.service.equipment.EquipmentService;
 
-@Tag(name = "环境卫生管理 - 设备")
+@Tag(name = "字典表 - 设备")
 @RestController
 @RequestMapping("/envirhealth/equipment")
 @Validated
@@ -93,4 +94,14 @@ public class EquipmentController {
                         BeanUtils.toBean(list, EquipmentRespVO.class));
     }
 
-}*/
+    /**
+     * 获得设备下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得设备(下拉框)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:equipment:query')")
+    public CommonResult<List<OptionVO>> getEquipmentOptions() {
+        return success(equipmentService.getEquipmentOptions());
+    }
+}

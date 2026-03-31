@@ -29,6 +29,11 @@ public class RectifyReviewDO extends BaseDO {
     @TableId
     private Long id;
     /**
+     * [整改通知书id]
+     */
+    private Long rectifyNoticeId;
+
+    /**
      * [台账编号] 整改通知书复审台账唯一编号
      */
     private String ledgerCode;
@@ -52,6 +57,10 @@ public class RectifyReviewDO extends BaseDO {
      * [草拟时间] 整改通知书草拟时间
      */
     private LocalDateTime draftTime;
+    /**
+     * [整改截至时间] 整改通知书草拟时间
+     */
+    private LocalDateTime rectifyDeadlineTime;
     /**
      * [复审状态] 如：待复审/已下发/已撤销
      */

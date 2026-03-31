@@ -10,12 +10,15 @@ import cn.iocoder.yudao.module.kitchen.dal.dataobject.dictionary.illegaltypedict
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.enterpriseinfo.EnterpriseInfoDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.punishnotice.PunishNoticeDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.punishreviewledger.PunishReviewLedgerDO;
+import cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifynotice.RectifyNoticeDO;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.dictionary.illegaltypedict.IllegalTypeDictMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.enterpriseinfo.EnterpriseInfoMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.punishnotice.PunishNoticeMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.punishreviewledger.PunishReviewLedgerMapper;
 import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.name.NameUtil;
+import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.pdf.PdfGenerator;
 import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.verify.VerifyUtil;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -94,6 +97,7 @@ public class PunishNoticeServiceImpl implements PunishNoticeService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Long addPunishNotice(AddPunishNoticeReq reqVO) {
 
         // 1. 校验处罚复审台账是否存在
@@ -110,8 +114,14 @@ public class PunishNoticeServiceImpl implements PunishNoticeService {
         notice.setNoticeCode(NameUtil.generateCode("PNTC")); // 编号自动生成
         notice.setPunishReviewId(reqVO.getPunishReviewId());
         notice.setIssueTime(LocalDateTime.now());
+
+        //处罚期限
+        reqVO.setPayDeadline(punishReviewDO.getPaymentDeadlineTime());
         notice.setPayDeadline(reqVO.getPayDeadline());
         notice.setReceiveStatus("未送达");
+
+        //处罚金额
+        reqVO.setActualPunishAmt(punishReviewDO.getDraftPunishAmt());
         notice.setActualPunishAmt(reqVO.getActualPunishAmt());
 
 //        // 富文本内容不在这里生成，可在前端调用单独接口生成
@@ -132,6 +142,7 @@ public class PunishNoticeServiceImpl implements PunishNoticeService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String generatePunishNoticeDraft(DraftPunishNoticeReq reqVO) {
+        System.out.println("cs2026-03-24 10:21:12:1556");
         VerifyUtil.verifyNotNullSimple(reqVO.getPunishReviewNoticeId());
         //1.获取处罚通知书
         PunishNoticeDO punishNoticeDO = punishNoticeMapper.selectById(reqVO.getPunishReviewNoticeId());
@@ -165,7 +176,7 @@ public class PunishNoticeServiceImpl implements PunishNoticeService {
         template.setContactPhone(enterpriseInfoDO.getContactPhone());
 
         // 3. 违法行为（字典 + 台账）
-        template.setIllegalBehavior(illegalTypeDictDO.getTypeName());
+        template.setIllegalBehavior(illegalTypeDictDO.getIllegalBehaviorDescription());
         // 如果台账里有补充描述，可以拼接：
         // template.setIllegalBehavior(illegalTypeDictDO.getName() + "，" + punishReviewLedgerDO.getIllegalDesc());
 
@@ -196,6 +207,21 @@ public class PunishNoticeServiceImpl implements PunishNoticeService {
         punishReviewLedgerDO.setDraftTime(LocalDateTime.now());
         punishReviewLedgerMapper.updateById(punishReviewLedgerDO);
         return noticeHtml;
+    }
+
+    @Override
+    public ResponseEntity<byte[]> downloadRectifyNoticePdf(Long punishNoticeId) {
+        // 1. 根据 ID 获取整改复审记录
+        PunishNoticeDO punishNoticeDO = punishNoticeMapper.selectById(punishNoticeId);
+        VerifyUtil.verifyNotNullWithMsg(punishNoticeDO,"通知书不存在");
+
+        // 2. 根据记录生成 HTML 内容（这里示例固定模板，可根据 review 动态替换）
+        String htmlStr = punishNoticeDO.getDecisionContent();
+        VerifyUtil.verifyNotNullWithMsg(htmlStr,"HTML内容为空，请进行检查");
+
+        // 3. 调用 PdfGenerator 生成 PDF 响应
+        PdfGenerator pdfGenerator = new PdfGenerator();
+        return pdfGenerator.generatePdfResponse(htmlStr);
     }
 
     private String buildPunishNoticeContent(PunishNoticeTemplateReqVO reqVO) {

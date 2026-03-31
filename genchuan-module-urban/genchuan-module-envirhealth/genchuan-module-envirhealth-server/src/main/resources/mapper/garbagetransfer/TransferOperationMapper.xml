@@ -30,6 +30,10 @@
     <sql id="whereConditions">
         <where>
             gto.deleted = 0
+
+            <if test="reqVO.id != null and reqVO.id != ''">
+                AND gto.id = #{reqVO.id}
+            </if>
             <if test="reqVO.operationId != null and reqVO.operationId != ''">
                 AND gto.operation_id = #{reqVO.operationId}
             </if>
@@ -64,6 +68,9 @@
             <!-- 创建时间范围过滤 -->
             <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
                 AND gto.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+            <if test="reqVO.operationStatus != null and reqVO.operationStatus != ''">
+                AND gto.operation_status = #{reqVO.operationStatus}
             </if>
         </where>
     </sql>

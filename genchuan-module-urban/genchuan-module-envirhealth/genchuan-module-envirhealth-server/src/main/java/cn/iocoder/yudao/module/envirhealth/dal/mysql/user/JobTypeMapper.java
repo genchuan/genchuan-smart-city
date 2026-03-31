@@ -17,15 +17,9 @@ public interface JobTypeMapper extends BaseMapperX<JobTypeDO> {
 
     default PageResult<JobTypeDO> selectPage(JobTypePageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<JobTypeDO>()
-                .eqIfPresent(JobTypeDO::getSysJobTypeId, reqVO.getSysJobTypeId())
+                .eqIfPresent(JobTypeDO::getJobTypeId, reqVO.getJobTypeId())
                 .likeIfPresent(JobTypeDO::getName, reqVO.getName())
-                .eqIfPresent(JobTypeDO::getCode, reqVO.getCode())
-                .eqIfPresent(JobTypeDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(JobTypeDO::getRemark, reqVO.getRemark())
-                .eqIfPresent(JobTypeDO::getExtCommon1, reqVO.getExtCommon1())
-                .eqIfPresent(JobTypeDO::getExtCommon2, reqVO.getExtCommon2())
-                .eqIfPresent(JobTypeDO::getExtCommon3, reqVO.getExtCommon3())
-                .eqIfPresent(JobTypeDO::getExtCommon4, reqVO.getExtCommon4())
                 .betweenIfPresent(JobTypeDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(JobTypeDO::getId));
     }

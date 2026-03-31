@@ -8,6 +8,7 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.revi
 import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.review.ReviewRejectReq;
 import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.upload.UploadFileReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.upload.UploadFileRespVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.add.AddPunishReviewLedgerReq;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileRespVO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.entrectifyrecord.EntRectifyRecordDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifynotice.RectifyNoticeDO;
@@ -28,8 +29,11 @@ import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
+
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
@@ -108,6 +112,7 @@ public class EntRectifyRecordServiceImpl implements EntRectifyRecordService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Long addEntRectifyRecord(AddEntRectifyRecordReqVO createReqVO) {
 
         //0. 插入实体
@@ -116,6 +121,9 @@ public class EntRectifyRecordServiceImpl implements EntRectifyRecordService {
         //1.获取整改通知书
         RectifyNoticeDO rectifyNoticeDO = rectifyNoticeMapper.selectById(createReqVO.getRectifyNoticeId());
         VerifyUtil.verifyNotNullWithMsg(rectifyNoticeDO,"整改通知书不存在数据库");
+        if (!"未送达".equals(rectifyNoticeDO.getReceiveStatus())){
+            throw exception("只有处于待送达的整改通知书才能产生企业记录");
+        }
 
         insertDO.setRectifyNoticeId(createReqVO.getRectifyNoticeId());
 
@@ -138,6 +146,12 @@ public class EntRectifyRecordServiceImpl implements EntRectifyRecordService {
 
         //6.插入
         Long id = (long) entRectifyRecordMapper.insert(insertDO);
+
+        //7.更新 整改通知 的 送达时间和 送达状态
+        rectifyNoticeDO.setReceiveTime(LocalDateTime.now());
+        rectifyNoticeDO.setReceiveStatus("已送达");
+
+        rectifyNoticeMapper.updateById(rectifyNoticeDO);
 
         //7.返回id
         return insertDO.getId();
@@ -195,6 +209,8 @@ public class EntRectifyRecordServiceImpl implements EntRectifyRecordService {
 
             //修改状态 为 整改中
             entRectifyRecordDO.setRectifyStatus("整改中");
+            entRectifyRecordDO.setRectifyDesc(reqVO.getRectifyDesc()!=null?
+                    reqVO.getRectifyDesc():"已进行整改");
 
             entRectifyRecordMapper.updateById(entRectifyRecordDO);
 
@@ -218,6 +234,7 @@ public class EntRectifyRecordServiceImpl implements EntRectifyRecordService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean reviewApprove(ReviewApproveReq reqVO) {
 
         // ================= 1. 参数校验 =================
@@ -233,10 +250,10 @@ public class EntRectifyRecordServiceImpl implements EntRectifyRecordService {
         }
 
         // ================= 3. 状态校验 =================
-        VerifyUtil.verifyNotNullWithMsg(record.getRectifyEvidenceUrl(),"请先上传整改资料");
-        // 只能“整改中”才能审核
-        if (!"整改中".equals(record.getRectifyStatus())) {
-            throw exception("当前状态不允许审核，必须为【整改中】");
+//        VerifyUtil.verifyNotNullWithMsg(record.getRectifyEvidenceUrl(),"请先上传整改资料");
+        //TODO 只能“整改中”才能审核
+        if (!"未整改".equals(record.getRectifyStatus())) {
+            throw exception("当前状态不允许审核，必须为【未整改】");
         }
 
         // ================= 4. 执行更新 =================
@@ -259,11 +276,17 @@ public class EntRectifyRecordServiceImpl implements EntRectifyRecordService {
         // 更新数据库
         entRectifyRecordMapper.updateById(updateObj);
 
+        //整改台账状态修改为已完成
+        RectifyReviewDO rectifyReviewDO =rectifyReviewMapper.selectById(record.getRectifyReviewId());
+        rectifyReviewDO.setReviewStatus("已完成");
+        rectifyReviewMapper.updateById(rectifyReviewDO);
+
         return true;
     }
 
     //审核-拒绝
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean reviewReject(ReviewRejectReq reqVO) {
         // ================= 1. 参数校验 =================
         if (reqVO == null || reqVO.getEntRectifyRecordId() == null) {
@@ -282,9 +305,9 @@ public class EntRectifyRecordServiceImpl implements EntRectifyRecordService {
         }
 
         // ================= 3. 状态校验 =================
-        // 只能“整改中”才能审核驳回
-        if (!"整改中".equals(record.getRectifyStatus())) {
-            throw exception("当前状态不允许驳回，必须为【整改中】");
+        //TODO  只能“整改中”才能审核驳回
+        if (!"未整改".equals(record.getRectifyStatus())) {
+            throw exception("当前状态不允许驳回，必须为【未整改】");
         }
 
         // ================= 4. 执行更新 =================
@@ -309,6 +332,17 @@ public class EntRectifyRecordServiceImpl implements EntRectifyRecordService {
 
         // 更新数据库
         entRectifyRecordMapper.updateById(updateObj);
+
+        //TODO 2.产生处罚台账
+        AddPunishReviewLedgerReq addPunishReviewLedgerReq = new AddPunishReviewLedgerReq();
+
+        // 生成 100~1000 的整数（包含100，不包含1001）
+        BigDecimal draftPunishAmt = BigDecimal.valueOf(
+                ThreadLocalRandom.current().nextInt(100, 1001)
+        );
+        addPunishReviewLedgerReq.setDraftPunishAmt(draftPunishAmt);
+        addPunishReviewLedgerReq.setEntRectifyRecordId(record.getId());
+        Long punishLedgerId = punishReviewLedgerService.addPunishReviewLedger(addPunishReviewLedgerReq);
 
         return true;
     }

@@ -220,9 +220,7 @@
         d.name AS dept_name,
         u4.user_name AS handle_name,
         hs.name AS handle_status_name,
-        tt.name AS task_type_name,
-        IFNULL(GROUP_CONCAT(DISTINCT u5.user_name), '') AS staffs_name_str,
-        IFNULL(GROUP_CONCAT(DISTINCT t.name), '') AS tools_name_str
+        tt.name AS task_type_name
         FROM river r
         LEFT JOIN sys_area a ON r.area_code = a.area_code AND a.deleted = 0
         LEFT JOIN sys_user u1 ON r.manager_id = u1.user_id AND u1.deleted = 0
@@ -237,19 +235,7 @@
         LEFT JOIN sys_user u2 ON r.monitor_by = u2.user_id AND u2.deleted = 0
         LEFT JOIN sys_user u3 ON r.report_by = u3.user_id AND u3.deleted = 0
         LEFT JOIN sys_user u4 ON r.handle_by = u4.user_id AND u4.deleted = 0
-        -- 处理负责人员JSON解析
-        LEFT JOIN sys_user u5 ON FIND_IN_SET(
-        u5.user_id,
-        REPLACE(REPLACE(REPLACE(REPLACE(r.staff_ids, '[', ''), ']', ''), '"', ''), ' ', '')
-        ) AND u5.deleted = 0
-        -- 处理保洁工具JSON解析
-        LEFT JOIN sys_tool t ON FIND_IN_SET(
-        t.sys_tool_id,
-        REPLACE(REPLACE(REPLACE(REPLACE(r.tool_ids, '[', ''), ']', ''), '"', ''), ' ', '')
-        ) AND t.deleted = 0
-
         <include refid="whereConditions" />
-
         GROUP BY
         r.id,
         a.area_name,
@@ -265,7 +251,6 @@
         u4.user_name,
         hs.name,
         tt.name
-
         ORDER BY r.id DESC
         LIMIT #{reqVO.offset}, #{reqVO.pageSize}
     </select>

@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.envirhealth.controller.admin.roadcleaning.vo.cleaningproblem;
 
+import cn.iocoder.yudao.module.envirhealth.framework.util.json.JsonFieldUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -45,4 +46,10 @@ public class CleaningProblemSaveReqVO {
     @Schema(description = "处置结果")
     private String handleResult;
 
+    @Schema(description = "现场照片URL")
+    private String localePhotoUrl;
+
+    public void setLocalePhotoUrl(String localePhotoUrl) {
+        this.localePhotoUrl = JsonFieldUtils.emptyToEmptyArray(localePhotoUrl);
+    }
 }

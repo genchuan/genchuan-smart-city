@@ -10,8 +10,11 @@
 
         SELECT
         rr.id,
+        rr.rectify_notice_id,
         rr.ledger_code,
+        rr.ent_id,
         ei.ent_name,
+        rr.illegal_type_id,
         itd.type_name AS illegal_type_name,
         ild.level_name AS illegal_level_name,
         rr.evidence_url,
@@ -21,19 +24,26 @@
         su.user_name AS review_user_name,
         rr.review_time,
 
+        rr.rectify_deadline_time,
         rn.issue_time,
         rr.cancel_time,
         rr.cancel_reason_id,
-
+        cancel.reason_name as cancel_reason,
         rn.receive_status,
         err.rectify_status,
 
-        lrl.ledger_code AS law_review_ledger_code
+        lrl.ledger_code AS law_review_ledger_code,
+
+        rr.create_time,
+        rr.update_time
 
         FROM rectify_review rr
 
         LEFT JOIN enterprise_info ei
         ON rr.ent_id = ei.id
+
+        left join cancel_reason_dict cancel
+        on cancel.id = rr.cancel_reason_id
 
         LEFT JOIN illegal_type_dict itd
         ON rr.illegal_type_id = itd.id

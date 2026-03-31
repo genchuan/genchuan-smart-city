@@ -111,7 +111,7 @@ public class ToiletComplaintController {
         return success(pageResult);
     }
 
-    @PostMapping("/upload-photos")
+   /* @PostMapping("/upload-photos")
     @Operation(summary = "上传多张整改图片")
     @PreAuthorize("@ss.hasPermission('envirhealth:toilet-complaint:update')")
     public CommonResult<List<String>> uploadPhotos(
@@ -137,7 +137,7 @@ public class ToiletComplaintController {
             @RequestParam("photoUrl") String photoUrl) {
         toiletComplaintService.deletePhoto(id, photoUrl);
         return success(true);
-    }
+    }*/
 
     @PostMapping("/batch-handle")
     @Operation(summary = "批量处理公厕投诉")

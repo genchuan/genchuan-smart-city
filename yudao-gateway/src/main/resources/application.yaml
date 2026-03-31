@@ -277,7 +277,7 @@ spring:
                 - Path=/app-api/data/***
               filters:
                 - RewritePath=/app-api/data/v3/api-docs, /v3/api-docs
-            ## genchuan-module-park
+              # genchuan-module-park
             - id: park-admin-api # 路由的编号
               uri: grayLb://park-server
               predicates: # 断言，作为路由的匹配条件
@@ -290,7 +290,14 @@ spring:
                 - Path=/app-api/park/***
               filters:
                 - RewritePath=/app-api/park/v3/api-docs, /v3/api-docs
-              # genchuan-module-energycharge 服务
+              # genchuan-module-evaluate
+            - id: evaluate-admin-api # 路由的编号
+              uri: grayLb://evaluate-server
+              predicates: # 断言，作为路由的匹配条件
+                - Path=/admin-api/evaluate/**
+              filters:
+              - RewritePath=/admin-api/evaluate/v3/api-docs, /v3/api-docs # 转发到 /v3/api-docs
+            # genchuan-module-energycharge 服务
               # genchuan-module-vehiclecharging
             - id: vehiclecharging-admin-api # 路由的编号
               uri: grayLb://vehiclecharging-server
@@ -371,6 +378,10 @@ knife4j:
       - name: facility-server        # 自定义模块名字，可以随便写，但最好和服务名一致
         service-name: facility-server # 必须和 Gateway 路由 uri 对应的服务名一致
         url: /admin-api/facility/v3/api-docs # 对应模块 Swagger 文档路径
+        # genchuan-module-appearance
+      - name: appearance-server
+        service-name: appearance-server
+        url: /admin-api/appearance/v3/api-docs
       # genchuan-module-marketsupervision
         # genchuan-module-kitchen
       - name: kitchen-server        # 自定义模块名字，可以随便写，但最好和服务名一致
@@ -389,6 +400,10 @@ knife4j:
       - name: park-server        # 自定义模块名字，可以随便写，但最好和服务名一致
         service-name: park-server # 必须和 Gateway 路由 uri 对应的服务名一致
         url: /admin-api/park/v3/api-docs # 对应模块 Swagger 文档路径
+       # genchuan-module-evaluate
+      - name: evaluate-server        # 自定义模块名字，可以随便写，但最好和服务名一致
+        service-name: park-server # 必须和 Gateway 路由 uri 对应的服务名一致
+        url: /admin-api/evaluate/v3/api-docs # 对应模块 Swagger 文档路径
         # genchuan-module-energycharge
         # genchuan-module-vehiclecharging
       - name: vehiclecharging-server

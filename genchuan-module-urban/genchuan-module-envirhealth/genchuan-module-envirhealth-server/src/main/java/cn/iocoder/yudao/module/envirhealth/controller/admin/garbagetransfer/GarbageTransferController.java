@@ -12,6 +12,7 @@ import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.g
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.garbagetransfer.GarbageTransferSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.GarbageTransferDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.GarbageTransferDetailDO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import cn.iocoder.yudao.module.envirhealth.service.garbagetransfer.garbagetransfer.GarbageTransferService;
 import cn.iocoder.yudao.module.envirhealth.framework.util.vo.StatisticsRespVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -63,6 +64,15 @@ public class GarbageTransferController {
     @PreAuthorize("@ss.hasPermission('envirhealth:garbage-transfer:delete')")
     public CommonResult<Boolean> deleteGarbageTransfer(@RequestParam("id") Long id) {
         garbageTransferService.deleteGarbageTransfer(id);
+        return success(true);
+    }
+
+    @DeleteMapping("/delete-batch")
+    @Operation(summary = "批量删除垃圾转运站")
+    @Parameter(name = "ids", description = "编号列表", required = true)
+    @PreAuthorize("@ss.hasPermission('envirhealth:garbage-transfer:delete')")
+    public CommonResult<Boolean> deleteGarbageTransferBatch(@RequestBody List<Long> ids) {
+        garbageTransferService.deleteGarbageTransferBatch(ids);
         return success(true);
     }
 
@@ -123,8 +133,19 @@ public class GarbageTransferController {
 
     @GetMapping("/chart/statistics")
     @Operation(summary = "获取垃圾转运站统计数据(按状态分组)")
-    @PreAuthorize("@ss.hasPermission('health:garbage-transfer:query')")
+    @PreAuthorize("@ss.hasPermission('envirhealth:garbage-transfer:query')")
     public CommonResult<StatisticsRespVO> getGarbageTransferStatistics() {
         return success(garbageTransferService.getGarbageTransferStatistics());
+    }
+
+    /**
+     * 获得垃圾转运站下拉框选项
+     * 前端下拉框直接调用该接口
+     */
+    @GetMapping("/options")
+    @Operation(summary = "获得垃圾转运站(下拉框)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:garbage-transfer:query')")
+    public CommonResult<List<OptionVO>> getGarbageTransferOptions() {
+        return success(garbageTransferService.getGarbageTransferOptions());
     }
 }

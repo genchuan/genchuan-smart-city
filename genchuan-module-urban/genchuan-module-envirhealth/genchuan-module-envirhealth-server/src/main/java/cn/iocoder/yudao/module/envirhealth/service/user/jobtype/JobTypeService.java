@@ -4,7 +4,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.jobtype.JobTypePageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.jobtype.JobTypeSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.JobTypeDO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 岗位类型字典 Service 接口
@@ -50,5 +53,11 @@ public interface JobTypeService {
      * @return 岗位类型字典分页
      */
     PageResult<JobTypeDO> getJobTypePage(JobTypePageReqVO pageReqVO);
+
+    /**
+     * 获得设备下拉框选项
+     * @return 下拉框选项列表
+     */
+    List<OptionVO> getJobTypeOptions();
 
 }

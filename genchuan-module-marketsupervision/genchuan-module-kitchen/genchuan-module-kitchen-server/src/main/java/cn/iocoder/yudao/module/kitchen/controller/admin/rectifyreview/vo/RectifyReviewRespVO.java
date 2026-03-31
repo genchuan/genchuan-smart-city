@@ -16,6 +16,10 @@ public class RectifyReviewRespVO {
     @ExcelProperty("[主键ID] 自增主键")
     private Long id;
 
+    @Schema(description = "整改通知书ID")
+    @ExcelProperty("整改通知书ID")
+    private Long rectifyNoticeId;
+
     @Schema(description = "[台账编号] 整改通知书复审台账唯一编号", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("[台账编号] 整改通知书复审台账唯一编号")
     private String ledgerCode;

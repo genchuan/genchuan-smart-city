@@ -3,7 +3,6 @@ package cn.iocoder.yudao.module.envirhealth.service.publictoilet.toiletfacilityr
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import cn.iocoder.yudao.module.envirhealth.framework.file.FileFeignClient;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.toiletfacilityrepair.ToiletFacilityRepairPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.toiletfacilityrepair.ToiletFacilityRepairPendingRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.publictoilet.vo.toiletfacilityrepair.ToiletFacilityRepairSaveReqVO;
@@ -14,6 +13,7 @@ import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.publicto
 import cn.iocoder.yudao.module.envirhealth.framework.util.convert.UrlConvert;
 import cn.iocoder.yudao.module.envirhealth.framework.util.vo.BarItemVO;
 import cn.iocoder.yudao.module.envirhealth.framework.util.vo.PieItemVO;
+import cn.iocoder.yudao.module.envirhealth.framework.file.FileClient;
 import com.alibaba.fastjson.JSON;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -44,7 +44,7 @@ public class ToiletFacilityRepairServiceImpl implements ToiletFacilityRepairServ
     private ToiletFacilityRepairCodeGenerator codeGenerator;
 
     @Resource
-    private FileFeignClient fileFeignClient;
+    private FileClient fileClient;
 
     @Resource
     private UrlConvert urlConvertUtil;
@@ -131,16 +131,10 @@ public class ToiletFacilityRepairServiceImpl implements ToiletFacilityRepairServ
         List<String> photoUrls = new ArrayList<>();
 
         for (MultipartFile file : files) {
-            CommonResult<String> result = fileFeignClient.uploadFile(file);
-            if (result.isError()) {
-                throw new RuntimeException("图片上传失败：" + result.getMsg());
-            }
-
-            // 转换为公网地址
-            String publicUrl = urlConvertUtil.convertToPublicUrl(result.getData());
+            String url = fileClient.uploadFile(file);
+            String publicUrl = urlConvertUtil.convertToPublicUrl(url);
             photoUrls.add(publicUrl);
         }
-
         // 获取当前维修记录
         ToiletFacilityRepairDO repair = toiletFacilityRepairMapper.selectById(id);
 
@@ -184,11 +178,9 @@ public class ToiletFacilityRepairServiceImpl implements ToiletFacilityRepairServ
         List<String> photoUrls = new ArrayList<>();
 
         for (MultipartFile file : files) {
-            CommonResult<String> result = fileFeignClient.uploadFile(file);
-            if (result.isError()) {
-                throw new RuntimeException("图片上传失败：" + result.getMsg());
-            }
-            String publicUrl = urlConvertUtil.convertToPublicUrl(result.getData());
+            // 只用 fileClient
+            String url = fileClient.uploadFile(file);
+            String publicUrl = urlConvertUtil.convertToPublicUrl(url);
             photoUrls.add(publicUrl);
         }
 

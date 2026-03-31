@@ -118,7 +118,7 @@ public class UserServiceImpl implements UserService {
     public UserDashboardVO getUserDashboard() {
         UserDashboardVO vo = new UserDashboardVO();
 
-       /* // 1. 卡片数据
+        // 1. 卡片数据
         vo.setTotalUserCount(userMapper.selectTotalUserCount());
         vo.setOnDutyCount(userMapper.selectOnDutyCount());
         vo.setFullAttendanceCount(userMapper.selectFullAttendanceCount());
@@ -132,7 +132,7 @@ public class UserServiceImpl implements UserService {
 
         // 3. 柱状图数据
         vo.setUserCountByTeam(userMapper.selectUserCountByTeam());
-        vo.setAvgAssessmentScoreByPosition(userMapper.selectAvgAssessmentScoreByPosition());*/
+        vo.setAvgAssessmentScoreByPosition(userMapper.selectAvgAssessmentScoreByPosition());
 
         return vo;
     }

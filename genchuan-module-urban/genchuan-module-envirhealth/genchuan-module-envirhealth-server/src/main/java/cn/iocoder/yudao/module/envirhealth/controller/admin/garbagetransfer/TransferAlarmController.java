@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferalarm.TransferAlarmDashboardRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferalarm.TransferAlarmPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferalarm.TransferAlarmRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferalarm.TransferAlarmSaveReqVO;
@@ -111,5 +112,21 @@ public class TransferAlarmController {
                 transferAlarmService.getTransferAlarmDetailPage(pageReqVO);
 
         return success(pageResult);
+    }
+
+    @GetMapping("/chart/dashboard")
+    @Operation(summary = "卡片/圆环图/柱状图统计(预警待处理)")
+    @PreAuthorize("@ss.hasPermission('envirhealth:transfer-alarm:query')")
+    public CommonResult<TransferAlarmDashboardRespVO> getTransferAlarmDashboard() {
+        return success(transferAlarmService.getTransferAlarmDashboard());
+    }
+
+    @PutMapping("/relieve")
+    @Operation(summary = "解除预警")
+    @PreAuthorize("@ss.hasPermission('envirhealth:transfer-alarm:update')")
+    public CommonResult<Boolean> relieveTransferAlarm(
+            @RequestParam("id") Long alarmId) {
+        transferAlarmService.relieveTransferAlarm(alarmId);
+        return success(true);
     }
 }

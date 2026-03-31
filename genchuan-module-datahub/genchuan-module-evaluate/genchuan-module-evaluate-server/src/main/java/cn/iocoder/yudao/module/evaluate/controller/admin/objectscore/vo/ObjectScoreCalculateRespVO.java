@@ -1,10 +1,13 @@
 package cn.iocoder.yudao.module.evaluate.controller.admin.objectscore.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.List;
 
 @Schema(description = "管理后台 - 计算公司得分 Response VO")
 @Data

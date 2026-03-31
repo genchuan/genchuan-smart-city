@@ -6,10 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferoperation.TransferOperationDashboardVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferoperation.TransferOperationPageReqVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferoperation.TransferOperationRespVO;
-import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferoperation.TransferOperationSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferoperation.*;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferOperationDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferOperationDetailDO;
 import cn.iocoder.yudao.module.envirhealth.service.garbagetransfer.transferoperation.TransferOperationService;
@@ -113,7 +110,7 @@ public class TransferOperationController {
         return success(pageResult);
     }
 
-    @GetMapping("/chart/dashboard")
+    @GetMapping("/chart/dashboard-execute")
     @Operation(summary = "卡片/圆环图/柱状图/折线图统计(进行中)")
     @PreAuthorize("@ss.hasPermission('envirhealth:transfer-operation:query')")
     public CommonResult<TransferOperationDashboardVO> getDashboardStats() {
@@ -121,4 +118,41 @@ public class TransferOperationController {
         return success(dashboardStats);
     }
 
+    @GetMapping("/chart/dashboard-completed")
+    @Operation(summary = "卡片/圆环图/柱状图/折线图统计(已完成)")
+    @Parameter(name = "timeDimension", description = "进站量统计维度：day(日)/week(周)/month(月)，默认day", example = "day")
+    @PreAuthorize("@ss.hasPermission('envirhealth:transfer-operation:query')")
+    public CommonResult<TransferOperationCompletedDashboardVO> getTransferOperationDashboard(
+            @RequestParam(required = false, defaultValue = "day") String timeDimension) {
+        return success(transferOperationService.getTransferOperationDashboard(timeDimension));
+    }
+
+    @PutMapping("/pause")
+    @Operation(summary = "暂停转运作业")
+    @PreAuthorize("@ss.hasPermission('envirhealth:transfer-operation:update')")
+    public CommonResult<Boolean> pauseTransferOperation(
+            @RequestParam("id") Long operationId,
+            @RequestParam(value = "pauseStatusId", defaultValue = "uuid-plan-status-004") String pauseStatusId) {
+        transferOperationService.pauseTransferOperation(operationId, pauseStatusId);
+        return success(true);
+    }
+
+    @PutMapping("/start")
+    @Operation(summary = "启动转运作业")
+    @PreAuthorize("@ss.hasPermission('envirhealth:transfer-operation:update')")
+    public CommonResult<Boolean> startTransferOperation(
+            @RequestParam("id") Long operationId,
+            @RequestParam(value = "startStatusId", defaultValue = "uuid-plan-status-002") String startStatusId) {
+        transferOperationService.startTransferOperation(operationId, startStatusId);
+        return success(true);
+    }
+
+    @PutMapping("/complete")
+    @Operation(summary = "归档转运作业")
+    @Parameter(name = "operationId", description = "作业ID", required = true)
+    @PreAuthorize("@ss.hasPermission('envirhealth:transfer-operation:update')")
+    public CommonResult<Boolean> completeTransferOperation(@RequestParam("operationId") Long operationId) {
+        transferOperationService.completeTransferOperation(operationId);
+        return success(true);
+    }
 }

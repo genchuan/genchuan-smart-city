@@ -4,7 +4,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.equipment.vo.EquipmentPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.dictionary.equipment.vo.EquipmentSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.EquipmentDO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 设备 Service 接口
@@ -51,4 +54,9 @@ public interface EquipmentService {
      */
     PageResult<EquipmentDO> getEquipmentPage(EquipmentPageReqVO pageReqVO);
 
+    /**
+     * 获得设备下拉框选项
+     * @return 下拉框选项列表
+     */
+    List<OptionVO> getEquipmentOptions();
 }

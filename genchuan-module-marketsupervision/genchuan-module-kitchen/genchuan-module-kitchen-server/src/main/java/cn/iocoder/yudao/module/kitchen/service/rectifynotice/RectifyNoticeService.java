@@ -6,6 +6,9 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.rectifynotice.vo.Rectify
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifynotice.vo.RectifyNoticeUpdateReqVO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifynotice.RectifyNoticeDO;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+
+import java.io.IOException;
 
 /**
  * 整改通知书 Service 接口
@@ -52,4 +55,5 @@ public interface RectifyNoticeService {
      */
     PageResult<RectifyNoticeDO> getRectifyNoticePage(RectifyNoticePageReqVO pageReqVO);
 
+    ResponseEntity<byte[]> downloadRectifyNoticePdf(Long rectifyNoticeId) throws IOException;
 }

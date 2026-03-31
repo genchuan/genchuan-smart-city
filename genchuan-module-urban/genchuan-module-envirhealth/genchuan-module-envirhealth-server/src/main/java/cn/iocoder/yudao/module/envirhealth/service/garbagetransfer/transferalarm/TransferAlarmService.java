@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.envirhealth.service.garbagetransfer.transferalarm;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferalarm.TransferAlarmDashboardRespVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferalarm.TransferAlarmPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.garbagetransfer.vo.transferalarm.TransferAlarmSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.garbagetransfer.TransferAlarmDO;
@@ -53,4 +54,16 @@ public interface TransferAlarmService {
     PageResult<TransferAlarmDO> getTransferAlarmPage(TransferAlarmPageReqVO pageReqVO);
 
     PageResult<TransferAlarmDetailDO> getTransferAlarmDetailPage(TransferAlarmPageReqVO pageReqVO);
+
+    /**
+     * 获取预警看板统计数据
+     */
+    TransferAlarmDashboardRespVO getTransferAlarmDashboard();
+
+    /**
+     * 解除预警
+     *
+     * @param alarmId 预警ID
+     */
+    void relieveTransferAlarm(Long alarmId);
 }

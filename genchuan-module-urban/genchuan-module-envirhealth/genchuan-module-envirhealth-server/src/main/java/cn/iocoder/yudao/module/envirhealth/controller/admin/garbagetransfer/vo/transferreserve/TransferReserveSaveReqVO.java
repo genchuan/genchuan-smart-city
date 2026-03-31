@@ -40,4 +40,7 @@ public class TransferReserveSaveReqVO {
     @Schema(description = "创建时间（业务字段）")
     private LocalDateTime abnormalCreateTime;
 
+    @Schema(description = "转运站编号")
+    private String transferId;
+
 }

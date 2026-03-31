@@ -10,6 +10,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
@@ -69,7 +71,10 @@ public class IllegalTypeDictServiceImpl implements IllegalTypeDictService {
 
     @Override
     public PageResult<IllegalTypeDictDO> getIllegalTypeDictPage(IllegalTypeDictPageReqVO pageReqVO) {
-        return illegalTypeDictMapper.selectPage(pageReqVO);
+        PageResult<IllegalTypeDictDO> result= illegalTypeDictMapper.selectPage(pageReqVO);
+        List<IllegalTypeDictDO> list = result.getList();
+        //添加违规类型名称
+        return result;
     }
 
 }

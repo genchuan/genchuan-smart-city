@@ -292,14 +292,14 @@ public interface GarbageCollectionMapper extends BaseMapperX<GarbageCollectionDO
             "ORDER BY timePoint ASC")*/
 
     @Select("SELECT " +
-            "TO_CHAR(create_time, 'HH24:00') AS timePoint, " +
+            "DATE_FORMAT(create_time, '%H:00') AS timePoint, " +
             "SUM(collected_volume) AS collectedVolume, " +
-            "SUM(SUM(collected_volume)) OVER (ORDER BY TO_CHAR(create_time, 'HH24:00')) AS cumulativeVolume " +
+            "SUM(SUM(collected_volume)) OVER (ORDER BY DATE_FORMAT(create_time, '%H:00')) AS cumulativeVolume " +
             "FROM garbage_collection " +
             "WHERE deleted = 0 " +
             "AND DATE(create_time) = '2026-02-26' " +
-            "GROUP BY TO_CHAR(create_time, 'HH24:00') " +
-            "ORDER BY timePoint ASC")
+            "GROUP BY DATE_FORMAT(create_time, '%H:00') " +
+            "ORDER BY timePoint DESC")
     List<GarbageCollectionDailyTrendVO> selectDailyCollectionVolumeTrend();
 
     /**
@@ -328,13 +328,13 @@ public interface GarbageCollectionMapper extends BaseMapperX<GarbageCollectionDO
             "GROUP BY DATE_FORMAT(create_time, '%H:00') " +
             "ORDER BY timeDimension ASC")*/
     @Select("SELECT " +
-            "TO_CHAR(create_time, 'HH24:00') AS timeDimension, " +
+            "DATE_FORMAT(create_time, '%H:00') AS timeDimension, " +
             "COALESCE(SUM(collected_volume), 0) AS collectedVolume " +
             "FROM garbage_collection " +
             "WHERE deleted = 0 " +
             "AND DATE(create_time) = '2026-02-26' " +
-            "GROUP BY TO_CHAR(create_time, 'HH24:00') " +
-            "ORDER BY timeDimension ASC")
+            "GROUP BY DATE_FORMAT(create_time, '%H:00') " +
+            "ORDER BY timeDimension DESC ")
     List<CollectionVolumeBarVO> selectTodayCollectionVolume();
 
     /**
@@ -449,4 +449,16 @@ public interface GarbageCollectionMapper extends BaseMapperX<GarbageCollectionDO
             "GROUP BY gc.garbage_type_id, g.name, total.total_volume " +
             "ORDER BY value DESC")
     List<GarbageCollectionCircleCompletedVO> selectCompletedVolumeByGarbageType();
+
+    /**
+     * 根据collectionId查询收运计划
+     */
+    @Select("SELECT * FROM garbage_collection WHERE collection_id = #{collectionId} AND deleted = 0 LIMIT 1")
+    GarbageCollectionDO selectByCollectionId(String collectionId);
+
+    /**
+     * 根据 planId 查询收运计划状态
+     */
+    @Select("SELECT plan_status_id FROM garbage_collection WHERE collection_id = #{planId} AND deleted = 0")
+    String selectPlanStatusByPlanId(@Param("planId") String planId);
 }

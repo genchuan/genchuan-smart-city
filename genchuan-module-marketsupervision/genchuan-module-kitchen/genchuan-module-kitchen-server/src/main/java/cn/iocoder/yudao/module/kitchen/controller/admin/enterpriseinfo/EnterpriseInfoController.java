@@ -39,14 +39,14 @@ public class EnterpriseInfoController {
 
     @PostMapping("/create")
     @Operation(summary = "创建企业信息")
-    @PreAuthorize("@ss.hasPermission('kitchen:enterprise-info:create')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:enterprise-info:create')")
     public CommonResult<Long> createEnterpriseInfo(@Valid @RequestBody EnterpriseInfoSaveReqVO createReqVO) {
         return success(enterpriseInfoService.createEnterpriseInfo(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新企业信息")
-    @PreAuthorize("@ss.hasPermission('kitchen:enterprise-info:update')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:enterprise-info:update')")
     public CommonResult<Boolean> updateEnterpriseInfo(@Valid @RequestBody EnterpriseInfoSaveReqVO updateReqVO) {
         enterpriseInfoService.updateEnterpriseInfo(updateReqVO);
         return success(true);
@@ -55,7 +55,7 @@ public class EnterpriseInfoController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除企业信息")
     @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('kitchen:enterprise-info:delete')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:enterprise-info:delete')")
     public CommonResult<Boolean> deleteEnterpriseInfo(@RequestParam("id") Long id) {
         enterpriseInfoService.deleteEnterpriseInfo(id);
         return success(true);
@@ -64,7 +64,7 @@ public class EnterpriseInfoController {
     @GetMapping("/get")
     @Operation(summary = "获得企业信息")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('kitchen:enterprise-info:query')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:enterprise-info:query')")
     public CommonResult<EnterpriseInfoRespVO> getEnterpriseInfo(@RequestParam("id") Long id) {
         EnterpriseInfoDO enterpriseInfo = enterpriseInfoService.getEnterpriseInfo(id);
         return success(BeanUtils.toBean(enterpriseInfo, EnterpriseInfoRespVO.class));
@@ -72,7 +72,7 @@ public class EnterpriseInfoController {
 
     @GetMapping("/page")
     @Operation(summary = "获得企业信息分页")
-    @PreAuthorize("@ss.hasPermission('kitchen:enterprise-info:query')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:enterprise-info:query')")
     public CommonResult<PageResult<EnterpriseInfoRespVO>> getEnterpriseInfoPage(@Valid EnterpriseInfoPageReqVO pageReqVO) {
         PageResult<EnterpriseInfoDO> pageResult = enterpriseInfoService.getEnterpriseInfoPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, EnterpriseInfoRespVO.class));
@@ -80,7 +80,7 @@ public class EnterpriseInfoController {
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出企业信息 Excel")
-    @PreAuthorize("@ss.hasPermission('kitchen:enterprise-info:export')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:enterprise-info:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportEnterpriseInfoExcel(@Valid EnterpriseInfoPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {

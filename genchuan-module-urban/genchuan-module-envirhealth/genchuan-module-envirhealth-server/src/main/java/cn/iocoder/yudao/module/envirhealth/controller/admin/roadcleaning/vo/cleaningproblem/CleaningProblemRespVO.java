@@ -64,4 +64,8 @@ public class CleaningProblemRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
+    @Schema(description = "现场照片URL")
+    @ExcelProperty("现场照片URL")
+    private String localePhotoUrl;
+
 }

@@ -39,14 +39,14 @@ public class LawReviewLedgerController {
 
     @PostMapping("/create")
     @Operation(summary = "创建执法复审总台账")
-    @PreAuthorize("@ss.hasPermission('kitchen:law-review-ledger:create')")
+    // //@PreAuthorize("@ss.hasPermission('kitchen:law-review-ledger:create')")
     public CommonResult<Long> createLawReviewLedger(@Valid @RequestBody LawReviewLedgerSaveReqVO createReqVO) {
         return success(lawReviewLedgerService.createLawReviewLedger(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新执法复审总台账")
-    @PreAuthorize("@ss.hasPermission('kitchen:law-review-ledger:update')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:law-review-ledger:update')")
     public CommonResult<Boolean> updateLawReviewLedger(@Valid @RequestBody LawReviewLedgerSaveReqVO updateReqVO) {
         lawReviewLedgerService.updateLawReviewLedger(updateReqVO);
         return success(true);
@@ -55,7 +55,7 @@ public class LawReviewLedgerController {
     @DeleteMapping("/delete")
     @Operation(summary = "删除执法复审总台账")
     @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('kitchen:law-review-ledger:delete')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:law-review-ledger:delete')")
     public CommonResult<Boolean> deleteLawReviewLedger(@RequestParam("id") Long id) {
         lawReviewLedgerService.deleteLawReviewLedger(id);
         return success(true);
@@ -64,7 +64,7 @@ public class LawReviewLedgerController {
     @GetMapping("/get")
     @Operation(summary = "获得执法复审总台账")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('kitchen:law-review-ledger:query')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:law-review-ledger:query')")
     public CommonResult<LawReviewLedgerRespVO> getLawReviewLedger(@RequestParam("id") Long id) {
         LawReviewLedgerDO lawReviewLedger = lawReviewLedgerService.getLawReviewLedger(id);
         return success(BeanUtils.toBean(lawReviewLedger, LawReviewLedgerRespVO.class));
@@ -72,7 +72,7 @@ public class LawReviewLedgerController {
 
     @GetMapping("/page")
     @Operation(summary = "获得执法复审总台账分页")
-    @PreAuthorize("@ss.hasPermission('kitchen:law-review-ledger:query')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:law-review-ledger:query')")
     public CommonResult<PageResult<LawReviewLedgerRespVO>> getLawReviewLedgerPage(@Valid LawReviewLedgerPageReqVO pageReqVO) {
         PageResult<LawReviewLedgerDO> pageResult = lawReviewLedgerService.getLawReviewLedgerPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, LawReviewLedgerRespVO.class));
@@ -80,7 +80,7 @@ public class LawReviewLedgerController {
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出执法复审总台账 Excel")
-    @PreAuthorize("@ss.hasPermission('kitchen:law-review-ledger:export')")
+    //@PreAuthorize("@ss.hasPermission('kitchen:law-review-ledger:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportLawReviewLedgerExcel(@Valid LawReviewLedgerPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {

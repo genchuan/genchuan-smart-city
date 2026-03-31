@@ -4,8 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
-
 @Schema(description = "管理后台 - 巡查巡检新增/修改 Request VO")
 @Data
 public class PatrolInspectionSaveReqVO {

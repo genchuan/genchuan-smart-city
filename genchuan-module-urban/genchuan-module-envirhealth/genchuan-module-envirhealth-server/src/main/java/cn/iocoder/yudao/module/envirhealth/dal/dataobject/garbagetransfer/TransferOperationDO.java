@@ -71,15 +71,13 @@ public class TransferOperationDO extends BaseDO {
      */
     private String abnormalIsAbnormal;
     /**
-     * 通用扩展字段1
+     * 转运站编号
      */
-    @JsonIgnore
-    private String extCommon1;
+    private String transferId;
     /**
-     * 通用扩展字段2
+     * 运行状态
      */
-    @JsonIgnore
-    private String extCommon2;
+    private String operationStatus;
     /**
      * 通用扩展字段3
      */

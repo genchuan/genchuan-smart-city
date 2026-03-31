@@ -1,12 +1,13 @@
 package cn.iocoder.yudao.module.evaluate.service.commentrule;
 
-import java.util.*;
-import jakarta.validation.*;
-import cn.iocoder.yudao.module.evaluate.controller.admin.commentrule.vo.*;
-import cn.iocoder.yudao.module.evaluate.controller.admin.ruledetail.vo.RuleDetailRespVO;
-import cn.iocoder.yudao.module.evaluate.dal.dataobject.commentrule.CommentRuleDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import cn.iocoder.yudao.module.evaluate.controller.admin.commentrule.vo.CommentRulePageReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.commentrule.vo.CommentRuleRespVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.commentrule.vo.CommentRuleSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.dal.dataobject.commentrule.CommentRuleDO;
+import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 评分规则主 Service 接口

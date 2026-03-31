@@ -127,6 +127,6 @@ public interface RiverMapper extends BaseMapperX<RiverDO> {
             "       COALESCE(water_quality_rate, 0) as value " +
             "FROM river " +
             "WHERE deleted = 0 " +
-            "ORDER BY water_quality_rate DESC NULLS LAST")
+            "ORDER BY water_quality_rate DESC")
     List<BarItemVO> selectWaterQualityRateByRiver();
 }

@@ -82,23 +82,23 @@ public class GarbageTransferDO extends BaseDO {
      */
     private String environmentData;
     /**
-     * 通用扩展字段1
+     * 流程状态
      */
-    @JsonIgnore
-    private String extCommon1;
+    private String progressStatus;
     /**
-     * 通用扩展字段2
+     * 预约编号
      */
-    @JsonIgnore
-    private String extCommon2;
+    private Long reserveId;
     /**
-     * 通用扩展字段3
+     * 作业编号
      */
-    @JsonIgnore
-    private String extCommon3;
+    private Long operationId;
     /**
-     * 通用扩展字段4
+     * 预警编号
      */
-    @JsonIgnore
-    private String extCommon4;
+    private Long alarmId;
+    /**
+     * 维护编号
+     */
+    private Long maintenanceId;
 }

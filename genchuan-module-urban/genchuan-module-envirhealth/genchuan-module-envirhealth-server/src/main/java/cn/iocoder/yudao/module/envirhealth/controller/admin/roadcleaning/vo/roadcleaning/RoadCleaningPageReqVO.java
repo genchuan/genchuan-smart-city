@@ -108,6 +108,12 @@ public class RoadCleaningPageReqVO extends PageParam {
     @Schema(description = "复盘意见")
     private String reviewDesc;
 
+    @Schema(description = "现场照片URL，JSON", example = "https://www.iocoder.cn")
+    private String localePhotoUrl;
+
+    @Schema(description = "核查照片URL，JSON", example = "https://www.iocoder.cn")
+    private String reviewPhotoUrl;
+
     @Schema(hidden = true)
     private Integer offset;
 

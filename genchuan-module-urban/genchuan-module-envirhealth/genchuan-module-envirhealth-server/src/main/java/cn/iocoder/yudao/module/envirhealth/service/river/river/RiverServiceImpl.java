@@ -1,19 +1,29 @@
 package cn.iocoder.yudao.module.envirhealth.service.river.river;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.river.RiverDashboardVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.river.RiverPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.river.vo.river.RiverSaveReqVO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.dictionary.ToolDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.RiverDO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.river.RiverDetailDO;
+import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.UserDO;
+import cn.iocoder.yudao.module.envirhealth.dal.mysql.dictionary.ToolMapper;
 import cn.iocoder.yudao.module.envirhealth.dal.mysql.river.RiverMapper;
+import cn.iocoder.yudao.module.envirhealth.dal.mysql.user.UserMapper;
 import cn.iocoder.yudao.module.envirhealth.framework.util.codegenerator.river.RiverCodeGenerator;
+import cn.iocoder.yudao.module.envirhealth.framework.util.json.JsonIdToNameUtil;
+import com.alibaba.fastjson.JSON;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.envirhealth.enums.ErrorCodeConstants.RIVER_NOT_EXISTS;
@@ -29,6 +39,12 @@ public class RiverServiceImpl implements RiverService {
 
     @Resource
     private RiverMapper riverMapper;
+
+    @Resource
+    private UserMapper userMapper;
+
+    @Resource
+    private ToolMapper toolMapper;
 
     @Resource
     private RiverCodeGenerator codeGenerator;
@@ -82,13 +98,33 @@ public class RiverServiceImpl implements RiverService {
     @Override
     public PageResult<RiverDetailDO> getRiverDetailPage(RiverPageReqVO pageReqVO) {
         Long total = riverMapper.selectCount(pageReqVO);
-        if (total == 0) {
-            return PageResult.empty();
-        }
+        if (total == 0) return PageResult.empty();
 
         pageReqVO.setOffset(pageReqVO.getPageNo(), pageReqVO.getPageSize());
-
         List<RiverDetailDO> list = riverMapper.selectDetailPage(pageReqVO);
+
+        // 1. 处理人员
+        Set<String> staffIds = JsonIdToNameUtil.collectIds(list, RiverDetailDO::getStaffIds);
+        Map<String, String> staffMap = JsonIdToNameUtil.toMap(
+                userMapper.selectList(new LambdaQueryWrapperX<UserDO>()
+                        .in(UserDO::getUserId, staffIds)
+                        .eq(UserDO::getDeleted, 0)),
+                UserDO::getUserId,
+                UserDO::getUserName
+        );
+        JsonIdToNameUtil.fillNames(list, RiverDetailDO::getStaffIds, RiverDetailDO::setStaffsNameStr, staffMap);
+
+        // 2. 处理工具
+        Set<String> toolIds = JsonIdToNameUtil.collectIds(list, RiverDetailDO::getToolIds);
+        Map<String, String> toolMap = JsonIdToNameUtil.toMap(
+                toolMapper.selectList(new LambdaQueryWrapperX<ToolDO>()
+                        .in(ToolDO::getSysToolId, toolIds)
+                        .eq(ToolDO::getDeleted, 0)),
+                ToolDO::getSysToolId,
+                ToolDO::getName
+        );
+        JsonIdToNameUtil.fillNames(list, RiverDetailDO::getToolIds, RiverDetailDO::setToolsNameStr, toolMap);
+
         return new PageResult<>(list, total);
     }
 

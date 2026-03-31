@@ -36,6 +36,10 @@ public class AiAlertMessageRespVO {
     @ExcelProperty("[告警类型] 告警类型")
     private Integer alertType;
 
+    @Schema(description = "[告警类型名称] ", example = "厨师帽没带")
+    @ExcelProperty("[告警类型名称] ")
+    private String alertTypeName;
+
     @Schema(description = "[消息产生时间] 消息产生时间(特别注意）")
     @ExcelProperty("[消息产生时间] 消息产生时间(特别注意）")
     private LocalDateTime alertCreateTime;

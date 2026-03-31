@@ -4,7 +4,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.personstatus.PersonStatusPageReqVO;
 import cn.iocoder.yudao.module.envirhealth.controller.admin.user.vo.personstatus.PersonStatusSaveReqVO;
 import cn.iocoder.yudao.module.envirhealth.dal.dataobject.user.PersonStatusDO;
+import cn.iocoder.yudao.module.envirhealth.framework.util.vo.OptionVO;
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 人员状态字典 Service 接口
@@ -51,4 +54,9 @@ public interface PersonStatusService {
      */
     PageResult<PersonStatusDO> getPersonStatusPage(PersonStatusPageReqVO pageReqVO);
 
+    /**
+     * 获得人员状态下拉框选项
+     * @return 下拉框选项列表
+     */
+    List<OptionVO> getPersonStatusOptions();
 }

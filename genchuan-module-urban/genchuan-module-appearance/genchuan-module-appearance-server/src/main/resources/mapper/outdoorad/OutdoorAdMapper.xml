@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.appearance.dal.mysql.outdoorad.OutdoorAdMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+    <!-- 通用查询条件 -->
+    <sql id="queryConditions">
+        <where>
+            <if test="adName != null and adName != ''">
+                AND o.name LIKE CONCAT('%', #{adName}, '%')
+            </if>
+            <if test="adType != null and adType != ''">
+                AND o.type = #{adType}
+            </if>
+            <if test="areaCode != null and areaCode != ''">
+                AND o.area_id = #{areaCode}
+            </if>
+            <if test="gridCode != null and gridCode != ''">
+                AND g.grid_code = #{gridCode}
+            </if>
+            <if test="approvalStatus != null and approvalStatus != ''">
+                AND o.approval_status = #{approvalStatus}
+            </if>
+            <if test="dataStatus != null">
+                AND o.data_status = #{dataStatus}
+            </if>
+            <if test="startApprovalTime != null">
+                AND o.start_approval_time &gt;= #{startApprovalTime}
+            </if>
+            <if test="endApprovalTime != null">
+                AND o.end_approval_time &lt;= #{endApprovalTime}
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页关联查询（用于列表） -->
+    <select id="selectPageVO" resultType="cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.OutdoorAdDO">
+        SELECT
+        o.*,
+        ar.area_code AS areaCode,
+        ar.area_name AS areaName,
+        g.grid_code AS gridCode,
+        g.grid_name AS gridName,
+        u1.user_name AS approvalName,
+        u2.user_name AS createName,
+        u3.user_name AS updateName
+        FROM
+        outdoor_ad o
+        LEFT JOIN sys_area ar ON o.area_id = ar.id
+        LEFT JOIN sys_grid g ON o.grid_id = g.id
+        LEFT JOIN sys_user u1 ON o.approval_by = u1.id
+        LEFT JOIN sys_user u2 ON o.creator = u2.id
+        LEFT JOIN sys_user u3 ON o.updater = u3.id
+        <where>
+            o.deleted = 0
+            <if test="reqVO.adName != null and reqVO.adName != ''">
+                AND o.name LIKE CONCAT('%', #{reqVO.adName}, '%')
+            </if>
+            <if test="reqVO.adType != null and reqVO.adType != ''">
+                AND o.type = #{reqVO.adType}
+            </if>
+            <if test="reqVO.approvalStatus != null and reqVO.approvalStatus != ''">
+                AND o.approval_status = #{reqVO.approvalStatus}
+            </if>
+            <if test="reqVO.startApprovalTime != null">
+                AND o.start_approval_time &gt;= #{reqVO.startApprovalTime}
+            </if>
+            <if test="reqVO.endApprovalTime != null">
+                AND o.end_approval_time &lt;= #{reqVO.endApprovalTime}
+            </if>
+            <!-- 多租户条件，如果开启了多租户插件且自动注入，可注释掉下一行 -->
+            AND o.tenant_id = 1
+        </where>
+        ORDER BY o.create_time DESC
+    </select>
+
+    <!-- 单条详情关联查询 -->
+    <select id="selectOneWithRelations" resultMap="OutdoorAdResultMap">
+        SELECT
+        o.id,
+        o.outdoor_ad_id AS outdoorAdId,
+        o.ad_code AS adCode,
+        o.name,
+        o.type,
+
+        o.approved_size     AS approvedSize,
+        o.actual_size       AS actualSize,
+        o.approval_status   AS approvalStatus,
+        o.approved_desc     AS approvedDesc,
+        o.end_approval_time AS endApprovalTime,
+        o.data_status       AS dataStatus,
+        o.archive_version   AS archiveVersion,
+        o.chain_hash        AS chainHash,
+        o.life_cycle_id     AS lifeCycleId,
+        o.create_time       AS createTime,
+        o.update_time       AS updateTime,
+
+        o.location,
+        o.lng,
+        o.lat,
+
+        ar.area_code AS areaCode,
+        ar.area_name AS areaName,
+
+        g.grid_code AS gridCode,
+        g.grid_name AS gridName,
+
+        u1.user_name AS approvalName,
+        u2.user_name AS createName,
+        u3.user_name AS updateName,
+
+        af.id AS attachId,
+        af.attach_file_id AS fileId,
+        af.file_url AS fileUrl,
+        af.file_name AS fileName,
+        af.file_type AS fileType
+
+        FROM
+        outdoor_ad o
+        LEFT JOIN sys_area ar ON o.area_id = ar.id
+        LEFT JOIN sys_grid g ON o.grid_id = g.id
+        LEFT JOIN sys_user u1 ON o.approval_by = u1.id
+        LEFT JOIN sys_user u2 ON o.creator = u2.id
+        LEFT JOIN sys_user u3 ON o.updater = u3.id
+        LEFT JOIN sys_attach_file af ON o.id = af.ad_id  <!-- 这里的 JOIN 确保能获取附件 -->
+
+        WHERE o.id = #{reqVO.id}
+    </select>
+
+    <!-- 关联查询广告整改工单列表 -->
+    <select id="selectOrderPageVO" resultType="cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.OutdoorAdOrderDO">
+        SELECT
+        ro.order_id AS orderId,
+        ro.order_code AS orderCode,
+        ro.problem_desc AS problemDesc,
+        ro.require_time AS requireTime,
+        ro.create_time AS createTime,
+        ro.update_time AS updateTime,
+        ro.chain_hash AS chainHash,
+        oa.outdoor_ad_id AS outdoorAdId,
+        oa.name AS adName,
+        oa.ad_code AS adCode,
+        sos.name AS orderStatus,
+        su1.user_id AS handlerUserId,
+        su1.user_name AS handlerName,
+        su2.user_name AS createByName
+        FROM
+        rectification_order ro
+        LEFT JOIN outdoor_ad oa ON ro.ad_id = oa.id
+        LEFT JOIN sys_order_status sos ON ro.order_status_id = sos.id
+        LEFT JOIN sys_user su1 ON ro.handler_id = su1.id
+        LEFT JOIN sys_user su2 ON ro.create_id = su2.id
+        WHERE ro.deleted = 0
+        AND ro.tenant_id = 1
+        ORDER BY ro.create_time DESC
+    </select>
+
+    <!-- 关联查询户外广告订单详情 -->
+    <select id="selectOneOrder" resultMap="OutdoorAdOrderResultMap">
+        SELECT
+        ro.order_id AS orderId,
+        ro.order_code AS orderCode,
+        ro.problem_desc AS problemDesc,
+        ro.require_time AS requireTime,
+        ro.handling_desc AS handlingDesc,
+        ro.complete_time AS completeTime,
+        ro.reject_reason AS rejectReason,
+        ro.close_reason AS closeReason,
+        ro.create_time AS createTime,
+        ro.update_time AS updateTime,
+        ro.chain_hash AS chainHash,
+        ro.life_cycle_id AS lifeCycleId,
+
+        oa.outdoor_ad_id AS outdoorAdId,
+        oa.name AS adName,
+        oa.ad_code AS adCode,
+
+        osi1.id AS prob_primaryId,
+        osi1.file_id AS prob_fileId,
+        osi1.file_url AS prob_fileUrl,
+        osi1.file_name AS prob_fileName,
+
+        sos.name AS orderStatus,
+        su1.user_id AS handlerUserId,
+        su1.user_name AS handlerName,
+
+        osi2.id AS hand_primaryId,
+        osi2.file_id AS hand_fileId,
+        osi2.file_url AS hand_fileUrl,
+        osi2.file_name AS hand_fileName,
+
+        su2.user_name AS createByName,
+        su3.user_name AS updateByName
+        FROM
+        rectification_order ro
+        LEFT JOIN outdoor_ad oa ON ro.ad_id = oa.id
+        LEFT JOIN on_site_image osi1 ON ro.id = osi1.order_id AND osi1.type = 'prob'
+        LEFT JOIN sys_order_status sos ON ro.order_status_id = sos.id
+        LEFT JOIN sys_user su1 ON ro.handler_id = su1.id
+        LEFT JOIN on_site_image osi2 ON ro.id = osi2.order_id AND osi2.type = 'hand'
+        LEFT JOIN sys_user su2 ON ro.create_id = su2.id
+        LEFT JOIN sys_user su3 ON ro.update_id = su3.id
+
+        WHERE ro.order_id = #{reqVO.id}
+    </select>
+
+    <!-- 根据区域编码查询户外广告ID -->
+    <select id="getAreaIdByCode" resultType="java.lang.Long">
+        SELECT id FROM sys_area WHERE area_code = #{areaCode}
+    </select>
+
+    <!-- 根据网格编码查询网格ID -->
+    <select id="getGridIdByCode" resultType="java.lang.Long">
+        SELECT id FROM sys_grid WHERE grid_code = #{gridCode}
+    </select>
+
+    <!-- 根据广告主键ID查询广告ID -->
+    <select id="getIdByOutdoorAdId" resultType="java.lang.Long">
+        SELECT id FROM outdoor_ad WHERE outdoor_ad_id = #{outdoorAdId}
+    </select>
+
+    <resultMap id="OutdoorAdResultMap" type="cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.OutdoorAdDO">
+        <!-- 普通字段映射 -->
+        <id property="id" column="id"/>
+        <result property="outdoorAdId" column="outdoorAdId"/>
+        <result property="adCode" column="adCode"/>
+        <result property="name" column="name"/>
+        <result property="type" column="type"/>
+        <result property="approvedSize" column="approvedSize"/>
+        <result property="actualSize" column="actualSize"/>
+        <result property="location" column="location"/>
+        <result property="lng" column="lng"/>
+        <result property="lat" column="lat"/>
+        <result property="areaName" column="areaName"/>
+        <result property="areaCode" column="areaCode"/>
+        <result property="gridName" column="gridName"/>
+        <result property="gridCode" column="gridCode"/>
+        <result property="approvalStatus" column="approvalStatus"/>
+        <result property="approvedDesc" column="approvedDesc"/>
+        <result property="approvalName" column="approvalName"/>
+        <result property="endApprovalTime" column="endApprovalTime"/>
+        <result property="dataStatus" column="dataStatus"/>
+        <result property="archiveVersion" column="archiveVersion"/>
+        <result property="chainHash" column="chainHash"/>
+        <result property="lifeCycleId" column="lifeCycleId"/>
+        <result property="createTime" column="createTime"/>
+        <result property="createName" column="createName"/>
+        <result property="updateTime" column="updateTime"/>
+        <result property="updateName" column="updateName"/>
+
+        <!-- 附件文件的集合映射 -->
+        <collection property="attachFileList" ofType="cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.SysAttachFileDO">
+            <id property="id" column="attachId"/>
+            <result property="fileId" column="fileId"/>
+            <result property="fileUrl" column="fileUrl"/>
+            <result property="fileName" column="fileName"/>
+            <result property="fileType" column="fileType"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="OutdoorAdOrderResultMap" type="cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.OutdoorAdOrderDO">
+        <id property="orderId" column="orderId"/>
+        <result property="orderCode" column="orderCode"/>
+        <result property="outdoorAdId" column="outdoorAdId"/>
+        <result property="adName" column="adName"/>
+        <result property="adCode" column="adCode"/>
+        <result property="problemDesc" column="problemDesc"/>
+        <result property="requireTime" column="requireTime"/>
+        <result property="orderStatus" column="orderStatus"/>
+        <result property="handlerUserId" column="handlerUserId"/>
+        <result property="handlerName" column="handlerName"/>
+        <result property="handlingDesc" column="handlingDesc"/>
+        <result property="completeTime" column="completeTime"/>
+        <result property="rejectReason" column="rejectReason"/>
+        <result property="closeReason" column="closeReason"/>
+        <result property="createTime" column="createTime"/>
+        <result property="createByName" column="createByName"/>
+        <result property="updateTime" column="updateTime"/>
+        <result property="updateByName" column="updateByName"/>
+        <result property="chainHash" column="chainHash"/>
+        <result property="lifeCycleId" column="lifeCycleId"/>
+
+        <collection property="problemImgList" ofType="cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.OnsiteImageDO">
+            <id property="id" column="prob_primaryId"/>
+            <result property="fileId" column="prob_fileId"/>
+            <result property="fileUrl" column="prob_fileUrl"/>
+            <result property="fileName" column="prob_fileName"/>
+        </collection>
+
+        <collection property="handleImgList" ofType="cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.OnsiteImageDO">
+            <id property="id" column="hand_primaryId"/>
+            <result property="fileId" column="hand_fileId"/>
+            <result property="fileUrl" column="hand_fileUrl"/>
+            <result property="fileName" column="hand_fileName"/>
+        </collection>
+    </resultMap>
+</mapper>
