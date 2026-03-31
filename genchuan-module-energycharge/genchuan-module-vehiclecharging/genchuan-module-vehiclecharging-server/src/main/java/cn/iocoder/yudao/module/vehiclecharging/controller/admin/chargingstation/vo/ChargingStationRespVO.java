@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.vehiclecharging.controller.damin.chargingstation.vo;
+package cn.iocoder.yudao.module.vehiclecharging.controller.admin.chargingstation.vo;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;

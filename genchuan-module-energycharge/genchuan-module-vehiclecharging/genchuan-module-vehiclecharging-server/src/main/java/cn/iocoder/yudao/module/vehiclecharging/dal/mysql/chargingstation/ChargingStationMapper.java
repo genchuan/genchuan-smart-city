@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.vehiclecharging.dal.mysql.chargingstation;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
-import cn.iocoder.yudao.module.vehiclecharging.controller.damin.chargingstation.vo.ChargingStationPageReqVO;
+import cn.iocoder.yudao.module.vehiclecharging.controller.admin.chargingstation.vo.ChargingStationPageReqVO;
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.chargingstation.ChargingStationDO;
 import org.apache.ibatis.annotations.Mapper;
 

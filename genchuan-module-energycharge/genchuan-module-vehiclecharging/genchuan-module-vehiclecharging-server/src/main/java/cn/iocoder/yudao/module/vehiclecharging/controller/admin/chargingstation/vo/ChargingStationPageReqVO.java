@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.vehiclecharging.controller.damin.chargingstation.vo;
+package cn.iocoder.yudao.module.vehiclecharging.controller.admin.chargingstation.vo;
 
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import groovy.transform.EqualsAndHashCode;

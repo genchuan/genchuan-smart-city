@@ -1,14 +1,13 @@
-package cn.iocoder.yudao.module.vehiclecharging.controller.damin.chargingstation;
+package cn.iocoder.yudao.module.vehiclecharging.controller.admin.chargingstation;
 
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.vehiclecharging.controller.damin.chargingstation.vo.ChargingStationPageReqVO;
-import cn.iocoder.yudao.module.vehiclecharging.controller.damin.chargingstation.vo.ChargingStationRespVO;
+import cn.iocoder.yudao.module.vehiclecharging.controller.admin.chargingstation.vo.ChargingStationPageReqVO;
+import cn.iocoder.yudao.module.vehiclecharging.controller.admin.chargingstation.vo.ChargingStationRespVO;
 import cn.iocoder.yudao.module.vehiclecharging.service.chargingstation.ChargingStationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
