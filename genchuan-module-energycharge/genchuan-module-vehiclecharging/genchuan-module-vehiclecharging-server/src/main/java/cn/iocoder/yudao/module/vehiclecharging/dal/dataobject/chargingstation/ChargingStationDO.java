@@ -4,11 +4,13 @@ package cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.chargingstation;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
+@TableName("charging_station")
 public class ChargingStationDO extends BaseDO {
 
   @TableId(type = IdType.AUTO)
