@@ -1,25 +1,20 @@
 package cn.iocoder.yudao.module.vehiclecharging.service.interconnection;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.interconnection.vo.*;
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.interconnection.InterconnectionDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.vehiclecharging.dal.mysql.interconnection.InterconnectionMapper;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.vehiclecharging.enums.ErrorCodeConstants.*;
 
 /**

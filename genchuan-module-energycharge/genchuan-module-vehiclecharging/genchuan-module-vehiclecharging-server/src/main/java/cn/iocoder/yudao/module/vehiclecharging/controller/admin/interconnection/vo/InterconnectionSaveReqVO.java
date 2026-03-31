@@ -2,10 +2,8 @@ package cn.iocoder.yudao.module.vehiclecharging.controller.admin.interconnection
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import java.util.*;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 互联互通表新增/修改 Request VO")

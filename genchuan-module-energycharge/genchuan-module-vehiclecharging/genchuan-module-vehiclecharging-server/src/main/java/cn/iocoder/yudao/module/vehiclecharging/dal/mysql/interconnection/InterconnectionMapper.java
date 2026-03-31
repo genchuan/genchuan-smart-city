@@ -1,7 +1,5 @@
 package cn.iocoder.yudao.module.vehiclecharging.dal.mysql.interconnection;
 
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
@@ -36,6 +34,4 @@ public interface InterconnectionMapper extends BaseMapperX<InterconnectionDO> {
                 .betweenIfPresent(InterconnectionDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(InterconnectionDO::getId));
     }
-
-    Integer selectTotalCount();
 }

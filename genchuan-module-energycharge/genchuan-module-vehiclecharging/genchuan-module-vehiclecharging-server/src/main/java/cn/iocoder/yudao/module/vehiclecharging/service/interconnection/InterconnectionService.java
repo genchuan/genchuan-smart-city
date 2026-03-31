@@ -5,7 +5,6 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.interconnection.vo.*;
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.interconnection.InterconnectionDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 互联互通表 Service 接口

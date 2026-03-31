@@ -1,7 +1,6 @@
 package cn.iocoder.yudao.module.vehiclecharging.controller.admin.interconnection.vo;
 
 import lombok.*;
-import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import java.math.BigDecimal;
