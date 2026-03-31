@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.appearance.controller.admin.outdoorad;
 
 import cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.vo.*;
+import cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.OutdoorAdOrderDO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -38,7 +39,7 @@ public class OutdoorAdController {
 
     @GetMapping("/get")
     @Operation(summary = "获得户外广告")
-    @Parameter(name = "id", description = "编号", required = true, example = "6")
+    @Parameter(name = "id", description = "主键ID", required = true, example = "6")
     @PreAuthorize("@ss.hasPermission('appearance:outdoor-ad-spvs:query')")
     public CommonResult<OutdoorAdGetRespVO> getOutdoorAd( @Valid OutdoorAdGetReqVO getReqVO) {
         OutdoorAdDO outdoorAd = outdoorAdService.getOutdoorAd(getReqVO);
@@ -59,4 +60,28 @@ public class OutdoorAdController {
     public CommonResult<Boolean> editOutdoorAd(@Valid OutdoorAdEditReqVO editReqVO) {
         return success(outdoorAdService.editOutdoorAd(editReqVO));
     }
+
+    @GetMapping("/remove")
+    @Operation(summary = "删除户外广告")
+    @PreAuthorize("@ss.hasPermission('appearance:outdoor-ad-spvs:remove')")
+    public CommonResult<Boolean> removeOutdoorAd(@Valid OutdoorAdRemoveReqVO removeReqVO) {
+        return success(outdoorAdService.removeOutdoorAd(removeReqVO));
+    }
+    @GetMapping("/order-page")
+    @Operation(summary = "获得广告整改工单分页")
+    @PreAuthorize("@ss.hasPermission('appearance:outdoor-ad-spvs:query')")
+    public CommonResult<PageResult<OutdoorAdOrderPageRespVO>> getOutdoorAdOrderPage( @Valid OutdoorAdOrderPageReqVO pageReqVO) {
+        PageResult<OutdoorAdOrderDO> pageResult = outdoorAdService.getOutdoorAdOrderPage(pageReqVO);
+        return success(BeanUtils.toBean(pageResult, OutdoorAdOrderPageRespVO.class));
+    }
+
+    @GetMapping("/order-get")
+    @Operation(summary = "获得广告整改工单")
+    @Parameter(name = "id", description = "主键ID", required = true, example = "1")
+    @PreAuthorize("@ss.hasPermission('appearance:outdoor-ad-spvs:query')")
+    public CommonResult<OutdoorAdOrderGetRespVO> getOutdoorAdOrder( @Valid OutdoorAdOrderGetReqVO getReqVO) {
+        OutdoorAdOrderDO outdoorAdOrder = outdoorAdService.getOutdoorAdOrder(getReqVO);
+        return success(BeanUtils.toBean(outdoorAdOrder, OutdoorAdOrderGetRespVO.class));
+    }
+
 }

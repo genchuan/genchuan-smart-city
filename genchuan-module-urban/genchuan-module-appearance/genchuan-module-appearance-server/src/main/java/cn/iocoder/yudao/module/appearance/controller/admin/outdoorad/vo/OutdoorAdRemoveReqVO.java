@@ -15,5 +15,4 @@ public class OutdoorAdRemoveReqVO {
     @NotEmpty(message = "广告ID不能为空")
     private String outdoorAdId;
 
-
 }

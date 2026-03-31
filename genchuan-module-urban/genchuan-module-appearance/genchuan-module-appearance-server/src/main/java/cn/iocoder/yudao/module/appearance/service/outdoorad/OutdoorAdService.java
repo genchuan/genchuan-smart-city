@@ -1,11 +1,9 @@
 package cn.iocoder.yudao.module.appearance.service.outdoorad;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.vo.OutdoorAdAddReqVO;
-import cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.vo.OutdoorAdEditReqVO;
-import cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.vo.OutdoorAdGetReqVO;
-import cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.vo.OutdoorAdPageReqVO;
+import cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.vo.*;
 import cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.OutdoorAdDO;
+import cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.OutdoorAdOrderDO;
 import jakarta.validation.Valid;
 
 /**
@@ -42,4 +40,22 @@ public interface OutdoorAdService {
      * @return 更新结果
      */
     Boolean editOutdoorAd( OutdoorAdEditReqVO editReqVO );
+    /**
+     * 删除户外广告
+     */
+    Boolean removeOutdoorAd( OutdoorAdRemoveReqVO removeReqVO );
+    /**
+     * 获得户外广告订单分页
+     *
+     * @param pageReqVO 分页查询
+     * @return 户外广告订单分页
+     */
+    PageResult<OutdoorAdOrderDO> getOutdoorAdOrderPage( OutdoorAdOrderPageReqVO pageReqVO );
+    /**
+     * 获得户外广告订单
+     *
+     * @param getReqVO 查询参数
+     * @return 户外广告订单
+     */
+    OutdoorAdOrderDO getOutdoorAdOrder(  OutdoorAdOrderGetReqVO getReqVO );
 }
