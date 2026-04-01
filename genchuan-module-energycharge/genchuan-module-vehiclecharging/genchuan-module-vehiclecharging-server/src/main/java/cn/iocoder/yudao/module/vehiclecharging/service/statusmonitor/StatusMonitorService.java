@@ -1,9 +1,13 @@
 package cn.iocoder.yudao.module.vehiclecharging.service.statusmonitor;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.StatusMonitorPageReqVO;
+import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.AbnormalPoint;
+import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.ParamTrend;
+import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.StatusCountRespVO;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.StatusMonitorChartRespVO;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.newvo.*;
 import jakarta.servlet.http.HttpServletResponse;
@@ -65,6 +69,12 @@ public interface StatusMonitorService {
     StatusMonitorDO getStatusMonitor(Long id);
 
     StatusMonitorChartRespVO getStatusMonitorChart();
+
+    List<ParamTrend> getParamTrend(String deviceCode, LocalDateTime startTime, LocalDateTime endTime);
+
+    List<AbnormalPoint> getAbnormalDeviceLocation(String area);
+
+    List<StatusCountRespVO> getStatusCountByStation(String status);
 //
 //    /**
 //     * 获得实时监测分页

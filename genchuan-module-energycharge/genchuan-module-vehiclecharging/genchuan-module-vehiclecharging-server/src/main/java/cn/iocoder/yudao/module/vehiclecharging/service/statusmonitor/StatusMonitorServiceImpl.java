@@ -8,9 +8,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.StatusMonitorPageReqVO;
-import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.AbnormalPoint;
-import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.ParamTrend;
-import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.StatusMonitorChartRespVO;
+import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.*;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.newvo.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -136,20 +134,7 @@ public class StatusMonitorServiceImpl implements StatusMonitorService {
         return respList;
     }
 
-    /**
-     * 获取需要刷新的充电桩ID列表
-     */
-//    private List<Long> getPileIdsToRefresh(StatusMonitorRefreshReqVO reqVO) {
-//        if (reqVO.getPileId() != null) {
-//            return Collections.singletonList(reqVO.getPileId());
-//        }
-//        if (reqVO.getStationId() != null) {
-//            // 查询场站下的充电桩
-//            return chargingPileMapper.selectIdsByStationId(reqVO.getStationId());
-//        }
-//        // 刷新当前租户所有充电桩
-//        return chargingPileMapper.selectIdsByTenantId(reqVO.getTenantId());
-//    }
+
 
     /**
      * 模拟调用设备接口获取实时数据
@@ -170,58 +155,8 @@ public class StatusMonitorServiceImpl implements StatusMonitorService {
         return map;
     }
 
-    /**
-     * 构建监测记录（每种监测类型一条）
-     */
-//    private List<StatusMonitorDO> buildMonitorRecords(Long pileId, DeviceMonitorData data, Long tenantId, String currentUser) {
-//        List<StatusMonitorDO> records = new ArrayList<>();
-//
-//        // 获取充电桩基本信息
-//        ChargingPileDO pile = chargingPileMapper.selectById(pileId);
-//        if (pile == null) {
-//            return records;
-//        }
-//
-//        // 监测类型：电压
-//        StatusMonitorDO voltageRecord = createMonitorRecord(pile, "电压", data.getVoltage(), tenantId, currentUser);
-//        records.add(voltageRecord);
-//
-//        // 监测类型：电流
-//        StatusMonitorDO currentRecord = createMonitorRecord(pile, "电流", data.getCurrent(), tenantId, currentUser);
-//        records.add(currentRecord);
-//
-//        // 监测类型：功率
-//        StatusMonitorDO powerRecord = createMonitorRecord(pile, "功率", data.getPower(), tenantId, currentUser);
-//        records.add(powerRecord);
-//
-//        // 监测类型：充电桩运行
-//        StatusMonitorDO runRecord = createMonitorRecord(pile, "充电桩运行", (double) data.getRunningStatus(), tenantId, currentUser);
-//        records.add(runRecord);
-//
-//        return records;
-//    }
 
-    /**
-     * 创建单条监测记录
-     */
-//    private StatusMonitorDO createMonitorRecord(ChargingPileDO pile, String monitorType, Double monitorValue,
-//                                                Long tenantId, String currentUser) {
-//        StatusMonitorDO record = new StatusMonitorDO();
-//        record.setDeviceCode(pile.getCode());
-//        record.setStationId(pile.getStationId());
-//        record.setLotId(pile.getLotId());
-//        record.setDeviceType("充电桩");
-//        record.setMonitorType(monitorType);
-//        record.setMonitorValue(monitorValue);
-//        record.setMonitorStatus(determineMonitorStatus(monitorType, monitorValue));
-//        record.setMonitorTime(LocalDateTime.now());
-//        record.setTenantId(tenantId);
-//        record.setCreator(currentUser);
-//        record.setUpdater(currentUser);
-//        record.setDeleted(false);
-//        // 其他字段可根据实际填充
-//        return record;
-//    }
+
 
     /**
      * 根据监测类型和数值判断状态
@@ -248,16 +183,7 @@ public class StatusMonitorServiceImpl implements StatusMonitorService {
         return "正常";
     }
 
-//    private StatusMonitorRefreshRespVO convertToRefreshRespVO(StatusMonitorDO monitor) {
-//        StatusMonitorRefreshRespVO respVO = new StatusMonitorRefreshRespVO();
-//        BeanUtils.copyProperties(monitor, respVO);
-//        // 关联充电桩型号
-//        ChargingPileDO pile = chargingPileMapper.selectByCode(monitor.getDeviceCode());
-//        if (pile != null) {
-//            respVO.setPileModel(pile.getModel());
-//        }
-//        return respVO;
-//    }
+
 
     // ========================= 导出 =========================
 
@@ -359,129 +285,7 @@ public class StatusMonitorServiceImpl implements StatusMonitorService {
         public void setMonitorTime(LocalDateTime monitorTime) { this.monitorTime = monitorTime; }
     }
 
-//    @Override
-//    public PageResult<StatusMonitorPageRespVO> getStatusMonitorPage(StatusMonitorPageReqVO pageReqVO) {
-//        // 1. 获取当前租户 ID（从 Security 上下文获取）
-//        Long tenantId = SecurityFrameworkUtils.getLoginUser().getTenantId();
-//        pageReqVO.setTenantId(tenantId);
-//
-//        // 2. 调用 Mapper 分页查询（Mapper 需支持多表关联和筛选条件）
-//        //    Mapper 需要返回 StatusMonitorPageRespVO 类型的数据，此处假设有专用方法
-//        //    实际应使用 BeanUtils 转换，但为简化，直接返回 PageResult<StatusMonitorDO> 再转换
-//        PageResult<StatusMonitorDO> doPageResult = statusMonitorMapper.selectPage(pageReqVO);
-//        List<StatusMonitorPageRespVO> list = doPageResult.getList().stream()
-//                .map(this::convertToPageRespVO)
-//                .collect(Collectors.toList());
-//        return new PageResult<>(list, doPageResult.getTotal());
-//    }
-//
-//    /**
-//     * 将 StatusMonitorDO 转换为 StatusMonitorPageRespVO（含关联场站名称、充电桩型号等）
-//     */
-//    private StatusMonitorPageRespVO convertToPageRespVO(StatusMonitorDO monitor) {
-//        StatusMonitorPageRespVO respVO = new StatusMonitorPageRespVO();
-//        BeanUtils.copyProperties(monitor, respVO);
-//
-//        // 关联查询场站名称（实际需通过 stationId 查询 charging_station 表）
-//        // respVO.setStationName(chargingStationService.getStationName(monitor.getStationId()));
-//
-//        // 关联查询充电桩型号（实际需通过 device_code 关联 charging_pile 表）
-//        // respVO.setPileModel(chargingPileService.getPileModelByCode(monitor.getDeviceCode()));
-//
-//        // 监测类型：根据实际需求映射，此处暂时固定为“充电桩运行”
-//        respVO.setMonitorType("充电桩运行");
-//        // 监测数值：根据 monitorType 决定，此处暂时取电压值
-//        respVO.setMonitorValue(monitor.getVoltage());
-//        // 预警阈值：可从配置表获取，此处暂设为 null
-//        respVO.setWarningValue(null);
-//        // 监测状态：直接使用表中的 monitor_status
-//        respVO.setMonitorStatus(monitor.getMonitorStatus());
-//        // 监测时间
-//        respVO.setMonitorTime(monitor.getMonitorTime());
-//        // 记录创建时间
-//        respVO.setCreateTime(monitor.getCreateTime());
-//
-//        return respVO;
-//    }
-//
-//    @Override
-//    public List<StatusMonitorRefreshRespVO> refreshStatusMonitor(StatusMonitorRefreshReqVO refreshReqVO) {
-//        Long tenantId = SecurityFrameworkUtils.getLoginUser().getTenantId();
-//        refreshReqVO.setTenantId(tenantId);
-//
-//        // 实际应调用设备终端接口获取最新数据并更新数据库，此处仅做查询演示
-//        List<StatusMonitorDO> list = statusMonitorMapper.selectRefreshList(refreshReqVO);
-//        // 转换并返回
-//        return list.stream().map(this::convertToRefreshRespVO).collect(Collectors.toList());
-//    }
-//
-//    private StatusMonitorRefreshRespVO convertToRefreshRespVO(StatusMonitorDO monitor) {
-//        StatusMonitorRefreshRespVO respVO = new StatusMonitorRefreshRespVO();
-//        BeanUtils.copyProperties(monitor, respVO);
-//        // 关联充电桩型号
-//        // respVO.setPileModel(chargingPileService.getPileModelByCode(monitor.getDeviceCode()));
-//        // 监测类型映射
-//        respVO.setMonitorType("充电桩运行");
-//        respVO.setMonitorValue(monitor.getVoltage());
-//        respVO.setMonitorStatus(monitor.getMonitorStatus());
-//        respVO.setMonitorTime(monitor.getMonitorTime());
-//        return respVO;
-//    }
-//
-//    @Override
-//    public void exportStatusMonitor(StatusMonitorExportReqVO exportReqVO, HttpServletResponse response) throws IOException {
-//        Long tenantId = SecurityFrameworkUtils.getLoginUser().getTenantId();
-//        exportReqVO.setTenantId(tenantId);
-//
-//        // 查询数据（不分页）
-//        List<StatusMonitorDO> list = statusMonitorMapper.selectExportList(exportReqVO);
-//        List<StatusMonitorPageRespVO> exportList = list.stream()
-//                .map(this::convertToPageRespVO)
-//                .collect(Collectors.toList());
-//
-//        // 导出为 Excel（PDF 暂未实现）
-//        String fileName = "实时监测数据_" + DateUtil.format(LocalDateTime.now(), "yyyyMMddHHmmss") + ".xlsx";
-//        ExcelUtils.write(response, fileName, "实时监测", StatusMonitorPageRespVO.class, exportList);
-//    }
-//
-//    @Override
-//    @Transactional(rollbackFor = Exception.class)
-//    public void handleAbnormal(StatusMonitorHandleAbnormalReqVO handleReqVO) {
-//        Long tenantId = SecurityFrameworkUtils.getLoginUser().getTenantId();
-//        handleReqVO.setTenantId(tenantId);
-//        String currentUser = SecurityFrameworkUtils.getLoginUser().getUsername();
-//
-//        // 1. 校验传入的 ID 是否存在且处于“异常”状态
-//        List<StatusMonitorDO> monitors = statusMonitorMapper.selectBatchIds(handleReqVO.getIds());
-//        if (monitors.size() != handleReqVO.getIds().size()) {
-//            throw exception(STATUS_MONITOR_NOT_EXISTS);
-//        }
-//        for (StatusMonitorDO monitor : monitors) {
-//            if (!"异常".equals(monitor.getMonitorStatus())) {
-//                throw exception(STATUS_MONITOR_NOT_ABNORMAL);
-//            }
-//            // 2. 更新处置字段
-//            monitor.setDisposeUser(currentUser);
-//            // 处置措施：将处置类型和备注合并存储
-//            String measure = handleReqVO.getHandleType() + "：" + handleReqVO.getHandleRemark();
-//            monitor.setDisposeMeasure(measure);
-//            monitor.setDisposeTime(LocalDateTime.now());
-//            // 3. 更新监测状态为“正常”
-//            monitor.setMonitorStatus("正常");
-//            monitor.setUpdater(currentUser);
-//            statusMonitorMapper.updateById(monitor);
-//        }
-//        // 审计日志由框架自动记录，此处省略
-//    }
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
 ////    ===============================================
     @Override
     public Long createStatusMonitor(StatusMonitorSaveReqVO createReqVO) {
@@ -542,14 +346,48 @@ public class StatusMonitorServiceImpl implements StatusMonitorService {
 
 
         // 4. 查询折线图数据（近24小时，15分钟间隔）
-        List<ParamTrend> paramTrendList = statusMonitorMapper.selectParamTrend();
+        List<ParamTrend> paramTrendList = statusMonitorMapper.selectParamTrend(new ParamTrendReq());
         respVO.setParamTrendList(paramTrendList);
 
         // 5. 查询异常设备坐标
-//        List<AbnormalPoint> points = statusMonitorMapper.selectAbnormalPoints();
-//        respVO.setAbnormalPointList(points);
+        List<AbnormalPoint> points = statusMonitorMapper.selectAbnormalPoints(new AbnormalPointReq());
+        respVO.setAbnormalPointList(points);
 
         return respVO;
+    }
+
+//    @Override
+//    public List<ParamTrend> getParamTrend(String deviceCode, LocalDateTime startTime, LocalDateTime endTime) {
+//        List<ParamTrend> list = statusMonitorMapper.selectParamTrend();
+//        return list;
+//    }
+    @Override
+    public List<ParamTrend> getParamTrend(String deviceCode, LocalDateTime startTime, LocalDateTime endTime) {
+        // 提取请求参数
+//        String deviceCode = req.getDeviceCode();
+//        LocalDateTime startTime = req.getStartTime();
+//        LocalDateTime endTime = req.getEndTime();
+
+        ParamTrendReq req = new ParamTrendReq();
+        req.setDeviceCode(deviceCode);
+        req.setStartTime(startTime);
+        req.setEndTime(endTime);
+        // 调用 Mapper 查询
+        List<ParamTrend> list = statusMonitorMapper.selectParamTrend(req);
+        return list;
+    }
+
+    @Override
+    public List<AbnormalPoint> getAbnormalDeviceLocation(String area) {
+        AbnormalPointReq abnormalPointReq = new AbnormalPointReq();
+        abnormalPointReq.setAreaName(area);
+        List<AbnormalPoint> list = statusMonitorMapper.selectAbnormalPoints(abnormalPointReq);
+        return list;
+    }
+
+    @Override
+    public List<StatusCountRespVO> getStatusCountByStation(String status) {
+        return statusMonitorMapper.selectStatusCountByStation(status);
     }
 //
 //    @Override

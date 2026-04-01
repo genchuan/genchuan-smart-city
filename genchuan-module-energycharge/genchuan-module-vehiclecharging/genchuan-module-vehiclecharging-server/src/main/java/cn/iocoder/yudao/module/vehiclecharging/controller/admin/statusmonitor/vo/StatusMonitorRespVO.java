@@ -16,6 +16,10 @@ public class StatusMonitorRespVO {
     @ExcelProperty("主键ID")
     private Long id;
 
+    @Schema(description = "地区名称", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("地区名称")
+    private String areaName;
+
     @Schema(description = "设备编号", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("设备编号")
     private String deviceCode;
