@@ -405,7 +405,7 @@ public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService 
 
             punishReviewLedgerMapper.updateById(punishReviewLedgerDO);
 
-//            //修改状态 为 整改中
+//            //TODO 修改状态 为 整改中
 //            entRectifyRecordDO.setRectifyStatus("整改中");
 //            entRectifyRecordDO.setRectifyDesc(reqVO.getRectifyDesc()!=null?
 //                    reqVO.getRectifyDesc():"已进行整改");

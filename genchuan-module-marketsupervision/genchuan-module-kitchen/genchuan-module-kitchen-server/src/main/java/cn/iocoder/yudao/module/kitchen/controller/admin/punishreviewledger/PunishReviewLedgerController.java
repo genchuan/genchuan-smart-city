@@ -62,7 +62,7 @@ public class PunishReviewLedgerController {
     @Operation(summary = "导出 Excel")
     //@PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:export-excel')")
     @ApiAccessLog(operateType = EXPORT)
-    @SysOpeLog(operObject = "处罚复审台账",operType = "批量操作")
+    @SysOpeLog(operObject = "处罚复审台账",operType = "批量导出Excel")
     public void exportRoadArchiveExcel(@Valid PunishReviewLedgerPageReqVO pageReqVO,
                                        HttpServletResponse response) throws IOException {
         // 0. 配置
@@ -88,14 +88,14 @@ public class PunishReviewLedgerController {
     @GetMapping("/download-notice-pdf-batch")
     //@PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:download-notice-pdf-batch')")
     @Operation(summary = "批量下载整改通知书PDF")
-    @SysOpeLog(operObject = "处罚复审台账")
+    @SysOpeLog(operObject = "处罚复审台账",operType = "批量下载PDF")
     public ResponseEntity<byte[]> downloadRectifyNoticePdfBatch(@RequestParam("punishNoticeIds") List<Long> punishNoticeIds) throws IOException {
         return punishReviewLedgerService.downloadRectifyNoticePdfBatch(punishNoticeIds);
     }
     @PostMapping("/upload-file")
     @Operation(summary = "上传资料")
     //@PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:upload-file')")
-    @SysOpeLog(operType = "其他",operObject = "处罚复审台账")
+    @SysOpeLog(operType = "上传证据资料",operObject = "处罚复审台账")
     public CommonResult<UploadFileRespVO> uploadEvidenceFile(
             @RequestPart("file") MultipartFile file,
             @Valid @ModelAttribute UploadFileReqVO reqVO) {
@@ -108,7 +108,7 @@ public class PunishReviewLedgerController {
     @PostMapping("/review-issue")
     //@PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:review-issue')")
     @Operation(summary = "下发处罚通知书操作")
-    @SysOpeLog(operObject = "处罚复审台账")
+    @SysOpeLog(operObject = "处罚复审台账",operType = "下发")
     public CommonResult<Long> reviewIssue(@Valid @RequestBody IssueReqVO reqVO) {
         Long punishNoticeId = punishReviewLedgerService.reviewIssue(reqVO);
         return success(punishNoticeId);

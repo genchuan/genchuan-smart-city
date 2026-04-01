@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 /**
  * CodeQueryUtils 配置类
  *
+ * 版本V1
  * 作用：
  * 1. 将 Spring 注入的 JdbcTemplate 设置到 CodeQueryUtils 中
  * 2. 让 CodeQueryUtils 可以直接使用 JdbcTemplate 执行 SQL 查询
