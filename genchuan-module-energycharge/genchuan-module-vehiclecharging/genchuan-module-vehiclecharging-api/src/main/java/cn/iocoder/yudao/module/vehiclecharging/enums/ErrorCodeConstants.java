@@ -8,7 +8,7 @@ import cn.iocoder.yudao.framework.common.exception.ErrorCode;
  * vehiclecharging 系统，使用500错误码
  */
 public interface ErrorCodeConstants {
-// ========== 实时监测 TODO 补充编号 ==========
+    // ========== 实时监测 ==========
     ErrorCode STATUS_MONITOR_NOT_EXISTS = new ErrorCode(500, "实时监测不存在");
 
     // ========== 充电车位==========
@@ -17,4 +17,11 @@ public interface ErrorCodeConstants {
     // ========== 互联互通表错误码=========
     ErrorCode INTERCONNECTION_NOT_EXISTS = new ErrorCode(500, "互联互通表不存在");
     ErrorCode INTERCONNECTION_STATUS_ERROR = new ErrorCode(500, "互联互通表状态错误");
+
+    // ========== 订单告警 ==========
+    ErrorCode ORDER_ALARM_NOT_EXISTS = new ErrorCode(500, "订单告警不存在");
+
+    // ========== 订单退款==========
+    ErrorCode ORDER_REFUND_NOT_EXISTS = new ErrorCode(500, "订单退款不存在");
+
 }
