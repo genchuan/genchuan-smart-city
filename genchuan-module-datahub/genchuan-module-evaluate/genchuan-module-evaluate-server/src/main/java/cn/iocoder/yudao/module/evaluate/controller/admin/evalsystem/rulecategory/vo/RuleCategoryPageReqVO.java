@@ -8,7 +8,6 @@ import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
-import java.util.*;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
@@ -23,6 +22,9 @@ public class RuleCategoryPageReqVO extends PageParam {
 
     @Schema(description = "状态ID（关联sys_status.status_id）", example = "15797")
     private Integer statusId;
+
+    @Schema(description = "适用指标体系名称（模糊查询）")
+    private String systemName;
 
     @Schema(description = "创建时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)

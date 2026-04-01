@@ -2,11 +2,12 @@ package cn.iocoder.yudao.module.evaluate.controller.admin.commentrule.vo;
 
 import cn.iocoder.yudao.module.evaluate.controller.admin.ruledetail.vo.RuleDetailSaveReqVO;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import java.util.*;
-import jakarta.validation.constraints.*;
-import org.springframework.format.annotation.DateTimeFormat;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Schema(description = "管理后台 - 评分规则主新增/修改 Request VO")
 @Data

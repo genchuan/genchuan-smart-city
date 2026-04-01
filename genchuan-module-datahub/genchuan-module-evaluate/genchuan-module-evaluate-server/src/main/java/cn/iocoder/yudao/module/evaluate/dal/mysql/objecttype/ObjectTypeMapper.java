@@ -6,6 +6,10 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.evaluate.controller.admin.sys.objecttype.vo.ObjectTypePageReqVO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.objecttype.ObjectTypeDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * 对象类型字典 Mapper
@@ -30,5 +34,16 @@ public interface ObjectTypeMapper extends BaseMapperX<ObjectTypeDO> {
                 .betweenIfPresent(ObjectTypeDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(ObjectTypeDO::getId));
     }
+
+    /**
+     * 批量查询对象类型名称（使用 typeId 查询）
+     */
+    @Select("<script>" +
+            "SELECT type_id, name FROM sys_object_type WHERE deleted = 0 AND type_id IN " +
+            "<foreach collection='typeIds' item='typeId' open='(' separator=',' close=')'>" +
+            "#{typeId}" +
+            "</foreach>" +
+            "</script>")
+    List<ObjectTypeDO> selectByTypeIds(@Param("typeIds") List<String> typeIds);
 
 }

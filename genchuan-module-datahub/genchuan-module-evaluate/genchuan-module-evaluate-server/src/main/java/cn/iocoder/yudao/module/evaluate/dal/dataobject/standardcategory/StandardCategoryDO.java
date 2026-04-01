@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.standardcategory;
+package cn.iocoder.yudao.module.evaluate.dal.dataobject.standardcategory;
 
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 import com.baomidou.mybatisplus.annotation.KeySequence;
@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.*;
 
 /**
  * 标准分类 DO
@@ -30,17 +29,13 @@ public class StandardCategoryDO extends BaseDO {
     @TableId
     private Long id;
     /**
-     * 标准分类ID（UUID）
-     */
-    private String standardCategoryId;
-    /**
      * 标准分类名称
      */
     private String name;
     /**
      * 适用指标体系ID（关联eval_index_system.system_id）
      */
-    private String systemId;
+    private Long systemId;
     /**
      * 标准项数量
      */
@@ -50,9 +45,13 @@ public class StandardCategoryDO extends BaseDO {
      */
     private Integer statusId;
     /**
-     * 创建人ID（关联sys_user.user_id）
+     * 最近使用时间
      */
-    private String createBy;
+    private LocalDateTime lastUseTime;
+    /**
+     * 使用次数
+     */
+    private Integer useCount;
     /**
      * 创建时间（业务字段）
      */
@@ -81,5 +80,6 @@ public class StandardCategoryDO extends BaseDO {
      * 通用扩展字段4
      */
     private String extCommon4;
+
 
 }

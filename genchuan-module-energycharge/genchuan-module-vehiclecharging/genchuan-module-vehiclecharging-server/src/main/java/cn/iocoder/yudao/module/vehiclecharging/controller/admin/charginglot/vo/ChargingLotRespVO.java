@@ -20,25 +20,23 @@ public class ChargingLotRespVO {
     @ExcelProperty("车位编号")
     private String lotCode;
 
-    @Schema(description = "所属场站编码")
-    @ExcelProperty("所属场站编码")
-    private String stationCode;
-
     @Schema(description = "所属场站ID")
     @ExcelProperty("所属场站ID")
     private Long stationId;
+
+    @Schema(description = "所属场站名称（模拟）")
+    private String stationName;
 
     @Schema(description = "车位类型")
     @ExcelProperty("车位类型")
     private String lotType;
 
-    @Schema(description = "关联充电桩编号")
-    @ExcelProperty("关联充电桩编号")
-    private String pileCode;
-
     @Schema(description = "关联充电桩ID")
     @ExcelProperty("关联充电桩ID")
     private Long pileId;
+
+    @Schema(description = "绑定充电桩名称（模拟）")
+    private String pileName;
 
     @Schema(description = "占用时长（分钟）")
     @ExcelProperty("占用时长（分钟）")

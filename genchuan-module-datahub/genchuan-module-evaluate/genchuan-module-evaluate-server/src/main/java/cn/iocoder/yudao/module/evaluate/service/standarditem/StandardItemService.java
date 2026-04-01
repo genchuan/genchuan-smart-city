@@ -1,10 +1,12 @@
 package cn.iocoder.yudao.module.evaluate.service.standarditem;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.standarditem.vo.StandardItemPageReqVO;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.standarditem.vo.StandardItemSaveReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.standarditem.vo.StandardItemPageReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.standarditem.vo.StandardItemSaveReqVO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.standarditem.StandardItemDO;
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 标准项 Service 接口
@@ -36,6 +38,13 @@ public interface StandardItemService {
     void deleteStandardItem(Long id);
 
     /**
+    * 批量删除标准项
+    *
+    * @param ids 编号
+    */
+    void deleteStandardItemListByIds(List<Long> ids);
+
+    /**
      * 获得标准项
      *
      * @param id 编号
@@ -50,5 +59,12 @@ public interface StandardItemService {
      * @return 标准项分页
      */
     PageResult<StandardItemDO> getStandardItemPage(StandardItemPageReqVO pageReqVO);
+
+    /**
+     * 根据标准分类ID列表删除标准项
+     *
+     * @param standardCategoryIds 标准分类ID列表
+     */
+    void deleteStandardItemListByStandardCategoryIds(List<Long> standardCategoryIds);
 
 }

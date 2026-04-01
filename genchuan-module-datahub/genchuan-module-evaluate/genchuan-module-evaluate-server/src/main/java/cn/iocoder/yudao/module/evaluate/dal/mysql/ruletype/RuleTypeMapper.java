@@ -6,6 +6,10 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.evaluate.controller.admin.sys.ruletype.vo.RuleTypePageReqVO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.sys.ruletype.RuleTypeDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * 规则类型字典 Mapper
@@ -30,5 +34,16 @@ public interface RuleTypeMapper extends BaseMapperX<RuleTypeDO> {
                 .betweenIfPresent(RuleTypeDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(RuleTypeDO::getId));
     }
+
+    /**
+     * 批量查询规则类型名称（使用 id 查询）
+     */
+    @Select("<script>" +
+            "SELECT id, type_id, name FROM sys_rule_type WHERE deleted = 0 AND id IN " +
+            "<foreach collection='ids' item='id' open='(' separator=',' close=')'>" +
+            "#{id}" +
+            "</foreach>" +
+            "</script>")
+    List<RuleTypeDO> selectByIds(@Param("ids") List<Long> ids);
 
 }

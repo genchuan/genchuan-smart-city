@@ -4,13 +4,13 @@ import cn.iocoder.yudao.module.evaluate.controller.admin.commentrule.vo.CommentR
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.util.*;
+import java.util.List;
 
 @Schema(description = "管理后台 - 规则分类管理新增/修改 Request VO")
 @Data
 public class RuleCategorySaveReqVO {
 
-    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "27497")
+    @Schema(description = "主键ID，修改时必填，新增时为空", example = "27497")
     private Long id;
 
     @Schema(description = "规则分类名称", example = "芋艿")

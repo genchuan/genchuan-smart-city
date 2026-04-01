@@ -32,10 +32,6 @@ public class ChargingLotDO extends BaseDO {
      */
     private String lotCode;
     /**
-     * 所属场站编码
-     */
-    private String stationCode;
-    /**
      * 所属场站ID
      */
     private Long stationId;
@@ -43,10 +39,6 @@ public class ChargingLotDO extends BaseDO {
      * 车位类型
      */
     private String lotType;
-    /**
-     * 关联充电桩编号
-     */
-    private String pileCode;
     /**
      * 关联充电桩ID
      */

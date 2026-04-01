@@ -1,10 +1,7 @@
 package cn.iocoder.yudao.module.evaluate.service.rulecategory;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.rulecategory.vo.RuleCategoryPageReqVO;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.rulecategory.vo.RuleCategoryRespVO;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.rulecategory.vo.RuleCategorySaveFullReqVO;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.rulecategory.vo.RuleCategorySaveReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.rulecategory.vo.*;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.rulecategory.RuleCategoryDO;
 import jakarta.validation.Valid;
 
@@ -34,8 +31,9 @@ public interface RuleCategoryService {
      * 更新规则分类管理（含树形结构：评分规则和明细）
      *
      * @param updateReqVO 更新信息（含子规则和明细）
+     * @return 规则分类ID
      */
-    void updateRuleCategoryWithRules(@Valid RuleCategorySaveReqVO updateReqVO);
+    Long updateRuleCategoryWithRules(@Valid RuleCategorySaveReqVO updateReqVO);
 
     /**
      * 删除规则分类管理
@@ -83,5 +81,12 @@ public interface RuleCategoryService {
      * @return 规则分类ID
      */
     Long saveFull(RuleCategorySaveFullReqVO saveFullReqVO);
+
+    /**
+     * 获取规则分类统计数据
+     *
+     * @return 规则分类统计数据
+     */
+    RuleCategoryStatisticsVO getRuleCategoryStatistics();
 
 }

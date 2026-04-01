@@ -6,7 +6,7 @@ import cn.iocoder.yudao.module.evaluate.controller.admin.datacollect.option.vo.O
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.option.OptionDO;
 import jakarta.validation.Valid;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * 选项 Service 接口

@@ -1,13 +1,11 @@
 package cn.iocoder.yudao.module.evaluate.dal.mysql.objectscore;
 
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.evaluate.controller.admin.objectscore.vo.ObjectScorePageReqVO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.objectscore.ObjectScoreDO;
 import org.apache.ibatis.annotations.Mapper;
-import cn.iocoder.yudao.module.evaluate.controller.admin.objectscore.vo.*;
 
 /**
  * 公司得分 Mapper

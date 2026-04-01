@@ -1,9 +1,7 @@
 package cn.iocoder.yudao.module.evaluate.controller.admin.objectscore.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import java.util.*;
-import jakarta.validation.constraints.*;
+import lombok.Data;
 
 @Schema(description = "管理后台 - 公司得分新增/修改 Request VO")
 @Data

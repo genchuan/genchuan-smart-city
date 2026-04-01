@@ -1,21 +1,21 @@
 package cn.iocoder.yudao.module.evaluate.dal.mysql.standardcategory;
 
-import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.standardcategory.vo.StandardCategoryPageReqVO;
-import cn.iocoder.yudao.module.evaluate.controller.admin.evalsystem.standardcategory.vo.StandardCategoryRespVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.standardcategory.vo.StandardCategoryPageReqVO;
+import cn.iocoder.yudao.module.evaluate.controller.admin.standardcategory.vo.StandardCategoryRespVO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.indexsystem.IndexSystemDO;
-import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.standardcategory.StandardCategoryDO;
-import cn.iocoder.yudao.module.evaluate.dal.dataobject.evalsystem.standarditem.StandardItemDO;
+import cn.iocoder.yudao.module.evaluate.dal.dataobject.standardcategory.StandardCategoryDO;
 import cn.iocoder.yudao.module.evaluate.dal.dataobject.status.StatusDO;
-import cn.iocoder.yudao.module.evaluate.dal.dataobject.user.UserDO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -28,12 +28,12 @@ public interface StandardCategoryMapper extends BaseMapperX<StandardCategoryDO> 
 
     default PageResult<StandardCategoryDO> selectPage(StandardCategoryPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<StandardCategoryDO>()
-                .eqIfPresent(StandardCategoryDO::getStandardCategoryId, reqVO.getStandardCategoryId())
                 .likeIfPresent(StandardCategoryDO::getName, reqVO.getName())
                 .eqIfPresent(StandardCategoryDO::getSystemId, reqVO.getSystemId())
                 .eqIfPresent(StandardCategoryDO::getItemCount, reqVO.getItemCount())
                 .eqIfPresent(StandardCategoryDO::getStatusId, reqVO.getStatusId())
-                .eqIfPresent(StandardCategoryDO::getCreateBy, reqVO.getCreateBy())
+                .betweenIfPresent(StandardCategoryDO::getLastUseTime, reqVO.getLastUseTime())
+                .eqIfPresent(StandardCategoryDO::getUseCount, reqVO.getUseCount())
                 .betweenIfPresent(StandardCategoryDO::getBizCreateTime, reqVO.getBizCreateTime())
                 .betweenIfPresent(StandardCategoryDO::getBizUpdateTime, reqVO.getBizUpdateTime())
                 .eqIfPresent(StandardCategoryDO::getChangeLog, reqVO.getChangeLog())
@@ -41,61 +41,82 @@ public interface StandardCategoryMapper extends BaseMapperX<StandardCategoryDO> 
                 .eqIfPresent(StandardCategoryDO::getExtCommon2, reqVO.getExtCommon2())
                 .eqIfPresent(StandardCategoryDO::getExtCommon3, reqVO.getExtCommon3())
                 .eqIfPresent(StandardCategoryDO::getExtCommon4, reqVO.getExtCommon4())
+                .eqIfPresent(StandardCategoryDO::getCreator, reqVO.getCreator())
+                .eqIfPresent(StandardCategoryDO::getUpdater, reqVO.getUpdater())
                 .betweenIfPresent(StandardCategoryDO::getCreateTime, reqVO.getCreateTime())
+                .betweenIfPresent(StandardCategoryDO::getUpdateTime, reqVO.getUpdateTime())
                 .orderByDesc(StandardCategoryDO::getId));
     }
 
     /**
-     * 标准分类联表分页查询（完整映射所有展示字段，支持钻取）
-     * @param reqVO 分页+筛选参数
-     * @return 分页结果
+     * 联表分页查询（使用 XML 实现），关联指标体系、状态、创建人、更新人表
      */
-        default PageResult<StandardCategoryRespVO> selectStandardCategoryJoinPage(StandardCategoryPageReqVO reqVO) {
-            // 1. 构建分页对象（兼容空值，默认1页10条）
-            Page<StandardCategoryRespVO> page = new Page<>(
-                    Objects.requireNonNullElse(reqVO.getPageNo(), 1),
-                    Objects.requireNonNullElse(reqVO.getPageSize(), 10)
-            );
+    IPage<StandardCategoryRespVO> selectJoinPage(Page<StandardCategoryRespVO> page, @Param("reqVO") StandardCategoryPageReqVO reqVO);
 
-            // 2. 构建联表查询条件（纯Lambda风格，移除所有tenant_id相关逻辑）
-            MPJLambdaWrapper<StandardCategoryDO> wrapper = new MPJLambdaWrapper<StandardCategoryDO>()
-                    // ===== 1. 映射所有展示字段（Lambda方式，替代字符串）=====
-                    .select(StandardCategoryDO::getId)
-                    .select(StandardCategoryDO::getSystemId)
-                    .select(StandardCategoryDO::getStatusId)
-                    .select(StandardCategoryDO::getCreateTime)
-                    .selectAs(StandardCategoryDO::getItemCount, StandardCategoryRespVO::getStandardItemCount)
-                    .selectAs(StandardCategoryDO::getName, StandardCategoryRespVO::getStandardCategoryName)
-                    // 自定义字段：变更日志前50字
-                    .select("IFNULL(SUBSTRING(t.change_log, 1, 50), '') AS changeLogShort")
-                    // 关联表字段映射
-                    .selectAs(IndexSystemDO::getName, StandardCategoryRespVO::getIndexSystemName)
-                    .selectAs(StandardItemDO::getGrade, StandardCategoryRespVO::getStandardItemGrade)
-                    .selectAs(StandardItemDO::getScoreRange, StandardCategoryRespVO::getScoreRange)
-                    .selectAs(StandardItemDO::getSortNo, StandardCategoryRespVO::getSortNo)
-                    .selectAs(StatusDO::getName, StandardCategoryRespVO::getStatusName)
-                    .selectAs(UserDO::getUserName, StandardCategoryRespVO::getCreateUserName)
+    // ==================== 统计查询 ====================
 
-                    // ===== 2. 联表关系（Lambda方式，替代字符串ON条件）=====
-                    .leftJoin(IndexSystemDO.class, IndexSystemDO::getSystemId, StandardCategoryDO::getSystemId)
-                    .leftJoin(StandardItemDO.class, StandardItemDO::getStandardCategoryId, StandardCategoryDO::getStandardCategoryId)
-                    .leftJoin(StatusDO.class, StatusDO::getStatusId, StandardCategoryDO::getStatusId)
-                    .leftJoin(UserDO.class, UserDO::getUserId, StandardCategoryDO::getCreateBy)
+    /**
+     * 统计标准分类总数
+     */
+    @Select("SELECT COUNT(*) AS totalCategoryCount FROM eval_standard_category WHERE deleted = 0")
+    Map<String, Object> selectTotalCategoryCount();
 
-                    // ===== 3. 过滤条件（Lambda方式，仅保留主表删除标记 + 动态筛选）=====
-                    .eq(StandardCategoryDO::getDeleted, 0) // 主表删除标记
-                    // 动态筛选条件
-                    .like(StrUtil.isNotBlank(reqVO.getName()), StandardCategoryDO::getName, reqVO.getName())
-                    .eq(StrUtil.isNotBlank(reqVO.getSystemId()), StandardCategoryDO::getSystemId, reqVO.getSystemId())
-                    .eq(reqVO.getStatusId() != null, StandardCategoryDO::getStatusId, reqVO.getStatusId())
+    /**
+     * 统计标准项总数
+     */
+    @Select("SELECT COUNT(*) AS totalItemCount FROM eval_standard_item WHERE deleted = 0")
+    Map<String, Object> selectTotalItemCount();
 
-                    // ===== 4. 排序（Lambda方式）=====
-                    .orderByDesc(StandardCategoryDO::getId);
+    /**
+     * 统计启用状态的标准分类数（statusId = 1）
+     */
+    @Select("SELECT COUNT(*) AS enabledCategoryCount FROM eval_standard_category WHERE deleted = 0 AND status_id = 1")
+    Map<String, Object> selectEnabledCategoryCount();
 
-            // 3. 执行联表分页查询
-            IPage<StandardCategoryRespVO> resultPage = selectJoinPage(page, StandardCategoryRespVO.class, wrapper);
+    /**
+     * 按状态分组统计标准分类数量
+     */
+    @Select("SELECT status_id, COUNT(*) AS categoryCount FROM eval_standard_category WHERE deleted = 0 GROUP BY status_id")
+    List<Map<String, Object>> selectStatusGroupCount();
 
-            // 4. 转换为项目通用分页结果
-            return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
-        }
+    /**
+     * 按指标体系分组统计标准分类数量
+     */
+    @Select("SELECT system_id, COUNT(*) AS categoryCount FROM eval_standard_category WHERE deleted = 0 GROUP BY system_id")
+    List<Map<String, Object>> selectSystemGroupCount();
+
+    /**
+     * 按等级分组统计标准项数量
+     */
+    @Select("SELECT grade, COUNT(*) AS itemCount FROM eval_standard_item WHERE deleted = 0 AND grade IS NOT NULL GROUP BY grade")
+    List<Map<String, Object>> selectGradeGroupCount();
+
+    /**
+     * 按标准分类ID统计标准项数量
+     */
+    @Select("SELECT standard_category_id, COUNT(*) AS itemCount FROM eval_standard_item WHERE deleted = 0 GROUP BY standard_category_id")
+    List<Map<String, Object>> selectCategoryItemCount();
+
+    /**
+     * 批量查询指标体系名称
+     */
+    @Select("<script>" +
+            "SELECT id, name FROM eval_index_system WHERE deleted = 0 AND id IN " +
+            "<foreach collection='ids' item='id' open='(' separator=',' close=')'>" +
+            "#{id}" +
+            "</foreach>" +
+            "</script>")
+    List<IndexSystemDO> selectSystemByIds(@Param("ids") List<Long> ids);
+
+    /**
+     * 批量查询状态名称
+     */
+    @Select("<script>" +
+            "SELECT id, name FROM sys_status WHERE deleted = 0 AND id IN " +
+            "<foreach collection='ids' item='id' open='(' separator=',' close=')'>" +
+            "#{id}" +
+            "</foreach>" +
+            "</script>")
+    List<StatusDO> selectStatusByIds(@Param("ids") List<Long> ids);
+
 }
