@@ -13,6 +13,7 @@
     <select id="selectPage" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.StatusMonitorRespVO">
         SELECT
         sm.id,
+        sm.area_name,
         sm.device_code as deviceCode,
         sm.station_id as stationId,
         cs.station_name as stationName,  <!-- 新增场站名称 -->
@@ -61,6 +62,11 @@
         <!-- 车位ID -->
         <if test="lotId != null">
             AND sm.lot_id = #{lotId}
+        </if>
+
+        <!-- 车位code -->
+        <if test="lotCode != null">
+            AND cl.lot_code = #{lotCode}
         </if>
 
         <!-- 设备类型 -->
@@ -166,6 +172,11 @@
             AND sm.lot_id = #{lotId}
         </if>
 
+        <!-- 车位code -->
+        <if test="lotCode != null">
+            AND cl.lot_code = #{lotCode}
+        </if>
+
         <!-- 设备类型 -->
         <if test="deviceType != null and deviceType != ''">
             AND sm.device_type = #{deviceType}
@@ -265,26 +276,33 @@
             AND main.monitor_time BETWEEN #{startTime} AND #{endTime}  <!-- 时间范围筛选 -->
         </if>
     </select>
-    <!--,
-        ROUND(AVG(t.power), 2) AS power,
-        ROUND(AVG(t.voltage), 2) AS voltage,
+    <!--
 
         -->
     <select id="selectParamTrend"
             resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.ParamTrend">
         SELECT
         DATE_FORMAT(t.monitor_time, '%H:%i') AS time,
-        ROUND(AVG(t.current), 2) AS `current`
+        coalesce(ROUND(AVG(t.current), 2),0) AS `current`,
+        coalesce(ROUND(AVG(t.power), 2),0) AS power,
+        coalesce(ROUND(AVG(t.voltage), 2),0) AS voltage
         FROM status_monitor t
         WHERE t.deleted = 0
+        <if test="startTime != null">
+            AND create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND create_time &lt;= #{endTime}
+        </if>
+        <if test="deviceCode != null and deviceCode != ''">
+            AND device_code = #{deviceCode}
+        </if>
         GROUP BY DATE_FORMAT(t.monitor_time, '%H:%i')
         ORDER BY DATE_FORMAT(t.monitor_time, '%H:%i') ASC
 <!--        <if test="stationId != null">-->
 <!--            AND station_id = #{stationId}-->
 <!--        </if>-->
-<!--        <if test="deviceType != null and deviceType != ''">-->
-<!--            AND device_type = #{deviceType}-->
-<!--        </if>-->
+
         <!-- GROUP BY time     ORDER BY t.monitor_time ASC  -->
     </select>
     <select id="selectAbnormalPoints"
@@ -299,9 +317,9 @@
         LEFT JOIN charging_station cs ON sm.station_id = cs.id
         WHERE sm.deleted = 0
         AND sm.monitor_status IN ('异常', '处置中')
-<!--        <if test="alarmLevel != null and alarmLevel != ''">-->
-<!--            AND sm.alarm_level = #{alarmLevel}-->
-<!--        </if>-->
+        <if test="areaName != null and areaName != ''">
+            AND sm.area_name = #{areaName}
+        </if>
 <!--        <if test="startTime != null">-->
 <!--            AND sm.monitor_time &gt;= #{startTime}-->
 <!--        </if>-->
@@ -309,6 +327,19 @@
 <!--            AND sm.monitor_time &lt;= #{endTime}-->
 <!--        </if>-->
         ORDER BY sm.alarm_level DESC, sm.monitor_time DESC
+    </select>
+    <select id="selectStatusCountByStation"
+            resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.StatusCountRespVO">
+        SELECT
+            sum(t.station_id),
+            station.station_name AS stationName,
+            COUNT(t.id) AS count
+        FROM status_monitor t
+        left join charging_station station on t.station_id = station.id
+        WHERE t.deleted = 0
+          AND t.monitor_status = #{status}
+        GROUP BY station.station_name
+        ORDER BY count DESC
     </select>
 
 </mapper>

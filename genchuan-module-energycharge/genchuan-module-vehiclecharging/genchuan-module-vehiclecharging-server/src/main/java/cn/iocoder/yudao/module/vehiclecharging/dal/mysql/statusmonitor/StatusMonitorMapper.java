@@ -4,9 +4,7 @@ import java.util.*;
 
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.tenant.core.aop.TenantIgnore;
-import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.AbnormalPoint;
-import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.ParamTrend;
-import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.StatusMonitorChartRespVO;
+import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.*;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.newvo.StatusMonitorExportReqVO;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.newvo.StatusMonitorRefreshReqVO;
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.statusmonitor.StatusMonitorDO;
@@ -52,7 +50,9 @@ public interface StatusMonitorMapper extends BaseMapperX<StatusMonitorDO> {
 
     StatusMonitorChartRespVO selectCardStats();
 
-    List<ParamTrend> selectParamTrend();
+    List<ParamTrend> selectParamTrend(ParamTrendReq req);
 
-    List<AbnormalPoint> selectAbnormalPoints();
+    List<AbnormalPoint> selectAbnormalPoints(AbnormalPointReq abnormalPointReq);
+
+    List<StatusCountRespVO> selectStatusCountByStation(String status);
 }

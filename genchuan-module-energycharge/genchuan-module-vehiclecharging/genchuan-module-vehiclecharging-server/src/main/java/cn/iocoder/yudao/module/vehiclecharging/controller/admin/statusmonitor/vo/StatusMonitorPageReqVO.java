@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo;
 
+import cn.idev.excel.annotation.ExcelProperty;
 import lombok.*;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,6 +18,10 @@ public class StatusMonitorPageReqVO extends PageParam {
     @Schema(description = "[设备编号] 设备编号")
     private String deviceCode;
 
+
+    @Schema(description = "地区名称")
+    private String areaName;
+
     @Schema(description = "[所属场站ID] 所属场站ID", example = "6947")
     private Long stationId;
 
@@ -25,6 +30,9 @@ public class StatusMonitorPageReqVO extends PageParam {
 
     @Schema(description = "[所属车位ID] 所属车位ID", example = "11972")
     private Long lotId;
+
+    @Schema(description = "[所属车位编号] 所属车位ID", example = "11972")
+    private String lotCode;
 
     @Schema(description = "[设备类型] 如：充电桩/车位", example = "2")
     private String deviceType;
