@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.vehiclecharging.controller.admin.interconnection;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -12,6 +13,7 @@ import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import java.util.*;
 import java.io.IOException;
+import java.time.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -102,38 +104,5 @@ public class InterconnectionController {
     public CommonResult<InterconnectionChartRespVO> getInterconnectionChart() {
         return success(interconnectionService.getInterconnectionChart());
     }
-
-//    @PostMapping("/create")
-//    @Operation(summary = "创建互联互通表")
-//    @PreAuthorize("@ss.hasPermission('vehiclecharging:interconnection:create')")
-//    public CommonResult<Long> createInterconnection(@Valid @RequestBody InterconnectionSaveReqVO createReqVO) {
-//        return success(interconnectionService.createInterconnection(createReqVO));
-//    }
-
-//    @PutMapping("/update")
-//    @Operation(summary = "更新互联互通表")
-//    @PreAuthorize("@ss.hasPermission('vehiclecharging:interconnection:update')")
-//    public CommonResult<Boolean> updateInterconnection(@Valid @RequestBody InterconnectionSaveReqVO updateReqVO) {
-//        interconnectionService.updateInterconnection(updateReqVO);
-//        return success(true);
-//    }
-
-//    @DeleteMapping("/delete")
-//    @Operation(summary = "删除互联互通表")
-//    @Parameter(name = "id", description = "编号", required = true)
-//    @PreAuthorize("@ss.hasPermission('vehiclecharging:interconnection:delete')")
-//    public CommonResult<Boolean> deleteInterconnection(@RequestParam("id") Long id) {
-//        interconnectionService.deleteInterconnection(id);
-//        return success(true);
-//    }
-
-//    @DeleteMapping("/delete-list")
-//    @Parameter(name = "ids", description = "编号", required = true)
-//    @Operation(summary = "批量删除互联互通表")
-//                @PreAuthorize("@ss.hasPermission('vehiclecharging:interconnection:delete')")
-//    public CommonResult<Boolean> deleteInterconnectionList(@RequestParam("ids") List<Long> ids) {
-//        interconnectionService.deleteInterconnectionListByIds(ids);
-//        return success(true);
-//    }
 
 }
