@@ -5,7 +5,10 @@ import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.sql.Date;
+import java.time.*;
 import java.util.*;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.interconnection.vo.*;
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.interconnection.InterconnectionDO;
@@ -28,40 +31,6 @@ public class InterconnectionServiceImpl implements InterconnectionService {
 
     @Resource
     private InterconnectionMapper interconnectionMapper;
-
-    @Override
-    public Long createInterconnection(InterconnectionSaveReqVO createReqVO) {
-        // 插入
-        InterconnectionDO interconnection = BeanUtils.toBean(createReqVO, InterconnectionDO.class);
-        interconnectionMapper.insert(interconnection);
-
-        // 返回
-        return interconnection.getId();
-    }
-
-    @Override
-    public void updateInterconnection(InterconnectionSaveReqVO updateReqVO) {
-        // 校验存在
-        validateInterconnectionExists(updateReqVO.getId());
-        // 更新
-        InterconnectionDO updateObj = BeanUtils.toBean(updateReqVO, InterconnectionDO.class);
-        interconnectionMapper.updateById(updateObj);
-    }
-
-    @Override
-    public void deleteInterconnection(Long id) {
-        // 校验存在
-        validateInterconnectionExists(id);
-        // 删除
-        interconnectionMapper.deleteById(id);
-    }
-
-    @Override
-        public void deleteInterconnectionListByIds(List<Long> ids) {
-        // 删除
-        interconnectionMapper.deleteByIds(ids);
-        }
-
 
     private void validateInterconnectionExists(Long id) {
         if (interconnectionMapper.selectById(id) == null) {
@@ -139,13 +108,36 @@ public class InterconnectionServiceImpl implements InterconnectionService {
     public InterconnectionChartRespVO getInterconnectionChart() {
         // 1. 查询各状态数量
         InterconnectionChartRespVO chartRespVO = new InterconnectionChartRespVO();
-//        chartRespVO.setTotalCount(interconnectionMapper.selectTotalCount());
-//        chartRespVO.setOpenedCount(interconnectionMapper.selectOpenedCount());
-//        chartRespVO.setAuditingCount(interconnectionMapper.selectAuditingCount());
-//        chartRespVO.setWaitApplyCount(interconnectionMapper.selectWaitApplyCount());
-//        chartRespVO.setClosedCount(interconnectionMapper.selectClosedCount());
-//        chartRespVO.setStatusRatio(interconnectionMapper.selectStatusRatio());
-//        chartRespVO.setCooperatorCount(interconnectionMapper.selectCooperatorCount());
+        chartRespVO.setTotalCount(interconnectionMapper.selectTotalCount());
+        chartRespVO.setOpenedCount(interconnectionMapper.selectOpenedCount());
+        chartRespVO.setAuditingCount(interconnectionMapper.selectAuditingCount());
+        chartRespVO.setWaitApplyCount(interconnectionMapper.selectWaitApplyCount());
+        chartRespVO.setClosedCount(interconnectionMapper.selectClosedCount());
+
+        // 2. 饼图数据：计算占比
+        List<InterconnectionChartRespVO.InterconnectionStatusRatioVO> statusList = interconnectionMapper.selectStatusRatio();
+        // 将状态 code 转换为中文名称（根据字典或常量）
+        Map<String, String> statusNameMap = Map.of(
+                "opened", "已开通",
+                "auditing", "审核中",
+                "waitapply", "未申请",
+                "closed", "已关闭"
+        );
+        for (InterconnectionChartRespVO.InterconnectionStatusRatioVO vo : statusList) {
+            String code = vo.getStatus();
+            vo.setStatus(statusNameMap.getOrDefault(code, code));
+            // 计算 ratio（保留两位小数）
+            BigDecimal ratio = BigDecimal.valueOf(vo.getCount())
+                    .divide(BigDecimal.valueOf(chartRespVO.getTotalCount()), 2, RoundingMode.HALF_UP);
+            vo.setRatio(ratio);
+        }
+        chartRespVO.setStatusRatio(statusList);
+
+        // 3. 柱状图数据
+        List<InterconnectionChartRespVO.InterconnectionCooperatorCountVO> cooperatorList = interconnectionMapper.selectCooperatorCount();
+        chartRespVO.setCooperatorCount(cooperatorList);
+
         return chartRespVO;
     }
+
 }
