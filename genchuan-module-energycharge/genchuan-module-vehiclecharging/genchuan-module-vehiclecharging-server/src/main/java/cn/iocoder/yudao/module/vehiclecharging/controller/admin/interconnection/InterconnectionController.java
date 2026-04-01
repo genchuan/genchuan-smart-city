@@ -105,4 +105,29 @@ public class InterconnectionController {
         return success(interconnectionService.getInterconnectionChart());
     }
 
+    @GetMapping("/chart/statusRatio")
+    @Operation(summary = "互联互通状态占比钻取（按合作方分布）")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:interconnection:query')")
+    public CommonResult<List<InterconnectionChartRespVO.InterconnectionCooperatorCountVO>> getCooperatorCountByStatus(
+            @RequestParam("status") String status) {
+        return success(interconnectionService.getCooperatorCountByStatus(status));
+    }
+
+    @GetMapping("/chart/cooperatorCount")
+    @Operation(summary = "各合作方互联互通开通数量钻取（按状态分布）")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:interconnection:query')")
+    public CommonResult<List<InterconnectionChartRespVO.InterconnectionStatusRatioVO>> getStatusCountByCooperator(
+            @RequestParam("cooperator") String cooperator) {
+        return success(interconnectionService.getStatusCountByCooperator(cooperator));
+    }
+
+    @GetMapping("/chart/applyCount")
+    @Operation(summary = "互联互通申请统计钻取（每日申请数量）")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:interconnection:query')")
+    public CommonResult<List<InterconnectionApplyDailyCountVO>> getDailyApplyCount(
+            @RequestParam(value = "startTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startTime,
+            @RequestParam(value = "endTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endTime) {
+        return success(interconnectionService.getDailyApplyCount(startTime, endTime));
+    }
+
 }
