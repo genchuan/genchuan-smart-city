@@ -140,4 +140,69 @@ public class InterconnectionServiceImpl implements InterconnectionService {
         return chartRespVO;
     }
 
+    @Override
+    public List<InterconnectionChartRespVO.InterconnectionCooperatorCountVO> getCooperatorCountByStatus(String status) {
+        // 可选：校验状态是否合法（根据字典或常量）
+        // 直接调用 Mapper 查询
+        return interconnectionMapper.selectCooperatorCountByStatus(status);
+    }
+
+    @Override
+    public List<InterconnectionChartRespVO.InterconnectionStatusRatioVO> getStatusCountByCooperator(String cooperator) {
+        // 1. 查询该合作方下各状态的对接数量
+        List<InterconnectionChartRespVO.InterconnectionStatusRatioVO> statusList =
+                interconnectionMapper.selectStatusCountByCooperator(cooperator);
+
+        // 2. 计算总数量（用于占比）
+        int total = statusList.stream().mapToInt(InterconnectionChartRespVO.InterconnectionStatusRatioVO::getCount).sum();
+
+        // 3. 将状态 code 转换为中文名称，并计算占比
+        Map<String, String> statusNameMap = Map.of(
+                "opened", "已开通",
+                "auditing", "审核中",
+                "waitapply", "未申请",
+                "closed", "已关闭"
+        );
+        for (InterconnectionChartRespVO.InterconnectionStatusRatioVO vo : statusList) {
+            String code = vo.getStatus();
+            vo.setStatus(statusNameMap.getOrDefault(code, code));
+            // 计算占比（保留两位小数），避免除零
+            BigDecimal ratio = total == 0 ? BigDecimal.ZERO :
+                    BigDecimal.valueOf(vo.getCount())
+                            .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP);
+            vo.setRatio(ratio);
+        }
+
+        return statusList;
+    }
+
+    @Override
+    public List<InterconnectionApplyDailyCountVO> getDailyApplyCount( LocalDate startTime, LocalDate endTime) {
+        // 1. 默认时间范围：最近7天（如果未传）
+        if (startTime == null && endTime == null) {
+            endTime = LocalDate.now();
+            startTime = endTime.minusDays(7);
+        } else if (startTime == null) {
+            startTime = endTime.minusDays(7);
+        } else if (endTime == null) {
+            endTime = startTime.plusDays(7);
+        }
+        // 2. 查询数据库中的每日申请数量
+        List<Map<String, Object>> dbList = interconnectionMapper.selectDailyApplyCount(startTime, endTime);
+        Map<java.time.LocalDate, Integer> countMap = new HashMap<>();
+        for (Map<String, Object> map : dbList) {
+            java.time.LocalDate date = ((Date) map.get("date")).toLocalDate();
+            Integer count = ((Number) map.get("count")).intValue();
+            countMap.put(date, count);
+        }
+        // 3. 补全日期范围内的所有日期（确保缺失的日期 count=0）
+        List<InterconnectionApplyDailyCountVO> result = new ArrayList<>();
+        for (LocalDate date = startTime; !date.isAfter(endTime); date = date.plusDays(1)) {
+            InterconnectionApplyDailyCountVO vo = new InterconnectionApplyDailyCountVO();
+            vo.setDate(date.toString());
+            vo.setCount(countMap.getOrDefault(date, 0));
+            result.add(vo);
+        }
+        return result;
+    }
 }
