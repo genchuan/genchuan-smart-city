@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.vehiclecharging.dal.mysql.statusmonitor.StatusMonitorMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+    <!-- 分页查询：根据筛选条件返回监测数据列表（含关联信息） -->
+    <select id="selectPage" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.StatusMonitorRespVO">
+        SELECT
+        sm.id,
+        sm.device_code as deviceCode,
+        sm.station_id as stationId,
+        cs.station_name as stationName,  <!-- 新增场站名称 -->
+        sm.lot_id as lotId,
+        cl.lot_code as lotCode,          <!-- 新增车位编号 -->
+        sm.device_type as deviceType,
+
+        sm.voltage,
+        sm.current,
+        sm.power,
+        sm.alarm_level as alarmLevel,
+
+        sm.monitor_status as monitorStatus,
+
+        sm.dispose_user as disposeUser,
+
+        sm.dispose_measure as disposeMeasure,
+        sm.dispose_time as disposeTime,
+        sm.monitor_time as monitorTime,
+        sm.remark,
+        sm.creator,
+
+        sm.create_time as createTime,
+        sm.update_time as updateTime
+        FROM status_monitor sm
+        LEFT JOIN charging_station cs ON sm.station_id = cs.id  <!-- 关联场站表获取场站名称 -->
+        LEFT JOIN charging_lot cl ON sm.lot_id = cl.id          <!-- 关联车位表获取车位编号 -->
+        WHERE
+        sm.deleted = 0
+
+        <!-- 设备编号：模糊查询 -->
+        <if test="deviceCode != null and deviceCode != ''">
+            AND sm.device_code LIKE CONCAT('%', #{deviceCode}, '%')
+        </if>
+
+        <!-- 场站ID -->
+        <if test="stationId != null">
+            AND sm.station_id = #{stationId}
+        </if>
+
+        <!-- 场站名称 -->
+        <if test="stationName != null">
+            AND cs.station_name = #{stationName}
+        </if>
+
+        <!-- 车位ID -->
+        <if test="lotId != null">
+            AND sm.lot_id = #{lotId}
+        </if>
+
+        <!-- 设备类型 -->
+        <if test="deviceType != null and deviceType != ''">
+            AND sm.device_type = #{deviceType}
+        </if>
+
+        <!-- 电压 -->
+        <if test="voltage != null">
+            AND sm.voltage = #{voltage}
+        </if>
+
+        <!-- 电流 -->
+        <if test="current != null">
+            AND sm.current = #{current}
+        </if>
+
+        <!-- 功率 -->
+        <if test="power != null">
+            AND sm.power = #{power}
+        </if>
+
+        <!-- 告警等级 -->
+        <if test="alarmLevel != null and alarmLevel != ''">
+            AND sm.alarm_level = #{alarmLevel}
+        </if>
+
+        <!-- 监测状态 -->
+        <if test="monitorStatus != null and monitorStatus != ''">
+            AND sm.monitor_status = #{monitorStatus}
+        </if>
+
+        <!-- 处置人员 -->
+        <if test="disposeUser != null and disposeUser != ''">
+            AND sm.dispose_user = #{disposeUser}
+        </if>
+
+        <!-- 处置措施 -->
+        <if test="disposeMeasure != null and disposeMeasure != ''">
+            AND sm.dispose_measure LIKE CONCAT('%', #{disposeMeasure}, '%')
+        </if>
+
+        <!-- 处置时间范围 -->
+        <if test="disposeTime != null and disposeTime.length == 2">
+            AND sm.dispose_time BETWEEN #{disposeTime[0]} AND #{disposeTime[1]}
+        </if>
+
+        <!-- 监测时间范围 -->
+        <if test="monitorTime != null and monitorTime.length == 2">
+            AND sm.monitor_time BETWEEN #{monitorTime[0]} AND #{monitorTime[1]}
+        </if>
+
+        <!-- 备注 -->
+        <if test="remark != null and remark != ''">
+            AND sm.remark LIKE CONCAT('%', #{remark}, '%')
+        </if>
+
+        <!-- 备用字段1 -->
+        <if test="reserve1 != null and reserve1 != ''">
+            AND sm.reserve1 = #{reserve1}
+        </if>
+
+        <!-- 备用字段2 -->
+        <if test="reserve2 != null and reserve2 != ''">
+            AND sm.reserve2 = #{reserve2}
+        </if>
+
+        <!-- 创建时间 -->
+        <if test="createTime != null and createTime.length == 2">
+            AND sm.create_time BETWEEN #{createTime[0]} AND #{createTime[1]}
+        </if>
+
+        ORDER BY sm.id DESC
+        LIMIT #{pageSize} OFFSET ${(pageNo - 1) * pageSize}
+    </select>
+
+    <!-- 分页查询：根据筛选条件返回监测数据列表（含关联信息） -->
+    <select id="selectPageCount" resultType="long">
+        SELECT COUNT(*)
+        FROM status_monitor sm
+        LEFT JOIN charging_station cs ON sm.station_id = cs.id  <!-- 关联场站表获取场站名称 -->
+        LEFT JOIN charging_lot cl ON sm.lot_id = cl.id          <!-- 关联车位表获取车位编号 -->
+        WHERE
+        sm.deleted = 0
+
+        <!-- 设备编号：模糊查询 -->
+        <if test="deviceCode != null and deviceCode != ''">
+            AND sm.device_code LIKE CONCAT('%', #{deviceCode}, '%')
+        </if>
+
+        <!-- 场站ID -->
+        <if test="stationId != null">
+            AND sm.station_id = #{stationId}
+        </if>
+
+        <!-- 场站名称 -->
+        <if test="stationName != null">
+            AND cs.station_name = #{stationName}
+        </if>
+
+        <!-- 车位ID -->
+        <if test="lotId != null">
+            AND sm.lot_id = #{lotId}
+        </if>
+
+        <!-- 设备类型 -->
+        <if test="deviceType != null and deviceType != ''">
+            AND sm.device_type = #{deviceType}
+        </if>
+
+        <!-- 电压 -->
+        <if test="voltage != null">
+            AND sm.voltage = #{voltage}
+        </if>
+
+        <!-- 电流 -->
+        <if test="current != null">
+            AND sm.current = #{current}
+        </if>
+
+        <!-- 功率 -->
+        <if test="power != null">
+            AND sm.power = #{power}
+        </if>
+
+        <!-- 告警等级 -->
+        <if test="alarmLevel != null and alarmLevel != ''">
+            AND sm.alarm_level = #{alarmLevel}
+        </if>
+
+        <!-- 监测状态 -->
+        <if test="monitorStatus != null and monitorStatus != ''">
+            AND sm.monitor_status = #{monitorStatus}
+        </if>
+
+        <!-- 处置人员 -->
+        <if test="disposeUser != null and disposeUser != ''">
+            AND sm.dispose_user = #{disposeUser}
+        </if>
+
+        <!-- 处置措施 -->
+        <if test="disposeMeasure != null and disposeMeasure != ''">
+            AND sm.dispose_measure LIKE CONCAT('%', #{disposeMeasure}, '%')
+        </if>
+
+        <!-- 处置时间范围 -->
+        <if test="disposeTime != null and disposeTime.length == 2">
+            AND sm.dispose_time BETWEEN #{disposeTime[0]} AND #{disposeTime[1]}
+        </if>
+
+        <!-- 监测时间范围 -->
+        <if test="monitorTime != null and monitorTime.length == 2">
+            AND sm.monitor_time BETWEEN #{monitorTime[0]} AND #{monitorTime[1]}
+        </if>
+
+        <!-- 备注 -->
+        <if test="remark != null and remark != ''">
+            AND sm.remark LIKE CONCAT('%', #{remark}, '%')
+        </if>
+
+        <!-- 备用字段1 -->
+        <if test="reserve1 != null and reserve1 != ''">
+            AND sm.reserve1 = #{reserve1}
+        </if>
+
+        <!-- 备用字段2 -->
+        <if test="reserve2 != null and reserve2 != ''">
+            AND sm.reserve2 = #{reserve2}
+        </if>
+
+        <!-- 创建时间 -->
+        <if test="createTime != null and createTime.length == 2">
+            AND sm.create_time BETWEEN #{createTime[0]} AND #{createTime[1]}
+        </if>
+    </select>
+
+    <select id="selectRefreshList"
+            resultType="cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.statusmonitor.StatusMonitorDO"></select>
+    <select id="selectExportList"
+            resultType="cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.statusmonitor.StatusMonitorDO"></select>
+
+
+
+<!--    统计，卡片数据-->
+    <select id="selectCardStats"
+            resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.StatusMonitorChartRespVO">
+        SELECT
+        COUNT(*) AS totalCount,
+        SUM(CASE WHEN main.monitor_status = '正常' THEN 1 ELSE 0 END) AS normalCount,
+        SUM(CASE WHEN main.monitor_status = '异常' THEN 1 ELSE 0 END) AS abnormalCount,
+        SUM(CASE WHEN main.monitor_status = '处置中' THEN 1 ELSE 0 END) AS handlingCount,
+        SUM(CASE WHEN main.monitor_status = '已恢复' THEN 1 ELSE 0 END) AS recoveredCount
+        FROM status_monitor main
+        WHERE main.deleted = 0
+        <if test="stationId != null">
+            AND main.station_id = #{stationId}  <!-- 可选场站筛选 -->
+        </if>
+        <if test="deviceType != null and deviceType != ''">
+            AND main.device_type = #{deviceType}  <!-- 可选设备类型筛选 -->
+        </if>
+        <if test="startTime != null and endTime != null">
+            AND main.monitor_time BETWEEN #{startTime} AND #{endTime}  <!-- 时间范围筛选 -->
+        </if>
+    </select>
+    <!--,
+        ROUND(AVG(t.power), 2) AS power,
+        ROUND(AVG(t.voltage), 2) AS voltage,
+
+        -->
+    <select id="selectParamTrend"
+            resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.ParamTrend">
+        SELECT
+        DATE_FORMAT(t.monitor_time, '%H:%i') AS time,
+        ROUND(AVG(t.current), 2) AS `current`
+        FROM status_monitor t
+        WHERE t.deleted = 0
+        GROUP BY DATE_FORMAT(t.monitor_time, '%H:%i')
+        ORDER BY DATE_FORMAT(t.monitor_time, '%H:%i') ASC
+<!--        <if test="stationId != null">-->
+<!--            AND station_id = #{stationId}-->
+<!--        </if>-->
+<!--        <if test="deviceType != null and deviceType != ''">-->
+<!--            AND device_type = #{deviceType}-->
+<!--        </if>-->
+        <!-- GROUP BY time     ORDER BY t.monitor_time ASC  -->
+    </select>
+    <select id="selectAbnormalPoints"
+            resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.AbnormalPoint">
+        SELECT
+        sm.id,
+        sm.device_code AS deviceName,
+        cs.lon,
+        cs.lat,
+        sm.alarm_level AS alarmLevel
+        FROM status_monitor sm
+        LEFT JOIN charging_station cs ON sm.station_id = cs.id
+        WHERE sm.deleted = 0
+        AND sm.monitor_status IN ('异常', '处置中')
+<!--        <if test="alarmLevel != null and alarmLevel != ''">-->
+<!--            AND sm.alarm_level = #{alarmLevel}-->
+<!--        </if>-->
+<!--        <if test="startTime != null">-->
+<!--            AND sm.monitor_time &gt;= #{startTime}-->
+<!--        </if>-->
+<!--        <if test="endTime != null">-->
+<!--            AND sm.monitor_time &lt;= #{endTime}-->
+<!--        </if>-->
+        ORDER BY sm.alarm_level DESC, sm.monitor_time DESC
+    </select>
+
+</mapper>
