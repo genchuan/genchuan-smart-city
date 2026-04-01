@@ -13,6 +13,7 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 /**
  * 通用“编号查询工具类”
  *
+ * 版本V1
  * 功能：
  * 1. 通过 DO 自动解析表名
  * 2. 自动识别编号字段（按优先级）

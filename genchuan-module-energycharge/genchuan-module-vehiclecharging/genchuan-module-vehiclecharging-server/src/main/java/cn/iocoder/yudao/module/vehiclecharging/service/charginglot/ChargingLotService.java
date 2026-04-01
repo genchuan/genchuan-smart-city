@@ -67,4 +67,15 @@ public interface ChargingLotService {
      */
     ChargingLotChartRespVO getChargingLotChart();
 
+    /**
+     * 更新充电车位状态
+     * 规则：
+     * 1. 状态为“占用”（1）时，需同时更新 occupyTime。
+     * 2. 状态为“空闲”（0）或“维护中”（2）时，清空 occupyTime。
+     *
+     * @param id 车位ID
+     * @param occupyTime 占用时长（仅状态为“占用”时有效）
+     * @param lotStatus 目标状态
+     */
+    void updateChargingLotStatus(Long id, Integer occupyTime, String lotStatus);
 }

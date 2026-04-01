@@ -12,4 +12,25 @@
         select count(*) as totalCount from interconnection where deleted = false
     </select>
 
+    <select id="selectStatusCountByCooperator" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.interconnection.vo.InterconnectionChartRespVO$InterconnectionStatusRatioVO">
+        select
+            connect_status as status,
+            count(*) as count
+        from interconnection
+        where deleted = false and third_platform = #{cooperator}
+        group by connect_status
+        order by connect_status
+    </select>
+
+    <select id="selectDailyApplyCount" resultType="java.util.HashMap">
+        SELECT
+            DATE(create_time) AS date,
+            COUNT(*) AS count
+        FROM interconnection
+        WHERE deleted = false
+          AND DATE(create_time) BETWEEN #{startTime} AND #{endTime}
+        GROUP BY DATE(create_time)
+        ORDER BY date ASC
+    </select>
+
 </mapper>
