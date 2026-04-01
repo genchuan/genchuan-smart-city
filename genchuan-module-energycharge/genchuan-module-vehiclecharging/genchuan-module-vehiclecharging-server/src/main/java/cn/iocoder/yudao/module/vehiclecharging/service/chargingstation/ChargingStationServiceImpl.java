@@ -188,7 +188,7 @@ public class ChargingStationServiceImpl implements ChargingStationService{
         ChargingStationDO update = new ChargingStationDO();
         update.setId(id);
         update.setStationStatus("已启用");
-        update.setStopReason(null); // 启用清空原因
+        update.setStopReason(""); // 启用清空原因
         chargingStationMapper.updateById(update);
     }
     /**
