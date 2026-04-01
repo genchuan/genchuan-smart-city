@@ -9,6 +9,12 @@ import cn.iocoder.yudao.framework.common.exception.ErrorCode;
  */
 public interface ErrorCodeConstants {
 
+    // ========== 充电站==========
+    ErrorCode CHARGING_STATION_NOT_EXISTS = new ErrorCode(500, "充电站不存在");
+    ErrorCode CHARGING_STATION_CODE_EXISTS = new ErrorCode(500, "充电站编号已存在");
+
+
+
     // ========== 充电车位==========
     ErrorCode CHARGING_LOT_NOT_EXISTS = new ErrorCode(500, "充电车位不存在");
 
