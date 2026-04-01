@@ -138,5 +138,13 @@ public class ChargingLotController {
         return success(chargingLotService.getChargingLotChart());
     }
 
+    @PutMapping("/update-status")
+    @Operation(summary = "更新充电车位状态")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:charging-lot:update')")
+    public CommonResult<Boolean> updateChargingLotStatus(@Valid @RequestBody ChargingLotUpdateStatusReqVO updateStatusReqVO) {
+        chargingLotService.updateChargingLotStatus(updateStatusReqVO.getId(), updateStatusReqVO.getOccupyTime(), updateStatusReqVO.getLotStatus());
+        return success(true);
+    }
+
 
 }

@@ -180,4 +180,38 @@ public class ChargingLotServiceImpl implements ChargingLotService {
         return chartRespVO;
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateChargingLotStatus(Long id, Integer occupyTime, String lotStatus) {
+        // 1. 校验车位是否存在
+        ChargingLotDO chargingLot = chargingLotMapper.selectById(id);
+        if (chargingLot == null) {
+            throw exception(CHARGING_LOT_NOT_EXISTS);
+        }
+
+        // 2. 构建更新对象
+        ChargingLotDO updateObj = new ChargingLotDO();
+        updateObj.setId(id);
+        updateObj.setLotStatus(lotStatus);
+
+        // 3. 根据目标状态，决定如何更新占用时长(occupyTime)
+        switch (lotStatus) {
+            case "1": // 状态：占用
+                if (occupyTime == null || occupyTime < 0) {
+                    throw exception("占用时长不合法");
+                }
+                updateObj.setOccupyTime(occupyTime);
+                break;
+            case "0": // 状态：空闲
+            case "2": // 状态：维护中
+                updateObj.setOccupyTime(null); // 清空占用时长
+                break;
+            default:
+                throw exception("状态值不合法");
+        }
+
+        // 4. 执行更新
+        chargingLotMapper.updateById(updateObj);
+    }
+
 }
