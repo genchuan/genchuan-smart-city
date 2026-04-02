@@ -8,6 +8,7 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.orderrefund.OrderRefundDO;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.orderrefund.vo.*;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 订单退款 Mapper
@@ -37,5 +38,18 @@ public interface OrderRefundMapper extends BaseMapperX<OrderRefundDO> {
                 .betweenIfPresent(OrderRefundDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(OrderRefundDO::getId));
     }
+
+    default List<OrderRefundDO> selectByIdsAndRefundStatus(@Param("ids") Collection<Long> ids,
+                                                           @Param("refundStatus") String refundStatus) {
+        return selectList(new LambdaQueryWrapperX<OrderRefundDO>()
+                .in(OrderRefundDO::getId, ids)
+                .eq(OrderRefundDO::getRefundStatus, refundStatus));
+    }
+
+    List<OrderRefundChartRespVO.LineData> selectLineDataByDate(@Param("req") OrderRefundChartReqVO chartReqVO);
+
+    List<OrderRefundChartRespVO.PieData> selectPieDataByStatus();
+
+    OrderRefundChartRespVO.CardData selectCardData();
 
 }

@@ -72,5 +72,8 @@ public class ChargingLotDO extends BaseDO {
      */
     private String reserve2;
 
-
+    /**
+     * 创建人
+     */
+    private String creator;
 }

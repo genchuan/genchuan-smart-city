@@ -57,6 +57,9 @@ public class OrderAlarmPageReqVO extends PageParam {
     @Schema(description = "备用字段2")
     private String reserve2;
 
+    @Schema(description = "创建人")
+    private String creator;
+
     @Schema(description = "创建时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;

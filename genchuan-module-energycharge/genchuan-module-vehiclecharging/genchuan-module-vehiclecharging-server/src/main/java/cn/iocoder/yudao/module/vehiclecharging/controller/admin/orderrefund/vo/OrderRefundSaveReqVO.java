@@ -60,4 +60,6 @@ public class OrderRefundSaveReqVO {
     @Schema(description = "备用字段2")
     private String reserve2;
 
+    @Schema(description = "创建人")
+    private String creator;
 }
