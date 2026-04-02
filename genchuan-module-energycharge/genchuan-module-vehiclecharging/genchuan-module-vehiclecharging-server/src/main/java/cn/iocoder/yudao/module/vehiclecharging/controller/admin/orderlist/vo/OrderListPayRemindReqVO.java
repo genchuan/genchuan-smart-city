@@ -3,8 +3,7 @@ package cn.iocoder.yudao.module.vehiclecharging.controller.admin.orderlist.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-@Schema(description = "管理后台 - 订单列表表导出 Excel Request VO")
+@Schema(description = "管理后台 - 订单支付提醒 Request VO")
 @Data
-public class OrderListExportReqVO extends OrderListPageReqVO {
-
+public class OrderListPayRemindReqVO extends OrderListSaveReqVO {
 }
