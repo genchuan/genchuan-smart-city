@@ -77,6 +77,10 @@ public class OrderRefundRespVO {
     @ExcelProperty("备用字段2")
     private String reserve2;
 
+    @Schema(description = "创建人")
+    @ExcelProperty("创建人")
+    private String creator;
+
     @Schema(description = "创建时间")
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;

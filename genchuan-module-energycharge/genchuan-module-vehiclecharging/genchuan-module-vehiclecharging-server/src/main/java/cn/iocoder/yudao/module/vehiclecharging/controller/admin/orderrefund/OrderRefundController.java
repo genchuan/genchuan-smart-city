@@ -88,17 +88,65 @@ public class OrderRefundController {
         return success(BeanUtils.toBean(pageResult, OrderRefundRespVO.class));
     }
 
+    @PutMapping("/audit")
+    @Operation(summary = "批量审核订单")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:order-refund:audit')")
+    public CommonResult<Boolean> auditOrderRefund(@Valid @RequestBody OrderRefundAuditReqVO auditReqVO) {
+        orderRefundService.auditOrderRefund(auditReqVO);
+        return success(true);
+    }
+
+    @PutMapping("/refund")
+    @Operation(summary = "批量退款")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:order-refund:refund')")
+    public CommonResult<Boolean> refundOrderRefund(@Valid @RequestBody OrderRefundRefundReqVO refundReqVO) {
+        orderRefundService.refundOrderRefund(refundReqVO);
+        return success(true);
+    }
+
+    @PutMapping("/reject")
+    @Operation(summary = "驳回订单退款申请")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:order-refund:reject')")
+    public CommonResult<Boolean> rejectOrderRefund(@Valid @RequestBody OrderRefundRejectReqVO rejectReqVO) {
+        orderRefundService.rejectOrderRefund(rejectReqVO);
+        return success(true);
+    }
+
+    @PostMapping("/reapply")
+    @Operation(summary = "重新申请退款")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:order-refund:reapply')")
+    public CommonResult<Boolean> reapplyOrderRefund(@Valid @RequestBody OrderRefundReapplyReqVO reapplyReqVO) {
+        orderRefundService.reapplyOrderRefund(reapplyReqVO);
+        return success(true);
+    }
+
     @GetMapping("/export-excel")
     @Operation(summary = "导出订单退款 Excel")
     @PreAuthorize("@ss.hasPermission('vehiclecharging:order-refund:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportOrderRefundExcel(@Valid OrderRefundPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                       HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<OrderRefundDO> list = orderRefundService.getOrderRefundPage(pageReqVO).getList();
         // 导出 Excel
         ExcelUtils.write(response, "订单退款.xls", "数据", OrderRefundRespVO.class,
-                        BeanUtils.toBean(list, OrderRefundRespVO.class));
+                BeanUtils.toBean(list, OrderRefundRespVO.class));
     }
+
+    @GetMapping("/chart")
+    @Operation(summary = "获取订单退款统计图表")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:order-refund:query')")
+    public CommonResult<OrderRefundChartRespVO> getOrderRefundChart(@Valid OrderRefundChartReqVO chartReqVO) {
+        return success(orderRefundService.getOrderRefundChart(chartReqVO));
+    }
+
+    @PutMapping("/remark")
+    @Operation(summary = "添加订单退款备注")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:order-refund:remark')")
+    public CommonResult<Boolean> remarkOrderRefund(@Valid @RequestBody OrderRefundRemarkReqVO remarkReqVO) {
+        orderRefundService.remarkOrderRefund(remarkReqVO);
+        return success(true);
+    }
+
 
 }

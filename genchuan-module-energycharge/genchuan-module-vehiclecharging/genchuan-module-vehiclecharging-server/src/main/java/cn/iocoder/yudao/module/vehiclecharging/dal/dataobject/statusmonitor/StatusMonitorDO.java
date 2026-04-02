@@ -33,6 +33,10 @@ public class StatusMonitorDO extends BaseDO {
     @TableId
     private Long id;
     /**
+     * [地区名称] 地区名称
+     */
+    private String areaName;
+    /**
      * [设备编号] 设备编号
      */
     private String deviceCode;

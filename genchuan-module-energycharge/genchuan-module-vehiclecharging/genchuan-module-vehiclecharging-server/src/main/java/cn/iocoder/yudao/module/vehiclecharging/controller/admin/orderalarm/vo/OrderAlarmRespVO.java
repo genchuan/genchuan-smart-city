@@ -44,6 +44,10 @@ public class OrderAlarmRespVO {
     @ExcelProperty("关联充电桩编号")
     private String pileCode;
 
+    @Schema(description = "关联充电桩名称（模拟）")
+    @ExcelProperty("关联充电桩名称")
+    private String pileName;
+
     @Schema(description = "告警状态")
     @ExcelProperty("告警状态")
     private String alarmStatus;
@@ -71,6 +75,10 @@ public class OrderAlarmRespVO {
     @Schema(description = "备用字段2")
     @ExcelProperty("备用字段2")
     private String reserve2;
+
+    @Schema(description = "创建人")
+    @ExcelProperty("创建人")
+    private String creator;
 
     @Schema(description = "创建时间")
     @ExcelProperty("创建时间")

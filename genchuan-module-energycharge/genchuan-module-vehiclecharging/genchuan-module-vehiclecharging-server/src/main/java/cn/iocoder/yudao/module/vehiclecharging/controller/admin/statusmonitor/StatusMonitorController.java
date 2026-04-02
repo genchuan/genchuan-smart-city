@@ -1,6 +1,9 @@
 package cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor;
 
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.StatusMonitorPageReqVO;
+import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.AbnormalPoint;
+import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.ParamTrend;
+import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.StatusCountRespVO;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.StatusMonitorChartRespVO;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.newvo.*;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +17,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
+
+import java.time.LocalDateTime;
 import java.util.*;
 import java.io.IOException;
 
@@ -40,6 +45,35 @@ public class StatusMonitorController {
 
     @Resource
     private StatusMonitorService statusMonitorService;
+
+    @GetMapping("/chart/statusCount")
+    @Operation(summary = "监测设备状态统计（卡片钻取）")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:status-monitor:query')")
+    @Parameter(name = "status", description = "监测状态：abnormal-异常 normal-正常 offline-离线", required = true, example = "abnormal")
+    public CommonResult<List<StatusCountRespVO>> getStatusCount(
+            @RequestParam("status") @NotBlank(message = "状态不能为空") String status) {
+        List<StatusCountRespVO> list = statusMonitorService.getStatusCountByStation(status);
+        return success(list);
+    }
+    @GetMapping("/chart/abnormalLocation")
+    @Operation(summary = "异常设备位置标注（地图钻取）")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:status-monitor:query')")
+    @Parameter(name = "area", description = "区域名称，用于钻取该区域下的异常设备", example = "丰泽区")
+    public CommonResult<List<AbnormalPoint>> getAbnormalDeviceLocation(
+            @RequestParam(value = "area", required = false) String area) {
+        List<AbnormalPoint> list = statusMonitorService.getAbnormalDeviceLocation(area);
+        return success(list);
+    }
+    @GetMapping("/chart/paramTrend")
+    @Operation(summary = "获取设备运行参数实时趋势（折线图钻取）")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:status-monitor:query')")
+    public CommonResult<List<ParamTrend>> getParamTrend(
+            @RequestParam("deviceCode") @NotNull(message = "设备编号不能为空") String deviceCode,
+            @RequestParam(value = "startTime", required = false) LocalDateTime startTime,
+            @RequestParam(value = "endTime", required = false) LocalDateTime endTime) {
+        List<ParamTrend> data = statusMonitorService.getParamTrend(deviceCode, startTime, endTime);
+        return success(data);
+    }
 
     @GetMapping("/chart")
     @Operation(summary = "获取场站设备实时运行监测图数据")

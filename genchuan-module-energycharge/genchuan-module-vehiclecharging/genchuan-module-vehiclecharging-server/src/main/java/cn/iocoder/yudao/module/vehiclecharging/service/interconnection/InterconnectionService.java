@@ -66,4 +66,26 @@ public interface InterconnectionService {
      */
     InterconnectionChartRespVO getInterconnectionChart();
 
+    /**
+     * 获得互联互通状态占比钻取（按合作方分布）
+     *
+     * @param status 状态
+     * @return 合作方对接数量统计
+     */
+    List<InterconnectionChartRespVO.InterconnectionCooperatorCountVO> getCooperatorCountByStatus( String status );
+
+    /**
+     * 获得互联互通状态占比钻取（按合作方分布）
+     *
+     * @param cooperator 合作方
+     * @return 合作方对接数量统计
+     */
+    List<InterconnectionChartRespVO.InterconnectionStatusRatioVO> getStatusCountByCooperator( String cooperator );
+
+    /**
+     * 获得互联互通申请每日数量统计
+     *
+     * @return 每日申请数量统计
+     */
+    List<InterconnectionApplyDailyCountVO> getDailyApplyCount( LocalDate startTime, LocalDate endTime);
 }

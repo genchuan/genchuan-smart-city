@@ -80,12 +80,66 @@ public class OrderAlarmController {
         return success(BeanUtils.toBean(orderAlarm, OrderAlarmRespVO.class));
     }
 
+//    @GetMapping("/page")
+//    @Operation(summary = "获得订单告警分页")
+//    @PreAuthorize("@ss.hasPermission('vehiclecharging:order-alarm:query')")
+//    public CommonResult<PageResult<OrderAlarmRespVO>> getOrderAlarmPage(@Valid OrderAlarmPageReqVO pageReqVO) {
+//        PageResult<OrderAlarmDO> pageResult = orderAlarmService.getOrderAlarmPage(pageReqVO);
+//        return success(BeanUtils.toBean(pageResult, OrderAlarmRespVO.class));
+//    }
+
     @GetMapping("/page")
     @Operation(summary = "获得订单告警分页")
     @PreAuthorize("@ss.hasPermission('vehiclecharging:order-alarm:query')")
     public CommonResult<PageResult<OrderAlarmRespVO>> getOrderAlarmPage(@Valid OrderAlarmPageReqVO pageReqVO) {
+        // 调用服务层获取分页结果
         PageResult<OrderAlarmDO> pageResult = orderAlarmService.getOrderAlarmPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, OrderAlarmRespVO.class));
+
+        // 将DO转换为VO，并添加模拟数据
+        List<OrderAlarmRespVO> voList = new ArrayList<>();
+        for (OrderAlarmDO doObj : pageResult.getList()) {
+            OrderAlarmRespVO vo = BeanUtils.toBean(doObj, OrderAlarmRespVO.class);
+
+            // 添加模拟的充电桩名称
+            if (doObj.getPileCode() != null && !doObj.getPileCode().isEmpty()) {
+                vo.setPileName("模拟充电桩-" + doObj.getPileCode());
+            } else {
+                vo.setPileName("未关联充电桩");
+            }
+
+            voList.add(vo);
+        }
+
+        // 创建新的分页结果
+        PageResult<OrderAlarmRespVO> voPageResult = new PageResult<>(
+                voList, pageResult.getTotal()
+        );
+
+        return success(voPageResult);
+    }
+
+    @PutMapping("/verify")
+    @Operation(summary = "核实订单告警")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:order-alarm:verify')")
+    public CommonResult<Boolean> verifyOrderAlarm(@Valid @RequestBody OrderAlarmVerifyReqVO verifyReqVO) {
+        orderAlarmService.verifyOrderAlarm(verifyReqVO);
+        return success(true);
+    }
+
+    @PutMapping("/handle")
+    @Operation(summary = "处理订单告警")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:order-alarm:handle')")
+    public CommonResult<Boolean> handleOrderAlarm(@Valid @RequestBody OrderAlarmHandleReqVO handleReqVO) {
+        orderAlarmService.handleOrderAlarm(handleReqVO);
+        return success(true);
+    }
+
+    @PutMapping("/complete")
+    @Operation(summary = "完结订单告警")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:order-alarm:complete')")
+    public CommonResult<Boolean> completeOrderAlarm(@Valid @RequestBody OrderAlarmCompleteReqVO completeReqVO) {
+        orderAlarmService.completeOrderAlarm(completeReqVO);
+        return success(true);
     }
 
     @GetMapping("/export-excel")
@@ -99,6 +153,22 @@ public class OrderAlarmController {
         // 导出 Excel
         ExcelUtils.write(response, "订单告警.xls", "数据", OrderAlarmRespVO.class,
                         BeanUtils.toBean(list, OrderAlarmRespVO.class));
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "获取订单告警图表统计数据")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:order-alarm:chart')")
+    public CommonResult<OrderAlarmChartRespVO> getOrderAlarmChart(@Valid OrderAlarmChartReqVO reqVO) {
+        OrderAlarmChartRespVO chartData = orderAlarmService.getOrderAlarmChartData(reqVO);
+        return success(chartData);
+    }
+
+    @PutMapping("/remark")
+    @Operation(summary = "更新订单告警备注")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:order-alarm:remark')")
+    public CommonResult<Boolean> remarkOrderAlarm(@Valid @RequestBody OrderAlarmRemarkReqVO remarkReqVO) {
+        orderAlarmService.remarkOrderAlarm(remarkReqVO);
+        return success(true);
     }
 
 }

@@ -119,6 +119,7 @@ public class ChargingLotServiceImpl implements ChargingLotService {
             ChargingLotChartRespVO.StationLot stationStat = stationLotMap.get(stationId);
             if (stationStat == null) {
                 stationStat = new ChargingLotChartRespVO.StationLot();
+                stationStat.setStationId(stationId);
                 // 设置场站名称 - 这里用stationId，实际应该从场站表获取名称
                 stationStat.setStationName("场站-" + stationKey);
                 stationStat.setTotalCount(0);
