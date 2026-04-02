@@ -140,4 +140,13 @@ public class OrderRefundController {
         return success(orderRefundService.getOrderRefundChart(chartReqVO));
     }
 
+    @PutMapping("/remark")
+    @Operation(summary = "添加订单退款备注")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:order-refund:remark')")
+    public CommonResult<Boolean> remarkOrderRefund(@Valid @RequestBody OrderRefundRemarkReqVO remarkReqVO) {
+        orderRefundService.remarkOrderRefund(remarkReqVO);
+        return success(true);
+    }
+
+
 }

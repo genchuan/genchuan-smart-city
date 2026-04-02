@@ -94,4 +94,11 @@ public interface OrderRefundService {
      * @return 图表数据
      */
     OrderRefundChartRespVO getOrderRefundChart(OrderRefundChartReqVO chartReqVO);
+
+    /**
+     * 添加订单退款备注
+     *
+     * @param remarkReqVO 备注信息
+     */
+    void remarkOrderRefund(@Valid OrderRefundRemarkReqVO remarkReqVO);
 }
