@@ -14,7 +14,7 @@ import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
  *
  * @author 亘川智城
  */
-@TableName("pilealarm")
+@TableName("pile_alarm")
 @KeySequence("pilealarm_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -28,7 +28,7 @@ public class PilealarmDO extends BaseDO {
      * 主键ID（UUID）
      */
     @TableId(type = IdType.INPUT)
-    private String id;
+    private Long id;
     /**
      * 告警编码（唯一）
      */

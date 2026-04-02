@@ -20,7 +20,7 @@ public interface PilealarmService {
      * @param createReqVO 创建信息
      * @return 编号
      */
-    String createPilealarm(@Valid PilealarmSaveReqVO createReqVO);
+    Long createPilealarm(@Valid PilealarmSaveReqVO createReqVO);
 
     /**
      * 更新充电桩告警
@@ -59,4 +59,61 @@ public interface PilealarmService {
      */
     PageResult<PilealarmDO> getPilealarmPage(PilealarmPageReqVO pageReqVO);
 
+    /**
+     * 获得充电桩告警分页
+     *
+     * @param reqVO 分页查询
+     * @return 充电桩告警分页
+     */
+    PageResult<NewPileAlarmRespVO> page(NewPileAlarmPageReqVO reqVO);
+
+    /**
+     * 充电桩告警 - 派单
+     * @param reqVO 派单参数
+     * @return 是否成功
+     */
+    Boolean disPileAlarm(PileAlarmDisReqVO reqVO);
+
+    /**
+     * 充电桩告警 - 处置
+     * @param reqVO 处置参数
+     * @return 是否成功
+     */
+    Boolean handlePileAlarm(PileAlarmHandleReqVO reqVO);
+    /**
+     * 充电桩告警 - 消单
+     * @param id 充电桩告警id
+     * @return 是否成功
+     */
+    Boolean closePileAlarm(Long id);
+
+    /**
+     * 充电桩告警 - 修改备注
+     * @param id 充电桩告警id
+     * @param remark 备注
+     * @return 是否成功
+     */
+    Boolean updateRemark(Long id, String remark);
+    /**
+     * 充电桩告警 - 统计
+     * @param reqVO 统计参数
+     * @return 统计结果
+     */
+    PileAlarmChartRespVO getAlarmChart(PileAlarmChartReqVO reqVO);
+    /**
+     * 充电桩告警 - 获取日统计
+     * @param reqVO 获取日统计参数
+     * @return 日统计结果
+     */
+    List<PileAlarmChartRespVO.BarData> getDailyCount(PileAlarmDailyCountReqVO reqVO);
+
+    /**
+     * 统计告警类型占比（饼图）
+     */
+    List<PileAlarmTypeRatioRespVO> getAlarmTypeRatio(PileAlarmDailyCountReqVO reqVO);
+
+    /**
+     * 告警处置统计
+     */
+    PileAlarmHandleCountRespVO getHandleCount(PileAlarmDailyCountReqVO reqVO);
 }

@@ -17,6 +17,8 @@ public interface ErrorCodeConstants {
     // ========== 充电桩告警==========
     ErrorCode PILEALARM_NOT_EXISTS = new ErrorCode(500, "充电桩告警不存在");
 
+
+
     // ========== 充电车位==========
     ErrorCode CHARGING_LOT_NOT_EXISTS = new ErrorCode(500, "充电车位不存在");
 
