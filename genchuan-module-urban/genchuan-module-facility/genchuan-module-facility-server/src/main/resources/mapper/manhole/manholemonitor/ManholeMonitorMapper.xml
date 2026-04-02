@@ -215,16 +215,16 @@
     </select>
 
     <!-- 批量更新窨井盖监测状态 -->
-    <update id="batchUpdateMonitorStatus">
-        UPDATE manhole_monitor
-        SET monitor_status = #{monitorStatus},
-        update_time = NOW(),
-        updater = 1
-        WHERE cover_id IN
-        <foreach collection="coverIds" item="coverId" open="(" separator="," close=")">
-            #{coverId}
-        </foreach>
-    </update>
+<!--    <update id="batchUpdateMonitorStatus">-->
+<!--        UPDATE manhole_monitor-->
+<!--        SET monitor_status = #{monitorStatus},-->
+<!--        update_time = NOW(),-->
+<!--        updater = 1-->
+<!--        WHERE cover_id IN-->
+<!--        <foreach collection="coverIds" item="coverId" open="(" separator="," close=")">-->
+<!--            #{coverId}-->
+<!--        </foreach>-->
+<!--    </update>-->
 
     <!-- 批量更新关联设备状态 -->
     <update id="batchUpdateDeviceStatus">
@@ -304,7 +304,7 @@
         </if>
         ORDER BY sw.create_time DESC
         <!-- 手动分页核心：MySQL 原生支持 LIMIT + OFFSET -->
-        LIMIT #{reqVO.pageSize} OFFSET #{reqVO.offset}
+--         LIMIT #{reqVO.pageSize} OFFSET #{reqVO.offset}
     </select>
 
     <!-- 2. 查询总条数（WHERE 条件和分页查询完全一致） -->

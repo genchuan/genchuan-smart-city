@@ -16,6 +16,14 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 @Validated
 public class DemoTestController {
 
+    // 服务启动时间（只初始化一次）
+    private final long rebuildTime = System.currentTimeMillis();
+
+    @GetMapping("/rebuild-time")
+    public String rebuildTime() {
+        return "rebuild=" + rebuildTime;
+    }
+
     // 这个构造方法，只是方便大家，验证 Controller 有生效
     public DemoTestController() {
         System.out.println(getClass() + "生效啦03261553！！！");

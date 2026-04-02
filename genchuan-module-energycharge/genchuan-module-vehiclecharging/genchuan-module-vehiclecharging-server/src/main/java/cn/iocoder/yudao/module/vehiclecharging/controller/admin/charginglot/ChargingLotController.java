@@ -80,12 +80,42 @@ public class ChargingLotController {
         return success(BeanUtils.toBean(chargingLot, ChargingLotRespVO.class));
     }
 
+//    @GetMapping("/page")
+//    @Operation(summary = "获得充电车位分页")
+//    @PreAuthorize("@ss.hasPermission('vehiclecharging:charging-lot:query')")
+//    public CommonResult<PageResult<ChargingLotRespVO>> getChargingLotPage(@Valid ChargingLotPageReqVO pageReqVO) {
+//        PageResult<ChargingLotDO> pageResult = chargingLotService.getChargingLotPage(pageReqVO);
+//        return success(BeanUtils.toBean(pageResult, ChargingLotRespVO.class));
+//    }
+
     @GetMapping("/page")
     @Operation(summary = "获得充电车位分页")
     @PreAuthorize("@ss.hasPermission('vehiclecharging:charging-lot:query')")
     public CommonResult<PageResult<ChargingLotRespVO>> getChargingLotPage(@Valid ChargingLotPageReqVO pageReqVO) {
         PageResult<ChargingLotDO> pageResult = chargingLotService.getChargingLotPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, ChargingLotRespVO.class));
+
+        // 将DO转换为VO，并添加模拟数据
+        List<ChargingLotRespVO> voList = new ArrayList<>();
+        for (ChargingLotDO doObj : pageResult.getList()) {
+            ChargingLotRespVO vo = BeanUtils.toBean(doObj, ChargingLotRespVO.class);
+
+            // 添加模拟的场站名称
+            vo.setStationName("模拟场站-" + doObj.getStationId());
+
+            // 添加模拟的充电桩名称
+            vo.setPileName(doObj.getPileId() != null ?
+                    "模拟充电桩-" + doObj.getPileId() :
+                    "未绑定充电桩");
+
+            voList.add(vo);
+        }
+
+        // 创建新的分页结果
+        PageResult<ChargingLotRespVO> voPageResult = new PageResult<>(
+                voList, pageResult.getTotal()
+        );
+
+        return success(voPageResult);
     }
 
     @GetMapping("/export-excel")
@@ -106,6 +136,14 @@ public class ChargingLotController {
     @PreAuthorize("@ss.hasPermission('vehiclecharging:charging-lot:query')")
     public CommonResult<ChargingLotChartRespVO> getChargingLotChart() {
         return success(chargingLotService.getChargingLotChart());
+    }
+
+    @PutMapping("/update-status")
+    @Operation(summary = "更新充电车位状态")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:charging-lot:update')")
+    public CommonResult<Boolean> updateChargingLotStatus(@Valid @RequestBody ChargingLotUpdateStatusReqVO updateStatusReqVO) {
+        chargingLotService.updateChargingLotStatus(updateStatusReqVO.getId(), updateStatusReqVO.getOccupyTime(), updateStatusReqVO.getLotStatus());
+        return success(true);
     }
 
 

@@ -71,8 +71,8 @@ public interface ManholeMonitorMapper extends BaseMapperX<ManholeMonitorDO> {
      * @param monitorStatus 监测状态
      * @return 更新成功的记录数
      */
-    Integer batchUpdateMonitorStatus(@Param("coverIds") List<Long> coverIds,
-                                     @Param("monitorStatus") String monitorStatus);
+//    Integer batchUpdateMonitorStatus(@Param("coverIds") List<Long> coverIds,
+//                                     @Param("monitorStatus") String monitorStatus);
 
     /**
      * 批量更新关联设备状态
