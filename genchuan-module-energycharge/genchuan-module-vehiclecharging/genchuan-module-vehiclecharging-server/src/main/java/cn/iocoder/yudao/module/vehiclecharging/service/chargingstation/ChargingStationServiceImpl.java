@@ -322,4 +322,29 @@ public class ChargingStationServiceImpl implements ChargingStationService{
         // 直接调用Mapper查询统计数据
         return chargingStationMapper.selectAreaStationCount(id);
     }
+
+    @Override
+    public List<StationStatusCountRespVO> getStationStatusCount() {
+        // 1. 查询所有未删除的场站
+        LambdaQueryWrapper<ChargingStationDO> wrapper = Wrappers.lambdaQuery();
+        wrapper.eq(ChargingStationDO::getDeleted, false);
+        List<ChargingStationDO> list = chargingStationMapper.selectList(wrapper);
+
+        // 2. 按状态分组统计
+        Map<String, Integer> statusMap = new HashMap<>();
+        for (ChargingStationDO station : list) {
+            String status = station.getStationStatus();
+            statusMap.put(status, statusMap.getOrDefault(status, 0) + 1);
+        }
+
+        // 3. 组装返回
+        List<StationStatusCountRespVO> result = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : statusMap.entrySet()) {
+            StationStatusCountRespVO vo = new StationStatusCountRespVO();
+            vo.setStationStatus(entry.getKey());
+            vo.setCount(entry.getValue());
+            result.add(vo);
+        }
+        return result;
+    }
 }

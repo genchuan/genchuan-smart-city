@@ -74,4 +74,9 @@ public interface ChargingStationService {
      * @return 统计结果
      */
     List<ChargingStationAreaCountRespVO> getAreaStationCount(Long id);
+
+    /**
+     * 场站状态统计（卡片钻取）
+     */
+    List<StationStatusCountRespVO> getStationStatusCount();
 }

@@ -156,4 +156,11 @@ public class ChargingStationController {
         List<ChargingStationAreaCountRespVO> list = chargingStationService.getAreaStationCount(id);
         return CommonResult.success(list);
     }
+
+    @GetMapping("/charging-station/chart/statusCount")
+    @Operation(summary = "场站状态统计（卡片钻取）")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:charging_station:query')")
+    public CommonResult<List<StationStatusCountRespVO>> getStationStatusCount() {
+        return CommonResult.success(chargingStationService.getStationStatusCount());
+    }
 }
