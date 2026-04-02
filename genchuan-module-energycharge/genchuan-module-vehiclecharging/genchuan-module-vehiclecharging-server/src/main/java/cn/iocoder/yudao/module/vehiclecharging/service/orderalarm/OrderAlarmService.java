@@ -87,4 +87,11 @@ public interface OrderAlarmService {
      * @return 图表统计结果
      */
     OrderAlarmChartRespVO getOrderAlarmChartData(OrderAlarmChartReqVO reqVO);
+
+    /**
+     * 更新订单告警备注
+     *
+     * @param remarkReqVO 备注信息
+     */
+    void remarkOrderAlarm(@Valid OrderAlarmRemarkReqVO remarkReqVO);
 }

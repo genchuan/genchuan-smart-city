@@ -88,82 +88,88 @@ public class OrderAlarmServiceImpl implements OrderAlarmService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void verifyOrderAlarm(OrderAlarmVerifyReqVO verifyReqVO) {
-        // 1. 校验告警是否存在并获取告警对象
-        OrderAlarmDO orderAlarm = getOrderAlarm(verifyReqVO.getId());
-        if (orderAlarm == null) {
-            throw exception(ORDER_ALARM_NOT_EXISTS);
+        for (Long id : verifyReqVO.getIds()) {
+            // 1. 校验告警是否存在并获取告警对象
+            OrderAlarmDO orderAlarm = getOrderAlarm(id);
+            if (orderAlarm == null) {
+                throw exception(ORDER_ALARM_NOT_EXISTS);
+            }
+
+            // 2. 校验告警状态是否为"未核实"（状态值 0）
+            if (!"0".equals(orderAlarm.getAlarmStatus())) {
+                // 如果状态不是0，抛出业务异常
+                throw exception("校验告警状态不是为“未核实”");
+            }
+
+            // 3. 构建更新对象
+            OrderAlarmDO updateObj = new OrderAlarmDO();
+            updateObj.setId(id);
+            // 3.1 更新告警状态为"已核实"（状态值 1）
+            updateObj.setAlarmStatus("1");
+            // 3.2 更新核实结果
+            updateObj.setVerifyResult(verifyReqVO.getVerifyResult());
+
+            // 4. 执行更新
+            orderAlarmMapper.updateById(updateObj);
         }
-
-        // 2. 校验告警状态是否为“未核实”（状态值 0）
-        if (!"0".equals(orderAlarm.getAlarmStatus())) {
-            // 如果状态不是0，抛出业务异常
-            throw exception("校验告警状态不是为“未核实”");
-        }
-
-        // 3. 构建更新对象
-        OrderAlarmDO updateObj = new OrderAlarmDO();
-        updateObj.setId(verifyReqVO.getId());
-        // 3.1 更新告警状态为“已核实”（状态值 1）
-        updateObj.setAlarmStatus("1");
-        // 3.2 更新核实结果
-        updateObj.setVerifyResult(verifyReqVO.getVerifyResult());
-
-        // 4. 执行更新
-        orderAlarmMapper.updateById(updateObj);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void handleOrderAlarm(OrderAlarmHandleReqVO handleReqVO) {
-        // 1. 校验告警是否存在并获取告警对象
-        OrderAlarmDO orderAlarm = getOrderAlarm(handleReqVO.getId());
-        if (orderAlarm == null) {
-            throw exception(ORDER_ALARM_NOT_EXISTS);
+        for (Long id : handleReqVO.getIds()) {
+            // 1. 校验告警是否存在并获取告警对象
+            OrderAlarmDO orderAlarm = getOrderAlarm(id);
+            if (orderAlarm == null) {
+                throw exception(ORDER_ALARM_NOT_EXISTS);
+            }
+
+            // 2. 校验告警状态是否为"已核实"（状态值 1）
+            if (!"1".equals(orderAlarm.getAlarmStatus())) {
+                // 如果状态不是1，抛出业务异常
+                throw exception("校验告警状态不是为“已核实”");
+            }
+
+            // 3. 构建更新对象
+            OrderAlarmDO updateObj = new OrderAlarmDO();
+            updateObj.setId(id);
+            // 3.1 更新告警状态为"处理中"（状态值 2）
+            updateObj.setAlarmStatus("2");
+            // 3.2 更新处理措施
+            updateObj.setHandleMeasure(handleReqVO.getHandleMeasure());
+            // 3.3 更新处理时间为当前时间
+            updateObj.setHandleTime(LocalDateTime.now());
+
+            // 4. 执行更新
+            orderAlarmMapper.updateById(updateObj);
         }
-
-        // 2. 校验告警状态是否为“已核实”（状态值 1）
-        if (!"1".equals(orderAlarm.getAlarmStatus())) {
-            // 如果状态不是1，抛出业务异常
-            throw exception("校验告警状态不是为“已核实”");
-        }
-
-        // 3. 构建更新对象
-        OrderAlarmDO updateObj = new OrderAlarmDO();
-        updateObj.setId(handleReqVO.getId());
-        // 3.1 更新告警状态为“处理中”（状态值 2）
-        updateObj.setAlarmStatus("2");
-        // 3.2 更新处理措施
-        updateObj.setHandleMeasure(handleReqVO.getHandleMeasure());
-        // 3.3 更新处理时间为当前时间
-        updateObj.setHandleTime(LocalDateTime.now());
-
-        // 4. 执行更新
-        orderAlarmMapper.updateById(updateObj);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void completeOrderAlarm(OrderAlarmCompleteReqVO completeReqVO) {
-        // 1. 校验告警是否存在并获取告警对象
-        OrderAlarmDO orderAlarm = getOrderAlarm(completeReqVO.getId());
-        if (orderAlarm == null) {
-            throw exception(ORDER_ALARM_NOT_EXISTS);
+        for (Long id : completeReqVO.getIds()) {
+            // 1. 校验告警是否存在并获取告警对象
+            OrderAlarmDO orderAlarm = getOrderAlarm(id);
+            if (orderAlarm == null) {
+                throw exception(ORDER_ALARM_NOT_EXISTS);
+            }
+
+            // 2. 校验告警状态是否为"处理中"（状态值 2）
+            if (!"2".equals(orderAlarm.getAlarmStatus())) {
+                // 如果状态不是2，抛出业务异常
+                throw exception("校验告警状态不是为“处理中”");
+            }
+
+            // 3. 构建更新对象
+            OrderAlarmDO updateObj = new OrderAlarmDO();
+            updateObj.setId(id);
+            // 3.1 更新告警状态为"已完结"（状态值 3）
+            updateObj.setAlarmStatus("3");
+
+            // 4. 执行更新
+            orderAlarmMapper.updateById(updateObj);
         }
-
-        // 2. 校验告警状态是否为"处理中"（状态值 2）
-        if (!"2".equals(orderAlarm.getAlarmStatus())) {
-            // 如果状态不是2，抛出业务异常
-            throw exception("校验告警状态不是为“处理中”");
-        }
-
-        // 3. 构建更新对象
-        OrderAlarmDO updateObj = new OrderAlarmDO();
-        updateObj.setId(completeReqVO.getId());
-        // 3.1 更新告警状态为"已完结"（状态值 3）
-        updateObj.setAlarmStatus("3");
-
-        // 4. 执行更新
-        orderAlarmMapper.updateById(updateObj);
     }
 
     @Override
@@ -229,5 +235,21 @@ public class OrderAlarmServiceImpl implements OrderAlarmService {
         return respVO;
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void remarkOrderAlarm(OrderAlarmRemarkReqVO remarkReqVO) {
+        // 1. 校验告警是否存在
+        OrderAlarmDO orderAlarm = getOrderAlarm(remarkReqVO.getId());
+        if (orderAlarm == null) {
+            throw exception(ORDER_ALARM_NOT_EXISTS);
+        }
 
+        // 2. 构建更新对象
+        OrderAlarmDO updateObj = new OrderAlarmDO();
+        updateObj.setId(remarkReqVO.getId());
+        updateObj.setRemark(remarkReqVO.getRemark());
+
+        // 3. 执行更新
+        orderAlarmMapper.updateById(updateObj);
+    }
 }

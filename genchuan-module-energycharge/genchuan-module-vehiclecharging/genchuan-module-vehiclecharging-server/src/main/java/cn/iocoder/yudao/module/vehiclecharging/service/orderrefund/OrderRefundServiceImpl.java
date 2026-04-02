@@ -229,4 +229,17 @@ public class OrderRefundServiceImpl implements OrderRefundService {
         return respVO;
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void remarkOrderRefund(OrderRefundRemarkReqVO remarkReqVO) {
+        // 1. 校验：记录必须存在
+        validateOrderRefundExists(remarkReqVO.getId());
+
+        // 2. 更新备注信息
+        OrderRefundDO updateObj = new OrderRefundDO();
+        updateObj.setId(remarkReqVO.getId());
+        updateObj.setRemark(remarkReqVO.getRemark());
+        orderRefundMapper.updateById(updateObj);
+    }
+
 }

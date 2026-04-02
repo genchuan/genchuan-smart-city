@@ -163,4 +163,12 @@ public class OrderAlarmController {
         return success(chartData);
     }
 
+    @PutMapping("/remark")
+    @Operation(summary = "更新订单告警备注")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:order-alarm:remark')")
+    public CommonResult<Boolean> remarkOrderAlarm(@Valid @RequestBody OrderAlarmRemarkReqVO remarkReqVO) {
+        orderAlarmService.remarkOrderAlarm(remarkReqVO);
+        return success(true);
+    }
+
 }
