@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.kitchen.controller.admin.enterpriseinfo.vo;
 
+import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -31,6 +32,10 @@ public class EnterpriseInfoSaveReqVO {
     @Schema(description = "[企业类型ID] 关联ent_type_dict.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "28435")
     @NotNull(message = "[企业类型ID] 关联ent_type_dict.id不能为空")
     private Long entTypeId;
+
+    @Schema(description = "[企业类型名称]", example = "食堂")
+    @NotNull(message = "[企业类型名称]")
+    private String entTypeName;
 
     @Schema(description = "[详细地址] 企业注册或经营地址", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotEmpty(message = "[详细地址] 企业注册或经营地址不能为空")
