@@ -1,12 +1,16 @@
 package cn.iocoder.yudao.module.vehiclecharging.service.chargingstation;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.chargingstation.vo.*;
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.chargingstation.ChargingStationDO;
+import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.sysarea.AreaDO;
 import cn.iocoder.yudao.module.vehiclecharging.dal.mysql.chargingstation.ChargingStationMapper;
+import cn.iocoder.yudao.module.vehiclecharging.dal.mysql.sysarea.AreaMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -14,10 +18,7 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.enums.GlobalErrorCodeConstants.BAD_REQUEST;
@@ -32,6 +33,9 @@ public class ChargingStationServiceImpl implements ChargingStationService{
 
     @Resource
     private ChargingStationMapper chargingStationMapper;
+
+    @Resource
+    private AreaMapper sysAreaMapper;
 
     @Override
     public PageResult<ChargingStationRespVO> getChargingStationPage(ChargingStationPageReqVO reqVO) {
@@ -213,85 +217,88 @@ public class ChargingStationServiceImpl implements ChargingStationService{
         return chargingStationMapper.selectPage(reqVO, wrapper);
     }
     /**
-     * 获取充电站统计
-     *
-     * @return 充电站统计
+     * 获取充电站图表统计
      */
     @Override
-    public ChargingStationChartRespVO getChartData() {
-        // 1. 查询所有未删除的充电站
+    public ChargingStationChartRespVO getChartData(ChargingStationChartReqVO reqVO) {
+        // 1. 拼接查询条件
         LambdaQueryWrapper<ChargingStationDO> wrapper = Wrappers.lambdaQuery();
-        wrapper.eq(ChargingStationDO::getDeleted, false);
+        wrapper.eq(ChargingStationDO::getDeleted, Boolean.FALSE);
+
+        // 时间范围
+        if (StrUtil.isNotBlank(reqVO.getStartTime())) {
+            wrapper.ge(ChargingStationDO::getCreateTime, new Date(Long.parseLong(reqVO.getStartTime()) * 1000));
+        }
+        if (StrUtil.isNotBlank(reqVO.getEndTime())) {
+            wrapper.le(ChargingStationDO::getCreateTime, new Date(Long.parseLong(reqVO.getEndTime()) * 1000));
+        }
+
         List<ChargingStationDO> stationList = chargingStationMapper.selectList(wrapper);
-        System.out.println(stationList);
+        if (CollUtil.isEmpty(stationList)) {
+            return new ChargingStationChartRespVO();
+        }
 
-        // ===================== 2. 统计各种数量 =====================
-        int totalCount = 0;       // 总数
-        int enableCount = 0;      // 已启用
-        int disableCount = 0;     // 已停用
-        int waitCount = 0;        // 未启用
+        // ===================== 卡片统计 =====================
+        ChargingStationChartRespVO.CardInfo cardInfo = new ChargingStationChartRespVO.CardInfo();
+        int total = 0, enable = 0, disable = 0, unEnable = 0;
 
-        // 地址统计（key=地址，value=数量）
-        Map<String, Integer> addressMap = new HashMap<>();
+        // 区域统计：key=areaId, value=[总数, 启用数]
+        Map<Long, int[]> areaMap = new HashMap<>();
+        List<ChargingStationChartRespVO.StationMap> mapList = new ArrayList<>();
 
-        // 地图点位集合
-        List<ChargingStationChartRespVO.StationPoint> stationPoints = new ArrayList<>();
-
-        // ===================== 遍历所有场站，一个一个统计 =====================
         for (ChargingStationDO station : stationList) {
-            // 总数 +1
-            totalCount++;
-
-            // 按状态统计
+            total++;
             String status = station.getStationStatus();
-            if ("已启用".equals(status)) {
-                enableCount++;
-            } else if ("已停用".equals(status)) {
-                disableCount++;
-            } else if ("未启用".equals(status)) {
-                waitCount++;
+
+            if ("已启用".equals(status)) enable++;
+            else if ("已停用".equals(status)) disable++;
+            else if ("未启用".equals(status)) unEnable++;
+
+            // 区域统计
+            Long areaId = station.getAreaId();
+            if (areaId != null && areaId > 0) {
+                int[] arr = areaMap.getOrDefault(areaId, new int[2]);
+                arr[0]++; // 总数
+                if ("已启用".equals(status)) arr[1]++;
+                areaMap.put(areaId, arr);
             }
 
-            // ===================== 地址统计（一模一样的地址就数量+1） =====================
-            String address = station.getAddress();
-            if (addressMap.containsKey(address)) {
-                // 地址已存在，数量+1
-                int count = addressMap.get(address);
-                addressMap.put(address, count + 1);
-            } else {
-                // 地址不存在，设为1
-                addressMap.put(address, 1);
+            // 地图数据
+            ChargingStationChartRespVO.StationMap map = new ChargingStationChartRespVO.StationMap();
+            map.setId(station.getId());
+            map.setStationName(station.getStationName());
+            map.setLon(station.getLon());
+            map.setLat(station.getLat());
+            map.setStationStatus(station.getStationStatus());
+            mapList.add(map);
+        }
+
+        cardInfo.setTotalCount(total);
+        cardInfo.setEnableCount(enable);
+        cardInfo.setDisableCount(disable);
+        cardInfo.setUnEnableCount(unEnable);
+
+        // ===================== 区域名称转换 =====================
+        List<ChargingStationChartRespVO.AreaBar> barList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(areaMap.keySet())) {
+            List<AreaDO> areas = sysAreaMapper.selectBatchIds(areaMap.keySet());
+            Map<Long, String> areaNameMap = areas.stream()
+                    .collect(Collectors.toMap(AreaDO::getId, AreaDO::getName));
+
+            for (Map.Entry<Long, int[]> entry : areaMap.entrySet()) {
+                ChargingStationChartRespVO.AreaBar bar = new ChargingStationChartRespVO.AreaBar();
+                bar.setAreaName(areaNameMap.getOrDefault(entry.getKey(), "未知区域"));
+                bar.setTotalCount(entry.getValue()[0]);
+                bar.setEnableCount(entry.getValue()[1]);
+                barList.add(bar);
             }
-
-            // ===================== 封装地图点位 =====================
-            ChargingStationChartRespVO.StationPoint point = new ChargingStationChartRespVO.StationPoint();
-            point.setId(station.getId());
-            point.setStationName(station.getStationName());
-            point.setLon(station.getLon());
-            point.setLat(station.getLat());
-            point.setStatus(station.getStationStatus());
-            point.setStatusName(station.getStationStatus());
-            stationPoints.add(point);
         }
 
-        // ===================== 把地址统计 转成前端需要的格式 =====================
-        List<ChargingStationChartRespVO.AreaStat> areaList = new ArrayList<>();
-        for (Map.Entry<String, Integer> entry : addressMap.entrySet()) {
-            ChargingStationChartRespVO.AreaStat stat = new ChargingStationChartRespVO.AreaStat();
-            stat.setAreaName(entry.getKey());    // 地址
-            stat.setCount(entry.getValue());     // 数量
-            areaList.add(stat);
-        }
-
-        // ===================== 封装返回 =====================
+        // ===================== 最终返回 =====================
         ChargingStationChartRespVO resp = new ChargingStationChartRespVO();
-        resp.setTotalCount(totalCount);
-        resp.setEnableCount(enableCount);
-        resp.setDisableCount(disableCount);
-        resp.setWaitCount(waitCount);
-        resp.setAreaList(areaList);
-        resp.setStationPoints(stationPoints);
-
+        resp.setCardInfo(cardInfo);
+        resp.setStationMapList(mapList);
+        resp.setAreaBarList(barList);
         return resp;
     }
 
@@ -308,5 +315,11 @@ public class ChargingStationServiceImpl implements ChargingStationService{
 
         // 3. 执行更新 (MyBatis Plus 批量更新)
         chargingStationMapper.update(updateEntity, updateWrapper);
+    }
+
+    @Override
+    public List<ChargingStationAreaCountRespVO> getAreaStationCount(Long id) {
+        // 直接调用Mapper查询统计数据
+        return chargingStationMapper.selectAreaStationCount(id);
     }
 }
