@@ -7,6 +7,7 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.ratesetting.vo.RateSettingPageReqVO;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.ratesetting.vo.RateSettingRespVO;
+import cn.iocoder.yudao.module.vehiclecharging.controller.admin.ratesetting.vo.chart.*;
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.ratesetting.RateSettingDO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -26,6 +27,12 @@ public interface RateSettingMapper extends BaseMapperX<RateSettingDO> {
      * 统计分页总数
      */
     long selectPageCount(RateSettingPageReqVO pageReqVO);
+
+    RateSettingStatusCountRespVO getRateSettingStatusCount(RateSettingStatusCountReqVO reqVO);
+
+    List<RateSettingGradeCountRespVO> getRateSettingGradeCount(RateSettingGradeCountReqVO reqVO);
+
+    List<RateSettingStationCountRespVO> getRateSettingStationCount(RateSettingStationCountReqVO reqVO2);
 
 
 //    default PageResult<RateSettingDO> selectPage(RateSettingPageReqVO reqVO) {

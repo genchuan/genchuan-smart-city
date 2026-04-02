@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.vehiclecharging.service.ratesetting;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.ratesetting.vo.*;
+import cn.iocoder.yudao.module.vehiclecharging.controller.admin.ratesetting.vo.chart.*;
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.ratesetting.RateSettingDO;
 import cn.iocoder.yudao.module.vehiclecharging.dal.mysql.ratesetting.RateSettingMapper;
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
@@ -132,13 +133,69 @@ public class RateSettingServiceImpl implements RateSettingService {
         wrapper.update();
     }
 
+    /**
+     * 复制费率方案
+     *
+     * @param reqVO 复制请求参数（源ID + 新编码、新生效/失效时间）
+     */
     @Override
     public void copyRateSetting(RateSettingCopyReqVO reqVO) {
-//        RateSettingDO rateSettingDO = rateSettingMapper.selectById(reqVO.getId());
-//
-//        rateSettingDO.setRateCode(reqVO.getNewRateCode());
-//        rateSettingDO.set(reqVO.getNewRateCode());
+        // 1. 校验参数：源费率方案ID不能为空
+        if (reqVO.getId() == null) {
+            throw new IllegalArgumentException("复制的源费率方案ID不能为空");
+        }
+        // 2. 查询源费率方案（判断是否存在）
+        RateSettingDO rateSettingDO = rateSettingMapper.selectById(reqVO.getId());
+        if (rateSettingDO == null) {
+            throw new IllegalArgumentException("复制的源费率方案不存在，ID：" + reqVO.getId());
+        }
 
+        // 3. 赋值新的费率编码（去重重复代码）
+        rateSettingDO.setRateCode(reqVO.getNewRateCode());
+        // 4. 赋值新的生效/失效时间
+        rateSettingDO.setEffectTime(reqVO.getNewStartTime());
+        rateSettingDO.setExpireTime(reqVO.getNewEndTime());
+        // 5. 复制后的方案默认状态：未生效
+        rateSettingDO.setRateStatus("未生效");
+
+        // 6. 关键：清空ID，让MyBatis-Plus执行insert新增，而非update
+        rateSettingDO.setId(null);
+
+        // 7. 插入新的费率方案
+        rateSettingMapper.insert(rateSettingDO);
+    }
+
+    @Override
+    public RateSettingStatusCountRespVO getRateSettingStatusCount(RateSettingStatusCountReqVO reqVO) {
+        RateSettingStatusCountRespVO respVO = rateSettingMapper.getRateSettingStatusCount(reqVO);
+        return respVO;
+    }
+
+    @Override
+    public List<RateSettingGradeCountRespVO> getRateSettingGradeCount(RateSettingGradeCountReqVO reqVO) {
+        List<RateSettingGradeCountRespVO> respVOList =rateSettingMapper.getRateSettingGradeCount(reqVO);
+        return respVOList;
+    }
+
+    @Override
+    public RateSettingChartRespVO getRateSettingChart(RateSettingChartReqVO reqVO) {
+        //1.获取卡片信息
+        RateSettingStatusCountReqVO rateSettingStatusCountReqVO =new RateSettingStatusCountReqVO();
+        rateSettingStatusCountReqVO.setStartTime(reqVO.getStartTime());
+        rateSettingStatusCountReqVO.setEndTime(reqVO.getEndTime());
+        RateSettingStatusCountRespVO rateSettingStatusCount = getRateSettingStatusCount(rateSettingStatusCountReqVO);
+        //2.获取柱状图数据
+        RateSettingStationCountReqVO reqVO2 = new RateSettingStationCountReqVO();
+        reqVO2.setStartTime(reqVO.getStartTime());
+        reqVO2.setEndTime(reqVO.getEndTime());
+        List<RateSettingStationCountRespVO> rateSettingStationCountRespVO = rateSettingMapper.getRateSettingStationCount(reqVO2);
+
+        //3.配置返回参数
+        RateSettingChartRespVO respVO =new RateSettingChartRespVO();
+        respVO.setCardData(rateSettingStatusCount);
+        respVO.setBarData(rateSettingStationCountRespVO);
+
+        return respVO;
     }
 
 }

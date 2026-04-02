@@ -33,7 +33,7 @@
         FROM rate_setting t
         LEFT JOIN charging_station s ON FIND_IN_SET(s.id, t.apply_station)
         <where>
-            1=1
+            1=1 and t.deleted = 0
             <if test="rateCode != null and rateCode != ''">
                 AND t.rate_code LIKE CONCAT('%', #{rateCode}, '%')
             </if>
@@ -87,7 +87,7 @@
         </where>
         GROUP BY t.id
         ORDER BY t.id desc,t.id
-        LIMIT #{pageNo}, #{pageSize}
+        LIMIT #{pageSize} OFFSET ${(pageNo - 1) * pageSize}
     </select>
 
     <!-- 分页总数 -->
@@ -95,7 +95,7 @@
         SELECT COUNT(DISTINCT t.id)
         FROM rate_setting t
         <where>
-            1=1
+            1=1 and t.deleted = 0
             <if test="rateCode != null and rateCode != ''">
                 AND t.rate_code LIKE CONCAT('%', #{rateCode}, '%')
             </if>
@@ -143,6 +143,75 @@
                 AND t.create_time &lt;= #{endTime}
             </if>
         </where>
+    </select>
+    <select id="getRateSettingStatusCount"
+            resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.ratesetting.vo.chart.RateSettingStatusCountRespVO">
+        select
+            count(*) as totalRateCount,
+            SUM(CASE WHEN t.rate_status = '已生效' THEN 1 ELSE 0 END) AS enableCount ,
+            SUM(CASE WHEN t.rate_status = '未生效' THEN 1 ELSE 0 END) AS unEnableCount  ,
+            SUM(CASE WHEN t.rate_status = '已失效' THEN 1 ELSE 0 END) AS disableCount   ,
+            CASE WHEN count(*) = 0 THEN 0
+                ELSE ROUND(SUM(CASE WHEN t.rate_status = '已生效' THEN 1 ELSE 0 END) / count(*) * 100, 1)
+            END AS enableRatio
+        from rate_setting t
+        where t.deleted=0
+        <if test="stationId != null">
+            AND FIND_IN_SET(#{stationId}, t.apply_station)
+        </if>
+        <if test="startTime != null">
+            AND t.create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND t.create_time &lt;= #{endTime}
+        </if>
+    </select>
+    <select id="getRateSettingGradeCount"
+            resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.ratesetting.vo.chart.RateSettingGradeCountRespVO">
+        select
+            t.rate_name as gradeType,
+            count(*) as count
+        from rate_setting t
+        where t.deleted=0
+        <if test="stationId != null">
+            AND FIND_IN_SET(#{stationId}, t.apply_station)
+        </if>
+        <if test="startTime != null">
+            AND t.create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND t.create_time &lt;= #{endTime}
+        </if>
+        group by t.rate_name
+    </select>
+
+    <select id="getRateSettingStationCount"
+            resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.ratesetting.vo.chart.RateSettingStationCountRespVO">
+        SELECT
+        s.station_id as stationId,
+        c.station_name as stationName,
+        COUNT(*) AS rateCount
+        FROM (
+            -- 拆分 apply_station 逗号分隔的场站ID
+            SELECT
+            SUBSTRING_INDEX(SUBSTRING_INDEX(t.apply_station, ',', b.help_topic_id + 1), ',', -1) AS station_id
+            FROM rate_setting t
+            JOIN mysql.help_topic b
+            ON b.help_topic_id &lt; (LENGTH(t.apply_station) - LENGTH(REPLACE(t.apply_station, ',', '')) + 1)
+            WHERE t.deleted = 0
+            <if test="startTime != null and startTime != ''">
+                AND t.create_time >= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND t.create_time &lt;= #{endTime}
+            </if>
+        ) s
+        left join charging_station c
+        on c.id = s.station_id
+        WHERE s.station_id != ''
+        AND s.station_id IS NOT NULL
+        GROUP BY s.station_id,c.station_name
+        ORDER BY s.station_id desc,c.station_name DESC
     </select>
 
 </mapper>
