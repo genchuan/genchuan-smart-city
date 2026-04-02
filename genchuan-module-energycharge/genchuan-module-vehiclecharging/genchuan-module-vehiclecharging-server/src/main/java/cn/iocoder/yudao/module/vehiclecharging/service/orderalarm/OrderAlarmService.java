@@ -59,4 +59,32 @@ public interface OrderAlarmService {
      */
     PageResult<OrderAlarmDO> getOrderAlarmPage(OrderAlarmPageReqVO pageReqVO);
 
+    /**
+     * 核实订单告警
+     *
+     * @param verifyReqVO 核实信息
+     */
+    void verifyOrderAlarm(@Valid OrderAlarmVerifyReqVO verifyReqVO);
+
+    /**
+     * 处理订单告警
+     *
+     * @param handleReqVO 处理信息
+     */
+    void handleOrderAlarm(@Valid OrderAlarmHandleReqVO handleReqVO);
+
+    /**
+     * 完结订单告警
+     *
+     * @param completeReqVO 完结信息
+     */
+    void completeOrderAlarm(@Valid OrderAlarmCompleteReqVO completeReqVO);
+
+    /**
+     * 获取订单告警图表统计数据
+     *
+     * @param reqVO 查询参数
+     * @return 图表统计结果
+     */
+    OrderAlarmChartRespVO getOrderAlarmChartData(OrderAlarmChartReqVO reqVO);
 }

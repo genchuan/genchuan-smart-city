@@ -91,5 +91,8 @@ public class OrderRefundDO extends BaseDO {
      */
     private String reserve2;
 
-
+    /**
+     * 创建人
+     */
+    private String creator;
 }

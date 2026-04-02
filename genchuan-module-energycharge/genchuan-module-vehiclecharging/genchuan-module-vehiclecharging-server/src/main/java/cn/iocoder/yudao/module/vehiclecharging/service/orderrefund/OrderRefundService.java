@@ -59,4 +59,39 @@ public interface OrderRefundService {
      */
     PageResult<OrderRefundDO> getOrderRefundPage(OrderRefundPageReqVO pageReqVO);
 
+    /**
+     * 批量审核订单
+     *
+     * @param auditReqVO 审核信息
+     */
+    void auditOrderRefund(@Valid OrderRefundAuditReqVO auditReqVO);
+
+    /**
+     * 批量退款
+     *
+     * @param refundReqVO 退款信息
+     */
+    void refundOrderRefund(@Valid OrderRefundRefundReqVO refundReqVO);
+
+    /**
+     * 驳回订单退款申请
+     *
+     * @param rejectReqVO 驳回信息
+     */
+    void rejectOrderRefund(@Valid OrderRefundRejectReqVO rejectReqVO);
+
+    /**
+     * 重新申请退款
+     *
+     * @param reapplyReqVO 重新申请信息
+     */
+    void reapplyOrderRefund(@Valid OrderRefundReapplyReqVO reapplyReqVO);
+
+    /**
+     * 获取订单退款统计图表
+     *
+     * @param chartReqVO 查询条件
+     * @return 图表数据
+     */
+    OrderRefundChartRespVO getOrderRefundChart(OrderRefundChartReqVO chartReqVO);
 }
