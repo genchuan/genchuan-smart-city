@@ -110,22 +110,22 @@ public class ManholeMonitorServiceImpl implements ManholeMonitorService {
     /**
      * 批量更新监测状态
      */
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Integer batchUpdateMonitorStatus(List<Long> coverIds, String monitorStatus) {
-        // 1. 参数校验
-        if (coverIds == null || coverIds.isEmpty()) {
-            throw new IllegalArgumentException("请选择要操作的井盖");
-        }
-        // 3. 批量更新监测状态（同步更新操作人和更新时间）
-        int count = monitorMapper.batchUpdateMonitorStatus(coverIds, monitorStatus);
-
-        // 4. 同步更新关联设备状态
-        String deviceOnlineStatus = "运行中".equals(monitorStatus) ? "在线" : "离线";
-        monitorMapper.batchUpdateDeviceStatus(coverIds, deviceOnlineStatus);
-
-        return count;
-    }
+//    @Override
+//    @Transactional(rollbackFor = Exception.class)
+//    public Integer batchUpdateMonitorStatus(List<Long> coverIds, String monitorStatus) {
+//        // 1. 参数校验
+//        if (coverIds == null || coverIds.isEmpty()) {
+//            throw new IllegalArgumentException("请选择要操作的井盖");
+//        }
+//        // 3. 批量更新监测状态（同步更新操作人和更新时间）
+//        int count = monitorMapper.batchUpdateMonitorStatus(coverIds, monitorStatus);
+//
+//        // 4. 同步更新关联设备状态
+//        String deviceOnlineStatus = "运行中".equals(monitorStatus) ? "在线" : "离线";
+//        monitorMapper.batchUpdateDeviceStatus(coverIds, deviceOnlineStatus);
+//
+//        return count;
+//    }
 
 //    @Override
 //    public ManholeMonitorStatsRespVO get24HourStats(Long id) {
@@ -180,7 +180,7 @@ public class ManholeMonitorServiceImpl implements ManholeMonitorService {
         // 查询详情
         ManholeCoverRealTimeDetailRespVO detail = monitorMapper.selectRealTimeDetail(coverId, tenantId);
         if (detail == null) {
-            throw exception("MONITOR_NOT_EXISTS");
+            throw exception(MONITOR_NOT_EXISTS);
         }
         return detail;
     }

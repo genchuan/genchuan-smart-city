@@ -11,6 +11,12 @@ public interface ErrorCodeConstants {
 // ========== 实时监测 TODO 补充编号 ==========
     ErrorCode STATUS_MONITOR_NOT_EXISTS = new ErrorCode(500, "实时监测不存在");
 
+    // ========== 充电站==========
+    ErrorCode CHARGING_STATION_NOT_EXISTS = new ErrorCode(500, "充电站不存在");
+    ErrorCode CHARGING_STATION_CODE_EXISTS = new ErrorCode(500, "充电站编号已存在");
+
+
+
     // ========== 充电车位==========
     ErrorCode CHARGING_LOT_NOT_EXISTS = new ErrorCode(500, "充电车位不存在");
 

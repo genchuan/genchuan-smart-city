@@ -74,7 +74,7 @@ public interface ManholeMonitorService {
      * @param monitorStatus 监测状态（运行中/已停止）
      * @return 更新成功的记录数
      */
-    Integer batchUpdateMonitorStatus(List<Long> coverIds, String monitorStatus);
+//    Integer batchUpdateMonitorStatus(List<Long> coverIds, String monitorStatus);
 
     /**
      * 查询近 24 小时统计数据
