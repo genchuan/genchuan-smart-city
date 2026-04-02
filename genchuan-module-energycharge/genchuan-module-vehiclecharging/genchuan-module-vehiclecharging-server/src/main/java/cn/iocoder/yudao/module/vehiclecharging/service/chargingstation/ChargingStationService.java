@@ -61,10 +61,22 @@ public interface ChargingStationService {
      *
      * @return 充电站图表数据
      */
-    ChargingStationChartRespVO getChartData();
+    ChargingStationChartRespVO getChartData(ChargingStationChartReqVO reqVO);
 
     /**
      * 批量改变合作模式和负责人
      */
     void batchChangeCooperationModeAndLeader(ChargingStationBatchUpdateReqVO reqVO);
+
+    /**
+     * 各区域充电场站数量统计（柱状图钻取）
+     *
+     * @return 统计结果
+     */
+    List<ChargingStationAreaCountRespVO> getAreaStationCount(Long id);
+
+    /**
+     * 场站状态统计（卡片钻取）
+     */
+    List<StationStatusCountRespVO> getStationStatusCount();
 }

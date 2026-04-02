@@ -136,10 +136,31 @@ public class ChargingStationController {
         return CommonResult.success(true);
     }
 
-    @Operation(summary = "充电场站分布及运行状态图（地图+柱状图+卡片）")
+//    @Operation(summary = "充电场站分布及运行状态图（地图+柱状图+卡片）")
+//    @GetMapping("/chart")
+//    @PreAuthorize("@ss.hasPermission('vehiclecharging:charging_station:query')")
+//    public CommonResult<ChargingStationChartRespVO> getChargingStationChart() {
+//        return CommonResult.success(chargingStationService.getChartData());
+//    }
     @GetMapping("/chart")
+    @Operation(summary = "充电场站分布及运行状态图（地图+柱状图+卡片）")
     @PreAuthorize("@ss.hasPermission('vehiclecharging:charging_station:query')")
-    public CommonResult<ChargingStationChartRespVO> getChargingStationChart() {
-        return CommonResult.success(chargingStationService.getChartData());
+    public CommonResult<ChargingStationChartRespVO> getChartData(ChargingStationChartReqVO reqVO) {
+        return CommonResult.success(chargingStationService.getChartData(reqVO));
+    }
+
+    @GetMapping("/chart/areaCount")
+    @Operation(summary = "各区域充电场站数量统计（柱状图钻取）")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:charging_station:query')")
+    public CommonResult<List<ChargingStationAreaCountRespVO>> getAreaStationCount(Long id) {
+        List<ChargingStationAreaCountRespVO> list = chargingStationService.getAreaStationCount(id);
+        return CommonResult.success(list);
+    }
+
+    @GetMapping("/chart/statusCount")
+    @Operation(summary = "场站状态统计（卡片钻取）")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:charging_station:query')")
+    public CommonResult<List<StationStatusCountRespVO>> getStationStatusCount() {
+        return CommonResult.success(chargingStationService.getStationStatusCount());
     }
 }
