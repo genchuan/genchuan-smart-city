@@ -74,4 +74,11 @@ public interface AbnormalOrderService {
      */
     Boolean verifyAbnormalOrder(AbnormalOrderVerifyReqVO reqVO);
 
+    /**
+     * 批量处理异常订单（仅已核实可处理）
+     * @param reqVO 处理参数
+     * @return 操作结果
+     */
+    Boolean handleAbnormalOrder(AbnormalOrderHandleReqVO reqVO);
+
 }

@@ -123,4 +123,20 @@ public class AbnormalOrderServiceImpl implements AbnormalOrderService {
         return true;
     }
 
+    @Override
+    public Boolean handleAbnormalOrder(AbnormalOrderHandleReqVO reqVO) {
+
+        UpdateWrapper<AbnormalOrderDO> wrapper = new UpdateWrapper<>();
+        wrapper.in("id", reqVO.getIds());
+        wrapper.eq("abnormal_status", "已核实");
+
+        wrapper.set("abnormal_status", "处理中");
+        wrapper.set("handle_measure", reqVO.getHandleMeasure());
+        wrapper.set("handle_time", LocalDateTime.now());
+
+        abnormalOrderMapper.update(null, wrapper);
+
+        return true;
+    }
+
 }
