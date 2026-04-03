@@ -139,4 +139,25 @@ public class AbnormalOrderServiceImpl implements AbnormalOrderService {
         return true;
     }
 
+    @Override
+    public Boolean completeAbnormalOrder(AbnormalOrderCompleteReqVO reqVO) {
+        // 获取登录用户名
+        Long username = SecurityFrameworkUtils.getLoginUserId();
+
+        UpdateWrapper<AbnormalOrderDO> wrapper = new UpdateWrapper<>();
+        // 条件：只允许处理 处理中 状态的数据
+        wrapper.in("id", reqVO.getIds());
+        wrapper.eq("abnormal_status", "处理中");
+
+        // 更新内容
+        wrapper.set("abnormal_status", "已完结");
+        wrapper.set("remark", reqVO.getCompleteRemark());
+        wrapper.set("updater", username);
+        wrapper.set("update_time", LocalDateTime.now());
+
+        // 执行更新
+        abnormalOrderMapper.update(null, wrapper);
+        return true;
+    }
+
 }
