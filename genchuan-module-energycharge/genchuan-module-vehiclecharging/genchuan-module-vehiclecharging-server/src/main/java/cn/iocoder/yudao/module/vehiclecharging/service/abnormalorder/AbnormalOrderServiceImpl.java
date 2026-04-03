@@ -1,6 +1,10 @@
 package cn.iocoder.yudao.module.vehiclecharging.service.abnormalorder;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.PageUtil;
+import cn.iocoder.yudao.framework.mybatis.core.util.MyBatisUtils;
+import cn.iocoder.yudao.module.vehiclecharging.controller.admin.pilealarm.vo.NewPileAlarmRespVO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -68,7 +72,7 @@ public class AbnormalOrderServiceImpl implements AbnormalOrderService {
 
     private void validateAbnormalOrderExists(Long id) {
         if (abnormalOrderMapper.selectById(id) == null) {
-            throw exception(ABNORMAL_ORDER_NOT_EXISTS);
+            throw exception(ORDER_ALARM_NOT_EXISTS);
         }
     }
 
@@ -80,6 +84,21 @@ public class AbnormalOrderServiceImpl implements AbnormalOrderService {
     @Override
     public PageResult<AbnormalOrderDO> getAbnormalOrderPage(AbnormalOrderPageReqVO pageReqVO) {
         return abnormalOrderMapper.selectPage(pageReqVO);
+    }
+
+    /**
+     * 获取异常订单分页
+     *
+     * @return 异常订单分页
+     */
+
+    @Override
+    public PageResult<NewAbnormalOrderRespVO> newgetAbnormalOrderPage(NewAbnormalOrderPageReqVO reqVO) {
+        IPage<NewAbnormalOrderRespVO> page = abnormalOrderMapper.selectAbnormalOrderPage(
+                MyBatisUtils.buildPage(reqVO),
+                reqVO
+        );
+        return new PageResult<>(page.getRecords(), page.getTotal());
     }
 
 }

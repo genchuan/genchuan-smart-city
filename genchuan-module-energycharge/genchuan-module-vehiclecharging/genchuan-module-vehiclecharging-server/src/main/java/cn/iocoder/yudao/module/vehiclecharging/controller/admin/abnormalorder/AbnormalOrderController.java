@@ -81,13 +81,13 @@ public class AbnormalOrderController {
         return success(BeanUtils.toBean(abnormalOrder, AbnormalOrderRespVO.class));
     }
 
-    @GetMapping("/page")
-    @Operation(summary = "获得异常订单分页")
-    @PreAuthorize("@ss.hasPermission('vehiclecharging:abnormal-order:query')")
-    public CommonResult<PageResult<AbnormalOrderRespVO>> getAbnormalOrderPage(@Valid AbnormalOrderPageReqVO pageReqVO) {
-        PageResult<AbnormalOrderDO> pageResult = abnormalOrderService.getAbnormalOrderPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, AbnormalOrderRespVO.class));
-    }
+//    @GetMapping("/page")
+//    @Operation(summary = "获得异常订单分页")
+//    @PreAuthorize("@ss.hasPermission('vehiclecharging:abnormal-order:query')")
+//    public CommonResult<PageResult<AbnormalOrderRespVO>> getAbnormalOrderPage(@Valid AbnormalOrderPageReqVO pageReqVO) {
+//        PageResult<AbnormalOrderDO> pageResult = abnormalOrderService.getAbnormalOrderPage(pageReqVO);
+//        return success(BeanUtils.toBean(pageResult, AbnormalOrderRespVO.class));
+//    }
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出异常订单 Excel")
@@ -102,4 +102,11 @@ public class AbnormalOrderController {
                 BeanUtils.toBean(list, AbnormalOrderRespVO.class));
     }
 
+
+    @Operation(summary = "获得异常订单分页")
+    @GetMapping("/page")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:abnormal_order:query')")
+    public CommonResult<PageResult<NewAbnormalOrderRespVO>> getAbnormalOrderPage(NewAbnormalOrderPageReqVO reqVO) {
+        return CommonResult.success(abnormalOrderService.newgetAbnormalOrderPage(reqVO));
+    }
 }

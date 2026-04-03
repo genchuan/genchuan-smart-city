@@ -59,4 +59,12 @@ public interface AbnormalOrderService {
      */
     PageResult<AbnormalOrderDO> getAbnormalOrderPage(AbnormalOrderPageReqVO pageReqVO);
 
+    /**
+     * 获得异常订单分页
+     *
+     * @param reqVO 分页查询
+     * @return 异常订单分页
+     */
+    PageResult<NewAbnormalOrderRespVO> newgetAbnormalOrderPage(NewAbnormalOrderPageReqVO reqVO);
+
 }

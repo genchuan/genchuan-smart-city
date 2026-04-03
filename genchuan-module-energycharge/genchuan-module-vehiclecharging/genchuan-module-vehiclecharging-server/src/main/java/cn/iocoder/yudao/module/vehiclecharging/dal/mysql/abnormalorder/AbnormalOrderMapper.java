@@ -6,8 +6,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.abnormalorder.AbnormalOrderDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.abnormalorder.vo.*;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 异常订单 Mapper
@@ -34,5 +36,7 @@ public interface AbnormalOrderMapper extends BaseMapperX<AbnormalOrderDO> {
                 .betweenIfPresent(AbnormalOrderDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(AbnormalOrderDO::getId));
     }
+
+    IPage<NewAbnormalOrderRespVO> selectAbnormalOrderPage(IPage<NewAbnormalOrderRespVO> page, @Param("req") NewAbnormalOrderPageReqVO reqVO);
 
 }
