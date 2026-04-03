@@ -74,13 +74,13 @@ public interface OrderListService {
      */
     Boolean payRemind(Long id);
 
-//    /**
-//     * 申请退款
-//     *
-//     * @param reqVO 退款申请
-//     * @return 布尔值
-//     */
-//    Boolean refundApply(@Valid OrderListRefundApplyReqVO reqVO);
+    /**
+     * 申请退款
+     *
+     * @param reqVO 退款申请
+     * @return 布尔值
+     */
+    Boolean refundApply(@Valid OrderListRefundApplyReqVO reqVO);
 
     /**
      * 评价订单
@@ -95,4 +95,32 @@ public interface OrderListService {
      * @return 布尔值
      */
     Boolean stopCharge(@Valid OrderListStopChargeReqVO reqVO);
+
+    /**
+     * 趋势图
+     * @param reqVO data
+     * @return 趋势数据
+     */
+    OrderListChartRespVO getOrderChart(OrderListChartReqVO reqVO);
+
+    /**
+     * 钻取趋势图
+     * @param reqVO data
+     * @return 内容
+     */
+    List<OrderListDailyTrendRespVO> getDailyTrend(OrderListDailyTrendReqVO reqVO);
+
+    /**
+     *
+     * @param reqVO data
+     * @return 内容
+     */
+    List<OrderListStatusRatioRespVO> getStatusRatio(OrderListStatusRatioReqVO reqVO);
+
+    /**
+     *
+     * @param reqVO data
+     * @return 内容
+     */
+    TradeCountRespVO getTradeCount(OrderListTradeCountReqVO reqVO);
 }
