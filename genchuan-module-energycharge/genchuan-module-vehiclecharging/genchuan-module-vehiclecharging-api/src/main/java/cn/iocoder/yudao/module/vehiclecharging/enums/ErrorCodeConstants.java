@@ -31,6 +31,10 @@ public interface ErrorCodeConstants {
 
     // ========== 订单告警 ==========
     ErrorCode ORDER_ALARM_NOT_EXISTS = new ErrorCode(500, "订单告警不存在");
+    // ========== 订单告警状态错误==========
+    ErrorCode ORDER_ALARM_STATUS_ERROR = new ErrorCode(500, "订单告警状态错误");
+    // ========== 订单不存在==========
+    ErrorCode ORDER_NOT_EXISTS = new ErrorCode(500, "订单不存在");
 
     // ========== 订单退款==========
     ErrorCode ORDER_REFUND_NOT_EXISTS = new ErrorCode(500, "订单退款不存在");

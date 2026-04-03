@@ -86,5 +86,22 @@ public interface AbnormalOrderService {
      * @return 操作结果
      */
     Boolean completeAbnormalOrder(AbnormalOrderCompleteReqVO reqVO);
+    /**
+     * 批量退款异常订单（仅已完成可退款）
+     * @param reqVO 退款参数
+     * @return 操作结果
+     */
+    Boolean refundAbnormalOrder(AbnormalOrderRefundReqVO reqVO);
+    /**
+     * 修改异常订单备注
+     * @param reqVO 修改参数
+     */
+    void updateAbnormalOrderRemark(AbnormalOrderRemarkReqVO reqVO);
+    /**
+     * 异常订单统计图表（柱状图+饼图+卡片）
+     * @param reqVO 统计参数
+     * @return 统计结果
+     */
+    AbnormalOrderChartRespVO getAbnormalOrderChart(AbnormalOrderChartReqVO reqVO);
 
 }

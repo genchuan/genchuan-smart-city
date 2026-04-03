@@ -134,4 +134,29 @@ public class AbnormalOrderController {
     ) {
         return CommonResult.success(abnormalOrderService.completeAbnormalOrder(reqVO));
     }
+
+    @Operation(summary = "异常订单退款")
+    @PostMapping("/refund")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:abnormal_order:refund')")
+    public CommonResult<Boolean> refundAbnormalOrder(
+            @Valid @RequestBody AbnormalOrderRefundReqVO reqVO
+    ) {
+        return CommonResult.success(abnormalOrderService.refundAbnormalOrder(reqVO));
+    }
+
+    @PutMapping("/remark")
+    @Operation(summary = "更新异常订单备注")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:abnormal_order:remark')")
+    public CommonResult<Boolean> updateAbnormalOrderRemark(@Valid @RequestBody AbnormalOrderRemarkReqVO reqVO) {
+        abnormalOrderService.updateAbnormalOrderRemark(reqVO);
+        return success(true);
+    }
+
+    @GetMapping("/abnormal-order/chart")
+    @Operation(summary = "异常订单统计图表（柱状图+饼图+卡片）")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:abnormal_order:query')")
+    public CommonResult<AbnormalOrderChartRespVO> getAbnormalOrderChart(
+            AbnormalOrderChartReqVO reqVO) {
+        return CommonResult.success(abnormalOrderService.getAbnormalOrderChart(reqVO));
+    }
 }

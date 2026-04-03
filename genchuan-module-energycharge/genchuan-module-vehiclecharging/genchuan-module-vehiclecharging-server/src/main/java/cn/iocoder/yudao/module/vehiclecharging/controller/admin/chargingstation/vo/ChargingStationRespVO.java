@@ -14,6 +14,9 @@ public class ChargingStationRespVO {
     @Schema(description = "主键", requiredMode = Schema.RequiredMode.REQUIRED, example = "1001")
     private Long id;
 
+    @Schema(description = "区域编号", requiredMode = Schema.RequiredMode.REQUIRED, example = "1001")
+    private Long areaId;
+
     @Schema(description = "场站编号", requiredMode = Schema.RequiredMode.REQUIRED, example = "CS20250301001")
     private String stationCode;
 

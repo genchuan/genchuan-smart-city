@@ -22,6 +22,7 @@ public class ChargingStationChartRespVO {
     @Data
     public static class StationMap {
         private Long id;
+        private String areaid;
         private String stationName;
         private BigDecimal lon;
         private BigDecimal lat;

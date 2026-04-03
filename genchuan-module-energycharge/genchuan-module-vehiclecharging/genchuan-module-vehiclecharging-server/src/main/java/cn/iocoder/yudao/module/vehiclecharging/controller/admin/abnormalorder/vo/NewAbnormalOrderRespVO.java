@@ -31,6 +31,9 @@ public class NewAbnormalOrderRespVO {
     @Schema(description = "异常类型", example = "充电中断")
     private String abnormalType;
 
+    @Schema(description = "异常原因")
+    private String abnormalReason;
+
     @Schema(description = "异常发生时间", example = "1775005986")
     private Long abnormalTime;
 
@@ -51,6 +54,9 @@ public class NewAbnormalOrderRespVO {
 
     @Schema(description = "处理时间", example = "1775007986")
     private Long handleTime;
+
+    @Schema(description = "排查人")
+    private String checkUser;
 
     @Schema(description = "完结时间", example = "1775008986")
     private Long completeTime;

@@ -5,36 +5,60 @@
     <select id="selectAbnormalOrderPage" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.abnormalorder.vo.NewAbnormalOrderRespVO">
         SELECT
         ao.id,
-        ao.order_code AS orderCode,
+        -- 异常编号：使用ao.abnormal_code（业务字段），彻底区分orderCode
+        ao.abnormal_code AS abnormalCode,
+
         ol.id AS orderId,
+        ao.order_code AS orderCode,
         ol.plate_no AS plateNo,
         cs.station_name AS stationName,
         ao.abnormal_type AS abnormalType,
-        UNIX_TIMESTAMP(ao.create_time) AS abnormalTime,
+        ao.abnormal_reason AS abnormalReason,
+        -- 毫秒时间戳 = 秒 × 1000
+        UNIX_TIMESTAMP(ao.abnormal_time) * 1000 AS abnormalTime,
         ao.abnormal_status AS abnormalStatus,
-        ao.check_user AS verifyUser,
-        UNIX_TIMESTAMP(ao.check_time) AS verifyTime,
-        ao.abnormal_reason AS verifyResult,
-        ao.check_user AS handleUser,
-        UNIX_TIMESTAMP(ao.handle_time) AS handleTime,
-        UNIX_TIMESTAMP(ao.handle_time) AS completeTime,
+
+        -- 核实人：直接返回nickname，匹配VO的verifyUser
+        su1.nickname AS verifyUser,
+        UNIX_TIMESTAMP(ao.verify_time) * 1000 AS verifyTime,
+        ao.verify_result AS verifyResult,
+
+        -- 处理人：直接返回nickname，匹配VO的handleUser
+        su2.nickname AS handleUser,
+        UNIX_TIMESTAMP(ao.handle_time) * 1000 AS handleTime,
+
+        su3.nickname AS checkUser,
+
+        UNIX_TIMESTAMP(ao.complete_time) * 1000 AS completeTime,
         ao.remark,
-        UNIX_TIMESTAMP(ao.create_time) AS createTime,
-        UNIX_TIMESTAMP(ao.update_time) AS updateTime
+        UNIX_TIMESTAMP(ao.create_time) * 1000 AS createTime,
+        UNIX_TIMESTAMP(ao.update_time) * 1000 AS updateTime
+
         FROM abnormal_order ao
         LEFT JOIN order_list ol
-        ON ao.order_code = ol.order_code COLLATE utf8mb4_unicode_ci
+        ON ao.order_code = ol.order_code COLLATE utf8mb4_general_ci
+        AND ol.deleted = 0
         LEFT JOIN charging_pile cp
-        ON ol.pile_code = cp.pile_code COLLATE utf8mb4_unicode_ci
+        ON ol.pile_code = cp.pile_code COLLATE utf8mb4_general_ci
+        AND cp.deleted = 0
         LEFT JOIN charging_station cs
         ON cp.station_id = cs.id
-        WHERE ao.deleted = 0
-        AND ol.deleted = 0
-        AND cp.deleted = 0
         AND cs.deleted = 0
 
+        -- 核实人关联：统一排序规则，解决字符集冲突
+        LEFT JOIN sys_user su1
+        ON ao.verify_user = su1.id
+        -- 处理人关联：统一排序规则，解决字符集冲突
+        LEFT JOIN sys_user su2
+        ON ao.handle_user = su2.id
+
+        LEFT JOIN sys_user su3
+        ON ao.check_user = su3.id
+
+        WHERE ao.deleted = 0
+
         <if test="req.abnormalCode != null and req.abnormalCode != ''">
-            AND ao.id LIKE CONCAT('%', #{req.abnormalCode}, '%')
+            AND ao.abnormal_code LIKE CONCAT('%', #{req.abnormalCode}, '%')
         </if>
         <if test="req.orderCode != null and req.orderCode != ''">
             AND ao.order_code LIKE CONCAT('%', #{req.orderCode}, '%')
@@ -55,7 +79,6 @@
             AND ao.create_time &lt;= #{req.endTime}
         </if>
 
-        ORDER BY ao.id DESC
     </select>
 
 </mapper>
