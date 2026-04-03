@@ -14,7 +14,7 @@ import cn.iocoder.yudao.module.kitchen.dal.dataobject.aialertmessage.AiAlertMess
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.dictionary.illegaltypedict.IllegalTypeDictDO;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.aialertmessage.AiAlertMessageMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.dictionary.illegaltypedict.IllegalTypeDictMapper;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.name.NameUtil;
+import cn.iocoder.yudao.module.kitchen.vrv.utils.common.name.VrvNameUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -192,7 +192,7 @@ public class AiAlertMessageServiceImpl implements AiAlertMessageService {
 
         //设备编码
         if (reqVO.getDeviceCode()==null){
-            reqVO.setDeviceCode(NameUtil.generateCode("AIDEV"));
+            reqVO.setDeviceCode(VrvNameUtil.generateCode("AIDEV"));
         }
 
         // 生成随机手机号（11位）

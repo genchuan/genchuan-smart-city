@@ -1,6 +1,5 @@
 package cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo;
 
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.procom.aop.sysope.BatchIdField;
 import lombok.Data;
 
 import java.util.List;

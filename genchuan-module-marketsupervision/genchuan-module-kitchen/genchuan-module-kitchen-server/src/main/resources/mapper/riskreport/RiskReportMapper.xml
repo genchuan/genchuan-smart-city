@@ -17,7 +17,7 @@
             CONCAT('REPORT', DATE_FORMAT(NOW(), '%Y%m'), r.ent_id) AS report_no,
             r.ent_id,
             e.ent_name,
-            '高风险' AS risk_level,  <!-- 你业务计算风险等级，这里先占位 -->
+            '低风险' AS risk_level,  <!-- 业务计算风险等级，这里先占位 -->
             e.area_name AS area,
             e.ent_type_name AS ent_type,
         MIN(r.create_time) AS begin_time,
@@ -28,13 +28,63 @@
         LEFT JOIN enterprise_info e ON r.ent_id = e.id
         WHERE r.deleted = 0
         AND e.deleted = 0
-
+        <!-- 动态查询条件：来自 EntReportPageReq -->
+        <if test="statisticPeriod != null and statisticPeriod != ''">
+            AND DATE_FORMAT(r.create_time, '%Y-%m') = #{statisticPeriod}
+        </if>
+        <if test="area != null and area != ''">
+            AND e.area_name = #{area}
+        </if>
+        <if test="entType != null and entType != ''">
+            AND e.ent_type_name = #{entType}
+        </if>
+        <if test="beginTime != null">
+            AND r.create_time >= #{beginTime}
+        </if>
+        <if test="endTime != null">
+            AND r.create_time &lt;= #{endTime}
+        </if>
+        <if test="entName != null and entName != ''">
+            AND e.ent_name LIKE CONCAT('%', #{entName}, '%')
+        </if>
         <!-- 按月分组 = 企业月报 -->
         GROUP BY r.ent_id, DATE_FORMAT(r.create_time, '%Y-%m')
 
         ORDER BY r.ent_id DESC
 
+        LIMIT #{pageSize} OFFSET ${(pageNo - 1) * pageSize}
+
     </select>
 
+    <!-- 分页统计总数（修复版） -->
+    <select id="getEntReportPageCount" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM (
+                                 SELECT 1
+                                 FROM rectify_review r
+                                          LEFT JOIN enterprise_info e ON r.ent_id = e.id
+                                 WHERE r.deleted = 0
+                                   AND e.deleted = 0
+                                <!-- 动态查询条件：来自 EntReportPageReq -->
+                                <if test="statisticPeriod != null and statisticPeriod != ''">
+                                    AND DATE_FORMAT(r.create_time, '%Y-%m') = #{statisticPeriod}
+                                </if>
+                                <if test="area != null and area != ''">
+                                    AND e.area_name = #{area}
+                                </if>
+                                <if test="entType != null and entType != ''">
+                                    AND e.ent_type_name = #{entType}
+                                </if>
+                                <if test="beginTime != null">
+                                    AND r.create_time >= #{beginTime}
+                                </if>
+                                <if test="endTime != null">
+                                    AND r.create_time &lt;= #{endTime}
+                                </if>
+                                <if test="entName != null and entName != ''">
+                                    AND e.ent_name LIKE CONCAT('%', #{entName}, '%')
+                                </if>
+                                 GROUP BY r.ent_id, DATE_FORMAT(r.create_time, '%Y-%m')
+                             ) AS temp
+    </select>
 
 </mapper>
