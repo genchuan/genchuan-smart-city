@@ -91,17 +91,18 @@ public class PileController {
     public CommonResult<List<PileStatusDictRespVO>> getChargeModeDictList() {
         return success(pileService.getChargeModeDictList());
     }
-
+    /**
+     * 获取二维码接口
+     *创建时自动构建二维码图片到静态存储中
+     * 修改编号后自动重新生成二维码，修改数据库地址
+     *
+     */
     @GetMapping("/qrcode")
     @Operation(summary = "获取充电枪二维码")
     @Parameter(name = "id", description = "编号", required = true, example = "1")
     @PreAuthorize("@ss.hasPermission('vehiclecharging:charging-pile:query')")
-    public void getPileQrcode(@RequestParam("id") Long id, HttpServletResponse response) throws IOException {
-        byte[] qrcodeBytes = pileService.getPileQrcode(id);
-        response.setContentType("image/png");
-        response.setHeader("Content-Disposition", "inline; filename=\"qrcode.png\"");
-        response.getOutputStream().write(qrcodeBytes);
-        response.getOutputStream().flush();
+    public CommonResult<String> getPileQrcode(@RequestParam("id") Long id) {
+        return success(pileService.getPileQrcode(id));
     }
 
     @GetMapping("/page")
