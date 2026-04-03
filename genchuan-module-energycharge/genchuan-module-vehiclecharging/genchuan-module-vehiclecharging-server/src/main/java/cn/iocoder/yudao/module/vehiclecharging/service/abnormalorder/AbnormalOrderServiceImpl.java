@@ -3,13 +3,16 @@ package cn.iocoder.yudao.module.vehiclecharging.service.abnormalorder;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.PageUtil;
 import cn.iocoder.yudao.framework.mybatis.core.util.MyBatisUtils;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.pilealarm.vo.NewPileAlarmRespVO;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.abnormalorder.vo.*;
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.abnormalorder.AbnormalOrderDO;
@@ -23,6 +26,7 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.vehiclecharging.enums.ErrorCodeConstants.*;
+import static com.github.yulichang.extension.kt.toolkit.KtWrappers.update;
 
 /**
  * 异常订单 Service 实现类
@@ -99,6 +103,24 @@ public class AbnormalOrderServiceImpl implements AbnormalOrderService {
                 reqVO
         );
         return new PageResult<>(page.getRecords(), page.getTotal());
+    }
+
+    @Override
+    public Boolean verifyAbnormalOrder(AbnormalOrderVerifyReqVO reqVO) {
+        UpdateWrapper<AbnormalOrderDO> updateWrapper = new UpdateWrapper<>();
+        // 批量 ID 条件
+        updateWrapper.in("id", reqVO.getIds());
+
+        // 要更新的字段
+        updateWrapper.set("abnormal_status", "已核实");
+        updateWrapper.set("check_user", SecurityFrameworkUtils.getLoginUserNickname());
+        updateWrapper.set("check_time", LocalDateTime.now());
+        updateWrapper.set("abnormal_reason", reqVO.getVerifyResult());
+        updateWrapper.set("remark", reqVO.getVerifyRemark());
+
+        abnormalOrderMapper.update(null, updateWrapper);
+
+        return true;
     }
 
 }

@@ -109,4 +109,11 @@ public class AbnormalOrderController {
     public CommonResult<PageResult<NewAbnormalOrderRespVO>> getAbnormalOrderPage(NewAbnormalOrderPageReqVO reqVO) {
         return CommonResult.success(abnormalOrderService.newgetAbnormalOrderPage(reqVO));
     }
+
+    @Operation(summary = "异常订单核实（批量）")
+    @PutMapping("/verify")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:abnormal_order:verify')")
+    public CommonResult<Boolean> verifyAbnormalOrder(@Valid @RequestBody AbnormalOrderVerifyReqVO reqVO) {
+        return CommonResult.success(abnormalOrderService.verifyAbnormalOrder(reqVO));
+    }
 }

@@ -67,4 +67,11 @@ public interface AbnormalOrderService {
      */
     PageResult<NewAbnormalOrderRespVO> newgetAbnormalOrderPage(NewAbnormalOrderPageReqVO reqVO);
 
+    /**
+     * 批量核实异常订单
+     * @param reqVO 核实参数
+     * @return 操作结果
+     */
+    Boolean verifyAbnormalOrder(AbnormalOrderVerifyReqVO reqVO);
+
 }
