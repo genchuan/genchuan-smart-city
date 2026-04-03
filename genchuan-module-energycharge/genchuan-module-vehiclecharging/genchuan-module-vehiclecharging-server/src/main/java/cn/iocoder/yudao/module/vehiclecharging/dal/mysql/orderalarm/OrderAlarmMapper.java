@@ -69,12 +69,9 @@ public interface OrderAlarmMapper extends BaseMapperX<OrderAlarmDO> {
     Map<String, Object> selectChartData(@Param("startTime") LocalDateTime startTime,
                                         @Param("endTime") LocalDateTime endTime);
 
-    /**
-     * 获取折线图数据（按日期分组）
-     */
     @Select("<script>" +
             "SELECT " +
-            "DATE(create_time) as date, " +
+            "DATE_FORMAT(create_time, '%Y-%m-%d') as date_str, " +
             "COUNT(*) as alarm_count, " +
             "SUM(CASE WHEN alarm_status IN ('2', '3') THEN 1 ELSE 0 END) as handle_count " +
             "FROM order_alarm " +
@@ -85,8 +82,8 @@ public interface OrderAlarmMapper extends BaseMapperX<OrderAlarmDO> {
             "<if test='endTime != null'>" +
             "   AND create_time &lt;= #{endTime}" +
             "</if>" +
-            "GROUP BY DATE(create_time) " +
-            "ORDER BY date ASC" +
+            "GROUP BY date_str " +
+            "ORDER BY date_str ASC" +
             "</script>")
     List<Map<String, Object>> selectLineChartData(@Param("startTime") LocalDateTime startTime,
                                                   @Param("endTime") LocalDateTime endTime);

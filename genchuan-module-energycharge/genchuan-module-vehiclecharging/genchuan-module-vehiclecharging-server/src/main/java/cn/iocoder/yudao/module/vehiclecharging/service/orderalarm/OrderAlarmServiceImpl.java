@@ -174,6 +174,7 @@ public class OrderAlarmServiceImpl implements OrderAlarmService {
 
     @Override
     public OrderAlarmChartRespVO getOrderAlarmChartData(OrderAlarmChartReqVO reqVO) {
+        OrderAlarmChartRespVO respVO = new OrderAlarmChartRespVO();
 
         // 1. 查询图表统计数据
         Map<String, Object> chartData = orderAlarmMapper.selectChartData(reqVO.getStartTime(), reqVO.getEndTime());
@@ -185,9 +186,8 @@ public class OrderAlarmServiceImpl implements OrderAlarmService {
         List<Map<String, Object>> pieDataList = orderAlarmMapper.selectPieChartData(reqVO.getStartTime(), reqVO.getEndTime());
 
         // 4. 构建响应对象
-        OrderAlarmChartRespVO respVO = new OrderAlarmChartRespVO();
 
-        // 4.1 设置基本统计数据 - 添加空值检查
+        // 4.1 设置基本统计数据
         Integer totalCount = chartData.get("total_count") != null ? ((Number) chartData.get("total_count")).intValue() : 0;
         Integer handledCount = chartData.get("handled_count") != null ? ((Number) chartData.get("handled_count")).intValue() : 0;
         respVO.setTotalCount(totalCount);
@@ -203,18 +203,20 @@ public class OrderAlarmServiceImpl implements OrderAlarmService {
             respVO.setHandleRate(BigDecimal.ZERO);
         }
 
-        // 4.2 设置折线图数据 - 添加空值检查
+        // 4.2 设置折线图数据
         List<OrderAlarmChartRespVO.LineData> lineData = new ArrayList<>();
         for (Map<String, Object> item : lineDataList) {
             OrderAlarmChartRespVO.LineData lineItem = new OrderAlarmChartRespVO.LineData();
-            lineItem.setDate(item.get("date") != null ? item.get("date").toString() : "");
+            // 将日期字符串转换为需要的格式
+            String dateStr = item.get("date_str") != null ? item.get("date_str").toString() : "";
+            lineItem.setDate(dateStr + " 00:00:00");
             lineItem.setAlarmCount(item.get("alarm_count") != null ? ((Number) item.get("alarm_count")).intValue() : 0);
             lineItem.setHandleCount(item.get("handle_count") != null ? ((Number) item.get("handle_count")).intValue() : 0);
             lineData.add(lineItem);
         }
         respVO.setLineData(lineData);
 
-        // 4.3 设置饼图数据 - 添加空值检查
+        // 4.3 设置饼图数据
         List<OrderAlarmChartRespVO.PieData> pieData = new ArrayList<>();
         for (Map<String, Object> item : pieDataList) {
             OrderAlarmChartRespVO.PieData pieItem = new OrderAlarmChartRespVO.PieData();
@@ -224,7 +226,7 @@ public class OrderAlarmServiceImpl implements OrderAlarmService {
         }
         respVO.setPieData(pieData);
 
-        // 4.4 设置卡片数据 - 添加空值检查
+        // 4.4 设置卡片数据
         OrderAlarmChartRespVO.CardData cardData = new OrderAlarmChartRespVO.CardData();
         cardData.setUnVerifyCount(chartData.get("unverify_count") != null ? ((Number) chartData.get("unverify_count")).intValue() : 0);
         cardData.setVerifiedCount(chartData.get("verified_count") != null ? ((Number) chartData.get("verified_count")).intValue() : 0);
