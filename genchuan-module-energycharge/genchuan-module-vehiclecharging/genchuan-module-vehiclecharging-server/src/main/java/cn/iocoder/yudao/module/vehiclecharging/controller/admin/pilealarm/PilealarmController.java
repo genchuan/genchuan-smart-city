@@ -125,7 +125,9 @@ public class PilealarmController {
     @Operation(summary = "充电桩告警 - 销单", description = "处置中 → 已销单")
     @PreAuthorize("@ss.hasPermission('vehiclecharging:pile_alarm:close')")
     public CommonResult<Boolean> closePileAlarm(
-            @RequestBody @Valid Long id) { // 直接接收 id，无VO
+            @RequestBody Map<String, Long> body) {
+        // 直接从 JSON 里拿 id
+        Long id = body.get("id");
         return success(pilealarmService.closePileAlarm(id));
     }
 
