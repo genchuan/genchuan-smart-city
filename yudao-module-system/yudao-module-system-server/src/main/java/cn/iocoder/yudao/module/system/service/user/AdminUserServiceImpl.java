@@ -22,8 +22,10 @@ import cn.iocoder.yudao.module.system.controller.admin.user.vo.user.UserPageReqV
 import cn.iocoder.yudao.module.system.controller.admin.user.vo.user.UserSaveReqVO;
 import cn.iocoder.yudao.module.system.dal.dataobject.dept.DeptDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.dept.UserPostDO;
+import cn.iocoder.yudao.module.system.dal.dataobject.permission.UserRoleDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.user.AdminUserDO;
 import cn.iocoder.yudao.module.system.dal.mysql.dept.UserPostMapper;
+import cn.iocoder.yudao.module.system.dal.mysql.permission.UserRoleMapper;
 import cn.iocoder.yudao.module.system.dal.mysql.user.AdminUserMapper;
 import cn.iocoder.yudao.module.system.service.dept.DeptService;
 import cn.iocoder.yudao.module.system.service.dept.PostService;
@@ -88,6 +90,9 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Resource
     private ConfigApi configApi;
 
+    @Resource
+    private UserRoleMapper userRoleMapper; // 新增：操作用户-角色关联表
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     @LogRecord(type = SYSTEM_USER_TYPE, subType = SYSTEM_USER_CREATE_SUB_TYPE, bizNo = "{{#user.id}}",
@@ -140,6 +145,13 @@ public class AdminUserServiceImpl implements AdminUserService {
         user.setStatus(CommonStatusEnum.ENABLE.getStatus()); // 默认开启
         user.setPassword(encodePassword(registerReqVO.getPassword())); // 加密密码
         userMapper.insert(user);
+
+        // 3. 新增：为用户自动分配固定角色 (角色ID = 168)
+        UserRoleDO userRole = new UserRoleDO();
+        userRole.setUserId(user.getId()); // 设置新注册用户的ID
+        userRole.setRoleId(168L); // 设置固定的角色ID为168
+        userRoleMapper.insert(userRole); // 执行插入关联表操作
+
         return user.getId();
     }
 
