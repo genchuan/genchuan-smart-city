@@ -13,6 +13,9 @@ public class ChargingStationPageReqVO extends PageParam {
     @Schema(description = "场站编号", example = "CS202503")
     private String stationCode;
 
+    @Schema(description = "区域编号", example = "1")
+    private Long areaId;
+
     @Schema(description = "场站名称", example = "泉州充电站")
     private String stationName;
 
