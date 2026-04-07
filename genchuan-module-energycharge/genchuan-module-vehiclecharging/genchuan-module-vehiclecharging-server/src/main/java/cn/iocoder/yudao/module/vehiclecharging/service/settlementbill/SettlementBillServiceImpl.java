@@ -45,7 +45,6 @@ public class SettlementBillServiceImpl implements SettlementBillService {
     private SettlementBillMapper settlementBillMapper;
 
     // ==================== 图表统计 ====================
-// ==================== 图表统计 ====================
     @Override
     public SettlementBillSummaryRespVO getSettlementBillChart(SettlementBillChartReqVO reqVO) {
         LambdaQueryWrapper<SettlementBillDO> qw = buildTimeQuery(reqVO.getTimeRangeStart(), reqVO.getTimeRangeEnd());
