@@ -5,23 +5,17 @@ import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.module.kitchen.controller.admin.common.upload.vo.UploadFileReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.common.upload.vo.UploadFileRespVO;
 
-import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.issue.IssueReqVO;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.file.FileUploadService;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import cn.iocoder.yudao.module.kitchen.vrv.utils.common.file.VrvFileUploadService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
@@ -33,7 +27,7 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 @Slf4j
 public class ComUploadController {
     @Resource
-    private FileUploadService fileUploadService;
+    private VrvFileUploadService vrvFileUploadService;
 
 
     @PostMapping("/upload-file")
@@ -45,7 +39,7 @@ public class ComUploadController {
         try {
 
             // 2. 上传文件到 MinIO
-            String fileUrl = fileUploadService.uploadAvatar(file);
+            String fileUrl = vrvFileUploadService.uploadAvatar(file);
 
             // 3. 构建文件信息对象
             Map<String, String> fileInfo = new HashMap<>();

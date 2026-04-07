@@ -47,4 +47,7 @@ public interface ErrorCodeConstants {
     ErrorCode PILE_QRCODE_NOT_EXISTS = new ErrorCode(500, "充电桩二维码内容不存在");
 
 
+    // ========== 结算单==========
+    ErrorCode SETTLEMENT_BILL_NOT_EXISTS = new ErrorCode(500, "结算单不存在");
+
 }

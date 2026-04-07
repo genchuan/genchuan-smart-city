@@ -12,10 +12,9 @@ import cn.iocoder.yudao.module.kitchen.dal.mysql.dictionary.illegaltypedict.Ille
 import cn.iocoder.yudao.module.kitchen.dal.mysql.enterpriseinfo.EnterpriseInfoMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.rectifynotice.RectifyNoticeMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.rectifyreview.RectifyReviewMapper;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.name.NameUtil;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.pdf.PdfGenerator;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.verify.VerifyUtil;
-import cn.iocoder.yudao.module.kitchen.service.rectifyreview.RectifyReviewService;
+import cn.iocoder.yudao.module.kitchen.vrv.utils.common.name.VrvNameUtil;
+import cn.iocoder.yudao.module.kitchen.vrv.utils.common.pdf.VrvPdfGenerator;
+import cn.iocoder.yudao.module.kitchen.vrv.utils.common.verify.VrvVerifyUtil;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -78,7 +77,7 @@ public class RectifyNoticeServiceImpl implements RectifyNoticeService {
 
         // ----------- 2. 创建通知书对象并设置基础信息 -----------
         RectifyNoticeDO notice = new RectifyNoticeDO();
-        notice.setNoticeCode(NameUtil.generateCode("RNTC"));
+        notice.setNoticeCode(VrvNameUtil.generateCode("RNTC"));
         notice.setRectifyReviewId(createReqVO.getRectifyReviewId());
         notice.setIssueTime(LocalDateTime.now());
         notice.setRectifyDeadline(createReqVO.getRectifyDeadline());
@@ -114,7 +113,7 @@ public class RectifyNoticeServiceImpl implements RectifyNoticeService {
      */
     private RectifyReviewDO validateRectifyReview(Long rectifyReviewId) {
         RectifyReviewDO reviewDO = rectifyReviewMapper.selectById(rectifyReviewId);
-        VerifyUtil.verifyNotNullWithMsg(reviewDO, "台账数据不能为空");
+        VrvVerifyUtil.verifyNotNullWithMsg(reviewDO, "台账数据不能为空");
 
         if (reviewDO.getRectifyNoticeCode() != null) {
             throw exception("已经下发整改书，请勿重复下发");
@@ -325,14 +324,14 @@ public class RectifyNoticeServiceImpl implements RectifyNoticeService {
     public ResponseEntity<byte[]> downloadRectifyNoticePdf(Long rectifyNoticeId) throws IOException {
         // 1. 根据 ID 获取整改复审记录
         RectifyNoticeDO rectifyNoticeDO = rectifyNoticeMapper.selectById(rectifyNoticeId);
-        VerifyUtil.verifyNotNullWithMsg(rectifyNoticeDO,"通知书不存在");
+        VrvVerifyUtil.verifyNotNullWithMsg(rectifyNoticeDO,"通知书不存在");
 
         // 2. 根据记录生成 HTML 内容（这里示例固定模板，可根据 review 动态替换）
         String htmlStr = rectifyNoticeDO.getNoticeContent();
-        VerifyUtil.verifyNotNullWithMsg(htmlStr,"HTML内容为空，请进行检查");
+        VrvVerifyUtil.verifyNotNullWithMsg(htmlStr,"HTML内容为空，请进行检查");
 
-        // 3. 调用 PdfGenerator 生成 PDF 响应
-        PdfGenerator pdfGenerator = new PdfGenerator();
+        // 3. 调用 VrvPdfGenerator 生成 PDF 响应
+        VrvPdfGenerator pdfGenerator = new VrvPdfGenerator();
         return pdfGenerator.generatePdfResponse(htmlStr);
     }
 

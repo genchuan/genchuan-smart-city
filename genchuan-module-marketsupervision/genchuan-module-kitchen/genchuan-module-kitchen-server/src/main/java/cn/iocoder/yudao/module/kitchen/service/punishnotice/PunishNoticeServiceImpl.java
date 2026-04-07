@@ -10,14 +10,13 @@ import cn.iocoder.yudao.module.kitchen.dal.dataobject.dictionary.illegaltypedict
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.enterpriseinfo.EnterpriseInfoDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.punishnotice.PunishNoticeDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.punishreviewledger.PunishReviewLedgerDO;
-import cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifynotice.RectifyNoticeDO;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.dictionary.illegaltypedict.IllegalTypeDictMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.enterpriseinfo.EnterpriseInfoMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.punishnotice.PunishNoticeMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.punishreviewledger.PunishReviewLedgerMapper;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.name.NameUtil;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.pdf.PdfGenerator;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.verify.VerifyUtil;
+import cn.iocoder.yudao.module.kitchen.vrv.utils.common.name.VrvNameUtil;
+import cn.iocoder.yudao.module.kitchen.vrv.utils.common.pdf.VrvPdfGenerator;
+import cn.iocoder.yudao.module.kitchen.vrv.utils.common.verify.VrvVerifyUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -25,9 +24,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 
@@ -102,7 +100,7 @@ public class PunishNoticeServiceImpl implements PunishNoticeService {
 
         // 1. 校验处罚复审台账是否存在
         PunishReviewLedgerDO punishReviewDO = punishReviewLedgerMapper.selectById(reqVO.getPunishReviewId());
-        VerifyUtil.verifyNotNullWithMsg(punishReviewDO, "处罚复审台账不存在");
+        VrvVerifyUtil.verifyNotNullWithMsg(punishReviewDO, "处罚复审台账不存在");
 
         if (punishReviewDO.getPunishNoticeId() != null) {
             throw exception("已经下发处罚通知书，请勿重复下发");
@@ -111,7 +109,7 @@ public class PunishNoticeServiceImpl implements PunishNoticeService {
 
         // 2. 创建处罚通知书对象
         PunishNoticeDO notice = new PunishNoticeDO();
-        notice.setNoticeCode(NameUtil.generateCode("PNTC")); // 编号自动生成
+        notice.setNoticeCode(VrvNameUtil.generateCode("PNTC")); // 编号自动生成
         notice.setPunishReviewId(reqVO.getPunishReviewId());
         notice.setIssueTime(LocalDateTime.now());
 
@@ -143,24 +141,24 @@ public class PunishNoticeServiceImpl implements PunishNoticeService {
     @Transactional(rollbackFor = Exception.class)
     public String generatePunishNoticeDraft(DraftPunishNoticeReq reqVO) {
         System.out.println("cs2026-03-24 10:21:12:1556");
-        VerifyUtil.verifyNotNullSimple(reqVO.getPunishReviewNoticeId());
+        VrvVerifyUtil.verifyNotNullSimple(reqVO.getPunishReviewNoticeId());
         //1.获取处罚通知书
         PunishNoticeDO punishNoticeDO = punishNoticeMapper.selectById(reqVO.getPunishReviewNoticeId());
-        VerifyUtil.verifyNotNullWithMsg(punishNoticeDO,"处罚通知书不能为空");
+        VrvVerifyUtil.verifyNotNullWithMsg(punishNoticeDO,"处罚通知书不能为空");
 
         //2.获取处罚通知台账
         PunishReviewLedgerDO punishReviewLedgerDO =
                 punishReviewLedgerMapper.selectById(punishNoticeDO.getPunishReviewId());
-        VerifyUtil.verifyNotNullWithMsg(punishReviewLedgerDO,"处罚台账记录不存在");
+        VrvVerifyUtil.verifyNotNullWithMsg(punishReviewLedgerDO,"处罚台账记录不存在");
 
         //3.获取企业信息
         EnterpriseInfoDO enterpriseInfoDO = enterpriseInfoMapper.selectById(punishReviewLedgerDO.getEntId());
-        VerifyUtil.verifyNotNullWithMsg(enterpriseInfoDO,"企业信息不存在");
+        VrvVerifyUtil.verifyNotNullWithMsg(enterpriseInfoDO,"企业信息不存在");
 
         //4.违规类型字典
         IllegalTypeDictDO illegalTypeDictDO =
                 illegalTypeDictMapper.selectById(punishReviewLedgerDO.getIllegalTypeId());
-        VerifyUtil.verifyNotNullWithMsg(illegalTypeDictDO,"违规类型不存在");
+        VrvVerifyUtil.verifyNotNullWithMsg(illegalTypeDictDO,"违规类型不存在");
 
         // ================== 关键：组装模板 VO ==================
         PunishNoticeTemplateReqVO template = new PunishNoticeTemplateReqVO();
@@ -213,14 +211,14 @@ public class PunishNoticeServiceImpl implements PunishNoticeService {
     public ResponseEntity<byte[]> downloadRectifyNoticePdf(Long punishNoticeId) {
         // 1. 根据 ID 获取整改复审记录
         PunishNoticeDO punishNoticeDO = punishNoticeMapper.selectById(punishNoticeId);
-        VerifyUtil.verifyNotNullWithMsg(punishNoticeDO,"通知书不存在");
+        VrvVerifyUtil.verifyNotNullWithMsg(punishNoticeDO,"通知书不存在");
 
         // 2. 根据记录生成 HTML 内容（这里示例固定模板，可根据 review 动态替换）
         String htmlStr = punishNoticeDO.getDecisionContent();
-        VerifyUtil.verifyNotNullWithMsg(htmlStr,"HTML内容为空，请进行检查");
+        VrvVerifyUtil.verifyNotNullWithMsg(htmlStr,"HTML内容为空，请进行检查");
 
-        // 3. 调用 PdfGenerator 生成 PDF 响应
-        PdfGenerator pdfGenerator = new PdfGenerator();
+        // 3. 调用 VrvPdfGenerator 生成 PDF 响应
+        VrvPdfGenerator pdfGenerator = new VrvPdfGenerator();
         return pdfGenerator.generatePdfResponse(htmlStr);
     }
 
