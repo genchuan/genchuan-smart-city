@@ -11,7 +11,6 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.ca
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.issue.IssueReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.upload.UploadFileReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.upload.UploadFileRespVO;
-import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.RectifyReviewLedgerRespVO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.dictionary.cancelreasondict.CancelReasonDictDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.entrectifyrecord.EntRectifyRecordDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.punishnotice.PunishNoticeDO;
@@ -24,15 +23,13 @@ import cn.iocoder.yudao.module.kitchen.dal.mysql.punishnotice.PunishNoticeMapper
 import cn.iocoder.yudao.module.kitchen.dal.mysql.punishreviewledger.PunishReviewLedgerMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.rectifynotice.RectifyNoticeMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.rectifyreview.RectifyReviewMapper;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.codeutils.CodeQueryUtils;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.file.FileUploadService;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.name.NameUtil;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.pdf.PdfGenerator;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.verify.VerifyUtil;
+import cn.iocoder.yudao.module.kitchen.vrv.utils.common.file.VrvFileUploadService;
+import cn.iocoder.yudao.module.kitchen.vrv.utils.common.name.VrvNameUtil;
+import cn.iocoder.yudao.module.kitchen.vrv.utils.common.pdf.VrvPdfGenerator;
+import cn.iocoder.yudao.module.kitchen.vrv.utils.common.verify.VrvVerifyUtil;
 import cn.iocoder.yudao.module.kitchen.service.punishnotice.PunishNoticeService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -53,7 +50,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -92,7 +88,7 @@ public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService 
     private PunishNoticeService punishNoticeService;
 
     @Resource
-    private FileUploadService fileUploadService;
+    private VrvFileUploadService vrvFileUploadService;
     @Override
     public Long createPunishReviewLedger(PunishReviewLedgerSaveReqVO createReqVO) {
         // 插入
@@ -217,7 +213,7 @@ public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService 
         reqVO.setLegalBasis("《中华人民共和国食品安全法》第三十条");
         punishLedger.setLegalBasis(reqVO.getLegalBasis());
 
-        punishLedger.setLedgerCode(NameUtil.generateCode("PNRL")); // 台账编号
+        punishLedger.setLedgerCode(VrvNameUtil.generateCode("PNRL")); // 台账编号
         punishLedger.setEntId(entId);
         punishLedger.setIllegalTypeId(ledger.getIllegalTypeId());
         punishLedger.setIllegalLevelId(ledger.getIllegalLevelId());
@@ -280,7 +276,7 @@ public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService 
         }
 
         CancelReasonDictDO cancelReason = cancelReasonDictMapper.selectById(reqVO.getCancelReasonId());
-        VerifyUtil.verifyNotNullWithMsg(cancelReason, "请选择正确的撤销原因");
+        VrvVerifyUtil.verifyNotNullWithMsg(cancelReason, "请选择正确的撤销原因");
 
         // =========================
         // 4. 更新台账状态
@@ -358,12 +354,12 @@ public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService 
         // 1. 校验整改复审台账是否存在
 //        EntRectifyRecordDO entRectifyRecordDO = entRectifyRecordMapper.selectById(reqVO.getEntRectifyRecordId());
         PunishReviewLedgerDO punishReviewLedgerDO = punishReviewLedgerMapper.selectById(reqVO.getPunishReviewLedgerId());
-        VerifyUtil.verifyNotNullWithMsg(punishReviewLedgerDO,"处罚台账记录不存在数据库");
+        VrvVerifyUtil.verifyNotNullWithMsg(punishReviewLedgerDO,"处罚台账记录不存在数据库");
 
 
         try {
             // 2. 上传文件到 MinIO
-            String fileUrl = fileUploadService.uploadAvatar(file);
+            String fileUrl = vrvFileUploadService.uploadAvatar(file);
 
             // 3. 构建文件信息对象
             Map<String, String> fileInfo = new HashMap<>();
@@ -434,12 +430,12 @@ public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService 
     @Override
     public ResponseEntity<byte[]> downloadRectifyNoticePdfBatch(List<Long> punishNoticeIds) throws IOException {
         System.out.println("cs2026-03-24 10:23:09:6586");
-        VerifyUtil.verifyNotNullWithMsg(punishNoticeIds, "ID不能为空");
+        VrvVerifyUtil.verifyNotNullWithMsg(punishNoticeIds, "ID不能为空");
 
         // 1. 查询通知书数据
         List<PunishNoticeDO> list = punishNoticeMapper.selectBatchIds(punishNoticeIds);
         log.info("批量通知书id："+punishNoticeIds);
-        VerifyUtil.verifyNotNullWithMsg(list, "通知书不存在");
+        VrvVerifyUtil.verifyNotNullWithMsg(list, "通知书不存在");
 
         // 2. 创建ZIP流
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -452,7 +448,7 @@ public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService 
             }
 
             // 3. HTML → PDF
-            PdfGenerator pdfGenerator = new PdfGenerator();
+            VrvPdfGenerator pdfGenerator = new VrvPdfGenerator();
             byte[] pdfBytes = pdfGenerator.generatePdfResponse(html).getBody();
             if (pdfBytes == null || pdfBytes.length == 0) {
                 log.warn("PDF生成失败，处罚决定书ID：{}", item.getId());

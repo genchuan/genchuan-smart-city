@@ -7,7 +7,6 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.add.AddAiAlertMessageReq;
 import cn.iocoder.yudao.module.kitchen.controller.admin.dictionary.illegalleveldict.vo.IllegalLevelDictPageReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.enterpriseinfo.vo.EnterpriseInfoPageReqVO;
-import cn.iocoder.yudao.module.kitchen.controller.admin.enterpriseinfo.vo.EnterpriseInfoRespVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.add.AddEntRectifyRecordReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifynotice.vo.RectifyNoticeSaveReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.*;
@@ -28,10 +27,10 @@ import cn.iocoder.yudao.module.kitchen.dal.mysql.aialertmessage.AiAlertMessageMa
 import cn.iocoder.yudao.module.kitchen.dal.mysql.dictionary.illegaltypedict.IllegalTypeDictMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.rectifynotice.RectifyNoticeMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.rectifyreview.RectifyReviewMapper;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.file.FileUploadService;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.name.NameUtil;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.pdf.PdfGenerator;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.verify.VerifyUtil;
+import cn.iocoder.yudao.module.kitchen.vrv.utils.common.file.VrvFileUploadService;
+import cn.iocoder.yudao.module.kitchen.vrv.utils.common.name.VrvNameUtil;
+import cn.iocoder.yudao.module.kitchen.vrv.utils.common.pdf.VrvPdfGenerator;
+import cn.iocoder.yudao.module.kitchen.vrv.utils.common.verify.VrvVerifyUtil;
 import cn.iocoder.yudao.module.kitchen.service.aialertmessage.AiAlertMessageService;
 import cn.iocoder.yudao.module.kitchen.service.dictionary.cancelreasondict.CancelReasonDictService;
 import cn.iocoder.yudao.module.kitchen.service.dictionary.illegalleveldict.IllegalLevelDictService;
@@ -56,7 +55,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -94,7 +92,7 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
     private AiAlertMessageMapper aiAlertMessageMapper;
 
     @Resource
-    private FileUploadService fileUploadService;
+    private VrvFileUploadService vrvFileUploadService;
 
     @Resource
     private IllegalTypeDictMapper illegalTypeDictMapper;
@@ -344,7 +342,7 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
 
         CancelReasonDictDO cancelReasonDictDO = cancelReasonDictService.getCancelReasonDict(reqVO.getCancelReasonId());
 
-        VerifyUtil.verifyNotNullWithMsg(cancelReasonDictDO,"请选择正确的撤销原因");
+        VrvVerifyUtil.verifyNotNullWithMsg(cancelReasonDictDO,"请选择正确的撤销原因");
         reviewDO.setCancelReasonId(reqVO.getCancelReasonId());
 
         //6.更新复审
@@ -363,22 +361,22 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
             throw exception("企业ID不能为空");
         }
         //校验预警
-        VerifyUtil.verifyNotNullWithMsg(reqVO.getAiAlertMessageId(),"预警id不能为空");
+        VrvVerifyUtil.verifyNotNullWithMsg(reqVO.getAiAlertMessageId(),"预警id不能为空");
         AiAlertMessageDO aiAlertMessageDO = aiAlertMessageMapper.selectById(reqVO.getAiAlertMessageId());
-        VerifyUtil.verifyNotNullWithMsg(aiAlertMessageDO,"Ai预警不存在");
+        VrvVerifyUtil.verifyNotNullWithMsg(aiAlertMessageDO,"Ai预警不存在");
         if (aiAlertMessageDO.getRectifyReviewId()!=null){
             throw exception("该预警已产生整改台账记录，请勿重复发送");
         }
         //校验违规类型字典
-        VerifyUtil.verifyNotNullWithMsg(aiAlertMessageDO.getAiAbilityCode(),"违规类型不存在");
+        VrvVerifyUtil.verifyNotNullWithMsg(aiAlertMessageDO.getAiAbilityCode(),"违规类型不存在");
         IllegalTypeDictDO illegalTypeDictDO = illegalTypeDictMapper.selectByTypeCode(aiAlertMessageDO.getAiAbilityCode());
-        VerifyUtil.verifyNotNullWithMsg(illegalTypeDictDO,"违规类型字典不存在");
+        VrvVerifyUtil.verifyNotNullWithMsg(illegalTypeDictDO,"违规类型字典不存在");
 
         // ========= 1.创建DO对象 =========
         RectifyReviewDO insertDO = new RectifyReviewDO();
 
         // ========= 2.台账编号（自动生成） =========
-        insertDO.setLedgerCode(NameUtil.generateCode("RECTIFY"));
+        insertDO.setLedgerCode(VrvNameUtil.generateCode("RECTIFY"));
 
         // ========= 3.企业ID（前端传入） =========
         insertDO.setEntId(reqVO.getEntId());
@@ -461,7 +459,7 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
         insertDO.setReviewBy(currentUserId);
 
         // ========= 10.执法复审台账编号（临时写死） =========
-        insertDO.setLawLedgerCode(NameUtil.generateCode("LAW"));
+        insertDO.setLawLedgerCode(VrvNameUtil.generateCode("LAW"));
 
         // ========= 11.入库 =========
         rectifyReviewMapper.insert(insertDO);
@@ -469,7 +467,7 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
 
         //12.修改预警的绑定 整改复审id
         AiAlertMessageDO updateAiAlertMessageDO = aiAlertMessageMapper.selectById(reqVO.getAiAlertMessageId());
-        VerifyUtil.verifyNotNullWithMsg(updateAiAlertMessageDO,"预警不存在数据库");
+        VrvVerifyUtil.verifyNotNullWithMsg(updateAiAlertMessageDO,"预警不存在数据库");
 
         updateAiAlertMessageDO.setRectifyReviewId(insertDO.getId());
         aiAlertMessageMapper.updateById(updateAiAlertMessageDO);
@@ -483,12 +481,12 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
     public UploadEvidenceFileRespVO uploadEvidenceFile(UploadEvidenceFileReqVO reqVO, MultipartFile file) {
         // 1. 校验整改复审台账是否存在
         RectifyReviewDO rectifyReviewDO = rectifyReviewMapper.selectById(reqVO.getRectifyReviewId());
-        VerifyUtil.verifyNotNullWithMsg(rectifyReviewDO,"整改复审台账记录不存在数据库");
+        VrvVerifyUtil.verifyNotNullWithMsg(rectifyReviewDO,"整改复审台账记录不存在数据库");
 
 
         try {
             // 2. 上传文件到 MinIO
-            String fileUrl = fileUploadService.uploadAvatar(file);
+            String fileUrl = vrvFileUploadService.uploadAvatar(file);
 
             // 3. 构建文件信息对象
             Map<String, String> fileInfo = new HashMap<>();
@@ -594,7 +592,7 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
 
         //获取整改台账
         RectifyReviewDO rectifyReviewDO = rectifyReviewMapper.selectById(rectifyReviewId);
-        VerifyUtil.verifyNotNullWithMsg(rectifyReviewDO,"整改台账不存在");
+        VrvVerifyUtil.verifyNotNullWithMsg(rectifyReviewDO,"整改台账不存在");
 
 
 
@@ -619,12 +617,12 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
 
     @Override
     public ResponseEntity<byte[]> downloadRectifyNoticePdfBatch(List<Long> rectifyNoticeIds) throws IOException {
-        VerifyUtil.verifyNotNullWithMsg(rectifyNoticeIds, "ID不能为空");
+        VrvVerifyUtil.verifyNotNullWithMsg(rectifyNoticeIds, "ID不能为空");
 
         // 1. 查询通知书数据
         List<RectifyNoticeDO> list = rectifyNoticeMapper.selectBatchIds(rectifyNoticeIds);
         log.info("批量通知书id："+rectifyNoticeIds);
-        VerifyUtil.verifyNotNullWithMsg(list, "通知书不存在");
+        VrvVerifyUtil.verifyNotNullWithMsg(list, "通知书不存在");
 
         // 2. 创建ZIP流
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -637,7 +635,7 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
             }
 
             // 3. HTML → PDF
-            PdfGenerator pdfGenerator = new PdfGenerator();
+            VrvPdfGenerator pdfGenerator = new VrvPdfGenerator();
             byte[] pdfBytes = pdfGenerator.generatePdfResponse(html).getBody();
             if (pdfBytes == null || pdfBytes.length == 0) {
                 log.warn("PDF生成失败，通知书ID：{}", item.getId());
@@ -707,7 +705,7 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
 //        Long noticeId = rectifyNoticeService.createRectifyNotice(rectifyNoticeSaveReqVO);
 
         //5.创建企业整改记录
-        VerifyUtil.verifyNotNullWithMsg(reviewDO.getRectifyNoticeId(),"整改通知书不存在");
+        VrvVerifyUtil.verifyNotNullWithMsg(reviewDO.getRectifyNoticeId(),"整改通知书不存在");
         AddEntRectifyRecordReqVO addEntRectifyRecordReqVO = new AddEntRectifyRecordReqVO();
         addEntRectifyRecordReqVO.setRectifyNoticeId(reviewDO.getRectifyNoticeId());
 

@@ -143,6 +143,18 @@
             <version>8.5.12</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.5.3</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.5.3</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>

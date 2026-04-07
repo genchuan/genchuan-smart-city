@@ -20,6 +20,7 @@ public interface ChargingStationMapper extends BaseMapperX<ChargingStationDO> {
                 .likeIfPresent(ChargingStationDO::getAddress, reqVO.getAddress())
                 .eqIfPresent(ChargingStationDO::getCoopMode, reqVO.getCoopMode())
                 .eqIfPresent(ChargingStationDO::getStationStatus, reqVO.getStationStatus())
+                .eqIfPresent(ChargingStationDO::getAreaId, reqVO.getAreaId())
                 .orderByDesc(ChargingStationDO::getId));
     }
 

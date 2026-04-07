@@ -31,8 +31,23 @@ public interface ErrorCodeConstants {
 
     // ========== 订单告警 ==========
     ErrorCode ORDER_ALARM_NOT_EXISTS = new ErrorCode(500, "订单告警不存在");
+    // ========== 订单告警状态错误==========
+    ErrorCode ORDER_ALARM_STATUS_ERROR = new ErrorCode(500, "订单告警状态错误");
+    // ========== 订单不存在==========
+    ErrorCode ORDER_NOT_EXISTS = new ErrorCode(500, "订单不存在");
 
     // ========== 订单退款==========
     ErrorCode ORDER_REFUND_NOT_EXISTS = new ErrorCode(500, "订单退款不存在");
+
+    ErrorCode PILE_NOT_EXISTS = new ErrorCode(500, "充电桩不存在");
+    ErrorCode PILE_CODE_DUPLICATE = new ErrorCode(500, "充电桩编号已存在");
+    ErrorCode PILE_STATUS_NOT_DEBUGGING = new ErrorCode(500, "充电桩状态不是未调试，无法调试");
+    ErrorCode PILE_STATUS_NOT_ENABLED = new ErrorCode(500, "充电桩状态不是已调试，无法启用");
+    ErrorCode PILE_STATUS_NOT_ENABLED_FOR_DISABLE = new ErrorCode(500, "充电桩状态不是已启用，无法进行停用操作");
+    ErrorCode PILE_QRCODE_NOT_EXISTS = new ErrorCode(500, "充电桩二维码内容不存在");
+
+
+    // ========== 结算单==========
+    ErrorCode SETTLEMENT_BILL_NOT_EXISTS = new ErrorCode(500, "结算单不存在");
 
 }
