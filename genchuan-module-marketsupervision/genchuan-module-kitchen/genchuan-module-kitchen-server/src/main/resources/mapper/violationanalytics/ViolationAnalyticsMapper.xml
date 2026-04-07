@@ -4,25 +4,52 @@
 <mapper namespace="cn.iocoder.yudao.module.kitchen.dal.mysql.violationanalytics.ViolationAnalyticsMapper">
 
     <!-- 列表查询（使用显式 JOIN，避免旧式逗号连接，并处理保留字 rank） -->
+    <!-- 列表查询（使用显式 JOIN，避免旧式逗号连接，并处理保留字 rank） -->
     <select id="selectViolationAnalyticsList"
             resultType="cn.iocoder.yudao.module.kitchen.controller.admin.violationanalytics.vo.page.ViolationAnalyticsPageResp">
         SELECT
-        ei.id AS entId,
-        ei.ent_name AS entName,
-        COUNT(DISTINCT aim.id) AS alarmCount,
-        COUNT(DISTINCT rr.id) AS violationCount,
-        0 AS deviceNormalRate,
-        0 AS rectifyFinishRate,
-        1 AS `rank`           <!-- rank 为 MySQL 保留字，使用反引号转义 -->
-        FROM ai_alert_message aim
-        INNER JOIN rectify_review rr ON aim.rectify_review_id = rr.id
-        INNER JOIN enterprise_info ei ON rr.ent_id = ei.id
-        WHERE aim.deleted = 0
-        AND rr.deleted = 0
-        AND ei.deleted = 0
-        GROUP BY ei.id, ei.ent_name
-        ORDER BY violationCount DESC
-
+            t.entId,
+            t.entName,
+            t.alarmCount,
+            t.violationCount,
+            t.deviceNormalRate,
+            t.rectifyFinishRate,
+            -- 自动排名：按违规次数降序，排名 1、2、3、4...
+            RANK() OVER (ORDER BY t.violationCount DESC) AS `rank`
+        FROM (
+                 SELECT
+                     ei.id AS entId,
+                     ei.ent_name AS entName,
+                     COUNT(DISTINCT aim.id) AS alarmCount,
+                     COUNT(DISTINCT rr.id) AS violationCount,
+                     ROUND(
+                                 (COUNT(DISTINCT CASE WHEN sd.status = '在线' THEN sd.device_code END)
+                                     / COUNT(DISTINCT sd.device_code)) * 100,
+                                 2
+                         ) AS deviceNormalRate,
+                     ROUND(
+                                 (COUNT(DISTINCT CASE WHEN rr.review_status = '已完成' THEN rr.id END)
+                                     / COUNT(DISTINCT rr.id)) * 100,
+                                 2
+                         ) AS rectifyFinishRate
+                 FROM ai_alert_message aim
+                          INNER JOIN rectify_review rr ON aim.rectify_review_id = rr.id
+                          INNER JOIN enterprise_info ei ON rr.ent_id = ei.id
+                          INNER JOIN sys_device sd ON aim.device_code = sd.device_code
+                 WHERE aim.deleted = 0
+                   AND rr.deleted = 0
+                   AND ei.deleted = 0
+                   AND sd.deleted = 0
+                    <!-- 拼接时间范围 -->
+                    <if test="beginTime != null">
+                        AND aim.create_time &gt;= #{beginTime}
+                    </if>
+                    <if test="endTime != null">
+                        AND aim.create_time &lt; #{endTime}
+                    </if>
+                 GROUP BY ei.id, ei.ent_name
+             ) t
+        ORDER BY t.violationCount DESC
     </select>
 
     <!-- 总数查询 -->
@@ -31,9 +58,138 @@
         FROM ai_alert_message aim
                  INNER JOIN rectify_review rr ON aim.rectify_review_id = rr.id
                  INNER JOIN enterprise_info ei ON rr.ent_id = ei.id
+                 INNER JOIN sys_device sd ON aim.device_code = sd.device_code
         WHERE aim.deleted = 0
           AND rr.deleted = 0
           AND ei.deleted = 0
+          AND sd.deleted = 0
+            <!-- 拼接时间范围 -->
+            <if test="beginTime != null">
+                AND aim.create_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                AND aim.create_time &lt; #{endTime}
+            </if>
+--         GROUP BY ei.id, ei.ent_name
     </select>
+    <select id="drillAlarmList"
+            resultType="cn.iocoder.yudao.module.kitchen.dal.dataobject.aialertmessage.AiAlertMessageDO">
+
+        SELECT
+            aim.*
+        FROM ai_alert_message aim
+        INNER JOIN rectify_review rr ON aim.rectify_review_id = rr.id
+        INNER JOIN enterprise_info ei ON rr.ent_id = ei.id
+        INNER JOIN sys_device sd ON aim.device_code = sd.device_code
+        WHERE aim.deleted = 0
+        AND rr.deleted = 0
+        AND ei.deleted = 0
+        AND sd.deleted = 0
+        <!-- 拼接时间范围 -->
+        <if test="beginTime != null">
+            AND aim.create_time &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null">
+            AND aim.create_time &lt; #{endTime}
+        </if>
+        <if test="entId != null">
+            AND rr.ent_id = #{entId}
+        </if>
+    </select>
+    <select id="drillrectifyReviewDOList"
+            resultType="cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifyreview.RectifyReviewDO">
+
+        SELECT
+        rr.*
+        FROM ai_alert_message aim
+        INNER JOIN rectify_review rr ON aim.rectify_review_id = rr.id
+        INNER JOIN enterprise_info ei ON rr.ent_id = ei.id
+        INNER JOIN sys_device sd ON aim.device_code = sd.device_code
+        WHERE aim.deleted = 0
+        AND rr.deleted = 0
+        AND ei.deleted = 0
+        AND sd.deleted = 0
+        <!-- 拼接时间范围 -->
+        <if test="beginTime != null">
+            AND aim.create_time &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null">
+            AND aim.create_time &lt; #{endTime}
+        </if>
+        <if test="entId != null">
+            AND rr.ent_id = #{entId}
+        </if>
+    </select>
+    <select id="drillNormalSysDeviceDOList"
+            resultType="cn.iocoder.yudao.module.kitchen.dal.dataobject.sysdevice.SysDeviceDO">
+        SELECT
+         distinct sd.*
+        FROM ai_alert_message aim
+        INNER JOIN rectify_review rr ON aim.rectify_review_id = rr.id
+        INNER JOIN enterprise_info ei ON rr.ent_id = ei.id
+        INNER JOIN sys_device sd ON aim.device_code = sd.device_code
+        WHERE aim.deleted = 0
+        AND rr.deleted = 0
+        AND ei.deleted = 0
+        AND sd.deleted = 0
+        <!-- 只查【在线】设备 -->
+        AND sd.status = '在线'
+        <!-- 拼接时间范围 -->
+        <if test="beginTime != null">
+            AND aim.create_time &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null">
+            AND aim.create_time &lt; #{endTime}
+        </if>
+        <if test="entId != null">
+            AND rr.ent_id = #{entId}
+        </if>
+    </select>
+    <select id="drillFinishRectifyReviewDOList"
+            resultType="cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifyreview.RectifyReviewDO">
+        SELECT
+        rr.*
+        FROM ai_alert_message aim
+        INNER JOIN rectify_review rr ON aim.rectify_review_id = rr.id
+        INNER JOIN enterprise_info ei ON rr.ent_id = ei.id
+        INNER JOIN sys_device sd ON aim.device_code = sd.device_code
+        WHERE aim.deleted = 0
+        AND rr.deleted = 0
+        AND ei.deleted = 0
+        AND sd.deleted = 0
+        and rr.review_status = '已完成'
+        <!-- 拼接时间范围 -->
+        <if test="beginTime != null">
+            AND aim.create_time &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null">
+            AND aim.create_time &lt; #{endTime}
+        </if>
+        <if test="entId != null">
+            AND rr.ent_id = #{entId}
+        </if>
+    </select>
+    <!--    <select id="drillViolationAnalyticsCount" resultType="java.lang.Long">-->
+<!--        SELECT-->
+<!--        count(aim.id)-->
+<!--        FROM ai_alert_message aim-->
+<!--        INNER JOIN rectify_review rr ON aim.rectify_review_id = rr.id-->
+<!--        INNER JOIN enterprise_info ei ON rr.ent_id = ei.id-->
+<!--        INNER JOIN sys_device sd ON aim.device_code = sd.device_code-->
+<!--        WHERE aim.deleted = 0-->
+<!--        AND rr.deleted = 0-->
+<!--        AND ei.deleted = 0-->
+<!--        AND sd.deleted = 0-->
+<!--        &lt;!&ndash; 拼接时间范围 &ndash;&gt;-->
+<!--        <if test="beginTime != null">-->
+<!--            AND aim.create_time &gt;= #{beginTime}-->
+<!--        </if>-->
+<!--        <if test="endTime != null">-->
+<!--            AND aim.create_time &lt; #{endTime}-->
+<!--        </if>-->
+<!--        <if test="entId != null">-->
+<!--            AND rr.ent_id = #{entId}-->
+<!--        </if>-->
+<!--    </select>-->
 
 </mapper>

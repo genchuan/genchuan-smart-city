@@ -1,19 +1,18 @@
-package cn.iocoder.yudao.module.kitchen.controller.admin.violationanalytics.vo.page;
+package cn.iocoder.yudao.module.kitchen.controller.admin.violationanalytics.vo.drill;
 
 
 
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Schema(description = "企业风险报表 Request VO")
-public class ViolationAnalyticsPageReq extends PageParam {
+public class ViolationAnalyticsDrillReq extends PageParam {
 
     // ====================== 【必填：区分月报 / 自定义报表】 ======================
 //    @Schema(description = "报表类型 1-企业月度评估报告 2-自定义报表", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -34,9 +33,14 @@ public class ViolationAnalyticsPageReq extends PageParam {
     private LocalDateTime endTime;
 
     // ====================== 【企业维度】 ======================
-//    @Schema(description = "企业ID")
-//    private Long entId;
+    @Schema(description = "企业ID")
+    @NotNull(message = "企业id不能为空")
+    private Long entId;
 
+    // ====================== 【钻取维度】 ======================
+
+    @Schema(description = "钻取纬度,值有告警/违规/正常设备/整改完成。null表示全选")
+    private String drillDimension;
 //    @Schema(description = "企业名称（模糊查询）")
 //    private String entName;
 
