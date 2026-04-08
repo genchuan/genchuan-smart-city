@@ -1,1 +1,0 @@
-ALTER TABLE `student_info` ADD COLUMN `grade` VARCHAR(4) DEFAULT NULL COMMENT '年级' AFTER `major`;
