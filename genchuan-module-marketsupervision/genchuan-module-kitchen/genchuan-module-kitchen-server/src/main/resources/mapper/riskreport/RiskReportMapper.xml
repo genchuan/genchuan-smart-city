@@ -47,6 +47,10 @@
         <if test="entName != null and entName != ''">
             AND e.ent_name LIKE CONCAT('%', #{entName}, '%')
         </if>
+        <!-- ====================== 新增：报表编号筛选 ====================== -->
+        <if test="reportNo != null and reportNo != ''">
+            AND CONCAT('REPORT', DATE_FORMAT(NOW(), '%Y%m'), r.ent_id) LIKE CONCAT('%', #{reportNo}, '%')
+        </if>
         <!-- 按月分组 = 企业月报 -->
         GROUP BY r.ent_id, DATE_FORMAT(r.create_time, '%Y-%m')
 
@@ -82,6 +86,10 @@
                                 </if>
                                 <if test="entName != null and entName != ''">
                                     AND e.ent_name LIKE CONCAT('%', #{entName}, '%')
+                                </if>
+                                <!-- ====================== 新增：报表编号筛选 ====================== -->
+                                <if test="reportNo != null and reportNo != ''">
+                                    AND CONCAT('REPORT', DATE_FORMAT(NOW(), '%Y%m'), r.ent_id) LIKE CONCAT('%', #{reportNo}, '%')
                                 </if>
                                  GROUP BY r.ent_id, DATE_FORMAT(r.create_time, '%Y-%m')
                              ) AS temp

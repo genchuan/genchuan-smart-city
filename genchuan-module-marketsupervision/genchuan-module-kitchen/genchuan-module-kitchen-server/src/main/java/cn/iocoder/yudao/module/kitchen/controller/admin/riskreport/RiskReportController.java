@@ -45,7 +45,7 @@ public class RiskReportController {
             @RequestBody EntReportPageResp resp,
             HttpServletResponse response
     ) throws Exception {
-        // 前端传 1 条 → 包装成 list → 直接用你现有的工具类导出
+        // 前端传 1 条 → 包装成 list → 直接用现有的工具类导出
         List<EntReportPageResp> list = Collections.singletonList(resp);
         VrvPdfGenerator.listExportPdf(
                 response,
@@ -72,7 +72,7 @@ public class RiskReportController {
         );
     }
     @GetMapping("/export-pdf")
-    @Operation(summary = "（可用但不推荐）导出 PDF")
+    @Operation(summary = "(勿用)（可用但不推荐）导出 PDF",hidden = true)
     @ApiAccessLog(operateType = EXPORT)
 //    @SysOpeLog(operObject = "企业风险评估报告", operType = "批量导出PDF")
     public ResponseEntity<byte[]> exportPdf(@Valid EntReportPageReq pageReqVO) {
@@ -82,7 +82,7 @@ public class RiskReportController {
     @Operation(summary = "导出 Excel")
     //@PreAuthorize("@ss.hasPermission('kitchen:risk-report:export')")
     @ApiAccessLog(operateType = EXPORT)
-    @SysOpeLog(operObject = "企业风险评估报告",operType = "批量导出")
+//    @SysOpeLog(operObject = "企业风险评估报告",operType = "批量导出")
     public void exportRoadArchiveExcel(@Valid EntReportPageReq pageReqVO,
                                        HttpServletResponse response) throws IOException {
         // 0. 配置

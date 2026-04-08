@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.kitchen.controller.admin.riskreport.vo.page;
 
+import cn.idev.excel.annotation.ExcelIgnore;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,8 +12,9 @@ import java.time.LocalDate;
 @Schema(description = "企业风险报表 Request VO")
 public class EntReportPageResp {
     // ====================== 【必填：区分月报 / 自定义报表】 ======================
-    @ExcelProperty(value = "报表类型", index = 0)
-    @Schema(description = "报表类型 1-企业月度评估报告 2-自定义报表", requiredMode = Schema.RequiredMode.REQUIRED)
+//    @ExcelProperty(value = "报表类型", index = 0)
+    @ExcelIgnore
+    @Schema(description = "报表类型 1-企业月度评估报告 2-自定义报表", hidden = true)
     private Integer reportType;
 
     // ====================== 【月报专用】 ======================

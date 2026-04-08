@@ -12,6 +12,7 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.violationanalytics.vo.dr
 import cn.iocoder.yudao.module.kitchen.controller.admin.violationanalytics.vo.page.ViolationAnalyticsPageReq;
 import cn.iocoder.yudao.module.kitchen.controller.admin.violationanalytics.vo.page.ViolationAnalyticsPageResp;
 import cn.iocoder.yudao.module.kitchen.service.violationanalytics.ViolationAnalyticsService;
+import cn.iocoder.yudao.module.kitchen.vrv.utils.common.excel.VrvExcelUtils;
 import cn.iocoder.yudao.module.kitchen.vrv.utils.common.pdf.VrvPdfGenerator;
 import cn.iocoder.yudao.module.kitchen.vrv.utils.procom.aop.sysope.SysOpeLog;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,6 +41,16 @@ public class ViolationAnalyticsController {
     @Resource
     private ViolationAnalyticsService violationAnalyticsService;
 
+    @GetMapping("/export-excel2")
+    @Operation(summary = "(勿用）导出 Excel2",hidden = true)
+    //@PreAuthorize("@ss.hasPermission('kitchen:violation-analytics:export')")
+    @ApiAccessLog(operateType = EXPORT)
+//    @SysOpeLog(operObject = "企业违规数据分析",operType = "批量导出")
+    public void exportRoadArchiveExcel2(@Valid ViolationAnalyticsPageReq pageReqVO,
+                                       HttpServletResponse response) throws Exception {
+        List<ViolationAnalyticsPageResp> list = violationAnalyticsService.getViolationAnalyticsPage(pageReqVO).getList();
+        VrvExcelUtils.listExportExcelSimple(response,list);
+    }
     @GetMapping("/export-list-pdf")
     @Operation(summary = "(目前推荐使用）列表导出PDF（通用：月报/自定义报表）")
     @ApiAccessLog(operateType = EXPORT)
