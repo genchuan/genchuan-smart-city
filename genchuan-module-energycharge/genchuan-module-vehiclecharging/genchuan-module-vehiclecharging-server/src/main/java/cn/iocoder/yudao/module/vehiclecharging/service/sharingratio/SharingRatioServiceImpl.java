@@ -1,27 +1,21 @@
 package cn.iocoder.yudao.module.vehiclecharging.service.sharingratio;
 
-import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
+
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.sharingratio.vo.*;
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.sharingratio.SharingRatioDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.vehiclecharging.dal.mysql.sharingratio.SharingRatioMapper;
-
-import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
-import static cn.iocoder.yudao.module.vehiclecharging.enums.ErrorCodeConstants.*;
 
 /**
  * 分账比例 Service 实现类
@@ -39,6 +33,9 @@ public class SharingRatioServiceImpl implements SharingRatioService {
     public Long createSharingRatio(SharingRatioCreateReqVO createReqVO) {
         // 插入
         SharingRatioDO sharingRatio = BeanUtils.toBean(createReqVO, SharingRatioDO.class);
+        String sharingCode = generateSharingCode();
+        sharingRatio.setSharingCode(sharingCode);
+        sharingRatio.setSharingStatus("未生效");
         sharingRatioMapper.insert(sharingRatio);
 
         // 返回
@@ -53,21 +50,6 @@ public class SharingRatioServiceImpl implements SharingRatioService {
         SharingRatioDO updateObj = BeanUtils.toBean(updateReqVO, SharingRatioDO.class);
         sharingRatioMapper.updateById(updateObj);
     }
-
-    @Override
-    public void deleteSharingRatio(Long id) {
-        // 校验存在
-        validateSharingRatioExists(id);
-        // 删除
-        sharingRatioMapper.deleteById(id);
-    }
-
-    @Override
-        public void deleteSharingRatioListByIds(List<Long> ids) {
-        // 删除
-        sharingRatioMapper.deleteByIds(ids);
-        }
-
 
     private void validateSharingRatioExists(Long id) {
         if (sharingRatioMapper.selectById(id) == null) {
@@ -158,6 +140,104 @@ public class SharingRatioServiceImpl implements SharingRatioService {
             }
         }
         return prefix + String.format("%03d", seq);
+    }
+
+    @Override
+    public SharingRatioSummaryRespVO getChartSummary(SharingRatioChartReqVO reqVO) {
+        // 1. 卡片统计：总方案数、各状态方案数（根据时间范围筛选）
+        SharingRatioSummaryRespVO respVO = sharingRatioMapper.selectSummaryStats(reqVO.getTimeRangeStart(), reqVO.getTimeRangeEnd());
+
+        // 2. 饼图数据：按分账类型分组统计方案数量
+        List<SharingRatioSummaryRespVO.PieData> pieData = sharingRatioMapper.selectPieData(reqVO.getTimeRangeStart(), reqVO.getTimeRangeEnd());
+        respVO.setPieData(pieData);
+
+        // 3. 柱状图数据：按合作方分组统计方案数量（取前 N 个，或全部）
+        List<SharingRatioSummaryRespVO.BarData> barData = sharingRatioMapper.selectBarData(reqVO.getTimeRangeStart(), reqVO.getTimeRangeEnd());
+        respVO.setBarData(barData);
+
+        return respVO;
+    }
+
+    @Override
+    public SharingRatioCooperatorRatioRespVO getCooperatorRatio(SharingRatioChartReqVO reqVO) {
+        Long startTime = reqVO.getTimeRangeStart();
+        Long endTime = reqVO.getTimeRangeEnd();
+
+        // 1. 查询各合作方方案数量
+        List<Map<String, Object>> cooperatorCounts = sharingRatioMapper.selectCooperatorCounts(startTime, endTime);
+        if (cooperatorCounts == null || cooperatorCounts.isEmpty()) {
+            return new SharingRatioCooperatorRatioRespVO();
+        }
+
+        // 2. 计算总方案数
+        int total = 0;
+        for (Map<String, Object> map : cooperatorCounts) {
+            total += ((Number) map.get("count")).intValue();
+        }
+
+        // 3. 计算每个合作方的占比（保留整数，四舍五入）
+        List<SharingRatioCooperatorRatioRespVO.CooperatorRatio> list = new ArrayList<>();
+        for (Map<String, Object> map : cooperatorCounts) {
+            String name = (String) map.get("cooperator");
+            int count = ((Number) map.get("count")).intValue();
+            int ratio = (int) Math.round((double) count / total * 100);
+            SharingRatioCooperatorRatioRespVO.CooperatorRatio item = new SharingRatioCooperatorRatioRespVO.CooperatorRatio();
+            item.setName(name);
+            item.setValue(ratio);
+            list.add(item);
+        }
+
+        // 4. 组装返回
+        SharingRatioCooperatorRatioRespVO respVO = new SharingRatioCooperatorRatioRespVO();
+        respVO.setList(list);
+        return respVO;
+    }
+
+    @Override
+    public SharingRatioSchemeCompareRespVO schemeCompare(List<Long> schemeIds) {
+        if (schemeIds == null || schemeIds.isEmpty()) {
+            return new SharingRatioSchemeCompareRespVO();
+        }
+        // 查询方案（自动过滤已删除和租户隔离）
+        List<SharingRatioDO> list = sharingRatioMapper.selectList(new LambdaQueryWrapper<SharingRatioDO>()
+                .in(SharingRatioDO::getId, schemeIds)
+                .eq(SharingRatioDO::getDeleted, false));
+        // 转换为响应 VO
+        List<SharingRatioSchemeCompareRespVO.SchemeCompareItem> items = list.stream()
+                .map(doItem -> {
+                    SharingRatioSchemeCompareRespVO.SchemeCompareItem item = new SharingRatioSchemeCompareRespVO.SchemeCompareItem();
+                    item.setName(doItem.getSharingName());
+                    item.setRatio(doItem.getSharingRatio());
+                    item.setCooperator(doItem.getCooperator());
+                    return item;
+                })
+                .collect(Collectors.toList());
+        SharingRatioSchemeCompareRespVO respVO = new SharingRatioSchemeCompareRespVO();
+        respVO.setList(items);
+        return respVO;
+    }
+
+    @Override
+    public SharingRatioStatusCountRespVO getStatusCount(SharingRatioChartReqVO reqVO) {
+        Long startTime = reqVO.getTimeRangeStart();
+        Long endTime = reqVO.getTimeRangeEnd();
+
+        // 查询各状态数量（直接使用之前统计查询的方法，但只取状态部分）
+        SharingRatioSummaryRespVO summary = sharingRatioMapper.selectSummaryStats(startTime, endTime);
+        if (summary == null) {
+            summary = new SharingRatioSummaryRespVO();
+            summary.setValidCount(0);
+            summary.setInvalidCount(0);
+            summary.setPendingCount(0);
+        }
+
+        SharingRatioStatusCountRespVO respVO = new SharingRatioStatusCountRespVO();
+        SharingRatioStatusCountRespVO.StatusCount statusCount = new SharingRatioStatusCountRespVO.StatusCount();
+        statusCount.setValid(summary.getValidCount());
+        statusCount.setInvalid(summary.getInvalidCount());
+        statusCount.setPending(summary.getPendingCount());
+        respVO.setStatusCount(statusCount);
+        return respVO;
     }
 
 }

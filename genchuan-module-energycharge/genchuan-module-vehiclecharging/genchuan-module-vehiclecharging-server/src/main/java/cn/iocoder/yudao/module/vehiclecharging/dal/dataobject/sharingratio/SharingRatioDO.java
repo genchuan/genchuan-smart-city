@@ -1,11 +1,7 @@
 package cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.sharingratio;
 
 import lombok.*;
-import java.util.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.LocalDateTime;
-import java.time.LocalDateTime;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
@@ -82,6 +78,5 @@ public class SharingRatioDO extends BaseDO {
      * 备用字段2
      */
     private String reserve2;
-
 
 }

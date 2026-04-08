@@ -5,7 +5,6 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.sharingratio.vo.*;
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.sharingratio.SharingRatioDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 分账比例 Service 接口
@@ -28,20 +27,6 @@ public interface SharingRatioService {
      * @param updateReqVO 更新信息
      */
     void updateSharingRatio(@Valid SharingRatioUpdateReqVO updateReqVO);
-
-    /**
-     * 删除分账比例
-     *
-     * @param id 编号
-     */
-    void deleteSharingRatio(Long id);
-
-    /**
-    * 批量删除分账比例
-    *
-    * @param ids 编号
-    */
-    void deleteSharingRatioListByIds(List<Long> ids);
 
     /**
      * 获得分账比例
@@ -72,4 +57,32 @@ public interface SharingRatioService {
      * @return 子文件ID
      */
     Long copySharingRatio(Long sourceId);
+
+    /**
+     *
+     * @param reqVO req
+     * @return resp
+     */
+    SharingRatioSummaryRespVO getChartSummary(SharingRatioChartReqVO reqVO);
+
+    /**
+     *
+     * @param reqVO req
+     * @return resp
+     */
+    SharingRatioCooperatorRatioRespVO getCooperatorRatio(SharingRatioChartReqVO reqVO);
+
+    /**
+     *
+     * @param schemeIds id
+     * @return resp
+     */
+    SharingRatioSchemeCompareRespVO schemeCompare(List<Long> schemeIds);
+
+    /**
+     *
+     * @param reqVO req
+     * @return resp
+     */
+    SharingRatioStatusCountRespVO getStatusCount(SharingRatioChartReqVO reqVO);
 }

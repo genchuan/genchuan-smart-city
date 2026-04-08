@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 
-import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import java.util.*;
@@ -104,6 +103,34 @@ public class SharingRatioController {
     @PreAuthorize("@ss.hasPermission('vehiclecharging:sharing-ratio:copy')")
     public CommonResult<Long> copySharingRatio(@Valid @RequestBody SharingRatioCopyReqVO reqVO) {
         return success(sharingRatioService.copySharingRatio(reqVO.getId()));
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "分账比例分布图表")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:sharing_ratio:query')")
+    public CommonResult<SharingRatioSummaryRespVO> getChart(@Valid SharingRatioChartReqVO reqVO) {
+        return success(sharingRatioService.getChartSummary(reqVO));
+    }
+
+    @GetMapping("/chart/cooperatorRatio")
+    @Operation(summary = "各合作方分账比例占比（饼图钻取）")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:sharing_ratio:query')")
+    public CommonResult<SharingRatioCooperatorRatioRespVO> getCooperatorRatio(@Valid SharingRatioChartReqVO reqVO) {
+        return success(sharingRatioService.getCooperatorRatio(reqVO));
+    }
+
+    @GetMapping("/chart/schemeCompare")
+    @Operation(summary = "各分账方案比例对比（柱状图钻取）")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:sharing_ratio:query')")
+    public CommonResult<SharingRatioSchemeCompareRespVO> schemeCompare(@RequestParam("schemeIds") List<Long> schemeIds) {
+        return success(sharingRatioService.schemeCompare(schemeIds));
+    }
+
+    @GetMapping("/chart/statusCount")
+    @Operation(summary = "分账方案状态统计（卡片钻取）")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:sharing_ratio:query')")
+    public CommonResult<SharingRatioStatusCountRespVO> getStatusCount(@Valid SharingRatioChartReqVO reqVO) {
+        return success(sharingRatioService.getStatusCount(reqVO));
     }
 
 }

@@ -8,6 +8,7 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.sharingratio.SharingRatioDO;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.sharingratio.vo.*;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 分账比例 Mapper
@@ -35,5 +36,11 @@ public interface SharingRatioMapper extends BaseMapperX<SharingRatioDO> {
                 .betweenIfPresent(SharingRatioDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(SharingRatioDO::getId));
     }
+
+    SharingRatioSummaryRespVO selectSummaryStats(@Param("startTime") Long startTime, @Param("endTime") Long endTime);
+    List<SharingRatioSummaryRespVO.PieData> selectPieData(@Param("startTime") Long startTime, @Param("endTime") Long endTime);
+    List<SharingRatioSummaryRespVO.BarData> selectBarData(@Param("startTime") Long startTime, @Param("endTime") Long endTime);
+
+    List<Map<String, Object>> selectCooperatorCounts(@Param("startTime") Long startTime, @Param("endTime") Long endTime);
 
 }
