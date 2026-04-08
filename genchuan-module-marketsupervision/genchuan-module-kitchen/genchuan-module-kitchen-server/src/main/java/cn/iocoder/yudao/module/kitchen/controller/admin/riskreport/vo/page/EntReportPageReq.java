@@ -12,18 +12,18 @@ import java.util.List;
 public class EntReportPageReq extends PageParam {
 
     // ====================== 【必填：区分月报 / 自定义报表】 ======================
-    @Schema(description = "报表类型 1-企业月度评估报告 2-自定义报表", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Integer reportType;
+//    @Schema(description = "报表类型 1-企业月度评估报告 2-自定义报表", requiredMode = Schema.RequiredMode.REQUIRED)
+//    private Integer reportType;
 
-    // ====================== 【月报专用】 ======================
-//    @Schema(description = "统计周期（yyyy-MM）：仅月报使用")
-//    private String statisticPeriod;
+    // ====================== 【统计周期是月的】 ======================
+    @Schema(description = "统计周期（yyyy-MM）")
+    private String statisticPeriod;
 
     // ====================== 【自定义报表专用筛选】 ======================
-    @Schema(description = "区域：仅自定义报表筛选")
+    @Schema(description = "区域")
     private String area;
 
-    @Schema(description = "企业类型：仅自定义报表筛选")
+    @Schema(description = "企业类型")
     private String entType;
 
     // ====================== 【通用时间条件】 ======================
@@ -34,19 +34,14 @@ public class EntReportPageReq extends PageParam {
     private LocalDate endTime;
 
     // ====================== 【企业维度】 ======================
-    @Schema(description = "企业ID")
-    private Long entId;
+//    @Schema(description = "企业ID")
+//    private Long entId;
 
     @Schema(description = "企业名称（模糊查询）")
     private String entName;
 
-    // ====================== 【风险等级】 ======================
-    @Schema(description = "风险等级")
-    private String riskLevel;
 
-    // ====================== 【AI文档字段】 ======================
-    @Schema(description = "报告编号")
-    private String reportNo;
+
 
 
 }

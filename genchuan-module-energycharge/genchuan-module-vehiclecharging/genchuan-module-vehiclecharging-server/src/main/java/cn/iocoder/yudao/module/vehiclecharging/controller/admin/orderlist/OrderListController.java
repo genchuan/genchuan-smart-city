@@ -91,12 +91,12 @@ public class OrderListController {
         return success(orderListService.payRemind(reqVO.getId()));
     }
 
-//    @PostMapping("/refundApply")
-//    @Operation(summary = "退款申请")
-//    @PreAuthorize("@ss.hasPermission('vehiclecharging:order-list:refundApply')")
-//    public CommonResult<Boolean> refundApply(@Valid @RequestBody OrderListRefundApplyReqVO reqVO) {
-//        return success(orderListService.refundApply(reqVO));
-//    }
+    @PostMapping("/refundApply")
+    @Operation(summary = "退款申请")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:order-list:refundApply')")
+    public CommonResult<Boolean> refundApply(@Valid @RequestBody OrderListRefundApplyReqVO reqVO) {
+        return success(orderListService.refundApply(reqVO));
+    }
 
     @PutMapping("/evaluate")
     @Operation(summary = "评价订单")
@@ -110,6 +110,34 @@ public class OrderListController {
     @PreAuthorize("@ss.hasPermission('vehiclecharging:order_list:stopCharge')")
     public CommonResult<Boolean> stopCharge(@Valid @RequestBody OrderListStopChargeReqVO reqVO) {
         return success(orderListService.stopCharge(reqVO));
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "充电订单交易趋势图")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:order_list:query')")
+    public CommonResult<OrderListChartRespVO> getOrderChart(@Valid OrderListChartReqVO reqVO) {
+        return success(orderListService.getOrderChart(reqVO));
+    }
+
+    @GetMapping("/chart/dailyTrend")
+    @Operation(summary = "每日订单数量及交易金额趋势（折线图钻取）")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:order_list:query')")
+    public CommonResult<List<OrderListDailyTrendRespVO>> getDailyTrend(@Valid OrderListDailyTrendReqVO reqVO) {
+        return success(orderListService.getDailyTrend(reqVO));
+    }
+
+    @GetMapping("/chart/statusRatio")
+    @Operation(summary = "订单状态占比（饼图钻取）")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:order_list:query')")
+    public CommonResult<List<OrderListStatusRatioRespVO>> getStatusRatio(@Valid OrderListStatusRatioReqVO reqVO) {
+        return success(orderListService.getStatusRatio(reqVO));
+    }
+
+    @GetMapping("/chart/tradeCount")
+    @Operation(summary = "订单交易统计（卡片钻取）")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:order_list:query')")
+    public CommonResult<TradeCountRespVO> getTradeCount(@Valid OrderListTradeCountReqVO reqVO) {
+        return success(orderListService.getTradeCount(reqVO));
     }
 
 //    @PostMapping("/create")

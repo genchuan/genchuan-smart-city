@@ -16,6 +16,7 @@ import cn.iocoder.yudao.module.vehiclecharging.dal.mysql.charginglot.ChargingLot
 import cn.iocoder.yudao.module.vehiclecharging.dal.mysql.pile.PileMapper;
 import cn.iocoder.yudao.module.vehiclecharging.dal.mysql.charge.ChargeModeMapper;
 import cn.iocoder.yudao.module.vehiclecharging.framework.common.QrCodeUtils;
+import cn.iocoder.yudao.module.infra.api.file.FileApi;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
@@ -50,6 +51,9 @@ public class PileServiceImpl implements PileService {
     @Autowired(required = false)
     private AdminUserApi adminUserApi;
 
+    @Resource
+    private FileApi fileApi;
+
     /**
      * 充电桩状态ID → 状态名称映射（内存常量，无需查库）
      */
@@ -75,6 +79,15 @@ public class PileServiceImpl implements PileService {
         if (pileMapper.selectIdByPileCode(createReqVO.getPileCode()) != null) {
             throw exception(PILE_CODE_DUPLICATE);
         }
+
+        // 生成二维码内容：扫码后跳转的 URL，可根据业务自定义路径
+        String qrContent = createReqVO.getPileCode();
+        // 生成二维码 PNG 字节数组（尺寸 300x300）
+        byte[] qrBytes = QrCodeUtils.generateBytes(qrContent, 300, 300);
+        // 上传到文件存储服务，得到访问 URL
+        // 文件名格式：charging_pile/{pileCode}_qr.png
+        String qrUrl = fileApi.createFile(qrBytes, createReqVO.getPileCode() + "_qr.png");
+
         // 插入
         PileDO pile = BeanUtils.toBean(createReqVO, PileDO.class);
         // 新增时默认设备状态为未调试（状态ID=3）
@@ -85,6 +98,7 @@ public class PileServiceImpl implements PileService {
         if (pile.getFaultFlag() == null) {
             pile.setFaultFlag(false);
         }
+        pile.setQrcode(qrUrl); // 写入二维码 URL
         pileMapper.insert(pile);
 
         // 返回
@@ -94,7 +108,10 @@ public class PileServiceImpl implements PileService {
     @Override
     public void updatePile(PileSaveReqVO updateReqVO) {
         // 校验存在
-        validatePileExists(updateReqVO.getId());
+        PileDO existingPile = pileMapper.selectById(updateReqVO.getId());
+        if (existingPile == null) {
+            throw exception(PILE_NOT_EXISTS);
+        }
         // 校验 pileCode 唯一性（排除自己）
         if (updateReqVO.getPileCode() != null) {
             Long existId = pileMapper.selectIdByPileCode(updateReqVO.getPileCode());
@@ -102,8 +119,18 @@ public class PileServiceImpl implements PileService {
                 throw exception(PILE_CODE_DUPLICATE);
             }
         }
-        // 更新
+
+        // 构造更新对象
         PileDO updateObj = BeanUtils.toBean(updateReqVO, PileDO.class);
+
+        // 如果 pileCode 发生变化，重新生成二维码
+        if (updateReqVO.getPileCode() != null
+                && !updateReqVO.getPileCode().equals(existingPile.getPileCode())) {
+            byte[] qrBytes = QrCodeUtils.generateBytes(updateReqVO.getPileCode(), 300, 300);
+            String qrUrl = fileApi.createFile(qrBytes, updateReqVO.getPileCode() + "_qr.png");
+            updateObj.setQrcode(qrUrl);
+        }
+
         pileMapper.updateById(updateObj);
     }
 
@@ -320,16 +347,15 @@ public class PileServiceImpl implements PileService {
     }
 
     @Override
-    public byte[] getPileQrcode(Long id) {
+    public String getPileQrcode(Long id) {
         PileDO pile = pileMapper.selectById(id);
         if (pile == null) {
             throw exception(PILE_NOT_EXISTS);
         }
-        String content = pile.getQrcode();
-        if (content == null || content.isEmpty()) {
+        if (pile.getQrcode() == null || pile.getQrcode().isEmpty()) {
             throw exception(PILE_QRCODE_NOT_EXISTS);
         }
-        return QrCodeUtils.generateBytes(content, 300, 300);
+        return pile.getQrcode();
     }
 
     @Override
