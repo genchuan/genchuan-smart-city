@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.vehiclecharging.dal.mysql.abnormalorder;
 
+import java.time.LocalDate;
 import java.util.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -38,5 +39,23 @@ public interface AbnormalOrderMapper extends BaseMapperX<AbnormalOrderDO> {
     }
 
     IPage<NewAbnormalOrderRespVO> selectAbnormalOrderPage(IPage<NewAbnormalOrderRespVO> page, @Param("req") NewAbnormalOrderPageReqVO reqVO);
+
+    List<AbnormalOrderDailyCountRespVO> selectDailyCountByStation(
+            @Param("startTime") LocalDate startTime,
+            @Param("endTime") LocalDate endTime,
+            @Param("stationId") Long stationId
+    );
+
+    List<AbnormalOrderTypeRatioRespVO> selectTypeRatio(
+            @Param("startTime") LocalDate startTime,
+            @Param("endTime") LocalDate endTime,
+            @Param("stationId") Long stationId
+    );
+
+    AbnormalOrderHandleCountRespVO selectHandleCount(
+            @Param("startTime") LocalDate startTime,
+            @Param("endTime") LocalDate endTime,
+            @Param("stationId") Long stationId
+    );
 
 }
