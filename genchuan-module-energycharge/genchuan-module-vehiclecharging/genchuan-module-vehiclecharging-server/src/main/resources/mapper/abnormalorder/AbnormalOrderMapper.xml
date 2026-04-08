@@ -14,6 +14,10 @@
         cs.station_name AS stationName,
         ao.abnormal_type AS abnormalType,
         ao.abnormal_reason AS abnormalReason,
+        ao.handle_measure AS handleMeasure,
+        ao.refund_amount AS refundAmount,
+        ao.refund_reason AS refundReason,
+        UNIX_TIMESTAMP(ao.check_time) * 1000 AS checkTime,
         -- 毫秒时间戳 = 秒 × 1000
         UNIX_TIMESTAMP(ao.abnormal_time) * 1000 AS abnormalTime,
         ao.abnormal_status AS abnormalStatus,
@@ -22,6 +26,7 @@
         su1.nickname AS verifyUser,
         UNIX_TIMESTAMP(ao.verify_time) * 1000 AS verifyTime,
         ao.verify_result AS verifyResult,
+        ao.verify_remark AS verifyRemark,
 
         -- 处理人：直接返回nickname，匹配VO的handleUser
         su2.nickname AS handleUser,

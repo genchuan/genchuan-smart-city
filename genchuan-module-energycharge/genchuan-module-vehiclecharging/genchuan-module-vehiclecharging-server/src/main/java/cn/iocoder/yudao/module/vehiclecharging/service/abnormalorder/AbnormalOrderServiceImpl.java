@@ -125,7 +125,7 @@ public class AbnormalOrderServiceImpl implements AbnormalOrderService {
 
         // 要更新的字段
         updateWrapper.set("abnormal_status", "已核实");
-        updateWrapper.set("check_user", SecurityFrameworkUtils.getLoginUserNickname());
+        updateWrapper.set("check_user", SecurityFrameworkUtils.getLoginUserId());
         updateWrapper.set("check_time", LocalDateTime.now());
         updateWrapper.set("verify_result", reqVO.getVerifyResult());
         updateWrapper.set("verify_remark", reqVO.getVerifyRemark());
@@ -197,6 +197,8 @@ public class AbnormalOrderServiceImpl implements AbnormalOrderService {
         updateWrapper.eq("id", reqVO.getId());
         updateWrapper.set("refund_amount", reqVO.getRefundAmount());
         updateWrapper.set("updater", username);
+        updateWrapper.set("abnormal_status", "退款中");
+        updateWrapper.set("refund_reason",reqVO.getRefundReason());
         abnormalOrderMapper.update(null, updateWrapper);
 
         // ======================

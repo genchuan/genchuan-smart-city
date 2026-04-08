@@ -152,7 +152,7 @@ public class AbnormalOrderController {
         return success(true);
     }
 
-    @GetMapping("/abnormal-order/chart")
+    @GetMapping("/chart")
     @Operation(summary = "异常订单统计图表（柱状图+饼图+卡片）")
     @PreAuthorize("@ss.hasPermission('vehiclecharging:abnormal_order:query')")
     public CommonResult<AbnormalOrderChartRespVO> getAbnormalOrderChart(
