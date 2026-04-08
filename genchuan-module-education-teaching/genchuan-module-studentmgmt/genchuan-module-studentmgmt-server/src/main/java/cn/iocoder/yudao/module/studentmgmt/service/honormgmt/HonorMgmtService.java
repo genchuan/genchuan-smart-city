@@ -64,4 +64,11 @@ public interface HonorMgmtService {
      * @return
      */
     boolean pushHonorMgmt(@Valid HonorMgmtPushReqVO reqVO);
+
+    /**
+     * 荣誉信息分布看板
+     * @param reqVO
+     * @return
+     */
+    HonorMgmtChartRespVO getChart(@Valid HonorMgmtChartReqVO reqVO);
 }

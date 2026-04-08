@@ -9,4 +9,30 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="selectTotalHonorCount" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM honor_mgmt
+        WHERE deleted = 0
+        <if test="grade != null and grade != ''">
+            AND grade = #{grade}
+        </if>
+        <if test="major != null and major != ''">
+            AND major = #{major}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status}
+        </if>
+        <if test="honorType != null and honorType != ''">
+            AND honor_type = #{honorType}
+        </if>
+    </select>
+    <select id="selectTodayPushCount" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM honor_mgmt
+        WHERE deleted = 0 AND push_time >= DATE(NOW()) AND push_time &lt; DATE(NOW())
+        <if test="grade != null and grade != ''">
+            AND grade = #{grade}
+        </if>
+        <if test="major != null and major != ''">
+            AND major = #{major}
+        </if>
+    </select>
 </mapper>

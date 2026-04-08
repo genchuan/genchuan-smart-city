@@ -1,26 +1,19 @@
 package cn.iocoder.yudao.module.studentmgmt.service.honormgmt;
 
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.date.LocalDateTimeUtil;
-import org.springframework.stereotype.Service;
-import jakarta.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.*;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.honormgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.honormgmt.HonorMgmtDO;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.honormgmt.HonorMgmtMapper;
+import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
-import static cn.iocoder.yudao.module.studentmgmt.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.studentmgmt.enums.ErrorCodeConstants.HONOR_MGMT_NOT_EXISTS;
 
 /**
  * 荣誉管理 Service 实现类
@@ -62,10 +55,10 @@ public class HonorMgmtServiceImpl implements HonorMgmtService {
     }
 
     @Override
-        public void deleteHonorMgmtListByIds(List<Long> ids) {
+    public void deleteHonorMgmtListByIds(List<Long> ids) {
         // 删除
         honorMgmtMapper.deleteByIds(ids);
-        }
+    }
 
 
     private void validateHonorMgmtExists(Long id) {
@@ -94,6 +87,32 @@ public class HonorMgmtServiceImpl implements HonorMgmtService {
             return true;
         }
         return false;
+    }
+
+    /**
+     * 荣誉信息分布看板
+     *
+     * @param reqVO
+     * @return
+     */
+    @Override
+    public HonorMgmtChartRespVO getChart(HonorMgmtChartReqVO reqVO) {
+
+        HonorMgmtChartRespVO vo = new HonorMgmtChartRespVO();
+
+        String grade = reqVO.getGrade();
+        String major = reqVO.getMajor();
+
+        // 1. 卡片数据
+        vo.setTotalHonorCount(honorMgmtMapper.selectTotalHonorCount(grade, major, "", ""));
+        vo.setPendingAuditCount(honorMgmtMapper.selectTotalHonorCount(grade, major, "待审核", ""));
+        vo.setExcellentStudentCount(honorMgmtMapper.selectTotalHonorCount(grade, major, "", "优秀学生"));
+        vo.setScholarshipCount(honorMgmtMapper.selectTotalHonorCount(grade, major, "", "奖学金"));
+        vo.setCompetitionCount(honorMgmtMapper.selectTotalHonorCount(grade, major, "", "竞赛获奖"));
+
+        vo.setTodayPushCount(honorMgmtMapper.selectTodayPushCount(grade, major));
+
+        return vo;
     }
 
 }

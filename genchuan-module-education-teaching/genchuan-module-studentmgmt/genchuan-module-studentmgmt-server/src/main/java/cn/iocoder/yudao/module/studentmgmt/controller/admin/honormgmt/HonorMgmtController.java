@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 
-import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import java.util.*;
@@ -116,9 +115,9 @@ public class HonorMgmtController {
     @GetMapping("/chart")
     @Operation(summary = "荣誉信息分布看板")
     @PreAuthorize("@ss.hasPermission('studentmgmt:honor-mgmt:query')")
-    public CommonResult<PageResult<HonorMgmtRespVO>> getChart(@Valid HonorMgmtPageReqVO pageReqVO) {
-        PageResult<HonorMgmtDO> pageResult = honorMgmtService.getHonorMgmtPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, HonorMgmtRespVO.class));
+    public CommonResult<HonorMgmtChartRespVO> getChart(@Valid HonorMgmtChartReqVO reqVO) {
+        HonorMgmtChartRespVO respVO = honorMgmtService.getChart(reqVO);
+        return success(respVO);
     }
 
     @GetMapping("/export")
