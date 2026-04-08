@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -8,6 +9,7 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.studentinfo.vo.*;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 /**
@@ -40,28 +42,35 @@ public interface StudentInfoMapper extends BaseMapperX<StudentInfoDO> {
     }
 
     // ========== 卡片数据 ==========
-    @Select("SELECT COUNT(*) FROM student_info WHERE deleted = 0")
-    Long selectTotalStudentCount();
 
-    @Select("SELECT COUNT(*) FROM student_info WHERE status = '在籍' ")
-    Long selectInSchoolCount();
+    /**
+     * 获取学生信息分布看板
+     *
+     * @param grade       年级
+     * @param major       专业
+     * @param status      状态
+     * @param studentType 学生类型
+     * @return
+     */
+    Long selectTotalStudentCount(@Param("grade") String grade, @Param("major") String major,
+                                 @Param("status") String status, @Param("studentType") String studentType);
 
-    @Select("SELECT COUNT(*) FROM student_info WHERE status = '休学' ")
-    Long selectSuspendCount();
+    /**
+     * 按年级 / 专业 / 班级分布统计
+     *
+     * @param dimension 维度名称，如年级 / 专业 / 班级名称
+     * @return
+     */
+    StudentInfoDistributionCountRespVO selectDistributionCount(@Param("dimension") String dimension);
 
-    @Select("SELECT COUNT(*) FROM student_info WHERE status = '退学' ")
-    Long selectDropOutCount();
-
-    @Select("SELECT COUNT(*) FROM student_info WHERE status = '异动' ")
-    Long selectTransferCount();
-
-    @Select("SELECT COUNT(*) FROM student_info WHERE student_type = '普通生' ")
-    Long selectNormalStudentCount();
-
-    @Select("SELECT COUNT(*) FROM student_info WHERE student_type = '特长生' ")
-    Long selectSpecialStudentCount();
-
-    @Select("SELECT COUNT(*) FROM student_info WHERE student_type = '转学生' ")
-    Long selectTransferStudentCount();
+    /**
+     * 核心指标统计
+     *
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    StudentInfoCoreIndexRespVO getCoreIndex(@Param("startTime") LocalDateTime startTime,
+                                            @Param("endTime") LocalDateTime endTime);
 
 }

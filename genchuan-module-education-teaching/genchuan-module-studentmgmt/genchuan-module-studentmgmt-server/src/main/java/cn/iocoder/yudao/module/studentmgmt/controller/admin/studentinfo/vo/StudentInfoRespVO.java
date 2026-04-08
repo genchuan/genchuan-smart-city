@@ -44,6 +44,10 @@ public class StudentInfoRespVO {
     @ExcelProperty("专业")
     private String major;
 
+    @Schema(description = "年级", example = "2024")
+    @ExcelProperty("年级")
+    private String grade;
+
     @Schema(description = "班级", requiredMode = Schema.RequiredMode.REQUIRED, example = "李四")
     @ExcelProperty("班级")
     private String className;
@@ -80,4 +84,4 @@ public class StudentInfoRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

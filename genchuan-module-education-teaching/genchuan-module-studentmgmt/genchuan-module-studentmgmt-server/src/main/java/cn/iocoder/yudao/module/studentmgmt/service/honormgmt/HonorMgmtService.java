@@ -5,7 +5,6 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.honormgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.honormgmt.HonorMgmtDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 荣誉管理 Service 接口
@@ -59,4 +58,10 @@ public interface HonorMgmtService {
      */
     PageResult<HonorMgmtDO> getHonorMgmtPage(HonorMgmtPageReqVO pageReqVO);
 
+    /**
+     * 推送
+     * @param reqVO
+     * @return
+     */
+    boolean pushHonorMgmt(@Valid HonorMgmtPushReqVO reqVO);
 }

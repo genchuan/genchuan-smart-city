@@ -39,6 +39,10 @@ public class StudentInfoSaveReqVO {
     @NotEmpty(message = "专业不能为空")
     private String major;
 
+    @Schema(description = "年级", example = "2024" , requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotEmpty(message = "年级不能为空")
+    private String grade;
+
     @Schema(description = "班级", requiredMode = Schema.RequiredMode.REQUIRED, example = "李四")
     @NotEmpty(message = "班级不能为空")
     private String className;

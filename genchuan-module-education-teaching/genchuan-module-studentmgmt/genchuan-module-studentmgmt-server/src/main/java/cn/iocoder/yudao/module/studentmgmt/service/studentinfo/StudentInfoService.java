@@ -5,7 +5,6 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.studentinfo.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 学生信息 Service 接口
@@ -59,7 +58,10 @@ public interface StudentInfoService {
      */
     PageResult<StudentInfoDO> getStudentInfoPage(StudentInfoPageReqVO pageReqVO);
 
-    StudentInfoDashboardVO getStudentInfoDashboard();
+    StudentInfoDashboardVO getStudentInfoDashboard(@Valid StudentInfoChartReqVO reqVO);
 
 
+    StudentInfoDistributionCountRespVO getDistributionCount(@Valid StudentInfoDistributionCountReqVO reqVO);
+
+    StudentInfoCoreIndexRespVO getCoreIndex(@Valid StudentInfoCoreIndexReqVO reqVO);
 }

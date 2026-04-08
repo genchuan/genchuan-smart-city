@@ -1,23 +1,21 @@
 package cn.iocoder.yudao.module.studentmgmt.service.studentinfo;
 
-import cn.hutool.core.collection.CollUtil;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.studentinfo.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.studentmgmt.enums.ErrorCodeConstants.*;
 
 /**
@@ -82,20 +80,27 @@ public class StudentInfoServiceImpl implements StudentInfoService {
         return studentInfoMapper.selectPage(pageReqVO);
     }
 
+    /**
+     * 学生信息分布看板
+     * @param reqVO
+     * @return
+     */
     @Override
-    public StudentInfoDashboardVO getStudentInfoDashboard() {
+    public StudentInfoDashboardVO getStudentInfoDashboard(@Valid StudentInfoChartReqVO reqVO) {
         StudentInfoDashboardVO vo = new StudentInfoDashboardVO();
 
-        // 1. 卡片数据
-        vo.setTotalStudentCount(studentInfoMapper.selectTotalStudentCount());
-        vo.setInSchoolCount(studentInfoMapper.selectInSchoolCount());
-        vo.setSuspendCount(studentInfoMapper.selectSuspendCount());
-        vo.setDropOutCount(studentInfoMapper.selectDropOutCount());
-        vo.setTransferCount(studentInfoMapper.selectTransferCount());
+        String grade = reqVO.getGrade();
+        String major = reqVO.getMajor();
 
-        vo.setNormalStudentCount(studentInfoMapper.selectNormalStudentCount());
-        vo.setSpecialStudentCount(studentInfoMapper.selectSpecialStudentCount());
-        vo.setTransferStudentCount (studentInfoMapper.selectTransferStudentCount ());
+        // 1. 卡片数据
+        vo.setTotalStudentCount(studentInfoMapper.selectTotalStudentCount(grade, major, "", ""));
+        vo.setInSchoolCount(studentInfoMapper.selectTotalStudentCount(grade, major, "在籍", ""));
+        vo.setSuspendCount(studentInfoMapper.selectTotalStudentCount(grade, major, "休学", ""));
+        vo.setDropOutCount(studentInfoMapper.selectTotalStudentCount(grade, major, "退学", ""));
+        vo.setTransferCount(studentInfoMapper.selectTotalStudentCount(grade, major, "异动", ""));
+        vo.setNormalStudentCount(studentInfoMapper.selectTotalStudentCount(grade, major, "","普通生"));
+        vo.setSpecialStudentCount(studentInfoMapper.selectTotalStudentCount(grade, major, "","特长生"));
+        vo.setTransferStudentCount(studentInfoMapper.selectTotalStudentCount(grade, major,"" ,"转学生"));
 
         // 2. 圆环图数据
 //        vo.setOperationStatusDistribution(studentInfoMapper.selectOperationStatusDistribution());
@@ -105,6 +110,24 @@ public class StudentInfoServiceImpl implements StudentInfoService {
 //        vo.setEnvironmentComplianceRateByPark(studentInfoMapper.selectEnvironmentComplianceRateByPark());
 
         return vo;
+    }
+
+    /**
+     * 按年级 / 专业 / 班级分布统计
+     * @param reqVO
+     * @return
+     */
+    @Override
+    public StudentInfoDistributionCountRespVO getDistributionCount(StudentInfoDistributionCountReqVO reqVO) {
+        String dimension = reqVO.getDimension();
+        return studentInfoMapper.selectDistributionCount(dimension);
+    }
+
+    @Override
+    public StudentInfoCoreIndexRespVO getCoreIndex(StudentInfoCoreIndexReqVO reqVO) {
+        LocalDateTime startTime = reqVO.getStartTime();
+        LocalDateTime endTime = reqVO.getEndTime();
+        return studentInfoMapper.getCoreIndex(startTime, endTime);
     }
 
 }

@@ -14,6 +14,7 @@ CREATE TABLE `student_info` (
     `education_level` VARCHAR(20) NOT NULL COMMENT '学历层次：中专/大专/本科/研究生',
     `study_form` VARCHAR(20) NOT NULL COMMENT '学习形式：全日制/非全日制/函授',
     `major` VARCHAR(64) NOT NULL COMMENT '专业',
+    `grade` VARCHAR(64) NOT NULL COMMENT '年级',
     `class_name` VARCHAR(64) NOT NULL COMMENT '班级',
     `student_type` VARCHAR(20) NOT NULL COMMENT '学生类型：普通生/特长生/转学生',
     `status` VARCHAR(20) NOT NULL COMMENT '学籍状态：在籍/休学/退学/异动',

@@ -1,11 +1,13 @@
 package cn.iocoder.yudao.module.studentmgmt.service.honormgmt;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.LocalDateTimeUtil;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.honormgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.honormgmt.HonorMgmtDO;
@@ -80,6 +82,18 @@ public class HonorMgmtServiceImpl implements HonorMgmtService {
     @Override
     public PageResult<HonorMgmtDO> getHonorMgmtPage(HonorMgmtPageReqVO pageReqVO) {
         return honorMgmtMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public boolean pushHonorMgmt(HonorMgmtPushReqVO reqVO) {
+        HonorMgmtDO honorMgmtDO = honorMgmtMapper.selectById(reqVO.getId());
+        honorMgmtDO.setPushTime(LocalDateTime.now());
+        honorMgmtDO.setStatus("已推送");
+        int i = honorMgmtMapper.updateById(honorMgmtDO);
+        if (i > 0) {
+            return true;
+        }
+        return false;
     }
 
 }

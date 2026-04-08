@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 
-import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import java.util.*;
@@ -105,16 +104,24 @@ public class StudentInfoController {
     @GetMapping("/chart")
     @Operation(summary = "卡片/圆环图/柱状图/统计(学生信息分布看板)")
     @PreAuthorize("@ss.hasPermission('studentmgmt:student-info:query')")
-    public CommonResult<StudentInfoDashboardVO> getStudentDashboard() {
-        StudentInfoDashboardVO dashboardVO = studentInfoService.getStudentInfoDashboard();
+    public CommonResult<StudentInfoDashboardVO> getStudentDashboard(@Valid @RequestBody StudentInfoChartReqVO reqVO) {
+        StudentInfoDashboardVO dashboardVO = studentInfoService.getStudentInfoDashboard(reqVO);
         return success(dashboardVO);
     }
 
     @GetMapping("/chart/distributionCount")
-    @Operation(summary = "查询学生信息分布看板的核心统计数据，用于学生信息页概览展示")
+    @Operation(summary = "按年级 / 专业 / 班级分布统计")
     @PreAuthorize("@ss.hasPermission('studentmgmt:student-info:query')")
-    public CommonResult<StudentInfoDashboardVO> getDistributionCount() {
-        StudentInfoDashboardVO dashboardVO = studentInfoService.getStudentInfoDashboard();
+    public CommonResult<StudentInfoDistributionCountRespVO> getDistributionCount(@Valid @RequestBody StudentInfoDistributionCountReqVO reqVO) {
+        StudentInfoDistributionCountRespVO dashboardVO = studentInfoService.getDistributionCount(reqVO);
+        return success(dashboardVO);
+    }
+
+    @GetMapping("/chart/coreIndex")
+    @Operation(summary = "按学生核心指标统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:student-info:query')")
+    public CommonResult<StudentInfoCoreIndexRespVO> getCoreIndex(@Valid @RequestBody StudentInfoCoreIndexReqVO reqVO) {
+        StudentInfoCoreIndexRespVO dashboardVO = studentInfoService.getCoreIndex(reqVO);
         return success(dashboardVO);
     }
 

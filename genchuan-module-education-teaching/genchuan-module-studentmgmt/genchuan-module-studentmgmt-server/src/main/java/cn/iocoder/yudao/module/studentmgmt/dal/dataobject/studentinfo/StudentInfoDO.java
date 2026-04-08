@@ -56,6 +56,10 @@ public class StudentInfoDO extends BaseDO {
      */
     private String major;
     /**
+     * 年级
+     */
+    private String grade;
+    /**
      * 班级
      */
     private String className;
@@ -89,4 +93,4 @@ public class StudentInfoDO extends BaseDO {
     private String reserve2;
 
 
-}
+}

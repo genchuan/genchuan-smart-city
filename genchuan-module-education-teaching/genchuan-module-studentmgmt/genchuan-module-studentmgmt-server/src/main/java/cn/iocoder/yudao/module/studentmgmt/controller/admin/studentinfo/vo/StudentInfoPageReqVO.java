@@ -34,6 +34,10 @@ public class StudentInfoPageReqVO extends PageParam {
     @Schema(description = "专业")
     private String major;
 
+    @Schema(description = "年级", example = "2024")
+    private String grade;
+
+
     @Schema(description = "班级", example = "李四")
     private String className;
 

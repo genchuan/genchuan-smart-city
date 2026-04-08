@@ -18,6 +18,8 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.error;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
@@ -44,6 +46,29 @@ public class HonorMgmtController {
     public CommonResult<Long> createHonorMgmt(@Valid @RequestBody HonorMgmtSaveReqVO createReqVO) {
         return success(honorMgmtService.createHonorMgmt(createReqVO));
     }
+
+    @PutMapping("/audit")
+    @Operation(summary = "审核荣誉管理")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:honor-mgmt:update')")
+    public CommonResult<Boolean> auditHonorMgmt(@Valid @RequestBody HonorMgmtSaveReqVO updateReqVO) {
+//        honorMgmtService.auditHonorMgmt(updateReqVO);
+        return success(true);
+    }
+
+    @PutMapping("/push")
+    @Operation(summary = "推送荣誉")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:honor-mgmt:update')")
+    public CommonResult<Boolean> pushHonorMgmt(@Valid @RequestBody HonorMgmtPushReqVO reqVO) {
+        boolean isSuccess = honorMgmtService.pushHonorMgmt(reqVO);
+        if (isSuccess) {
+            return success(true);
+        }
+        else {
+            return error(500, "推送失败！请检查数据！");
+        }
+
+    }
+
 
     @PutMapping("/update")
     @Operation(summary = "更新荣誉管理")
@@ -84,6 +109,14 @@ public class HonorMgmtController {
     @Operation(summary = "获得荣誉管理分页")
     @PreAuthorize("@ss.hasPermission('studentmgmt:honor-mgmt:query')")
     public CommonResult<PageResult<HonorMgmtRespVO>> getHonorMgmtPage(@Valid HonorMgmtPageReqVO pageReqVO) {
+        PageResult<HonorMgmtDO> pageResult = honorMgmtService.getHonorMgmtPage(pageReqVO);
+        return success(BeanUtils.toBean(pageResult, HonorMgmtRespVO.class));
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "荣誉信息分布看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:honor-mgmt:query')")
+    public CommonResult<PageResult<HonorMgmtRespVO>> getChart(@Valid HonorMgmtPageReqVO pageReqVO) {
         PageResult<HonorMgmtDO> pageResult = honorMgmtService.getHonorMgmtPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, HonorMgmtRespVO.class));
     }
