@@ -1,9 +1,10 @@
 package cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.sharingreport;
 
-import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
-import com.baomidou.mybatisplus.annotation.KeySequence;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.*;
+import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 
 /**
  * 分账报表 DO
@@ -16,7 +17,57 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Builder
-//@NoArgsConstructor
+@NoArgsConstructor
 @AllArgsConstructor
 public class SharingReportDO extends BaseDO {
+
+    /**
+     * 主键ID
+     */
+    @TableId
+    private Long id;
+    /**
+     * 报表编号，唯一
+     */
+    private String reportCode;
+    /**
+     * 报表名称
+     */
+    private String reportName;
+    /**
+     * 报表类型：日/周/月/季/半年/年/自定义
+     */
+    private String reportType;
+    /**
+     * 报表时间范围（如2025-03、2025-Q1、2025-03-01~2025-03-31）
+     */
+    private String timeRange;
+    /**
+     * 合作方（为空表示全部）
+     */
+    private String cooperator;
+    /**
+     * 总结算金额（元）
+     */
+    private BigDecimal totalSettlementAmount;
+    /**
+     * 总分账金额（元）
+     */
+    private BigDecimal totalSharingAmount;
+    /**
+     * 关联结算单数量
+     */
+    private Integer billCount;
+    /**
+     * 备注
+     */
+    private String remark;
+    /**
+     * 备用字段1
+     */
+    private String reserve1;
+    /**
+     * 备用字段2
+     */
+    private String reserve2;
 }
