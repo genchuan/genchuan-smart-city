@@ -11,6 +11,10 @@ import java.util.List;
 @Schema(description = "企业风险报表 Request VO")
 public class EntReportPageReq extends PageParam {
 
+
+    @Schema(description = "编号")
+    private String reportNo;
+
     // ====================== 【必填：区分月报 / 自定义报表】 ======================
 //    @Schema(description = "报表类型 1-企业月度评估报告 2-自定义报表", requiredMode = Schema.RequiredMode.REQUIRED)
 //    private Integer reportType;
@@ -39,8 +43,6 @@ public class EntReportPageReq extends PageParam {
 
     @Schema(description = "企业名称（模糊查询）")
     private String entName;
-
-
 
 
 

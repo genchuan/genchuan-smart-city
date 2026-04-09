@@ -19,17 +19,17 @@ public class ViolationAnalyticsDrillReq extends PageParam {
 //    private Integer reportType;
 
     // ====================== 【统计周期是月的】 ======================
-    @Schema(description = "统计周期(当日/周/月)")
+    @Schema(description = "统计周期(日/周/月)")
     private String statisticPeriod;
 
 
     // ====================== 【通用时间条件】 ======================
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Schema(description = "统计开始时间", example = "2026-04-01 00:00:00")
+    @Schema(description = "统计开始时间", example = "2026-04-01 00:00:00",hidden = true)
     private LocalDateTime beginTime;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Schema(description = "统计结束时间", example = "2026-04-07 23:59:59")
+    @Schema(description = "统计结束时间", example = "2026-04-07 23:59:59",hidden = true)
     private LocalDateTime endTime;
 
     // ====================== 【企业维度】 ======================
