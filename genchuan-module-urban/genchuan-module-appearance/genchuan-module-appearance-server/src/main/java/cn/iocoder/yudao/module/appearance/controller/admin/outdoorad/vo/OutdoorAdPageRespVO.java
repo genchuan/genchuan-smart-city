@@ -1,95 +1,73 @@
 package cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.vo;
 
-import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
-import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 户外广告分页 Page Response VO")
+@Schema(description = "管理后台 - 户外广告分页响应 VO")
 @Data
-@ExcelIgnoreUnannotated
 public class OutdoorAdPageRespVO {
-    @Schema(description = "广告主键ID")
-    @ExcelProperty("广告主键ID")
-    private String outdoorAdId;
 
-    @Schema(description = "广告编码，唯一（格式：AD-[年月]-[6位随机数]）")
-    @ExcelProperty("广告编码")
+    @Schema(description = "主键ID", example = "k1l2m3n4-o5p6-7890-klmn-123456789012")
+    private String id;
+
+    @Schema(description = "广告编码", example = "AD-202603-123456")
     private String adCode;
 
-    @Schema(description = "广告名称")
-    @ExcelProperty("广告名称")
-    private String name;
+    @Schema(description = "广告名称", example = "鼓楼区商业广场电子屏广告")
+    private String adName;
 
-    @Schema(description = "广告类型（立柱/墙面/灯箱/电子屏）")
-    @ExcelProperty("广告类型")
-    private String type;
+    @Schema(description = "广告类型", example = "电子屏")
+    private String adType;
 
-    @Schema(description = "广告尺寸（长*宽，单位：米）")
-    @ExcelProperty("广告尺寸")
-    private String approvedSize;
+    @Schema(description = "广告尺寸", example = "8*4")
+    private String adSize;
 
-    @Schema(description = "广告具体位置")
-    @ExcelProperty("广告位置")
+    @Schema(description = "广告具体位置", example = "鼓楼区XX路商业广场1号楼外立面")
     private String location;
 
-    @Schema(description = "广告点位经度")
-    @ExcelProperty("经度")
+    @Schema(description = "经度", example = "119.2988")
     private String lng;
 
-    @Schema(description = "广告点位纬度")
-    @ExcelProperty("纬度")
+    @Schema(description = "纬度", example = "26.0853")
     private String lat;
 
-    @Schema(description = "所属区域编码")
-    @ExcelProperty("区域编码")
+    @Schema(description = "所属区域编码", example = "350105")
     private String areaCode;
 
-    @Schema(description = "所属区域名称")
-    @ExcelProperty("区域名称")
+    @Schema(description = "所属区域名称", example = "鼓楼区")
     private String areaName;
 
-    @Schema(description = "所属网格编码")
-    @ExcelProperty("网格编码")
+    @Schema(description = "所属网格编码", example = "GRID-350105001-001")
     private String gridCode;
 
-    @Schema(description = "所属网格名称")
-    @ExcelProperty("网格名称")
+    @Schema(description = "所属网格名称", example = "鼓西街道第一网格")
     private String gridName;
 
-    @Schema(description = "审批状态（待审批/已审批/已驳回）")
-    @ExcelProperty("审批状态")
+    @Schema(description = "审批状态", example = "已审批")
     private String approvalStatus;
 
-    @Schema(description = "审批人真实姓名")
-    @ExcelProperty("审批人")
-    private String approvalName;
+    @Schema(description = "审批人真实姓名", example = "张三")
+    private String approvalBy;
 
-    @Schema(description = "审批时间，格式yyyy-MM-dd HH:mm:ss")
-    @ExcelProperty("审批时间")
-    private String endApprovalTime;
+    @Schema(description = "审批时间", example = "2026-03-10 09:00:00")
+    private LocalDateTime approvalTime;
 
-    @Schema(description = "数据状态 (0-未启用，1-已启用，2-已归档)")
-    @ExcelProperty("数据状态")
+    @Schema(description = "数据状态", example = "1")
     private Integer dataStatus;
 
-    @Schema(description = "区块链存证哈希值")
-    @ExcelProperty("区块链存证哈希")
+    @Schema(description = "区块链存证哈希值", example = "0xabc...")
     private String chainHash;
 
-    @Schema(description = "创建时间，格式yyyy-MM-dd HH:mm:ss")
-    @ExcelProperty("创建时间")
-    private String createTime;
+    @Schema(description = "创建时间", example = "2026-03-01 10:00:00")
+    private LocalDateTime createTime;
 
-    @Schema(description = "创建人真实姓名")
-    @ExcelProperty("创建人")
-    private String createName;
+    @Schema(description = "创建人真实姓名", example = "李四")
+    private String createByName;
 
-    @Schema(description = "更新时间，格式yyyy-MM-dd HH:mm:ss")
-    @ExcelProperty("更新时间")
-    private String updateTime;
+    @Schema(description = "更新时间", example = "2026-03-10 09:00:00")
+    private LocalDateTime updateTime;
 
-    @Schema(description = "更新人真实姓名")
-    @ExcelProperty("更新人")
-    private String updateName;
+    @Schema(description = "更新人真实姓名", example = "张三")
+    private String updateByName;
 }

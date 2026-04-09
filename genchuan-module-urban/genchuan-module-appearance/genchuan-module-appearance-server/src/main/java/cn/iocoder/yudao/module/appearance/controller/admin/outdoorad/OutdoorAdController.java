@@ -30,58 +30,91 @@ public class OutdoorAdController {
     private OutdoorAdService outdoorAdService;
 
     @GetMapping("/page")
-    @Operation(summary = "获得户外广告分页")
+    @Operation(summary = "户外广告信息分页查询")
     @PreAuthorize("@ss.hasPermission('appearance:outdoor-ad-spvs:query')")
-    public CommonResult<PageResult<OutdoorAdPageRespVO>> getOutdoorAdPage( @Valid OutdoorAdPageReqVO pageReqVO) {
-        PageResult<OutdoorAdDO> pageResult = outdoorAdService.getOutdoorAdPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, OutdoorAdPageRespVO.class));
+    public CommonResult<PageResult<OutdoorAdPageRespVO>> page(@Valid OutdoorAdPageReqVO pageReqVO) {
+        PageResult<OutdoorAdPageRespVO> pageResult = outdoorAdService.getOutdoorAdPage(pageReqVO);
+        return CommonResult.success(pageResult);
     }
 
     @GetMapping("/get")
-    @Operation(summary = "获得户外广告")
-    @Parameter(name = "id", description = "主键ID", required = true, example = "6")
-    @PreAuthorize("@ss.hasPermission('appearance:outdoor-ad-spvs:query')")
-    public CommonResult<OutdoorAdGetRespVO> getOutdoorAd( @Valid OutdoorAdGetReqVO getReqVO) {
-        OutdoorAdDO outdoorAd = outdoorAdService.getOutdoorAd(getReqVO);
-        return success(BeanUtils.toBean(outdoorAd, OutdoorAdGetRespVO.class));
+    @Operation(summary = "户外广告信息单条详情")
+    @PreAuthorize("@ss.hasPermission('appearance:outdoor-ad-spvs:get')")
+    public CommonResult<OutdoorAdGetRespVO> get(@Valid OutdoorAdGetReqVO reqVO) {
+        OutdoorAdGetRespVO respVO = outdoorAdService.getOutdoorAd(reqVO.getId());
+        return CommonResult.success(respVO);
     }
 
     @PostMapping("/add")
-    @Operation(summary = "新增户外广告")
+    @Operation(summary = "户外广告信息新增")
     @PreAuthorize("@ss.hasPermission('appearance:outdoor-ad-spvs:add')")
-    public CommonResult<OutdoorAdAddRespVO> addOutdoorAd(@Valid OutdoorAdAddReqVO addReqVO) {
-        OutdoorAdDO outdoorAd = outdoorAdService.addOutdoorAd(addReqVO);
-        return success(BeanUtils.toBean(outdoorAd, OutdoorAdAddRespVO.class));
+    public CommonResult<OutdoorAdAddRespVO> add(@Valid @RequestBody OutdoorAdAddReqVO addReqVO) {
+        return CommonResult.success(outdoorAdService.addOutdoorAd(addReqVO));
     }
 
     @PostMapping("/edit")
-    @Operation(summary = "更新户外广告")
+    @Operation(summary = "户外广告信息编辑")
     @PreAuthorize("@ss.hasPermission('appearance:outdoor-ad-spvs:edit')")
-    public CommonResult<Boolean> editOutdoorAd(@Valid OutdoorAdEditReqVO editReqVO) {
-        return success(outdoorAdService.editOutdoorAd(editReqVO));
+    public CommonResult<Boolean> edit(@Valid @RequestBody OutdoorAdEditReqVO editReqVO) {
+        outdoorAdService.editOutdoorAd(editReqVO);
+        return CommonResult.success(true);
     }
 
-    @GetMapping("/remove")
-    @Operation(summary = "删除户外广告")
+    @PostMapping("/remove")
+    @Operation(summary = "户外广告信息删除")
     @PreAuthorize("@ss.hasPermission('appearance:outdoor-ad-spvs:remove')")
-    public CommonResult<Boolean> removeOutdoorAd(@Valid OutdoorAdRemoveReqVO removeReqVO) {
-        return success(outdoorAdService.removeOutdoorAd(removeReqVO));
-    }
-    @GetMapping("/order-page")
-    @Operation(summary = "获得广告整改工单分页")
-    @PreAuthorize("@ss.hasPermission('appearance:outdoor-ad-spvs:query')")
-    public CommonResult<PageResult<OutdoorAdOrderPageRespVO>> getOutdoorAdOrderPage( @Valid OutdoorAdOrderPageReqVO pageReqVO) {
-        PageResult<OutdoorAdOrderDO> pageResult = outdoorAdService.getOutdoorAdOrderPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, OutdoorAdOrderPageRespVO.class));
+    public CommonResult<Boolean> remove(@Valid @RequestBody OutdoorAdRemoveReqVO removeReqVO) {
+        outdoorAdService.removeOutdoorAds(removeReqVO);
+        return CommonResult.success(true);
     }
 
-    @GetMapping("/order-get")
-    @Operation(summary = "获得广告整改工单")
-    @Parameter(name = "id", description = "主键ID", required = true, example = "1")
-    @PreAuthorize("@ss.hasPermission('appearance:outdoor-ad-spvs:query')")
-    public CommonResult<OutdoorAdOrderGetRespVO> getOutdoorAdOrder( @Valid OutdoorAdOrderGetReqVO getReqVO) {
-        OutdoorAdOrderDO outdoorAdOrder = outdoorAdService.getOutdoorAdOrder(getReqVO);
-        return success(BeanUtils.toBean(outdoorAdOrder, OutdoorAdOrderGetRespVO.class));
-    }
+//    @GetMapping("/page")
+//    @Operation(summary = "获得户外广告分页")
+//    @PreAuthorize("@ss.hasPermission('appearance:outdoor-ad-spvs:query')")
+//    public CommonResult<PageResult<OutdoorAdPageRespVO>> getOutdoorAdPage( @Valid OutdoorAdPageReqVO pageReqVO) {
+//        PageResult<OutdoorAdDO> pageResult = outdoorAdService.getOutdoorAdPage(pageReqVO);
+//        return success(BeanUtils.toBean(pageResult, OutdoorAdPageRespVO.class));
+//    }
+//
+//    @GetMapping("/get")
+//    @Operation(summary = "获得户外广告")
+//    @Parameter(name = "id", description = "主键ID", required = true, example = "6")
+//    @PreAuthorize("@ss.hasPermission('appearance:outdoor-ad-spvs:query')")
+//    public CommonResult<OutdoorAdGetRespVO> getOutdoorAd( @Valid OutdoorAdGetReqVO getReqVO) {
+//        OutdoorAdDO outdoorAd = outdoorAdService.getOutdoorAd(getReqVO);
+//        return success(BeanUtils.toBean(outdoorAd, OutdoorAdGetRespVO.class));
+//    }
+//
+//    @PostMapping("/add")
+//    @Operation(summary = "新增户外广告")
+//    @PreAuthorize("@ss.hasPermission('appearance:outdoor-ad-spvs:add')")
+//    public CommonResult<OutdoorAdAddRespVO> addOutdoorAd(@Valid OutdoorAdAddReqVO addReqVO) {
+//        OutdoorAdDO outdoorAd = outdoorAdService.addOutdoorAd(addReqVO);
+//        return success(BeanUtils.toBean(outdoorAd, OutdoorAdAddRespVO.class));
+//    }
+//
+//    @PostMapping("/edit")
+//    @Operation(summary = "更新户外广告")
+//    @PreAuthorize("@ss.hasPermission('appearance:outdoor-ad-spvs:edit')")
+//    public CommonResult<Boolean> editOutdoorAd(@Valid OutdoorAdEditReqVO editReqVO) {
+//        return success(outdoorAdService.editOutdoorAd(editReqVO));
+//    }
+//
+//    @GetMapping("/order-page")
+//    @Operation(summary = "获得广告整改工单分页")
+//    @PreAuthorize("@ss.hasPermission('appearance:outdoor-ad-spvs:query')")
+//    public CommonResult<PageResult<OutdoorAdOrderPageRespVO>> getOutdoorAdOrderPage( @Valid OutdoorAdOrderPageReqVO pageReqVO) {
+//        PageResult<OutdoorAdOrderDO> pageResult = outdoorAdService.getOutdoorAdOrderPage(pageReqVO);
+//        return success(BeanUtils.toBean(pageResult, OutdoorAdOrderPageRespVO.class));
+//    }
+//
+//    @GetMapping("/order-get")
+//    @Operation(summary = "获得广告整改工单")
+//    @Parameter(name = "id", description = "主键ID", required = true, example = "1")
+//    @PreAuthorize("@ss.hasPermission('appearance:outdoor-ad-spvs:query')")
+//    public CommonResult<OutdoorAdOrderGetRespVO> getOutdoorAdOrder( @Valid OutdoorAdOrderGetReqVO getReqVO) {
+//        OutdoorAdOrderDO outdoorAdOrder = outdoorAdService.getOutdoorAdOrder(getReqVO);
+//        return success(BeanUtils.toBean(outdoorAdOrder, OutdoorAdOrderGetRespVO.class));
+//    }
 
 }
