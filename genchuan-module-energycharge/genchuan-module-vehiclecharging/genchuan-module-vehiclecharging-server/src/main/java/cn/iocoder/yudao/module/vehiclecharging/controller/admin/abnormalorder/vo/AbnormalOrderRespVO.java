@@ -45,6 +45,18 @@ public class AbnormalOrderRespVO {
     @ExcelProperty("退款金额")
     private BigDecimal refundAmount;
 
+    @Schema(description = "退款原因")
+    @ExcelProperty("退款原因")
+    private String refundReason;
+
+    @Schema(description = "异常订单核实结果", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @ExcelProperty("异常订单核实结果")
+    private String verifyResult;
+
+    @Schema(description = "异常订单核实备注")
+    @ExcelProperty("异常订单核实备注")
+    private String verifyRemark;
+
     @Schema(description = "异常状态：未核实/已核实/处理中/已完结，关联字典abnormal_order_abnormal_status", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @ExcelProperty("异常状态：未核实/已核实/处理中/已完结，关联字典abnormal_order_abnormal_status")
     private String abnormalStatus;

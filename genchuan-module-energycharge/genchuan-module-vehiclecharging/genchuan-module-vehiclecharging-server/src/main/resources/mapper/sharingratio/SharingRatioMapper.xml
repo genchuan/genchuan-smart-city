@@ -9,4 +9,77 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="selectSummaryStats" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.sharingratio.vo.SharingRatioSummaryRespVO">
+        SELECT
+        COUNT(*) AS totalCount,
+        SUM(CASE WHEN sharing_status = '已生效' THEN 1 ELSE 0 END) AS validCount,
+        SUM(CASE WHEN sharing_status = '已失效' THEN 1 ELSE 0 END) AS invalidCount,
+        SUM(CASE WHEN sharing_status = '未生效' THEN 1 ELSE 0 END) AS pendingCount
+        FROM sharing_ratio
+        WHERE deleted = 0
+        <if test="startTime != null and endTime != null">
+            AND create_time BETWEEN FROM_UNIXTIME(#{startTime}) AND FROM_UNIXTIME(#{endTime})
+        </if>
+        <if test="startTime != null and endTime == null">
+            AND create_time &gt;= FROM_UNIXTIME(#{startTime})
+        </if>
+        <if test="endTime != null and startTime == null">
+            AND create_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
+    </select>
+
+    <!-- 饼图数据：按分账类型分组 -->
+    <select id="selectPieData" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.sharingratio.vo.SharingRatioSummaryRespVO$PieData">
+        SELECT
+        sharing_type AS name,
+        COUNT(*) AS value
+        FROM sharing_ratio
+        WHERE deleted = 0
+        <if test="startTime != null and endTime != null">
+            AND create_time BETWEEN FROM_UNIXTIME(#{startTime}) AND FROM_UNIXTIME(#{endTime})
+        </if>
+        <if test="startTime != null and endTime == null">
+            AND create_time &gt;= FROM_UNIXTIME(#{startTime})
+        </if>
+        <if test="endTime != null and startTime == null">
+            AND create_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
+        GROUP BY sharing_type
+        ORDER BY value DESC
+    </select>
+
+    <!-- 柱状图数据：按合作方分组 -->
+    <select id="selectBarData" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.sharingratio.vo.SharingRatioSummaryRespVO$BarData">
+        SELECT
+        cooperator AS name,
+        COUNT(*) AS value
+        FROM sharing_ratio
+        WHERE deleted = 0
+        <if test="startTime != null and endTime != null">
+            AND create_time BETWEEN FROM_UNIXTIME(#{startTime}) AND FROM_UNIXTIME(#{endTime})
+        </if>
+        <if test="startTime != null and endTime == null">
+            AND create_time &gt;= FROM_UNIXTIME(#{startTime})
+        </if>
+        <if test="endTime != null and startTime == null">
+            AND create_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
+        GROUP BY cooperator
+        ORDER BY value DESC
+    </select>
+
+    <select id="selectCooperatorCounts" resultType="java.util.HashMap">
+        SELECT
+        cooperator,
+        COUNT(*) AS count
+        FROM sharing_ratio
+        WHERE deleted = 0
+        <if test="startTime != null and endTime != null">
+            AND create_time &gt;= FROM_UNIXTIME(#{startTime})
+            AND create_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
+        GROUP BY cooperator
+        ORDER BY count DESC
+    </select>
+
 </mapper>

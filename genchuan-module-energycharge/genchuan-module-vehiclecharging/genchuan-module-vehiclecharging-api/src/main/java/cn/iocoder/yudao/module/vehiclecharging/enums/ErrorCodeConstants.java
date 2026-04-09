@@ -45,6 +45,13 @@ public interface ErrorCodeConstants {
     ErrorCode PILE_STATUS_NOT_ENABLED = new ErrorCode(500, "充电桩状态不是已调试，无法启用");
     ErrorCode PILE_STATUS_NOT_ENABLED_FOR_DISABLE = new ErrorCode(500, "充电桩状态不是已启用，无法进行停用操作");
     ErrorCode PILE_QRCODE_NOT_EXISTS = new ErrorCode(500, "充电桩二维码内容不存在");
+    ErrorCode     MODULE_ALARM_NOT_EXISTS = new ErrorCode(500, "模块告警记录不存在");
+
+
+    ErrorCode MODULE_ALARM_STATUS_NOT_UNCHECKED = new ErrorCode(500, "模块告警状态不是未排查，无法执行排查操作");
+    ErrorCode MODULE_ALARM_STATUS_NOT_CHECKED = new ErrorCode(500, "模块告警状态不是已排查，无法执行修复操作");
+    ErrorCode MODULE_ALARM_STATUS_NOT_REPAIRING = new ErrorCode(500, "模块告警状态不是修复中，无法执行销账操作");
+    ErrorCode MODULE_ALARM_REPAIR_VOUCHER_NOT_EXISTS = new ErrorCode(500, "模块告警记录不存在修复凭证");
 
 
     // ========== 结算单==========

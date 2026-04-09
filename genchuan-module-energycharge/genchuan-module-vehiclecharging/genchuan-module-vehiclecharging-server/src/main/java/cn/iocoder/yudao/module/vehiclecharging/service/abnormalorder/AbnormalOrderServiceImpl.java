@@ -125,7 +125,7 @@ public class AbnormalOrderServiceImpl implements AbnormalOrderService {
 
         // 要更新的字段
         updateWrapper.set("abnormal_status", "已核实");
-        updateWrapper.set("check_user", SecurityFrameworkUtils.getLoginUserNickname());
+        updateWrapper.set("check_user", SecurityFrameworkUtils.getLoginUserId());
         updateWrapper.set("check_time", LocalDateTime.now());
         updateWrapper.set("verify_result", reqVO.getVerifyResult());
         updateWrapper.set("verify_remark", reqVO.getVerifyRemark());
@@ -197,6 +197,8 @@ public class AbnormalOrderServiceImpl implements AbnormalOrderService {
         updateWrapper.eq("id", reqVO.getId());
         updateWrapper.set("refund_amount", reqVO.getRefundAmount());
         updateWrapper.set("updater", username);
+        updateWrapper.set("abnormal_status", "已完结");
+        updateWrapper.set("refund_reason",reqVO.getRefundReason());
         abnormalOrderMapper.update(null, updateWrapper);
 
         // ======================
@@ -282,6 +284,33 @@ public class AbnormalOrderServiceImpl implements AbnormalOrderService {
         return resp;
     }
 
+    @Override
+    public List<AbnormalOrderDailyCountRespVO> getAbnormalOrderDailyCount(AbnormalOrderDailyCountReqVO reqVO) {
+        return abnormalOrderMapper.selectDailyCountByStation(
+                reqVO.getStartTime(),
+                reqVO.getEndTime(),
+                reqVO.getStationId()
+        );
+    }
+
+    @Override
+    public List<AbnormalOrderTypeRatioRespVO> getAbnormalOrderTypeRatio(AbnormalOrderDailyCountReqVO reqVO) {
+        return abnormalOrderMapper.selectTypeRatio(
+                reqVO.getStartTime(),
+                reqVO.getEndTime(),
+                reqVO.getStationId()
+        );
+    }
+
+    @Override
+    public AbnormalOrderHandleCountRespVO getAbnormalOrderHandleCount(AbnormalOrderDailyCountReqVO reqVO) {
+        return abnormalOrderMapper.selectHandleCount(
+                reqVO.getStartTime(),
+                reqVO.getEndTime(),
+                reqVO.getStationId()
+        );
+    }
+
 // ==================== 内部工具方法 ====================
 
     // 柱状图：按日期分组
@@ -297,7 +326,7 @@ public class AbnormalOrderServiceImpl implements AbnormalOrderService {
                     bar.setDate(date);
                     bar.setAbnormalCount(dayList.size());
                     bar.setHandleCount((int) dayList.stream()
-                            .filter(o -> "已完成".equals(o.getAbnormalStatus())).count());
+                            .filter(o -> "已完结".equals(o.getAbnormalStatus())).count());
                     return bar;
                 }).sorted(Comparator.comparing(AbnormalOrderChartRespVO.BarData::getDate))
                 .collect(Collectors.toList());
@@ -321,7 +350,7 @@ public class AbnormalOrderServiceImpl implements AbnormalOrderService {
         AbnormalOrderChartRespVO.CardData card = new AbnormalOrderChartRespVO.CardData();
 
         int total = list.size();
-        int handleCount = (int) list.stream().filter(o -> "已完成".equals(o.getAbnormalStatus())).count();
+        int handleCount = (int) list.stream().filter(o -> "已完结".equals(o.getAbnormalStatus())).count();
         int unHandleCount = total - handleCount;
         double ratio = total == 0 ? 0 : BigDecimal.valueOf(handleCount)
                 .divide(BigDecimal.valueOf(total), 2, RoundingMode.HALF_UP)

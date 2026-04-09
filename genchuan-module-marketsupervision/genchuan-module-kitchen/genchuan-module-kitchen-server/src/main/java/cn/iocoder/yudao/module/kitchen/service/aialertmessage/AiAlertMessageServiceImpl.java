@@ -12,8 +12,11 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.AiAler
 import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.add.AddAiAlertMessageReq;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.aialertmessage.AiAlertMessageDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.dictionary.illegaltypedict.IllegalTypeDictDO;
+import cn.iocoder.yudao.module.kitchen.dal.dataobject.sysdevice.SysDeviceDO;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.aialertmessage.AiAlertMessageMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.dictionary.illegaltypedict.IllegalTypeDictMapper;
+import cn.iocoder.yudao.module.kitchen.dal.mysql.sysdevice.SysDeviceMapper;
+import cn.iocoder.yudao.module.kitchen.service.sysdevice.SysDeviceService;
 import cn.iocoder.yudao.module.kitchen.vrv.utils.common.name.VrvNameUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.annotation.Resource;
@@ -41,6 +44,11 @@ public class AiAlertMessageServiceImpl implements AiAlertMessageService {
 
     @Resource
     private IllegalTypeDictMapper illegalTypeDictMapper;
+
+
+
+    @Resource
+    private SysDeviceMapper sysDeviceMapper;
 
     @Override
     public Long createAiAlertMessage(AiAlertMessageSaveReqVO createReqVO) {
@@ -190,11 +198,22 @@ public class AiAlertMessageServiceImpl implements AiAlertMessageService {
             reqVO.setSrcUrl(imageUrl);
         }
 
-        //设备编码
-        if (reqVO.getDeviceCode()==null){
-            reqVO.setDeviceCode(VrvNameUtil.generateCode("AIDEV"));
-        }
+        // 设备编码：从真实设备表里随机取一个，不再随机生成
+        if (reqVO.getDeviceCode() == null) {
+            // 从 sys_device 随机查 1 条未删除的设备
+            SysDeviceDO randomDevice = sysDeviceMapper.selectOne(new LambdaQueryWrapper<SysDeviceDO>()
+                    .eq(SysDeviceDO::getDeleted, 0)
+                    .last("ORDER BY RAND() LIMIT 1") // 正确随机取1条
+            );
 
+            if (randomDevice != null) {
+                // 使用真实设备编号
+                reqVO.setDeviceCode(randomDevice.getDeviceCode());
+            } else {
+                // 兜底：没有设备时，兼容旧逻辑
+                reqVO.setDeviceCode(VrvNameUtil.generateCode("AIDEV"));
+            }
+        }
         // 生成随机手机号（11位）
         if (reqVO.getDeviceAccount() == null) {
             reqVO.setDeviceAccount(generatePhone());

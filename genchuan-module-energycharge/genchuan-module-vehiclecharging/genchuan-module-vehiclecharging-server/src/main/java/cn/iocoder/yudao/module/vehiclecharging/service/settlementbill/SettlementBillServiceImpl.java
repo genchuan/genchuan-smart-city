@@ -45,7 +45,6 @@ public class SettlementBillServiceImpl implements SettlementBillService {
     private SettlementBillMapper settlementBillMapper;
 
     // ==================== 图表统计 ====================
-// ==================== 图表统计 ====================
     @Override
     public SettlementBillSummaryRespVO getSettlementBillChart(SettlementBillChartReqVO reqVO) {
         LambdaQueryWrapper<SettlementBillDO> qw = buildTimeQuery(reqVO.getTimeRangeStart(), reqVO.getTimeRangeEnd());
@@ -64,7 +63,7 @@ public class SettlementBillServiceImpl implements SettlementBillService {
             item.setDate(e.getKey());
             item.setCount(e.getValue().intValue());
             return item;
-        }).collect(Collectors.toList());
+        }).sorted(Comparator.comparing(SettlementBillSummaryRespVO.LineItem::getDate)).collect(Collectors.toList());
 
         Map<String, BigDecimal> coopAmount = all.stream()
                 .collect(Collectors.groupingBy(SettlementBillDO::getCooperator,
@@ -87,6 +86,14 @@ public class SettlementBillServiceImpl implements SettlementBillService {
         return resp;
     }
 
+    /**
+     * 查询结算账单的每日趋势
+     * 作用：按天分组统计 每天的总账单数 + 已完成账单数
+     */
+    /**
+     * 查询结算账单的每日趋势
+     * 作用：按天分组统计 每天的总账单数 + 已完成账单数
+     */
     @Override
     public SettlementBillDailyTrendRespVO getDailyTrend(SettlementBillDailyTrendReqVO reqVO) {
         LambdaQueryWrapper<SettlementBillDO> qw = buildTimeQuery(reqVO.getTimeRangeStart(), reqVO.getTimeRangeEnd());
@@ -96,12 +103,15 @@ public class SettlementBillServiceImpl implements SettlementBillService {
                 .collect(Collectors.groupingBy(b -> b.getCreateTime().toLocalDate().toString()));
 
         List<SettlementBillDailyTrendRespVO.DailyItem> list = group.entrySet().stream().map(e -> {
-            SettlementBillDailyTrendRespVO.DailyItem item = new SettlementBillDailyTrendRespVO.DailyItem();
-            item.setDate(e.getKey());
-            item.setTotalCount(e.getValue().size());
-            item.setCompletedCount((int) e.getValue().stream().filter(b -> "已完成".equals(b.getBillStatus())).count());
-            return item;
-        }).collect(Collectors.toList());
+                    SettlementBillDailyTrendRespVO.DailyItem item = new SettlementBillDailyTrendRespVO.DailyItem();
+                    item.setDate(e.getKey());
+                    item.setTotalCount(e.getValue().size());
+                    item.setCompletedCount((int) e.getValue().stream().filter(b -> "已完成".equals(b.getBillStatus())).count());
+                    return item;
+                })
+                // 👇 👇 👇 【强制按日期从早到晚排序，绝对稳】
+                .sorted((d1, d2) -> d1.getDate().compareTo(d2.getDate()))
+                .collect(Collectors.toList());
 
         SettlementBillDailyTrendRespVO resp = new SettlementBillDailyTrendRespVO();
         resp.setList(list);
@@ -113,7 +123,8 @@ public class SettlementBillServiceImpl implements SettlementBillService {
         LambdaQueryWrapper<SettlementBillDO> qw = buildTimeQuery(reqVO.getTimeRangeStart(), reqVO.getTimeRangeEnd());
         List<SettlementBillDO> all = settlementBillMapper.selectList(qw);
 
-        Map<String, List<SettlementBillDO>> group = all.stream().collect(Collectors.groupingBy(SettlementBillDO::getCooperator));
+        Map<String, List<SettlementBillDO>> group = all.stream()
+                .collect(Collectors.groupingBy(SettlementBillDO::getCooperator));
         List<SettlementBillCooperatorAmountRespVO.CooperatorItem> list = group.entrySet().stream().map(e -> {
             SettlementBillCooperatorAmountRespVO.CooperatorItem item = new SettlementBillCooperatorAmountRespVO.CooperatorItem();
             item.setName(e.getKey());

@@ -97,6 +97,10 @@ public class AbnormalOrderDO extends BaseDO {
      * 退款金额
      */
     private BigDecimal refundAmount;
+    /**
+     * 退款原因
+     */
+    private String refundReason;
 
     /**
      * 异常状态：未核实/已核实/处理中/已完结

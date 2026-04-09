@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.vehiclecharging.controller.admin.abnormalorder.vo;
 
+import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -49,14 +50,31 @@ public class NewAbnormalOrderRespVO {
     @Schema(description = "核实结果", example = "异常")
     private String verifyResult;
 
+    @Schema(description = "异常订单核实备注")
+    @ExcelProperty("异常订单核实备注")
+    private String verifyRemark;
+
+    @Schema(description = "处理措施", example = "爱咋咋")
+    private String handleMeasure;
+
     @Schema(description = "处理人", example = "运维李四")
     private String handleUser;
+
+    @Schema(description = "退款金额", example = "0.01")
+    private BigDecimal refundAmount;
+
+    @Schema(description = "退款原因")
+    @ExcelProperty("退款原因")
+    private String refundReason;
 
     @Schema(description = "处理时间", example = "1775007986")
     private Long handleTime;
 
     @Schema(description = "排查人")
     private String checkUser;
+
+    @Schema(description = "排查时间", example = "1775008986")
+    private Long checkTime;
 
     @Schema(description = "完结时间", example = "1775008986")
     private Long completeTime;

@@ -34,5 +34,8 @@ public interface ErrorCodeConstants {
     // ========== 系统操作审计日志表，存储平台全模块所有操作的审计日志信息==========
     ErrorCode SYS_OPERATION_LOG_NOT_EXISTS = new ErrorCode(500, "系统操作审计日志表，存储平台全模块所有操作的审计日志信息不存在");
 
+    // ========== 设备信息==========
+    ErrorCode SYS_DEVICE_NOT_EXISTS = new ErrorCode(500, "设备信息不存在");
+
 
 }

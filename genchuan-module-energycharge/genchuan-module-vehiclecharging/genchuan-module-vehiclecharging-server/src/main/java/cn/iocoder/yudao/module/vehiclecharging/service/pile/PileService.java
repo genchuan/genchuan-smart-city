@@ -88,9 +88,9 @@ public interface PileService {
      * 获取充电枪二维码
      *
      * @param id 编号
-     * @return 二维码图片字节数组
+     * @return 二维码 URL
      */
-    byte[] getPileQrcode(Long id);
+    String getPileQrcode(Long id);
 
     /**
      * 远程重启充电桩
