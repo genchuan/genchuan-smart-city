@@ -12,7 +12,7 @@ import jakarta.validation.constraints.*;
 @Data
 public class OutdoorAdGetReqVO {
 
-    @Schema(description = "户外广告主键ID（UUID）", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "户外广告主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "k1l2m3n4-o5p6-7890-klmn-123456789012")
     @NotBlank(message = "广告ID不能为空")
     private String id;
 
