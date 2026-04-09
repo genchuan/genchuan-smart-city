@@ -35,6 +35,10 @@ public class ChargingLotDO extends BaseDO {
      * 所属场站ID
      */
     private Long stationId;
+
+    @TableField(exist = false)
+    private String stationName;
+
     /**
      * 车位类型
      */
@@ -43,6 +47,10 @@ public class ChargingLotDO extends BaseDO {
      * 关联充电桩ID
      */
     private Long pileId;
+
+    @TableField(exist = false)
+    private String pileName;
+
     /**
      * 占用时长（分钟）
      */
