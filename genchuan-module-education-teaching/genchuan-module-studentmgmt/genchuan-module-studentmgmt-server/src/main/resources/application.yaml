@@ -1,9 +1,10 @@
 spring:
   application:
-    name: studentmgmt-server
+    name: student-server
 
   profiles:
     active: local
+#    active: local-my
 
   main:
     allow-circular-references: true # 允许循环依赖，因为项目是三层架构，无法避免这个情况。
@@ -62,6 +63,7 @@ knife4j:
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true # 虽然默认为 true ，但是还是显示去指定下。
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:
       id-type: NONE # “智能”模式，基于 IdTypeEnvironmentPostProcessor + 数据源的类型，自动适配成 AUTO、INPUT 模式。
@@ -88,14 +90,16 @@ easy-trans:
 
 --- #################### 定时任务相关配置 ####################
 
+#xxl:
+#  job:
+#    executor:
+#      appname: ${spring.application.name} # 执行器 AppName
+#      logpath: ${user.home}/logs/xxl-job/${spring.application.name} # 执行器运行日志文件存储磁盘路径
+#    accessToken: default_token # 执行器通讯TOKEN
+# 临时禁用
 xxl:
   job:
-    enabled: false
-    executor:
-      appname: ${spring.application.name} # 执行器 AppName
-      logpath: ${user.home}/logs/xxl-job/${spring.application.name} # 执行器运行日志文件存储磁盘路径
-
-    accessToken: default_token # 执行器通讯TOKEN
+    enabled: false  # 先禁用，让服务能启动
 
 --- #################### 芋道相关配置 ####################
 
