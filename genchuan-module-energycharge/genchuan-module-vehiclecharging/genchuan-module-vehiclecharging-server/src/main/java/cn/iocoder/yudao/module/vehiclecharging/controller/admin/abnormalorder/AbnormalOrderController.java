@@ -152,11 +152,35 @@ public class AbnormalOrderController {
         return success(true);
     }
 
-    @GetMapping("/abnormal-order/chart")
+    @GetMapping("/chart")
     @Operation(summary = "异常订单统计图表（柱状图+饼图+卡片）")
     @PreAuthorize("@ss.hasPermission('vehiclecharging:abnormal_order:query')")
     public CommonResult<AbnormalOrderChartRespVO> getAbnormalOrderChart(
             AbnormalOrderChartReqVO reqVO) {
         return CommonResult.success(abnormalOrderService.getAbnormalOrderChart(reqVO));
+    }
+
+    @GetMapping("/chart/dailyCount")
+    @Operation(summary = "每日异常订单统计（柱状图钻取）")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:abnormal_order:query')")
+    public CommonResult<List<AbnormalOrderDailyCountRespVO>> getAbnormalOrderDailyCount(
+            @Valid AbnormalOrderDailyCountReqVO reqVO) {
+        return success(abnormalOrderService.getAbnormalOrderDailyCount(reqVO));
+    }
+
+    @GetMapping("/chart/typeRatio")
+    @Operation(summary = "异常订单类型占比（饼图钻取）")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:abnormal_order:query')")
+    public CommonResult<List<AbnormalOrderTypeRatioRespVO>> getAbnormalOrderTypeRatio(
+            @Valid AbnormalOrderDailyCountReqVO reqVO) {
+        return success(abnormalOrderService.getAbnormalOrderTypeRatio(reqVO));
+    }
+
+    @GetMapping("/chart/handleCount")
+    @Operation(summary = "异常订单处理统计（卡片钻取）")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:abnormal_order:query')")
+    public CommonResult<AbnormalOrderHandleCountRespVO> getAbnormalOrderHandleCount(
+            @Valid AbnormalOrderDailyCountReqVO reqVO) {
+        return success(abnormalOrderService.getAbnormalOrderHandleCount(reqVO));
     }
 }

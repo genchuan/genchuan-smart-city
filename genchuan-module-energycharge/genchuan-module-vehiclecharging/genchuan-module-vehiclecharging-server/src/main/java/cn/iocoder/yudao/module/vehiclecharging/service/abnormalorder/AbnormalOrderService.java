@@ -103,5 +103,24 @@ public interface AbnormalOrderService {
      * @return 统计结果
      */
     AbnormalOrderChartRespVO getAbnormalOrderChart(AbnormalOrderChartReqVO reqVO);
+    /**
+     * 获取异常订单日统计
+     * @param reqVO 统计参数
+     * @return 统计结果
+     */
+    List<AbnormalOrderDailyCountRespVO> getAbnormalOrderDailyCount(AbnormalOrderDailyCountReqVO reqVO);
+    /**
+     * 获取异常订单类型占比
+     * @param reqVO 统计参数
+     * @return 统计结果
+     */
+    List<AbnormalOrderTypeRatioRespVO> getAbnormalOrderTypeRatio(AbnormalOrderDailyCountReqVO reqVO);
+
+    /**
+     * 获取异常订单处理数量
+     * @param reqVO 统计参数
+     * @return 统计结果
+     */
+    AbnormalOrderHandleCountRespVO getAbnormalOrderHandleCount(AbnormalOrderDailyCountReqVO reqVO);
 
 }
