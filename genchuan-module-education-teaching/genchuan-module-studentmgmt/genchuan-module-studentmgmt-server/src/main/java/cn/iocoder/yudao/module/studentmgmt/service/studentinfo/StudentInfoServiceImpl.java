@@ -1,22 +1,20 @@
 package cn.iocoder.yudao.module.studentmgmt.service.studentinfo;
 
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.studentinfo.vo.*;
+import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
+import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
+import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
-import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
-import java.util.*;
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.studentinfo.vo.*;
-import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
-import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
-import static cn.iocoder.yudao.module.studentmgmt.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.studentmgmt.enums.ErrorCodeConstants.STUDENT_INFO_NOT_EXISTS;
 
 /**
  * 学生信息 Service 实现类
