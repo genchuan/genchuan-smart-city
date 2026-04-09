@@ -1,6 +1,6 @@
 spring:
   application:
-    name: student-mgmt-server
+    name: studentmgmt-server
 
   profiles:
     active: local
@@ -112,8 +112,8 @@ yudao:
       - ${spring.boot.admin.context-path}/** # 不处理 Spring Boot Admin 的请求
       - ${management.endpoints.web.base-path}/** # 不处理 Actuator 的请求
   swagger:
-    title: 管理后台
-    description: 提供管理员管理的所有功能
+    title: 学生管理后台
+    description: 提供学生管理的所有功能
     version: ${yudao.info.version}
   tenant: # 多租户相关配置项
     enable: true

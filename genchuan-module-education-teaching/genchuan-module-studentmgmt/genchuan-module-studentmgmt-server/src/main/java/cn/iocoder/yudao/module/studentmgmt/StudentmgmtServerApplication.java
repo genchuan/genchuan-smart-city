@@ -5,9 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
-public class StudentmgmtServerApplicationApplication {
+public class StudentmgmtServerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(StudentmgmtServerApplicationApplication.class, args);
+        SpringApplication.run(StudentmgmtServerApplication.class, args);
     }
 }
