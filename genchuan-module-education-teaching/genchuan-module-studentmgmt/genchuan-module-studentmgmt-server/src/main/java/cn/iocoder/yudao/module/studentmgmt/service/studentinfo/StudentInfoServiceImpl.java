@@ -5,6 +5,9 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.studentinfo.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
@@ -12,9 +15,11 @@ import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.studentmgmt.enums.ErrorCodeConstants.STUDENT_INFO_NOT_EXISTS;
+import static cn.iocoder.yudao.module.studentmgmt.enums.LogRecordConstants.*;
 
 /**
  * 学生信息 Service 实现类
@@ -29,43 +34,68 @@ public class StudentInfoServiceImpl implements StudentInfoService {
     private StudentInfoMapper studentInfoMapper;
 
     @Override
+    @LogRecord(type = STUDENT_INFO_TYPE, subType = STUDENT_INFO_CREATE_SUB_TYPE, bizNo = "{{#studentInfo.id}}",
+            success = STUDENT_INFO_CREATE_SUCCESS)
     public Long createStudentInfo(StudentInfoSaveReqVO createReqVO) {
         // 插入
         StudentInfoDO studentInfo = BeanUtils.toBean(createReqVO, StudentInfoDO.class);
         studentInfoMapper.insert(studentInfo);
 
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("studentInfo", studentInfo);
         // 返回
         return studentInfo.getId();
     }
 
     @Override
+    @LogRecord(type = STUDENT_INFO_TYPE, subType = STUDENT_INFO_UPDATE_SUB_TYPE, bizNo = "{{#updateReqVO.id}}",
+            success = STUDENT_INFO_UPDATE_SUCCESS)
     public void updateStudentInfo(StudentInfoSaveReqVO updateReqVO) {
         // 校验存在
-        validateStudentInfoExists(updateReqVO.getId());
+        StudentInfoDO studentInfoDO = validateStudentInfoExists(updateReqVO.getId());
         // 更新
         StudentInfoDO updateObj = BeanUtils.toBean(updateReqVO, StudentInfoDO.class);
         studentInfoMapper.updateById(updateObj);
+
+        // 3. 记录操作日志上下文
+        LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, BeanUtils.toBean(studentInfoDO, StudentInfoSaveReqVO.class));
+        LogRecordContext.putVariable("studentInfo", studentInfoDO);
     }
 
+
     @Override
+    @LogRecord(type = STUDENT_INFO_TYPE, subType = STUDENT_INFO_DELETE_SUB_TYPE, bizNo = "{{#id}}",
+            success = STUDENT_INFO_DELETE_SUCCESS)
     public void deleteStudentInfo(Long id) {
         // 校验存在
-        validateStudentInfoExists(id);
+        StudentInfoDO studentInfoDO = validateStudentInfoExists(id);
         // 删除
         studentInfoMapper.deleteById(id);
+
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("studentName", studentInfoDO.getName());
     }
 
     @Override
-        public void deleteStudentInfoListByIds(List<Long> ids) {
+    @LogRecord(type = STUDENT_INFO_TYPE, subType = STUDENT_INFO_DELETE_SUB_TYPE, bizNo = "{{#id}}",
+            success = STUDENT_INFO_DELETE_SUCCESS)
+    public void deleteStudentInfoListByIds(List<Long> ids) {
+        List<StudentInfoDO> studentInfoDOS = studentInfoMapper.selectByIds(ids);
         // 删除
-        studentInfoMapper.deleteByIds(ids);
-        }
+        int i = studentInfoMapper.deleteByIds(ids);
+        // 逐条追加变更日志
+        String studentName = studentInfoDOS.stream().map(StudentInfoDO::getName).collect(Collectors.joining(","));
+        LogRecordContext.putVariable("id", ids.get(0));
+        LogRecordContext.putVariable("studentName", studentName);
+    }
 
 
-    private void validateStudentInfoExists(Long id) {
-        if (studentInfoMapper.selectById(id) == null) {
+    private StudentInfoDO validateStudentInfoExists(Long id) {
+        StudentInfoDO studentInfoDO = studentInfoMapper.selectById(id);
+        if (studentInfoDO == null) {
             throw exception(STUDENT_INFO_NOT_EXISTS);
         }
+        return studentInfoDO;
     }
 
     @Override
@@ -116,13 +146,13 @@ public class StudentInfoServiceImpl implements StudentInfoService {
      * @return
      */
     @Override
-    public StudentInfoDistributionCountRespVO getDistributionCount(StudentInfoDistributionCountReqVO reqVO) {
+    public List<StudentInfoDistributionCountRespVO> getDistributionCount(StudentInfoDistributionCountReqVO reqVO) {
         String dimension = reqVO.getDimension();
         return studentInfoMapper.selectDistributionCount(dimension);
     }
 
     @Override
-    public StudentInfoCoreIndexRespVO getCoreIndex(StudentInfoCoreIndexReqVO reqVO) {
+    public List<StudentInfoCoreIndexRespVO> getCoreIndex(StudentInfoCoreIndexReqVO reqVO) {
         LocalDateTime startTime = reqVO.getStartTime();
         LocalDateTime endTime = reqVO.getEndTime();
         return studentInfoMapper.getCoreIndex(startTime, endTime);

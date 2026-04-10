@@ -65,7 +65,7 @@
             SELECT
             DATE_FORMAT(create_time, '%Y-%m-%d') AS date,
             COUNT(*) AS count,
-            'new_student_count' AS type
+            'new' AS type
             FROM student_info
             WHERE deleted = 0
             AND create_time &gt;= #{startTime}
@@ -78,7 +78,7 @@
             SELECT
             DATE_FORMAT(update_time, '%Y-%m-%d') AS date,
             COUNT(*) AS count,
-            'status_change_count' AS type
+            'change' AS type
             FROM student_info
             WHERE deleted = 0
             AND update_time &gt;= #{startTime}

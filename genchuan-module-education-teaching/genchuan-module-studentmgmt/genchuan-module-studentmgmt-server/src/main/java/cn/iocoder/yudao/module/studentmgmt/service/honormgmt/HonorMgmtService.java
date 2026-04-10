@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.studentmgmt.service.honormgmt;
 
 import java.util.*;
+
+import cn.iocoder.yudao.framework.security.core.LoginUser;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.honormgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.honormgmt.HonorMgmtDO;
@@ -71,4 +73,7 @@ public interface HonorMgmtService {
      * @return
      */
     HonorMgmtChartRespVO getChart(@Valid HonorMgmtChartReqVO reqVO);
+
+    boolean audit(@Valid HonorMgmtAuditReqVO reqVO, LoginUser loginUser);
+
 }

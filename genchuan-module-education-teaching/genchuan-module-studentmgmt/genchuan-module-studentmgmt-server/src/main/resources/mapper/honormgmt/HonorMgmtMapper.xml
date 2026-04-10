@@ -8,6 +8,17 @@
         代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
+    <update id="audit">
+        UPDATE honor_mgmt
+        SET status = #{status},
+            audit_user = #{auditUser},
+            audit_time = now(),
+            audit_remark = #{auditRemark}
+        WHERE id IN
+        <foreach item="id" collection="ids" separator="," close=")" open="(" index="">
+            #{id}
+        </foreach>
+    </update>
 
     <select id="selectTotalHonorCount" resultType="java.lang.Integer">
         SELECT COUNT(1) FROM honor_mgmt

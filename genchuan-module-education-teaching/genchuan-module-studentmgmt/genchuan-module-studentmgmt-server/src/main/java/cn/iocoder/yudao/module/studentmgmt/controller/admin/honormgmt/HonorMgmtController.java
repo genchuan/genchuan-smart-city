@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.honormgmt;
 
+import cn.iocoder.yudao.framework.security.core.LoginUser;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -25,12 +27,14 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
+import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUser;
+import static cn.iocoder.yudao.module.studentmgmt.enums.LogRecordConstants.*;
 
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.honormgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.honormgmt.HonorMgmtDO;
 import cn.iocoder.yudao.module.studentmgmt.service.honormgmt.HonorMgmtService;
 
-@Tag(name = "管理后台 - 荣誉管理")
+@Tag(name = "学生管理后台 - 荣誉管理")
 @RestController
 @RequestMapping("/studentmgmt/honor-mgmt")
 @Validated
@@ -46,13 +50,6 @@ public class HonorMgmtController {
         return success(honorMgmtService.createHonorMgmt(createReqVO));
     }
 
-    @PutMapping("/audit")
-    @Operation(summary = "审核荣誉管理")
-    @PreAuthorize("@ss.hasPermission('studentmgmt:honor-mgmt:update')")
-    public CommonResult<Boolean> auditHonorMgmt(@Valid @RequestBody HonorMgmtSaveReqVO updateReqVO) {
-//        honorMgmtService.auditHonorMgmt(updateReqVO);
-        return success(true);
-    }
 
     @PutMapping("/push")
     @Operation(summary = "推送荣誉")
@@ -118,6 +115,17 @@ public class HonorMgmtController {
     public CommonResult<HonorMgmtChartRespVO> getChart(@Valid HonorMgmtChartReqVO reqVO) {
         HonorMgmtChartRespVO respVO = honorMgmtService.getChart(reqVO);
         return success(respVO);
+    }
+
+
+    @PutMapping("/audit'")
+    @Parameter(name = "ids", description = "编号", required = true)
+    @Operation(summary = "审核荣誉")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:honor-mgmt:audit')")
+    public CommonResult<Boolean> audit(@Valid HonorMgmtAuditReqVO reqVO) {
+        LoginUser loginUser = getLoginUser();
+        boolean isSuccess = honorMgmtService.audit(reqVO, loginUser);
+        return success(isSuccess);
     }
 
     @GetMapping("/export")

@@ -28,7 +28,7 @@ import cn.iocoder.yudao.module.studentmgmt.controller.admin.studentinfo.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
 import cn.iocoder.yudao.module.studentmgmt.service.studentinfo.StudentInfoService;
 
-@Tag(name = "管理后台 - 学生信息")
+@Tag(name = "学生管理后台 - 学生信息")
 @RestController
 @RequestMapping("/studentmgmt/student-info")
 @Validated
@@ -82,9 +82,9 @@ public class StudentInfoController {
     @GetMapping("/page")
     @Operation(summary = "获得学生信息分页")
     @PreAuthorize("@ss.hasPermission('studentmgmt:student-info:query')")
-    public CommonResult<PageResult<StudentInfoRespVO>> getStudentInfoPage(@Valid StudentInfoPageReqVO pageReqVO) {
+    public CommonResult<PageResult<StudentInfoPageRespVO>> getStudentInfoPage(@Valid StudentInfoPageReqVO pageReqVO) {
         PageResult<StudentInfoDO> pageResult = studentInfoService.getStudentInfoPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, StudentInfoRespVO.class));
+        return success(BeanUtils.toBean(pageResult, StudentInfoPageRespVO.class));
     }
 
     @GetMapping("/export")
@@ -112,16 +112,16 @@ public class StudentInfoController {
     @GetMapping("/chart/distributionCount")
     @Operation(summary = "按年级 / 专业 / 班级分布统计")
     @PreAuthorize("@ss.hasPermission('studentmgmt:student-info:query')")
-    public CommonResult<StudentInfoDistributionCountRespVO> getDistributionCount(@Valid @RequestBody StudentInfoDistributionCountReqVO reqVO) {
-        StudentInfoDistributionCountRespVO dashboardVO = studentInfoService.getDistributionCount(reqVO);
+    public CommonResult<List<StudentInfoDistributionCountRespVO>> getDistributionCount(@Valid @RequestBody StudentInfoDistributionCountReqVO reqVO) {
+        List<StudentInfoDistributionCountRespVO> dashboardVO = studentInfoService.getDistributionCount(reqVO);
         return success(dashboardVO);
     }
 
     @GetMapping("/chart/coreIndex")
     @Operation(summary = "按学生核心指标统计")
     @PreAuthorize("@ss.hasPermission('studentmgmt:student-info:query')")
-    public CommonResult<StudentInfoCoreIndexRespVO> getCoreIndex(@Valid @RequestBody StudentInfoCoreIndexReqVO reqVO) {
-        StudentInfoCoreIndexRespVO dashboardVO = studentInfoService.getCoreIndex(reqVO);
+    public CommonResult<List<StudentInfoCoreIndexRespVO>> getCoreIndex(@Valid @RequestBody StudentInfoCoreIndexReqVO reqVO) {
+        List<StudentInfoCoreIndexRespVO> dashboardVO = studentInfoService.getCoreIndex(reqVO);
         return success(dashboardVO);
     }
 

@@ -3,9 +3,11 @@ package cn.iocoder.yudao.module.studentmgmt.service.assessmgmt;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.*;
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.studentinfo.vo.StudentInfoCoreIndexReqVO;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.assessmgmt.AssessMgmtDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.assessmgmt.AssessMgmtMapper;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -15,6 +17,7 @@ import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.studentmgmt.enums.ErrorCodeConstants.ASSESS_MGMT_NOT_EXISTS;
+import static cn.iocoder.yudao.module.studentmgmt.enums.LogRecordConstants.*;
 
 /**
  * 考评管理 Service 实现类
@@ -29,21 +32,34 @@ public class AssessMgmtServiceImpl implements AssessMgmtService {
     private AssessMgmtMapper assessMgmtMapper;
 
     @Override
+    @LogRecord(type = STUDENT_ASSESS_TYPE, subType = STUDENT_ASSESS_CREATE_SUB_TYPE, bizNo = "{{#assessMgmt.id}}",
+            success = STUDENT_ASSESS_CREATE_SUCCESS)
     public Long createAssessMgmt(AssessMgmtSaveReqVO createReqVO) {
         // 插入
         AssessMgmtDO assessMgmt = BeanUtils.toBean(createReqVO, AssessMgmtDO.class);
         assessMgmtMapper.insert(assessMgmt);
+
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("assessMgmt", assessMgmt);
+        LogRecordContext.putVariable("className", assessMgmt.getClassName());
 
         // 返回
         return assessMgmt.getId();
     }
 
     @Override
+    @LogRecord(type = STUDENT_ASSESS_TYPE, subType = STUDENT_ASSESS_UPDATE_SUB_TYPE, bizNo = "{{#assessMgmt.id}}",
+            success = STUDENT_ASSESS_UPDATE_SUCCESS)
     public void updateAssessMgmt(AssessMgmtSaveReqVO updateReqVO) {
         // 校验存在
-        validateAssessMgmtExists(updateReqVO.getId());
+        AssessMgmtDO assessMgmtDO = validateAssessMgmtExists(updateReqVO.getId());
         // 更新
         AssessMgmtDO updateObj = BeanUtils.toBean(updateReqVO, AssessMgmtDO.class);
+
+        // 记录操作日志上下文
+        LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, BeanUtils.toBean(assessMgmtDO, AssessMgmtSaveReqVO.class));
+        LogRecordContext.putVariable("assessMgmt", assessMgmtDO);
+
         assessMgmtMapper.updateById(updateObj);
     }
 
@@ -62,10 +78,12 @@ public class AssessMgmtServiceImpl implements AssessMgmtService {
         }
 
 
-    private void validateAssessMgmtExists(Long id) {
-        if (assessMgmtMapper.selectById(id) == null) {
+    private AssessMgmtDO validateAssessMgmtExists(Long id) {
+        AssessMgmtDO assessMgmtDO = assessMgmtMapper.selectById(id);
+        if ( assessMgmtDO == null) {
             throw exception(ASSESS_MGMT_NOT_EXISTS);
         }
+        return assessMgmtDO;
     }
 
     @Override
@@ -79,12 +97,17 @@ public class AssessMgmtServiceImpl implements AssessMgmtService {
     }
 
     @Override
+    @LogRecord(type = STUDENT_ASSESS_TYPE, subType = STUDENT_ASSESS_PUBLISH_SUB_TYPE, bizNo = "{{#assessMgmt.id}}",
+            success = STUDENT_ASSESS_PUBLISH_SUCCESS)
     public boolean publishAssessMgmt(AssessMgmtPublishReqVO publishReqVO) {
         AssessMgmtDO assessMgmtDO = assessMgmtMapper.selectById(publishReqVO.getId());
         if (assessMgmtDO != null) {
-            assessMgmtDO.setStatus("已发布");
+            assessMgmtDO.setStatus("1");
             assessMgmtDO.setPublishTime(LocalDateTime.now());
             assessMgmtMapper.updateById(assessMgmtDO);
+            // 记录操作日志上下文
+            LogRecordContext.putVariable("assessMgmt", assessMgmtDO);
+
             return true;
         }
         return false;
@@ -117,16 +140,19 @@ public class AssessMgmtServiceImpl implements AssessMgmtService {
      * @return
      */
     @Override
-    public AssessMgmtTypeCountRespVO typeCount(AssessMgmtChartReqVO reqVO) {
-        String grade = reqVO.getGrade();
-        return assessMgmtMapper.typeCount(grade);
+    public List<AssessMgmtDimensionScoreRespVO> dimensionScore(AssessMgmtDimensionScoreReqVO reqVO) {
+        String cycle = reqVO.getCycle();
+        return assessMgmtMapper.dimensionScore(cycle);
     }
 
     @Override
-    public AssessMgmtCoreIndexReqVO getCoreIndex(StudentInfoCoreIndexReqVO reqVO) {
+    public List<AssessMgmtCycleTrendRespVO> cycleTrend(AssessMgmtCycleTrendReqVO reqVO) {
         LocalDateTime startTime = reqVO.getStartTime();
         LocalDateTime endTime = reqVO.getEndTime();
-        return assessMgmtMapper.getCoreIndex(startTime, endTime);
+
+        String className = reqVO.getClassName();
+
+        return assessMgmtMapper.cycleTrend(className, startTime, endTime);
     }
 
 }

@@ -7,7 +7,6 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.*;
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.studentinfo.vo.StudentInfoCoreIndexReqVO;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.assessmgmt.AssessMgmtDO;
 import cn.iocoder.yudao.module.studentmgmt.service.assessmgmt.AssessMgmtService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +25,7 @@ import java.util.List;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
-@Tag(name = "管理后台 - 考评管理")
+@Tag(name = "学生管理后台 - 考评管理")
 @RestController
 @RequestMapping("/studentmgmt/assess-mgmt")
 @Validated
@@ -114,19 +113,19 @@ public class AssessMgmtController {
         return success(respVO);
     }
 
-    @PutMapping("/chart/typeCount")
-    @Operation(summary = "考评信息分布看板")
+    @PutMapping("/chart/dimensionScore")
+    @Operation(summary = "班级多维度考评得分统计")
     @PreAuthorize("@ss.hasPermission('studentmgmt:assess-mgmt:query')")
-    public CommonResult<AssessMgmtTypeCountRespVO> typeCount(@Valid @RequestBody AssessMgmtChartReqVO reqVO) {
-        AssessMgmtTypeCountRespVO respVO = assessMgmtService.typeCount(reqVO);
-        return success(respVO);
+    public CommonResult<List<AssessMgmtDimensionScoreRespVO>> dimensionScore(@Valid @RequestBody AssessMgmtDimensionScoreReqVO reqVO) {
+        List<AssessMgmtDimensionScoreRespVO> list = assessMgmtService.dimensionScore(reqVO);
+        return success(list);
     }
 
-    @GetMapping("/chart/coreIndex")
-    @Operation(summary = "按考评核心指标统计")
+    @GetMapping("/chart/cycleTrend")
+    @Operation(summary = "班级考评周期趋势统计")
     @PreAuthorize("@ss.hasPermission('studentmgmt:assess-info:query')")
-    public CommonResult<AssessMgmtCoreIndexReqVO> getCoreIndex(@Valid @RequestBody StudentInfoCoreIndexReqVO reqVO) {
-        AssessMgmtCoreIndexReqVO dashboardVO = assessMgmtService.getCoreIndex(reqVO);
+    public CommonResult<List<AssessMgmtCycleTrendRespVO>> cycleTrend(@Valid @RequestBody AssessMgmtCycleTrendReqVO reqVO) {
+        List<AssessMgmtCycleTrendRespVO> dashboardVO = assessMgmtService.cycleTrend(reqVO);
         return success(dashboardVO);
     }
 

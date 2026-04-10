@@ -39,4 +39,7 @@ public interface HonorMgmtMapper extends BaseMapperX<HonorMgmtDO> {
                                   @Param("status") String status, @Param("honorType") String honorType);
 
     Integer selectTodayPushCount(@Param("grade") String grade, @Param("major") String major);
+
+    Integer audit( @Param("ids") List<Long> ids, @Param("auditRemark") String auditRemark,
+                   @Param("auditUser") String auditUser, @Param("status") String status );
 }

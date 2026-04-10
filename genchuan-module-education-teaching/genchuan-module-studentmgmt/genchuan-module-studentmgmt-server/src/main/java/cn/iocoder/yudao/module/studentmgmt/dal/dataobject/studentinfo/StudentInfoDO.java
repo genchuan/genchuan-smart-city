@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo;
 
+import cn.iocoder.yudao.framework.desensitize.core.slider.annotation.MobileDesensitize;
 import lombok.*;
 import java.util.*;
 import java.time.LocalDateTime;

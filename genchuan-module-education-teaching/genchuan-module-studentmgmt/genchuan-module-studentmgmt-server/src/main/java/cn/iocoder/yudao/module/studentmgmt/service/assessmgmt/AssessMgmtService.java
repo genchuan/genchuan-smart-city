@@ -2,12 +2,10 @@ package cn.iocoder.yudao.module.studentmgmt.service.assessmgmt;
 
 import java.util.*;
 
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.studentinfo.vo.StudentInfoCoreIndexReqVO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.assessmgmt.AssessMgmtDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 考评管理 Service 接口
@@ -65,7 +63,7 @@ public interface AssessMgmtService {
 
     AssessMgmtChartRespVO chart(@Valid AssessMgmtChartReqVO reqVO);
 
-    AssessMgmtTypeCountRespVO typeCount(@Valid AssessMgmtChartReqVO reqVO);
+    List<AssessMgmtDimensionScoreRespVO> dimensionScore(@Valid AssessMgmtDimensionScoreReqVO reqVO);
 
-    AssessMgmtCoreIndexReqVO getCoreIndex(@Valid StudentInfoCoreIndexReqVO reqVO);
+    List<AssessMgmtCycleTrendRespVO> cycleTrend(@Valid AssessMgmtCycleTrendReqVO reqVO);
 }

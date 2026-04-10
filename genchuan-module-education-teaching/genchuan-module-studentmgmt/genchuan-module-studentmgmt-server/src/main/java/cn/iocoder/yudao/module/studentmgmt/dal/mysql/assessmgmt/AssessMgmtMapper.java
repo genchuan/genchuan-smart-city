@@ -2,7 +2,7 @@ package cn.iocoder.yudao.module.studentmgmt.dal.mysql.assessmgmt;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
@@ -45,8 +45,7 @@ public interface AssessMgmtMapper extends BaseMapperX<AssessMgmtDO> {
 
     Integer selectTodayPublishCount(@Param("grade") String grade, @Param("major") String major);
 
-    AssessMgmtTypeCountRespVO typeCount(@Param("grade") String grade);
+    List<AssessMgmtDimensionScoreRespVO> dimensionScore(@Param("cycle") String cycle);
 
-    AssessMgmtCoreIndexReqVO getCoreIndex(@Param("startTime") LocalDateTime startTime,
-                                          @Param("endTime") LocalDateTime endTime);
+    List<AssessMgmtCycleTrendRespVO> cycleTrend(@Param("className") String className, @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 }

@@ -22,18 +22,18 @@ public interface StudentInfoMapper extends BaseMapperX<StudentInfoDO> {
 
     default PageResult<StudentInfoDO> selectPage(StudentInfoPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<StudentInfoDO>()
-                .eqIfPresent(StudentInfoDO::getStudentNo, reqVO.getStudentNo())
+                .likeIfPresent(StudentInfoDO::getStudentNo, reqVO.getStudentNo())
                 .likeIfPresent(StudentInfoDO::getName, reqVO.getName())
-                .eqIfPresent(StudentInfoDO::getIdCard, reqVO.getIdCard())
-                .eqIfPresent(StudentInfoDO::getPhoto, reqVO.getPhoto())
+                .likeIfPresent(StudentInfoDO::getIdCard, reqVO.getIdCard())
+                .likeIfPresent(StudentInfoDO::getPhoto, reqVO.getPhoto())
                 .eqIfPresent(StudentInfoDO::getEducationLevel, reqVO.getEducationLevel())
                 .eqIfPresent(StudentInfoDO::getStudyForm, reqVO.getStudyForm())
-                .eqIfPresent(StudentInfoDO::getMajor, reqVO.getMajor())
+                .likeIfPresent(StudentInfoDO::getMajor, reqVO.getMajor())
                 .likeIfPresent(StudentInfoDO::getClassName, reqVO.getClassName())
                 .eqIfPresent(StudentInfoDO::getStudentType, reqVO.getStudentType())
                 .eqIfPresent(StudentInfoDO::getStatus, reqVO.getStatus())
-                .eqIfPresent(StudentInfoDO::getPhone, reqVO.getPhone())
-                .eqIfPresent(StudentInfoDO::getParentPhone, reqVO.getParentPhone())
+                .likeIfPresent(StudentInfoDO::getPhone, reqVO.getPhone())
+                .likeIfPresent(StudentInfoDO::getParentPhone, reqVO.getParentPhone())
                 .eqIfPresent(StudentInfoDO::getRemark, reqVO.getRemark())
                 .eqIfPresent(StudentInfoDO::getReserve1, reqVO.getReserve1())
                 .eqIfPresent(StudentInfoDO::getReserve2, reqVO.getReserve2())
@@ -61,7 +61,7 @@ public interface StudentInfoMapper extends BaseMapperX<StudentInfoDO> {
      * @param dimension 维度名称，如年级 / 专业 / 班级名称
      * @return
      */
-    StudentInfoDistributionCountRespVO selectDistributionCount(@Param("dimension") String dimension);
+    List<StudentInfoDistributionCountRespVO> selectDistributionCount(@Param("dimension") String dimension);
 
     /**
      * 核心指标统计
@@ -70,7 +70,7 @@ public interface StudentInfoMapper extends BaseMapperX<StudentInfoDO> {
      * @param endTime
      * @return
      */
-    StudentInfoCoreIndexRespVO getCoreIndex(@Param("startTime") LocalDateTime startTime,
+    List<StudentInfoCoreIndexRespVO> getCoreIndex(@Param("startTime") LocalDateTime startTime,
                                             @Param("endTime") LocalDateTime endTime);
 
 }

@@ -55,28 +55,29 @@
         <if test="status != null">
         </if>
     </select>
-    <select id="typeCount"
-            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.AssessMgmtTypeCountRespVO">
-        SELECT assess_type AS name, COUNT(1) AS count FROM assess_mgmt
-        WHERE deleted = 0 AND status = '已发布'
-        <if test="grade != null">
-            AND grade = #{grade}
-        </if>
-        GROUP BY assess_type
-    </select>
-    <select id="getCoreIndex"
-            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.AssessMgmtCoreIndexReqVO">
-        SELECT DATE(create_time) AS date, COUNT(1) AS newAssessCount,
-        COUNT(IF(status = '已发布', 1, NULL)) AS publishCount
+
+    <select id="dimensionScore"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.AssessMgmtDimensionScoreRespVO">
+        SELECT
+        class_name,
+        AVG(CASE WHEN assess_type = '1' THEN score ELSE NULL END) AS classCleanScore,
+        AVG(CASE WHEN assess_type = '2' THEN score ELSE NULL END) AS morningExerciseScore,
+        AVG(CASE WHEN assess_type = '3' THEN score ELSE NULL END) AS civilClassScore,
+        AVG(CASE WHEN assess_type = '4' THEN score ELSE NULL END) AS blackboardScore,
+        AVG(score) AS totalScore
         FROM assess_mgmt
         WHERE deleted = 0
-        <if test="grade != null">
-            AND grade = #{grade}
+        AND status = '1'
+        <if test="cycle != null and cycle != ''">
+            AND cycle = #{cycle}
         </if>
-        AND create_time &gt;= #{startTime}
-        AND create_time &lt;= #{endTime}
-        GROUP BY DATE(create_time)
-        ORDER BY DATE(create_time) ASC
+        GROUP BY class_name
+        ORDER BY totalScore DESC
+    </select>
+    <select id="cycleTrend"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.AssessMgmtCycleTrendRespVO">
+
+
     </select>
 
 </mapper>
