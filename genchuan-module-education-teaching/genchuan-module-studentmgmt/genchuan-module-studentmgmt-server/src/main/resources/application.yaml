@@ -1,6 +1,6 @@
 spring:
   application:
-    name: student-server
+    name: studentmgmt-server
 
   profiles:
     active: local
