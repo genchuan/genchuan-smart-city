@@ -14,7 +14,8 @@
         SELECT
             1 AS report_type,  <!-- 1=月报 2=自定义报表 -->
             DATE_FORMAT(r.create_time, '%Y-%m') AS statistic_period,
-            CONCAT('REPORT', DATE_FORMAT(NOW(), '%Y%m'), r.ent_id) AS report_no,
+            -- CONCAT('REPORT', DATE_FORMAT(now(), '%Y-%m'), r.ent_id) AS report_no,
+            CONCAT('REPORT', DATE_FORMAT(ANY_VALUE(r.create_time), '%Y-%m'), r.ent_id) AS report_no,
             r.ent_id,
             e.ent_name,
             '低风险' AS risk_level,  <!-- 业务计算风险等级，这里先占位 -->
@@ -53,12 +54,12 @@
         </if>
         <!-- ====================== 新增：报表编号筛选 ====================== -->
         <if test="reportNo != null and reportNo != ''">
-            AND CONCAT('REPORT', DATE_FORMAT(NOW(), '%Y%m'), r.ent_id) LIKE CONCAT('%', #{reportNo}, '%')
+            AND CONCAT('REPORT', DATE_FORMAT(r.create_time, '%Y-%m'), r.ent_id) LIKE CONCAT('%', #{reportNo}, '%')
         </if>
         <!-- 按月分组 = 企业月报 -->
         GROUP BY r.ent_id, DATE_FORMAT(r.create_time, '%Y-%m')
 
-        ORDER BY r.ent_id DESC
+        ORDER BY DATE_FORMAT(r.create_time, '%Y-%m') desc,r.ent_id DESC
 
         LIMIT #{pageSize} OFFSET ${(pageNo - 1) * pageSize}
 
@@ -93,7 +94,7 @@
                                 </if>
                                 <!-- ====================== 新增：报表编号筛选 ====================== -->
                                 <if test="reportNo != null and reportNo != ''">
-                                    AND CONCAT('REPORT', DATE_FORMAT(NOW(), '%Y%m'), r.ent_id) LIKE CONCAT('%', #{reportNo}, '%')
+                                    AND CONCAT('REPORT', DATE_FORMAT(r.create_time, '%Y-%m'), r.ent_id) LIKE CONCAT('%', #{reportNo}, '%')
                                 </if>
                                  GROUP BY r.ent_id, DATE_FORMAT(r.create_time, '%Y-%m')
                              ) AS temp
