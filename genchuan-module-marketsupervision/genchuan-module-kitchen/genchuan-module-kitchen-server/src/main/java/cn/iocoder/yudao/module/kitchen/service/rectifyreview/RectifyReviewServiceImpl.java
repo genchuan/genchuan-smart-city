@@ -445,7 +445,7 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
             insertDO.setEvidenceUrl(evidenceUrlJson);
         } else {
             // 没有 srcUrl 时使用默认的 JSON 字符串
-            insertDO.setEvidenceUrl("[{\"name\":\"违规图片1.png\",\"type\":\"image\",\"url\":\"http://112.47.127.21:59000/shunchang/avatar/676ab23c-47c0-4d20-860a-c0d2021861e1.png\"},{\"name\":\"违规图片2.png\",\"type\":\"image\",\"url\":\"http://112.47.127.21:59000/shunchang/avatar/29904d39-8a4f-4c15-ac28-5b34c3781f11.png\"}]");
+            insertDO.setEvidenceUrl("[{\"name\":\"违规图片1.png\",\"type\":\"image\",\"url\":\"http://112.47.127.21:9000/shunchang/avatar/676ab23c-47c0-4d20-860a-c0d2021861e1.png\"},{\"name\":\"违规图片2.png\",\"type\":\"image\",\"url\":\"http://112.47.127.21:9000/shunchang/avatar/29904d39-8a4f-4c15-ac28-5b34c3781f11.png\"}]");
         }
 
         // ========= 7.草拟时间（当前时间） =========
@@ -558,7 +558,7 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
 //        addAiAlertMessageReq.setSceneId("scene_088930");
 //        addAiAlertMessageReq.setAiAbilityCode("100600");
 //        addAiAlertMessageReq.setAlertType(13);
-//        addAiAlertMessageReq.setSrcUrl("http://112.47.127.21:59000/shunchang/avatar/29904d39-8a4f-4c15-ac28-5b34c3781f11.png");
+//        addAiAlertMessageReq.setSrcUrl("http://112.47.127.21:9000/shunchang/avatar/29904d39-8a4f-4c15-ac28-5b34c3781f11.png");
         Long aiAlertMessageId =  aiAlertMessageService.addAiAlertMessage(addAiAlertMessageReq);
 
         log.info("[整改流程] 预警生成成功 aiAlertMessageId={}", aiAlertMessageId);
