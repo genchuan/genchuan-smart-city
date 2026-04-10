@@ -3,6 +3,8 @@ package cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdictt
 import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdicttype.vo.BizDictTypePageReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdicttype.vo.BizDictTypeRespVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdicttype.vo.BizDictTypeSaveReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdicttype.vo.ops.AddReq;
+import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdicttype.vo.ops.UpdateReq;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.vrv.dictionary.bizdicttype.BizDictTypeDO;
 import cn.iocoder.yudao.module.kitchen.service.vrv.dictionary.bizdicttype.BizDictTypeService;
 import org.springframework.web.bind.annotation.*;
@@ -40,13 +42,42 @@ public class BizDictTypeController {
     @Resource
     private BizDictTypeService bizDictTypeService;
 
+    /**
+     * 批量删除业务字典分类
+     * 同时会删除该分类下的所有字典项
+     */
+    @DeleteMapping("/delete-batch")
+    @Parameter(name = "ids", description = "编号", required = true)
+    @Operation(summary = "批量删除业务字典分类")
+//    @PreAuthorize("@ss.hasPermission('kitchen:biz-dict-type:delete')")
+    public CommonResult<Boolean> deleteBizDictTypeBatch(@RequestParam("ids") List<Long> ids) {
+        bizDictTypeService.deleteBizDictTypeBatch(ids);
+        return success(true);
+    }
+
+    /**
+     * 更新业务字典分类
+     * 可更新：名称、排序、描述、备注、状态
+     */
+    @PutMapping("/update-biz")
+    @Operation(summary = "更新业务字典分类")
+//    @PreAuthorize("@ss.hasPermission('kitchen:biz-dict-type:update')")
+    public CommonResult<Boolean> updateBiz(@Valid @RequestBody UpdateReq updateReqVO) {
+        bizDictTypeService.updateBiz(updateReqVO);
+        return success(true);
+    }
+
+    /**
+     * 新增业务字典分类
+     * 自动生成排序号，默认启用，校验编码和名称唯一
+     */
     @PostMapping("/add")
     @Operation(summary = "创建业务字典分类")
 //    @PreAuthorize("@ss.hasPermission('kitchen:biz-dict-type:create')")
-    public CommonResult<Long> addBizDictType(@Valid @RequestBody BizDictTypeSaveReqVO createReqVO) {
-        return success(bizDictTypeService.createBizDictType(createReqVO));
+    public CommonResult<Long> addBizDictType(@Valid @RequestBody AddReq createReqVO) {
+        Long id = bizDictTypeService.addBizDictType(createReqVO);
+        return success(id);
     }
-
 
     @GetMapping("/page")
     @Operation(summary = "获得业务字典分类分页")

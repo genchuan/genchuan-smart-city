@@ -18,50 +18,50 @@ public class EntReportPageResp {
     private Integer reportType;
 
     // ====================== 【月报专用】 ======================
-    @ExcelProperty(value = "统计周期", index = 1)
+    @ExcelProperty(value = "统计周期", index = 0)
     @Schema(description = "统计周期（yyyy-MM）：仅月报使用")
     private String statisticPeriod;
 
     // ====================== 【AI文档字段】 ======================
-    @ExcelProperty(value = "报告编号", index = 2)
+    @ExcelProperty(value = "报告编号", index = 1)
     @Schema(description = "报告编号")
     private String reportNo;
 
     // ====================== 【企业维度(月报专有）】 ======================
-    @ExcelProperty(value = "企业ID", index = 3)
+    @ExcelProperty(value = "企业ID", index = 2)
     @Schema(description = "企业ID")
     private Long entId;
 
-    @ExcelProperty(value = "企业名称", index = 4)
+    @ExcelProperty(value = "企业名称", index = 3)
     @Schema(description = "企业名称（模糊查询）")
     private String entName;
 
     // ====================== 【通用】 ======================
-    @ExcelProperty(value = "风险等级", index = 5)
+    @ExcelProperty(value = "风险等级", index = 4)
     @Schema(description = "风险等级")
     private String riskLevel;
 
-    @ExcelProperty(value = "区域", index = 6)
+    @ExcelProperty(value = "区域", index = 5)
     @Schema(description = "区域")
     private String area;
 
-    @ExcelProperty(value = "企业类型", index = 7)
+    @ExcelProperty(value = "企业类型", index = 6)
     @Schema(description = "企业类型")
     private String entType;
 
-    @ExcelProperty(value = "统计开始时间", index = 8)
+    @ExcelProperty(value = "统计开始时间", index = 7)
     @Schema(description = "统计开始时间")
     private LocalDate beginTime;
 
-    @ExcelProperty(value = "统计结束时间", index = 9)
+    @ExcelProperty(value = "统计结束时间", index = 8)
     @Schema(description = "统计结束时间")
     private LocalDate endTime;
 
-    @ExcelProperty(value = "违规次数", index = 10)
+    @ExcelProperty(value = "违规次数", index = 9)
     @Schema(description = "违规次数")
     private Integer violationCount;
 
-    @ExcelProperty(value = "整改率", index = 11)
+    @ExcelProperty(value = "整改率", index = 10)
     @Schema(description = "整改率")
     private Double rectifyFinishRate;
 

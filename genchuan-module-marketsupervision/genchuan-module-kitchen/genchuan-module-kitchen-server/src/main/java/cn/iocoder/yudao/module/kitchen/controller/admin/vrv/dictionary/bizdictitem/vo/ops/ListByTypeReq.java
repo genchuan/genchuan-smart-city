@@ -11,9 +11,14 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 
 @Schema(description = "管理后台 - 业务字典项分页 Request VO")
 @Data
-public class ListByTypeReq extends PageParam {
+public class ListByTypeReq {
 
-    @Schema(description = "[关联类型编码] 关联park_dict_type.uni_code")
+    @Schema(description = "[关联类型编码] ")
     private String typeCode;
+
+    @Schema(description = "[关联类型名称] 只能看不能用，因为类型名称可能改变")
+    private String typeName;
+
+
 
 }

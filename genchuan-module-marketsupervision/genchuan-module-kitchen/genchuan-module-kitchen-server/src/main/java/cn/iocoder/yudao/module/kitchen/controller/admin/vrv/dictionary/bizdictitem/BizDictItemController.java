@@ -44,7 +44,10 @@ public class BizDictItemController {
     @Resource
     private BizDictItemService bizDictItemService;
 
-    //更新：dict_key，dict_label，color，sort，description，remark，status
+    /**
+     * 更新业务字典项
+     * 可更新字段：dict_key、dict_label、color、sort、description、remark、status
+     */
     @PutMapping("/update-biz")
     @Operation(summary = "业务更新-字典项")
 //    @PreAuthorize("@ss.hasPermission('kitchen:biz-dict-item:update')")
@@ -53,6 +56,10 @@ public class BizDictItemController {
         return success(true);
     }
 
+    /**
+     * 新增业务字典项
+     * 自动排序，默认启用，默认颜色#1890ff，校验类型存在、键唯一
+     */
     @PostMapping("/add")
     @Operation(summary = "创建业务字典项")
 //    @PreAuthorize("@ss.hasPermission('kitchen:biz-dict-item:create')")
@@ -61,12 +68,16 @@ public class BizDictItemController {
         return success(id);
     }
 
+    /**
+     * 根据类型编码获取启用的字典项列表
+     * 按sort正序、创建时间正序排列
+     */
     @GetMapping("/list-by-type")
     @Operation(summary = "new-获取该类型的全部字典项")
 //    @PreAuthorize("@ss.hasPermission('kitchen:biz-dict-item:query')")
     public CommonResult<List<ListByTypeResp>> ListByType(@Valid ListByTypeReq req) {
         List<ListByTypeResp> result = bizDictItemService.listByType(req);
-        return success(BeanUtils.toBean(result, ListByTypeResp.class));
+        return success(result);
     }
 
     @GetMapping("/get")
@@ -108,7 +119,7 @@ public class BizDictItemController {
 
 //    ================================暂时不用=========================================
     @PostMapping("/create")
-    @Operation(summary = "(勿用)创建业务字典项")
+    @Operation(summary = "(勿用)创建业务字典项",hidden = true)
 //    @PreAuthorize("@ss.hasPermission('kitchen:biz-dict-item:create')")
     public CommonResult<Long> createBizDictItem(@Valid @RequestBody BizDictItemSaveReqVO createReqVO) {
         return success(bizDictItemService.createBizDictItem(createReqVO));

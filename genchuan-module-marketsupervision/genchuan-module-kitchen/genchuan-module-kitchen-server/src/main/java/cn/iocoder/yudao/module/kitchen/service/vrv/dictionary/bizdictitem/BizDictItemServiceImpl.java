@@ -93,23 +93,71 @@ public class BizDictItemServiceImpl implements BizDictItemService {
         return bizDictItemMapper.selectPage(pageReqVO);
     }
 
+//    @Override
+//    public List<ListByTypeResp> listByType(ListByTypeReq req) {
+//        // 1. 构建 MP 条件构造器
+//        LambdaQueryWrapper<BizDictItemDO> wrapper = new LambdaQueryWrapper<>();
+//
+//        // 2. 拼接条件：根据 type_code 查询 + 未删除 + 启用
+//        wrapper.eq(BizDictItemDO::getTypeCode, req.getTypeCode())
+//                .eq(BizDictItemDO::getDeleted, 0)  // 逻辑删除
+//                .eq(BizDictItemDO::getStatus, 1)     // 状态启用
+//                .orderByAsc(BizDictItemDO::getSort)  // 按 sort 排序
+//                .orderByAsc(BizDictItemDO::getCreateTime); // 再按创建时间
+//
+//        // 3. 查询数据
+//        List<BizDictItemDO> items = bizDictItemMapper.selectList(wrapper);
+//
+//        // 4. 转成 VO 返回
+//        return BeanUtils.toBean(items, ListByTypeResp.class);
+//
+//
+//
+//
+//    }
+
     @Override
     public List<ListByTypeResp> listByType(ListByTypeReq req) {
-        // 1. 构建 MP 条件构造器
+        // 1. 构建条件
         LambdaQueryWrapper<BizDictItemDO> wrapper = new LambdaQueryWrapper<>();
 
-        // 2. 拼接条件：根据 type_code 查询 + 未删除 + 启用
-        wrapper.eq(BizDictItemDO::getTypeCode, req.getTypeCode())
-                .eq(BizDictItemDO::getDeleted, 0)  // 逻辑删除
-                .eq(BizDictItemDO::getStatus, 1)     // 状态启用
-                .orderByAsc(BizDictItemDO::getSort)  // 按 sort 排序
-                .orderByAsc(BizDictItemDO::getCreateTime); // 再按创建时间
+        // ====================== 通用条件 ======================
+        wrapper.eq(BizDictItemDO::getDeleted, false)
+                .eq(BizDictItemDO::getStatus, 1);
 
-        // 3. 查询数据
+        // ====================== 1. 根据 typeCode 精确查询 ======================
+        if (req.getTypeCode() != null && !req.getTypeCode().isEmpty()) {
+            wrapper.eq(BizDictItemDO::getTypeCode, req.getTypeCode());
+        }
+
+        // ====================== 2. 根据 字典分类名称 查询（连表逻辑） ======================
+        if (req.getTypeName() != null && !req.getTypeName().isEmpty()) {
+            // 先根据名称查询类型，拿到 typeCode 集合
+            LambdaQueryWrapper<BizDictTypeDO> typeWrapper = new LambdaQueryWrapper<>();
+            typeWrapper.eq(BizDictTypeDO::getDeleted, false)
+                    .eq(BizDictTypeDO::getName, req.getTypeName()); // 精确匹配
+
+            List<BizDictTypeDO> typeList = bizDictTypeMapper.selectList(typeWrapper);
+            if (CollUtil.isEmpty(typeList)) {
+                return Collections.emptyList(); // 无数据直接返回
+            }
+
+            // 提取 typeCode 进行 IN 查询
+            List<String> typeCodeList = typeList.stream()
+                    .map(BizDictTypeDO::getUniCode)
+                    .toList();
+            wrapper.in(BizDictItemDO::getTypeCode, typeCodeList);
+        }
+
+        // ====================== 排序 ======================
+        wrapper.orderByAsc(BizDictItemDO::getSort)
+                .orderByAsc(BizDictItemDO::getCreateTime);
+
+        // ====================== 查询 ======================
         List<BizDictItemDO> items = bizDictItemMapper.selectList(wrapper);
-
-        // 4. 转成 VO 返回
+        // ====================== 转换 VO ======================
         return BeanUtils.toBean(items, ListByTypeResp.class);
+
     }
 
     @Override
