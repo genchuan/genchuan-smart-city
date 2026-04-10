@@ -30,6 +30,12 @@ public interface OutdoorAdMapper extends BaseMapperX<OutdoorAdDO> {
 
     void clearAdIdByAdIds(@Param("adIds") List<String> adIds);
 
+    IPage<OutdoorAdOrderPageRespVO> selectOrderPage(Page<?> page, @Param("reqVO") OutdoorAdOrderPageReqVO reqVO);
+
+    OutdoorAdOrderGetRespVO selectOrderDetailById(@Param("id") String id);
+
+    List<OutdoorAdOrderGetRespVO.ImageItem> selectImagesByOrderIdAndType(@Param("orderId") String orderId, @Param("fileType") String fileType);
+
     /**
      * 关联查询户外广告列表
      */
