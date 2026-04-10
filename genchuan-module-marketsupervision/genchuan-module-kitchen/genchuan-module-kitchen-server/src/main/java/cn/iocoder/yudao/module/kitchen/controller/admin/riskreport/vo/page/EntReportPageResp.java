@@ -60,4 +60,33 @@ public class EntReportPageResp {
     @ExcelProperty(value = "违规次数", index = 10)
     @Schema(description = "违规次数")
     private Integer violationCount;
+
+    @ExcelProperty(value = "整改率", index = 11)
+    @Schema(description = "整改率")
+    private Double rectifyFinishRate;
+
+    //--------------钻取
+//    @ExcelProperty(value = "整改率", index = 10)
+    @ExcelIgnore
+    @Schema(description = "风险钻取")
+    private RiskDrillVO riskLevelDrill;
+
+
+
+    // ======================== 【内部类：风险钻取】 ========================
+    @Data
+    @Schema(description = "企业风险钻取VO")
+    public static class RiskDrillVO {
+        @Schema(description = "企业名称")
+        private String entName;
+
+        @Schema(description = "统计月份")
+        private String statisticPeriod;
+
+        @Schema(description = "违规次数")
+        private Integer violationCount;
+
+        @Schema(description = "整改率")
+        private Double rectifyFinishRate;
+    }
 }

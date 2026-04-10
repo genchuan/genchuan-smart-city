@@ -39,13 +39,16 @@ public class RiskReportController {
 
     @Resource
     private RiskReportService riskReportService;
-    @PostMapping("/export-single-enterprise-pdf")
+    @GetMapping("/export-single-enterprise-pdf")
     @Operation(summary = "单企业月报独立导出PDF")
     public void exportSingleEnterprisePdf(
-            @RequestBody EntReportPageResp resp,
+            EntReportPageResp resp,
             HttpServletResponse response
     ) throws Exception {
-        // 前端传 1 条 → 包装成 list → 直接用现有的工具类导出
+
+        System.out.println("cs2026-04-09 17:40:13:"+resp);
+//        return;
+//         前端传 1 条 → 包装成 list → 直接用现有的工具类导出
         List<EntReportPageResp> list = Collections.singletonList(resp);
         VrvPdfGenerator.listExportPdf(
                 response,

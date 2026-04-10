@@ -28,8 +28,8 @@ public class RectifyReviewLedgerRespVO {
     @ExcelProperty("逾期标识")
     private Integer overdueFlag;
 
-    @Schema(description = "[企业ID] 关联park_enterprise_info.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "4078")
-    @ExcelProperty("[企业ID] 关联park_enterprise_info.id")
+    @Schema(description = "[企业ID] ", requiredMode = Schema.RequiredMode.REQUIRED, example = "4078")
+    @ExcelProperty("[企业ID]")
     private Long entId;
 
     @Schema(description = "企业名称")

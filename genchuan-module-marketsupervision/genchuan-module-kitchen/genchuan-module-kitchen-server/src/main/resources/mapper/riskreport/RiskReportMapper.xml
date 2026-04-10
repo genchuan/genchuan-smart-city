@@ -22,8 +22,12 @@
             e.ent_type_name AS ent_type,
         MIN(r.create_time) AS begin_time,
         MAX(r.create_time) AS end_time,
-        COUNT(r.id) AS violation_count
-
+        COUNT(r.id) AS violation_count,
+        ROUND(
+            (COUNT(DISTINCT CASE WHEN r.review_status = '已完成' THEN r.id END)
+            / COUNT(DISTINCT r.id)) * 100,
+            2
+        ) AS rectify_finish_rate
         FROM rectify_review r
         LEFT JOIN enterprise_info e ON r.ent_id = e.id
         WHERE r.deleted = 0

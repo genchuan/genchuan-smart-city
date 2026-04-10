@@ -41,8 +41,7 @@ public class ViolationAnalyticsDrillReq extends PageParam {
 
     @Schema(description = "钻取纬度,值有告警/违规/正常设备/整改完成。null表示全选")
     private String drillDimension;
-//    @Schema(description = "企业名称（模糊查询）")
-//    private String entName;
+
 
 
 
