@@ -18,7 +18,7 @@ public class DemoTestController {
 
     // 这个构造方法，只是方便大家，验证 Controller 有生效
     public DemoTestController() {
-        System.out.println(getClass() + "生效啦！！！");
+        System.out.println(getClass() + "生效啦2！！！");
     }
 
     @GetMapping("/get")
