@@ -3,11 +3,14 @@ package cn.iocoder.yudao.module.system.service.auth;
 import cn.hutool.core.util.ObjectUtil;
 import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
 import cn.iocoder.yudao.framework.common.enums.UserTypeEnum;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.monitor.TracerUtils;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.common.util.servlet.ServletUtils;
 import cn.iocoder.yudao.framework.common.util.validation.ValidationUtils;
 import cn.iocoder.yudao.framework.datapermission.core.annotation.DataPermission;
+import cn.iocoder.yudao.module.member.api.user.MemberUserApi;
+import cn.iocoder.yudao.module.member.api.user.dto.MemberUserRespDTO;
 import cn.iocoder.yudao.module.system.api.logger.dto.LoginLogCreateReqDTO;
 import cn.iocoder.yudao.module.system.api.sms.SmsCodeApi;
 import cn.iocoder.yudao.module.system.api.sms.dto.code.SmsCodeUseReqDTO;
@@ -69,6 +72,9 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     private CaptchaService captchaService;
     @Resource
     private SmsCodeApi smsCodeApi;
+
+    @Resource
+    private MemberUserApi memberUserApi;
 
     /**
      * 验证码的开关，默认为 true
@@ -265,16 +271,57 @@ public class AdminAuthServiceImpl implements AdminAuthService {
         return UserTypeEnum.ADMIN;
     }
 
+//    @Override
+//    public AuthLoginRespVO register(AuthRegisterReqVO registerReqVO) {
+//        // 1. 校验验证码
+//        validateCaptcha(registerReqVO);
+//
+//        // 2. 校验用户名是否已存在
+//        Long userId = userService.registerUser(registerReqVO);
+//
+//        // 3. 创建 Token 令牌，记录登录日志
+//        return createTokenAfterLoginSuccess(userId, registerReqVO.getUsername(), LoginLogTypeEnum.LOGIN_USERNAME);
+//    }
+
     @Override
     public AuthLoginRespVO register(AuthRegisterReqVO registerReqVO) {
         // 1. 校验验证码
         validateCaptcha(registerReqVO);
 
-        // 2. 校验用户名是否已存在
+        // 2. 创建后台用户
         Long userId = userService.registerUser(registerReqVO);
 
-        // 3. 创建 Token 令牌，记录登录日志
+        // 3. 使用 Feign API 创建关联会员
+        createMemberForUser(registerReqVO);
+
+        // 4. 创建 Token 令牌，记录登录日志
         return createTokenAfterLoginSuccess(userId, registerReqVO.getUsername(), LoginLogTypeEnum.LOGIN_USERNAME);
+    }
+
+    /**
+     * 新增：根据用户注册信息创建关联的会员
+     * @param registerReqVO 注册信息
+     */
+    private void createMemberForUser(AuthRegisterReqVO registerReqVO) {
+        String registerIp = ServletUtils.getClientIP();
+        Integer terminal = 20; // 假设 10 代表 ADMIN 终端
+
+        // 通过 Feign API 创建会员
+        CommonResult<MemberUserRespDTO> result = memberUserApi.createUserIfAbsent(
+                registerReqVO.getMobile(),
+                registerReqVO.getNickname(),
+                registerReqVO.getPassword(),
+                registerIp,
+                terminal
+        );
+
+        // 处理结果
+        if (result == null || !result.isSuccess()) {
+            log.error("创建会员失败: {}", result != null ? result.getMsg() : "未知错误");
+            // 根据业务需求决定是否抛出异常
+        } else {
+            log.info("成功创建会员: {}", result.getData().getId());
+        }
     }
 
     @VisibleForTesting

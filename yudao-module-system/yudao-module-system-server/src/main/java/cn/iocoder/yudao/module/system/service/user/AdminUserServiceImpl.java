@@ -138,12 +138,15 @@ public class AdminUserServiceImpl implements AdminUserService {
             }
         });
         // 1.3 校验正确性
-        validateUserForCreateOrUpdate(null, registerReqVO.getUsername(), null, null, null, null);
+        validateUserForCreateOrUpdate(null, registerReqVO.getUsername(),
+                registerReqVO.getMobile(), // 新增：传入手机号进行唯一性校验
+                null, null, null);
 
         // 2. 插入用户
         AdminUserDO user = BeanUtils.toBean(registerReqVO, AdminUserDO.class);
         user.setStatus(CommonStatusEnum.ENABLE.getStatus()); // 默认开启
         user.setPassword(encodePassword(registerReqVO.getPassword())); // 加密密码
+        user.setMobile(registerReqVO.getMobile()); // 新增：存储手机号
         userMapper.insert(user);
 
         // 3. 新增：为用户自动分配固定角色 (角色ID = 168)
