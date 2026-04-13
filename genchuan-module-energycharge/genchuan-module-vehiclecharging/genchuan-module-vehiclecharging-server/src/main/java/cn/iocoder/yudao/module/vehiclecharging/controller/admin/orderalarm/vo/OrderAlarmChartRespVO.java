@@ -5,7 +5,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Schema(description = "管理后台 - 订单告警图表统计 Response VO")
+@Schema(description = "汽车充电 - 订单告警图表统计 Response VO")
 @Data
 public class OrderAlarmChartRespVO {
 

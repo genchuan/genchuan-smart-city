@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-@Schema(description = "管理后台 - 分账报表分页 Request VO")
+@Schema(description = "汽车充电 - 分账报表分页 Request VO")
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class SharingReportPageReqVO extends PageParam {

@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-@Tag(name = "管理后台 - 充电站")
+@Tag(name = "汽车充电 - 充电站")
 @RestController
 @RequestMapping("/vehiclecharging/charging_station")
 public class ChargingStationController {

@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-@Schema(description = "管理后台 - 费率档次数量统计 Response VO")
+@Schema(description = "汽车充电 - 费率档次数量统计 Response VO")
 public class RateSettingStationCountRespVO {
 
     @Schema(description = "场站id", example = "场站id")

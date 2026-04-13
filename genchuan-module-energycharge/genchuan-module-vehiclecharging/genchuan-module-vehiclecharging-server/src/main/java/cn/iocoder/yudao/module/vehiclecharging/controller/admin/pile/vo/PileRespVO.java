@@ -15,7 +15,7 @@ import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.chargingstation.Ch
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.charginglot.ChargingLotDO;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 
-@Schema(description = "管理后台 - 充电桩 Response VO")
+@Schema(description = "汽车充电 - 充电桩 Response VO")
 @Data
 @ExcelIgnoreUnannotated
 public class PileRespVO implements VO {

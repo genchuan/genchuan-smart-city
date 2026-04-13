@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 import cn.idev.excel.annotation.*;
 
-@Schema(description = "管理后台 - 统一行政区划配置表（树形结构） Response VO")
+@Schema(description = "汽车充电 - 统一行政区划配置表（树形结构） Response VO")
 @Data
 @ExcelIgnoreUnannotated
 public class AreaRespVO {

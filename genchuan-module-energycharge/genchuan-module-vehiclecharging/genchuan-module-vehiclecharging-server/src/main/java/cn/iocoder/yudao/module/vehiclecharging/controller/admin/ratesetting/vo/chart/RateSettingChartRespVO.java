@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-@Schema(description = "管理后台 - 费率设置分布图表 Response VO")
+@Schema(description = "汽车充电 - 费率设置分布图表 Response VO")
 public class RateSettingChartRespVO {
 
     @Schema(description = "柱状图数据（场站 + 费率数量）")

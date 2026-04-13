@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-@Schema(description = "管理后台 - 更新充电车位状态 Request VO")
+@Schema(description = "汽车充电 - 更新充电车位状态 Request VO")
 @Data
 public class ChargingLotUpdateStatusReqVO {
 

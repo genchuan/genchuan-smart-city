@@ -6,7 +6,7 @@ import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 统一行政区划配置表（树形结构）新增/修改 Request VO")
+@Schema(description = "汽车充电 - 统一行政区划配置表（树形结构）新增/修改 Request VO")
 @Data
 public class AreaSaveReqVO {
 

@@ -28,7 +28,7 @@ import cn.iocoder.yudao.module.vehiclecharging.controller.admin.sharingratio.vo.
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.sharingratio.SharingRatioDO;
 import cn.iocoder.yudao.module.vehiclecharging.service.sharingratio.SharingRatioService;
 
-@Tag(name = "管理后台 - 分账比例")
+@Tag(name = "汽车充电 - 分账比例")
 @RestController
 @RequestMapping("/vehiclecharging/sharing-ratio")
 @Validated

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
-@Schema(description = "管理后台 - 充电桩告警分页 Request VO")
+@Schema(description = "汽车充电 - 充电桩告警分页 Request VO")
 @Data
 public class PilealarmPageReqVO extends PageParam {
 

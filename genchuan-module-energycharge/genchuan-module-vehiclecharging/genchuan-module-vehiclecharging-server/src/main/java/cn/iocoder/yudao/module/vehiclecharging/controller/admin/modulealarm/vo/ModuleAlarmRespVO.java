@@ -12,7 +12,7 @@ import com.fhs.core.trans.vo.VO;
 
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 
-@Schema(description = "管理后台 - 模块告警记录 Response VO")
+@Schema(description = "汽车充电 - 模块告警记录 Response VO")
 @Data
 @ExcelIgnoreUnannotated
 public class ModuleAlarmRespVO implements VO {

@@ -28,7 +28,7 @@ import cn.iocoder.yudao.module.vehiclecharging.controller.admin.pile.vo.LotSimpl
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.pile.vo.StationSimpleRespVO;
 import cn.iocoder.yudao.module.vehiclecharging.service.pile.PileService;
 
-@Tag(name = "管理后台 - 充电桩")
+@Tag(name = "汽车充电 - 充电桩")
 @RestController
 @RequestMapping("/vehiclecharging/charging-pile")
 @Validated

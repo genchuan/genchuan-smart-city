@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-@Schema(description = "管理后台 - 充电桩图表统计 Response VO")
+@Schema(description = "汽车充电 - 充电桩图表统计 Response VO")
 public class PileChartRespVO {
 
     @Schema(description = "运行时长趋势折线图数据")

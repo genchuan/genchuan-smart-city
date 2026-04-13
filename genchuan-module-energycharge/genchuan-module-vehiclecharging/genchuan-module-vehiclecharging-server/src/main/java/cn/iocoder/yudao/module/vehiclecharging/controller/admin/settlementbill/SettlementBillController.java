@@ -34,7 +34,7 @@ import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 
-@Tag(name = "管理后台 - 结算单")
+@Tag(name = "汽车充电 - 结算单")
 @RestController
 @RequestMapping("/vehiclecharging/settlement-bill")
 @Validated

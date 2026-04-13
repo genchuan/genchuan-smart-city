@@ -29,7 +29,7 @@ import cn.iocoder.yudao.module.vehiclecharging.controller.admin.orderrefund.vo.*
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.orderrefund.OrderRefundDO;
 import cn.iocoder.yudao.module.vehiclecharging.service.orderrefund.OrderRefundService;
 
-@Tag(name = "管理后台 - 订单退款")
+@Tag(name = "汽车充电 - 订单退款")
 @RestController
 @RequestMapping("/vehiclecharging/order-refund")
 @Validated

@@ -5,7 +5,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
-@Schema(description = "管理后台 - 异常订单类型占比 Response VO")
+@Schema(description = "汽车充电 - 异常订单类型占比 Response VO")
 @Data
 public class AbnormalOrderTypeRatioRespVO {
 

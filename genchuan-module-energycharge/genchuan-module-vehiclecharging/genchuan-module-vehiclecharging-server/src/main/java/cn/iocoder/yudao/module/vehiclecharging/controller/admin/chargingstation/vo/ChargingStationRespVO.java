@@ -7,7 +7,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 充电站分页 Response VO")
+@Schema(description = "汽车充电 - 充电站分页 Response VO")
 @Data
 public class ChargingStationRespVO {
 

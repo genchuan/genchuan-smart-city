@@ -30,7 +30,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.abnormalorder.vo.*;
 
 
-@Tag(name = "管理后台 - 异常订单")
+@Tag(name = "汽车充电 - 异常订单")
 @RestController
 @RequestMapping("/vehiclecharging/abnormal-order")
 @Validated

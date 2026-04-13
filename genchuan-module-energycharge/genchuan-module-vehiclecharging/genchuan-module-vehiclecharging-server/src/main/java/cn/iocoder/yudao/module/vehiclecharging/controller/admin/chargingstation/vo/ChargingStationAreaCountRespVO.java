@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.vehiclecharging.controller.admin.chargingstation
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-@Schema(description = "管理后台 - 各区域充电场站数量统计 Response VO")
+@Schema(description = "汽车充电 - 各区域充电场站数量统计 Response VO")
 @Data
 public class ChargingStationAreaCountRespVO {
 

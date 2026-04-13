@@ -29,7 +29,7 @@ import cn.iocoder.yudao.module.vehiclecharging.controller.admin.pilealarm.vo.*;
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.pilealarm.PilealarmDO;
 import cn.iocoder.yudao.module.vehiclecharging.service.pilealarm.PilealarmService;
 
-@Tag(name = "管理后台 - 充电桩告警")
+@Tag(name = "汽车充电 - 充电桩告警")
 @RestController
 @RequestMapping("/vehiclecharging/pile-alarm")
 @Validated

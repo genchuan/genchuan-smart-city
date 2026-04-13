@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-@Schema(description = "管理后台 - 批量生成结算单 Request VO")
+@Schema(description = "汽车充电 - 批量生成结算单 Request VO")
 public class SettlementBillCreateBatchReqVO {
 
     @NotBlank(message = "合作方不能为空")

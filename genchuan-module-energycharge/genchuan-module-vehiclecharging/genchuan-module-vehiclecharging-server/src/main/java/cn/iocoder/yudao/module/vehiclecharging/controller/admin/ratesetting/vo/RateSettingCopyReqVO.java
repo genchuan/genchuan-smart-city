@@ -13,7 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
 @Data
-@Schema(description = "管理后台 - 费率方案复制 Request VO")
+@Schema(description = "汽车充电 - 费率方案复制 Request VO")
 public class RateSettingCopyReqVO {
 
     @Schema(description = "原方案ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")

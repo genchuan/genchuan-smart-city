@@ -6,7 +6,7 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 分账比例新增 Request VO")
+@Schema(description = "汽车充电 - 分账比例新增 Request VO")
 @Data
 public class SharingRatioCreateReqVO {
 

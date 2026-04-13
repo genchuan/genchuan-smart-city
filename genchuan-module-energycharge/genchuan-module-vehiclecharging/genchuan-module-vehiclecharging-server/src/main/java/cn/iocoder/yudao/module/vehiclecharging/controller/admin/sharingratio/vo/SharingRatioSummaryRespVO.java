@@ -5,7 +5,7 @@ import lombok.Data;
 
 import java.util.List;
 
-@Schema(description = "管理后台 - 分账比例统计图表 Response VO")
+@Schema(description = "汽车充电 - 分账比例统计图表 Response VO")
 @Data
 public class SharingRatioSummaryRespVO {
 

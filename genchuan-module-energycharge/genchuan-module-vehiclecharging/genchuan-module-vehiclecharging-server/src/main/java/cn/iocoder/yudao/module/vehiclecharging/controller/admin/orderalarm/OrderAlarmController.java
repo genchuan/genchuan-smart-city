@@ -29,7 +29,7 @@ import cn.iocoder.yudao.module.vehiclecharging.controller.admin.orderalarm.vo.*;
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.orderalarm.OrderAlarmDO;
 import cn.iocoder.yudao.module.vehiclecharging.service.orderalarm.OrderAlarmService;
 
-@Tag(name = "管理后台 - 订单告警")
+@Tag(name = "汽车充电 - 订单告警")
 @RestController
 @RequestMapping("/vehiclecharging/order-alarm")
 @Validated

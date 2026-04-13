@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import java.util.List;
 
-@Schema(description = "管理后台 - 订单退款批量退款 Request VO")
+@Schema(description = "汽车充电 - 订单退款批量退款 Request VO")
 @Data
 public class OrderRefundRefundReqVO {
 

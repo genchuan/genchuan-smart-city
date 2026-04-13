@@ -24,7 +24,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
-@Tag(name = "管理后台 - 分账报表")
+@Tag(name = "汽车充电 - 分账报表")
 @RestController
 @RequestMapping("/vehiclecharging/sharing-report")
 @Validated

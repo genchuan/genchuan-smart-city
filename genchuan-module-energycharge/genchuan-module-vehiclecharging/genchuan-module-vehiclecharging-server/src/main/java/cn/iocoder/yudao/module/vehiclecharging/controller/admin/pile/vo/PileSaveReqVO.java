@@ -6,7 +6,7 @@ import java.util.*;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 
-@Schema(description = "管理后台 - 充电桩新增/修改 Request VO")
+@Schema(description = "汽车充电 - 充电桩新增/修改 Request VO")
 @Data
 public class PileSaveReqVO {
 

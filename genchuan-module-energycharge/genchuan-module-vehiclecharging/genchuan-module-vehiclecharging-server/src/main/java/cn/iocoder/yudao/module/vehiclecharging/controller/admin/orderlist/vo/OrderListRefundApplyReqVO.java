@@ -6,7 +6,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
-@Schema(description = "管理后台 - 退款申请 Request VO")
+@Schema(description = "汽车充电 - 退款申请 Request VO")
 @Data
 public class OrderListRefundApplyReqVO extends OrderListSaveReqVO {
 

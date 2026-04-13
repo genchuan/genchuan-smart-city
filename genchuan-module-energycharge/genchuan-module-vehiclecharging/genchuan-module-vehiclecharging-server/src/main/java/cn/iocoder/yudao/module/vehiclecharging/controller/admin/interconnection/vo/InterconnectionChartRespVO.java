@@ -5,7 +5,7 @@ import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 
-@Schema(description = "管理后台 - 互联互通表图表数据 Response VO")
+@Schema(description = "汽车充电 - 互联互通表图表数据 Response VO")
 @Data
 public class InterconnectionChartRespVO {
 

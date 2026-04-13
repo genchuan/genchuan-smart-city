@@ -5,7 +5,7 @@ import groovy.transform.EqualsAndHashCode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-@Schema(description = "管理后台 - 充电站分页 Request VO")
+@Schema(description = "汽车充电 - 充电站分页 Request VO")
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ChargingStationPageReqVO extends PageParam {

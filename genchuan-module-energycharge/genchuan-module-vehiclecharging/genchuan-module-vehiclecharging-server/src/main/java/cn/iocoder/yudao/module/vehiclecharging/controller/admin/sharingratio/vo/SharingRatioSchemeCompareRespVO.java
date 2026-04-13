@@ -5,7 +5,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Schema(description = "管理后台 - 分账方案对比响应 VO")
+@Schema(description = "汽车充电 - 分账方案对比响应 VO")
 @Data
 public class SharingRatioSchemeCompareRespVO {
 

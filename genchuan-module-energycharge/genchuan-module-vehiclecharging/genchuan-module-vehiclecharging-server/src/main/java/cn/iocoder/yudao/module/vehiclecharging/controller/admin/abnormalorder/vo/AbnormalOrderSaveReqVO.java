@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 异常订单新增/修改 Request VO")
+@Schema(description = "汽车充电 - 异常订单新增/修改 Request VO")
 @Data
 public class AbnormalOrderSaveReqVO {
 

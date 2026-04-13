@@ -8,7 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
-@Schema(description = "管理后台 - 每日异常订单统计 Request VO")
+@Schema(description = "汽车充电 - 每日异常订单统计 Request VO")
 @Data
 public class AbnormalOrderDailyCountReqVO {
 

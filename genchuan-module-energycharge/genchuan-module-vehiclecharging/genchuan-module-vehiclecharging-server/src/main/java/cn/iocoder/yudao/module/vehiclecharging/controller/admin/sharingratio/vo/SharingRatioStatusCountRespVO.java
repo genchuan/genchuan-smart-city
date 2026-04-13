@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.vehiclecharging.controller.admin.sharingratio.vo
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-@Schema(description = "管理后台 - 分账方案状态统计响应 VO")
+@Schema(description = "汽车充电 - 分账方案状态统计响应 VO")
 @Data
 public class SharingRatioStatusCountRespVO {
 

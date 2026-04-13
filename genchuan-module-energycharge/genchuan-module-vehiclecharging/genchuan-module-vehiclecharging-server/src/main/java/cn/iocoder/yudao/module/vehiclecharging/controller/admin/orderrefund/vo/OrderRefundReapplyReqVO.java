@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import java.math.BigDecimal;
 
-@Schema(description = "管理后台 - 订单退款重新申请 Request VO")
+@Schema(description = "汽车充电 - 订单退款重新申请 Request VO")
 @Data
 public class OrderRefundReapplyReqVO {
 

@@ -6,7 +6,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Schema(description = "管理后台 - 模块告警统计图表 Response VO")
+@Schema(description = "汽车充电 - 模块告警统计图表 Response VO")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
