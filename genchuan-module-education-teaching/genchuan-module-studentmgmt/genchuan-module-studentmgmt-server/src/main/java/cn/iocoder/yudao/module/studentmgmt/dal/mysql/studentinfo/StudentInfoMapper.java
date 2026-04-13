@@ -73,4 +73,6 @@ public interface StudentInfoMapper extends BaseMapperX<StudentInfoDO> {
     List<StudentInfoCoreIndexRespVO> getCoreIndex(@Param("startTime") LocalDateTime startTime,
                                             @Param("endTime") LocalDateTime endTime);
 
+    List<StudentInfoBaseVO> selectBaseInfoList();
+
 }

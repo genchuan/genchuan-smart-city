@@ -51,4 +51,35 @@ public interface LogRecordConstants {
     String STUDENT_ASSESS_UPDATE_AUDIT_STATUS_SUCCESS = "更新了考评【{{#className}}】的审核状态为【{{#status ? '已审核' : '未审核'}}】";
 
 
+    // ======================= Violate 违纪管理 =======================
+
+    String VIOLATE_TYPE = "STUDENT 违纪管理";
+    String VIOLATE_CREATE_SUB_TYPE = "创建违纪";
+    String VIOLATE_CREATE_SUCCESS = "创建了{{#studentName}}的违纪";
+    String VIOLATE_UPDATE_SUB_TYPE = "更新违纪";
+    String VIOLATE_UPDATE_SUCCESS = "更新了违纪【{{#violate.studentId}}】: {_DIFF{#updateReqVO}}";
+    String VIOLATE_WARN_SUB_TYPE = "预警违纪";
+    String VIOLATE_WARN_SUCCESS = "更新了违纪【{{#studentName}}】的预警状态为【{{#status ? '已预警' : '未预警'}}】";
+    String VIOLATE_PUSH_SUB_TYPE = "推送违纪";
+    String VIOLATE_PUSH_SUCCESS = "推送了【{{#studentName}}】违纪";
+    String VIOLATE_UPDATE_AUDIT_STATUS_SUB_TYPE = "更新违纪审批状态";
+    String VIOLATE_UPDATE_AUDIT_STATUS_SUCCESS = "更新了违纪【{{#studentName}}】的审批状态为【{{#status ? '已审批' : '未审批'}}】";
+
+
+
+    // ======================= mental 心理管理 =======================
+
+    String MENTAL_TYPE = "STUDENT 心理管理";
+    String MENTAL_CREATE_SUB_TYPE = "创建心理";
+    String MENTAL_CREATE_SUCCESS = "创建了{{#studentName}}的心理";
+    String MENTAL_UPDATE_SUB_TYPE = "更新心理";
+    String MENTAL_UPDATE_SUCCESS = "更新了心理【{{#violate.studentId}}】: {_DIFF{#updateReqVO}}";
+    String MENTAL_WARN_SUB_TYPE = "预警心理";
+    String MENTAL_WARN_SUCCESS = "更新了心理【{{#studentName}}】的预警状态为【{{#status ? '已预警' : '未预警'}}】";
+    String MENTAL_CONSULT_SUB_TYPE = "预约心理";
+    String MENTAL_CONSULT_SUCCESS = "【{{username}}】预约了【{{#studentName}}】心理";
+    String MENTAL_UPDATE_AUDIT_STATUS_SUB_TYPE = "更新心理审批状态";
+    String MENTAL_UPDATE_AUDIT_STATUS_SUCCESS = "更新了心理【{{#studentName}}】的审批状态为【{{#status ? '已审批' : '未审批'}}】";
+
+
 }

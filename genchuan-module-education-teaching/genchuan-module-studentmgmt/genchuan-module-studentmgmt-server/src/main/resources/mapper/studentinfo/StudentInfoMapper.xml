@@ -89,4 +89,13 @@
         GROUP BY all_dates.date
         ORDER BY all_dates.date ASC
     </select>
+    <select id="selectBaseInfoList"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.studentinfo.vo.StudentInfoBaseVO">
+        SELECT
+            id,
+            student_no AS studentNo,
+            name
+        FROM student_info
+        WHERE deleted = 0
+    </select>
 </mapper>

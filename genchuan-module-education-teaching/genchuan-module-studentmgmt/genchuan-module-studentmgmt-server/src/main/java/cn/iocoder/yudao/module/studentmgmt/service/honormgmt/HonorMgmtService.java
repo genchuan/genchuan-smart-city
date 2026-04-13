@@ -76,4 +76,6 @@ public interface HonorMgmtService {
 
     boolean audit(@Valid HonorMgmtAuditReqVO reqVO, LoginUser loginUser);
 
+    PageResult<HonorMgmtPageRespVO> getHonorMgmtJoinPage(@Valid HonorMgmtPageReqVO pageReqVO);
+
 }

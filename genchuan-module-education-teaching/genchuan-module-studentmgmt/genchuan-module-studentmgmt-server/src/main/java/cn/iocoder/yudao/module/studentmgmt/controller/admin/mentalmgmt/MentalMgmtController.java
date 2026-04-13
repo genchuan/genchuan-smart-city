@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.mentalmgmt;
 
+import cn.iocoder.yudao.framework.security.core.LoginUser;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -24,6 +25,8 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
+import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUser;
+import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId;
 
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.mentalmgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.mentalmgmt.MentalMgmtDO;
@@ -83,9 +86,9 @@ public class MentalMgmtController {
     @GetMapping("/page")
     @Operation(summary = "获得心理管理分页")
     @PreAuthorize("@ss.hasPermission('studentmgmt:mental-mgmt:query')")
-    public CommonResult<PageResult<MentalMgmtRespVO>> getMentalMgmtPage(@Valid MentalMgmtPageReqVO pageReqVO) {
-        PageResult<MentalMgmtDO> pageResult = mentalMgmtService.getMentalMgmtPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, MentalMgmtRespVO.class));
+    public CommonResult<PageResult<MentalMgmtJoinPageRespVO>> getMentalMgmtPage(@Valid MentalMgmtPageReqVO pageReqVO) {
+        PageResult<MentalMgmtJoinPageRespVO> pageResult = mentalMgmtService.getMentalMgmtJoinPage(pageReqVO);
+        return success(BeanUtils.toBean(pageResult, MentalMgmtJoinPageRespVO.class));
     }
 
     @GetMapping("/export-excel")
@@ -100,5 +103,16 @@ public class MentalMgmtController {
         ExcelUtils.write(response, "心理管理.xls", "数据", MentalMgmtRespVO.class,
                         BeanUtils.toBean(list, MentalMgmtRespVO.class));
     }
+
+    @PutMapping("/consult")
+    @Operation(summary = "预约")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:mental-mgmt:consult')")
+    public CommonResult<Boolean> consult(@Valid @RequestBody MentalMgmtConsultReqVO reqVO) {
+        // 获取当前用户
+        LoginUser loginUser = getLoginUser();
+        boolean isSuccess = mentalMgmtService.consult(reqVO, loginUser);
+        return success(isSuccess);
+    }
+
 
 }

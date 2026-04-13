@@ -64,4 +64,8 @@ public interface StudentInfoService {
     List<StudentInfoDistributionCountRespVO> getDistributionCount(@Valid StudentInfoDistributionCountReqVO reqVO);
 
     List<StudentInfoCoreIndexRespVO> getCoreIndex(@Valid StudentInfoCoreIndexReqVO reqVO);
+
+    List<StudentInfoBaseVO> getAll();
+
+
 }

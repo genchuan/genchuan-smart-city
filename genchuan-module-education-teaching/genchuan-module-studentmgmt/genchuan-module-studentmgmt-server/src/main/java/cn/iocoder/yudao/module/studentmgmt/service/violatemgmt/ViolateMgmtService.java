@@ -61,4 +61,13 @@ public interface ViolateMgmtService {
     boolean auditViolateMgmtListByIds(List<Long> ids, Long userId);
 
     Boolean push(Long id, Long userId);
+
+    PageResult<ViolateMgmtPageRespVO> getViolateMgmtPageVo(@Valid ViolateMgmtPageReqVO pageReqVO);
+
+    Boolean warn(Long id, Long userId);
+
+    ViolateDashboardVO chart(@Valid ViolateChartReqVO reqVO);
+
+    ViolateCountDashboardVO violateCount(@Valid ViolateChartReqVO reqVO);
+
 }

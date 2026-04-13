@@ -87,6 +87,14 @@ public class StudentInfoController {
         return success(BeanUtils.toBean(pageResult, StudentInfoPageRespVO.class));
     }
 
+    @GetMapping("/getAll")
+    @Operation(summary = "获得学生信息分页")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:student-info:query')")
+    public CommonResult<List<StudentInfoBaseVO>> getAll() {
+        List<StudentInfoBaseVO> list = studentInfoService.getAll();
+        return success(list);
+    }
+
     @GetMapping("/export")
     @Operation(summary = "导出学生信息 Excel")
     @PreAuthorize("@ss.hasPermission('studentmgmt:student-info:export')")

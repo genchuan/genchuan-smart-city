@@ -12,13 +12,64 @@
     <update id="auditViolateMgmtListByIds">
         UPDATE violate_mgmt
         SET status = #{status},
-        audit_user = #{userId}，
+        audit_user = #{userId},
         audit_time = now(),
         update_time = now()
         WHERE id IN
         <foreach item="id" collection="ids" separator="," close=")" open="(" index="">
             #{id}
         </foreach>
-        />
     </update>
+    <select id="selectTotalCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM violate_mgmt
+        WHERE deleted = 0
+        <if test="violateType != null and violateType != '' " >
+            AND violate_type = #{violateType}
+        </if>
+        <if test="startTime != null">
+            AND violate_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND violate_time &lt;= #{endTime}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status}
+        </if>
+    </select>
+<!--    高风险学生数（违纪次数≥3 次）-->
+    <select id="selectHighRiskStudentCount" resultType="java.lang.Long">
+        SELECT COUNT(student_id) count
+        FROM violate_mgmt
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND violate_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND violate_time &lt;= #{endTime}
+        </if>
+        GROUP BY student_id
+        HAVING num >3
+
+    </select>
+    <select id="selectViolateTypeCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT violate_type,
+        COUNT(*) count
+        FROM violate_mgmt
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND violate_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND violate_time &lt;= #{endTime}
+        </if>
+        GROUP BY violate_type
+    </select>
+    <select id="selectViolateClassCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT class_name, COUNT(1) AS count
+        FROM violate_mgmt AS v
+        LEFT JOIN student_info AS s ON s.id = v.student_id
+        WHERE v.deleted = 0
+        GROUP BY class_name
+    </select>
 </mapper>

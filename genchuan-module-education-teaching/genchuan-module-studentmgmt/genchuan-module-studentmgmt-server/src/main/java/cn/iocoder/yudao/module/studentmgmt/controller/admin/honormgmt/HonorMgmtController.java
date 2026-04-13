@@ -104,9 +104,9 @@ public class HonorMgmtController {
     @GetMapping("/page")
     @Operation(summary = "获得荣誉管理分页")
     @PreAuthorize("@ss.hasPermission('studentmgmt:honor-mgmt:query')")
-    public CommonResult<PageResult<HonorMgmtRespVO>> getHonorMgmtPage(@Valid HonorMgmtPageReqVO pageReqVO) {
-        PageResult<HonorMgmtDO> pageResult = honorMgmtService.getHonorMgmtPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, HonorMgmtRespVO.class));
+    public CommonResult<PageResult<HonorMgmtPageRespVO>> getHonorMgmtPage(@Valid HonorMgmtPageReqVO pageReqVO) {
+        PageResult<HonorMgmtPageRespVO> pageResult = honorMgmtService.getHonorMgmtJoinPage(pageReqVO);
+        return success(pageResult);
     }
 
     @GetMapping("/chart")

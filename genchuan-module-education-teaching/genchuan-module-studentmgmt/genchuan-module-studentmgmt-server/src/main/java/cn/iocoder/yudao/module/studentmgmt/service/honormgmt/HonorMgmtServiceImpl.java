@@ -198,4 +198,9 @@ public class HonorMgmtServiceImpl implements HonorMgmtService {
         return false;
     }
 
+    @Override
+    public PageResult<HonorMgmtPageRespVO> getHonorMgmtJoinPage(HonorMgmtPageReqVO pageReqVO) {
+        return honorMgmtMapper.selectJoinPage(pageReqVO);
+    }
+
 }

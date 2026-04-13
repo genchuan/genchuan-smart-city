@@ -25,7 +25,6 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId;
-import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserNickname;
 
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.violatemgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.violatemgmt.ViolateMgmtDO;
@@ -88,9 +87,9 @@ public class ViolateMgmtController {
     @GetMapping("/page")
     @Operation(summary = "获得违纪管理分页")
     @PreAuthorize("@ss.hasPermission('studentmgmt:violate-mgmt:query')")
-    public CommonResult<PageResult<ViolateMgmtRespVO>> getViolateMgmtPage(@Valid ViolateMgmtPageReqVO pageReqVO) {
-        PageResult<ViolateMgmtDO> pageResult = violateMgmtService.getViolateMgmtPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, ViolateMgmtRespVO.class));
+    public CommonResult<PageResult<ViolateMgmtPageRespVO>> getViolateMgmtPage(@Valid ViolateMgmtPageReqVO pageReqVO) {
+        PageResult<ViolateMgmtPageRespVO> pageResult = violateMgmtService.getViolateMgmtPageVo(pageReqVO);
+        return success(BeanUtils.toBean(pageResult, ViolateMgmtPageRespVO.class));
     }
 
     @GetMapping("/export")
@@ -125,9 +124,37 @@ public class ViolateMgmtController {
     public CommonResult<Boolean> push(@RequestParam("id") Long id) {
         // 获取当前用户
         Long userId = getLoginUserId();
-        String loginUserNickname = getLoginUserNickname();
         Boolean isSuccess = violateMgmtService.push(id, userId);
         return success(isSuccess);
+    }
+
+
+    @PutMapping("/warn")
+    @Operation(summary = "预警违纪管理")
+    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:violate-mgmt:warn')")
+    public CommonResult<Boolean> warn(@RequestParam("id") Long id) {
+        // 获取当前用户
+        Long userId = getLoginUserId();
+        Boolean isSuccess = violateMgmtService.warn(id, userId);
+        return success(isSuccess);
+    }
+
+
+    @GetMapping("/chart")
+    @Operation(summary = "学生违纪预警看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:violate-info:query')")
+    public CommonResult<ViolateDashboardVO> chart(@Valid @RequestBody ViolateChartReqVO reqVO) {
+        ViolateDashboardVO dashboardVO = violateMgmtService.chart(reqVO);
+        return success(dashboardVO);
+    }
+
+    @GetMapping("/chart/violateCount")
+    @Operation(summary = "各班级违纪次数 / 类型分布统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:violate-info:query')")
+    public CommonResult<ViolateCountDashboardVO> violateCount(@Valid @RequestBody ViolateChartReqVO reqVO) {
+        ViolateCountDashboardVO dashboardVO = violateMgmtService.violateCount(reqVO);
+        return success(dashboardVO);
     }
 
 

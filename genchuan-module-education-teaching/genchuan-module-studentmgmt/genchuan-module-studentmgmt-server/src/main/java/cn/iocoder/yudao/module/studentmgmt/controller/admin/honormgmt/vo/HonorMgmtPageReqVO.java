@@ -16,6 +16,12 @@ public class HonorMgmtPageReqVO extends PageParam {
     @Schema(description = "学生 ID", example = "19619")
     private Long studentId;
 
+    @Schema(description = "学生姓名", example = "张三")
+    private String studentName;
+
+    @Schema(description = "班级姓名", example = "2024级1班")
+    private String className;
+
     @Schema(description = "荣誉类型：优秀学生/奖学金/竞赛获奖/其他", example = "2")
     private String honorType;
 
