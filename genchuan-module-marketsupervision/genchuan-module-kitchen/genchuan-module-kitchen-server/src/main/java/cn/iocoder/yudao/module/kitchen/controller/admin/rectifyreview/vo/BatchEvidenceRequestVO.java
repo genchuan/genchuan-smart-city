@@ -8,6 +8,6 @@ import java.util.List;
 @Data
 public class BatchEvidenceRequestVO {
     private List<Long> ledgerIdList;
-    private Long pageNo = 1L;
-    private Long pageSize = 10L;
+    private Long pageNo;
+    private Long pageSize;
 }
