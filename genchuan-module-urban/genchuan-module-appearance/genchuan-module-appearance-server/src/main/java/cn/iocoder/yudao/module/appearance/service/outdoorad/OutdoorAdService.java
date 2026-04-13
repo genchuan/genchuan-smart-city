@@ -2,9 +2,7 @@ package cn.iocoder.yudao.module.appearance.service.outdoorad;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.vo.*;
-import cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.OutdoorAdDO;
 import cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.OutdoorAdOrderDO;
-import jakarta.validation.Valid;
 
 /**
  * 户外广告 Service 接口
@@ -44,6 +42,10 @@ public interface OutdoorAdService {
      * 删除户外广告
      */
     void removeOutdoorAds(OutdoorAdRemoveReqVO removeReqVO);
+
+    PageResult<OutdoorAdOrderPageRespVO> getOrderPage(OutdoorAdOrderPageReqVO pageReqVO);
+
+    OutdoorAdOrderGetRespVO getOrderDetail(String id);
 //    /**
 //     * 获得户外广告分页
 //     *

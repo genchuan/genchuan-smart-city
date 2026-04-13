@@ -1,7 +1,5 @@
 package cn.iocoder.yudao.module.appearance.service.outdoorad;
 
-import cn.hutool.core.util.IdUtil;
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.appearance.controller.admin.outdoorad.vo.*;
 import cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad.OutdoorAdOrderDO;
 import com.alibaba.nacos.common.utils.CollectionUtils;
@@ -23,7 +21,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -186,6 +183,30 @@ public class OutdoorAdServiceImpl implements OutdoorAdService {
 //        log.info("删除户外广告，广告ID列表：{}，删除原因：{}，操作人：{}",
 //                ids, removeReqVO.getRemoveReason(), SecurityUtils.getLoginUser().getNickname());
     }
+
+    @Override
+    public PageResult<OutdoorAdOrderPageRespVO> getOrderPage(OutdoorAdOrderPageReqVO pageReqVO) {
+        Page<OutdoorAdOrderPageRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        IPage<OutdoorAdOrderPageRespVO> result = outdoorAdMapper.selectOrderPage(page, pageReqVO);
+        return new PageResult<>(result.getRecords(), result.getTotal());
+    }
+
+    @Override
+    public OutdoorAdOrderGetRespVO getOrderDetail(String id) {
+        // 1. 查询工单主信息及关联广告、处理人
+        OutdoorAdOrderGetRespVO detail = outdoorAdMapper.selectOrderDetailById(id);
+        if (detail == null) {
+            throw new RuntimeException("整改工单不存在");
+        }
+        // 2. 查询问题图片列表
+        List<OutdoorAdOrderGetRespVO.ImageItem> problemImgs = outdoorAdMapper.selectImagesByOrderIdAndType(id, "problem");
+        detail.setProblemImgList(problemImgs);
+        // 3. 查询整改后图片列表
+        List<OutdoorAdOrderGetRespVO.ImageItem> handleImgs = outdoorAdMapper.selectImagesByOrderIdAndType(id, "handle");
+        detail.setHandleImgList(handleImgs);
+        return detail;
+    }
+
 //    @Override
 //    public PageResult<OutdoorAdDO> getOutdoorAdPage( OutdoorAdPageReqVO pageReqVO) {
 //        Page<OutdoorAdDO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
