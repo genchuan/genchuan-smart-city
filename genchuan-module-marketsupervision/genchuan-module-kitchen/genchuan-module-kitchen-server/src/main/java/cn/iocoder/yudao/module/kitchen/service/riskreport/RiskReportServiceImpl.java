@@ -20,27 +20,33 @@ public class RiskReportServiceImpl implements RiskReportService{
     @Override
     public PageResult<EntReportPageResp> getEntReportPage(EntReportPageReq pageReqVO) {
 
-//        // 1. 构建分页
-//        Page<EntReportPageResp> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
-//
-//        // 2. 查询分页数据
-//        IPage<EntReportPageResp> resultPage = riskReportMapper.getEntReportPage(page, pageReqVO);
-//        List<EntReportPageResp> list = resultPage.getRecords();
-
         //1.获取list
         List<EntReportPageResp> list = riskReportMapper.getEntReportPage(pageReqVO);
 
 
 
-        //2.计算风险等级
-        for (EntReportPageResp entReport:list){
-            if (entReport.getViolationCount()>3){
+        // 2. 计算风险等级 + 填充风险钻取（完整版）
+        for (EntReportPageResp entReport : list) {
+            // 1. 计算风险等级
+            if (entReport.getViolationCount() > 3) {
                 entReport.setRiskLevel("高风险");
-            } else if (entReport.getViolationCount()>1) {
+            } else if (entReport.getViolationCount() > 1) {
                 entReport.setRiskLevel("中风险");
-            }else {
+            } else {
                 entReport.setRiskLevel("低风险");
             }
+
+            // 2. 创建风险钻取对象（内部类）
+            EntReportPageResp.RiskDrillVO drillVO = new EntReportPageResp.RiskDrillVO();
+
+            // 3. 给钻取对象赋值（你内部类里的4个字段）
+            drillVO.setEntName(entReport.getEntName());
+            drillVO.setStatisticPeriod(entReport.getStatisticPeriod());
+            drillVO.setViolationCount(entReport.getViolationCount());
+            drillVO.setRectifyFinishRate(entReport.getRectifyFinishRate());
+
+            // 4. 把钻取对象 set 到当前行
+            entReport.setRiskLevelDrill(drillVO);
         }
 
         //2.获取total

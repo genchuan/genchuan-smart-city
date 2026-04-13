@@ -35,7 +35,7 @@ public class AddAiAlertMessageReq {
     private Integer alertSource = 6;
 
     //TODO 先自己上传图片
-    @Schema(description = "[图片地址] 通用图片地址或视频地址（人脸布控和车牌布控时为空），时光缩影下为视频下载地址", example = "http://112.47.127.21:59000/shunchang/avatar/29904d39-8a4f-4c15-ac28-5b34c3781f11.png")
+    @Schema(description = "[图片地址] 通用图片地址或视频地址（人脸布控和车牌布控时为空），时光缩影下为视频下载地址", example = "http://112.47.127.21:9000/shunchang/avatar/29904d39-8a4f-4c15-ac28-5b34c3781f11.png")
     private String srcUrl;
 
     @Schema(description = "[图片刷新token] 	通用图片刷新token（人脸布控和车牌布控时为空）时光缩影下为视频刷新token",hidden = true)

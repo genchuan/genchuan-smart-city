@@ -60,7 +60,7 @@ public class ViolationAnalyticsPageResp {
     @Schema(description = "统计开始时间")
     private LocalDateTime beginTime;
 
-        @ExcelProperty(value = "统计结束时间", index = 9)
+    @ExcelProperty(value = "统计结束时间", index = 9)
 //    @ExcelIgnore // ← 加上这个
     @Schema(description = "统计结束时间")
     private LocalDateTime endTime;

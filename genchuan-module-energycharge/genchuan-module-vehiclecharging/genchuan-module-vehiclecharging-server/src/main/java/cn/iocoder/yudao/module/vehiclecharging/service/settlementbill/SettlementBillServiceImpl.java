@@ -109,7 +109,7 @@ public class SettlementBillServiceImpl implements SettlementBillService {
                     item.setCompletedCount((int) e.getValue().stream().filter(b -> "已完成".equals(b.getBillStatus())).count());
                     return item;
                 })
-                // 👇 👇 👇 【强制按日期从早到晚排序，绝对稳】
+                // 【强制按日期从早到晚排序】
                 .sorted((d1, d2) -> d1.getDate().compareTo(d2.getDate()))
                 .collect(Collectors.toList());
 
@@ -118,38 +118,77 @@ public class SettlementBillServiceImpl implements SettlementBillService {
         return resp;
     }
 
+    /**
+     * 根据时间范围查询合作方结算金额统计
+     * <p>
+     * 功能：按合作方分组，统计每个合作方的单据数量和总结算金额
+     *
+     * @param reqVO 请求参数，包含时间范围起始/结束时间
+     * @return 合作方金额统计响应对象，包含所有合作方的统计列表
+     */
     @Override
     public SettlementBillCooperatorAmountRespVO getCooperatorAmount(SettlementBillCooperatorAmountReqVO reqVO) {
+        // 1. 构建时间范围查询条件（开始时间 ~ 结束时间）
         LambdaQueryWrapper<SettlementBillDO> qw = buildTimeQuery(reqVO.getTimeRangeStart(), reqVO.getTimeRangeEnd());
+
+        // 2. 根据查询条件查询所有符合条件的结算单数据
         List<SettlementBillDO> all = settlementBillMapper.selectList(qw);
 
+        // 3. 按合作方（cooperator）分组，key=合作方名称，value=该合作方下的所有结算单
         Map<String, List<SettlementBillDO>> group = all.stream()
                 .collect(Collectors.groupingBy(SettlementBillDO::getCooperator));
+
+        // 4. 将分组后的数据转换为前端需要的展示对象列表
         List<SettlementBillCooperatorAmountRespVO.CooperatorItem> list = group.entrySet().stream().map(e -> {
             SettlementBillCooperatorAmountRespVO.CooperatorItem item = new SettlementBillCooperatorAmountRespVO.CooperatorItem();
+            // 设置合作方名称
             item.setName(e.getKey());
+            // 设置该合作方的单据总数
             item.setCount(e.getValue().size());
-            item.setAmount(e.getValue().stream().map(SettlementBillDO::getSettlementAmount).reduce(BigDecimal.ZERO, BigDecimal::add));
+            // 累加计算该合作方的总结算金额
+            item.setAmount(e.getValue().stream()
+                    .map(SettlementBillDO::getSettlementAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add));
             return item;
         }).collect(Collectors.toList());
 
+        // 5. 封装最终响应对象并返回
         SettlementBillCooperatorAmountRespVO resp = new SettlementBillCooperatorAmountRespVO();
         resp.setList(list);
         return resp;
     }
 
+    /**
+     * 根据时间范围 统计不同状态的结算单数量
+     * <p>
+     * 功能：查询指定时间区间内的结算单，按单据状态分别统计数量（待审核、审核通过、结算中、已完成、已驳回）
+     *
+     * @param reqVO 请求参数，包含统计时间范围的开始时间和结束时间
+     * @return 封装好的各状态结算单数量响应对象
+     */
     @Override
     public SettlementBillCountRespVO getBillCount(SettlementBillCountReqVO reqVO) {
+        // 构建时间范围查询条件
         LambdaQueryWrapper<SettlementBillDO> qw = buildTimeQuery(reqVO.getTimeRangeStart(), reqVO.getTimeRangeEnd());
+
+        // 根据时间条件，查询所有符合条件的结算单数据
         List<SettlementBillDO> all = settlementBillMapper.selectList(qw);
 
+        // 创建状态统计对象，用于存放各状态的单据数量
         SettlementBillCountRespVO.StatusCountItem status = new SettlementBillCountRespVO.StatusCountItem();
+
+        // 统计：待审核 单据数量
         status.setPendingAudit((int) all.stream().filter(b -> "待审核".equals(b.getBillStatus())).count());
+        // 统计：审核通过 单据数量
         status.setAuditPass((int) all.stream().filter(b -> "审核通过".equals(b.getBillStatus())).count());
+        // 统计：结算中 单据数量
         status.setSettling((int) all.stream().filter(b -> "结算中".equals(b.getBillStatus())).count());
+        // 统计：已完成 单据数量
         status.setCompleted((int) all.stream().filter(b -> "已完成".equals(b.getBillStatus())).count());
+        // 统计：已驳回 单据数量
         status.setRejected((int) all.stream().filter(b -> "已驳回".equals(b.getBillStatus())).count());
 
+        // 封装最终返回结果
         SettlementBillCountRespVO resp = new SettlementBillCountRespVO();
         resp.setStatusCount(status);
         return resp;
