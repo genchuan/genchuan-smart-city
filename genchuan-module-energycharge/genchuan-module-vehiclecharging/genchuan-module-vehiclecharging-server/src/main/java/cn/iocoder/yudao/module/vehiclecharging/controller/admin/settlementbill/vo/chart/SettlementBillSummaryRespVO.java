@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Data
-@Schema(description = "管理后台 - 结算单统计总览 Response VO")
+@Schema(description = "汽车充电 - 结算单统计总览 Response VO")
 public class SettlementBillSummaryRespVO {
     @Schema(description = "结算单总数", example = "32")
     private Integer totalBillCount;

@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-@Schema(description = "管理后台 - 每日趋势 Response VO")
+@Schema(description = "汽车充电 - 每日趋势 Response VO")
 public class SettlementBillDailyTrendRespVO {
     private List<DailyItem> list;
 

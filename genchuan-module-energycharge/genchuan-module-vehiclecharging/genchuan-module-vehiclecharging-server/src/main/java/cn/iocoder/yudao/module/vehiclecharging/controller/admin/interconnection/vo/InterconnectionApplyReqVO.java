@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.vehiclecharging.controller.admin.interconnection
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "管理后台 - 互联互通表分页 Request VO")
+@Schema(description = "汽车充电 - 互联互通表分页 Request VO")
 @Data
 public class InterconnectionApplyReqVO {
 

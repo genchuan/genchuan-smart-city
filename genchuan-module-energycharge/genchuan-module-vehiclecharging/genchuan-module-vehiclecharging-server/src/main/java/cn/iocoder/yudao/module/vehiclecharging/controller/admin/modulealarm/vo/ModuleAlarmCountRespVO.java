@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.vehiclecharging.controller.admin.modulealarm.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
-@Schema(description = "管理后台 - 模块告警状态数量统计 Response VO")
+@Schema(description = "汽车充电 - 模块告警状态数量统计 Response VO")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

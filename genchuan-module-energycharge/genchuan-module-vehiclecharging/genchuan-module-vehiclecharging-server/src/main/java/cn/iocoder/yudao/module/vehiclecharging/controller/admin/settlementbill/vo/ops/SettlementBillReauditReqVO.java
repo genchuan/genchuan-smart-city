@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-@Schema(description = "管理后台 - 结算单重新审核 Request VO")
+@Schema(description = "汽车充电 - 结算单重新审核 Request VO")
 public class SettlementBillReauditReqVO {
 
     @NotNull(message = "结算单主键ID不能为空")

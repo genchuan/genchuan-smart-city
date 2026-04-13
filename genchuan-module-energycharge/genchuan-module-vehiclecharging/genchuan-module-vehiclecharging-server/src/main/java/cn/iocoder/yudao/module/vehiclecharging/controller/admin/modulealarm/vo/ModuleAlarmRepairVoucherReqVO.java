@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
-@Schema(description = "管理后台 - 模块告警记录修复凭证预览 Request VO")
+@Schema(description = "汽车充电 - 模块告警记录修复凭证预览 Request VO")
 @Data
 public class ModuleAlarmRepairVoucherReqVO {
 

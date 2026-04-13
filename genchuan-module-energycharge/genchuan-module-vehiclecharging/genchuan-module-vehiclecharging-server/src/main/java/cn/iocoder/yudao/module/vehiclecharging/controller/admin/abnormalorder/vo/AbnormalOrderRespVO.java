@@ -8,7 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import cn.idev.excel.annotation.*;
 
-@Schema(description = "管理后台 - 异常订单 Response VO")
+@Schema(description = "汽车充电 - 异常订单 Response VO")
 @Data
 @ExcelIgnoreUnannotated
 public class AbnormalOrderRespVO {

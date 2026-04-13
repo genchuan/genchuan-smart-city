@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.vehiclecharging.controller.admin.pile.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-@Schema(description = "管理后台 - 车位简易列表 Response VO")
+@Schema(description = "汽车充电 - 车位简易列表 Response VO")
 @Data
 public class LotSimpleRespVO {
 

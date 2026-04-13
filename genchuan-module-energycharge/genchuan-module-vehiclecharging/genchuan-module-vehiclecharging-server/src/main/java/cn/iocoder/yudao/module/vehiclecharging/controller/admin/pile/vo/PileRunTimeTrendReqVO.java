@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.vehiclecharging.controller.admin.pile.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-@Schema(description = "管理后台 - 充电桩运行时长趋势 Request VO")
+@Schema(description = "汽车充电 - 充电桩运行时长趋势 Request VO")
 @Data
 public class PileRunTimeTrendReqVO {
 

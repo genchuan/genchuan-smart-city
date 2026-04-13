@@ -5,7 +5,7 @@ import lombok.Data;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-@Schema(description = "管理后台 - 自定义报表生成 Request VO")
+@Schema(description = "汽车充电 - 自定义报表生成 Request VO")
 @Data
 public class SharingReportCustomCreateReqVO {
 

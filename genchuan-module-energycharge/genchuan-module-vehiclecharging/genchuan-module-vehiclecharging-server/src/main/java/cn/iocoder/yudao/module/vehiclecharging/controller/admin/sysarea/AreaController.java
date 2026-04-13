@@ -30,7 +30,7 @@ import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 
-@Tag(name = "管理后台 - 统一行政区划配置表（树形结构）")
+@Tag(name = "汽车充电 - 统一行政区划配置表（树形结构）")
 @RestController
 @RequestMapping("/sys/area")
 @Validated

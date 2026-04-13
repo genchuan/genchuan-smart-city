@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.util.List;
 
-@Schema(description = "管理后台 - 各合作方分账比例占比响应 VO")
+@Schema(description = "汽车充电 - 各合作方分账比例占比响应 VO")
 @Data
 public class SharingRatioCooperatorRatioRespVO {
 

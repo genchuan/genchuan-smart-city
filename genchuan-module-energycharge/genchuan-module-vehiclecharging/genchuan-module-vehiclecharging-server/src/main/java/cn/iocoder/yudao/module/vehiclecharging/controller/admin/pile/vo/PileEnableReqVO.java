@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import jakarta.validation.constraints.*;
 
-@Schema(description = "管理后台 - 充电桩启用 Request VO")
+@Schema(description = "汽车充电 - 充电桩启用 Request VO")
 @Data
 public class PileEnableReqVO {
 

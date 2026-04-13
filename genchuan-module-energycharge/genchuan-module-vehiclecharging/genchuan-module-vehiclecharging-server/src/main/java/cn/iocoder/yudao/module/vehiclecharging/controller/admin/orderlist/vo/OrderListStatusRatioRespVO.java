@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.math.BigDecimal;
 
-@Schema(description = "管理后台 - 订单状态占比响应 VO")
+@Schema(description = "汽车充电 - 订单状态占比响应 VO")
 @Data
 public class OrderListStatusRatioRespVO {
 

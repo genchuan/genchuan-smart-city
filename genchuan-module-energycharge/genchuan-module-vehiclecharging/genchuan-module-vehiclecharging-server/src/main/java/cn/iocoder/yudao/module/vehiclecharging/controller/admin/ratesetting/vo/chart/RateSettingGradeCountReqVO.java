@@ -5,7 +5,7 @@ import lombok.Data;
 import jakarta.validation.constraints.NotBlank;
 
 @Data
-@Schema(description = "管理后台 - 费率档次数量统计 Request VO")
+@Schema(description = "汽车充电 - 费率档次数量统计 Request VO")
 public class RateSettingGradeCountReqVO {
 
 //    @NotBlank(message = "开始时间不能为空")

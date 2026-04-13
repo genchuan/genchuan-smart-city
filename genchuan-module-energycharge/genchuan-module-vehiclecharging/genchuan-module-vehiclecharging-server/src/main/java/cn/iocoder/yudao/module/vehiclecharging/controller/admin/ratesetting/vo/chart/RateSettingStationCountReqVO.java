@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-@Schema(description = "管理后台 - 费率状态统计 Request VO")
+@Schema(description = "汽车充电 - 费率状态统计 Request VO")
 public class RateSettingStationCountReqVO {
 
 //    @NotBlank(message = "开始时间不能为空")

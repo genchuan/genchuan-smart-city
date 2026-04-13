@@ -28,4 +28,10 @@ public class AuthRegisterReqVO extends CaptchaVerificationReqVO {
     @NotEmpty(message = "密码不能为空")
     @Length(min = 4, max = 16, message = "密码长度为 4-16 位")
     private String password;
+
+    // 新增：手机号字段
+    @Schema(description = "手机号", requiredMode = Schema.RequiredMode.REQUIRED, example = "15601691300")
+    @NotBlank(message = "手机号不能为空")
+    @Pattern(regexp = "^1[3-9]\\d{9}$", message = "手机号格式不正确") // 简单的中国手机号正则校验
+    private String mobile;
 }

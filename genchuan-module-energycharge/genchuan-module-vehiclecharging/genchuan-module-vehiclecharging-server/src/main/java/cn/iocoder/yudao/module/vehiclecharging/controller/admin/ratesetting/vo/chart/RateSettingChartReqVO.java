@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-@Schema(description = "管理后台 - 费率设置分布图表 Request VO")
+@Schema(description = "汽车充电 - 费率设置分布图表 Request VO")
 public class RateSettingChartReqVO {
 
     @Schema(description = "时间范围：近7天、近30天、本月、自定义时间", example = "近30天")

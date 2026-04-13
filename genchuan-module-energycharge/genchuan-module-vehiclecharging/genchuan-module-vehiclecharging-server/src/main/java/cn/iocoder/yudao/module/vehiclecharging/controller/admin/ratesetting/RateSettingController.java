@@ -30,7 +30,7 @@ import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 
-@Tag(name = "管理后台 - 费率设置")
+@Tag(name = "汽车充电 - 费率设置")
 @RestController
 @RequestMapping("/vehiclecharging/rate-setting")
 @Validated

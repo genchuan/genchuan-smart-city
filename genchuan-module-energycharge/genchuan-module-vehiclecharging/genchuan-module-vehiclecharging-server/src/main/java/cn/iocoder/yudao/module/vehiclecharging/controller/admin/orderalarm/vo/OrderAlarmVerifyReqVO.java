@@ -8,7 +8,7 @@ import lombok.Data;
 
 import java.util.List;
 
-@Schema(description = "管理后台 - 订单告警核实 Request VO")
+@Schema(description = "汽车充电 - 订单告警核实 Request VO")
 @Data
 public class OrderAlarmVerifyReqVO {
 

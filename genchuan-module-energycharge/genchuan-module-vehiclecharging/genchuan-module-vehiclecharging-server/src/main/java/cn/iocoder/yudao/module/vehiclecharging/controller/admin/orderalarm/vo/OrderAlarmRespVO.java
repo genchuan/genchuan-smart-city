@@ -7,7 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import cn.idev.excel.annotation.*;
 
-@Schema(description = "管理后台 - 订单告警 Response VO")
+@Schema(description = "汽车充电 - 订单告警 Response VO")
 @Data
 @ExcelIgnoreUnannotated
 public class OrderAlarmRespVO {

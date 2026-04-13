@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.math.BigDecimal;
 
-@Schema(description = "管理后台 - 订单交易统计响应 VO")
+@Schema(description = "汽车充电 - 订单交易统计响应 VO")
 @Data
 public class TradeCountRespVO {
 

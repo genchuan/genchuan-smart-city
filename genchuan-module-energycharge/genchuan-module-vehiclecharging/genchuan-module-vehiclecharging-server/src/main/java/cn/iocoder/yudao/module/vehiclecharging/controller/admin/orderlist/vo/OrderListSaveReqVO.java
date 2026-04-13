@@ -6,7 +6,7 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 订单列表新增/修改 Request VO")
+@Schema(description = "汽车充电 - 订单列表新增/修改 Request VO")
 @Data
 public class OrderListSaveReqVO {
 

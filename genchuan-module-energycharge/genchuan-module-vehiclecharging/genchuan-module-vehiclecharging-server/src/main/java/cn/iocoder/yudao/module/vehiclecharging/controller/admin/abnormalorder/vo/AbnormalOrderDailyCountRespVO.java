@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.vehiclecharging.controller.admin.abnormalorder.v
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-@Schema(description = "管理后台 - 每日异常订单统计 Response VO")
+@Schema(description = "汽车充电 - 每日异常订单统计 Response VO")
 @Data
 public class AbnormalOrderDailyCountRespVO {
 

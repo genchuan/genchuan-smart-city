@@ -27,7 +27,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.modulealarm.vo.*;
 import cn.iocoder.yudao.module.vehiclecharging.service.modulealarm.ModuleAlarmService;
 
-@Tag(name = "管理后台 - 模块告警记录")
+@Tag(name = "汽车充电 - 模块告警记录")
 @RestController
 @RequestMapping("/vehiclecharging/module-alarm")
 @Validated

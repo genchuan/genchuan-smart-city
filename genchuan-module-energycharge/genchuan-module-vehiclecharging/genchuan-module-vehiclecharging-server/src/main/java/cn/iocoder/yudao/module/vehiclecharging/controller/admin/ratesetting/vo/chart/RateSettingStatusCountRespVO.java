@@ -5,7 +5,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-@Schema(description = "管理后台 - 费率状态统计 Response VO")
+@Schema(description = "汽车充电 - 费率状态统计 Response VO")
 public class RateSettingStatusCountRespVO {
 
     @Schema(description = "总费率方案数", example = "8")

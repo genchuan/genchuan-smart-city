@@ -28,7 +28,7 @@ import cn.iocoder.yudao.module.vehiclecharging.controller.admin.interconnection.
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.interconnection.InterconnectionDO;
 import cn.iocoder.yudao.module.vehiclecharging.service.interconnection.InterconnectionService;
 
-@Tag(name = "管理后台 - 互联互通表")
+@Tag(name = "汽车充电 - 互联互通表")
 @RestController
 @RequestMapping("/vehiclecharging/interconnection")
 @Validated

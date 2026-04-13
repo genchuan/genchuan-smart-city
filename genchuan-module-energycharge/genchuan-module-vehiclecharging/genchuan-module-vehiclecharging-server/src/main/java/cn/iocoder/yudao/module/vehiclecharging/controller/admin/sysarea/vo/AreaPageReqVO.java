@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
-@Schema(description = "管理后台 - 统一行政区划配置表（树形结构）分页 Request VO")
+@Schema(description = "汽车充电 - 统一行政区划配置表（树形结构）分页 Request VO")
 @Data
 public class AreaPageReqVO extends PageParam {
 

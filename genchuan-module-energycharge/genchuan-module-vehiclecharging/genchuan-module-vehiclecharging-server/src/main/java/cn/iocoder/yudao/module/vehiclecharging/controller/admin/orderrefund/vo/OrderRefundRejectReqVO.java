@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-@Schema(description = "管理后台 - 订单退款驳回 Request VO")
+@Schema(description = "汽车充电 - 订单退款驳回 Request VO")
 @Data
 public class OrderRefundRejectReqVO {
 

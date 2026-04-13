@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-@Schema(description = "管理后台 - 结算单图表统计 Request VO")
+@Schema(description = "汽车充电 - 结算单图表统计 Request VO")
 public class SettlementBillChartReqVO {
     @Schema(description = "时间范围开始（时间戳）", example = "1735689600")
     private String timeRangeStart;

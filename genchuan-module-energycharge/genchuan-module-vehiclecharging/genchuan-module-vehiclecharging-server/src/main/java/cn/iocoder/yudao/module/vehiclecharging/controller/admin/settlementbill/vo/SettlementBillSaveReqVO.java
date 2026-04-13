@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 结算单新增/修改 Request VO")
+@Schema(description = "汽车充电 - 结算单新增/修改 Request VO")
 @Data
 public class SettlementBillSaveReqVO {
 

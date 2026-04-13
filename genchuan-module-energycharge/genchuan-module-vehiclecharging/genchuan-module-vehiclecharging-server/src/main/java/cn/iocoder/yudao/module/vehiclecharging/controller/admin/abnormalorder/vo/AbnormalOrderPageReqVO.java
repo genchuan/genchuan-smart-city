@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
-@Schema(description = "管理后台 - 异常订单分页 Request VO")
+@Schema(description = "汽车充电 - 异常订单分页 Request VO")
 @Data
 public class AbnormalOrderPageReqVO extends PageParam {
 

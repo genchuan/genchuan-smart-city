@@ -6,7 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 模块告警状态数量统计 Request VO")
+@Schema(description = "汽车充电 - 模块告警状态数量统计 Request VO")
 @Data
 public class ModuleAlarmCountReqVO {
 

@@ -28,7 +28,7 @@ import cn.iocoder.yudao.module.vehiclecharging.controller.admin.orderlist.vo.*;
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.orderlist.OrderListDO;
 import cn.iocoder.yudao.module.vehiclecharging.service.orderlist.OrderListService;
 
-@Tag(name = "管理后台 - 订单列表")
+@Tag(name = "汽车充电 - 订单列表")
 @RestController
 @RequestMapping("/vehiclecharging/order-list")
 @Validated

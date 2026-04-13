@@ -6,7 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
-@Schema(description = "管理后台 - 订单退款图表统计 Request VO")
+@Schema(description = "汽车充电 - 订单退款图表统计 Request VO")
 @Data
 public class OrderRefundChartReqVO {
 

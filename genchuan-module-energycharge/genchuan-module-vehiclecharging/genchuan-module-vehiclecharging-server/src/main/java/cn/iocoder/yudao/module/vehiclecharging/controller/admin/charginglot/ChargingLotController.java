@@ -29,7 +29,7 @@ import cn.iocoder.yudao.module.vehiclecharging.controller.admin.charginglot.vo.*
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.charginglot.ChargingLotDO;
 import cn.iocoder.yudao.module.vehiclecharging.service.charginglot.ChargingLotService;
 
-@Tag(name = "管理后台 - 充电车位")
+@Tag(name = "汽车充电 - 充电车位")
 @RestController
 @RequestMapping("/vehiclecharging/charging-lot")
 @Validated
