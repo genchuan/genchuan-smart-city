@@ -73,13 +73,17 @@ public interface LogRecordConstants {
     String MENTAL_CREATE_SUB_TYPE = "创建心理";
     String MENTAL_CREATE_SUCCESS = "创建了{{#studentName}}的心理";
     String MENTAL_UPDATE_SUB_TYPE = "更新心理";
-    String MENTAL_UPDATE_SUCCESS = "更新了心理【{{#violate.studentId}}】: {_DIFF{#updateReqVO}}";
+    String MENTAL_UPDATE_SUCCESS = "更新了心理【{{#mental.studentId}}】: {_DIFF{#updateReqVO}}";
     String MENTAL_WARN_SUB_TYPE = "预警心理";
     String MENTAL_WARN_SUCCESS = "更新了心理【{{#studentName}}】的预警状态为【{{#status ? '已预警' : '未预警'}}】";
     String MENTAL_CONSULT_SUB_TYPE = "预约心理";
     String MENTAL_CONSULT_SUCCESS = "【{{username}}】预约了【{{#studentName}}】心理";
-    String MENTAL_UPDATE_AUDIT_STATUS_SUB_TYPE = "更新心理审批状态";
-    String MENTAL_UPDATE_AUDIT_STATUS_SUCCESS = "更新了心理【{{#studentName}}】的审批状态为【{{#status ? '已审批' : '未审批'}}】";
+
+    String MENTAL_INTERVENE_SUB_TYPE = "跟进心理";
+    String MENTAL_INTERVENE_SUCCESS = "【{{username}}】跟进了【{{#studentName}}】心理";
+
+    String MENTAL_UPDATE_STATUS_SUB_TYPE = "更新心理状态";
+    String MENTAL_UPDATE_STATUS_SUCCESS = "更新了心理状态【{{#studentName}}】为【{{{#status}}】";
 
 
 }

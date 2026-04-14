@@ -26,5 +26,15 @@ public enum MentalStatusEnum {
      */
     private final String name;
 
+    // 根据key获取名称
+    public static String getNameByKey(String key) {
+        for (MentalStatusEnum value : values()) {
+            if (value.status.equals(key)) {
+                return value.name;
+            }
+        }
+        return null;
+    }
+
 
 }

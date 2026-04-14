@@ -5,10 +5,7 @@ import cn.iocoder.yudao.framework.common.util.date.LocalDateTimeUtils;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.mentalmgmt.vo.MentalMgmtConsultReqVO;
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.mentalmgmt.vo.MentalMgmtJoinPageRespVO;
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.mentalmgmt.vo.MentalMgmtPageReqVO;
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.mentalmgmt.vo.MentalMgmtSaveReqVO;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.mentalmgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.mentalmgmt.MentalMgmtDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.mentalmgmt.MentalMgmtMapper;
@@ -17,6 +14,7 @@ import cn.iocoder.yudao.module.studentmgmt.enums.MentalStatusEnum;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -137,5 +135,62 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
 
         return false;
     }
+
+    @Override
+    @LogRecord(type = MENTAL_TYPE, subType = MENTAL_INTERVENE_SUB_TYPE, bizNo = "{{#mental.id}}",
+            success = MENTAL_INTERVENE_SUCCESS)
+    public boolean intervene(@Valid MentalMgmtInterveneReqVO reqVO) {
+        MentalMgmtDO mentalMgmtDO = validateMentalMgmtExists(reqVO.getId());
+        if (mentalMgmtDO.getConsultTime() != null) {
+            LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
+            String username = loginUser != null ? String.valueOf(loginUser.getId()) : null;
+            LocalDateTime now = LocalDateTime.now();
+            mentalMgmtDO.setConsultTime(LocalDateTimeUtils.parse(reqVO.getInterveneTime()));
+            mentalMgmtDO.setUpdateTime(now);
+            // 查询所有学生的姓名
+            StudentInfoDO studentInfoDO = studentInfoMapper.selectById(mentalMgmtDO.getStudentId());
+            // 获取所有学生的姓名
+            String studentName = studentInfoDO.getName();
+            mentalMgmtDO.setStatus(MentalStatusEnum.MENTAL_STATUS_INTERVENED.getStatus());
+            mentalMgmtMapper.updateById(mentalMgmtDO);
+
+            // 记录操作日志上下文
+            LogRecordContext.putVariable("mental", mentalMgmtDO);
+            LogRecordContext.putVariable("studentName", studentName);
+            LogRecordContext.putVariable("username", username);
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    @LogRecord(type = MENTAL_TYPE, subType = MENTAL_UPDATE_STATUS_SUB_TYPE, bizNo = "{{#mental.id}}",
+            success = MENTAL_UPDATE_STATUS_SUCCESS)
+    public boolean updateStatus(MentalMgmtUpdateStatusReqVO reqVO) {
+        MentalMgmtDO mentalMgmtDO = validateMentalMgmtExists(reqVO.getId());
+        if (mentalMgmtDO.getConsultTime() != null) {
+            LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
+            String username = loginUser != null ? String.valueOf(loginUser.getId()) : null;
+            LocalDateTime now = LocalDateTime.now();
+            mentalMgmtDO.setUpdateTime(now);
+            // 查询所有学生的姓名
+            StudentInfoDO studentInfoDO = studentInfoMapper.selectById(mentalMgmtDO.getStudentId());
+            // 获取所有学生的姓名
+            String studentName = studentInfoDO.getName();
+            mentalMgmtDO.setStatus(reqVO.getStatus());
+            mentalMgmtMapper.updateById(mentalMgmtDO);
+
+            // 记录操作日志上下文
+            LogRecordContext.putVariable("mental", mentalMgmtDO);
+            LogRecordContext.putVariable("studentName", studentName);
+            LogRecordContext.putVariable("username", username);
+            LogRecordContext.putVariable("status", MentalStatusEnum.getNameByKey(reqVO.getStatus()));
+            return true;
+        }
+
+        return false;
+    }
+
 
 }
