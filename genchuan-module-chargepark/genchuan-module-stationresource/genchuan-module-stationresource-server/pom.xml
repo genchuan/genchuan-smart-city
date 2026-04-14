@@ -141,6 +141,22 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
         </dependency>
+
+<!--        MINIO-->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>8.5.12</version>
+            <scope>compile</scope>
+        </dependency>
+
+
+        <!--        PDF-->
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>html2pdf</artifactId>
+            <version>3.0.5</version>
+        </dependency>
     </dependencies>
 
     <build>
