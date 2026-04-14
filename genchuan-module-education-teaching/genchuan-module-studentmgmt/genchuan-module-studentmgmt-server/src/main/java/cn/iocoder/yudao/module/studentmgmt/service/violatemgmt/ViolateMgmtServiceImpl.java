@@ -118,7 +118,7 @@ public class ViolateMgmtServiceImpl implements ViolateMgmtService {
     public boolean auditViolateMgmtListByIds(List<Long> ids, Long userId) {
         List<ViolateMgmtDO> violateMgmtDOS = violateMgmtMapper.selectByIds(ids);
 
-        String status = ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_WARN.getStatus();
+        String status = ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_APPROVE.getStatus();
         Integer i = violateMgmtMapper.auditViolateMgmtListByIds(ids, status, userId);
 
         if (i > 0 && i == ids.size()) {
