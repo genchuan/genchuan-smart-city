@@ -18,6 +18,7 @@ public interface ErrorCodeConstants {
 
     // ========== 学生信息管理 ==========
     ErrorCode STUDENT_INFO_NOT_EXISTS = new ErrorCode(500, "学生信息管理不存在");
+    ErrorCode STUDENT_INFO_IS_EXISTS = new ErrorCode(500, "学生信息管理已存在");
 
     // ========== 荣誉管理==========
     ErrorCode HONOR_MGMT_NOT_EXISTS = new ErrorCode(500, "荣誉管理不存在");
