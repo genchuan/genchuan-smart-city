@@ -32,7 +32,7 @@ public interface LogRecordConstants {
     String STUDENT_HONOR_EXPORT_SUB_TYPE = "导出荣誉";
     String STUDENT_HONOR_EXPORT_SUCCESS = "导出了荣誉";
     String STUDENT_HONOR_UPDATE_AUDIT_STATUS_SUB_TYPE = "更新荣誉审核状态";
-    String STUDENT_HONOR_UPDATE_AUDIT_STATUS_SUCCESS = "更新了荣誉【{{#honorName}}】的审核状态为【{{#status ? '已审核' : '未审核'}}】";
+    String STUDENT_HONOR_UPDATE_AUDIT_STATUS_SUCCESS = "更新了荣誉【{{#honorName}}】的审核状态为【{{#status}}】";
 
     // ======================= STUDENT_ASSESS 考评管理 =======================
 
