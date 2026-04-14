@@ -114,5 +114,21 @@ public class MentalMgmtController {
         return success(isSuccess);
     }
 
+    @PutMapping("/intervene")
+    @Operation(summary = "跟进")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:mental-mgmt:intervene')")
+    public CommonResult<Boolean> intervene(@Valid @RequestBody MentalMgmtInterveneReqVO reqVO) {
+        boolean isSuccess = mentalMgmtService.intervene(reqVO);
+        return success(isSuccess);
+    }
+
+    @PutMapping("/updateStatus")
+    @Operation(summary = "状态更新")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:mental-mgmt:intervene')")
+    public CommonResult<Boolean> updateStatus(@Valid @RequestBody MentalMgmtUpdateStatusReqVO reqVO) {
+        boolean isSuccess = mentalMgmtService.updateStatus(reqVO);
+        return success(isSuccess);
+    }
+
 
 }
