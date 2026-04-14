@@ -10,7 +10,11 @@ import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.mentalmgmt.MentalMgmtD
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.mentalmgmt.MentalMgmtMapper;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
+import cn.iocoder.yudao.module.studentmgmt.enums.MentalMentalStatusEnum;
+import cn.iocoder.yudao.module.studentmgmt.enums.MentalRiskLevelEnum;
 import cn.iocoder.yudao.module.studentmgmt.enums.MentalStatusEnum;
+import cn.iocoder.yudao.module.studentmgmt.enums.ViolaateStatusEnum;
+import com.alibaba.fastjson.JSONObject;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
@@ -190,6 +194,55 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
         }
 
         return false;
+    }
+
+    @Override
+    public MentalMgmtChartRespVO chart() {
+        MentalMgmtChartRespVO vo = new MentalMgmtChartRespVO();
+        // 1. 卡片数据
+        // totalCount (integer): 心理档案总数量。
+        vo.setTotalCount(mentalMgmtMapper.selectTotalCount("", "",""));
+        // focusCount (integer): 心理状态关注的学生数量。
+        vo.setFocusCount(mentalMgmtMapper.selectTotalCount(MentalMentalStatusEnum.MENTAL_MGMT_MENTAL_STATUS_FOCUS.getStatus(),"", ""));
+        // highRiskCount (integer): 心理状态高危的学生数量。
+        vo.setHighRiskCount(mentalMgmtMapper.selectTotalCount(MentalMentalStatusEnum.MENTAL_MGMT_MENTAL_STATUS_HIGH_RISK.getStatus(),"", ""));
+        // lowRiskCount (integer): 风险等级低学生的数量。
+        vo.setLowRiskCount(mentalMgmtMapper.selectTotalCount("", MentalRiskLevelEnum.MENTAL_MGMT_RISK_LEVEL_LOW.getStatus(),""));
+        // midRiskCount (integer): 风险等级中的学生的数量。
+        vo.setMidRiskCount(mentalMgmtMapper.selectTotalCount("", MentalRiskLevelEnum.MENTAL_MGMT_RISK_LEVEL_MEDIUM.getStatus(),""));
+        // highRiskLevelCount (integer): 风险等级高的学生的数量。
+        vo.setHighRiskLevelCount(mentalMgmtMapper.selectTotalCount("", MentalRiskLevelEnum.MENTAL_MGMT_RISK_LEVEL_HIGH.getStatus(), ""));
+        // waitEvaluateCount (integer): 待评估状态的档案数量。
+        vo.setWaitEvaluateCount(mentalMgmtMapper.selectTotalCount("","", MentalStatusEnum.MENTAL_STATUS_WAIT_EVALUATE.getStatus()));
+        // consultingCount (integer): 咨询中状态的档案数量。
+        vo.setConsultingCount(mentalMgmtMapper.selectTotalCount("", "", MentalStatusEnum.MENTAL_STATUS_CONSULTING.getStatus()));
+        // intervenedCount (integer): 已干预状态的档案数量。
+        vo.setIntervenedCount(mentalMgmtMapper.selectTotalCount("", "", MentalStatusEnum.MENTAL_STATUS_INTERVENED.getStatus()));
+        // recent7DayCount (integer): 近 7 天新增心理档案数量。
+        vo.setRecent7DayCount(mentalMgmtMapper.selectRecent7DayCount());
+        return vo;
+    }
+
+    @Override
+    public MentalMgmtStatusDistributionRespVO statusDistribution() {
+        MentalMgmtStatusDistributionRespVO vo = new MentalMgmtStatusDistributionRespVO();
+        // 1. 卡片数据
+        // 心理状态分布数据
+        List<JSONObject> statusList = mentalMgmtMapper.selectMentalStatusDistributionCount();
+        // 对应的key值转换成枚举值
+        statusList.forEach(item -> {
+            item.put("name", MentalMentalStatusEnum.getNameByKey(item.getString("name")));
+        });
+        vo.setMentalStatusDistribution(statusList);
+
+        // 风险等级分布数据
+        List<JSONObject> riskList = mentalMgmtMapper.selectRiskLevelDistributionCount();
+        riskList.forEach(item -> {
+            item.put("name", MentalRiskLevelEnum.getNameByKey(item.getString("name")));
+        });
+        vo.setRiskLevelDistribution(riskList);
+
+        return vo;
     }
 
 

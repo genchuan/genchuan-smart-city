@@ -67,4 +67,8 @@ public interface MentalMgmtService {
     boolean intervene(@Valid MentalMgmtInterveneReqVO reqVO);
 
     boolean updateStatus(@Valid MentalMgmtUpdateStatusReqVO reqVO);
+
+    MentalMgmtChartRespVO chart();
+
+    MentalMgmtStatusDistributionRespVO statusDistribution();
 }

@@ -8,12 +8,12 @@ import lombok.Getter;
 /**
  * 心理状态
  */
-public enum MentalMentalStatusEnum {
+public enum MentalRiskLevelEnum {
 
-//    正常 / 关注 / 高危，关联芋道字典表：mental_mgmt_mental_status
-    MENTAL_MGMT_MENTAL_STATUS_NORMAL ("normal", "正常"),
-    MENTAL_MGMT_MENTAL_STATUS_FOCUS("focus", "关注"),
-    MENTAL_MGMT_MENTAL_STATUS_HIGH_RISK("high_risk", "高危");
+    // 风险等级：低/中/高，关联芋道字典表：mental_mgmt_risk_level
+    MENTAL_MGMT_RISK_LEVEL_LOW("low", "低"),
+    MENTAL_MGMT_RISK_LEVEL_MEDIUM("medium", "中"),
+    MENTAL_MGMT_RISK_LEVEL_HIGH("high", "高");
 
     /**
      * 状态
@@ -26,10 +26,9 @@ public enum MentalMentalStatusEnum {
      */
     private final String name;
 
-
     // 根据key获取名称
     public static String getNameByKey(String key) {
-        for (MentalMentalStatusEnum value : values()) {
+        for (MentalRiskLevelEnum value : values()) {
             if (value.status.equals(key)) {
                 return value.name;
             }
