@@ -12,7 +12,7 @@ public class StudentInfoSaveReqVO {
     @Schema(description = "主键 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "18139")
     private Long id;
 
-    @Schema(description = "学号", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "学号", requiredMode = Schema.RequiredMode.REQUIRED,example = "2024002")
     @NotEmpty(message = "学号不能为空")
     private String studentNo;
 
@@ -20,30 +20,30 @@ public class StudentInfoSaveReqVO {
     @NotEmpty(message = "姓名不能为空")
     private String name;
 
-    @Schema(description = "身份证号", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "身份证号", requiredMode = Schema.RequiredMode.REQUIRED, example = "420222199901010001")
     @NotEmpty(message = "身份证号不能为空")
     private String idCard;
 
     @Schema(description = "学生照片地址")
     private String photo;
 
-    @Schema(description = "学历层次：中专/大专/本科/研究生", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "学历层次：中专/大专/本科/研究生", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
     @NotEmpty(message = "学历层次：中专/大专/本科/研究生不能为空")
     private String educationLevel;
 
-    @Schema(description = "学习形式：全日制/非全日制/函授", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "学习形式：全日制/非全日制/函授", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
     @NotEmpty(message = "学习形式：全日制/非全日制/函授不能为空")
     private String studyForm;
 
-    @Schema(description = "专业", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "专业", requiredMode = Schema.RequiredMode.REQUIRED, example = "软件工程")
     @NotEmpty(message = "专业不能为空")
     private String major;
 
-    @Schema(description = "年级", example = "2024" , requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "年级", example = "2024级" , requiredMode = Schema.RequiredMode.REQUIRED)
     @NotEmpty(message = "年级不能为空")
     private String grade;
 
-    @Schema(description = "班级", requiredMode = Schema.RequiredMode.REQUIRED, example = "李四")
+    @Schema(description = "班级", requiredMode = Schema.RequiredMode.REQUIRED, example = "软件工程01班")
     @NotEmpty(message = "班级不能为空")
     private String className;
 
