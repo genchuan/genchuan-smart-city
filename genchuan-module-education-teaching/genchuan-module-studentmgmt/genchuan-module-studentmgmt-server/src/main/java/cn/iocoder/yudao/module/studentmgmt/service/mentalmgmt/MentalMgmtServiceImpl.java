@@ -13,6 +13,7 @@ import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.mentalmgmt.MentalMgmtD
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.mentalmgmt.MentalMgmtMapper;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
+import cn.iocoder.yudao.module.studentmgmt.enums.MentalStatusEnum;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
@@ -124,11 +125,14 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
             StudentInfoDO studentInfoDO = studentInfoMapper.selectById(mentalMgmtDO.getStudentId());
             // 获取所有学生的姓名
             String studentName = studentInfoDO.getName();
+            mentalMgmtDO.setStatus(MentalStatusEnum.MENTAL_STATUS_CONSULTING.getStatus());
+            mentalMgmtMapper.updateById(mentalMgmtDO);
 
             // 记录操作日志上下文
             LogRecordContext.putVariable("mental", mentalMgmtDO);
             LogRecordContext.putVariable("studentName", studentName);
             LogRecordContext.putVariable("username", username);
+            return true;
         }
 
         return false;
