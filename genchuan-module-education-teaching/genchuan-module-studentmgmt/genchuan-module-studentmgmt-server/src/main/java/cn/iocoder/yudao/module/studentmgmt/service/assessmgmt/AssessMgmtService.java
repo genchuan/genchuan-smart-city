@@ -63,7 +63,7 @@ public interface AssessMgmtService {
 
     AssessMgmtChartRespVO chart(@Valid AssessMgmtChartReqVO reqVO);
 
-    List<AssessMgmtDimensionScoreRespVO> dimensionScore(@Valid AssessMgmtDimensionScoreReqVO reqVO);
+    List<AssessMgmtDimensionScoreRespVO> dimensionScore(@Valid AssessMgmtChartReqVO reqVO);
 
     List<AssessMgmtCycleTrendRespVO> cycleTrend(@Valid AssessMgmtCycleTrendReqVO reqVO);
 }

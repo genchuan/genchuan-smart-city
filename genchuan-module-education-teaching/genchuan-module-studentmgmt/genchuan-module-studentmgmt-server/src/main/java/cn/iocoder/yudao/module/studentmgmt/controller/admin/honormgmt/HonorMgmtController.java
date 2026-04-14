@@ -118,7 +118,7 @@ public class HonorMgmtController {
     }
 
 
-    @PutMapping("/audit'")
+    @PutMapping("/audit")
     @Parameter(name = "ids", description = "编号", required = true)
     @Operation(summary = "审核荣誉")
     @PreAuthorize("@ss.hasPermission('studentmgmt:honor-mgmt:audit')")

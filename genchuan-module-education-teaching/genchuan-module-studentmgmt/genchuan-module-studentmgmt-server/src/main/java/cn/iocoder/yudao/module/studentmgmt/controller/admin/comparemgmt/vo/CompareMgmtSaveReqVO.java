@@ -28,7 +28,7 @@ public class CompareMgmtSaveReqVO {
     private BigDecimal totalScore;
 
     @Schema(description = "排名")
-    private Integer rank;
+    private Integer rankNo;
 
     @Schema(description = "授予称号", example = "赵六")
     private String awardName;

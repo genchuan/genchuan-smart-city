@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 考评核心指标统计 Response VO")
 @Data
@@ -20,5 +21,10 @@ public class AssessMgmtCycleTrendRespVO {
     private BigDecimal avgScore;
     @Schema(description = "班级排名", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("班级排名")
-    private Integer rank;
+    private Integer rankNo;
+    // 创建时间
+    @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("创建时间")
+    private LocalDateTime createTime;
+
 }

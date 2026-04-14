@@ -22,7 +22,7 @@ public interface CompareMgmtMapper extends BaseMapperX<CompareMgmtDO> {
                 .likeIfPresent(CompareMgmtDO::getClassName, reqVO.getClassName())
                 .eqIfPresent(CompareMgmtDO::getCycle, reqVO.getCycle())
                 .eqIfPresent(CompareMgmtDO::getTotalScore, reqVO.getTotalScore())
-                .eqIfPresent(CompareMgmtDO::getRank, reqVO.getRank())
+                .eqIfPresent(CompareMgmtDO::getRankNo, reqVO.getRankNo())
                 .likeIfPresent(CompareMgmtDO::getAwardName, reqVO.getAwardName())
                 .betweenIfPresent(CompareMgmtDO::getAwardTime, reqVO.getAwardTime())
                 .eqIfPresent(CompareMgmtDO::getScoreUser, reqVO.getScoreUser())

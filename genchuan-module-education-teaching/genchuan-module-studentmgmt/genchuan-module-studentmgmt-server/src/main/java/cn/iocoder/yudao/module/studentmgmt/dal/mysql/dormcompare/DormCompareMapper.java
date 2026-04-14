@@ -23,7 +23,7 @@ public interface DormCompareMapper extends BaseMapperX<DormCompareDO> {
                 .eqIfPresent(DormCompareDO::getDormNum, reqVO.getDormNum())
                 .eqIfPresent(DormCompareDO::getCycle, reqVO.getCycle())
                 .eqIfPresent(DormCompareDO::getScore, reqVO.getScore())
-                .eqIfPresent(DormCompareDO::getRank, reqVO.getRank())
+                .eqIfPresent(DormCompareDO::getRankNo, reqVO.getRankNo())
                 .eqIfPresent(DormCompareDO::getScoreUser, reqVO.getScoreUser())
                 .betweenIfPresent(DormCompareDO::getSumTime, reqVO.getSumTime())
                 .betweenIfPresent(DormCompareDO::getPushTime, reqVO.getPushTime())

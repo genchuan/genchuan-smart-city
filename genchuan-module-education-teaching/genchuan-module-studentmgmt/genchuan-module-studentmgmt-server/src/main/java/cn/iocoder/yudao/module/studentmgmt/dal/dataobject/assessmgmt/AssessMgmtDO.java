@@ -45,7 +45,7 @@ public class AssessMgmtDO extends BaseDO {
     /**
      * 班级排名
      */
-    private Integer rank;
+    private Integer rankNo;
     /**
      * 考评人
      */

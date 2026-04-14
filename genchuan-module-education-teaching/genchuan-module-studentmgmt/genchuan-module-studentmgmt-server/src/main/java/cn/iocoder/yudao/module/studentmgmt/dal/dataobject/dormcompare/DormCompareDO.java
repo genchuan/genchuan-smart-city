@@ -49,7 +49,7 @@ public class DormCompareDO extends BaseDO {
     /**
      * 排名
      */
-    private Integer rank;
+    private Integer rankNo;
     /**
      * 打分人
      */
@@ -80,4 +80,4 @@ public class DormCompareDO extends BaseDO {
     private String reserve2;
 
 
-}
+}
