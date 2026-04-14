@@ -148,7 +148,10 @@ public class ViolateMgmtServiceImpl implements ViolateMgmtService {
             if (i > 0 ) {
                 // 查询所有学生的姓名
                 StudentInfoDO studentInfoDO = studentInfoMapper.selectById(violateMgmtDO.getStudentId());
-                // 获取所有学生的姓名
+                // 获取学生的姓名
+                if (studentInfoDO == null) {
+                    throw exception(STUDENT_INFO_NOT_EXISTS);
+                }
                 String studentName = studentInfoDO.getName();
 
                 // 记录操作日志上下文
