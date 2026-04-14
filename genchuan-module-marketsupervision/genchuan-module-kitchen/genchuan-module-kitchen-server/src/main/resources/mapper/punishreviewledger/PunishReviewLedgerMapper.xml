@@ -124,6 +124,9 @@
             <if test="cancelTimeEnd != null">
                 AND prl.cancel_time &lt;= #{cancelTimeEnd}
             </if>
+            <if test="draftPunishAmt != null">
+                AND prl.draft_punish_amt = #{draftPunishAmt}
+            </if>
 
         </where>
 

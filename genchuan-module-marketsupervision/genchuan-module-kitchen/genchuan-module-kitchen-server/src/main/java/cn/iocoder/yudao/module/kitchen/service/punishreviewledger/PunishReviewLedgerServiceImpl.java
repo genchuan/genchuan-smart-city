@@ -155,7 +155,6 @@ public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService 
             }
         }
 
-//        pageResult.setList(punishReviewLedgerRespVOList);
 
         //配置 分页参数
         punishReviewLedgerDOPageResult.setList(punishReviewLedgerRespVOList);
