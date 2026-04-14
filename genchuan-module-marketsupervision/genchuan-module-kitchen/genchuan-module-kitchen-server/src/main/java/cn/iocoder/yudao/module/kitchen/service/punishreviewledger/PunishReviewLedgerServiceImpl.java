@@ -456,7 +456,7 @@ public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService 
             }
 
             // 4. 写入ZIP（文件名使用UTF-8，避免中文乱码）
-            String fileName = "处罚决定书_" + item.getId() + ".pdf";
+            String fileName = "处罚决定书_" + item.getPunishReviewId() + ".pdf";
             // ZIP内部文件名使用UTF-8编码
             ZipEntry entry = new ZipEntry(fileName);
 //            ZipEntry entry = new ZipEntry(new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1));

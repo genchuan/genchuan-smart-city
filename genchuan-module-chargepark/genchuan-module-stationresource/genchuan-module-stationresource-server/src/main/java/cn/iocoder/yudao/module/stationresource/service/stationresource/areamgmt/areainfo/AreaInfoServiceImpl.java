@@ -12,6 +12,7 @@ import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.ar
 import cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.areamgmt.areainfo.AreaInfoMapper;
 import cn.iocoder.yudao.module.stationresource.vrv.utils.common.excel.VrvExcelUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -92,11 +93,12 @@ public class AreaInfoServiceImpl implements AreaInfoService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Long addAreaInfo(AddReq createReqVO) {
         // 插入
         AreaInfoDO areaInfo = BeanUtils.toBean(createReqVO, AreaInfoDO.class);
         areaInfo.setStatus("未生效");
-        areaInfoMapper.insert(areaInfo);
+
 
         //片区编号唯一性
         LambdaQueryWrapper<AreaInfoDO> wrapper =new LambdaQueryWrapper<>();
@@ -104,17 +106,19 @@ public class AreaInfoServiceImpl implements AreaInfoService {
         if (areaInfoMapper.exists(wrapper)){
             throw exception("片区编号不能和数据库存在的一样");
         }
+
+        areaInfoMapper.insert(areaInfo);
         // 返回
         return areaInfo.getId();
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public ImportRespVO importAreaInfo(MultipartFile file) {
+    public ImportRespVO importAreaInfo(MultipartFile file,boolean updateSupport) {
         ImportRespVO resp = new ImportRespVO();
         resp.setSuccessCount(0);
         resp.setFailureCount(0);
-        resp.setFailures(new ArrayList<>());
+        resp.setFailureList(new ArrayList<>());
 
         try {
             // ===================== 【完整使用 VrvExcelUtils】 =====================
@@ -140,9 +144,14 @@ public class AreaInfoServiceImpl implements AreaInfoService {
                 int rowIndex = i + 2; // Excel 真实行号
 
                 try {
-                    // ===================== 【复用你自己的 addAreaInfo 方法】 =====================
-                    // 直接调用你写好的新增方法：自带校验、状态设置、唯一性判断
-                    addAreaInfo(req);
+                    // ==============================================
+                    // 支持更新 / 仅新增 二合一逻辑
+                    // ==============================================
+                    if (updateSupport) {
+                        updateAreaInfoIfExists(req); // 存在则更新，不存在则新增
+                    } else {
+                        addAreaInfo(req); // 仅新增（重复直接报错）
+                    }
                     successCount++;
 
                 } catch (Exception e) {
@@ -157,7 +166,7 @@ public class AreaInfoServiceImpl implements AreaInfoService {
             // 封装返回
             resp.setSuccessCount(successCount);
             resp.setFailureCount(failures.size());
-            resp.setFailures(failures);
+            resp.setFailureList(failures);
             return resp;
 
         } catch (Exception e) {
@@ -165,10 +174,41 @@ public class AreaInfoServiceImpl implements AreaInfoService {
             ImportRespVO.ImportFailure failure = new ImportRespVO.ImportFailure();
             failure.setRowIndex(1);
             failure.setMessage("导入失败：" + e.getMessage());
-            resp.getFailures().add(failure);
+            resp.getFailureList().add(failure);
             resp.setFailureCount(1);
             return resp;
         }
     }
 
+
+    /**
+     * 存在则更新，不存在则新增（你自己实现判断依据）
+     */
+    /**
+     * 存在则更新，不存在则新增
+     */
+    private void updateAreaInfoIfExists(AddReq req) {
+        // 1. 根据 areaNo 查询是否存在
+        AreaInfoDO existing = areaInfoMapper.selectOne(new LambdaQueryWrapper<AreaInfoDO>()
+                .eq(AreaInfoDO::getAreaNo, req.getAreaNo())
+                .last("LIMIT 1")
+        );
+
+        if (existing == null) {
+            // 不存在 → 新增
+            addAreaInfo(req);
+        } else {
+            // ===================== 纯 MP 原生更新 =====================
+            AreaInfoDO updateEntity = new AreaInfoDO();
+
+            // 把 Excel 里的字段 复制到 DO
+            BeanUtil.copyProperties(req, updateEntity);
+
+            // 必须设置 ID（WHERE 条件）
+            updateEntity.setId(existing.getId());
+
+            // 直接调用 MyBatis-Plus 原生方法更新
+            areaInfoMapper.updateById(updateEntity);
+        }
+    }
 }
