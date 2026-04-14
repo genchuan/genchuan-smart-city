@@ -12,11 +12,8 @@
     <select id="selectTotalAssessCount" resultType="java.lang.Integer">
         SELECT COUNT(1) FROM assess_mgmt
         WHERE deleted = 0
-        <if test="grade != null">
-            AND grade = #{grade}
-        </if>
-        <if test="major != null">
-            AND major = #{major}
+        <if test="cycle != null">
+            AND cycle = #{cycle}
         </if>
         <if test="assessType != null">
             AND assess_type = #{assessType}
@@ -60,14 +57,13 @@
             resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.AssessMgmtDimensionScoreRespVO">
         SELECT
         class_name,
-        AVG(CASE WHEN assess_type = '1' THEN score ELSE NULL END) AS classCleanScore,
-        AVG(CASE WHEN assess_type = '2' THEN score ELSE NULL END) AS morningExerciseScore,
-        AVG(CASE WHEN assess_type = '3' THEN score ELSE NULL END) AS civilClassScore,
-        AVG(CASE WHEN assess_type = '4' THEN score ELSE NULL END) AS blackboardScore,
-        AVG(score) AS totalScore
+        ROUND(AVG(CASE WHEN assess_type = 'class_clean' THEN score ELSE NULL END),2) AS classCleanScore,
+        ROUND(AVG(CASE WHEN assess_type = 'morning_exercise' THEN score ELSE NULL END),2) AS morningExerciseScore,
+        ROUND(AVG(CASE WHEN assess_type = 'civilized_class' THEN score ELSE NULL END),2) AS civilClassScore,
+        ROUND(AVG(CASE WHEN assess_type = 'blackboard' THEN score ELSE NULL END),2) AS blackboardScore,
+        ROUND(SUM(score),2) AS totalScore
         FROM assess_mgmt
         WHERE deleted = 0
-        AND status = '1'
         <if test="cycle != null and cycle != ''">
             AND cycle = #{cycle}
         </if>
@@ -76,8 +72,60 @@
     </select>
     <select id="cycleTrend"
             resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.AssessMgmtCycleTrendRespVO">
+        SELECT
+        cycle AS cycleName,
+        ROUND(AVG(score),2) AS avgScore,
+        create_time,
+        rank_no AS rankNo
+        FROM assess_mgmt
+        WHERE deleted = 0
+        <if test="className != null and className != ''">
+            AND class_name = #{className}
+        </if>
+        GROUP BY cycle, create_time, rank_no
+        ORDER BY cycle, create_time
 
-
+    </select>
+    <select id="selectAvgScore" resultType="java.math.BigDecimal">
+        SELECT AVG(score) FROM assess_mgmt
+        WHERE deleted = 0
+        <if test="cycle != null and cycle != ''">
+            AND cycle = #{cycle}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+    <select id="selectTopRankClass" resultType="java.lang.String">
+        SELECT class_name FROM assess_mgmt
+        WHERE deleted = 0
+        <if test="cycle != null and cycle != ''">
+            AND cycle = #{cycle}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        ORDER BY score DESC
+        LIMIT 1
+    </select>
+    <select id="selectAssessTypeCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT assess_type, COUNT(1) AS count FROM assess_mgmt
+        WHERE deleted = 0
+        <if test="cycle != null and cycle != ''">
+            AND cycle = #{cycle}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        GROUP BY assess_type
+    </select>
+    <select id="selectStatusCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT status, COUNT(1) AS count FROM assess_mgmt
+        WHERE deleted = 0
+        <if test="cycle != null and cycle != ''">
+            AND cycle = #{cycle}
+        </if>
+        GROUP BY status
     </select>
 
 </mapper>

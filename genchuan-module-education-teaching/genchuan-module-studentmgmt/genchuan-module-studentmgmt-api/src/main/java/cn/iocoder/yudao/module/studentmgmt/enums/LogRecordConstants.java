@@ -42,9 +42,9 @@ public interface LogRecordConstants {
     String STUDENT_ASSESS_UPDATE_SUB_TYPE = "更新考评";
     String STUDENT_ASSESS_UPDATE_SUCCESS = "更新了考评【{{#assessMgmt.className}}】: {_DIFF{#updateReqVO}}";
     String STUDENT_ASSESS_DELETE_SUB_TYPE = "删除考评";
-    String STUDENT_ASSESS_DELETE_SUCCESS = "删除了考评【{{#className}}】";
+    String STUDENT_ASSESS_DELETE_SUCCESS = "删除了考评【{{#assessMgmt.className}}】";
     String STUDENT_ASSESS_PUBLISH_SUB_TYPE = "发布考评";
-    String STUDENT_ASSESS_PUBLISH_SUCCESS = "发布了考评【{{#className}}】";
+    String STUDENT_ASSESS_PUBLISH_SUCCESS = "发布了考评【{{#assessMgmt.className}}】";
     String STUDENT_ASSESS_EXPORT_SUB_TYPE = "导出考评";
     String STUDENT_ASSESS_EXPORT_SUCCESS = "导出了考评";
     String STUDENT_ASSESS_UPDATE_AUDIT_STATUS_SUB_TYPE = "更新考评审核状态";

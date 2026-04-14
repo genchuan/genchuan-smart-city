@@ -44,7 +44,7 @@ public class CompareMgmtDO extends BaseDO {
     /**
      * 排名
      */
-    private Integer rank;
+    private Integer rankNo;
     /**
      * 授予称号
      */
@@ -75,4 +75,4 @@ public class CompareMgmtDO extends BaseDO {
     private String reserve2;
 
 
-}
+}

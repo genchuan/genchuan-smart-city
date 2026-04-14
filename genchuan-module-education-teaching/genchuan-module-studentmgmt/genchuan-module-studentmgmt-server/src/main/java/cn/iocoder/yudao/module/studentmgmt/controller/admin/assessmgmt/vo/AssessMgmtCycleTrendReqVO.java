@@ -8,11 +8,11 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 考评核心指标统计 Response VO")
+@Schema(description = "管理后台 - 班级考评周期趋势统计 Response VO")
 @Data
 @ExcelIgnoreUnannotated
 public class AssessMgmtCycleTrendReqVO {
-    @Schema(description = "班级名称", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "班级名称")
     @ExcelProperty("班级名称")
     private String className;
     @Schema(description = "开始时间", requiredMode = Schema.RequiredMode.REQUIRED)

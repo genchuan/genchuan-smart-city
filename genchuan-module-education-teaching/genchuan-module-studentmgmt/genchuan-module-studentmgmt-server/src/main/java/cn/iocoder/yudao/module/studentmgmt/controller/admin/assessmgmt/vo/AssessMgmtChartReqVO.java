@@ -4,13 +4,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 
-@Schema(description = "管理后台 - 考评管理推送 Request VO")
+@Schema(description = "管理后台 - 班级考评态势看板 Request VO")
 @Data
 public class AssessMgmtChartReqVO {
-    @Schema(description = "年级")
-    private String grade;
-    @Schema(description = "专业")
-    private String major;
+    @Schema(description = "统计周期，可选周 / 月 / 学期，默认当前月")
+    private String cycle;
 
 
 

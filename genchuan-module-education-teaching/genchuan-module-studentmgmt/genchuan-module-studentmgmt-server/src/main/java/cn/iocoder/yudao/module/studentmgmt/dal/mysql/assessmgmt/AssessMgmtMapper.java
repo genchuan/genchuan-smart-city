@@ -8,6 +8,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.assessmgmt.AssessMgmtDO;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.*;
 import org.apache.ibatis.annotations.Param;
@@ -26,7 +27,7 @@ public interface AssessMgmtMapper extends BaseMapperX<AssessMgmtDO> {
                 .eqIfPresent(AssessMgmtDO::getAssessType, reqVO.getAssessType())
                 .eqIfPresent(AssessMgmtDO::getCycle, reqVO.getCycle())
                 .eqIfPresent(AssessMgmtDO::getScore, reqVO.getScore())
-                .eqIfPresent(AssessMgmtDO::getRank, reqVO.getRank())
+                .eqIfPresent(AssessMgmtDO::getRankNo, reqVO.getRankNo())
                 .eqIfPresent(AssessMgmtDO::getAssessUser, reqVO.getAssessUser())
                 .betweenIfPresent(AssessMgmtDO::getPublishTime, reqVO.getPublishTime())
                 .eqIfPresent(AssessMgmtDO::getStatus, reqVO.getStatus())
@@ -37,7 +38,7 @@ public interface AssessMgmtMapper extends BaseMapperX<AssessMgmtDO> {
                 .orderByDesc(AssessMgmtDO::getId));
     }
 
-    Integer selectTotalAssessCount(@Param("grade") String grade, @Param("major") String major,
+    Integer selectTotalAssessCount(@Param("cycle") String cycle,
                                    @Param("status") String status, @Param("assessType") String assessType);
 
     BigDecimal selectAssessScore(@Param("grade") String grade, @Param("major") String major,
@@ -48,4 +49,12 @@ public interface AssessMgmtMapper extends BaseMapperX<AssessMgmtDO> {
     List<AssessMgmtDimensionScoreRespVO> dimensionScore(@Param("cycle") String cycle);
 
     List<AssessMgmtCycleTrendRespVO> cycleTrend(@Param("className") String className, @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
+
+    BigDecimal selectAvgScore(@Param("cycle") String cycle, String status);
+
+    String selectTopRankClass(@Param("cycle") String cycle, @Param("status") String status);
+
+    List<JSONObject> selectAssessTypeCount(@Param("cycle") String cycle,@Param("status") String status);
+
+    List<JSONObject> selectStatusCount(String cycle, String status);
 }

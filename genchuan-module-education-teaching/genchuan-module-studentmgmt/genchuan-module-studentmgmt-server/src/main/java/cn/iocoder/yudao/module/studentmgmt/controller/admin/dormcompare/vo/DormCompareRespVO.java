@@ -35,7 +35,7 @@ public class DormCompareRespVO {
 
     @Schema(description = "排名")
     @ExcelProperty("排名")
-    private Integer rank;
+    private Integer rankNo;
 
     @Schema(description = "打分人")
     @ExcelProperty("打分人")
@@ -69,4 +69,4 @@ public class DormCompareRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

@@ -27,7 +27,7 @@ public class AssessMgmtPageReqVO extends PageParam {
     private BigDecimal score;
 
     @Schema(description = "班级排名")
-    private Integer rank;
+    private Integer rankNo;
 
     @Schema(description = "考评人")
     private String assessUser;

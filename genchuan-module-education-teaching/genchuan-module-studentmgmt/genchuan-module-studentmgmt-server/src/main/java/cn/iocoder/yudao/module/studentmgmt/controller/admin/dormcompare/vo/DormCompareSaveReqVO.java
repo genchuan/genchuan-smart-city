@@ -31,7 +31,7 @@ public class DormCompareSaveReqVO {
     private BigDecimal score;
 
     @Schema(description = "排名")
-    private Integer rank;
+    private Integer rankNo;
 
     @Schema(description = "打分人")
     private String scoreUser;

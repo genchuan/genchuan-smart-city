@@ -116,7 +116,7 @@ public class AssessMgmtController {
     @PutMapping("/chart/dimensionScore")
     @Operation(summary = "班级多维度考评得分统计")
     @PreAuthorize("@ss.hasPermission('studentmgmt:assess-mgmt:query')")
-    public CommonResult<List<AssessMgmtDimensionScoreRespVO>> dimensionScore(@Valid @RequestBody AssessMgmtDimensionScoreReqVO reqVO) {
+    public CommonResult<List<AssessMgmtDimensionScoreRespVO>> dimensionScore(@Valid @RequestBody AssessMgmtChartReqVO reqVO) {
         List<AssessMgmtDimensionScoreRespVO> list = assessMgmtService.dimensionScore(reqVO);
         return success(list);
     }
