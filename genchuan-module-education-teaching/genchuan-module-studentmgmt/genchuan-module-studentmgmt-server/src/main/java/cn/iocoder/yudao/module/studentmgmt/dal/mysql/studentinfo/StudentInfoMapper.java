@@ -41,6 +41,16 @@ public interface StudentInfoMapper extends BaseMapperX<StudentInfoDO> {
                 .orderByDesc(StudentInfoDO::getId));
     }
 
+
+    default List<StudentInfoDO> isExist(StudentInfoSaveReqVO reqVO) {
+        return selectList(new LambdaQueryWrapperX<StudentInfoDO>()
+                .likeIfPresent(StudentInfoDO::getStudentNo, reqVO.getStudentNo())
+                .likeIfPresent(StudentInfoDO::getName, reqVO.getName())
+                .likeIfPresent(StudentInfoDO::getIdCard, reqVO.getIdCard())
+                .likeIfPresent(StudentInfoDO::getPhone, reqVO.getPhone())
+                .orderByDesc(StudentInfoDO::getId));
+    }
+
     // ========== 卡片数据 ==========
 
     /**
