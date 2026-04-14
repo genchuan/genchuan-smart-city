@@ -187,7 +187,7 @@ public class VrvPdfGenerator {
             // 2. 配置字体
 
             // ==========================
-            // 关键：这里直接使用全局字体，不再重复加载！
+            // 关键：这里直接使用全局字体，不再重复加载
             // ==========================
             ConverterProperties converterProperties = PdfFontCache.getConverterProperties();
 //            ConverterProperties converterProperties = new ConverterProperties();
