@@ -91,9 +91,16 @@ public class CodegenBuilder {
         CREATE_OPERATION_EXCLUDE_COLUMN.addAll(BASE_DO_FIELDS);
         UPDATE_OPERATION_EXCLUDE_COLUMN.addAll(BASE_DO_FIELDS);
         LIST_OPERATION_EXCLUDE_COLUMN.addAll(BASE_DO_FIELDS);
+        LIST_OPERATION_EXCLUDE_COLUMN.remove("creator");
+        LIST_OPERATION_EXCLUDE_COLUMN.remove("updater");
         LIST_OPERATION_EXCLUDE_COLUMN.remove("createTime"); // 创建时间，还是可能需要传递的
+        LIST_OPERATION_EXCLUDE_COLUMN.remove("updateTime");
+
         LIST_OPERATION_RESULT_EXCLUDE_COLUMN.addAll(BASE_DO_FIELDS);
+        LIST_OPERATION_RESULT_EXCLUDE_COLUMN.remove("creator");
+        LIST_OPERATION_RESULT_EXCLUDE_COLUMN.remove("updater");
         LIST_OPERATION_RESULT_EXCLUDE_COLUMN.remove("createTime"); // 创建时间，还是需要返回的
+        LIST_OPERATION_RESULT_EXCLUDE_COLUMN.remove("updateTime");
     }
 
     public CodegenTableDO buildTable(TableInfo tableInfo) {

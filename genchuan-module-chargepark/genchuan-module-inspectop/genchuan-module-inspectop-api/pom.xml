@@ -1,21 +1,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>genchuan-module-chargepark</artifactId>
-    <packaging>pom</packaging>
-    <!--  基础数据  -->
-    <modules>
-        <module>genchuan-module-stationresource</module>
-        <module>genchuan-module-usermerchant</module>
-        <module>genchuan-module-inspectop</module>
-    </modules>
-
     <parent>
         <groupId>cn.iocoder.cloud</groupId>
-        <artifactId>yudao</artifactId>
+        <artifactId>genchuan-module-inspectop</artifactId>
         <version>${revision}</version>
     </parent>
-    <name>genchuan-module-chargepark</name>
+
+    <artifactId>genchuan-module-inspectop-api</artifactId>
+    <packaging>jar</packaging>
+
+    <description>
+        inspectop-api模块
+    </description>
+
+    <name>genchuan-module-inspectop-api</name>
     <url>http://maven.apache.org</url>
 
     <properties>
@@ -28,6 +27,10 @@
             <artifactId>junit</artifactId>
             <version>3.8.1</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.cloud</groupId>
+            <artifactId>yudao-common</artifactId>
         </dependency>
     </dependencies>
 </project>

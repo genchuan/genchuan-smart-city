@@ -8,6 +8,8 @@ import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.areamgmt.areainfo.AreaInfoDO;
 import cn.iocoder.yudao.module.stationresource.service.stationresource.areamgmt.areainfo.AreaInfoService;
 import cn.iocoder.yudao.module.stationresource.vrv.utils.common.excel.VrvExcelUtils;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.Content;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -54,13 +56,15 @@ public class AreaInfoController {
         VrvExcelUtils.downloadImportTemplate(response, AddReq.class);
     }
 
-    @PostMapping(value = "/import", consumes = "multipart/form-data")
-    @Operation(summary = "导入片区信息")
+
+    @PostMapping("/import")
+    @Operation(summary = "导入片区信息", description = "上传Excel文件")
     @PreAuthorize("@ss.hasPermission('stationresource:area-info:import')")
-    @ApiAccessLog(operateType = IMPORT)
+//    @ApiAccessLog(operateType = IMPORT)
     public CommonResult<ImportRespVO> importAreaInfo(
-            @RequestParam("file") MultipartFile file) throws Exception {
-        ImportRespVO result = areaInfoService.importAreaInfo(file);
+            @RequestPart("file") MultipartFile file,
+            @RequestParam(value = "updateSupport", defaultValue = "false") boolean updateSupport) throws Exception {
+        ImportRespVO result = areaInfoService.importAreaInfo(file,updateSupport);
         return success(result);
     }
     @PostMapping("/create")

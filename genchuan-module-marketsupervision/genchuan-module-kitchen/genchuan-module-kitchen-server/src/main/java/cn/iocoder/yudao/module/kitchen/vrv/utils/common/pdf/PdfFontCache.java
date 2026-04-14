@@ -52,8 +52,8 @@ public enum PdfFontCache {
             // 5. 将全局字体设置到转换配置里（永久生效）
             converterProperties.setFontProvider(fontProvider);
 
-            // 打印日志，告诉你字体只初始化了一次
-            System.out.println("✅ 字体全局初始化成功（仅一次）");
+            // 打印日志，字体只初始化了一次
+            System.out.println("字体全局初始化成功（仅一次）");
 
         } catch (Exception e) {
             // 如果字体文件找不到、读取失败，直接抛出异常

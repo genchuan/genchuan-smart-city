@@ -66,5 +66,5 @@ public interface AreaInfoService {
 
     Long addAreaInfo(AddReq createReqVO);
 
-    ImportRespVO importAreaInfo(MultipartFile file);
+    ImportRespVO importAreaInfo(MultipartFile file,boolean updateSupport);
 }
