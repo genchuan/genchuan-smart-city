@@ -7,8 +7,6 @@
         <version>${revision}</version> <!-- 1. 修改 version 为 ${revision} -->
     </parent>
     <modules>
-<!--        <module>genchuan-module-inspectop-api</module>-->
-<!--        <module>genchuan-module-inspectop-server</module>-->
         <module>genchuan-module-inspectop-api</module>
         <module>genchuan-module-inspectop-server</module>
     </modules>

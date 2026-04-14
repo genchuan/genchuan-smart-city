@@ -9,6 +9,9 @@ import cn.iocoder.yudao.framework.common.exception.ErrorCode;
  */
 public interface ErrorCodeConstants {
 
+    // ========== 车位状态监测==========
+    ErrorCode SPACE_MONITOR_NOT_EXISTS = new ErrorCode(500, "车位状态监测不存在");
+
 
 
 }
