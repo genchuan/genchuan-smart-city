@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.honormgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.honormgmt.HonorMgmtDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.honormgmt.HonorMgmtMapper;
+import cn.iocoder.yudao.module.studentmgmt.enums.HonorStatusEnum;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
@@ -164,35 +165,42 @@ public class HonorMgmtServiceImpl implements HonorMgmtService {
         LogRecordContext.putVariable("honorName", honorName);
     }
 
-    @LogRecord(type = STUDENT_HONOR_TYPE, subType = STUDENT_HONOR_UPDATE_AUDIT_STATUS_SUB_TYPE, bizNo = "{{#honor.id}}",
-            success = STUDENT_HONOR_UPDATE_AUDIT_STATUS_SUCCESS)
-    public void auditHonorLog(HonorMgmtDO honor, String honorName) {
-        // 记录操作日志上下文
-        LogRecordContext.putVariable("honor", honor);
-        LogRecordContext.putVariable("honorName", honorName);
-    }
+//    @LogRecord(type = STUDENT_HONOR_TYPE, subType = STUDENT_HONOR_UPDATE_AUDIT_STATUS_SUB_TYPE, bizNo = "{{#honor.id}}",
+//            success = STUDENT_HONOR_UPDATE_AUDIT_STATUS_SUCCESS)
+//    public void auditHonorLog(HonorMgmtDO honor, String honorName) {
+//        // 记录操作日志上下文
+//        LogRecordContext.putVariable("honor", honor);
+//        LogRecordContext.putVariable("honorName", honorName);
+//    }
 
     @Override
-    @LogRecord(type = STUDENT_HONOR_TYPE, subType = STUDENT_HONOR_UPDATE_AUDIT_STATUS_SUB_TYPE, bizNo = "{{#honorMgmt.id}}",
+    @LogRecord(type = STUDENT_HONOR_TYPE, subType = STUDENT_HONOR_UPDATE_AUDIT_STATUS_SUB_TYPE, bizNo = "{{#honor.id}}",
             success = STUDENT_HONOR_UPDATE_AUDIT_STATUS_SUCCESS)
     public boolean audit(HonorMgmtAuditReqVO reqVO, LoginUser loginUser) {
         List<Long> ids = reqVO.getIds();
         List<HonorMgmtDO> honorMgmtDOS = honorMgmtMapper.selectByIds(ids);
         String auditRemark = reqVO.getAuditRemark();
-        String auditUser = loginUser.getId()+"";
+        String auditUser = loginUser.getId() + "";
         String status = reqVO.getStatus();
         Integer i = honorMgmtMapper.audit(ids, auditRemark, auditUser, status);
 
         // 记录操作日志上下文
-        if (i>0 && i.equals(ids.size())) {
+        if (i > 0 && i.equals(ids.size())) {
             // 逐条追加变更日志
+            String honorName = "";
             for (HonorMgmtDO detail : honorMgmtDOS) {
                 HonorMgmtDO info = honorMgmtMapper.selectById(detail.getId());
                 if (info != null) {
                     // 记录操作日志上下文
-                    auditHonorLog(info, info.getHonorName());
+                    honorName = honorName + info.getHonorName() + "，";
                 }
             }
+            // 去掉最尾的逗号
+            honorName = honorName.substring(0, honorName.length() - 1);
+            String label = HonorStatusEnum.getNameByKey(status);
+            LogRecordContext.putVariable("honor", honorMgmtDOS.get(0));
+            LogRecordContext.putVariable("status", label);
+            LogRecordContext.putVariable("honorName", honorName);
             return true;
         }
         return false;

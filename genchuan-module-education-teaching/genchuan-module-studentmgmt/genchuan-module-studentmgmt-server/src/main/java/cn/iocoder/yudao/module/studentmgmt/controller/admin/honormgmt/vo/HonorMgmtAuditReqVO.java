@@ -11,9 +11,9 @@ import java.util.List;
 public class HonorMgmtAuditReqVO {
     @Schema(description = "审核备注")
     private String auditRemark;
-    @Schema(description = "审核状态")
+    @Schema(description = "审核状态", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
     private String status;
-    @Schema(description = "荣誉 ID 列表")
+    @Schema(description = "荣誉 ID 列表", requiredMode = Schema.RequiredMode.REQUIRED, example = "1024,1025")
     private List<Long> ids;
 
 }

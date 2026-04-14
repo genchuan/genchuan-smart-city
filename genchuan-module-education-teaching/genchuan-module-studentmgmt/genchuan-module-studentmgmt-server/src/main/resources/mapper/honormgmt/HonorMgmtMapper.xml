@@ -13,7 +13,7 @@
         SET status = #{status},
             audit_user = #{auditUser},
             audit_time = now(),
-            audit_remark = #{auditRemark}
+            remark = #{auditRemark}
         WHERE id IN
         <foreach item="id" collection="ids" separator="," close=")" open="(" index="">
             #{id}
