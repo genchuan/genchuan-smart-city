@@ -56,6 +56,13 @@
         <if test="reportNo != null and reportNo != ''">
             AND CONCAT('REPORT', DATE_FORMAT(r.create_time, '%Y-%m'), r.ent_id) LIKE CONCAT('%', #{reportNo}, '%')
         </if>
+        <!-- ====================== 新增：多编号批量筛选（reportNoList） ====================== -->
+        <if test="reportNoList != null and !reportNoList.isEmpty()">
+            AND CONCAT('REPORT', DATE_FORMAT(r.create_time, '%Y-%m'), r.ent_id) IN
+            <foreach collection="reportNoList" item="reportNo" open="(" separator="," close=")">
+                #{reportNo}
+            </foreach>
+        </if>
         <!-- 按月分组 = 企业月报 -->
         GROUP BY r.ent_id, DATE_FORMAT(r.create_time, '%Y-%m')
 
@@ -95,6 +102,13 @@
                                 <!-- ====================== 新增：报表编号筛选 ====================== -->
                                 <if test="reportNo != null and reportNo != ''">
                                     AND CONCAT('REPORT', DATE_FORMAT(r.create_time, '%Y-%m'), r.ent_id) LIKE CONCAT('%', #{reportNo}, '%')
+                                </if>
+                                <!-- ====================== 新增：多编号批量筛选（reportNoList） ====================== -->
+                                <if test="reportNoList != null and !reportNoList.isEmpty()">
+                                    AND CONCAT('REPORT', DATE_FORMAT(r.create_time, '%Y-%m'), r.ent_id) IN
+                                    <foreach collection="reportNoList" item="reportNo" open="(" separator="," close=")">
+                                        #{reportNo}
+                                    </foreach>
                                 </if>
                                  GROUP BY r.ent_id, DATE_FORMAT(r.create_time, '%Y-%m')
                              ) AS temp

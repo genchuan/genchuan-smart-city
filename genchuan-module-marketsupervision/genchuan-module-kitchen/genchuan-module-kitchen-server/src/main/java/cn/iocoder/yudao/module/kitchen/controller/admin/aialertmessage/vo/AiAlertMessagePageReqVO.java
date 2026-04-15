@@ -45,6 +45,9 @@ public class AiAlertMessagePageReqVO extends PageParam {
     @Schema(description = "[消息来源] 如：1-端侧/2-云化/3-云侧/6-盒子")
     private Integer alertSource;
 
+    @Schema(description = "[消息来源] 如：1-端侧/2-云化/3-云侧/6-盒子")
+    private String alertSourceName;
+
     @Schema(description = "[图片地址] 通用图片地址或视频地址（人脸布控和车牌布控时为空），时光缩影下为视频下载地址", example = "https://www.iocoder.cn")
     private String srcUrl;
 

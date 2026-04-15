@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.kitchen.controller.admin.violationanalytics.vo.drill;
 
 import cn.idev.excel.annotation.ExcelProperty;
+import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.AiAlertMessageRespVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.RectifyReviewLedgerRespVO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.aialertmessage.AiAlertMessageDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifyreview.RectifyReviewDO;
@@ -44,7 +45,7 @@ public class ViolationAnalyticsDrillResp {
 
     @ExcelProperty(value = "钻取的告警详情列表", index = 6)
     @Schema(description = "钻取的告警详情列表（AI预警按企业分组统计）")
-    private List<AiAlertMessageDO> alarmList;
+    private List<AiAlertMessageRespVO> alarmList;
 
     @ExcelProperty(value = "钻取的违规次数", index = 7)
     @Schema(description = "钻取的违规次数（整改复审计数）")

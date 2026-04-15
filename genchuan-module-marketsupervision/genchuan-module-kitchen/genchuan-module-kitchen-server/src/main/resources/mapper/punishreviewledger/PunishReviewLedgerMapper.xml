@@ -46,7 +46,17 @@
         prl.draft_time,
 
         prl.create_time,
-        prl.update_time
+        prl.update_time,
+
+        -- ====================== 【逾期判断：直接在 SQL 计算 overdueFlag】 ======================
+        CASE
+        <!--         条件1：状态 = 已下发 -->
+                WHEN prl.review_status = '已下发'
+        <!--         条件2：缴费截止时间 < 当前时间（已逾期） -->
+        AND prl.payment_deadline_time &lt; NOW()
+        THEN 1  -- 逾期
+        ELSE 0  -- 未逾期
+        END AS overdue_flag
 
         FROM punish_review_ledger prl
 
@@ -124,7 +134,25 @@
             <if test="cancelTimeEnd != null">
                 AND prl.cancel_time &lt;= #{cancelTimeEnd}
             </if>
-
+            <if test="draftPunishAmt != null">
+                AND prl.draft_punish_amt = #{draftPunishAmt}
+            </if>
+            <!-- ====================== 【新增：逾期筛选】 ====================== -->
+            <if test="overdueFlag != null">
+                AND (
+                <choose>
+                    <when test="overdueFlag == 1">
+                        prl.review_status = '已下发'
+                        AND prl.payment_deadline_time &lt; NOW()
+                    </when>
+                    <otherwise>
+                        prl.review_status != '已下发'
+                        OR prl.payment_deadline_time &gt;= NOW()
+                        OR prl.payment_deadline_time IS NULL
+                    </otherwise>
+                </choose>
+                )
+            </if>
         </where>
 
         ORDER BY prl.id DESC, prl.create_time DESC
@@ -189,7 +217,22 @@
             <if test="reviewStatus != null and reviewStatus != ''">
                 AND prl.review_status = #{reviewStatus}
             </if>
-
+            <!-- ====================== 【新增：逾期筛选】 ====================== -->
+            <if test="overdueFlag != null">
+                AND (
+                <choose>
+                    <when test="overdueFlag == 1">
+                        prl.review_status = '已下发'
+                        AND prl.payment_deadline_time &lt; NOW()
+                    </when>
+                    <otherwise>
+                        prl.review_status != '已下发'
+                        OR prl.payment_deadline_time &gt;= NOW()
+                        OR prl.payment_deadline_time IS NULL
+                    </otherwise>
+                </choose>
+                )
+            </if>
         </where>
 
     </select>

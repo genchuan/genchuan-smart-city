@@ -15,7 +15,7 @@ public class ImportRespVO {
     private Integer failureCount;
 
     @Schema(description = "导入失败明细")
-    private List<ImportFailure> failures;
+    private List<ImportFailure> failureList;
 
     @Data
     public static class ImportFailure {

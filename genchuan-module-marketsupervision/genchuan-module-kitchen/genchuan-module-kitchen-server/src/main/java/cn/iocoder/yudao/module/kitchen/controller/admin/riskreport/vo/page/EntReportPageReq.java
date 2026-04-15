@@ -14,6 +14,8 @@ import java.util.List;
 @Schema(description = "企业风险报表 Request VO")
 public class EntReportPageReq extends PageParam {
 
+    @Schema(description = "筛选的编号")
+    private List<String> reportNoList;
 
     @Schema(description = "编号")
     private String reportNo;

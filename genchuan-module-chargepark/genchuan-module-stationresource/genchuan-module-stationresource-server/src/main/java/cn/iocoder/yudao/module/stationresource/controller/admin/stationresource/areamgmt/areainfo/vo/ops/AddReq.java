@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Schema(description = "管理后台 - 片区信息新增/修改 Request VO")
 @Data
 public class AddReq {
@@ -40,9 +42,8 @@ public class AddReq {
     @Schema(description = "[联系电话] 联系电话", example = "13800138000")
     private String phone;
 
-    //后端自己生成
+    // 后端自己生成
     @Schema(description = "[状态] 如:未生效/已生效/已禁用", example = "未生效", hidden = true)
-//    @NotEmpty(message = "[状态] 如:未生效/已生效/已禁用不能为空")
     private String status;
 
     @Schema(description = "[备注] 备注", example = "核心城区充电片区")
@@ -54,4 +55,25 @@ public class AddReq {
     @Schema(description = "[备用字段2] 备用字段2", example = "备用信息2")
     private String reserve2;
 
+    // ==================== 新增字段：前端隐藏，后端自己处理 ====================
+    @Schema(description = "[负责人] 关联芋道用户表system_user", hidden = true)
+    private Long userId;
+
+    @Schema(description = "[绑定时间]", hidden = true)
+    private LocalDateTime bindTime;
+
+    @Schema(description = "[绑定人ID] 关联芋道用户表system_user", hidden = true)
+    private Long bindUserId;
+
+    /**
+     * 经度
+     */
+    @Schema(description = "[经度] ", example = "111")
+    private Double lon;
+
+    /**
+     * 纬度
+     */
+    @Schema(description = "[纬度] ", example = "111")
+    private Double lat;
 }

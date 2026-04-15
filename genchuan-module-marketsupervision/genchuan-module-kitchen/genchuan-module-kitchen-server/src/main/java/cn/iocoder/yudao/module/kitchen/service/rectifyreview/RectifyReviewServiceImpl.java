@@ -643,7 +643,7 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
             }
 
             // 4. 写入ZIP（文件名使用UTF-8，避免中文乱码）
-            String fileName = "整改通知书_" + item.getId() + ".pdf";
+            String fileName = "整改通知书_" + item.getRectifyReviewId() + ".pdf";
             // ZIP内部文件名使用UTF-8编码
             ZipEntry entry = new ZipEntry(fileName);
 //            ZipEntry entry = new ZipEntry(new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1));

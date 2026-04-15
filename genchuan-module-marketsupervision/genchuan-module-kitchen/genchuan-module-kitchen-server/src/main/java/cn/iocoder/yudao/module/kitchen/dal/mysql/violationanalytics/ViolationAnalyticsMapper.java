@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.kitchen.dal.mysql.violationanalytics;
 
+import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.AiAlertMessageRespVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.RectifyReviewLedgerRespVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.violationanalytics.vo.drill.ViolationAnalyticsDrillReq;
 import cn.iocoder.yudao.module.kitchen.controller.admin.violationanalytics.vo.page.ViolationAnalyticsPageReq;
@@ -19,7 +20,7 @@ public interface ViolationAnalyticsMapper {
     // 查询总数
     Long selectViolationAnalyticsCount(ViolationAnalyticsPageReq req);
 
-    List<AiAlertMessageDO> drillAlarmList(ViolationAnalyticsDrillReq req);
+    List<AiAlertMessageRespVO> drillAlarmList(ViolationAnalyticsDrillReq req);
 
     List<RectifyReviewLedgerRespVO> drillrectifyReviewDOList(ViolationAnalyticsDrillReq req);
 

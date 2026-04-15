@@ -79,6 +79,10 @@ public class PunishReviewLedgerPageReqVO extends PageParam {
     @Schema(description = "[撤销原因ID] 关联cancel_reason_dict.id，仅已撤销状态赋值", example = "15547")
     private Long cancelReasonId;
 
+    @Schema(description = "[是否逾期] 0/1", example = "1")
+    private Integer overdueFlag;
+
+
     @Schema(description = "[草拟时间]")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] draftTime;

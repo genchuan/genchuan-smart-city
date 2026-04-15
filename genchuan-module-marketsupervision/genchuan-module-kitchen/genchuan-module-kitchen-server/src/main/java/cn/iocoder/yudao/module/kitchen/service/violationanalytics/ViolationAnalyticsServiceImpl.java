@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.kitchen.service.violationanalytics;
 
 import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.AiAlertMessageRespVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.RectifyReviewLedgerRespVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.violationanalytics.vo.drill.ViolationAnalyticsDrillReq;
 import cn.iocoder.yudao.module.kitchen.controller.admin.violationanalytics.vo.drill.ViolationAnalyticsDrillResp;
@@ -157,7 +158,7 @@ public class ViolationAnalyticsServiceImpl implements ViolationAnalyticsService{
         // 查询数据
         // ====================== 【关键：钻取纬度逻辑】 ======================
         String drillDimension = req.getDrillDimension();
-        List<AiAlertMessageDO> alarmList = null;
+        List<AiAlertMessageRespVO> alarmList = null;
         List<RectifyReviewLedgerRespVO> rectifyReviewDOList = null;
         List<SysDeviceDO> normalSysDeviceDOList = null;
         List<RectifyReviewDO> finishRectifyReviewDOList = null;
