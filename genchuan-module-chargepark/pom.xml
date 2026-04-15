@@ -9,7 +9,6 @@
         <module>genchuan-module-usermerchant</module>
         <module>genchuan-module-inspectop</module>
         <module>genchuan-module-vehiclepass</module>
-        <module>genchuan-module-vehiclepass</module>
     </modules>
 
     <parent>

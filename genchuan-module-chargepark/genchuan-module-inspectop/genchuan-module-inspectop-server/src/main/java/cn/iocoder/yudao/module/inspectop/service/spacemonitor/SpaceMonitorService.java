@@ -51,12 +51,19 @@ public interface SpaceMonitorService {
      */
     SpaceMonitorDO getSpaceMonitor(Long id);
 
+//    /**
+//     * 获得车位状态监测分页
+//     *
+//     * @param pageReqVO 分页查询
+//     * @return 车位状态监测分页
+//     */
+//    PageResult<SpaceMonitorDO> getSpaceMonitorPage(SpaceMonitorPageReqVO pageReqVO);
+
     /**
      * 获得车位状态监测分页
      *
      * @param pageReqVO 分页查询
      * @return 车位状态监测分页
      */
-    PageResult<SpaceMonitorDO> getSpaceMonitorPage(SpaceMonitorPageReqVO pageReqVO);
-
+    List<SpaceMonitorRespVO> getSpaceMonitorPage(SpaceMonitorPageReqVO pageReqVO);
 }

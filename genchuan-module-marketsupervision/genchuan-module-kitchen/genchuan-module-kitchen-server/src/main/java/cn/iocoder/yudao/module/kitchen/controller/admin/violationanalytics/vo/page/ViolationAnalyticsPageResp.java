@@ -55,13 +55,13 @@ public class ViolationAnalyticsPageResp {
     @Schema(description = "整改完成率（整改复审计算）")
     private Double rectifyFinishRate;
 
-    @ExcelProperty(value = "统计开始时间", index = 8)
-//    @ExcelIgnore // ← 加上这个
+//    @ExcelProperty(value = "统计开始时间", index = 8)
+    @ExcelIgnore // ← 加上这个
     @Schema(description = "统计开始时间")
     private LocalDateTime beginTime;
 
-    @ExcelProperty(value = "统计结束时间", index = 9)
-//    @ExcelIgnore // ← 加上这个
+//    @ExcelProperty(value = "统计结束时间", index = 9)
+    @ExcelIgnore // ← 加上这个
     @Schema(description = "统计结束时间")
     private LocalDateTime endTime;
 

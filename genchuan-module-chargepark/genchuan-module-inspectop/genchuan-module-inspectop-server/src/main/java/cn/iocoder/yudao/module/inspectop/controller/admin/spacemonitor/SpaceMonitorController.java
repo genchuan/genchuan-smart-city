@@ -83,9 +83,10 @@ public class SpaceMonitorController {
     @GetMapping("/page")
     @Operation(summary = "获得车位状态监测分页")
     @PreAuthorize("@ss.hasPermission('inspectop:space-monitor:query')")
-    public CommonResult<PageResult<SpaceMonitorRespVO>> getSpaceMonitorPage(@Valid SpaceMonitorPageReqVO pageReqVO) {
-        PageResult<SpaceMonitorDO> pageResult = spaceMonitorService.getSpaceMonitorPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, SpaceMonitorRespVO.class));
+    public CommonResult<List<SpaceMonitorRespVO>> getSpaceMonitorPage(@Valid SpaceMonitorPageReqVO pageReqVO) {
+        // 直接返回Service的结果，Service的结果已经是VO
+        List<SpaceMonitorRespVO> pageResult = spaceMonitorService.getSpaceMonitorPage(pageReqVO);
+        return success(pageResult); // 移除了 BeanUtils.toBean 转换
     }
 
     @GetMapping("/export-excel")
@@ -93,12 +94,12 @@ public class SpaceMonitorController {
     @PreAuthorize("@ss.hasPermission('inspectop:space-monitor:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportSpaceMonitorExcel(@Valid SpaceMonitorPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                        HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<SpaceMonitorDO> list = spaceMonitorService.getSpaceMonitorPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "车位状态监测.xls", "数据", SpaceMonitorRespVO.class,
-                        BeanUtils.toBean(list, SpaceMonitorRespVO.class));
+        // Service返回的就是List<SpaceMonitorRespVO>
+        List<SpaceMonitorRespVO> list = spaceMonitorService.getSpaceMonitorPage(pageReqVO);
+        // 导出 Excel，list现在直接就是VO对象
+        ExcelUtils.write(response, "车位状态监测.xls", "数据", SpaceMonitorRespVO.class, list); // 移除了 BeanUtils.toBean 转换
     }
 
 }
