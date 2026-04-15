@@ -3,8 +3,8 @@ package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.AreaInfoPageReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.AreaInfoRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.AreaInfoSaveReqVO;
-import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.ops.AddReq;
-import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.ops.ImportRespVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.ops.*;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.statistics.AreaInfoChartRespVO;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.areamgmt.areainfo.AreaInfoDO;
 import cn.iocoder.yudao.module.stationresource.service.stationresource.areamgmt.areainfo.AreaInfoService;
 import cn.iocoder.yudao.module.stationresource.vrv.utils.common.excel.VrvExcelUtils;
@@ -47,6 +47,35 @@ public class AreaInfoController {
     @Resource
     private AreaInfoService areaInfoService;
 
+    @GetMapping("/chart")
+    @Operation(summary = "片区数据可视化图表（地图+柱状图+卡片）")
+    @PreAuthorize("@ss.hasPermission('stationresource:area-info:query')")
+    public CommonResult<AreaInfoChartRespVO> getAreaInfoChart() {
+        AreaInfoChartRespVO resp = areaInfoService.getAreaInfoChart();
+        return success(resp);
+    }
+    @PutMapping("/update")
+    @Operation(summary = "更新片区信息")
+    @PreAuthorize("@ss.hasPermission('stationresource:area-info:update')")
+    public CommonResult<Boolean> updateAreaInfo(@Valid @RequestBody AreaInfoUpdateReqVO reqVO) {
+        areaInfoService.updateArea(reqVO);
+        return success(true);
+    }
+    @PutMapping("/enable")
+    @Operation(summary = "批量生效片区信息")
+    @PreAuthorize("@ss.hasPermission('stationresource:area-info:update')")
+    public CommonResult<Boolean> enableAreaInfo(@Valid @RequestBody AreaInfoEnableReqVO reqVO) {
+        areaInfoService.updateAreaInfoStatus(reqVO.getIds(), true);
+        return success(true);
+    }
+
+    @PutMapping("/disable")
+    @Operation(summary = "批量禁用片区信息")
+    @PreAuthorize("@ss.hasPermission('stationresource:area-info:update')")
+    public CommonResult<Boolean> disableAreaInfo(@Valid @RequestBody AreaInfoDisableReqVO reqVO) {
+        areaInfoService.updateAreaInfoStatus(reqVO.getIds(), false);
+        return success(true);
+    }
 
     @GetMapping("/import-template")
     @Operation(summary = "下载导入模板")
@@ -75,13 +104,13 @@ public class AreaInfoController {
         return success(id);
     }
 
-    @PutMapping("/update")
-    @Operation(summary = "更新片区信息")
-    @PreAuthorize("@ss.hasPermission('stationresource:area-info:update')")
-    public CommonResult<Boolean> updateAreaInfo(@Valid @RequestBody AreaInfoSaveReqVO updateReqVO) {
-        areaInfoService.updateAreaInfo(updateReqVO);
-        return success(true);
-    }
+//    @PutMapping("/update")
+//    @Operation(summary = "更新片区信息")
+//    @PreAuthorize("@ss.hasPermission('stationresource:area-info:update')")
+//    public CommonResult<Boolean> updateAreaInfo(@Valid @RequestBody AreaInfoSaveReqVO updateReqVO) {
+//        areaInfoService.updateAreaInfo(updateReqVO);
+//        return success(true);
+//    }
 
     @DeleteMapping("/delete")
     @Operation(summary = "删除片区信息")
