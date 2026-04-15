@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
-@Schema(description = "管理后台 - 实时监测分页 Request VO")
+@Schema(description = "汽车充电 - 实时监测分页 Request VO")
 @Data
 public class StatusMonitorPageReqVO extends PageParam {
 

@@ -18,6 +18,8 @@ import cn.iocoder.yudao.module.infra.framework.file.core.utils.FileTypeUtils;
 import com.google.common.annotations.VisibleForTesting;
 import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -54,6 +56,13 @@ public class FileServiceImpl implements FileService {
     @Resource
     private FileMapper fileMapper;
 
+    // 新增：注入公网访问URL配置
+    @Value("${yudao.file.access-url:}")
+    private String fileAccessUrl;
+
+    @Value("${yudao.file.bucket-name:genchuan}")
+    private String bucketName;
+
     @Override
     public PageResult<FileDO> getFilePage(FilePageReqVO pageReqVO) {
         return fileMapper.selectPage(pageReqVO);
@@ -80,17 +89,60 @@ public class FileServiceImpl implements FileService {
 
         // 2.1 生成上传的 path，需要保证唯一
         String path = generateUploadPath(name, directory);
+
         // 2.2 上传到文件存储器
         FileClient client = fileConfigService.getMasterFileClient();
         Assert.notNull(client, "客户端(master) 不能为空");
-        String url = client.upload(content, path, type);
+        String originalUrl = client.upload(content, path, type);
 
-        // 3. 保存到数据库
+        // 【新增】2.3 重写URL为公网可访问地址（使用动态bucketName）
+        String finalUrl = originalUrl;
+        if (StrUtil.isNotBlank(fileAccessUrl)) {
+            // 使用配置的公网基础URL和存储桶名称，拼接上文件的存储路径(path)
+            finalUrl = StrUtil.addSuffixIfNot(fileAccessUrl, "/")
+                    + bucketName + "/"
+                    + StrUtil.removePrefix(path, "/");
+        }
+
+        // 3. 保存到数据库 (使用重写后的finalUrl)
         fileMapper.insert(new FileDO().setConfigId(client.getId())
-                .setName(name).setPath(path).setUrl(url)
+                .setName(name).setPath(path).setUrl(finalUrl) // <- 这里用finalUrl
                 .setType(type).setSize((long) content.length));
-        return url;
+        return finalUrl; // 返回finalUrl
     }
+
+//    @Override
+//    @SneakyThrows
+//    public String createFile(byte[] content, String name, String directory, String type) {
+//        // 1.1 处理 type 为空的情况
+//        if (StrUtil.isEmpty(type)) {
+//            type = FileTypeUtils.getMineType(content, name);
+//        }
+//        // 1.2 处理 name 为空的情况
+//        if (StrUtil.isEmpty(name)) {
+//            name = DigestUtil.sha256Hex(content);
+//        }
+//        if (StrUtil.isEmpty(FileUtil.extName(name))) {
+//            // 如果 name 没有后缀 type，则补充后缀
+//            String extension = FileTypeUtils.getExtension(type);
+//            if (StrUtil.isNotEmpty(extension)) {
+//                name = name + extension;
+//            }
+//        }
+//
+//        // 2.1 生成上传的 path，需要保证唯一
+//        String path = generateUploadPath(name, directory);
+//        // 2.2 上传到文件存储器
+//        FileClient client = fileConfigService.getMasterFileClient();
+//        Assert.notNull(client, "客户端(master) 不能为空");
+//        String url = client.upload(content, path, type);
+//
+//        // 3. 保存到数据库
+//        fileMapper.insert(new FileDO().setConfigId(client.getId())
+//                .setName(name).setPath(path).setUrl(url)
+//                .setType(type).setSize((long) content.length));
+//        return url;
+//    }
 
     @VisibleForTesting
     String generateUploadPath(String name, String directory) {

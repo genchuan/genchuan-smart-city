@@ -37,7 +37,7 @@ import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.statusmonitor.StatusMonitorDO;
 import cn.iocoder.yudao.module.vehiclecharging.service.statusmonitor.StatusMonitorService;
 
-@Tag(name = "管理后台 - 实时监测")
+@Tag(name = "汽车充电 - 实时监测")
 @RestController
 @RequestMapping("/vehiclecharging/status-monitor")
 @Validated

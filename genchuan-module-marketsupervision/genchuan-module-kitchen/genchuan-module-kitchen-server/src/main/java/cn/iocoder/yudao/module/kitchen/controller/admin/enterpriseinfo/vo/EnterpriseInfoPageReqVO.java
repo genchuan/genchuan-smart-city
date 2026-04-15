@@ -32,6 +32,9 @@ public class EnterpriseInfoPageReqVO extends PageParam {
     @Schema(description = "[企业类型ID] 关联ent_type_dict.id", example = "28435")
     private Long entTypeId;
 
+    @Schema(description = "[企业类型名称]", example = "食堂")
+    private String entTypeName;
+
     @Schema(description = "[详细地址] 企业注册或经营地址")
     private String address;
 

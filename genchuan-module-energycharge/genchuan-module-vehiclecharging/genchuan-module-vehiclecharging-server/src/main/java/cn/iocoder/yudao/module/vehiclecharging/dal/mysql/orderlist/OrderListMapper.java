@@ -1,13 +1,15 @@
 package cn.iocoder.yudao.module.vehiclecharging.dal.mysql.orderlist;
 
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.orderlist.OrderListDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.orderlist.vo.*;
+
+import java.util.List;
+import java.time.*;
 
 /**
  * 订单列表 Mapper
@@ -39,5 +41,27 @@ public interface OrderListMapper extends BaseMapperX<OrderListDO> {
                 .betweenIfPresent(OrderListDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(OrderListDO::getId));
     }
+
+    List<OrderListChartRespVO.LineData> selectDailyOrderStats(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    List<OrderListChartRespVO.PieData> selectStatusStats();
+
+    OrderListChartRespVO.CardData selectCardStats(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    List<OrderListDailyTrendRespVO> selectDailyTrend(@Param("startDate") LocalDate startDate,
+                                                     @Param("endDate") LocalDate endDate,
+                                                     @Param("stationId") Long stationId);
+
+    List<OrderListStatusRatioRespVO> selectStatusCount(@Param("startDate") LocalDate startDate,
+                                                       @Param("endDate") LocalDate endDate,
+                                                       @Param("stationId") Long stationId);
+
+    TradeCountRespVO selectTradeStats(@Param("startDate") LocalDate startDate,
+                                      @Param("endDate") LocalDate endDate,
+                                      @Param("stationId") Long stationId);
+
+    Integer selectCompleteOrderCount(@Param("startDate") LocalDate startDate,
+                                     @Param("endDate") LocalDate endDate,
+                                     @Param("stationId") Long stationId);
 
 }

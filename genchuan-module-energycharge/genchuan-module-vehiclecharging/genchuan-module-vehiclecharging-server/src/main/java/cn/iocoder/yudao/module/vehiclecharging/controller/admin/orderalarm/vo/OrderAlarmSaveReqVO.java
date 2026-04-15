@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.vehiclecharging.controller.admin.orderalarm.vo;
 
+import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import java.util.*;
@@ -7,7 +8,7 @@ import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 订单告警新增/修改 Request VO")
+@Schema(description = "汽车充电 - 订单告警新增/修改 Request VO")
 @Data
 public class OrderAlarmSaveReqVO {
 
@@ -58,4 +59,6 @@ public class OrderAlarmSaveReqVO {
     @Schema(description = "备用字段2")
     private String reserve2;
 
+    @Schema(description = "创建人")
+    private String creator;
 }

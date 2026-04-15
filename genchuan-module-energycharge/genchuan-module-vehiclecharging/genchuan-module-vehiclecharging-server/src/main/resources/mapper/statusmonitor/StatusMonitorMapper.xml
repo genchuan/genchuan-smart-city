@@ -276,9 +276,7 @@
             AND main.monitor_time BETWEEN #{startTime} AND #{endTime}  <!-- 时间范围筛选 -->
         </if>
     </select>
-    <!--
 
-        -->
     <select id="selectParamTrend"
             resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.ParamTrend">
         SELECT
@@ -299,11 +297,6 @@
         </if>
         GROUP BY DATE_FORMAT(t.monitor_time, '%H:%i')
         ORDER BY DATE_FORMAT(t.monitor_time, '%H:%i') ASC
-<!--        <if test="stationId != null">-->
-<!--            AND station_id = #{stationId}-->
-<!--        </if>-->
-
-        <!-- GROUP BY time     ORDER BY t.monitor_time ASC  -->
     </select>
     <select id="selectAbnormalPoints"
             resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.chart.AbnormalPoint">
@@ -320,12 +313,6 @@
         <if test="areaName != null and areaName != ''">
             AND sm.area_name = #{areaName}
         </if>
-<!--        <if test="startTime != null">-->
-<!--            AND sm.monitor_time &gt;= #{startTime}-->
-<!--        </if>-->
-<!--        <if test="endTime != null">-->
-<!--            AND sm.monitor_time &lt;= #{endTime}-->
-<!--        </if>-->
         ORDER BY sm.alarm_level DESC, sm.monitor_time DESC
     </select>
     <select id="selectStatusCountByStation"

@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
-@Schema(description = "管理后台 - 充电车位分页 Request VO")
+@Schema(description = "汽车充电 - 充电车位分页 Request VO")
 @Data
 public class ChargingLotPageReqVO extends PageParam {
 
@@ -46,6 +46,9 @@ public class ChargingLotPageReqVO extends PageParam {
 
     @Schema(description = "备用字段2")
     private String reserve2;
+
+    @Schema(description = "创建人")
+    private String creator;
 
     @Schema(description = "创建时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)

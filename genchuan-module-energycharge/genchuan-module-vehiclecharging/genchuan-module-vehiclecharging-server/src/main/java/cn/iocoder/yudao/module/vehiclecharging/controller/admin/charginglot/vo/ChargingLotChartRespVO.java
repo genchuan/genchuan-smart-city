@@ -5,7 +5,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Schema(description = "管理后台 - 充电车位图表统计 Response VO")
+@Schema(description = "汽车充电 - 充电车位图表统计 Response VO")
 @Data
 public class ChargingLotChartRespVO {
 
@@ -39,6 +39,8 @@ public class ChargingLotChartRespVO {
 
     @Data
     public static class StationLot {
+        @Schema(description = "场站ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+        private Long stationId;
         @Schema(description = "场站名称（这里用场站编码stationCode代替，若需名称则需关联场站表获取）", requiredMode = Schema.RequiredMode.REQUIRED, example = "泉州丰泽万达广场充电站")
         private String stationName;
         @Schema(description = "该场站总车位数", requiredMode = Schema.RequiredMode.REQUIRED, example = "50")

@@ -14,6 +14,8 @@ import cn.iocoder.yudao.module.vehiclecharging.controller.admin.interconnection.
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.interconnection.InterconnectionDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
+import cn.iocoder.yudao.framework.security.core.LoginUser;
 
 import cn.iocoder.yudao.module.vehiclecharging.dal.mysql.interconnection.InterconnectionMapper;
 
@@ -48,34 +50,45 @@ public class InterconnectionServiceImpl implements InterconnectionService {
         return interconnectionMapper.selectPage(pageReqVO);
     }
 
+    /**
+     * 获取当前登录用户的昵称，若未登录则返回默认值 "admin"
+     */
+    private String getCurrentUserNickname() {
+        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
+        if (loginUser != null && loginUser.getInfo() != null) {
+            String nickname = loginUser.getInfo().get(LoginUser.INFO_KEY_NICKNAME);
+            if (nickname != null && !nickname.isEmpty()) {
+                return nickname;
+            }
+        }
+        return "admin";
+    }
+
     @Override
-    public Long applyInterconnection( InterconnectionApplyReqVO applyReqVO ) {
+    public Long applyInterconnection(InterconnectionApplyReqVO applyReqVO) {
         InterconnectionDO interconnection = BeanUtils.toBean(applyReqVO, InterconnectionDO.class);
-        interconnection.setConnectStatus("auditing");//waitapply未申请,auditing审核中,opened已开通,closed已关闭
-        interconnection.setCreator("admin");
-        interconnection.setUpdater("admin");
+        interconnection.setConnectStatus("auditing"); // waitapply未申请,auditing审核中,opened已开通,closed已关闭
+        String nickname = getCurrentUserNickname();
+        interconnection.setCreator(nickname);
+        interconnection.setUpdater(nickname);
         interconnection.setDeleted(false);
         interconnection.setCreateTime(LocalDateTime.now());
         interconnection.setUpdateTime(LocalDateTime.now());
         interconnectionMapper.insert(interconnection);
-
-        // 返回
         return interconnection.getId();
     }
 
     @Override
-    public void auditInterconnection( InterconnectionAuditReqVO auditReqVO ) {
-        // 校验存在
+    public void auditInterconnection(InterconnectionAuditReqVO auditReqVO) {
         validateInterconnectionExists(Long.valueOf(auditReqVO.getId()));
-        // 审核
         InterconnectionDO updateObj = BeanUtils.toBean(auditReqVO, InterconnectionDO.class);
-        if (updateObj.getPass().equals(true)) {
+        if (Boolean.TRUE.equals(updateObj.getPass())) {
             updateObj.setConnectStatus("opened");
         } else {
             updateObj.setConnectStatus("closed");
         }
-        // 更新
-        updateObj.setAuditUser("admin");
+        // 审核用户使用当前登录用户昵称
+        updateObj.setAuditUser(getCurrentUserNickname());
         updateObj.setAuditTime(LocalDateTime.now());
         interconnectionMapper.updateById(updateObj);
     }

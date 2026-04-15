@@ -2,13 +2,11 @@ package cn.iocoder.yudao.module.vehiclecharging.controller.admin.orderlist.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import java.util.*;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 订单列表新增/修改 Request VO")
+@Schema(description = "汽车充电 - 订单列表新增/修改 Request VO")
 @Data
 public class OrderListSaveReqVO {
 
@@ -49,6 +47,9 @@ public class OrderListSaveReqVO {
 
     @Schema(description = "支付方式")
     private String payType;
+
+    @Schema(description = "取消订单原因")
+    private String cancelReason;
 
     @Schema(description = "终止充电原因")
     private String stopReason;

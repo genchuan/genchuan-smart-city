@@ -14,34 +14,23 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.issue.I
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileRespVO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifyreview.RectifyReviewDO;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.pdf.PdfGenerator;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.verify.VerifyUtil;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.procom.aop.sysope.SysOpeLog;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.procom.aop.sysope.SysOpeModule;
+import cn.iocoder.yudao.module.kitchen.vrv.utils.procom.aop.sysope.SysOpeLog;
 import cn.iocoder.yudao.module.kitchen.service.rectifyreview.RectifyReviewService;
-import com.itextpdf.html2pdf.ConverterProperties;
-import com.itextpdf.html2pdf.HtmlConverter;
-import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
@@ -132,6 +121,10 @@ public class RectifyReviewController {
     public CommonResult<PageResult<RectifyEvidenceVO>> getBatchEvidence(
             @Valid @RequestBody BatchEvidenceRequestVO reqVO) {
 
+        if (reqVO.getPageNo()==null||reqVO.getPageSize()==null){
+            reqVO.setPageNo(1L);
+            reqVO.setPageSize(9999L);
+        }
         // 调用 Service 获取分页数据
         PageResult<RectifyEvidenceVO> pageResult = rectifyReviewService.getBatchEvidence(reqVO);
 

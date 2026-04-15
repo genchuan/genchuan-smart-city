@@ -8,5 +8,50 @@
         代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
+    <!-- 在 OrderRefundMapper.xml 文件中添加以下 SQL -->
+    <!-- 折线图数据查询：按日期统计退款申请和完成数量 -->
+    <select id="selectLineDataByDate" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.orderrefund.vo.OrderRefundChartRespVO$LineData">
+        SELECT
+        DATE_FORMAT(create_time, '%Y-%m-%d') AS date,
+        COUNT(id) AS applyCount,
+        SUM(CASE WHEN refund_status = '3' THEN 1 ELSE 0 END) AS completeCount
+        FROM order_refund
+        <where>
+            <if test="req.startTime != null">
+                AND create_time >= #{req.startTime}
+            </if>
+            <if test="req.endTime != null">
+                AND create_time &lt;= #{req.endTime}
+            </if>
+        </where>
+        GROUP BY DATE_FORMAT(create_time, '%Y-%m-%d')
+        ORDER BY DATE_FORMAT(create_time, '%Y-%m-%d') ASC
+    </select>
 
+    <!-- 饼图数据查询：按状态统计数量 -->
+    <select id="selectPieDataByStatus" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.orderrefund.vo.OrderRefundChartRespVO$PieData">
+        SELECT
+        CASE refund_status
+        WHEN '0' THEN '待审核'
+        WHEN '1' THEN '审核通过'
+        WHEN '2' THEN '退款中'
+        WHEN '3' THEN '已完成'
+        WHEN '4' THEN '已驳回'
+        END AS name,
+        COUNT(id) AS value
+        FROM order_refund
+        GROUP BY refund_status
+    </select>
+
+    <!-- 卡片数据查询：总体统计 -->
+    <select id="selectCardData" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.orderrefund.vo.OrderRefundChartRespVO$CardData">
+        SELECT
+        COUNT(id) AS totalRefundCount,
+        COALESCE(SUM(refund_amount), 0) AS totalRefundAmount,
+        CASE
+        WHEN COUNT(id) = 0 THEN 0
+        ELSE ROUND(SUM(CASE WHEN refund_status = '3' THEN 1 ELSE 0 END) * 100.0 / COUNT(id), 2)
+        END AS refundCompleteRatio
+        FROM order_refund
+    </select>
 </mapper>

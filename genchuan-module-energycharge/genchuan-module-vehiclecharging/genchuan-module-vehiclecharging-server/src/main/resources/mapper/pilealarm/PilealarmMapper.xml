@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.vehiclecharging.dal.mysql.pilealarm.PilealarmMapper">
+
+    <select id="selectAlarmPage" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.pilealarm.vo.NewPileAlarmRespVO">
+        SELECT
+        a.id,
+        a.alarm_code           AS alarmCode,
+        p.pile_code            AS pileCode,
+        p.model                AS pileName,
+        a.station_id           AS stationId,
+        s.station_name         AS stationName,
+        a.fault_type           AS faultType,
+        a.alarm_level          AS alarmLevel,
+        a.alarm_time           AS alarmTime,
+        a.handler_id           AS handleUser,
+        u.nickname             AS handleUserName,
+        a.status               AS alarmStatus,
+        a.handle_result        AS disposeMeasure,
+        a.remark,
+        a.create_time          AS createTime,
+        a.update_time          AS updateTime
+        FROM pile_alarm a
+        LEFT JOIN charging_pile p ON a.pile_id = p.id
+        LEFT JOIN charging_station s ON p.station_id = s.id
+        LEFT JOIN sys_user u ON a.handler_id = u.id
+        <where>
+            a.deleted = 0
+            <if test="reqVO.alarmCode != null and reqVO.alarmCode != ''">
+                AND a.alarm_code LIKE CONCAT('%', #{reqVO.alarmCode}, '%')
+            </if>
+            <if test="reqVO.stationId != null">
+                AND p.station_id = #{reqVO.stationId}
+            </if>
+            <if test="reqVO.faultType != null and reqVO.faultType != ''">
+                AND a.fault_type = #{reqVO.faultType}
+            </if>
+            <if test="reqVO.alarmLevel != null and reqVO.alarmLevel != ''">
+                AND a.alarm_level = #{reqVO.alarmLevel}
+            </if>
+            <if test="reqVO.alarmStatus != null and reqVO.alarmStatus != ''">
+                AND a.status = #{reqVO.alarmStatus}
+            </if>
+            <if test="reqVO.alarmTimeStart != null">
+                AND a.alarm_time >= #{reqVO.alarmTimeStart}
+            </if>
+            <if test="reqVO.alarmTimeEnd != null">
+                AND a.alarm_time &lt;= #{reqVO.alarmTimeEnd}
+            </if>
+        </where>
+    </select>
+
+    <!-- 总统计 -->
+    <select id="selectAlarmChart" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.pilealarm.vo.PileAlarmChartRespVO">
+        SELECT
+        COUNT(*) AS totalCount,
+        SUM(CASE WHEN a.status = '已销单' THEN 1 ELSE 0 END) AS handledCount
+        FROM pile_alarm a
+        JOIN charging_pile p ON a.pile_id = p.id
+        JOIN charging_station s ON p.station_id = s.id
+        WHERE a.deleted = 0
+        AND a.tenant_id = 1
+        <if test="query.startTime != null"> AND a.create_time &gt;= #{query.startTime} </if>
+        <if test="query.endTime != null"> AND a.create_time &lt;= #{query.endTime} </if>
+        <if test="query.stationId != null"> AND s.id = #{query.stationId} </if>
+    </select>
+
+    <!-- 柱状图：按天 -->
+    <select id="selectBarData" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.pilealarm.vo.PileAlarmChartRespVO$BarData">
+        SELECT
+        DATE_FORMAT(a.create_time, '%Y-%m-%d') AS date,
+        COUNT(*) AS alarmCount,
+        SUM(CASE WHEN a.status = '已销单' THEN 1 ELSE 0 END) AS handleCount
+        FROM pile_alarm a
+        JOIN charging_pile p ON a.pile_id = p.id
+        JOIN charging_station s ON p.station_id = s.id
+        WHERE a.deleted = 0
+        AND a.tenant_id = 1
+        <if test="query.startTime != null"> AND a.create_time &gt;= #{query.startTime} </if>
+        <if test="query.endTime != null"> AND a.create_time &lt;= #{query.endTime} </if>
+        <if test="query.stationId != null"> AND s.id = #{query.stationId} </if>
+        GROUP BY DATE_FORMAT(a.create_time, '%Y-%m-%d')
+        ORDER BY date
+    </select>
+
+    <!-- 饼图：故障类型 -->
+    <select id="selectPieData" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.pilealarm.vo.PileAlarmChartRespVO$PieData">
+        SELECT
+        a.fault_type AS name,
+        COUNT(*) AS value
+        FROM pile_alarm a
+        JOIN charging_pile p ON a.pile_id = p.id
+        JOIN charging_station s ON p.station_id = s.id
+        WHERE a.deleted = 0
+        AND a.tenant_id = 1
+        <if test="query.startTime != null"> AND a.create_time &gt;= #{query.startTime} </if>
+        <if test="query.endTime != null"> AND a.create_time &lt;= #{query.endTime} </if>
+        <if test="query.stationId != null"> AND s.id = #{query.stationId} </if>
+        GROUP BY a.fault_type
+    </select>
+
+    <!-- 【新增】按场站统计（带场地名称）-->
+    <select id="selectStationChart" resultType="java.util.Map">
+        SELECT
+        s.id AS stationId,
+        s.station_name AS stationName,
+        COUNT(*) AS alarmCount
+        FROM pile_alarm a
+        JOIN charging_pile p ON a.pile_id = p.id
+        JOIN charging_station s ON p.station_id = s.id
+        WHERE a.deleted = 0
+        AND a.tenant_id = 1
+        <if test="query.startTime != null"> AND a.create_time &gt;= #{query.startTime} </if>
+        <if test="query.endTime != null"> AND a.create_time &lt;= #{query.endTime} </if>
+        GROUP BY s.id, s.station_name
+    </select>
+
+    <!-- 每日告警统计（柱状图钻取）-->
+    <select id="selectDailyCount" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.pilealarm.vo.PileAlarmChartRespVO$BarData">
+        SELECT
+        DATE_FORMAT(a.create_time, '%Y-%m-%d') AS date,
+        COUNT(*) AS alarmCount,
+        SUM(CASE WHEN a.status = '已销单' THEN 1 ELSE 0 END) AS handleCount
+        FROM pile_alarm a
+        JOIN charging_pile p ON a.pile_id = p.id
+        JOIN charging_station s ON p.station_id = s.id
+        WHERE a.deleted = 0
+        AND a.tenant_id = 1
+        <if test="query.startTime != null"> AND a.create_time &gt;= #{query.startTime} </if>
+        <if test="query.endTime != null"> AND a.create_time &lt;= #{query.endTime} </if>
+        <if test="query.stationId != null"> AND s.id = #{query.stationId} </if>
+        GROUP BY DATE_FORMAT(a.create_time, '%Y-%m-%d')
+        ORDER BY date
+    </select>
+
+    <select id="selectAlarmTypeRatio" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.pilealarm.vo.PileAlarmTypeRatioRespVO">
+        SELECT
+        pa.fault_type AS name,
+        COUNT(pa.id) AS value
+        FROM pile_alarm pa
+        WHERE pa.deleted = 0
+        <if test="startTime != null">
+            AND pa.alarm_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND pa.alarm_time &lt;= #{endTime}
+        </if>
+        <if test="stationId != null">
+            AND pa.station_id = #{stationId}
+        </if>
+        GROUP BY pa.fault_type
+        ORDER BY value DESC
+    </select>
+
+    <!-- 告警处置统计（联表 + 字符集强制统一，解决报错） -->
+    <select id="selectHandleCount"
+            resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.pilealarm.vo.PileAlarmHandleCountRespVO">
+        SELECT
+        SUM(CASE WHEN pa.status = '未派单' THEN 1 ELSE 0 END) AS unDisCount,
+        SUM(CASE WHEN pa.status = '已派单' THEN 1 ELSE 0 END) AS disCount,
+        SUM(CASE WHEN pa.status = '处置中' THEN 1 ELSE 0 END) AS handlingCount,
+        SUM(CASE WHEN pa.status = '已销单' THEN 1 ELSE 0 END) AS closedCount,
+        COUNT(pa.id) AS totalCount
+        FROM pile_alarm pa
+        LEFT JOIN charging_pile cp
+        ON pa.pile_id = CONVERT(cp.id USING utf8mb4) COLLATE utf8mb4_general_ci
+        AND cp.deleted = 0
+        LEFT JOIN charging_station cs
+        ON CONVERT(pa.station_id USING utf8mb4) = CONVERT(cs.id USING utf8mb4)
+        AND cs.deleted = 0
+        WHERE pa.deleted = 0
+        <if test="startTime != null">
+            AND pa.alarm_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND pa.alarm_time &lt;= #{endTime}
+        </if>
+        <if test="stationId != null">
+            AND pa.station_id = #{stationId}
+        </if>
+    </select>
+
+</mapper>

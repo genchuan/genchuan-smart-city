@@ -58,4 +58,12 @@ public class MemberUserApiImpl implements MemberUserApi {
         return success(true);
     }
 
+    @Override
+    public CommonResult<MemberUserRespDTO> createUserIfAbsent(String mobile, String nickname, String password, String registerIp, Integer terminal) {
+        // 1. 调用 Service 层的业务方法，传入密码
+        MemberUserDO user = userService.createUserIfAbsent(mobile, nickname, password, registerIp, terminal);
+        // 2. 转换并返回
+        return success(MemberUserConvert.INSTANCE.convert2(user));
+    }
+
 }

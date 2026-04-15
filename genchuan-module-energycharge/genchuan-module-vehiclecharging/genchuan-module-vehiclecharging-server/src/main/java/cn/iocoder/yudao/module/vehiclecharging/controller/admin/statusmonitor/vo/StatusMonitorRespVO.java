@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import cn.idev.excel.annotation.ExcelProperty;
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 
-@Schema(description = "管理后台 - 实时监测 Response VO")
+@Schema(description = "汽车充电 - 实时监测 Response VO")
 @Data
 @ExcelIgnoreUnannotated
 public class StatusMonitorRespVO {

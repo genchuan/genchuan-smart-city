@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.waterdetection.service.watersampletestsummary;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 
@@ -10,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.*;
 import cn.iocoder.yudao.module.waterdetection.controller.admin.watersampletestsummary.vo.*;
 import cn.iocoder.yudao.module.waterdetection.dal.dataobject.watersampletestsummary.WaterSampleTestSummaryDO;
@@ -29,6 +31,7 @@ import static cn.iocoder.yudao.module.waterdetection.enums.ErrorCodeConstants.*;
  */
 @Service
 @Validated
+@Slf4j
 public class WaterSampleTestSummaryServiceImpl implements WaterSampleTestSummaryService {
 
     @Resource
@@ -197,7 +200,7 @@ public class WaterSampleTestSummaryServiceImpl implements WaterSampleTestSummary
                 }
             } catch (Exception e) {
                 // 记录错误日志，但继续处理其他数据
-//                log.error("处理设备数据失败，样品编号: {}", detail.getYangpinbianhao(), e);
+                log.error("处理设备数据失败，样品编号: {}", detail.getYangpinbianhao(), e);
             }
         }
 
@@ -304,6 +307,12 @@ public class WaterSampleTestSummaryServiceImpl implements WaterSampleTestSummary
                 // 如果检测项目不匹配已知字段，可以记录到备注或其他字段
                 break;
         }
+
+        // 手动设置创建者信息（使用默认系统用户）
+        waterSample.setCreator("水质检测仪");
+        waterSample.setCreator("水质检测仪");
+        waterSample.setCreateTime(LocalDateTime.now());
+        waterSample.setUpdateTime(LocalDateTime.now());
 
         return waterSample;
     }

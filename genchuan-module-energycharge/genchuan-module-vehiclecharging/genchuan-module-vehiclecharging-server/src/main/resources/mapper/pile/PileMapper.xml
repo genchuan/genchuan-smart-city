@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.vehiclecharging.dal.mysql.pile.PileMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+    <!-- ==================== 图表统计 SQL ==================== -->
+
+    <!-- 运行时长趋势：按日聚合 status_monitor 的 power 之和 -->
+    <select id="selectRunTimeTrend" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.pile.vo.PileChartRespVO$RunTimeTrend">
+        SELECT
+            DATE_FORMAT(sm.monitor_time, '%Y-%m-%d') AS time,
+            CAST(SUM(ROUND(sm.power, 2)) AS SIGNED) AS runTime
+        FROM status_monitor sm
+        <where>
+            <if test="stationId != null">
+                AND sm.station_id = #{stationId}
+            </if>
+            <if test="startTime != null and startTime != ''">
+                AND UNIX_TIMESTAMP(sm.monitor_time) &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND UNIX_TIMESTAMP(sm.monitor_time) &lt;= #{endTime}
+            </if>
+            AND sm.deleted = 0
+        </where>
+        GROUP BY DATE_FORMAT(sm.monitor_time, '%Y-%m-%d')
+        ORDER BY time ASC
+    </select>
+
+    <!-- 各类型充电桩数量：按 charge_mode 分组，charge_mode 现在是 bigint ID，名称由 Service 层填充 -->
+    <select id="selectTypeBarList" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.pile.vo.PileChartRespVO$TypeBar">
+        SELECT
+            CAST(charge_mode AS CHAR) AS typeName,
+            COUNT(*) AS count
+        FROM charging_pile
+        <where>
+            <if test="stationId != null">
+                AND station_id = #{stationId}
+            </if>
+            AND deleted = 0
+        </where>
+        GROUP BY charge_mode
+    </select>
+
+    <!-- 卡片统计数据：总桩数、已启用数、故障数、调试中数 -->
+    <select id="selectCardInfo" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.pile.vo.PileChartRespVO$CardInfo">
+        SELECT
+            COUNT(*) AS totalCount,
+            SUM(CASE WHEN pile_status = 1 THEN 1 ELSE 0 END) AS enableCount,
+            SUM(CASE WHEN fault_flag = 1 THEN 1 ELSE 0 END) AS faultCount,
+            SUM(CASE WHEN pile_status = 3 THEN 1 ELSE 0 END) AS debugCount
+        FROM charging_pile
+        <where>
+            <if test="stationId != null">
+                AND station_id = #{stationId}
+            </if>
+            AND deleted = 0
+        </where>
+    </select>
+
+    <!-- 充电模式统计：按 charge_mode 分组统计充电桩数量，支持多租户隔离，charge_mode 现在是 bigint ID，名称由 Service 层填充 -->
+    <select id="selectChargeModeStat" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.pile.vo.PileChargeModeStatRespVO">
+        SELECT
+            charge_mode AS chargeMode,
+            COUNT(*) AS count
+        FROM charging_pile
+        <where>
+            <if test="stationId != null">
+                AND station_id = #{stationId}
+            </if>
+            AND deleted = 0
+        </where>
+        GROUP BY charge_mode
+    </select>
+
+    <!-- 充电桩状态统计：按 pile_status 分组统计数量 -->
+    <select id="selectPileStatusStat" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.pile.vo.PileStatusStatRespVO">
+        SELECT
+            pile_status AS pileStatus,
+            COUNT(*) AS count
+        FROM charging_pile
+        WHERE deleted = 0
+        GROUP BY pile_status
+    </select>
+
+</mapper>
