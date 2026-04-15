@@ -21,9 +21,17 @@ public class SpaceMonitorRespVO {
     @ExcelProperty("车位ID")
     private Long spaceId;
 
+    @Schema(description = "车位编号")
+    @ExcelProperty("车位编号")
+    private String spaceNo;
+
     @Schema(description = "场站ID", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("场站ID")
     private Long stationId;
+
+    @Schema(description = "场站名称")
+    @ExcelProperty("场站名称")
+    private String stationName;
 
     @Schema(description = "监测时间", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("监测时间")
@@ -81,4 +89,4 @@ public class SpaceMonitorRespVO {
     @ExcelProperty("更新时间")
     private LocalDateTime updateTime;
 
-}
+}

@@ -8,6 +8,8 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.spacemonitor.SpaceMonitorDO;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.inspectop.controller.admin.spacemonitor.vo.*;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * 车位状态监测 Mapper
@@ -38,4 +40,14 @@ public interface SpaceMonitorMapper extends BaseMapperX<SpaceMonitorDO> {
                 .orderByDesc(SpaceMonitorDO::getId));
     }
 
+    /**
+     * 【新增方法】关联查询分页方法
+     * 使用自定义SQL进行关联查询，返回包含车位编号和场站名称的结果
+     *
+     * @param page 分页参数
+     * @param reqVO 查询条件
+     * @return 包含关联信息的分页结果
+     */
+    List<SpaceMonitorRespVO> selectPageWithJoin(@Param("page") com.baomidou.mybatisplus.extension.plugins.pagination.Page<SpaceMonitorRespVO> page,
+                                                      @Param("reqVO") SpaceMonitorPageReqVO reqVO);
 }
