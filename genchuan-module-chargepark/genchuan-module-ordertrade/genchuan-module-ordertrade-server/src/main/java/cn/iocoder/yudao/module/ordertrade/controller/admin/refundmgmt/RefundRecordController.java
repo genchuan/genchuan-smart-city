@@ -30,7 +30,7 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
  *
  * @author genchuan
  */
-@Tag(name = "管理后台 -退款管理- 退款记录")
+@Tag(name = "订单交易 -退款管理- 退款记录")
 @RestController
 @RequestMapping("/ordertrade/refund-record")
 @Validated

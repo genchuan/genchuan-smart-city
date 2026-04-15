@@ -30,7 +30,7 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
  *
  * @author genchuan
  */
-@Tag(name = "管理后台 -联合追缴- 逃费识别")
+@Tag(name = "订单交易 -联合追缴- 逃费识别")
 @RestController
 @RequestMapping("/ordertrade/debt-identify")
 @Validated

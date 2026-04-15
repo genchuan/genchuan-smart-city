@@ -30,7 +30,7 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
  *
  * @author genchuan
  */
-@Tag(name = "管理后台 -订单管理- 两轮充电订单")
+@Tag(name = "订单交易 -订单管理- 两轮充电订单")
 @RestController
 @RequestMapping("/ordertrade/bike-charge-order")
 @Validated

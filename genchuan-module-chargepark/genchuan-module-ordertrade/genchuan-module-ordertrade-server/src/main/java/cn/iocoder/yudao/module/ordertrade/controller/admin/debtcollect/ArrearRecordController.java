@@ -30,7 +30,7 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
  *
  * @author genchuan
  */
-@Tag(name = "管理后台 -联合追缴 - 欠费记录")
+@Tag(name = "订单交易 -联合追缴 - 欠费记录")
 @RestController
 @RequestMapping("/ordertrade/arrear-record")
 @Validated
