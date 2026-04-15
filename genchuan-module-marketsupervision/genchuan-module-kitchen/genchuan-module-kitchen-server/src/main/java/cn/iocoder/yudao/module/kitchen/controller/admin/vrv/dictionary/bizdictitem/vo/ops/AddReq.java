@@ -11,7 +11,7 @@ public class AddReq {
 
     //==========================必须填写
 
-    @Schema(description = "[关联类型编码] 关联park_dict_type.uni_code", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "[关联类型编码] 关联park_dict_type.uni_code", requiredMode = Schema.RequiredMode.REQUIRED,example = "eee")
     @NotEmpty(message = "[关联类型编码] 关联park_dict_type.uni_code不能为空")
     private String typeCode;
 

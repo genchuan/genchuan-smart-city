@@ -74,14 +74,18 @@
     </select>
     <select id="drillAlarmList"
             parameterType="cn.iocoder.yudao.module.kitchen.controller.admin.violationanalytics.vo.drill.ViolationAnalyticsDrillReq"
-            resultType="cn.iocoder.yudao.module.kitchen.dal.dataobject.aialertmessage.AiAlertMessageDO">
+            resultType="cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.AiAlertMessageRespVO">
 
         SELECT
-            aim.*
+            aim.*,
+            itd.type_name as alert_type_name,
+            bdi.dict_label as alert_source_name
         FROM ai_alert_message aim
         INNER JOIN rectify_review rr ON aim.rectify_review_id = rr.id
         INNER JOIN enterprise_info ei ON rr.ent_id = ei.id
         INNER JOIN sys_device sd ON aim.device_code = sd.device_code
+        INNER JOIN illegal_type_dict itd ON aim.alert_type = itd.id
+        left join biz_dict_item bdi on aim.alert_source = bdi.dict_key and bdi.type_code = 'biz_AiAlertMessagePageReqVO_alertSourceName'
         WHERE aim.deleted = 0
         AND rr.deleted = 0
         AND ei.deleted = 0
