@@ -135,25 +135,25 @@ public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService 
         LocalDateTime now = LocalDateTime.now();
 
         // 2. 计算逾期标识
-        for (PunishReviewLedgerRespVO item : punishReviewLedgerRespVOList) {
-
-            // 默认未逾期
-            item.setOverdueFlag(0);
-
-            // 判空（非常关键，避免 NPE）
-            if (item.getPaymentDeadlineTime() == null || item.getReviewStatus() == null) {
-                continue;
-            }
-
-            // 判断是否“已下发”
-            if ("已下发".equals(item.getReviewStatus())) {
-
-                // 判断是否超过缴费截止时间
-                if (now.isAfter(item.getPaymentDeadlineTime())) {
-                    item.setOverdueFlag(1);
-                }
-            }
-        }
+//        for (PunishReviewLedgerRespVO item : punishReviewLedgerRespVOList) {
+//
+//            // 默认未逾期
+//            item.setOverdueFlag(0);
+//
+//            // 判空（非常关键，避免 NPE）
+//            if (item.getPaymentDeadlineTime() == null || item.getReviewStatus() == null) {
+//                continue;
+//            }
+//
+//            // 判断是否“已下发”
+//            if ("已下发".equals(item.getReviewStatus())) {
+//
+//                // 判断是否超过缴费截止时间
+//                if (now.isAfter(item.getPaymentDeadlineTime())) {
+//                    item.setOverdueFlag(1);
+//                }
+//            }
+//        }
 
 
         //配置 分页参数
