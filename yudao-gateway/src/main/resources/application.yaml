@@ -313,6 +313,14 @@ spring:
                 - Path=/admin-api/studentmgmt/**
               filters:
                 - RewritePath=/admin-api/studentmgmt/v3/api-docs, /v3/api-docs # 转发到 /v3/api-docs
+            ## genchuan-module-chargepark 服务
+            # genchuan-module-ordertrade
+            - id: ordertrade-admin-api # 路由的编号
+              uri: grayLb://ordertrade-server
+              predicates: # 断言，作为路由的匹配条件
+                - Path=/admin-api/ordertrade/**
+              filters:
+                - RewritePath=/admin-api/ordertrade/v3/api-docs, /v3/api-docs # 转发到 /v3/api-docs
 
           x-forwarded:
             prefix-enabled: false # 避免 Swagger 重复带上额外的 /admin-api/system 前缀
@@ -423,6 +431,12 @@ knife4j:
       - name: studentmgmt-server
         service-name: studentmgmt-server
         url: /admin-api/studentmgmt/v3/api-docs
+
+      # genchuan-module-chargepark
+      # genchuan-module-ordertrade
+      - name: ordertrade-server
+        service-name: ordertrade-server
+        url: /admin-api/ordertrade/v3/api-docs
 
 
 --- #################### 芋道相关配置 ####################
