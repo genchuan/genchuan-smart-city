@@ -1,7 +1,6 @@
 package cn.iocoder.yudao.module.vehiclecharging.controller.admin.orderlist.vo;
 
 import lombok.*;
-import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import java.math.BigDecimal;
@@ -10,7 +9,7 @@ import java.time.LocalDateTime;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
-@Schema(description = "管理后台 - 订单列表分页 Request VO")
+@Schema(description = "汽车充电 - 订单列表分页 Request VO")
 @Data
 public class OrderListPageReqVO extends PageParam {
 

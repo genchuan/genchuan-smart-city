@@ -81,7 +81,68 @@ public class ChargingLotServiceImpl implements ChargingLotService {
 
     @Override
     public PageResult<ChargingLotDO> getChargingLotPage(ChargingLotPageReqVO pageReqVO) {
-        return chargingLotMapper.selectPage(pageReqVO);
+        // 1. 查询充电车位分页数据
+        PageResult<ChargingLotDO> pageResult = chargingLotMapper.selectPage(pageReqVO);
+
+        if (CollUtil.isEmpty(pageResult.getList())) {
+            return pageResult;
+        }
+
+        // 2. 批量收集所有关联的场站ID和充电桩ID
+        Set<Long> stationIds = new HashSet<>();
+        Set<Long> pileIds = new HashSet<>();
+
+        for (ChargingLotDO lot : pageResult.getList()) {
+            if (lot.getStationId() != null) {
+                stationIds.add(lot.getStationId());
+            }
+            if (lot.getPileId() != null) {
+                pileIds.add(lot.getPileId());
+            }
+        }
+
+        // 3. 批量查询场站信息（建立ID->名称映射）
+        Map<Long, String> stationNameMap = new HashMap<>();
+        if (CollUtil.isNotEmpty(stationIds)) {
+            // 使用自定义SQL批量查询场站名称
+            List<Map<String, Object>> stationNames = chargingLotMapper.selectStationNamesByIds(stationIds);
+            for (Map<String, Object> map : stationNames) {
+                Long id = (Long) map.get("id");
+                String name = (String) map.get("station_name");
+                stationNameMap.put(id, name);
+            }
+        }
+
+        // 4. 批量查询充电桩信息（建立ID->桩名称映射）
+        Map<Long, String> pileNameMap = new HashMap<>();
+        if (CollUtil.isNotEmpty(pileIds)) {
+            // 使用自定义SQL批量查询充电桩名称
+            List<Map<String, Object>> pileNames = chargingLotMapper.selectPileNamesByIds(pileIds);
+            for (Map<String, Object> map : pileNames) {
+                Long id = (Long) map.get("id");
+                String name = (String) map.get("pile_code");
+                pileNameMap.put(id, name);
+            }
+        }
+
+        // 5. 为每个充电车位设置关联名称
+        for (ChargingLotDO lot : pageResult.getList()) {
+            // 设置场站名称
+            if (lot.getStationId() != null) {
+                lot.setStationName(stationNameMap.getOrDefault(lot.getStationId(), "场站ID:" + lot.getStationId()));
+            } else {
+                lot.setStationName("未关联场站");
+            }
+
+            // 设置充电桩名称
+            if (lot.getPileId() != null) {
+                lot.setPileName(pileNameMap.getOrDefault(lot.getPileId(), "桩ID:" + lot.getPileId()));
+            } else {
+                lot.setPileName("未绑定充电桩");
+            }
+        }
+
+        return pageResult;
     }
 
 
@@ -119,6 +180,7 @@ public class ChargingLotServiceImpl implements ChargingLotService {
             ChargingLotChartRespVO.StationLot stationStat = stationLotMap.get(stationId);
             if (stationStat == null) {
                 stationStat = new ChargingLotChartRespVO.StationLot();
+                stationStat.setStationId(stationId);
                 // 设置场站名称 - 这里用stationId，实际应该从场站表获取名称
                 stationStat.setStationName("场站-" + stationKey);
                 stationStat.setTotalCount(0);

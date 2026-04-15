@@ -1,0 +1,123 @@
+--- #################### 注册中心 + 配置中心 ####################
+
+spring:
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+      username:
+      password:
+      discovery:
+        namespace:
+        group: DEFAULT_GROUP
+        metadata:
+          version: 1.0.0
+      config:
+        namespace:
+        group: DEFAULT_GROUP
+
+--- #################### 数据库相关配置 ####################
+
+spring:
+  autoconfigure:
+    exclude:
+      - com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+  datasource:
+    druid:
+      web-stat-filter:
+        enabled: true
+      stat-view-servlet:
+        enabled: true
+        allow:
+        url-pattern: /druid/*
+        login-username:
+        login-password:
+      filter:
+        stat:
+          enabled: true
+          log-slow-sql: true
+          slow-sql-millis: 100
+          merge-sql: true
+        wall:
+          config:
+            multi-statement-allow: true
+    dynamic:
+      druid:
+        initial-size: 1
+        min-idle: 1
+        max-active: 20
+        max-wait: 60000
+        time-between-eviction-runs-millis: 60000
+        min-evictable-idle-time-millis: 600000
+        max-evictable-idle-time-millis: 1800000
+        validation-query: SELECT 1 FROM DUAL
+        test-while-idle: true
+        test-on-borrow: false
+        test-on-return: false
+        pool-prepared-statements: true
+        max-pool-prepared-statement-per-connection-size: 20
+      primary: master
+      datasource:
+        master:
+          url: jdbc:mysql://127.0.0.1:3306/order_trade?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
+          username: root
+          password: 123456
+        slave:
+          lazy: true
+          url: jdbc:mysql://127.0.0.1:3306/order_trade?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
+          username: root
+          password: 123456
+
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      database: 0
+      password: 123456
+      timeout: 10s
+--- #################### 定时任务 ####################
+
+xxl:
+  job:
+    admin:
+      addresses: http://127.0.0.1:9090/xxl-job-admin
+
+--- #################### 服务保障 ####################
+
+lock4j:
+  acquire-timeout: 3000
+  expire: 30000
+
+--- #################### 监控 ####################
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: '*'
+
+spring:
+  boot:
+    admin:
+      client:
+        instance:
+          service-host-type: IP
+        username: admin
+        password: admin
+
+--- #################### 日志 ####################
+
+logging:
+  level:
+    cn.iocoder.yudao.module.ordertrade.dal.mysql: debug
+    org.springframework.context.support.PostProcessorRegistrationDelegate: ERROR
+
+--- #################### 芋道相关配置 ####################
+
+yudao:
+  env:
+    tag: ${HOSTNAME}
+  security:
+    mock-enable: true
+  access-log:
+    enable: false

@@ -225,40 +225,42 @@ public class StatusMonitorServiceImpl implements StatusMonitorService {
 
 // 3. 筛选出状态为"异常"的记录
         List<StatusMonitorDO> abnormalMonitors = monitorList.stream()
-                .filter(monitor -> "异常".equals(monitor.getMonitorStatus()))
-                .peek(monitor -> {
-                    // 5. 直接修改DO对象
-                    monitor.setMonitorStatus("已恢复");
-                    monitor.setDisposeMeasure(handleReqVO.getDisposeMeasure());
-                    monitor.setDisposeUser(String.valueOf(loginUserId));
-                    monitor.setDisposeTime(LocalDateTime.now());
-                    monitor.setUpdater(String.valueOf(loginUserId));
-                    monitor.setUpdateTime(LocalDateTime.now());
-                })
+//                .filter(monitor -> "异常".equals(monitor.getMonitorStatus()))
+//                .peek(monitor -> {
+//                    // 5. 直接修改DO对象
+//                    monitor.setMonitorStatus("已恢复");
+//                    monitor.setDisposeMeasure(handleReqVO.getDisposeMeasure());
+//                    monitor.setDisposeUser(String.valueOf(loginUserId));
+//                    monitor.setDisposeTime(LocalDateTime.now());
+//                    monitor.setUpdater(String.valueOf(loginUserId));
+//                    monitor.setUpdateTime(LocalDateTime.now());
+//                })
                 .collect(Collectors.toList());
 
-        if (abnormalMonitors.isEmpty()) {
-            throw exception("没有符合条件的异常记录需要处置");
-        }
+//        if (abnormalMonitors.isEmpty()) {
+//            throw exception("没有符合条件的异常记录需要处置");
+//        }
 
 
 // 6. 使用条件更新（仅适用于所有记录更新相同字段）
-        StatusMonitorDO updateDO = new StatusMonitorDO();
-        updateDO.setMonitorStatus("已恢复");
-        updateDO.setDisposeMeasure(handleReqVO.getDisposeMeasure());
-        updateDO.setDisposeUser(String.valueOf(loginUserId));
-        updateDO.setDisposeTime(LocalDateTime.now());
-        updateDO.setUpdater(String.valueOf(loginUserId));
-        updateDO.setUpdateTime(LocalDateTime.now());
+        if (!abnormalMonitors.isEmpty()) {
+            StatusMonitorDO updateDO = new StatusMonitorDO();
+            updateDO.setMonitorStatus("已恢复");
+            updateDO.setDisposeMeasure(handleReqVO.getDisposeMeasure());
+            updateDO.setDisposeUser(String.valueOf(loginUserId));
+            updateDO.setDisposeTime(LocalDateTime.now());
+            updateDO.setUpdater(String.valueOf(loginUserId));
+            updateDO.setUpdateTime(LocalDateTime.now());
 
-        statusMonitorMapper.update(
-                updateDO,
-                new LambdaQueryWrapper<StatusMonitorDO>()
-                        .in(StatusMonitorDO::getId,
-                                abnormalMonitors.stream().map(StatusMonitorDO::getId).collect(Collectors.toList()))
-                        .eq(StatusMonitorDO::getMonitorStatus, "异常")
-        );
+            statusMonitorMapper.update(
+                    updateDO,
+                    new LambdaQueryWrapper<StatusMonitorDO>()
+                            .in(StatusMonitorDO::getId,
+                                    abnormalMonitors.stream().map(StatusMonitorDO::getId).collect(Collectors.toList()))
+//                            .eq(StatusMonitorDO::getMonitorStatus, "异常")
+            );
 
+        }
 
 
         return (long) abnormalMonitors.size();

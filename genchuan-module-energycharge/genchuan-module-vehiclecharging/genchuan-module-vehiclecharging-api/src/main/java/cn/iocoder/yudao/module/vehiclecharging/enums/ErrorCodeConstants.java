@@ -14,6 +14,8 @@ public interface ErrorCodeConstants {
     // ========== 充电站==========
     ErrorCode CHARGING_STATION_NOT_EXISTS = new ErrorCode(500, "充电站不存在");
     ErrorCode CHARGING_STATION_CODE_EXISTS = new ErrorCode(500, "充电站编号已存在");
+    // ========== 充电桩告警==========
+    ErrorCode PILEALARM_NOT_EXISTS = new ErrorCode(500, "充电桩告警不存在");
 
 
 
@@ -29,8 +31,30 @@ public interface ErrorCodeConstants {
 
     // ========== 订单告警 ==========
     ErrorCode ORDER_ALARM_NOT_EXISTS = new ErrorCode(500, "订单告警不存在");
+    // ========== 订单告警状态错误==========
+    ErrorCode ORDER_ALARM_STATUS_ERROR = new ErrorCode(500, "订单告警状态错误");
+    // ========== 订单不存在==========
+    ErrorCode ORDER_NOT_EXISTS = new ErrorCode(500, "订单不存在");
 
     // ========== 订单退款==========
     ErrorCode ORDER_REFUND_NOT_EXISTS = new ErrorCode(500, "订单退款不存在");
+
+    ErrorCode PILE_NOT_EXISTS = new ErrorCode(500, "充电桩不存在");
+    ErrorCode PILE_CODE_DUPLICATE = new ErrorCode(500, "充电桩编号已存在");
+    ErrorCode PILE_STATUS_NOT_DEBUGGING = new ErrorCode(500, "充电桩状态不是未调试，无法调试");
+    ErrorCode PILE_STATUS_NOT_ENABLED = new ErrorCode(500, "充电桩状态不是已调试，无法启用");
+    ErrorCode PILE_STATUS_NOT_ENABLED_FOR_DISABLE = new ErrorCode(500, "充电桩状态不是已启用，无法进行停用操作");
+    ErrorCode PILE_QRCODE_NOT_EXISTS = new ErrorCode(500, "充电桩二维码内容不存在");
+    ErrorCode     MODULE_ALARM_NOT_EXISTS = new ErrorCode(500, "模块告警记录不存在");
+
+
+    ErrorCode MODULE_ALARM_STATUS_NOT_UNCHECKED = new ErrorCode(500, "模块告警状态不是未排查，无法执行排查操作");
+    ErrorCode MODULE_ALARM_STATUS_NOT_CHECKED = new ErrorCode(500, "模块告警状态不是已排查，无法执行修复操作");
+    ErrorCode MODULE_ALARM_STATUS_NOT_REPAIRING = new ErrorCode(500, "模块告警状态不是修复中，无法执行销账操作");
+    ErrorCode MODULE_ALARM_REPAIR_VOUCHER_NOT_EXISTS = new ErrorCode(500, "模块告警记录不存在修复凭证");
+
+
+    // ========== 结算单==========
+    ErrorCode SETTLEMENT_BILL_NOT_EXISTS = new ErrorCode(500, "结算单不存在");
 
 }

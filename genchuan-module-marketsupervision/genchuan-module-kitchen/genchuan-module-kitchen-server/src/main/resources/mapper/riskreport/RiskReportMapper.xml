@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.kitchen.dal.mysql.riskreport.RiskReportMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+    <select id="getEntReportPage"
+            resultType="cn.iocoder.yudao.module.kitchen.controller.admin.riskreport.vo.page.EntReportPageResp">
+        SELECT
+            1 AS report_type,  <!-- 1=月报 2=自定义报表 -->
+            DATE_FORMAT(r.create_time, '%Y-%m') AS statistic_period,
+            -- CONCAT('REPORT', DATE_FORMAT(now(), '%Y-%m'), r.ent_id) AS report_no,
+            CONCAT('REPORT', DATE_FORMAT(ANY_VALUE(r.create_time), '%Y-%m'), r.ent_id) AS report_no,
+            r.ent_id,
+            e.ent_name,
+            '低风险' AS risk_level,  <!-- 业务计算风险等级，这里先占位 -->
+            e.area_name AS area,
+            e.ent_type_name AS ent_type,
+        MIN(r.create_time) AS begin_time,
+        MAX(r.create_time) AS end_time,
+        COUNT(r.id) AS violation_count,
+        ROUND(
+            (COUNT(DISTINCT CASE WHEN r.review_status = '已完成' THEN r.id END)
+            / COUNT(DISTINCT r.id)) * 100,
+            2
+        ) AS rectify_finish_rate
+        FROM rectify_review r
+        LEFT JOIN enterprise_info e ON r.ent_id = e.id
+        WHERE r.deleted = 0
+        AND e.deleted = 0
+        <!-- 动态查询条件：来自 EntReportPageReq -->
+        <if test="statisticPeriod != null and statisticPeriod != ''">
+            AND DATE_FORMAT(r.create_time, '%Y-%m') = #{statisticPeriod}
+        </if>
+        <if test="area != null and area != ''">
+            AND e.area_name = #{area}
+        </if>
+        <if test="entType != null and entType != ''">
+            AND e.ent_type_name = #{entType}
+        </if>
+        <if test="beginTime != null">
+            AND r.create_time >= #{beginTime}
+        </if>
+        <if test="endTime != null">
+            AND r.create_time &lt;= #{endTime}
+        </if>
+        <if test="entName != null and entName != ''">
+            AND e.ent_name LIKE CONCAT('%', #{entName}, '%')
+        </if>
+        <!-- ====================== 新增：报表编号筛选 ====================== -->
+        <if test="reportNo != null and reportNo != ''">
+            AND CONCAT('REPORT', DATE_FORMAT(r.create_time, '%Y-%m'), r.ent_id) LIKE CONCAT('%', #{reportNo}, '%')
+        </if>
+        <!-- 按月分组 = 企业月报 -->
+        GROUP BY r.ent_id, DATE_FORMAT(r.create_time, '%Y-%m')
+
+        ORDER BY DATE_FORMAT(r.create_time, '%Y-%m') desc,r.ent_id DESC
+
+        LIMIT #{pageSize} OFFSET ${(pageNo - 1) * pageSize}
+
+    </select>
+
+    <!-- 分页统计总数（修复版） -->
+    <select id="getEntReportPageCount" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM (
+                                 SELECT 1
+                                 FROM rectify_review r
+                                          LEFT JOIN enterprise_info e ON r.ent_id = e.id
+                                 WHERE r.deleted = 0
+                                   AND e.deleted = 0
+                                <!-- 动态查询条件：来自 EntReportPageReq -->
+                                <if test="statisticPeriod != null and statisticPeriod != ''">
+                                    AND DATE_FORMAT(r.create_time, '%Y-%m') = #{statisticPeriod}
+                                </if>
+                                <if test="area != null and area != ''">
+                                    AND e.area_name = #{area}
+                                </if>
+                                <if test="entType != null and entType != ''">
+                                    AND e.ent_type_name = #{entType}
+                                </if>
+                                <if test="beginTime != null">
+                                    AND r.create_time >= #{beginTime}
+                                </if>
+                                <if test="endTime != null">
+                                    AND r.create_time &lt;= #{endTime}
+                                </if>
+                                <if test="entName != null and entName != ''">
+                                    AND e.ent_name LIKE CONCAT('%', #{entName}, '%')
+                                </if>
+                                <!-- ====================== 新增：报表编号筛选 ====================== -->
+                                <if test="reportNo != null and reportNo != ''">
+                                    AND CONCAT('REPORT', DATE_FORMAT(r.create_time, '%Y-%m'), r.ent_id) LIKE CONCAT('%', #{reportNo}, '%')
+                                </if>
+                                 GROUP BY r.ent_id, DATE_FORMAT(r.create_time, '%Y-%m')
+                             ) AS temp
+    </select>
+
+</mapper>

@@ -5,7 +5,7 @@ import lombok.*;
 import java.util.*;
 import jakarta.validation.constraints.*;
 
-@Schema(description = "管理后台 - 充电车位新增/修改 Request VO")
+@Schema(description = "汽车充电 - 充电车位新增/修改 Request VO")
 @Data
 public class ChargingLotSaveReqVO {
 
@@ -44,5 +44,8 @@ public class ChargingLotSaveReqVO {
 
     @Schema(description = "备用字段2")
     private String reserve2;
+
+    @Schema(description = "创建人")
+    private String creator;
 
 }

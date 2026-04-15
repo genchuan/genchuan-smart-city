@@ -1,12 +1,8 @@
 package cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.orderlist;
 
+import cn.iocoder.yudao.framework.excel.core.annotations.ExcelColumnSelect;
 import lombok.*;
-import java.util.*;
 import java.math.BigDecimal;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.LocalDateTime;
-import java.time.LocalDateTime;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
@@ -99,6 +95,10 @@ public class OrderListDO extends BaseDO {
      * 备用字段2
      */
     private String reserve2;
-
+    /**
+     * 取消订单原因
+     */
+    @TableField(exist = false)
+    private String cancelReason;
 
 }

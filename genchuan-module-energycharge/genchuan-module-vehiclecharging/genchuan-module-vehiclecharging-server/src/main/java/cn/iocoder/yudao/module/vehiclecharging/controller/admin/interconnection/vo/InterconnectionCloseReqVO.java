@@ -3,7 +3,7 @@ package cn.iocoder.yudao.module.vehiclecharging.controller.admin.interconnection
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-@Schema(description = "管理后台 - 互联互通表关闭 Request VO")
+@Schema(description = "汽车充电 - 互联互通表关闭 Request VO")
 @Data
 public class InterconnectionCloseReqVO {
     @Schema(description = "对接申请主键 ID", example = "4002")

@@ -17,6 +17,10 @@ Build:
         echo "===== 当前是 master 分支，开始构建镜像 ====="
         declare -A MODULE_JAR_MAP=(
           ["yudao-gateway"]="yudao-gateway"
+          ["yudao-module-system-server"]="yudao-module-system/yudao-module-system-server"
+          ["yudao-module-infra-server"]="yudao-module-infra/yudao-module-infra-server"
+          ["yudao-module-member-server"]="yudao-module-member/yudao-module-member-server"
+          ["yudao-module-product-server"]="yudao-module-mall/yudao-module-product-server"
           ["genchuan-module-envirhealth-server"]="genchuan-module-urban/genchuan-module-envirhealth/genchuan-module-envirhealth-server"
           ["genchuan-module-facility-server"]="genchuan-module-urban/genchuan-module-facility/genchuan-module-facility-server"
           ["genchuan-module-data-server"]="genchuan-module-datahub/genchuan-module-data/genchuan-module-data-server"

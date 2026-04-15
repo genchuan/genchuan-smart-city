@@ -1,9 +1,11 @@
 package cn.iocoder.yudao.module.appearance.dal.dataobject.outdoorad;
 
-import com.baomidou.mybatisplus.annotation.*;
-import lombok.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
-
+import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,82 +26,74 @@ import java.util.List;
 public class OutdoorAdDO extends BaseDO {
 
     /**
-     * 主键ID
+     * 主键ID（UUID）
      */
     @TableId
-    private Long id;
+    private String id;
     /**
-     * 广告ID（UUID）
-     */
-    private String outdoorAdId;
-    /**
-     * 广告编码
+     * 广告编码，唯一
      */
     private String adCode;
     /**
      * 广告名称
      */
-    private String name;
+    private String adName;
     /**
-     * 广告类型
+     * 广告类型（立柱/墙面/灯箱/电子屏）
      */
-    private String type;
+    private String adType;
     /**
-     * 广告位置
+     * 广告尺寸（长*宽，单位：米）
      */
-    private String location;
+    private String adSize;
+    /**
+     * 实际尺寸（长*宽，单位：米）
+     */
+    private String actualSize;
+    /**
+     * 广告具体位置
+     */
+    private String adLocation;
     /**
      * 广告点位经度
      */
-    private String lng;
+    private BigDecimal lng;
     /**
      * 广告点位纬度
      */
-    private String lat;
+    private BigDecimal lat;
     /**
-     * 网格ID
+     * 所属区域编码
      */
-    private Long gridId;
+    private String areaCode;
     /**
-     * 审批尺寸
+     * 所属网格编码
      */
-    private String approvedSize;
+    private String gridCode;
     /**
-     * 审批状态
+     * 审批状态（待审批/已审批/已驳回）
      */
     private String approvalStatus;
     /**
      * 审批意见
      */
-    private String approvedDesc;
+    private String approvalOpinion;
     /**
-     * 审批人ID
+     * 审批人真实姓名
      */
-    private Long approvalBy;
+    private String approverName;
     /**
-     * 审批开始时间
+     * 审批时间
      */
-    private LocalDateTime startApprovalTime;
+    private LocalDateTime approvalTime;
     /**
-     * 审批结束时间
+     * 数据状态：0-未启用，1-已启用，2-已归档
      */
-    private LocalDateTime endApprovalTime;
-    /**
-     * 数据状态
-     */
-    private Long dataStatus;
+    private Integer dataStatus;
     /**
      * 归档版本号
      */
     private String archiveVersion;
-    /**
-     * 附件文件ID
-     */
-    private Long attachFileId;
-    /**
-     * 实际尺寸
-     */
-    private String actualSize;
     /**
      * 区块链存证哈希值
      */
@@ -109,111 +103,47 @@ public class OutdoorAdDO extends BaseDO {
      */
     private String lifeCycleId;
     /**
-     * 倾斜角度
-     */
-    private BigDecimal tiltAngle;
-    /**
-     * 关联 sys_damage_status.id，破损状态ID
-     */
-    private Long damageStatusId;
-    /**
-     * 关联 sys_ad_status.id，广告状态ID
-     */
-    private Long adStatusId;
-    /**
-     * 区域ID
-     */
-    private Long areaId;
-    /**
-     * 关联 sys_user.id，监管员ID
-     */
-    private Long supervisorId;
-    /**
-     * 关联 sys_warning_type.id，预警类型ID
-     */
-    private Long warningTypeId;
-    /**
-     * 预警时间
-     */
-    private LocalDateTime warningTime;
-    /**
      * 备注
      */
     private String remark;
     /**
-     * 通用扩展字段1
+     * 备用字段1
      */
-    private String extCommon1;
+    private String reserve1;
     /**
-     * 通用扩展字段2
+     * 备用字段2
      */
-    private String extCommon2;
-    /**
-     * 通用扩展字段3
-     */
-    private String extCommon3;
-    /**
-     * 通用扩展字段4
-     */
-    private String extCommon4;
+    private String reserve2;
+
     // ==================== 以下为关联查询字段（非数据库字段） ====================
     /**
-     * 区域名称
+     * 所属区域名称
      */
     @TableField(exist = false)
     private String areaName;
     /**
-     * 关联 sys_area.id，区域编码
-     */
-    @TableField(exist = false)
-    private String areaCode;
-    /**
-     * 网格名称
+     * 所属网格名称
      */
     @TableField(exist = false)
     private String gridName;
     /**
-     * 文件名称
-     */
-    @TableField(exist = false)
-    private String fileName;
-    /**
-     * 文件地址
-     */
-    @TableField(exist = false)
-    private String fileUrl;
-    /**
-     * 文件类型
-     */
-    @TableField(exist = false)
-    private String fileType;
-    /**
-     * 审批人名称（对应 approvalBy）
+     * 审批人名称（对应 approverName）
      */
     @TableField(exist = false)
     private String approvalName;
     /**
-     * 创建人名称（对应 creator）
+     * 创建人名称（对应 creator，BaseDO 中有 creator 字段但存储的是用户ID，此处为昵称）
      */
     @TableField(exist = false)
-    private String createName;
+    private String createByName;
     /**
      * 更新人名称（对应 updater）
      */
     @TableField(exist = false)
-    private String updateName;
+    private String updateByName;
     /**
-     * 文件ID
+     * 附件文件列表
      */
-    @TableField(exist = false)
-    private String fileId;
-    /**
-     * 关联 sys_grid.id，网格编码
-     */
-    @TableField(exist = false)
-    private String gridCode;
-
-    // 附件文件列表
     @TableField(exist = false)
     private List<SysAttachFileDO> attachFileList;
 }

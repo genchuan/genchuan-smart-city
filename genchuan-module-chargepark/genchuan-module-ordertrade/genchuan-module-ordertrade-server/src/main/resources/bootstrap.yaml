@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: genchuan-module-ordertrade
+  cloud:
+    nacos:
+      config:
+        server-addr: 127.0.0.1:8848
+        namespace: dev
+        file-extension: yaml

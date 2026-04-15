@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.vehiclecharging.dal.mysql.chargingstation.ChargingStationMapper">
+
+    <select id="selectAreaStationCount" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.chargingstation.vo.ChargingStationAreaCountRespVO">
+        SELECT
+        a.id AS areaId,
+        a.name AS areaName,
+        COUNT(s.id) AS stationCount,
+        SUM(CASE WHEN s.station_status = '已启用' THEN 1 ELSE 0 END) AS enableCount
+        FROM
+        sys_area a
+        LEFT JOIN
+        charging_station s ON a.id = s.area_id AND s.deleted = 0
+        WHERE
+        a.deleted = 0
+        <if test="id != null">
+            AND a.parent_id = #{id}
+        </if>
+        <if test="id == null">
+            AND a.parent_id = 0
+        </if>
+        GROUP BY
+        a.id, a.name
+        ORDER BY
+        a.id
+    </select>
+
+</mapper>

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
-@Schema(description = "管理后台 - 订单退款分页 Request VO")
+@Schema(description = "汽车充电 - 订单退款分页 Request VO")
 @Data
 public class OrderRefundPageReqVO extends PageParam {
 
@@ -60,6 +60,9 @@ public class OrderRefundPageReqVO extends PageParam {
 
     @Schema(description = "备用字段2")
     private String reserve2;
+
+    @Schema(description = "创建人")
+    private String creator;
 
     @Schema(description = "创建时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)

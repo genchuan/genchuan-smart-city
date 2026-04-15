@@ -314,4 +314,45 @@ public class MemberUserServiceImpl implements MemberUserService {
         return true;
     }
 
+//    private MemberUserDO createUser(String mobile, String nickname, String avatar,
+//                                    String registerIp, Integer terminal) {
+//        // 重载一个原有方法，保持随机密码逻辑，供其他场景（如三方登录）使用
+//        return createUser(mobile, nickname, avatar, registerIp, terminal, null);
+//    }
+
+    /**
+     * 创建用户（支持自定义密码）
+     * @param password 明文密码。为 null 时则随机生成。
+     */
+    private MemberUserDO createUser(String mobile, String nickname, String avatar,
+                                    String registerIp, Integer terminal, String password) {
+        // 生成密码：如果未传入，则随机生成
+        if (StrUtil.isEmpty(password)) {
+            password = IdUtil.fastSimpleUUID();
+        }
+        // 插入用户
+        MemberUserDO user = new MemberUserDO();
+        user.setMobile(mobile);
+        user.setStatus(CommonStatusEnum.ENABLE.getStatus());
+        user.setPassword(encodePassword(password)); // 对传入的或随机的密码进行加密
+        user.setRegisterIp(registerIp).setRegisterTerminal(terminal);
+        user.setNickname(nickname).setAvatar(avatar);
+        if (StrUtil.isEmpty(nickname)) {
+            user.setNickname("用户" + RandomUtil.randomNumbers(6));
+        }
+        memberUserMapper.insert(user);
+        return user;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public MemberUserDO createUserIfAbsent(String mobile, String nickname, String password, String registerIp, Integer terminal) {
+        MemberUserDO user = memberUserMapper.selectByMobile(mobile);
+        if (user != null) {
+            return user;
+        }
+        // 调用私有的 createUser 方法，传入昵称和密码
+        return createUser(mobile, nickname, null, registerIp, terminal, password);
+    }
+
 }

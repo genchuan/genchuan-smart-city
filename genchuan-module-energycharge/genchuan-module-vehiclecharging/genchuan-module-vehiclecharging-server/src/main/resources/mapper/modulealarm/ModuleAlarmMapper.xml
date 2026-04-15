@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.vehiclecharging.dal.mysql.modulealarm.ModuleAlarmMapper">
+
+    <select id="selectPageWithNames" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.modulealarm.vo.ModuleAlarmRespVO">
+        SELECT
+            m.id,
+            m.alarm_code AS alarmCode,
+            m.module_name AS moduleName,
+            m.abnormal_type_id AS abnormalTypeId,
+            m.alarm_level_id AS alarmLevelId,
+            m.alarm_time AS alarmTime,
+            m.server_info AS serverInfo,
+            m.alarm_status_id AS alarmStatusId,
+            m.check_reason AS checkReason,
+            m.repair_voucher AS repairVoucher,
+            m.repair_time AS repairTime,
+            m.remark,
+            m.reserve1,
+            m.reserve2,
+        m.creator,
+        m.updater,
+        m.deleted,
+        m.create_time AS createTime,
+        m.update_time AS updateTime,
+        a.typename AS abnormalName,
+        g.typename AS alarmLevelName,
+        s.typename AS alarmStatusName
+        FROM module_alarm_record m
+        LEFT JOIN abnormal_type a ON m.abnormal_type_id = a.id
+        LEFT JOIN alarm_grade g ON m.alarm_level_id = g.id
+        LEFT JOIN alarm_status s ON m.alarm_status_id = s.id
+        WHERE m.deleted = 0
+        <if test="reqVO.alarmCode != null and reqVO.alarmCode != ''">
+            AND m.alarm_code = #{reqVO.alarmCode}
+        </if>
+        <if test="reqVO.moduleName != null and reqVO.moduleName != ''">
+            AND m.module_name LIKE CONCAT('%', #{reqVO.moduleName}, '%')
+        </if>
+        <if test="reqVO.abnormalTypeId != null">
+            AND m.abnormal_type_id = #{reqVO.abnormalTypeId}
+        </if>
+        <if test="reqVO.alarmLevelId != null">
+            AND m.alarm_level_id = #{reqVO.alarmLevelId}
+        </if>
+        <if test="reqVO.alarmTime != null and reqVO.alarmTime.length == 2">
+            AND m.alarm_time BETWEEN #{reqVO.alarmTime[0]} AND #{reqVO.alarmTime[1]}
+        </if>
+        <if test="reqVO.serverInfo != null and reqVO.serverInfo != ''">
+            AND m.server_info = #{reqVO.serverInfo}
+        </if>
+        <if test="reqVO.alarmStatusId != null">
+            AND m.alarm_status_id = #{reqVO.alarmStatusId}
+        </if>
+        <if test="reqVO.checkReason != null and reqVO.checkReason != ''">
+            AND m.check_reason = #{reqVO.checkReason}
+        </if>
+        <if test="reqVO.repairVoucher != null and reqVO.repairVoucher != ''">
+            AND m.repair_voucher = #{reqVO.repairVoucher}
+        </if>
+        <if test="reqVO.repairTime != null and reqVO.repairTime.length == 2">
+            AND m.repair_time BETWEEN #{reqVO.repairTime[0]} AND #{reqVO.repairTime[1]}
+        </if>
+        <if test="reqVO.remark != null and reqVO.remark != ''">
+            AND m.remark = #{reqVO.remark}
+        </if>
+        <if test="reqVO.reserve1 != null and reqVO.reserve1 != ''">
+            AND m.reserve1 = #{reqVO.reserve1}
+        </if>
+        <if test="reqVO.reserve2 != null and reqVO.reserve2 != ''">
+            AND m.reserve2 = #{reqVO.reserve2}
+        </if>
+        <if test="reqVO.creator != null and reqVO.creator != ''">
+            AND m.creator = #{reqVO.creator}
+        </if>
+        <if test="reqVO.updater != null and reqVO.updater != ''">
+            AND m.updater = #{reqVO.updater}
+        </if>
+        <if test="reqVO.deleted != null">
+            AND m.deleted = #{reqVO.deleted}
+        </if>
+        <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+            AND m.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+        </if>
+        <if test="reqVO.updateTime != null and reqVO.updateTime.length == 2">
+            AND m.update_time BETWEEN #{reqVO.updateTime[0]} AND #{reqVO.updateTime[1]}
+        </if>
+        ORDER BY m.id DESC
+    </select>
+
+    <select id="selectWithNamesById" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.modulealarm.vo.ModuleAlarmRespVO">
+        SELECT
+            m.id,
+            m.alarm_code AS alarmCode,
+            m.module_name AS moduleName,
+            m.abnormal_type_id AS abnormalTypeId,
+            m.alarm_level_id AS alarmLevelId,
+            m.alarm_time AS alarmTime,
+            m.server_info AS serverInfo,
+            m.alarm_status_id AS alarmStatusId,
+            m.check_reason AS checkReason,
+            m.repair_voucher AS repairVoucher,
+            m.repair_time AS repairTime,
+            m.remark,
+            m.reserve1,
+            m.reserve2,
+            m.creator,
+            m.updater,
+            m.deleted,
+            m.create_time AS createTime,
+            m.update_time AS updateTime,
+            a.typename AS abnormalName,
+            g.typename AS alarmLevelName,
+            s.typename AS alarmStatusName
+        FROM module_alarm_record m
+        LEFT JOIN abnormal_type a ON m.abnormal_type_id = a.id
+        LEFT JOIN alarm_grade g ON m.alarm_level_id = g.id
+        LEFT JOIN alarm_status s ON m.alarm_status_id = s.id
+        WHERE m.deleted = 0 AND m.id = #{id}
+    </select>
+
+    <select id="selectChartCardData" resultType="java.util.Map">
+        SELECT
+            m.alarm_status_id AS alarmStatusId,
+            COUNT(*) AS count
+        FROM module_alarm_record m
+        WHERE m.deleted = 0
+        <if test="startTime != null">
+            AND m.alarm_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND m.alarm_time &lt;= #{endTime}
+        </if>
+        GROUP BY m.alarm_status_id
+    </select>
+
+    <select id="selectChartBarData" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.modulealarm.vo.ModuleAlarmChartRespVO$BarData">
+        SELECT
+            m.module_name AS `name`,
+            COUNT(*) AS `value`
+        FROM module_alarm_record m
+        WHERE m.deleted = 0
+        <if test="startTime != null">
+            AND m.alarm_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND m.alarm_time &lt;= #{endTime}
+        </if>
+        GROUP BY m.module_name
+        ORDER BY `value` DESC
+    </select>
+
+    <select id="selectChartLineData" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.modulealarm.vo.ModuleAlarmChartRespVO$LineData">
+        SELECT
+            DATE(m.repair_time) AS `date`,
+            AVG(TIMESTAMPDIFF(HOUR, m.alarm_time, m.repair_time)) AS repairTime
+        FROM module_alarm_record m
+        WHERE m.deleted = 0
+          AND m.alarm_status_id = 4
+          AND m.repair_time IS NOT NULL
+        <if test="startTime != null">
+            AND m.alarm_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND m.alarm_time &lt;= #{endTime}
+        </if>
+        GROUP BY DATE(m.repair_time)
+        ORDER BY `date` ASC
+    </select>
+
+</mapper>

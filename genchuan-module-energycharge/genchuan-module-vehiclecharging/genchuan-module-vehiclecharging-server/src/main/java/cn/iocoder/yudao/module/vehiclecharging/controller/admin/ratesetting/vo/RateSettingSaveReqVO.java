@@ -7,7 +7,7 @@ import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 费率设置新增/修改 Request VO")
+@Schema(description = "汽车充电 - 费率设置新增/修改 Request VO")
 @Data
 public class RateSettingSaveReqVO {
 
