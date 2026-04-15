@@ -1,0 +1,46 @@
+package cn.iocoder.yudao.module.ordertrade.framework.security.config;
+
+import cn.iocoder.yudao.framework.security.config.AuthorizeRequestsCustomizer;
+import cn.iocoder.yudao.module.infra.enums.ApiConstants;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
+
+/**
+ * 订单交易模块的 Spring Security 配置
+ *
+ * @author genchuan
+ */
+@Configuration(proxyBeanMethods = false)
+public class SecurityConfiguration {
+
+    @Bean("orderTradeAuthorizeRequestsCustomizer")
+    public AuthorizeRequestsCustomizer authorizeRequestsCustomizer() {
+        return new AuthorizeRequestsCustomizer() {
+
+            @Override
+            public void customize(AuthorizeHttpRequestsConfigurer<HttpSecurity>
+                                          .AuthorizationManagerRequestMatcherRegistry registry) {
+                // Swagger 接口文档
+                registry.requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/webjars/**").permitAll()
+                        .requestMatchers("/swagger-ui").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll();
+                // Druid 监控
+                registry.requestMatchers("/druid/**").permitAll();
+                // Spring Boot Actuator 的安全配置
+                registry.requestMatchers("/actuator").permitAll()
+                        .requestMatchers("/actuator/**").permitAll();
+
+                // RPC 服务的安全配置
+                registry.requestMatchers(ApiConstants.PREFIX + "/**").permitAll()
+                        // ↓ 加这一行，本地测试放行所有订单交易接口
+                        .requestMatchers("/ordertrade/**").permitAll();
+
+                // 本地开发：全部放行
+                registry.requestMatchers("/**").permitAll();
+            }
+        };
+    }
+}

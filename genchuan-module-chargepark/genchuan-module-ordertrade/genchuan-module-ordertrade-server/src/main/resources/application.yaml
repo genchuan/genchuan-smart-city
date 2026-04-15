@@ -1,0 +1,124 @@
+spring:
+  application:
+    name: ordertrade-server
+
+  profiles:
+    active: local
+
+  main:
+    allow-circular-references: true
+    allow-bean-definition-overriding: true
+
+  config:
+    import:
+      - optional:classpath:application-${spring.profiles.active}.yaml
+      - optional:nacos:${spring.application.name}-${spring.profiles.active}.yaml
+
+  servlet:
+    multipart:
+      max-file-size: 16MB
+      max-request-size: 32MB
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: true
+      write-date-timestamps-as-nanoseconds: false
+      write-durations-as-timestamps: true
+      fail-on-empty-beans: false
+
+  cache:
+    type: REDIS
+    redis:
+      time-to-live: 1h
+
+server:
+  port: 58090
+
+logging:
+  file:
+    name: ${user.home}/logs/${spring.application.name}.log
+
+--- #################### 接口文档配置 ####################
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  default-flat-param-object: true
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+--- #################### MyBatis Plus 配置 ####################
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: NONE
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+    banner: false
+  type-aliases-package: ${yudao.info.base-package}.dal.dataobject
+  encryptor:
+    password: XDV71a+xqStEA3WH
+
+mybatis-plus-join:
+  banner: false
+
+easy-trans:
+  is-enable-global: false
+
+--- #################### 定时任务 ####################
+
+xxl:
+  job:
+    enabled: false
+    executor:
+      appname: ${spring.application.name}
+      logpath: ${user.home}/logs/xxl-job/${spring.application.name}
+    accessToken: default_token
+
+--- #################### 芋道相关配置 ####################
+
+yudao:
+  info:
+    version: 1.0.0
+    base-package: cn.iocoder.yudao.module.ordertrade
+  web:
+    admin-ui:
+      url: http://dashboard.yudao.iocoder.cn
+  xss:
+    enable: false
+  swagger:
+    title: 订单交易管理后台
+    description: 充电停车一体化管理系统 - 订单交易模块
+    version: ${yudao.info.version}
+  tenant:
+    enable: true
+    ignore-urls:
+      - /ordertrade/**
+    ignore-tables:
+        - all_order
+        - temp_park_order
+        - offtime_park_order
+        - car_charge_order
+        - bike_charge_order
+        - share_charge_order
+        - abnormal_order
+        - debt_identify
+        - debt_record
+        - arrear_record
+        - collect_track
+        - collect_config
+        - refund_apply
+        - refund_record
+        - amount_check
+
+debug: false
