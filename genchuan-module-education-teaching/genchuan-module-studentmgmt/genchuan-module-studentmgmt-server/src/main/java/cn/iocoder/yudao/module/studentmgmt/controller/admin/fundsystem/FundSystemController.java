@@ -24,6 +24,8 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
+import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUser;
+import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserNickname;
 
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.fundsystem.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.fundsystem.FundSystemDO;
@@ -100,5 +102,30 @@ public class FundSystemController {
         ExcelUtils.write(response, "资助系统.xls", "数据", FundSystemRespVO.class,
                         BeanUtils.toBean(list, FundSystemRespVO.class));
     }
+
+    @PutMapping("/audit")
+    @Operation(summary = "审核资助系统")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:fund-system:audit')")
+    public CommonResult<Boolean> audit(@Valid @RequestBody FundSystemAuditReqVO reqVO) {
+        boolean isSuccess = fundSystemService.audit(reqVO);
+        return success(isSuccess);
+    }
+
+    @PutMapping("/chart")
+    @Operation(summary = "资助信息统计看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:fund-system:query')")
+    public CommonResult<FundSystemChartRespVO> chart(@Valid @RequestBody FundSystemChartReqVO reqVO) {
+        FundSystemChartRespVO dashboardVO = fundSystemService.chart(reqVO);
+        return success(dashboardVO);
+    }
+
+    @PutMapping("/fundCount")
+    @Operation(summary = "各年级资助人数 / 类型分布统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:fund-system:query')")
+    public CommonResult<FundSystemFundCountRespVO> fundCount(@Valid @RequestBody FundSystemFundCountReqVO reqVO) {
+        FundSystemFundCountRespVO dashboardVO = fundSystemService.fundCount(reqVO);
+        return success(dashboardVO);
+    }
+
 
 }

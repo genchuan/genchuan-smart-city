@@ -119,6 +119,21 @@ INSERT INTO `system_dict_type` (`name`, `type`, `status`, `remark`, `creator`, `
 VALUES ('奖助勤贷审核状态', 'aid_work_status', 0, '奖助勤贷申请的审核状态', 'admin', NOW(), 'admin', NOW(), b'0');
 
 
+-- 29. 宿舍考勤-考勤状态
+INSERT INTO `system_dict_type` (`name`, `type`, `status`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`)
+VALUES ('宿舍考勤考勤状态', 'dorm_check_check_status', 0, '宿舍考勤考勤状态', 'admin', NOW(), 'admin', NOW(), b'0');
+
+
+-- 30. 宿舍考勤-状态
+INSERT INTO `system_dict_type` (`name`, `type`, `status`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`)
+VALUES ('宿舍考勤状态', 'dorm_check_status', 0, '宿舍考勤状态', 'admin', NOW(), 'admin', NOW(), b'0');
+
+
+-- 31. 宿舍考勤-异常类型
+INSERT INTO `system_dict_type` (`name`, `type`, `status`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`)
+VALUES ('宿舍考勤异常类型', 'dorm_check_abnormal_type', 0, '宿舍考勤异常类型', 'admin', NOW(), 'admin', NOW(), b'0');
+
+
 -- ==================== 二、字典数据 (system_dict_data) ====================
 
 -- 1. 学工首页记录类型数据
@@ -294,3 +309,27 @@ INSERT INTO `system_dict_data` (`sort`, `label`, `value`, `dict_type`, `status`,
 (1, '待审核', '0', 'aid_work_status', 0, 'warning', '', '等待审核', 'admin', NOW(), 'admin', NOW(), b'0'),
 (2, '已通过', '1', 'aid_work_status', 0, 'success', '', '审核通过', 'admin', NOW(), 'admin', NOW(), b'0'),
 (3, '已完成', '2', 'aid_work_status', 0, 'primary', '', '流程已完成', 'admin', NOW(), 'admin', NOW(), b'0');
+
+-- 29. 奖助勤贷状态数据
+INSERT INTO `system_dict_data` (`sort`, `label`, `value`, `dict_type`, `status`, `color_type`, `css_class`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES
+(1, '正常', '0','dorm_check_check_status', 0, 'warning', '', '等待审核', 'admin', NOW(), 'admin', NOW(), b'0'),
+(2, '迟到', '1', 'dorm_check_check_status', 0, 'success', '', '审核通过', 'admin', NOW(), 'admin', NOW(), b'0'),
+(3, '未到', '2', 'dorm_check_check_status', 0, 'primary', '', '流程已完成', 'admin', NOW(), 'admin', NOW(), b'0');
+
+
+-- 30. 宿舍考勤-状态
+INSERT INTO `system_dict_data` (`sort`, `label`, `value`, `dict_type`, `status`, `color_type`, `css_class`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`)
+VALUES
+(1, '正常', '0', 'dorm_check_status', 0, 'success', '', '正常', 'admin', NOW(), 'admin', NOW(), b'0'),
+(2, '异常', '1', 'dorm_check_status', 0, 'warning', '', '异常', 'admin', NOW(), 'admin', NOW(), b'0');
+
+-- 31. 宿舍考勤-异常类型
+INSERT INTO `system_dict_type` (`name`, `type`, `status`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`)
+VALUES ('宿舍考勤异常类型', 'dorm_check_abnormal_type', 0, '宿舍考勤异常类型', 'admin', NOW(), 'admin', NOW(), b'0');
+
+INSERT INTO `system_dict_data` (`sort`, `label`, `value`, `dict_type`, `status`, `color_type`, `css_class`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`)
+VALUES
+(1, '无', '0', 'dorm_check_abnormal_type', 0, 'success', '', '正常', 'admin', NOW(), 'admin', NOW(), b'0'),
+(2, '晚归', '1', 'dorm_check_abnormal_type', 0, 'warning', '', '异常', 'admin', NOW(), 'admin', NOW(), b'0'),
+(3, '未归', '2', 'dorm_check_abnormal_type', 0, 'warning', '', '异常', 'admin', NOW(), 'admin', NOW(), b'0');
+

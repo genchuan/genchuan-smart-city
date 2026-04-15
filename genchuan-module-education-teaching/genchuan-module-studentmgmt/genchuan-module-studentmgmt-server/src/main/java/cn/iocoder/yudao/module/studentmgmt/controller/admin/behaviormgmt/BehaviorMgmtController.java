@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.behaviormgmt;
 
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.mentalmgmt.vo.MentalMgmtChartRespVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -8,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 
-import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import java.util.*;
@@ -100,5 +100,40 @@ public class BehaviorMgmtController {
         ExcelUtils.write(response, "行为管理.xls", "数据", BehaviorMgmtRespVO.class,
                         BeanUtils.toBean(list, BehaviorMgmtRespVO.class));
     }
+
+
+    @PutMapping("/audit")
+    @Operation(summary = "更新行为管理")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:behavior-mgmt:update')")
+    public CommonResult<Boolean> audit(@Valid @RequestBody BehaviorMgmtAuditReqVO reqVO) {
+        boolean isSuccess = behaviorMgmtService.audit(reqVO);
+        return success(isSuccess);
+    }
+
+    @PutMapping("/cancel")
+    @Operation(summary = "取消行为管理")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:behavior-mgmt:update')")
+    public CommonResult<Boolean> cancel(@Valid @RequestBody BehaviorMgmtCancelReqVO reqVO) {
+        boolean isSuccess = behaviorMgmtService.cancel(reqVO);
+        return success(isSuccess);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "学生行为看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:behavior-mgmt:update')")
+    public CommonResult<BehaviorMgmtChartRespVO> chart(@Valid @RequestBody BehaviorMgmtChartReqVO reqVO) {
+        BehaviorMgmtChartRespVO dashboardVO = behaviorMgmtService.chart(reqVO);
+        return success(dashboardVO);
+    }
+
+
+    @GetMapping("/attendanceCount")
+    @Operation(summary = "各班级请假次数 / 考勤异常人数统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:behavior-mgmt:update')")
+    public CommonResult<BehaviorMgmtAttendanceCountRespVO> attendanceCount(@Valid @RequestBody BehaviorMgmtAttendanceCountReqVO reqVO) {
+        BehaviorMgmtAttendanceCountRespVO dashboardVO = behaviorMgmtService.attendanceCount(reqVO);
+        return success(dashboardVO);
+    }
+
 
 }

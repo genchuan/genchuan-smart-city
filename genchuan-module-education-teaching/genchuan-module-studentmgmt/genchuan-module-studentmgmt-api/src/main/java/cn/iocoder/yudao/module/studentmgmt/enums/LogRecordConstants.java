@@ -77,13 +77,37 @@ public interface LogRecordConstants {
     String MENTAL_WARN_SUB_TYPE = "预警心理";
     String MENTAL_WARN_SUCCESS = "更新了心理【{{#studentName}}】的预警状态为【{{#status ? '已预警' : '未预警'}}】";
     String MENTAL_CONSULT_SUB_TYPE = "预约心理";
-    String MENTAL_CONSULT_SUCCESS = "【{{username}}】预约了【{{#studentName}}】心理";
+    String MENTAL_CONSULT_SUCCESS = "预约了【{{#studentName}}】心理";
 
     String MENTAL_INTERVENE_SUB_TYPE = "跟进心理";
-    String MENTAL_INTERVENE_SUCCESS = "【{{username}}】跟进了【{{#studentName}}】心理";
+    String MENTAL_INTERVENE_SUCCESS = "跟进了【{{#studentName}}】心理";
 
     String MENTAL_UPDATE_STATUS_SUB_TYPE = "更新心理状态";
     String MENTAL_UPDATE_STATUS_SUCCESS = "更新了心理状态【{{#studentName}}】为【{{{#status}}】";
 
+
+    // ======================= behavior 行为管理 =======================
+
+    String BEHAVIOR_TYPE = "STUDENT 行为管理";
+    String BEHAVIOR_CREATE_SUB_TYPE = "创建行为";
+    String BEHAVIOR_CREATE_SUCCESS = "创建了{{#studentName}}的行为";
+    String BEHAVIOR_UPDATE_SUB_TYPE = "更新行为";
+    String BEHAVIOR_UPDATE_SUCCESS = "更新了行为【{{#behavior.studentId}}】: {_DIFF{#updateReqVO}}";
+    String BEHAVIOR_AUDIT_SUB_TYPE = "预警行为";
+    String BEHAVIOR_AUDIT_SUCCESS = "审核了行为";;
+    String BEHAVIOR_CANCEL_SUB_TYPE = "取消行为";
+    String BEHAVIOR_CANCEL_SUCCESS = "取消了行为";
+
+    // ======================= FundSystem 资助系统管理 =======================
+
+    String FUND_SYSTEM_TYPE = "STUDENT 资助系统管理";
+    String FUND_SYSTEM_CREATE_SUB_TYPE = "创建资助系统";
+    String FUND_SYSTEM_CREATE_SUCCESS = "创建了{{#studentName}}的资助系统";
+    String FUND_SYSTEM_UPDATE_SUB_TYPE = "更新资助系统";
+    String FUND_SYSTEM_UPDATE_SUCCESS = "更新了资助系统【{{#behavior.studentId}}】: {_DIFF{#updateReqVO}}";
+    String FUND_SYSTEM_AUDIT_SUB_TYPE = "预警资助系统";
+    String FUND_SYSTEM_AUDIT_SUCCESS = "资助系统审核成功";;
+    String FUND_SYSTEM_CANCEL_SUB_TYPE = "取消资助系统";
+    String FUND_SYSTEM_CANCEL_SUCCESS = "取消了资助系统";
 
 }

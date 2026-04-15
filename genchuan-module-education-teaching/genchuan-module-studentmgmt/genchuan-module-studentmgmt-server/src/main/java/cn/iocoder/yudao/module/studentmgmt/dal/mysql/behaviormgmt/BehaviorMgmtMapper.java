@@ -1,13 +1,16 @@
 package cn.iocoder.yudao.module.studentmgmt.dal.mysql.behaviormgmt;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.behaviormgmt.BehaviorMgmtDO;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.behaviormgmt.vo.*;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 行为管理 Mapper
@@ -36,4 +39,17 @@ public interface BehaviorMgmtMapper extends BaseMapperX<BehaviorMgmtDO> {
                 .orderByDesc(BehaviorMgmtDO::getId));
     }
 
+    Integer selectTotalCount(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime,
+                             @Param("status") String status, @Param("attendanceSync") String attendanceSync, @Param("leaveType") String leaveType);
+
+    Integer selectTotalCountByClassName(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime,
+                                        @Param("status") String status, @Param("attendanceSync") String attendanceSync, @Param("leaveType") String leaveType, @Param("className") String className);
+
+    List<JSONObject> selectLeaveTypeCount(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime);
+
+    List<JSONObject> selectLeaveTypeCountByClassName(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime, @Param("className") String className);
+
+    List<JSONObject> selectDailyLeaveTrend(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime);
+
+    List<JSONObject> selectDailyLeaveTrendByClassName(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime, @Param("className") String className);
 }
