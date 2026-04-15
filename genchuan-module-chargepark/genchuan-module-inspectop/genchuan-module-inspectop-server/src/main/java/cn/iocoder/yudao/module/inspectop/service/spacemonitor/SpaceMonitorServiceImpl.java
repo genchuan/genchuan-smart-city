@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.inspectop.service.spacemonitor;
 
 import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -77,9 +78,20 @@ public class SpaceMonitorServiceImpl implements SpaceMonitorService {
         return spaceMonitorMapper.selectById(id);
     }
 
+//    @Override
+//    public PageResult<SpaceMonitorDO> getSpaceMonitorPage(SpaceMonitorPageReqVO pageReqVO) {
+//        return spaceMonitorMapper.selectPage(pageReqVO);
+//    }
+
     @Override
-    public PageResult<SpaceMonitorDO> getSpaceMonitorPage(SpaceMonitorPageReqVO pageReqVO) {
-        return spaceMonitorMapper.selectPage(pageReqVO);
+    public List<SpaceMonitorRespVO> getSpaceMonitorPage(SpaceMonitorPageReqVO pageReqVO) {
+        // 创建MyBatis-Plus的分页对象
+        Page<SpaceMonitorRespVO> mpPage = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+
+        // 调用Mapper的自定义关联查询方法
+        List<SpaceMonitorRespVO> pageResult = spaceMonitorMapper.selectPageWithJoin(mpPage, pageReqVO);
+
+        return pageResult;
     }
 
 }
