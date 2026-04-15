@@ -9,4 +9,77 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <!-- 用户增长趋势（折线图） -->
+    <select id="selectUserGrowthTrend" resultType="cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.vo.UserInfoChartRespVO$UserGrowthTrendVO">
+        SELECT
+        <choose>
+            <when test="granularity == 'year'">
+                DATE_FORMAT(create_time, '%Y') as date,
+                COUNT(*) as count
+            </when>
+            <when test="granularity == 'month'">
+                DATE_FORMAT(create_time, '%Y-%m') as date,
+                COUNT(*) as count
+            </when>
+            <when test="granularity == 'day'">
+                DATE_FORMAT(create_time, '%Y-%m-%d') as date,
+                COUNT(*) as count
+            </when>
+            <otherwise>
+                DATE(create_time) as date,
+                COUNT(*) as count
+            </otherwise>
+        </choose>
+        FROM user_info
+        WHERE deleted = 0
+        <if test="start != null">
+            AND create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt;= #{end}
+        </if>
+        GROUP BY date
+        ORDER BY date ASC
+    </select>
+
+    <!-- 用户类型分布（柱状图） -->
+    <select id="selectUserTypeDistribution" resultType="cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.vo.UserInfoChartRespVO$UserTypeDistributionVO">
+        SELECT user_type as type, COUNT(*) as count
+        FROM user_info
+        WHERE deleted = 0
+        <if test="start != null">
+            AND create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt;= #{end}
+        </if>
+        GROUP BY user_type
+    </select>
+
+    <!-- 总数统计 -->
+    <select id="selectTotalUserCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM user_info
+        WHERE deleted = 0
+        <if test="start != null">
+            AND create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt;= #{end}
+        </if>
+    </select>
+
+    <!-- 新增用户数（假设新用户是指注册时间在时间范围内） -->
+    <select id="selectNewUserCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM user_info
+        WHERE deleted = 0
+        <if test="start != null">
+            AND create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt;= #{end}
+        </if>
+    </select>
+
 </mapper>
