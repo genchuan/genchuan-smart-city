@@ -1,10 +1,12 @@
 package cn.iocoder.yudao.module.vehiclepass.dal.mysql.entermgmt.enterrecord;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.enterrecord.vo.EnterRecordChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.enterrecord.vo.EnterRecordPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.enterrecord.vo.MyEnterRecordPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.enterrecord.vo.MyEnterRecordRespVO;
@@ -46,6 +48,24 @@ public interface EnterRecordMapper extends BaseMapperX<EnterRecordDO> {
 
     IPage<MyEnterRecordRespVO> selectEnterRecordPage(Page<?> page,
                                                      @Param("query") MyEnterRecordPageReqVO reqVO);
+
+    // 折线图：按日统计
+    List<EnterRecordChartRespVO.EnterCountTrend> selectEnterCountTrend(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
+            @Param("stationId") Long stationId);
+
+    // 柱状图：按小时统计
+    List<EnterRecordChartRespVO.HourEnterCount> selectHourEnterCount(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
+            @Param("stationId") Long stationId);
+
+    // 今日入场量
+    Integer selectTodayEnterCount(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
+            @Param("stationId") Long stationId);
 
 
 }

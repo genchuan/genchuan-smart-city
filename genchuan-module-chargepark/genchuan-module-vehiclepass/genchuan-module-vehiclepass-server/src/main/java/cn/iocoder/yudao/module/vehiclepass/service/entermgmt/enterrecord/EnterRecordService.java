@@ -2,10 +2,7 @@ package cn.iocoder.yudao.module.vehiclepass.service.entermgmt.enterrecord;
 
 import java.util.*;
 
-import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.enterrecord.vo.EnterRecordPageReqVO;
-import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.enterrecord.vo.EnterRecordSaveReqVO;
-import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.enterrecord.vo.MyEnterRecordPageReqVO;
-import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.enterrecord.vo.MyEnterRecordRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.enterrecord.vo.*;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.entermgmt.enterrecord.EnterRecordDO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -73,5 +70,18 @@ public interface EnterRecordService {
      * @return 入场记录分页
      */
     PageResult<MyEnterRecordRespVO> getEnterRecordPage(MyEnterRecordPageReqVO reqVO);
+
+    /**
+     * 创建入场记录（人工补录）
+     */
+    Boolean createEnterRecord(EnterRecordCreateReqVO createReqVO);
+    /**
+     * 修改入场记录（人工补录）
+     */
+    Boolean updateEnterRecord(EnterRecordUpdateReqVO updateReqVO);
+    /**
+     * 获取入场记录图表
+     */
+    EnterRecordChartRespVO getChart(EnterRecordChartReqVO reqVO);
 
 }

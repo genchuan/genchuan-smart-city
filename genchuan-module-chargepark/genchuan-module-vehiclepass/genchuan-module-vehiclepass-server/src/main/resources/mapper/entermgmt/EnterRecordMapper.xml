@@ -55,4 +55,41 @@
 
         ORDER BY e.id DESC
     </select>
+
+
+    <select id="selectEnterCountTrend"
+            resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.enterrecord.vo.EnterRecordChartRespVO$EnterCountTrend">
+        SELECT DATE(t1.enter_time) AS date, COUNT(*) AS count
+        FROM enter_record t1
+        WHERE t1.deleted = 0
+        AND t1.enter_time BETWEEN #{start} AND #{end}
+        <if test="stationId != null">
+            AND t1.station_id = #{stationId}
+        </if>
+        GROUP BY DATE(t1.enter_time)
+        ORDER BY DATE(t1.enter_time)
+    </select>
+
+    <select id="selectHourEnterCount"
+            resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.enterrecord.vo.EnterRecordChartRespVO$HourEnterCount">
+        SELECT DATE_FORMAT(t1.enter_time, '%H:00') AS hour, COUNT(*) AS count
+        FROM enter_record t1
+        WHERE t1.deleted = 0
+        AND t1.enter_time BETWEEN #{start} AND #{end}
+        <if test="stationId != null">
+            AND t1.station_id = #{stationId}
+        </if>
+        GROUP BY DATE_FORMAT(t1.enter_time, '%H:00')
+        ORDER BY hour
+    </select>
+
+    <select id="selectTodayEnterCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM enter_record t1
+        WHERE t1.deleted = 0
+        AND t1.enter_time BETWEEN #{start} AND #{end}
+        <if test="stationId != null">
+            AND t1.station_id = #{stationId}
+        </if>
+    </select>
 </mapper>

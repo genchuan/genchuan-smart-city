@@ -38,12 +38,12 @@ public class EnterRecordController {
     @Resource
     private EnterRecordService enterRecordService;
 
-    @PostMapping("/create")
-    @Operation(summary = "创建入场记录")
-    @PreAuthorize("@ss.hasPermission('enter:record:create')")
-    public CommonResult<Long> createRecord(@Valid @RequestBody EnterRecordSaveReqVO createReqVO) {
-        return success(enterRecordService.createRecord(createReqVO));
-    }
+//    @PostMapping("/create")
+//    @Operation(summary = "创建入场记录")
+//    @PreAuthorize("@ss.hasPermission('enter:record:create')")
+//    public CommonResult<Long> createRecord(@Valid @RequestBody EnterRecordSaveReqVO createReqVO) {
+//        return success(enterRecordService.createRecord(createReqVO));
+//    }
 
     @PutMapping("/update")
     @Operation(summary = "更新入场记录")
@@ -89,6 +89,7 @@ public class EnterRecordController {
 //    }
 
     @GetMapping("/page")
+    @Operation(summary = "获得入场记录分页")
     @PreAuthorize("@ss.hasPermission('vehiclepass:enter-record:query')")
     public CommonResult<PageResult<MyEnterRecordRespVO>> page(MyEnterRecordPageReqVO reqVO) {
         PageResult<MyEnterRecordRespVO> result = enterRecordService.getEnterRecordPage(reqVO);
@@ -106,6 +107,27 @@ public class EnterRecordController {
         // 导出 Excel
         ExcelUtils.write(response, "入场记录.xls", "数据", EnterRecordRespVO.class,
                 BeanUtils.toBean(list, EnterRecordRespVO.class));
+    }
+
+    @PostMapping("/create")
+    @Operation(summary = "人工补录入场记录")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:enter-record:create')")
+    public CommonResult<Boolean> createEnterRecord(@Valid @RequestBody EnterRecordCreateReqVO createReqVO) {
+        return CommonResult.success(enterRecordService.createEnterRecord(createReqVO));
+    }
+
+    @PutMapping("/correct")
+    @Operation(summary = "修正入场记录")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:enter-record:update')")
+    public CommonResult<Boolean> updateEnterRecord(@Valid @RequestBody EnterRecordUpdateReqVO updateReqVO) {
+        return CommonResult.success(enterRecordService.updateEnterRecord(updateReqVO));
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "入场记录统计（折线+柱状+卡片）")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:enter-record:chart')")
+    public CommonResult<EnterRecordChartRespVO> getChart(EnterRecordChartReqVO reqVO) {
+        return CommonResult.success(enterRecordService.getChart(reqVO));
     }
 
 }
