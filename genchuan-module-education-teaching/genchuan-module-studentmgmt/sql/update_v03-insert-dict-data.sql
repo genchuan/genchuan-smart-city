@@ -173,7 +173,8 @@ INSERT INTO `system_dict_data` (`sort`, `label`, `value`, `dict_type`, `status`,
 INSERT INTO `system_dict_data` (`sort`, `label`, `value`, `dict_type`, `status`, `color_type`, `css_class`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES
 (1, '待审核', '0', 'honor_mgmt_status', 0, 'warning', '', '等待审核', 'admin', NOW(), 'admin', NOW(), b'0'),
 (2, '已通过', '1', 'honor_mgmt_status', 0, 'success', '', '审核通过', 'admin', NOW(), 'admin', NOW(), b'0'),
-(3, '已推送', '2', 'honor_mgmt_status', 0, 'primary', '', '已推送通知', 'admin', NOW(), 'admin', NOW(), b'0');
+(3, '已推送', '2', 'honor_mgmt_status', 0, 'primary', '', '已推送通知', 'admin', NOW(), 'admin', NOW(), b'0'),
+(4, '不通过', '3', 'honor_mgmt_status', 0, 'danger', '', '审核不通过', 'admin', NOW(), 'admin', NOW(), b'0');
 
 -- 9. 考评类型数据
 INSERT INTO `system_dict_data` (`sort`, `label`, `value`, `dict_type`, `status`, `color_type`, `css_class`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`) VALUES

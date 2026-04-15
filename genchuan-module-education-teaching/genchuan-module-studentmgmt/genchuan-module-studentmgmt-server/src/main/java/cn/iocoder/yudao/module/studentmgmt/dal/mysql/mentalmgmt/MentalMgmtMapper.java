@@ -8,12 +8,16 @@ import cn.iocoder.yudao.module.studentmgmt.controller.admin.mentalmgmt.vo.Mental
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.mentalmgmt.MentalMgmtDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.violatemgmt.ViolateMgmtDO;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -86,4 +90,12 @@ public interface MentalMgmtMapper extends BaseMapperX<MentalMgmtDO> {
         // 4. 返回结果
         return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
     }
+
+    Integer selectTotalCount(@Param("mentalStatus") String mentalStatus,@Param("riskLevel") String riskLevel, @Param("status") String status);
+
+    Integer selectRecent7DayCount();
+
+    List<JSONObject> selectMentalStatusDistributionCount();
+
+    List<JSONObject> selectRiskLevelDistributionCount();
 }

@@ -31,7 +31,7 @@ public class CompareMgmtRespVO {
 
     @Schema(description = "排名")
     @ExcelProperty("排名")
-    private Integer rank;
+    private Integer rankNo;
 
     @Schema(description = "授予称号", example = "赵六")
     @ExcelProperty("授予称号")
@@ -65,4 +65,4 @@ public class CompareMgmtRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

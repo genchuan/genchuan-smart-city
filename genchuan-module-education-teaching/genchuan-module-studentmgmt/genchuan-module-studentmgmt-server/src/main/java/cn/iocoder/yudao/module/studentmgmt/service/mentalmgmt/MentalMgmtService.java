@@ -63,4 +63,12 @@ public interface MentalMgmtService {
     PageResult<MentalMgmtJoinPageRespVO> getMentalMgmtJoinPage(@Valid MentalMgmtPageReqVO pageReqVO);
 
     boolean consult(@Valid MentalMgmtConsultReqVO reqVO, LoginUser user);
+
+    boolean intervene(@Valid MentalMgmtInterveneReqVO reqVO);
+
+    boolean updateStatus(@Valid MentalMgmtUpdateStatusReqVO reqVO);
+
+    MentalMgmtChartRespVO chart();
+
+    MentalMgmtStatusDistributionRespVO statusDistribution();
 }

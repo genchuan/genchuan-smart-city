@@ -32,7 +32,7 @@ public interface LogRecordConstants {
     String STUDENT_HONOR_EXPORT_SUB_TYPE = "导出荣誉";
     String STUDENT_HONOR_EXPORT_SUCCESS = "导出了荣誉";
     String STUDENT_HONOR_UPDATE_AUDIT_STATUS_SUB_TYPE = "更新荣誉审核状态";
-    String STUDENT_HONOR_UPDATE_AUDIT_STATUS_SUCCESS = "更新了荣誉【{{#honorName}}】的审核状态为【{{#status ? '已审核' : '未审核'}}】";
+    String STUDENT_HONOR_UPDATE_AUDIT_STATUS_SUCCESS = "更新了荣誉【{{#honorName}}】的审核状态为【{{#status}}】";
 
     // ======================= STUDENT_ASSESS 考评管理 =======================
 
@@ -42,9 +42,9 @@ public interface LogRecordConstants {
     String STUDENT_ASSESS_UPDATE_SUB_TYPE = "更新考评";
     String STUDENT_ASSESS_UPDATE_SUCCESS = "更新了考评【{{#assessMgmt.className}}】: {_DIFF{#updateReqVO}}";
     String STUDENT_ASSESS_DELETE_SUB_TYPE = "删除考评";
-    String STUDENT_ASSESS_DELETE_SUCCESS = "删除了考评【{{#className}}】";
+    String STUDENT_ASSESS_DELETE_SUCCESS = "删除了考评【{{#assessMgmt.className}}】";
     String STUDENT_ASSESS_PUBLISH_SUB_TYPE = "发布考评";
-    String STUDENT_ASSESS_PUBLISH_SUCCESS = "发布了考评【{{#className}}】";
+    String STUDENT_ASSESS_PUBLISH_SUCCESS = "发布了考评【{{#assessMgmt.className}}】";
     String STUDENT_ASSESS_EXPORT_SUB_TYPE = "导出考评";
     String STUDENT_ASSESS_EXPORT_SUCCESS = "导出了考评";
     String STUDENT_ASSESS_UPDATE_AUDIT_STATUS_SUB_TYPE = "更新考评审核状态";
@@ -73,13 +73,17 @@ public interface LogRecordConstants {
     String MENTAL_CREATE_SUB_TYPE = "创建心理";
     String MENTAL_CREATE_SUCCESS = "创建了{{#studentName}}的心理";
     String MENTAL_UPDATE_SUB_TYPE = "更新心理";
-    String MENTAL_UPDATE_SUCCESS = "更新了心理【{{#violate.studentId}}】: {_DIFF{#updateReqVO}}";
+    String MENTAL_UPDATE_SUCCESS = "更新了心理【{{#mental.studentId}}】: {_DIFF{#updateReqVO}}";
     String MENTAL_WARN_SUB_TYPE = "预警心理";
     String MENTAL_WARN_SUCCESS = "更新了心理【{{#studentName}}】的预警状态为【{{#status ? '已预警' : '未预警'}}】";
     String MENTAL_CONSULT_SUB_TYPE = "预约心理";
     String MENTAL_CONSULT_SUCCESS = "【{{username}}】预约了【{{#studentName}}】心理";
-    String MENTAL_UPDATE_AUDIT_STATUS_SUB_TYPE = "更新心理审批状态";
-    String MENTAL_UPDATE_AUDIT_STATUS_SUCCESS = "更新了心理【{{#studentName}}】的审批状态为【{{#status ? '已审批' : '未审批'}}】";
+
+    String MENTAL_INTERVENE_SUB_TYPE = "跟进心理";
+    String MENTAL_INTERVENE_SUCCESS = "【{{username}}】跟进了【{{#studentName}}】心理";
+
+    String MENTAL_UPDATE_STATUS_SUB_TYPE = "更新心理状态";
+    String MENTAL_UPDATE_STATUS_SUCCESS = "更新了心理状态【{{#studentName}}】为【{{{#status}}】";
 
 
 }

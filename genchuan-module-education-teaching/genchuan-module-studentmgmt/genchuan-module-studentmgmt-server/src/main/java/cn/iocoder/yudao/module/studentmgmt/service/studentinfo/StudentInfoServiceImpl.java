@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.module.studentmgmt.enums.ErrorCodeConstants.STUDENT_INFO_IS_EXISTS;
 import static cn.iocoder.yudao.module.studentmgmt.enums.ErrorCodeConstants.STUDENT_INFO_NOT_EXISTS;
 import static cn.iocoder.yudao.module.studentmgmt.enums.LogRecordConstants.*;
 
@@ -39,6 +40,12 @@ public class StudentInfoServiceImpl implements StudentInfoService {
     @LogRecord(type = STUDENT_INFO_TYPE, subType = STUDENT_INFO_CREATE_SUB_TYPE, bizNo = "{{#studentInfo.id}}",
             success = STUDENT_INFO_CREATE_SUCCESS)
     public Long createStudentInfo(StudentInfoSaveReqVO createReqVO) {
+        // 判断某个字段的值是否已经存在了该学生
+        List<StudentInfoDO> list = studentInfoMapper.isExist(createReqVO);
+        if (null != list && list.size() > 0) {
+            throw exception(STUDENT_INFO_IS_EXISTS);
+        }
+
         // 插入
         StudentInfoDO studentInfo = BeanUtils.toBean(createReqVO, StudentInfoDO.class);
         studentInfoMapper.insert(studentInfo);

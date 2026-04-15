@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.mentalmgmt;
 
 import cn.iocoder.yudao.framework.security.core.LoginUser;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.violatemgmt.vo.ViolateChartReqVO;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.violatemgmt.vo.ViolateDashboardVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -114,5 +116,36 @@ public class MentalMgmtController {
         return success(isSuccess);
     }
 
+    @PutMapping("/intervene")
+    @Operation(summary = "跟进")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:mental-mgmt:intervene')")
+    public CommonResult<Boolean> intervene(@Valid @RequestBody MentalMgmtInterveneReqVO reqVO) {
+        boolean isSuccess = mentalMgmtService.intervene(reqVO);
+        return success(isSuccess);
+    }
+
+    @PutMapping("/updateStatus")
+    @Operation(summary = "状态更新")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:mental-mgmt:intervene')")
+    public CommonResult<Boolean> updateStatus(@Valid @RequestBody MentalMgmtUpdateStatusReqVO reqVO) {
+        boolean isSuccess = mentalMgmtService.updateStatus(reqVO);
+        return success(isSuccess);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "学生心理健康看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:mental-info:query')")
+    public CommonResult<MentalMgmtChartRespVO> chart() {
+        MentalMgmtChartRespVO dashboardVO = mentalMgmtService.chart();
+        return success(dashboardVO);
+    }
+
+    @GetMapping("/chart/statusDistribution")
+    @Operation(summary = "心理状态 / 风险等级分布统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:mental-info:query')")
+    public CommonResult<MentalMgmtStatusDistributionRespVO> statusDistribution() {
+        MentalMgmtStatusDistributionRespVO dashboardVO = mentalMgmtService.statusDistribution();
+        return success(dashboardVO);
+    }
 
 }

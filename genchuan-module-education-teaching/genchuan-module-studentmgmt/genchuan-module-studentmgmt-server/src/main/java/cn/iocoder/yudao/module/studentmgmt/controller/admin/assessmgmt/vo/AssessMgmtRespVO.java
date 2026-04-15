@@ -35,7 +35,7 @@ public class AssessMgmtRespVO {
 
     @Schema(description = "班级排名")
     @ExcelProperty("班级排名")
-    private Integer rank;
+    private Integer rankNo;
 
     @Schema(description = "考评人")
     @ExcelProperty("考评人")
@@ -65,4 +65,4 @@ public class AssessMgmtRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}
