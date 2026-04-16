@@ -15,29 +15,27 @@ public class AmountCheckRespVO {
     @ExcelProperty("主键ID")
     private Long id;
 
-    @Schema(description = "订单ID")
-    @ExcelProperty("订单ID")
+    @Schema(description = "核算编号")
+    @ExcelProperty("核算编号")
+    private String checkNo;
+    @Schema(description = "关联订单ID")
+    @ExcelProperty("关联订单ID")
     private Long orderId;
-
-    @Schema(description = "核算金额")
-    @ExcelProperty("核算金额")
-    private BigDecimal checkAmount;
-
-    @Schema(description = "实际金额")
-    @ExcelProperty("实际金额")
-    private BigDecimal realAmount;
-
-    @Schema(description = "核算时间")
-    @ExcelProperty("核算时间")
-    private LocalDateTime checkTime;
-
+    @Schema(description = "申请金额")
+    @ExcelProperty("申请金额")
+    private BigDecimal applyAmount;
+    @Schema(description = "核算结果")
+    @ExcelProperty("核算结果")
+    private String checkResult;
+    @Schema(description = "核算明细")
+    @ExcelProperty("核算明细")
+    private String checkDetail;
     @Schema(description = "状态")
     @ExcelProperty("状态")
     private String status;
-
-    @Schema(description = "备注")
-    @ExcelProperty("备注")
-    private String remark;
+    @Schema(description = "操作人ID")
+    @ExcelProperty("操作人ID")
+    private Long operatorId;
 
     @Schema(description = "备用字段1")
     private String reserve1;

@@ -15,29 +15,30 @@ public class DebtRecordRespVO {
     @ExcelProperty("主键ID")
     private Long id;
 
-    @Schema(description = "用户ID")
-    @ExcelProperty("用户ID")
-    private Long userId;
-
-    @Schema(description = "车牌号码")
-    @ExcelProperty("车牌号码")
-    private String carNo;
-
+    @Schema(description = "记录编号")
+    @ExcelProperty("记录编号")
+    private String recordNo;
+    @Schema(description = "车牌")
+    @ExcelProperty("车牌")
+    private String plateNo;
+    @Schema(description = "欠费订单数")
+    @ExcelProperty("欠费订单数")
+    private Integer arrearOrderCount;
     @Schema(description = "欠费金额")
     @ExcelProperty("欠费金额")
-    private BigDecimal debtAmount;
-
-    @Schema(description = "状态")
-    @ExcelProperty("状态")
+    private BigDecimal arrearAmount;
+    @Schema(description = "追缴状态")
+    @ExcelProperty("追缴状态")
     private String status;
-
-    @Schema(description = "追缴完成时间")
-    @ExcelProperty("追缴完成时间")
-    private LocalDateTime collectTime;
-
-    @Schema(description = "备注")
-    @ExcelProperty("备注")
-    private String remark;
+    @Schema(description = "所属场站ID")
+    @ExcelProperty("所属场站ID")
+    private Long stationId;
+    @Schema(description = "追缴进度")
+    @ExcelProperty("追缴进度")
+    private String collectProgress;
+    @Schema(description = "操作人ID")
+    @ExcelProperty("操作人ID")
+    private Long operatorId;
 
     @Schema(description = "备用字段1")
     private String reserve1;

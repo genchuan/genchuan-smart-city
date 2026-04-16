@@ -15,33 +15,48 @@ public class ShareChargeOrderRespVO {
     @ExcelProperty("主键ID")
     private Long id;
 
-    @Schema(description = "主订单ID")
-    @ExcelProperty("主订单ID")
-    private Long orderId;
-
-    @Schema(description = "设备ID")
-    @ExcelProperty("设备ID")
-    private Long deviceId;
-
+    @Schema(description = "订单编号")
+    @ExcelProperty("订单编号")
+    private String orderNo;
+    @Schema(description = "用户ID")
+    @ExcelProperty("用户ID")
+    private Long userId;
+    @Schema(description = "用户昵称")
+    @ExcelProperty("用户昵称")
+    private String userNickname;
     @Schema(description = "借出时间")
     @ExcelProperty("借出时间")
-    private LocalDateTime borrowTime;
-
+    private LocalDateTime lendTime;
     @Schema(description = "归还时间")
     @ExcelProperty("归还时间")
     private LocalDateTime returnTime;
-
-    @Schema(description = "费用")
-    @ExcelProperty("费用")
-    private BigDecimal fee;
-
-    @Schema(description = "押金")
-    @ExcelProperty("押金")
-    private BigDecimal deposit;
-
-    @Schema(description = "备注")
-    @ExcelProperty("备注")
-    private String remark;
+    @Schema(description = "实际使用时长（分钟）")
+    @ExcelProperty("实际使用时长（分钟）")
+    private Integer actualDuration;
+    @Schema(description = "订单金额")
+    @ExcelProperty("订单金额")
+    private BigDecimal amount;
+    @Schema(description = "订单状态")
+    @ExcelProperty("订单状态")
+    private String status;
+    @Schema(description = "订单生成时间")
+    @ExcelProperty("订单生成时间")
+    private LocalDateTime createOrderTime;
+    @Schema(description = "所属场站ID")
+    @ExcelProperty("所属场站ID")
+    private Long stationId;
+    @Schema(description = "支付方式")
+    @ExcelProperty("支付方式")
+    private String payMethod;
+    @Schema(description = "优惠抵扣金额")
+    @ExcelProperty("优惠抵扣金额")
+    private BigDecimal discountAmount;
+    @Schema(description = "归档时间")
+    @ExcelProperty("归档时间")
+    private LocalDateTime archiveTime;
+    @Schema(description = "操作人ID")
+    @ExcelProperty("操作人ID")
+    private Long operatorId;
 
     @Schema(description = "备用字段1")
     private String reserve1;

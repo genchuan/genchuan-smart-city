@@ -1,11 +1,9 @@
 package cn.iocoder.yudao.module.ordertrade.controller.admin.refundmgmt.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 金额核算新增/修改 Request VO")
 @Data
@@ -14,24 +12,18 @@ public class AmountCheckSaveReqVO {
     @Schema(description = "主键ID（更新时必填）")
     private Long id;
 
-    @Schema(description = "订单ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "订单不能为空")
+    @Schema(description = "核算编号", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private String checkNo;
+    @Schema(description = "关联订单ID", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long orderId;
-
-    @Schema(description = "核算金额", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "核算金额不能为空")
-    private BigDecimal checkAmount;
-
-    @Schema(description = "实际金额", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "实际金额不能为空")
-    private BigDecimal realAmount;
-
-    @Schema(description = "核算时间")
-    private LocalDateTime checkTime;
-
-    @Schema(description = "状态：pending/checked")
+    @Schema(description = "申请金额", requiredMode = Schema.RequiredMode.REQUIRED)
+    private BigDecimal applyAmount;
+    @Schema(description = "核算结果", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private String checkResult;
+    @Schema(description = "核算明细", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private String checkDetail;
+    @Schema(description = "状态", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String status;
-
-    @Schema(description = "备注")
-    private String remark;
+    @Schema(description = "操作人ID", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private Long operatorId;
 }

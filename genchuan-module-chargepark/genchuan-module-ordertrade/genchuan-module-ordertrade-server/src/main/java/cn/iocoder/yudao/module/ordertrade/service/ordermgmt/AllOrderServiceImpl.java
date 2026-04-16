@@ -8,6 +8,7 @@ import cn.iocoder.yudao.module.ordertrade.dal.dataobject.ordermgmt.AllOrderDO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.refundmgmt.RefundApplyDO;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.ordermgmt.AllOrderMapper;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.refundmgmt.RefundApplyMapper;
+import cn.iocoder.yudao.module.ordertrade.framework.tool.OrderUtils;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -124,6 +125,7 @@ public class AllOrderServiceImpl implements AllOrderService {
         // 2. 创建退款申请（触发退款流程）
         RefundApplyDO apply = new RefundApplyDO();
         apply.setOrderId(reqVO.getId());
+        apply.setApplyNo(OrderUtils.generateRefundNo());
         apply.setApplicantId(SecurityFrameworkUtils.getLoginUserId());
         apply.setRefundAmount(order.getAmount());      // 退款金额 = 订单金额
         apply.setRefundReason(reqVO.getRemark() != null ? reqVO.getRemark() : "申请退款");

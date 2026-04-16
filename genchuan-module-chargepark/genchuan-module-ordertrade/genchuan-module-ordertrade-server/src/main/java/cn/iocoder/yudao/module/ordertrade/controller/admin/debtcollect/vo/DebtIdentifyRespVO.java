@@ -15,25 +15,27 @@ public class DebtIdentifyRespVO {
     @ExcelProperty("主键ID")
     private Long id;
 
-    @Schema(description = "订单ID")
-    @ExcelProperty("订单ID")
-    private Long orderId;
-
+    @Schema(description = "识别编号")
+    @ExcelProperty("识别编号")
+    private String identifyNo;
+    @Schema(description = "车牌")
+    @ExcelProperty("车牌")
+    private String plateNo;
     @Schema(description = "欠费金额")
     @ExcelProperty("欠费金额")
-    private BigDecimal debtAmount;
-
+    private BigDecimal arrearAmount;
     @Schema(description = "识别时间")
     @ExcelProperty("识别时间")
     private LocalDateTime identifyTime;
-
     @Schema(description = "状态")
     @ExcelProperty("状态")
     private String status;
-
-    @Schema(description = "备注")
-    @ExcelProperty("备注")
-    private String remark;
+    @Schema(description = "所属场站ID")
+    @ExcelProperty("所属场站ID")
+    private Long stationId;
+    @Schema(description = "操作人ID")
+    @ExcelProperty("操作人ID")
+    private Long operatorId;
 
     @Schema(description = "备用字段1")
     private String reserve1;

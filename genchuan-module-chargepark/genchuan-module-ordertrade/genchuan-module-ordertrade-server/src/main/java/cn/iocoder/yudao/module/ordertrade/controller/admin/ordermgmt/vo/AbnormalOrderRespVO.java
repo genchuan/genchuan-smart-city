@@ -14,37 +14,33 @@ public class AbnormalOrderRespVO {
     @ExcelProperty("主键ID")
     private Long id;
 
-    @Schema(description = "订单ID")
-    @ExcelProperty("订单ID")
+    @Schema(description = "关联订单ID")
+    @ExcelProperty("关联订单ID")
     private Long orderId;
-
-    @Schema(description = "异常原因")
-    @ExcelProperty("异常原因")
-    private String reason;
-
-    @Schema(description = "发生时间")
-    @ExcelProperty("发生时间")
-    private LocalDateTime happenTime;
-
-    @Schema(description = "状态")
-    @ExcelProperty("状态")
+    @Schema(description = "订单类型")
+    @ExcelProperty("订单类型")
+    private String orderType;
+    @Schema(description = "异常类型")
+    @ExcelProperty("异常类型")
+    private String abnormalType;
+    @Schema(description = "异常识别时间")
+    @ExcelProperty("异常识别时间")
+    private LocalDateTime identifyTime;
+    @Schema(description = "处置状态")
+    @ExcelProperty("处置状态")
     private String status;
-
-    @Schema(description = "处置人ID")
-    @ExcelProperty("处置人ID")
-    private Long handlerId;
-
-    @Schema(description = "处置时间")
-    @ExcelProperty("处置时间")
-    private LocalDateTime handleTime;
-
-    @Schema(description = "处置结果")
-    @ExcelProperty("处置结果")
-    private String handleResult;
-
-    @Schema(description = "备注")
-    @ExcelProperty("备注")
-    private String remark;
+    @Schema(description = "所属场站ID")
+    @ExcelProperty("所属场站ID")
+    private Long stationId;
+    @Schema(description = "忽略理由")
+    @ExcelProperty("忽略理由")
+    private String ignoreReason;
+    @Schema(description = "处置进度")
+    @ExcelProperty("处置进度")
+    private String processProgress;
+    @Schema(description = "操作人ID")
+    @ExcelProperty("操作人ID")
+    private Long operatorId;
 
     @Schema(description = "备用字段1")
     private String reserve1;
