@@ -21,7 +21,7 @@ public class AidWorkPageReqVO extends PageParam {
     private String aidType;
 
     @Schema(description = "申请金额")
-    private BigDecimal applyAmount;
+    private BigDecimal[] applyAmount;
 
     @Schema(description = "申报时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)

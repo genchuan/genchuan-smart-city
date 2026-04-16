@@ -88,7 +88,7 @@ public class StudentInfoController {
     }
 
     @GetMapping("/getAll")
-    @Operation(summary = "获得学生信息分页")
+    @Operation(summary = "获得全部学生信息")
     @PreAuthorize("@ss.hasPermission('studentmgmt:student-info:query')")
     public CommonResult<List<StudentInfoBaseVO>> getAll() {
         List<StudentInfoBaseVO> list = studentInfoService.getAll();

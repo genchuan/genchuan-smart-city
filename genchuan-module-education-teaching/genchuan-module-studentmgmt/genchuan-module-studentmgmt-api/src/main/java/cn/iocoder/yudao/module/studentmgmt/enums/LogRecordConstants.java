@@ -115,5 +115,21 @@ public interface LogRecordConstants {
     String CLUB_AUDIT_SUB_TYPE = "审核社团";
     String CLUB_AUDIT_SUCCESS = "审核了社团";
 
+    // ======================= Aid 奖助勤贷 =======================
+
+    String AID_TYPE = "奖助勤贷管理";
+    String AID_CREATE_SUB_TYPE = "创建奖助勤贷";
+    String AID_CREATE_SUCCESS = "创建了{{#aid.studentId}}的奖助勤贷";
+    String AID_UPDATE_SUB_TYPE = "更新奖助勤贷";
+    String AID_UPDATE_SUCCESS = "【{{#aid.auditUser}}】更新了学生【{{#aid.studentId}}】: {_DIFF{#updateReqVO}}奖助勤贷";
+    String AID_DELETE_SUB_TYPE = "删除奖助勤贷";
+    String AID_DELETE_SUCCESS = "删除了奖助勤贷【{{#aid.studentId}}】";
+    String AID_FOLLOW_SUB_TYPE = "跟进奖助勤贷";
+    String AID_FOLLOW_SUCCESS = "跟进了奖助勤贷【{{#aid.id}}】";
+    String AID_EXPORT_SUB_TYPE = "导出奖助勤贷";
+    String AID_EXPORT_SUCCESS = "导出了奖助勤贷";
+    String AID_AUDIT_SUB_TYPE = "审核奖助勤贷";
+    String AID_AUDIT_SUCCESS = "学生【{{#aid.studentId}}】奖助勤贷的审核状态为【{{#status ? '已审核' : '未审核'}}】";
+
 
 }

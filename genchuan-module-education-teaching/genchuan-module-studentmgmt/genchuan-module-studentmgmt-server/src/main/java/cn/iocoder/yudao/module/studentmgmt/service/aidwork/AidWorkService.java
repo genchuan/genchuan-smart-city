@@ -5,7 +5,6 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.aidwork.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.aidwork.AidWorkDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 奖助勤贷 Service 接口
@@ -59,4 +58,11 @@ public interface AidWorkService {
      */
     PageResult<AidWorkDO> getAidWorkPage(AidWorkPageReqVO pageReqVO);
 
+    boolean audit(@Valid AidWorkAuditReqVO reqVO);
+
+    boolean follow(@Valid AidWorkFollowReqVO reqVO);
+
+    AidWorkChartRespVO chart(@Valid AidWorkChartReqVO reqVO);
+
+    List<AidWorkApplyCountRespVO> applyCount(@Valid AidWorkApplyCountReqVO reqVO);
 }
