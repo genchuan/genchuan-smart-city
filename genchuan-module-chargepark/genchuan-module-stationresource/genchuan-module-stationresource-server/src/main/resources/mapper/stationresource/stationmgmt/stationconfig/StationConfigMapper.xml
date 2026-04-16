@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.stationmgmt.stationconfig.StationConfigMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+    <!-- 按配置类型 type 分组统计数量 -->
+    <select id="selectTypeGroupCount" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationconfig.vo.statistics.StationConfigChartRespVO$TypePieDTO">
+        SELECT type AS name, COUNT(*) AS value
+        FROM station_config
+        WHERE deleted = 0
+        GROUP BY type
+    </select>
+
+    <!-- 已配置场站数量（去重 station_id） -->
+    <select id="selectConfigedStationCount" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT station_id)
+        FROM station_config
+        WHERE deleted = 0
+    </select>
+
+    <!-- 已生效配置数量（status = '已生效'） -->
+    <select id="selectEnableConfigCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM station_config
+        WHERE deleted = 0 AND status = '已生效'
+    </select>
+</mapper>
