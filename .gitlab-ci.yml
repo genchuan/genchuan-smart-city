@@ -24,6 +24,7 @@ Build:
           ["genchuan-module-park-server"]="genchuan-module-park/genchuan-module-park-server"
           ["genchuan-module-kitchen-server"]="genchuan-module-marketsupervision/genchuan-module-kitchen/genchuan-module-kitchen-server"
           ["genchuan-module-vehiclecharging-server"]="genchuan-module-energycharge/genchuan-module-vehiclecharging/genchuan-module-vehiclecharging-server"
+          ["genchuan-module-marketop-server"]="genchuan-module-chargepark/genchuan-module-marketop/genchuan-module-marketop-server"
           ["genchuan-module-appearance-server"]="genchuan-module-urban/genchuan-module-appearance/genchuan-module-appearance-server"
           ["genchuan-module-smartcity-server"]="genchuan-module-urban/genchuan-module-smartcity/genchuan-module-smartcity-server"
           ["genchuan-module-waterdetection-server"]="genchuan-module-wateraffairs/genchuan-module-waterdetection/genchuan-module-waterdetection-server"
