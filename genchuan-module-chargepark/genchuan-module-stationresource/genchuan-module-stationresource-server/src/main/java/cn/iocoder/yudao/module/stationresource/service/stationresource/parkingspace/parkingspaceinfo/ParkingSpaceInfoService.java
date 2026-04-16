@@ -5,10 +5,14 @@ import java.util.*;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ParkingSpaceInfoPageReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ParkingSpaceInfoSaveReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ops.AddParkingSpaceInfoReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ops.BindParkingSpaceReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ops.ImportResultVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.statistics.ParkingSpaceChartRespVO;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.parkingspace.parkingspaceinfo.ParkingSpaceInfoDO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 车位信息 Service 接口
@@ -23,7 +27,7 @@ public interface ParkingSpaceInfoService {
      * @param createReqVO 创建信息
      * @return 编号
      */
-    Long createParkingSpaceInfo(@Valid ParkingSpaceInfoSaveReqVO createReqVO);
+//    Long createParkingSpaceInfo(@Valid ParkingSpaceInfoSaveReqVO createReqVO);
 
     /**
      * 更新车位信息
@@ -63,4 +67,10 @@ public interface ParkingSpaceInfoService {
     PageResult<ParkingSpaceInfoDO> getParkingSpaceInfoPage(ParkingSpaceInfoPageReqVO pageReqVO);
 
     Long addParkingSpaceInfo(AddParkingSpaceInfoReqVO createReqVO);
+
+    ImportResultVO importParkingSpaceInfo(MultipartFile file, boolean updateSupport);
+
+    void bindParkingSpace(BindParkingSpaceReqVO reqVO);
+
+    ParkingSpaceChartRespVO getParkingSpaceChart();
 }

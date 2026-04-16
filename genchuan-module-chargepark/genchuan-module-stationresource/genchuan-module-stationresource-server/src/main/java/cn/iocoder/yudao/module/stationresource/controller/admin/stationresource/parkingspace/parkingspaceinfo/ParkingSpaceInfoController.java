@@ -1,11 +1,17 @@
 package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo;
 
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.ops.AddReq;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ParkingSpaceInfoPageReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ParkingSpaceInfoRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ParkingSpaceInfoSaveReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ops.AddParkingSpaceInfoReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ops.BindParkingSpaceReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ops.ImportResultVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.statistics.ParkingSpaceChartRespVO;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.parkingspace.parkingspaceinfo.ParkingSpaceInfoDO;
 import cn.iocoder.yudao.module.stationresource.service.stationresource.parkingspace.parkingspaceinfo.ParkingSpaceInfoService;
+import cn.iocoder.yudao.module.stationresource.vrv.utils.common.excel.VrvExcelUtils;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -29,6 +35,8 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+import org.springframework.web.multipart.MultipartFile;
+
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 
@@ -36,10 +44,49 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 @RestController
 @RequestMapping("/stationresource/parking-space-info")
 @Validated
+//@Hidden
 public class ParkingSpaceInfoController {
 
     @Resource
     private ParkingSpaceInfoService parkingSpaceInfoService;
+
+    @GetMapping("/chart")
+    @Operation(summary = "车位数据可视化图表（地图+卡片）")
+    @PreAuthorize("@ss.hasPermission('stationresource:parking-space-info:query')")
+    public CommonResult<ParkingSpaceChartRespVO> getParkingSpaceChart() {
+        ParkingSpaceChartRespVO respVO = parkingSpaceInfoService.getParkingSpaceChart();
+        return success(respVO);
+    }
+    @PutMapping("/update")
+    @Operation(summary = "更新车位信息")
+    @PreAuthorize("@ss.hasPermission('stationresource:parking-space-info:update')")
+    public CommonResult<Boolean> updateParkingSpaceInfo(@Valid @RequestBody ParkingSpaceInfoSaveReqVO updateReqVO) {
+        parkingSpaceInfoService.updateParkingSpaceInfo(updateReqVO);
+        return success(true);
+    }
+    @PutMapping("/bind")
+    @Operation(summary = "车位绑定设备", description = "批量绑定设备，更新状态为【已绑定】")
+    @PreAuthorize("@ss.hasPermission('stationresource:parking-space-info:update')")
+    public CommonResult<Boolean> bindParkingSpace(@Valid @RequestBody BindParkingSpaceReqVO reqVO) {
+        parkingSpaceInfoService.bindParkingSpace(reqVO);
+        return success(true);
+    }
+    @GetMapping("/import-template")
+    @Operation(summary = "下载导入模板")
+    @PreAuthorize("@ss.hasPermission('stationresource:area-info:import')")
+    public void importTemplate(HttpServletResponse response) throws Exception {
+        // 传入你要生成模板的类（AddReq / 任意VO）
+        VrvExcelUtils.downloadImportTemplate(response, AddParkingSpaceInfoReqVO.class);
+    }
+    @PostMapping("/import")
+    @Operation(summary = "导入车位信息", description = "上传Excel文件")
+    @PreAuthorize("@ss.hasPermission('stationresource:parking-space-info:import')")
+    public CommonResult<ImportResultVO> importParkingSpaceInfo(
+            @RequestPart("file") MultipartFile file,
+            @RequestParam(value = "updateSupport", defaultValue = "false") boolean updateSupport) throws Exception {
+        ImportResultVO result = parkingSpaceInfoService.importParkingSpaceInfo(file, updateSupport);
+        return success(result);
+    }
     @PostMapping("/create")
     @Operation(summary = "创建车位信息")
     @PreAuthorize("@ss.hasPermission('stationresource:parking-space-info:create')")

@@ -317,6 +317,7 @@ public class AreaInfoServiceImpl implements AreaInfoService {
         // 1. 根据 areaNo 查询是否存在
         AreaInfoDO existing = areaInfoMapper.selectOne(new LambdaQueryWrapper<AreaInfoDO>()
                 .eq(AreaInfoDO::getAreaNo, req.getAreaNo())
+                .eq(AreaInfoDO::getDeleted,0)
                 .last("LIMIT 1")
         );
 

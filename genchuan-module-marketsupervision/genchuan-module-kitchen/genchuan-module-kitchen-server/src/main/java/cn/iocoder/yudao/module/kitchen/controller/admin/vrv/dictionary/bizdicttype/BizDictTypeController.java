@@ -43,6 +43,18 @@ public class BizDictTypeController {
     private BizDictTypeService bizDictTypeService;
 
     /**
+     * 批量新增业务字典分类
+     * 自动生成排序号，默认启用，校验编码和名称唯一
+     */
+//    @PostMapping("/batch-add")
+//    @Operation(summary = "批量创建业务字典分类")
+////    @PreAuthorize("@ss.hasPermission('kitchen:biz-dict-type:create')")
+//    public CommonResult<Long> addBizDictType(@Valid @RequestBody AddReq createReqVO) {
+//        Long id = bizDictTypeService.addBizDictType(createReqVO);
+//        return success(id);
+//    }
+
+    /**
      * 批量删除业务字典分类
      * 同时会删除该分类下的所有字典项
      */

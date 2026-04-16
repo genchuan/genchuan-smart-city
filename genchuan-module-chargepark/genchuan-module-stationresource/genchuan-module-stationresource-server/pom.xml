@@ -157,6 +157,18 @@
             <artifactId>html2pdf</artifactId>
             <version>3.0.5</version>
         </dependency>
+        <!--        二维码 / 条形码 编码与解码算法-->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.5.3</version>
+        </dependency>
+        <!--        Java 图片输出工具,把 BitMatrix 转成图片,处理 BufferedImage-->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.5.3</version>
+        </dependency>
     </dependencies>
 
     <build>

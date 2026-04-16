@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.kitchen.controller.admin.vrv.test;
+package cn.iocoder.yudao.module.stationresource.controller.admin.vrv.test;
 
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,19 +8,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryUsage;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.jar.Manifest;
 
+/**
+ * 管理后台 - 测试辅助控制器
+ * 提供服务内存查看、启动时间、打包时间等辅助功能
+ * 本地/线上均可安全使用，无内存泄漏风险
+ */
 @Tag(name = "管理后台 - 测试辅助")
 @RestController
-@RequestMapping("/kitchen/test-fuzhu")
+@RequestMapping("/stationresource/test-fuzhu")
 @Validated
 public class TestFuZhuController {
 
@@ -84,5 +86,4 @@ public class TestFuZhuController {
 
         return CommonResult.success(data);
     }
-
 }

@@ -9,4 +9,27 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="selectParkingSpaceChartList" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.statistics.ParkingSpaceChartRespVO$SpaceMapDTO">
+        SELECT
+            psi.id,
+            psi.location AS name,
+            psi.real_status AS realStatus,
+            coalesce(ai.lon, 0) AS lon,
+            coalesce(ai.lat, 0) AS lat
+        FROM parking_space_info psi
+                 LEFT JOIN station_info si ON psi.station_id = si.id
+                 LEFT JOIN area_info ai ON si.area_id = ai.id
+        WHERE psi.deleted = 0
+    </select>
+
+    <select id="selectTotalSpaceCount" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM parking_space_info
+        WHERE deleted = 0
+    </select>
+
+    <select id="selectAvailableSpaceCount" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM parking_space_info
+        WHERE deleted = 0
+          AND real_status = '空闲'
+    </select>
 </mapper>

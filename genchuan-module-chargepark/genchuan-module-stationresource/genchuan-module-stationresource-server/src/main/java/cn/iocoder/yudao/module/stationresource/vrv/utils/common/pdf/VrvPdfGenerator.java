@@ -150,6 +150,14 @@ public class VrvPdfGenerator {
      * 生成 PDF 字节数组并包装为 ResponseEntity（供接口下载使用）
      */
     public ResponseEntity<byte[]> generatePdfResponse(String htmlContent) {
+        // 获取内存管理器
+        Runtime runtime = Runtime.getRuntime();
+
+// 执行前
+        long beforeMem = runtime.totalMemory() - runtime.freeMemory();
+        System.out.println("PDF导出前占用内存：" + beforeMem / 1024 / 1024 + " MB");
+
+
         long start = System.currentTimeMillis();
         // 禁止返回 null！出现异常直接抛错
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
@@ -164,39 +172,44 @@ public class VrvPdfGenerator {
             }
 
             // 2. 配置字体
-            ConverterProperties converterProperties = new ConverterProperties();
 
-// 创建 FontProvider
-// 从 jar 内读取字体流
-            FontProvider fontProvider = new FontProvider();
-            try (InputStream fontStream = getClass().getClassLoader().getResourceAsStream("fonts/simsun.ttf")) {
-                if (fontStream == null) {
-                    log.error("生成PDF失败：字体文件未找到，请检查 resources/fonts/simsun.ttf");
-                    throw exception("生成PDF失败：字体文件未找到，请检查 resources/fonts/simsun.ttf");
-                }
-
-                // 创建临时文件
-                File tempFontFile = File.createTempFile("simsun", ".ttf");
-                tempFontFile.deleteOnExit(); // JVM 退出时删除
-
-                // 写入临时文件
-                try (OutputStream out = new FileOutputStream(tempFontFile)) {
-                    byte[] buffer = new byte[1024];
-                    int len;
-                    while ((len = fontStream.read(buffer)) != -1) {
-                        out.write(buffer, 0, len);
-                    }
-                }
-
-                // 注册字体
-                fontProvider.addFont(tempFontFile.getAbsolutePath());
-            }catch (IOException ioe) {
-                ioe.printStackTrace();
-                log.error("字体加载/写入临时文件异常", ioe);
-                throw exception("生成PDF失败：字体加载/写入临时文件异常 | " + ioe.getMessage());
-            }
-
-            converterProperties.setFontProvider(fontProvider);
+            // ==========================
+            // 关键：这里直接使用全局字体，不再重复加载
+            // ==========================
+            ConverterProperties converterProperties = PdfFontCache.getConverterProperties();
+//            ConverterProperties converterProperties = new ConverterProperties();
+//
+//// 创建 FontProvider
+//// 从 jar 内读取字体流
+//            FontProvider fontProvider = new FontProvider();
+//            try (InputStream fontStream = getClass().getClassLoader().getResourceAsStream("fonts/simsun.ttf")) {
+//                if (fontStream == null) {
+//                    log.error("生成PDF失败：字体文件未找到，请检查 resources/fonts/simsun.ttf");
+//                    throw exception("生成PDF失败：字体文件未找到，请检查 resources/fonts/simsun.ttf");
+//                }
+//
+//                // 创建临时文件
+//                File tempFontFile = File.createTempFile("simsun", ".ttf");
+//                tempFontFile.deleteOnExit(); // JVM 退出时删除
+//
+//                // 写入临时文件
+//                try (OutputStream out = new FileOutputStream(tempFontFile)) {
+//                    byte[] buffer = new byte[1024];
+//                    int len;
+//                    while ((len = fontStream.read(buffer)) != -1) {
+//                        out.write(buffer, 0, len);
+//                    }
+//                }
+//
+//                // 注册字体
+//                fontProvider.addFont(tempFontFile.getAbsolutePath());
+//            }catch (IOException ioe) {
+//                ioe.printStackTrace();
+//                log.error("字体加载/写入临时文件异常", ioe);
+//                throw exception("生成PDF失败：字体加载/写入临时文件异常 | " + ioe.getMessage());
+//            }
+//
+//            converterProperties.setFontProvider(fontProvider);
 
             // 3. 强制使用宋体
             htmlContent = "<style>body { font-family: 'SimSun'; }</style>" + htmlContent;
@@ -215,9 +228,16 @@ public class VrvPdfGenerator {
             headers.setContentType(MediaType.APPLICATION_PDF);
             headers.setContentDispositionFormData("attachment", "notice.pdf");
 
+            // 执行后
+            long afterMem = runtime.totalMemory() - runtime.freeMemory();
+            System.out.println("PDF导出后占用内存：" + afterMem / 1024 / 1024 + " MB");
+            System.out.println("本次导出消耗内存：" + (afterMem - beforeMem)/1024/1024 + " MB");
+
+
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(baos.toByteArray());
+
 
         } catch (Exception e) {
             // 关键：异常不捕获后静默返回 null，而是抛出异常，方便排查
