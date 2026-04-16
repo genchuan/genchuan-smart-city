@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.stationmgmt.debtexpand.DebtExpandMapper">
+
+    <!-- 1. 卡片统计 -->
+    <select id="selectCardData" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.debtexpand.vo.chart.DebtExpandChartRespVO$CardDataItem">
+        SELECT
+            COUNT(CASE WHEN progress = 100 THEN 1 END) AS expandFinishCount,
+            IFNULL(ROUND(AVG(recovery_rate),1), 0) AS recoveryRate
+        FROM debt_expand
+        WHERE deleted = 0
+    </select>
+
+    <!-- 2. 拓场进度趋势 按月 -->
+    <select id="selectProgressLineList" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.debtexpand.vo.chart.DebtExpandChartRespVO$ProgressLineItem">
+        SELECT
+            DATE_FORMAT(create_time, '%Y-%m') AS date,
+            IFNULL(AVG(progress), 0) AS progress
+        FROM debt_expand
+        WHERE deleted = 0
+        GROUP BY DATE_FORMAT(create_time, '%Y-%m')
+        ORDER BY date ASC
+    </select>
+
+    <!-- 3. 追缴成功率 按场站 -->
+    <select id="selectRecoveryBarList" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.debtexpand.vo.chart.DebtExpandChartRespVO$RecoveryBarItem">
+        SELECT
+            s.name AS name,
+            IFNULL(ROUND(AVG(d.recovery_rate),1), 0) AS value
+        FROM debt_expand d
+                 LEFT JOIN station_info s ON d.station_id = s.id
+        WHERE d.deleted = 0
+        GROUP BY d.station_id, s.name
+    </select>
+
+</mapper>

@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo;
 
+import cn.idev.excel.annotation.ExcelIgnore;
 import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -17,7 +18,8 @@ public class RectifyReviewLedgerRespVO {
     private Long id;
 
     @Schema(description = "整改通知书ID")
-    @ExcelProperty("整改通知书ID")
+    @ExcelIgnore
+//    @ExcelProperty("整改通知书ID")
     private Long rectifyNoticeId;
 
     @Schema(description = "台账编号")
@@ -28,8 +30,9 @@ public class RectifyReviewLedgerRespVO {
     @ExcelProperty("逾期标识")
     private Integer overdueFlag;
 
-    @Schema(description = "[企业ID] ", requiredMode = Schema.RequiredMode.REQUIRED, example = "4078")
-    @ExcelProperty("[企业ID]")
+    @Schema(description = "企业ID ", requiredMode = Schema.RequiredMode.REQUIRED, example = "4078")
+
+    @ExcelProperty("企业ID")
     private Long entId;
 
     @Schema(description = "企业名称")
@@ -37,7 +40,8 @@ public class RectifyReviewLedgerRespVO {
     private String entName;
 
     @Schema(description = "[违规类型ID] 关联park_illegal_type_dict.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "16642")
-    @ExcelProperty("[违规类型ID] 关联park_illegal_type_dict.id")
+    @ExcelIgnore
+//    @ExcelProperty("[违规类型ID] 关联park_illegal_type_dict.id")
     private Long illegalTypeId;
 
     @Schema(description = "违规类型")
