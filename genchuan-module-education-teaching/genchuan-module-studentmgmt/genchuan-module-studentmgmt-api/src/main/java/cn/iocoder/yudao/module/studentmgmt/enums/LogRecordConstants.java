@@ -74,8 +74,6 @@ public interface LogRecordConstants {
     String MENTAL_CREATE_SUCCESS = "创建了{{#studentName}}的心理";
     String MENTAL_UPDATE_SUB_TYPE = "更新心理";
     String MENTAL_UPDATE_SUCCESS = "更新了心理【{{#mental.studentId}}】: {_DIFF{#updateReqVO}}";
-    String MENTAL_WARN_SUB_TYPE = "预警心理";
-    String MENTAL_WARN_SUCCESS = "更新了心理【{{#studentName}}】的预警状态为【{{#status ? '已预警' : '未预警'}}】";
     String MENTAL_CONSULT_SUB_TYPE = "预约心理";
     String MENTAL_CONSULT_SUCCESS = "预约了【{{#studentName}}】心理";
 
@@ -107,7 +105,15 @@ public interface LogRecordConstants {
     String FUND_SYSTEM_UPDATE_SUCCESS = "更新了资助系统【{{#behavior.studentId}}】: {_DIFF{#updateReqVO}}";
     String FUND_SYSTEM_AUDIT_SUB_TYPE = "预警资助系统";
     String FUND_SYSTEM_AUDIT_SUCCESS = "资助系统审核成功";;
-    String FUND_SYSTEM_CANCEL_SUB_TYPE = "取消资助系统";
-    String FUND_SYSTEM_CANCEL_SUCCESS = "取消了资助系统";
+
+    // ======================= club 社团管理 =======================
+    String CLUB_TYPE = "STUDENT 社团管理";
+    String CLUB_CREATE_SUB_TYPE = "创建社团";
+    String CLUB_CREATE_SUCCESS = "创建了{{club.clubName}}的社团";
+    String CLUB_UPDATE_SUB_TYPE = "更新社团";
+    String CLUB_UPDATE_SUCCESS = "更新了社团【{{#club.clubName}}】: {_DIFF{#updateReqVO}}";
+    String CLUB_AUDIT_SUB_TYPE = "审核社团";
+    String CLUB_AUDIT_SUCCESS = "审核了社团";
+
 
 }

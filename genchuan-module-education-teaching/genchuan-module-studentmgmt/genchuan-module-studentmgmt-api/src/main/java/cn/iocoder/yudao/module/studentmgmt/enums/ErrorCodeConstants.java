@@ -87,5 +87,6 @@ public interface ErrorCodeConstants {
     ErrorCode TARGET_MGMT_NOT_EXISTS = new ErrorCode(500, "指标管理不存在");
     // ========== 就诊管理 ==========
     ErrorCode TREAT_MGMT_NOT_EXISTS = new ErrorCode(500, "就诊管理不存在");
-
+    // ========== 社团管理  ==========
+    ErrorCode CLUB_MGMT_NOT_EXISTS = new ErrorCode(500, "社团管理不存在");
 }
