@@ -50,4 +50,38 @@ public interface SpaceMonitorMapper extends BaseMapperX<SpaceMonitorDO> {
      */
     List<SpaceMonitorRespVO> selectPageWithJoin(@Param("page") com.baomidou.mybatisplus.extension.plugins.pagination.Page<SpaceMonitorRespVO> page,
                                                       @Param("reqVO") SpaceMonitorPageReqVO reqVO);
+
+    /**
+     * 根据ID查询定位信息
+     * 关联查询场站名称和车位编号
+     *
+     * @param id 监测记录ID
+     * @return 定位信息
+     */
+    SpaceMonitorLocationRespVO selectLocationById(@Param("id") Long id);
+
+    // SpaceMonitorMapper.java
+    /**
+     * 查询地图数据
+     *
+     * @param reqVO 查询参数
+     * @return 地图数据列表
+     */
+    List<SpaceMonitorChartRespVO.MapData> selectMapData(@Param("reqVO") SpaceMonitorChartReqVO reqVO);
+
+    /**
+     * 查询趋势数据
+     *
+     * @param reqVO 查询参数
+     * @return 趋势数据列表
+     */
+    List<SpaceMonitorChartRespVO.TrendData> selectTrendData(@Param("reqVO") SpaceMonitorChartReqVO reqVO);
+
+    /**
+     * 查询卡片数据
+     *
+     * @param reqVO 查询参数
+     * @return 卡片数据
+     */
+    SpaceMonitorChartRespVO.CardData selectCardData(@Param("reqVO") SpaceMonitorChartReqVO reqVO);
 }

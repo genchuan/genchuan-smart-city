@@ -7,6 +7,7 @@ import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import cn.iocoder.yudao.module.inspectop.controller.admin.spacemonitor.vo.*;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.spacemonitor.SpaceMonitorDO;
@@ -92,6 +93,60 @@ public class SpaceMonitorServiceImpl implements SpaceMonitorService {
         List<SpaceMonitorRespVO> pageResult = spaceMonitorMapper.selectPageWithJoin(mpPage, pageReqVO);
 
         return pageResult;
+    }
+
+    // 在 SpaceMonitorServiceImpl.java 中添加以下方法
+    @Override
+    public SpaceMonitorLocationRespVO getSpaceMonitorLocation(Long id) {
+        // 校验记录是否存在
+        validateSpaceMonitorExists(id);
+
+        // 调用Mapper的定位查询方法
+        SpaceMonitorLocationRespVO location = spaceMonitorMapper.selectLocationById(id);
+
+        if (location == null) {
+            // 如果查询结果为空，抛出异常
+            throw exception(SPACE_MONITOR_NOT_EXISTS);
+        }
+
+        return location;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateSpaceMonitorAlarm(SpaceMonitorAlarmReqVO alarmReqVO) {
+        // 1. 校验记录是否存在
+        validateSpaceMonitorExists(alarmReqVO.getId());
+
+        // 2. 构建更新对象
+        SpaceMonitorDO updateObj = new SpaceMonitorDO();
+        updateObj.setId(alarmReqVO.getId());
+        updateObj.setAlarmStatus("ALARM"); // 设置为告警状态
+        updateObj.setAlarmRemark(alarmReqVO.getAlarmRemark());
+        updateObj.setAlarmTime(LocalDateTime.now()); // 设置告警时间为当前时间
+
+        // 3. 更新数据库
+        spaceMonitorMapper.updateById(updateObj);
+    }
+
+    // SpaceMonitorServiceImpl.java
+    @Override
+    public SpaceMonitorChartRespVO getSpaceMonitorChart(SpaceMonitorChartReqVO reqVO) {
+        SpaceMonitorChartRespVO result = new SpaceMonitorChartRespVO();
+
+        // 1. 获取地图数据
+        List<SpaceMonitorChartRespVO.MapData> mapDataList = spaceMonitorMapper.selectMapData(reqVO);
+        result.setMapData(mapDataList);
+
+        // 2. 获取趋势数据
+        List<SpaceMonitorChartRespVO.TrendData> trendDataList = spaceMonitorMapper.selectTrendData(reqVO);
+        result.setTrendData(trendDataList);
+
+        // 3. 获取卡片数据
+        SpaceMonitorChartRespVO.CardData cardData = spaceMonitorMapper.selectCardData(reqVO);
+        result.setCardData(cardData);
+
+        return result;
     }
 
 }
