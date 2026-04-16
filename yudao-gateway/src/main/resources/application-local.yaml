@@ -301,6 +301,13 @@ spring:
                 - Path=/admin-api/stationresource/**
               filters:
                 - RewritePath=/admin-api/stationresource/v3/api-docs, /v3/api-docs # 转发到 /v3/api-docs
+              # genchuan-module-usermerchant
+            - id: usermerchant-admin-api # 路由的编号
+              uri: grayLb://usermerchant-server
+              predicates: # 断言，作为路由的匹配条件
+                - Path=/admin-api/usermerchant/**
+              filters:
+                - RewritePath=/admin-api/usermerchant/v3/api-docs, /v3/api-docs # 转发到 /v3/api-docs
               # genchuan-module-inspectop
             - id: inspectop-admin-api # 路由的编号
               uri: grayLb://inspectop-server
@@ -436,6 +443,10 @@ knife4j:
       - name: stationresource-server
         service-name: stationresource-server
         url: /admin-api/stationresource/v3/api-docs
+        # genchuan-module-usermerchant
+      - name: usermerchant-server
+        service-name: usermerchant-server
+        url: /admin-api/usermerchant/v3/api-docs
         # genchuan-module-inspectop
       - name: inspectop-server
         service-name: inspectop-server

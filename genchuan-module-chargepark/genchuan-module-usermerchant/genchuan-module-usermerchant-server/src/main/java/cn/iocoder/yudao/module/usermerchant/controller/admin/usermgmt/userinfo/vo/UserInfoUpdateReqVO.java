@@ -1,8 +1,10 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.vo;
 
+import cn.iocoder.yudao.module.usermerchant.framework.FlexibleTimestampDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import jakarta.validation.constraints.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -26,9 +28,11 @@ public class UserInfoUpdateReqVO {
     private String status;
 
     @Schema(description = "注册时间")
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
     private LocalDateTime registerTime;
 
     @Schema(description = "最后登录时间")
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
     private LocalDateTime loginTime;
 
     @Schema(description = "钱包余额", example = "100")

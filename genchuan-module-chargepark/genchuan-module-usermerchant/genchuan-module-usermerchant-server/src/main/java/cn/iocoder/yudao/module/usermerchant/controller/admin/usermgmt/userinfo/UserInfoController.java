@@ -12,9 +12,7 @@ import jakarta.servlet.http.*;
 import java.util.*;
 import java.io.IOException;
 
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.framework.common.pojo.*;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
@@ -112,22 +110,11 @@ public class UserInfoController {
         return success(true);
     }
 
-//    @DeleteMapping("/delete")
-//    @Operation(summary = "删除用户信息")
-//    @Parameter(name = "id", description = "编号", required = true)
-//    @PreAuthorize("@ss.hasPermission('usermerchant:user-info:delete')")
-//    public CommonResult<Boolean> deleteUserInfo(@RequestParam("id") Long id) {
-//        userInfoService.deleteUserInfo(id);
-//        return success(true);
-//    }
-//
-//    @DeleteMapping("/delete-list")
-//    @Parameter(name = "ids", description = "编号", required = true)
-//    @Operation(summary = "批量删除用户信息")
-//                @PreAuthorize("@ss.hasPermission('usermerchant:user-info:delete')")
-//    public CommonResult<Boolean> deleteUserInfoList(@RequestParam("ids") List<Long> ids) {
-//        userInfoService.deleteUserInfoListByIds(ids);
-//        return success(true);
-//    }
+    @PutMapping("/chart")
+    @Operation(summary = "用户信息统计")
+    @PreAuthorize("@ss.hasPermission('usermerchant:user-info:query')")
+    public CommonResult<UserInfoChartRespVO> getUserInfoChart(@Valid @RequestBody UserInfoChartReqVO chartReqVO) {
+        return success(userInfoService.getUserInfoChart(chartReqVO));
+    }
 
 }
