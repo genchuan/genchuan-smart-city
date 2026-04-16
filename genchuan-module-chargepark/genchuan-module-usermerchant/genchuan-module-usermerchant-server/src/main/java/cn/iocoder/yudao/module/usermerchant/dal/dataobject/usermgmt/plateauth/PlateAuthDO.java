@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.usermerchant.dal.dataobject.usermgmt.usercar;
+package cn.iocoder.yudao.module.usermerchant.dal.dataobject.usermgmt.plateauth;
 
 import lombok.*;
 
@@ -8,19 +8,19 @@ import com.baomidou.mybatisplus.annotation.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 
 /**
- * 用户车辆 DO
+ * 车牌认证 DO
  *
  * @author 亘川智城
  */
-@TableName("user_car")
-@KeySequence("user_car_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。
+@TableName("plate_auth")
+@KeySequence("plate_auth_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserCarDO extends BaseDO {
+public class PlateAuthDO extends BaseDO {
 
     /**
      * 主键ID
@@ -28,7 +28,7 @@ public class UserCarDO extends BaseDO {
     @TableId
     private Long id;
     /**
-     * 用户信息ID
+     * 所属用户ID，关联 user_info 表 id
      */
     private Long userId;
     /**
@@ -37,27 +37,27 @@ public class UserCarDO extends BaseDO {
     @TableField(exist = false)
     private String nickname;
     /**
+     * 关联车辆ID，关联 user_car 表 id
+     */
+    private Long carId;
+    /**
      * 车牌号码
      */
     private String plateNo;
     /**
-     * 车牌颜色：蓝牌/黄牌/绿牌/黑牌/白牌
+     * 行驶证图片地址
      */
-    private String plateColor;
+    private String drivingLicense;
     /**
-     * 车辆类型：小型车/大型车/新能源/其他
+     * 认证申请时间
      */
-    private String carType;
+    private LocalDateTime applyTime;
     /**
-     * 绑定时间
-     */
-    private LocalDateTime bindTime;
-    /**
-     * 绑定状态：待审核/已绑定/已解绑
+     * 认证状态：待审核/已认证/已驳回，关联芋道字典表 plate_auth_status
      */
     private String status;
     /**
-     * 审核人ID
+     * 审核人ID，关联芋道用户表 system_user
      */
     private Long auditorId;
     /**

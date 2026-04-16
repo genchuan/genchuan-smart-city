@@ -1,7 +1,7 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.vo;
 
 import cn.idev.excel.annotation.ExcelProperty;
-import cn.iocoder.yudao.module.usermerchant.framework.FlexibleTimestampDeserializer;
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.FlexibleTimestampDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 import lombok.experimental.Accessors;

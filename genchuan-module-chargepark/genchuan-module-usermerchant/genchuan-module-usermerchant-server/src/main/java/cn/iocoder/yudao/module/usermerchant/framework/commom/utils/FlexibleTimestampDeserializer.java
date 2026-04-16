@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.usermerchant.framework;
+package cn.iocoder.yudao.module.usermerchant.framework.commom.utils;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
