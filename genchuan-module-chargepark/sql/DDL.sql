@@ -1,0 +1,323 @@
+CREATE DATABASE `market_op` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- 2.2.1 积分活动表
+CREATE TABLE `point_activity` (
+                                  `id`            BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+                                  `name`          VARCHAR(64)  NOT NULL                COMMENT '活动名称(唯一)',
+                                  `type`          VARCHAR(20)  NOT NULL                COMMENT '活动类型(注册赠分/消费赠分/邀请赠分/活动赠分)',
+                                  `start_time`    DATETIME     NOT NULL                COMMENT '开始时间',
+                                  `end_time`      DATETIME     NOT NULL                COMMENT '结束时间',
+                                  `rule`          TEXT         NOT NULL                COMMENT '积分规则',
+                                  `description`   TEXT                                 COMMENT '活动描述',
+                                  `station_ids`   VARCHAR(255) DEFAULT NULL             COMMENT '适用场站(场站ID列表,逗号分隔)',
+                                  `join_count`    INT          DEFAULT 0               COMMENT '参与人数',
+                                  `auditor_id`    BIGINT       DEFAULT NULL             COMMENT '审核人(关联system_user)',
+                                  `audit_time`    DATETIME     DEFAULT NULL             COMMENT '审核时间',
+                                  `remain_point`  INT          DEFAULT 0               COMMENT '剩余积分额度',
+                                  `status`        VARCHAR(20)  NOT NULL                COMMENT '状态(待生效/进行中/已结束/已暂停)',
+                                  `reserve1`      VARCHAR(100) DEFAULT NULL             COMMENT '备用字段1',
+                                  `reserve2`      VARCHAR(100) DEFAULT NULL             COMMENT '备用字段2',
+                                  `creator`       VARCHAR(64)  DEFAULT ''               COMMENT '创建者',
+                                  `updater`       VARCHAR(64)  DEFAULT ''               COMMENT '更新者',
+                                  `deleted`       BIT(1)       DEFAULT 0                COMMENT '是否删除',
+                                  `tenant_id`     BIGINT       NOT NULL DEFAULT 1       COMMENT '租户ID',
+                                  `create_time`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                  `update_time`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                  PRIMARY KEY (`id`),
+                                  UNIQUE KEY `uk_name` (`name`, `deleted`)
+) ENGINE=InnoDB COMMENT='积分活动表';
+
+-- 2.2.2 积分抽奖表
+CREATE TABLE `point_lottery` (
+                                 `id`            BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+                                 `no`            VARCHAR(32)  NOT NULL                COMMENT '抽奖记录编号(唯一)',
+                                 `user_id`       BIGINT       NOT NULL                COMMENT '用户ID(关联system_user)',
+                                 `prize_id`      BIGINT       NOT NULL                COMMENT '奖品ID(关联prize_mgmt)',
+                                 `lottery_time`  DATETIME     NOT NULL                COMMENT '抽奖时间',
+                                 `cost_point`    INT          NOT NULL                COMMENT '消耗积分',
+                                 `status`        VARCHAR(20)  NOT NULL                COMMENT '记录状态(正常记录/异常记录/已核查)',
+                                 `send_time`     DATETIME     DEFAULT NULL             COMMENT '发放时间',
+                                 `sender_id`     BIGINT       DEFAULT NULL             COMMENT '发放人(关联system_user)',
+                                 `check_result`  TEXT                                 COMMENT '核查结果',
+                                 `sync_status`   VARCHAR(20)  NOT NULL DEFAULT '未同步' COMMENT '同步状态(未同步/已同步/同步失败)',
+                                 `reserve1`      VARCHAR(100) DEFAULT NULL             COMMENT '备用字段1',
+                                 `reserve2`      VARCHAR(100) DEFAULT NULL             COMMENT '备用字段2',
+                                 `creator`       VARCHAR(64)  DEFAULT ''               COMMENT '创建者',
+                                 `updater`       VARCHAR(64)  DEFAULT ''               COMMENT '更新者',
+                                 `deleted`       BIT(1)       DEFAULT 0                COMMENT '是否删除',
+                                 `tenant_id`     BIGINT       NOT NULL DEFAULT 1       COMMENT '租户ID',
+                                 `create_time`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                 `update_time`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                 PRIMARY KEY (`id`),
+                                 UNIQUE KEY `uk_no` (`no`)
+) ENGINE=InnoDB COMMENT='积分抽奖表';
+
+-- 2.2.3 规则配置表
+CREATE TABLE `rule_config` (
+                               `id`            BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+                               `name`          VARCHAR(64)  NOT NULL                COMMENT '规则名称(唯一)',
+                               `type`          VARCHAR(20)  NOT NULL                COMMENT '规则类型(获取规则/消耗规则/赠送规则)',
+                               `gift_ratio`    DECIMAL(5,2) NOT NULL DEFAULT 0.00   COMMENT '赠送比例',
+                               `status`        VARCHAR(20)  NOT NULL                COMMENT '状态(未生效/已生效)',
+                               `auditor_id`    BIGINT       DEFAULT NULL             COMMENT '审核人(关联system_user)',
+                               `audit_time`    DATETIME     DEFAULT NULL             COMMENT '审核时间',
+                               `match_count`   INT          DEFAULT 0               COMMENT '匹配次数',
+                               `effect_time`   DATETIME     DEFAULT NULL             COMMENT '生效时间',
+                               `description`   TEXT                                 COMMENT '规则描述',
+                               `scene`         VARCHAR(20)  NOT NULL                COMMENT '适用场景(充电/停车/活动/其他)',
+                               `reserve1`      VARCHAR(100) DEFAULT NULL             COMMENT '备用字段1',
+                               `reserve2`      VARCHAR(100) DEFAULT NULL             COMMENT '备用字段2',
+                               `creator`       VARCHAR(64)  DEFAULT ''               COMMENT '创建者',
+                               `updater`       VARCHAR(64)  DEFAULT ''               COMMENT '更新者',
+                               `deleted`       BIT(1)       DEFAULT 0                COMMENT '是否删除',
+                               `tenant_id`     BIGINT       NOT NULL DEFAULT 1       COMMENT '租户ID',
+                               `create_time`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                               `update_time`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                               PRIMARY KEY (`id`),
+                               UNIQUE KEY `uk_name` (`name`, `deleted`)
+) ENGINE=InnoDB COMMENT='积分规则配置表';
+
+-- 2.2.4 奖品管理表
+CREATE TABLE `prize_mgmt` (
+                              `id`              BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+                              `name`            VARCHAR(64)  NOT NULL                COMMENT '奖品名称(唯一)',
+                              `type`            VARCHAR(20)  NOT NULL                COMMENT '奖品类型(实物/虚拟/优惠券/卡种)',
+                              `stock`           INT          NOT NULL DEFAULT 0      COMMENT '当前库存',
+                              `status`          VARCHAR(20)  NOT NULL                COMMENT '状态(正常状态/禁用状态)',
+                              `activity_id`     BIGINT       DEFAULT NULL             COMMENT '绑定活动ID(关联point_activity)',
+                              `send_count`      INT          DEFAULT 0               COMMENT '发放量',
+                              `sync_time`       DATETIME     DEFAULT NULL             COMMENT '同步时间',
+                              `warn_threshold`  INT          NOT NULL DEFAULT 0       COMMENT '预警阈值',
+                              `description`     TEXT                                 COMMENT '奖品描述',
+                              `reserve1`        VARCHAR(100) DEFAULT NULL             COMMENT '备用字段1',
+                              `reserve2`        VARCHAR(100) DEFAULT NULL             COMMENT '备用字段2',
+                              `creator`         VARCHAR(64)  DEFAULT ''               COMMENT '创建者',
+                              `updater`         VARCHAR(64)  DEFAULT ''               COMMENT '更新者',
+                              `deleted`         BIT(1)       DEFAULT 0                COMMENT '是否删除',
+                              `tenant_id`       BIGINT       NOT NULL DEFAULT 1       COMMENT '租户ID',
+                              `create_time`     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                              `update_time`     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                              PRIMARY KEY (`id`),
+                              UNIQUE KEY `uk_name` (`name`, `deleted`)
+) ENGINE=InnoDB COMMENT='奖品管理表';
+
+    -- 2.3.1 优惠券表
+CREATE TABLE `coupon_mgmt` (
+                               `id`            BIGINT        NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+                               `name`          VARCHAR(64)   NOT NULL                COMMENT '券名称(唯一)',
+                               `type`          VARCHAR(20)   NOT NULL                COMMENT '券类型(满减/折扣/时长/立减)',
+                               `amount`        DECIMAL(10,2) NOT NULL DEFAULT 0.00   COMMENT '面额',
+                               `use_condition` TEXT                                  COMMENT '使用条件',
+                               `status`        VARCHAR(20)   NOT NULL                COMMENT '状态(未领取/已领取/已使用/已过期)',
+                               `sender_id`     BIGINT        DEFAULT NULL             COMMENT '发放人(关联system_user)',
+                               `send_time`     DATETIME      DEFAULT NULL             COMMENT '发放时间',
+                               `receiver_id`   BIGINT        DEFAULT NULL             COMMENT '领取人(关联system_user)',
+                               `verify_time`   DATETIME      DEFAULT NULL             COMMENT '核销时间',
+                               `valid_time`    DATETIME      NOT NULL                COMMENT '有效期',
+                               `description`   TEXT                                  COMMENT '券描述',
+                               `station_ids`   VARCHAR(255)  DEFAULT NULL             COMMENT '适用场站(场站ID列表,逗号分隔)',
+                               `reserve1`      VARCHAR(100)  DEFAULT NULL             COMMENT '备用字段1',
+                               `reserve2`      VARCHAR(100)  DEFAULT NULL             COMMENT '备用字段2',
+                               `creator`       VARCHAR(64)   DEFAULT ''               COMMENT '创建者',
+                               `updater`       VARCHAR(64)   DEFAULT ''               COMMENT '更新者',
+                               `deleted`       BIT(1)        DEFAULT 0                COMMENT '是否删除',
+                               `tenant_id`     BIGINT        NOT NULL DEFAULT 1       COMMENT '租户ID',
+                               `create_time`   DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                               `update_time`   DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                               PRIMARY KEY (`id`),
+                               UNIQUE KEY `uk_name` (`name`, `deleted`)
+) ENGINE=InnoDB COMMENT='优惠券表';
+
+-- 2.3.2 活动配置表
+CREATE TABLE `activity_config` (
+                                   `id`              BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+                                   `name`            VARCHAR(64)  NOT NULL                COMMENT '活动名称(唯一)',
+                                   `type`            VARCHAR(20)  NOT NULL                COMMENT '配置类型(新用户/节假日/店庆/日常)',
+                                   `join_condition`  TEXT         NOT NULL                COMMENT '参与条件',
+                                   `rule_content`    TEXT         NOT NULL                COMMENT '规则内容',
+                                   `status`          VARCHAR(20)  NOT NULL                COMMENT '状态(未生效/已生效)',
+                                   `auditor_id`      BIGINT       DEFAULT NULL             COMMENT '审核人(关联system_user)',
+                                   `audit_time`      DATETIME     DEFAULT NULL             COMMENT '审核时间',
+                                   `join_count`      INT          DEFAULT 0               COMMENT '参与人数',
+                                   `effect_time`     DATETIME     DEFAULT NULL             COMMENT '生效时间',
+                                   `description`     TEXT                                 COMMENT '活动描述',
+                                   `user_group`      VARCHAR(20)  NOT NULL                COMMENT '适用人群(新用户/老用户/全部)',
+                                   `reserve1`        VARCHAR(100) DEFAULT NULL             COMMENT '备用字段1',
+                                   `reserve2`        VARCHAR(100) DEFAULT NULL             COMMENT '备用字段2',
+                                   `creator`         VARCHAR(64)  DEFAULT ''               COMMENT '创建者',
+                                   `updater`         VARCHAR(64)  DEFAULT ''               COMMENT '更新者',
+                                   `deleted`         BIT(1)       DEFAULT 0                COMMENT '是否删除',
+                                   `tenant_id`       BIGINT       NOT NULL DEFAULT 1       COMMENT '租户ID',
+                                   `create_time`     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                   `update_time`     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                   PRIMARY KEY (`id`),
+                                   UNIQUE KEY `uk_name` (`name`, `deleted`)
+) ENGINE=InnoDB COMMENT='优惠活动配置表';
+
+-- 2.3.3 券包配置表
+CREATE TABLE `package_config` (
+                                  `id`            BIGINT        NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+                                  `name`          VARCHAR(64)   NOT NULL                COMMENT '券包名称(唯一)',
+                                  `type`          VARCHAR(20)   NOT NULL                COMMENT '券包类型(新手包/节日包/日常包)',
+                                  `coupon_ids`    VARCHAR(255)  NOT NULL                COMMENT '包含优惠券(优惠券ID列表,逗号分隔)',
+                                  `price`         DECIMAL(10,2) NOT NULL DEFAULT 0.00   COMMENT '价格',
+                                  `status`        VARCHAR(20)   NOT NULL                COMMENT '状态(未生效/已生效)',
+                                  `auditor_id`    BIGINT        DEFAULT NULL             COMMENT '审核人(关联system_user)',
+                                  `audit_time`    DATETIME      DEFAULT NULL             COMMENT '审核时间',
+                                  `sale_count`    INT           DEFAULT 0               COMMENT '销量',
+                                  `effect_time`   DATETIME      DEFAULT NULL             COMMENT '生效时间',
+                                  `description`   TEXT                                  COMMENT '券包描述',
+                                  `scope`         VARCHAR(20)   NOT NULL                COMMENT '适用范围(全平台/指定场站/指定用户)',
+                                  `reserve1`      VARCHAR(100)  DEFAULT NULL             COMMENT '备用字段1',
+                                  `reserve2`      VARCHAR(100)  DEFAULT NULL             COMMENT '备用字段2',
+                                  `creator`       VARCHAR(64)   DEFAULT ''               COMMENT '创建者',
+                                  `updater`       VARCHAR(64)   DEFAULT ''               COMMENT '更新者',
+                                  `deleted`       BIT(1)        DEFAULT 0                COMMENT '是否删除',
+                                  `tenant_id`     BIGINT        NOT NULL DEFAULT 1       COMMENT '租户ID',
+                                  `create_time`   DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                  `update_time`   DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                  PRIMARY KEY (`id`),
+                                  UNIQUE KEY `uk_name` (`name`, `deleted`)
+) ENGINE=InnoDB COMMENT='券包配置表';
+
+-- 2.3.4 领用记录表
+CREATE TABLE `receive_record` (
+                                  `id`            BIGINT   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+                                  `no`            VARCHAR(32)  NOT NULL            COMMENT '记录编号(唯一)',
+                                  `user_id`       BIGINT   NOT NULL                COMMENT '用户ID(关联system_user)',
+                                  `coupon_id`     BIGINT   NOT NULL                COMMENT '优惠券ID(关联coupon_mgmt)',
+                                  `receive_time`  DATETIME NOT NULL                COMMENT '领用时间',
+                                  `status`        VARCHAR(20) NOT NULL DEFAULT '正常记录' COMMENT '记录状态(正常记录/异常记录/已核查)',
+                                  `verify_time`   DATETIME DEFAULT NULL             COMMENT '核销时间',
+                                  `check_result`  TEXT                             COMMENT '核查结果',
+                                  `sync_status`   VARCHAR(20) NOT NULL DEFAULT '未同步' COMMENT '同步状态(未同步/已同步/同步失败)',
+                                  `archive_time`  DATETIME DEFAULT NULL             COMMENT '归档时间',
+                                  `reserve1`      VARCHAR(100) DEFAULT NULL          COMMENT '备用字段1',
+                                  `reserve2`      VARCHAR(100) DEFAULT NULL          COMMENT '备用字段2',
+                                  `creator`       VARCHAR(64) DEFAULT ''              COMMENT '创建者',
+                                  `updater`       VARCHAR(64) DEFAULT ''              COMMENT '更新者',
+                                  `deleted`       BIT(1)    DEFAULT 0                 COMMENT '是否删除',
+                                  `tenant_id`     BIGINT    NOT NULL DEFAULT 1        COMMENT '租户ID',
+                                  `create_time`   DATETIME  NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                  `update_time`   DATETIME  NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                  PRIMARY KEY (`id`),
+                                  UNIQUE KEY `uk_no` (`no`)
+) ENGINE=InnoDB COMMENT='优惠券领用记录表';
+    -- 2.4.1 卡种订单表
+CREATE TABLE `card_order` (
+                              `id`              BIGINT        NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+                              `no`              VARCHAR(32)   NOT NULL                COMMENT '订单编号(唯一)',
+                              `user_id`         BIGINT        NOT NULL                COMMENT '用户ID(关联system_user)',
+                              `card_id`         BIGINT        NOT NULL                COMMENT '卡种ID(关联card_config)',
+                              `amount`          DECIMAL(10,2) NOT NULL DEFAULT 0.00   COMMENT '订单金额',
+                              `pay_status`      VARCHAR(20)   NOT NULL                COMMENT '支付状态(待支付/已支付/已完成/已取消)',
+                              `pay_time`        DATETIME      DEFAULT NULL             COMMENT '支付时间',
+                              `active_time`     DATETIME      DEFAULT NULL             COMMENT '激活时间',
+                              `invoice_status`  VARCHAR(20)   NOT NULL DEFAULT '未开票' COMMENT '开票状态(未开票/已开票)',
+                              `archive_time`    DATETIME      DEFAULT NULL             COMMENT '归档时间',
+                              `reserve1`        VARCHAR(100)  DEFAULT NULL             COMMENT '备用字段1',
+                              `reserve2`        VARCHAR(100)  DEFAULT NULL             COMMENT '备用字段2',
+                              `creator`         VARCHAR(64)   DEFAULT ''               COMMENT '创建者',
+                              `updater`         VARCHAR(64)   DEFAULT ''               COMMENT '更新者',
+                              `deleted`         BIT(1)        DEFAULT 0                COMMENT '是否删除',
+                              `tenant_id`       BIGINT        NOT NULL DEFAULT 1       COMMENT '租户ID',
+                              `create_time`     DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                              `update_time`     DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                              PRIMARY KEY (`id`),
+                              UNIQUE KEY `uk_no` (`no`)
+) ENGINE=InnoDB COMMENT='卡种订单表';
+
+-- 2.4.2 卡种配置表
+CREATE TABLE `card_config` (
+                               `id`            BIGINT        NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+                               `name`          VARCHAR(64)   NOT NULL                COMMENT '卡种名称(唯一)',
+                               `type`          VARCHAR(20)   NOT NULL                COMMENT '卡种类型(日卡/周卡/月卡/季卡/年卡)',
+                               `scope`         VARCHAR(20)   NOT NULL                COMMENT '适用范围(充电/停车/充停通用)',
+                               `price`         DECIMAL(10,2) NOT NULL DEFAULT 0.00   COMMENT '价格',
+                               `status`        VARCHAR(20)   NOT NULL                COMMENT '状态(未生效/已生效)',
+                               `auditor_id`    BIGINT        DEFAULT NULL             COMMENT '审核人(关联system_user)',
+                               `audit_time`    DATETIME      DEFAULT NULL             COMMENT '审核时间',
+                               `sale_count`    INT           DEFAULT 0               COMMENT '销量',
+                               `effect_time`   DATETIME      DEFAULT NULL             COMMENT '生效时间',
+                               `description`   TEXT                                  COMMENT '卡种描述',
+                               `valid_days`    INT           NOT NULL                COMMENT '有效期(天)',
+                               `reserve1`      VARCHAR(100)  DEFAULT NULL             COMMENT '备用字段1',
+                               `reserve2`      VARCHAR(100)  DEFAULT NULL             COMMENT '备用字段2',
+                               `creator`       VARCHAR(64)   DEFAULT ''               COMMENT '创建者',
+                               `updater`       VARCHAR(64)   DEFAULT ''               COMMENT '更新者',
+                               `deleted`       BIT(1)        DEFAULT 0                COMMENT '是否删除',
+                               `tenant_id`     BIGINT        NOT NULL DEFAULT 1       COMMENT '租户ID',
+                               `create_time`   DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                               `update_time`   DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                               PRIMARY KEY (`id`),
+                               UNIQUE KEY `uk_name` (`name`, `deleted`)
+) ENGINE=InnoDB COMMENT='卡种配置表';
+
+-- 2.4.3 库存管控表
+CREATE TABLE `stock_control` (
+                                 `id`              BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+                                 `card_id`         BIGINT       NOT NULL                COMMENT '卡种ID(关联card_config)',
+                                 `current_stock`   INT          NOT NULL DEFAULT 0      COMMENT '当前库存',
+                                 `warn_threshold`  INT          NOT NULL DEFAULT 0      COMMENT '预警阈值',
+                                 `status`          VARCHAR(20)  NOT NULL DEFAULT '正常库存' COMMENT '库存状态(正常库存/低库存/预警库存)',
+                                 `warn_status`     VARCHAR(20)  NOT NULL DEFAULT '未告警' COMMENT '告警状态(未告警/已告警)',
+                                 `sync_time`       DATETIME     DEFAULT NULL             COMMENT '同步时间',
+                                 `reserve1`        VARCHAR(100) DEFAULT NULL             COMMENT '备用字段1',
+                                 `reserve2`        VARCHAR(100) DEFAULT NULL             COMMENT '备用字段2',
+                                 `creator`         VARCHAR(64)  DEFAULT ''               COMMENT '创建者',
+                                 `updater`         VARCHAR(64)  DEFAULT ''               COMMENT '更新者',
+                                 `deleted`         BIT(1)       DEFAULT 0                COMMENT '是否删除',
+                                 `tenant_id`       BIGINT       NOT NULL DEFAULT 1       COMMENT '租户ID',
+                                 `create_time`     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                 `update_time`     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                 PRIMARY KEY (`id`)
+) ENGINE=InnoDB COMMENT='卡种库存管控表';
+
+    -- 2.5.1 兑换类目表
+CREATE TABLE `exchange_category` (
+                                     `id`            BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+                                     `name`          VARCHAR(64)  NOT NULL                COMMENT '类目名称(唯一)',
+                                     `description`   TEXT                                 COMMENT '类目描述',
+                                     `goods_count`   INT          DEFAULT 0               COMMENT '商品数量',
+                                     `status`        VARCHAR(20)  NOT NULL                COMMENT '状态(未生效/已生效/已禁用)',
+                                     `auditor_id`    BIGINT       DEFAULT NULL             COMMENT '审核人(关联system_user)',
+                                     `audit_time`    DATETIME     DEFAULT NULL             COMMENT '审核时间',
+                                     `effect_time`   DATETIME     DEFAULT NULL             COMMENT '生效时间',
+                                     `sort`          INT          DEFAULT 0               COMMENT '排序权重',
+                                     `scope`         VARCHAR(20)  NOT NULL                COMMENT '适用范围(全平台/指定场站)',
+                                     `reserve1`      VARCHAR(100) DEFAULT NULL             COMMENT '备用字段1',
+                                     `reserve2`      VARCHAR(100) DEFAULT NULL             COMMENT '备用字段2',
+                                     `creator`       VARCHAR(64)  DEFAULT ''               COMMENT '创建者',
+                                     `updater`       VARCHAR(64)  DEFAULT ''               COMMENT '更新者',
+                                     `deleted`       BIT(1)       DEFAULT 0                COMMENT '是否删除',
+                                     `tenant_id`     BIGINT       NOT NULL DEFAULT 1       COMMENT '租户ID',
+                                     `create_time`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                     `update_time`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                     PRIMARY KEY (`id`),
+                                     UNIQUE KEY `uk_name` (`name`, `deleted`)
+) ENGINE=InnoDB COMMENT='兑换类目表';
+
+-- 2.5.2 兑换订单表
+CREATE TABLE `exchange_order` (
+                                  `id`              BIGINT        NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+                                  `no`              VARCHAR(32)   NOT NULL                COMMENT '订单编号(唯一)',
+                                  `user_id`         BIGINT        NOT NULL                COMMENT '用户ID(关联system_user)',
+                                  `category_id`     BIGINT        NOT NULL                COMMENT '类目ID(关联exchange_category)',
+                                  `goods_name`      VARCHAR(64)   NOT NULL                COMMENT '商品名称',
+                                  `cost_point`      INT           NOT NULL DEFAULT 0      COMMENT '消耗积分',
+                                  `pay_status`      VARCHAR(20)   NOT NULL                COMMENT '支付状态(待支付/已支付/已完成/已取消)',
+                                  `pay_time`        DATETIME      DEFAULT NULL             COMMENT '支付时间',
+                                  `ship_time`       DATETIME      DEFAULT NULL             COMMENT '发货时间',
+                                  `logistics_info`  VARCHAR(255)  DEFAULT NULL             COMMENT '物流信息',
+                                  `archive_time`    DATETIME      DEFAULT NULL             COMMENT '归档时间',
+                                  `reserve1`        VARCHAR(100)  DEFAULT NULL             COMMENT '备用字段1',
+                                  `reserve2`        VARCHAR(100)  DEFAULT NULL             COMMENT '备用字段2',
+                                  `creator`         VARCHAR(64)   DEFAULT ''               COMMENT '创建者',
+                                  `updater`         VARCHAR(64)   DEFAULT ''               COMMENT '更新者',
+                                  `deleted`         BIT(1)        DEFAULT 0                COMMENT '是否删除',
+                                  `tenant_id`       BIGINT        NOT NULL DEFAULT 1       COMMENT '租户ID',
+                                  `create_time`     DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                  `update_time`     DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                  PRIMARY KEY (`id`),
+                                  UNIQUE KEY `uk_no` (`no`)
+) ENGINE=InnoDB COMMENT='兑换订单表';
