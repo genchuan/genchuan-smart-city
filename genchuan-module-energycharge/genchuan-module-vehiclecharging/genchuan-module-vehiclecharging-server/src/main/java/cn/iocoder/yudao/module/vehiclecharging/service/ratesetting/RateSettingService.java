@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.vehiclecharging.service.ratesetting;
 import java.util.*;
 
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.ratesetting.vo.*;
+import cn.iocoder.yudao.module.vehiclecharging.controller.admin.ratesetting.vo.chart.*;
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.ratesetting.RateSettingDO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -67,4 +68,12 @@ public interface RateSettingService {
     void enableRateSetting(RateSettingEnableReqVO reqVO);
 
     void copyRateSetting(RateSettingCopyReqVO reqVO);
+
+
+    RateSettingStatusCountRespVO getRateSettingStatusCount(RateSettingStatusCountReqVO reqVO);
+
+    List<RateSettingGradeCountRespVO> getRateSettingGradeCount(RateSettingGradeCountReqVO reqVO);
+
+
+    RateSettingChartRespVO getRateSettingChart(RateSettingChartReqVO reqVO);
 }

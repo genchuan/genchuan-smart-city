@@ -9,20 +9,18 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.revi
 import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.upload.UploadFileReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.entrectifyrecord.vo.upload.UploadFileRespVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.add.AddPunishReviewLedgerReq;
-import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileRespVO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.entrectifyrecord.EntRectifyRecordDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifynotice.RectifyNoticeDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifyreview.RectifyReviewDO;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.entrectifyrecord.EntRectifyRecordMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.rectifynotice.RectifyNoticeMapper;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.rectifyreview.RectifyReviewMapper;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.file.FileUploadService;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.name.NameUtil;
-import cn.iocoder.yudao.module.kitchen.framework.lxsutils.common.verify.VerifyUtil;
+import cn.iocoder.yudao.module.kitchen.vrv.utils.common.file.VrvFileUploadService;
+import cn.iocoder.yudao.module.kitchen.vrv.utils.common.name.VrvNameUtil;
+import cn.iocoder.yudao.module.kitchen.vrv.utils.common.verify.VrvVerifyUtil;
 import cn.iocoder.yudao.module.kitchen.service.punishreviewledger.PunishReviewLedgerService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -35,7 +33,6 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -64,7 +61,7 @@ public class EntRectifyRecordServiceImpl implements EntRectifyRecordService {
     private RectifyReviewMapper rectifyReviewMapper;
 
     @Resource
-    private FileUploadService fileUploadService;
+    private VrvFileUploadService vrvFileUploadService;
 
     @Resource
     private PunishReviewLedgerService punishReviewLedgerService;
@@ -120,7 +117,7 @@ public class EntRectifyRecordServiceImpl implements EntRectifyRecordService {
 
         //1.获取整改通知书
         RectifyNoticeDO rectifyNoticeDO = rectifyNoticeMapper.selectById(createReqVO.getRectifyNoticeId());
-        VerifyUtil.verifyNotNullWithMsg(rectifyNoticeDO,"整改通知书不存在数据库");
+        VrvVerifyUtil.verifyNotNullWithMsg(rectifyNoticeDO,"整改通知书不存在数据库");
         if (!"未送达".equals(rectifyNoticeDO.getReceiveStatus())){
             throw exception("只有处于待送达的整改通知书才能产生企业记录");
         }
@@ -128,18 +125,18 @@ public class EntRectifyRecordServiceImpl implements EntRectifyRecordService {
         insertDO.setRectifyNoticeId(createReqVO.getRectifyNoticeId());
 
         //2.通过整改通知书获取 整改复审台账id
-        VerifyUtil.verifyNotNullSimple(rectifyNoticeDO.getRectifyReviewId());
+        VrvVerifyUtil.verifyNotNullSimple(rectifyNoticeDO.getRectifyReviewId());
         insertDO.setRectifyReviewId(rectifyNoticeDO.getRectifyReviewId());
 
         //3.获取企业ID
         RectifyReviewDO rectifyReviewDO = rectifyReviewMapper.selectById(insertDO.getRectifyReviewId());
-        VerifyUtil.verifyNotNullSimple(rectifyReviewDO);
+        VrvVerifyUtil.verifyNotNullSimple(rectifyReviewDO);
 
         Long entId = rectifyReviewDO.getEntId();
         insertDO.setEntId(entId);
 
         //4.自动生成编号
-        insertDO.setUniCode(NameUtil.generateCode("ERRD"));
+        insertDO.setUniCode(VrvNameUtil.generateCode("ERRD"));
 
         //5.整改状态
         insertDO.setRectifyStatus("未整改");
@@ -162,12 +159,12 @@ public class EntRectifyRecordServiceImpl implements EntRectifyRecordService {
     public UploadFileRespVO uploadEvidenceFile(UploadFileReqVO reqVO, MultipartFile file) {
         // 1. 校验整改复审台账是否存在
         EntRectifyRecordDO entRectifyRecordDO = entRectifyRecordMapper.selectById(reqVO.getEntRectifyRecordId());
-        VerifyUtil.verifyNotNullWithMsg(entRectifyRecordDO,"企业整改记录不存在数据库");
+        VrvVerifyUtil.verifyNotNullWithMsg(entRectifyRecordDO,"企业整改记录不存在数据库");
 
 
         try {
             // 2. 上传文件到 MinIO
-            String fileUrl = fileUploadService.uploadAvatar(file);
+            String fileUrl = vrvFileUploadService.uploadAvatar(file);
 
             // 3. 构建文件信息对象
             Map<String, String> fileInfo = new HashMap<>();
@@ -250,7 +247,7 @@ public class EntRectifyRecordServiceImpl implements EntRectifyRecordService {
         }
 
         // ================= 3. 状态校验 =================
-//        VerifyUtil.verifyNotNullWithMsg(record.getRectifyEvidenceUrl(),"请先上传整改资料");
+//        VrvVerifyUtil.verifyNotNullWithMsg(record.getRectifyEvidenceUrl(),"请先上传整改资料");
         //TODO 只能“整改中”才能审核
         if (!"未整改".equals(record.getRectifyStatus())) {
             throw exception("当前状态不允许审核，必须为【未整改】");

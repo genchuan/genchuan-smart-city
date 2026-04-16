@@ -36,6 +36,10 @@ public class EnterpriseInfoRespVO {
     @ExcelProperty("[企业类型ID] 关联ent_type_dict.id")
     private Long entTypeId;
 
+    @Schema(description = "[企业类型名称]", example = "食堂")
+    @ExcelProperty("[企业类型名称]")
+    private String entTypeName;
+
     @Schema(description = "[详细地址] 企业注册或经营地址", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("[详细地址] 企业注册或经营地址")
     private String address;

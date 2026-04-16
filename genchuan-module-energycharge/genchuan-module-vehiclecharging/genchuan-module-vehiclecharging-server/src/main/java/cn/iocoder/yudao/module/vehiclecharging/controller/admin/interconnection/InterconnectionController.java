@@ -15,9 +15,7 @@ import java.util.*;
 import java.io.IOException;
 import java.time.*;
 
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.framework.common.pojo.*;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
@@ -30,7 +28,7 @@ import cn.iocoder.yudao.module.vehiclecharging.controller.admin.interconnection.
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.interconnection.InterconnectionDO;
 import cn.iocoder.yudao.module.vehiclecharging.service.interconnection.InterconnectionService;
 
-@Tag(name = "管理后台 - 互联互通表")
+@Tag(name = "汽车充电 - 互联互通表")
 @RestController
 @RequestMapping("/vehiclecharging/interconnection")
 @Validated

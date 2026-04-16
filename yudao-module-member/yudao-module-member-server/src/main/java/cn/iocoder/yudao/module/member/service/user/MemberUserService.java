@@ -187,4 +187,15 @@ public interface MemberUserService {
      */
     boolean updateUserPoint(Long userId, Integer point);
 
+    /**
+     * 基于手机号创建用户（携带昵称）。
+     * 如果用户已经存在，则直接进行返回
+     *
+     * @param mobile     手机号
+     * @param nickname   昵称
+     * @param registerIp 注册 IP
+     * @param terminal   终端 {@link TerminalEnum}
+     * @return 用户对象
+     */
+    MemberUserDO createUserIfAbsent(String mobile, String nickname, String password, String registerIp, Integer terminal);
 }

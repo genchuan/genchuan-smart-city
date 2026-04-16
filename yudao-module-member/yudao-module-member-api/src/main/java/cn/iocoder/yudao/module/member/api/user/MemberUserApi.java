@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collection;
@@ -57,5 +58,14 @@ public interface MemberUserApi {
     @Operation(summary = "校验用户是否存在")
     @Parameter(name = "id", description = "用户编号", required = true, example = "1")
     CommonResult<Boolean> validateUser(@RequestParam("id") Long id);
+
+    @PostMapping(PREFIX + "/create-if-absent")
+    @Operation(summary = "创建或获取会员用户")
+    CommonResult<MemberUserRespDTO> createUserIfAbsent(
+            @RequestParam("mobile") String mobile,
+            @RequestParam("nickname") String nickname,
+            @RequestParam("password") String password,
+            @RequestParam("registerIp") String registerIp,
+            @RequestParam("terminal") Integer terminal);
 
 }

@@ -15,6 +15,7 @@ public class ChargingStationDO extends BaseDO {
 
   @TableId(type = IdType.AUTO)
   private Long id;
+  private Long areaId;
   private String stationCode;    // 场站编号
   private String stationName;    // 场站名称
   private String address;        // 场站地址

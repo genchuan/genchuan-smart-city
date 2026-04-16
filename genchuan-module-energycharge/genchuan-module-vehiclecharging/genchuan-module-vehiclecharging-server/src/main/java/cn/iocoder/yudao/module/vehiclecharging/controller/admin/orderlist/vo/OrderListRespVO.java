@@ -2,13 +2,11 @@ package cn.iocoder.yudao.module.vehiclecharging.controller.admin.orderlist.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import java.util.*;
 import java.math.BigDecimal;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import cn.idev.excel.annotation.*;
 
-@Schema(description = "管理后台 - 订单列表 Response VO")
+@Schema(description = "汽车充电 - 订单列表 Response VO")
 @Data
 @ExcelIgnoreUnannotated
 public class OrderListRespVO {

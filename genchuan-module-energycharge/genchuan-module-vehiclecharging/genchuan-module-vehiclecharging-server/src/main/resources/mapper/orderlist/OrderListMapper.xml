@@ -9,4 +9,112 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <!-- 折线图：按日期分组统计订单数量和交易金额 -->
+    <select id="selectDailyOrderStats" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.orderlist.vo.OrderListChartRespVO$LineData">
+        SELECT
+            DATE(create_time) AS date,
+            COUNT(*) AS orderCount,
+            SUM(charge_money) AS tradeAmount
+        FROM order_list
+        WHERE deleted = 0
+          AND create_time BETWEEN #{startDate} AND #{endDate} + INTERVAL 1 DAY
+        GROUP BY DATE(create_time)
+        ORDER BY date ASC
+    </select>
+
+    <!-- 饼图：统计各订单状态的数量 -->
+    <select id="selectStatusStats" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.orderlist.vo.OrderListChartRespVO$PieData">
+        SELECT
+            order_status AS name,
+            COUNT(*) AS value
+        FROM order_list
+        WHERE deleted = 0
+        GROUP BY order_status
+    </select>
+
+    <!-- 卡片数据：总订单数、总交易金额、总充电量、平均充电时长 -->
+    <select id="selectCardStats" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.orderlist.vo.OrderListChartRespVO$CardData">
+        SELECT
+            COUNT(*) AS totalOrderCount,
+            SUM(charge_money) AS totalTradeAmount,
+            SUM(charge_amount) AS totalChargeAmount,
+            ROUND(AVG(charge_time), 0) AS avgChargeTime
+        FROM order_list
+        WHERE deleted = 0
+          AND create_time BETWEEN #{startDate} AND #{endDate} + INTERVAL 1 DAY
+          AND charge_time IS NOT NULL
+    </select>
+
+    <select id="selectDailyTrend" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.orderlist.vo.OrderListDailyTrendRespVO">
+        SELECT
+        DATE(o.create_time) AS date,
+        COUNT(*) AS orderCount,
+        SUM(o.charge_money) AS tradeAmount,
+        SUM(o.charge_amount) AS chargeAmount
+        FROM order_list o
+        WHERE o.deleted = 0
+        AND o.create_time BETWEEN #{startDate} AND #{endDate} + INTERVAL 1 DAY
+        <if test="stationId != null">
+            AND o.pile_code IN (
+            SELECT pile_code FROM charging_pile WHERE station_id = #{stationId}
+                AND deleted = 0
+            )
+        </if>
+        GROUP BY DATE(o.create_time)
+        ORDER BY date ASC
+    </select>
+
+    <select id="selectStatusCount" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.orderlist.vo.OrderListStatusRatioRespVO">
+        SELECT
+        o.order_status AS status,
+        COUNT(*) AS count
+        FROM order_list o
+        WHERE o.deleted = 0
+        AND o.create_time BETWEEN #{startDate} AND #{endDate} + INTERVAL 1 DAY
+        <if test="stationId != null">
+            AND o.pile_code IN (
+            SELECT pile_code FROM charging_pile
+            WHERE station_id = #{stationId}
+            AND deleted = 0   <!-- 如果有 deleted 字段 -->
+            )
+        </if>
+        GROUP BY o.order_status
+        ORDER BY count DESC
+    </select>
+
+    <!-- 总体统计：总订单数、总交易金额、总充电量、平均充电时长 -->
+    <select id="selectTradeStats" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.orderlist.vo.TradeCountRespVO">
+        SELECT
+        COUNT(*) AS totalOrderCount,
+        SUM(charge_money) AS totalTradeAmount,
+        SUM(charge_amount) AS totalChargeAmount,
+        ROUND(AVG(charge_time), 0) AS avgChargeTime
+        FROM order_list o
+        WHERE o.deleted = 0
+        AND o.create_time BETWEEN #{startDate} AND #{endDate} + INTERVAL 1 DAY
+        <if test="stationId != null">
+            AND o.pile_code IN (
+            SELECT pile_code FROM charging_pile
+            WHERE station_id = #{stationId}
+            AND deleted = 0
+            )
+        </if>
+    </select>
+
+    <!-- 已完成订单数 -->
+    <select id="selectCompleteOrderCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM order_list o
+        WHERE o.deleted = 0
+        AND o.order_status = '已完成'   <!-- 根据实际字典值调整 -->
+        AND o.create_time BETWEEN #{startDate} AND #{endDate} + INTERVAL 1 DAY
+        <if test="stationId != null">
+            AND o.pile_code IN (
+            SELECT pile_code FROM charging_pile
+            WHERE station_id = #{stationId}
+            AND deleted = 0
+            )
+        </if>
+    </select>
+
 </mapper>

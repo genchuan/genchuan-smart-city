@@ -7,7 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import cn.idev.excel.annotation.*;
 
-@Schema(description = "管理后台 - 充电车位 Response VO")
+@Schema(description = "汽车充电 - 充电车位 Response VO")
 @Data
 @ExcelIgnoreUnannotated
 public class ChargingLotRespVO {
@@ -65,6 +65,10 @@ public class ChargingLotRespVO {
     @Schema(description = "备用字段2")
     @ExcelProperty("备用字段2")
     private String reserve2;
+
+    @Schema(description = "创建人")
+    @ExcelProperty("创建人")
+    private String creator;
 
     @Schema(description = "创建时间")
     @ExcelProperty("创建时间")

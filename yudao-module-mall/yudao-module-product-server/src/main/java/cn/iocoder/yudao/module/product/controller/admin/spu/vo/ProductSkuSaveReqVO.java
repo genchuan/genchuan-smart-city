@@ -13,8 +13,8 @@ import java.util.List;
 @Data
 public class ProductSkuSaveReqVO {
 
-    @Schema(description = "商品 SKU 名字", requiredMode = Schema.RequiredMode.REQUIRED, example = "清凉小短袖")
-    @NotEmpty(message = "商品 SKU 名字不能为空")
+    @Schema(description = "商品 SKU 名字", example = "清凉小短袖")
+    // @NotEmpty(message = "商品 SKU 名字不能为空")
     private String name;
 
     @Schema(description = "销售价格，单位：分", requiredMode = Schema.RequiredMode.REQUIRED, example = "1999")

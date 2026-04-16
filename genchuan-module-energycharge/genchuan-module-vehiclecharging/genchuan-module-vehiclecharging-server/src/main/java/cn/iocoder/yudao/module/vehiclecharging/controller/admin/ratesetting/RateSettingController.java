@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.vehiclecharging.controller.admin.ratesetting;
 
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.ratesetting.vo.*;
+import cn.iocoder.yudao.module.vehiclecharging.controller.admin.ratesetting.vo.chart.*;
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.ratesetting.RateSettingDO;
 import cn.iocoder.yudao.module.vehiclecharging.service.ratesetting.RateSettingService;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,7 @@ import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 
-@Tag(name = "管理后台 - 费率设置")
+@Tag(name = "汽车充电 - 费率设置")
 @RestController
 @RequestMapping("/vehiclecharging/rate-setting")
 @Validated
@@ -38,15 +39,41 @@ public class RateSettingController {
     @Resource
     private RateSettingService rateSettingService;
 
+    // ==================== 新增：费率设置图表统计接口 ====================
+
+    @GetMapping("/chart")
+    @Operation(summary = "费率设置分布图表（柱状图 + 卡片）")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:rate_setting:query')")
+    public CommonResult<RateSettingChartRespVO> getRateSettingChart(@Valid RateSettingChartReqVO reqVO) {
+        RateSettingChartRespVO respVO = rateSettingService.getRateSettingChart(reqVO);
+        return success(respVO);
+    }
+//
+    @GetMapping("/chart/gradeCount")
+    @Operation(summary = "各费率档次数量统计（柱状图钻取）-通过【费率档案名称】获取分组数量")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:rate_setting:query')")
+    public CommonResult<List<RateSettingGradeCountRespVO>> getRateSettingGradeCount(@Valid RateSettingGradeCountReqVO reqVO) {
+        List<RateSettingGradeCountRespVO> respVO = rateSettingService.getRateSettingGradeCount(reqVO);
+        return success(respVO);
+    }
+
+
+    @GetMapping("/chart/statusCount")
+    @Operation(summary = "费率状态统计（卡片钻取）")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:rate_setting:query')")
+    public CommonResult<RateSettingStatusCountRespVO> getRateSettingStatusCount(@Valid RateSettingStatusCountReqVO reqVO) {
+        RateSettingStatusCountRespVO respVO = rateSettingService.getRateSettingStatusCount(reqVO);
+        return success(respVO);
+    }
     // ==================== 新增：复制费率方案接口 ====================
 
-//    @PostMapping("/copy")
-//    @Operation(summary = "复制费率方案")
-//    @PreAuthorize("@ss.hasPermission('vehiclecharging:rate_setting:copy')")
-//    public CommonResult<Boolean> copyRateSetting(@Valid @RequestBody RateSettingCopyReqVO reqVO) {
-//        rateSettingService.copyRateSetting(reqVO);
-//        return success(true);
-//    }
+    @PostMapping("/copy")
+    @Operation(summary = "复制费率方案")
+    @PreAuthorize("@ss.hasPermission('vehiclecharging:rate_setting:copy')")
+    public CommonResult<Boolean> copyRateSetting(@Valid @RequestBody RateSettingCopyReqVO reqVO) {
+        rateSettingService.copyRateSetting(reqVO);
+        return success(true);
+    }
     // ==================== 以下是新增：生效 / 失效接口 ====================
 
     @PutMapping("/enable")

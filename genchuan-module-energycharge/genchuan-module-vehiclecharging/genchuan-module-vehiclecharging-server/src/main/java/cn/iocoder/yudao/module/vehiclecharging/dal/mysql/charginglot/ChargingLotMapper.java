@@ -10,6 +10,7 @@ import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.charginglot.Chargi
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.charginglot.vo.*;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * 充电车位 Mapper
@@ -45,4 +46,31 @@ public interface ChargingLotMapper extends BaseMapperX<ChargingLotDO> {
         return selectList(new LambdaQueryWrapperX<>());
     }
 
+    /**
+     * 批量查询场站名称
+     * @param ids 场站ID集合
+     * @return 场站ID和名称的映射
+     */
+    @Select("<script>" +
+            "SELECT id, station_name FROM charging_station " +
+            "WHERE id IN " +
+            "<foreach collection='ids' item='id' open='(' separator=',' close=')'>" +
+            "#{id}" +
+            "</foreach>" +
+            "</script>")
+    List<Map<String, Object>> selectStationNamesByIds(@Param("ids") Set<Long> ids);
+
+    /**
+     * 批量查询充电桩名称
+     * @param ids 充电桩ID集合
+     * @return 充电桩ID和名称的映射
+     */
+    @Select("<script>" +
+            "SELECT id, pile_code FROM charging_pile " +
+            "WHERE id IN " +
+            "<foreach collection='ids' item='id' open='(' separator=',' close=')'>" +
+            "#{id}" +
+            "</foreach>" +
+            "</script>")
+    List<Map<String, Object>> selectPileNamesByIds(@Param("ids") Set<Long> ids);
 }
