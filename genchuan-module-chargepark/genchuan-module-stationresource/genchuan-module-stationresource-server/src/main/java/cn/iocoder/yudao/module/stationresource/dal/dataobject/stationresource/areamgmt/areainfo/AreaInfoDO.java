@@ -1,8 +1,6 @@
 package cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.areamgmt.areainfo;
 
 import lombok.*;
-import java.util.*;
-import java.time.LocalDateTime;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.*;
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
@@ -60,6 +58,10 @@ public class AreaInfoDO extends BaseDO {
      */
     private Long leaderId;
     /**
+     * [负责人] 关联芋道用户表system_user
+     */
+    private Long userId;
+    /**
      * [联系电话] 联系电话
      */
     private String phone;
@@ -67,6 +69,14 @@ public class AreaInfoDO extends BaseDO {
      * [关联场站数] 关联场站数
      */
     private Integer stationCount;
+    /**
+     * [绑定时间]
+     */
+    private LocalDateTime bindTime;
+    /**
+     * [绑定人ID] 关联芋道用户表system_user
+     */
+    private Long bindUserId;
     /**
      * [状态] 如:未生效/已生效/已禁用
      */
@@ -84,5 +94,13 @@ public class AreaInfoDO extends BaseDO {
      */
     private String reserve2;
 
+    /**
+     * 经度
+     */
+    private Double lon;
 
+    /**
+     * 纬度
+     */
+    private Double lat;
 }

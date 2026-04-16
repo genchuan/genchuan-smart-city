@@ -135,27 +135,26 @@ public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService 
         LocalDateTime now = LocalDateTime.now();
 
         // 2. 计算逾期标识
-        for (PunishReviewLedgerRespVO item : punishReviewLedgerRespVOList) {
+//        for (PunishReviewLedgerRespVO item : punishReviewLedgerRespVOList) {
+//
+//            // 默认未逾期
+//            item.setOverdueFlag(0);
+//
+//            // 判空（非常关键，避免 NPE）
+//            if (item.getPaymentDeadlineTime() == null || item.getReviewStatus() == null) {
+//                continue;
+//            }
+//
+//            // 判断是否“已下发”
+//            if ("已下发".equals(item.getReviewStatus())) {
+//
+//                // 判断是否超过缴费截止时间
+//                if (now.isAfter(item.getPaymentDeadlineTime())) {
+//                    item.setOverdueFlag(1);
+//                }
+//            }
+//        }
 
-            // 默认未逾期
-            item.setOverdueFlag(0);
-
-            // 判空（非常关键，避免 NPE）
-            if (item.getPaymentDeadlineTime() == null || item.getReviewStatus() == null) {
-                continue;
-            }
-
-            // 判断是否“已下发”
-            if ("已下发".equals(item.getReviewStatus())) {
-
-                // 判断是否超过缴费截止时间
-                if (now.isAfter(item.getPaymentDeadlineTime())) {
-                    item.setOverdueFlag(1);
-                }
-            }
-        }
-
-//        pageResult.setList(punishReviewLedgerRespVOList);
 
         //配置 分页参数
         punishReviewLedgerDOPageResult.setList(punishReviewLedgerRespVOList);
@@ -456,7 +455,7 @@ public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService 
             }
 
             // 4. 写入ZIP（文件名使用UTF-8，避免中文乱码）
-            String fileName = "处罚决定书_" + item.getId() + ".pdf";
+            String fileName = "处罚决定书_" + item.getPunishReviewId() + ".pdf";
             // ZIP内部文件名使用UTF-8编码
             ZipEntry entry = new ZipEntry(fileName);
 //            ZipEntry entry = new ZipEntry(new String(fileName.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1));

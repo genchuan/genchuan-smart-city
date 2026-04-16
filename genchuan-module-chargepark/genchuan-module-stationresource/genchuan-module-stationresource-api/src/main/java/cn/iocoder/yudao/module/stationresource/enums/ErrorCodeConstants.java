@@ -10,5 +10,7 @@ public interface ErrorCodeConstants {
 
     // ========== 片区信息==========
     ErrorCode AREA_INFO_NOT_EXISTS = new ErrorCode(500, "片区信息不存在");
+    // ========== 场站信息==========
+    ErrorCode STATION_INFO_NOT_EXISTS = new ErrorCode(500, "场站信息不存在");
 
 }

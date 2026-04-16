@@ -7,6 +7,7 @@
     <modules>
         <module>genchuan-module-stationresource</module>
         <module>genchuan-module-usermerchant</module>
+        <module>genchuan-module-inspectop</module>
     </modules>
 
     <parent>

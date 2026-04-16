@@ -2,14 +2,15 @@ package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import java.util.*;
 import jakarta.validation.constraints.*;
+
+import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 片区信息新增/修改 Request VO")
 @Data
 public class AreaInfoSaveReqVO {
 
-    @Schema(description = "[主键ID] 主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "16304")
+    @Schema(description = "[主键ID] 主键ID", example = "16304")
     private Long id;
 
     @Schema(description = "[片区编号] 唯一标识片区编号", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -41,6 +42,10 @@ public class AreaInfoSaveReqVO {
     @Schema(description = "[负责人ID] 关联芋道用户表system_user", example = "18361")
     private Long leaderId;
 
+    @Schema(description = "[负责人] 关联芋道用户表system_user", requiredMode = Schema.RequiredMode.REQUIRED, example = "18362")
+    @NotNull(message = "[负责人] 不能为空")
+    private Long userId;
+
     @Schema(description = "[联系电话] 联系电话")
     private String phone;
 
@@ -51,6 +56,12 @@ public class AreaInfoSaveReqVO {
     @NotEmpty(message = "[状态] 如:未生效/已生效/已禁用不能为空")
     private String status;
 
+    @Schema(description = "[绑定时间]")
+    private LocalDateTime bindTime;
+
+    @Schema(description = "[绑定人ID] 关联芋道用户表system_user", example = "18363")
+    private Long bindUserId;
+
     @Schema(description = "[备注] 备注", example = "你说的对")
     private String remark;
 
@@ -60,4 +71,7 @@ public class AreaInfoSaveReqVO {
     @Schema(description = "[备用字段2] 备用字段2")
     private String reserve2;
 
+    @Schema(description = "[租户ID] 关联芋道租户表system_tenant", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "[租户ID] 不能为空")
+    private Long tenantId;
 }

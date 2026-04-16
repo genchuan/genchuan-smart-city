@@ -5,7 +5,9 @@ import java.util.*;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.AreaInfoPageReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.AreaInfoSaveReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.ops.AddReq;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.ops.AreaInfoUpdateReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.ops.ImportRespVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.statistics.AreaInfoChartRespVO;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.areamgmt.areainfo.AreaInfoDO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -32,7 +34,7 @@ public interface AreaInfoService {
      *
      * @param updateReqVO 更新信息
      */
-    void updateAreaInfo(@Valid AreaInfoSaveReqVO updateReqVO);
+//    void updateAreaInfo(@Valid AreaInfoSaveReqVO updateReqVO);
 
     /**
      * 删除片区信息
@@ -66,5 +68,11 @@ public interface AreaInfoService {
 
     Long addAreaInfo(AddReq createReqVO);
 
-    ImportRespVO importAreaInfo(MultipartFile file);
+    ImportRespVO importAreaInfo(MultipartFile file,boolean updateSupport);
+
+    void updateAreaInfoStatus(List<Long> ids, boolean b);
+
+    void updateArea(AreaInfoUpdateReqVO reqVO);
+
+    AreaInfoChartRespVO getAreaInfoChart();
 }

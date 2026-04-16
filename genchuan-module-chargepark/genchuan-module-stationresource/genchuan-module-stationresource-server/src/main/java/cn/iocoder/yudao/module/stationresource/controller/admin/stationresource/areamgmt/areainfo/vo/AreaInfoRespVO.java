@@ -2,8 +2,6 @@ package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import java.util.*;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import cn.idev.excel.annotation.*;
 
@@ -48,6 +46,10 @@ public class AreaInfoRespVO {
     @ExcelProperty("[负责人ID] 关联芋道用户表system_user")
     private Long leaderId;
 
+    @Schema(description = "[负责人] 关联芋道用户表system_user", example = "18362")
+    @ExcelProperty("[负责人] 关联芋道用户表system_user")
+    private Long userId;
+
     @Schema(description = "[联系电话] 联系电话")
     @ExcelProperty("[联系电话] 联系电话")
     private String phone;
@@ -59,6 +61,14 @@ public class AreaInfoRespVO {
     @Schema(description = "[状态] 如:未生效/已生效/已禁用", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @ExcelProperty("[状态] 如:未生效/已生效/已禁用")
     private String status;
+
+    @Schema(description = "[绑定时间]")
+    @ExcelProperty("[绑定时间]")
+    private LocalDateTime bindTime;
+
+    @Schema(description = "[绑定人ID] 关联芋道用户表system_user", example = "18363")
+    @ExcelProperty("[绑定人ID] 关联芋道用户表system_user")
+    private Long bindUserId;
 
     @Schema(description = "[备注] 备注", example = "你说的对")
     @ExcelProperty("[备注] 备注")
@@ -72,17 +82,39 @@ public class AreaInfoRespVO {
     @ExcelProperty("[备用字段2] 备用字段2")
     private String reserve2;
 
+    @Schema(description = "[创建者] 创建人账号/姓名")
+    @ExcelProperty("[创建者] 创建人账号/姓名")
+    private String creator;
+
+    @Schema(description = "[更新者] 更新人账号/姓名")
+    @ExcelProperty("[更新者] 更新人账号/姓名")
+    private String updater;
+
+    @Schema(description = "[删除标识] 0-未删除/1-已删除")
+    @ExcelProperty("[删除标识] 0-未删除/1-已删除")
+    private Boolean deleted;
+
+    @Schema(description = "[租户ID] 关联芋道租户表system_tenant", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("[租户ID] 关联芋道租户表system_tenant")
+    private Long tenantId;
+
     @Schema(description = "[创建时间] 记录创建时间")
     @ExcelProperty("[创建时间] 记录创建时间")
     private LocalDateTime createTime;
 
-
-    //===============================新增的=================================================
-    @Schema(description = "[创建人id] ")
-    @ExcelProperty("[创建人id] ")
-    private String creator;
-
-    @Schema(description = "[更新时间] ")
-    @ExcelProperty("[更新时间] ")
+    @Schema(description = "[更新时间] 记录最后更新时间")
+    @ExcelProperty("[更新时间] 记录最后更新时间")
     private LocalDateTime updateTime;
+
+    /**
+     * 经度
+     */
+    @Schema(description = "[经度] ", example = "111")
+    private Double lon;
+
+    /**
+     * 纬度
+     */
+    @Schema(description = "[纬度] ", example = "111")
+    private Double lat;
 }

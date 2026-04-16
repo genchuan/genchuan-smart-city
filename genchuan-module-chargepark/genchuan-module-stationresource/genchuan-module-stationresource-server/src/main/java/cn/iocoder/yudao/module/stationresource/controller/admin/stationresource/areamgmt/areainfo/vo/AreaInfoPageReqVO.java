@@ -37,6 +37,9 @@ public class AreaInfoPageReqVO extends PageParam {
     @Schema(description = "[负责人ID] 关联芋道用户表system_user", example = "18361")
     private Long leaderId;
 
+    @Schema(description = "[负责人ID] 关联芋道用户表system_user", example = "18362")
+    private Long userId;
+
     @Schema(description = "[联系电话] 联系电话")
     private String phone;
 
@@ -45,6 +48,13 @@ public class AreaInfoPageReqVO extends PageParam {
 
     @Schema(description = "[状态] 如:未生效/已生效/已禁用", example = "1")
     private String status;
+
+    @Schema(description = "[绑定时间]")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime[] bindTime;
+
+    @Schema(description = "[绑定人ID] 关联芋道用户表system_user", example = "18363")
+    private Long bindUserId;
 
     @Schema(description = "[备注] 备注", example = "你说的对")
     private String remark;

@@ -121,6 +121,10 @@ public class RectifyReviewController {
     public CommonResult<PageResult<RectifyEvidenceVO>> getBatchEvidence(
             @Valid @RequestBody BatchEvidenceRequestVO reqVO) {
 
+        if (reqVO.getPageNo()==null||reqVO.getPageSize()==null){
+            reqVO.setPageNo(1L);
+            reqVO.setPageSize(9999L);
+        }
         // 调用 Service 获取分页数据
         PageResult<RectifyEvidenceVO> pageResult = rectifyReviewService.getBatchEvidence(reqVO);
 
