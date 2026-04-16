@@ -66,4 +66,27 @@ public interface SpaceMonitorService {
      * @return 车位状态监测分页
      */
     List<SpaceMonitorRespVO> getSpaceMonitorPage(SpaceMonitorPageReqVO pageReqVO);
+
+    /**
+     * 获取车位状态监测的定位信息
+     *
+     * @param id 监测记录ID
+     * @return 定位信息
+     */
+    SpaceMonitorLocationRespVO getSpaceMonitorLocation(Long id);
+
+    /**
+     * 更新车位状态监测告警信息
+     *
+     * @param alarmReqVO 告警请求信息
+     */
+    void updateSpaceMonitorAlarm(@Valid SpaceMonitorAlarmReqVO alarmReqVO);
+
+    /**
+     * 获取车位状态监控数据
+     *
+     * @param reqVO 查询参数
+     * @return 监控数据
+     */
+    SpaceMonitorChartRespVO getSpaceMonitorChart(SpaceMonitorChartReqVO reqVO);
 }

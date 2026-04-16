@@ -29,7 +29,7 @@ import cn.iocoder.yudao.module.inspectop.controller.admin.oilmonitor.vo.*;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.oilmonitor.OilMonitorDO;
 import cn.iocoder.yudao.module.inspectop.service.oilmonitor.OilMonitorService;
 
-@Tag(name = "管理后台 - 油车占位监测")
+@Tag(name = "巡查巡检 - 油车占位监测")
 @RestController
 @RequestMapping("/inspectop/oil-monitor")
 @Validated
@@ -83,9 +83,50 @@ public class OilMonitorController {
     @GetMapping("/page")
     @Operation(summary = "获得油车占位监测分页")
     @PreAuthorize("@ss.hasPermission('inspectop:oil-monitor:query')")
-    public CommonResult<PageResult<OilMonitorRespVO>> getOilMonitorPage(@Valid OilMonitorPageReqVO pageReqVO) {
-        PageResult<OilMonitorDO> pageResult = oilMonitorService.getOilMonitorPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, OilMonitorRespVO.class));
+    public CommonResult<List<OilMonitorRespVO>> getOilMonitorPage(@Valid OilMonitorPageReqVO pageReqVO) {
+        // 直接返回Service的结果，Service的结果已经是VO
+        List<OilMonitorRespVO> pageResult = oilMonitorService.getOilMonitorPage(pageReqVO);
+        return success(pageResult); // 移除了 BeanUtils.toBean 转换
+    }
+
+    @PutMapping("/batch-process")
+    @Operation(summary = "批量处置")
+    @PreAuthorize("@ss.hasPermission('inspectop:oil-monitor:batch-process')")
+    public CommonResult<Boolean> batchProcessOilMonitor(@Valid @RequestBody OilMonitorBatchProcessReqVO batchProcessReqVO) {
+        oilMonitorService.batchProcessOilMonitor(batchProcessReqVO);
+        return success(true);
+    }
+
+    @PutMapping("/process")
+    @Operation(summary = "处置")
+    @PreAuthorize("@ss.hasPermission('inspectop:oil-monitor:process')")
+    public CommonResult<Boolean> processOilMonitor(@Valid @RequestBody OilMonitorBatchProcessReqVO batchProcessReqVO) {
+        oilMonitorService.batchProcessOilMonitor(batchProcessReqVO);
+        return success(true);
+    }
+
+    @PutMapping("/update-process")
+    @Operation(summary = "更新进度")
+    @PreAuthorize("@ss.hasPermission('inspectop:oil-monitor:update-process')")
+    public CommonResult<Boolean> UpdateProcessOilMonitor(@Valid @RequestBody OilMonitorBatchProcessReqVO batchProcessReqVO) {
+        oilMonitorService.batchProcessOilMonitor(batchProcessReqVO);
+        return success(true);
+    }
+
+    @PutMapping("/ignore")
+    @Operation(summary = "忽略油车占位监测")
+    @PreAuthorize("@ss.hasPermission('inspectop:oil-monitor:ignore')")
+    public CommonResult<Boolean> ignoreOilMonitor(@Valid @RequestBody OilMonitorIgnoreReqVO ignoreReqVO) {
+        oilMonitorService.ignoreOilMonitor(ignoreReqVO);
+        return success(true);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "获取油车占位监控数据")
+    @PreAuthorize("@ss.hasPermission('inspectop:oil-monitor:chart')")
+    public CommonResult<OilMonitorChartRespVO> getOilMonitorChart(@Valid OilMonitorChartReqVO reqVO) {
+        OilMonitorChartRespVO chartData = oilMonitorService.getOilMonitorChart(reqVO);
+        return success(chartData);
     }
 
     @GetMapping("/export-excel")
@@ -93,12 +134,12 @@ public class OilMonitorController {
     @PreAuthorize("@ss.hasPermission('inspectop:oil-monitor:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportOilMonitorExcel(@Valid OilMonitorPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                      HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<OilMonitorDO> list = oilMonitorService.getOilMonitorPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "油车占位监测.xls", "数据", OilMonitorRespVO.class,
-                        BeanUtils.toBean(list, OilMonitorRespVO.class));
+        // Service返回的就是List<OilMonitorRespVO>
+        List<OilMonitorRespVO> list = oilMonitorService.getOilMonitorPage(pageReqVO);
+        // 导出 Excel，list现在直接就是VO对象
+        ExcelUtils.write(response, "油车占位监测.xls", "数据", OilMonitorRespVO.class, list); // 移除了 BeanUtils.toBean 转换
     }
 
 }

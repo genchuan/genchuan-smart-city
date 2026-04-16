@@ -29,7 +29,7 @@ import cn.iocoder.yudao.module.inspectop.controller.admin.spacemonitor.vo.*;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.spacemonitor.SpaceMonitorDO;
 import cn.iocoder.yudao.module.inspectop.service.spacemonitor.SpaceMonitorService;
 
-@Tag(name = "管理后台 - 车位状态监测")
+@Tag(name = "巡查巡检 - 车位状态监测")
 @RestController
 @RequestMapping("/inspectop/space-monitor")
 @Validated
@@ -87,6 +87,31 @@ public class SpaceMonitorController {
         // 直接返回Service的结果，Service的结果已经是VO
         List<SpaceMonitorRespVO> pageResult = spaceMonitorService.getSpaceMonitorPage(pageReqVO);
         return success(pageResult); // 移除了 BeanUtils.toBean 转换
+    }
+
+    @GetMapping("/location")
+    @Operation(summary = "获取车位状态监测定位信息")
+    @Parameter(name = "id", description = "监测记录ID", required = true, example = "1")
+    @PreAuthorize("@ss.hasPermission('inspectop:space-monitor:location')")
+    public CommonResult<SpaceMonitorLocationRespVO> getSpaceMonitorLocation(@RequestParam("id") Long id) {
+        SpaceMonitorLocationRespVO location = spaceMonitorService.getSpaceMonitorLocation(id);
+        return success(location);
+    }
+
+    @PutMapping("/alarm")
+    @Operation(summary = "更新车位状态监测告警信息")
+    @PreAuthorize("@ss.hasPermission('inspectop:space-monitor:alarm')")
+    public CommonResult<Boolean> updateSpaceMonitorAlarm(@Valid @RequestBody SpaceMonitorAlarmReqVO alarmReqVO) {
+        spaceMonitorService.updateSpaceMonitorAlarm(alarmReqVO);
+        return success(true);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "获取车位状态监控数据")
+    @PreAuthorize("@ss.hasPermission('inspectop:space-monitor:chart')")
+    public CommonResult<SpaceMonitorChartRespVO> getSpaceMonitorChart(@Valid SpaceMonitorChartReqVO reqVO) {
+        SpaceMonitorChartRespVO chartData = spaceMonitorService.getSpaceMonitorChart(reqVO);
+        return success(chartData);
     }
 
     @GetMapping("/export-excel")

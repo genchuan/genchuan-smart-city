@@ -29,7 +29,7 @@ import cn.iocoder.yudao.module.inspectop.controller.admin.carchargemonitor.vo.*;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.carchargemonitor.CarChargeMonitorDO;
 import cn.iocoder.yudao.module.inspectop.service.carchargemonitor.CarChargeMonitorService;
 
-@Tag(name = "管理后台 - 汽车充电监测")
+@Tag(name = "巡查巡检 - 汽车充电监测")
 @RestController
 @RequestMapping("/inspectop/car-charge-monitor")
 @Validated
