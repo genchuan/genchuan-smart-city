@@ -7,14 +7,14 @@ variables:
 
 Build:
   stage: BuildAndPush
+  tags:
+    - genchuan-cloud-runner  # 必须和截图里的标签完全一致
   script:
     - echo "===== 开始Maven打包 ====="
     - mvn clean package -Dmaven.test.skip=true
-   
   retry:
     max: 2
     when:
       - runner_system_failure
       - stuck_or_timeout_failure
       - unknown_failure
-
