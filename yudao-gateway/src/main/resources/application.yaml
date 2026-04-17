@@ -328,6 +328,13 @@ spring:
                 - Path=/admin-api/marketop/**
               filters:
                 - RewritePath=/admin-api/marketop/v3/api-docs, /v3/api-docs # 转发到 /v3/api-docs
+              # genchuan-module-carservice
+            - id: carservice-admin-api # 路由的编号
+              uri: grayLb://carservice-server
+              predicates: # 断言，作为路由的匹配条件
+                - Path=/admin-api/carservice/**
+              filters:
+                - RewritePath=/admin-api/carservice/v3/api-docs, /v3/api-docs # 转发到 /v3/api-docs
           x-forwarded:
             prefix-enabled: false # 避免 Swagger 重复带上额外的 /admin-api/system 前缀
           default-filters:
@@ -447,6 +454,10 @@ knife4j:
       - name: marketop-server
         service-name: marketop-server
         url: /admin-api/marketop/v3/api-docs
+        # genchuan-module-carservice
+      - name: carservice-server               # 自定义模块名字，可以随便写，但最好和服务名一致
+        service-name: carservice-server       # 必须和 Gateway 路由 uri 对应的服务名一致
+        url: /admin-api/carservice/v3/api-docs # 对应模块 Swagger 文档路径
 --- #################### 芋道相关配置 ####################
 
 yudao:
