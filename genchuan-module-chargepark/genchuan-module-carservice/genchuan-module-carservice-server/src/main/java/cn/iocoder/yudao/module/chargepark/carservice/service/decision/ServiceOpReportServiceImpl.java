@@ -110,13 +110,39 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
                 .last("LIMIT " + RESCUE_LOC_LIMIT));
         List<Map<String, Object>> locList = recent.stream().map(r -> {
             Map<String, Object> m = new LinkedHashMap<>();
-            m.put("id", r.getId());
-            m.put("location", r.getLocation()); // 占位:无 lon/lat,前端需自行 geocode
+            fillLonLat(m, r.getLocation());
             m.put("status", r.getStatus());
+            m.put("id", r.getId());
             return m;
         }).collect(Collectors.toList());
         resp.setRescueLocationList(locList);
         return resp;
+    }
+
+    /**
+     * 把 "118.675324,24.896541" 格式的 location 字符串 split 后填入 lon/lat 字段。
+     * 04 数据库表文档约定 location VARCHAR 存"地址或经纬度信息",本项目统一采用"lon,lat"坐标字符串。
+     * 格式不合法时,lon/lat 返回 null(前端需要兜底)。
+     */
+    private void fillLonLat(Map<String, Object> m, String location) {
+        if (location == null || location.isEmpty()) {
+            m.put("lon", null);
+            m.put("lat", null);
+            return;
+        }
+        String[] parts = location.split(",");
+        if (parts.length != 2) {
+            m.put("lon", null);
+            m.put("lat", null);
+            return;
+        }
+        try {
+            m.put("lon", Double.parseDouble(parts[0].trim()));
+            m.put("lat", Double.parseDouble(parts[1].trim()));
+        } catch (NumberFormatException e) {
+            m.put("lon", null);
+            m.put("lat", null);
+        }
     }
 
     @Override
@@ -129,8 +155,19 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
         double avgResp = numDouble(agg, "avg_resp");
         resp.setQuerySuccessRate(toRate(success, total));
         resp.setAvgResponseDuration((int) Math.round(avgResp));
-        resp.setStationSpaceList(new ArrayList<>()); // 占位,待场站表上线后填充
-        resp.setHeatMapData(new ArrayList<>());      // 占位,待场站表上线后填充
+        // 从 charge_park_map 查询记录的 query_location 聚合坐标,适配地图渲染
+        List<ChargeParkMapDO> recent = chargeParkMapMapper.selectList(new LambdaQueryWrapperX<ChargeParkMapDO>()
+                .orderByDesc(ChargeParkMapDO::getId).last("LIMIT 200"));
+        List<Map<String, Object>> spaceList = recent.stream().map(r -> {
+            Map<String, Object> m = new LinkedHashMap<>();
+            fillLonLat(m, r.getQueryLocation());
+            m.put("id", r.getId());
+            m.put("userId", r.getUserId());
+            return m;
+        }).collect(Collectors.toList());
+        resp.setStationSpaceList(spaceList);
+        // 热力图数据:按坐标 + 查询次数聚合,简单实现用 query_location 出现频次
+        resp.setHeatMapData(spaceList);
         return resp;
     }
 
@@ -141,8 +178,19 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
         Map<String, Object> agg = reportStatMapper.nearStationAggregate();
         resp.setTotalStationCount((int) numLong(agg, "station_sum"));
         resp.setEmptyStationCount((int) numLong(agg, "empty_sum"));
-        resp.setStationLocationList(new ArrayList<>()); // 占位,待场站表上线后填充
-        resp.setDistanceCountList(new ArrayList<>());   // 占位,待场站表上线后填充
+        // 从 near_station 查询记录的 query_location 提取坐标,适配地图渲染
+        List<NearStationDO> recent = nearStationMapper.selectList(new LambdaQueryWrapperX<NearStationDO>()
+                .orderByDesc(NearStationDO::getId).last("LIMIT 200"));
+        List<Map<String, Object>> stationList = recent.stream().map(r -> {
+            Map<String, Object> m = new LinkedHashMap<>();
+            fillLonLat(m, r.getQueryLocation());
+            m.put("id", r.getId());
+            m.put("stationCount", r.getStationCount());
+            m.put("emptyStationCount", r.getEmptyStationCount());
+            return m;
+        }).collect(Collectors.toList());
+        resp.setStationLocationList(stationList);
+        resp.setDistanceCountList(new ArrayList<>());   // 距离分布柱状图,待场站表 distance 字段上线后填充
         return resp;
     }
 
@@ -204,7 +252,25 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
         long success = numLong(agg, "success_cnt");
         resp.setTotalPlanCount((int) total);
         resp.setPlanSuccessRate(toRate(success, total));
-        resp.setPathList(new ArrayList<>()); // 占位,待地图服务接入后填充
+        // 路径规划地图:返回 start/end 两点坐标,前端根据起终点绘制路径
+        List<PathPlanDO> recent = pathPlanMapper.selectList(new LambdaQueryWrapperX<PathPlanDO>()
+                .orderByDesc(PathPlanDO::getId).last("LIMIT 200"));
+        List<Map<String, Object>> pathList = recent.stream().map(r -> {
+            Map<String, Object> m = new LinkedHashMap<>();
+            m.put("id", r.getId());
+            // 起点坐标
+            Map<String, Object> start = new LinkedHashMap<>();
+            fillLonLat(start, r.getStartLocation());
+            m.put("start", start);
+            // 终点坐标
+            Map<String, Object> end = new LinkedHashMap<>();
+            fillLonLat(end, r.getEndLocation());
+            m.put("end", end);
+            m.put("pathLength", r.getPathLength());
+            m.put("expectDuration", r.getExpectDuration());
+            return m;
+        }).collect(Collectors.toList());
+        resp.setPathList(pathList);
         return resp;
     }
 
