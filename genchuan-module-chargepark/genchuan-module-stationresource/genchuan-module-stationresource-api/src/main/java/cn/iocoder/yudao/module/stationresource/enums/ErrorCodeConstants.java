@@ -19,4 +19,7 @@ public interface ErrorCodeConstants {
     // ========== 车位信息==========
     ErrorCode PARKING_SPACE_INFO_NOT_EXISTS = new ErrorCode(500, "车位信息不存在");
 
+    // ========== 时段权限==========
+    ErrorCode TIME_PERMISSION_NOT_EXISTS = new ErrorCode(500, "时段权限不存在");
+
 }

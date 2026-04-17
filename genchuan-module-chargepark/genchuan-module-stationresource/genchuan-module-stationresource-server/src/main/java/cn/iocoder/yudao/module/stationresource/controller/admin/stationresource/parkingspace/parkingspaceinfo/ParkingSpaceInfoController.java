@@ -50,6 +50,7 @@ public class ParkingSpaceInfoController {
     @Resource
     private ParkingSpaceInfoService parkingSpaceInfoService;
 
+
     @GetMapping("/chart")
     @Operation(summary = "车位数据可视化图表（地图+卡片）")
     @PreAuthorize("@ss.hasPermission('stationresource:parking-space-info:query')")

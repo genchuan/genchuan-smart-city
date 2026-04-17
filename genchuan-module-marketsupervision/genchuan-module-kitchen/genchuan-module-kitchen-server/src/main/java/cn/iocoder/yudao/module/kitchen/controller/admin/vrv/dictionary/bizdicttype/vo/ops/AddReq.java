@@ -8,8 +8,6 @@ import lombok.Data;
 @Data
 public class AddReq {
 
-
-
     @Schema(description = "[类型编码] 如：sex、status", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotEmpty(message = "[类型编码] 如：sex、status不能为空")
     private String uniCode;
@@ -18,7 +16,6 @@ public class AddReq {
     @NotEmpty(message = "[类型名称] 如：性别、状态不能为空")
     private String name;
 
-
     //============================非必填但重要
     @Schema(description = "[类型描述] 字典分类的详细说明", example = "你说的对")
     private String description;
@@ -26,17 +23,5 @@ public class AddReq {
     //============================非必填但不重要
     @Schema(description = "[分类备注] 如：“性别字典，用于用户表性别字段”", example = "随便")
     private String remark;
-
-    //==========================前端无需填写
-    //自动排序
-//    @Schema(description = "[分类排序]",hidden = true)
-//    private Integer sort;
-//
-//    @Schema(description = "[状态]如:0-禁用/1-启用", example = "2",hidden = true)
-//    private Integer status;
-    //====================================================
-
-
-
 
 }
