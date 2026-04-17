@@ -1,30 +1,25 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>genchuan-module-chargepark</artifactId>
-    <packaging>pom</packaging>
-    <!--  基础数据  -->
-    <modules>
-        <module>genchuan-module-ordertrade</module>
-        <module>genchuan-module-stationresource</module>
-        <module>genchuan-module-usermerchant</module>
-        <module>genchuan-module-inspectop</module>
-        <module>genchuan-module-marketop</module>
-        <module>genchuan-module-carservice</module>
-    </modules>
-    <description>
-        充电停车一体化管理模块，包含营销运营等功能。
-    </description>
     <parent>
         <groupId>cn.iocoder.cloud</groupId>
-        <artifactId>yudao</artifactId>
+        <artifactId>genchuan-module-carservice</artifactId>
         <version>${revision}</version>
     </parent>
-    <name>genchuan-module-chargepark</name>
+
+    <artifactId>genchuan-module-carservice-api</artifactId>
+    <packaging>jar</packaging>
+
+    <name>genchuan-module-carservice-api</name>
     <url>http://maven.apache.org</url>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <description>
+        carservice-api 模块。对外暴露 RPC、错误码、字典常量等，供其他微服务模块引用。
+    </description>
 
     <dependencies>
         <dependency>
@@ -32,6 +27,10 @@
             <artifactId>junit</artifactId>
             <version>3.8.1</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.cloud</groupId>
+            <artifactId>yudao-common</artifactId>
         </dependency>
     </dependencies>
 </project>

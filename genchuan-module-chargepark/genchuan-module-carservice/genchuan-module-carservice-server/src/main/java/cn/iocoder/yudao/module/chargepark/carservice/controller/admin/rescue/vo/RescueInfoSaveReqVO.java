@@ -1,0 +1,75 @@
+package cn.iocoder.yudao.module.chargepark.carservice.controller.admin.rescue.vo;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
+@Schema(description = "管理后台 - 救援信息新增/修改 Request VO")
+@Data
+public class RescueInfoSaveReqVO {
+
+    @Schema(description = "主键 ID", example = "1024")
+    private Long id;
+
+    @Schema(description = "用户 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1001")
+    @NotNull(message = "用户 ID 不能为空")
+    private Long userId;
+
+    @Schema(description = "救援位置", requiredMode = Schema.RequiredMode.REQUIRED, example = "福建省泉州市丰泽区 XX 路")
+    @NotBlank(message = "救援位置不能为空")
+    private String location;
+
+    @Schema(description = "救援类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "道路救援")
+    @NotBlank(message = "救援类型不能为空")
+    private String rescueType;
+
+    @Schema(description = "派发时间")
+    private LocalDateTime dispatchTime;
+
+    @Schema(description = "救援状态（创建时由后端默认为 待派发）", example = "待派发")
+    private String status;
+
+    @Schema(description = "救援人员 ID")
+    private Long rescueUserId;
+
+    @Schema(description = "完成时间")
+    private LocalDateTime finishTime;
+
+    @Schema(description = "处理时长（秒）")
+    private Integer handleDuration;
+
+    @Schema(description = "评价得分，1-5 分", example = "5")
+    @Min(value = 1, message = "评分最小为 1")
+    @Max(value = 5, message = "评分最大为 5")
+    private Integer score;
+
+    @Schema(description = "归档状态", example = "未归档")
+    private String archiveStatus;
+
+    @Schema(description = "派发备注")
+    private String dispatchRemark;
+
+    @Schema(description = "转派理由")
+    private String transferReason;
+
+    @Schema(description = "救援进度")
+    private String progress;
+
+    @Schema(description = "现场照片 URL")
+    private String photo;
+
+    @Schema(description = "评价内容")
+    private String evaluateContent;
+
+    @Schema(description = "备用字段 1")
+    private String reserve1;
+
+    @Schema(description = "备用字段 2")
+    private String reserve2;
+
+}
