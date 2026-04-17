@@ -64,4 +64,12 @@ public interface PlateAuthService {
      * @return 车牌认证
      */
     PlateAuthDO getPlateAuth(Long id);
+
+    /**
+     * 车牌认证统计可视化
+     *
+     * @param chartReqVO 时间范围
+     * @return 统计信息
+     */
+    PlateAuthChartRespVO getPlateAuthChart(@Valid PlateAuthChartReqVO chartReqVO);
 }
