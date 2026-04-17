@@ -14,6 +14,21 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 public interface PlateAuthService {
 
     /**
+     * 获得车牌认证分页
+     *
+     * @param pageReqVO 分页查询
+     * @return 车牌认证分页
+     */
+    PageResult<PlateAuthDO> getPlateAuthPage(PlateAuthPageReqVO pageReqVO);
+
+    /**
+     * 批量更新车牌认证
+     *
+     * @param updateReqVO 更新信息
+     */
+    void batchUpdatePlateAuth(@Valid PlateAuthSaveReqVO updateReqVO);
+
+    /**
      * 创建车牌认证
      *
      * @param createReqVO 创建信息
@@ -49,13 +64,4 @@ public interface PlateAuthService {
      * @return 车牌认证
      */
     PlateAuthDO getPlateAuth(Long id);
-
-    /**
-     * 获得车牌认证分页
-     *
-     * @param pageReqVO 分页查询
-     * @return 车牌认证分页
-     */
-    PageResult<PlateAuthDO> getPlateAuthPage(PlateAuthPageReqVO pageReqVO);
-
 }
