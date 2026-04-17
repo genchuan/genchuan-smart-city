@@ -4,7 +4,6 @@ import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 追缴配置 Response VO")
@@ -15,25 +14,27 @@ public class CollectConfigRespVO {
     @ExcelProperty("主键ID")
     private Long id;
 
-    @Schema(description = "欠费阈值时间（天）")
-    @ExcelProperty("阈值时间(天)")
-    private Integer thresholdTime;
-
-    @Schema(description = "欠费阈值金额")
-    @ExcelProperty("阈值金额")
-    private BigDecimal thresholdAmount;
-
-    @Schema(description = "推送方式")
-    @ExcelProperty("推送方式")
-    private String pushWay;
-
+    @Schema(description = "配置编号")
+    @ExcelProperty("配置编号")
+    private String configNo;
+    @Schema(description = "追缴方式")
+    @ExcelProperty("追缴方式")
+    private String collectMethod;
+    @Schema(description = "推送模板ID")
+    @ExcelProperty("推送模板ID")
+    private Long templateId;
+    @Schema(description = "推送频次（小时）")
+    @ExcelProperty("推送频次（小时）")
+    private Integer pushFrequency;
     @Schema(description = "状态")
     @ExcelProperty("状态")
     private String status;
-
-    @Schema(description = "备注")
-    @ExcelProperty("备注")
+    @Schema(description = "配置说明")
+    @ExcelProperty("配置说明")
     private String remark;
+    @Schema(description = "操作人ID")
+    @ExcelProperty("操作人ID")
+    private Long operatorId;
 
     @Schema(description = "备用字段1")
     private String reserve1;

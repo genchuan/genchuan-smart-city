@@ -15,33 +15,61 @@ public class BikeChargeOrderRespVO {
     @ExcelProperty("主键ID")
     private Long id;
 
-    @Schema(description = "主订单ID")
-    @ExcelProperty("主订单ID")
-    private Long orderId;
+    @Schema(description = "订单编号")
+    @ExcelProperty("订单编号")
+    private String orderNo;
 
-    @Schema(description = "设备ID")
-    @ExcelProperty("设备ID")
-    private Long deviceId;
+    @Schema(description = "用户ID")
+    @ExcelProperty("用户ID")
+    private Long userId;
 
-    @Schema(description = "开始充电时间")
-    @ExcelProperty("开始时间")
-    private LocalDateTime startTime;
+    @Schema(description = "用户昵称")
+    @ExcelProperty("用户昵称")
+    private String userNickname;
 
-    @Schema(description = "结束充电时间")
-    @ExcelProperty("结束时间")
-    private LocalDateTime endTime;
+    @Schema(description = "充电时长（分钟）")
+    @ExcelProperty("充电时长（分钟）")
+    private Integer chargeDuration;
 
-    @Schema(description = "充电度数（kWh）")
-    @ExcelProperty("充电度数")
-    private BigDecimal chargeDegree;
+    @Schema(description = "充电量（度）")
+    @ExcelProperty("充电量（度）")
+    private BigDecimal chargeQuantity;
 
-    @Schema(description = "费用")
-    @ExcelProperty("费用")
-    private BigDecimal fee;
+    @Schema(description = "订单金额")
+    @ExcelProperty("订单金额")
+    private BigDecimal amount;
 
-    @Schema(description = "备注")
-    @ExcelProperty("备注")
-    private String remark;
+    @Schema(description = "订单状态")
+    @ExcelProperty("订单状态")
+    private String status;
+
+    @Schema(description = "订单生成时间")
+    @ExcelProperty("订单生成时间")
+    private LocalDateTime createOrderTime;
+
+    @Schema(description = "所属场站ID")
+    @ExcelProperty("所属场站ID")
+    private Long stationId;
+
+    @Schema(description = "支付时间")
+    @ExcelProperty("支付时间")
+    private LocalDateTime payTime;
+
+    @Schema(description = "支付方式")
+    @ExcelProperty("支付方式")
+    private String payMethod;
+
+    @Schema(description = "优惠抵扣金额")
+    @ExcelProperty("优惠抵扣金额")
+    private BigDecimal discountAmount;
+
+    @Schema(description = "归档时间")
+    @ExcelProperty("归档时间")
+    private LocalDateTime archiveTime;
+
+    @Schema(description = "操作人ID")
+    @ExcelProperty("操作人ID")
+    private Long operatorId;
 
     @Schema(description = "备用字段1")
     private String reserve1;

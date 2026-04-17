@@ -8,6 +8,7 @@ import cn.iocoder.yudao.module.ordertrade.dal.dataobject.ordermgmt.TempParkOrder
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.refundmgmt.RefundApplyDO;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.ordermgmt.TempParkOrderMapper;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.refundmgmt.RefundApplyMapper;
+import cn.iocoder.yudao.module.ordertrade.framework.tool.OrderUtils;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -107,6 +108,7 @@ public class TempParkOrderServiceImpl implements TempParkOrderService {
         tempParkOrderMapper.updateById(update);
         // 创建退款申请（触发退款流程）
         RefundApplyDO apply = new RefundApplyDO();
+        apply.setApplyNo(OrderUtils.generateRefundNo());
         apply.setApplicantId(SecurityFrameworkUtils.getLoginUserId());
         apply.setRefundAmount(order.getAmount());
         apply.setRefundReason(reqVO.getRemark() != null ? reqVO.getRemark() : "申请退款");

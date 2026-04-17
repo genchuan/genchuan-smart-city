@@ -1,11 +1,8 @@
 package cn.iocoder.yudao.module.ordertrade.controller.admin.debtcollect.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.math.BigDecimal;
 
 @Schema(description = "管理后台 - 追缴配置新增/修改 Request VO")
 @Data
@@ -14,21 +11,18 @@ public class CollectConfigSaveReqVO {
     @Schema(description = "主键ID（更新时必填）")
     private Long id;
 
-    @Schema(description = "欠费阈值时间（天）", requiredMode = Schema.RequiredMode.REQUIRED, example = "7")
-    @NotNull(message = "阈值时间不能为空")
-    private Integer thresholdTime;
-
-    @Schema(description = "欠费阈值金额", requiredMode = Schema.RequiredMode.REQUIRED, example = "50")
-    @NotNull(message = "阈值金额不能为空")
-    private BigDecimal thresholdAmount;
-
-    @Schema(description = "推送方式：miniapp/sms/phone", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "推送方式不能为空")
-    private String pushWay;
-
-    @Schema(description = "状态：inactive/active")
+    @Schema(description = "配置编号", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String configNo;
+    @Schema(description = "追缴方式", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String collectMethod;
+    @Schema(description = "推送模板ID", requiredMode = Schema.RequiredMode.REQUIRED)
+    private Long templateId;
+    @Schema(description = "推送频次（小时）", requiredMode = Schema.RequiredMode.REQUIRED)
+    private Integer pushFrequency;
+    @Schema(description = "状态", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String status;
-
-    @Schema(description = "备注")
+    @Schema(description = "配置说明", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String remark;
+    @Schema(description = "操作人ID", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private Long operatorId;
 }

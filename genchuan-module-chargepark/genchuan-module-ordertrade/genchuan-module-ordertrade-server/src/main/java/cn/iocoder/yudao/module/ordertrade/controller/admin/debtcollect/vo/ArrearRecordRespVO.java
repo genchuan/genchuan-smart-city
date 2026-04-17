@@ -15,25 +15,27 @@ public class ArrearRecordRespVO {
     @ExcelProperty("主键ID")
     private Long id;
 
-    @Schema(description = "用户ID")
-    @ExcelProperty("用户ID")
-    private Long userId;
-
-    @Schema(description = "总欠费金额")
-    @ExcelProperty("总欠费金额")
-    private BigDecimal totalAmount;
-
-    @Schema(description = "未结清金额")
-    @ExcelProperty("未结清金额")
-    private BigDecimal unPayAmount;
-
-    @Schema(description = "状态")
-    @ExcelProperty("状态")
+    @Schema(description = "记录编号")
+    @ExcelProperty("记录编号")
+    private String recordNo;
+    @Schema(description = "车牌")
+    @ExcelProperty("车牌")
+    private String plateNo;
+    @Schema(description = "关联欠费订单ID")
+    @ExcelProperty("关联欠费订单ID")
+    private String orderIds;
+    @Schema(description = "欠费金额")
+    @ExcelProperty("欠费金额")
+    private BigDecimal arrearAmount;
+    @Schema(description = "结清状态")
+    @ExcelProperty("结清状态")
     private String status;
-
-    @Schema(description = "备注")
-    @ExcelProperty("备注")
-    private String remark;
+    @Schema(description = "所属场站ID")
+    @ExcelProperty("所属场站ID")
+    private Long stationId;
+    @Schema(description = "操作人ID")
+    @ExcelProperty("操作人ID")
+    private Long operatorId;
 
     @Schema(description = "备用字段1")
     private String reserve1;

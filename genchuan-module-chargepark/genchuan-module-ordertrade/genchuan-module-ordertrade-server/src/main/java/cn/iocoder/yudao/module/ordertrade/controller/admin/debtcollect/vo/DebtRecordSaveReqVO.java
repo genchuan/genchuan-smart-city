@@ -1,12 +1,9 @@
 package cn.iocoder.yudao.module.ordertrade.controller.admin.debtcollect.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 逃费记录新增/修改 Request VO")
 @Data
@@ -15,23 +12,20 @@ public class DebtRecordSaveReqVO {
     @Schema(description = "主键ID（更新时必填）")
     private Long id;
 
-    @Schema(description = "用户ID")
-    private Long userId;
-
-    @Schema(description = "车牌号码", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "车牌号码不能为空")
-    private String carNo;
-
+    @Schema(description = "记录编号", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String recordNo;
+    @Schema(description = "车牌", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String plateNo;
+    @Schema(description = "欠费订单数", requiredMode = Schema.RequiredMode.REQUIRED)
+    private Integer arrearOrderCount;
     @Schema(description = "欠费金额", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "欠费金额不能为空")
-    private BigDecimal debtAmount;
-
-    @Schema(description = "状态：uncollected/collecting/completed")
+    private BigDecimal arrearAmount;
+    @Schema(description = "追缴状态", requiredMode = Schema.RequiredMode.REQUIRED)
     private String status;
-
-    @Schema(description = "追缴完成时间")
-    private LocalDateTime collectTime;
-
-    @Schema(description = "备注")
-    private String remark;
+    @Schema(description = "所属场站ID", requiredMode = Schema.RequiredMode.REQUIRED)
+    private Long stationId;
+    @Schema(description = "追缴进度", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private String collectProgress;
+    @Schema(description = "操作人ID", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private Long operatorId;
 }

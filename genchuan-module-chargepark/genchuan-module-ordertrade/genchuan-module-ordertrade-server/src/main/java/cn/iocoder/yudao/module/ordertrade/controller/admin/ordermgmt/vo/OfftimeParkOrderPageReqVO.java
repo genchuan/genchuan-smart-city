@@ -1,6 +1,11 @@
 package cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo;
 
+import cn.idev.excel.annotation.ExcelProperty;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import cn.iocoder.yudao.module.ordertrade.enums.ChargeOrderStatusEnum;
+import cn.iocoder.yudao.module.ordertrade.enums.ParkOrderStatusEnum;
+import cn.iocoder.yudao.module.ordertrade.framework.excel.EnumExcelConverter;
+import cn.iocoder.yudao.module.ordertrade.framework.excel.EnumFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -22,6 +27,8 @@ public class OfftimeParkOrderPageReqVO extends PageParam {
     @Schema(description = "车牌，模糊查询")
     private String plateNo;
     @Schema(description = "支付状态")
+    @ExcelProperty(value = "支付状态", converter = EnumExcelConverter.class)
+    @EnumFormat(ParkOrderStatusEnum.class)   // ← 指向枚举类
     private String status;
     @Schema(description = "场站ID")
     private Long stationId;

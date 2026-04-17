@@ -1,8 +1,6 @@
 package cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -15,33 +13,28 @@ public class AllOrderSaveReqVO {
     @Schema(description = "主键ID（更新时必填）")
     private Long id;
 
-    @Schema(description = "订单编号", requiredMode = Schema.RequiredMode.REQUIRED, example = "ORD-20250411001")
-    @NotBlank(message = "订单编号不能为空")
+    @Schema(description = "订单编号", requiredMode = Schema.RequiredMode.REQUIRED)
     private String orderNo;
-
-    @Schema(description = "用户ID")
-    private Long userId;
-
-    @Schema(description = "场站ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "场站不能为空")
-    private Long stationId;
-
-    @Schema(description = "订单类型（all_order_type）：temp_park/offtime_park/car_charge/bike_charge/share_charge", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "订单类型不能为空")
-    private String type;
-
-    @Schema(description = "总金额")
-    private BigDecimal totalAmount;
-
-    @Schema(description = "实付金额")
-    private BigDecimal payAmount;
-
-    @Schema(description = "订单状态（all_order_status）：pending_pay/paid/completed/cancelled")
+    @Schema(description = "订单类型", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String orderType;
+    @Schema(description = "车牌", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private String plateNo;
+    @Schema(description = "订单金额", requiredMode = Schema.RequiredMode.REQUIRED)
+    private BigDecimal amount;
+    @Schema(description = "支付状态", requiredMode = Schema.RequiredMode.REQUIRED)
     private String status;
-
-    @Schema(description = "支付时间")
+    @Schema(description = "订单生成时间", requiredMode = Schema.RequiredMode.REQUIRED)
+    private LocalDateTime createOrderTime;
+    @Schema(description = "所属场站ID", requiredMode = Schema.RequiredMode.REQUIRED)
+    private Long stationId;
+    @Schema(description = "支付时间", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private LocalDateTime payTime;
-
-    @Schema(description = "备注")
-    private String remark;
+    @Schema(description = "支付方式", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private String payMethod;
+    @Schema(description = "优惠抵扣金额", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private BigDecimal discountAmount;
+    @Schema(description = "归档时间", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private LocalDateTime archiveTime;
+    @Schema(description = "操作人ID", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private Long operatorId;
 }

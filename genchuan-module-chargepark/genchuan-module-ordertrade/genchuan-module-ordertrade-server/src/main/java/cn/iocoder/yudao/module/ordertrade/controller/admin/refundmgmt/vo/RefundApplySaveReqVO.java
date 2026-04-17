@@ -1,8 +1,6 @@
 package cn.iocoder.yudao.module.ordertrade.controller.admin.refundmgmt.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -15,34 +13,24 @@ public class RefundApplySaveReqVO {
     @Schema(description = "主键ID（更新时必填）")
     private Long id;
 
-    @Schema(description = "订单ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "订单不能为空")
+    @Schema(description = "申请编号", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private String applyNo;
+    @Schema(description = "关联订单ID", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long orderId;
-
-    @Schema(description = "用户ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "用户不能为空")
-    private Long userId;
-
-    @Schema(description = "退款原因", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "退款原因不能为空")
-    private String reason;
-
     @Schema(description = "退款金额", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "退款金额不能为空")
-    private BigDecimal amount;
-
-    @Schema(description = "申请时间")
+    private BigDecimal refundAmount;
+    @Schema(description = "退款原因", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String refundReason;
+    @Schema(description = "申请时间", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private LocalDateTime applyTime;
-
-    @Schema(description = "审核状态：pending_audit/pending_exec/completed/rejected")
-    private String auditStatus;
-
-    @Schema(description = "审核人ID")
-    private Long auditorId;
-
-    @Schema(description = "审核时间")
+    @Schema(description = "状态", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private String status;
+    @Schema(description = "申请人ID", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private Long applicantId;
+    @Schema(description = "审核人ID", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private Long auditUserId;
+    @Schema(description = "审核时间", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private LocalDateTime auditTime;
-
-    @Schema(description = "备注")
-    private String remark;
+    @Schema(description = "操作人ID", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private Long operatorId;
 }
