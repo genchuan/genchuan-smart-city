@@ -40,9 +40,58 @@ public class PlateAuthController {
     @GetMapping("/page")
     @Operation(summary = "获得车牌认证分页")
     @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:query')")
-    public CommonResult<PageResult<PlateAuthRespVO>> getPlateAuthPage(@Valid PlateAuthPageReqVO pageReqVO) {
+    public CommonResult<PageResult<PlateAuthPageRespVO>> getPlateAuthPage(@Valid PlateAuthPageReqVO pageReqVO) {
         PageResult<PlateAuthDO> pageResult = plateAuthService.getPlateAuthPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, PlateAuthRespVO.class));
+        return success(BeanUtils.toBean(pageResult, PlateAuthPageRespVO.class));
+    }
+
+    @PutMapping("/batch-audit")
+    @Operation(summary = "批量审核车牌")
+    @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:batch-audit')")
+    public CommonResult<Boolean> batchAuditPlate(@Valid @RequestBody PlateAuthSaveReqVO updateReqVO) {
+        plateAuthService.batchUpdatePlateAuth(updateReqVO);
+        return success(true);
+    }
+
+    @GetMapping("/export-excel")
+    @Operation(summary = "导出车牌认证 Excel")
+    @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:export')")
+    @ApiAccessLog(operateType = EXPORT)
+    public void exportPlateAuthExcel(@Valid PlateAuthPageReqVO pageReqVO,
+                                     HttpServletResponse response) throws IOException {
+        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        List<PlateAuthDO> list = plateAuthService.getPlateAuthPage(pageReqVO).getList();
+        // 导出 Excel
+        ExcelUtils.write(response, "车牌认证.xls", "数据", PlateAuthPageRespVO.class,
+                BeanUtils.toBean(list, PlateAuthPageRespVO.class));
+    }
+
+    @PutMapping("/approve")
+    @Operation(summary = "审核通过")
+    @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:approve')")
+    public CommonResult<Boolean> approve(@Valid @RequestBody PlateAuthSaveReqVO reqVO) {
+        reqVO.setAuditResult("通过");
+        plateAuthService.batchUpdatePlateAuth(reqVO);
+        return success(true);
+    }
+
+    @PutMapping("/reject")
+    @Operation(summary = "审核驳回")
+    @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:reject')")
+    public CommonResult<Boolean> reject(@Valid @RequestBody PlateAuthSaveReqVO reqVO) {
+        reqVO.setAuditResult("驳回");
+        plateAuthService.batchUpdatePlateAuth(reqVO);
+        return success(true);
+    }
+
+    @PutMapping("/reauth")
+    @Operation(summary = "重新认证")
+    @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:reauth')")
+    public CommonResult<Boolean> reauth(@Valid @RequestBody PlateAuthSaveReqVO reqVO) {
+        reqVO.setAuditResult("待审核");
+        reqVO.setAuditRemark(null);
+        plateAuthService.batchUpdatePlateAuth(reqVO);
+        return success(true);
     }
 //——————————————————————————————————————————————————————//
     @PostMapping("/create")
@@ -82,22 +131,9 @@ public class PlateAuthController {
     @Operation(summary = "获得车牌认证")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:query')")
-    public CommonResult<PlateAuthRespVO> getPlateAuth(@RequestParam("id") Long id) {
+    public CommonResult<PlateAuthPageRespVO> getPlateAuth(@RequestParam("id") Long id) {
         PlateAuthDO plateAuth = plateAuthService.getPlateAuth(id);
-        return success(BeanUtils.toBean(plateAuth, PlateAuthRespVO.class));
-    }
-
-    @GetMapping("/export-excel")
-    @Operation(summary = "导出车牌认证 Excel")
-    @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:export')")
-    @ApiAccessLog(operateType = EXPORT)
-    public void exportPlateAuthExcel(@Valid PlateAuthPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
-        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<PlateAuthDO> list = plateAuthService.getPlateAuthPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "车牌认证.xls", "数据", PlateAuthRespVO.class,
-                        BeanUtils.toBean(list, PlateAuthRespVO.class));
+        return success(BeanUtils.toBean(plateAuth, PlateAuthPageRespVO.class));
     }
 
 }

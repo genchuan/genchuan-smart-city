@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.usermgmt.userinfo.UserInfoDO;
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.usermgmt.userinfo.UserInfoMapper;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.NameQueryHelper;
@@ -18,7 +19,6 @@ import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.usercar.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.usermgmt.usercar.UserCarDO;
@@ -42,6 +42,9 @@ public class UserCarServiceImpl implements UserCarService {
     private static final String STATUS_UNBIND = "已解绑";
     private static final String STATUS_REJECT = "已驳回";
     private static final String STATUS_REBIND = "待审核";
+
+    @Resource
+    private AdminUserApi adminUserApi;
 
     @Resource
     private UserCarMapper userCarMapper;
@@ -103,13 +106,11 @@ public class UserCarServiceImpl implements UserCarService {
                 "user_info", "id", "nickname"
         );
 
-        // 批量填充审核人昵称
-        NameQueryHelper.fillNamesByIds(
-                pageResult.getList(),
+        // 批量填充审核人昵称（通过 Feign 调用 system-server）
+        NameQueryHelper.fillUserNames(pageResult.getList(),
                 UserCarDO::getAuditorId,
                 UserCarDO::setAuditorName,
-                "user_info", "id", "nickname"
-        );
+                adminUserApi);
 
         return pageResult;
     }

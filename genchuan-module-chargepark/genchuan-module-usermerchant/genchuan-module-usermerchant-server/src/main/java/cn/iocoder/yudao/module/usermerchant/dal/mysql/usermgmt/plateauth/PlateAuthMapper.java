@@ -20,7 +20,6 @@ public interface PlateAuthMapper extends BaseMapperX<PlateAuthDO> {
                 .eqIfPresent(PlateAuthDO::getUserId, reqVO.getUserId())
                 .eqIfPresent(PlateAuthDO::getCarId, reqVO.getCarId())
                 .eqIfPresent(PlateAuthDO::getPlateNo, reqVO.getPlateNo())
-                .eqIfPresent(PlateAuthDO::getDrivingLicense, reqVO.getDrivingLicense())
                 .betweenIfPresent(PlateAuthDO::getApplyTime, reqVO.getApplyTime())
                 .eqIfPresent(PlateAuthDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(PlateAuthDO::getAuditorId, reqVO.getAuditorId())
@@ -30,5 +29,4 @@ public interface PlateAuthMapper extends BaseMapperX<PlateAuthDO> {
                 .orderByDesc(PlateAuthDO::getId));
     }
 
-    Long getIdByNickname(String nickname);
 }

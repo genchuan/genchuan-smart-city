@@ -9,4 +9,80 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="selectTotalStats" resultType="java.util.HashMap">
+        SELECT SUM(settlement_amount) AS totalSettlementAmount,
+               SUM(sharing_amount) AS totalSharingAmount,
+               COUNT(*) AS totalBillCount
+        FROM settlement_bill
+        WHERE deleted = 0 AND create_time BETWEEN #{start} AND #{end}
+    </select>
+
+    <select id="selectLineData" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.sharingreport.vo.SharingReportSummaryRespVO$LineData">
+        SELECT DATE_FORMAT(create_time, #{groupPattern}) AS date,
+           SUM(sharing_amount) AS amount
+        FROM settlement_bill
+        WHERE deleted = 0 AND create_time BETWEEN #{start} AND #{end}
+        GROUP BY date
+        ORDER BY date
+    </select>
+
+    <select id="selectBarData" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.sharingreport.vo.SharingReportSummaryRespVO$BarData">
+        SELECT cooperator AS name,
+               SUM(sharing_amount) AS amount
+        FROM settlement_bill
+        WHERE deleted = 0 AND create_time BETWEEN #{start} AND #{end}
+        GROUP BY cooperator
+        ORDER BY amount DESC
+    </select>
+
+    <select id="selectPieData" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.sharingreport.vo.SharingReportSummaryRespVO$PieData">
+        SELECT cooperator AS name,
+               SUM(sharing_amount) AS amount
+        FROM settlement_bill
+        WHERE deleted = 0 AND create_time BETWEEN #{start} AND #{end}
+        GROUP BY cooperator
+        ORDER BY amount DESC
+    </select>
+
+    <select id="selectTotalSharingAmount" resultType="java.math.BigDecimal">
+        SELECT SUM(sharing_amount)
+        FROM settlement_bill
+        WHERE deleted = 0 AND create_time BETWEEN #{start} AND #{end}
+    </select>
+
+    <select id="selectTimeTrend" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.sharingreport.vo.SharingReportTimeTrendRespVO$TimeTrendData">
+        SELECT DATE_FORMAT(create_time, #{groupPattern}) AS date,
+           SUM(sharing_amount) AS sharingAmount,
+           COUNT(*) AS billCount
+        FROM settlement_bill
+        WHERE deleted = 0 AND create_time BETWEEN #{start} AND #{end}
+        GROUP BY date
+        ORDER BY date
+    </select>
+
+    <select id="selectCooperatorTimeAmount" resultType="java.util.HashMap">
+        SELECT DATE_FORMAT(create_time, #{groupPattern}) AS date,
+           cooperator,
+           SUM(sharing_amount) AS amount
+        FROM settlement_bill
+        WHERE deleted = 0 AND create_time BETWEEN #{start} AND #{end}
+        GROUP BY date, cooperator
+        ORDER BY date, amount DESC
+    </select>
+
+    <select id="selectCooperatorRatio" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.sharingreport.vo.SharingReportCooperatorRatioRespVO$CooperatorRatioData">
+        SELECT cooperator AS name,
+               SUM(sharing_amount) AS amount
+        FROM settlement_bill
+        WHERE deleted = 0 AND create_time BETWEEN #{start} AND #{end}
+        GROUP BY cooperator
+        ORDER BY amount DESC
+    </select>
+
+    <select id="countGroupBy" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT DATE_FORMAT(create_time, #{pattern}))
+        FROM settlement_bill
+        WHERE deleted = 0 AND create_time BETWEEN #{start} AND #{end}
+    </select>
+
 </mapper>
