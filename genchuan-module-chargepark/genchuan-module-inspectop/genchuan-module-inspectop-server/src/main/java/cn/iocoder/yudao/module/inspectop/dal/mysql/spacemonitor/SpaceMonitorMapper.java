@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.spacemonitor.SpaceMonitorDO;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.inspectop.controller.admin.spacemonitor.vo.*;
 import org.apache.ibatis.annotations.Param;
@@ -44,12 +45,11 @@ public interface SpaceMonitorMapper extends BaseMapperX<SpaceMonitorDO> {
      * 【新增方法】关联查询分页方法
      * 使用自定义SQL进行关联查询，返回包含车位编号和场站名称的结果
      *
-     * @param page 分页参数
+     * @param page  MyBatis-Plus分页参数，查询后其total、records等属性会被自动填充
      * @param reqVO 查询条件
-     * @return 包含关联信息的分页结果
+     * @return 包含关联信息的分页结果（此处返回Page对象，让MyBatis-Plus能回填分页信息）
      */
-    List<SpaceMonitorRespVO> selectPageWithJoin(@Param("page") com.baomidou.mybatisplus.extension.plugins.pagination.Page<SpaceMonitorRespVO> page,
-                                                      @Param("reqVO") SpaceMonitorPageReqVO reqVO);
+    Page<SpaceMonitorRespVO> selectPageWithJoin(@Param("page") Page<SpaceMonitorRespVO> page, @Param("reqVO") SpaceMonitorPageReqVO reqVO);
 
     /**
      * 根据ID查询定位信息

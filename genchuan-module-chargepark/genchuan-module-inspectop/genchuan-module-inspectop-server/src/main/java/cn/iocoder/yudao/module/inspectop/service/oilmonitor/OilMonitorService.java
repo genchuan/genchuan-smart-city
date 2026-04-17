@@ -58,7 +58,7 @@ public interface OilMonitorService {
      * @return 油车占位监测分页
      */
     // PageResult<OilMonitorDO> getOilMonitorPage(OilMonitorPageReqVO pageReqVO);
-    List<OilMonitorRespVO> getOilMonitorPage(OilMonitorPageReqVO pageReqVO);
+    PageResult<OilMonitorRespVO> getOilMonitorPage(OilMonitorPageReqVO pageReqVO);
 
     /**
      * 批量处置油车占位监测

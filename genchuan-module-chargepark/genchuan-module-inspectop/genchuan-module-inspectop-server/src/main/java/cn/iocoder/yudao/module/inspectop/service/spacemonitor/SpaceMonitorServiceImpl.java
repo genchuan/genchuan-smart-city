@@ -79,20 +79,16 @@ public class SpaceMonitorServiceImpl implements SpaceMonitorService {
         return spaceMonitorMapper.selectById(id);
     }
 
-//    @Override
-//    public PageResult<SpaceMonitorDO> getSpaceMonitorPage(SpaceMonitorPageReqVO pageReqVO) {
-//        return spaceMonitorMapper.selectPage(pageReqVO);
-//    }
-
     @Override
-    public List<SpaceMonitorRespVO> getSpaceMonitorPage(SpaceMonitorPageReqVO pageReqVO) {
-        // 创建MyBatis-Plus的分页对象
+    public PageResult<SpaceMonitorRespVO> getSpaceMonitorPage(SpaceMonitorPageReqVO pageReqVO) {
+        // 创建分页对象
         Page<SpaceMonitorRespVO> mpPage = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
 
-        // 调用Mapper的自定义关联查询方法
-        List<SpaceMonitorRespVO> pageResult = spaceMonitorMapper.selectPageWithJoin(mpPage, pageReqVO);
+        // 调用Mapper方法，注意接收返回值
+        Page<SpaceMonitorRespVO> resultPage = spaceMonitorMapper.selectPageWithJoin(mpPage, pageReqVO);
 
-        return pageResult;
+        // 直接构造PageResult
+        return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
     }
 
     // 在 SpaceMonitorServiceImpl.java 中添加以下方法
