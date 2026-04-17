@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.inspectop.service.carchargemonitor;
 
 import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -78,8 +79,63 @@ public class CarChargeMonitorServiceImpl implements CarChargeMonitorService {
     }
 
     @Override
-    public PageResult<CarChargeMonitorDO> getCarChargeMonitorPage(CarChargeMonitorPageReqVO pageReqVO) {
-        return carChargeMonitorMapper.selectPage(pageReqVO);
+    public PageResult<CarChargeMonitorRespVO> getCarChargeMonitorPage(CarChargeMonitorPageReqVO pageReqVO) {
+        // 创建分页对象
+        Page<CarChargeMonitorRespVO> mpPage = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+
+        // 调用Mapper的关联查询方法
+        Page<CarChargeMonitorRespVO> resultPage = carChargeMonitorMapper.selectPageWithJoin(mpPage, pageReqVO);
+
+        // 直接构造PageResult
+        return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
+    }
+
+    @Override
+    public CarChargeMonitorLocationRespVO getCarChargeMonitorLocation(Long id) {
+        // 校验记录是否存在
+        validateCarChargeMonitorExists(id);
+
+        // 从数据库查询定位信息（包含经度、纬度、场站名称）
+        CarChargeMonitorLocationRespVO locationRespVO = carChargeMonitorMapper.selectLocationById(id);
+
+        if (locationRespVO == null) {
+            throw exception(CAR_CHARGE_MONITOR_NOT_EXISTS);
+        }
+
+        // 在Controller层模拟deviceCode字段
+        // 这里不设置deviceCode，留给Controller层处理
+        return locationRespVO;
+    }
+
+    @Override
+    public void alarmCarChargeMonitor(CarChargeMonitorAlarmReqVO alarmReqVO) {
+        // 1. 校验记录是否存在
+        validateCarChargeMonitorExists(alarmReqVO.getId());
+
+        // 2. 更新告警备注
+        CarChargeMonitorDO updateObj = new CarChargeMonitorDO();
+        updateObj.setId(alarmReqVO.getId());
+        updateObj.setAlarmRemark(alarmReqVO.getAlarmRemark());
+        carChargeMonitorMapper.updateById(updateObj);
+    }
+
+    @Override
+    public CarChargeMonitorChartRespVO getCarChargeMonitorChart(CarChargeMonitorChartReqVO reqVO) {
+        CarChargeMonitorChartRespVO result = new CarChargeMonitorChartRespVO();
+
+        // 1. 获取地图数据
+        List<CarChargeMonitorChartRespVO.MapData> mapDataList = carChargeMonitorMapper.selectMapData(reqVO);
+        result.setMapData(mapDataList);
+
+        // 2. 获取趋势数据
+        List<CarChargeMonitorChartRespVO.TrendData> trendDataList = carChargeMonitorMapper.selectTrendData(reqVO);
+        result.setTrendData(trendDataList);
+
+        // 3. 获取卡片数据
+        CarChargeMonitorChartRespVO.CardData cardData = carChargeMonitorMapper.selectCardData(reqVO);
+        result.setCardData(cardData);
+
+        return result;
     }
 
 }

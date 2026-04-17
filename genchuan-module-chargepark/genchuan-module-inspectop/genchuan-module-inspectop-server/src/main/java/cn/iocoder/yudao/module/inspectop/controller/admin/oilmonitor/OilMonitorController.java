@@ -83,9 +83,9 @@ public class OilMonitorController {
     @GetMapping("/page")
     @Operation(summary = "获得油车占位监测分页")
     @PreAuthorize("@ss.hasPermission('inspectop:oil-monitor:query')")
-    public CommonResult<List<OilMonitorRespVO>> getOilMonitorPage(@Valid OilMonitorPageReqVO pageReqVO) {
+    public CommonResult<PageResult<OilMonitorRespVO>> getOilMonitorPage(@Valid OilMonitorPageReqVO pageReqVO) {
         // 直接返回Service的结果，Service的结果已经是VO
-        List<OilMonitorRespVO> pageResult = oilMonitorService.getOilMonitorPage(pageReqVO);
+        PageResult<OilMonitorRespVO> pageResult = oilMonitorService.getOilMonitorPage(pageReqVO);
         return success(pageResult); // 移除了 BeanUtils.toBean 转换
     }
 
@@ -137,7 +137,7 @@ public class OilMonitorController {
                                       HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         // Service返回的就是List<OilMonitorRespVO>
-        List<OilMonitorRespVO> list = oilMonitorService.getOilMonitorPage(pageReqVO);
+        List<OilMonitorRespVO> list = oilMonitorService.getOilMonitorPage(pageReqVO).getList();
         // 导出 Excel，list现在直接就是VO对象
         ExcelUtils.write(response, "油车占位监测.xls", "数据", OilMonitorRespVO.class, list); // 移除了 BeanUtils.toBean 转换
     }

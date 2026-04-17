@@ -48,7 +48,7 @@ public interface OilMonitorMapper extends BaseMapperX<OilMonitorDO> {
      * @param reqVO 查询条件
      * @return 包含关联信息的结果列表
      */
-    List<OilMonitorRespVO> selectPageWithJoin(@Param("page") Page<OilMonitorRespVO> page,
+    Page<OilMonitorRespVO> selectPageWithJoin(@Param("page") Page<OilMonitorRespVO> page,
                                               @Param("reqVO") OilMonitorPageReqVO reqVO);
 
     // 在 OilMonitorMapper 接口中添加

@@ -81,14 +81,14 @@ public class OilMonitorServiceImpl implements OilMonitorService {
     }
 
     @Override
-    public List<OilMonitorRespVO> getOilMonitorPage(OilMonitorPageReqVO pageReqVO) {
+    public PageResult<OilMonitorRespVO> getOilMonitorPage(OilMonitorPageReqVO pageReqVO) {
         // 创建MyBatis-Plus的分页对象
         Page<OilMonitorRespVO> mpPage = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
 
         // 调用Mapper的自定义关联查询方法
-        List<OilMonitorRespVO> pageResult = oilMonitorMapper.selectPageWithJoin(mpPage, pageReqVO);
+        Page<OilMonitorRespVO> pageResult = oilMonitorMapper.selectPageWithJoin(mpPage, pageReqVO);
 
-        return pageResult;
+        return new PageResult<>(pageResult.getRecords(), pageResult.getTotal());
     }
 
     @Override

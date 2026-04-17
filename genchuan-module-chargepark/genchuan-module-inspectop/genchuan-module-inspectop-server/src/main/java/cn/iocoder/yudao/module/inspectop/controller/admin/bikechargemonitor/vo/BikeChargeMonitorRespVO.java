@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.inspectop.controller.admin.carchargemonitor.vo;
+package cn.iocoder.yudao.module.inspectop.controller.admin.bikechargemonitor.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -8,10 +8,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import cn.idev.excel.annotation.*;
 
-@Schema(description = "巡查巡检 - 汽车充电监测 Response VO")
+@Schema(description = "巡查巡检 - 两轮充电监测 Response VO")
 @Data
 @ExcelIgnoreUnannotated
-public class CarChargeMonitorRespVO {
+public class BikeChargeMonitorRespVO {
 
     @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("主键ID")
