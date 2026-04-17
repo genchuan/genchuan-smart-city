@@ -59,4 +59,11 @@ public interface BehaviorMgmtService {
      */
     PageResult<BehaviorMgmtDO> getBehaviorMgmtPage(BehaviorMgmtPageReqVO pageReqVO);
 
+    boolean audit(@Valid BehaviorMgmtAuditReqVO auditReqVO);
+
+    boolean cancel(@Valid BehaviorMgmtCancelReqVO reqVO);
+
+    BehaviorMgmtChartRespVO chart(@Valid BehaviorMgmtChartReqVO reqVO);
+
+    BehaviorMgmtAttendanceCountRespVO attendanceCount(@Valid BehaviorMgmtAttendanceCountReqVO reqVO);
 }

@@ -9,4 +9,96 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="selectTotalCount" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM behavior_mgmt
+        WHERE deleted=0
+        <if test="status != null and status != '' ">
+            AND status = #{status}
+        </if>
+        <if test="leaveType != null and leaveType != '' ">
+            AND leave_type = #{leaveType}
+        </if>
+        <if test="attendanceSync != null and attendanceSync != '' ">
+            AND attendance_sync = #{attendanceSync}
+        </if>
+        <if test="startDateTime != null">
+            AND create_time >= #{startDateTime} and create_time <![CDATA[ <= ]]> #{endDateTime}
+        </if>
+    </select>
+
+    <select id="selectLeaveTypeCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT leave_type AS name, COUNT(1) AS count FROM behavior_mgmt
+        WHERE deleted=0
+        <if test="startDateTime != null">
+            AND create_time >= #{startDateTime} and create_time <![CDATA[ <= ]]> #{endDateTime}
+        </if>
+        GROUP BY leave_type
+    </select>
+    <select id="selectLeaveTypeCountByClassName" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT leave_type AS name, COUNT(1) AS count
+        FROM `behavior_mgmt` AS b LEFT JOIN student_info AS s ON b.student_id = s.id
+        WHERE b.deleted=0
+        <if test="startDateTime != null">
+            AND b.create_time >= #{startDateTime} and b.create_time <![CDATA[ <= ]]> #{endDateTime}
+        </if>
+        <if test="className != null and className != '' ">
+            AND s.class_name = #{className}
+        </if>
+        GROUP BY b.leave_type
+    </select>
+    <select id="selectDailyLeaveTrend" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT DATE_FORMAT(create_time, '%Y-%m-%d') AS name, COUNT(1) AS count FROM behavior_mgmt
+        WHERE deleted=0
+        <if test="startDateTime != null">
+            AND create_time >= #{startDateTime} and create_time <![CDATA[ <= ]]> #{endDateTime}
+        </if>
+        GROUP BY name
+        ORDER BY name
+    </select>
+    <select id="selectDailyLeaveTrendByClassName" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT DATE_FORMAT(b.create_time, '%Y-%m-%d') AS name, COUNT(1) AS count
+        FROM `behavior_mgmt` AS b LEFT JOIN student_info AS s ON b.student_id = s.id
+        WHERE b.deleted=0
+        <if test="startDateTime != null">
+            AND b.create_time >= #{startDateTime} and b.create_time <![CDATA[ <= ]]> #{endDateTime}
+        </if>
+        <if test="className != null and className != '' ">
+            AND s.class_name = #{className}
+        </if>
+        GROUP BY name, b.create_time
+        ORDER BY name
+    </select>
+<!--    查询班级请假次数-->
+    <!--<select id="selectTotalCountByClassName" resultType="java.lang.Integer">
+        SELECT COUNT(1)  FROM `behavior_mgmt` AS b LEFT JOIN student_info AS s ON b.student_id = s.id
+        WHERE b.deleted=0
+        <if test="status != null and status != '' ">
+            AND b.status = #{status}
+        </if>
+        <if test="className != null and className != '' ">
+            AND class_name = #{className}
+        </if>
+        <if test="startDateTime != null">
+            AND b.create_time >= #{startDateTime} and b.create_time <![CDATA[ <= ]]> #{endDateTime}
+        </if>
+    </select>-->
+    <select id="selectTotalCountByClassName" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM behavior_mgmt AS b LEFT JOIN student_info AS s ON b.student_id = s.id
+        WHERE b.deleted=0
+        <if test="status != null and status != '' ">
+            AND b.status = #{status}
+        </if>
+        <if test="leaveType != null and leaveType != '' ">
+            AND b.leave_type = #{leaveType}
+        </if>
+        <if test="attendanceSync != null and attendanceSync != '' ">
+            AND b.attendance_sync = #{attendanceSync}
+        </if>
+        <if test="className != null and className != '' ">
+            AND s.class_name = #{className}
+        </if>
+        <if test="startDateTime != null">
+            AND b.create_time >= #{startDateTime} and b.create_time <![CDATA[ <= ]]> #{endDateTime}
+        </if>
+    </select>
 </mapper>

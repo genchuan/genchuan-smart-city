@@ -101,4 +101,37 @@ public class AidWorkController {
                         BeanUtils.toBean(list, AidWorkRespVO.class));
     }
 
+    @PutMapping("/audit")
+    @Operation(summary = "审核奖助勤贷")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:aid-work:audit')")
+    public CommonResult<Boolean> audit(@Valid @RequestBody AidWorkAuditReqVO reqVO) {
+        boolean isSuccess =aidWorkService.audit(reqVO);
+        return success(isSuccess);
+    }
+
+    @PutMapping("/follow")
+    @Operation(summary = "流程跟进")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:aid-work:follow')")
+    public CommonResult<Boolean> follow(@Valid @RequestBody AidWorkFollowReqVO reqVO) {
+        boolean isSuccess =aidWorkService.follow(reqVO);
+        return success(isSuccess);
+    }
+
+    @PutMapping("/chart")
+    @Operation(summary = "奖助勤贷统计看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:aid-work:chart')")
+    public CommonResult<AidWorkChartRespVO> chart(@Valid @RequestBody AidWorkChartReqVO reqVO) {
+        AidWorkChartRespVO vo = aidWorkService.chart(reqVO);
+        return success(vo);
+    }
+
+    @PutMapping("/chart/applyCount")
+    @Operation(summary = "各类型申请人数 / 办理完成率统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:aid-work:chart')")
+    public CommonResult<List<AidWorkApplyCountRespVO>> applyCount(@Valid @RequestBody AidWorkApplyCountReqVO reqVO) {
+        List<AidWorkApplyCountRespVO> vo = aidWorkService.applyCount(reqVO);
+        return success(vo);
+    }
+
+
 }

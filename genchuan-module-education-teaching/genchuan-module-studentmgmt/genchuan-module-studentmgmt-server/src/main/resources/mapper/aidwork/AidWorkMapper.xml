@@ -9,4 +9,42 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="selectTotalCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT COUNT(1) AS count, sum(apply_amount) total FROM aid_work
+        WHERE deleted = 0
+        <if test="status != null and status != ''">
+            AND status = #{status}
+        </if>
+        <if test="startTime != null">
+            AND create_time >= #{startTime} and create_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+    </select>
+
+    <select id="selectStatusCount" resultType="java.util.Map">
+        SELECT status AS status, COUNT(1) AS count FROM aid_work
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND create_time >= #{startTime} and create_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+        GROUP BY status
+    </select>
+    <select id="selectTypeCount" resultType="java.util.Map">
+        SELECT aid_type AS type, COUNT(1) AS count FROM aid_work
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND create_time >= #{startTime} and create_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+        GROUP BY aid_type
+    </select>
+    <select id="selectStatusCountByType" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT `status` AS status, COUNT(1) AS count FROM aid_work
+        WHERE deleted = 0
+        <if test="type != null and type !='' ">
+            AND aid_type = #{type}
+        </if>
+        <if test="startTime != null">
+            AND create_time >= #{startTime} and create_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+        GROUP BY `status`
+    </select>
 </mapper>

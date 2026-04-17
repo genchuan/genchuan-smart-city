@@ -9,21 +9,18 @@
         <module>genchuan-module-stationresource</module>
         <module>genchuan-module-usermerchant</module>
         <module>genchuan-module-inspectop</module>
+        <module>genchuan-module-marketop</module>
     </modules>
-
+    <description>
+        充电停车一体化管理模块，包含营销运营等功能。
+    </description>
     <parent>
         <groupId>cn.iocoder.cloud</groupId>
         <artifactId>yudao</artifactId>
         <version>${revision}</version>
     </parent>
-
-    <description> <!-- 4. 新增 description 为该模块的描述 -->
-        demo 模块，主要实现 XXX、YYY、ZZZ 等功能0。
-    </description>
-
     <name>genchuan-module-chargepark</name>
     <url>http://maven.apache.org</url>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
