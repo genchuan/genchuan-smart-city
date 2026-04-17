@@ -1,5 +1,3 @@
-CREATE DATABASE `market_op` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
 -- 2.2.1 积分活动表
 CREATE TABLE `point_activity` (
                                   `id`            BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键ID',
