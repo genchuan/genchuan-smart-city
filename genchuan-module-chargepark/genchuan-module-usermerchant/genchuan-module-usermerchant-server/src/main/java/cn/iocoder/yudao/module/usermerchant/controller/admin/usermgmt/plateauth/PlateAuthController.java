@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.plateauth;
 
+import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.usercar.vo.UserCarChartReqVO;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.usercar.vo.UserCarChartRespVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -93,47 +95,54 @@ public class PlateAuthController {
         plateAuthService.batchUpdatePlateAuth(reqVO);
         return success(true);
     }
+
+//    @GetMapping("/chart")
+//    @Operation(summary = "车牌认证统计")
+//    @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:query')")
+//    public CommonResult<PlateAuthChartRespVO> getPlateAuthChart(@Valid PlateAuthChartReqVO chartReqVO) {
+//        return success(plateAuthService.getPlateAuthChart(chartReqVO));
+//    }
 //——————————————————————————————————————————————————————//
-    @PostMapping("/create")
-    @Operation(summary = "创建车牌认证")
-    @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:create')")
-    public CommonResult<Long> createPlateAuth(@Valid @RequestBody PlateAuthSaveReqVO createReqVO) {
-        return success(plateAuthService.createPlateAuth(createReqVO));
-    }
-
-    @PutMapping("/update")
-    @Operation(summary = "更新车牌认证")
-    @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:update')")
-    public CommonResult<Boolean> updatePlateAuth(@Valid @RequestBody PlateAuthSaveReqVO updateReqVO) {
-        plateAuthService.updatePlateAuth(updateReqVO);
-        return success(true);
-    }
-
-    @DeleteMapping("/delete")
-    @Operation(summary = "删除车牌认证")
-    @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:delete')")
-    public CommonResult<Boolean> deletePlateAuth(@RequestParam("id") Long id) {
-        plateAuthService.deletePlateAuth(id);
-        return success(true);
-    }
-
-    @DeleteMapping("/delete-list")
-    @Parameter(name = "ids", description = "编号", required = true)
-    @Operation(summary = "批量删除车牌认证")
-                @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:delete')")
-    public CommonResult<Boolean> deletePlateAuthList(@RequestParam("ids") List<Long> ids) {
-        plateAuthService.deletePlateAuthListByIds(ids);
-        return success(true);
-    }
-
-    @GetMapping("/get")
-    @Operation(summary = "获得车牌认证")
-    @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:query')")
-    public CommonResult<PlateAuthPageRespVO> getPlateAuth(@RequestParam("id") Long id) {
-        PlateAuthDO plateAuth = plateAuthService.getPlateAuth(id);
-        return success(BeanUtils.toBean(plateAuth, PlateAuthPageRespVO.class));
-    }
+//    @PostMapping("/create")
+//    @Operation(summary = "创建车牌认证")
+//    @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:create')")
+//    public CommonResult<Long> createPlateAuth(@Valid @RequestBody PlateAuthSaveReqVO createReqVO) {
+//        return success(plateAuthService.createPlateAuth(createReqVO));
+//    }
+//
+//    @PutMapping("/update")
+//    @Operation(summary = "更新车牌认证")
+//    @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:update')")
+//    public CommonResult<Boolean> updatePlateAuth(@Valid @RequestBody PlateAuthSaveReqVO updateReqVO) {
+//        plateAuthService.updatePlateAuth(updateReqVO);
+//        return success(true);
+//    }
+//
+//    @DeleteMapping("/delete")
+//    @Operation(summary = "删除车牌认证")
+//    @Parameter(name = "id", description = "编号", required = true)
+//    @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:delete')")
+//    public CommonResult<Boolean> deletePlateAuth(@RequestParam("id") Long id) {
+//        plateAuthService.deletePlateAuth(id);
+//        return success(true);
+//    }
+//
+//    @DeleteMapping("/delete-list")
+//    @Parameter(name = "ids", description = "编号", required = true)
+//    @Operation(summary = "批量删除车牌认证")
+//                @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:delete')")
+//    public CommonResult<Boolean> deletePlateAuthList(@RequestParam("ids") List<Long> ids) {
+//        plateAuthService.deletePlateAuthListByIds(ids);
+//        return success(true);
+//    }
+//
+//    @GetMapping("/get")
+//    @Operation(summary = "获得车牌认证")
+//    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+//    @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:query')")
+//    public CommonResult<PlateAuthPageRespVO> getPlateAuth(@RequestParam("id") Long id) {
+//        PlateAuthDO plateAuth = plateAuthService.getPlateAuth(id);
+//        return success(BeanUtils.toBean(plateAuth, PlateAuthPageRespVO.class));
+//    }
 
 }
