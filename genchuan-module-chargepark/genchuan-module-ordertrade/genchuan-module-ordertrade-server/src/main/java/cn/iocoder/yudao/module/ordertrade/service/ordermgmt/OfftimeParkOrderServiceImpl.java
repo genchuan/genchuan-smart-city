@@ -110,6 +110,7 @@ public class OfftimeParkOrderServiceImpl implements OfftimeParkOrderService {
         RefundApplyDO apply = new RefundApplyDO();
         apply.setApplicantId(SecurityFrameworkUtils.getLoginUserId());
         apply.setApplyNo(OrderUtils.generateRefundNo());
+        apply.setOrderId(reqVO.getId());
         apply.setRefundAmount(order.getAmount());
         apply.setRefundReason(reqVO.getRemark() != null ? reqVO.getRemark() : "申请退款");
         apply.setApplyTime(LocalDateTime.now());
