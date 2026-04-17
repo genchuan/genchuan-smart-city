@@ -9,4 +9,51 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+<!--    宿舍考勤预警看板-->
+    <select id="selectTotalCount" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM `dorm_check`
+        WHERE deleted =0
+        <if test="startDateTime != null">
+            AND check_time >= #{startDateTime}
+            AND check_time <![CDATA[ <= ]]> #{endDateTime}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="abnormalType != null">
+            AND abnormal_type = #{abnormalType}
+        </if>
+        <if test="checkStatus != null">
+            AND check_status = #{checkStatus}
+        </if>
+
+    </select>
+
+<!--    统计考勤异常数-->
+    <select id="selectAbnormalCount" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM `dorm_check`
+        WHERE deleted =0
+        <if test="startDateTime != null">
+            AND check_time >= #{startDateTime}
+            AND check_time <![CDATA[ <= ]]> #{endDateTime}
+        </if>
+        <if test="checkStatus != null">
+            AND check_status != #{checkStatus}
+        </if>
+
+    </select>
+    <select id="selectAbnormalCountByClassName" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM `dorm_check`
+        WHERE deleted =0
+        <if test="startDateTime != null">
+            AND check_time >= #{startDateTime}
+            AND check_time <![CDATA[ <= ]]> #{endDateTime}
+        </if>
+        <if test="checkStatus != null">
+            AND check_status != #{checkStatus}
+        </if>
+        <if test="className != null">
+            AND className = #{className}
+        </if>
+    </select>
 </mapper>

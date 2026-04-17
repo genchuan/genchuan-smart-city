@@ -118,8 +118,8 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
     public boolean consult(MentalMgmtConsultReqVO reqVO, LoginUser user) {
         MentalMgmtDO mentalMgmtDO = validateMentalMgmtExists(reqVO.getId());
         if (mentalMgmtDO.getConsultTime() != null) {
-            LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
-            String username = loginUser != null ? String.valueOf(loginUser.getId()) : null;
+//            LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
+//            String username = SecurityFrameworkUtils.getLoginUserNickname();
             LocalDateTime now = LocalDateTime.now();
             mentalMgmtDO.setConsultTime(LocalDateTimeUtils.parse(reqVO.getConsultTime()));
             mentalMgmtDO.setUpdateTime(now);
@@ -133,7 +133,6 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
             // 记录操作日志上下文
             LogRecordContext.putVariable("mental", mentalMgmtDO);
             LogRecordContext.putVariable("studentName", studentName);
-            LogRecordContext.putVariable("username", username);
             return true;
         }
 
@@ -146,10 +145,10 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
     public boolean intervene(@Valid MentalMgmtInterveneReqVO reqVO) {
         MentalMgmtDO mentalMgmtDO = validateMentalMgmtExists(reqVO.getId());
         if (mentalMgmtDO.getConsultTime() != null) {
-            LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
-            String username = loginUser != null ? String.valueOf(loginUser.getId()) : null;
+//            LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
+            String username = SecurityFrameworkUtils.getLoginUserNickname();
             LocalDateTime now = LocalDateTime.now();
-            mentalMgmtDO.setConsultTime(LocalDateTimeUtils.parse(reqVO.getInterveneTime()));
+            mentalMgmtDO.setConsultTime(reqVO.getInterveneTime());
             mentalMgmtDO.setUpdateTime(now);
             // 查询所有学生的姓名
             StudentInfoDO studentInfoDO = studentInfoMapper.selectById(mentalMgmtDO.getStudentId());
@@ -161,7 +160,8 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
             // 记录操作日志上下文
             LogRecordContext.putVariable("mental", mentalMgmtDO);
             LogRecordContext.putVariable("studentName", studentName);
-            LogRecordContext.putVariable("username", username);
+//            System.out.println("optionUsername: " + username);
+//            LogRecordContext.putVariable("optionUsername", "admin");
             return true;
         }
 
@@ -174,8 +174,8 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
     public boolean updateStatus(MentalMgmtUpdateStatusReqVO reqVO) {
         MentalMgmtDO mentalMgmtDO = validateMentalMgmtExists(reqVO.getId());
         if (mentalMgmtDO.getConsultTime() != null) {
-            LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
-            String username = loginUser != null ? String.valueOf(loginUser.getId()) : null;
+//            LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
+            String username = SecurityFrameworkUtils.getLoginUserNickname();
             LocalDateTime now = LocalDateTime.now();
             mentalMgmtDO.setUpdateTime(now);
             // 查询所有学生的姓名

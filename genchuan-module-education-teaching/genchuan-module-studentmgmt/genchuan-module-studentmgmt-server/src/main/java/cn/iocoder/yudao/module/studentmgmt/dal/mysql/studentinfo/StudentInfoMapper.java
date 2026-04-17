@@ -85,4 +85,9 @@ public interface StudentInfoMapper extends BaseMapperX<StudentInfoDO> {
 
     List<StudentInfoBaseVO> selectBaseInfoList();
 
+    List<String> selectAllGrade();
+
+    List<String> selectAllClass(@Param("grade") String grade);
+
+
 }

@@ -74,16 +74,62 @@ public interface LogRecordConstants {
     String MENTAL_CREATE_SUCCESS = "创建了{{#studentName}}的心理";
     String MENTAL_UPDATE_SUB_TYPE = "更新心理";
     String MENTAL_UPDATE_SUCCESS = "更新了心理【{{#mental.studentId}}】: {_DIFF{#updateReqVO}}";
-    String MENTAL_WARN_SUB_TYPE = "预警心理";
-    String MENTAL_WARN_SUCCESS = "更新了心理【{{#studentName}}】的预警状态为【{{#status ? '已预警' : '未预警'}}】";
     String MENTAL_CONSULT_SUB_TYPE = "预约心理";
-    String MENTAL_CONSULT_SUCCESS = "【{{username}}】预约了【{{#studentName}}】心理";
+    String MENTAL_CONSULT_SUCCESS = "预约了【{{#studentName}}】心理";
 
     String MENTAL_INTERVENE_SUB_TYPE = "跟进心理";
-    String MENTAL_INTERVENE_SUCCESS = "【{{username}}】跟进了【{{#studentName}}】心理";
+    String MENTAL_INTERVENE_SUCCESS = "跟进了【{{#studentName}}】心理";
 
     String MENTAL_UPDATE_STATUS_SUB_TYPE = "更新心理状态";
     String MENTAL_UPDATE_STATUS_SUCCESS = "更新了心理状态【{{#studentName}}】为【{{{#status}}】";
+
+
+    // ======================= behavior 行为管理 =======================
+
+    String BEHAVIOR_TYPE = "STUDENT 行为管理";
+    String BEHAVIOR_CREATE_SUB_TYPE = "创建行为";
+    String BEHAVIOR_CREATE_SUCCESS = "创建了{{#studentName}}的行为";
+    String BEHAVIOR_UPDATE_SUB_TYPE = "更新行为";
+    String BEHAVIOR_UPDATE_SUCCESS = "更新了行为【{{#behavior.studentId}}】: {_DIFF{#updateReqVO}}";
+    String BEHAVIOR_AUDIT_SUB_TYPE = "预警行为";
+    String BEHAVIOR_AUDIT_SUCCESS = "审核了行为";;
+    String BEHAVIOR_CANCEL_SUB_TYPE = "取消行为";
+    String BEHAVIOR_CANCEL_SUCCESS = "取消了行为";
+
+    // ======================= FundSystem 资助系统管理 =======================
+
+    String FUND_SYSTEM_TYPE = "STUDENT 资助系统管理";
+    String FUND_SYSTEM_CREATE_SUB_TYPE = "创建资助系统";
+    String FUND_SYSTEM_CREATE_SUCCESS = "创建了{{#studentName}}的资助系统";
+    String FUND_SYSTEM_UPDATE_SUB_TYPE = "更新资助系统";
+    String FUND_SYSTEM_UPDATE_SUCCESS = "更新了资助系统【{{#behavior.studentId}}】: {_DIFF{#updateReqVO}}";
+    String FUND_SYSTEM_AUDIT_SUB_TYPE = "预警资助系统";
+    String FUND_SYSTEM_AUDIT_SUCCESS = "资助系统审核成功";;
+
+    // ======================= club 社团管理 =======================
+    String CLUB_TYPE = "STUDENT 社团管理";
+    String CLUB_CREATE_SUB_TYPE = "创建社团";
+    String CLUB_CREATE_SUCCESS = "创建了{{club.clubName}}的社团";
+    String CLUB_UPDATE_SUB_TYPE = "更新社团";
+    String CLUB_UPDATE_SUCCESS = "更新了社团【{{#club.clubName}}】: {_DIFF{#updateReqVO}}";
+    String CLUB_AUDIT_SUB_TYPE = "审核社团";
+    String CLUB_AUDIT_SUCCESS = "审核了社团";
+
+    // ======================= Aid 奖助勤贷 =======================
+
+    String AID_TYPE = "奖助勤贷管理";
+    String AID_CREATE_SUB_TYPE = "创建奖助勤贷";
+    String AID_CREATE_SUCCESS = "创建了{{#aid.studentId}}的奖助勤贷";
+    String AID_UPDATE_SUB_TYPE = "更新奖助勤贷";
+    String AID_UPDATE_SUCCESS = "【{{#aid.auditUser}}】更新了学生【{{#aid.studentId}}】: {_DIFF{#updateReqVO}}奖助勤贷";
+    String AID_DELETE_SUB_TYPE = "删除奖助勤贷";
+    String AID_DELETE_SUCCESS = "删除了奖助勤贷【{{#aid.studentId}}】";
+    String AID_FOLLOW_SUB_TYPE = "跟进奖助勤贷";
+    String AID_FOLLOW_SUCCESS = "跟进了奖助勤贷【{{#aid.id}}】";
+    String AID_EXPORT_SUB_TYPE = "导出奖助勤贷";
+    String AID_EXPORT_SUCCESS = "导出了奖助勤贷";
+    String AID_AUDIT_SUB_TYPE = "审核奖助勤贷";
+    String AID_AUDIT_SUCCESS = "学生【{{#aid.studentId}}】奖助勤贷的审核状态为【{{#status ? '已审核' : '未审核'}}】";
 
 
 }

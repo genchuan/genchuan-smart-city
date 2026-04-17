@@ -98,4 +98,16 @@
         FROM student_info
         WHERE deleted = 0
     </select>
+
+
+    <select id="selectAllGrade" resultType="java.lang.String">
+        SELECT DISTINCT grade FROM student_info WHERE deleted = 0
+    </select>
+
+    <select id="selectAllClass" resultType="java.lang.String">
+        SELECT DISTINCT class_name FROM student_info WHERE deleted = 0
+        <if test="grade != null and grade != '' ">
+            AND grade = #{grade}
+        </if>
+    </select>
 </mapper>

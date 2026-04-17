@@ -59,4 +59,9 @@ public interface FundSystemService {
      */
     PageResult<FundSystemDO> getFundSystemPage(FundSystemPageReqVO pageReqVO);
 
+    boolean audit(@Valid FundSystemAuditReqVO reqVO);
+
+    FundSystemChartRespVO chart(@Valid FundSystemChartReqVO reqVO);
+
+    FundSystemFundCountRespVO fundCount(@Valid FundSystemFundCountReqVO reqVO);
 }

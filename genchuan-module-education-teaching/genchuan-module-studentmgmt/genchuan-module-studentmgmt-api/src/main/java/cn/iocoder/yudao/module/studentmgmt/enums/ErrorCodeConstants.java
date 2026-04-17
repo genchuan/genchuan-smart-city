@@ -14,7 +14,7 @@ public interface ErrorCodeConstants {
     // =============================================== 学 生 管 理 模 块 ==================================================
     // =============================================================================================================
 
-
+    ErrorCode DEPT_NOT_EXISTS = new ErrorCode(500, "班级（部门）不存在");
 
     // ========== 学生信息管理 ==========
     ErrorCode STUDENT_INFO_NOT_EXISTS = new ErrorCode(500, "学生信息管理不存在");
@@ -87,5 +87,6 @@ public interface ErrorCodeConstants {
     ErrorCode TARGET_MGMT_NOT_EXISTS = new ErrorCode(500, "指标管理不存在");
     // ========== 就诊管理 ==========
     ErrorCode TREAT_MGMT_NOT_EXISTS = new ErrorCode(500, "就诊管理不存在");
-
+    // ========== 社团管理  ==========
+    ErrorCode CLUB_MGMT_NOT_EXISTS = new ErrorCode(500, "社团管理不存在");
 }

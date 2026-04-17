@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.studentmgmt.dal.mysql.dormcheck;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -8,6 +9,7 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.dormcheck.DormCheckDO;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.dormcheck.vo.*;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 宿舍考勤 Mapper
@@ -35,4 +37,10 @@ public interface DormCheckMapper extends BaseMapperX<DormCheckDO> {
                 .orderByDesc(DormCheckDO::getId));
     }
 
+    Integer selectTotalCount(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime,
+                             @Param("status") String status, @Param("checkStatus") String checkStatus, @Param("abnormalType") String abnormalType);
+
+    Integer selectAbnormalCount(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime, @Param("checkStatus") String checkStatus);
+
+    Integer selectAbnormalCountByClassName(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime, @Param("status") String status, @Param("className") String className);
 }
