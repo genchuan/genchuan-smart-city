@@ -6,8 +6,10 @@ import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.vo.UserInfoChartRespVO;
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.usermgmt.userinfo.UserInfoMapper;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.NameQueryHelper;
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -170,6 +172,29 @@ public class PlateAuthServiceImpl implements PlateAuthService {
     @Override
     public PlateAuthDO getPlateAuth(Long id) {
         return plateAuthMapper.selectById(id);
+    }
+
+    @Override
+    public PlateAuthChartRespVO getPlateAuthChart(PlateAuthChartReqVO chartReqVO) {
+        PlateAuthChartRespVO chartRespVO = new PlateAuthChartRespVO();
+        //拆分时间范围
+        String timeRange = chartReqVO.getTimeRange();
+
+        // 解析时间范围，获取开始时间、结束时间以及分组类型（日/月/年）
+        TimeRangeParser.TimeRangeParsed parsed = TimeRangeParser.parse(timeRange);
+        if (parsed == null) {
+            // 若解析失败，可返回空数据或抛异常
+            return chartRespVO;
+        }
+        //折线图渲染
+        List<PlateAuthChartRespVO.AuthTrendVO> authTrend = plateAuthMapper.selectAuthTrend(
+                parsed.getStart(), parsed.getEnd(), parsed.getGranularity());
+        chartRespVO.setAuthTrend(authTrend);
+        //总数统计
+        chartRespVO.setAuthCount(plateAuthMapper.selectAuthCount(parsed.getStart(), parsed.getEnd()));
+        // 计算比率
+        chartRespVO.setAuthPassRate(plateAuthMapper.selectAuthPassRate(parsed.getStart(), parsed.getEnd()));
+        return chartRespVO;
     }
 
     /**

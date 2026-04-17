@@ -96,12 +96,12 @@ public class PlateAuthController {
         return success(true);
     }
 
-//    @GetMapping("/chart")
-//    @Operation(summary = "车牌认证统计")
-//    @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:query')")
-//    public CommonResult<PlateAuthChartRespVO> getPlateAuthChart(@Valid PlateAuthChartReqVO chartReqVO) {
-//        return success(plateAuthService.getPlateAuthChart(chartReqVO));
-//    }
+    @GetMapping("/chart")
+    @Operation(summary = "车牌认证统计")
+    @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:query')")
+    public CommonResult<PlateAuthChartRespVO> getPlateAuthChart(@Valid PlateAuthChartReqVO chartReqVO) {
+        return success(plateAuthService.getPlateAuthChart(chartReqVO));
+    }
 //——————————————————————————————————————————————————————//
 //    @PostMapping("/create")
 //    @Operation(summary = "创建车牌认证")
