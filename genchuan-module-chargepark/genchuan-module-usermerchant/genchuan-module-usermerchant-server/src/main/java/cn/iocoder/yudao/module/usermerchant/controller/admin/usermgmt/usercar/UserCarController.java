@@ -68,7 +68,7 @@ public class UserCarController {
         return success(userCarService.importUserCar(list, updateSupport));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出用户车辆")
     @PreAuthorize("@ss.hasPermission('usermerchant:user-car:export')")
     @ApiAccessLog(operateType = EXPORT)
@@ -128,6 +128,13 @@ public class UserCarController {
     public CommonResult<Boolean> updateUserCar(@Valid @RequestBody UserCarUpdateReqVO updateReqVO) {
         userCarService.updateUserCar(updateReqVO);
         return success(true);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "用户车辆统计")
+    @PreAuthorize("@ss.hasPermission('usermerchant:user-car:query')")
+    public CommonResult<UserCarChartRespVO> getUserCarChart(@Valid UserCarChartReqVO chartReqVO) {
+        return success(userCarService.getUserCarChart(chartReqVO));
     }
 
 }

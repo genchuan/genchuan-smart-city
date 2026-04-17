@@ -110,10 +110,10 @@ public class UserInfoController {
         return success(true);
     }
 
-    @PutMapping("/chart")
+    @GetMapping("/chart")
     @Operation(summary = "用户信息统计")
     @PreAuthorize("@ss.hasPermission('usermerchant:user-info:query')")
-    public CommonResult<UserInfoChartRespVO> getUserInfoChart(@Valid @RequestBody UserInfoChartReqVO chartReqVO) {
+    public CommonResult<UserInfoChartRespVO> getUserInfoChart(@Valid UserInfoChartReqVO chartReqVO) {
         return success(userInfoService.getUserInfoChart(chartReqVO));
     }
 

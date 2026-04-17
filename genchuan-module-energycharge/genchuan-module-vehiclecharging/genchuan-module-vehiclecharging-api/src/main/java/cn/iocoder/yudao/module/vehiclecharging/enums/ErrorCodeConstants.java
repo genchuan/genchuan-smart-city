@@ -56,5 +56,7 @@ public interface ErrorCodeConstants {
 
     // ========== 结算单==========
     ErrorCode SETTLEMENT_BILL_NOT_EXISTS = new ErrorCode(500, "结算单不存在");
-
+    // ========== 分账报表==========
+    ErrorCode SHARING_REPORT_NOT_EXISTS = new ErrorCode(500, "结算单不存在");
+    ErrorCode ILLEGAL_TIME_FORMAT = new ErrorCode(500, "非法时间格式");
 }

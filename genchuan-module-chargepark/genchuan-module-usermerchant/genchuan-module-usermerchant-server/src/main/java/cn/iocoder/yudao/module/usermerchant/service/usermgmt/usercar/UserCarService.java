@@ -58,4 +58,12 @@ public interface UserCarService {
      * @param ids,updateSupport 用户信息
      */
     void auditUserCar(@NotEmpty(message = "用户ID列表不能为空") List<Long> ids, String remark, String status);
+
+    /**
+     * 用户车辆统计可视化
+     *
+     * @param chartReqVO 时间范围
+     * @return 统计信息
+     */
+    UserCarChartRespVO getUserCarChart(@Valid UserCarChartReqVO chartReqVO);
 }
