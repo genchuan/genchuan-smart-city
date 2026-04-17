@@ -1,0 +1,117 @@
+package cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity;
+
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.*;
+import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointActivityDO;
+import cn.iocoder.yudao.module.chargepark.marketop.service.pointactivity.pointactivity.PointActivityService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+@Tag(name = "管理后台 - 积分活动列表")
+@RestController
+@RequestMapping("/marketop/point-activity")
+public class PointActivityController {
+
+    @Resource
+    private PointActivityService pointActivityService;
+
+    @GetMapping("/page")
+    @Operation(summary = "获得积分活动分页")
+    @PreAuthorize("@ss.hasPermission('marketop:point-activity:query')")
+    public CommonResult<PageResult<PointActivityRespVO>> getPage(PointActivityPageReqVO reqVO) {
+        PageResult<PointActivityDO> pageResult = pointActivityService.getPage(reqVO);
+        return CommonResult.success(BeanUtils.toBean(pageResult, PointActivityRespVO.class));
+    }
+
+    @GetMapping("/get")
+    @Operation(summary = "获得积分活动详情")
+    @Parameter(name = "id", description = "主键ID", required = true)
+    @PreAuthorize("@ss.hasPermission('marketop:point-activity:query')")
+    public CommonResult<PointActivityRespVO> get(@RequestParam("id") Long id) {
+        PointActivityDO pointActivity = pointActivityService.get(id);
+        return CommonResult.success(BeanUtils.toBean(pointActivity, PointActivityRespVO.class));
+    }
+
+    @PostMapping("/create")
+    @Operation(summary = "创建积分活动")
+    @PreAuthorize("@ss.hasPermission('marketop:point-activity:create')")
+    public CommonResult<Long> create(@Valid @RequestBody PointActivityCreateReqVO reqVO) {
+        return CommonResult.success(pointActivityService.create(reqVO));
+    }
+
+    @PutMapping("/update")
+    @Operation(summary = "更新积分活动")
+    @PreAuthorize("@ss.hasPermission('marketop:point-activity:update')")
+    public CommonResult<Boolean> update(@Valid @RequestBody PointActivityUpdateReqVO reqVO) {
+        pointActivityService.update(reqVO);
+        return CommonResult.success(true);
+    }
+
+    @PutMapping("/enable")
+    @Operation(summary = "生效积分活动")
+    @PreAuthorize("@ss.hasPermission('marketop:point-activity:update')")
+    public CommonResult<Boolean> enable(@RequestParam("id") Long id) {
+        pointActivityService.enable(id);
+        return CommonResult.success(true);
+    }
+
+    @PutMapping("/pause")
+    @Operation(summary = "暂停积分活动")
+    @PreAuthorize("@ss.hasPermission('marketop:point-activity:update')")
+    public CommonResult<Boolean> pause(@RequestParam("id") Long id) {
+        pointActivityService.pause(id);
+        return CommonResult.success(true);
+    }
+
+    @GetMapping("/get-import-template")
+    @Operation(summary = "获得导入积分活动模板")
+    public void importTemplate(HttpServletResponse response) throws IOException {
+        List<PointActivityImportExcelVO> list = Arrays.asList(
+                PointActivityImportExcelVO.builder().name("新用户注册赠分").type("1").startTime("2024-01-01 00:00:00").endTime("2024-12-31 23:59:59").rule("注册即送100积分").description("新年活动").stationIds("1,2").build(),
+                PointActivityImportExcelVO.builder().name("消费返积分").type("2").startTime("2024-01-01 00:00:00").endTime("2024-06-30 23:59:59").rule("消费1元返1积分").description("消费返积分活动").stationIds("1").build()
+        );
+        ExcelUtils.write(response, "积分活动导入模板.xls", "积分活动列表", PointActivityImportExcelVO.class, list);
+    }
+
+    @PostMapping("/import")
+    @Operation(summary = "导入积分活动")
+    @PreAuthorize("@ss.hasPermission('marketop:point-activity:import')")
+    public CommonResult<Boolean> importExcel(@RequestParam("file") MultipartFile file) throws Exception {
+        List<PointActivityImportExcelVO> list = ExcelUtils.read(file, PointActivityImportExcelVO.class);
+        pointActivityService.importPointActivityList(list);
+        return CommonResult.success(true);
+    }
+
+    @GetMapping("/export")
+    @Operation(summary = "导出积分活动")
+    @PreAuthorize("@ss.hasPermission('marketop:point-activity:query')")
+    public void export(PointActivityPageReqVO reqVO, HttpServletResponse response) throws IOException {
+        reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        PageResult<PointActivityDO> pageResult = pointActivityService.getPage(reqVO);
+        List<PointActivityRespVO> list = BeanUtils.toBean(pageResult.getList(), PointActivityRespVO.class);
+        ExcelUtils.write(response, "积分活动.xlsx", "数据", PointActivityRespVO.class, list);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "积分活动图表统计")
+    @PreAuthorize("@ss.hasPermission('marketop:point-activity:query')")
+    public CommonResult<PointActivityChartRespVO> getChart(@RequestParam(value = "timeRange", required = false) String timeRange) {
+        return CommonResult.success(pointActivityService.getChart(timeRange));
+    }
+
+}

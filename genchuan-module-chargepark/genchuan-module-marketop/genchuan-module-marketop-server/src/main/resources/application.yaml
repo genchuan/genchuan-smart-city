@@ -1,0 +1,168 @@
+spring:
+  application:
+    name: marketop-server
+
+  profiles:
+    active: local
+
+  main:
+    allow-circular-references: true
+    allow-bean-definition-overriding: true
+
+  config:
+    import:
+      - optional:classpath:application-${spring.profiles.active}.yaml
+      - optional:nacos:${spring.application.name}-${spring.profiles.active}.yaml
+
+  # Servlet 配置
+  servlet:
+    multipart:
+      max-file-size: 16MB
+      max-request-size: 32MB
+
+  # Jackson 配置项
+  jackson:
+    serialization:
+      write-dates-as-timestamps: true
+      write-date-timestamps-as-nanoseconds: false
+      write-durations-as-timestamps: true
+      fail-on-empty-beans: false
+
+  # Cache 配置项
+  cache:
+    type: REDIS
+    redis:
+      time-to-live: 1h
+
+server:
+  port: 58091
+
+logging:
+  file:
+    name: ${user.home}/logs/${spring.application.name}.log
+
+--- #################### 接口文档配置 ####################
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui
+  default-flat-param-object: true
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+# MyBatis Plus 的配置项
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  mapper-locations: classpath*:mapper/**/*.xml
+  global-config:
+    db-config:
+      id-type: AUTO
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+    banner: false
+  type-aliases-package: cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject
+  encryptor:
+    password: XDV71a+xqStEA3WH
+
+mybatis-plus-join:
+  banner: false
+
+# Spring Data Redis 配置
+spring:
+  data:
+    redis:
+      repositories:
+        enabled: false
+
+# VO 转换（数据翻译）相关
+easy-trans:
+  is-enable-global: false
+
+--- #################### RPC 远程调用相关配置 ####################
+
+--- #################### 消息队列相关 ####################
+
+# rocketmq 配置项
+rocketmq:
+  producer:
+    group: ${spring.application.name}_PRODUCER
+
+spring:
+  kafka:
+    producer:
+      acks: 1
+      retries: 3
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      auto-offset-reset: earliest
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: '*'
+    listener:
+      missing-topics-fatal: false
+
+--- #################### 定时任务相关配置 ####################
+
+#xxl:
+#  job:
+#    executor:
+#      appname: ${spring.application.name} # 执行器 AppName
+#      logpath: ${user.home}/logs/xxl-job/${spring.application.name} # 执行器运行日志文件存储磁盘路径
+#    accessToken: default_token # 执行器通讯TOKEN
+# 临时禁用
+xxl:
+  job:
+    enabled: false  # 先禁用，让服务能启动
+
+--- #################### 芋道相关配置 ####################
+
+yudao:
+  info:
+    version: 1.0.0
+    base-package: cn.iocoder.yudao.module.chargepark.marketop
+  web:
+    admin-ui:
+      url: http://dashboard.yudao.iocoder.cn
+  xss:
+    enable: false
+    exclude-urls:
+      - ${spring.boot.admin.context-path}/**
+      - ${management.endpoints.web.base-path}/**
+  websocket:
+    enable: true
+    path: /data/ws
+    sender-type: local
+    sender-rocketmq:
+      topic: ${spring.application.name}-websocket
+      consumer-group: ${spring.application.name}-websocket-consumer
+    sender-rabbitmq:
+      exchange: ${spring.application.name}-websocket-exchange
+      queue: ${spring.application.name}-websocket-queue
+    sender-kafka:
+      topic: ${spring.application.name}-websocket
+      consumer-group: ${spring.application.name}-websocket-consumer
+  swagger:
+    title: 营销运营模块
+    description: 提供积分活动、优惠活动、卡种管理、兑换管理、决策分析等功能
+    version: ${yudao.info.version}
+  codegen:
+    base-package: cn.iocoder.yudao
+    db-schemas: ${spring.datasource.dynamic.datasource.master.name}
+    front-type: 20
+    vo-type: 10
+    delete-batch-enable: true
+    unit-test-enable: false
+  tenant:
+    enable: true
+    ignore-urls:
+    ignore-tables:
+
+debug: false
