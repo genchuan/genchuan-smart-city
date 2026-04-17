@@ -18,7 +18,7 @@ public class DutyMgmtSaveReqVO {
 
     @Schema(description = "值班日期", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "值班日期不能为空")
-    private LocalDate dutyDate;
+    private LocalDate[] dutyDate;
 
     @Schema(description = "值班人", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotEmpty(message = "值班人不能为空")
