@@ -137,6 +137,10 @@ public interface LogRecordConstants {
     String DUTY_TYPE = "值班管理";
     String DUTY_CREATE_SUB_TYPE = "排班";
     String DUTY_CREATE_SUCCESS = "排班了【{{#reqVO.dutyUser}}】的值班{{#total}}天";
+    String DUTY_UPDATE_SUB_TYPE = "更新排班";
+    String DUTY_UPDATE_SUCCESS = "更新排班【{{#updateReqVO.dutyUser}}】的值班";
+
+
     String DUTY_CHECK_IN_SUB_TYPE = "打卡";
     String DUTY_CHECK_IN_SUCCESS = "【{{#duty.dutyUser}}】打卡了值班";
 

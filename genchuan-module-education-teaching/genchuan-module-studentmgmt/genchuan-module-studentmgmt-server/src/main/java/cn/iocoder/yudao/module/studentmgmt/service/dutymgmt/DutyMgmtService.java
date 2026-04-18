@@ -26,7 +26,7 @@ public interface DutyMgmtService {
      *
      * @param updateReqVO 更新信息
      */
-    void updateDutyMgmt(@Valid DutyMgmtSaveReqVO updateReqVO);
+    void updateDutyMgmt(@Valid DutyMgmtUpdateReqVO updateReqVO);
 
     /**
      * 删除值班管理

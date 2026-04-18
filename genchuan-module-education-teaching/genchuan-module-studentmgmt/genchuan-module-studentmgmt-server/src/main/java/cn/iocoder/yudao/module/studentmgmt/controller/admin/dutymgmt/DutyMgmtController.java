@@ -51,7 +51,7 @@ public class DutyMgmtController {
     @PutMapping("/update")
     @Operation(summary = "更新值班管理")
     @PreAuthorize("@ss.hasPermission('studentmgmt:duty-mgmt:update')")
-    public CommonResult<Boolean> updateDutyMgmt(@Valid @RequestBody DutyMgmtSaveReqVO updateReqVO) {
+    public CommonResult<Boolean> updateDutyMgmt(@Valid @RequestBody DutyMgmtUpdateReqVO updateReqVO) {
         dutyMgmtService.updateDutyMgmt(updateReqVO);
         return success(true);
     }
@@ -161,7 +161,7 @@ public class DutyMgmtController {
     }
 
     @PutMapping("/chart")
-    @Operation(summary = "记录上传")
+    @Operation(summary = "值班调度看板")
     @PreAuthorize("@ss.hasPermission('studentmgmt:duty-mgmt:chart')")
     public CommonResult<DutyMgmtChartRespVO> chart(@Valid @RequestBody DutyMgmtChartReqVO reqVo) {
         DutyMgmtChartRespVO respVO = dutyMgmtService.chart(reqVo);
@@ -169,7 +169,7 @@ public class DutyMgmtController {
     }
 
     @PutMapping("/chart/dutyIndex")
-    @Operation(summary = "记录上传")
+    @Operation(summary = "值班核心指标统计")
     @PreAuthorize("@ss.hasPermission('studentmgmt:duty-mgmt:dutyIndex')")
     public CommonResult<DutyMgmtChartIndexRespVO> dutyIndex(@Valid @RequestBody DutyMgmtChartReqVO reqVo) {
         DutyMgmtChartIndexRespVO respVO = dutyMgmtService.dutyIndex(reqVo);

@@ -1,9 +1,7 @@
 package cn.iocoder.yudao.module.studentmgmt.service.dutymgmt;
 
-import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.AssessMgmtChartRespVO;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.dutymgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.dutymgmt.DutyMgmtDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.dutymgmt.DutyMgmtMapper;
@@ -14,7 +12,6 @@ import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.formula.functions.Trend;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -24,7 +21,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeMap;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.studentmgmt.enums.ErrorCodeConstants.*;
@@ -53,7 +49,9 @@ public class DutyMgmtServiceImpl implements DutyMgmtService {
     }
 
     @Override
-    public void updateDutyMgmt(DutyMgmtSaveReqVO updateReqVO) {
+    @LogRecord(type = DUTY_TYPE, subType = DUTY_UPDATE_SUB_TYPE, bizNo = "{{#updateReqVO.id}}",
+            success = DUTY_UPDATE_SUCCESS)
+    public void updateDutyMgmt(@Valid DutyMgmtUpdateReqVO updateReqVO) {
         // 校验存在
         DutyMgmtDO dutyMgmtDO = validateDutyMgmtExists(updateReqVO.getId());
         // 更新
@@ -214,16 +212,6 @@ public class DutyMgmtServiceImpl implements DutyMgmtService {
     public boolean shiftAudit(@Valid DutyMgmtShiftAuditReqVO reqVo) {
 
         DutyMgmtDO dutyMgmt = validateDutyMgmtExists(reqVo.getId());
-
-        // 签到状态为已签到，则不能调班
-        if (DutyCheckInStatusEnum.DUTY_CHCECK_IN_STATUS_CHECKED_IN.getStatus().equals(dutyMgmt.getCheckInStatus())) {
-            throw exception("已签到，不可申请出车");
-        }
-
-        // 状态不待打卡，则不能调班
-        if (!dutyMgmt.getStatus().equals(DutyStatusEnum.DUTY_STATUS_PENDING_CHECKIN.getStatus())) {
-            throw exception("非打卡状态，不可出车");
-        }
         // 状态不待打卡，则不能调班
         if (!dutyMgmt.getTransferStatus().equals(DutyTransferStatusEnum.TRANSFER_STATUS_PENDING_PENDING.getStatus())) {
             throw exception("当前不是待审批状态，不可审批");
@@ -432,7 +420,10 @@ public class DutyMgmtServiceImpl implements DutyMgmtService {
                 Integer totalCount = dutyCountJson.getInteger("totalCount");
                 dutyCountList.add(dutyCount);
                 // 打卡率
-                BigDecimal checkInRate = new BigDecimal(statusCount).divide(new BigDecimal(totalCount), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).setScale(2, RoundingMode.HALF_UP);
+                BigDecimal checkInRate = BigDecimal.ZERO;
+                if (!totalCount.equals(0)) {
+                    checkInRate = new BigDecimal(statusCount).divide(new BigDecimal(totalCount), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).setScale(2, RoundingMode.HALF_UP);
+                }
                 checkInRateList.add(checkInRate);
             }
 
@@ -442,7 +433,10 @@ public class DutyMgmtServiceImpl implements DutyMgmtService {
                 Integer statusCount = shiftCountJson.getInteger("statusCount");
                 Integer totalCount = shiftCountJson.getInteger("totalCount");
                 // 调班率
-                BigDecimal shiftRate = new BigDecimal(statusCount).divide(new BigDecimal(totalCount), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).setScale(2, RoundingMode.HALF_UP);
+                BigDecimal shiftRate = BigDecimal.ZERO;
+                if (!totalCount.equals(0)) {
+                    shiftRate = new BigDecimal(statusCount).divide(new BigDecimal(totalCount), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).setScale(2, RoundingMode.HALF_UP);
+                }
                 shiftRateList.add(shiftRate);
             }
 
@@ -452,7 +446,10 @@ public class DutyMgmtServiceImpl implements DutyMgmtService {
                 Integer statusCount = vehicleCountJson.getInteger("statusCount");
                 Integer totalCount = vehicleCountJson.getInteger("totalCount");
                 // 出车率
-                BigDecimal vehicleRate = new BigDecimal(statusCount).divide(new BigDecimal(totalCount), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).setScale(2, RoundingMode.HALF_UP);
+                BigDecimal vehicleRate = BigDecimal.ZERO;
+                if (!totalCount.equals(0)) {
+                    vehicleRate = new BigDecimal(statusCount).divide(new BigDecimal(totalCount), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).setScale(2, RoundingMode.HALF_UP);
+                }
                 vehicleRateList.add(vehicleRate);
             }
 
