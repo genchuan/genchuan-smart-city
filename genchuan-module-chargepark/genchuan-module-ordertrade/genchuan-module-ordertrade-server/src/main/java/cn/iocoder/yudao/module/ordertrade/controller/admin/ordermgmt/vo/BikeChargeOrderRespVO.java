@@ -1,6 +1,10 @@
 package cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo;
 
 import cn.idev.excel.annotation.ExcelProperty;
+import cn.iocoder.yudao.module.ordertrade.enums.ChargeOrderStatusEnum;
+import cn.iocoder.yudao.module.ordertrade.enums.PayMethodEnum;
+import cn.iocoder.yudao.module.ordertrade.framework.excel.EnumExcelConverter;
+import cn.iocoder.yudao.module.ordertrade.framework.excel.EnumFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -40,7 +44,8 @@ public class BikeChargeOrderRespVO {
     private BigDecimal amount;
 
     @Schema(description = "订单状态")
-    @ExcelProperty("订单状态")
+    @ExcelProperty(value = "订单状态", converter = EnumExcelConverter.class)
+    @EnumFormat(ChargeOrderStatusEnum.class)
     private String status;
 
     @Schema(description = "订单生成时间")
@@ -56,7 +61,8 @@ public class BikeChargeOrderRespVO {
     private LocalDateTime payTime;
 
     @Schema(description = "支付方式")
-    @ExcelProperty("支付方式")
+    @ExcelProperty(value = "支付方式", converter = EnumExcelConverter.class)
+    @EnumFormat(PayMethodEnum.class)
     private String payMethod;
 
     @Schema(description = "优惠抵扣金额")

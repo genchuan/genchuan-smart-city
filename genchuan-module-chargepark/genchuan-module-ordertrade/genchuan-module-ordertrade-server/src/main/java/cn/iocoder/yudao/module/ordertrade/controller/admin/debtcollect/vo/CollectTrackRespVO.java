@@ -1,6 +1,10 @@
 package cn.iocoder.yudao.module.ordertrade.controller.admin.debtcollect.vo;
 
 import cn.idev.excel.annotation.ExcelProperty;
+import cn.iocoder.yudao.module.ordertrade.enums.CollectMethodEnum;
+import cn.iocoder.yudao.module.ordertrade.enums.CollectTrackStatusEnum;
+import cn.iocoder.yudao.module.ordertrade.framework.excel.EnumExcelConverter;
+import cn.iocoder.yudao.module.ordertrade.framework.excel.EnumFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -17,27 +21,37 @@ public class CollectTrackRespVO {
     @Schema(description = "追缴编号")
     @ExcelProperty("追缴编号")
     private String trackNo;
+
     @Schema(description = "车牌")
     @ExcelProperty("车牌")
     private String plateNo;
+
     @Schema(description = "追缴方式")
-    @ExcelProperty("追缴方式")
+    @ExcelProperty(value = "追缴方式", converter = EnumExcelConverter.class)
+    @EnumFormat(CollectMethodEnum.class)
     private String collectMethod;
+
     @Schema(description = "追缴时间")
     @ExcelProperty("追缴时间")
     private LocalDateTime collectTime;
+
     @Schema(description = "状态")
-    @ExcelProperty("状态")
+    @ExcelProperty(value = "状态", converter = EnumExcelConverter.class)
+    @EnumFormat(CollectTrackStatusEnum.class)
     private String status;
+
     @Schema(description = "片区ID")
     @ExcelProperty("片区ID")
     private Long areaId;
+
     @Schema(description = "转派用户ID")
     @ExcelProperty("转派用户ID")
     private Long transferUserId;
+
     @Schema(description = "追缴进度")
     @ExcelProperty("追缴进度")
     private String collectProgress;
+
     @Schema(description = "操作人ID")
     @ExcelProperty("操作人ID")
     private Long operatorId;

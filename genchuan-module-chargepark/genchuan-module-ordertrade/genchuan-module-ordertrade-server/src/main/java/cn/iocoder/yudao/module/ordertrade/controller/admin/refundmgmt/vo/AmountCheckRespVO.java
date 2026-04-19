@@ -1,6 +1,9 @@
 package cn.iocoder.yudao.module.ordertrade.controller.admin.refundmgmt.vo;
 
 import cn.idev.excel.annotation.ExcelProperty;
+import cn.iocoder.yudao.module.ordertrade.enums.AmountCheckStatusEnum;
+import cn.iocoder.yudao.module.ordertrade.framework.excel.EnumExcelConverter;
+import cn.iocoder.yudao.module.ordertrade.framework.excel.EnumFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -18,21 +21,28 @@ public class AmountCheckRespVO {
     @Schema(description = "核算编号")
     @ExcelProperty("核算编号")
     private String checkNo;
+
     @Schema(description = "关联订单ID")
     @ExcelProperty("关联订单ID")
     private Long orderId;
+
     @Schema(description = "申请金额")
     @ExcelProperty("申请金额")
     private BigDecimal applyAmount;
+
     @Schema(description = "核算结果")
     @ExcelProperty("核算结果")
     private String checkResult;
+
     @Schema(description = "核算明细")
     @ExcelProperty("核算明细")
     private String checkDetail;
+
     @Schema(description = "状态")
-    @ExcelProperty("状态")
+    @ExcelProperty(value = "状态", converter = EnumExcelConverter.class)
+    @EnumFormat(AmountCheckStatusEnum.class)
     private String status;
+
     @Schema(description = "操作人ID")
     @ExcelProperty("操作人ID")
     private Long operatorId;

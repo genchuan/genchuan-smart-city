@@ -1,6 +1,9 @@
 package cn.iocoder.yudao.module.ordertrade.controller.admin.debtcollect.vo;
 
 import cn.idev.excel.annotation.ExcelProperty;
+import cn.iocoder.yudao.module.ordertrade.enums.DebtIdentifyStatusEnum;
+import cn.iocoder.yudao.module.ordertrade.framework.excel.EnumExcelConverter;
+import cn.iocoder.yudao.module.ordertrade.framework.excel.EnumFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -18,21 +21,28 @@ public class DebtIdentifyRespVO {
     @Schema(description = "识别编号")
     @ExcelProperty("识别编号")
     private String identifyNo;
+
     @Schema(description = "车牌")
     @ExcelProperty("车牌")
     private String plateNo;
+
     @Schema(description = "欠费金额")
     @ExcelProperty("欠费金额")
     private BigDecimal arrearAmount;
+
     @Schema(description = "识别时间")
     @ExcelProperty("识别时间")
     private LocalDateTime identifyTime;
+
     @Schema(description = "状态")
-    @ExcelProperty("状态")
+    @ExcelProperty(value = "状态", converter = EnumExcelConverter.class)
+    @EnumFormat(DebtIdentifyStatusEnum.class)
     private String status;
+
     @Schema(description = "所属场站ID")
     @ExcelProperty("所属场站ID")
     private Long stationId;
+
     @Schema(description = "操作人ID")
     @ExcelProperty("操作人ID")
     private Long operatorId;
