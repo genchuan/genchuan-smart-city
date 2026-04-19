@@ -668,16 +668,16 @@ VALUES ('目标管理评分类型', 'target_mgmt_score_type', 0, '目标管理�
 
 INSERT INTO `system_dict_data` (`sort`, `label`, `value`, `dict_type`, `status`, `color_type`, `css_class`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`)
 VALUES
-(1, '定量', 'quantitative', 'target_mgmt_score_type', 0, 'primary', '', '定量评分', 'admin', NOW(), 'admin', NOW(), b'0'),
-(2, '定性', 'qualitative', 'target_mgmt_score_type', 0, 'success', '', '定性评分', 'admin', NOW(), 'admin', NOW(), b'0');
+(1, '累计赋分', 'cumulative', 'target_mgmt_score_type', 0, 'primary', '', '定量评分', 'admin', NOW(), 'admin', NOW(), b'0'),
+(2, '接口赋分', 'api', 'target_mgmt_score_type', 0, 'success', '', '定性评分', 'admin', NOW(), 'admin', NOW(), b'0');
 
 INSERT INTO `system_dict_type` (`name`, `type`, `status`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`)
 VALUES ('目标管理状态', 'target_mgmt_status', 0, '目标管理评价的发布状态', 'admin', NOW(), 'admin', NOW(), b'0');
 
 INSERT INTO `system_dict_data` (`sort`, `label`, `value`, `dict_type`, `status`, `color_type`, `css_class`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`)
 VALUES
-(1, '未发布', 'unpublished', 'target_mgmt_status', 0, 'warning', '', '评价尚未发布', 'admin', NOW(), 'admin', NOW(), b'0'),
-(2, '已发布', 'published', 'target_mgmt_status', 0, 'success', '', '评价已发布', 'admin', NOW(), 'admin', NOW(), b'0');
+(1, '停用', 'disable', 'target_mgmt_status', 0, 'warning', '', '停用', 'admin', NOW(), 'admin', NOW(), b'0'),
+(2, '启用', 'enable', 'target_mgmt_status', 0, 'success', '', '启用', 'admin', NOW(), 'admin', NOW(), b'0');
 
 
 -- 插入字典类型

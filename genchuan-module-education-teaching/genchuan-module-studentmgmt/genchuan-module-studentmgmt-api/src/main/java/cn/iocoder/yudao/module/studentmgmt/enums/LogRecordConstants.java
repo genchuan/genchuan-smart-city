@@ -161,4 +161,24 @@ public interface LogRecordConstants {
     String DUTY_UPLOAD_RECORD_SUCCESS = "值班记录上传成功，内容：【{{#duty.recordContent}}】";
 
 
+// ======================= target 指标管理 =======================
+
+    String TARGET_TYPE = "指标管理";
+    String TARGET_CREATE_SUB_TYPE = "新建指标";
+    String TARGET_CREATE_SUCCESS = "新建指标成功【{{#createReqVO.targetName}}】";
+
+    String TARGET_UPDATE_SUB_TYPE = "更新指标";
+    String TARGET_UPDATE_SUCCESS = "更新【{{#updateReqVO.targetName}}】的指标";
+
+    String TARGET_CONFIG_SUB_TYPE = "配置指标";
+    String TARGET_CONFIG_SUCCESS = "配置【{{#target.targetName}}】的指标";
+
+    String TARGET_ENABLE_SUB_TYPE = "启用指标";
+    String TARGET_ENABLE_SUCCESS = "启用的指标";
+
+    String TARGET_DISABLE_SUB_TYPE = "停用指标";
+    String TARGET_DISABLE_SUCCESS = "停用的指标";
+
+
+
 }

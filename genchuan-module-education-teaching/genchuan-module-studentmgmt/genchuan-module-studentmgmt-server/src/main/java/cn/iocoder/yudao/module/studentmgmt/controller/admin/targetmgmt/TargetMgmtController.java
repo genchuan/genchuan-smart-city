@@ -101,4 +101,42 @@ public class TargetMgmtController {
                         BeanUtils.toBean(list, TargetMgmtRespVO.class));
     }
 
+    @PutMapping("/config")
+    @Operation(summary = "配置")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:target-mgmt:config')")
+    public CommonResult<Boolean> config(@Valid @RequestBody TargetMgmtConfigReqVO reqVO) {
+        boolean isSuccess = targetMgmtService.config(reqVO);
+        return success(true);
+    }
+    @PutMapping("/enable")
+    @Operation(summary = "启用")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:target-mgmt:enable')")
+    public CommonResult<Boolean> enable(@Valid @RequestBody TargetMgmtEnableReqVO reqVO) {
+        boolean isSuccess = targetMgmtService.enable(reqVO);
+        return success(isSuccess);
+    }
+    @PutMapping("/disable")
+    @Operation(summary = "停用")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:target-mgmt:disable')")
+    public CommonResult<Boolean> disable(@Valid @RequestBody TargetMgmtEnableReqVO reqVO) {
+        boolean isSuccess = targetMgmtService.disable(reqVO);
+        return success(isSuccess);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "德育指标配置看板")
+    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:target-mgmt:query')")
+    public CommonResult<TargetMgmtChartRespVO> chart(@Valid @RequestBody TargetMgmtChartReqVO reqVO) {
+        TargetMgmtChartRespVO vo = targetMgmtService.chart(reqVO);
+        return success(vo);
+    }
+    @GetMapping("/chart/targetIndex")
+    @Operation(summary = "指标核心指标统计")
+    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:target-mgmt:query')")
+    public CommonResult<TargetMgmtChartIndexRespVO> targetIndex() {
+        TargetMgmtChartIndexRespVO vo = targetMgmtService.targetIndex();
+        return success(vo);
+    }
 }
