@@ -1,6 +1,9 @@
 package cn.iocoder.yudao.module.ordertrade.controller.admin.debtcollect.vo;
 
 import cn.idev.excel.annotation.ExcelProperty;
+import cn.iocoder.yudao.module.ordertrade.enums.ArrearRecordStatusEnum;
+import cn.iocoder.yudao.module.ordertrade.framework.excel.EnumExcelConverter;
+import cn.iocoder.yudao.module.ordertrade.framework.excel.EnumFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -18,21 +21,28 @@ public class ArrearRecordRespVO {
     @Schema(description = "记录编号")
     @ExcelProperty("记录编号")
     private String recordNo;
+
     @Schema(description = "车牌")
     @ExcelProperty("车牌")
     private String plateNo;
+
     @Schema(description = "关联欠费订单ID")
     @ExcelProperty("关联欠费订单ID")
     private String orderIds;
+
     @Schema(description = "欠费金额")
     @ExcelProperty("欠费金额")
     private BigDecimal arrearAmount;
+
     @Schema(description = "结清状态")
-    @ExcelProperty("结清状态")
+    @ExcelProperty(value = "结清状态", converter = EnumExcelConverter.class)
+    @EnumFormat(ArrearRecordStatusEnum.class)
     private String status;
+
     @Schema(description = "所属场站ID")
     @ExcelProperty("所属场站ID")
     private Long stationId;
+
     @Schema(description = "操作人ID")
     @ExcelProperty("操作人ID")
     private Long operatorId;

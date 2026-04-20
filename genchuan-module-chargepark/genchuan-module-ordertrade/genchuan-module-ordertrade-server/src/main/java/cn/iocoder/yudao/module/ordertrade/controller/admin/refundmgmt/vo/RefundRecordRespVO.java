@@ -1,6 +1,9 @@
 package cn.iocoder.yudao.module.ordertrade.controller.admin.refundmgmt.vo;
 
 import cn.idev.excel.annotation.ExcelProperty;
+import cn.iocoder.yudao.module.ordertrade.enums.RefundRecordStatusEnum;
+import cn.iocoder.yudao.module.ordertrade.framework.excel.EnumExcelConverter;
+import cn.iocoder.yudao.module.ordertrade.framework.excel.EnumFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -18,24 +21,32 @@ public class RefundRecordRespVO {
     @Schema(description = "记录编号")
     @ExcelProperty("记录编号")
     private String recordNo;
+
     @Schema(description = "关联退款申请ID")
     @ExcelProperty("关联退款申请ID")
     private Long applyId;
+
     @Schema(description = "关联订单ID")
     @ExcelProperty("关联订单ID")
     private Long orderId;
+
     @Schema(description = "退款金额")
     @ExcelProperty("退款金额")
     private BigDecimal refundAmount;
+
     @Schema(description = "退款时间")
     @ExcelProperty("退款时间")
     private LocalDateTime refundTime;
+
     @Schema(description = "状态")
-    @ExcelProperty("状态")
+    @ExcelProperty(value = "状态", converter = EnumExcelConverter.class)
+    @EnumFormat(RefundRecordStatusEnum.class)
     private String status;
+
     @Schema(description = "核查理由")
     @ExcelProperty("核查理由")
     private String checkReason;
+
     @Schema(description = "操作人ID")
     @ExcelProperty("操作人ID")
     private Long operatorId;

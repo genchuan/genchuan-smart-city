@@ -64,4 +64,91 @@ public interface ErrorCodeConstants {
     // ========== 金额核算 ==========
     ErrorCode AMOUNT_CHECK_NOT_EXISTS            = new ErrorCode(1_030_015_000, "金额核算记录不存在");
 
+    // ========== 开票审核 ==========
+    ErrorCode INVOICE_AUDIT_NOT_EXISTS           = new ErrorCode(1_030_016_000, "开票审核记录不存在");
+    ErrorCode INVOICE_AUDIT_STATUS_CANNOT_APPROVE = new ErrorCode(1_030_016_001, "开票审核不是待审核状态，无法审核通过");
+    ErrorCode INVOICE_AUDIT_STATUS_CANNOT_REJECT  = new ErrorCode(1_030_016_002, "开票审核不是待审核状态，无法驳回");
+
+    // ========== 发票列表 ==========
+    ErrorCode INVOICE_LIST_NOT_EXISTS            = new ErrorCode(1_030_017_000, "发票记录不存在");
+    ErrorCode INVOICE_LIST_STATUS_CANNOT_APPROVE = new ErrorCode(1_030_017_001, "发票不是待审核状态，无法审核通过");
+    ErrorCode INVOICE_LIST_STATUS_CANNOT_REJECT  = new ErrorCode(1_030_017_002, "发票不是待审核状态，无法驳回");
+    ErrorCode INVOICE_LIST_STATUS_CANNOT_INVOICE = new ErrorCode(1_030_017_003, "发票不是待开票状态，无法开票");
+
+    // ========== 发票配置 ==========
+    ErrorCode INVOICE_CONFIG_NOT_EXISTS          = new ErrorCode(1_030_018_000, "发票配置不存在");
+    ErrorCode INVOICE_CONFIG_STATUS_CANNOT_ENABLE  = new ErrorCode(1_030_018_001, "发票配置已生效，无法重复生效");
+    ErrorCode INVOICE_CONFIG_STATUS_CANNOT_DISABLE = new ErrorCode(1_030_018_002, "发票配置已禁用，无法重复禁用");
+
+    // ========== 支付应用 ==========
+    ErrorCode PAY_APP_NOT_EXISTS                 = new ErrorCode(1_030_019_000, "支付应用不存在");
+    ErrorCode PAY_APP_STATUS_CANNOT_ENABLE       = new ErrorCode(1_030_019_001, "支付应用已生效，无法重复生效");
+    ErrorCode PAY_APP_STATUS_CANNOT_DISABLE      = new ErrorCode(1_030_019_002, "支付应用已禁用，无法重复禁用");
+
+    // ========== 支付订单 ==========
+    ErrorCode PAY_ORDER_NOT_EXISTS               = new ErrorCode(1_030_020_000, "支付订单不存在");
+    ErrorCode PAY_ORDER_STATUS_CANNOT_PAY        = new ErrorCode(1_030_020_001, "支付订单不是待支付状态，无法支付");
+    ErrorCode PAY_ORDER_STATUS_CANNOT_REFUND     = new ErrorCode(1_030_020_002, "支付订单不是已支付状态，无法退款");
+    ErrorCode PAY_ORDER_STATUS_CANNOT_CANCEL     = new ErrorCode(1_030_020_003, "支付订单不是待支付状态，无法取消");
+
+    // ========== 退款单 ==========
+    ErrorCode PAY_REFUND_NOT_EXISTS              = new ErrorCode(1_030_021_000, "退款单不存在");
+    ErrorCode PAY_REFUND_STATUS_CANNOT_EXECUTE   = new ErrorCode(1_030_021_001, "退款单不是待执行状态，无法执行");
+    ErrorCode PAY_REFUND_STATUS_CANNOT_CANCEL    = new ErrorCode(1_030_021_002, "退款单不是待执行状态，无法取消");
+
+    // ========== 转账单 ==========
+    ErrorCode PAY_TRANSFER_NOT_EXISTS            = new ErrorCode(1_030_022_000, "转账单不存在");
+    ErrorCode PAY_TRANSFER_STATUS_CANNOT_EXECUTE = new ErrorCode(1_030_022_001, "转账单不是待执行状态，无法执行");
+    ErrorCode PAY_TRANSFER_STATUS_CANNOT_CANCEL  = new ErrorCode(1_030_022_002, "转账单不是待执行状态，无法取消");
+
+    // ========== 电子钱包 ==========
+    ErrorCode PAY_WALLET_NOT_EXISTS              = new ErrorCode(1_030_023_000, "电子钱包不存在");
+    ErrorCode PAY_WALLET_STATUS_CANNOT_RECHARGE  = new ErrorCode(1_030_023_001, "电子钱包已冻结，无法充值");
+    ErrorCode PAY_WALLET_STATUS_CANNOT_WITHDRAW  = new ErrorCode(1_030_023_002, "电子钱包已冻结，无法提现");
+
+    // ========== 支付回调 ==========
+    ErrorCode PAY_CALLBACK_NOT_EXISTS            = new ErrorCode(1_030_024_000, "支付回调记录不存在");
+
+    // ========== 分账账单 ==========
+    ErrorCode SETTLE_BILL_NOT_EXISTS             = new ErrorCode(1_030_025_000, "分账账单不存在");
+    ErrorCode SETTLE_BILL_STATUS_CANNOT_APPROVE  = new ErrorCode(1_030_025_001, "分账账单不是待审核状态，无法审核通过");
+    ErrorCode SETTLE_BILL_STATUS_CANNOT_REJECT   = new ErrorCode(1_030_025_002, "分账账单不是待审核状态，无法驳回");
+    ErrorCode SETTLE_BILL_STATUS_CANNOT_SETTLE   = new ErrorCode(1_030_025_003, "分账账单不是待结算状态，无法结算");
+
+    // ========== 分账比例 ==========
+    ErrorCode SPLIT_RATE_NOT_EXISTS              = new ErrorCode(1_030_026_000, "分账比例配置不存在");
+    ErrorCode SPLIT_RATE_STATUS_CANNOT_ENABLE    = new ErrorCode(1_030_026_001, "分账比例配置已生效，无法重复生效");
+    ErrorCode SPLIT_RATE_STATUS_CANNOT_DISABLE   = new ErrorCode(1_030_026_002, "分账比例配置已生效状态才能禁用");
+
+    // ========== 结算状态 ==========
+    ErrorCode SETTLE_STATUS_NOT_EXISTS           = new ErrorCode(1_030_027_000, "结算状态记录不存在");
+
+    // ========== 商户对账单 ==========
+    ErrorCode RECONCILE_BILL_NOT_EXISTS          = new ErrorCode(1_030_028_000, "商户对账单不存在");
+    ErrorCode RECONCILE_BILL_STATUS_CANNOT_CONFIRM = new ErrorCode(1_030_028_001, "对账单不是待确认状态，无法确认");
+    ErrorCode RECONCILE_BILL_STATUS_CANNOT_DISPUTE = new ErrorCode(1_030_028_002, "对账单不是待确认状态，无法提出异议");
+
+    // ========== 对账记录 ==========
+    ErrorCode RECONCILE_RECORD_NOT_EXISTS        = new ErrorCode(1_030_029_000, "对账记录不存在");
+
+    // ========== 代付规则 ==========
+    ErrorCode AGENT_RULE_NOT_EXISTS              = new ErrorCode(1_030_030_000, "代付规则不存在");
+    ErrorCode AGENT_RULE_STATUS_CANNOT_ENABLE    = new ErrorCode(1_030_030_001, "代付规则当前状态不可生效");
+    ErrorCode AGENT_RULE_STATUS_CANNOT_DISABLE   = new ErrorCode(1_030_030_002, "代付规则未处于已生效状态，无法禁用");
+
+    // ========== 代付码 ==========
+    ErrorCode AGENT_CODE_NOT_EXISTS              = new ErrorCode(1_030_031_000, "代付码不存在");
+    ErrorCode AGENT_CODE_STATUS_CANNOT_REFRESH   = new ErrorCode(1_030_031_001, "代付码不是未使用状态，无法刷新");
+    ErrorCode AGENT_CODE_STATUS_CANNOT_REGEN     = new ErrorCode(1_030_031_002, "代付码不是已过期状态，无法重新生成");
+
+    // ========== 代付订单 ==========
+    ErrorCode AGENT_ORDER_NOT_EXISTS             = new ErrorCode(1_030_032_000, "代付订单不存在");
+    ErrorCode AGENT_ORDER_STATUS_CANNOT_PAY      = new ErrorCode(1_030_032_001, "代付订单不是待支付状态，无法支付");
+    ErrorCode AGENT_ORDER_STATUS_CANNOT_INVOICE  = new ErrorCode(1_030_032_002, "代付订单不是已支付或已完成状态，无法开票");
+    ErrorCode AGENT_ORDER_STATUS_CANNOT_CANCEL   = new ErrorCode(1_030_032_003, "代付订单不是待支付状态，无法取消");
+
+    // ========== 代付记录 ==========
+    ErrorCode AGENT_RECORD_NOT_EXISTS            = new ErrorCode(1_030_033_000, "代付记录不存在");
+    ErrorCode AGENT_RECORD_STATUS_CANNOT_CHECK   = new ErrorCode(1_030_033_001, "代付记录不是异常状态，无需核查");
+
 }

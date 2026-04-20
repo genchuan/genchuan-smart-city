@@ -1,6 +1,9 @@
 package cn.iocoder.yudao.module.ordertrade.controller.admin.debtcollect.vo;
 
 import cn.idev.excel.annotation.ExcelProperty;
+import cn.iocoder.yudao.module.ordertrade.enums.CollectMethodEnum;
+import cn.iocoder.yudao.module.ordertrade.framework.excel.EnumExcelConverter;
+import cn.iocoder.yudao.module.ordertrade.framework.excel.EnumFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -18,7 +21,8 @@ public class CollectConfigRespVO {
     @ExcelProperty("配置编号")
     private String configNo;
     @Schema(description = "追缴方式")
-    @ExcelProperty("追缴方式")
+    @ExcelProperty(value = "追缴方式", converter = EnumExcelConverter.class)
+    @EnumFormat(CollectMethodEnum.class)
     private String collectMethod;
     @Schema(description = "推送模板ID")
     @ExcelProperty("推送模板ID")
