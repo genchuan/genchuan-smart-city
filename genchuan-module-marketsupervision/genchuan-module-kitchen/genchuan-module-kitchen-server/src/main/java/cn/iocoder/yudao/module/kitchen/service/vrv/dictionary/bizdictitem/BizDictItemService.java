@@ -4,10 +4,7 @@ import java.util.*;
 
 import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdictitem.vo.BizDictItemPageReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdictitem.vo.BizDictItemSaveReqVO;
-import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdictitem.vo.ops.AddReq;
-import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdictitem.vo.ops.ListByTypeReq;
-import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdictitem.vo.ops.ListByTypeResp;
-import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdictitem.vo.ops.UpdateReq;
+import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdictitem.vo.ops.*;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.vrv.dictionary.bizdictitem.BizDictItemDO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -67,7 +64,9 @@ public interface BizDictItemService {
 
     List<ListByTypeResp> listByType(ListByTypeReq req);
 
-    Long addBizDictItem(AddReq createReqVO);
+    Long addBizDictItem(@Valid AddReq createReqVO);
 
     void updateBiz(UpdateReq updateReqVO);
+
+    BatchResult batchAddBizDictItem(List<AddReq> addReqList);
 }

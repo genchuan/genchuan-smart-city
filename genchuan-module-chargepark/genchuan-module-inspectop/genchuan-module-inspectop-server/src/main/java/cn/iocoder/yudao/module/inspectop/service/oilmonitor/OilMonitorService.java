@@ -57,6 +57,28 @@ public interface OilMonitorService {
      * @param pageReqVO 分页查询
      * @return 油车占位监测分页
      */
-    PageResult<OilMonitorDO> getOilMonitorPage(OilMonitorPageReqVO pageReqVO);
+    // PageResult<OilMonitorDO> getOilMonitorPage(OilMonitorPageReqVO pageReqVO);
+    PageResult<OilMonitorRespVO> getOilMonitorPage(OilMonitorPageReqVO pageReqVO);
 
+    /**
+     * 批量处置油车占位监测
+     *
+     * @param batchProcessReqVO 批量处置信息
+     */
+    void batchProcessOilMonitor(@Valid OilMonitorBatchProcessReqVO batchProcessReqVO);
+
+    /**
+     * 忽略油车占位监测
+     *
+     * @param ignoreReqVO 忽略信息
+     */
+    void ignoreOilMonitor(@Valid OilMonitorIgnoreReqVO ignoreReqVO);
+
+    /**
+     * 获取油车占位监控图表数据
+     *
+     * @param reqVO 查询参数
+     * @return 监控图表数据
+     */
+    OilMonitorChartRespVO getOilMonitorChart(@Valid OilMonitorChartReqVO reqVO);
 }

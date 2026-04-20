@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdicttype.vo.BizDictTypePageReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdicttype.vo.BizDictTypeSaveReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdicttype.vo.ops.AddReq;
+import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdicttype.vo.ops.BatchResult;
 import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdicttype.vo.ops.UpdateReq;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.vrv.dictionary.bizdictitem.BizDictItemDO;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.vrv.dictionary.bizdicttype.BizDictTypeDO;
@@ -11,6 +12,7 @@ import cn.iocoder.yudao.module.kitchen.dal.mysql.vrv.dictionary.bizdictitem.BizD
 import cn.iocoder.yudao.module.kitchen.dal.mysql.vrv.dictionary.bizdicttype.BizDictTypeMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -41,6 +43,12 @@ public class BizDictTypeServiceImpl implements BizDictTypeService {
     @Resource
     private BizDictTypeMapper bizDictTypeMapper;
 
+//    @Resource
+//    private BizDictTypeService bizDictTypeService;
+
+    // 第一步：在这里注入校验器
+    @Resource
+    private jakarta.validation.Validator validator;
     @Resource
     private BizDictItemMapper bizDictItemMapper;
 
@@ -72,10 +80,10 @@ public class BizDictTypeServiceImpl implements BizDictTypeService {
     }
 
     @Override
-        public void deleteBizDictTypeListByIds(List<Long> ids) {
+    public void deleteBizDictTypeListByIds(List<Long> ids) {
         // 删除
         bizDictTypeMapper.deleteByIds(ids);
-        }
+    }
 
 
     private void validateBizDictTypeExists(Long id) {
@@ -202,6 +210,55 @@ public class BizDictTypeServiceImpl implements BizDictTypeService {
         int typeDeleteCount = bizDictTypeMapper.delete(typeQuery); // <--- 就用这个！
 
         log.info("删除的字典项{}条；删除的字典分类{}条",itemDeleteCount,typeDeleteCount);
+    }
+
+    @Override
+    public BatchResult batchAddBizDictType(List<AddReq> addReqList) {
+        BatchResult result = new BatchResult();
+        List<BatchResult.FailItem> failList = new ArrayList<>();
+        int success = 0;
+
+        // 1. 空数据判断
+        if (CollUtil.isEmpty(addReqList)) {
+            result.setSuccessCount(0);
+            result.setFailureCount(0);
+            result.setTotalCount(0);
+            result.setFailList(failList);
+            return result;
+        }
+
+        // 2. 逐条处理（复用单条新增逻辑）
+        for (int i = 0; i < addReqList.size(); i++) {
+            AddReq req = addReqList.get(i);
+            int index = i + 1;
+            try {
+                // ==============================================
+                // 使用 AddReq 里的 @NotEmpty 注解校验！
+                // 不用写任何 if！
+                // ==============================================
+                var violations = validator.validate(req);
+                if (!violations.isEmpty()) {
+                    throw new IllegalArgumentException(violations.iterator().next().getMessage());
+                }
+                // 核心：直接调用写好的 add 方法！
+                addBizDictType(req);
+                success++;
+            } catch (Exception e) {
+                // 失败了，收集错误信息
+                BatchResult.FailItem failItem = new BatchResult.FailItem();
+                failItem.setIndex(index);
+                failItem.setData(req.toString());
+                failItem.setErrorReason(e.getMessage());
+                failList.add(failItem);
+            }
+        }
+
+        // 3. 封装返回结果
+        result.setSuccessCount(success);
+        result.setFailureCount(failList.size());
+        result.setTotalCount(addReqList.size());
+        result.setFailList(failList);
+        return result;
     }
 
 }

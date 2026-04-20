@@ -9,6 +9,12 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="getIdByNickname" resultType="java.lang.Long">
+        SELECT id
+        FROM user_info
+        WHERE deleted = 0 AND nickname = #{nickname}
+    </select>
+
     <!-- 用户增长趋势（折线图） -->
     <select id="selectUserGrowthTrend" resultType="cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.vo.UserInfoChartRespVO$UserGrowthTrendVO">
         SELECT

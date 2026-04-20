@@ -19,6 +19,10 @@ public class UserCarPageRespVO {
     @ExcelProperty("用户信息ID")
     private Long userId;
 
+    @Schema(description = "用户名称")
+    @ExcelProperty("用户信息ID")
+    private String nickname;
+
     @Schema(description = "车牌号码", example = "闽 C12345")
     @ExcelProperty("车牌号码")
     private String plateNo;
@@ -42,6 +46,10 @@ public class UserCarPageRespVO {
     @Schema(description = "审核人ID", example = "1")
     @ExcelProperty("审核人ID")
     private Long auditorId;
+
+    @Schema(description = "审核人名称")
+    @ExcelProperty("审核人名称")
+    private String auditorName;
 
     @Schema(description = "审核时间")
     @ExcelProperty("审核时间")

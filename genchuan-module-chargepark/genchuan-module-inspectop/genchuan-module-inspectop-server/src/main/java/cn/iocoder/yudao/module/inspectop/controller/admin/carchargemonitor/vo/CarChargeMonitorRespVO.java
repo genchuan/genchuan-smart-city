@@ -8,7 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import cn.idev.excel.annotation.*;
 
-@Schema(description = "管理后台 - 汽车充电监测 Response VO")
+@Schema(description = "巡查巡检 - 汽车充电监测 Response VO")
 @Data
 @ExcelIgnoreUnannotated
 public class CarChargeMonitorRespVO {
@@ -24,6 +24,10 @@ public class CarChargeMonitorRespVO {
     @Schema(description = "场站ID", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("场站ID")
     private Long stationId;
+
+    @Schema(description = "场站名称")
+    @ExcelProperty("场站名称")
+    private String stationName;
 
     @Schema(description = "监测时间", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("监测时间")
@@ -81,4 +85,4 @@ public class CarChargeMonitorRespVO {
     @ExcelProperty("更新时间")
     private LocalDateTime updateTime;
 
-}
+}
