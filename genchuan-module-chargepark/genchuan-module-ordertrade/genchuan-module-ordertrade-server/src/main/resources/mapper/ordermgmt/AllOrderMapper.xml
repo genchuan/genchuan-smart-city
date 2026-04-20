@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.ordertrade.dal.mysql.ordermgmt.AllOrderMapper">
+
+    <!--
+        AllOrder Mapper XML
+        表名: all_order
+
+        说明：
+          - insert / updateById / deleteById 由 MyBatis Plus BaseMapper 自动提供，无需在此定义
+          - BaseDO 公共字段（creator/updater/deleted/tenant_id/create_time/update_time）
+            由芋道框架 MetaObjectHandler 自动填充
+          - 以下为自定义统计查询，供 ServiceImpl chart 方法调用
+
+        @author genchuan
+    -->
+
+    <!-- 趋势统计（折线图）：按日期分组统计数量 -->
+    <select id="selectTrend" resultType="java.util.Map">
+        SELECT DATE_FORMAT(create_time, '%Y-%m-%d') AS `date`, COUNT(*) AS `count`
+        FROM `all_order`
+        WHERE deleted = 0
+        <if test="startTime != null"> AND create_time &gt;= #{startTime} </if>
+        <if test="endTime != null">   AND create_time &lt;= #{endTime}   </if>
+        GROUP BY DATE_FORMAT(create_time, '%Y-%m-%d')
+        ORDER BY `date`
+    </select>
+
+    <!-- 状态分组统计（柱状图/饼图）-->
+    <select id="selectGroupByStatus" resultType="java.util.Map">
+        SELECT status, COUNT(*) AS `count`
+        FROM `all_order`
+        WHERE deleted = 0
+        GROUP BY status
+    </select>
+
+    <!-- 今日数量 -->
+    <select id="selectTodayCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM `all_order`
+        WHERE deleted = 0
+          AND create_time BETWEEN #{startTime} AND #{endTime}
+    </select>
+
+    <!-- 按状态统计数量（status=null 时统计全部）-->
+    <select id="selectCountByStatus" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM `all_order`
+        WHERE deleted = 0
+        <if test="status != null"> AND status = #{status} </if>
+    </select>
+
+</mapper>

@@ -1,9 +1,9 @@
-
-FROM 192.168.8.14/library/eclipse-temurin:21-jre
+# 适用于 yudao-module-system-biz 等子模块
+FROM harbor.genchuan.cn/library/eclipse-temurin:21-jre
 
 ARG MODULE_NAME=yudao-gateway
 ARG JAR_PATH=yudao-gateway
-ENV TZ=Asia/Shanghai
+ENV TZ=Asia/Shanghai 
 ENV JAVA_OPTS="-Xms512m -Xmx512m"
 ENV NACOS_SERVER_ADDR=nacos-server:8848
 ENV NACOS_NAMESPACE=public

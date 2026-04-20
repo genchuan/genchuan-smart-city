@@ -1,0 +1,817 @@
+{
+  "info": {
+    "name": "订单交易模块 API 测试",
+    "_postman_id": "ordertrade-test-collection",
+    "description": "genchuan-module-ordertrade 完整接口测试集合\n\n使用前：\n1. 先执行 test-data.sql 写入基础数据\n2. 配置环境变量 baseUrl 和 tenantId\n3. 按闭环顺序运行，ID 会自动通过脚本传递",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl",   "value": "http://localhost:58090", "type": "string" },
+    { "key": "tenantId",  "value": "1",                      "type": "string" },
+    { "key": "allOrderId",      "value": "9",  "type": "string" },
+    { "key": "tempParkOrderId", "value": "4",  "type": "string" },
+    { "key": "chargeOrderId",   "value": "1",  "type": "string" },
+    { "key": "refundApplyId",   "value": "1",  "type": "string" },
+    { "key": "amountCheckId",   "value": "1",  "type": "string" },
+    { "key": "debtIdentifyId",  "value": "1",  "type": "string" },
+    { "key": "debtRecordId",    "value": "1",  "type": "string" },
+    { "key": "collectTrackId",  "value": "1",  "type": "string" },
+    { "key": "arrearRecordId",  "value": "1",  "type": "string" }
+  ],
+  "item": [
+
+    {
+      "name": "闭环1 - 停车订单完整生命周期",
+      "description": "流程：创建主订单 → 创建子订单 → 查询 → 支付 → 开票 → 统计 → 导出",
+      "item": [
+        {
+          "name": "Step1 创建主订单",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "if (json.code === 200 && json.data) {",
+                "    pm.collectionVariables.set('allOrderId', json.data);",
+                "    console.log('allOrderId 已保存:', json.data);",
+                "}",
+                "pm.test('创建成功，code=200', () => pm.expect(json.code).to.eql(200));",
+                "pm.test('返回订单ID > 0', () => pm.expect(json.data).to.be.above(0));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "tenant-id",    "value": "{{tenantId}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderNo\": \"NEW-PARK-001\",\n  \"userId\": 1001,\n  \"stationId\": 1,\n  \"type\": \"temp_park\",\n  \"totalAmount\": 30.00,\n  \"payAmount\": 30.00,\n  \"status\": \"pending_pay\",\n  \"remark\": \"新建停车订单\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/ordertrade/all-order/create", "host": ["{{baseUrl}}"], "path": ["ordertrade","all-order","create"] }
+          }
+        },
+        {
+          "name": "Step2 创建临时停车子订单",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "if (json.code === 200 && json.data) {",
+                "    pm.collectionVariables.set('tempParkOrderId', json.data);",
+                "}",
+                "pm.test('创建成功，code=200', () => pm.expect(json.code).to.eql(200));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "tenant-id",    "value": "{{tenantId}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": {{allOrderId}},\n  \"spaceId\": 101,\n  \"inTime\": \"2025-04-11 10:00:00\",\n  \"parkHour\": 2.0,\n  \"fee\": 30.00,\n  \"remark\": \"B区101车位\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/ordertrade/temp-park-order/create", "host": ["{{baseUrl}}"], "path": ["ordertrade","temp-park-order","create"] }
+          }
+        },
+        {
+          "name": "Step3 查询订单列表（确认创建）",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('查询成功，code=200', () => pm.expect(json.code).to.eql(200));",
+                "pm.test('list不为空', () => pm.expect(json.data.list).to.be.an('array').that.is.not.empty);"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/ordertrade/all-order/page?pageNo=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["ordertrade","all-order","page"],
+              "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Step4 查询订单详情",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('查询成功，code=200', () => pm.expect(json.code).to.eql(200));",
+                "pm.test('data不为null', () => pm.expect(json.data).to.not.be.null);"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/ordertrade/all-order/get?id={{allOrderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["ordertrade","all-order","get"],
+              "query": [{ "key": "id", "value": "{{allOrderId}}" }]
+            }
+          }
+        },
+        {
+          "name": "Step5 支付订单",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('支付成功，code=200', () => pm.expect(json.code).to.eql(200));",
+                "pm.test('data=true', () => pm.expect(json.data).to.eql(true));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "tenant-id",    "value": "{{tenantId}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{ \"id\": {{allOrderId}} }" },
+            "url": { "raw": "{{baseUrl}}/ordertrade/all-order/pay", "host": ["{{baseUrl}}"], "path": ["ordertrade","all-order","pay"] }
+          }
+        },
+        {
+          "name": "Step6 申请开票",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('开票成功，code=200', () => pm.expect(json.code).to.eql(200));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "tenant-id",    "value": "{{tenantId}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{ \"id\": {{allOrderId}} }" },
+            "url": { "raw": "{{baseUrl}}/ordertrade/all-order/invoice", "host": ["{{baseUrl}}"], "path": ["ordertrade","all-order","invoice"] }
+          }
+        },
+        {
+          "name": "Step7 查看图表统计",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('统计成功，code=200', () => pm.expect(json.code).to.eql(200));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/ordertrade/all-order/chart?startTime=2025-01-01 00:00:00&endTime=2025-12-31 23:59:59",
+              "host": ["{{baseUrl}}"],
+              "path": ["ordertrade","all-order","chart"],
+              "query": [
+                { "key": "startTime", "value": "2025-01-01 00:00:00" },
+                { "key": "endTime",   "value": "2025-12-31 23:59:59" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Step8 导出Excel",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "pm.test('导出响应正常(200)', () => pm.expect(pm.response.code).to.eql(200));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/ordertrade/all-order/export?pageNo=1&pageSize=999",
+              "host": ["{{baseUrl}}"],
+              "path": ["ordertrade","all-order","export"],
+              "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "999" }]
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "闭环2 - 充电订单停止支付",
+      "description": "流程：查询充电中订单 → 停止充电 → 支付",
+      "item": [
+        {
+          "name": "Step1 查询充电中的订单",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('查询成功，code=200', () => pm.expect(json.code).to.eql(200));",
+                "if (json.data && json.data.list && json.data.list.length > 0) {",
+                "    pm.collectionVariables.set('chargeOrderId', json.data.list[0].id);",
+                "    console.log('chargeOrderId 已保存:', json.data.list[0].id);",
+                "}"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/ordertrade/car-charge-order/page?pageNo=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["ordertrade","car-charge-order","page"],
+              "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Step2 停止充电",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('停止成功，code=200', () => pm.expect(json.code).to.eql(200));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "tenant-id",    "value": "{{tenantId}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{ \"id\": {{chargeOrderId}}, \"remark\": \"手动停止充电\" }" },
+            "url": { "raw": "{{baseUrl}}/ordertrade/car-charge-order/stop", "host": ["{{baseUrl}}"], "path": ["ordertrade","car-charge-order","stop"] }
+          }
+        },
+        {
+          "name": "Step3 支付充电费用",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('支付成功，code=200', () => pm.expect(json.code).to.eql(200));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "tenant-id",    "value": "{{tenantId}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{ \"id\": {{chargeOrderId}} }" },
+            "url": { "raw": "{{baseUrl}}/ordertrade/car-charge-order/pay", "host": ["{{baseUrl}}"], "path": ["ordertrade","car-charge-order","pay"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "闭环3 - 退款申请全流程",
+      "description": "流程：查看待审核申请 → 审核通过 → 执行退款 → 查看退款记录 → 金额核算 → 确认核算",
+      "item": [
+        {
+          "name": "Step1 查看待审核退款申请",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('查询成功，code=200', () => pm.expect(json.code).to.eql(200));",
+                "if (json.data && json.data.list && json.data.list.length > 0) {",
+                "    pm.collectionVariables.set('refundApplyId', json.data.list[0].id);",
+                "    console.log('refundApplyId 已保存:', json.data.list[0].id);",
+                "}"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/ordertrade/refund-apply/page?pageNo=1&pageSize=10&auditStatus=pending_audit",
+              "host": ["{{baseUrl}}"],
+              "path": ["ordertrade","refund-apply","page"],
+              "query": [
+                { "key": "pageNo",      "value": "1" },
+                { "key": "pageSize",    "value": "10" },
+                { "key": "auditStatus", "value": "pending_audit" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Step2 审核通过",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('审核成功，code=200', () => pm.expect(json.code).to.eql(200));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "tenant-id",    "value": "{{tenantId}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{ \"id\": {{refundApplyId}}, \"remark\": \"审核通过，同意退款\" }" },
+            "url": { "raw": "{{baseUrl}}/ordertrade/refund-apply/approve", "host": ["{{baseUrl}}"], "path": ["ordertrade","refund-apply","approve"] }
+          }
+        },
+        {
+          "name": "Step3 执行退款",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('执行成功，code=200', () => pm.expect(json.code).to.eql(200));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "tenant-id",    "value": "{{tenantId}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{ \"id\": {{refundApplyId}} }" },
+            "url": { "raw": "{{baseUrl}}/ordertrade/refund-apply/execute", "host": ["{{baseUrl}}"], "path": ["ordertrade","refund-apply","execute"] }
+          }
+        },
+        {
+          "name": "Step4 查看退款记录",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('查询成功，code=200', () => pm.expect(json.code).to.eql(200));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/ordertrade/refund-record/page?pageNo=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["ordertrade","refund-record","page"],
+              "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Step5 查看金额核算列表",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('查询成功，code=200', () => pm.expect(json.code).to.eql(200));",
+                "if (json.data && json.data.list && json.data.list.length > 0) {",
+                "    pm.collectionVariables.set('amountCheckId', json.data.list[0].id);",
+                "}"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/ordertrade/amount-check/page?pageNo=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["ordertrade","amount-check","page"],
+              "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Step6 确认核算结果",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('确认成功，code=200', () => pm.expect(json.code).to.eql(200));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "tenant-id",    "value": "{{tenantId}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{ \"id\": {{amountCheckId}} }" },
+            "url": { "raw": "{{baseUrl}}/ordertrade/amount-check/confirm", "host": ["{{baseUrl}}"], "path": ["ordertrade","amount-check","confirm"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "闭环4 - 逃费识别追缴跟踪",
+      "description": "流程：查看识别列表 → 识别逃费 → 标记欠费 → 查看逃费记录 → 发起追缴 → 查看配置/跟踪 → 推送消息 → 催缴",
+      "item": [
+        {
+          "name": "Step1 查看逃费识别列表",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('查询成功，code=200', () => pm.expect(json.code).to.eql(200));",
+                "if (json.data && json.data.list && json.data.list.length > 0) {",
+                "    pm.collectionVariables.set('debtIdentifyId', json.data.list[0].id);",
+                "    console.log('debtIdentifyId 已保存:', json.data.list[0].id);",
+                "}"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/ordertrade/debt-identify/page?pageNo=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["ordertrade","debt-identify","page"],
+              "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Step2 识别逃费",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('识别成功，code=200', () => pm.expect(json.code).to.eql(200));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "tenant-id",    "value": "{{tenantId}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{ \"id\": {{debtIdentifyId}}, \"remark\": \"确认为逃费\" }" },
+            "url": { "raw": "{{baseUrl}}/ordertrade/debt-identify/identify", "host": ["{{baseUrl}}"], "path": ["ordertrade","debt-identify","identify"] }
+          }
+        },
+        {
+          "name": "Step3 标记欠费（生成逃费记录）",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('标记成功，code=200', () => pm.expect(json.code).to.eql(200));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "tenant-id",    "value": "{{tenantId}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{ \"id\": {{debtIdentifyId}}, \"remark\": \"生成欠费记录\" }" },
+            "url": { "raw": "{{baseUrl}}/ordertrade/debt-identify/mark", "host": ["{{baseUrl}}"], "path": ["ordertrade","debt-identify","mark"] }
+          }
+        },
+        {
+          "name": "Step4 查看逃费记录",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('查询成功，code=200', () => pm.expect(json.code).to.eql(200));",
+                "if (json.data && json.data.list && json.data.list.length > 0) {",
+                "    pm.collectionVariables.set('debtRecordId', json.data.list[0].id);",
+                "}"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/ordertrade/debt-record/page?pageNo=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["ordertrade","debt-record","page"],
+              "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Step5 发起追缴",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('发起成功，code=200', () => pm.expect(json.code).to.eql(200));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "tenant-id",    "value": "{{tenantId}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{ \"id\": {{debtRecordId}}, \"remark\": \"开始追缴\" }" },
+            "url": { "raw": "{{baseUrl}}/ordertrade/debt-record/start-collect", "host": ["{{baseUrl}}"], "path": ["ordertrade","debt-record","start-collect"] }
+          }
+        },
+        {
+          "name": "Step6 查看追缴配置",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('查询成功，code=200', () => pm.expect(json.code).to.eql(200));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/ordertrade/collect-config/page?pageNo=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["ordertrade","collect-config","page"],
+              "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Step7 查看追缴跟踪",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('查询成功，code=200', () => pm.expect(json.code).to.eql(200));",
+                "if (json.data && json.data.list && json.data.list.length > 0) {",
+                "    pm.collectionVariables.set('collectTrackId', json.data.list[0].id);",
+                "}"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/ordertrade/collect-track/page?pageNo=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["ordertrade","collect-track","page"],
+              "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Step8 推送追缴消息",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('推送成功，code=200', () => pm.expect(json.code).to.eql(200));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "tenant-id",    "value": "{{tenantId}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{ \"id\": {{collectTrackId}}, \"remark\": \"短信推送成功\" }" },
+            "url": { "raw": "{{baseUrl}}/ordertrade/collect-track/push", "host": ["{{baseUrl}}"], "path": ["ordertrade","collect-track","push"] }
+          }
+        },
+        {
+          "name": "Step9 查看欠费记录",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('查询成功，code=200', () => pm.expect(json.code).to.eql(200));",
+                "if (json.data && json.data.list && json.data.list.length > 0) {",
+                "    pm.collectionVariables.set('arrearRecordId', json.data.list[0].id);",
+                "}"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/ordertrade/arrear-record/page?pageNo=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["ordertrade","arrear-record","page"],
+              "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Step10 催缴提醒",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('催缴成功，code=200', () => pm.expect(json.code).to.eql(200));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "tenant-id",    "value": "{{tenantId}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{ \"id\": {{arrearRecordId}}, \"remark\": \"发送催缴通知\" }" },
+            "url": { "raw": "{{baseUrl}}/ordertrade/arrear-record/remind", "host": ["{{baseUrl}}"], "path": ["ordertrade","arrear-record","remind"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "闭环5 - 取消订单",
+      "description": "取消待支付订单",
+      "item": [
+        {
+          "name": "取消待支付订单",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "pm.test('取消成功，code=200', () => pm.expect(json.code).to.eql(200));"
+              ],
+              "type": "text/javascript"
+            }
+          }],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "tenant-id",    "value": "{{tenantId}}" }
+            ],
+            "body": { "mode": "raw", "raw": "{ \"id\": 1, \"remark\": \"用户主动取消\" }" },
+            "url": { "raw": "{{baseUrl}}/ordertrade/all-order/cancel", "host": ["{{baseUrl}}"], "path": ["ordertrade","all-order","cancel"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "快速验证清单 - 所有模块 page 接口",
+      "description": "一键验证所有模块的分页查询，确认数据已正确写入",
+      "item": [
+        {
+          "name": "全部订单 /page",
+          "event": [{ "listen": "test", "script": { "exec": ["var json = pm.response.json(); pm.test('code=200', () => pm.expect(json.code).to.eql(200)); pm.test('有数据', () => pm.expect(json.data.total).to.be.above(0));"], "type": "text/javascript" } }],
+          "request": { "method": "GET", "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }], "url": { "raw": "{{baseUrl}}/ordertrade/all-order/page?pageNo=1&pageSize=10", "host": ["{{baseUrl}}"], "path": ["ordertrade","all-order","page"], "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }] } }
+        },
+        {
+          "name": "临时停车 /page",
+          "event": [{ "listen": "test", "script": { "exec": ["var json = pm.response.json(); pm.test('code=200', () => pm.expect(json.code).to.eql(200));"], "type": "text/javascript" } }],
+          "request": { "method": "GET", "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }], "url": { "raw": "{{baseUrl}}/ordertrade/temp-park-order/page?pageNo=1&pageSize=10", "host": ["{{baseUrl}}"], "path": ["ordertrade","temp-park-order","page"], "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }] } }
+        },
+        {
+          "name": "错时停车 /page",
+          "event": [{ "listen": "test", "script": { "exec": ["var json = pm.response.json(); pm.test('code=200', () => pm.expect(json.code).to.eql(200));"], "type": "text/javascript" } }],
+          "request": { "method": "GET", "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }], "url": { "raw": "{{baseUrl}}/ordertrade/offtime-park-order/page?pageNo=1&pageSize=10", "host": ["{{baseUrl}}"], "path": ["ordertrade","offtime-park-order","page"], "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }] } }
+        },
+        {
+          "name": "汽车充电 /page",
+          "event": [{ "listen": "test", "script": { "exec": ["var json = pm.response.json(); pm.test('code=200', () => pm.expect(json.code).to.eql(200));"], "type": "text/javascript" } }],
+          "request": { "method": "GET", "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }], "url": { "raw": "{{baseUrl}}/ordertrade/car-charge-order/page?pageNo=1&pageSize=10", "host": ["{{baseUrl}}"], "path": ["ordertrade","car-charge-order","page"], "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }] } }
+        },
+        {
+          "name": "两轮充电 /page",
+          "event": [{ "listen": "test", "script": { "exec": ["var json = pm.response.json(); pm.test('code=200', () => pm.expect(json.code).to.eql(200));"], "type": "text/javascript" } }],
+          "request": { "method": "GET", "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }], "url": { "raw": "{{baseUrl}}/ordertrade/bike-charge-order/page?pageNo=1&pageSize=10", "host": ["{{baseUrl}}"], "path": ["ordertrade","bike-charge-order","page"], "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }] } }
+        },
+        {
+          "name": "共享充电 /page",
+          "event": [{ "listen": "test", "script": { "exec": ["var json = pm.response.json(); pm.test('code=200', () => pm.expect(json.code).to.eql(200));"], "type": "text/javascript" } }],
+          "request": { "method": "GET", "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }], "url": { "raw": "{{baseUrl}}/ordertrade/share-charge-order/page?pageNo=1&pageSize=10", "host": ["{{baseUrl}}"], "path": ["ordertrade","share-charge-order","page"], "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }] } }
+        },
+        {
+          "name": "异常订单 /page",
+          "event": [{ "listen": "test", "script": { "exec": ["var json = pm.response.json(); pm.test('code=200', () => pm.expect(json.code).to.eql(200));"], "type": "text/javascript" } }],
+          "request": { "method": "GET", "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }], "url": { "raw": "{{baseUrl}}/ordertrade/abnormal-order/page?pageNo=1&pageSize=10", "host": ["{{baseUrl}}"], "path": ["ordertrade","abnormal-order","page"], "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }] } }
+        },
+        {
+          "name": "逃费识别 /page",
+          "event": [{ "listen": "test", "script": { "exec": ["var json = pm.response.json(); pm.test('code=200', () => pm.expect(json.code).to.eql(200));"], "type": "text/javascript" } }],
+          "request": { "method": "GET", "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }], "url": { "raw": "{{baseUrl}}/ordertrade/debt-identify/page?pageNo=1&pageSize=10", "host": ["{{baseUrl}}"], "path": ["ordertrade","debt-identify","page"], "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }] } }
+        },
+        {
+          "name": "逃费记录 /page",
+          "event": [{ "listen": "test", "script": { "exec": ["var json = pm.response.json(); pm.test('code=200', () => pm.expect(json.code).to.eql(200));"], "type": "text/javascript" } }],
+          "request": { "method": "GET", "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }], "url": { "raw": "{{baseUrl}}/ordertrade/debt-record/page?pageNo=1&pageSize=10", "host": ["{{baseUrl}}"], "path": ["ordertrade","debt-record","page"], "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }] } }
+        },
+        {
+          "name": "欠费记录 /page",
+          "event": [{ "listen": "test", "script": { "exec": ["var json = pm.response.json(); pm.test('code=200', () => pm.expect(json.code).to.eql(200));"], "type": "text/javascript" } }],
+          "request": { "method": "GET", "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }], "url": { "raw": "{{baseUrl}}/ordertrade/arrear-record/page?pageNo=1&pageSize=10", "host": ["{{baseUrl}}"], "path": ["ordertrade","arrear-record","page"], "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }] } }
+        },
+        {
+          "name": "追缴配置 /page",
+          "event": [{ "listen": "test", "script": { "exec": ["var json = pm.response.json(); pm.test('code=200', () => pm.expect(json.code).to.eql(200));"], "type": "text/javascript" } }],
+          "request": { "method": "GET", "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }], "url": { "raw": "{{baseUrl}}/ordertrade/collect-config/page?pageNo=1&pageSize=10", "host": ["{{baseUrl}}"], "path": ["ordertrade","collect-config","page"], "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }] } }
+        },
+        {
+          "name": "追缴跟踪 /page",
+          "event": [{ "listen": "test", "script": { "exec": ["var json = pm.response.json(); pm.test('code=200', () => pm.expect(json.code).to.eql(200));"], "type": "text/javascript" } }],
+          "request": { "method": "GET", "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }], "url": { "raw": "{{baseUrl}}/ordertrade/collect-track/page?pageNo=1&pageSize=10", "host": ["{{baseUrl}}"], "path": ["ordertrade","collect-track","page"], "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }] } }
+        },
+        {
+          "name": "退款申请 /page",
+          "event": [{ "listen": "test", "script": { "exec": ["var json = pm.response.json(); pm.test('code=200', () => pm.expect(json.code).to.eql(200));"], "type": "text/javascript" } }],
+          "request": { "method": "GET", "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }], "url": { "raw": "{{baseUrl}}/ordertrade/refund-apply/page?pageNo=1&pageSize=10", "host": ["{{baseUrl}}"], "path": ["ordertrade","refund-apply","page"], "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }] } }
+        },
+        {
+          "name": "退款记录 /page",
+          "event": [{ "listen": "test", "script": { "exec": ["var json = pm.response.json(); pm.test('code=200', () => pm.expect(json.code).to.eql(200));"], "type": "text/javascript" } }],
+          "request": { "method": "GET", "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }], "url": { "raw": "{{baseUrl}}/ordertrade/refund-record/page?pageNo=1&pageSize=10", "host": ["{{baseUrl}}"], "path": ["ordertrade","refund-record","page"], "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }] } }
+        },
+        {
+          "name": "金额核算 /page",
+          "event": [{ "listen": "test", "script": { "exec": ["var json = pm.response.json(); pm.test('code=200', () => pm.expect(json.code).to.eql(200));"], "type": "text/javascript" } }],
+          "request": { "method": "GET", "header": [{ "key": "tenant-id", "value": "{{tenantId}}" }], "url": { "raw": "{{baseUrl}}/ordertrade/amount-check/page?pageNo=1&pageSize=10", "host": ["{{baseUrl}}"], "path": ["ordertrade","amount-check","page"], "query": [{ "key": "pageNo", "value": "1" }, { "key": "pageSize", "value": "10" }] } }
+        }
+      ]
+    }
+
+  ]
+}
