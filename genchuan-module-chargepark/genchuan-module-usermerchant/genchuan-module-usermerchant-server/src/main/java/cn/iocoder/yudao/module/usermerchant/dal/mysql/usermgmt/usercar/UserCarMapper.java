@@ -6,6 +6,11 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.usermgmt.usercar.UserCarDO;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.usercar.vo.*;
+import org.apache.ibatis.annotations.Param;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 用户车辆 Mapper
@@ -29,4 +34,11 @@ public interface UserCarMapper extends BaseMapperX<UserCarDO> {
                 .orderByDesc(UserCarDO::getId));
     }
 
+    List<UserCarChartRespVO.CarTypeDistributionVO> selectCarTypeDistribution(@Param("start") LocalDateTime start,
+                                                                             @Param("end") LocalDateTime end,
+                                                                             @Param("granularity") String granularity);
+
+    Long selectBindCarCount(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    BigDecimal selectAuditPassRate(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }

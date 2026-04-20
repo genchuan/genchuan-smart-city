@@ -5,6 +5,7 @@ import java.util.*;
 import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdicttype.vo.BizDictTypePageReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdicttype.vo.BizDictTypeSaveReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdicttype.vo.ops.AddReq;
+import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdicttype.vo.ops.BatchResult;
 import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdicttype.vo.ops.UpdateReq;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.vrv.dictionary.bizdicttype.BizDictTypeDO;
 import jakarta.validation.*;
@@ -63,9 +64,11 @@ public interface BizDictTypeService {
      */
     PageResult<BizDictTypeDO> getBizDictTypePage(BizDictTypePageReqVO pageReqVO);
 
-    Long addBizDictType(AddReq createReqVO);
+    Long addBizDictType(@Valid AddReq createReqVO);
 
     void updateBiz(UpdateReq updateReqVO);
 
     void deleteBizDictTypeBatch(List<Long> ids);
+
+    BatchResult batchAddBizDictType(List<AddReq> addReqList);
 }

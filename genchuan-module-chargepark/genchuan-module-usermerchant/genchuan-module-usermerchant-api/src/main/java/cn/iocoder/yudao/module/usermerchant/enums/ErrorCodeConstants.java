@@ -14,5 +14,7 @@ public interface ErrorCodeConstants {
     ErrorCode ILLEGAL_STATUS = new ErrorCode(500, "不合法的状态");
     // ========== 用户车辆==========
     ErrorCode USER_CAR_NOT_EXISTS = new ErrorCode(500, "用户车辆不存在");
+    // ========== 车牌认证==========
+    ErrorCode PLATE_AUTH_NOT_EXISTS = new ErrorCode(500, "车牌认证不存在");
 
 }

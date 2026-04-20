@@ -31,6 +31,9 @@ Build:
           ["genchuan-module-appearance-server"]="genchuan-module-urban/genchuan-module-appearance/genchuan-module-appearance-server"
           ["genchuan-module-smartcity-server"]="genchuan-module-urban/genchuan-module-smartcity/genchuan-module-smartcity-server"
           ["genchuan-module-waterdetection-server"]="genchuan-module-wateraffairs/genchuan-module-waterdetection/genchuan-module-waterdetection-server"
+          ["genchuan-module-inspectop-server"]="genchuan-module-chargepark/genchuan-module-inspectop/genchuan-module-inspectop-server"
+          ["genchuan-module-stationresource-server"]="genchuan-module-chargepark/genchuan-module-stationresource/genchuan-module-stationresource-server"
+          ["genchuan-module-usermerchant-server"]="genchuan-module-chargepark/genchuan-module-usermerchant/genchuan-module-usermerchant-server"
         )
         for module in "${!MODULE_JAR_MAP[@]}"; do
           jarPath=${MODULE_JAR_MAP[$module]}

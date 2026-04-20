@@ -32,6 +32,11 @@ public class UserCarDO extends BaseDO {
      */
     private Long userId;
     /**
+     * 用户名称
+     */
+    @TableField(exist = false)
+    private String nickname;
+    /**
      * 车牌号码
      */
     private String plateNo;
@@ -55,6 +60,11 @@ public class UserCarDO extends BaseDO {
      * 审核人ID
      */
     private Long auditorId;
+    /**
+     * 审核人名称
+     */
+    @TableField(exist = false)
+    private String auditorName;
     /**
      * 审核时间
      */

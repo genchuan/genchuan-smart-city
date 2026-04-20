@@ -1,9 +1,9 @@
 package cn.iocoder.yudao.module.usermerchant.service.usermgmt.userinfo;
 
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import jakarta.validation.Valid;
-import lombok.Data;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,10 +11,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.*;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.usermgmt.userinfo.UserInfoDO;
@@ -128,7 +125,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         String timeRange = chartReqVO.getTimeRange();
 
         // 解析时间范围，获取开始时间、结束时间以及分组类型（日/月/年）
-        TimeRangeParsed parsed = parseTimeRange(timeRange);
+        TimeRangeParser.TimeRangeParsed parsed = TimeRangeParser.parse(timeRange);
         if (parsed == null) {
             // 若解析失败，可返回空数据或抛异常
             return chartRespVO;
@@ -162,7 +159,7 @@ public class UserInfoServiceImpl implements UserInfoService {
                 .last("LIMIT 1");
         UserInfoDO last = userInfoMapper.selectOne(wrapper);
 
-        int seq = 0;
+        int seq = 1;
         if (last != null && last.getUserNo() != null) {
             String lastNo = last.getUserNo();
             // 提取后面的数字部分
@@ -170,7 +167,7 @@ public class UserInfoServiceImpl implements UserInfoService {
             try {
                 seq = Integer.parseInt(seqStr) + 1;
             } catch (NumberFormatException e) {
-                seq = 0;
+                seq = 1;
             }
         }
         // 超过 999 可以重置或抛出异常，根据业务决定
@@ -178,87 +175,6 @@ public class UserInfoServiceImpl implements UserInfoService {
             throw exception(USER_INFO_NO_REACHED_LIMIT);
         }
         return prefix + String.format("%03d", seq);
-    }
-
-    /**
-     * 解析时间范围字符串
-     * 格式示例： "2025-04-01~2025-04-30" -> 日粒度
-     *           "2025-04~2025-04" -> 月粒度
-     *           "2025~2025" -> 年粒度
-     * 返回包含 start, end, granularity 的对象
-     */
-    private TimeRangeParsed parseTimeRange(String timeRange) {
-        if (timeRange == null || !timeRange.contains("~")) {
-            return null;
-        }
-        String[] parts = timeRange.split("~");
-        if (parts.length != 2) {
-            return null;
-        }
-        String startStr = parts[0].trim();
-        String endStr = parts[1].trim();
-
-        // 解析开始和结束时间（支持 yyyy-MM-dd 或 yyyy-MM-dd HH:mm:ss）
-        LocalDateTime start = parseDateTime(startStr);
-        LocalDateTime end = parseDateTime(endStr);
-        if (start == null || end == null) {
-            return null;
-        }
-
-        // 推断粒度
-        String granularity;
-        // 年粒度：开始是年初（月=1，日=1，时=0，分=0，秒=0），结束是年末（月=12，日=31，时=23，分=59，秒=59），且同年
-        if (start.getMonth() == Month.JANUARY && start.getDayOfMonth() == 1 && start.getHour() == 0 && start.getMinute() == 0 && start.getSecond() == 0 &&
-                end.getMonth() == Month.DECEMBER && end.getDayOfMonth() == 31 && end.getHour() == 23 && end.getMinute() == 59 && end.getSecond() == 59 &&
-                start.getYear() == end.getYear()) {
-            granularity = "year";
-        }
-        // 月粒度：开始是月初（日=1，时=0，分=0，秒=0），结束是月末（同年同月，且日期为该月最后一天，时=23，分=59，秒=59）
-        else if (start.getDayOfMonth() == 1 && start.getHour() == 0 && start.getMinute() == 0 && start.getSecond() == 0 &&
-                start.getYear() == end.getYear() && start.getMonth() == end.getMonth() &&
-                end.getDayOfMonth() == end.toLocalDate().lengthOfMonth() && end.getHour() == 23 && end.getMinute() == 59 && end.getSecond() == 59) {
-            granularity = "month";
-        }
-        else {
-            granularity = "day";
-        }
-
-        return new TimeRangeParsed(start, end, granularity);
-    }
-
-    /**
-     * 解析日期时间字符串，支持格式：
-     * - yyyy-MM-dd HH:mm:ss
-     * - yyyy-MM-dd
-     */
-    private LocalDateTime parseDateTime(String str) {
-        if (str == null || str.isEmpty()) {
-            return null;
-        }
-        // 尝试完整格式
-        try {
-            return LocalDateTime.parse(str, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        } catch (DateTimeParseException e) {
-            // 尝试日期格式
-            try {
-                LocalDate date = LocalDate.parse(str, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                return date.atStartOfDay();
-            } catch (DateTimeParseException e2) {
-                return null;
-            }
-        }
-    }
-
-    @Data
-    private static class TimeRangeParsed {
-        private final LocalDateTime start;
-        private final LocalDateTime end;
-        private final String granularity; // "day", "month", "year"
-        public TimeRangeParsed(LocalDateTime start, LocalDateTime end, String granularity) {
-            this.start = start;
-            this.end = end;
-            this.granularity = granularity;
-        }
     }
 
 }

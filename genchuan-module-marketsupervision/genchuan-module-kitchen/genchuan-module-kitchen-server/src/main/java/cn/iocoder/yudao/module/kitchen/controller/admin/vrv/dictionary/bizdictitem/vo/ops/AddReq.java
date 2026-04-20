@@ -7,10 +7,7 @@ import lombok.Data;
 @Schema(description = "管理后台 - 业务字典项新增/修改 Request VO")
 @Data
 public class AddReq {
-
-
     //==========================必须填写
-
     @Schema(description = "[关联类型编码] 关联park_dict_type.uni_code", requiredMode = Schema.RequiredMode.REQUIRED,example = "eee")
     @NotEmpty(message = "[关联类型编码] 关联park_dict_type.uni_code不能为空")
     private String typeCode;
@@ -23,21 +20,17 @@ public class AddReq {
     @NotEmpty(message = "[字典显示名] 如：男、女、成功不能为空")
     private String dictLabel;
 
-
     //==========================可选但重要填写
     @Schema(description = "[字典项描述]", example = "你猜")
     private String description;
 
     //==========================可选但不重要填写
-
     //有默认蓝色#1890ff
     @Schema(description = "[颜色] 如：#1890ff")
     private String color;
 
     @Schema(description = "[备注]", example = "你说的对")
     private String remark;
-
-
 
     //===============无需填写=======
     //自动获取最大编号+1

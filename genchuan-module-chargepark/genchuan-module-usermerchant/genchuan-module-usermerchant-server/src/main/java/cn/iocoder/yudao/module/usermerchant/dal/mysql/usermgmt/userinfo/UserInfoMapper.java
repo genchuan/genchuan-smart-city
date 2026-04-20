@@ -31,6 +31,7 @@ public interface UserInfoMapper extends BaseMapperX<UserInfoDO> {
     );
 
     Long selectTotalUserCount(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
     Long selectNewUserCount(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     default PageResult<UserInfoDO> selectPage(UserInfoPageReqVO reqVO) {
@@ -46,5 +47,7 @@ public interface UserInfoMapper extends BaseMapperX<UserInfoDO> {
                 .eqIfPresent(UserInfoDO::getRemark, reqVO.getRemark())
                 .orderByDesc(UserInfoDO::getId));
     }
+
+    Long getIdByNickname(String nickname);
 
 }

@@ -4,10 +4,7 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdictit
 import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdictitem.vo.BizDictItemRespVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdictitem.vo.BizDictItemSaveReqVO;
 
-import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdictitem.vo.ops.AddReq;
-import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdictitem.vo.ops.ListByTypeReq;
-import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdictitem.vo.ops.ListByTypeResp;
-import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdictitem.vo.ops.UpdateReq;
+import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdictitem.vo.ops.*;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.vrv.dictionary.bizdictitem.BizDictItemDO;
 import cn.iocoder.yudao.module.kitchen.service.vrv.dictionary.bizdictitem.BizDictItemService;
 import org.springframework.web.bind.annotation.*;
@@ -45,6 +42,12 @@ public class BizDictItemController {
     @Resource
     private BizDictItemService bizDictItemService;
 
+    @PostMapping("/batch-add")
+    @Operation(summary = "批量新增业务字典项")
+    public CommonResult<BatchResult> batchAddBizDictItem(@RequestBody List<AddReq> addReqList) {
+        BatchResult result = bizDictItemService.batchAddBizDictItem(addReqList);
+        return success(result);
+    }
     /**
      * 更新业务字典项
      * 可更新字段：dict_key、dict_label、color、sort、description、remark、status
@@ -74,7 +77,7 @@ public class BizDictItemController {
      * 按sort正序、创建时间正序排列
      */
     @GetMapping("/list-by-type")
-    @Operation(summary = "new-获取该类型的全部字典项")
+    @Operation(summary = "AAA-获取该类型的全部字典项")
 //    @PreAuthorize("@ss.hasPermission('kitchen:biz-dict-item:query')")
     public CommonResult<List<ListByTypeResp>> ListByType(@Valid ListByTypeReq req) {
         List<ListByTypeResp> result = bizDictItemService.listByType(req);

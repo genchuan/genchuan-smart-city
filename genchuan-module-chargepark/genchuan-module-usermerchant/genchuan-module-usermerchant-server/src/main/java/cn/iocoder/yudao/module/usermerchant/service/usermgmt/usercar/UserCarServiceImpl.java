@@ -1,9 +1,14 @@
 package cn.iocoder.yudao.module.usermerchant.service.usermgmt.usercar;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.usermgmt.userinfo.UserInfoDO;
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.usermgmt.userinfo.UserInfoMapper;
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.NameQueryHelper;
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.springframework.stereotype.Service;
@@ -14,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
 import java.util.*;
+
 import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.usercar.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.usermgmt.usercar.UserCarDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -36,6 +42,9 @@ public class UserCarServiceImpl implements UserCarService {
     private static final String STATUS_UNBIND = "已解绑";
     private static final String STATUS_REJECT = "已驳回";
     private static final String STATUS_REBIND = "待审核";
+
+    @Resource
+    private AdminUserApi adminUserApi;
 
     @Resource
     private UserCarMapper userCarMapper;
@@ -75,7 +84,35 @@ public class UserCarServiceImpl implements UserCarService {
 
     @Override
     public PageResult<UserCarDO> getUserCarPage(UserCarPageReqVO pageReqVO) {
-        return userCarMapper.selectPage(pageReqVO);
+        // 1. 处理昵称筛选：如果前端传了 nickname，则转换为 userId 并设置到查询条件
+        if (StrUtil.isNotBlank(pageReqVO.getNickname())) {
+            Long userId = userInfoMapper.getIdByNickname(pageReqVO.getNickname());
+            if (userId == null) {
+                return new PageResult<>(Collections.emptyList(), 0L);
+            }
+            pageReqVO.setUserId(userId);
+        }
+        // 2. 分页查询车辆数据
+        PageResult<UserCarDO> pageResult = userCarMapper.selectPage(pageReqVO);
+        if (CollUtil.isEmpty(pageResult.getList())) {
+            return pageResult;
+        }
+
+        // 批量填充所属用户昵称
+        NameQueryHelper.fillNamesByIds(
+                pageResult.getList(),
+                UserCarDO::getUserId,
+                UserCarDO::setNickname,
+                "user_info", "id", "nickname"
+        );
+
+        // 批量填充审核人昵称（通过 Feign 调用 system-server）
+        NameQueryHelper.fillUserNames(pageResult.getList(),
+                UserCarDO::getAuditorId,
+                UserCarDO::setAuditorName,
+                adminUserApi);
+
+        return pageResult;
     }
 
     @Override
@@ -174,6 +211,28 @@ public class UserCarServiceImpl implements UserCarService {
         } else {
             throw exception(ILLEGAL_STATUS);
         }
+    }
+
+    @Override
+    public UserCarChartRespVO getUserCarChart(UserCarChartReqVO chartReqVO) {
+        UserCarChartRespVO chartRespVO = new UserCarChartRespVO();
+        String timeRange = chartReqVO.getTimeRange();
+
+        // 使用工具类解析时间范围
+        TimeRangeParser.TimeRangeParsed parsed = TimeRangeParser.parse(timeRange);
+        if (parsed == null) {
+            // 若解析失败，可返回空数据或抛异常
+            return chartRespVO;
+        }
+        // 柱状图数据
+        List<UserCarChartRespVO.CarTypeDistributionVO> typeDistribution = userCarMapper.selectCarTypeDistribution(
+                parsed.getStart(), parsed.getEnd(), parsed.getGranularity());
+        chartRespVO.setCarTypeDistribution(typeDistribution);
+        // 总数统计
+        chartRespVO.setBindCarCount(userCarMapper.selectBindCarCount(parsed.getStart(), parsed.getEnd()));
+        // 计算比率
+        chartRespVO.setAuditPassRate(userCarMapper.selectAuditPassRate(parsed.getStart(), parsed.getEnd()));
+        return chartRespVO;
     }
 
     private Long getCurrentUserId() {

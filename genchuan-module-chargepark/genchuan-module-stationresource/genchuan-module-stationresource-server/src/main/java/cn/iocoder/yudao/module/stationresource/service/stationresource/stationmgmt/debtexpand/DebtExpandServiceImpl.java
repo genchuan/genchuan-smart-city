@@ -122,7 +122,7 @@ public class DebtExpandServiceImpl implements DebtExpandService {
                         // 更新模式：先查是否存在 → 存在更新，不存在新增
                         DebtExpandDO exist = debtExpandMapper.selectOne(DebtExpandDO::getStationId, req.getStationId());
                         if (exist != null) {
-                            // 有就更新（你可以自己写 update 方法，这里保持逻辑一致）
+                            // 有就更新（自己写 update 方法，这里保持逻辑一致）
                             DebtExpandDO updateDO = BeanUtils.toBean(req, DebtExpandDO.class);
                             updateDO.setId(exist.getId());
                             debtExpandMapper.updateById(updateDO);
