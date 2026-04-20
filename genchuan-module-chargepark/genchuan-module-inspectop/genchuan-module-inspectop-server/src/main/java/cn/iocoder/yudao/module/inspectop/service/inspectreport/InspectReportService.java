@@ -1,0 +1,62 @@
+package cn.iocoder.yudao.module.inspectop.service.inspectreport;
+
+import java.util.*;
+import jakarta.validation.*;
+import cn.iocoder.yudao.module.inspectop.controller.admin.inspectreport.vo.*;
+import cn.iocoder.yudao.module.inspectop.dal.dataobject.inspectreport.InspectReportDO;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
+
+/**
+ * 巡检上报 Service 接口
+ *
+ * @author zhucongquan
+ */
+public interface InspectReportService {
+
+    /**
+     * 创建巡检上报
+     *
+     * @param createReqVO 创建信息
+     * @return 编号
+     */
+    Long createInspectReport(@Valid InspectReportSaveReqVO createReqVO);
+
+    /**
+     * 更新巡检上报
+     *
+     * @param updateReqVO 更新信息
+     */
+    void updateInspectReport(@Valid InspectReportSaveReqVO updateReqVO);
+
+    /**
+     * 删除巡检上报
+     *
+     * @param id 编号
+     */
+    void deleteInspectReport(Long id);
+
+    /**
+    * 批量删除巡检上报
+    *
+    * @param ids 编号
+    */
+    void deleteInspectReportListByIds(List<Long> ids);
+
+    /**
+     * 获得巡检上报
+     *
+     * @param id 编号
+     * @return 巡检上报
+     */
+    InspectReportDO getInspectReport(Long id);
+
+    /**
+     * 获得巡检上报分页
+     *
+     * @param pageReqVO 分页查询
+     * @return 巡检上报分页
+     */
+    PageResult<InspectReportDO> getInspectReportPage(InspectReportPageReqVO pageReqVO);
+
+}
