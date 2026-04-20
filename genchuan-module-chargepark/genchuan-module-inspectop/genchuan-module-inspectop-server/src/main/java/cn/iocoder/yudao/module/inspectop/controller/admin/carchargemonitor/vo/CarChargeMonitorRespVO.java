@@ -25,6 +25,10 @@ public class CarChargeMonitorRespVO {
     @ExcelProperty("场站ID")
     private Long stationId;
 
+    @Schema(description = "场站名称")
+    @ExcelProperty("场站名称")
+    private String stationName;
+
     @Schema(description = "监测时间", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("监测时间")
     private LocalDateTime monitorTime;

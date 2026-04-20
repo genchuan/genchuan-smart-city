@@ -1,12 +1,15 @@
 package cn.iocoder.yudao.module.vehiclecharging.framework.common.utils;
 
+import cn.hutool.core.util.StrUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
@@ -16,6 +19,7 @@ import java.time.format.DateTimeParseException;
  *
  * @author 亘川智城
  */
+@Slf4j
 public class TimeRangeParser {
 
     /**
@@ -80,6 +84,89 @@ public class TimeRangeParser {
                 return null;
             }
         }
+    }
+
+    public static class ReportRange {
+        private final LocalDateTime start;
+        private final LocalDateTime end;
+        private final String groupPattern; // 用于 SQL 的 DATE_FORMAT 格式，如 "%Y-%m-%d"
+        public ReportRange(LocalDateTime start, LocalDateTime end, String groupPattern) {
+            this.start = start;
+            this.end = end;
+            this.groupPattern = groupPattern;
+        }
+        public LocalDateTime getStart() { return start; }
+        public LocalDateTime getEnd() { return end; }
+        public String getGroupPattern() { return groupPattern; }
+    }
+
+    /**
+     * 根据报表类型和时间范围解析起止时间和分组格式
+     * @param reportType 日/周/月/季/半年/年
+     * @param timeRange  对应格式：yyyy-MM-dd, yyyy-MM, yyyy, yyyy-Q1, yyyy-H1 等
+     * @return ReportRange 对象，若解析失败返回 null
+     */
+    public static ReportRange parseReport(String reportType, String timeRange) {
+        if (StrUtil.isBlank(reportType) || StrUtil.isBlank(timeRange)) {
+            return null;
+        }
+        LocalDateTime start = null;
+        LocalDateTime end = null;
+        String groupPattern = null;
+        try {
+            switch (reportType) {
+                case "日":
+                    LocalDate day = LocalDate.parse(timeRange);
+                    start = day.atStartOfDay();
+                    end = day.atTime(23, 59, 59);
+                    groupPattern = "%Y-%m-%d";
+                    break;
+                case "周":
+                    // 周统计较复杂，暂不支持，抛出异常或返回 null
+                    throw new IllegalArgumentException("周统计暂未实现");
+                case "月":
+                    YearMonth ym = YearMonth.parse(timeRange);
+                    start = ym.atDay(1).atStartOfDay();
+                    end = ym.atEndOfMonth().atTime(23, 59, 59);
+                    groupPattern = "%Y-%m-%d";
+                    break;
+                case "季":
+                    String[] qParts = timeRange.split("-Q");
+                    int year = Integer.parseInt(qParts[0]);
+                    int quarter = Integer.parseInt(qParts[1]);
+                    int startMonth = (quarter - 1) * 3 + 1;
+                    int endMonth = startMonth + 2;
+                    start = LocalDate.of(year, startMonth, 1).atStartOfDay();
+                    end = LocalDate.of(year, endMonth, 1).plusMonths(1).minusDays(1).atTime(23, 59, 59);
+                    groupPattern = "%Y-%m-%d";
+                    break;
+                case "半年":
+                    String[] hParts = timeRange.split("-H");
+                    int halfYear = Integer.parseInt(hParts[0]);
+                    int half = Integer.parseInt(hParts[1]);
+                    if (half == 1) {
+                        start = LocalDate.of(halfYear, 1, 1).atStartOfDay();
+                        end = LocalDate.of(halfYear, 6, 30).atTime(23, 59, 59);
+                    } else {
+                        start = LocalDate.of(halfYear, 7, 1).atStartOfDay();
+                        end = LocalDate.of(halfYear, 12, 31).atTime(23, 59, 59);
+                    }
+                    groupPattern = "%Y-%m-%d";
+                    break;
+                case "年":
+                    int y = Integer.parseInt(timeRange);
+                    start = LocalDate.of(y, 1, 1).atStartOfDay();
+                    end = LocalDate.of(y, 12, 31).atTime(23, 59, 59);
+                    groupPattern = "%Y-%m";
+                    break;
+                default:
+                    return null;
+            }
+        } catch (Exception e) {
+            log.error("解析报表时间范围失败, reportType={}, timeRange={}", reportType, timeRange, e);
+            return null;
+        }
+        return new ReportRange(start, end, groupPattern);
     }
 
     /**

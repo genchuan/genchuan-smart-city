@@ -13,6 +13,7 @@ import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import java.util.*;
 import java.io.IOException;
+import java.util.concurrent.ThreadLocalRandom;
 
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -84,8 +85,43 @@ public class CarChargeMonitorController {
     @Operation(summary = "获得汽车充电监测分页")
     @PreAuthorize("@ss.hasPermission('inspectop:car-charge-monitor:query')")
     public CommonResult<PageResult<CarChargeMonitorRespVO>> getCarChargeMonitorPage(@Valid CarChargeMonitorPageReqVO pageReqVO) {
-        PageResult<CarChargeMonitorDO> pageResult = carChargeMonitorService.getCarChargeMonitorPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, CarChargeMonitorRespVO.class));
+        PageResult<CarChargeMonitorRespVO> pageResult = carChargeMonitorService.getCarChargeMonitorPage(pageReqVO);
+        return success(pageResult);
+    }
+
+    @GetMapping("/location")
+    @Operation(summary = "定位")
+    @Parameter(name = "id", description = "监测记录ID", required = true, example = "1")
+    @PreAuthorize("@ss.hasPermission('inspectop:car-charge-monitor:location')")
+    public CommonResult<CarChargeMonitorLocationRespVO> getCarChargeMonitorLocation(@RequestParam("id") Long id) {
+        // 1. 从Service层获取基础定位信息
+        CarChargeMonitorLocationRespVO locationRespVO = carChargeMonitorService.getCarChargeMonitorLocation(id);
+
+        // 2. 生成随机设备编号：CC-01 到 CC-50
+        int deviceNum = ThreadLocalRandom.current().nextInt(1, 51); // 生成1-50的随机数
+        String deviceCode = String.format("CC-%02d", deviceNum); // 格式化为两位数字
+
+        // 3. 设置设备编号到响应对象
+        locationRespVO.setDeviceCode(deviceCode);
+
+        // 4. 返回成功响应
+        return success(locationRespVO);
+    }
+
+    @PutMapping("/alarm")
+    @Operation(summary = "告警更新汽车充电监测")
+    @PreAuthorize("@ss.hasPermission('inspectop:car-charge-monitor:alarm')")
+    public CommonResult<Boolean> alarmCarChargeMonitor(@Valid @RequestBody CarChargeMonitorAlarmReqVO alarmReqVO) {
+        carChargeMonitorService.alarmCarChargeMonitor(alarmReqVO);
+        return success(true);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "统计图表")
+    @PreAuthorize("@ss.hasPermission('inspectop:car-charge-monitor:chart')")
+    public CommonResult<CarChargeMonitorChartRespVO> getCarChargeMonitorChart(@Valid CarChargeMonitorChartReqVO reqVO) {
+        CarChargeMonitorChartRespVO chartData = carChargeMonitorService.getCarChargeMonitorChart(reqVO);
+        return success(chartData);
     }
 
     @GetMapping("/export-excel")
@@ -95,7 +131,7 @@ public class CarChargeMonitorController {
     public void exportCarChargeMonitorExcel(@Valid CarChargeMonitorPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<CarChargeMonitorDO> list = carChargeMonitorService.getCarChargeMonitorPage(pageReqVO).getList();
+        List<CarChargeMonitorRespVO> list = carChargeMonitorService.getCarChargeMonitorPage(pageReqVO).getList();
         // 导出 Excel
         ExcelUtils.write(response, "汽车充电监测.xls", "数据", CarChargeMonitorRespVO.class,
                         BeanUtils.toBean(list, CarChargeMonitorRespVO.class));

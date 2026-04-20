@@ -21,7 +21,7 @@ public class SharingReportPageRespVO {
     @Schema(description = "报表类型", example = "月")
     private String reportType;
 
-    @Schema(description = "报表时间范围", example = "2025-03")
+    @Schema(description = "报表时间范围", example = "2025-03-01 00:00:00~2025-03-01 23:59:59")
     private String timeRange;
 
     @Schema(description = "合作方", example = "XX 能源科技有限公司")

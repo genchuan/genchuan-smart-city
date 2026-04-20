@@ -17,4 +17,10 @@ public interface ErrorCodeConstants {
 
     // ========== 汽车充电监测 ==========
     ErrorCode CAR_CHARGE_MONITOR_NOT_EXISTS = new ErrorCode(500, "汽车充电监测不存在");
+
+    // ========== 两轮充电监测 ==========
+    ErrorCode BIKE_CHARGE_MONITOR_NOT_EXISTS = new ErrorCode(500, "两轮充电监测不存在");
+
+    // ========== 共享充电监测 ==========
+    ErrorCode SHARE_CHARGE_MONITOR_NOT_EXISTS = new ErrorCode(500, "共享充电监测不存在");
 }

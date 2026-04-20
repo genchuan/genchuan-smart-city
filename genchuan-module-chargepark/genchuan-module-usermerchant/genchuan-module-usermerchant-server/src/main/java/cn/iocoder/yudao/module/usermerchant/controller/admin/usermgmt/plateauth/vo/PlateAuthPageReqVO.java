@@ -6,10 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
-
-import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
 @Schema(description = "管理后台 - 车牌认证分页 Request VO")
 @Data
@@ -27,9 +24,6 @@ public class PlateAuthPageReqVO extends PageParam {
 
     @Schema(description = "车牌号码", example = "闽 C12345")
     private String plateNo;
-
-    @Schema(description = "行驶证图片地址", example = "/genchuan/chargePark/userMerchant/driving/123.jpg")
-    private String drivingLicense;
 
     @Schema(description = "认证申请时间")
     @JsonDeserialize(using = FlexibleTimestampDeserializer.class)

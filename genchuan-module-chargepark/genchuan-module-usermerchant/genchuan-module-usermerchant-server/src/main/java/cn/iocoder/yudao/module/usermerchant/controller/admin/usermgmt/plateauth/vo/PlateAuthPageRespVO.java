@@ -9,7 +9,7 @@ import cn.idev.excel.annotation.*;
 @Schema(description = "管理后台 - 车牌认证 Response VO")
 @Data
 @ExcelIgnoreUnannotated
-public class PlateAuthRespVO {
+public class PlateAuthPageRespVO {
 
     @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @ExcelProperty("主键ID")

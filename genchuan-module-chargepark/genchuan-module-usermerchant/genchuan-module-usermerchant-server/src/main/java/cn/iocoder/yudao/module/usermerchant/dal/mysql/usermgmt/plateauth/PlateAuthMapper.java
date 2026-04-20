@@ -6,6 +6,11 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.usermgmt.plateauth.PlateAuthDO;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.plateauth.vo.*;
+import org.apache.ibatis.annotations.Param;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 车牌认证 Mapper
@@ -20,7 +25,6 @@ public interface PlateAuthMapper extends BaseMapperX<PlateAuthDO> {
                 .eqIfPresent(PlateAuthDO::getUserId, reqVO.getUserId())
                 .eqIfPresent(PlateAuthDO::getCarId, reqVO.getCarId())
                 .eqIfPresent(PlateAuthDO::getPlateNo, reqVO.getPlateNo())
-                .eqIfPresent(PlateAuthDO::getDrivingLicense, reqVO.getDrivingLicense())
                 .betweenIfPresent(PlateAuthDO::getApplyTime, reqVO.getApplyTime())
                 .eqIfPresent(PlateAuthDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(PlateAuthDO::getAuditorId, reqVO.getAuditorId())
@@ -30,5 +34,13 @@ public interface PlateAuthMapper extends BaseMapperX<PlateAuthDO> {
                 .orderByDesc(PlateAuthDO::getId));
     }
 
-    Long getIdByNickname(String nickname);
+    List<PlateAuthChartRespVO.AuthTrendVO> selectAuthTrend(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
+            @Param("granularity") String granularity
+    );
+
+    Long selectAuthCount(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    BigDecimal selectAuthPassRate(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }

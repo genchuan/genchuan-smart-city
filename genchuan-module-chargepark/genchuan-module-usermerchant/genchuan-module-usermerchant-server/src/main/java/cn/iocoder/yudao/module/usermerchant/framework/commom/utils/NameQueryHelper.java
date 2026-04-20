@@ -1,12 +1,16 @@
 package cn.iocoder.yudao.module.usermerchant.framework.commom.utils;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import com.alibaba.nacos.shaded.javax.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -123,5 +127,45 @@ public class NameQueryHelper {
 
     private static boolean isBlank(String str) {
         return str == null || str.trim().isEmpty();
+    }
+
+    /**
+     * 通过 Feign 调用 system-server 批量填充用户名称（优先昵称，否则“未知”）
+     *
+     * @param list          需要填充的对象列表
+     * @param idGetter      从对象中获取用户ID的函数
+     * @param nameSetter    将用户名称设置到对象的函数
+     * @param adminUserApi  AdminUserApi 实例（用于远程调用）
+     * @param <T>           对象类型
+     */
+    public static <T> void fillUserNames(List<T> list,
+                                         Function<T, Long> idGetter,
+                                         BiConsumer<T, String> nameSetter,
+                                         AdminUserApi adminUserApi) {
+        if (CollUtil.isEmpty(list)) {
+            return;
+        }
+        Set<Long> userIds = list.stream()
+                .map(idGetter)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        if (CollUtil.isEmpty(userIds)) {
+            return;
+        }
+        CommonResult<List<AdminUserRespDTO>> result = adminUserApi.getUserList(userIds);
+        if (result.isSuccess() && CollUtil.isNotEmpty(result.getData())) {
+            Map<Long, String> userMap = result.getData().stream()
+                    .collect(Collectors.toMap(
+                            AdminUserRespDTO::getId,
+                            user -> StringUtils.hasText(user.getNickname()) ? user.getNickname() : "未知",
+                            (v1, v2) -> v1
+                    ));
+            list.forEach(item -> {
+                Long id = idGetter.apply(item);
+                if (id != null) {
+                    nameSetter.accept(item, userMap.get(id));
+                }
+            });
+        }
     }
 }
