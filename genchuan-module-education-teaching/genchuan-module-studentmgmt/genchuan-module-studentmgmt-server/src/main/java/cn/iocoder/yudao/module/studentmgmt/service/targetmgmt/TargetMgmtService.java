@@ -59,4 +59,13 @@ public interface TargetMgmtService {
      */
     PageResult<TargetMgmtDO> getTargetMgmtPage(TargetMgmtPageReqVO pageReqVO);
 
+    boolean config(@Valid TargetMgmtConfigReqVO reqVO);
+
+    boolean enable(@Valid TargetMgmtEnableReqVO reqVO);
+
+    boolean disable(@Valid TargetMgmtEnableReqVO reqVO);
+
+    TargetMgmtChartRespVO chart(@Valid TargetMgmtChartReqVO reqVO);
+
+    TargetMgmtChartIndexRespVO targetIndex();
 }

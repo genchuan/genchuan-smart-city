@@ -66,7 +66,6 @@ public interface LogRecordConstants {
     String VIOLATE_UPDATE_AUDIT_STATUS_SUCCESS = "更新了违纪【{{#studentName}}】的审批状态为【{{#status ? '已审批' : '未审批'}}】";
 
 
-
     // ======================= mental 心理管理 =======================
 
     String MENTAL_TYPE = "STUDENT 心理管理";
@@ -92,7 +91,8 @@ public interface LogRecordConstants {
     String BEHAVIOR_UPDATE_SUB_TYPE = "更新行为";
     String BEHAVIOR_UPDATE_SUCCESS = "更新了行为【{{#behavior.studentId}}】: {_DIFF{#updateReqVO}}";
     String BEHAVIOR_AUDIT_SUB_TYPE = "预警行为";
-    String BEHAVIOR_AUDIT_SUCCESS = "审核了行为";;
+    String BEHAVIOR_AUDIT_SUCCESS = "审核了行为";
+    ;
     String BEHAVIOR_CANCEL_SUB_TYPE = "取消行为";
     String BEHAVIOR_CANCEL_SUCCESS = "取消了行为";
 
@@ -104,7 +104,8 @@ public interface LogRecordConstants {
     String FUND_SYSTEM_UPDATE_SUB_TYPE = "更新资助系统";
     String FUND_SYSTEM_UPDATE_SUCCESS = "更新了资助系统【{{#behavior.studentId}}】: {_DIFF{#updateReqVO}}";
     String FUND_SYSTEM_AUDIT_SUB_TYPE = "预警资助系统";
-    String FUND_SYSTEM_AUDIT_SUCCESS = "资助系统审核成功";;
+    String FUND_SYSTEM_AUDIT_SUCCESS = "资助系统审核成功";
+    ;
 
     // ======================= club 社团管理 =======================
     String CLUB_TYPE = "STUDENT 社团管理";
@@ -130,6 +131,54 @@ public interface LogRecordConstants {
     String AID_EXPORT_SUCCESS = "导出了奖助勤贷";
     String AID_AUDIT_SUB_TYPE = "审核奖助勤贷";
     String AID_AUDIT_SUCCESS = "学生【{{#aid.studentId}}】奖助勤贷的审核状态为【{{#status ? '已审核' : '未审核'}}】";
+
+// ======================= Duty 值班管理 =======================
+
+    String DUTY_TYPE = "值班管理";
+    String DUTY_CREATE_SUB_TYPE = "排班";
+    String DUTY_CREATE_SUCCESS = "排班了【{{#reqVO.dutyUser}}】的值班{{#total}}天";
+    String DUTY_UPDATE_SUB_TYPE = "更新排班";
+    String DUTY_UPDATE_SUCCESS = "更新排班【{{#updateReqVO.dutyUser}}】的值班";
+
+
+    String DUTY_CHECK_IN_SUB_TYPE = "打卡";
+    String DUTY_CHECK_IN_SUCCESS = "【{{#duty.dutyUser}}】打卡了值班";
+
+    String DUTY_SHIFT_APPLY_SUB_TYPE = "调班申请";
+    String DUTY_SHIFT_APPLY_SUCCESS = "【{{#duty.dutyUser}}】调班申请";
+
+    String DUTY_SHIFT_AUDIT_SUB_TYPE = "调班审批";
+    String DUTY_SHIFT_AUDIT_SUCCESS = "调班审批成功";
+
+    String DUTY_VEHICLE_APPLY_SUB_TYPE = "出车申请";
+    String DUTY_VEHICLE_APPLY_SUCCESS = "【{{#duty.dutyUser}}】出车申请";
+
+    String DUTY_VEHICLE_AUDIT_SUB_TYPE = "出车审批";
+    String DUTY_VEHICLE_AUDIT_SUCCESS = "出车审批成功";
+
+
+    String DUTY_UPLOAD_RECORD_SUB_TYPE = "值班记录上传";
+    String DUTY_UPLOAD_RECORD_SUCCESS = "值班记录上传成功，内容：【{{#duty.recordContent}}】";
+
+
+// ======================= target 指标管理 =======================
+
+    String TARGET_TYPE = "指标管理";
+    String TARGET_CREATE_SUB_TYPE = "新建指标";
+    String TARGET_CREATE_SUCCESS = "新建指标成功【{{#createReqVO.targetName}}】";
+
+    String TARGET_UPDATE_SUB_TYPE = "更新指标";
+    String TARGET_UPDATE_SUCCESS = "更新【{{#updateReqVO.targetName}}】的指标";
+
+    String TARGET_CONFIG_SUB_TYPE = "配置指标";
+    String TARGET_CONFIG_SUCCESS = "配置【{{#target.targetName}}】的指标";
+
+    String TARGET_ENABLE_SUB_TYPE = "启用指标";
+    String TARGET_ENABLE_SUCCESS = "启用的指标";
+
+    String TARGET_DISABLE_SUB_TYPE = "停用指标";
+    String TARGET_DISABLE_SUCCESS = "停用的指标";
+
 
 
 }

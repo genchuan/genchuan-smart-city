@@ -9,4 +9,70 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="selectStatusCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+            status AS status,
+            COUNT(1) AS count
+        FROM target_mgmt
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND create_time <![CDATA[<=]]> #{endTime}
+        </if>
+        GROUP BY status
+    </select>
+    <select id="selectEvaluatorTypeCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+            evaluator_type AS evaluatorType,
+            COUNT(1) AS count
+        FROM target_mgmt
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND create_time <![CDATA[<=]]> #{endTime}
+        </if>
+        GROUP BY evaluator_type
+    </select>
+    <select id="selectScoreTypeCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+            score_type AS scoreType,
+            COUNT(1) AS count
+        FROM target_mgmt
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND create_time <![CDATA[<=]]> #{endTime}
+        </if>
+        GROUP BY score_type
+    </select>
+    <select id="selectScoreDistribution" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+            total_score AS score,
+            COUNT(1) AS count
+        FROM target_mgmt
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND create_time <![CDATA[<=]]> #{endTime}
+        </if>
+        GROUP BY score
+    </select>
+    <select id="selectTotalIndex"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.targetmgmt.vo.TargetMgmtChartIndexRespVO">
+        SELECT
+            COUNT(1) AS totalTargetCount,
+            COUNT(CASE WHEN `status` = #{status} THEN 1 END) AS enabledTargetCount,
+            COUNT(CASE WHEN total_score <![CDATA[<]]> warn_threshold THEN 1 END) AS warnTargetCount,
+            AVG(total_score) AS avgScore
+        FROM target_mgmt
+        WHERE deleted = 0
+    </select>
 </mapper>

@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
+
 import java.util.*;
 import java.io.IOException;
 
@@ -18,11 +19,13 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.dutymgmt.vo.*;
@@ -48,7 +51,7 @@ public class DutyMgmtController {
     @PutMapping("/update")
     @Operation(summary = "更新值班管理")
     @PreAuthorize("@ss.hasPermission('studentmgmt:duty-mgmt:update')")
-    public CommonResult<Boolean> updateDutyMgmt(@Valid @RequestBody DutyMgmtSaveReqVO updateReqVO) {
+    public CommonResult<Boolean> updateDutyMgmt(@Valid @RequestBody DutyMgmtUpdateReqVO updateReqVO) {
         dutyMgmtService.updateDutyMgmt(updateReqVO);
         return success(true);
     }
@@ -65,7 +68,7 @@ public class DutyMgmtController {
     @DeleteMapping("/delete-list")
     @Parameter(name = "ids", description = "编号", required = true)
     @Operation(summary = "批量删除值班管理")
-                @PreAuthorize("@ss.hasPermission('studentmgmt:duty-mgmt:delete')")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:duty-mgmt:delete')")
     public CommonResult<Boolean> deleteDutyMgmtList(@RequestParam("ids") List<Long> ids) {
         dutyMgmtService.deleteDutyMgmtListByIds(ids);
         return success(true);
@@ -93,12 +96,85 @@ public class DutyMgmtController {
     @PreAuthorize("@ss.hasPermission('studentmgmt:duty-mgmt:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportDutyMgmtExcel(@Valid DutyMgmtPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                    HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<DutyMgmtDO> list = dutyMgmtService.getDutyMgmtPage(pageReqVO).getList();
         // 导出 Excel
         ExcelUtils.write(response, "值班管理.xls", "数据", DutyMgmtRespVO.class,
-                        BeanUtils.toBean(list, DutyMgmtRespVO.class));
+                BeanUtils.toBean(list, DutyMgmtRespVO.class));
     }
+
+    @PutMapping("/schedule")
+    @Operation(summary = "排班")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:duty-mgmt:schedule')")
+    public CommonResult<Boolean> schedule(@Valid @RequestBody DutyMgmtScheduleReqVO reqVo) {
+        boolean isSuccess = dutyMgmtService.schedule(reqVo);
+        return success(isSuccess);
+    }
+
+    @PutMapping("/checkin")
+    @Operation(summary = "打卡")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:duty-mgmt:checkin')")
+    public CommonResult<Boolean> checkin(@Valid @RequestBody DutyMgmtCheckinReqVO reqVo) {
+        boolean isSuccess = dutyMgmtService.checkin(reqVo);
+        return success(isSuccess);
+    }
+
+    @PutMapping("/shiftApply")
+    @Operation(summary = "调班申请")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:duty-mgmt:shiftApply')")
+    public CommonResult<Boolean> shiftApply(@Valid @RequestBody DutyMgmtShiftApplyReqVO reqVo) {
+        boolean isSuccess = dutyMgmtService.shiftApply(reqVo);
+        return success(isSuccess);
+    }
+
+    @PutMapping("/shiftAudit")
+    @Operation(summary = "调班审批")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:duty-mgmt:shiftAudit')")
+    public CommonResult<Boolean> shiftAudit(@Valid @RequestBody DutyMgmtShiftAuditReqVO reqVo) {
+        boolean isSuccess = dutyMgmtService.shiftAudit(reqVo);
+        return success(isSuccess);
+    }
+
+    @PutMapping("/vehicleApply")
+    @Operation(summary = "出车申请")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:duty-mgmt:vehicleApply')")
+    public CommonResult<Boolean> vehicleApply(@Valid @RequestBody DutyMgmtVehicleApplyReqVO reqVo) {
+        boolean isSuccess = dutyMgmtService.vehicleApply(reqVo);
+        return success(isSuccess);
+    }
+
+    @PutMapping("/vehicleAudit")
+    @Operation(summary = "出车审批")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:duty-mgmt:vehicleAudit')")
+    public CommonResult<Boolean> vehicleAudit(@Valid @RequestBody DutyMgmtShiftAuditReqVO reqVo) {
+        boolean isSuccess = dutyMgmtService.vehicleAudit(reqVo);
+        return success(isSuccess);
+    }
+
+    @PutMapping("/uploadRecord")
+    @Operation(summary = "记录上传")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:duty-mgmt:uploadRecord')")
+    public CommonResult<Boolean> uploadRecord(@Valid @RequestBody DutyMgmtUploadRecordReqVO reqVo) {
+        boolean isSuccess = dutyMgmtService.uploadRecord(reqVo);
+        return success(isSuccess);
+    }
+
+    @PutMapping("/chart")
+    @Operation(summary = "值班调度看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:duty-mgmt:chart')")
+    public CommonResult<DutyMgmtChartRespVO> chart(@Valid @RequestBody DutyMgmtChartReqVO reqVo) {
+        DutyMgmtChartRespVO respVO = dutyMgmtService.chart(reqVo);
+        return success(respVO);
+    }
+
+    @PutMapping("/chart/dutyIndex")
+    @Operation(summary = "值班核心指标统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:duty-mgmt:dutyIndex')")
+    public CommonResult<DutyMgmtChartIndexRespVO> dutyIndex(@Valid @RequestBody DutyMgmtChartReqVO reqVo) {
+        DutyMgmtChartIndexRespVO respVO = dutyMgmtService.dutyIndex(reqVo);
+        return success(respVO);
+    }
+
 
 }

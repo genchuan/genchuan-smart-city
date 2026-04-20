@@ -5,7 +5,6 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.dutymgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.dutymgmt.DutyMgmtDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 值班管理 Service 接口
@@ -27,7 +26,7 @@ public interface DutyMgmtService {
      *
      * @param updateReqVO 更新信息
      */
-    void updateDutyMgmt(@Valid DutyMgmtSaveReqVO updateReqVO);
+    void updateDutyMgmt(@Valid DutyMgmtUpdateReqVO updateReqVO);
 
     /**
      * 删除值班管理
@@ -59,4 +58,21 @@ public interface DutyMgmtService {
      */
     PageResult<DutyMgmtDO> getDutyMgmtPage(DutyMgmtPageReqVO pageReqVO);
 
+    boolean schedule(@Valid DutyMgmtScheduleReqVO updateReqVO);
+
+    boolean checkin(@Valid DutyMgmtCheckinReqVO reqVo);
+
+    boolean shiftApply(@Valid DutyMgmtShiftApplyReqVO reqVo);
+
+     boolean shiftAudit(@Valid DutyMgmtShiftAuditReqVO reqVo);
+
+    boolean vehicleApply(@Valid DutyMgmtVehicleApplyReqVO reqVo);
+
+    boolean vehicleAudit(@Valid DutyMgmtShiftAuditReqVO reqVo);
+
+    boolean uploadRecord(@Valid DutyMgmtUploadRecordReqVO reqVo);
+
+    DutyMgmtChartRespVO chart(@Valid DutyMgmtChartReqVO reqVo);
+
+    DutyMgmtChartIndexRespVO dutyIndex(@Valid DutyMgmtChartReqVO reqVo);
 }

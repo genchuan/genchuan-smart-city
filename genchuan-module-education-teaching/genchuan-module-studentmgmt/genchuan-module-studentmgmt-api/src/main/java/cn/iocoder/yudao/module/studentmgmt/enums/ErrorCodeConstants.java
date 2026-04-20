@@ -67,6 +67,8 @@ public interface ErrorCodeConstants {
     ErrorCode DORM_COMPARE_NOT_EXISTS = new ErrorCode(500, "宿舍评比不存在");
     // ========== 值班管理 ==========
     ErrorCode DUTY_MGMT_NOT_EXISTS = new ErrorCode(500, "值班管理不存在");
+    ErrorCode DUTY_MGMT_CHECK_IN_STATUS_CHECKED_IN = new ErrorCode(500, "该用户已打卡，请勿重复打卡");
+    ErrorCode DUTY_MGMT_NOT_PENDING_CHECKIN = new ErrorCode(500, "待打卡状态，不可操作");
     // ========== 资助系统 ==========
     ErrorCode FUND_SYSTEM_NOT_EXISTS = new ErrorCode(500, "资助系统不存在");
     // ========== 德育活动 ==========
