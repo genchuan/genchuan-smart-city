@@ -26,8 +26,7 @@ Build:
         echo "模块路径：$jarPath"
         echo "====================================="
         cp -vf ${jarPath}/target/${module}.jar ${DEPLOY_DIR}/${module}.jar 2>/dev/null
-        cd ${DEPLOY_DIR}
-        sh ./start.sh ${module}
+        sh ${DEPLOY_DIR}/start.sh ${DEPLOY_DIR}/${module}.jar
       done
   retry:
     max: 2
