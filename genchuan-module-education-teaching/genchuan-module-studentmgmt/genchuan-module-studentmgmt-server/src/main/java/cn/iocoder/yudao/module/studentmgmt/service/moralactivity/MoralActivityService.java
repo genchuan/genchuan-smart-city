@@ -1,11 +1,11 @@
 package cn.iocoder.yudao.module.studentmgmt.service.moralactivity;
 
-import java.util.*;
-import jakarta.validation.*;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.moralactivity.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.moralactivity.MoralActivityDO;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 德育活动 Service 接口
@@ -59,4 +59,13 @@ public interface MoralActivityService {
      */
     PageResult<MoralActivityDO> getMoralActivityPage(MoralActivityPageReqVO pageReqVO);
 
+    boolean publish(@Valid MoralActivityPublishReqVO reqVO);
+
+    boolean join(@Valid MoralActivityJoinReqVO reqVO);
+
+    boolean record(@Valid MoralActivityRecordReqVO reqVO);
+
+    MoralActivityChartRespVO chart(@Valid MoralActivityChartReqVO reqVO);
+
+    ChartActivityCountRespVO activityCount(@Valid MoralActivityChartReqVO reqVO);
 }

@@ -66,6 +66,7 @@ public interface LogRecordConstants {
     String VIOLATE_UPDATE_AUDIT_STATUS_SUCCESS = "更新了违纪【{{#studentName}}】的审批状态为【{{#status ? '已审批' : '未审批'}}】";
 
 
+
     // ======================= mental 心理管理 =======================
 
     String MENTAL_TYPE = "STUDENT 心理管理";
@@ -80,7 +81,7 @@ public interface LogRecordConstants {
     String MENTAL_INTERVENE_SUCCESS = "跟进了【{{#studentName}}】心理";
 
     String MENTAL_UPDATE_STATUS_SUB_TYPE = "更新心理状态";
-    String MENTAL_UPDATE_STATUS_SUCCESS = "更新了心理状态【{{#studentName}}】为【{{{#status}}】";
+    String MENTAL_UPDATE_STATUS_SUCCESS = "更新了心理状态【{{#studentName}}】为【{{#status}}】";
 
 
     // ======================= behavior 行为管理 =======================
@@ -91,8 +92,7 @@ public interface LogRecordConstants {
     String BEHAVIOR_UPDATE_SUB_TYPE = "更新行为";
     String BEHAVIOR_UPDATE_SUCCESS = "更新了行为【{{#behavior.studentId}}】: {_DIFF{#updateReqVO}}";
     String BEHAVIOR_AUDIT_SUB_TYPE = "预警行为";
-    String BEHAVIOR_AUDIT_SUCCESS = "审核了行为";
-    ;
+    String BEHAVIOR_AUDIT_SUCCESS = "审核了行为";;
     String BEHAVIOR_CANCEL_SUB_TYPE = "取消行为";
     String BEHAVIOR_CANCEL_SUCCESS = "取消了行为";
 
@@ -104,8 +104,7 @@ public interface LogRecordConstants {
     String FUND_SYSTEM_UPDATE_SUB_TYPE = "更新资助系统";
     String FUND_SYSTEM_UPDATE_SUCCESS = "更新了资助系统【{{#behavior.studentId}}】: {_DIFF{#updateReqVO}}";
     String FUND_SYSTEM_AUDIT_SUB_TYPE = "预警资助系统";
-    String FUND_SYSTEM_AUDIT_SUCCESS = "资助系统审核成功";
-    ;
+    String FUND_SYSTEM_AUDIT_SUCCESS = "资助系统审核成功";;
 
     // ======================= club 社团管理 =======================
     String CLUB_TYPE = "STUDENT 社团管理";
@@ -160,7 +159,6 @@ public interface LogRecordConstants {
     String DUTY_UPLOAD_RECORD_SUB_TYPE = "值班记录上传";
     String DUTY_UPLOAD_RECORD_SUCCESS = "值班记录上传成功，内容：【{{#duty.recordContent}}】";
 
-
 // ======================= target 指标管理 =======================
 
     String TARGET_TYPE = "指标管理";
@@ -179,6 +177,31 @@ public interface LogRecordConstants {
     String TARGET_DISABLE_SUB_TYPE = "停用指标";
     String TARGET_DISABLE_SUCCESS = "停用的指标";
 
+    String COMPARE_TYPE = "评比管理";
+    String COMPARE_CREATE_SUB_TYPE = "新建评比";
+    String COMPARE_CREATE_SUCCESS = "新建【{{#createReqVO.className}}】评比成功";
+
+    String COMPARE_UPDATE_SUB_TYPE = "更新评比";
+    String COMPARE_UPDATE_SUCCESS = "更新【{{#updateReqVO.className}}】的评比";
+
+    String COMPARE_SCORE_SUB_TYPE = "打分评比";
+    String COMPARE_SCORE_SUCCESS = "评分人【{{#reqVO.scoreUser}}】打分【{{#compare.className}}】的评比【{{#reqVO.totalScore}}】分";
+
+    String COMPARE_AWARD_SUB_TYPE = "授予评比";
+    String COMPARE_AWARD_SUCCESS = "授予【{{#id}}】等的评比【{{#reqVO.awardName}}】称号";
 
 
+
+    // ======================= 德育活动 =======================
+
+    String MORAL_ACTIVITY_TYPE = "德育活动";
+    String MORAL_ACTIVITY_PUBLISH_SUB_TYPE = "德育活动";
+    String MORAL_ACTIVITY_PUBLISH_SUCCESS = "发布了德育活动";
+    String MORAL_ACTIVITY_JOIN_SUB_TYPE = "德育活动";
+    String MORAL_ACTIVITY_JOIN_SUCCESS = "报名了德育活动";
+    String MORAL_ACTIVITY_RECORD_SUB_TYPE = "德育活动";
+    String MORAL_ACTIVITY_RECORD_SUCCESS = "记录了德育活动";
+
+    String MORAL_ACTIVITY_UPDATE_SUB_TYPE = "更新德育活动";
+    String MORAL_ACTIVITY_UPDATE_SUCCESS = "更新了德育活动【{{#honorName}}】: {_DIFF{#updateReqVO}}";
 }
