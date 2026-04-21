@@ -16,7 +16,7 @@ Build:
     - echo "===== 创建产物目录 ====="
     - source ci-modules.conf
     - |
-      set +e
+      #!/bin/bash
       for module in "${!MODULE_JAR_MAP[@]}"; do
         jarPath=${MODULE_JAR_MAP[$module]}
         echo "====================================="
@@ -25,7 +25,7 @@ Build:
         echo "====================================="
         ls $jarPath
         # 直接复制到服务器目录，不上传产物
-        cp -vf ${jarPath}/target/*.jar ${DEPLOY_DIR}/${module}.jar 2>/dev/null
+        cp -vf ${jarPath}/target/${module}.jar ${DEPLOY_DIR}/${module}.jar 2>/dev/null
 
         if [ $? -eq 0 ]; then
           echo "✅ 复制成功：$module"
@@ -33,7 +33,6 @@ Build:
           echo "⚠️  未找到 jar，跳过：$module"
         fi
       done
-      set -e
   retry:
     max: 2
     when:
