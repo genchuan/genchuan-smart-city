@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.iocoder.yudao.module.industry.dal.mysql.chargeparklink.ChargeParkLinkMapper">
+<mapper namespace="cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.rulecontrol.chargeparklink.ChargeParkLinkMapper">
 
     <!--
         一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
@@ -8,5 +8,29 @@
         代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
+    <select id="selectCardData" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.chargeparklink.vo.ops.ChargeParkLinkChartRespVO$CardDataVO">
+        SELECT IFNULL(SUM(today_order_count), 0) AS todayOrderCount,
+               IFNULL(SUM(today_income), 0)      AS todayIncome,
+               IFNULL(AVG(pay_rate), 0)         AS payRate
+        FROM charge_park_link
+        WHERE deleted = 0
+    </select>
 
+    <select id="selectDiscountLineList" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.chargeparklink.vo.ops.ChargeParkLinkChartRespVO$DiscountLineVO">
+        SELECT DATE_FORMAT(create_time, '%Y-%m') date,
+               COUNT(*)                         useCount
+        FROM charge_park_link
+        WHERE deleted = 0
+        GROUP BY DATE_FORMAT(create_time, '%Y-%m')
+        ORDER BY date
+    </select>
+
+    <select id="selectOrderBarList" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.chargeparklink.vo.ops.ChargeParkLinkChartRespVO$OrderBarVO">
+        SELECT s.name        AS name,
+               IFNULL(SUM(c.today_order_count), 0) AS value
+        FROM charge_park_link c
+                 LEFT JOIN station_info s ON c.station_id = s.id
+        WHERE c.deleted = 0
+        GROUP BY c.station_id, s.name
+    </select>
 </mapper>

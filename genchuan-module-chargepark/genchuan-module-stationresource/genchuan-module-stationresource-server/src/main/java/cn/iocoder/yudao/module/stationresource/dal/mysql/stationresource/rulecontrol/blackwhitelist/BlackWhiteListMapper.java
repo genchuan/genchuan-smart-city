@@ -1,11 +1,14 @@
 package cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.rulecontrol.blackwhitelist;
 
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.blackwhitelist.vo.BlackWhiteListPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.blackwhitelist.vo.ops.BlackWhiteListChartRespVO;
+import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.rulecontrol.blackwhitelist.BlackWhiteListDO;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * 黑白名单 Mapper
@@ -37,4 +40,9 @@ public interface BlackWhiteListMapper extends BaseMapperX<BlackWhiteListDO> {
                 .orderByDesc(BlackWhiteListDO::getId));
     }
 
+    // 卡片统计
+    BlackWhiteListChartRespVO.CardDataVO selectCardData();
+
+    // 饼图统计
+    List<BlackWhiteListChartRespVO.TypePieVO> selectTypePieList();
 }

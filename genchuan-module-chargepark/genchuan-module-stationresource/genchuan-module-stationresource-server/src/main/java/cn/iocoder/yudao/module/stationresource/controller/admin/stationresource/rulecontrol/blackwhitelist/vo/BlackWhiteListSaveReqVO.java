@@ -1,10 +1,9 @@
 package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.blackwhitelist.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import java.util.*;
-import jakarta.validation.constraints.*;
-import org.springframework.format.annotation.DateTimeFormat;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.Data;
+
 import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 黑白名单新增/修改 Request VO")

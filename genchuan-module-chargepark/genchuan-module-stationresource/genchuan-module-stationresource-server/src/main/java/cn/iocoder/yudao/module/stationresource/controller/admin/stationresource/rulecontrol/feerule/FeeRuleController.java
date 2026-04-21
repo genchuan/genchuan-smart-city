@@ -1,71 +1,109 @@
 package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.feerule;
 
-import org.springframework.web.bind.annotation.*;
-import jakarta.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.security.access.prepost.PreAuthorize;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Operation;
-
-import jakarta.validation.constraints.*;
-import jakarta.validation.*;
-import jakarta.servlet.http.*;
-import java.util.*;
-import java.io.IOException;
-
+import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
-
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ops.ImportResultVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.feerule.vo.FeeRulePageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.feerule.vo.FeeRuleRespVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.feerule.vo.FeeRuleSaveReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.feerule.vo.ops.AddFeeRuleReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.feerule.vo.ops.FeeRuleChartRespVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.feerule.vo.ops.FeeRuleImportResp;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.feerule.vo.ops.FeeRuleUpdateReqVO;
+import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.rulecontrol.feerule.FeeRuleDO;
+import cn.iocoder.yudao.module.stationresource.service.stationresource.rulecontrol.feerule.FeeRuleService;
+import cn.iocoder.yudao.module.stationresource.vrv.utils.common.excel.VrvExcelUtils;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
-import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
+import java.io.IOException;
+import java.util.List;
+
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 
 @Tag(name = "管理后台 - 收费规则")
 @RestController
 @RequestMapping("/stationresource/fee-rule")
 @Validated
+//@Hidden
 public class FeeRuleController {
 
     @Resource
     private FeeRuleService feeRuleService;
 
-    @PostMapping("/create")
-    @Operation(summary = "创建收费规则")
-    @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:create')")
-    public CommonResult<Long> createFeeRule(@Valid @RequestBody FeeRuleSaveReqVO createReqVO) {
-        return success(feeRuleService.createFeeRule(createReqVO));
+    @GetMapping("/chart")
+    @Operation(summary = "收费规则统计（柱状图+卡片）")
+    @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:query')")
+    public CommonResult<FeeRuleChartRespVO> getFeeRuleChart() {
+        FeeRuleChartRespVO chartData = feeRuleService.getFeeRuleChart();
+        return CommonResult.success(chartData);
+    }
+    @PutMapping("/enable")
+    @Operation(summary = "批量生效收费规则")
+    @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:update')")
+    public CommonResult<Boolean> enableFeeRule(@RequestBody List<Long> ids) {
+        feeRuleService.enableFeeRule(ids);
+        return CommonResult.success(true);
     }
 
-    @PutMapping("/update")
+    @PutMapping("/disable")
+    @Operation(summary = "批量禁用收费规则")
+    @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:update')")
+    public CommonResult<Boolean> disableFeeRule(@RequestBody List<Long> ids) {
+        feeRuleService.disableFeeRule(ids);
+        return CommonResult.success(true);
+    }
+    @PutMapping("/fee-rule/update")
     @Operation(summary = "更新收费规则")
     @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:update')")
-    public CommonResult<Boolean> updateFeeRule(@Valid @RequestBody FeeRuleSaveReqVO updateReqVO) {
-        feeRuleService.updateFeeRule(updateReqVO);
+    public CommonResult<Boolean> updateFeeRule2(@Valid @RequestBody FeeRuleUpdateReqVO updateReqVO) {
+        feeRuleService.updateFeeRuleBiz(updateReqVO);
         return success(true);
     }
-
-    @DeleteMapping("/delete")
-    @Operation(summary = "删除收费规则")
-    @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:delete')")
-    public CommonResult<Boolean> deleteFeeRule(@RequestParam("id") Long id) {
-        feeRuleService.deleteFeeRule(id);
-        return success(true);
+    @GetMapping("/fee-rule/import-template")
+    @Operation(summary = "下载收费规则导入模板")
+    @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:import')")
+    public void importFeeRuleTemplate(HttpServletResponse response) throws Exception {
+        VrvExcelUtils.downloadImportTemplate(response, AddFeeRuleReqVO.class);
     }
 
-    @DeleteMapping("/delete-list")
-    @Parameter(name = "ids", description = "编号", required = true)
-    @Operation(summary = "批量删除收费规则")
-                @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:delete')")
-    public CommonResult<Boolean> deleteFeeRuleList(@RequestParam("ids") List<Long> ids) {
-        feeRuleService.deleteFeeRuleListByIds(ids);
-        return success(true);
+    @PostMapping("/fee-rule/import")
+    @Operation(summary = "导入收费规则", description = "上传Excel文件")
+    @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:import')")
+    public CommonResult<FeeRuleImportResp> importFeeRule(
+            @RequestPart("file") MultipartFile file,
+            @RequestParam(value = "updateSupport", defaultValue = "false") boolean updateSupport) throws Exception {
+        FeeRuleImportResp result = feeRuleService.importFeeRule(file, updateSupport);
+        return success(result);
+    }
+    @PostMapping("/add")
+    @Operation(summary = "新增收费规则")
+    @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:create')")
+    public CommonResult<Boolean> addFeeRule(@Valid @RequestBody AddFeeRuleReqVO reqVO) {
+        feeRuleService.addFeeRule(reqVO);
+        return CommonResult.success(true);
+    }
+    @GetMapping("/page")
+    @Operation(summary = "获得收费规则分页")
+    @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:query')")
+    public CommonResult<PageResult<FeeRuleRespVO>> getFeeRulePage(@Valid FeeRulePageReqVO pageReqVO) {
+        PageResult<FeeRuleDO> pageResult = feeRuleService.getFeeRulePage(pageReqVO);
+        return success(BeanUtils.toBean(pageResult, FeeRuleRespVO.class));
     }
 
     @GetMapping("/get")
@@ -77,25 +115,21 @@ public class FeeRuleController {
         return success(BeanUtils.toBean(feeRule, FeeRuleRespVO.class));
     }
 
-    @GetMapping("/page")
-    @Operation(summary = "获得收费规则分页")
-    @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:query')")
-    public CommonResult<PageResult<FeeRuleRespVO>> getFeeRulePage(@Valid FeeRulePageReqVO pageReqVO) {
-        PageResult<FeeRuleDO> pageResult = feeRuleService.getFeeRulePage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, FeeRuleRespVO.class));
-    }
-
     @GetMapping("/export-excel")
     @Operation(summary = "导出收费规则 Excel")
     @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportFeeRuleExcel(@Valid FeeRulePageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                   HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<FeeRuleDO> list = feeRuleService.getFeeRulePage(pageReqVO).getList();
         // 导出 Excel
         ExcelUtils.write(response, "收费规则.xls", "数据", FeeRuleRespVO.class,
-                        BeanUtils.toBean(list, FeeRuleRespVO.class));
+                BeanUtils.toBean(list, FeeRuleRespVO.class));
     }
+    //==================================================================================
+
+
+
 
 }

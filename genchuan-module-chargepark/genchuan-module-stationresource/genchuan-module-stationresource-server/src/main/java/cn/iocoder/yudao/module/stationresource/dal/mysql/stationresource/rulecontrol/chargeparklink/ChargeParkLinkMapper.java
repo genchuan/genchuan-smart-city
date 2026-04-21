@@ -1,11 +1,14 @@
 package cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.rulecontrol.chargeparklink;
 
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.chargeparklink.vo.ChargeParkLinkPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.chargeparklink.vo.ops.ChargeParkLinkChartRespVO;
+import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.rulecontrol.chargeparklink.ChargeParkLinkDO;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * 充停联动 Mapper
@@ -37,4 +40,12 @@ public interface ChargeParkLinkMapper extends BaseMapperX<ChargeParkLinkDO> {
                 .orderByDesc(ChargeParkLinkDO::getId));
     }
 
+    // 图表卡片
+    ChargeParkLinkChartRespVO.CardDataVO selectCardData();
+
+    // 折线图
+    List<ChargeParkLinkChartRespVO.DiscountLineVO> selectDiscountLineList();
+
+    // 柱状图
+    List<ChargeParkLinkChartRespVO.OrderBarVO> selectOrderBarList();
 }

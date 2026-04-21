@@ -1,7 +1,8 @@
 package cn.iocoder.yudao.module.stationresource.service.stationresource.rulecontrol.timepermission;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.iocoder.yudao.framework.common.exception.ServiceException;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.timepermission.vo.TimePermissionPageReqVO;
@@ -14,23 +15,19 @@ import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.ru
 import cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.rulecontrol.timepermission.TimePermissionMapper;
 import cn.iocoder.yudao.module.stationresource.vrv.utils.common.excel.VrvExcelUtils;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.*;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
-import static cn.iocoder.yudao.module.stationresource.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.stationresource.enums.ErrorCodeConstants.TIME_PERMISSION_NOT_EXISTS;
 
 /**
  * 时段权限 Service 实现类

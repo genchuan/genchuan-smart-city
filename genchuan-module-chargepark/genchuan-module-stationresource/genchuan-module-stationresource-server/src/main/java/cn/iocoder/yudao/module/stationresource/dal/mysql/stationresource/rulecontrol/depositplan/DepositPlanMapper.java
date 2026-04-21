@@ -1,11 +1,14 @@
 package cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.rulecontrol.depositplan;
 
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.depositplan.vo.DepositPlanPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.depositplan.vo.ops.DepositPlanChartRespVO;
+import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.rulecontrol.depositplan.DepositPlanDO;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * 押金方案 Mapper
@@ -34,4 +37,7 @@ public interface DepositPlanMapper extends BaseMapperX<DepositPlanDO> {
                 .orderByDesc(DepositPlanDO::getId));
     }
 
+    DepositPlanChartRespVO.CardDataVO selectCardData();
+
+    List<DepositPlanChartRespVO.SceneBarVO> selectSceneBarList();
 }

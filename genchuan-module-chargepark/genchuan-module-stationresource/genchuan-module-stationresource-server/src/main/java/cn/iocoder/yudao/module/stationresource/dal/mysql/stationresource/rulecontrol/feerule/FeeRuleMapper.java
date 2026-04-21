@@ -1,11 +1,14 @@
 package cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.rulecontrol.feerule;
 
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.feerule.vo.FeeRulePageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.feerule.vo.ops.FeeRuleChartRespVO;
+import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.rulecontrol.feerule.FeeRuleDO;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * 收费规则 Mapper
@@ -40,4 +43,7 @@ public interface FeeRuleMapper extends BaseMapperX<FeeRuleDO> {
                 .orderByDesc(FeeRuleDO::getId));
     }
 
+    FeeRuleChartRespVO.CardDataVO selectCardData();
+
+    List<FeeRuleChartRespVO.StationBarVO> selectStationBarList();
 }

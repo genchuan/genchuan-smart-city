@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.decisionanalysis.stationopreport.StationOpReportMapper">
+
+    <!-- 1. 获取单条报表（统计） -->
+    <select id="selectReportById" resultType="cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.decisionanalysis.stationopreport.StationOpReportDO">
+        SELECT
+            1 AS id,
+            '月报' AS reportType,
+            DATE_FORMAT(NOW(), '%Y-%m') AS reportTime,
+            (SELECT MIN(create_time) FROM station_info WHERE deleted = 0) AS startTime,
+            (SELECT MAX(create_time) FROM station_info WHERE deleted = 0) AS endTime,
+            'system' AS creator,
+            NOW() AS createTime
+    </select>
+
+    <!-- 2. 分页查询（正确ID + 正确resultType） -->
+    <select id="selectReportPage" resultType="cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.decisionanalysis.stationopreport.StationOpReportDO">
+        SELECT
+            (@row := @row + 1) AS id,
+            '月报' AS reportType,
+            DATE_FORMAT(NOW(), '%Y-%m') AS reportTime,
+            (SELECT MIN(create_time) FROM station_info WHERE deleted = 0) AS startTime,
+            (SELECT MAX(create_time) FROM station_info WHERE deleted = 0) AS endTime,
+            'system' AS creator,
+            NOW() AS createTime
+        WHERE 1=1
+        <!-- 关键：时间筛选条件（前端传了就拼接） -->
+        <if test="startTime != null">
+            AND NOW() >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND NOW() &lt;= #{endTime}
+        </if>
+    </select>
+
+
+    <!-- 分页查询报表（基于现有业务表动态统计，无独立报表表） -->
+<!--    <select id="selectReportPage" resultType="java.util.Map">-->
+<!--        SELECT-->
+<!--        t.id,-->
+<!--        t.report_type,-->
+<!--        t.report_time,-->
+<!--        t.start_time,-->
+<!--        t.end_time,-->
+<!--        t.creator,-->
+<!--        t.create_time,-->
+<!--        /* 场站数 */-->
+<!--        (SELECT COUNT(DISTINCT s.id) FROM station_info s-->
+<!--        WHERE s.deleted = 0 AND s.tenant_id = 1) AS station_count,-->
+<!--        /* 车位使用率 */-->
+<!--        ROUND(-->
+<!--        (SELECT COUNT(p.id) FROM parking_space_info p-->
+<!--        WHERE p.deleted = 0 AND p.real_status = '占用')-->
+<!--        / NULLIF((SELECT COUNT(p2.id) FROM parking_space_info p2 WHERE p2.deleted = 0),1) * 100, 2-->
+<!--        ) AS space_use_rate,-->
+<!--        /* 规则匹配率 */-->
+<!--        ROUND(-->
+<!--        (SELECT COUNT(f.id) FROM fee_rule f WHERE f.deleted = 0 AND f.status = '已生效')-->
+<!--        / NULLIF((SELECT COUNT(f2.id) FROM fee_rule f2 WHERE f2.deleted = 0),1) * 100, 2-->
+<!--        ) AS rule_match_rate,-->
+<!--        0 AS year_on_year,-->
+<!--        0 AS month_on_month-->
+<!--        FROM (-->
+<!--        /* 虚拟报表数据：自动生成 + 自定义报表 */-->
+<!--        SELECT-->
+<!--        1 AS id,-->
+<!--        #{query.reportType} AS report_type,-->
+<!--        DATE_FORMAT(NOW(), '%Y-%m') AS report_time,-->
+<!--        UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 30 DAY)) AS start_time,-->
+<!--        UNIX_TIMESTAMP(NOW()) AS end_time,-->
+<!--        'system' AS creator,-->
+<!--        UNIX_TIMESTAMP(NOW()) AS create_time-->
+<!--        UNION ALL-->
+<!--        SELECT-->
+<!--        2 AS id,-->
+<!--        '自定义报表' AS report_type,-->
+<!--        DATE_FORMAT(NOW(), '%Y-%m-%d') AS report_time,-->
+<!--        UNIX_TIMESTAMP(#{query.startTime}) AS start_time,-->
+<!--        UNIX_TIMESTAMP(#{query.endTime}) AS end_time,-->
+<!--        'admin' AS creator,-->
+<!--        UNIX_TIMESTAMP(NOW()) AS create_time-->
+<!--        ) t-->
+<!--        WHERE 1=1-->
+<!--        <if test="query.reportType != null and query.reportType != ''">-->
+<!--            AND t.report_type = #{query.reportType}-->
+<!--        </if>-->
+<!--        <if test="query.startTime != null and query.startTime != ''">-->
+<!--            AND FROM_UNIXTIME(t.start_time) >= #{query.startTime}-->
+<!--        </if>-->
+<!--        <if test="query.endTime != null and query.endTime != ''">-->
+<!--            AND FROM_UNIXTIME(t.end_time) &lt;= #{query.endTime}-->
+<!--        </if>-->
+<!--    </select>-->
+
+    <!-- 3. 卡片统计（真实业务表） -->
+    <select id="selectCardData" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.decisionanalysis.stationopreport.vo.ops.StationOpReportChartRespVO$CardDataVO">
+        SELECT
+            IFNULL(SUM(cpl.today_order_count), 0) AS totalOrderCount,
+            IFNULL(SUM(cpl.today_income), 0) AS totalIncome,
+            IFNULL(
+                            (SELECT COUNT(1) FROM parking_space_info WHERE real_status = '占用' AND deleted = 0)
+                            / (SELECT COUNT(1) FROM parking_space_info WHERE deleted = 0) * 100, 0
+                ) AS totalSpaceUseRate
+        FROM station_info s
+                 LEFT JOIN charge_park_link cpl ON s.id = cpl.station_id
+        WHERE s.deleted = 0
+    </select>
+
+    <!-- 4. 折线图 -->
+<!--    <select id="selectOperateLine" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.decisionanalysis.stationopreport.vo.ops.StationOpReportChartRespVO$OperateLineVO">-->
+<!--        SELECT-->
+<!--            DATE_FORMAT(s.create_time, '%Y-%m-%d') AS date,-->
+<!--            IFNULL(SUM(cpl.today_order_count), 0) AS orderCount,-->
+<!--            IFNULL(SUM(cpl.today_income), 0) AS income-->
+<!--        FROM station_info s-->
+<!--                 LEFT JOIN charge_park_link cpl ON s.id = cpl.station_id-->
+<!--        WHERE s.deleted = 0-->
+<!--        GROUP BY DATE_FORMAT(s.create_time, '%Y-%m-%d')-->
+<!--        ORDER BY date ASC-->
+<!--    </select>-->
+    <select id="selectOperateLine" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.decisionanalysis.stationopreport.vo.ops.StationOpReportChartRespVO$OperateLineVO">
+        SELECT
+            DATE_FORMAT(cpl.create_time, '%Y-%m-%d') AS date,
+            IFNULL(SUM(cpl.today_order_count), 0) AS orderCount,
+            IFNULL(SUM(cpl.today_income), 0) AS income
+        FROM charge_park_link cpl
+                 LEFT JOIN station_info s ON s.id = cpl.station_id
+        WHERE cpl.deleted = 0
+          AND s.deleted = 0
+        GROUP BY DATE_FORMAT(cpl.create_time, '%Y-%m-%d')
+        ORDER BY date ASC
+    </select>
+
+    <!-- 5. 柱状图 -->
+    <select id="selectAreaBar" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.decisionanalysis.stationopreport.vo.ops.StationOpReportChartRespVO$AreaBarVO">
+        SELECT
+            a.name AS name,
+            IFNULL(SUM(cpl.today_income), 0) AS income
+        FROM station_info s
+                 LEFT JOIN area_info a ON s.area_id = a.id
+                 LEFT JOIN charge_park_link cpl ON s.id = cpl.station_id
+        WHERE s.deleted = 0 AND a.deleted = 0
+        GROUP BY a.id, a.name
+        ORDER BY income DESC
+    </select>
+
+</mapper>

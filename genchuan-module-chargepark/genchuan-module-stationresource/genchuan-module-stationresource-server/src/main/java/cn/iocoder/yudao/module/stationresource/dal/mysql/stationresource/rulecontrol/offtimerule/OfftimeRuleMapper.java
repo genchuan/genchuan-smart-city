@@ -1,11 +1,14 @@
 package cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.rulecontrol.offtimerule;
 
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.offtimerule.vo.OfftimeRulePageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.offtimerule.vo.ops.OfftimeRuleChartRespVO;
+import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.rulecontrol.offtimerule.OfftimeRuleDO;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * 错时规则 Mapper
@@ -33,5 +36,13 @@ public interface OfftimeRuleMapper extends BaseMapperX<OfftimeRuleDO> {
                 .betweenIfPresent(OfftimeRuleDO::getUpdateTime, reqVO.getUpdateTime())
                 .orderByDesc(OfftimeRuleDO::getId));
     }
+    /**
+     * 查询卡片统计数据
+     */
+    OfftimeRuleChartRespVO.CardDataVO selectCardData();
 
+    /**
+     * 查询订单趋势折线数据
+     */
+    List<OfftimeRuleChartRespVO.OrderLineVO> selectOrderLineList();
 }

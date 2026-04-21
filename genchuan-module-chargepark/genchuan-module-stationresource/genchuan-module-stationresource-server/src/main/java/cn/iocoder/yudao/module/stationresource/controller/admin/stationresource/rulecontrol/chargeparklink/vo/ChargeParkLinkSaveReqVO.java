@@ -1,11 +1,11 @@
 package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.chargeparklink.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import java.util.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
 import java.math.BigDecimal;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 充停联动新增/修改 Request VO")
