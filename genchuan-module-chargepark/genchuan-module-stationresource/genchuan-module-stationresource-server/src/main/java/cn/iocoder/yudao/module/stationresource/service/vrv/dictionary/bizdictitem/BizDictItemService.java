@@ -68,4 +68,6 @@ public interface BizDictItemService {
     void updateBiz(UpdateReq updateReqVO);
 
     BatchResult batchAddBizDictItem(List<AddReq> addReqList);
+
+    List<ListByTypeResp> listByTypeFuzzy(ListByTypeFuzzyReq reqVO);
 }

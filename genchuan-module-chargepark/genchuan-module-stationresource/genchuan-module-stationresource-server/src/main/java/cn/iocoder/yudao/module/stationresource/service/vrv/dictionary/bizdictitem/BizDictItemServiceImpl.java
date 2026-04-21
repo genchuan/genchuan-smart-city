@@ -91,71 +91,75 @@ public class BizDictItemServiceImpl implements BizDictItemService {
         return bizDictItemMapper.selectPage(pageReqVO);
     }
 
-//    @Override
-//    public List<ListByTypeResp> listByType(ListByTypeReq req) {
-//        // 1. 构建 MP 条件构造器
-//        LambdaQueryWrapper<BizDictItemDO> wrapper = new LambdaQueryWrapper<>();
-//
-//        // 2. 拼接条件：根据 type_code 查询 + 未删除 + 启用
-//        wrapper.eq(BizDictItemDO::getTypeCode, req.getTypeCode())
-//                .eq(BizDictItemDO::getDeleted, 0)  // 逻辑删除
-//                .eq(BizDictItemDO::getStatus, 1)     // 状态启用
-//                .orderByAsc(BizDictItemDO::getSort)  // 按 sort 排序
-//                .orderByAsc(BizDictItemDO::getCreateTime); // 再按创建时间
-//
-//        // 3. 查询数据
-//        List<BizDictItemDO> items = bizDictItemMapper.selectList(wrapper);
-//
-//        // 4. 转成 VO 返回
-//        return BeanUtils.toBean(items, ListByTypeResp.class);
-//
-//
-//
-//
-//    }
-
     @Override
     public List<ListByTypeResp> listByType(ListByTypeReq req) {
-        // 1. 构建条件
+        // 1. 构建字典项查询条件
         LambdaQueryWrapper<BizDictItemDO> wrapper = new LambdaQueryWrapper<>();
-
-        // ====================== 通用条件 ======================
         wrapper.eq(BizDictItemDO::getDeleted, false)
                 .eq(BizDictItemDO::getStatus, 1);
 
-        // ====================== 1. 根据 typeCode 精确查询 ======================
+        List<String> queryTypeCodes = null;
+
+        // 2. 根据 typeCode 精确查询
         if (req.getTypeCode() != null && !req.getTypeCode().isEmpty()) {
             wrapper.eq(BizDictItemDO::getTypeCode, req.getTypeCode());
+            queryTypeCodes = Collections.singletonList(req.getTypeCode());
         }
 
-        // ====================== 2. 根据 字典分类名称 查询（连表逻辑） ======================
+        // 3. 根据类型名称精确查询（连表）
         if (req.getTypeName() != null && !req.getTypeName().isEmpty()) {
-            // 先根据名称查询类型，拿到 typeCode 集合
             LambdaQueryWrapper<BizDictTypeDO> typeWrapper = new LambdaQueryWrapper<>();
             typeWrapper.eq(BizDictTypeDO::getDeleted, false)
-                    .eq(BizDictTypeDO::getName, req.getTypeName()); // 精确匹配
+                    .eq(BizDictTypeDO::getName, req.getTypeName());
 
             List<BizDictTypeDO> typeList = bizDictTypeMapper.selectList(typeWrapper);
             if (CollUtil.isEmpty(typeList)) {
-                return Collections.emptyList(); // 无数据直接返回
+                return Collections.emptyList();
             }
 
-            // 提取 typeCode 进行 IN 查询
-            List<String> typeCodeList = typeList.stream()
+            queryTypeCodes = typeList.stream()
                     .map(BizDictTypeDO::getUniCode)
                     .toList();
-            wrapper.in(BizDictItemDO::getTypeCode, typeCodeList);
+            wrapper.in(BizDictItemDO::getTypeCode, queryTypeCodes);
         }
 
-        // ====================== 排序 ======================
+        // 4. 无查询条件直接返回空
+        if (queryTypeCodes == null || queryTypeCodes.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 5. 查询字典项
         wrapper.orderByAsc(BizDictItemDO::getSort)
                 .orderByAsc(BizDictItemDO::getCreateTime);
+        List<BizDictItemDO> itemList = bizDictItemMapper.selectList(wrapper);
 
-        // ====================== 查询 ======================
-        List<BizDictItemDO> items = bizDictItemMapper.selectList(wrapper);
-        // ====================== 转换 VO ======================
-        return BeanUtils.toBean(items, ListByTypeResp.class);
+        // 6. 查询对应的类型信息（用于返回 typeName）
+        List<BizDictTypeDO> typeList = bizDictTypeMapper.selectList(
+                new LambdaQueryWrapper<BizDictTypeDO>()
+                        .in(BizDictTypeDO::getUniCode, queryTypeCodes)
+        );
 
+        // 7. 封装成【新结构】返回（核心！）
+        return typeList.stream().map(type -> {
+            ListByTypeResp resp = new ListByTypeResp();
+            resp.setTypeCode(type.getUniCode());
+            resp.setTypeName(type.getName());
+
+            // 组装当前类型的字典项
+            List<ListByTypeResp.DictItem> items = itemList.stream()
+                    .filter(i -> type.getUniCode().equals(i.getTypeCode()))
+                    .map(i -> {
+                        ListByTypeResp.DictItem item = new ListByTypeResp.DictItem();
+                        item.setId(i.getId());
+                        item.setDictKey(i.getDictKey());
+                        item.setDictLabel(i.getDictLabel());
+                        item.setDescription(i.getDescription());
+                        return item;
+                    }).toList();
+
+            resp.setItemList(items);
+            return resp;
+        }).toList();
     }
 
     @Override
@@ -318,5 +322,79 @@ public class BizDictItemServiceImpl implements BizDictItemService {
         result.setTotalCount(addReqList.size());
         result.setFailList(failList);
         return result;
+    }
+
+    @Override
+    public List<ListByTypeResp> listByTypeFuzzy(ListByTypeFuzzyReq reqVO) {
+        String typeCode = reqVO.getTypeCode();
+        String typeName = reqVO.getTypeName();
+        String all = reqVO.getAll();
+        Boolean allowMultiType = reqVO.getAllowMultiType();
+
+        // 1. 查询字典分类
+        LambdaQueryWrapper<BizDictTypeDO> typeQuery = new LambdaQueryWrapper<>();
+        typeQuery.eq(BizDictTypeDO::getDeleted, false)
+                .eq(BizDictTypeDO::getStatus, 1);
+
+        boolean hasSearch = false;
+        if (all != null && !all.isBlank()) {
+            typeQuery.and(q -> q.like(BizDictTypeDO::getUniCode, all)
+                    .or()
+                    .like(BizDictTypeDO::getName, all));
+            hasSearch = true;
+        } else {
+            if (typeCode != null && !typeCode.isBlank()) {
+                typeQuery.like(BizDictTypeDO::getUniCode, typeCode);
+                hasSearch = true;
+            }
+            if (typeName != null && !typeName.isBlank()) {
+                typeQuery.like(BizDictTypeDO::getName, typeName);
+                hasSearch = true;
+            }
+        }
+
+        if (!hasSearch) {
+            return Collections.emptyList();
+        }
+
+        List<BizDictTypeDO> typeList = bizDictTypeMapper.selectList(typeQuery);
+        if (CollUtil.isEmpty(typeList)) {
+            return Collections.emptyList();
+        }
+
+        // 严格模式校验
+        List<String> typeCodes = typeList.stream().map(BizDictTypeDO::getUniCode).toList();
+        if (!allowMultiType && typeCodes.size() > 1) {
+            throw exception("搜索结果集包含多种字典类型，请使用【完整类型编码】进行精准搜索");
+        }
+
+        // 2. 查询字典项
+        LambdaQueryWrapper<BizDictItemDO> itemQuery = new LambdaQueryWrapper<>();
+        itemQuery.eq(BizDictItemDO::getDeleted, false)
+                .eq(BizDictItemDO::getStatus, 1)
+                .in(BizDictItemDO::getTypeCode, typeCodes);
+        List<BizDictItemDO> itemList = bizDictItemMapper.selectList(itemQuery);
+
+        // 3. 按类型分组封装成你要的格式
+        return typeList.stream().map(type -> {
+            ListByTypeResp resp = new ListByTypeResp();
+            resp.setTypeCode(type.getUniCode());
+            resp.setTypeName(type.getName());
+
+            // 筛选当前类型的字典项
+            List<ListByTypeResp.DictItem> items = itemList.stream()
+                    .filter(i -> type.getUniCode().equals(i.getTypeCode()))
+                    .map(i -> {
+                        ListByTypeResp.DictItem item = new ListByTypeResp.DictItem();
+                        item.setId(i.getId());
+                        item.setDictKey(i.getDictKey());
+                        item.setDictLabel(i.getDictLabel());
+                        item.setDescription(i.getDescription());
+                        return item;
+                    }).toList();
+
+            resp.setItemList(items);
+            return resp;
+        }).toList();
     }
 }

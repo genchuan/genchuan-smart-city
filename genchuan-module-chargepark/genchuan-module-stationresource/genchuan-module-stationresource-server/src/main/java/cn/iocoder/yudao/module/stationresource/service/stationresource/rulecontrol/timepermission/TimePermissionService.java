@@ -1,7 +1,6 @@
 package cn.iocoder.yudao.module.stationresource.service.stationresource.rulecontrol.timepermission;
 
-import java.util.*;
-
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.timepermission.vo.TimePermissionPageReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.timepermission.vo.TimePermissionSaveReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.timepermission.vo.ops.ImportRespVO;
@@ -9,10 +8,10 @@ import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.timepermission.vo.ops.TimePermissionUpdateReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.timepermission.vo.statistics.TimePermissionChartRespVO;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.rulecontrol.timepermission.TimePermissionDO;
-import jakarta.validation.*;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import jakarta.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * 时段权限 Service 接口
