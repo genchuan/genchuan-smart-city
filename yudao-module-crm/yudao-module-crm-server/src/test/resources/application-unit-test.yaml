@@ -23,8 +23,8 @@ spring:
     # Redis 配置。Redisson 默认的配置足够使用，一般不需要进行调优
     data:
       redis:
-        host: 192.168.8.67 # 地址
-        port: 16379 # 端口（单元测试，使用 16379 端口）
+        host: 127.0.0.1
+        port: 16379 
         database: 0 # 数据库索引
 
 mybatis-plus:

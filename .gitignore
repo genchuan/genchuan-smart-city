@@ -73,3 +73,7 @@ functions/mock
 screenshot
 .firebase
 sessionStore
+
+# application-local 本地开发配置,禁止提交(含本地密码)
+**/application-local.yml
+**/application-local.yaml

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cn.iocoder.cloud</groupId>
+        <artifactId>genchuan-module-chargepark</artifactId>
+        <version>${revision}</version> <!-- 1. 修改 version 为 ${revision} -->
+    </parent>
+
+    <artifactId>genchuan-module-ordertrade</artifactId>
+    <packaging>pom</packaging>
+    <description>订单交易模块 - 充电停车一体化管理系统</description>
+
+    <modules>
+        <module>genchuan-module-ordertrade-api</module>
+        <module>genchuan-module-ordertrade-server</module>
+    </modules>
+</project>
