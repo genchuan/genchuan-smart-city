@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.vehiclepass.service.entermgmt.unplateenter;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.util.string.StrUtils;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterCreateReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterSaveReqVO;
@@ -109,6 +110,17 @@ public class UnplateEnterServiceImpl implements UnplateEnterService {
 
         // 4. 返回最终结果
         return new PageResult<>(list, pageResult.getTotal());
+    }
+
+    @Override
+    public void createEnterVehiclePass(UnplateEnterCreateReqVO createReqVO) {
+        // 插入
+        UnplateEnterDO enter = BeanUtils.toBean(createReqVO, UnplateEnterDO.class);
+        // 设置默认状态为"待审核"
+        enter.setStatus("待审核");
+        // 设置登记时间为当前时间
+        enter.setRegisterTime(java.time.LocalDateTime.now());
+        enterMapper.insert(enter);
     }
 
 }
