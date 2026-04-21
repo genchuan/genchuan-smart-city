@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.vehiclepass.dal.mysql.entermgmt.unplateenter.UnplateEnterMapper">
+
+    <select id="selectPageJoinStation" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterRespVO">
+        SELECT
+        u.id,
+        u.car_type AS carType,
+        u.car_color AS carColor,
+        u.phone,
+        u.register_time AS registerTime,
+        u.status,
+        u.audit_user_id AS auditUserId,
+        u.audit_time AS auditTime,
+        u.audit_comment AS auditComment,
+        u.remark,
+        u.reserve1,
+        u.reserve2,
+        u.creator,
+        u.updater,
+        u.create_time AS createTime,
+        u.update_time AS updateTime,
+        s.name AS stationName
+        FROM unplate_enter u
+        LEFT JOIN station_info s ON u.station_id = s.id
+        WHERE u.deleted = 0
+        <if test="reqVO.carType != null and reqVO.carType != ''">
+            AND u.car_type = #{reqVO.carType}
+        </if>
+        <if test="reqVO.carColor != null and reqVO.carColor != ''">
+            AND u.car_color LIKE CONCAT('%', #{reqVO.carColor}, '%')
+        </if>
+        <if test="reqVO.phone != null and reqVO.phone != ''">
+            AND u.phone LIKE CONCAT('%', #{reqVO.phone}, '%')
+        </if>
+        <if test="reqVO.status != null and reqVO.status != ''">
+            AND u.status = #{reqVO.status}
+        </if>
+        <if test="reqVO.stationId != null">
+            AND u.station_id = #{reqVO.stationId}
+        </if>
+        <if test="reqVO.auditUserId != null">
+            AND u.audit_user_id = #{reqVO.auditUserId}
+        </if>
+        <if test="reqVO.remark != null and reqVO.remark != ''">
+            AND u.remark LIKE CONCAT('%', #{reqVO.remark}, '%')
+        </if>
+        <if test="reqVO.registerTime != null and reqVO.registerTime.size() == 2">
+            AND u.register_time BETWEEN #{reqVO.registerTime[0]} AND #{reqVO.registerTime[1]}
+        </if>
+        ORDER BY u.id DESC
+    </select>
+
+</mapper>

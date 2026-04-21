@@ -4,6 +4,8 @@ import cn.iocoder.yudao.framework.common.exception.ErrorCode;
 
 public interface ErrorCodeConstants {
 
+    ErrorCode ENTER_NOT_EXISTS = new ErrorCode(500, "无牌入场不存在");
+
     ErrorCode IDENTIFY_NOT_EXISTS = new ErrorCode(500, "片区信息不存在");
 
     ErrorCode RECORD_NOT_EXISTS = new ErrorCode(500, "入场记录不存在");
