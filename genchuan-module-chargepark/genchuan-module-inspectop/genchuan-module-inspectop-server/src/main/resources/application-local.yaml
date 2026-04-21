@@ -4,7 +4,7 @@ spring:
   cloud:
     #服务器nacos
     nacos:
-      server-addr: 192.168.8.6:8848 # Nacos 服务器地址
+      server-addr: 127.0.0.1:8848 # Nacos 服务器地址
       username: # Nacos 账号
       password: # Nacos 密码
       discovery: # 【配置中心】配置项
