@@ -22,14 +22,8 @@ Build:
       for module in "${!MODULE_JAR_MAP[@]}"; do
         jarPath=${MODULE_JAR_MAP[$module]}
         echo "收集模块：$jarPath"
-        cp -f ${jarPath}/target/*.jar jars/${module}.jar 2>/dev/null || echo "⚠️  $module 无jar包，跳过"
+        cp -f ${jarPath}/target/*.jar ${DEPLOY_DIR}/${module}.jar 2>/dev/null || echo "⚠️  $module 无jar包，跳过"
       done
-
-  artifacts:
-    name: "jars-${CI_COMMIT_BRANCH}"
-    paths:
-      - jars/
-    expire_in: 1 day
   retry:
     max: 2
     when:
@@ -46,7 +40,6 @@ Deploy:
     - master
   script:
     - echo "===== 开始部署 ====="
-    - cp -rf jars/* ${DEPLOY_DIR}/
     - cd ${DEPLOY_DIR}
     # 加载服务列表
     - source ci-modules.conf
