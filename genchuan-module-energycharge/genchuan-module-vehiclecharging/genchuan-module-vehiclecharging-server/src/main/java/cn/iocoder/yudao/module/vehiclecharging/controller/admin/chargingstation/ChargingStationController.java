@@ -114,9 +114,12 @@ public class ChargingStationController {
     @PreAuthorize("@ss.hasPermission('vehiclecharging:charging_station:export')")
     public void exportChargingStation(ChargingStationExportReqVO exportReqVO,
                                       HttpServletResponse response) throws IOException {
+        exportReqVO.setPageSize(-1);
         // 1. 分页查询数据
         PageResult<ChargingStationDO> pageResult = chargingStationService.getChargingStationPage(exportReqVO);
         List<ChargingStationDO> list = pageResult.getList();
+        System.out.println("================================");
+        System.out.println(list.size());
 
         // 2. 导出 Excel
         ExcelUtils.write(response, "充电站信息.xlsx","数据", ChargingStationExcelVO.class,
