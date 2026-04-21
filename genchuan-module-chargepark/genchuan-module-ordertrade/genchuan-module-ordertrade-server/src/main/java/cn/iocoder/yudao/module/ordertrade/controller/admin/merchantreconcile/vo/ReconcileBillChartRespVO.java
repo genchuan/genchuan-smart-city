@@ -1,0 +1,28 @@
+package cn.iocoder.yudao.module.ordertrade.controller.admin.merchantreconcile.vo;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+@Schema(description = "管理后台 - 商户对账单统计图表 Response VO")
+@Data
+public class ReconcileBillChartRespVO {
+
+    @Schema(description = "对账单趋势数据（折线图）")
+    private List<Map<String, Object>> trendData;
+
+    @Schema(description = "待确认对账单数量")
+    private Long pendingCount;
+
+    @Schema(description = "有异议对账单数量")
+    private Long disputedCount;
+
+    @Schema(description = "已确认对账单数量")
+    private Long confirmedCount;
+
+    @Schema(description = "对账通过率(%)")
+    private BigDecimal confirmRate;
+}
