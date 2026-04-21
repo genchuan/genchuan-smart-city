@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.ordertrade.dal.mysql.paymgmt.PayCallbackMapper">
+
+    <!--
+        PayCallback Mapper XML
+        复用芋道表: pay_notify_task
+        说明：CRUD 由 MyBatis Plus 自动提供；统计查询通过 Java @Select 注解定义，此处仅保留命名空间。
+        @author genchuan
+    -->
+
+</mapper>
