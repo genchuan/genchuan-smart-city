@@ -12,6 +12,7 @@ import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.reserve.Rese
 import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.reserve.ReserveListMapper;
 import cn.iocoder.yudao.module.chargepark.carservice.enums.reserve.ReserveStatusEnum;
 import cn.iocoder.yudao.module.chargepark.carservice.framework.notify.CarServiceNotifyHelper;
+import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.CrossModuleValidator;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +45,9 @@ public class ReserveListServiceImpl implements ReserveListService {
     @Resource
     private CarServiceNotifyHelper notifyHelper;
 
+    @Resource
+    private CrossModuleValidator crossModuleValidator;
+
     /** 给用户发送审核结果通知 */
     private void notifyAuditResult(ReserveListDO reserve, boolean approved, String rejectReason) {
         if (approved) {
@@ -61,6 +65,9 @@ public class ReserveListServiceImpl implements ReserveListService {
 
     @Override
     public Long createReserveList(ReserveListSaveReqVO createReqVO) {
+        // 跨模块外键校验:stationId / spaceId 必须真实存在
+        crossModuleValidator.validateStationExists(createReqVO.getStationId());
+        crossModuleValidator.validateSpaceExists(createReqVO.getSpaceId());
         ReserveListDO reserveList = BeanUtils.toBean(createReqVO, ReserveListDO.class);
         if (reserveList.getStatus() == null || reserveList.getStatus().isEmpty()) {
             reserveList.setStatus(ReserveStatusEnum.WAITING_AUDIT.getLabel());

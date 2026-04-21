@@ -38,7 +38,7 @@ public class SpaceLocationRespVO {
     @ExcelProperty("车位 ID")
     private Long spaceId;
 
-    @Schema(description = "定位结果")
+    @Schema(description = "定位结果,关联字典 space_location_location_result")
     @ExcelProperty("定位结果")
     private String locationResult;
 

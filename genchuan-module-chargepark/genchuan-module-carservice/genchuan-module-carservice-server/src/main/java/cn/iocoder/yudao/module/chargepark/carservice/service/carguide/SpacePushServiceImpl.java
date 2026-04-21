@@ -8,6 +8,7 @@ import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.v
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.carguide.SpacePushDO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.carguide.SpacePushMapper;
 import cn.iocoder.yudao.module.chargepark.carservice.enums.carguide.SpacePushStatusEnum;
+import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.CrossModuleValidator;
 import cn.iocoder.yudao.module.system.api.notify.NotifyMessageSendApi;
 import cn.iocoder.yudao.module.system.api.notify.dto.NotifySendSingleToUserReqDTO;
 import jakarta.annotation.Resource;
@@ -42,8 +43,13 @@ public class SpacePushServiceImpl implements SpacePushService {
     @Resource
     private NotifyMessageSendApi notifyMessageSendApi;
 
+    @Resource
+    private CrossModuleValidator crossModuleValidator;
+
     @Override
     public Long createSpacePush(SpacePushSaveReqVO createReqVO) {
+        // 跨模块外键校验:stationId 必须真实存在
+        crossModuleValidator.validateStationExists(createReqVO.getStationId());
         SpacePushDO spacePush = BeanUtils.toBean(createReqVO, SpacePushDO.class);
         if (spacePush.getStatus() == null || spacePush.getStatus().isEmpty()) {
             spacePush.setStatus(SpacePushStatusEnum.WAITING_PUSH.getLabel());
@@ -89,6 +95,7 @@ public class SpacePushServiceImpl implements SpacePushService {
     // ========== 业务操作 ==========
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void pushSpacePush(Long id) {
         SpacePushDO push = spacePushMapper.selectById(id);
         if (push == null) {
@@ -113,7 +120,8 @@ public class SpacePushServiceImpl implements SpacePushService {
         if (reqVO.getIds() == null || reqVO.getIds().isEmpty()) {
             return;
         }
-        LocalDateTime now = LocalDateTime.now();
+        // 第 1 遍:预校验全部记录,任何一条不合法立即抛异常,此时还没发 notify 不会误推
+        List<SpacePushDO> pushes = new java.util.ArrayList<>(reqVO.getIds().size());
         for (Long id : reqVO.getIds()) {
             SpacePushDO push = spacePushMapper.selectById(id);
             if (push == null) {
@@ -122,9 +130,14 @@ public class SpacePushServiceImpl implements SpacePushService {
             if (!SpacePushStatusEnum.WAITING_PUSH.getLabel().equals(push.getStatus())) {
                 throw exception(SPACE_PUSH_STATUS_INVALID);
             }
+            pushes.add(push);
+        }
+        // 第 2 遍:全部校验通过后再统一发 notify + update DB
+        LocalDateTime now = LocalDateTime.now();
+        for (SpacePushDO push : pushes) {
             String result = sendNotify(push);
             SpacePushDO update = new SpacePushDO();
-            update.setId(id);
+            update.setId(push.getId());
             update.setStatus(SpacePushStatusEnum.PUSHED.getLabel());
             update.setPushTime(now);
             update.setPushResult(result);

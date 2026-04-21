@@ -5,8 +5,11 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.IsoFields;
 import java.time.temporal.TemporalAdjusters;
+import java.time.temporal.WeekFields;
+import java.util.Locale;
 
 /**
  * 决策分析-报表时间尺度
@@ -65,6 +68,56 @@ public enum ReportPeriodEnum {
             default:
                 throw new IllegalStateException("未支持的尺度：" + this);
         }
+    }
+
+    /** 下一周期基准日期(用于遍历统计区间) */
+    public LocalDate nextPeriod(LocalDate baseDate) {
+        switch (this) {
+            case DAILY:        return baseDate.plusDays(1);
+            case WEEKLY:       return baseDate.plusWeeks(1);
+            case MONTHLY:      return baseDate.plusMonths(1);
+            case QUARTERLY:    return baseDate.plusMonths(3);
+            case SEMI_ANNUAL:  return baseDate.plusMonths(6);
+            case ANNUAL:       return baseDate.plusYears(1);
+            default:
+                throw new IllegalStateException("未支持的尺度：" + this);
+        }
+    }
+
+    /** 格式化成客户文档的 statPeriod 字符串。例: MONTHLY→"2025-03" / WEEKLY→"2025-W15" / QUARTERLY→"2025-Q1" */
+    public String formatStatPeriod(LocalDate baseDate) {
+        switch (this) {
+            case DAILY:
+                return baseDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
+            case WEEKLY:
+                int week = baseDate.get(WeekFields.ISO.weekOfWeekBasedYear());
+                int weekYear = baseDate.get(WeekFields.ISO.weekBasedYear());
+                return String.format("%d-W%02d", weekYear, week);
+            case MONTHLY:
+                return baseDate.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+            case QUARTERLY:
+                return baseDate.getYear() + "-Q" + baseDate.get(IsoFields.QUARTER_OF_YEAR);
+            case SEMI_ANNUAL:
+                return baseDate.getYear() + "-H" + (baseDate.getMonthValue() <= 6 ? 1 : 2);
+            case ANNUAL:
+                return String.valueOf(baseDate.getYear());
+            default:
+                throw new IllegalStateException("未支持的尺度：" + this);
+        }
+    }
+
+    /** 按客户文档 timeScale 汉字(日/周/月/季/半年/年)匹配枚举。容错匹配 reportType(日报/周报/...) */
+    public static ReportPeriodEnum fromTimeScale(String s) {
+        if (s == null) return MONTHLY; // 默认月度
+        String x = s.trim();
+        if (x.isEmpty()) return MONTHLY;
+        if (x.startsWith("日")) return DAILY;
+        if (x.startsWith("周")) return WEEKLY;
+        if (x.startsWith("月")) return MONTHLY;
+        if (x.startsWith("季")) return QUARTERLY;
+        if (x.startsWith("半")) return SEMI_ANNUAL;
+        if (x.startsWith("年")) return ANNUAL;
+        return MONTHLY;
     }
 
     /**

@@ -32,7 +32,7 @@ public class RescueInfoRespVO {
     @ExcelProperty("救援地址")
     private String locationName;
 
-    @Schema(description = "救援类型")
+    @Schema(description = "救援类型,关联字典 rescue_info_rescue_type")
     @ExcelProperty("救援类型")
     private String rescueType;
 
@@ -40,7 +40,7 @@ public class RescueInfoRespVO {
     @ExcelProperty("派发时间")
     private LocalDateTime dispatchTime;
 
-    @Schema(description = "救援状态")
+    @Schema(description = "救援状态,关联字典 rescue_info_status")
     @ExcelProperty("救援状态")
     private String status;
 
@@ -64,7 +64,7 @@ public class RescueInfoRespVO {
     @ExcelProperty("评价得分")
     private Integer score;
 
-    @Schema(description = "归档状态")
+    @Schema(description = "归档状态,关联字典 rescue_info_archive_status")
     @ExcelProperty("归档状态")
     private String archiveStatus;
 

@@ -6,6 +6,7 @@ import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.DisputeMediateSaveReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.DisputeMediateUpdateProgressReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.complaint.DisputeMediateDO;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -16,9 +17,9 @@ import java.util.List;
  */
 public interface DisputeMediateService {
 
-    Long createDisputeMediate(DisputeMediateSaveReqVO createReqVO);
+    Long createDisputeMediate(@Valid DisputeMediateSaveReqVO createReqVO);
 
-    void updateDisputeMediate(DisputeMediateSaveReqVO updateReqVO);
+    void updateDisputeMediate(@Valid DisputeMediateSaveReqVO updateReqVO);
 
     void deleteDisputeMediate(Long id);
 

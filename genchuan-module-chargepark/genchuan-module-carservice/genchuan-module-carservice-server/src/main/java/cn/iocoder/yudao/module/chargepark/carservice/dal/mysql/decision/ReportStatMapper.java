@@ -23,46 +23,73 @@ import java.util.Map;
 @Mapper
 public interface ReportStatMapper {
 
-    @Select("SELECT DATE(create_time) AS day, COUNT(*) AS cnt FROM rescue_info " +
-            "WHERE create_time >= #{since} GROUP BY DATE(create_time) ORDER BY day")
-    List<Map<String, Object>> rescueInfoDailyCount(@Param("since") LocalDateTime since);
+    @Select("<script>SELECT DATE(create_time) AS day, COUNT(*) AS cnt FROM rescue_info " +
+            "WHERE create_time &gt;= #{since} " +
+            "<if test='end != null'>AND create_time &lt;= #{end}</if> " +
+            "GROUP BY DATE(create_time) ORDER BY day</script>")
+    List<Map<String, Object>> rescueInfoDailyCount(@Param("since") LocalDateTime since,
+                                                   @Param("end") LocalDateTime end);
 
-    @Select("SELECT DATE(create_time) AS day, COUNT(*) AS cnt FROM reserve_list " +
-            "WHERE create_time >= #{since} GROUP BY DATE(create_time) ORDER BY day")
-    List<Map<String, Object>> reserveListDailyCount(@Param("since") LocalDateTime since);
+    @Select("<script>SELECT DATE(create_time) AS day, COUNT(*) AS cnt FROM reserve_list " +
+            "WHERE create_time &gt;= #{since} " +
+            "<if test='end != null'>AND create_time &lt;= #{end}</if> " +
+            "GROUP BY DATE(create_time) ORDER BY day</script>")
+    List<Map<String, Object>> reserveListDailyCount(@Param("since") LocalDateTime since,
+                                                    @Param("end") LocalDateTime end);
 
-    @Select("SELECT DATE(create_time) AS day, COUNT(*) AS cnt FROM space_push " +
-            "WHERE create_time >= #{since} GROUP BY DATE(create_time) ORDER BY day")
-    List<Map<String, Object>> spacePushDailyCount(@Param("since") LocalDateTime since);
+    @Select("<script>SELECT DATE(create_time) AS day, COUNT(*) AS cnt FROM space_push " +
+            "WHERE create_time &gt;= #{since} " +
+            "<if test='end != null'>AND create_time &lt;= #{end}</if> " +
+            "GROUP BY DATE(create_time) ORDER BY day</script>")
+    List<Map<String, Object>> spacePushDailyCount(@Param("since") LocalDateTime since,
+                                                  @Param("end") LocalDateTime end);
 
-    @Select("SELECT DATE(create_time) AS day, COUNT(*) AS cnt FROM suggestion " +
-            "WHERE create_time >= #{since} GROUP BY DATE(create_time) ORDER BY day")
-    List<Map<String, Object>> suggestionDailyCount(@Param("since") LocalDateTime since);
+    @Select("<script>SELECT DATE(create_time) AS day, COUNT(*) AS cnt FROM suggestion " +
+            "WHERE create_time &gt;= #{since} " +
+            "<if test='end != null'>AND create_time &lt;= #{end}</if> " +
+            "GROUP BY DATE(create_time) ORDER BY day</script>")
+    List<Map<String, Object>> suggestionDailyCount(@Param("since") LocalDateTime since,
+                                                   @Param("end") LocalDateTime end);
 
-    @Select("SELECT DATE(create_time) AS day, COUNT(*) AS cnt FROM user_appeal " +
-            "WHERE create_time >= #{since} GROUP BY DATE(create_time) ORDER BY day")
-    List<Map<String, Object>> userAppealDailyCount(@Param("since") LocalDateTime since);
+    @Select("<script>SELECT DATE(create_time) AS day, COUNT(*) AS cnt FROM user_appeal " +
+            "WHERE create_time &gt;= #{since} " +
+            "<if test='end != null'>AND create_time &lt;= #{end}</if> " +
+            "GROUP BY DATE(create_time) ORDER BY day</script>")
+    List<Map<String, Object>> userAppealDailyCount(@Param("since") LocalDateTime since,
+                                                   @Param("end") LocalDateTime end);
 
-    @Select("SELECT DATE(create_time) AS day, COUNT(*) AS cnt FROM dispute_mediate " +
-            "WHERE create_time >= #{since} GROUP BY DATE(create_time) ORDER BY day")
-    List<Map<String, Object>> disputeMediateDailyCount(@Param("since") LocalDateTime since);
+    @Select("<script>SELECT DATE(create_time) AS day, COUNT(*) AS cnt FROM dispute_mediate " +
+            "WHERE create_time &gt;= #{since} " +
+            "<if test='end != null'>AND create_time &lt;= #{end}</if> " +
+            "GROUP BY DATE(create_time) ORDER BY day</script>")
+    List<Map<String, Object>> disputeMediateDailyCount(@Param("since") LocalDateTime since,
+                                                       @Param("end") LocalDateTime end);
 
     /**
-     * 通用：按 reserve_type 列做枚举分组（用于柱状图）
+     * 通用：按 reserve_type 列做枚举分组（用于柱状图），支持按 create_time 时间范围过滤
      */
-    @Select("SELECT reserve_type AS k, COUNT(*) AS cnt FROM reserve_list " +
-            "WHERE reserve_type IS NOT NULL GROUP BY reserve_type")
-    List<Map<String, Object>> reserveListTypeDistribution();
+    @Select("<script>SELECT reserve_type AS k, COUNT(*) AS cnt FROM reserve_list " +
+            "WHERE reserve_type IS NOT NULL " +
+            "<if test='since != null'>AND create_time &gt;= #{since}</if> " +
+            "<if test='end != null'>AND create_time &lt;= #{end}</if> " +
+            "GROUP BY reserve_type</script>")
+    List<Map<String, Object>> reserveListTypeDistribution(@Param("since") LocalDateTime since,
+                                                          @Param("end") LocalDateTime end);
 
     /**
-     * 充停地图：聚合统计（成功率、平均响应时长、总数）一次拿全
+     * 充停地图：聚合统计（成功率、平均响应时长、总数）一次拿全，支持按 create_time 时间范围过滤
      */
-    @Select("SELECT " +
+    @Select("<script>SELECT " +
             " COUNT(*) AS total, " +
-            " SUM(CASE WHEN result_count > 0 THEN 1 ELSE 0 END) AS success_cnt, " +
+            " SUM(CASE WHEN result_count &gt; 0 THEN 1 ELSE 0 END) AS success_cnt, " +
             " AVG(response_duration) AS avg_resp " +
-            "FROM charge_park_map")
-    Map<String, Object> chargeParkMapAggregate();
+            "FROM charge_park_map " +
+            "<where>" +
+            "<if test='since != null'>AND create_time &gt;= #{since}</if>" +
+            "<if test='end != null'>AND create_time &lt;= #{end}</if>" +
+            "</where></script>")
+    Map<String, Object> chargeParkMapAggregate(@Param("since") LocalDateTime since,
+                                               @Param("end") LocalDateTime end);
 
     /**
      * 周边场站：聚合统计（station 求和、empty 求和、查询次数）
@@ -75,28 +102,42 @@ public interface ReportStatMapper {
     Map<String, Object> nearStationAggregate();
 
     /**
-     * 路径规划：聚合（总数、成功数）
+     * 路径规划：聚合（总数、成功数），支持按 create_time 时间范围过滤
      */
-    @Select("SELECT COUNT(*) AS total, " +
-            " SUM(CASE WHEN path_length > 0 THEN 1 ELSE 0 END) AS success_cnt " +
-            "FROM path_plan")
-    Map<String, Object> pathPlanAggregate();
+    @Select("<script>SELECT COUNT(*) AS total, " +
+            " SUM(CASE WHEN path_length &gt; 0 THEN 1 ELSE 0 END) AS success_cnt " +
+            "FROM path_plan " +
+            "<where>" +
+            "<if test='since != null'>AND create_time &gt;= #{since}</if>" +
+            "<if test='end != null'>AND create_time &lt;= #{end}</if>" +
+            "</where></script>")
+    Map<String, Object> pathPlanAggregate(@Param("since") LocalDateTime since,
+                                          @Param("end") LocalDateTime end);
 
     /**
-     * 话术：按类型分组
+     * 话术：按类型分组，支持按 create_time 时间范围过滤
      */
-    @Select("SELECT type AS k, COUNT(*) AS cnt FROM wording_mgmt " +
-            "WHERE type IS NOT NULL GROUP BY type")
-    List<Map<String, Object>> wordingMgmtTypeDistribution();
+    @Select("<script>SELECT type AS k, COUNT(*) AS cnt FROM wording_mgmt " +
+            "WHERE type IS NOT NULL " +
+            "<if test='since != null'>AND create_time &gt;= #{since}</if> " +
+            "<if test='end != null'>AND create_time &lt;= #{end}</if> " +
+            "GROUP BY type</script>")
+    List<Map<String, Object>> wordingMgmtTypeDistribution(@Param("since") LocalDateTime since,
+                                                          @Param("end") LocalDateTime end);
 
     /**
-     * 话术：按状态计数（生效数、总数）
+     * 话术：按状态计数（生效数、总数），支持按 create_time 时间范围过滤
      */
-    @Select("SELECT " +
+    @Select("<script>SELECT " +
             " COUNT(*) AS total, " +
             " SUM(CASE WHEN status = '已生效' THEN 1 ELSE 0 END) AS enabled_cnt " +
-            "FROM wording_mgmt")
-    Map<String, Object> wordingMgmtAggregate();
+            "FROM wording_mgmt " +
+            "<where>" +
+            "<if test='since != null'>AND create_time &gt;= #{since}</if>" +
+            "<if test='end != null'>AND create_time &lt;= #{end}</if>" +
+            "</where></script>")
+    Map<String, Object> wordingMgmtAggregate(@Param("since") LocalDateTime since,
+                                             @Param("end") LocalDateTime end);
 
     // ========== count-by-status 系列(给前端卡片角标用,一次 GROUP BY 取所有状态) ==========
     // 多租户隔离由 TenantLineInnerInterceptor 自动追加 tenant_id = ?
@@ -118,5 +159,68 @@ public interface ReportStatMapper {
 
     @Select("SELECT status AS k, COUNT(*) AS cnt FROM dispute_mediate GROUP BY status")
     List<Map<String, Object>> disputeMediateCountByStatus();
+
+    // ========== 月度率聚合(用于服务运营趋势折线图) ==========
+    // 返回 {ym, total, done_cnt},应用层合并多表后计算 rate
+
+    @Select("<script>SELECT DATE_FORMAT(create_time, '%Y-%m') AS ym, " +
+            " COUNT(*) AS total, " +
+            " SUM(CASE WHEN status = '已完成' THEN 1 ELSE 0 END) AS done_cnt " +
+            "FROM rescue_info " +
+            "<where>" +
+            "<if test='since != null'>AND create_time &gt;= #{since}</if>" +
+            "<if test='end != null'>AND create_time &lt;= #{end}</if>" +
+            "</where>" +
+            "GROUP BY DATE_FORMAT(create_time, '%Y-%m') ORDER BY ym</script>")
+    List<Map<String, Object>> rescueInfoMonthlyRate(@Param("since") LocalDateTime since,
+                                                    @Param("end") LocalDateTime end);
+
+    @Select("<script>SELECT DATE_FORMAT(create_time, '%Y-%m') AS ym, " +
+            " COUNT(*) AS total, " +
+            " SUM(CASE WHEN status IN ('已生效','已完成') THEN 1 ELSE 0 END) AS done_cnt " +
+            "FROM reserve_list " +
+            "<where>" +
+            "<if test='since != null'>AND create_time &gt;= #{since}</if>" +
+            "<if test='end != null'>AND create_time &lt;= #{end}</if>" +
+            "</where>" +
+            "GROUP BY DATE_FORMAT(create_time, '%Y-%m') ORDER BY ym</script>")
+    List<Map<String, Object>> reserveListMonthlyRate(@Param("since") LocalDateTime since,
+                                                     @Param("end") LocalDateTime end);
+
+    @Select("<script>SELECT DATE_FORMAT(create_time, '%Y-%m') AS ym, " +
+            " COUNT(*) AS total, " +
+            " SUM(CASE WHEN status = '已完成' THEN 1 ELSE 0 END) AS done_cnt " +
+            "FROM suggestion " +
+            "<where>" +
+            "<if test='since != null'>AND create_time &gt;= #{since}</if>" +
+            "<if test='end != null'>AND create_time &lt;= #{end}</if>" +
+            "</where>" +
+            "GROUP BY DATE_FORMAT(create_time, '%Y-%m') ORDER BY ym</script>")
+    List<Map<String, Object>> suggestionMonthlyRate(@Param("since") LocalDateTime since,
+                                                    @Param("end") LocalDateTime end);
+
+    @Select("<script>SELECT DATE_FORMAT(create_time, '%Y-%m') AS ym, " +
+            " COUNT(*) AS total, " +
+            " SUM(CASE WHEN status = '已完成' THEN 1 ELSE 0 END) AS done_cnt " +
+            "FROM user_appeal " +
+            "<where>" +
+            "<if test='since != null'>AND create_time &gt;= #{since}</if>" +
+            "<if test='end != null'>AND create_time &lt;= #{end}</if>" +
+            "</where>" +
+            "GROUP BY DATE_FORMAT(create_time, '%Y-%m') ORDER BY ym</script>")
+    List<Map<String, Object>> userAppealMonthlyRate(@Param("since") LocalDateTime since,
+                                                    @Param("end") LocalDateTime end);
+
+    @Select("<script>SELECT DATE_FORMAT(create_time, '%Y-%m') AS ym, " +
+            " COUNT(*) AS total, " +
+            " SUM(CASE WHEN status = '已完成' THEN 1 ELSE 0 END) AS done_cnt " +
+            "FROM dispute_mediate " +
+            "<where>" +
+            "<if test='since != null'>AND create_time &gt;= #{since}</if>" +
+            "<if test='end != null'>AND create_time &lt;= #{end}</if>" +
+            "</where>" +
+            "GROUP BY DATE_FORMAT(create_time, '%Y-%m') ORDER BY ym</script>")
+    List<Map<String, Object>> disputeMediateMonthlyRate(@Param("since") LocalDateTime since,
+                                                        @Param("end") LocalDateTime end);
 
 }

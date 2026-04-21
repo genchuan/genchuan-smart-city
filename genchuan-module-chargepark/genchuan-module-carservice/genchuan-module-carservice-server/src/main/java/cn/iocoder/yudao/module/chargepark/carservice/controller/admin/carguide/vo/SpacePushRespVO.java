@@ -28,6 +28,10 @@ public class SpacePushRespVO {
     @ExcelProperty("场站 ID")
     private Long stationId;
 
+    @Schema(description = "场站名（关联 station_info.name）")
+    @ExcelProperty("场站名")
+    private String stationName;
+
     @Schema(description = "空位信息")
     @ExcelProperty("空位信息")
     private String spaceInfo;
@@ -36,11 +40,11 @@ public class SpacePushRespVO {
     @ExcelProperty("推送时间")
     private LocalDateTime pushTime;
 
-    @Schema(description = "推送状态")
+    @Schema(description = "推送状态,关联字典 space_push_status")
     @ExcelProperty("推送状态")
     private String status;
 
-    @Schema(description = "推送结果")
+    @Schema(description = "推送结果,关联字典 space_push_push_result")
     @ExcelProperty("推送结果")
     private String pushResult;
 

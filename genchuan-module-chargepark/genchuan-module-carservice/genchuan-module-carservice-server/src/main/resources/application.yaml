@@ -176,4 +176,4 @@ carservice:
     # 路径导航 URL 模板（path-plan）。{from}/{to} 占位分别替换为起点/终点坐标串
     map-path-url-template: "https://uri.amap.com/navigation?from={from}&to={to}"
     # 前端预约页跳转 URL 模板。{params} 占位会被 "stationId=X" 或 "stationId=X&spaceId=Y" 替换
-    reserve-url-template: "/#/genchuan/chargePark/carService/reserveService/reserveList?{params}"
+    reserve-url-template: "/#/chargePark/carService/reserveService/reserveList?{params}"

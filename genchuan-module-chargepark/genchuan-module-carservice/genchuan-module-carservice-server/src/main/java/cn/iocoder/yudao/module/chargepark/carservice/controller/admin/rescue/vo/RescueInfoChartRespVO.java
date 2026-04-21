@@ -27,6 +27,12 @@ public class RescueInfoChartRespVO {
     @Schema(description = "待救援数,待派发 + 待认领状态的总数")
     private Integer waitRescueCount;
 
+    @Schema(description = "待派发数(status=待派发)")
+    private Integer waitDispatchCount;
+
+    @Schema(description = "待认领数(status=待认领)")
+    private Integer waitClaimCount;
+
     @Schema(description = "救援完成率,已完成 / 总数")
     private BigDecimal finishRate;
 

@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo;
 
+import cn.iocoder.yudao.framework.dict.validation.InDict;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -28,7 +29,10 @@ public class UserAppealSaveReqVO {
     @Schema(description = "提交时间（创建时由后端默认为当前时间）")
     private LocalDateTime submitTime;
 
-    @Schema(description = "申诉状态（创建时由后端默认为 待审核）", example = "待审核")
+    @Schema(description = "申诉状态,关联字典 user_appeal_status(创建时由后端默认为 待审核)",
+            example = "待审核",
+            allowableValues = {"待审核", "待处置", "已完成"})
+    @InDict(type = "user_appeal_status")
     private String status;
 
     @Schema(description = "审核人 ID")

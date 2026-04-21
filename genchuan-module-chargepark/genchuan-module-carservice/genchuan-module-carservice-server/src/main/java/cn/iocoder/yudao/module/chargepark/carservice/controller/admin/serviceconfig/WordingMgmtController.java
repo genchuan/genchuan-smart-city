@@ -4,6 +4,7 @@ import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.serviceconfig.vo.WordingMgmtBatchSaveReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.serviceconfig.vo.WordingMgmtChartRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.serviceconfig.vo.WordingMgmtCreateReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.serviceconfig.vo.WordingMgmtPageReqVO;
@@ -101,13 +102,15 @@ public class WordingMgmtController {
     }
 
     @PutMapping("/save")
-    @Operation(summary = "保存 - 保存当前页面的所有配置修改")
+    @Operation(summary = "批量保存 - 表格内联编辑的新增/编辑一次性提交",
+            description = "前端允许在表格里同时新增多行 + 编辑多行,点\"保存\"一次性 POST 整个列表。" +
+                    "items 内单条有 id = 编辑(走 updateWordingMgmt),无 id = 新增(走 createWordingMgmt)。" +
+                    "两遍扫描:先整体 JSR-303 校验(含 @InDict 字典校验),全部通过后才进入写入阶段;" +
+                    "写入阶段整体 @Transactional,任何一条失败全部回滚。")
     @PreAuthorize("@ss.hasPermission('carservice:wording-mgmt:save')")
     @ApiAccessLog(operateType = UPDATE)
-    public CommonResult<Boolean> saveWordingMgmt() {
-        // 按 05 接口文档原文:无参数,触发"保存当前页面配置"
-        // 因为话术的 create/update 已经是即时保存(点编辑/新增即入库),此接口是 UI 层"确认保存"动作,
-        // 后端无需额外操作,直接返回成功
+    public CommonResult<Boolean> saveWordingMgmt(@Valid @RequestBody WordingMgmtBatchSaveReqVO reqVO) {
+        wordingMgmtService.batchSaveWordingMgmt(reqVO);
         return success(true);
     }
 

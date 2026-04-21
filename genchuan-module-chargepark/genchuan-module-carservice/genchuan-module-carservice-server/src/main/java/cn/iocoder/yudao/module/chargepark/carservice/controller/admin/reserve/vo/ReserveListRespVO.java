@@ -28,6 +28,10 @@ public class ReserveListRespVO {
     @ExcelProperty("场站 ID")
     private Long stationId;
 
+    @Schema(description = "场站名（关联 station_info.name）")
+    @ExcelProperty("场站名")
+    private String stationName;
+
     @Schema(description = "车位 ID")
     @ExcelProperty("车位 ID")
     private Long spaceId;
@@ -36,11 +40,11 @@ public class ReserveListRespVO {
     @ExcelProperty("预约时间")
     private LocalDateTime reserveTime;
 
-    @Schema(description = "预约类型")
+    @Schema(description = "预约类型,关联字典 reserve_list_reserve_type")
     @ExcelProperty("预约类型")
     private String reserveType;
 
-    @Schema(description = "预约状态")
+    @Schema(description = "预约状态,关联字典 reserve_list_status")
     @ExcelProperty("预约状态")
     private String status;
 

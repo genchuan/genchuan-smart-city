@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.chargepark.carservice.controller.admin.rescue.vo;
 
+import cn.iocoder.yudao.framework.dict.validation.InDict;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -29,14 +30,21 @@ public class RescueInfoSaveReqVO {
             example = "福建省泉州市丰泽区津淮街 123 号")
     private String locationName;
 
-    @Schema(description = "救援类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "道路救援")
+    @Schema(description = "救援类型,关联字典 rescue_info_rescue_type",
+            requiredMode = Schema.RequiredMode.REQUIRED,
+            example = "道路救援",
+            allowableValues = {"道路救援", "充电故障救援", "停车故障救援"})
     @NotBlank(message = "救援类型不能为空")
+    @InDict(type = "rescue_info_rescue_type")
     private String rescueType;
 
     @Schema(description = "派发时间")
     private LocalDateTime dispatchTime;
 
-    @Schema(description = "救援状态（创建时由后端默认为 待派发）", example = "待派发")
+    @Schema(description = "救援状态,关联字典 rescue_info_status(创建时由后端默认为 待派发)",
+            example = "待派发",
+            allowableValues = {"待派发", "待认领", "处理中", "已完成"})
+    @InDict(type = "rescue_info_status")
     private String status;
 
     @Schema(description = "救援人员 ID")
@@ -53,7 +61,10 @@ public class RescueInfoSaveReqVO {
     @Max(value = 5, message = "评分最大为 5")
     private Integer score;
 
-    @Schema(description = "归档状态", example = "未归档")
+    @Schema(description = "归档状态,关联字典 rescue_info_archive_status",
+            example = "未归档",
+            allowableValues = {"未归档", "已归档"})
+    @InDict(type = "rescue_info_archive_status")
     private String archiveStatus;
 
     @Schema(description = "派发备注")

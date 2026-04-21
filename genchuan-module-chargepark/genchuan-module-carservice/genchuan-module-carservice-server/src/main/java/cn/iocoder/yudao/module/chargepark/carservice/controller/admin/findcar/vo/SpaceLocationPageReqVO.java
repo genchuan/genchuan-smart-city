@@ -19,10 +19,13 @@ public class SpaceLocationPageReqVO extends PageParam {
     @Schema(description = "车牌号码（支持模糊查询）", example = "闽C12345")
     private String plateNo;
 
-    @Schema(description = "定位结果，关联字典 space_location_location_result")
+    @Schema(description = "定位结果,关联字典 space_location_location_result", example = "成功",
+            allowableValues = {"成功", "失败"})
     private String locationResult;
 
-    @Schema(description = "查询时间")
+    @Schema(description = "查询时间范围(长度 2 的数组:[起始时间, 结束时间])。" +
+            "前端示例:axios.get(url,{params:{queryTime:[start,end]}}) — 不要 JSON.stringify,最终 HTTP 是两次同名 query:?queryTime=start&queryTime=end",
+            example = "[\"2025-04-01 00:00:00\", \"2025-04-14 23:59:59\"]")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] queryTime;
 

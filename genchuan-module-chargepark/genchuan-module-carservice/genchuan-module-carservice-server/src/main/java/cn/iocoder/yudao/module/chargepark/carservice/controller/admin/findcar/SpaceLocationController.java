@@ -11,11 +11,14 @@ import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.findcar.Spac
 import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.UserNameInjector;
 import cn.iocoder.yudao.module.chargepark.carservice.service.decision.ServiceOpReportService;
 import cn.iocoder.yudao.module.chargepark.carservice.service.findcar.SpaceLocationService;
+import cn.iocoder.yudao.module.inspectop.api.space.SpaceMonitorApi;
+import cn.iocoder.yudao.module.inspectop.api.space.dto.SpaceMonitorRespDTO;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,6 +32,7 @@ import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
+@Slf4j
 @Tag(name = "反向寻车 - 车位定位")
 @RestController
 @RequestMapping("/carservice/space-location")
@@ -43,6 +47,9 @@ public class SpaceLocationController {
 
     @Resource
     private AdminUserApi adminUserApi;
+
+    @Resource
+    private SpaceMonitorApi spaceMonitorApi;
 
     @Value("${carservice.navigate.map-url-template}")
     private String mapUrlTemplate;
@@ -78,9 +85,20 @@ public class SpaceLocationController {
         if (record == null) {
             return success(null);
         }
-        // TODO 等 stationresource 模块开 RPC 后,按 spaceId 查目标车位真实坐标
-        // 现阶段车位定位表无坐标字段,暂用 spaceId 占位,契约已对齐文档
-        String to = "spaceId:" + reqVO.getSpaceId();
+        // 按 spaceId 从 inspectop 模块 space_monitor 拿真实车位坐标;下游异常或拿不到就 null,不拼半成品 URL
+        String to = null;
+        try {
+            CommonResult<SpaceMonitorRespDTO> result = spaceMonitorApi.getLatestBySpaceId(reqVO.getSpaceId());
+            SpaceMonitorRespDTO space = result == null ? null : result.getData();
+            if (space != null && space.getLongitude() != null && space.getLatitude() != null) {
+                to = space.getLongitude().toPlainString() + "," + space.getLatitude().toPlainString();
+            }
+        } catch (Exception ex) {
+            log.warn("[navigate] inspectop RPC 失败 spaceId={}", reqVO.getSpaceId(), ex);
+        }
+        if (to == null) {
+            return success(null);
+        }
         return success(mapUrlTemplate.replace("{to}", to));
     }
 

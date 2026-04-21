@@ -351,27 +351,3 @@ CREATE TABLE `wording_mgmt` (
     KEY `idx_tenant_id` (`tenant_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC COMMENT = '话术管理表';
 
--- ---------------------------------------------------------------------
--- [过渡] 周边场站 mock 表 mock_nearby_station
--- 用途: near-station/chart 接口在 stationresource 模块未开 Feign RPC 前的数据来源
--- 待 stationresource 开放 RPC 后可整表 DROP
--- ---------------------------------------------------------------------
-DROP TABLE IF EXISTS `mock_nearby_station`;
-CREATE TABLE `mock_nearby_station` (
-    `id`             BIGINT         NOT NULL AUTO_INCREMENT                COMMENT '主键 ID',
-    `lon`            DECIMAL(10,6)  NOT NULL                                COMMENT '经度',
-    `lat`            DECIMAL(10,6)  NOT NULL                                COMMENT '纬度',
-    `station_name`   VARCHAR(64)    NOT NULL                                COMMENT '场站名称',
-    `has_empty`      BIT(1)         NOT NULL DEFAULT b'1'                   COMMENT '是否有空位：0-无，1-有',
-    `empty_space`    INT            NOT NULL DEFAULT 0                      COMMENT '空位数',
-    `total_space`    INT            NOT NULL DEFAULT 0                      COMMENT '总车位数',
-    `distance_group` VARCHAR(16)    DEFAULT NULL                            COMMENT '距离分桶：0-1km / 1-3km / 3-5km',
-    `creator`        VARCHAR(64)    DEFAULT ''                              COMMENT '创建者',
-    `updater`        VARCHAR(64)    DEFAULT ''                              COMMENT '更新者',
-    `deleted`        BIT(1)         NOT NULL DEFAULT b'0'                   COMMENT '删除标识',
-    `tenant_id`      BIGINT         NOT NULL DEFAULT 1                      COMMENT '租户 ID',
-    `create_time`    DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP      COMMENT '创建时间',
-    `update_time`    DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    PRIMARY KEY (`id`) USING BTREE,
-    KEY `idx_tenant_id` (`tenant_id`)
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC COMMENT = '[过渡] 周边场站 mock 表';

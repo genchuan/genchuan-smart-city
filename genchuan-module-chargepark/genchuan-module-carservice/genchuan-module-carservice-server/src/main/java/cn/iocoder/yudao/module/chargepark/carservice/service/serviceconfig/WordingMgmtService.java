@@ -1,9 +1,11 @@
 package cn.iocoder.yudao.module.chargepark.carservice.service.serviceconfig;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.serviceconfig.vo.WordingMgmtBatchSaveReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.serviceconfig.vo.WordingMgmtPageReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.serviceconfig.vo.WordingMgmtSaveReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.serviceconfig.WordingMgmtDO;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -14,9 +16,9 @@ import java.util.List;
  */
 public interface WordingMgmtService {
 
-    Long createWordingMgmt(WordingMgmtSaveReqVO createReqVO);
+    Long createWordingMgmt(@Valid WordingMgmtSaveReqVO createReqVO);
 
-    void updateWordingMgmt(WordingMgmtSaveReqVO updateReqVO);
+    void updateWordingMgmt(@Valid WordingMgmtSaveReqVO updateReqVO);
 
     void deleteWordingMgmt(Long id);
 
@@ -34,5 +36,8 @@ public interface WordingMgmtService {
 
     /** 校验话术名称唯一性,id 非空时排除自身 */
     boolean checkNameUnique(String name, Long id);
+
+    /** 批量保存:items 里无 id 走 insert,有 id 走 update;整体事务,两遍扫描(先全部校验再全部写入) */
+    void batchSaveWordingMgmt(@Valid WordingMgmtBatchSaveReqVO reqVO);
 
 }

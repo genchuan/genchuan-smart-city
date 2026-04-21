@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo;
 
+import cn.iocoder.yudao.framework.dict.validation.InDict;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -29,10 +30,14 @@ public class SpacePushSaveReqVO {
     @Schema(description = "推送时间")
     private LocalDateTime pushTime;
 
-    @Schema(description = "推送状态", example = "待推送")
+    @Schema(description = "推送状态,关联字典 space_push_status", example = "待推送",
+            allowableValues = {"待推送", "已推送"})
+    @InDict(type = "space_push_status")
     private String status;
 
-    @Schema(description = "推送结果")
+    @Schema(description = "推送结果,关联字典 space_push_push_result", example = "成功",
+            allowableValues = {"成功", "失败"})
+    @InDict(type = "space_push_push_result")
     private String pushResult;
 
     @Schema(description = "反馈时间")

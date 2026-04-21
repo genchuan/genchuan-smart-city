@@ -270,15 +270,3 @@ INSERT INTO `path_plan` (`id`, `user_id`, `start_location`, `start_location_name
 INSERT INTO `path_plan` (`id`, `user_id`, `start_location`, `start_location_name`, `end_location`, `end_location_name`, `plan_time`, `path_length`, `expect_duration`, `reserve1`, `reserve2`, `creator`, `updater`, `deleted`, `tenant_id`, `create_time`, `update_time`) VALUES (21,139,'119.278123,26.065432','福建省厦门市海沧区海沧大道 8 号','118.589421,24.874532','福建省福州市台江区工业路 168 号','2026-04-15 15:25:00',250,95,NULL,NULL,'admin','',0x00,1,'2026-04-15 15:25:00','2026-04-15 20:03:24');
 
 SET FOREIGN_KEY_CHECKS = 1;
-
--- ---------------------------------------------------------------------
--- [过渡] mock_nearby_station mock 数据
--- 用于 near-station/chart 和 charge-park-map/chart 接口前端对接(stationresource RPC 上线后整表删除)
--- ---------------------------------------------------------------------
-TRUNCATE TABLE mock_nearby_station;
-INSERT INTO `mock_nearby_station` (`id`, `lon`, `lat`, `station_name`, `has_empty`, `empty_space`, `total_space`, `distance_group`, `creator`, `updater`, `deleted`, `tenant_id`, `create_time`, `update_time`) VALUES
-(1, 118.675324, 24.896541, '丰泽充电站',      0x01, 5,  20, '0-1km', 'admin', '', 0x00, 1, '2026-04-21 10:00:00', '2026-04-21 10:00:00'),
-(2, 118.685324, 24.906541, '城东停车场',      0x01, 12, 50, '0-1km', 'admin', '', 0x00, 1, '2026-04-21 10:00:00', '2026-04-21 10:00:00'),
-(3, 118.695324, 24.916541, '浦西商业广场场站', 0x00, 0,  30, '1-3km', 'admin', '', 0x00, 1, '2026-04-21 10:00:00', '2026-04-21 10:00:00'),
-(4, 118.665324, 24.886541, '华侨新村地下车库', 0x01, 8,  40, '1-3km', 'admin', '', 0x00, 1, '2026-04-21 10:00:00', '2026-04-21 10:00:00'),
-(5, 118.705324, 24.926541, '田安北路充电站',   0x01, 3,  15, '3-5km', 'admin', '', 0x00, 1, '2026-04-21 10:00:00', '2026-04-21 10:00:00');

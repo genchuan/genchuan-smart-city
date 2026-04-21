@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo;
 
+import cn.iocoder.yudao.framework.dict.validation.InDict;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -29,7 +30,10 @@ public class DisputeMediateSaveReqVO {
     @Schema(description = "发起时间（创建时由后端默认为当前时间）")
     private LocalDateTime submitTime;
 
-    @Schema(description = "调解状态（创建时由后端默认为 待调解）", example = "待调解")
+    @Schema(description = "调解状态,关联字典 dispute_mediate_status(创建时由后端默认为 待调解)",
+            example = "待调解",
+            allowableValues = {"待调解", "调解中", "已完成"})
+    @InDict(type = "dispute_mediate_status")
     private String status;
 
     @Schema(description = "调解人 ID")

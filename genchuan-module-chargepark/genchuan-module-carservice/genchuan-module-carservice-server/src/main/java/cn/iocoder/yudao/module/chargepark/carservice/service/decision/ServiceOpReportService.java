@@ -6,7 +6,10 @@ import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.v
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.DisputeMediateChartRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.SuggestionChartRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.UserAppealChartRespVO;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.decision.vo.ServiceOpReportChartRespVO;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.decision.vo.ServiceOpReportPageReqVO;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.decision.vo.ServiceOpReportRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.decision.vo.TimeReportRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.findcar.vo.PathPlanChartRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.findcar.vo.SpaceLocationChartRespVO;
@@ -63,6 +66,14 @@ public interface ServiceOpReportService {
      * @param baseDate 基准日期（为 null 则用今天）
      */
     TimeReportRespVO generateReport(ReportPeriodEnum period, LocalDate baseDate);
+
+    /**
+     * 服务运营报表分页(客户文档架构:按 timeScale 切分 statTime 区间,每个子窗口动态生成一条报表)
+     *
+     * - 不建专表,全部即时聚合
+     * - 每条包含:救援完成率/预约成功率/投诉处理率 + 同比/环比 delta
+     */
+    PageResult<ServiceOpReportRespVO> pageServiceOpReport(ServiceOpReportPageReqVO reqVO);
 
     // ========== count-by-status 系列(给前端卡片角标用) ==========
     // 一次 GROUP BY 取所有状态,缺失状态补 0,自动带 yudao 多租户隔离

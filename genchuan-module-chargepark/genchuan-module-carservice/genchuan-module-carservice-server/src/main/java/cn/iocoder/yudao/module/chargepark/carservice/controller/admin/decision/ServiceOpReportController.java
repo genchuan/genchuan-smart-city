@@ -5,9 +5,14 @@ import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.tenant.core.context.TenantContextHolder;
+import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.decision.vo.ServiceOpReportChartRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.decision.vo.ServiceOpReportCompareRespVO;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.decision.vo.ServiceOpReportExportRow;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.decision.vo.ServiceOpReportPageReqVO;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.decision.vo.ServiceOpReportRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.decision.vo.TimeReportRespVO;
+import jakarta.validation.Valid;
 import cn.iocoder.yudao.module.chargepark.carservice.enums.ReportPeriodEnum;
 import cn.iocoder.yudao.module.chargepark.carservice.framework.pdf.PdfUtils;
 import cn.iocoder.yudao.module.chargepark.carservice.service.decision.ServiceOpReportService;
@@ -76,19 +81,12 @@ public class ServiceOpReportController {
     }
 
     @GetMapping("/page")
-    @Operation(summary = "筛选/刷新 - 服务运营报表台账(6 种时间尺度)")
+    @Operation(summary = "筛选/刷新 - 服务运营报表台账",
+            description = "按 timeScale 切分 statTime 区间,每个子窗口动态生成一条报表(包含救援完成率/预约成功率/投诉处理率 + 同比/环比)。" +
+                    "不建专表,全部即时聚合。参数可选,不传时默认 timeScale=月 + statTime=[近 1 年, 现在]")
     @PreAuthorize("@ss.hasPermission('carservice:service-op-report:query')")
-    public CommonResult<PageResult<TimeReportRespVO>> getServiceOpReportPage() {
-        // 6 种时间尺度,每种生成一条当前周期报表
-        List<TimeReportRespVO> list = new ArrayList<>();
-        LocalDate today = LocalDate.now();
-        for (ReportPeriodEnum period : ReportPeriodEnum.values()) {
-            list.add(serviceOpReportService.generateReport(period, today));
-        }
-        PageResult<TimeReportRespVO> result = new PageResult<>();
-        result.setList(list);
-        result.setTotal((long) list.size());
-        return success(result);
+    public CommonResult<PageResult<ServiceOpReportRespVO>> getServiceOpReportPage(@Valid ServiceOpReportPageReqVO reqVO) {
+        return success(serviceOpReportService.pageServiceOpReport(reqVO));
     }
 
     @GetMapping("/get")
@@ -115,64 +113,98 @@ public class ServiceOpReportController {
     @GetMapping("/chart-drill-line")
     @Operation(summary = "各时间运营指标统计(折线图钻取) - 同 page 接口")
     @PreAuthorize("@ss.hasPermission('carservice:service-op-report:query')")
-    public CommonResult<PageResult<TimeReportRespVO>> drillServiceOpReportLine() {
-        return getServiceOpReportPage();
+    public CommonResult<PageResult<ServiceOpReportRespVO>> drillServiceOpReportLine(@Valid ServiceOpReportPageReqVO reqVO) {
+        return getServiceOpReportPage(reqVO);
     }
 
     @GetMapping("/chart-drill-bar")
     @Operation(summary = "各服务类型运营统计(柱状图钻取) - 同 page 接口")
     @PreAuthorize("@ss.hasPermission('carservice:service-op-report:query')")
-    public CommonResult<PageResult<TimeReportRespVO>> drillServiceOpReportBar() {
-        return getServiceOpReportPage();
+    public CommonResult<PageResult<ServiceOpReportRespVO>> drillServiceOpReportBar(@Valid ServiceOpReportPageReqVO reqVO) {
+        return getServiceOpReportPage(reqVO);
     }
 
     @GetMapping("/row-export")
-    @Operation(summary = "导出(列表行) - 同列表页导出接口")
-    @Parameter(name = "period", description = "时间尺度", required = true)
+    @Operation(summary = "导出(列表行) - 单个报表")
     @PreAuthorize("@ss.hasPermission('carservice:service-op-report:query')")
     @ApiAccessLog(operateType = EXPORT)
     public void rowExportServiceOpReport(
             @RequestParam("period") ReportPeriodEnum period,
             @RequestParam(value = "baseDate", required = false)
             @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate baseDate,
+            @RequestParam(value = "format", defaultValue = "excel") String format,
             HttpServletResponse response) throws IOException {
-        exportServiceOpReport(period, baseDate, response);
+        // 行导出:只导一条报表,用对应的 period + 指定 baseDate(默认今天)生成窗口
+        LocalDateTime base = (baseDate == null ? LocalDate.now() : baseDate).atStartOfDay();
+        ServiceOpReportPageReqVO reqVO = new ServiceOpReportPageReqVO();
+        reqVO.setTimeScale(period.getLabel().replace("报", ""));
+        reqVO.setStatTime(new LocalDateTime[]{base, base});
+        reqVO.setPageNo(1);
+        reqVO.setPageSize(1);
+        exportServiceOpReport(reqVO, format, response);
     }
 
     @GetMapping("/export")
-    @Operation(summary = "导出 - 时间尺度报表 PDF(年报/季报场景,客户文档要求年报支持打印)")
-    @Parameter(name = "period", description = "时间尺度", required = true)
+    @Operation(summary = "导出 - 服务运营报表列表(Excel/PDF 双格式)",
+            description = "按 /page 相同参数拉全量列表(不分页),用 format=excel|pdf 切换格式。" +
+                    "导出字段包含报表ID/类型/时间尺度/统计周期/生成时间/三率/同比环比/创建者。" +
+                    "不传 format 默认 excel。")
     @PreAuthorize("@ss.hasPermission('carservice:service-op-report:query')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportServiceOpReport(
-            @RequestParam("period") ReportPeriodEnum period,
-            @RequestParam(value = "baseDate", required = false)
-            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate baseDate,
-            HttpServletResponse response) throws IOException {
-        TimeReportRespVO report = serviceOpReportService.generateReport(period, baseDate == null ? LocalDate.now() : baseDate);
+    public void exportServiceOpReport(@Valid ServiceOpReportPageReqVO reqVO,
+                                      @RequestParam(value = "format", defaultValue = "excel") String format,
+                                      HttpServletResponse response) throws IOException {
+        // 拉全量列表(把 pageSize 设大,取 total 范围)
+        reqVO.setPageNo(1);
+        reqVO.setPageSize(Integer.MAX_VALUE);
+        List<ServiceOpReportRespVO> list = serviceOpReportService.pageServiceOpReport(reqVO).getList();
+        List<ServiceOpReportExportRow> rows = list.stream().map(this::toExportRow).collect(java.util.stream.Collectors.toList());
 
-        // 把 report 的 modules map 拍平为一行表格
-        List<Map<String, Object>> rows = new ArrayList<>();
-        Map<String, Object> row = new LinkedHashMap<>();
-        row.put("period", report.getPeriodLabel());
-        row.put("startTime", String.valueOf(report.getStartTime()));
-        row.put("endTime", String.valueOf(report.getEndTime()));
-        row.put("generateTime", String.valueOf(report.getGenerateTime()));
-        if (report.getModules() != null) {
-            for (Map.Entry<String, Object> e : report.getModules().entrySet()) {
-                row.put(e.getKey(), String.valueOf(e.getValue()));
-            }
+        String baseName = "服务运营报表-" + java.time.LocalDate.now();
+        if ("pdf".equalsIgnoreCase(format)) {
+            // PDF 表头(ExcelProperty 的 label → PDF 列标题)
+            LinkedHashMap<String, String> pdfHeaders = new LinkedHashMap<>();
+            pdfHeaders.put("id", "报表 ID");
+            pdfHeaders.put("reportType", "报表类型");
+            pdfHeaders.put("timeScale", "时间尺度");
+            pdfHeaders.put("statPeriod", "统计周期");
+            pdfHeaders.put("createTime", "生成时间");
+            pdfHeaders.put("rescueFinishRate", "救援完成率");
+            pdfHeaders.put("reserveSuccessRate", "预约成功率");
+            pdfHeaders.put("complaintHandleRate", "投诉处理率");
+            pdfHeaders.put("yoyRescueFinishRate", "同比-救援");
+            pdfHeaders.put("yoyReserveSuccessRate", "同比-预约");
+            pdfHeaders.put("qoqRescueFinishRate", "环比-救援");
+            pdfHeaders.put("qoqReserveSuccessRate", "环比-预约");
+            pdfHeaders.put("creator", "创建者");
+            PdfUtils.write(response, baseName + ".pdf", "服务运营报表", pdfHeaders, rows);
+        } else {
+            ExcelUtils.write(response, baseName + ".xls", "服务运营报表", ServiceOpReportExportRow.class, rows);
         }
-        rows.add(row);
+    }
 
-        // 服务运营报表只输出 PDF(业务台账数据的 Excel 导出在各表 controller 的 /export 接口提供)
-        String fileName = "服务运营" + report.getPeriodLabel() + ".pdf";
-        LinkedHashMap<String, String> headers = new LinkedHashMap<>();
-        for (String key : row.keySet()) {
-            headers.put(key, key);
+    /** 把响应 VO 拍平成导出行(同比/环比 Map 拆成独立列) */
+    private ServiceOpReportExportRow toExportRow(ServiceOpReportRespVO vo) {
+        ServiceOpReportExportRow r = new ServiceOpReportExportRow();
+        r.setId(String.valueOf(vo.getId()));
+        r.setReportType(vo.getReportType());
+        r.setTimeScale(vo.getTimeScale());
+        r.setStatPeriod(vo.getStatPeriod());
+        r.setCreateTime(vo.getCreateTime() == null ? "" :
+                vo.getCreateTime().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        r.setRescueFinishRate(vo.getRescueFinishRate() == null ? "" : vo.getRescueFinishRate().toString());
+        r.setReserveSuccessRate(vo.getReserveSuccessRate() == null ? "" : vo.getReserveSuccessRate().toString());
+        r.setComplaintHandleRate(vo.getComplaintHandleRate() == null ? "" : vo.getComplaintHandleRate().toString());
+        if (vo.getYoyData() != null) {
+            r.setYoyRescueFinishRate(String.valueOf(vo.getYoyData().getOrDefault("rescueFinishRate", java.math.BigDecimal.ZERO)));
+            r.setYoyReserveSuccessRate(String.valueOf(vo.getYoyData().getOrDefault("reserveSuccessRate", java.math.BigDecimal.ZERO)));
         }
-        PdfUtils.write(response, fileName, "服务运营" + report.getPeriodLabel() + "报表",
-                headers, rows);
+        if (vo.getQoqData() != null) {
+            r.setQoqRescueFinishRate(String.valueOf(vo.getQoqData().getOrDefault("rescueFinishRate", java.math.BigDecimal.ZERO)));
+            r.setQoqReserveSuccessRate(String.valueOf(vo.getQoqData().getOrDefault("reserveSuccessRate", java.math.BigDecimal.ZERO)));
+        }
+        r.setCreator(vo.getCreator());
+        return r;
     }
 
     // ========== 02 模块功能文档要求的扩展接口 ==========

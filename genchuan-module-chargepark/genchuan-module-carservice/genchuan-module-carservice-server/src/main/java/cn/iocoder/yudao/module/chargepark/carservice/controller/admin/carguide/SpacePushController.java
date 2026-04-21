@@ -12,9 +12,11 @@ import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.v
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.SpacePushRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.carguide.SpacePushDO;
 import cn.iocoder.yudao.module.chargepark.carservice.framework.pdf.PdfUtils;
+import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.StationNameInjector;
 import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.UserNameInjector;
 import cn.iocoder.yudao.module.chargepark.carservice.service.carguide.SpacePushService;
 import cn.iocoder.yudao.module.chargepark.carservice.service.decision.ServiceOpReportService;
+import cn.iocoder.yudao.module.stationresource.api.station.StationInfoApi;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -50,6 +52,9 @@ public class SpacePushController {
 
     @Resource
     private AdminUserApi adminUserApi;
+
+    @Resource
+    private StationInfoApi stationInfoApi;
 
     @GetMapping("/page")
     @Operation(summary = "筛选/刷新 空位推送")
@@ -149,6 +154,8 @@ public class SpacePushController {
     private void injectUserNames(List<SpacePushRespVO> list) {
         UserNameInjector.inject(list, adminUserApi,
                 UserNameInjector.field(SpacePushRespVO::getUserId, SpacePushRespVO::setUserName));
+        StationNameInjector.inject(list, stationInfoApi,
+                StationNameInjector.field(SpacePushRespVO::getStationId, SpacePushRespVO::setStationName));
     }
 
 }

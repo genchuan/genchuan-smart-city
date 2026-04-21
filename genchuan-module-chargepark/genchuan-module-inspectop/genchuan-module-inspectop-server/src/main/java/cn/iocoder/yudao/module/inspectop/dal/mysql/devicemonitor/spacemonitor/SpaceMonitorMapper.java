@@ -83,4 +83,14 @@ public interface SpaceMonitorMapper extends BaseMapperX<SpaceMonitorDO> {
      * @return 卡片数据
      */
     SpaceMonitorChartRespVO.CardData selectCardData(@Param("reqVO") SpaceMonitorChartReqVO reqVO);
+
+    /**
+     * 每个 space_id 取最新一条监测记录(含坐标)。
+     * 依赖复合索引 (space_id, monitor_time) 时性能最佳。
+     */
+    @Select("SELECT sm.* FROM space_monitor sm " +
+            "INNER JOIN (SELECT space_id, MAX(monitor_time) AS mt FROM space_monitor WHERE deleted = 0 GROUP BY space_id) latest " +
+            "ON sm.space_id = latest.space_id AND sm.monitor_time = latest.mt " +
+            "WHERE sm.deleted = 0")
+    List<SpaceMonitorDO> selectLatestPerSpace();
 }

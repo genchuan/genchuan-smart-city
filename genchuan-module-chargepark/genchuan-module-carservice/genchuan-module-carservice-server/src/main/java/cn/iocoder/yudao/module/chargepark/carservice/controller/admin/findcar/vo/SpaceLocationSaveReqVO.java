@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.chargepark.carservice.controller.admin.findcar.vo;
 
+import cn.iocoder.yudao.framework.dict.validation.InDict;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -28,7 +29,9 @@ public class SpaceLocationSaveReqVO {
     @Schema(description = "车位 ID")
     private Long spaceId;
 
-    @Schema(description = "定位结果", example = "成功")
+    @Schema(description = "定位结果,关联字典 space_location_location_result", example = "成功",
+            allowableValues = {"成功", "失败"})
+    @InDict(type = "space_location_location_result")
     private String locationResult;
 
     @Schema(description = "响应时长（毫秒）")
