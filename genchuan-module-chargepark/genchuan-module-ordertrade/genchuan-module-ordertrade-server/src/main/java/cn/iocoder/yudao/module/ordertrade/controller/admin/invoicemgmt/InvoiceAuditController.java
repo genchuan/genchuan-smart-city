@@ -31,7 +31,6 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 @RequestMapping("/ordertrade/invoice-audit")
 @Validated
 public class InvoiceAuditController {
-
     @Resource
     private InvoiceAuditService invoiceAuditService;
 
