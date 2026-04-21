@@ -16,10 +16,11 @@ public class NearStationPageReqVO extends PageParam {
     @Schema(description = "用户 ID", example = "1001")
     private Long userId;
 
-    @Schema(description = "查询位置（支持模糊查询）")
-    private String queryLocation;
+    @Schema(description = "查询位置汉字地址（模糊查询）", example = "泉州")
+    private String queryLocationName;
 
-    @Schema(description = "查询时间")
+    @Schema(description = "查询时间范围（数组 2 个元素：起始时间、结束时间）",
+            example = "[\"2025-04-01 00:00:00\", \"2025-04-14 23:59:59\"]")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] queryTime;
 

@@ -32,9 +32,13 @@ public class ChargeParkMapDO extends BaseDO {
      */
     private Long userId;
     /**
-     * 查询位置
+     * 查询位置（格式："经度,纬度"）
      */
     private String queryLocation;
+    /**
+     * 查询位置汉字地址（供列表页展示，前端地图 SDK 选点时回传）
+     */
+    private String queryLocationName;
     /**
      * 查询时间
      */

@@ -167,3 +167,13 @@ yudao:
     ignore-tables:
 
 debug: false
+
+# 车务服务自定义配置
+carservice:
+  navigate:
+    # 单目标导航 URL 模板（charge-park-map / near-station / space-location）。{to} 占位替换为"经度,纬度"坐标串
+    map-url-template: "https://uri.amap.com/navigation?to={to}"
+    # 路径导航 URL 模板（path-plan）。{from}/{to} 占位分别替换为起点/终点坐标串
+    map-path-url-template: "https://uri.amap.com/navigation?from={from}&to={to}"
+    # 前端预约页跳转 URL 模板。{params} 占位会被 "stationId=X" 或 "stationId=X&spaceId=Y" 替换
+    reserve-url-template: "/#/genchuan/chargePark/carService/reserveService/reserveList?{params}"

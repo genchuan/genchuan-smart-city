@@ -185,6 +185,15 @@ public class RescueInfoServiceImpl implements RescueInfoService {
         if (reqVO.getPhoto() != null) {
             update.setPhoto(reqVO.getPhoto());
         }
+        // 弹窗勾选「标记为已完成」时(complete=true),自动流转为已完成并回写完成时间、处理时长
+        if (Boolean.TRUE.equals(reqVO.getComplete())) {
+            LocalDateTime now = LocalDateTime.now();
+            update.setStatus(RescueStatusEnum.COMPLETED.getLabel());
+            update.setFinishTime(now);
+            if (rescue.getCreateTime() != null) {
+                update.setHandleDuration((int) Duration.between(rescue.getCreateTime(), now).getSeconds());
+            }
+        }
         rescueInfoMapper.updateById(update);
     }
 

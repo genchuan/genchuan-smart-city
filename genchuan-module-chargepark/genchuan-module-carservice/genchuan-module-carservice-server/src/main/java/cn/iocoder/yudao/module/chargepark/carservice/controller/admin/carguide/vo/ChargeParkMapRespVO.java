@@ -24,9 +24,13 @@ public class ChargeParkMapRespVO {
     @ExcelProperty("用户名")
     private String userName;
 
-    @Schema(description = "查询位置")
+    @Schema(description = "查询位置（经度,纬度 格式）", example = "118.675324,24.896541")
     @ExcelProperty("查询位置")
     private String queryLocation;
+
+    @Schema(description = "查询位置汉字地址（列表页展示用）", example = "福建省泉州市丰泽区津淮街 123 号")
+    @ExcelProperty("查询地址")
+    private String queryLocationName;
 
     @Schema(description = "查询时间")
     @ExcelProperty("查询时间")

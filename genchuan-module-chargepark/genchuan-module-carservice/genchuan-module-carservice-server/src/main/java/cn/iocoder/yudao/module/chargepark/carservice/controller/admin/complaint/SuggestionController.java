@@ -27,6 +27,9 @@ import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 import java.io.IOException;
 import java.util.List;
@@ -105,8 +108,9 @@ public class SuggestionController {
     @GetMapping("/chart")
     @Operation(summary = "意见建议统计图表 - 折线图+卡片")
     @PreAuthorize("@ss.hasPermission('carservice:suggestion:query')")
-    public CommonResult<SuggestionChartRespVO> getSuggestionChart() {
-        return success(serviceOpReportService.chartSuggestion());
+    public CommonResult<SuggestionChartRespVO> getSuggestionChart(@RequestParam(value = "startTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
+            @RequestParam(value = "endTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
+        return success(serviceOpReportService.chartSuggestion(startTime, endTime));
     }
 
     @GetMapping("/chart-drill-line")

@@ -24,9 +24,13 @@ public class RescueInfoRespVO {
     @ExcelProperty("用户名")
     private String userName;
 
-    @Schema(description = "救援位置")
+    @Schema(description = "救援位置（经度,纬度 格式）", example = "118.675324,24.896541")
     @ExcelProperty("救援位置")
     private String location;
+
+    @Schema(description = "救援位置汉字地址（列表页展示用）", example = "福建省泉州市丰泽区津淮街 123 号")
+    @ExcelProperty("救援地址")
+    private String locationName;
 
     @Schema(description = "救援类型")
     @ExcelProperty("救援类型")

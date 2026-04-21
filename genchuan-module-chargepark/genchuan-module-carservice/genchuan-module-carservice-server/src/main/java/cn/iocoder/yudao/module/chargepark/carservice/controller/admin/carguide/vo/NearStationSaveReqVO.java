@@ -18,9 +18,14 @@ public class NearStationSaveReqVO {
     @NotNull(message = "用户 ID 不能为空")
     private Long userId;
 
-    @Schema(description = "查询位置", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "查询位置坐标（格式：经度,纬度，前端地图 SDK 选点时填充）",
+            requiredMode = Schema.RequiredMode.REQUIRED, example = "118.675324,24.896541")
     @NotBlank(message = "查询位置不能为空")
     private String queryLocation;
+
+    @Schema(description = "查询位置汉字地址（前端地图 SDK 选点时回传，供列表页展示）",
+            example = "福建省泉州市丰泽区津淮街 123 号")
+    private String queryLocationName;
 
     @Schema(description = "查询时间（创建时由后端默认为当前时间）")
     private LocalDateTime queryTime;

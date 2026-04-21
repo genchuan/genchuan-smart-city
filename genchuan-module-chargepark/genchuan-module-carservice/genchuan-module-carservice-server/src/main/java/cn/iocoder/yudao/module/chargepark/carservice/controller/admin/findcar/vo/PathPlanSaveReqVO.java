@@ -18,13 +18,23 @@ public class PathPlanSaveReqVO {
     @NotNull(message = "用户 ID 不能为空")
     private Long userId;
 
-    @Schema(description = "起点位置", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "起点位置坐标（格式：经度,纬度，前端地图 SDK 选点时填充）",
+            requiredMode = Schema.RequiredMode.REQUIRED, example = "118.675324,24.896541")
     @NotBlank(message = "起点位置不能为空")
     private String startLocation;
 
-    @Schema(description = "终点位置", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "起点位置汉字地址（前端地图 SDK 选点时回传，供列表页展示）",
+            example = "福建省泉州市丰泽区津淮街 123 号")
+    private String startLocationName;
+
+    @Schema(description = "终点位置坐标（格式：经度,纬度，前端地图 SDK 选点时填充）",
+            requiredMode = Schema.RequiredMode.REQUIRED, example = "118.685324,24.906541")
     @NotBlank(message = "终点位置不能为空")
     private String endLocation;
+
+    @Schema(description = "终点位置汉字地址（前端地图 SDK 选点时回传，供列表页展示）",
+            example = "福建省泉州市鲤城区中山路 456 号")
+    private String endLocationName;
 
     @Schema(description = "规划时间（创建时由后端默认为当前时间）")
     private LocalDateTime planTime;

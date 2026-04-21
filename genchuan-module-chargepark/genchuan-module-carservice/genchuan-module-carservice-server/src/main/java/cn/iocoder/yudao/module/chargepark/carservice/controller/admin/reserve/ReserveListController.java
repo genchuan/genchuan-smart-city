@@ -29,6 +29,9 @@ import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 import java.io.IOException;
 import java.util.List;
@@ -110,8 +113,9 @@ public class ReserveListController {
     @GetMapping("/chart")
     @Operation(summary = "预约服务统计图表 - 折线图+柱状图+卡片")
     @PreAuthorize("@ss.hasPermission('carservice:reserve-list:query')")
-    public CommonResult<ReserveListChartRespVO> getReserveListChart() {
-        return success(serviceOpReportService.chartReserve());
+    public CommonResult<ReserveListChartRespVO> getReserveListChart(@RequestParam(value = "startTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
+            @RequestParam(value = "endTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
+        return success(serviceOpReportService.chartReserve(startTime, endTime));
     }
 
     @GetMapping("/chart-drill-line")

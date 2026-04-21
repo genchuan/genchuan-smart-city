@@ -32,13 +32,21 @@ public class PathPlanDO extends BaseDO {
      */
     private Long userId;
     /**
-     * 起点位置
+     * 起点位置（格式："经度,纬度"）
      */
     private String startLocation;
     /**
-     * 终点位置
+     * 起点位置汉字地址（供列表页展示，前端地图 SDK 选点时回传）
+     */
+    private String startLocationName;
+    /**
+     * 终点位置（格式："经度,纬度"）
      */
     private String endLocation;
+    /**
+     * 终点位置汉字地址（供列表页展示，前端地图 SDK 选点时回传）
+     */
+    private String endLocationName;
     /**
      * 规划时间
      */

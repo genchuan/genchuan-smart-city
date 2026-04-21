@@ -20,6 +20,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -42,7 +45,7 @@ public class PathPlanController {
     @Resource
     private AdminUserApi adminUserApi;
 
-    @Value("${carservice.navigate.map-url-template}")
+    @Value("${carservice.navigate.map-path-url-template}")
     private String mapUrlTemplate;
 
     @GetMapping("/page")
@@ -77,20 +80,18 @@ public class PathPlanController {
         if (record == null) {
             return success(null);
         }
-        // 路径规划场景:to 用 "起点→终点" 字符串编码,前端可解析展示路径
-        String to = URLEncoder.encode(
-                (record.getStartLocation() == null ? "" : record.getStartLocation())
-                        + "→"
-                        + (record.getEndLocation() == null ? "" : record.getEndLocation()),
-                StandardCharsets.UTF_8);
-        return success(mapUrlTemplate.replace("{to}", to));
+        // 文档要求 URL 格式: ?from=<起点坐标>&to=<终点坐标>
+        String from = record.getStartLocation() == null ? "" : record.getStartLocation();
+        String to = record.getEndLocation() == null ? "" : record.getEndLocation();
+        return success(mapUrlTemplate.replace("{to}", to).replace("{from}", from));
     }
 
     @GetMapping("/chart")
     @Operation(summary = "路径规划统计图表 - 地图+卡片")
     @PreAuthorize("@ss.hasPermission('carservice:path-plan:query')")
-    public CommonResult<PathPlanChartRespVO> getPathPlanChart() {
-        return success(serviceOpReportService.chartPathPlan());
+    public CommonResult<PathPlanChartRespVO> getPathPlanChart(@RequestParam(value = "startTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
+            @RequestParam(value = "endTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
+        return success(serviceOpReportService.chartPathPlan(startTime, endTime));
     }
 
     private void injectUserNames(List<PathPlanRespVO> list) {

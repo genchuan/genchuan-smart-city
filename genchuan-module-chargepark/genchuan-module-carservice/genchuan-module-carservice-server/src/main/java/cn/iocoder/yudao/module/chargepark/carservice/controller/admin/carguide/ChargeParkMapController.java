@@ -4,7 +4,9 @@ import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.ChargeParkMapChartRespVO;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.ChargeParkMapNavigateReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.ChargeParkMapPageReqVO;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.ChargeParkMapReserveReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.ChargeParkMapRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.carguide.ChargeParkMapDO;
 import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.UserNameInjector;
@@ -20,6 +22,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -74,37 +79,47 @@ public class ChargeParkMapController {
 
     @GetMapping("/navigate")
     @Operation(summary = "导航 - 跳转外部地图")
-    @Parameter(name = "id", description = "充停地图记录 ID", required = true)
     @PreAuthorize("@ss.hasPermission('carservice:charge-park-map:navigate')")
-    public CommonResult<String> navigateChargeParkMap(@RequestParam("id") Long id) {
-        ChargeParkMapDO record = chargeParkMapService.getChargeParkMap(id);
+    public CommonResult<String> navigateChargeParkMap(@Valid ChargeParkMapNavigateReqVO reqVO) {
+        ChargeParkMapDO record = chargeParkMapService.getChargeParkMap(reqVO.getId());
         if (record == null) {
             return success(null);
         }
-        String to = URLEncoder.encode(record.getQueryLocation() == null ? "" : record.getQueryLocation(),
-                StandardCharsets.UTF_8);
+        // TODO 等 stationresource 模块开 RPC 后,按 targetId 查目标场站/车位真实坐标
+        // 现阶段暂用 queryLocation 作为导航终点,契约已对齐文档
+        String to = record.getQueryLocation() == null ? "" : record.getQueryLocation();
         return success(mapUrlTemplate.replace("{to}", to));
     }
 
     @GetMapping("/reserve")
     @Operation(summary = "预订 - 跳转预约页面")
-    @Parameter(name = "id", description = "充停地图记录 ID", required = true)
     @PreAuthorize("@ss.hasPermission('carservice:charge-park-map:reserve')")
-    public CommonResult<String> reserveChargeParkMap(@RequestParam("id") Long id) {
-        ChargeParkMapDO record = chargeParkMapService.getChargeParkMap(id);
+    public CommonResult<String> reserveChargeParkMap(@Valid ChargeParkMapReserveReqVO reqVO) {
+        // 校验记录存在（审计 + 防越权访问他人的查询记录）
+        ChargeParkMapDO record = chargeParkMapService.getChargeParkMap(reqVO.getId());
         if (record == null) {
             return success(null);
         }
-        String location = URLEncoder.encode(record.getQueryLocation() == null ? "" : record.getQueryLocation(),
-                StandardCharsets.UTF_8);
-        return success(reserveUrlTemplate.replace("{queryLocation}", location));
+        // 按文档要求拼 URL：?stationId=xxx[&spaceId=yyy]
+        StringBuilder params = new StringBuilder();
+        if (reqVO.getStationId() != null) {
+            params.append("stationId=").append(reqVO.getStationId());
+        }
+        if (reqVO.getSpaceId() != null) {
+            if (params.length() > 0) {
+                params.append("&");
+            }
+            params.append("spaceId=").append(reqVO.getSpaceId());
+        }
+        return success(reserveUrlTemplate.replace("{params}", params.toString()));
     }
 
     @GetMapping("/chart")
     @Operation(summary = "充停地图统计图表 - 地图+热力图+卡片")
     @PreAuthorize("@ss.hasPermission('carservice:charge-park-map:query')")
-    public CommonResult<ChargeParkMapChartRespVO> getChargeParkMapChart() {
-        return success(serviceOpReportService.chartChargeParkMap());
+    public CommonResult<ChargeParkMapChartRespVO> getChargeParkMapChart(@RequestParam(value = "startTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
+            @RequestParam(value = "endTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
+        return success(serviceOpReportService.chartChargeParkMap(startTime, endTime));
     }
 
     @GetMapping("/chart-drill-heat")

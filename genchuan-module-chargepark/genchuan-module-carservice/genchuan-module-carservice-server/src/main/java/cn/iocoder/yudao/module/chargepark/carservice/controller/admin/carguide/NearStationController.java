@@ -4,7 +4,9 @@ import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationChartRespVO;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationNavigateReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationPageReqVO;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationReserveReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.carguide.NearStationDO;
 import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.UserNameInjector;
@@ -20,6 +22,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -73,37 +78,41 @@ public class NearStationController {
 
     @GetMapping("/navigate")
     @Operation(summary = "导航 - 跳转到周边场站位置")
-    @Parameter(name = "id", description = "周边场站记录 ID", required = true)
     @PreAuthorize("@ss.hasPermission('carservice:near-station:navigate')")
-    public CommonResult<String> navigateNearStation(@RequestParam("id") Long id) {
-        NearStationDO record = nearStationService.getNearStation(id);
+    public CommonResult<String> navigateNearStation(@Valid NearStationNavigateReqVO reqVO) {
+        NearStationDO record = nearStationService.getNearStation(reqVO.getId());
         if (record == null) {
             return success(null);
         }
-        String to = URLEncoder.encode(record.getQueryLocation() == null ? "" : record.getQueryLocation(),
-                StandardCharsets.UTF_8);
+        // TODO 等 stationresource 模块开 RPC 后,按 stationId 查目标场站真实坐标
+        // 现阶段暂用 queryLocation 作为导航终点,契约已对齐文档
+        String to = record.getQueryLocation() == null ? "" : record.getQueryLocation();
         return success(mapUrlTemplate.replace("{to}", to));
     }
 
     @GetMapping("/reserve")
     @Operation(summary = "预订 - 跳转预约页面")
-    @Parameter(name = "id", description = "周边场站记录 ID", required = true)
     @PreAuthorize("@ss.hasPermission('carservice:near-station:reserve')")
-    public CommonResult<String> reserveNearStation(@RequestParam("id") Long id) {
-        NearStationDO record = nearStationService.getNearStation(id);
+    public CommonResult<String> reserveNearStation(@Valid NearStationReserveReqVO reqVO) {
+        // 校验记录存在（审计 + 防越权）
+        NearStationDO record = nearStationService.getNearStation(reqVO.getId());
         if (record == null) {
             return success(null);
         }
-        String location = URLEncoder.encode(record.getQueryLocation() == null ? "" : record.getQueryLocation(),
-                StandardCharsets.UTF_8);
-        return success(reserveUrlTemplate.replace("{queryLocation}", location));
+        // 按文档要求拼 URL：?stationId=xxx
+        String params = "stationId=" + reqVO.getStationId();
+        return success(reserveUrlTemplate.replace("{params}", params));
     }
 
     @GetMapping("/chart")
     @Operation(summary = "周边场站统计图表 - 地图+柱状图+卡片")
     @PreAuthorize("@ss.hasPermission('carservice:near-station:query')")
-    public CommonResult<NearStationChartRespVO> getNearStationChart() {
-        return success(serviceOpReportService.chartNearStation());
+    public CommonResult<NearStationChartRespVO> getNearStationChart(
+            @RequestParam(value = "startTime", required = false)
+            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
+            @RequestParam(value = "endTime", required = false)
+            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
+        return success(serviceOpReportService.chartNearStation(startTime, endTime));
     }
 
     @GetMapping("/chart-drill-bar")

@@ -32,18 +32,18 @@ public interface ServiceOpReportService {
 
     // ========== chart 接口(返回扁平字段,严格按 05 接口文档命名) ==========
 
-    RescueInfoChartRespVO chartRescue();
-    ChargeParkMapChartRespVO chartChargeParkMap();
-    NearStationChartRespVO chartNearStation();
-    SpacePushChartRespVO chartSpacePush();
-    ReserveListChartRespVO chartReserve();
-    SpaceLocationChartRespVO chartSpaceLocation();
-    PathPlanChartRespVO chartPathPlan();
-    SuggestionChartRespVO chartSuggestion();
-    UserAppealChartRespVO chartUserAppeal();
-    DisputeMediateChartRespVO chartDisputeMediate();
+    RescueInfoChartRespVO chartRescue(LocalDateTime startTime, LocalDateTime endTime);
+    ChargeParkMapChartRespVO chartChargeParkMap(LocalDateTime startTime, LocalDateTime endTime);
+    NearStationChartRespVO chartNearStation(LocalDateTime startTime, LocalDateTime endTime);
+    SpacePushChartRespVO chartSpacePush(LocalDateTime startTime, LocalDateTime endTime);
+    ReserveListChartRespVO chartReserve(LocalDateTime startTime, LocalDateTime endTime);
+    SpaceLocationChartRespVO chartSpaceLocation(LocalDateTime startTime, LocalDateTime endTime);
+    PathPlanChartRespVO chartPathPlan(LocalDateTime startTime, LocalDateTime endTime);
+    SuggestionChartRespVO chartSuggestion(LocalDateTime startTime, LocalDateTime endTime);
+    UserAppealChartRespVO chartUserAppeal(LocalDateTime startTime, LocalDateTime endTime);
+    DisputeMediateChartRespVO chartDisputeMediate(LocalDateTime startTime, LocalDateTime endTime);
     WordingMgmtChartRespVO chartWordingMgmt();
-    ServiceOpReportChartRespVO chartServiceOpReport();
+    ServiceOpReportChartRespVO chartServiceOpReport(LocalDateTime startTime, LocalDateTime endTime);
 
     // ========== 时间尺度报表 + 自定义报表 ==========
 
