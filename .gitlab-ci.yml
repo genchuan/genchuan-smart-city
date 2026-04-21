@@ -13,17 +13,26 @@ Build:
   script:
     - echo "===== 开始Maven打包 ====="
     - mvn clean package -Dmaven.test.skip=true
-
     - echo "===== 创建产物目录 ====="
-    - mkdir -p jars/
     - source ci-modules.conf
-    # 循环打包：输出 服务名.jar
     - |
+      set +e 
       for module in "${!MODULE_JAR_MAP[@]}"; do
         jarPath=${MODULE_JAR_MAP[$module]}
-        echo "收集模块：$jarPath"
-        cp -f ${jarPath}/target/*.jar ${DEPLOY_DIR}/${module}.jar 2>/dev/null || echo "⚠️  $module 无jar包，跳过"
+        echo "====================================="
+        echo "收集模块：$module"
+        echo "模块路径：$jarPath"
+        echo "====================================="
+        pwd
+        ls ${jarPath}/target/
+        cp -f ${jarPath}/target/*.jar jars/${module}.jar 2>/dev/null
+        if [ $? -eq 0 ]; then
+          echo "✅ 收集成功：$module"
+        else
+          echo "⚠️  未找到 jar，跳过：$module"
+        fi
       done
+      set -e
   retry:
     max: 2
     when:
