@@ -29,7 +29,7 @@ import cn.iocoder.yudao.module.inspectop.controller.admin.inspectuser.vo.*;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.inspectuser.InspectUserDO;
 import cn.iocoder.yudao.module.inspectop.service.inspectuser.InspectUserService;
 
-@Tag(name = "管理后台 - 巡检人员")
+@Tag(name = "巡查巡检 - 巡检人员")
 @RestController
 @RequestMapping("/inspectop/inspect-user")
 @Validated

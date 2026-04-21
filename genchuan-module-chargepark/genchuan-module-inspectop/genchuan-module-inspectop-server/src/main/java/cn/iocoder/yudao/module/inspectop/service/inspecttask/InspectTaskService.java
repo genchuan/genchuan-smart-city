@@ -52,11 +52,62 @@ public interface InspectTaskService {
     InspectTaskDO getInspectTask(Long id);
 
     /**
-     * 获得巡检任务分页
+     * 获得巡检任务分页（带关联查询）
+     * 通过关联 inspect_plan 表查询计划名称
+     * 通过关联 inspect_user 表查询人员姓名
      *
      * @param pageReqVO 分页查询
-     * @return 巡检任务分页
+     * @return 巡检任务分页（包含计划名称和人员姓名）
      */
-    PageResult<InspectTaskDO> getInspectTaskPage(InspectTaskPageReqVO pageReqVO);
+    PageResult<InspectTaskRespVO> getInspectTaskPage(InspectTaskPageReqVO pageReqVO);
+
+    /**
+     * 批量派发巡检任务
+     * 将多个任务派发给指定的巡检人员
+     *
+     * @param batchDispatchReqVO 批量派发请求参数
+     */
+    void batchDispatchInspectTask(@Valid InspectTaskBatchDispatchReqVO batchDispatchReqVO);
+
+    /**
+     * 认领巡检任务
+     * 将任务状态更新为"处理中"（字典值3）并设置认领时间
+     *
+     * @param claimReqVO 认领请求参数
+     */
+    void claimInspectTask(@Valid InspectTaskClaimReqVO claimReqVO);
+
+    /**
+     * 更新巡检任务进度
+     *
+     * @param updateProgressReqVO 更新进度请求参数
+     */
+    void updateInspectTaskProgress(@Valid InspectTaskUpdateProgressReqVO updateProgressReqVO);
+
+    /**
+     * 转派巡检任务
+     * 将任务从一个巡检人员转派给另一个巡检人员
+     *
+     * @param transferReqVO 转派请求参数
+     */
+    void transferInspectTask(@Valid InspectTaskTransferReqVO transferReqVO);
+
+    /**
+     * 归档巡检任务
+     * 将任务的isArchive字段更新为true（1）
+     *
+     * @param archiveReqVO 归档请求参数
+     */
+    void archiveInspectTask(@Valid InspectTaskArchiveReqVO archiveReqVO);
+
+    /**
+     * 获取巡检任务图表数据
+     * 包含任务类型分布、处理时效趋势和卡片统计数据
+     *
+     * @param timeRange 时间范围
+     * @return 图表数据
+     */
+    InspectTaskChartRespVO getInspectTaskChartData(String[] timeRange);
+
 
 }

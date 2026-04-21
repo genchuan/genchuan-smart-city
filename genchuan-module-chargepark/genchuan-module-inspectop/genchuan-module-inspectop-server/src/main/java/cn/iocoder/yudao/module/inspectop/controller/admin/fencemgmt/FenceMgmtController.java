@@ -29,7 +29,7 @@ import cn.iocoder.yudao.module.inspectop.controller.admin.fencemgmt.vo.*;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.fencemgmt.FenceMgmtDO;
 import cn.iocoder.yudao.module.inspectop.service.fencemgmt.FenceMgmtService;
 
-@Tag(name = "管理后台 - 电子围栏")
+@Tag(name = "巡查巡检 - 电子围栏")
 @RestController
 @RequestMapping("/inspectop/fence-mgmt")
 @Validated

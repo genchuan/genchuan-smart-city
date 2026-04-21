@@ -31,7 +31,7 @@ import cn.iocoder.yudao.module.inspectop.dal.dataobject.inspectplan.InspectPlanD
 import cn.iocoder.yudao.module.inspectop.service.inspectplan.InspectPlanService;
 import org.springframework.web.multipart.MultipartFile;
 
-@Tag(name = "管理后台 - 巡检计划")
+@Tag(name = "巡查巡检 - 巡检计划")
 @RestController
 @RequestMapping("/inspectop/inspect-plan")
 @Validated

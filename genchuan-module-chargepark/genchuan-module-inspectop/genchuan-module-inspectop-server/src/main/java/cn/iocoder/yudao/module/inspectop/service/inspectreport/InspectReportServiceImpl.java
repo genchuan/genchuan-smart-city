@@ -1,11 +1,14 @@
 package cn.iocoder.yudao.module.inspectop.service.inspectreport;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import cn.iocoder.yudao.module.inspectop.controller.admin.inspectreport.vo.*;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.inspectreport.InspectReportDO;
@@ -78,8 +81,155 @@ public class InspectReportServiceImpl implements InspectReportService {
     }
 
     @Override
-    public PageResult<InspectReportDO> getInspectReportPage(InspectReportPageReqVO pageReqVO) {
-        return inspectReportMapper.selectPage(pageReqVO);
+    public PageResult<InspectReportRespVO> getInspectReportPage(InspectReportPageReqVO pageReqVO) {
+        // 创建 MyBatis-Plus 分页对象
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<InspectReportRespVO> mpPage
+                = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+
+        // 调用 Mapper 的关联查询方法
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<InspectReportRespVO> resultPage =
+                inspectReportMapper.selectPageWithJoin(mpPage, pageReqVO);
+
+        // 构造返回结果
+        return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void batchAuditInspectReport(InspectReportBatchAuditReqVO batchAuditReqVO) {
+        // 1. 获取参数
+        List<Long> ids = batchAuditReqVO.getIds();
+        String auditResult = batchAuditReqVO.getAuditResult();
+        String auditRemark = batchAuditReqVO.getAuditRemark();
+
+        if (CollUtil.isEmpty(ids)) {
+            return; // 如果ID列表为空，直接返回
+        }
+
+        // 2. 校验所有上报记录是否存在
+        List<InspectReportDO> reportList = inspectReportMapper.selectBatchIds(ids);
+        if (reportList.size() != ids.size()) {
+            // 如果查询到的记录数量与传入的ID数量不一致，说明有记录不存在
+            throw exception(INSPECT_REPORT_NOT_EXISTS);
+        }
+
+        // 3. 获取当前时间（作为审核时间）
+        LocalDateTime auditTime = LocalDateTime.now();
+
+        // 4. 获取当前登录用户ID（作为审核人ID）
+        Long auditUserId = SecurityFrameworkUtils.getLoginUserId();
+
+        // 5. 批量更新审核信息
+        LambdaUpdateWrapper<InspectReportDO> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper
+                .set(InspectReportDO::getStatus, auditResult)        // 设置审核结果状态
+                .set(InspectReportDO::getAuditUserId, auditUserId)   // 设置审核人ID
+                .set(InspectReportDO::getAuditTime, auditTime)       // 设置审核时间
+                .set(InspectReportDO::getRemark, auditRemark)   // 设置审核备注
+                .in(InspectReportDO::getId, ids);
+
+        inspectReportMapper.update(null, updateWrapper);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void approveInspectReport(InspectReportApproveReqVO approveReqVO) {
+        // 1. 获取参数
+        Long id = approveReqVO.getId();
+        String auditRemark = approveReqVO.getAuditRemark();
+
+        // 2. 校验上报记录是否存在
+        validateInspectReportExists(id);
+
+        // 3. 获取当前登录用户ID（作为审核人ID）
+        Long auditUserId = SecurityFrameworkUtils.getLoginUserId();
+
+        // 4. 获取当前时间（作为审核时间）
+        LocalDateTime auditTime = LocalDateTime.now();
+
+        // 5. 更新审核信息，状态改为3（已完成）
+        LambdaUpdateWrapper<InspectReportDO> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper
+                .set(InspectReportDO::getStatus, "3")                // 状态：已完成
+                .set(InspectReportDO::getAuditUserId, auditUserId)   // 审核人ID
+                .set(InspectReportDO::getAuditTime, auditTime)       // 审核时间
+                .set(InspectReportDO::getRemark, auditRemark)   // 审核备注
+                .eq(InspectReportDO::getId, id);
+
+        inspectReportMapper.update(null, updateWrapper);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void rejectInspectReport(InspectReportRejectReqVO rejectReqVO) {
+        // 1. 获取参数
+        Long id = rejectReqVO.getId();
+        String auditRemark = rejectReqVO.getAuditRemark();
+
+        // 2. 校验上报记录是否存在
+        validateInspectReportExists(id);
+
+        // 3. 获取当前登录用户ID（作为审核人ID）
+        Long auditUserId = SecurityFrameworkUtils.getLoginUserId();
+
+        // 4. 获取当前时间（作为审核时间）
+        LocalDateTime auditTime = LocalDateTime.now();
+
+        // 5. 更新审核信息，状态改为1（待审核）
+        LambdaUpdateWrapper<InspectReportDO> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper
+                .set(InspectReportDO::getStatus, "1")                // 状态：待审核
+                .set(InspectReportDO::getAuditUserId, auditUserId)   // 审核人ID
+                .set(InspectReportDO::getAuditTime, auditTime)       // 审核时间
+                .set(InspectReportDO::getRemark, auditRemark)   // 驳回理由
+                .eq(InspectReportDO::getId, id);
+
+        inspectReportMapper.update(null, updateWrapper);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void processInspectReport(InspectReportProcessReqVO processReqVO) {
+        // 1. 获取参数
+        Long id = processReqVO.getId();
+
+        // 2. 校验上报记录是否存在
+        validateInspectReportExists(id);
+
+        // 3. 获取当前登录用户ID（作为处置人ID）
+        Long processUserId = SecurityFrameworkUtils.getLoginUserId();
+
+        // 4. 获取当前时间（作为处置时间）
+        LocalDateTime processTime = LocalDateTime.now();
+
+        // 5. 更新处置信息，状态改为2（待处置）
+        LambdaUpdateWrapper<InspectReportDO> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper
+                .set(InspectReportDO::getStatus, "2")                // 状态：待处置
+                .set(InspectReportDO::getProcessUserId, processUserId) // 处置人ID
+                .set(InspectReportDO::getProcessTime, processTime)   // 处置时间
+                .eq(InspectReportDO::getId, id);
+
+        inspectReportMapper.update(null, updateWrapper);
+    }
+
+    @Override
+    public InspectReportChartRespVO getInspectReportChartData(String[] timeRange) {
+        InspectReportChartRespVO chartRespVO = new InspectReportChartRespVO();
+
+        // 1. 获取趋势数据
+        List<InspectReportChartRespVO.TrendData> trendData = inspectReportMapper.selectReportTrendData(timeRange);
+        chartRespVO.setTrendData(trendData);
+
+        // 2. 获取类型分布数据
+        List<InspectReportChartRespVO.TypeData> typeData = inspectReportMapper.selectReportTypeDistribution(timeRange);
+        chartRespVO.setTypeData(typeData);
+
+        // 3. 获取卡片统计数据
+        InspectReportChartRespVO.CardData cardData = inspectReportMapper.selectReportCardData(timeRange);
+        chartRespVO.setCardData(cardData);
+
+        return chartRespVO;
     }
 
 }

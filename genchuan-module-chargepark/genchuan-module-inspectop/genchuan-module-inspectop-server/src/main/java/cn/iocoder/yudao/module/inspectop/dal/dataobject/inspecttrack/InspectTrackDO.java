@@ -58,6 +58,15 @@ public class InspectTrackDO extends BaseDO {
      */
     private String points;
     /**
+     * 核查状态
+     */
+    private Integer checkStatus;
+    /**
+     * 核查备注
+     */
+    private String checkRemark;
+
+    /**
      * 备用字段1
      */
     private String reserve1;

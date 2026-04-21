@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
-@Schema(description = "管理后台 - 巡检轨迹分页 Request VO")
+@Schema(description = "巡查巡检 - 巡检轨迹分页 Request VO")
 @Data
 public class InspectTrackPageReqVO extends PageParam {
 
@@ -38,6 +38,9 @@ public class InspectTrackPageReqVO extends PageParam {
 
     @Schema(description = "备用字段1")
     private String reserve1;
+
+    @Schema(description = "核查状态：0-未核查 1-已核查 2-核查中")
+    private Integer checkStatus;
 
     @Schema(description = "备用字段2")
     private String reserve2;

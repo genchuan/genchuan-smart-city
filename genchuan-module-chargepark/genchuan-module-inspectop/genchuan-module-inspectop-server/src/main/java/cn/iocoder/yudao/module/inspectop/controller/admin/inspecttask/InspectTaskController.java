@@ -29,7 +29,7 @@ import cn.iocoder.yudao.module.inspectop.controller.admin.inspecttask.vo.*;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.inspecttask.InspectTaskDO;
 import cn.iocoder.yudao.module.inspectop.service.inspecttask.InspectTaskService;
 
-@Tag(name = "管理后台 - 巡检任务")
+@Tag(name = "巡查巡检 - 巡检任务")
 @RestController
 @RequestMapping("/inspectop/inspect-task")
 @Validated
@@ -84,8 +84,65 @@ public class InspectTaskController {
     @Operation(summary = "获得巡检任务分页")
     @PreAuthorize("@ss.hasPermission('inspectop:inspect-task:query')")
     public CommonResult<PageResult<InspectTaskRespVO>> getInspectTaskPage(@Valid InspectTaskPageReqVO pageReqVO) {
-        PageResult<InspectTaskDO> pageResult = inspectTaskService.getInspectTaskPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, InspectTaskRespVO.class));
+        // 使用新的关联查询方法
+        PageResult<InspectTaskRespVO> pageResult = inspectTaskService.getInspectTaskPage(pageReqVO);
+        return success(pageResult);
+    }
+
+    @PutMapping("/batch-dispatch")
+    @Operation(summary = "批量派发")
+    @PreAuthorize("@ss.hasPermission('inspectop:inspect-task:batch-dispatch')")
+    public CommonResult<Boolean> batchDispatchInspectTask(@Valid @RequestBody InspectTaskBatchDispatchReqVO batchDispatchReqVO) {
+        inspectTaskService.batchDispatchInspectTask(batchDispatchReqVO);
+        return success(true);
+    }
+
+    @PutMapping("/dispatch")
+    @Operation(summary = "派发")
+    @PreAuthorize("@ss.hasPermission('inspectop:inspect-task:dispatch')")
+    public CommonResult<Boolean> dispatchInspectTask(@Valid @RequestBody InspectTaskBatchDispatchReqVO batchDispatchReqVO) {
+        inspectTaskService.batchDispatchInspectTask(batchDispatchReqVO);
+        return success(true);
+    }
+
+    @PutMapping("/claim")
+    @Operation(summary = "认领")
+    @PreAuthorize("@ss.hasPermission('inspectop:inspect-task:claim')")
+    public CommonResult<Boolean> claimInspectTask(@Valid @RequestBody InspectTaskClaimReqVO claimReqVO) {
+        inspectTaskService.claimInspectTask(claimReqVO);
+        return success(true);
+    }
+
+    @PutMapping("/update-progress")
+    @Operation(summary = "更新巡检任务进度")
+    @PreAuthorize("@ss.hasPermission('inspectop:inspect-task:update-progress')")
+    public CommonResult<Boolean> updateInspectTaskProgress(@Valid @RequestBody InspectTaskUpdateProgressReqVO updateProgressReqVO) {
+        inspectTaskService.updateInspectTaskProgress(updateProgressReqVO);
+        return success(true);
+    }
+
+    @PutMapping("/transfer")
+    @Operation(summary = "转派")
+    @PreAuthorize("@ss.hasPermission('inspectop:inspect-task:transfer')")
+    public CommonResult<Boolean> transferInspectTask(@Valid @RequestBody InspectTaskTransferReqVO transferReqVO) {
+        inspectTaskService.transferInspectTask(transferReqVO);
+        return success(true);
+    }
+
+    @PutMapping("/archive")
+    @Operation(summary = "归档")
+    @PreAuthorize("@ss.hasPermission('inspectop:inspect-task:archive')")
+    public CommonResult<Boolean> archiveInspectTask(@Valid @RequestBody InspectTaskArchiveReqVO archiveReqVO) {
+        inspectTaskService.archiveInspectTask(archiveReqVO);
+        return success(true);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "统计图表数据")
+    @PreAuthorize("@ss.hasPermission('inspectop:inspect-task:chart')")
+    public CommonResult<InspectTaskChartRespVO> getInspectTaskChart(@RequestParam(value = "timeRange", required = false) String[] timeRange) {
+        InspectTaskChartRespVO chartData = inspectTaskService.getInspectTaskChartData(timeRange);
+        return success(chartData);
     }
 
     @GetMapping("/export-excel")
@@ -95,7 +152,7 @@ public class InspectTaskController {
     public void exportInspectTaskExcel(@Valid InspectTaskPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<InspectTaskDO> list = inspectTaskService.getInspectTaskPage(pageReqVO).getList();
+        List<InspectTaskRespVO> list = inspectTaskService.getInspectTaskPage(pageReqVO).getList();
         // 导出 Excel
         ExcelUtils.write(response, "巡检任务.xls", "数据", InspectTaskRespVO.class,
                         BeanUtils.toBean(list, InspectTaskRespVO.class));

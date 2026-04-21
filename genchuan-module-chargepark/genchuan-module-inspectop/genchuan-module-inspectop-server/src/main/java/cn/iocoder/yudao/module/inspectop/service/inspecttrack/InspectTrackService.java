@@ -57,6 +57,30 @@ public interface InspectTrackService {
      * @param pageReqVO 分页查询
      * @return 巡检轨迹分页
      */
-    PageResult<InspectTrackDO> getInspectTrackPage(InspectTrackPageReqVO pageReqVO);
+    PageResult<InspectTrackRespVO> getInspectTrackPage(InspectTrackPageReqVO pageReqVO);
+
+    /**
+     * 获得巡检轨迹回放信息
+     *
+     * @param id 轨迹ID
+     * @return 巡检轨迹回放信息
+     */
+    InspectTrackReplayRespVO getInspectTrackReplay(Long id);
+
+    /**
+     * 核查巡检轨迹
+     *
+     * @param checkReqVO 核查信息
+     * @return 是否成功
+     */
+    Boolean checkInspectTrack(@Valid InspectTrackCheckReqVO checkReqVO);
+
+    /**
+     * 获得巡检轨迹图表统计数据
+     *
+     * @param reqVO 查询参数
+     * @return 图表统计数据
+     */
+    InspectTrackChartRespVO getInspectTrackChart(InspectTrackChartReqVO reqVO);
 
 }
