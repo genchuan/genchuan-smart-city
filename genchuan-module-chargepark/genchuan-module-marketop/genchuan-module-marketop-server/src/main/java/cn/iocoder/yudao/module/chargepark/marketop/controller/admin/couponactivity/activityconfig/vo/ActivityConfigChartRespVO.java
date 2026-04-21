@@ -3,7 +3,6 @@ package cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactiv
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Schema(description = "管理后台 - 活动配置图表统计 Response VO")
@@ -14,17 +13,17 @@ public class ActivityConfigChartRespVO {
     private Integer enableCount;
 
     @Schema(description = "活动参与率")
-    private BigDecimal joinRate;
+    private Integer joinRate;
 
-    @Schema(description = "活动类型参与率分布")
-    private List<TypeRateItem> typeList;
+    @Schema(description = "活动类型分布")
+    private List<TypeCountItem> typeList;
 
     @Data
-    public static class TypeRateItem {
+    public static class TypeCountItem {
         @Schema(description = "活动类型")
         private String type;
-        @Schema(description = "参与率")
-        private BigDecimal rate;
+        @Schema(description = "数量")
+        private Integer count;
     }
 
 }

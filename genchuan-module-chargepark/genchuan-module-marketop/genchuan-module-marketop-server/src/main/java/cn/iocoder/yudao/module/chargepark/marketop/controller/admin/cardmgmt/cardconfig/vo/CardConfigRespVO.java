@@ -25,7 +25,7 @@ public class CardConfigRespVO {
     @Schema(description = "价格")
     private BigDecimal price;
 
-    @Schema(description = "状态")
+    @Schema(description = "状态（0-未生效，1-已生效）")
     private String status;
 
     @Schema(description = "审核人")

@@ -17,6 +17,9 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @ToString(callSuper = true)
 public class PointLotteryPageReqVO extends PageParam {
 
+    @Schema(description = "抽奖记录编号")
+    private String no;
+
     @Schema(description = "用户ID")
     private Long userId;
 

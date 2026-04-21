@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.chargepark.marketop.service.couponactivity.activ
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.activityconfig.vo.ActivityConfigChartRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.activityconfig.vo.ActivityConfigCreateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.activityconfig.vo.ActivityConfigPageReqVO;
@@ -12,9 +13,9 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.*;
@@ -41,7 +42,7 @@ public class ActivityConfigServiceImpl implements ActivityConfigService {
         // 校验名称唯一
         validateNameUnique(null, reqVO.getName());
         ActivityConfigDO activityConfig = BeanUtils.toBean(reqVO, ActivityConfigDO.class);
-        activityConfig.setStatus("未生效");
+        activityConfig.setStatus("1");
         activityConfig.setJoinCount(0);
         activityConfigMapper.insert(activityConfig);
         return activityConfig.getId();
@@ -57,10 +58,10 @@ public class ActivityConfigServiceImpl implements ActivityConfigService {
     @Override
     public void enable(Long id) {
         ActivityConfigDO activityConfig = validateExists(id);
-        if (!"未生效".equals(activityConfig.getStatus())) {
+        if (!"0".equals(activityConfig.getStatus())) {
             throw exception(ACTIVITY_CONFIG_NOT_EXISTS);
         }
-        activityConfig.setStatus("已生效");
+        activityConfig.setStatus("1");
         activityConfig.setAuditTime(LocalDateTime.now());
         activityConfig.setEffectTime(LocalDateTime.now());
         activityConfigMapper.updateById(activityConfig);
@@ -69,20 +70,59 @@ public class ActivityConfigServiceImpl implements ActivityConfigService {
     @Override
     public void disable(Long id) {
         ActivityConfigDO activityConfig = validateExists(id);
-        if (!"已生效".equals(activityConfig.getStatus())) {
+        if (!"1".equals(activityConfig.getStatus())) {
             throw exception(ACTIVITY_CONFIG_NOT_EXISTS);
         }
-        activityConfig.setStatus("未生效");
+        activityConfig.setStatus("0");
         activityConfigMapper.updateById(activityConfig);
     }
 
     @Override
-    public ActivityConfigChartRespVO getChart(String timeRange) {
-        // TODO: 实现图表统计逻辑，暂时返回空数据
+    public ActivityConfigChartRespVO getChart(Long startTime, Long endTime) {
         ActivityConfigChartRespVO respVO = new ActivityConfigChartRespVO();
-        respVO.setEnableCount(0);
-        respVO.setJoinRate(BigDecimal.ZERO);
-        respVO.setTypeList(new ArrayList<>());
+
+        // 构建时间范围查询条件
+        LocalDateTime startDateTime = startTime != null
+                ? LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(startTime), java.time.ZoneId.systemDefault()) : null;
+        LocalDateTime endDateTime = endTime != null
+                ? LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(endTime), java.time.ZoneId.systemDefault()) : null;
+
+        // EnableCount: status为1的记录数
+        LambdaQueryWrapperX<ActivityConfigDO> enableWrapper = new LambdaQueryWrapperX<ActivityConfigDO>()
+                .eq(ActivityConfigDO::getStatus, "1");
+        if (startDateTime != null) {
+            enableWrapper.ge(ActivityConfigDO::getCreateTime, startDateTime);
+        }
+        if (endDateTime != null) {
+            enableWrapper.le(ActivityConfigDO::getCreateTime, endDateTime);
+        }
+        Long enableCount = activityConfigMapper.selectCount(enableWrapper);
+        respVO.setEnableCount(enableCount != null ? enableCount.intValue() : 0);
+
+        // JoinRate: 暂不计算
+        respVO.setJoinRate(0);
+
+        // TypeList: 按type分组统计
+        LambdaQueryWrapperX<ActivityConfigDO> typeWrapper = new LambdaQueryWrapperX<>();
+        if (startDateTime != null) {
+            typeWrapper.ge(ActivityConfigDO::getCreateTime, startDateTime);
+        }
+        if (endDateTime != null) {
+            typeWrapper.le(ActivityConfigDO::getCreateTime, endDateTime);
+        }
+        List<ActivityConfigDO> allList = activityConfigMapper.selectList(typeWrapper);
+        List<ActivityConfigChartRespVO.TypeCountItem> typeList = allList.stream()
+                .collect(Collectors.groupingBy(ActivityConfigDO::getType, Collectors.counting()))
+                .entrySet().stream()
+                .map(entry -> {
+                    ActivityConfigChartRespVO.TypeCountItem item = new ActivityConfigChartRespVO.TypeCountItem();
+                    item.setType(entry.getKey());
+                    item.setCount(entry.getValue().intValue());
+                    return item;
+                })
+                .collect(Collectors.toList());
+        respVO.setTypeList(typeList);
+
         return respVO;
     }
 

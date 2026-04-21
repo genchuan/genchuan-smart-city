@@ -10,23 +10,23 @@ import java.util.List;
 @Data
 public class CouponMgmtChartRespVO {
 
-    @Schema(description = "领取量")
+    @Schema(description = "发放量")
     private Integer sendCount;
 
     @Schema(description = "核销率")
     private BigDecimal verifyRate;
 
-    @Schema(description = "领取趋势(近30天)")
-    private List<TrendItem> trendList;
+    @Schema(description = "发放趋势")
+    private List<TrendItem> sendTrend;
 
     @Schema(description = "券类型分布")
-    private List<TypeCountItem> typeList;
+    private List<TypeCountItem> typeDistribution;
 
     @Data
     public static class TrendItem {
         @Schema(description = "日期")
         private String date;
-        @Schema(description = "领取数量")
+        @Schema(description = "数量")
         private Integer count;
     }
 

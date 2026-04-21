@@ -5,7 +5,14 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.*;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityChartReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityExportExcelVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityRespVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityPageReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityCreateReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityUpdateReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityImportExcelVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityChartRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointActivityDO;
 import cn.iocoder.yudao.module.chargepark.marketop.service.pointactivity.pointactivity.PointActivityService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,7 +42,8 @@ public class PointActivityController {
     @PreAuthorize("@ss.hasPermission('marketop:point-activity:query')")
     public CommonResult<PageResult<PointActivityRespVO>> getPage(PointActivityPageReqVO reqVO) {
         PageResult<PointActivityDO> pageResult = pointActivityService.getPage(reqVO);
-        return CommonResult.success(BeanUtils.toBean(pageResult, PointActivityRespVO.class));
+        PageResult<PointActivityRespVO> bean = BeanUtils.toBean(pageResult, PointActivityRespVO.class);
+        return CommonResult.success(bean);
     }
 
     @GetMapping("/get")
@@ -59,6 +67,14 @@ public class PointActivityController {
     @PreAuthorize("@ss.hasPermission('marketop:point-activity:update')")
     public CommonResult<Boolean> update(@Valid @RequestBody PointActivityUpdateReqVO reqVO) {
         pointActivityService.update(reqVO);
+        return CommonResult.success(true);
+    }
+
+    @PutMapping("/activate")
+    @Operation(summary = "生效积分活动")
+    @PreAuthorize("@ss.hasPermission('marketop:point-activity:activate')")
+    public CommonResult<Boolean> activate(@RequestParam("id") Long id) {
+        pointActivityService.activate(id);
         return CommonResult.success(true);
     }
 
@@ -103,15 +119,15 @@ public class PointActivityController {
     public void export(PointActivityPageReqVO reqVO, HttpServletResponse response) throws IOException {
         reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<PointActivityDO> pageResult = pointActivityService.getPage(reqVO);
-        List<PointActivityRespVO> list = BeanUtils.toBean(pageResult.getList(), PointActivityRespVO.class);
-        ExcelUtils.write(response, "积分活动.xlsx", "数据", PointActivityRespVO.class, list);
+        List<PointActivityExportExcelVO> list = BeanUtils.toBean(pageResult.getList(), PointActivityExportExcelVO.class);
+        ExcelUtils.write(response, "积分活动.xlsx", "数据", PointActivityExportExcelVO.class, list);
     }
 
     @GetMapping("/chart")
     @Operation(summary = "积分活动图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:point-activity:query')")
-    public CommonResult<PointActivityChartRespVO> getChart(@RequestParam(value = "timeRange", required = false) String timeRange) {
-        return CommonResult.success(pointActivityService.getChart(timeRange));
+    public CommonResult<PointActivityChartRespVO> getChart(PointActivityChartReqVO reqVO) {
+        return CommonResult.success(pointActivityService.getChart(reqVO));
     }
 
 }

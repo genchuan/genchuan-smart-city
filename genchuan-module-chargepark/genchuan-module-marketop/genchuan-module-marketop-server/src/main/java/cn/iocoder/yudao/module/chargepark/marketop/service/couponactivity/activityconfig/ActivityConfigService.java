@@ -22,6 +22,6 @@ public interface ActivityConfigService {
 
     void disable(Long id);
 
-    ActivityConfigChartRespVO getChart(String timeRange);
+    ActivityConfigChartRespVO getChart(Long startTime, Long endTime);
 
 }

@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,27 +56,35 @@ public class ActivityConfigController {
         return CommonResult.success(true);
     }
 
-    @PutMapping("/enable")
+    @PutMapping("/activate")
     @Operation(summary = "生效活动配置")
     @PreAuthorize("@ss.hasPermission('marketop:activity-config:update')")
-    public CommonResult<Boolean> enable(@RequestParam("id") Long id) {
-        activityConfigService.enable(id);
+    public CommonResult<Boolean> enable(@Valid @RequestBody IdReq req) {
+        activityConfigService.enable(req.getId());
         return CommonResult.success(true);
     }
 
     @PutMapping("/disable")
     @Operation(summary = "停用活动配置")
     @PreAuthorize("@ss.hasPermission('marketop:activity-config:update')")
-    public CommonResult<Boolean> disable(@RequestParam("id") Long id) {
-        activityConfigService.disable(id);
+    public CommonResult<Boolean> disable(@Valid @RequestBody IdReq req) {
+        activityConfigService.disable(req.getId());
         return CommonResult.success(true);
+    }
+
+    @Data
+    public static class IdReq {
+        @NotNull(message = "id不能为空")
+        private Long id;
     }
 
     @GetMapping("/chart")
     @Operation(summary = "活动配置图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:activity-config:query')")
-    public CommonResult<ActivityConfigChartRespVO> getChart(@RequestParam(value = "timeRange", required = false) String timeRange) {
-        return CommonResult.success(activityConfigService.getChart(timeRange));
+    public CommonResult<ActivityConfigChartRespVO> getChart(
+            @RequestParam(value = "startTime", required = false) Long startTime,
+            @RequestParam(value = "endTime", required = false) Long endTime) {
+        return CommonResult.success(activityConfigService.getChart(startTime, endTime));
     }
 
 }

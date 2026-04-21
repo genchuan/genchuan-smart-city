@@ -22,8 +22,7 @@ public class PointActivityImportExcelVO {
     @ExcelProperty("活动名称")
     private String name;
 
-    @ExcelProperty(value = "活动类型", converter = DictConvert.class)
-    @DictFormat(DictTypeConstants.POINT_ACTIVITY_TYPE)
+    @ExcelProperty(value = "活动类型")
     private String type;
 
     @ExcelProperty("开始时间")

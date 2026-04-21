@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,27 +56,34 @@ public class PackageConfigController {
         return CommonResult.success(true);
     }
 
-    @PutMapping("/enable")
+    @PutMapping("/activate")
     @Operation(summary = "生效券包配置")
     @PreAuthorize("@ss.hasPermission('marketop:package-config:update')")
-    public CommonResult<Boolean> enable(@RequestParam("id") Long id) {
-        packageConfigService.enable(id);
+    public CommonResult<Boolean> enable(@Valid @RequestBody IdReq req) {
+        packageConfigService.enable(req.getId());
         return CommonResult.success(true);
     }
 
     @PutMapping("/disable")
     @Operation(summary = "停用券包配置")
     @PreAuthorize("@ss.hasPermission('marketop:package-config:update')")
-    public CommonResult<Boolean> disable(@RequestParam("id") Long id) {
-        packageConfigService.disable(id);
+    public CommonResult<Boolean> disable(@Valid @RequestBody IdReq req) {
+        packageConfigService.disable(req.getId());
         return CommonResult.success(true);
     }
 
     @GetMapping("/chart")
     @Operation(summary = "券包配置图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:package-config:query')")
-    public CommonResult<PackageConfigChartRespVO> getChart(@RequestParam(value = "timeRange", required = false) String timeRange) {
-        return CommonResult.success(packageConfigService.getChart(timeRange));
+    public CommonResult<PackageConfigChartRespVO> getChart(@RequestParam(value = "startTime", required = false) Long startTime,
+                                                           @RequestParam(value = "endTime", required = false) Long endTime) {
+        return CommonResult.success(packageConfigService.getChart(startTime, endTime));
+    }
+
+    @Data
+    public static class IdReq {
+        @NotNull(message = "id不能为空")
+        private Long id;
     }
 
 }

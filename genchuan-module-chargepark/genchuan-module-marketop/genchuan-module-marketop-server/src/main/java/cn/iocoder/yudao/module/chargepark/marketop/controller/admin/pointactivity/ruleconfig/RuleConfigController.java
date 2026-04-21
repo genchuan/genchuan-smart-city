@@ -3,7 +3,13 @@ package cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivi
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.ruleconfig.vo.*;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.ruleconfig.vo.RuleConfigChartReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.ruleconfig.vo.RuleConfigChartRespVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.ruleconfig.vo.RuleConfigCreateReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.ruleconfig.vo.RuleConfigIdReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.ruleconfig.vo.RuleConfigPageReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.ruleconfig.vo.RuleConfigRespVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.ruleconfig.vo.RuleConfigUpdateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.RuleConfigDO;
 import cn.iocoder.yudao.module.chargepark.marketop.service.pointactivity.ruleconfig.RuleConfigService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -54,10 +60,11 @@ public class RuleConfigController {
         return CommonResult.success(true);
     }
 
-    @PutMapping("/enable")
+    @PutMapping("/activate")
     @Operation(summary = "生效规则配置")
     @PreAuthorize("@ss.hasPermission('marketop:rule-config:update')")
-    public CommonResult<Boolean> enable(@RequestParam("id") Long id) {
+    public CommonResult<Boolean> activate(@Valid @RequestBody RuleConfigIdReqVO  reqVO) {
+        Long id = reqVO.getId();
         ruleConfigService.enable(id);
         return CommonResult.success(true);
     }
@@ -65,7 +72,8 @@ public class RuleConfigController {
     @PutMapping("/disable")
     @Operation(summary = "禁用规则配置")
     @PreAuthorize("@ss.hasPermission('marketop:rule-config:update')")
-    public CommonResult<Boolean> disable(@RequestParam("id") Long id) {
+    public CommonResult<Boolean> disable(@Valid @RequestBody RuleConfigIdReqVO  reqVO) {
+        Long id = reqVO.getId();
         ruleConfigService.disable(id);
         return CommonResult.success(true);
     }
@@ -73,8 +81,8 @@ public class RuleConfigController {
     @GetMapping("/chart")
     @Operation(summary = "规则配置图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:rule-config:query')")
-    public CommonResult<RuleConfigChartRespVO> getChart(@RequestParam(value = "timeRange", required = false) String timeRange) {
-        return CommonResult.success(ruleConfigService.getChart(timeRange));
+    public CommonResult<RuleConfigChartRespVO> getChart(RuleConfigChartReqVO reqVO) {
+        return CommonResult.success(ruleConfigService.getChart(reqVO));
     }
 
 }

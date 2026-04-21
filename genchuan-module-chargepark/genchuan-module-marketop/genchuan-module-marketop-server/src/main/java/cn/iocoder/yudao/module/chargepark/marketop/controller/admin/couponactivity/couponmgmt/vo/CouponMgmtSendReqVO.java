@@ -16,7 +16,7 @@ public class CouponMgmtSendReqVO {
     private Long id;
 
     @Schema(description = "用户ID列表", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotEmpty(message = "用户ID列表不能为空")
-    private List<Long> userIds;
+    @NotNull(message = "用户ID列表不能为空")
+    private Long receiverId;
 
 }

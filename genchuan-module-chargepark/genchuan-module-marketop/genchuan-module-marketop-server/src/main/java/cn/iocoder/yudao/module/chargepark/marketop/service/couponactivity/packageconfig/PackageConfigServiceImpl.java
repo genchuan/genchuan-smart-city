@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.chargepark.marketop.service.couponactivity.packa
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.packageconfig.vo.PackageConfigChartRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.packageconfig.vo.PackageConfigCreateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.packageconfig.vo.PackageConfigPageReqVO;
@@ -13,7 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.*;
@@ -40,7 +44,7 @@ public class PackageConfigServiceImpl implements PackageConfigService {
         // 校验名称唯一
         validateNameUnique(null, reqVO.getName());
         PackageConfigDO packageConfig = BeanUtils.toBean(reqVO, PackageConfigDO.class);
-        packageConfig.setStatus("未生效");
+        packageConfig.setStatus("0");
         packageConfig.setSaleCount(0);
         packageConfigMapper.insert(packageConfig);
         return packageConfig.getId();
@@ -56,10 +60,10 @@ public class PackageConfigServiceImpl implements PackageConfigService {
     @Override
     public void enable(Long id) {
         PackageConfigDO packageConfig = validateExists(id);
-        if (!"未生效".equals(packageConfig.getStatus())) {
+        if (!"0".equals(packageConfig.getStatus())) {
             throw exception(PACKAGE_CONFIG_NOT_EXISTS);
         }
-        packageConfig.setStatus("已生效");
+        packageConfig.setStatus("1");
         packageConfig.setAuditTime(LocalDateTime.now());
         packageConfig.setEffectTime(LocalDateTime.now());
         packageConfigMapper.updateById(packageConfig);
@@ -68,20 +72,55 @@ public class PackageConfigServiceImpl implements PackageConfigService {
     @Override
     public void disable(Long id) {
         PackageConfigDO packageConfig = validateExists(id);
-        if (!"已生效".equals(packageConfig.getStatus())) {
+        if (!"1".equals(packageConfig.getStatus())) {
             throw exception(PACKAGE_CONFIG_NOT_EXISTS);
         }
-        packageConfig.setStatus("未生效");
+        packageConfig.setStatus("0");
         packageConfigMapper.updateById(packageConfig);
     }
 
     @Override
-    public PackageConfigChartRespVO getChart(String timeRange) {
-        // TODO: 实现图表统计逻辑，暂时返回空数据
+    public PackageConfigChartRespVO getChart(Long startTime, Long endTime) {
         PackageConfigChartRespVO respVO = new PackageConfigChartRespVO();
-        respVO.setEnableCount(0);
-        respVO.setSalesCount(0);
-        respVO.setTypeList(new ArrayList<>());
+
+        // 构建时间范围
+        LocalDateTime startDateTime = startTime != null
+                ? LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(startTime), ZoneId.systemDefault()) : null;
+        LocalDateTime endDateTime = endTime != null
+                ? LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(endTime), ZoneId.systemDefault()) : null;
+
+        // 构建查询条件
+        LambdaQueryWrapperX<PackageConfigDO> wrapper = new LambdaQueryWrapperX<>();
+        if (startDateTime != null) {
+            wrapper.ge(PackageConfigDO::getCreateTime, startDateTime);
+        }
+        if (endDateTime != null) {
+            wrapper.le(PackageConfigDO::getCreateTime, endDateTime);
+        }
+        List<PackageConfigDO> allList = packageConfigMapper.selectList(wrapper);
+
+        // enableCount: status为1的数量
+        long enableCount = allList.stream().filter(item -> "1".equals(item.getStatus())).count();
+        respVO.setEnableCount((int) enableCount);
+
+        // salesCount: 总数
+        respVO.setSalesCount(allList.size());
+
+        // typeList: 按type分组统计数量
+        Map<String, Long> typeCount = allList.stream()
+                .collect(Collectors.groupingBy(
+                        item -> item.getType() != null ? item.getType() : "unknown",
+                        Collectors.counting()));
+        List<PackageConfigChartRespVO.TypeCountItem> typeList = typeCount.entrySet().stream()
+                .map(entry -> {
+                    PackageConfigChartRespVO.TypeCountItem item = new PackageConfigChartRespVO.TypeCountItem();
+                    item.setType(entry.getKey());
+                    item.setCount(entry.getValue().intValue());
+                    return item;
+                })
+                .collect(Collectors.toList());
+        respVO.setTypeList(typeList);
+
         return respVO;
     }
 

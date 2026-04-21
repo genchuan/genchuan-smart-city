@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,8 +48,8 @@ public class PointLotteryController {
     @PutMapping("/check")
     @Operation(summary = "核查积分抽奖记录")
     @PreAuthorize("@ss.hasPermission('marketop:point-lottery:query')")
-    public CommonResult<Boolean> check(@RequestParam("id") Long id, @RequestParam("checkResult") String checkResult) {
-        pointLotteryService.check(id, checkResult);
+    public CommonResult<Boolean> check(@Valid @RequestBody PointLotteryCheckReqVO reqVO) {
+        pointLotteryService.check(reqVO.getId(), reqVO.getCheckResult());
         return CommonResult.success(true);
     }
 

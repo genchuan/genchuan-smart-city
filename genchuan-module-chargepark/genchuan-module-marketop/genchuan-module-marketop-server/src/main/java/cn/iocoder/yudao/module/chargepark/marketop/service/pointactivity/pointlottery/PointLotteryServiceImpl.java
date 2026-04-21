@@ -35,10 +35,10 @@ public class PointLotteryServiceImpl implements PointLotteryService {
     @Override
     public void check(Long id, String checkResult) {
         PointLotteryDO lottery = validateExists(id);
-        if (!"异常记录".equals(lottery.getStatus())) {
+        if (!"2".equals(lottery.getStatus())) {
             throw exception(POINT_LOTTERY_STATUS_ERROR);
         }
-        lottery.setStatus("已核查");
+        lottery.setStatus("1");
         lottery.setCheckResult(checkResult);
         pointLotteryMapper.updateById(lottery);
     }
