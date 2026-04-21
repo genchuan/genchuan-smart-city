@@ -5,11 +5,16 @@
     <packaging>pom</packaging>
     <!--  基础数据  -->
     <modules>
+        <module>genchuan-module-ordertrade</module>
         <module>genchuan-module-stationresource</module>
         <module>genchuan-module-usermerchant</module>
         <module>genchuan-module-inspectop</module>
+        <module>genchuan-module-marketop</module>
+        <module>genchuan-module-carservice</module>
     </modules>
-
+    <description>
+        充电停车一体化管理模块，包含营销运营等功能。
+    </description>
     <parent>
         <groupId>cn.iocoder.cloud</groupId>
         <artifactId>yudao</artifactId>
@@ -17,7 +22,6 @@
     </parent>
     <name>genchuan-module-chargepark</name>
     <url>http://maven.apache.org</url>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

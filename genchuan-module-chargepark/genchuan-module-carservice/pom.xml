@@ -1,0 +1,36 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cn.iocoder.cloud</groupId>
+        <artifactId>genchuan-module-chargepark</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>genchuan-module-carservice</artifactId>
+    <packaging>pom</packaging>
+
+    <name>genchuan-module-carservice</name>
+    <url>http://maven.apache.org</url>
+    <modules>
+        <module>genchuan-module-carservice-api</module>
+        <module>genchuan-module-carservice-server</module>
+    </modules>
+
+    <description>
+        车务服务 carservice 模块，覆盖救援服务、车辆引导、预约服务、反向寻车、投诉调解、客服配置、决策分析等用户服务场景。
+    </description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
