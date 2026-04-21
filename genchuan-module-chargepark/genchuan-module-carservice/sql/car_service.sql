@@ -32,7 +32,8 @@ DROP TABLE IF EXISTS `rescue_info`;
 CREATE TABLE `rescue_info` (
     `id`                BIGINT          NOT NULL AUTO_INCREMENT                COMMENT '主键 ID',
     `user_id`           BIGINT          NOT NULL                                COMMENT '用户 ID，关联芋道用户表 system_user',
-    `location`          VARCHAR(255)    NOT NULL                                COMMENT '救援位置，记录救援地址或经纬度信息',
+    `location`          VARCHAR(255)    NOT NULL                                COMMENT '救援位置坐标，格式"经度,纬度"',
+    `location_name`     VARCHAR(255)    DEFAULT NULL                            COMMENT '救援位置汉字地址（供列表页展示）',
     `rescue_type`       VARCHAR(20)     NOT NULL                                COMMENT '救援类型：道路救援/充电故障救援/停车故障救援，关联芋道字典表 rescue_info_rescue_type',
     `dispatch_time`     DATETIME        DEFAULT NULL                            COMMENT '派发时间',
     `status`            VARCHAR(20)     NOT NULL                                COMMENT '救援状态：待派发/待认领/处理中/已完成，关联芋道字典表 rescue_info_status',
@@ -68,7 +69,8 @@ DROP TABLE IF EXISTS `charge_park_map`;
 CREATE TABLE `charge_park_map` (
     `id`                 BIGINT         NOT NULL AUTO_INCREMENT                COMMENT '主键 ID',
     `user_id`            BIGINT         NOT NULL                                COMMENT '用户 ID，关联芋道用户表 system_user',
-    `query_location`     VARCHAR(255)   NOT NULL                                COMMENT '查询位置，记录用户查询时的位置信息',
+    `query_location`     VARCHAR(255)   NOT NULL                                COMMENT '查询位置坐标，格式"经度,纬度"',
+    `query_location_name` VARCHAR(255)  DEFAULT NULL                            COMMENT '查询位置汉字地址（供列表页展示）',
     `query_time`         DATETIME       NOT NULL                                COMMENT '查询时间',
     `result_count`       INT            NOT NULL DEFAULT 0                      COMMENT '查询结果数，本次查询返回的场站/车位结果数量',
     `response_duration`  INT            NOT NULL DEFAULT 0                      COMMENT '响应时长（毫秒）',
@@ -93,7 +95,8 @@ DROP TABLE IF EXISTS `near_station`;
 CREATE TABLE `near_station` (
     `id`                  BIGINT        NOT NULL AUTO_INCREMENT                COMMENT '主键 ID',
     `user_id`             BIGINT        NOT NULL                                COMMENT '用户 ID，关联芋道用户表 system_user',
-    `query_location`      VARCHAR(255)  NOT NULL                                COMMENT '查询位置',
+    `query_location`      VARCHAR(255)  NOT NULL                                COMMENT '查询位置坐标，格式"经度,纬度"',
+    `query_location_name` VARCHAR(255)  DEFAULT NULL                            COMMENT '查询位置汉字地址（供列表页展示）',
     `query_time`          DATETIME      NOT NULL                                COMMENT '查询时间',
     `station_count`       INT           NOT NULL DEFAULT 0                      COMMENT '周边场站数',
     `empty_station_count` INT           NOT NULL DEFAULT 0                      COMMENT '空位场站数',
@@ -209,8 +212,10 @@ DROP TABLE IF EXISTS `path_plan`;
 CREATE TABLE `path_plan` (
     `id`              BIGINT       NOT NULL AUTO_INCREMENT                COMMENT '主键 ID',
     `user_id`         BIGINT       NOT NULL                                COMMENT '用户 ID，关联芋道用户表 system_user',
-    `start_location`  VARCHAR(255) NOT NULL                                COMMENT '起点位置',
-    `end_location`    VARCHAR(255) NOT NULL                                COMMENT '终点位置',
+    `start_location`      VARCHAR(255) NOT NULL                                COMMENT '起点位置坐标，格式"经度,纬度"',
+    `start_location_name` VARCHAR(255) DEFAULT NULL                            COMMENT '起点位置汉字地址（供列表页展示）',
+    `end_location`        VARCHAR(255) NOT NULL                                COMMENT '终点位置坐标，格式"经度,纬度"',
+    `end_location_name`   VARCHAR(255) DEFAULT NULL                            COMMENT '终点位置汉字地址（供列表页展示）',
     `plan_time`       DATETIME     NOT NULL                                COMMENT '规划时间',
     `path_length`     INT          NOT NULL DEFAULT 0                      COMMENT '路径长度（米）',
     `expect_duration` INT          NOT NULL DEFAULT 0                      COMMENT '预计时长（秒）',
@@ -345,3 +350,28 @@ CREATE TABLE `wording_mgmt` (
     KEY `idx_status` (`status`),
     KEY `idx_tenant_id` (`tenant_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC COMMENT = '话术管理表';
+
+-- ---------------------------------------------------------------------
+-- [过渡] 周边场站 mock 表 mock_nearby_station
+-- 用途: near-station/chart 接口在 stationresource 模块未开 Feign RPC 前的数据来源
+-- 待 stationresource 开放 RPC 后可整表 DROP
+-- ---------------------------------------------------------------------
+DROP TABLE IF EXISTS `mock_nearby_station`;
+CREATE TABLE `mock_nearby_station` (
+    `id`             BIGINT         NOT NULL AUTO_INCREMENT                COMMENT '主键 ID',
+    `lon`            DECIMAL(10,6)  NOT NULL                                COMMENT '经度',
+    `lat`            DECIMAL(10,6)  NOT NULL                                COMMENT '纬度',
+    `station_name`   VARCHAR(64)    NOT NULL                                COMMENT '场站名称',
+    `has_empty`      BIT(1)         NOT NULL DEFAULT b'1'                   COMMENT '是否有空位：0-无，1-有',
+    `empty_space`    INT            NOT NULL DEFAULT 0                      COMMENT '空位数',
+    `total_space`    INT            NOT NULL DEFAULT 0                      COMMENT '总车位数',
+    `distance_group` VARCHAR(16)    DEFAULT NULL                            COMMENT '距离分桶：0-1km / 1-3km / 3-5km',
+    `creator`        VARCHAR(64)    DEFAULT ''                              COMMENT '创建者',
+    `updater`        VARCHAR(64)    DEFAULT ''                              COMMENT '更新者',
+    `deleted`        BIT(1)         NOT NULL DEFAULT b'0'                   COMMENT '删除标识',
+    `tenant_id`      BIGINT         NOT NULL DEFAULT 1                      COMMENT '租户 ID',
+    `create_time`    DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP      COMMENT '创建时间',
+    `update_time`    DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `idx_tenant_id` (`tenant_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = DYNAMIC COMMENT = '[过渡] 周边场站 mock 表';

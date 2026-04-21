@@ -4,6 +4,7 @@ import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.findcar.vo.SpaceLocationChartRespVO;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.findcar.vo.SpaceLocationNavigateReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.findcar.vo.SpaceLocationPageReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.findcar.vo.SpaceLocationRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.findcar.SpaceLocationDO;
@@ -20,6 +21,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 import java.util.List;
 
@@ -68,23 +72,24 @@ public class SpaceLocationController {
 
     @GetMapping("/navigate")
     @Operation(summary = "导航 - 跳转到车位位置")
-    @Parameter(name = "id", description = "车位定位记录 ID", required = true)
     @PreAuthorize("@ss.hasPermission('carservice:space-location:navigate')")
-    public CommonResult<String> navigateSpaceLocation(@RequestParam("id") Long id) {
-        SpaceLocationDO record = spaceLocationService.getSpaceLocation(id);
+    public CommonResult<String> navigateSpaceLocation(@Valid SpaceLocationNavigateReqVO reqVO) {
+        SpaceLocationDO record = spaceLocationService.getSpaceLocation(reqVO.getId());
         if (record == null) {
             return success(null);
         }
-        // 用 plate_no 或 space_id 作为目标定位关键字
-        String to = "spaceId:" + (record.getSpaceId() == null ? "" : record.getSpaceId());
+        // TODO 等 stationresource 模块开 RPC 后,按 spaceId 查目标车位真实坐标
+        // 现阶段车位定位表无坐标字段,暂用 spaceId 占位,契约已对齐文档
+        String to = "spaceId:" + reqVO.getSpaceId();
         return success(mapUrlTemplate.replace("{to}", to));
     }
 
     @GetMapping("/chart")
     @Operation(summary = "车位定位统计图表 - 地图+卡片")
     @PreAuthorize("@ss.hasPermission('carservice:space-location:query')")
-    public CommonResult<SpaceLocationChartRespVO> getSpaceLocationChart() {
-        return success(serviceOpReportService.chartSpaceLocation());
+    public CommonResult<SpaceLocationChartRespVO> getSpaceLocationChart(@RequestParam(value = "startTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
+            @RequestParam(value = "endTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
+        return success(serviceOpReportService.chartSpaceLocation(startTime, endTime));
     }
 
     private void injectUserNames(List<SpaceLocationRespVO> list) {

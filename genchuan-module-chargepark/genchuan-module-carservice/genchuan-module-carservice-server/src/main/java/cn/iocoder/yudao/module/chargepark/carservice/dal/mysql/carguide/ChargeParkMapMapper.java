@@ -18,7 +18,7 @@ public interface ChargeParkMapMapper extends BaseMapperX<ChargeParkMapDO> {
     default PageResult<ChargeParkMapDO> selectPage(ChargeParkMapPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<ChargeParkMapDO>()
                 .eqIfPresent(ChargeParkMapDO::getUserId, reqVO.getUserId())
-                .likeIfPresent(ChargeParkMapDO::getQueryLocation, reqVO.getQueryLocation())
+                .likeIfPresent(ChargeParkMapDO::getQueryLocationName, reqVO.getQueryLocationName())
                 .betweenIfPresent(ChargeParkMapDO::getQueryTime, reqVO.getQueryTime())
                 .orderByDesc(ChargeParkMapDO::getId));
     }

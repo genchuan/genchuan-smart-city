@@ -30,6 +30,9 @@ import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 import java.io.IOException;
 import java.util.List;
@@ -110,8 +113,9 @@ public class UserAppealController {
     @GetMapping("/chart")
     @Operation(summary = "用户申诉统计图表 - 折线图+卡片")
     @PreAuthorize("@ss.hasPermission('carservice:user-appeal:query')")
-    public CommonResult<UserAppealChartRespVO> getUserAppealChart() {
-        return success(serviceOpReportService.chartUserAppeal());
+    public CommonResult<UserAppealChartRespVO> getUserAppealChart(@RequestParam(value = "startTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
+            @RequestParam(value = "endTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
+        return success(serviceOpReportService.chartUserAppeal(startTime, endTime));
     }
 
     @GetMapping("/chart-drill-line")

@@ -20,9 +20,14 @@ public class RescueInfoSaveReqVO {
     @NotNull(message = "用户 ID 不能为空")
     private Long userId;
 
-    @Schema(description = "救援位置", requiredMode = Schema.RequiredMode.REQUIRED, example = "福建省泉州市丰泽区 XX 路")
+    @Schema(description = "救援位置坐标（格式：经度,纬度，前端地图 SDK 选点时填充）",
+            requiredMode = Schema.RequiredMode.REQUIRED, example = "118.675324,24.896541")
     @NotBlank(message = "救援位置不能为空")
     private String location;
+
+    @Schema(description = "救援位置汉字地址（前端地图 SDK 选点时回传，供列表页展示）",
+            example = "福建省泉州市丰泽区津淮街 123 号")
+    private String locationName;
 
     @Schema(description = "救援类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "道路救援")
     @NotBlank(message = "救援类型不能为空")

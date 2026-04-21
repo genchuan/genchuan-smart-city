@@ -25,6 +25,9 @@ import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 import java.io.IOException;
 import java.util.List;
@@ -102,8 +105,9 @@ public class SpacePushController {
     @GetMapping("/chart")
     @Operation(summary = "空位推送统计图表 - 折线图+卡片")
     @PreAuthorize("@ss.hasPermission('carservice:space-push:query')")
-    public CommonResult<SpacePushChartRespVO> getSpacePushChart() {
-        return success(serviceOpReportService.chartSpacePush());
+    public CommonResult<SpacePushChartRespVO> getSpacePushChart(@RequestParam(value = "startTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
+            @RequestParam(value = "endTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
+        return success(serviceOpReportService.chartSpacePush(startTime, endTime));
     }
 
     @GetMapping("/chart-drill-line")

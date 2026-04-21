@@ -32,9 +32,13 @@ public class RescueInfoDO extends BaseDO {
      */
     private Long userId;
     /**
-     * 救援位置，记录救援地址或经纬度信息
+     * 救援位置，记录救援地址或经纬度信息（格式："经度,纬度"）
      */
     private String location;
+    /**
+     * 救援位置汉字地址（供列表页展示，前端地图 SDK 选点时回传）
+     */
+    private String locationName;
     /**
      * 救援类型：道路救援/充电故障救援/停车故障救援
      * 关联字典 rescue_info_rescue_type

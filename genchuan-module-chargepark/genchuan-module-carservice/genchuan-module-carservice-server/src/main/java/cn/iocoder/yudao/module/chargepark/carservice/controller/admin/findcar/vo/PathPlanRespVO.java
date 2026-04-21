@@ -24,13 +24,21 @@ public class PathPlanRespVO {
     @ExcelProperty("用户名")
     private String userName;
 
-    @Schema(description = "起点位置")
+    @Schema(description = "起点位置（经度,纬度 格式）", example = "118.675324,24.896541")
     @ExcelProperty("起点位置")
     private String startLocation;
 
-    @Schema(description = "终点位置")
+    @Schema(description = "起点位置汉字地址（列表页展示用）", example = "福建省泉州市丰泽区津淮街 123 号")
+    @ExcelProperty("起点地址")
+    private String startLocationName;
+
+    @Schema(description = "终点位置（经度,纬度 格式）", example = "118.685324,24.906541")
     @ExcelProperty("终点位置")
     private String endLocation;
+
+    @Schema(description = "终点位置汉字地址（列表页展示用）", example = "福建省泉州市鲤城区中山路 456 号")
+    @ExcelProperty("终点地址")
+    private String endLocationName;
 
     @Schema(description = "规划时间")
     @ExcelProperty("规划时间")

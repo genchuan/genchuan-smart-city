@@ -20,4 +20,8 @@ public class RescueInfoUpdateProgressReqVO {
     @Schema(description = "现场照片 URL")
     private String photo;
 
+    @Schema(description = "是否标记为已完成。true=本次更新同时收尾,系统自动流转状态 处理中→已完成 并回写完成时间、处理时长;false 或不传=仅更新进度,不改变状态。对应弹窗勾选框「标记为已完成」",
+            example = "false", defaultValue = "false")
+    private Boolean complete;
+
 }

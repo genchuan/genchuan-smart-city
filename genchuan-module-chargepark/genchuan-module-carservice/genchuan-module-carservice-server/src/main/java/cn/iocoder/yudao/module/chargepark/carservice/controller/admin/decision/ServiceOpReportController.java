@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -103,8 +104,12 @@ public class ServiceOpReportController {
     @GetMapping("/chart")
     @Operation(summary = "服务运营分析图表 - 折线图+柱状图+核心指标")
     @PreAuthorize("@ss.hasPermission('carservice:service-op-report:query')")
-    public CommonResult<ServiceOpReportChartRespVO> getServiceOpReportChart() {
-        return success(serviceOpReportService.chartServiceOpReport());
+    public CommonResult<ServiceOpReportChartRespVO> getServiceOpReportChart(
+            @RequestParam(value = "startTime", required = false)
+            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
+            @RequestParam(value = "endTime", required = false)
+            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
+        return success(serviceOpReportService.chartServiceOpReport(startTime, endTime));
     }
 
     @GetMapping("/chart-drill-line")

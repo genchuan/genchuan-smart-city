@@ -15,6 +15,7 @@ import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.rescue.vo.
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.reserve.vo.ReserveListChartRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.serviceconfig.vo.WordingMgmtChartRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.carguide.ChargeParkMapDO;
+import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.carguide.MockNearbyStationDO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.carguide.NearStationDO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.carguide.SpacePushDO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.complaint.DisputeMediateDO;
@@ -25,6 +26,7 @@ import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.findcar.Spac
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.rescue.RescueInfoDO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.reserve.ReserveListDO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.carguide.ChargeParkMapMapper;
+import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.carguide.MockNearbyStationMapper;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.carguide.NearStationMapper;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.carguide.SpacePushMapper;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.complaint.DisputeMediateMapper;
@@ -77,6 +79,7 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     @Resource private RescueInfoMapper rescueInfoMapper;
     @Resource private ChargeParkMapMapper chargeParkMapMapper;
     @Resource private NearStationMapper nearStationMapper;
+    @Resource private MockNearbyStationMapper mockNearbyStationMapper;
     @Resource private SpacePushMapper spacePushMapper;
     @Resource private ReserveListMapper reserveListMapper;
     @Resource private SpaceLocationMapper spaceLocationMapper;
@@ -92,20 +95,27 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
 
     @Override
     @Cacheable(cacheNames = "carservice:report:chart-rescue#30s")
-    public RescueInfoChartRespVO chartRescue() {
+    public RescueInfoChartRespVO chartRescue(LocalDateTime startTime, LocalDateTime endTime) {
         RescueInfoChartRespVO resp = new RescueInfoChartRespVO();
-        long total = rescueInfoMapper.selectCount(new LambdaQueryWrapperX<>());
+        long total = rescueInfoMapper.selectCount(new LambdaQueryWrapperX<RescueInfoDO>()
+                .geIfPresent(RescueInfoDO::getCreateTime, startTime)
+                .leIfPresent(RescueInfoDO::getCreateTime, endTime));
         long waiting = rescueInfoMapper.selectCount(new LambdaQueryWrapperX<RescueInfoDO>()
-                .in(RescueInfoDO::getStatus, Arrays.asList("待派发", "待认领")));
+                .in(RescueInfoDO::getStatus, Arrays.asList("待派发", "待认领"))
+                .geIfPresent(RescueInfoDO::getCreateTime, startTime)
+                .leIfPresent(RescueInfoDO::getCreateTime, endTime));
         long completed = rescueInfoMapper.selectCount(new LambdaQueryWrapperX<RescueInfoDO>()
-                .eq(RescueInfoDO::getStatus, "已完成"));
+                .eq(RescueInfoDO::getStatus, "已完成")
+                .geIfPresent(RescueInfoDO::getCreateTime, startTime)
+                .leIfPresent(RescueInfoDO::getCreateTime, endTime));
         resp.setWaitRescueCount((int) waiting);
         resp.setFinishRate(toRate(completed, total));
         resp.setTrendList(toTrendList(reportStatMapper.rescueInfoDailyCount(
-                LocalDate.now().minusDays(TREND_DAYS).atStartOfDay())));
-        // 救援位置列表:限制 LIMIT 防止大表全扫
+                startTime != null ? startTime : LocalDate.now().minusDays(TREND_DAYS).atStartOfDay())));
+        // 救援位置列表:按 startTime/endTime 过滤,未传则返最近 N 条
         List<RescueInfoDO> recent = rescueInfoMapper.selectList(new LambdaQueryWrapperX<RescueInfoDO>()
-                .ge(RescueInfoDO::getCreateTime, LocalDate.now().minusDays(TREND_DAYS).atStartOfDay())
+                .geIfPresent(RescueInfoDO::getCreateTime, startTime)
+                .leIfPresent(RescueInfoDO::getCreateTime, endTime)
                 .orderByDesc(RescueInfoDO::getId)
                 .last("LIMIT " + RESCUE_LOC_LIMIT));
         List<Map<String, Object>> locList = recent.stream().map(r -> {
@@ -147,78 +157,117 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
 
     @Override
     @Cacheable(cacheNames = "carservice:report:chart-charge-park-map#30s")
-    public ChargeParkMapChartRespVO chartChargeParkMap() {
+    public ChargeParkMapChartRespVO chartChargeParkMap(LocalDateTime startTime, LocalDateTime endTime) {
+        // TODO stationresource 模块开 Feign RPC 后切换数据源,mock_nearby_station 表可整表 DROP
         ChargeParkMapChartRespVO resp = new ChargeParkMapChartRespVO();
+
+        // 查询成功率 + 平均响应时长(保留原有聚合 SQL,按 charge_park_map 查询记录)
         Map<String, Object> agg = reportStatMapper.chargeParkMapAggregate();
         long total = numLong(agg, "total");
         long success = numLong(agg, "success_cnt");
         double avgResp = numDouble(agg, "avg_resp");
         resp.setQuerySuccessRate(toRate(success, total));
         resp.setAvgResponseDuration((int) Math.round(avgResp));
-        // 从 charge_park_map 查询记录的 query_location 聚合坐标,适配地图渲染
-        List<ChargeParkMapDO> recent = chargeParkMapMapper.selectList(new LambdaQueryWrapperX<ChargeParkMapDO>()
-                .orderByDesc(ChargeParkMapDO::getId).last("LIMIT 200"));
-        List<Map<String, Object>> spaceList = recent.stream().map(r -> {
+
+        // 场站分布(从 mock_nearby_station 表查,复用 near-station 的 mock 数据)
+        List<MockNearbyStationDO> stations = mockNearbyStationMapper.selectList(new LambdaQueryWrapperX<>());
+        List<Map<String, Object>> spaceList = stations.stream().map(s -> {
             Map<String, Object> m = new LinkedHashMap<>();
-            fillLonLat(m, r.getQueryLocation());
-            m.put("id", r.getId());
-            m.put("userId", r.getUserId());
+            m.put("lon", s.getLon());
+            m.put("lat", s.getLat());
+            m.put("stationName", s.getStationName());
+            m.put("emptySpace", s.getEmptySpace() == null ? 0 : s.getEmptySpace());
             return m;
         }).collect(Collectors.toList());
         resp.setStationSpaceList(spaceList);
-        // 热力图数据:按坐标 + 查询次数聚合,简单实现用 query_location 出现频次
-        resp.setHeatMapData(spaceList);
+
+        // 热力图数据:value = 使用率 = (total - empty) / total,0-1 小数
+        List<Map<String, Object>> heatList = stations.stream().map(s -> {
+            Map<String, Object> m = new LinkedHashMap<>();
+            m.put("lon", s.getLon());
+            m.put("lat", s.getLat());
+            int tot = s.getTotalSpace() == null ? 0 : s.getTotalSpace();
+            int emp = s.getEmptySpace() == null ? 0 : s.getEmptySpace();
+            double value = tot == 0 ? 0.0
+                    : BigDecimal.valueOf((double)(tot - emp) / tot).setScale(2, RoundingMode.HALF_UP).doubleValue();
+            m.put("value", value);
+            return m;
+        }).collect(Collectors.toList());
+        resp.setHeatMapData(heatList);
         return resp;
     }
 
     @Override
     @Cacheable(cacheNames = "carservice:report:chart-near-station#30s")
-    public NearStationChartRespVO chartNearStation() {
+    public NearStationChartRespVO chartNearStation(LocalDateTime startTime, LocalDateTime endTime) {
+        // TODO stationresource 模块开 Feign RPC 后切换数据源,mock_nearby_station 表可整表 DROP
         NearStationChartRespVO resp = new NearStationChartRespVO();
-        Map<String, Object> agg = reportStatMapper.nearStationAggregate();
-        resp.setTotalStationCount((int) numLong(agg, "station_sum"));
-        resp.setEmptyStationCount((int) numLong(agg, "empty_sum"));
-        // 从 near_station 查询记录的 query_location 提取坐标,适配地图渲染
-        List<NearStationDO> recent = nearStationMapper.selectList(new LambdaQueryWrapperX<NearStationDO>()
-                .orderByDesc(NearStationDO::getId).last("LIMIT 200"));
-        List<Map<String, Object>> stationList = recent.stream().map(r -> {
+        List<MockNearbyStationDO> stations = mockNearbyStationMapper.selectList(new LambdaQueryWrapperX<MockNearbyStationDO>()
+                .geIfPresent(MockNearbyStationDO::getCreateTime, startTime)
+                .leIfPresent(MockNearbyStationDO::getCreateTime, endTime));
+
+        // 场站地图点位:lon / lat / stationName / hasEmpty
+        List<Map<String, Object>> stationList = stations.stream().map(s -> {
             Map<String, Object> m = new LinkedHashMap<>();
-            fillLonLat(m, r.getQueryLocation());
-            m.put("id", r.getId());
-            m.put("stationCount", r.getStationCount());
-            m.put("emptyStationCount", r.getEmptyStationCount());
+            m.put("lon", s.getLon());
+            m.put("lat", s.getLat());
+            m.put("stationName", s.getStationName());
+            m.put("hasEmpty", Boolean.TRUE.equals(s.getHasEmpty()));
             return m;
         }).collect(Collectors.toList());
         resp.setStationLocationList(stationList);
-        resp.setDistanceCountList(new ArrayList<>());   // 距离分布柱状图,待场站表 distance 字段上线后填充
+
+        // 距离分桶柱状图:按 distance_group 聚合计数
+        Map<String, Long> distanceAgg = stations.stream()
+                .filter(s -> s.getDistanceGroup() != null)
+                .collect(Collectors.groupingBy(MockNearbyStationDO::getDistanceGroup, Collectors.counting()));
+        List<Map<String, Object>> distanceList = distanceAgg.entrySet().stream().map(e -> {
+            Map<String, Object> m = new LinkedHashMap<>();
+            m.put("distance", e.getKey());
+            m.put("count", e.getValue().intValue());
+            return m;
+        }).collect(Collectors.toList());
+        resp.setDistanceCountList(distanceList);
+
+        resp.setTotalStationCount(stations.size());
+        resp.setEmptyStationCount((int) stations.stream()
+                .filter(s -> Boolean.TRUE.equals(s.getHasEmpty())).count());
         return resp;
     }
 
     @Override
     @Cacheable(cacheNames = "carservice:report:chart-space-push#30s")
-    public SpacePushChartRespVO chartSpacePush() {
+    public SpacePushChartRespVO chartSpacePush(LocalDateTime startTime, LocalDateTime endTime) {
         SpacePushChartRespVO resp = new SpacePushChartRespVO();
-        long total = spacePushMapper.selectCount(new LambdaQueryWrapperX<>());
+        long total = spacePushMapper.selectCount(new LambdaQueryWrapperX<SpacePushDO>()
+                .geIfPresent(SpacePushDO::getCreateTime, startTime)
+                .leIfPresent(SpacePushDO::getCreateTime, endTime));
         long success = spacePushMapper.selectCount(new LambdaQueryWrapperX<SpacePushDO>()
-                .eq(SpacePushDO::getPushResult, "成功"));
+                .eq(SpacePushDO::getPushResult, "成功")
+                .geIfPresent(SpacePushDO::getCreateTime, startTime)
+                .leIfPresent(SpacePushDO::getCreateTime, endTime));
         resp.setTotalPushCount((int) total);
         resp.setPushSuccessRate(toRate(success, total));
         resp.setPushTrendList(toTrendList(reportStatMapper.spacePushDailyCount(
-                LocalDate.now().minusDays(TREND_DAYS).atStartOfDay())));
+                startTime != null ? startTime : LocalDate.now().minusDays(TREND_DAYS).atStartOfDay())));
         return resp;
     }
 
     @Override
     @Cacheable(cacheNames = "carservice:report:chart-reserve#30s")
-    public ReserveListChartRespVO chartReserve() {
+    public ReserveListChartRespVO chartReserve(LocalDateTime startTime, LocalDateTime endTime) {
         ReserveListChartRespVO resp = new ReserveListChartRespVO();
-        long total = reserveListMapper.selectCount(new LambdaQueryWrapperX<>());
+        long total = reserveListMapper.selectCount(new LambdaQueryWrapperX<ReserveListDO>()
+                .geIfPresent(ReserveListDO::getCreateTime, startTime)
+                .leIfPresent(ReserveListDO::getCreateTime, endTime));
         long succeeded = reserveListMapper.selectCount(new LambdaQueryWrapperX<ReserveListDO>()
-                .in(ReserveListDO::getStatus, Arrays.asList("已生效", "已完成")));
+                .in(ReserveListDO::getStatus, Arrays.asList("已生效", "已完成"))
+                .geIfPresent(ReserveListDO::getCreateTime, startTime)
+                .leIfPresent(ReserveListDO::getCreateTime, endTime));
         resp.setTotalReserveCount((int) total);
         resp.setReserveSuccessRate(toRate(succeeded, total));
         resp.setReserveTrendList(toTrendList(reportStatMapper.reserveListDailyCount(
-                LocalDate.now().minusDays(TREND_DAYS).atStartOfDay())));
+                startTime != null ? startTime : LocalDate.now().minusDays(TREND_DAYS).atStartOfDay())));
         List<Map<String, Object>> typeRows = reportStatMapper.reserveListTypeDistribution();
         List<Map<String, Object>> typeList = typeRows.stream().map(row -> {
             Map<String, Object> m = new LinkedHashMap<>();
@@ -232,11 +281,15 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
 
     @Override
     @Cacheable(cacheNames = "carservice:report:chart-space-location#30s")
-    public SpaceLocationChartRespVO chartSpaceLocation() {
+    public SpaceLocationChartRespVO chartSpaceLocation(LocalDateTime startTime, LocalDateTime endTime) {
         SpaceLocationChartRespVO resp = new SpaceLocationChartRespVO();
-        long total = spaceLocationMapper.selectCount(new LambdaQueryWrapperX<>());
+        long total = spaceLocationMapper.selectCount(new LambdaQueryWrapperX<SpaceLocationDO>()
+                .geIfPresent(SpaceLocationDO::getCreateTime, startTime)
+                .leIfPresent(SpaceLocationDO::getCreateTime, endTime));
         long success = spaceLocationMapper.selectCount(new LambdaQueryWrapperX<SpaceLocationDO>()
-                .eq(SpaceLocationDO::getLocationResult, "成功"));
+                .eq(SpaceLocationDO::getLocationResult, "成功")
+                .geIfPresent(SpaceLocationDO::getCreateTime, startTime)
+                .leIfPresent(SpaceLocationDO::getCreateTime, endTime));
         resp.setTotalQueryCount((int) total);
         resp.setLocationSuccessRate(toRate(success, total));
         resp.setSpaceLocationList(new ArrayList<>()); // 占位,待车位表上线后填充
@@ -245,7 +298,7 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
 
     @Override
     @Cacheable(cacheNames = "carservice:report:chart-path-plan#30s")
-    public PathPlanChartRespVO chartPathPlan() {
+    public PathPlanChartRespVO chartPathPlan(LocalDateTime startTime, LocalDateTime endTime) {
         PathPlanChartRespVO resp = new PathPlanChartRespVO();
         Map<String, Object> agg = reportStatMapper.pathPlanAggregate();
         long total = numLong(agg, "total");
@@ -254,6 +307,8 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
         resp.setPlanSuccessRate(toRate(success, total));
         // 路径规划地图:返回 start/end 两点坐标,前端根据起终点绘制路径
         List<PathPlanDO> recent = pathPlanMapper.selectList(new LambdaQueryWrapperX<PathPlanDO>()
+                .geIfPresent(PathPlanDO::getCreateTime, startTime)
+                .leIfPresent(PathPlanDO::getCreateTime, endTime)
                 .orderByDesc(PathPlanDO::getId).last("LIMIT 200"));
         List<Map<String, Object>> pathList = recent.stream().map(r -> {
             Map<String, Object> m = new LinkedHashMap<>();
@@ -276,49 +331,67 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
 
     @Override
     @Cacheable(cacheNames = "carservice:report:chart-suggestion#30s")
-    public SuggestionChartRespVO chartSuggestion() {
+    public SuggestionChartRespVO chartSuggestion(LocalDateTime startTime, LocalDateTime endTime) {
         SuggestionChartRespVO resp = new SuggestionChartRespVO();
-        long total = suggestionMapper.selectCount(new LambdaQueryWrapperX<>());
+        long total = suggestionMapper.selectCount(new LambdaQueryWrapperX<SuggestionDO>()
+                .geIfPresent(SuggestionDO::getCreateTime, startTime)
+                .leIfPresent(SuggestionDO::getCreateTime, endTime));
         long pending = suggestionMapper.selectCount(new LambdaQueryWrapperX<SuggestionDO>()
-                .eq(SuggestionDO::getStatus, "待处理"));
+                .eq(SuggestionDO::getStatus, "待处理")
+                .geIfPresent(SuggestionDO::getCreateTime, startTime)
+                .leIfPresent(SuggestionDO::getCreateTime, endTime));
         long completed = suggestionMapper.selectCount(new LambdaQueryWrapperX<SuggestionDO>()
-                .eq(SuggestionDO::getStatus, "已完成"));
+                .eq(SuggestionDO::getStatus, "已完成")
+                .geIfPresent(SuggestionDO::getCreateTime, startTime)
+                .leIfPresent(SuggestionDO::getCreateTime, endTime));
         resp.setWaitHandleCount((int) pending);
         resp.setHandleFinishRate(toRate(completed, total));
         resp.setSuggestionTrendList(toTrendList(reportStatMapper.suggestionDailyCount(
-                LocalDate.now().minusDays(TREND_DAYS).atStartOfDay())));
+                startTime != null ? startTime : LocalDate.now().minusDays(TREND_DAYS).atStartOfDay())));
         return resp;
     }
 
     @Override
     @Cacheable(cacheNames = "carservice:report:chart-user-appeal#30s")
-    public UserAppealChartRespVO chartUserAppeal() {
+    public UserAppealChartRespVO chartUserAppeal(LocalDateTime startTime, LocalDateTime endTime) {
         UserAppealChartRespVO resp = new UserAppealChartRespVO();
-        long total = userAppealMapper.selectCount(new LambdaQueryWrapperX<>());
+        long total = userAppealMapper.selectCount(new LambdaQueryWrapperX<UserAppealDO>()
+                .geIfPresent(UserAppealDO::getCreateTime, startTime)
+                .leIfPresent(UserAppealDO::getCreateTime, endTime));
         long pending = userAppealMapper.selectCount(new LambdaQueryWrapperX<UserAppealDO>()
-                .in(UserAppealDO::getStatus, Arrays.asList("待审核", "待处置")));
+                .in(UserAppealDO::getStatus, Arrays.asList("待审核", "待处置"))
+                .geIfPresent(UserAppealDO::getCreateTime, startTime)
+                .leIfPresent(UserAppealDO::getCreateTime, endTime));
         long completed = userAppealMapper.selectCount(new LambdaQueryWrapperX<UserAppealDO>()
-                .eq(UserAppealDO::getStatus, "已完成"));
+                .eq(UserAppealDO::getStatus, "已完成")
+                .geIfPresent(UserAppealDO::getCreateTime, startTime)
+                .leIfPresent(UserAppealDO::getCreateTime, endTime));
         resp.setWaitAppealCount((int) pending);
         resp.setHandleFinishRate(toRate(completed, total));
         resp.setAppealTrendList(toTrendList(reportStatMapper.userAppealDailyCount(
-                LocalDate.now().minusDays(TREND_DAYS).atStartOfDay())));
+                startTime != null ? startTime : LocalDate.now().minusDays(TREND_DAYS).atStartOfDay())));
         return resp;
     }
 
     @Override
     @Cacheable(cacheNames = "carservice:report:chart-dispute-mediate#30s")
-    public DisputeMediateChartRespVO chartDisputeMediate() {
+    public DisputeMediateChartRespVO chartDisputeMediate(LocalDateTime startTime, LocalDateTime endTime) {
         DisputeMediateChartRespVO resp = new DisputeMediateChartRespVO();
-        long total = disputeMediateMapper.selectCount(new LambdaQueryWrapperX<>());
+        long total = disputeMediateMapper.selectCount(new LambdaQueryWrapperX<DisputeMediateDO>()
+                .geIfPresent(DisputeMediateDO::getCreateTime, startTime)
+                .leIfPresent(DisputeMediateDO::getCreateTime, endTime));
         long pending = disputeMediateMapper.selectCount(new LambdaQueryWrapperX<DisputeMediateDO>()
-                .eq(DisputeMediateDO::getStatus, "待调解"));
+                .eq(DisputeMediateDO::getStatus, "待调解")
+                .geIfPresent(DisputeMediateDO::getCreateTime, startTime)
+                .leIfPresent(DisputeMediateDO::getCreateTime, endTime));
         long completed = disputeMediateMapper.selectCount(new LambdaQueryWrapperX<DisputeMediateDO>()
-                .eq(DisputeMediateDO::getStatus, "已完成"));
+                .eq(DisputeMediateDO::getStatus, "已完成")
+                .geIfPresent(DisputeMediateDO::getCreateTime, startTime)
+                .leIfPresent(DisputeMediateDO::getCreateTime, endTime));
         resp.setWaitMediateCount((int) pending);
         resp.setMediateFinishRate(toRate(completed, total));
         resp.setDisputeTrendList(toTrendList(reportStatMapper.disputeMediateDailyCount(
-                LocalDate.now().minusDays(TREND_DAYS).atStartOfDay())));
+                startTime != null ? startTime : LocalDate.now().minusDays(TREND_DAYS).atStartOfDay())));
         return resp;
     }
 
@@ -343,7 +416,7 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
 
     @Override
     @Cacheable(cacheNames = "carservice:report:chart-service-op-report#30s")
-    public ServiceOpReportChartRespVO chartServiceOpReport() {
+    public ServiceOpReportChartRespVO chartServiceOpReport(LocalDateTime startTime, LocalDateTime endTime) {
         ServiceOpReportChartRespVO resp = new ServiceOpReportChartRespVO();
         // 服务运营趋势(综合,这里以救援趋势为代表)
         resp.setOperateTrendList(toTrendList(reportStatMapper.rescueInfoDailyCount(
@@ -484,9 +557,13 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     }
 
     /** part/total → BigDecimal 百分比(保留 2 位) */
+    /**
+     * 算比率,返回 0~1 之间的小数(如 0.97),保留 2 位精度。
+     * 所有 chart 接口的 *Rate 字段按 05 文档统一格式。
+     */
     private BigDecimal toRate(long part, long total) {
         if (total <= 0) return BigDecimal.ZERO;
-        return new BigDecimal(part * 100.0 / total).setScale(2, RoundingMode.HALF_UP);
+        return new BigDecimal((double) part / total).setScale(2, RoundingMode.HALF_UP);
     }
 
     private long numLong(Map<String, Object> row, String key) {

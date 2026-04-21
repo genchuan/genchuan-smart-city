@@ -22,11 +22,19 @@ public class RescueInfoPageReqVO extends PageParam {
     @Schema(description = "救援状态，关联字典 rescue_info_status", example = "待派发")
     private String status;
 
-    @Schema(description = "救援位置（支持模糊查询）", example = "福建省泉州市")
-    private String location;
+    @Schema(description = "救援位置汉字地址（模糊查询）", example = "泉州")
+    private String locationName;
 
     @Schema(description = "创建时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
+
+    @Schema(description = "派发时间(折线图钻取专用,按派发日期筛选)")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime[] dispatchTime;
+
+    @Schema(description = "完成时间")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime[] finishTime;
 
 }

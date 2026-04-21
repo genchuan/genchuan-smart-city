@@ -20,8 +20,10 @@ public interface RescueInfoMapper extends BaseMapperX<RescueInfoDO> {
                 .eqIfPresent(RescueInfoDO::getUserId, reqVO.getUserId())
                 .eqIfPresent(RescueInfoDO::getRescueType, reqVO.getRescueType())
                 .eqIfPresent(RescueInfoDO::getStatus, reqVO.getStatus())
-                .likeIfPresent(RescueInfoDO::getLocation, reqVO.getLocation())
+                .likeIfPresent(RescueInfoDO::getLocationName, reqVO.getLocationName())
                 .betweenIfPresent(RescueInfoDO::getCreateTime, reqVO.getCreateTime())
+                .betweenIfPresent(RescueInfoDO::getDispatchTime, reqVO.getDispatchTime())
+                .betweenIfPresent(RescueInfoDO::getFinishTime, reqVO.getFinishTime())
                 .orderByDesc(RescueInfoDO::getId));
     }
 
