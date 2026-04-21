@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.vehiclepass.service.entermgmt.unplateenter;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.util.string.StrUtils;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterAuditReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterCreateReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterRespVO;
@@ -22,6 +23,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -121,6 +123,28 @@ public class UnplateEnterServiceImpl implements UnplateEnterService {
         // 设置登记时间为当前时间
         enter.setRegisterTime(java.time.LocalDateTime.now());
         enterMapper.insert(enter);
+    }
+
+    @Override
+    public void auditEnter(UnplateEnterAuditReqVO auditReqVO) {
+        // 校验记录存在
+        UnplateEnterDO enter = enterMapper.selectById(auditReqVO.getId());
+        if (enter == null) {
+            throw exception(ENTER_NOT_EXISTS);
+        }
+        // 校验状态只能是"待审核"才能审核
+        if (!"待审核".equals(enter.getStatus())) {
+            throw exception(ENTER_NOT_EXISTS); // TODO: 需要添加专门的错误码
+        }
+
+        // 更新审核信息
+        UnplateEnterDO updateObj = new UnplateEnterDO();
+        updateObj.setId(auditReqVO.getId());
+        updateObj.setStatus(auditReqVO.getAuditResult());
+        updateObj.setAuditComment(auditReqVO.getAuditComment());
+        updateObj.setAuditTime(java.time.LocalDateTime.now());
+        updateObj.setAuditUserId(SecurityFrameworkUtils.getLoginUserId());
+        enterMapper.updateById(updateObj);
     }
 
 }

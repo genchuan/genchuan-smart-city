@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.vehiclepass.service.entermgmt.unplateenter;
 
 import java.util.*;
 
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterAuditReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterCreateReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterRespVO;
@@ -77,4 +78,11 @@ public interface UnplateEnterService {
      * @param createReqVO 创建信息
      */
     void createEnterVehiclePass(UnplateEnterCreateReqVO createReqVO);
+
+    /**
+     * 审核无牌入场
+     *
+     * @param auditReqVO 审核信息
+     */
+    void auditEnter(UnplateEnterAuditReqVO auditReqVO);
 }

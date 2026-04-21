@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter;
 
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterAuditReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterCreateReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterRespVO;
@@ -104,6 +105,14 @@ public class UnplateEnterController {
     @PreAuthorize("@ss.hasPermission('vehiclepass:unplate-enter:query')")
     public CommonResult<PageResult<UnplateEnterRespVO>> getUnplateEnterPage(@Valid UnplateEnterPageReqVO reqVO) {
         return CommonResult.success(enterService.getUnplateEnterPage(reqVO));
+    }
+
+    @PutMapping("/vehiclepass-unplate-enter-audit")
+    @Operation(summary = "审核无牌入场")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:unplate-enter:audit')")
+    public CommonResult<Boolean> auditEnter(@Valid @RequestBody UnplateEnterAuditReqVO reqVO) {
+        enterService.auditEnter(reqVO);
+        return success(true);
     }
 
     @GetMapping("/export-excel")
