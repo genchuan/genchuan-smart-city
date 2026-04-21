@@ -16,22 +16,21 @@ Build:
     - echo "===== 创建产物目录 ====="
     - source ci-modules.conf
     - |
-      #!/bin/bash
       set +e
-      cat ci-modules.conf | while IFS='=' read moduleName jarPath; do
+      for module in "${!MODULE_JAR_MAP[@]}"; do
+        jarPath=${MODULE_JAR_MAP[$module]}
         echo "====================================="
-        echo "模块名：$moduleName"
-        echo "JAR路径：$jarPath"
-        echo "目标：${DEPLOY_DIR}/${moduleName}.jar"
+        echo "收集模块：$module"
+        echo "模块路径：$jarPath"
         echo "====================================="
+        ls $jarPath
+        # 直接复制到服务器目录，不上传产物
+        cp -vf ${jarPath}/target/*.jar ${DEPLOY_DIR}/${module}.jar 2>/dev/null
 
-        # 直接复制！不经过产物
-        cp -f ${jarPath}/target/*.jar ${DEPLOY_DIR}/${moduleName}.jar 2>/dev/null
-
-        if [ -f "${DEPLOY_DIR}/${moduleName}.jar" ]; then
-          echo "✅ 复制成功：$moduleName"
+        if [ $? -eq 0 ]; then
+          echo "✅ 复制成功：$module"
         else
-          echo "⚠️  无jar包，跳过：$moduleName"
+          echo "⚠️  未找到 jar，跳过：$module"
         fi
       done
       set -e
