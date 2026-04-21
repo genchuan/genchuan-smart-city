@@ -39,10 +39,9 @@ Build:
         echo "收集模块：$module"
         echo "模块路径：$jarPath"
         echo "====================================="
-        pwd
-        ls $jarPath/target
         cp -vf ${jarPath}/target/${module}.jar ${DEPLOY_DIR}/${module}.jar 2>/dev/null
-        sh ${DEPLOY_DIR}/start.sh ${module}
+        cd ${DEPLOY_DIR}
+        sh ./start.sh ${module}
       done
   retry:
     max: 2
