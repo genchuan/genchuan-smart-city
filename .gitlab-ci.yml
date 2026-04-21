@@ -1,51 +1,64 @@
 stages:
-  - BuildAndPush
+  - Build
+  - Deploy
 
 variables:
   POD_TAG: "$CI_COMMIT_BRANCH"
-  IMAGE_NAMESPACE: "genchuan"
+  DEPLOY_DIR: "/data/java/service"
 
 Build:
-  stage: BuildAndPush
+  stage: Build
   tags:
-    - genchuan-cloud-runner  # 必须和截图里的标签完全一致
+    - genchuan-cloud-runner
   script:
     - echo "===== 开始Maven打包 ====="
     - mvn clean package -Dmaven.test.skip=true
+
+    - echo "===== 创建产物目录 ====="
+    - mkdir -p jars/
+    - source ci-modules.conf
+    # 循环打包：输出 服务名.jar
     - |
-      if [ "$CI_COMMIT_BRANCH" = "genchuan-mysql-master" ]; then
-        echo "===== 当前是 master 分支，开始构建镜像 ====="
-        declare -A MODULE_JAR_MAP=(
-          ["yudao-gateway"]="yudao-gateway"
-          ["yudao-module-system-server"]="yudao-module-system/yudao-module-system-server"
-          ["yudao-module-infra-server"]="yudao-module-infra/yudao-module-infra-server"
-          ["yudao-module-member-server"]="yudao-module-member/yudao-module-member-server"
-          ["yudao-module-product-server"]="yudao-module-mall/yudao-module-product-server"
-          ["genchuan-module-envirhealth-server"]="genchuan-module-urban/genchuan-module-envirhealth/genchuan-module-envirhealth-server"
-          ["genchuan-module-facility-server"]="genchuan-module-urban/genchuan-module-facility/genchuan-module-facility-server"
-          ["genchuan-module-data-server"]="genchuan-module-datahub/genchuan-module-data/genchuan-module-data-server"
-          ["genchuan-module-evaluate-server"]="genchuan-module-datahub/genchuan-module-evaluate/genchuan-module-evaluate-server"
-          ["genchuan-module-park-server"]="genchuan-module-park/genchuan-module-park-server"
-          ["genchuan-module-kitchen-server"]="genchuan-module-marketsupervision/genchuan-module-kitchen/genchuan-module-kitchen-server"
-          ["genchuan-module-vehiclecharging-server"]="genchuan-module-energycharge/genchuan-module-vehiclecharging/genchuan-module-vehiclecharging-server"
-          ["genchuan-module-marketop-server"]="genchuan-module-chargepark/genchuan-module-marketop/genchuan-module-marketop-server"
-          ["genchuan-module-appearance-server"]="genchuan-module-urban/genchuan-module-appearance/genchuan-module-appearance-server"
-          ["genchuan-module-smartcity-server"]="genchuan-module-urban/genchuan-module-smartcity/genchuan-module-smartcity-server"
-          ["genchuan-module-waterdetection-server"]="genchuan-module-wateraffairs/genchuan-module-waterdetection/genchuan-module-waterdetection-server"
-          ["genchuan-module-inspectop-server"]="genchuan-module-chargepark/genchuan-module-inspectop/genchuan-module-inspectop-server"
-          ["genchuan-module-stationresource-server"]="genchuan-module-chargepark/genchuan-module-stationresource/genchuan-module-stationresource-server"
-          ["genchuan-module-usermerchant-server"]="genchuan-module-chargepark/genchuan-module-usermerchant/genchuan-module-usermerchant-server"
-        )
-        for module in "${!MODULE_JAR_MAP[@]}"; do
-          jarPath=${MODULE_JAR_MAP[$module]}
-          imageFullName="${DOCKER_REGISTRY}/${IMAGE_NAMESPACE}/${module}:${POD_TAG}"
-          docker build --build-arg MODULE_NAME="$module" --build-arg JAR_PATH="$jarPath" -t "${imageFullName}" .
-          docker push "${imageFullName}"
-        done
-        echo "===== master 分支：所有镜像推送完成 ====="
-      else
-        echo "===== 非 master 分支：跳过构建镜像 ====="
-      fi
+      for module in "${!MODULE_JAR_MAP[@]}"; do
+        jarPath=${MODULE_JAR_MAP[$module]}
+        echo "收集模块：$jarPath"
+        cp -f ${jarPath}/target/*.jar jars/${module}.jar 2>/dev/null || echo "⚠️  $module 无jar包，跳过"
+      done
+
+  artifacts:
+    name: "jars-${CI_COMMIT_BRANCH}"
+    paths:
+      - jars/
+    expire_in: 1 day
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+      - unknown_failure
+
+# 部署：只在 master 执行
+Deploy:
+  stage: Deploy
+  tags:
+    - genchuan-cloud-runner
+  only:
+    - master
+  script:
+    - echo "===== 开始部署 ====="
+    - cp -rf jars/* ${DEPLOY_DIR}/
+    - cd ${DEPLOY_DIR}
+    # 加载服务列表
+    - source ci-modules.conf
+    # ✅ 服务启动
+    - |
+      for module in "${!MODULE_JAR_MAP[@]}"; do
+        echo -e "\n====================================="
+        echo " 部署服务：$module"
+        echo "====================================="
+        ./start.sh ${module}
+      done
+    - echo -e "\n✅ 所有服务部署完成！"
   retry:
     max: 2
     when:
