@@ -41,7 +41,6 @@ Build:
         echo "====================================="
         pwd
         ls $jarPath/target
-        # 直接复制到服务器目录，不上传产物
         cp -vf ${jarPath}/target/${module}.jar ${DEPLOY_DIR}/${module}.jar 2>/dev/null
         sh ${DEPLOY_DIR}/start.sh ${module}
       done
