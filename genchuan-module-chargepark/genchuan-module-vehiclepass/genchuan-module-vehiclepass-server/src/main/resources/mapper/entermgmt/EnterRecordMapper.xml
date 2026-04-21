@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.vehiclepass.dal.mysql.entermgmt.enterrecord.EnterRecordMapper">
+
+    <select id="selectEnterRecordPage" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.enterrecord.vo.MyEnterRecordRespVO">
+        SELECT
+        e.id,
+        e.plate_no AS plateNo,
+        e.plate_color AS plateColor,
+        e.space_no AS spaceNo,
+        e.enter_time AS enterTime,
+        e.record_type AS recordType,
+        e.status AS status,
+        s.name AS stationName,
+        e.remark,
+        e.proof_image AS proofImage,
+        e.is_corrected AS isCorrected,
+        e.reserve1,
+        e.reserve2,
+        e.creator,
+        e.updater,
+        e.create_time AS createTime,
+        e.update_time AS updateTime
+        FROM enter_record e  <!-- 关键：加别名 e -->
+        LEFT JOIN station_info s ON e.station_id = s.id  <!-- 别名 s -->
+        WHERE e.deleted = 0  <!-- 全部用别名 -->
+
+        <if test="query.plateNo != null and query.plateNo != ''">
+            AND e.plate_no LIKE CONCAT('%', #{query.plateNo}, '%')
+        </if>
+        <if test="query.plateColor != null">
+            AND e.plate_color = #{query.plateColor}
+        </if>
+        <if test="query.spaceNo != null and query.spaceNo != ''">
+            AND e.space_no LIKE CONCAT('%', #{query.spaceNo}, '%')
+        </if>
+        <if test="query.enterTime != null and query.enterTime.length == 2">
+            AND e.enter_time BETWEEN #{query.enterTime[0]} AND #{query.enterTime[1]}
+        </if>
+        <if test="query.recordType != null">
+            AND e.record_type = #{query.recordType}
+        </if>
+        <if test="query.status != null">
+            AND e.status = #{query.status}
+        </if>
+        <if test="query.stationId != null">
+            AND e.station_id = #{query.stationId}
+        </if>
+        <if test="query.remark != null and query.remark != ''">
+            AND e.remark LIKE CONCAT('%', #{query.remark}, '%')
+        </if>
+        <if test="query.isCorrected != null">
+            AND e.is_corrected = #{query.isCorrected}
+        </if>
+
+        ORDER BY e.id DESC
+    </select>
+
+
+    <select id="selectEnterCountTrend"
+            resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.enterrecord.vo.EnterRecordChartRespVO$EnterCountTrend">
+        SELECT DATE(t1.enter_time) AS date, COUNT(*) AS count
+        FROM enter_record t1
+        WHERE t1.deleted = 0
+        AND t1.enter_time BETWEEN #{start} AND #{end}
+        <if test="stationId != null">
+            AND t1.station_id = #{stationId}
+        </if>
+        GROUP BY DATE(t1.enter_time)
+        ORDER BY DATE(t1.enter_time)
+    </select>
+
+    <select id="selectHourEnterCount"
+            resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.enterrecord.vo.EnterRecordChartRespVO$HourEnterCount">
+        SELECT DATE_FORMAT(t1.enter_time, '%H:00') AS hour, COUNT(*) AS count
+        FROM enter_record t1
+        WHERE t1.deleted = 0
+        AND t1.enter_time BETWEEN #{start} AND #{end}
+        <if test="stationId != null">
+            AND t1.station_id = #{stationId}
+        </if>
+        GROUP BY DATE_FORMAT(t1.enter_time, '%H:00')
+        ORDER BY hour
+    </select>
+
+    <select id="selectTodayEnterCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM enter_record t1
+        WHERE t1.deleted = 0
+        AND t1.enter_time BETWEEN #{start} AND #{end}
+        <if test="stationId != null">
+            AND t1.station_id = #{stationId}
+        </if>
+    </select>
+</mapper>
