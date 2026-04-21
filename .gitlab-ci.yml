@@ -35,15 +35,29 @@ Build:
           ["genchuan-module-marketop-server"]="genchuan-module-chargepark/genchuan-module-marketop/genchuan-module-marketop-server"
           ["genchuan-module-carservice-server"]="genchuan-module-chargepark/genchuan-module-carservice/genchuan-module-carservice-server"
       )
-      for module in "${!MODULE_JAR_MAP[@]}"; do
-        jarPath=${MODULE_JAR_MAP[$module]}
-        echo "====================================="
-        echo "收集模块：$module"
-        echo "模块路径：$jarPath"
-        echo "====================================="
-        cp -vf ${jarPath}/target/${module}.jar ${DEPLOY_DIR}/${module}.jar 2>/dev/null
-        sh /data/java/service/start.sh ${DEPLOY_DIR} ${module}
-      done
+
+      # ===================== 核心优化逻辑 =====================
+      if [ "$CI_COMMIT_BRANCH" = "master" ]; then
+        echo "===== 当前为master分支，全量构建所有服务 ====="
+        for module in "${!MODULE_JAR_MAP[@]}"; do
+          jarPath=${MODULE_JAR_MAP[$module]}
+          echo -e "\n===== 构建服务：$module ====="
+          cp -vf ${jarPath}/target/${module}.jar ${DEPLOY_DIR}/ 2>/dev/null
+          sh /data/java/service/start.sh ${DEPLOY_DIR} ${module}
+        done
+      else
+        echo "===== 当前为服务分支：$CI_COMMIT_BRANCH，仅构建当前服务 ====="
+        module=$CI_COMMIT_BRANCH
+        if [ -n "${MODULE_JAR_MAP[$module]-}" ]; then
+          jarPath=${MODULE_JAR_MAP[$module]}
+          echo -e "\n===== 构建服务：$module ====="
+          cp -vf ${jarPath}/target/${module}.jar ${DEPLOY_DIR}/ 2>/dev/null
+          sh /data/java/service/start.sh ${DEPLOY_DIR} ${module}
+        else
+          echo "错误：分支名 $module 未匹配到任何服务，请检查分支名！"
+          exit 1
+        fi
+      fi
   retry:
     max: 2
     when:
