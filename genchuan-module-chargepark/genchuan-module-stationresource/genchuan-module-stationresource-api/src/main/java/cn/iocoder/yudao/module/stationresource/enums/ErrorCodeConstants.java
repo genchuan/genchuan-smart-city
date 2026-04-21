@@ -22,4 +22,15 @@ public interface ErrorCodeConstants {
     // ========== 时段权限==========
     ErrorCode TIME_PERMISSION_NOT_EXISTS = new ErrorCode(500, "时段权限不存在");
 
+    // ========== 黑白名单==========
+    ErrorCode BLACK_WHITE_LIST_NOT_EXISTS = new ErrorCode(500, "黑白名单不存在");
+    // ========== 充停联动==========
+    ErrorCode CHARGE_PARK_LINK_NOT_EXISTS = new ErrorCode(500, "充停联动不存在");
+    // ========== 押金方案==========
+    ErrorCode DEPOSIT_PLAN_NOT_EXISTS = new ErrorCode(500, "押金方案不存在");
+    // ========== 收费规则==========
+    ErrorCode FEE_RULE_NOT_EXISTS = new ErrorCode(500, "收费规则不存在");
+    // ========== 错时规则==========
+    ErrorCode OFFTIME_RULE_NOT_EXISTS = new ErrorCode(500, "错时规则不存在");
+
 }

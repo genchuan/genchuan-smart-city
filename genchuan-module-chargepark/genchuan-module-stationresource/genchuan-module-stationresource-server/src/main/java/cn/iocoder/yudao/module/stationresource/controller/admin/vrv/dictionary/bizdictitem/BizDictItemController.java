@@ -38,6 +38,13 @@ public class BizDictItemController {
     @Resource
     private BizDictItemService bizDictItemService;
 
+
+    @GetMapping("/list-by-type-fuzzy")
+    @Operation(summary = "AAA-字典项-严格模糊搜索（按类型校验）")
+    public CommonResult<List<ListByTypeResp>> listByTypeFuzzy(@Valid ListByTypeFuzzyReq reqVO) {
+        List<ListByTypeResp> result = bizDictItemService.listByTypeFuzzy(reqVO);
+        return success(result);
+    }
     @PostMapping("/batch-add")
     @Operation(summary = "批量新增业务字典项")
     public CommonResult<BatchResult> batchAddBizDictItem(@RequestBody List<AddReq> addReqList) {

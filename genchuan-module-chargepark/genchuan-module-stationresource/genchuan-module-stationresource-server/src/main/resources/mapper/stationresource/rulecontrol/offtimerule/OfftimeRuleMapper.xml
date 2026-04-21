@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.rulecontrol.offtimerule.OfftimeRuleMapper">
+
+    <!-- 查询卡片统计：生效规则数、总订单量 -->
+    <select id="selectCardData" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.offtimerule.vo.ops.OfftimeRuleChartRespVO$CardDataVO">
+        SELECT
+            COUNT(CASE WHEN status = '已生效' THEN 1 END) AS enableRuleCount,
+            IFNULL(SUM(off_order_count), 0) AS totalOffOrderCount
+        FROM offtime_rule
+        WHERE deleted = 0
+    </select>
+
+    <!-- 查询订单趋势：按月份统计订单量 -->
+    <select id="selectOrderLineList" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.offtimerule.vo.ops.OfftimeRuleChartRespVO$OrderLineVO">
+        SELECT
+            DATE_FORMAT(create_time, '%Y-%m') AS date,
+            IFNULL(SUM(off_order_count), 0) AS orderCount
+        FROM offtime_rule
+        WHERE deleted = 0
+        GROUP BY DATE_FORMAT(create_time, '%Y-%m')
+        ORDER BY date ASC
+    </select>
+
+</mapper>
