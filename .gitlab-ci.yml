@@ -17,7 +17,7 @@ Build:
           ["yudao-gateway"]="yudao-gateway"
           ["yudao-module-system-server"]="yudao-module-system/yudao-module-system-server"
           ["yudao-module-infra-server"]="yudao-module-infra/yudao-module-infra-server"
-          ["genchuan-module-studentmgmt-server"]="genchuan-module-education-teaching/genchuan-module-studentmgmt-server"
+          ["genchuan-module-studentmgmt-server"]="genchuan-module-education-teaching/genchuan-module-studentmgmt/genchuan-module-studentmgmt-server"
       )
       for module in "${!MODULE_JAR_MAP[@]}"; do
         jarPath=${MODULE_JAR_MAP[$module]}
