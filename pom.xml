@@ -27,11 +27,11 @@
         <!-- <module>yudao-module-ai</module> -->
         <!-- <module>yudao-module-iot</module> -->
         <!--  genchuan 新服务 -->
-        <!-- <module>genchuan-module-urban</module> -->
-        <!-- <module>genchuan-module-marketsupervision</module> -->
-        <!-- <module>genchuan-module-datahub</module> -->
-        <!-- <module>genchuan-module-park</module> -->
-        <!-- <module>genchuan-module-wateraffairs</module>  -->
+        <module>genchuan-module-urban</module>
+        <module>genchuan-module-marketsupervision</module>
+        <module>genchuan-module-datahub</module>
+        <module>genchuan-module-park</module>
+        <module>genchuan-module-wateraffairs</module>
         <module>genchuan-module-energycharge</module>
         <module>genchuan-module-education-teaching</module>
         <module>genchuan-module-chargepark</module>
