@@ -6,6 +6,10 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.usermgmt.userinfo.UserInfoDO;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.vo.*;
+import org.apache.ibatis.annotations.Param;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 用户信息 Mapper
@@ -14,6 +18,21 @@ import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.v
  */
 @Mapper
 public interface UserInfoMapper extends BaseMapperX<UserInfoDO> {
+
+    List<UserInfoChartRespVO.UserGrowthTrendVO> selectUserGrowthTrend(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
+            @Param("granularity") String granularity
+    );
+
+    List<UserInfoChartRespVO.UserTypeDistributionVO> selectUserTypeDistribution(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
+    Long selectTotalUserCount(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    Long selectNewUserCount(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     default PageResult<UserInfoDO> selectPage(UserInfoPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<UserInfoDO>()
@@ -28,5 +47,7 @@ public interface UserInfoMapper extends BaseMapperX<UserInfoDO> {
                 .eqIfPresent(UserInfoDO::getRemark, reqVO.getRemark())
                 .orderByDesc(UserInfoDO::getId));
     }
+
+    Long getIdByNickname(String nickname);
 
 }

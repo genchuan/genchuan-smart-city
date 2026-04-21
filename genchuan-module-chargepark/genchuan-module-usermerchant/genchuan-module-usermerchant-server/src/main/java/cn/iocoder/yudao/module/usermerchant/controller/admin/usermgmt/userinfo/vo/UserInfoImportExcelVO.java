@@ -1,10 +1,8 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.vo;
 
 import cn.idev.excel.annotation.ExcelProperty;
-import cn.iocoder.yudao.framework.excel.core.annotations.DictFormat;
-import cn.iocoder.yudao.framework.excel.core.convert.DictConvert;
-import cn.iocoder.yudao.module.system.enums.DictTypeConstants;
-import io.swagger.v3.oas.annotations.media.Schema;
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.FlexibleTimestampDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -34,9 +32,11 @@ public class UserInfoImportExcelVO {
     private String status;
 
     @ExcelProperty("注册时间")
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
     private LocalDateTime registerTime;
 
     @ExcelProperty("最后登录时间")
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
     private LocalDateTime loginTime;
 
     @ExcelProperty("钱包余额")
@@ -58,9 +58,11 @@ public class UserInfoImportExcelVO {
     private String creator;
 
     @ExcelProperty("创建时间")
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
     private LocalDateTime createTime;
 
     @ExcelProperty("更新时间")
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
     private LocalDateTime updateTime;
 
 }

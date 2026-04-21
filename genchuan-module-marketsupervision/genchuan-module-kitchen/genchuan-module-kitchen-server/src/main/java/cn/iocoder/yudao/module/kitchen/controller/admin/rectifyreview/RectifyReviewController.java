@@ -77,7 +77,7 @@ public class RectifyReviewController {
     //新增.即预警页面的“生成复审台账”
     @PostMapping("/review-add")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-add')")
-    @Operation(summary = "（勿用）新增-整改通知复审记录操作")
+    @Operation(summary = "（勿用）新增-整改通知复审记录操作",hidden = true)
     @SysOpeLog(operObject = "整改复审台账",operType = "新增")
     public CommonResult<Long> reviewAdd(@Valid @RequestBody AddRectifyReviewReqVO reqVO) {
         Long id = rectifyReviewService.reviewAdd(reqVO);
@@ -106,7 +106,7 @@ public class RectifyReviewController {
     //下发整改通知书，返回增改通知书表的记录
     @PostMapping("/review-issue")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-issue')")
-    @Operation(summary = "（勿用）下发整改通知书操作")
+    @Operation(summary = "（勿用）下发整改通知书操作",hidden = true)
     @SysOpeLog(operObject = "整改复审台账",operType = "下发")
     public CommonResult<Long> reviewIssue(@Valid @RequestBody IssueReqVO reqVO) {
         Long rectifyNoticeId = rectifyReviewService.reviewIssue(reqVO);

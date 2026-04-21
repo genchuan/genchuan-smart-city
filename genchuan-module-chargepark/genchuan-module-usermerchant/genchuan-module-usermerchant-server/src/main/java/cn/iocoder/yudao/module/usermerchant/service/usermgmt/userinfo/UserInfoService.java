@@ -29,20 +29,6 @@ public interface UserInfoService {
     void updateUserInfo(@Valid UserInfoUpdateReqVO updateReqVO);
 
     /**
-     * 删除用户信息
-     *
-     * @param id 编号
-     */
-    void deleteUserInfo(Long id);
-
-    /**
-    * 批量删除用户信息
-    *
-    * @param ids 编号
-    */
-    void deleteUserInfoListByIds(List<Long> ids);
-
-    /**
      * 获得用户信息
      *
      * @param id 编号
@@ -62,7 +48,6 @@ public interface UserInfoService {
      * 导入用户信息
      *
      * @param list 用户信息
-     * @return 我也不知道
      */
     Boolean importUsers(List<UserInfoImportExcelVO> list, Boolean updateSupport);
 
@@ -72,4 +57,12 @@ public interface UserInfoService {
      * @param ids 编号
      */
     void updateUserStatus(List<Long> ids, String status);
+
+    /**
+     * 用户信息统计可视化
+     *
+     * @param chartReqVO 时间范围
+     * @return 统计信息
+     */
+    UserInfoChartRespVO getUserInfoChart(@Valid UserInfoChartReqVO chartReqVO);
 }

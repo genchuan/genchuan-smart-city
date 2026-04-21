@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.usermerchant.service.usermgmt.userinfo;
 
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
@@ -8,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.usermgmt.userinfo.UserInfoDO;
@@ -17,7 +21,6 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.usermgmt.userinfo.UserInfoMapper;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
 
 /**
@@ -36,6 +39,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     public Boolean createUserInfo(@Valid UserInfoCreateReqVO createReqVO) {
         // 插入
         UserInfoDO userInfo = BeanUtils.toBean(createReqVO, UserInfoDO.class);
+        userInfo.setUserNo(generateUserNo());
         int rows = userInfoMapper.insert(userInfo);
         // 返回是否插入成功
         return rows > 0;
@@ -49,21 +53,6 @@ public class UserInfoServiceImpl implements UserInfoService {
         UserInfoDO updateObj = BeanUtils.toBean(updateReqVO, UserInfoDO.class);
         userInfoMapper.updateById(updateObj);
     }
-
-    @Override
-    public void deleteUserInfo(Long id) {
-        // 校验存在
-        validateUserInfoExists(id);
-        // 删除
-        userInfoMapper.deleteById(id);
-    }
-
-    @Override
-        public void deleteUserInfoListByIds(List<Long> ids) {
-        // 删除
-        userInfoMapper.deleteByIds(ids);
-        }
-
 
     private void validateUserInfoExists(Long id) {
         if (userInfoMapper.selectById(id) == null) {
@@ -127,6 +116,65 @@ public class UserInfoServiceImpl implements UserInfoService {
         updateWrapper.in("id", ids)
                 .set("status", status);
         userInfoMapper.update(null, updateWrapper);
+    }
+
+    @Override
+    public UserInfoChartRespVO getUserInfoChart(UserInfoChartReqVO chartReqVO) {
+        UserInfoChartRespVO chartRespVO = new UserInfoChartRespVO();
+        //拆分时间范围
+        String timeRange = chartReqVO.getTimeRange();
+
+        // 解析时间范围，获取开始时间、结束时间以及分组类型（日/月/年）
+        TimeRangeParser.TimeRangeParsed parsed = TimeRangeParser.parse(timeRange);
+        if (parsed == null) {
+            // 若解析失败，可返回空数据或抛异常
+            return chartRespVO;
+        }
+        //折线图渲染
+        // 折线图数据
+        List<UserInfoChartRespVO.UserGrowthTrendVO> growthTrend = userInfoMapper.selectUserGrowthTrend(
+                parsed.getStart(), parsed.getEnd(), parsed.getGranularity());
+        chartRespVO.setUserGrowthTrend(growthTrend);
+        //柱状图渲染
+        List<UserInfoChartRespVO.UserTypeDistributionVO> typeDistribution = userInfoMapper.selectUserTypeDistribution(
+                parsed.getStart(), parsed.getEnd());
+        chartRespVO.setUserTypeDistribution(typeDistribution);
+        //总数统计
+        chartRespVO.setTotalUserCount(userInfoMapper.selectTotalUserCount(parsed.getStart(), parsed.getEnd()));
+        chartRespVO.setNewUserCount(userInfoMapper.selectNewUserCount(parsed.getStart(), parsed.getEnd()));
+
+        return chartRespVO;
+    }
+
+    private String generateUserNo() {
+        // 当前日期格式：yyyyMMdd
+        String datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String prefix = "U-" + datePart;
+
+        // 查询当天已生成的最大序号
+        LambdaQueryWrapper<UserInfoDO> wrapper = new LambdaQueryWrapper<>();
+        wrapper.select(UserInfoDO::getUserNo)
+                .likeRight(UserInfoDO::getUserNo, prefix)   // 匹配前缀，如 "U-20250415-"
+                .orderByDesc(UserInfoDO::getUserNo)
+                .last("LIMIT 1");
+        UserInfoDO last = userInfoMapper.selectOne(wrapper);
+
+        int seq = 1;
+        if (last != null && last.getUserNo() != null) {
+            String lastNo = last.getUserNo();
+            // 提取后面的数字部分
+            String seqStr = lastNo.substring(prefix.length());
+            try {
+                seq = Integer.parseInt(seqStr) + 1;
+            } catch (NumberFormatException e) {
+                seq = 1;
+            }
+        }
+        // 超过 999 可以重置或抛出异常，根据业务决定
+        if (seq > 999) {
+            throw exception(USER_INFO_NO_REACHED_LIMIT);
+        }
+        return prefix + String.format("%03d", seq);
     }
 
 }

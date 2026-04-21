@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.usermerchant.dal.mysql.usermgmt.usercar.UserCarMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+    <!-- 用户类型分布（柱状图） -->
+    <select id="selectCarTypeDistribution" resultType="cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.usercar.vo.UserCarChartRespVO$CarTypeDistributionVO">
+        SELECT car_type as type, COUNT(*) as count
+        FROM user_car
+        WHERE deleted = 0
+        <if test="start != null">
+            AND create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt;= #{end}
+        </if>
+        GROUP BY car_type
+    </select>
+
+    <!-- 总数统计 -->
+    <select id="selectBindCarCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM user_car
+        WHERE deleted = 0
+        <if test="start != null">
+            AND create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt;= #{end}
+        </if>
+    </select>
+
+    <select id="selectAuditPassRate" resultType="java.math.BigDecimal">
+        SELECT
+        ROUND(
+        IFNULL(
+        SUM(CASE WHEN status = '已绑定' THEN 1 ELSE 0 END) /
+        NULLIF(SUM(CASE WHEN status IN ('已绑定', '已驳回') THEN 1 ELSE 0 END), 0)
+        , 0), 2
+        ) AS passRate
+        FROM user_car
+        WHERE deleted = 0
+        <if test="start != null">
+            AND audit_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND audit_time &lt;= #{end}
+        </if>
+    </select>
+
+</mapper>

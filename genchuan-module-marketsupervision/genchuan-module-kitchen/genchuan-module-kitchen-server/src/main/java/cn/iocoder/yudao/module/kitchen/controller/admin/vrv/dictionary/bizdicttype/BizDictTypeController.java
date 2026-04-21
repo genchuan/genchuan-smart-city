@@ -4,6 +4,7 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdictty
 import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdicttype.vo.BizDictTypeRespVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdicttype.vo.BizDictTypeSaveReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdicttype.vo.ops.AddReq;
+import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdicttype.vo.ops.BatchResult;
 import cn.iocoder.yudao.module.kitchen.controller.admin.vrv.dictionary.bizdicttype.vo.ops.UpdateReq;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.vrv.dictionary.bizdicttype.BizDictTypeDO;
 import cn.iocoder.yudao.module.kitchen.service.vrv.dictionary.bizdicttype.BizDictTypeService;
@@ -41,6 +42,18 @@ public class BizDictTypeController {
 
     @Resource
     private BizDictTypeService bizDictTypeService;
+
+    /**
+     * 批量新增业务字典分类
+     * 自动生成排序号，默认启用，校验编码和名称唯一
+     */
+    @PostMapping("/batch-add")
+    @Operation(summary = "批量创建业务字典分类")
+//    @PreAuthorize("@ss.hasPermission('kitchen:biz-dict-type:create')")
+    public CommonResult<BatchResult> batchAddBizDictType(@RequestBody List<AddReq> addReqList) {
+        BatchResult result = bizDictTypeService.batchAddBizDictType(addReqList);
+        return success(result);
+    }
 
     /**
      * 批量删除业务字典分类

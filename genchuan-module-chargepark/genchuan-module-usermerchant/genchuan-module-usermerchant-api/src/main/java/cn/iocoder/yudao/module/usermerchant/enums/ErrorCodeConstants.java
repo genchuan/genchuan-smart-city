@@ -8,7 +8,13 @@ import cn.iocoder.yudao.framework.common.exception.ErrorCode;
  */
 public interface ErrorCodeConstants {
 
-    // ========== 片区信息==========
+    // ========== 用户信息==========
     ErrorCode USER_INFO_NOT_EXISTS = new ErrorCode(500, "用户信息不存在");
+    ErrorCode USER_INFO_NO_REACHED_LIMIT = new ErrorCode(500, "用户信息编号达到极限");
+    ErrorCode ILLEGAL_STATUS = new ErrorCode(500, "不合法的状态");
+    // ========== 用户车辆==========
+    ErrorCode USER_CAR_NOT_EXISTS = new ErrorCode(500, "用户车辆不存在");
+    // ========== 车牌认证==========
+    ErrorCode PLATE_AUTH_NOT_EXISTS = new ErrorCode(500, "车牌认证不存在");
 
 }
