@@ -23,4 +23,31 @@ public interface ErrorCodeConstants {
 
     // ========== 共享充电监测 ==========
     ErrorCode SHARE_CHARGE_MONITOR_NOT_EXISTS = new ErrorCode(500, "共享充电监测不存在");
+
+    // ========== 巡检人员 ==========
+    ErrorCode INSPECT_USER_NOT_EXISTS = new ErrorCode(500, "巡检人员不存在");
+
+    // ========== 巡检计划 ==========
+    ErrorCode INSPECT_PLAN_NOT_EXISTS = new ErrorCode(500, "巡检计划不存在");
+
+    // ========== 巡检任务 ==========
+    ErrorCode INSPECT_TASK_NOT_EXISTS = new ErrorCode(500, "巡检任务不存在");
+
+    // ========== 巡检上报 ==========
+    ErrorCode INSPECT_REPORT_NOT_EXISTS = new ErrorCode(500, "巡检上报不存在");
+
+    ErrorCode INSPECT_TRACK_NOT_EXISTS= new ErrorCode(500, "巡检轨迹不存在");
+
+    // ========== 电子围栏 ==========
+    ErrorCode FENCE_MGMT_NOT_EXISTS = new ErrorCode(500, "电子围栏不存在");
+
+    // 巡检计划错误码
+    // 错误码区间 [100300000, 100309999]
+    ErrorCode INSPECT_PLAN_IMPORT_DATA_EMPTY = new ErrorCode(500, "导入数据不能为空");
+    ErrorCode INSPECT_PLAN_NAME_NOT_NULL = new ErrorCode(500, "计划名称不能为空");
+    ErrorCode INSPECT_PLAN_TYPE_NOT_NULL = new ErrorCode(500, "巡检类型不能为空");
+    ErrorCode INSPECT_PLAN_SCOPE_NOT_NULL = new ErrorCode(500, "巡检范围不能为空");
+    ErrorCode INSPECT_PLAN_STATUS_NOT_NULL = new ErrorCode(500, "计划状态不能为空");
+    ErrorCode INSPECT_PLAN_EXISTS = new ErrorCode(500, "巡检计划【{}】已存在");
+
 }
