@@ -120,8 +120,8 @@ public class BehaviorMgmtController {
 
     @GetMapping("/chart")
     @Operation(summary = "学生行为看板")
-    @PreAuthorize("@ss.hasPermission('studentmgmt:behavior-mgmt:update')")
-    public CommonResult<BehaviorMgmtChartRespVO> chart(@Valid @RequestBody BehaviorMgmtChartReqVO reqVO) {
+    @PreAuthorize("@ss.hasPermission('studentmgmt:behavior-mgmt:query')")
+    public CommonResult<BehaviorMgmtChartRespVO> chart(@Valid BehaviorMgmtChartReqVO reqVO) {
         BehaviorMgmtChartRespVO dashboardVO = behaviorMgmtService.chart(reqVO);
         return success(dashboardVO);
     }

@@ -59,4 +59,11 @@ public interface MoralResourceService {
      */
     PageResult<MoralResourceDO> getMoralResourcePage(MoralResourcePageReqVO pageReqVO);
 
+    boolean online(@Valid MoralResourceOnlineReqVO reqVO);
+
+    boolean offline(@Valid MoralResourceOnlineReqVO reqVO);
+
+    MoralResourceChartRespVO chart(@Valid MoralResourceChartReqVO reqVO);
+
+    ChartResourceCountRespVO resourceCount(@Valid MoralResourceChartReqVO reqVO);
 }

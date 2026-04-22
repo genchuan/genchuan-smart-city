@@ -101,4 +101,37 @@ public class MoralResourceController {
                         BeanUtils.toBean(list, MoralResourceRespVO.class));
     }
 
+    @PutMapping("/online")
+    @Operation(summary = "上架")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:moral-resource:online')")
+    public CommonResult<Boolean> online(@Valid @RequestBody MoralResourceOnlineReqVO reqVO) {
+        boolean isSuccess = moralResourceService.online(reqVO);
+        return success(isSuccess);
+    }
+
+    @PutMapping("/offline")
+    @Operation(summary = "下架")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:moral-resource:offline')")
+    public CommonResult<Boolean> offline(@Valid @RequestBody MoralResourceOnlineReqVO reqVO) {
+        boolean isSuccess = moralResourceService.offline(reqVO);
+        return success(isSuccess);
+    }
+
+    @PutMapping("/chart")
+    @Operation(summary = "德育资源学习看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:moral-resource:query')")
+    public CommonResult<MoralResourceChartRespVO> chart(@Valid MoralResourceChartReqVO reqVO) {
+        MoralResourceChartRespVO vo = moralResourceService.chart(reqVO);
+        return success(vo);
+    }
+
+    @PutMapping("/chart/resourceCount")
+    @Operation(summary = "资源类型 / 学习完成率统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:moral-resource:query')")
+    public CommonResult<ChartResourceCountRespVO> resourceCount(@Valid MoralResourceChartReqVO reqVO) {
+        ChartResourceCountRespVO vo = moralResourceService.resourceCount(reqVO);
+        return success(vo);
+    }
+
+
 }

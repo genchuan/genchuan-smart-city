@@ -114,7 +114,7 @@ public class FundSystemController {
     @PutMapping("/chart")
     @Operation(summary = "资助信息统计看板")
     @PreAuthorize("@ss.hasPermission('studentmgmt:fund-system:query')")
-    public CommonResult<FundSystemChartRespVO> chart(@Valid @RequestBody FundSystemChartReqVO reqVO) {
+    public CommonResult<FundSystemChartRespVO> chart(@Valid FundSystemChartReqVO reqVO) {
         FundSystemChartRespVO dashboardVO = fundSystemService.chart(reqVO);
         return success(dashboardVO);
     }

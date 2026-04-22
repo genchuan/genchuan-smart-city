@@ -120,14 +120,14 @@ public class MoralActivityController {
     @GetMapping("/chart")
     @Operation(summary = "德育活动态势看板")
     @PreAuthorize("@ss.hasPermission('studentmgmt:moral-activity:chart')")
-    public CommonResult<MoralActivityChartRespVO> chart(@Valid @RequestBody MoralActivityChartReqVO reqVO) {
+    public CommonResult<MoralActivityChartRespVO> chart(@Valid MoralActivityChartReqVO reqVO) {
         MoralActivityChartRespVO vo = moralActivityService.chart(reqVO);
         return success(vo);
     }
     @GetMapping("/chart/activityCount")
     @Operation(summary = "活动参与 / 类型数量统计")
     @PreAuthorize("@ss.hasPermission('studentmgmt:moral-activity:query')")
-    public CommonResult<ChartActivityCountRespVO> activityCount(@Valid @RequestBody MoralActivityChartReqVO reqVO) {
+    public CommonResult<ChartActivityCountRespVO> activityCount(@Valid MoralActivityChartReqVO reqVO) {
         ChartActivityCountRespVO vo = moralActivityService.activityCount(reqVO);
         return success(vo);
     }

@@ -204,4 +204,16 @@ public interface LogRecordConstants {
 
     String MORAL_ACTIVITY_UPDATE_SUB_TYPE = "更新德育活动";
     String MORAL_ACTIVITY_UPDATE_SUCCESS = "更新了德育活动【{{#honorName}}】: {_DIFF{#updateReqVO}}";
+
+    // ======================= STUDENT_ASSESS 德育资源 =======================
+
+    String MORAL_RESOURCE_TYPE = "德育资源";
+    String MORAL_RESOURCE_ONLINE_SUB_TYPE = "上架德育资源";
+    String MORAL_RESOURCE_ONLINE_SUCCESS = "上架了德育资源";
+
+    String MORAL_RESOURCE_OFFLINE_SUB_TYPE = "上架德育资源";
+    String MORAL_RESOURCE_OFFLINE_SUCCESS = "上架了德育资源";
+
+    String MORAL_RESOURCE_UPDATE_SUB_TYPE = "更新德育资源";
+    String MORAL_RESOURCE_UPDATE_SUCCESS = "更新了德育资源【{{#assessMgmt.className}}】: {_DIFF{#updateReqVO}}";
 }

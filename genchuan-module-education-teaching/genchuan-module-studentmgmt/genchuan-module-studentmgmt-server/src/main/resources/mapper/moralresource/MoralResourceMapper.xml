@@ -9,4 +9,76 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="selectTypeCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        resource_type AS type,
+        COUNT(1) AS count
+        FROM moral_resource
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND create_time BETWEEN #{startTime} AND #{endTime}
+        </if>
+        GROUP BY resource_type
+    </select>
+    <select id="selectStatusCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        status AS status,
+        COUNT(1) AS count
+        FROM moral_resource
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND create_time BETWEEN #{startTime} AND #{endTime}
+        </if>
+        GROUP BY status
+    </select>
+    <select id="selectLearnTrend" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        DATE_FORMAT(create_time, '%Y-%m') AS date,
+        COUNT(1) AS count
+        FROM moral_resource
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND create_time BETWEEN #{startTime} AND #{endTime}
+        </if>
+        GROUP BY DATE_FORMAT(create_time, '%Y-%m')
+    </select>
+    <select id="selectRateTrend" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        DATE_FORMAT(create_time, '%Y-%m') AS date,
+        ROUND(AVG(learn_rate),2) AS rate
+        FROM moral_resource
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND create_time BETWEEN #{startTime} AND #{endTime}
+        </if>
+        GROUP BY DATE_FORMAT(create_time, '%Y-%m')
+    </select>
+    <select id="selectLearnCountByType" resultType="java.lang.Long">
+        SELECT
+        DATE_FORMAT(create_time, '%Y-%m') AS date,
+        ROUND(AVG(learn_rate),2) AS rate
+        FROM moral_resource
+        WHERE deleted = 0
+        <if test="resourceType != null">
+            AND resource_type = #{resourceType}
+        </if>
+        <if test="startTime != null">
+            AND create_time BETWEEN #{startTime} AND #{endTime}
+        </if>
+        GROUP BY DATE_FORMAT(create_time, '%Y-%m')
+    </select>
+    <select id="selectTypeCountByType" resultType="java.lang.Long">
+        SELECT
+        resource_type AS type,
+        COUNT(1) AS count
+        FROM moral_resource
+        WHERE deleted = 0
+        <if test="resourceType != null">
+            AND resource_type = #{resourceType}
+        </if>
+        <if test="startTime != null">
+            AND create_time BETWEEN #{startTime} AND #{endTime}
+        </if>
+        GROUP BY resource_type
+    </select>
 </mapper>
