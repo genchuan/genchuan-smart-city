@@ -48,6 +48,10 @@ public class FakePlateControlRespVO {
     @ExcelProperty("处置进度")
     private String handleProgress;
 
+    @Schema(description = "处理类型：核查 / 忽略", example = "核查")
+    @ExcelProperty("处理类型：核查 / 忽略")
+    private String handleType;
+
     @Schema(description = "忽略理由", example = "不对")
     @ExcelProperty("忽略理由")
     private String ignoreReason;

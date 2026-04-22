@@ -40,6 +40,9 @@ public class MyFakePlateControlRespVO {
     @Schema(description = "处置进度", example = "")
     private String handleProgress;
 
+    @Schema(description = "处理类型：核查 / 忽略", example = "核查")
+    private String handleType;
+
     @Schema(description = "忽略理由", example = "")
     private String ignoreReason;
 

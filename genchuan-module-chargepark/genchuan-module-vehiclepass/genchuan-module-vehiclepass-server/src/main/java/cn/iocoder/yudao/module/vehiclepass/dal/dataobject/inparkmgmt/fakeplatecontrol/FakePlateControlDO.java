@@ -62,6 +62,10 @@ public class FakePlateControlDO extends BaseDO {
      */
     private String handleProgress;
     /**
+     * 处理类型：核查 / 忽略
+     */
+    private String handleType;
+    /**
      * 忽略理由
      */
     private String ignoreReason;

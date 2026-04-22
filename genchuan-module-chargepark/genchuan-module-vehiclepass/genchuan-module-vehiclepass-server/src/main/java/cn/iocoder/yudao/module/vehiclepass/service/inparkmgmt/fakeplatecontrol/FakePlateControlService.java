@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.vehiclepass.service.inparkmgmt.fakeplatecontrol;
 
 import java.util.*;
 
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlBatchHandleReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlSaveReqVO;
@@ -64,4 +65,11 @@ public interface FakePlateControlService {
     PageResult<FakePlateControlDO> getPlateControlPage(FakePlateControlPageReqVO pageReqVO);
 
     PageResult<MyFakePlateControlRespVO> getFakePlateControlPage(FakePlateControlPageReqVO pageReqVO);
+
+    /**
+     * 批量处置套牌管控
+     *
+     * @param reqVO 批量处置请求
+     */
+    void batchHandle(FakePlateControlBatchHandleReqVO reqVO);
 }

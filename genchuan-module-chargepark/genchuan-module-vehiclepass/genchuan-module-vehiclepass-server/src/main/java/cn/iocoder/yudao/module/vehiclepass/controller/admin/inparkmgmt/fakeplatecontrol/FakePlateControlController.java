@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol;
 
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlBatchHandleReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlSaveReqVO;
@@ -94,6 +95,14 @@ public class FakePlateControlController {
     @PreAuthorize("@ss.hasPermission('vehiclepass:fake-plate-control:query')")
     public CommonResult<PageResult<MyFakePlateControlRespVO>> page(FakePlateControlPageReqVO reqVO) {
         return CommonResult.success(plateControlService.getFakePlateControlPage(reqVO));
+    }
+
+    @PostMapping("/batch-handle")
+    @Operation(summary = "批量处置套牌管控")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:fake-plate-control:batch-handle')")
+    public CommonResult<Boolean> batchHandle(@Valid @RequestBody FakePlateControlBatchHandleReqVO reqVO) {
+        plateControlService.batchHandle(reqVO);
+        return success(true);
     }
 
     @GetMapping("/export-excel")
