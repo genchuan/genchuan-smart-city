@@ -4,6 +4,7 @@ import java.util.*;
 
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterAuditReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterConfirmReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterCorrectReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterCreateReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterRespVO;
@@ -93,4 +94,11 @@ public interface UnplateEnterService {
      * @param confirmReqVO 确认信息
      */
     void confirmEnter(UnplateEnterConfirmReqVO confirmReqVO);
+
+    /**
+     * 修正无牌入场
+     *
+     * @param correctReqVO 修正信息
+     */
+    void correctEnter(UnplateEnterCorrectReqVO correctReqVO);
 }

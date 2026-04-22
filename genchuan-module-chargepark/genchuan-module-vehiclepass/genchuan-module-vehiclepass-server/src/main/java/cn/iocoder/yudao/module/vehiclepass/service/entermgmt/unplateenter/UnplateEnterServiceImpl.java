@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.util.string.StrUtils;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterAuditReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterConfirmReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterCorrectReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterCreateReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterRespVO;
@@ -164,6 +165,29 @@ public class UnplateEnterServiceImpl implements UnplateEnterService {
         UnplateEnterDO updateObj = new UnplateEnterDO();
         updateObj.setId(confirmReqVO.getId());
         updateObj.setStatus("已入场");
+        enterMapper.updateById(updateObj);
+    }
+
+    @Override
+    public void correctEnter(UnplateEnterCorrectReqVO correctReqVO) {
+        // 校验记录存在
+        UnplateEnterDO enter = enterMapper.selectById(correctReqVO.getId());
+        if (enter == null) {
+            throw exception(ENTER_NOT_EXISTS);
+        }
+        // 校验状态只能是"待审核"或"已通过"才能修正
+        if (!"待审核".equals(enter.getStatus()) && !"已通过".equals(enter.getStatus())) {
+            throw exception(ENTER_NOT_EXISTS); // TODO: 需要添加专门的错误码
+        }
+
+        // 更新修正信息
+        UnplateEnterDO updateObj = new UnplateEnterDO();
+        updateObj.setId(correctReqVO.getId());
+        updateObj.setCarType(correctReqVO.getCarType());
+        updateObj.setCarColor(correctReqVO.getCarColor());
+        updateObj.setPhone(correctReqVO.getPhone());
+        updateObj.setStationId(correctReqVO.getStationId());
+        updateObj.setRemark(correctReqVO.getRemark());
         enterMapper.updateById(updateObj);
     }
 

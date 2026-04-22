@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateen
 
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterAuditReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterConfirmReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterCorrectReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterCreateReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterRespVO;
@@ -37,7 +38,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 @Tag(name = "管理后台 - 无牌入场")
 @RestController
-@RequestMapping("/unplate/enter")
+@RequestMapping("/vehiclepass/unplate-enter")
 @Validated
 public class UnplateEnterController {
 
@@ -108,7 +109,7 @@ public class UnplateEnterController {
         return CommonResult.success(enterService.getUnplateEnterPage(reqVO));
     }
 
-    @PutMapping("/vehiclepass-unplate-enter-audit")
+    @PutMapping("/audit")
     @Operation(summary = "审核无牌入场")
     @PreAuthorize("@ss.hasPermission('vehiclepass:unplate-enter:audit')")
     public CommonResult<Boolean> auditEnter(@Valid @RequestBody UnplateEnterAuditReqVO reqVO) {
@@ -116,11 +117,19 @@ public class UnplateEnterController {
         return success(true);
     }
 
-    @PutMapping("/vehiclepass-unplate-enter-confirm")
+    @PutMapping("/confirm")
     @Operation(summary = "确认无牌入场")
     @PreAuthorize("@ss.hasPermission('vehiclepass:unplate-enter:confirm')")
     public CommonResult<Boolean> confirmEnter(@Valid @RequestBody UnplateEnterConfirmReqVO reqVO) {
         enterService.confirmEnter(reqVO);
+        return success(true);
+    }
+
+    @PutMapping("/correct")
+    @Operation(summary = "修正无牌入场")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:unplate-enter:correct')")
+    public CommonResult<Boolean> correctEnter(@Valid @RequestBody UnplateEnterCorrectReqVO reqVO) {
+        enterService.correctEnter(reqVO);
         return success(true);
     }
 
