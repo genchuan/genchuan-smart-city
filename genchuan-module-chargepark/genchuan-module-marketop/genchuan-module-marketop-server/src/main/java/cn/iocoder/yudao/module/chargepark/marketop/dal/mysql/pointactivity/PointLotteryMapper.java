@@ -12,6 +12,7 @@ public interface PointLotteryMapper extends BaseMapperX<PointLotteryDO> {
 
     default PageResult<PointLotteryDO> selectPage(PointLotteryPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<PointLotteryDO>()
+                .likeIfPresent(PointLotteryDO::getNo, reqVO.getNo())
                 .eqIfPresent(PointLotteryDO::getUserId, reqVO.getUserId())
                 .eqIfPresent(PointLotteryDO::getPrizeId, reqVO.getPrizeId())
                 .eqIfPresent(PointLotteryDO::getStatus, reqVO.getStatus())

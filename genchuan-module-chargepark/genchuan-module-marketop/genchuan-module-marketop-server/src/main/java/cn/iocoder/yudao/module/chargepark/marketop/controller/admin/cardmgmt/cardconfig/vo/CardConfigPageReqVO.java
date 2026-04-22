@@ -21,7 +21,7 @@ public class CardConfigPageReqVO extends PageParam {
     @Schema(description = "适用范围")
     private String scope;
 
-    @Schema(description = "状态")
+    @Schema(description = "状态（0-未生效，1-已生效）")
     private String status;
 
 }

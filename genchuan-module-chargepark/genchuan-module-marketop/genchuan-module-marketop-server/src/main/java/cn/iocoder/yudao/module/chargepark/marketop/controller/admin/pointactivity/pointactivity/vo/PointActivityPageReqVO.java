@@ -27,11 +27,9 @@ public class PointActivityPageReqVO extends PageParam {
     private String status;
 
     @Schema(description = "开始时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDateTime[] startTime;
+    private Long startTime;
 
     @Schema(description = "结束时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDateTime[] endTime;
+    private Long endTime;
 
 }

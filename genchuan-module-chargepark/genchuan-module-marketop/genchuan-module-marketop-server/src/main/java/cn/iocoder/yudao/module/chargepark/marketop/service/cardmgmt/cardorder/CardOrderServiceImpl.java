@@ -58,20 +58,20 @@ public class CardOrderServiceImpl implements CardOrderService {
     @Override
     public void invoice(Long id) {
         CardOrderDO cardOrder = validateExists(id);
-        if (!"未开票".equals(cardOrder.getInvoiceStatus())) {
+        if (!"0".equals(cardOrder.getInvoiceStatus())) {
             throw exception(CARD_ORDER_STATUS_ERROR);
         }
-        cardOrder.setInvoiceStatus("已开票");
+        cardOrder.setInvoiceStatus("1");
         cardOrderMapper.updateById(cardOrder);
     }
 
     @Override
     public void cancel(Long id) {
         CardOrderDO cardOrder = validateExists(id);
-        if (!"待支付".equals(cardOrder.getPayStatus())) {
+        if (!"0".equals(cardOrder.getPayStatus())) {
             throw exception(CARD_ORDER_STATUS_ERROR);
         }
-        cardOrder.setPayStatus("已取消");
+        cardOrder.setPayStatus("-1");
         cardOrderMapper.updateById(cardOrder);
     }
 

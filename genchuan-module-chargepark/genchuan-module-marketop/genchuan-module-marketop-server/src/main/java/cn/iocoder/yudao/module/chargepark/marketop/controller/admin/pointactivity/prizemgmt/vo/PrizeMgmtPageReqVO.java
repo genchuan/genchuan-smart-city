@@ -21,4 +21,7 @@ public class PrizeMgmtPageReqVO extends PageParam {
     @Schema(description = "状态")
     private String status;
 
+    @Schema(description = "活动ID")
+    private Long activityId;
+
 }

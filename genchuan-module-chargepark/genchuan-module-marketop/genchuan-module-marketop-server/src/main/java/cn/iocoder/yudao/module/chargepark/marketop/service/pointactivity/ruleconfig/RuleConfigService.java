@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.chargepark.marketop.service.pointactivity.ruleconfig;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.ruleconfig.vo.RuleConfigChartReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.ruleconfig.vo.RuleConfigChartRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.ruleconfig.vo.RuleConfigCreateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.ruleconfig.vo.RuleConfigPageReqVO;
@@ -22,6 +23,6 @@ public interface RuleConfigService {
 
     void disable(Long id);
 
-    RuleConfigChartRespVO getChart(String timeRange);
+    RuleConfigChartRespVO getChart(RuleConfigChartReqVO reqVO);
 
 }

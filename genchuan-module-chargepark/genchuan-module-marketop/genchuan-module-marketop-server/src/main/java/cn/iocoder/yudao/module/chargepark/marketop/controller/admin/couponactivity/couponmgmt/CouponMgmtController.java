@@ -14,10 +14,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @Tag(name = "管理后台 - 优惠券")
@@ -64,31 +68,47 @@ public class CouponMgmtController {
     @Operation(summary = "发放优惠券")
     @PreAuthorize("@ss.hasPermission('marketop:coupon-mgmt:send')")
     public CommonResult<Boolean> send(@Valid @RequestBody CouponMgmtSendReqVO reqVO) {
-        couponMgmtService.send(reqVO.getId(), reqVO.getUserIds());
+
+        couponMgmtService.send(reqVO.getId(), reqVO.getReceiverId());
         return CommonResult.success(true);
     }
 
     @PutMapping("/verify")
     @Operation(summary = "核销优惠券")
     @PreAuthorize("@ss.hasPermission('marketop:coupon-mgmt:verify')")
-    public CommonResult<Boolean> verify(@RequestParam("id") Long id) {
-        couponMgmtService.verify(id);
+    public CommonResult<Boolean> verify(@Valid @RequestBody IdReq req) {
+        couponMgmtService.verify(req.getId());
         return CommonResult.success(true);
     }
 
     @PutMapping("/resend")
     @Operation(summary = "重新发放优惠券")
     @PreAuthorize("@ss.hasPermission('marketop:coupon-mgmt:send')")
-    public CommonResult<Boolean> resend(@RequestParam("id") Long id) {
-        couponMgmtService.resend(id);
+    public CommonResult<Boolean> resend(@Valid @RequestBody CouponMgmtResendReqVO reqVO) {
+        couponMgmtService.resend(reqVO.getId(), reqVO.getReceiverId(), reqVO.getNewValidTime());
         return CommonResult.success(true);
+    }
+
+    @GetMapping("/get-import-template")
+    @Operation(summary = "获得导入优惠券模板")
+    public void importTemplate(HttpServletResponse response) throws IOException {
+        List<CouponMgmtImportExcelVO> list = Arrays.asList(
+                CouponMgmtImportExcelVO.builder().name("新用户满减券").type("满减")
+                        .amount(new java.math.BigDecimal("20.00")).useCondition("满100元可用")
+                        .stationIds("1,2,3").description("新用户注册发放的满减优惠券").build(),
+                CouponMgmtImportExcelVO.builder().name("节假日折扣券").type("折扣")
+                        .amount(new java.math.BigDecimal("15.00")).useCondition("满50元可用")
+                        .stationIds("1,2").description("节假日活动折扣券").build()
+        );
+        ExcelUtils.write(response, "优惠券导入模板.xls", "优惠券列表", CouponMgmtImportExcelVO.class, list);
     }
 
     @PostMapping("/import")
     @Operation(summary = "导入优惠券")
     @PreAuthorize("@ss.hasPermission('marketop:coupon-mgmt:import')")
-    public CommonResult<Boolean> importExcel() {
-        // TODO: 实现导入逻辑
+    public CommonResult<Boolean> importExcel(@RequestParam("file") MultipartFile file) throws Exception {
+        List<CouponMgmtImportExcelVO> list = ExcelUtils.read(file, CouponMgmtImportExcelVO.class);
+        couponMgmtService.importCouponMgmtList(list);
         return CommonResult.success(true);
     }
 
@@ -105,8 +125,17 @@ public class CouponMgmtController {
     @GetMapping("/chart")
     @Operation(summary = "优惠券图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:coupon-mgmt:query')")
-    public CommonResult<CouponMgmtChartRespVO> getChart(@RequestParam(value = "timeRange", required = false) String timeRange) {
-        return CommonResult.success(couponMgmtService.getChart(timeRange));
+    public CommonResult<CouponMgmtChartRespVO> getChart(
+            @RequestParam(value = "startTime", required = false) Long startTime,
+            @RequestParam(value = "endTime", required = false) Long endTime,
+            @RequestParam(value = "stationId", required = false) Long stationId) {
+        return CommonResult.success(couponMgmtService.getChart(startTime, endTime, stationId));
+    }
+
+    @Data
+    public static class IdReq {
+        @NotNull(message = "id不能为空")
+        private Long id;
     }
 
 }

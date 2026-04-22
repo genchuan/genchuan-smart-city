@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @TableName("exchange_category")
 @KeySequence("exchange_category_seq")
 @Data
@@ -20,15 +22,23 @@ public class ExchangeCategoryDO extends BaseDO {
     private Long id;
     /** 类目名称 */
     private String name;
-    /** 所需积分 */
-    private Integer point;
-    /** 库存 */
-    private Integer stock;
-    /** 类目状态（未生效/已生效/已禁用） */
+    /** 类目描述 */
+    private String description;
+    /** 商品数量 */
+    private Integer goodsCount;
+    /** 类目状态(未生效/已生效/已禁用) */
     private String status;
-    /** 备注 */
-    private String remark;
-    /** 商品数 */
-    private Integer productCount;
+    /** 审核人 */
+    private Long auditorId;
+    /** 审核时间 */
+    private LocalDateTime auditTime;
+    /** 生效时间 */
+    private LocalDateTime effectTime;
+    /** 排序权重 */
+    private Integer sort;
+    /** 适用范围(全平台/指定场站) */
+    private String scope;
+    private String reserve1;
+    private String reserve2;
 
 }

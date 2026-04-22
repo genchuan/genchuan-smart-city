@@ -20,6 +20,6 @@ public interface StockControlService {
 
     void allocate(@Valid StockControlAllocateReqVO reqVO);
 
-    StockControlChartRespVO getChart(String timeRange);
+    StockControlChartRespVO getChart(Long startTime, Long endTime, Long stationId);
 
 }

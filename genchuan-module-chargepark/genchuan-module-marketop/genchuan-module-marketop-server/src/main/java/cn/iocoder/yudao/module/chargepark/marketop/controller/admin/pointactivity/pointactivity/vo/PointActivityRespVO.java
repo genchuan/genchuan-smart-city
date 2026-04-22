@@ -18,11 +18,14 @@ public class PointActivityRespVO {
     @Schema(description = "活动类型")
     private String type;
 
+//    @Schema(description = "活动类型名称")
+//    private String typeName;
+
     @Schema(description = "开始时间")
-    private LocalDateTime startTime;
+    private Long startTime;
 
     @Schema(description = "结束时间")
-    private LocalDateTime endTime;
+    private Long endTime;
 
     @Schema(description = "积分规则")
     private String rule;
@@ -32,6 +35,9 @@ public class PointActivityRespVO {
 
     @Schema(description = "适用场站")
     private String stationIds;
+
+//    @Schema(description = "适用场站")
+//    private  String stationName;
 
     @Schema(description = "参与人数")
     private Integer joinCount;

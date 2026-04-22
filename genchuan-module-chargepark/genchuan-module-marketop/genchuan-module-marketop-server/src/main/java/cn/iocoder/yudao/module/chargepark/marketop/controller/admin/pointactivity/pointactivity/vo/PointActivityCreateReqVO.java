@@ -35,4 +35,6 @@ public class PointActivityCreateReqVO {
     @Schema(description = "适用场站")
     private String stationIds;
 
+    @Schema(description = "剩余积分额度")
+    private Integer remainPoint;
 }

@@ -2,8 +2,10 @@ package cn.iocoder.yudao.module.chargepark.marketop.service.pointactivity.prizem
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.prizemgmt.vo.PrizeMgmtChartReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.prizemgmt.vo.PrizeMgmtChartRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.prizemgmt.vo.PrizeMgmtCreateReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.prizemgmt.vo.PrizeMgmtImportExcelVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.prizemgmt.vo.PrizeMgmtPageReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.prizemgmt.vo.PrizeMgmtUpdateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PrizeMgmtDO;
@@ -13,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.*;
@@ -38,7 +42,7 @@ public class PrizeMgmtServiceImpl implements PrizeMgmtService {
     public Long create(PrizeMgmtCreateReqVO reqVO) {
         validateNameUnique(null, reqVO.getName());
         PrizeMgmtDO prizeMgmt = BeanUtils.toBean(reqVO, PrizeMgmtDO.class);
-        prizeMgmt.setStatus("正常状态");
+        prizeMgmt.setStatus("1");
         prizeMgmt.setSendCount(0);
         prizeMgmtMapper.insert(prizeMgmt);
         return prizeMgmt.getId();
@@ -57,31 +61,53 @@ public class PrizeMgmtServiceImpl implements PrizeMgmtService {
     @Override
     public void enable(Long id) {
         PrizeMgmtDO prizeMgmt = validateExists(id);
-        if (!"禁用状态".equals(prizeMgmt.getStatus())) {
+        if (!"0".equals(prizeMgmt.getStatus())) {
             throw exception(PRIZE_MGMT_NOT_EXISTS);
         }
-        prizeMgmt.setStatus("正常状态");
+        prizeMgmt.setStatus("1");
         prizeMgmtMapper.updateById(prizeMgmt);
     }
 
     @Override
     public void disable(Long id) {
         PrizeMgmtDO prizeMgmt = validateExists(id);
-        if (!"正常状态".equals(prizeMgmt.getStatus())) {
+        if (!"1".equals(prizeMgmt.getStatus())) {
             throw exception(PRIZE_MGMT_NOT_EXISTS);
         }
-        prizeMgmt.setStatus("禁用状态");
+        prizeMgmt.setStatus("0");
         prizeMgmtMapper.updateById(prizeMgmt);
     }
 
     @Override
-    public PrizeMgmtChartRespVO getChart(String timeRange) {
-        // TODO: 实现图表统计逻辑
+    public PrizeMgmtChartRespVO getChart(PrizeMgmtChartReqVO reqVO) {
+        // TODO: prizeCount 和 sendCount 后续实现
+        // TypeList: 按 type 分组统计数量
+        List<Map<String, Object>> typeCountList = prizeMgmtMapper.selectTypeCountList(reqVO);
+        List<PrizeMgmtChartRespVO.TypeCountItem> typeList = typeCountList.stream().map(m -> {
+            PrizeMgmtChartRespVO.TypeCountItem item = new PrizeMgmtChartRespVO.TypeCountItem();
+            item.setType((String) m.get("type"));
+            item.setCount(((Number) m.get("count")).intValue());
+            return item;
+        }).toList();
         PrizeMgmtChartRespVO respVO = new PrizeMgmtChartRespVO();
         respVO.setPrizeCount(0);
         respVO.setSendCount(0);
-        respVO.setTypeList(new ArrayList<>());
+        respVO.setTypeList(typeList);
         return respVO;
+    }
+
+    @Override
+    public void importPrizeMgmtList(List<PrizeMgmtImportExcelVO> list) {
+        if (list == null || list.isEmpty()) {
+            return;
+        }
+        for (PrizeMgmtImportExcelVO excelVO : list) {
+            validateNameUnique(null, excelVO.getName());
+            PrizeMgmtDO prizeMgmt = BeanUtils.toBean(excelVO, PrizeMgmtDO.class);
+            prizeMgmt.setStatus("1");
+            prizeMgmt.setSendCount(0);
+            prizeMgmtMapper.insert(prizeMgmt);
+        }
     }
 
     private PrizeMgmtDO validateExists(Long id) {

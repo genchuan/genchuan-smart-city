@@ -17,7 +17,7 @@ public class CardConfigChartRespVO {
     private Integer salesCount;
 
     @Schema(description = "卡种类型销售分布")
-    private List<TypeRateItem> typeList;
+    private List<TypeRateItem> typeRatio;
 
     @Data
     public static class TypeRateItem {

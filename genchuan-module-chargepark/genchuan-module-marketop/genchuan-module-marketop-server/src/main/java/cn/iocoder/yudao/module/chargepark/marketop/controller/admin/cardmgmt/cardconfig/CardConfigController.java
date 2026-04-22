@@ -57,24 +57,25 @@ public class CardConfigController {
     @PutMapping("/enable")
     @Operation(summary = "生效卡种配置")
     @PreAuthorize("@ss.hasPermission('marketop:card-config:update')")
-    public CommonResult<Boolean> enable(@RequestParam("id") Long id) {
-        cardConfigService.enable(id);
+    public CommonResult<Boolean> enable(@RequestBody CardConfigEnableReqVO reqVO) {
+        cardConfigService.enable(reqVO.getId());
         return CommonResult.success(true);
     }
 
     @PutMapping("/disable")
     @Operation(summary = "停用卡种配置")
     @PreAuthorize("@ss.hasPermission('marketop:card-config:update')")
-    public CommonResult<Boolean> disable(@RequestParam("id") Long id) {
-        cardConfigService.disable(id);
+    public CommonResult<Boolean> disable(@RequestBody CardConfigDisableReqVO reqVO) {
+        cardConfigService.disable(reqVO.getId());
         return CommonResult.success(true);
     }
 
     @GetMapping("/chart")
     @Operation(summary = "卡种配置图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:card-config:query')")
-    public CommonResult<CardConfigChartRespVO> getChart(@RequestParam(value = "timeRange", required = false) String timeRange) {
-        return CommonResult.success(cardConfigService.getChart(timeRange));
+    public CommonResult<CardConfigChartRespVO> getChart(@RequestParam(value = "startTime", required = false) Long startTime,
+                                                        @RequestParam(value = "endTime", required = false) Long endTime) {
+        return CommonResult.success(cardConfigService.getChart(startTime, endTime));
     }
 
 }

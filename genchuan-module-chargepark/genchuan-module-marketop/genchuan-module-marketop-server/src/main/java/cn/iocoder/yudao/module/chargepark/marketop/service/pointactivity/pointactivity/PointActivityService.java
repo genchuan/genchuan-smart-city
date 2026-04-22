@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.chargepark.marketop.service.pointactivity.pointactivity;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityChartReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityChartRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityCreateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityImportExcelVO;
@@ -25,11 +26,12 @@ public interface PointActivityService {
 
     void pause(Long id);
 
-    PointActivityChartRespVO getChart(String timeRange);
+    PointActivityChartRespVO getChart(PointActivityChartReqVO reqVO);
 
     /**
      * 导入积分活动列表
      */
     void importPointActivityList(List<PointActivityImportExcelVO> list);
 
+    void activate(Long id);
 }

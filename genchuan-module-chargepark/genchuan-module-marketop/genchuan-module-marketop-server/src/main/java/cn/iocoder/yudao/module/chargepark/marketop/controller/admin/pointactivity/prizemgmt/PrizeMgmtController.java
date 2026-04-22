@@ -16,8 +16,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @Tag(name = "管理后台 - 奖品管理")
@@ -63,24 +65,35 @@ public class PrizeMgmtController {
     @PutMapping("/enable")
     @Operation(summary = "启用奖品")
     @PreAuthorize("@ss.hasPermission('marketop:prize-mgmt:update')")
-    public CommonResult<Boolean> enable(@RequestParam("id") Long id) {
-        prizeMgmtService.enable(id);
+    public CommonResult<Boolean> enable(@Valid @RequestBody PrizeMgmtIdReqVO reqVO) {
+        prizeMgmtService.enable(reqVO.getId());
         return CommonResult.success(true);
     }
 
     @PutMapping("/disable")
     @Operation(summary = "禁用奖品")
     @PreAuthorize("@ss.hasPermission('marketop:prize-mgmt:update')")
-    public CommonResult<Boolean> disable(@RequestParam("id") Long id) {
-        prizeMgmtService.disable(id);
+    public CommonResult<Boolean> disable(@Valid @RequestBody PrizeMgmtIdReqVO reqVO) {
+        prizeMgmtService.disable(reqVO.getId());
         return CommonResult.success(true);
+    }
+
+    @GetMapping("/get-import-template")
+    @Operation(summary = "获得导入奖品模板")
+    public void importTemplate(HttpServletResponse response) throws IOException {
+        List<PrizeMgmtImportExcelVO> list = Arrays.asList(
+                PrizeMgmtImportExcelVO.builder().name("一等奖").type("1").stock(100).warnThreshold(10).activityId(1L).description("一等奖奖品").build(),
+                PrizeMgmtImportExcelVO.builder().name("二等奖").type("2").stock(500).warnThreshold(50).activityId(1L).description("二等奖奖品").build()
+        );
+        ExcelUtils.write(response, "奖品管理导入模板.xls", "奖品列表", PrizeMgmtImportExcelVO.class, list);
     }
 
     @PostMapping("/import")
     @Operation(summary = "导入奖品")
     @PreAuthorize("@ss.hasPermission('marketop:prize-mgmt:import')")
-    public CommonResult<Boolean> importExcel() {
-        // TODO: 实现导入逻辑
+    public CommonResult<Boolean> importExcel(@RequestParam("file") MultipartFile file) throws Exception {
+        List<PrizeMgmtImportExcelVO> list = ExcelUtils.read(file, PrizeMgmtImportExcelVO.class);
+        prizeMgmtService.importPrizeMgmtList(list);
         return CommonResult.success(true);
     }
 
@@ -97,8 +110,8 @@ public class PrizeMgmtController {
     @GetMapping("/chart")
     @Operation(summary = "奖品管理图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:prize-mgmt:query')")
-    public CommonResult<PrizeMgmtChartRespVO> getChart(@RequestParam(value = "timeRange", required = false) String timeRange) {
-        return CommonResult.success(prizeMgmtService.getChart(timeRange));
+    public CommonResult<PrizeMgmtChartRespVO> getChart(PrizeMgmtChartReqVO reqVO) {
+        return CommonResult.success(prizeMgmtService.getChart(reqVO));
     }
 
 }
