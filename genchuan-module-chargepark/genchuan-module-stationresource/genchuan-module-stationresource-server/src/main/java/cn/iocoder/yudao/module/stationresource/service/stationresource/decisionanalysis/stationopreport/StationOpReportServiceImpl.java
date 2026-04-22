@@ -19,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -50,17 +51,35 @@ public class StationOpReportServiceImpl implements StationOpReportService {
                 // 非自定义：自动计算 开始/结束 时间
                 Date[] dates = autoCalcReportTime(reportType);
                 // 覆盖前端传入的时间（自动生成）
-                pageReqVO.setStartTime(LocalDateTime.parse(DateUtil.format(dates[0], "yyyy-MM-dd HH:mm:ss")));
-                pageReqVO.setEndTime(LocalDateTime.parse(DateUtil.format(dates[1], "yyyy-MM-dd HH:mm:ss")));
+                // 方式1：使用 Date -> LocalDateTime 直接转换（推荐，无格式问题）
+                pageReqVO.setStartTime(LocalDateTime.ofInstant(dates[0].toInstant(), ZoneId.systemDefault()));
+                pageReqVO.setEndTime(LocalDateTime.ofInstant(dates[1].toInstant(), ZoneId.systemDefault()));
             }
         }
 
-
+        System.out.println("cs2026-04-22 11:24:10:"+pageReqVO);
         // 1. 创建分页对象（和你正确示例完全一致）
         Page<StationOpReportDO> mpPage = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
 
         // 2. 调用 Mapper
-        Page<StationOpReportDO> resultPage = stationOpReportMapper.selectReportPage(mpPage);
+//        Page<StationOpReportDO> resultPage = stationOpReportMapper.selectReportPage(mpPage);
+        // 2. 正确调用：把 pageReqVO + mpPage 都传给 Mapper
+        Page<StationOpReportDO> resultPage = stationOpReportMapper.selectReportPage(pageReqVO, mpPage);
+
+        // ========== 处理 null → 0：同比、环比 ==========
+        List<StationOpReportDO> records = resultPage.getRecords();
+        if (CollUtil.isNotEmpty(records)) {
+            for (StationOpReportDO report : records) {
+                // 同比为 null 设为 0
+                if (report.getYearOnYear() == null) {
+                    report.setYearOnYear(BigDecimal.ZERO);
+                }
+                // 环比为 null 设为 0
+                if (report.getMonthOnMonth() == null) {
+                    report.setMonthOnMonth(BigDecimal.ZERO);
+                }
+            }
+        }
 
         // 3. 直接构造 PageResult（你正确的格式！）
         return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());

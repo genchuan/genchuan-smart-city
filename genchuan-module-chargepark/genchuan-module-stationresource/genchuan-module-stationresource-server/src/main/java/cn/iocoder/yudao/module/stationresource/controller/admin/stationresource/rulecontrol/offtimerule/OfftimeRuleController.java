@@ -36,7 +36,7 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 @RestController
 @RequestMapping("/stationresource/offtime-rule")
 @Validated
-@Hidden
+//@Hidden
 public class OfftimeRuleController {
 
     @Resource
