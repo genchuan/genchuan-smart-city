@@ -28,6 +28,10 @@ public class FenceMgmtRespVO {
     @ExcelProperty("关联巡检人员ID")
     private Long userId;
 
+    @Schema(description = "巡检人员姓名")
+    @ExcelProperty("巡检人员姓名")
+    private String userName;
+
     @Schema(description = "围栏状态", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("围栏状态")
     private String status;

@@ -129,8 +129,8 @@ public class InspectPlanController {
     @Operation(summary = "生效巡检计划")
     @PreAuthorize("@ss.hasPermission('inspectop:inspect-plan:enable')")
     public CommonResult<Boolean> enableInspectPlan(@Valid @RequestBody InspectPlanStatusReqVO reqVO) {
-        // 状态值 "1" 对应 "待生效"（根据您的字典值说明）
-        inspectPlanService.updateInspectPlanStatus(reqVO.getId(), "1");
+        // 状态值 "0" 对应 "已生效"（根据您的字典值说明）
+        inspectPlanService.updateInspectPlanStatus(reqVO.getId(), "0");
         return success(true);
     }
 

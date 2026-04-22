@@ -35,4 +35,18 @@ public interface InspectUserMapper extends BaseMapperX<InspectUserDO> {
                 .orderByDesc(InspectUserDO::getId));
     }
 
+    /**
+     * 查询人员区域分布数据
+     *
+     * @return 区域分布列表
+     */
+    List<InspectUserChartRespVO.AreaData> selectAreaData();
+
+    /**
+     * 查询卡片统计数据
+     *
+     * @return 卡片数据
+     */
+    InspectUserChartRespVO.CardData selectCardData();
+
 }

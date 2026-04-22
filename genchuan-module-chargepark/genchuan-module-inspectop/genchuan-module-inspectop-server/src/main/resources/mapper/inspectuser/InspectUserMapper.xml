@@ -9,4 +9,21 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="selectAreaData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.inspectuser.vo.InspectUserChartRespVO$AreaData">
+        SELECT
+            area AS areaName,
+            COUNT(*) AS count
+        FROM inspect_user
+        WHERE area IS NOT NULL AND area != ''
+        GROUP BY area
+        ORDER BY count DESC
+    </select>
+
+    <select id="selectCardData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.inspectuser.vo.InspectUserChartRespVO$CardData">
+        SELECT
+            COUNT(*) AS userCount,
+            SUM(CASE WHEN online_status = '1' THEN 1 ELSE 0 END) AS onlineUserCount
+        FROM inspect_user
+    </select>
+
 </mapper>
