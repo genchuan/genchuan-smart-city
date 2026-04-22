@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.vehiclepass.service.entermgmt.unplateenter;
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.util.string.StrUtils;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterAuditReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterConfirmReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterCreateReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterRespVO;
@@ -144,6 +145,25 @@ public class UnplateEnterServiceImpl implements UnplateEnterService {
         updateObj.setAuditComment(auditReqVO.getAuditComment());
         updateObj.setAuditTime(java.time.LocalDateTime.now());
         updateObj.setAuditUserId(SecurityFrameworkUtils.getLoginUserId());
+        enterMapper.updateById(updateObj);
+    }
+
+    @Override
+    public void confirmEnter(UnplateEnterConfirmReqVO confirmReqVO) {
+        // 校验记录存在
+        UnplateEnterDO enter = enterMapper.selectById(confirmReqVO.getId());
+        if (enter == null) {
+            throw exception(ENTER_NOT_EXISTS);
+        }
+        // 校验状态只能是"已通过"才能确认
+        if (!"已通过".equals(enter.getStatus())) {
+            throw exception(ENTER_NOT_EXISTS); // TODO: 需要添加专门的错误码
+        }
+
+        // 更新状态为"已入场"
+        UnplateEnterDO updateObj = new UnplateEnterDO();
+        updateObj.setId(confirmReqVO.getId());
+        updateObj.setStatus("已入场");
         enterMapper.updateById(updateObj);
     }
 
