@@ -6,9 +6,11 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterChartReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.entermgmt.unplateenter.UnplateEnterDO;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Mapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -44,5 +46,17 @@ public interface UnplateEnterMapper extends BaseMapperX<UnplateEnterDO> {
                 .orderByDesc(UnplateEnterDO::getId));
     }
     IPage<UnplateEnterRespVO> selectPageJoinStation(Page<?> page, @Param("reqVO") UnplateEnterPageReqVO reqVO);
+
+    /**
+     * 统计各场站无牌入场数量
+     */
+    @MapKey("station_id")
+    List<Map<String, Object>> selectStationUnplateCount(@Param("reqVO") UnplateEnterChartReqVO reqVO);
+
+    /**
+     * 统计无牌入场总量和审核通过数
+     */
+    @MapKey("station_id")
+    Map<String, Object> selectUnplateEnterStats(@Param("reqVO") UnplateEnterChartReqVO reqVO);
 
 }

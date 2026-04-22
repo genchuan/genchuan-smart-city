@@ -51,4 +51,33 @@
         ORDER BY u.id DESC
     </select>
 
+    <!-- 统计各场站无牌入场数量 -->
+    <select id="selectStationUnplateCount" resultType="map">
+        SELECT
+            s.name AS stationName,
+            COUNT(u.id) AS count
+        FROM station_info s
+        LEFT JOIN unplate_enter u ON u.station_id = s.id AND u.deleted = 0
+            AND u.register_time BETWEEN FROM_UNIXTIME(CAST(#{reqVO.startTime} AS UNSIGNED)) AND FROM_UNIXTIME(CAST(#{reqVO.endTime} AS UNSIGNED))
+        WHERE s.deleted = 0
+        <if test="reqVO.stationId != null">
+            AND s.id = #{reqVO.stationId}
+        </if>
+        GROUP BY s.id, s.name
+        ORDER BY count DESC
+    </select>
+
+    <!-- 统计无牌入场总量和审核通过数 -->
+    <select id="selectUnplateEnterStats" resultType="map">
+        SELECT
+            COUNT(id) AS unplateEnterCount,
+            SUM(CASE WHEN status = '已通过' THEN 1 ELSE 0 END) AS auditPassCount
+        FROM unplate_enter
+        WHERE deleted = 0
+        AND register_time BETWEEN FROM_UNIXTIME(CAST(#{reqVO.startTime} AS UNSIGNED)) AND FROM_UNIXTIME(CAST(#{reqVO.endTime} AS UNSIGNED))
+        <if test="reqVO.stationId != null">
+            AND station_id = #{reqVO.stationId}
+        </if>
+    </select>
+
 </mapper>

@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter;
 
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterAuditReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterConfirmReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterCorrectReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterCreateReqVO;
@@ -131,6 +133,13 @@ public class UnplateEnterController {
     public CommonResult<Boolean> correctEnter(@Valid @RequestBody UnplateEnterCorrectReqVO reqVO) {
         enterService.correctEnter(reqVO);
         return success(true);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "无牌入场统计")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:unplate-enter:chart')")
+    public CommonResult<UnplateEnterChartRespVO> getUnplateEnterChart(@Valid UnplateEnterChartReqVO reqVO) {
+        return success(enterService.getUnplateEnterChart(reqVO));
     }
 
     @GetMapping("/export-excel")

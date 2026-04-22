@@ -3,6 +3,8 @@ package cn.iocoder.yudao.module.vehiclepass.service.entermgmt.unplateenter;
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.util.string.StrUtils;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterAuditReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterConfirmReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterCorrectReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterCreateReqVO;
@@ -26,6 +28,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
+import java.math.BigDecimal;
 
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -189,6 +192,41 @@ public class UnplateEnterServiceImpl implements UnplateEnterService {
         updateObj.setStationId(correctReqVO.getStationId());
         updateObj.setRemark(correctReqVO.getRemark());
         enterMapper.updateById(updateObj);
+    }
+
+    @Override
+    public UnplateEnterChartRespVO getUnplateEnterChart(UnplateEnterChartReqVO chartReqVO) {
+        UnplateEnterChartRespVO respVO = new UnplateEnterChartRespVO();
+
+        List<Map<String, Object>> stationCountList = enterMapper.selectStationUnplateCount(chartReqVO);
+        List<UnplateEnterChartRespVO.StationUnplateCount> stationList = new ArrayList<>();
+        for (Map<String, Object> map : stationCountList) {
+            UnplateEnterChartRespVO.StationUnplateCount item = new UnplateEnterChartRespVO.StationUnplateCount();
+            item.setStationName((String) map.get("stationName"));
+            Object countObj = map.get("count");
+            item.setCount(countObj != null ? ((Number) countObj).longValue() : 0L);
+            stationList.add(item);
+        }
+        respVO.setStationUnplateCount(stationList);
+
+        Map<String, Object> stats = enterMapper.selectUnplateEnterStats(chartReqVO);
+        UnplateEnterChartRespVO.CardData cardData = new UnplateEnterChartRespVO.CardData();
+
+        Object unplateEnterCountObj = stats.get("unplateEnterCount");
+        Object auditPassCountObj = stats.get("auditPassCount");
+
+        long unplateEnterCount = unplateEnterCountObj != null ? ((Number) unplateEnterCountObj).longValue() : 0L;
+        long auditPassCount = auditPassCountObj != null ? ((Number) auditPassCountObj).longValue() : 0L;
+
+        cardData.setUnplateEnterCount(unplateEnterCount);
+        if (unplateEnterCount > 0) {
+            cardData.setAuditPassRate(Math.round(auditPassCount * 10000.0 / unplateEnterCount) / 100.0);
+        } else {
+            cardData.setAuditPassRate(0.0);
+        }
+        respVO.setCardData(cardData);
+
+        return respVO;
     }
 
 }
