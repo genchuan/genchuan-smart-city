@@ -1,0 +1,19 @@
+package cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
+import jakarta.validation.constraints.*;
+
+@Schema(description = "管理后台 - 套牌管控更新进度 Request VO")
+@Data
+public class FakePlateControlUpdateProgressReqVO {
+
+    @Schema(description = "记录主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @NotNull(message = "记录主键ID不能为空")
+    private Long id;
+
+    @Schema(description = "处置进度", requiredMode = Schema.RequiredMode.REQUIRED, example = "已联系车主，等待核实")
+    @NotBlank(message = "处置进度不能为空")
+    private String handleProgress;
+
+}

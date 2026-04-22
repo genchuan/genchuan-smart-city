@@ -3,7 +3,12 @@ package cn.iocoder.yudao.module.vehiclepass.service.inparkmgmt.fakeplatecontrol;
 import java.util.*;
 
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlBatchHandleReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlCheckReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlIgnoreReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlPageReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlUpdateProgressReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.MyFakePlateControlRespVO;
@@ -72,4 +77,33 @@ public interface FakePlateControlService {
      * @param reqVO 批量处置请求
      */
     void batchHandle(FakePlateControlBatchHandleReqVO reqVO);
+
+    /**
+     * 核查套牌管控
+     *
+     * @param reqVO 核查请求
+     */
+    void check(FakePlateControlCheckReqVO reqVO);
+
+    /**
+     * 忽略套牌管控
+     *
+     * @param reqVO 忽略请求
+     */
+    void ignore(FakePlateControlIgnoreReqVO reqVO);
+
+    /**
+     * 更新处置进度
+     *
+     * @param reqVO 更新进度请求
+     */
+    void updateProgress(FakePlateControlUpdateProgressReqVO reqVO);
+
+    /**
+     * 获取套牌管控统计
+     *
+     * @param reqVO 统计请求
+     * @return 统计数据
+     */
+    FakePlateControlChartRespVO getChart(FakePlateControlChartReqVO reqVO);
 }

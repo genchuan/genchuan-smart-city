@@ -44,4 +44,19 @@ public interface FakePlateControlMapper extends BaseMapperX<FakePlateControlDO> 
     }
 
     IPage<MyFakePlateControlRespVO> selectPageJoinStationUser(Page<?> page, @Param("reqVO") FakePlateControlPageReqVO reqVO);
+
+    /**
+     * 查询套牌识别趋势
+     */
+    List<Map<String, Object>> selectIdentifyTrend(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("stationId") Long stationId);
+
+    /**
+     * 查询各场站套牌数
+     */
+    List<Map<String, Object>> selectStationFakeCount(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("stationId") Long stationId);
+
+    /**
+     * 查询待处置数和处置完成率
+     */
+    Map<String, Object> selectHandleStats(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("stationId") Long stationId);
 }

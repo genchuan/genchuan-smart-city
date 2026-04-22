@@ -2,7 +2,12 @@ package cn.iocoder.yudao.module.vehiclepass.service.inparkmgmt.fakeplatecontrol;
 
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlBatchHandleReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlCheckReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlIgnoreReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlPageReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlChartRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlUpdateProgressReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.MyFakePlateControlRespVO;
@@ -126,6 +131,116 @@ public class FakePlateControlServiceImpl implements FakePlateControlService {
 
             plateControlMapper.updateById(updateObj);
         }
+    }
+
+    @Override
+    public void check(FakePlateControlCheckReqVO reqVO) {
+        // 校验记录存在
+        FakePlateControlDO plateControl = plateControlMapper.selectById(reqVO.getId());
+        if (plateControl == null) {
+            throw exception(PLATE_CONTROL_NOT_EXISTS);
+        }
+
+        // 更新记录
+        FakePlateControlDO updateObj = new FakePlateControlDO();
+        updateObj.setId(reqVO.getId());
+        updateObj.setHandleUserId(SecurityFrameworkUtils.getLoginUserId());
+        updateObj.setHandleTime(LocalDateTime.now());
+        updateObj.setStatus("处理中");
+        updateObj.setHandleProgress("已核查");
+        updateObj.setHandleType("核查");
+        plateControlMapper.updateById(updateObj);
+    }
+
+    @Override
+    public void ignore(FakePlateControlIgnoreReqVO reqVO) {
+        // 校验记录存在
+        FakePlateControlDO plateControl = plateControlMapper.selectById(reqVO.getId());
+        if (plateControl == null) {
+            throw exception(PLATE_CONTROL_NOT_EXISTS);
+        }
+
+        // 更新记录
+        FakePlateControlDO updateObj = new FakePlateControlDO();
+        updateObj.setId(reqVO.getId());
+        updateObj.setHandleUserId(SecurityFrameworkUtils.getLoginUserId());
+        updateObj.setHandleTime(LocalDateTime.now());
+        updateObj.setStatus("已关闭");
+        updateObj.setHandleType("忽略");
+        updateObj.setHandleProgress("已忽略");
+        updateObj.setIgnoreReason(reqVO.getIgnoreReason());
+        plateControlMapper.updateById(updateObj);
+    }
+
+    @Override
+    public void updateProgress(FakePlateControlUpdateProgressReqVO reqVO) {
+        // 校验记录存在
+        FakePlateControlDO plateControl = plateControlMapper.selectById(reqVO.getId());
+        if (plateControl == null) {
+            throw exception(PLATE_CONTROL_NOT_EXISTS);
+        }
+
+        // 更新记录
+        FakePlateControlDO updateObj = new FakePlateControlDO();
+        updateObj.setId(reqVO.getId());
+        updateObj.setHandleProgress(reqVO.getHandleProgress());
+        plateControlMapper.updateById(updateObj);
+    }
+
+    @Override
+    public FakePlateControlChartRespVO getChart(FakePlateControlChartReqVO reqVO) {
+        FakePlateControlChartRespVO respVO = new FakePlateControlChartRespVO();
+
+        // 1. 套牌识别趋势
+        List<Map<String, Object>> trendList = plateControlMapper.selectIdentifyTrend(
+                reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
+        List<FakePlateControlChartRespVO.FakeIdentifyTrend> fakeIdentifyTrend = new ArrayList<>();
+        if (trendList != null) {
+            for (Map<String, Object> map : trendList) {
+            FakePlateControlChartRespVO.FakeIdentifyTrend item = new FakePlateControlChartRespVO.FakeIdentifyTrend();
+            Object dateObj = map.get("date");
+            if (dateObj != null) {
+                item.setDate(dateObj.toString());
+            }
+            Object countObj = map.get("count");
+            if (countObj != null) {
+                item.setCount(((Number) countObj).longValue());
+            }
+            fakeIdentifyTrend.add(item);
+        }
+        }
+        respVO.setFakeIdentifyTrend(fakeIdentifyTrend);
+
+        // 2. 各场站套牌数
+        List<Map<String, Object>> stationList = plateControlMapper.selectStationFakeCount(
+                reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
+        List<FakePlateControlChartRespVO.StationFakeCount> stationFakeCount = new ArrayList<>();
+        if (stationList != null) {
+            for (Map<String, Object> map : stationList) {
+            FakePlateControlChartRespVO.StationFakeCount item = new FakePlateControlChartRespVO.StationFakeCount();
+            item.setStationName((String) map.get("stationName"));
+            Object countObj = map.get("count");
+            if (countObj != null) {
+                item.setCount(((Number) countObj).longValue());
+            }
+            stationFakeCount.add(item);
+        }
+        }
+        respVO.setStationFakeCount(stationFakeCount);
+
+        // 3. 卡片数据
+        Map<String, Object> stats = plateControlMapper.selectHandleStats(
+                reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
+        FakePlateControlChartRespVO.CardData cardData = new FakePlateControlChartRespVO.CardData();
+        if (stats != null) {
+            Object waitHandleCountObj = stats.get("waitHandleCount");
+            cardData.setWaitHandleCount(waitHandleCountObj != null ? ((Number) waitHandleCountObj).longValue() : 0L);
+            Object rateObj = stats.get("handleCompleteRate");
+            cardData.setHandleCompleteRate(rateObj != null ? ((Number) rateObj).doubleValue() : 0.0);
+        }
+        respVO.setCardData(cardData);
+
+        return respVO;
     }
 
 }

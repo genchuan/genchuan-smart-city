@@ -1,7 +1,12 @@
 package cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol;
 
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlBatchHandleReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlCheckReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlIgnoreReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlPageReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlChartRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlUpdateProgressReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.MyFakePlateControlRespVO;
@@ -103,6 +108,37 @@ public class FakePlateControlController {
     public CommonResult<Boolean> batchHandle(@Valid @RequestBody FakePlateControlBatchHandleReqVO reqVO) {
         plateControlService.batchHandle(reqVO);
         return success(true);
+    }
+
+    @PutMapping("/check")
+    @Operation(summary = "核查套牌管控")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:fake-plate-control:check')")
+    public CommonResult<Boolean> check(@Valid @RequestBody FakePlateControlCheckReqVO reqVO) {
+        plateControlService.check(reqVO);
+        return success(true);
+    }
+
+    @PutMapping("/ignore")
+    @Operation(summary = "忽略套牌管控")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:fake-plate-control:ignore')")
+    public CommonResult<Boolean> ignore(@Valid @RequestBody FakePlateControlIgnoreReqVO reqVO) {
+        plateControlService.ignore(reqVO);
+        return success(true);
+    }
+
+    @PutMapping("/update-progress")
+    @Operation(summary = "更新处置进度")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:fake-plate-control:update-progress')")
+    public CommonResult<Boolean> updateProgress(@Valid @RequestBody FakePlateControlUpdateProgressReqVO reqVO) {
+        plateControlService.updateProgress(reqVO);
+        return success(true);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "套牌管控统计")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:fake-plate-control:chart')")
+    public CommonResult<FakePlateControlChartRespVO> getChart(@Valid FakePlateControlChartReqVO reqVO) {
+        return success(plateControlService.getChart(reqVO));
     }
 
     @GetMapping("/export-excel")
