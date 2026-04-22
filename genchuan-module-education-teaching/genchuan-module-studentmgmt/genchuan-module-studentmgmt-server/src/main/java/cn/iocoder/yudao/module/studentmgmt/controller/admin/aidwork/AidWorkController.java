@@ -120,7 +120,7 @@ public class AidWorkController {
     @PutMapping("/chart")
     @Operation(summary = "奖助勤贷统计看板")
     @PreAuthorize("@ss.hasPermission('studentmgmt:aid-work:chart')")
-    public CommonResult<AidWorkChartRespVO> chart(@Valid @RequestBody AidWorkChartReqVO reqVO) {
+    public CommonResult<AidWorkChartRespVO> chart(@Valid AidWorkChartReqVO reqVO) {
         AidWorkChartRespVO vo = aidWorkService.chart(reqVO);
         return success(vo);
     }
@@ -128,7 +128,7 @@ public class AidWorkController {
     @PutMapping("/chart/applyCount")
     @Operation(summary = "各类型申请人数 / 办理完成率统计")
     @PreAuthorize("@ss.hasPermission('studentmgmt:aid-work:chart')")
-    public CommonResult<List<AidWorkApplyCountRespVO>> applyCount(@Valid @RequestBody AidWorkApplyCountReqVO reqVO) {
+    public CommonResult<List<AidWorkApplyCountRespVO>> applyCount(@Valid AidWorkApplyCountReqVO reqVO) {
         List<AidWorkApplyCountRespVO> vo = aidWorkService.applyCount(reqVO);
         return success(vo);
     }
