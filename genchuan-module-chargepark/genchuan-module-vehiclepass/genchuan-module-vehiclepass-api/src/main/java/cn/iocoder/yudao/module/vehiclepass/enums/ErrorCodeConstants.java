@@ -14,4 +14,6 @@ public interface ErrorCodeConstants {
     ErrorCode RECORD_TYPE_NOT_MANUAL = new ErrorCode(500, "入场记录类型非人工补录");
 
     ErrorCode PARK_STATUS_NOT_EXISTS = new ErrorCode(500, "在停状态不存在");
+
+    ErrorCode PLATE_CONTROL_NOT_EXISTS = new ErrorCode(500, "套牌管控不存在");
 }
