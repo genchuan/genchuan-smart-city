@@ -96,4 +96,12 @@ public interface OilCarHandleService {
      */
     void updateProgress(OilCarHandleUpdateProgressReqVO reqVO);
 
+    /**
+     * 获取统计图表数据
+     *
+     * @param reqVO 统计请求
+     * @return 统计数据
+     */
+    OilCarHandleChartRespVO getChart(OilCarHandleChartReqVO reqVO);
+
 }

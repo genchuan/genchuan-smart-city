@@ -57,4 +57,63 @@
         ORDER BY o.id DESC
     </select>
 
+    <!-- 查询处置进度趋势（按天统计） -->
+    <select id="selectHandleProgressTrend" resultType="map">
+        SELECT
+            DATE(o.identify_time) AS date,
+            COUNT(*) AS count
+        FROM oil_car_handle o
+        WHERE o.deleted = 0
+        <if test="startTime != null and startTime != ''">
+            AND o.identify_time >= FROM_UNIXTIME(#{startTime})
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND o.identify_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
+        <if test="stationId != null">
+            AND o.station_id = #{stationId}
+        </if>
+        GROUP BY DATE(o.identify_time)
+        ORDER BY date
+    </select>
+
+    <!-- 查询各场站处置量 -->
+    <select id="selectStationHandleCount" resultType="map">
+        SELECT
+            s.name AS stationName,
+            COUNT(o.id) AS count
+        FROM oil_car_handle o
+        LEFT JOIN station_info s ON o.station_id = s.id AND s.deleted = 0
+        WHERE o.deleted = 0
+        <if test="startTime != null and startTime != ''">
+            AND o.identify_time >= FROM_UNIXTIME(#{startTime})
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND o.identify_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
+        <if test="stationId != null">
+            AND o.station_id = #{stationId}
+        </if>
+        GROUP BY o.station_id, s.name
+        ORDER BY count DESC
+    </select>
+
+    <!-- 查询待处置数和处置完成率 -->
+    <select id="selectHandleStats" resultType="map">
+        SELECT
+            SUM(CASE WHEN o.status = '未处理' OR o.status = '处理中' THEN 1 ELSE 0 END) AS waitHandleCount,
+            ROUND(SUM(CASE WHEN o.status = '已关闭' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(*), 0), 1) AS handleCompleteRate
+        FROM oil_car_handle o
+        WHERE o.deleted = 0
+        <if test="startTime != null and startTime != ''">
+            AND o.identify_time >= FROM_UNIXTIME(#{startTime})
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND o.identify_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
+        <if test="stationId != null">
+            AND o.station_id = #{stationId}
+        </if>
+    </select>
+
 </mapper>

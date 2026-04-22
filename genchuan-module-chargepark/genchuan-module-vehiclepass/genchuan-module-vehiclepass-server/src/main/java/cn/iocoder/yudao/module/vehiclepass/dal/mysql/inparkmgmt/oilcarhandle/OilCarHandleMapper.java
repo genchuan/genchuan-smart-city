@@ -46,4 +46,19 @@ public interface OilCarHandleMapper extends BaseMapperX<OilCarHandleDO> {
 
     IPage<OilCarHandleRespVO> selectPageJoin(Page<?> page, @Param("reqVO") OilCarHandlePageReqVO reqVO);
 
+    /**
+     * 查询处置进度趋势
+     */
+    List<Map<String, Object>> selectHandleProgressTrend(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("stationId") Long stationId);
+
+    /**
+     * 查询各场站处置量
+     */
+    List<Map<String, Object>> selectStationHandleCount(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("stationId") Long stationId);
+
+    /**
+     * 查询待处置数和处置完成率
+     */
+    Map<String, Object> selectHandleStats(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("stationId") Long stationId);
+
 }

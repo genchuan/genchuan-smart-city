@@ -126,6 +126,13 @@ public class OilCarHandleController {
         return success(true);
     }
 
+    @GetMapping("/chart")
+    @Operation(summary = "获取油车占位处置统计")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:oil-car-handle:query')")
+    public CommonResult<OilCarHandleChartRespVO> getChart(@Valid OilCarHandleChartReqVO reqVO) {
+        return success(carHandleService.getChart(reqVO));
+    }
+
     @GetMapping("/export-excel")
     @Operation(summary = "导出油车占位处置 Excel")
     @PreAuthorize("@ss.hasPermission('oil:car-handle:export')")

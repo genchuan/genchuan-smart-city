@@ -5,6 +5,8 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhan
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandleHandleReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandleIgnoreReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandleUpdateProgressReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandleChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandleChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandlePageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandleRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandleSaveReqVO;
@@ -173,6 +175,50 @@ public class OilCarHandleServiceImpl implements OilCarHandleService {
         updateObj.setId(reqVO.getId());
         updateObj.setHandleProgress(reqVO.getHandleProgress());
         carHandleMapper.updateById(updateObj);
+    }
+
+    @Override
+    public OilCarHandleChartRespVO getChart(OilCarHandleChartReqVO reqVO) {
+        // 查询处置进度趋势
+        List<Map<String, Object>> trendList = carHandleMapper.selectHandleProgressTrend(
+                reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
+        List<OilCarHandleChartRespVO.HandleProgressTrend> handleProgressTrends = new ArrayList<>();
+        for (Map<String, Object> trend : trendList) {
+            OilCarHandleChartRespVO.HandleProgressTrend item = new OilCarHandleChartRespVO.HandleProgressTrend();
+            item.setDate(trend.get("date") != null ? trend.get("date").toString() : null);
+            item.setCount(trend.get("count") != null ? Long.parseLong(trend.get("count").toString()) : 0L);
+            handleProgressTrends.add(item);
+        }
+
+        // 查询各场站处置量
+        List<Map<String, Object>> stationList = carHandleMapper.selectStationHandleCount(
+                reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
+        List<OilCarHandleChartRespVO.StationHandleCount> stationHandleCounts = new ArrayList<>();
+        for (Map<String, Object> station : stationList) {
+            OilCarHandleChartRespVO.StationHandleCount item = new OilCarHandleChartRespVO.StationHandleCount();
+            item.setStationName(station.get("stationName") != null ? station.get("stationName").toString() : null);
+            item.setCount(station.get("count") != null ? Long.parseLong(station.get("count").toString()) : 0L);
+            stationHandleCounts.add(item);
+        }
+
+        // 查询待处置数和处置完成率
+        Map<String, Object> stats = carHandleMapper.selectHandleStats(
+                reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
+        OilCarHandleChartRespVO.CardData cardData = new OilCarHandleChartRespVO.CardData();
+        if (stats != null) {
+            cardData.setWaitHandleCount(stats.get("waitHandleCount") != null ? Long.parseLong(stats.get("waitHandleCount").toString()) : 0L);
+            cardData.setHandleCompleteRate(stats.get("handleCompleteRate") != null ? Double.parseDouble(stats.get("handleCompleteRate").toString()) : 0.0);
+        } else {
+            cardData.setWaitHandleCount(0L);
+            cardData.setHandleCompleteRate(0.0);
+        }
+
+        // 组装返回
+        OilCarHandleChartRespVO respVO = new OilCarHandleChartRespVO();
+        respVO.setHandleProgressTrend(handleProgressTrends);
+        respVO.setStationHandleCount(stationHandleCounts);
+        respVO.setCardData(cardData);
+        return respVO;
     }
 
 }
