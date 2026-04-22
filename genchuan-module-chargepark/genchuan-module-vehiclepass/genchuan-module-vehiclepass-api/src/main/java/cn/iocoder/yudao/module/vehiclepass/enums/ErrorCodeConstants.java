@@ -16,4 +16,6 @@ public interface ErrorCodeConstants {
     ErrorCode PARK_STATUS_NOT_EXISTS = new ErrorCode(500, "在停状态不存在");
 
     ErrorCode PLATE_CONTROL_NOT_EXISTS = new ErrorCode(500, "套牌管控不存在");
+
+    ErrorCode CAR_HANDLE_NOT_EXISTS = new ErrorCode(500, "油车占位处置不存在");
 }
