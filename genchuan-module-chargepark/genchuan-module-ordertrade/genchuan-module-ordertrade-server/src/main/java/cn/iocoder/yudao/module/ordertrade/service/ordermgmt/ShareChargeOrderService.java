@@ -42,7 +42,7 @@ public interface ShareChargeOrderService {
 
     void refundShareChargeOrder(IdReqVO reqVO);
 
-    /** Invoice - 单条操作（IdReqVO） */
+    /** Invoice - 单条操作（InvoiceOrderReqVO） */
 
-    void invoiceShareChargeOrder(IdReqVO reqVO);
+    void invoiceShareChargeOrder(InvoiceOrderReqVO reqVO);
 }

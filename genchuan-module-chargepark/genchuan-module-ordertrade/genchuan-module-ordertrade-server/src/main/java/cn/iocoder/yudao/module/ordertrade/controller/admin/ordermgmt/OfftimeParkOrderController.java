@@ -126,7 +126,7 @@ public class OfftimeParkOrderController {
     @PutMapping("/invoice")
     @ApiAccessLog(operateType = UPDATE)  // ← 加这一行
     @Operation(summary = "申请开票")
-    public CommonResult<Boolean> invoiceOfftimeParkOrder(@Valid @RequestBody IdReqVO reqVO) {
+    public CommonResult<Boolean> invoiceOfftimeParkOrder(@Valid @RequestBody InvoiceOrderReqVO reqVO) {
         offtimeParkOrderService.invoiceOfftimeParkOrder(reqVO);
         return success(true);
     }

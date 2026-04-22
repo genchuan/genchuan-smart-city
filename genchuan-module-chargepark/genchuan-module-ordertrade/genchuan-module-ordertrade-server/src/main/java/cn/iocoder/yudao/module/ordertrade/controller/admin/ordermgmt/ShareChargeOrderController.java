@@ -133,7 +133,7 @@ public class ShareChargeOrderController {
     @PutMapping("/invoice")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "申请开票")
-    public CommonResult<Boolean> invoiceShareChargeOrder(@Valid @RequestBody IdReqVO reqVO) {
+    public CommonResult<Boolean> invoiceShareChargeOrder(@Valid @RequestBody InvoiceOrderReqVO reqVO) {
         shareChargeOrderService.invoiceShareChargeOrder(reqVO);
         return success(true);
     }
