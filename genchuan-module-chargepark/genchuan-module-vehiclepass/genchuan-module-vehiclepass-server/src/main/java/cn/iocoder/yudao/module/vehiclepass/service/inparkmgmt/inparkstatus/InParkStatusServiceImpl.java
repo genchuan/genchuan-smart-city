@@ -116,4 +116,14 @@ public class InParkStatusServiceImpl implements InParkStatusService {
         return respVO;
     }
 
+    @Override
+    public void remindParkStatus(Long id) {
+        // 校验记录存在
+        InParkStatusDO parkStatus = parkStatusMapper.selectById(id);
+        if (parkStatus == null) {
+            throw exception(PARK_STATUS_NOT_EXISTS);
+        }
+        // TODO: 调用短信或推送服务提醒车主
+    }
+
 }

@@ -79,4 +79,11 @@ public interface InParkStatusService {
      * @return 定位信息
      */
     InParkStatusLocationRespVO getInParkStatusLocation(InParkStatusLocationReqVO reqVO);
+
+    /**
+     * 提醒在场车辆
+     *
+     * @param id 记录ID
+     */
+    void remindParkStatus(Long id);
 }

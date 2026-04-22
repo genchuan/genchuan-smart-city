@@ -106,6 +106,14 @@ public class InParkStatusController {
         return success(parkStatusService.getInParkStatusLocation(reqVO));
     }
 
+    @PutMapping("/remind")
+    @Operation(summary = "提醒在场车辆")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:in-park-status:remind')")
+    public CommonResult<Boolean> remindParkStatus(@RequestParam("id") Long id) {
+        parkStatusService.remindParkStatus(id);
+        return success(true);
+    }
+
     @GetMapping("/export-excel")
     @Operation(summary = "导出在停状态 Excel")
     @PreAuthorize("@ss.hasPermission('in:park-status:export')")
