@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.vehiclepass.service.inparkmgmt.inparkstatus;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusLocationReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusLocationRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusSaveReqVO;
@@ -91,6 +93,27 @@ public class InParkStatusServiceImpl implements InParkStatusService {
         Page<InParkStatusRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
         IPage<InParkStatusRespVO> pageResult = parkStatusMapper.selectPageJoinSpaceStation(page, pageReqVO);
         return new PageResult<>(pageResult.getRecords(), pageResult.getTotal());
+    }
+
+    @Override
+    public InParkStatusLocationRespVO getInParkStatusLocation(InParkStatusLocationReqVO reqVO) {
+        Map<String, Object> location = parkStatusMapper.selectLocationById(reqVO.getId());
+        if (location == null) {
+            throw exception(PARK_STATUS_NOT_EXISTS);
+        }
+
+        InParkStatusLocationRespVO respVO = new InParkStatusLocationRespVO();
+        Object lonObj = location.get("lon");
+        Object latObj = location.get("lat");
+        if (lonObj != null) {
+            respVO.setLon(new java.math.BigDecimal(lonObj.toString()));
+        }
+        if (latObj != null) {
+            respVO.setLat(new java.math.BigDecimal(latObj.toString()));
+        }
+        respVO.setSpaceName((String) location.get("spaceName"));
+        respVO.setStationName((String) location.get("stationName"));
+        return respVO;
     }
 
 }

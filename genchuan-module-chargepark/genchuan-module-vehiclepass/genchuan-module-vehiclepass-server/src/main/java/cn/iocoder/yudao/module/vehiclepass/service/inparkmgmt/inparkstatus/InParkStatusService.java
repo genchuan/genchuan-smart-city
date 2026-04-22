@@ -2,6 +2,8 @@ package cn.iocoder.yudao.module.vehiclepass.service.inparkmgmt.inparkstatus;
 
 import java.util.*;
 
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusLocationReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusLocationRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusSaveReqVO;
@@ -69,4 +71,12 @@ public interface InParkStatusService {
      * @return 在停状态分页
      */
     PageResult<InParkStatusRespVO> getInParkStatusPage(InParkStatusPageReqVO pageReqVO);
+
+    /**
+     * 获取在停状态定位
+     *
+     * @param reqVO 定位请求
+     * @return 定位信息
+     */
+    InParkStatusLocationRespVO getInParkStatusLocation(InParkStatusLocationReqVO reqVO);
 }

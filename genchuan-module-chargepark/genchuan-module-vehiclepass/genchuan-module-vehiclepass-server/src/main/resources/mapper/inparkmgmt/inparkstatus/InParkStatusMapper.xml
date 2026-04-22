@@ -42,4 +42,18 @@
         ORDER BY p.id DESC
     </select>
 
+    <select id="selectLocationById" resultType="map">
+        SELECT
+            p.id,
+            ai.lon,
+            ai.lat,
+            ps.location AS spaceName,
+            s.name AS stationName
+        FROM in_park_status p
+        LEFT JOIN station_info s ON p.station_id = s.id AND s.deleted = 0
+        LEFT JOIN area_info ai ON s.area_id = ai.id AND ai.deleted = 0
+        LEFT JOIN parking_space_info ps ON p.space_id = ps.id AND ps.deleted = 0
+        WHERE p.id = #{id} AND p.deleted = 0
+    </select>
+
 </mapper>

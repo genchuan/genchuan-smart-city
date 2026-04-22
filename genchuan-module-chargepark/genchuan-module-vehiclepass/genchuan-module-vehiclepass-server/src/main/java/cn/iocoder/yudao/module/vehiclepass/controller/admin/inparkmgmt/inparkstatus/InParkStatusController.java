@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus;
 
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusLocationReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusLocationRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusSaveReqVO;
@@ -95,6 +97,13 @@ public class InParkStatusController {
     @PreAuthorize("@ss.hasPermission('vehiclepass:in-park-status:query')")
     public CommonResult<PageResult<InParkStatusRespVO>> getInParkStatusPage(@Valid InParkStatusPageReqVO pageReqVO) {
         return success(parkStatusService.getInParkStatusPage(pageReqVO));
+    }
+
+    @GetMapping("/location")
+    @Operation(summary = "在停状态定位")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:in-park-status:location')")
+    public CommonResult<InParkStatusLocationRespVO> getParkStatusLocation(@Valid InParkStatusLocationReqVO reqVO) {
+        return success(parkStatusService.getInParkStatusLocation(reqVO));
     }
 
     @GetMapping("/export-excel")

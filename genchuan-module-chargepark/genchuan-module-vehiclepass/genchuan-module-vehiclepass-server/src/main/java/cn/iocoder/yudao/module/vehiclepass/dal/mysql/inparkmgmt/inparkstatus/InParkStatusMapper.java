@@ -42,4 +42,9 @@ public interface InParkStatusMapper extends BaseMapperX<InParkStatusDO> {
 
     IPage<InParkStatusRespVO> selectPageJoinSpaceStation(Page<?> page, @Param("reqVO") InParkStatusPageReqVO reqVO);
 
+    /**
+     * 查询定位信息
+     */
+    Map<String, Object> selectLocationById(@Param("id") Long id);
+
 }
