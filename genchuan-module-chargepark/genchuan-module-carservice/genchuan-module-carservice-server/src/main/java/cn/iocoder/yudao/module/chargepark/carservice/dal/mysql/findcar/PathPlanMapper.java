@@ -18,8 +18,10 @@ public interface PathPlanMapper extends BaseMapperX<PathPlanDO> {
     default PageResult<PathPlanDO> selectPage(PathPlanPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<PathPlanDO>()
                 .eqIfPresent(PathPlanDO::getUserId, reqVO.getUserId())
-                .likeIfPresent(PathPlanDO::getStartLocation, reqVO.getStartLocation())
-                .likeIfPresent(PathPlanDO::getEndLocation, reqVO.getEndLocation())
+                // 前端传的是汉字地址(如"入口"/"A 区"),匹配 DB start_location_name/end_location_name 列;
+                // start_location/end_location 存经纬度坐标,无法做汉字模糊匹配
+                .likeIfPresent(PathPlanDO::getStartLocationName, reqVO.getStartLocation())
+                .likeIfPresent(PathPlanDO::getEndLocationName, reqVO.getEndLocation())
                 .betweenIfPresent(PathPlanDO::getPlanTime, reqVO.getPlanTime())
                 .orderByDesc(PathPlanDO::getId));
     }

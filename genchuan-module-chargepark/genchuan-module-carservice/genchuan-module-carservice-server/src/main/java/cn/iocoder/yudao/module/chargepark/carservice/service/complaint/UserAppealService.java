@@ -8,6 +8,7 @@ import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.UserAppealPageReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.UserAppealSaveReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.complaint.UserAppealDO;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -18,9 +19,9 @@ import java.util.List;
  */
 public interface UserAppealService {
 
-    Long createUserAppeal(UserAppealSaveReqVO createReqVO);
+    Long createUserAppeal(@Valid UserAppealSaveReqVO createReqVO);
 
-    void updateUserAppeal(UserAppealSaveReqVO updateReqVO);
+    void updateUserAppeal(@Valid UserAppealSaveReqVO updateReqVO);
 
     void deleteUserAppeal(Long id);
 

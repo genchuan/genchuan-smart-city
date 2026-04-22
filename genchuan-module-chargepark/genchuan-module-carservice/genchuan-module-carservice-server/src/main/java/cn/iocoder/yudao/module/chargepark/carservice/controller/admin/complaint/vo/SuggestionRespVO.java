@@ -32,7 +32,7 @@ public class SuggestionRespVO {
     @ExcelProperty("提交时间")
     private LocalDateTime submitTime;
 
-    @Schema(description = "处理状态")
+    @Schema(description = "处理状态,关联字典 suggestion_status")
     @ExcelProperty("处理状态")
     private String status;
 

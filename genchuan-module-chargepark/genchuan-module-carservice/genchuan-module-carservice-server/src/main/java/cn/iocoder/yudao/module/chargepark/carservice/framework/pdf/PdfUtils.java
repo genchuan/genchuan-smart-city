@@ -7,6 +7,7 @@ import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.FontSelector;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
@@ -40,6 +41,17 @@ public class PdfUtils {
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     /**
+     * 构建字体选择器:ASCII 走 Helvetica,CJK 走 STSong-Light。
+     * 原因:UniGB-UCS2-H 编码下 STSong 的 ASCII 字符宽度紊乱,数字会挤在一起。
+     */
+    private static FontSelector buildSelector(BaseFont cjk, int size, int style, Color color) {
+        FontSelector selector = new FontSelector();
+        selector.addFont(new Font(Font.HELVETICA, size, style, color));
+        selector.addFont(new Font(cjk, size, style, color));
+        return selector;
+    }
+
+    /**
      * 中文字体（OpenPDF fonts-extra 提供，无需外部 ttf）
      */
     private static BaseFont createChineseBaseFont() {
@@ -68,8 +80,15 @@ public class PdfUtils {
         Font titleFont = new Font(bf, 16, Font.BOLD);
         Font headerFont = new Font(bf, 10, Font.BOLD, Color.WHITE);
         Font cellFont = new Font(bf, 9, Font.NORMAL);
+        // FontSelector: ASCII 走 Helvetica(等宽正常),CJK 走 STSong-Light;解决"2026-04-22"数字紧挨
+        FontSelector headerSelector = buildSelector(bf, 10, Font.BOLD, Color.WHITE);
+        FontSelector cellSelector = buildSelector(bf, 9, Font.NORMAL, Color.BLACK);
 
-        Document document = new Document(PageSize.A4.rotate(), 36, 36, 36, 36);
+        // 列数 >8 时升 A3 横向,防止中文挤压换行
+        com.lowagie.text.Rectangle pageSize = headers.size() > 8
+                ? PageSize.A3.rotate()
+                : PageSize.A4.rotate();
+        Document document = new Document(pageSize, 36, 36, 36, 36);
         try {
             response.setContentType("application/pdf");
             response.setCharacterEncoding(StandardCharsets.UTF_8.name());
@@ -99,14 +118,26 @@ public class PdfUtils {
             PdfPTable table = new PdfPTable(columnCount);
             table.setWidthPercentage(100);
             table.setSpacingBefore(8f);
+            // 按 "表头+前 50 行内容最长字符数" 分配相对列宽,防止某一列内容过长被压换行
+            try {
+                float[] widths = computeColumnWidths(headers, dataList);
+                table.setWidths(widths);
+            } catch (Exception ignore) {
+                // 异常就退回等宽,保持原行为
+            }
 
             // 表头
             for (String header : headers.values()) {
-                PdfPCell cell = new PdfPCell(new Phrase(header, headerFont));
+                Phrase hp = headerSelector.process(header);
+                hp.setLeading(14f);
+                PdfPCell cell = new PdfPCell(hp);
                 cell.setBackgroundColor(new Color(46, 117, 182));
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-                cell.setPadding(6f);
+                cell.setPaddingTop(8f);
+                cell.setPaddingBottom(8f);
+                cell.setPaddingLeft(6f);
+                cell.setPaddingRight(6f);
                 table.addCell(cell);
             }
 
@@ -115,10 +146,15 @@ public class PdfUtils {
             for (T item : dataList) {
                 for (String fieldName : fieldNames) {
                     String text = readField(item, fieldName);
-                    PdfPCell cell = new PdfPCell(new Phrase(text, cellFont));
+                    Phrase cp = text.isEmpty() ? new Phrase(" ", cellFont) : cellSelector.process(text);
+                    cp.setLeading(12f);
+                    PdfPCell cell = new PdfPCell(cp);
                     cell.setHorizontalAlignment(Element.ALIGN_LEFT);
                     cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-                    cell.setPadding(4f);
+                    cell.setPaddingTop(6f);
+                    cell.setPaddingBottom(6f);
+                    cell.setPaddingLeft(5f);
+                    cell.setPaddingRight(5f);
                     table.addCell(cell);
                 }
             }
@@ -137,6 +173,37 @@ public class PdfUtils {
                 document.close();
             }
         }
+    }
+
+    /**
+     * 根据表头 + 前 50 行内容的最长字符数(中文按 2 倍宽),按比例生成列宽数组。
+     * 每列最小宽度 3,最大宽度 30,避免极端列占满页面。
+     */
+    private static <T> float[] computeColumnWidths(LinkedHashMap<String, String> headers, List<T> dataList) {
+        List<String> fieldNames = new ArrayList<>(headers.keySet());
+        List<String> headerTitles = new ArrayList<>(headers.values());
+        int cols = fieldNames.size();
+        float[] widths = new float[cols];
+        int sample = Math.min(dataList.size(), 50);
+        for (int i = 0; i < cols; i++) {
+            int max = visualLength(headerTitles.get(i));
+            for (int r = 0; r < sample; r++) {
+                int len = visualLength(readField(dataList.get(r), fieldNames.get(i)));
+                if (len > max) max = len;
+            }
+            widths[i] = Math.min(30f, Math.max(3f, max));
+        }
+        return widths;
+    }
+
+    /** 中文等非 ASCII 字符按 2 倍宽计算,ASCII 按 1 倍 */
+    private static int visualLength(String s) {
+        if (s == null || s.isEmpty()) return 0;
+        int len = 0;
+        for (int i = 0; i < s.length(); i++) {
+            len += s.charAt(i) < 0x80 ? 1 : 2;
+        }
+        return len;
     }
 
     /**

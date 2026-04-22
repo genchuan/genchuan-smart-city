@@ -9,6 +9,7 @@ import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.rescue.vo.
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.rescue.vo.RescueInfoTransferReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.rescue.vo.RescueInfoUpdateProgressReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.rescue.RescueInfoDO;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -19,9 +20,9 @@ import java.util.List;
  */
 public interface RescueInfoService {
 
-    Long createRescueInfo(RescueInfoSaveReqVO createReqVO);
+    Long createRescueInfo(@Valid RescueInfoSaveReqVO createReqVO);
 
-    void updateRescueInfo(RescueInfoSaveReqVO updateReqVO);
+    void updateRescueInfo(@Valid RescueInfoSaveReqVO updateReqVO);
 
     void deleteRescueInfo(Long id);
 

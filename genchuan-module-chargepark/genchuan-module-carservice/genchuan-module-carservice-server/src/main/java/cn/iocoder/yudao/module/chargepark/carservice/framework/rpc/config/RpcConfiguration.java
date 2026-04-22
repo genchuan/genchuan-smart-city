@@ -1,5 +1,8 @@
 package cn.iocoder.yudao.module.chargepark.carservice.framework.rpc.config;
 
+import cn.iocoder.yudao.module.inspectop.api.space.SpaceMonitorApi;
+import cn.iocoder.yudao.module.stationresource.api.parking.ParkingSpaceInfoApi;
+import cn.iocoder.yudao.module.stationresource.api.station.StationInfoApi;
 import cn.iocoder.yudao.module.system.api.notify.NotifyMessageSendApi;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -13,7 +16,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(value = "carserviceRpcConfiguration", proxyBeanMethods = false)
 @EnableFeignClients(clients = {
         AdminUserApi.class,
-        NotifyMessageSendApi.class
+        NotifyMessageSendApi.class,
+        StationInfoApi.class,
+        ParkingSpaceInfoApi.class,
+        SpaceMonitorApi.class
 })
 public class RpcConfiguration {
 }

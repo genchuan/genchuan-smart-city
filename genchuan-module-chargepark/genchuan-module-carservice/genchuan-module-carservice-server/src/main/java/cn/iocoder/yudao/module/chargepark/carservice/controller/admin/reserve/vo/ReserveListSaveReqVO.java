@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.chargepark.carservice.controller.admin.reserve.vo;
 
+import cn.iocoder.yudao.framework.dict.validation.InDict;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -32,11 +33,17 @@ public class ReserveListSaveReqVO {
     @NotNull(message = "预约时间不能为空")
     private LocalDateTime reserveTime;
 
-    @Schema(description = "预约类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "停车预约")
+    @Schema(description = "预约类型,关联字典 reserve_list_reserve_type",
+            requiredMode = Schema.RequiredMode.REQUIRED, example = "停车预约",
+            allowableValues = {"停车预约", "充电预约"})
     @NotBlank(message = "预约类型不能为空")
+    @InDict(type = "reserve_list_reserve_type")
     private String reserveType;
 
-    @Schema(description = "预约状态（创建时由后端默认为 待审核）", example = "待审核")
+    @Schema(description = "预约状态,关联字典 reserve_list_status(创建时由后端默认为 待审核)",
+            example = "待审核",
+            allowableValues = {"待审核", "已生效", "已完成", "已取消"})
+    @InDict(type = "reserve_list_status")
     private String status;
 
     @Schema(description = "审核人 ID")

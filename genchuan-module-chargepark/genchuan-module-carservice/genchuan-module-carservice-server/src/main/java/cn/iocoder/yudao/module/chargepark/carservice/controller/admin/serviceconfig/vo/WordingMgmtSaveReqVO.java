@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.chargepark.carservice.controller.admin.serviceconfig.vo;
 
+import cn.iocoder.yudao.framework.dict.validation.InDict;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -21,11 +22,16 @@ public class WordingMgmtSaveReqVO {
     @NotBlank(message = "话术内容不能为空")
     private String content;
 
-    @Schema(description = "话术类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "快捷回复")
+    @Schema(description = "话术类型,关联字典 wording_mgmt_type",
+            requiredMode = Schema.RequiredMode.REQUIRED, example = "快捷回复",
+            allowableValues = {"快捷回复", "自动回复", "投诉回复"})
     @NotBlank(message = "话术类型不能为空")
+    @InDict(type = "wording_mgmt_type")
     private String type;
 
-    @Schema(description = "状态", example = "未生效")
+    @Schema(description = "状态,关联字典 wording_mgmt_status", example = "未生效",
+            allowableValues = {"未生效", "已生效"})
+    @InDict(type = "wording_mgmt_status")
     private String status;
 
     @Schema(description = "备用字段 1")

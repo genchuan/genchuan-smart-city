@@ -12,11 +12,14 @@ import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.carguide.Nea
 import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.UserNameInjector;
 import cn.iocoder.yudao.module.chargepark.carservice.service.carguide.NearStationService;
 import cn.iocoder.yudao.module.chargepark.carservice.service.decision.ServiceOpReportService;
+import cn.iocoder.yudao.module.stationresource.api.station.StationInfoApi;
+import cn.iocoder.yudao.module.stationresource.api.station.dto.StationInfoRespDTO;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,6 +35,7 @@ import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
+@Slf4j
 @Tag(name = "车辆引导 - 周边场站")
 @RestController
 @RequestMapping("/carservice/near-station")
@@ -46,6 +50,9 @@ public class NearStationController {
 
     @Resource
     private AdminUserApi adminUserApi;
+
+    @Resource
+    private StationInfoApi stationInfoApi;
 
     @Value("${carservice.navigate.map-url-template}")
     private String mapUrlTemplate;
@@ -84,10 +91,37 @@ public class NearStationController {
         if (record == null) {
             return success(null);
         }
-        // TODO 等 stationresource 模块开 RPC 后,按 stationId 查目标场站真实坐标
-        // 现阶段暂用 queryLocation 作为导航终点,契约已对齐文档
-        String to = record.getQueryLocation() == null ? "" : record.getQueryLocation();
+        // 按 stationId 从 stationresource 拿真实场站坐标;下游异常或拿不到就 null,不构造半成品 URL
+        String to = resolveCoord(reqVO.getStationId(), record.getQueryLocation());
+        if (to == null) {
+            return success(null);
+        }
         return success(mapUrlTemplate.replace("{to}", to));
+    }
+
+    /** 返回可直接拼到地图 URL 的 "lon,lat",拿不到返回 null */
+    private String resolveCoord(Long stationId, String queryLocation) {
+        try {
+            CommonResult<StationInfoRespDTO> r = stationInfoApi.getStation(stationId);
+            StationInfoRespDTO station = r == null ? null : r.getData();
+            if (station != null && station.getLon() != null && station.getLat() != null) {
+                return station.getLon().toPlainString() + "," + station.getLat().toPlainString();
+            }
+        } catch (Exception ex) {
+            log.warn("[navigate] stationresource RPC 失败 stationId={}", stationId, ex);
+        }
+        if (queryLocation != null) {
+            String[] parts = queryLocation.split(",");
+            if (parts.length == 2) {
+                try {
+                    Double.parseDouble(parts[0].trim());
+                    Double.parseDouble(parts[1].trim());
+                    return queryLocation;
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        }
+        return null;
     }
 
     @GetMapping("/reserve")

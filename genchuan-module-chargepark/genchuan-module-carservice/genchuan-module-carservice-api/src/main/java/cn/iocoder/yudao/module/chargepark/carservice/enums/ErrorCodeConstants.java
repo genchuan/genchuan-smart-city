@@ -42,4 +42,11 @@ public interface ErrorCodeConstants {
     // ========== 决策分析 1-100-007-xxx ==========
     ErrorCode SERVICE_OP_REPORT_PARAM_INVALID = new ErrorCode(1_100_007_001, "服务运营报表参数无效");
 
+    // ========== 跨模块外键校验 1-100-008-xxx ==========
+    ErrorCode STATION_NOT_EXISTS = new ErrorCode(1_100_008_001, "场站不存在");
+    ErrorCode SPACE_NOT_EXISTS = new ErrorCode(1_100_008_002, "车位不存在");
+    ErrorCode RESCUE_USER_NOT_EXISTS = new ErrorCode(1_100_008_003, "救援人员不存在");
+    ErrorCode RESCUE_USER_DISABLED = new ErrorCode(1_100_008_004, "救援人员已停用");
+    ErrorCode CROSS_MODULE_RPC_UNAVAILABLE = new ErrorCode(1_100_008_005, "下游服务暂不可用,请稍后重试");
+
 }

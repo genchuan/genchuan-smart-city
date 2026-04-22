@@ -16,9 +16,11 @@ import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.reserve.vo
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.reserve.vo.ReserveListRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.reserve.ReserveListDO;
 import cn.iocoder.yudao.module.chargepark.carservice.framework.pdf.PdfUtils;
+import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.StationNameInjector;
 import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.UserNameInjector;
 import cn.iocoder.yudao.module.chargepark.carservice.service.decision.ServiceOpReportService;
 import cn.iocoder.yudao.module.chargepark.carservice.service.reserve.ReserveListService;
+import cn.iocoder.yudao.module.stationresource.api.station.StationInfoApi;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -55,6 +57,9 @@ public class ReserveListController {
 
     @Resource
     private AdminUserApi adminUserApi;
+
+    @Resource
+    private StationInfoApi stationInfoApi;
 
     @GetMapping("/page")
     @Operation(summary = "筛选/刷新 预约列表")
@@ -205,6 +210,8 @@ public class ReserveListController {
         UserNameInjector.inject(list, adminUserApi,
                 UserNameInjector.field(ReserveListRespVO::getUserId, ReserveListRespVO::setUserName),
                 UserNameInjector.field(ReserveListRespVO::getAuditUserId, ReserveListRespVO::setAuditUserName));
+        StationNameInjector.inject(list, stationInfoApi,
+                StationNameInjector.field(ReserveListRespVO::getStationId, ReserveListRespVO::setStationName));
     }
 
 }

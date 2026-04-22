@@ -4,6 +4,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.findcar.vo.SpaceLocationPageReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.findcar.vo.SpaceLocationSaveReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.findcar.SpaceLocationDO;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -14,9 +15,9 @@ import java.util.List;
  */
 public interface SpaceLocationService {
 
-    Long createSpaceLocation(SpaceLocationSaveReqVO createReqVO);
+    Long createSpaceLocation(@Valid SpaceLocationSaveReqVO createReqVO);
 
-    void updateSpaceLocation(SpaceLocationSaveReqVO updateReqVO);
+    void updateSpaceLocation(@Valid SpaceLocationSaveReqVO updateReqVO);
 
     void deleteSpaceLocation(Long id);
 

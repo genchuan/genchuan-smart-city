@@ -36,7 +36,7 @@ public class UserAppealRespVO {
     @ExcelProperty("提交时间")
     private LocalDateTime submitTime;
 
-    @Schema(description = "申诉状态")
+    @Schema(description = "申诉状态,关联字典 user_appeal_status")
     @ExcelProperty("申诉状态")
     private String status;
 

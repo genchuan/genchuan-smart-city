@@ -7,6 +7,7 @@ import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.reserve.vo
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.reserve.vo.ReserveListPageReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.reserve.vo.ReserveListSaveReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.reserve.ReserveListDO;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -17,9 +18,9 @@ import java.util.List;
  */
 public interface ReserveListService {
 
-    Long createReserveList(ReserveListSaveReqVO createReqVO);
+    Long createReserveList(@Valid ReserveListSaveReqVO createReqVO);
 
-    void updateReserveList(ReserveListSaveReqVO updateReqVO);
+    void updateReserveList(@Valid ReserveListSaveReqVO updateReqVO);
 
     void deleteReserveList(Long id);
 

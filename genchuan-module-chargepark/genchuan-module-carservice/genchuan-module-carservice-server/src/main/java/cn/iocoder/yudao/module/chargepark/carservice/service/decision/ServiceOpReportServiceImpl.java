@@ -7,7 +7,10 @@ import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.v
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.DisputeMediateChartRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.SuggestionChartRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.UserAppealChartRespVO;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.decision.vo.ServiceOpReportChartRespVO;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.decision.vo.ServiceOpReportPageReqVO;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.decision.vo.ServiceOpReportRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.decision.vo.TimeReportRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.findcar.vo.PathPlanChartRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.findcar.vo.SpaceLocationChartRespVO;
@@ -15,7 +18,6 @@ import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.rescue.vo.
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.reserve.vo.ReserveListChartRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.serviceconfig.vo.WordingMgmtChartRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.carguide.ChargeParkMapDO;
-import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.carguide.MockNearbyStationDO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.carguide.NearStationDO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.carguide.SpacePushDO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.complaint.DisputeMediateDO;
@@ -26,7 +28,6 @@ import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.findcar.Spac
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.rescue.RescueInfoDO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.reserve.ReserveListDO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.carguide.ChargeParkMapMapper;
-import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.carguide.MockNearbyStationMapper;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.carguide.NearStationMapper;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.carguide.SpacePushMapper;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.complaint.DisputeMediateMapper;
@@ -44,7 +45,15 @@ import cn.iocoder.yudao.module.chargepark.carservice.enums.complaint.SuggestionS
 import cn.iocoder.yudao.module.chargepark.carservice.enums.complaint.UserAppealStatusEnum;
 import cn.iocoder.yudao.module.chargepark.carservice.enums.rescue.RescueStatusEnum;
 import cn.iocoder.yudao.module.chargepark.carservice.enums.reserve.ReserveStatusEnum;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.module.inspectop.api.space.SpaceMonitorApi;
+import cn.iocoder.yudao.module.inspectop.api.space.dto.SpaceMonitorRespDTO;
+import cn.iocoder.yudao.module.stationresource.api.parking.ParkingSpaceInfoApi;
+import cn.iocoder.yudao.module.stationresource.api.parking.dto.ParkingSpaceInfoRespDTO;
+import cn.iocoder.yudao.module.stationresource.api.station.StationInfoApi;
+import cn.iocoder.yudao.module.stationresource.api.station.dto.StationInfoRespDTO;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -54,9 +63,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -68,6 +80,7 @@ import java.util.stream.Collectors;
  *
  * 所有 chart 方法都加 @Cacheable 30s,与 P8.8 阶段的缓存策略保持一致。
  */
+@Slf4j
 @Service
 public class ServiceOpReportServiceImpl implements ServiceOpReportService {
 
@@ -79,7 +92,6 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     @Resource private RescueInfoMapper rescueInfoMapper;
     @Resource private ChargeParkMapMapper chargeParkMapMapper;
     @Resource private NearStationMapper nearStationMapper;
-    @Resource private MockNearbyStationMapper mockNearbyStationMapper;
     @Resource private SpacePushMapper spacePushMapper;
     @Resource private ReserveListMapper reserveListMapper;
     @Resource private SpaceLocationMapper spaceLocationMapper;
@@ -88,6 +100,9 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     @Resource private UserAppealMapper userAppealMapper;
     @Resource private DisputeMediateMapper disputeMediateMapper;
     @Resource private ReportStatMapper reportStatMapper;
+    @Resource private StationInfoApi stationInfoApi;
+    @Resource private ParkingSpaceInfoApi parkingSpaceInfoApi;
+    @Resource private SpaceMonitorApi spaceMonitorApi;
 
     // ===================================================================
     // chart 接口实现(12 个,严格按 05 接口文档字段命名)
@@ -100,18 +115,25 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
         long total = rescueInfoMapper.selectCount(new LambdaQueryWrapperX<RescueInfoDO>()
                 .geIfPresent(RescueInfoDO::getCreateTime, startTime)
                 .leIfPresent(RescueInfoDO::getCreateTime, endTime));
-        long waiting = rescueInfoMapper.selectCount(new LambdaQueryWrapperX<RescueInfoDO>()
-                .in(RescueInfoDO::getStatus, Arrays.asList("待派发", "待认领"))
+        long waitDispatch = rescueInfoMapper.selectCount(new LambdaQueryWrapperX<RescueInfoDO>()
+                .eq(RescueInfoDO::getStatus, "待派发")
+                .geIfPresent(RescueInfoDO::getCreateTime, startTime)
+                .leIfPresent(RescueInfoDO::getCreateTime, endTime));
+        long waitClaim = rescueInfoMapper.selectCount(new LambdaQueryWrapperX<RescueInfoDO>()
+                .eq(RescueInfoDO::getStatus, "待认领")
                 .geIfPresent(RescueInfoDO::getCreateTime, startTime)
                 .leIfPresent(RescueInfoDO::getCreateTime, endTime));
         long completed = rescueInfoMapper.selectCount(new LambdaQueryWrapperX<RescueInfoDO>()
                 .eq(RescueInfoDO::getStatus, "已完成")
                 .geIfPresent(RescueInfoDO::getCreateTime, startTime)
                 .leIfPresent(RescueInfoDO::getCreateTime, endTime));
-        resp.setWaitRescueCount((int) waiting);
+        resp.setWaitDispatchCount((int) waitDispatch);
+        resp.setWaitClaimCount((int) waitClaim);
+        resp.setWaitRescueCount((int) (waitDispatch + waitClaim));
         resp.setFinishRate(toRate(completed, total));
         resp.setTrendList(toTrendList(reportStatMapper.rescueInfoDailyCount(
-                startTime != null ? startTime : LocalDate.now().minusDays(TREND_DAYS).atStartOfDay())));
+                startTime != null ? startTime : LocalDate.now().minusDays(TREND_DAYS).atStartOfDay(),
+                endTime)));
         // 救援位置列表:按 startTime/endTime 过滤,未传则返最近 N 条
         List<RescueInfoDO> recent = rescueInfoMapper.selectList(new LambdaQueryWrapperX<RescueInfoDO>()
                 .geIfPresent(RescueInfoDO::getCreateTime, startTime)
@@ -150,46 +172,48 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
             m.put("lon", Double.parseDouble(parts[0].trim()));
             m.put("lat", Double.parseDouble(parts[1].trim()));
         } catch (NumberFormatException e) {
+            log.warn("[fillLonLat] 坐标解析失败 location={}", location);
             m.put("lon", null);
             m.put("lat", null);
         }
     }
 
     @Override
-    @Cacheable(cacheNames = "carservice:report:chart-charge-park-map#30s")
+    @Cacheable(cacheNames = "carservice:report:chart-charge-park-map#30s",
+            unless = "#result == null || #result.stationSpaceList == null || #result.stationSpaceList.isEmpty()")
     public ChargeParkMapChartRespVO chartChargeParkMap(LocalDateTime startTime, LocalDateTime endTime) {
-        // TODO stationresource 模块开 Feign RPC 后切换数据源,mock_nearby_station 表可整表 DROP
         ChargeParkMapChartRespVO resp = new ChargeParkMapChartRespVO();
 
         // 查询成功率 + 平均响应时长(保留原有聚合 SQL,按 charge_park_map 查询记录)
-        Map<String, Object> agg = reportStatMapper.chargeParkMapAggregate();
+        Map<String, Object> agg = reportStatMapper.chargeParkMapAggregate(startTime, endTime);
         long total = numLong(agg, "total");
         long success = numLong(agg, "success_cnt");
         double avgResp = numDouble(agg, "avg_resp");
         resp.setQuerySuccessRate(toRate(success, total));
         resp.setAvgResponseDuration((int) Math.round(avgResp));
 
-        // 场站分布(从 mock_nearby_station 表查,复用 near-station 的 mock 数据)
-        List<MockNearbyStationDO> stations = mockNearbyStationMapper.selectList(new LambdaQueryWrapperX<>());
+        // 场站分布 & 热力图数据 → 通过 Feign 从 stationresource 模块取,下游挂掉时降级为空列表
+        List<StationInfoRespDTO> stations = safeListStations();
+
         List<Map<String, Object>> spaceList = stations.stream().map(s -> {
             Map<String, Object> m = new LinkedHashMap<>();
             m.put("lon", s.getLon());
             m.put("lat", s.getLat());
-            m.put("stationName", s.getStationName());
-            m.put("emptySpace", s.getEmptySpace() == null ? 0 : s.getEmptySpace());
+            m.put("stationName", s.getName());
+            m.put("emptySpace", nz(s.getEmptySpace()));
             return m;
         }).collect(Collectors.toList());
         resp.setStationSpaceList(spaceList);
 
-        // 热力图数据:value = 使用率 = (total - empty) / total,0-1 小数
+        // 热力图:value = 使用率 = spaceCount / spaceTotal,0-1 小数
         List<Map<String, Object>> heatList = stations.stream().map(s -> {
             Map<String, Object> m = new LinkedHashMap<>();
             m.put("lon", s.getLon());
             m.put("lat", s.getLat());
-            int tot = s.getTotalSpace() == null ? 0 : s.getTotalSpace();
-            int emp = s.getEmptySpace() == null ? 0 : s.getEmptySpace();
+            int tot = nz(s.getSpaceTotal());
+            int used = nz(s.getSpaceCount());
             double value = tot == 0 ? 0.0
-                    : BigDecimal.valueOf((double)(tot - emp) / tot).setScale(2, RoundingMode.HALF_UP).doubleValue();
+                    : BigDecimal.valueOf((double) used / tot).setScale(2, RoundingMode.HALF_UP).doubleValue();
             m.put("value", value);
             return m;
         }).collect(Collectors.toList());
@@ -198,41 +222,131 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = "carservice:report:chart-near-station#30s")
+    @Cacheable(cacheNames = "carservice:report:chart-near-station#30s",
+            unless = "#result == null || #result.stationLocationList == null || #result.stationLocationList.isEmpty()")
     public NearStationChartRespVO chartNearStation(LocalDateTime startTime, LocalDateTime endTime) {
-        // TODO stationresource 模块开 Feign RPC 后切换数据源,mock_nearby_station 表可整表 DROP
         NearStationChartRespVO resp = new NearStationChartRespVO();
-        List<MockNearbyStationDO> stations = mockNearbyStationMapper.selectList(new LambdaQueryWrapperX<MockNearbyStationDO>()
-                .geIfPresent(MockNearbyStationDO::getCreateTime, startTime)
-                .leIfPresent(MockNearbyStationDO::getCreateTime, endTime));
+        List<StationInfoRespDTO> stations = safeListStations();
 
-        // 场站地图点位:lon / lat / stationName / hasEmpty
+        // 场站地图点位:lon / lat / stationName / hasEmpty → 来自 station_info(Feign)
         List<Map<String, Object>> stationList = stations.stream().map(s -> {
             Map<String, Object> m = new LinkedHashMap<>();
             m.put("lon", s.getLon());
             m.put("lat", s.getLat());
-            m.put("stationName", s.getStationName());
-            m.put("hasEmpty", Boolean.TRUE.equals(s.getHasEmpty()));
+            m.put("stationName", s.getName());
+            m.put("hasEmpty", nz(s.getEmptySpace()) > 0);
             return m;
         }).collect(Collectors.toList());
         resp.setStationLocationList(stationList);
 
-        // 距离分桶柱状图:按 distance_group 聚合计数
-        Map<String, Long> distanceAgg = stations.stream()
-                .filter(s -> s.getDistanceGroup() != null)
-                .collect(Collectors.groupingBy(MockNearbyStationDO::getDistanceGroup, Collectors.counting()));
-        List<Map<String, Object>> distanceList = distanceAgg.entrySet().stream().map(e -> {
-            Map<String, Object> m = new LinkedHashMap<>();
-            m.put("distance", e.getKey());
-            m.put("count", e.getValue().intValue());
-            return m;
-        }).collect(Collectors.toList());
-        resp.setDistanceCountList(distanceList);
+        // 拉时间窗内的 near_station 历史查询记录,作为距离分桶 & 卡片指标的聚合源
+        List<NearStationDO> queries = nearStationMapper.selectList(
+                new LambdaQueryWrapperX<NearStationDO>()
+                        .geIfPresent(NearStationDO::getCreateTime, startTime)
+                        .leIfPresent(NearStationDO::getCreateTime, endTime));
 
-        resp.setTotalStationCount(stations.size());
-        resp.setEmptyStationCount((int) stations.stream()
-                .filter(s -> Boolean.TRUE.equals(s.getHasEmpty())).count());
+        // 距离分桶柱状图:平均每次查询,各距离区间的场站数量
+        resp.setDistanceCountList(buildDistanceBuckets(queries, stations));
+
+        // 卡片: 平均查询返回的周边场站总数 / 有空位场站数(按客户文档"平均"口径聚合 near_station 表)
+        if (queries.isEmpty()) {
+            resp.setTotalStationCount(0);
+            resp.setEmptyStationCount(0);
+        } else {
+            long sumStation = queries.stream().mapToLong(q -> q.getStationCount() == null ? 0 : q.getStationCount()).sum();
+            long sumEmpty = queries.stream().mapToLong(q -> q.getEmptyStationCount() == null ? 0 : q.getEmptyStationCount()).sum();
+            resp.setTotalStationCount((int) Math.round((double) sumStation / queries.size()));
+            resp.setEmptyStationCount((int) Math.round((double) sumEmpty / queries.size()));
+        }
         return resp;
+    }
+
+    /** 4 个固定桶:0-1km / 1-3km / 3-5km / >5km。每桶 count = 平均每次查询该桶内的场站数量 */
+    private List<Map<String, Object>> buildDistanceBuckets(List<NearStationDO> queries,
+                                                           List<StationInfoRespDTO> stations) {
+        String[] labels = {"0-1km", "1-3km", "3-5km", ">5km"};
+        long[] sums = new long[4];
+        int effectiveQueryCount = 0;
+        for (NearStationDO q : queries) {
+            double[] ref = parseLonLat(q.getQueryLocation());
+            if (ref == null) continue;
+            effectiveQueryCount++;
+            for (StationInfoRespDTO s : stations) {
+                if (s.getLon() == null || s.getLat() == null) continue;
+                double dKm = haversineKm(ref[0], ref[1], s.getLon().doubleValue(), s.getLat().doubleValue());
+                sums[pickBucket(dKm)]++;
+            }
+        }
+        List<Map<String, Object>> result = new ArrayList<>(4);
+        for (int i = 0; i < 4; i++) {
+            Map<String, Object> m = new LinkedHashMap<>();
+            m.put("distance", labels[i]);
+            m.put("count", effectiveQueryCount == 0 ? 0
+                    : (int) Math.round((double) sums[i] / effectiveQueryCount));
+            result.add(m);
+        }
+        return result;
+    }
+
+    private int pickBucket(double km) {
+        if (km <= 1) return 0;
+        if (km <= 3) return 1;
+        if (km <= 5) return 2;
+        return 3;
+    }
+
+    private double[] parseLonLat(String location) {
+        if (location == null || location.isEmpty()) return null;
+        String[] parts = location.split(",");
+        if (parts.length != 2) return null;
+        try {
+            return new double[]{Double.parseDouble(parts[0].trim()), Double.parseDouble(parts[1].trim())};
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    /** Haversine 大圆距离(km),地球平均半径 6371km */
+    private double haversineKm(double lon1, double lat1, double lon2, double lat2) {
+        double R = 6371.0;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
+    /** Feign 调用 stationresource 失败时降级为空列表,不让一个下游模块拖垮本模块 */
+    private List<StationInfoRespDTO> safeListStations() {
+        try {
+            return unwrapList(stationInfoApi.listStations());
+        } catch (Exception ex) {
+            log.warn("[safeListStations] stationresource RPC 调用失败,降级返回空列表", ex);
+            return new ArrayList<>();
+        }
+    }
+
+    /** Feign 调用 inspectop 失败时降级为空列表 */
+    private List<SpaceMonitorRespDTO> safeListLatestSpaceMonitors() {
+        try {
+            return unwrapList(spaceMonitorApi.listLatestSpaceMonitors());
+        } catch (Exception ex) {
+            log.warn("[safeListLatestSpaceMonitors] inspectop RPC 调用失败,降级返回空列表", ex);
+            return new ArrayList<>();
+        }
+    }
+
+    private int nz(Integer v) { return v == null ? 0 : v; }
+
+    private <T> T unwrap(CommonResult<T> result) {
+        return result == null ? null : result.getData();
+    }
+
+    private <T> List<T> unwrapList(CommonResult<List<T>> result) {
+        List<T> data = result == null ? null : result.getData();
+        return data == null ? new ArrayList<>() : data;
     }
 
     @Override
@@ -249,7 +363,8 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
         resp.setTotalPushCount((int) total);
         resp.setPushSuccessRate(toRate(success, total));
         resp.setPushTrendList(toTrendList(reportStatMapper.spacePushDailyCount(
-                startTime != null ? startTime : LocalDate.now().minusDays(TREND_DAYS).atStartOfDay())));
+                startTime != null ? startTime : LocalDate.now().minusDays(TREND_DAYS).atStartOfDay(),
+                endTime)));
         return resp;
     }
 
@@ -267,8 +382,9 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
         resp.setTotalReserveCount((int) total);
         resp.setReserveSuccessRate(toRate(succeeded, total));
         resp.setReserveTrendList(toTrendList(reportStatMapper.reserveListDailyCount(
-                startTime != null ? startTime : LocalDate.now().minusDays(TREND_DAYS).atStartOfDay())));
-        List<Map<String, Object>> typeRows = reportStatMapper.reserveListTypeDistribution();
+                startTime != null ? startTime : LocalDate.now().minusDays(TREND_DAYS).atStartOfDay(),
+                endTime)));
+        List<Map<String, Object>> typeRows = reportStatMapper.reserveListTypeDistribution(startTime, endTime);
         List<Map<String, Object>> typeList = typeRows.stream().map(row -> {
             Map<String, Object> m = new LinkedHashMap<>();
             m.put("reserveType", row.get("k"));
@@ -280,7 +396,8 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = "carservice:report:chart-space-location#30s")
+    @Cacheable(cacheNames = "carservice:report:chart-space-location#30s",
+            unless = "#result == null || #result.spaceLocationList == null || #result.spaceLocationList.isEmpty()")
     public SpaceLocationChartRespVO chartSpaceLocation(LocalDateTime startTime, LocalDateTime endTime) {
         SpaceLocationChartRespVO resp = new SpaceLocationChartRespVO();
         long total = spaceLocationMapper.selectCount(new LambdaQueryWrapperX<SpaceLocationDO>()
@@ -292,37 +409,72 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
                 .leIfPresent(SpaceLocationDO::getCreateTime, endTime));
         resp.setTotalQueryCount((int) total);
         resp.setLocationSuccessRate(toRate(success, total));
-        resp.setSpaceLocationList(new ArrayList<>()); // 占位,待车位表上线后填充
+        // 车位位置展示:时间窗内的 space_location 查询事件,每条拼 {lon, lat, spaceNo, plateNo}
+        List<SpaceLocationDO> queries = spaceLocationMapper.selectList(new LambdaQueryWrapperX<SpaceLocationDO>()
+                .geIfPresent(SpaceLocationDO::getCreateTime, startTime)
+                .leIfPresent(SpaceLocationDO::getCreateTime, endTime));
+        Set<Long> spaceIds = queries.stream().map(SpaceLocationDO::getSpaceId)
+                .filter(Objects::nonNull).collect(Collectors.toSet());
+        // 两次 Feign 批量拉:车位监测坐标 + 车位编号
+        Map<Long, SpaceMonitorRespDTO> monitorMap = safeSpaceMonitorMap(spaceIds);
+        Map<Long, ParkingSpaceInfoRespDTO> parkingMap = safeParkingSpaceMap(spaceIds);
+        List<Map<String, Object>> spaceLocationList = queries.stream().map(q -> {
+            Map<String, Object> m = new LinkedHashMap<>();
+            SpaceMonitorRespDTO mon = monitorMap.get(q.getSpaceId());
+            m.put("lon", mon == null ? null : mon.getLongitude());
+            m.put("lat", mon == null ? null : mon.getLatitude());
+            ParkingSpaceInfoRespDTO info = parkingMap.get(q.getSpaceId());
+            m.put("spaceNo", info == null ? null : info.getSpaceNo());
+            m.put("plateNo", q.getPlateNo());
+            return m;
+        }).collect(Collectors.toList());
+        resp.setSpaceLocationList(spaceLocationList);
         return resp;
+    }
+
+    /** 按 spaceIds 批量拉车位监测(去重最新坐标),下游异常降级空 map */
+    private Map<Long, SpaceMonitorRespDTO> safeSpaceMonitorMap(Set<Long> spaceIds) {
+        if (spaceIds == null || spaceIds.isEmpty()) return Collections.emptyMap();
+        List<SpaceMonitorRespDTO> all = safeListLatestSpaceMonitors();
+        return all.stream()
+                .filter(sm -> sm.getSpaceId() != null && spaceIds.contains(sm.getSpaceId()))
+                .collect(Collectors.toMap(SpaceMonitorRespDTO::getSpaceId, sm -> sm, (a, b) -> a));
+    }
+
+    /** 按 spaceIds 批量拉 parking_space_info(拿 spaceNo),下游异常降级空 map */
+    private Map<Long, ParkingSpaceInfoRespDTO> safeParkingSpaceMap(Set<Long> spaceIds) {
+        if (spaceIds == null || spaceIds.isEmpty()) return Collections.emptyMap();
+        try {
+            return parkingSpaceInfoApi.getSpaceMap(spaceIds);
+        } catch (Exception ex) {
+            log.warn("[safeParkingSpaceMap] stationresource ParkingSpaceInfo RPC 调用失败,降级空 map", ex);
+            return Collections.emptyMap();
+        }
     }
 
     @Override
     @Cacheable(cacheNames = "carservice:report:chart-path-plan#30s")
     public PathPlanChartRespVO chartPathPlan(LocalDateTime startTime, LocalDateTime endTime) {
         PathPlanChartRespVO resp = new PathPlanChartRespVO();
-        Map<String, Object> agg = reportStatMapper.pathPlanAggregate();
+        Map<String, Object> agg = reportStatMapper.pathPlanAggregate(startTime, endTime);
         long total = numLong(agg, "total");
         long success = numLong(agg, "success_cnt");
         resp.setTotalPlanCount((int) total);
         resp.setPlanSuccessRate(toRate(success, total));
-        // 路径规划地图:返回 start/end 两点坐标,前端根据起终点绘制路径
+        // 路径规划地图:严格按 05 接口文档 sample,每条 = {path: [[lon,lat],[lon,lat],...]}
+        // DB 只存 start/end 两点,path 数组长度=2,前端用高德 SDK 补中间 waypoints
         List<PathPlanDO> recent = pathPlanMapper.selectList(new LambdaQueryWrapperX<PathPlanDO>()
                 .geIfPresent(PathPlanDO::getCreateTime, startTime)
                 .leIfPresent(PathPlanDO::getCreateTime, endTime)
                 .orderByDesc(PathPlanDO::getId).last("LIMIT 200"));
         List<Map<String, Object>> pathList = recent.stream().map(r -> {
             Map<String, Object> m = new LinkedHashMap<>();
-            m.put("id", r.getId());
-            // 起点坐标
-            Map<String, Object> start = new LinkedHashMap<>();
-            fillLonLat(start, r.getStartLocation());
-            m.put("start", start);
-            // 终点坐标
-            Map<String, Object> end = new LinkedHashMap<>();
-            fillLonLat(end, r.getEndLocation());
-            m.put("end", end);
-            m.put("pathLength", r.getPathLength());
-            m.put("expectDuration", r.getExpectDuration());
+            List<double[]> path = new ArrayList<>(2);
+            double[] startXY = parseLonLat(r.getStartLocation());
+            double[] endXY = parseLonLat(r.getEndLocation());
+            if (startXY != null) path.add(startXY);
+            if (endXY != null) path.add(endXY);
+            m.put("path", path);
             return m;
         }).collect(Collectors.toList());
         resp.setPathList(pathList);
@@ -347,7 +499,8 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
         resp.setWaitHandleCount((int) pending);
         resp.setHandleFinishRate(toRate(completed, total));
         resp.setSuggestionTrendList(toTrendList(reportStatMapper.suggestionDailyCount(
-                startTime != null ? startTime : LocalDate.now().minusDays(TREND_DAYS).atStartOfDay())));
+                startTime != null ? startTime : LocalDate.now().minusDays(TREND_DAYS).atStartOfDay(),
+                endTime)));
         return resp;
     }
 
@@ -369,7 +522,8 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
         resp.setWaitAppealCount((int) pending);
         resp.setHandleFinishRate(toRate(completed, total));
         resp.setAppealTrendList(toTrendList(reportStatMapper.userAppealDailyCount(
-                startTime != null ? startTime : LocalDate.now().minusDays(TREND_DAYS).atStartOfDay())));
+                startTime != null ? startTime : LocalDate.now().minusDays(TREND_DAYS).atStartOfDay(),
+                endTime)));
         return resp;
     }
 
@@ -391,7 +545,8 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
         resp.setWaitMediateCount((int) pending);
         resp.setMediateFinishRate(toRate(completed, total));
         resp.setDisputeTrendList(toTrendList(reportStatMapper.disputeMediateDailyCount(
-                startTime != null ? startTime : LocalDate.now().minusDays(TREND_DAYS).atStartOfDay())));
+                startTime != null ? startTime : LocalDate.now().minusDays(TREND_DAYS).atStartOfDay(),
+                endTime)));
         return resp;
     }
 
@@ -399,11 +554,14 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     @Cacheable(cacheNames = "carservice:report:chart-wording-mgmt#30s")
     public WordingMgmtChartRespVO chartWordingMgmt() {
         WordingMgmtChartRespVO resp = new WordingMgmtChartRespVO();
-        Map<String, Object> agg = reportStatMapper.wordingMgmtAggregate();
-        resp.setEnableWordingCount((int) numLong(agg, "enabled_cnt"));
-        // matchRate 占位:需要客服会话日志数据源,待客服会话模块上线后接入
-        resp.setMatchRate(BigDecimal.ZERO);
-        List<Map<String, Object>> typeRows = reportStatMapper.wordingMgmtTypeDistribution();
+        // chart-wording-mgmt 接口无时间参数,传 null 不过滤(全量统计当前生效/类型分布)
+        Map<String, Object> agg = reportStatMapper.wordingMgmtAggregate(null, null);
+        long total = numLong(agg, "total");
+        long enabled = numLong(agg, "enabled_cnt");
+        resp.setEnableWordingCount((int) enabled);
+        // matchRate = 已生效话术数 / 总话术数,反映话术库配置完整度
+        resp.setMatchRate(toRate(enabled, total));
+        List<Map<String, Object>> typeRows = reportStatMapper.wordingMgmtTypeDistribution(null, null);
         List<Map<String, Object>> typeList = typeRows.stream().map(row -> {
             Map<String, Object> m = new LinkedHashMap<>();
             m.put("type", row.get("k"));
@@ -418,39 +576,86 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     @Cacheable(cacheNames = "carservice:report:chart-service-op-report#30s")
     public ServiceOpReportChartRespVO chartServiceOpReport(LocalDateTime startTime, LocalDateTime endTime) {
         ServiceOpReportChartRespVO resp = new ServiceOpReportChartRespVO();
-        // 服务运营趋势(综合,这里以救援趋势为代表)
-        resp.setOperateTrendList(toTrendList(reportStatMapper.rescueInfoDailyCount(
-                LocalDate.now().minusDays(TREND_DAYS).atStartOfDay())));
-        // 服务类型分布
-        long rescue = rescueInfoMapper.selectCount(new LambdaQueryWrapperX<>());
-        long reserve = reserveListMapper.selectCount(new LambdaQueryWrapperX<>());
-        long sug = suggestionMapper.selectCount(new LambdaQueryWrapperX<>());
-        long appeal = userAppealMapper.selectCount(new LambdaQueryWrapperX<>());
-        long dispute = disputeMediateMapper.selectCount(new LambdaQueryWrapperX<>());
-        long push = spacePushMapper.selectCount(new LambdaQueryWrapperX<>());
+        // 默认近半年,给月度趋势图留足月份
+        LocalDateTime start = startTime != null ? startTime : LocalDate.now().minusMonths(6).atStartOfDay();
+        LocalDateTime end = endTime;
+
+        // ---- operateTrendList:按 %Y-%m 聚合三率 ----
+        Map<String, long[]> rescueMap = monthlyRateToMap(reportStatMapper.rescueInfoMonthlyRate(start, end));
+        Map<String, long[]> reserveMap = monthlyRateToMap(reportStatMapper.reserveListMonthlyRate(start, end));
+        // 投诉 = suggestion + user_appeal + dispute_mediate(与 computeRates 口径一致)
+        Map<String, long[]> complaintMap = mergeMonthly(
+                reportStatMapper.suggestionMonthlyRate(start, end),
+                reportStatMapper.userAppealMonthlyRate(start, end),
+                reportStatMapper.disputeMediateMonthlyRate(start, end));
+        // 合并月份集合,按时间升序
+        java.util.TreeSet<String> months = new java.util.TreeSet<>();
+        months.addAll(rescueMap.keySet());
+        months.addAll(reserveMap.keySet());
+        months.addAll(complaintMap.keySet());
+        List<Map<String, Object>> trend = new ArrayList<>();
+        for (String ym : months) {
+            long[] r = rescueMap.getOrDefault(ym, new long[2]);
+            long[] v = reserveMap.getOrDefault(ym, new long[2]);
+            long[] c = complaintMap.getOrDefault(ym, new long[2]);
+            Map<String, Object> row = new LinkedHashMap<>();
+            row.put("date", ym);
+            row.put("rescueFinishRate", toRate(r[1], r[0]));
+            row.put("reserveSuccessRate", toRate(v[1], v[0]));
+            row.put("complaintHandleRate", toRate(c[1], c[0]));
+            trend.add(row);
+        }
+        resp.setOperateTrendList(trend);
+
+        // ---- serviceTypeCountList:3 类 {type, count}(受时间窗影响)----
+        long rescueCnt = rescueInfoMapper.selectCount(rangeWrapper(start, end));
+        long reserveCnt = reserveListMapper.selectCount(rangeWrapper(start, end));
+        long complaintCnt = suggestionMapper.selectCount(rangeWrapper(start, end))
+                + userAppealMapper.selectCount(rangeWrapper(start, end))
+                + disputeMediateMapper.selectCount(rangeWrapper(start, end));
         List<Map<String, Object>> serviceTypes = new ArrayList<>();
         for (Object[] o : new Object[][]{
-                {"救援", rescue}, {"预约", reserve}, {"意见", sug},
-                {"申诉", appeal}, {"调解", dispute}, {"推送", push}}) {
+                {"救援服务", rescueCnt}, {"预约服务", reserveCnt}, {"投诉服务", complaintCnt}}) {
             Map<String, Object> m = new LinkedHashMap<>();
-            m.put("serviceType", o[0]);
+            m.put("type", o[0]);
             m.put("count", o[1]);
             serviceTypes.add(m);
         }
         resp.setServiceTypeCountList(serviceTypes);
-        // 核心指标
+
+        // ---- coreIndex:三率(复用 computeRates,口径与 page / computeRates 一致)----
+        Rates rates = computeRates(start, end);
         Map<String, Object> core = new LinkedHashMap<>();
-        long rescueCompleted = rescueInfoMapper.selectCount(new LambdaQueryWrapperX<RescueInfoDO>()
-                .eq(RescueInfoDO::getStatus, "已完成"));
-        long reserveSuccess = reserveListMapper.selectCount(new LambdaQueryWrapperX<ReserveListDO>()
-                .in(ReserveListDO::getStatus, Arrays.asList("已生效", "已完成")));
-        long appealHandled = userAppealMapper.selectCount(new LambdaQueryWrapperX<UserAppealDO>()
-                .eq(UserAppealDO::getStatus, "已完成"));
-        core.put("rescueFinishRate", toRate(rescueCompleted, rescue));
-        core.put("reserveSuccessRate", toRate(reserveSuccess, reserve));
-        core.put("appealHandleRate", toRate(appealHandled, appeal));
+        core.put("rescueFinishRate", rates.rescueFinishRate);
+        core.put("reserveSuccessRate", rates.reserveSuccessRate);
+        core.put("complaintHandleRate", rates.complaintHandleRate);
         resp.setCoreIndex(core);
         return resp;
+    }
+
+    /** 单表月度率结果 → {ym: [total, done]} */
+    private Map<String, long[]> monthlyRateToMap(List<Map<String, Object>> rows) {
+        Map<String, long[]> m = new LinkedHashMap<>();
+        for (Map<String, Object> r : rows) {
+            String ym = String.valueOf(r.get("ym"));
+            m.put(ym, new long[]{numLong(r, "total"), numLong(r, "done_cnt")});
+        }
+        return m;
+    }
+
+    /** 多个表的月度率按 ym 求和合并(用于投诉 = 意见+申诉+调解) */
+    @SafeVarargs
+    private final Map<String, long[]> mergeMonthly(List<Map<String, Object>>... lists) {
+        Map<String, long[]> merged = new LinkedHashMap<>();
+        for (List<Map<String, Object>> rows : lists) {
+            for (Map<String, Object> r : rows) {
+                String ym = String.valueOf(r.get("ym"));
+                long[] cur = merged.computeIfAbsent(ym, k -> new long[2]);
+                cur[0] += numLong(r, "total");
+                cur[1] += numLong(r, "done_cnt");
+            }
+        }
+        return merged;
     }
 
     // ===================================================================
@@ -660,6 +865,243 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     public Map<String, Long> countDisputeMediateByStatus() {
         return toCountByStatus(reportStatMapper.disputeMediateCountByStatus(),
                 Arrays.stream(DisputeMediateStatusEnum.values()).map(DisputeMediateStatusEnum::getLabel).toArray(String[]::new));
+    }
+
+    // ===================================================================
+    // 服务运营报表分页 - 动态聚合,不建专表(遵循客户"不独立新建数据表"架构)
+    // ===================================================================
+
+    @Override
+    @Cacheable(cacheNames = "carservice:report:serviceopreport-page#30s",
+            unless = "#result == null || #result.list == null || #result.list.isEmpty()")
+    public PageResult<ServiceOpReportRespVO> pageServiceOpReport(ServiceOpReportPageReqVO reqVO) {
+        // 1. 参数默认处理
+        ReportPeriodEnum period = ReportPeriodEnum.fromTimeScale(reqVO.getTimeScale());
+        LocalDateTime[] range = reqVO.getStatTime();
+        LocalDateTime rangeStart = (range != null && range.length >= 1 && range[0] != null)
+                ? range[0] : LocalDateTime.now().minusYears(1);
+        LocalDateTime rangeEnd = (range != null && range.length >= 2 && range[1] != null)
+                ? range[1] : LocalDateTime.now();
+        String reportType = reqVO.getReportType() != null ? reqVO.getReportType() : period.getLabel();
+
+        // 2. 按 period 切分 [rangeStart, rangeEnd] 成多个 anchor(纯日期游标,不查 DB)
+        List<LocalDate> anchors = new ArrayList<>();
+        LocalDate cursor = period.startOf(rangeStart.toLocalDate()).toLocalDate();
+        LocalDate endDate = rangeEnd.toLocalDate();
+        while (!cursor.isAfter(endDate)) {
+            anchors.add(cursor);
+            cursor = period.nextPeriod(cursor);
+        }
+
+        // 3. 先按 pageNo/pageSize 截取当前页的 anchor 列表
+        //    避免一次性对全部 anchor 调 computeRates(每个 anchor = 30 次 count SQL,
+        //    N 月份×30 上百条 SQL,性能灾难,前端转圈)
+        int pageNo = reqVO.getPageNo() == null ? 1 : reqVO.getPageNo();
+        int pageSize = reqVO.getPageSize() == null ? 10 : reqVO.getPageSize();
+        int from = Math.min((pageNo - 1) * pageSize, anchors.size());
+        int to = Math.min(from + pageSize, anchors.size());
+        List<LocalDate> pageAnchors = anchors.subList(from, to);
+
+        // 4. 一次性加载全范围业务数据,内存按 period 分组,避免 per-anchor 30 次 count SQL
+        //    总 SQL 数 = 5 次 selectList(rescue/reserve/suggestion/userAppeal/disputeMediate) 不随 pageSize 变化
+        LocalDateTime loadStart = pageAnchors.isEmpty() ? rangeStart
+                : period.startOf(pageAnchors.get(0).minusYears(1));            // 最早到 yoy 窗口起点
+        LocalDateTime loadEnd = pageAnchors.isEmpty() ? rangeEnd
+                : period.endOf(pageAnchors.get(pageAnchors.size() - 1));       // 最晚到当前最新 anchor
+        Map<String, PeriodStat> rescueMap = loadAndGroupRescue(loadStart, loadEnd, period);
+        Map<String, PeriodStat> reserveMap = loadAndGroupReserve(loadStart, loadEnd, period);
+        Map<String, PeriodStat> complaintMap = loadAndGroupComplaint(loadStart, loadEnd, period);
+
+        List<ServiceOpReportRespVO> pageList = new ArrayList<>(pageAnchors.size());
+        for (LocalDate anchor : pageAnchors) {
+            pageList.add(buildFromMaps(reportType, period, anchor, rescueMap, reserveMap, complaintMap));
+        }
+
+        PageResult<ServiceOpReportRespVO> result = new PageResult<>();
+        result.setList(pageList);
+        result.setTotal((long) anchors.size()); // total 是所有 anchor 数,供前端算总页数
+        return result;
+    }
+
+    /** 按 period 聚合后的单元格数据 */
+    private static class PeriodStat {
+        long total = 0;
+        long done = 0;
+    }
+
+    private Map<String, PeriodStat> loadAndGroupRescue(LocalDateTime start, LocalDateTime end, ReportPeriodEnum period) {
+        List<RescueInfoDO> list = rescueInfoMapper.selectList(rangeWrapper(start, end));
+        Map<String, PeriodStat> m = new java.util.HashMap<>();
+        for (RescueInfoDO r : list) {
+            if (r.getCreateTime() == null) continue;
+            String key = period.formatStatPeriod(r.getCreateTime().toLocalDate());
+            PeriodStat ps = m.computeIfAbsent(key, k -> new PeriodStat());
+            ps.total++;
+            if ("已完成".equals(r.getStatus())) ps.done++;
+        }
+        return m;
+    }
+
+    private Map<String, PeriodStat> loadAndGroupReserve(LocalDateTime start, LocalDateTime end, ReportPeriodEnum period) {
+        List<ReserveListDO> list = reserveListMapper.selectList(rangeWrapper(start, end));
+        Map<String, PeriodStat> m = new java.util.HashMap<>();
+        Set<String> successStatuses = new java.util.HashSet<>(Arrays.asList("已生效", "已完成"));
+        for (ReserveListDO r : list) {
+            if (r.getCreateTime() == null) continue;
+            String key = period.formatStatPeriod(r.getCreateTime().toLocalDate());
+            PeriodStat ps = m.computeIfAbsent(key, k -> new PeriodStat());
+            ps.total++;
+            if (successStatuses.contains(r.getStatus())) ps.done++;
+        }
+        return m;
+    }
+
+    /** complaint 合并 suggestion + userAppeal + disputeMediate 三张表 */
+    private Map<String, PeriodStat> loadAndGroupComplaint(LocalDateTime start, LocalDateTime end, ReportPeriodEnum period) {
+        Map<String, PeriodStat> m = new java.util.HashMap<>();
+        for (SuggestionDO r : suggestionMapper.selectList(rangeWrapper(start, end))) {
+            if (r.getCreateTime() == null) continue;
+            String key = period.formatStatPeriod(r.getCreateTime().toLocalDate());
+            PeriodStat ps = m.computeIfAbsent(key, k -> new PeriodStat());
+            ps.total++;
+            if ("已完成".equals(r.getStatus())) ps.done++;
+        }
+        for (UserAppealDO r : userAppealMapper.selectList(rangeWrapper(start, end))) {
+            if (r.getCreateTime() == null) continue;
+            String key = period.formatStatPeriod(r.getCreateTime().toLocalDate());
+            PeriodStat ps = m.computeIfAbsent(key, k -> new PeriodStat());
+            ps.total++;
+            if ("已完成".equals(r.getStatus())) ps.done++;
+        }
+        for (DisputeMediateDO r : disputeMediateMapper.selectList(rangeWrapper(start, end))) {
+            if (r.getCreateTime() == null) continue;
+            String key = period.formatStatPeriod(r.getCreateTime().toLocalDate());
+            PeriodStat ps = m.computeIfAbsent(key, k -> new PeriodStat());
+            ps.total++;
+            if ("已完成".equals(r.getStatus())) ps.done++;
+        }
+        return m;
+    }
+
+    private Rates ratesFromMaps(ReportPeriodEnum period, LocalDate anchor,
+                                Map<String, PeriodStat> rescueMap,
+                                Map<String, PeriodStat> reserveMap,
+                                Map<String, PeriodStat> complaintMap) {
+        String key = period.formatStatPeriod(anchor);
+        Rates r = new Rates();
+        PeriodStat rescue = rescueMap.get(key);
+        if (rescue != null) r.rescueFinishRate = toRate(rescue.done, rescue.total);
+        PeriodStat reserve = reserveMap.get(key);
+        if (reserve != null) r.reserveSuccessRate = toRate(reserve.done, reserve.total);
+        PeriodStat complaint = complaintMap.get(key);
+        if (complaint != null) r.complaintHandleRate = toRate(complaint.done, complaint.total);
+        return r;
+    }
+
+    private ServiceOpReportRespVO buildFromMaps(String reportType, ReportPeriodEnum period, LocalDate anchor,
+                                                Map<String, PeriodStat> rescueMap,
+                                                Map<String, PeriodStat> reserveMap,
+                                                Map<String, PeriodStat> complaintMap) {
+        Rates cur = ratesFromMaps(period, anchor, rescueMap, reserveMap, complaintMap);
+        Rates qoq = ratesFromMaps(period, period.previousPeriod(anchor), rescueMap, reserveMap, complaintMap);
+        Rates yoy = ratesFromMaps(period, anchor.minusYears(1), rescueMap, reserveMap, complaintMap);
+
+        ServiceOpReportRespVO vo = new ServiceOpReportRespVO();
+        vo.setId((long) Math.abs(Objects.hash(reportType, period.formatStatPeriod(anchor))));
+        vo.setReportType(reportType);
+        vo.setTimeScale(period.getLabel().replace("报", ""));
+        vo.setStatPeriod(period.formatStatPeriod(anchor));
+        vo.setCreateTime(LocalDateTime.now());
+        vo.setRescueFinishRate(cur.rescueFinishRate);
+        vo.setReserveSuccessRate(cur.reserveSuccessRate);
+        vo.setComplaintHandleRate(cur.complaintHandleRate);
+        vo.setYoyData(deltaMap(cur, yoy));
+        vo.setQoqData(deltaMap(cur, qoq));
+        vo.setCreator("system");
+        return vo;
+    }
+
+    /** 按时间窗口生成单条报表,包含 3 个核心指标 + 同比/环比 */
+    private ServiceOpReportRespVO buildServiceOpReport(String reportType, ReportPeriodEnum period, LocalDate anchor) {
+        // 当前窗口
+        LocalDateTime curStart = period.startOf(anchor);
+        LocalDateTime curEnd = period.endOf(anchor);
+        Rates cur = computeRates(curStart, curEnd);
+        // 环比:上一周期
+        LocalDate prevAnchor = period.previousPeriod(anchor);
+        Rates qoq = computeRates(period.startOf(prevAnchor), period.endOf(prevAnchor));
+        // 同比:去年同期
+        LocalDate yoyAnchor = anchor.minusYears(1);
+        Rates yoy = computeRates(period.startOf(yoyAnchor), period.endOf(yoyAnchor));
+
+        ServiceOpReportRespVO vo = new ServiceOpReportRespVO();
+        // 虚拟 ID:取正数(Objects.hash 返回 int 可能为负)。reportType+statPeriod 稳定 hash 保证多次查询 ID 一致
+        vo.setId((long) Math.abs(Objects.hash(reportType, period.formatStatPeriod(anchor))));
+        vo.setReportType(reportType);
+        vo.setTimeScale(period.getLabel().replace("报", ""));  // "月报" → "月"
+        vo.setStatPeriod(period.formatStatPeriod(anchor));
+        vo.setCreateTime(LocalDateTime.now());
+        vo.setRescueFinishRate(cur.rescueFinishRate);
+        vo.setReserveSuccessRate(cur.reserveSuccessRate);
+        vo.setComplaintHandleRate(cur.complaintHandleRate);
+        vo.setYoyData(deltaMap(cur, yoy));
+        vo.setQoqData(deltaMap(cur, qoq));
+        vo.setCreator("system");
+        return vo;
+    }
+
+    /** 单窗口的 3 个核心指标聚合 */
+    private Rates computeRates(LocalDateTime start, LocalDateTime end) {
+        Rates r = new Rates();
+        // 救援完成率
+        long rescueTotal = rescueInfoMapper.selectCount(rangeWrapper(start, end));
+        long rescueCompleted = rescueInfoMapper.selectCount(new LambdaQueryWrapperX<RescueInfoDO>()
+                .geIfPresent(RescueInfoDO::getCreateTime, start)
+                .leIfPresent(RescueInfoDO::getCreateTime, end)
+                .eq(RescueInfoDO::getStatus, "已完成"));
+        r.rescueFinishRate = toRate(rescueCompleted, rescueTotal);
+        // 预约成功率
+        long reserveTotal = reserveListMapper.selectCount(rangeWrapper(start, end));
+        long reserveSuccess = reserveListMapper.selectCount(new LambdaQueryWrapperX<ReserveListDO>()
+                .geIfPresent(ReserveListDO::getCreateTime, start)
+                .leIfPresent(ReserveListDO::getCreateTime, end)
+                .in(ReserveListDO::getStatus, Arrays.asList("已生效", "已完成")));
+        r.reserveSuccessRate = toRate(reserveSuccess, reserveTotal);
+        // 投诉处理率 = (suggestion + userAppeal + disputeMediate) 已完成 / 三者总数
+        long compTotal = suggestionMapper.selectCount(rangeWrapper(start, end))
+                + userAppealMapper.selectCount(rangeWrapper(start, end))
+                + disputeMediateMapper.selectCount(rangeWrapper(start, end));
+        long compDone = suggestionMapper.selectCount(new LambdaQueryWrapperX<SuggestionDO>()
+                .geIfPresent(SuggestionDO::getCreateTime, start)
+                .leIfPresent(SuggestionDO::getCreateTime, end)
+                .eq(SuggestionDO::getStatus, "已完成"))
+                + userAppealMapper.selectCount(new LambdaQueryWrapperX<UserAppealDO>()
+                .geIfPresent(UserAppealDO::getCreateTime, start)
+                .leIfPresent(UserAppealDO::getCreateTime, end)
+                .eq(UserAppealDO::getStatus, "已完成"))
+                + disputeMediateMapper.selectCount(new LambdaQueryWrapperX<DisputeMediateDO>()
+                .geIfPresent(DisputeMediateDO::getCreateTime, start)
+                .leIfPresent(DisputeMediateDO::getCreateTime, end)
+                .eq(DisputeMediateDO::getStatus, "已完成"));
+        r.complaintHandleRate = toRate(compDone, compTotal);
+        return r;
+    }
+
+    /** 计算 delta:当前 - 基线(BigDecimal 保留 2 位小数)。
+     *  严格按客户 05 文档 sample 只出 2 个字段:rescueFinishRate / reserveSuccessRate。
+     *  complaintHandleRate 客户样例没列,不返(如果客户后续要再补) */
+    private Map<String, BigDecimal> deltaMap(Rates cur, Rates baseline) {
+        Map<String, BigDecimal> m = new LinkedHashMap<>();
+        m.put("rescueFinishRate", cur.rescueFinishRate.subtract(baseline.rescueFinishRate).setScale(2, RoundingMode.HALF_UP));
+        m.put("reserveSuccessRate", cur.reserveSuccessRate.subtract(baseline.reserveSuccessRate).setScale(2, RoundingMode.HALF_UP));
+        return m;
+    }
+
+    /** 3 个指标的容器 */
+    private static class Rates {
+        BigDecimal rescueFinishRate = BigDecimal.ZERO;
+        BigDecimal reserveSuccessRate = BigDecimal.ZERO;
+        BigDecimal complaintHandleRate = BigDecimal.ZERO;
     }
 
 }

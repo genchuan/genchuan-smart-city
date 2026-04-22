@@ -5,6 +5,7 @@ import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.v
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.SpacePushPageReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.SpacePushSaveReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.carguide.SpacePushDO;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -15,9 +16,9 @@ import java.util.List;
  */
 public interface SpacePushService {
 
-    Long createSpacePush(SpacePushSaveReqVO createReqVO);
+    Long createSpacePush(@Valid SpacePushSaveReqVO createReqVO);
 
-    void updateSpacePush(SpacePushSaveReqVO updateReqVO);
+    void updateSpacePush(@Valid SpacePushSaveReqVO updateReqVO);
 
     void deleteSpacePush(Long id);
 

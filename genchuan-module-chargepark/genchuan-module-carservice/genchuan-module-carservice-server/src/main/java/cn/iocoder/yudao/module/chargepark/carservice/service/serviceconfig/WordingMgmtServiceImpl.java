@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.chargepark.carservice.service.serviceconfig;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.serviceconfig.vo.WordingMgmtBatchSaveReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.serviceconfig.vo.WordingMgmtPageReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.serviceconfig.vo.WordingMgmtSaveReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.serviceconfig.WordingMgmtDO;
@@ -10,7 +11,11 @@ import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.serviceconfig.Wor
 import cn.iocoder.yudao.module.chargepark.carservice.enums.serviceconfig.WordingMgmtStatusEnum;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import java.util.List;
 import java.util.Objects;
@@ -134,6 +139,37 @@ public class WordingMgmtServiceImpl implements WordingMgmtService {
             return true;
         }
         return id != null && Objects.equals(existing.getId(), id);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void batchSaveWordingMgmt(WordingMgmtBatchSaveReqVO reqVO) {
+        List<WordingMgmtBatchSaveReqVO.Item> items = reqVO.getItems();
+        // Pass 1: 全量预校验(字段 + 存在性 + 名称唯一性,含"同批次内重名"防护)
+        Set<String> nameInBatch = new HashSet<>();
+        for (WordingMgmtBatchSaveReqVO.Item it : items) {
+            if (!nameInBatch.add(it.getName())) {
+                // 同一批次内就有重名,直接抛
+                throw exception(WORDING_MGMT_NAME_DUPLICATE);
+            }
+            if (it.getId() != null) {
+                validateWordingMgmtExists(it.getId());
+            }
+            validateNameUnique(it.getId(), it.getName());
+        }
+        // Pass 2: 校验全部通过后统一写入;事务回滚兜底
+        for (WordingMgmtBatchSaveReqVO.Item it : items) {
+            WordingMgmtSaveReqVO save = new WordingMgmtSaveReqVO();
+            save.setId(it.getId());
+            save.setName(it.getName());
+            save.setContent(it.getContent());
+            save.setType(it.getType());
+            if (it.getId() == null) {
+                createWordingMgmt(save);
+            } else {
+                updateWordingMgmt(save);
+            }
+        }
     }
 
 }

@@ -16,6 +16,7 @@ import cn.iocoder.yudao.module.chargepark.carservice.enums.rescue.RescueArchiveS
 import cn.iocoder.yudao.module.chargepark.carservice.enums.rescue.RescueStatusEnum;
 import cn.iocoder.yudao.module.chargepark.carservice.framework.notify.CarServiceNotifyHelper;
 import cn.iocoder.yudao.module.chargepark.carservice.framework.statemachine.StatusTransition;
+import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.CrossModuleValidator;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,6 +58,9 @@ public class RescueInfoServiceImpl implements RescueInfoService {
 
     @Resource
     private CarServiceNotifyHelper notifyHelper;
+
+    @Resource
+    private CrossModuleValidator crossModuleValidator;
 
     @Override
     public Long createRescueInfo(RescueInfoSaveReqVO createReqVO) {
@@ -129,6 +133,7 @@ public class RescueInfoServiceImpl implements RescueInfoService {
     public void dispatchRescueInfo(RescueInfoDispatchReqVO reqVO) {
         RescueInfoDO rescue = validateRescueInfoExists(reqVO.getId());
         validateStatus(rescue, RescueStatusEnum.WAITING_DISPATCH);
+        crossModuleValidator.validateAdminUserActive(reqVO.getRescueUserId());
         RescueInfoDO update = new RescueInfoDO();
         update.setId(reqVO.getId());
         update.setStatus(RescueStatusEnum.WAITING_CLAIM.getLabel());
@@ -145,6 +150,7 @@ public class RescueInfoServiceImpl implements RescueInfoService {
         if (reqVO.getIds() == null || reqVO.getIds().isEmpty()) {
             return;
         }
+        crossModuleValidator.validateAdminUserActive(reqVO.getRescueUserId());
         LocalDateTime now = LocalDateTime.now();
         for (Long id : reqVO.getIds()) {
             RescueInfoDO rescue = validateRescueInfoExists(id);
@@ -201,6 +207,7 @@ public class RescueInfoServiceImpl implements RescueInfoService {
     public void transferRescueInfo(RescueInfoTransferReqVO reqVO) {
         RescueInfoDO rescue = validateRescueInfoExists(reqVO.getId());
         validateStatus(rescue, RescueStatusEnum.PROCESSING);
+        crossModuleValidator.validateAdminUserActive(reqVO.getNewRescueUserId());
         RescueInfoDO update = new RescueInfoDO();
         update.setId(reqVO.getId());
         update.setRescueUserId(reqVO.getNewRescueUserId());

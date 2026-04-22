@@ -9,14 +9,18 @@ import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.v
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.ChargeParkMapReserveReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.ChargeParkMapRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.carguide.ChargeParkMapDO;
+import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.CrossModuleValidator;
 import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.UserNameInjector;
 import cn.iocoder.yudao.module.chargepark.carservice.service.carguide.ChargeParkMapService;
 import cn.iocoder.yudao.module.chargepark.carservice.service.decision.ServiceOpReportService;
+import cn.iocoder.yudao.module.stationresource.api.station.StationInfoApi;
+import cn.iocoder.yudao.module.stationresource.api.station.dto.StationInfoRespDTO;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,6 +37,7 @@ import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
+@Slf4j
 @Tag(name = "车辆引导 - 充停地图")
 @RestController
 @RequestMapping("/carservice/charge-park-map")
@@ -47,6 +52,12 @@ public class ChargeParkMapController {
 
     @Resource
     private AdminUserApi adminUserApi;
+
+    @Resource
+    private StationInfoApi stationInfoApi;
+
+    @Resource
+    private CrossModuleValidator crossModuleValidator;
 
     @Value("${carservice.navigate.map-url-template}")
     private String mapUrlTemplate;
@@ -85,10 +96,39 @@ public class ChargeParkMapController {
         if (record == null) {
             return success(null);
         }
-        // TODO 等 stationresource 模块开 RPC 后,按 targetId 查目标场站/车位真实坐标
-        // 现阶段暂用 queryLocation 作为导航终点,契约已对齐文档
-        String to = record.getQueryLocation() == null ? "" : record.getQueryLocation();
+        // 按 targetId 从 stationresource 拿真实场站坐标;下游异常或拿不到就回退合法的"lon,lat"字符串
+        String to = resolveCoord(reqVO.getTargetId(), record.getQueryLocation());
+        if (to == null) {
+            return success(null); // 没有可用坐标,不构造半成品 URL
+        }
         return success(mapUrlTemplate.replace("{to}", to));
+    }
+
+    /** 返回可直接拼到地图 URL 的 "lon,lat",拿不到返回 null */
+    private String resolveCoord(Long stationId, String queryLocation) {
+        // 1. 真实场站坐标
+        try {
+            CommonResult<StationInfoRespDTO> r = stationInfoApi.getStation(stationId);
+            StationInfoRespDTO station = r == null ? null : r.getData();
+            if (station != null && station.getLon() != null && station.getLat() != null) {
+                return station.getLon().toPlainString() + "," + station.getLat().toPlainString();
+            }
+        } catch (Exception ex) {
+            log.warn("[navigate] stationresource RPC 失败 stationId={}", stationId, ex);
+        }
+        // 2. 兜底:queryLocation 必须严格符合 "lon,lat" 格式才用,否则 null
+        if (queryLocation != null) {
+            String[] parts = queryLocation.split(",");
+            if (parts.length == 2) {
+                try {
+                    Double.parseDouble(parts[0].trim());
+                    Double.parseDouble(parts[1].trim());
+                    return queryLocation;
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        }
+        return null;
     }
 
     @GetMapping("/reserve")
@@ -100,6 +140,9 @@ public class ChargeParkMapController {
         if (record == null) {
             return success(null);
         }
+        // 跨模块外键校验:stationId / spaceId 必须真实存在(至少传一个)
+        crossModuleValidator.validateStationExists(reqVO.getStationId());
+        crossModuleValidator.validateSpaceExists(reqVO.getSpaceId());
         // 按文档要求拼 URL：?stationId=xxx[&spaceId=yyy]
         StringBuilder params = new StringBuilder();
         if (reqVO.getStationId() != null) {

@@ -7,6 +7,7 @@ import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.SuggestionSaveReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.SuggestionUpdateProgressReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.complaint.SuggestionDO;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -17,9 +18,9 @@ import java.util.List;
  */
 public interface SuggestionService {
 
-    Long createSuggestion(SuggestionSaveReqVO createReqVO);
+    Long createSuggestion(@Valid SuggestionSaveReqVO createReqVO);
 
-    void updateSuggestion(SuggestionSaveReqVO updateReqVO);
+    void updateSuggestion(@Valid SuggestionSaveReqVO updateReqVO);
 
     void deleteSuggestion(Long id);
 

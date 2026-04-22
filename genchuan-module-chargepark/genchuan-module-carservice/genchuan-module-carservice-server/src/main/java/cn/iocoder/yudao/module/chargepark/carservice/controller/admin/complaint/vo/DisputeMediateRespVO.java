@@ -36,7 +36,7 @@ public class DisputeMediateRespVO {
     @ExcelProperty("发起时间")
     private LocalDateTime submitTime;
 
-    @Schema(description = "调解状态")
+    @Schema(description = "调解状态,关联字典 dispute_mediate_status")
     @ExcelProperty("调解状态")
     private String status;
 

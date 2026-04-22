@@ -24,11 +24,11 @@ public class WordingMgmtRespVO {
     @ExcelProperty("话术内容")
     private String content;
 
-    @Schema(description = "话术类型")
+    @Schema(description = "话术类型,关联字典 wording_mgmt_type")
     @ExcelProperty("话术类型")
     private String type;
 
-    @Schema(description = "状态")
+    @Schema(description = "状态,关联字典 wording_mgmt_status")
     @ExcelProperty("状态")
     private String status;
 
