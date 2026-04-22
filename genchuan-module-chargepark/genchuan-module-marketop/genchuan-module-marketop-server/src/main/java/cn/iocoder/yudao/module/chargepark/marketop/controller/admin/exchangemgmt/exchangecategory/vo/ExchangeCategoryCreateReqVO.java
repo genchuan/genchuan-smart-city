@@ -2,26 +2,24 @@ package cn.iocoder.yudao.module.chargepark.marketop.controller.admin.exchangemgm
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Schema(description = "管理后台 - 兑换类目创建 Request VO")
 @Data
 public class ExchangeCategoryCreateReqVO {
 
-    @Schema(description = "类目名称", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "类目名称(唯一)", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotEmpty(message = "类目名称不能为空")
     private String name;
 
-    @Schema(description = "所需积分", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "所需积分不能为空")
-    private Integer point;
+    @Schema(description = "适用范围(全平台/指定场站)", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotEmpty(message = "适用范围不能为空")
+    private String scope;
 
-    @Schema(description = "库存", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "库存不能为空")
-    private Integer stock;
+    @Schema(description = "排序权重")
+    private Integer sort;
 
-    @Schema(description = "备注")
-    private String remark;
+    @Schema(description = "类目描述")
+    private String description;
 
 }

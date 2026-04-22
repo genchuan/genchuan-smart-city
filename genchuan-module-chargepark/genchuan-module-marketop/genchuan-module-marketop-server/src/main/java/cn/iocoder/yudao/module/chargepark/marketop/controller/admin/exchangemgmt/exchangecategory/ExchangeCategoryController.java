@@ -18,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @Tag(name = "管理后台 - 兑换类目")
@@ -84,6 +85,16 @@ public class ExchangeCategoryController {
         PageResult<ExchangeCategoryDO> pageResult = exchangeCategoryService.getPage(reqVO);
         List<ExchangeCategoryRespVO> list = BeanUtils.toBean(pageResult.getList(), ExchangeCategoryRespVO.class);
         ExcelUtils.write(response, "兑换类目.xlsx", "数据", ExchangeCategoryRespVO.class, list);
+    }
+
+    @GetMapping("/get-import-template")
+    @Operation(summary = "获得导入兑换类目模板")
+    public void importTemplate(HttpServletResponse response) throws IOException {
+        List<ExchangeCategoryImportExcelVO> list = Arrays.asList(
+                ExchangeCategoryImportExcelVO.builder().name("数码配件").scope("全平台").sort(1).description("各类充电、数码相关配件").build(),
+                ExchangeCategoryImportExcelVO.builder().name("生活用品").scope("指定场站").sort(2).description("日常生活用品").build()
+        );
+        ExcelUtils.write(response, "兑换类目导入模板.xls", "类目列表", ExchangeCategoryImportExcelVO.class, list);
     }
 
     @GetMapping("/chart")

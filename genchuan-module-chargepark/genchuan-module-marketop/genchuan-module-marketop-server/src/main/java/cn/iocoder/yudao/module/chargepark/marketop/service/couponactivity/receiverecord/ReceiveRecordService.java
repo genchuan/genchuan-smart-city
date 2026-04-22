@@ -13,6 +13,6 @@ public interface ReceiveRecordService {
 
     void check(Long id, String checkResult);
 
-    ReceiveRecordChartRespVO getChart(String timeRange);
+    ReceiveRecordChartRespVO getChart(Long startTime, Long endTime, Long stationId);
 
 }

@@ -28,7 +28,7 @@ public class ReceiveRecordDO extends BaseDO {
     private Long couponId;
     /** 领取时间 */
     private LocalDateTime receiveTime;
-    /** 状态(正常记录/异常记录/已核查) */
+    /** 状态(正常记录=1/异常记录=-1/已核查=1) */
     private String status;
     /** 核销时间 */
     private LocalDateTime verifyTime;

@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -47,8 +48,8 @@ public class ReceiveRecordController {
     @PutMapping("/check")
     @Operation(summary = "核查领用记录")
     @PreAuthorize("@ss.hasPermission('marketop:receive-record:query')")
-    public CommonResult<Boolean> check(@RequestParam("id") Long id, @RequestParam("checkResult") String checkResult) {
-        receiveRecordService.check(id, checkResult);
+    public CommonResult<Boolean> check(@Valid @RequestBody ReceiveRecordCheckReqVO reqVO) {
+        receiveRecordService.check(reqVO.getId(), reqVO.getCheckResult());
         return CommonResult.success(true);
     }
 
@@ -65,8 +66,10 @@ public class ReceiveRecordController {
     @GetMapping("/chart")
     @Operation(summary = "领用记录图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:receive-record:query')")
-    public CommonResult<ReceiveRecordChartRespVO> getChart(@RequestParam(value = "timeRange", required = false) String timeRange) {
-        return CommonResult.success(receiveRecordService.getChart(timeRange));
+    public CommonResult<ReceiveRecordChartRespVO> getChart(@RequestParam(value = "startTime", required = false) Long startTime,
+                                                           @RequestParam(value = "endTime", required = false) Long endTime,
+                                                           @RequestParam(value = "stationId", required = false) Long stationId) {
+        return CommonResult.success(receiveRecordService.getChart(startTime, endTime, stationId));
     }
 
 }

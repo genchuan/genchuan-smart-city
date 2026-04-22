@@ -13,13 +13,13 @@ public class StockControlChartRespVO {
     private Integer totalStock;
 
     @Schema(description = "预警数量")
-    private Integer warnCount;
+    private Integer warnStockCount;
 
-    @Schema(description = "库存变化趋势(近30天)")
-    private List<TrendItem> trendList;
+    @Schema(description = "库存变化趋势")
+    private List<TrendItem> stockTrend;
 
-    @Schema(description = "各卡种库存分布")
-    private List<StockItem> stockList;
+    @Schema(description = "各卡种库存分布(按type分类)")
+    private List<DistributionItem> stockDistribution;
 
     @Data
     public static class TrendItem {
@@ -30,15 +30,11 @@ public class StockControlChartRespVO {
     }
 
     @Data
-    public static class StockItem {
-        @Schema(description = "卡种ID")
-        private Long cardId;
-        @Schema(description = "卡种名称")
-        private String cardName;
-        @Schema(description = "当前库存")
-        private Integer currentStock;
-        @Schema(description = "预警阈值")
-        private Integer warnThreshold;
+    public static class DistributionItem {
+        @Schema(description = "卡种类型")
+        private String type;
+        @Schema(description = "数量")
+        private Integer count;
     }
 
 }

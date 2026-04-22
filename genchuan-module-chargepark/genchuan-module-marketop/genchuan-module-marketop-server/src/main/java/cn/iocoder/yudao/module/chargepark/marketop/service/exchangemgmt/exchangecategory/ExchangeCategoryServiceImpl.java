@@ -40,8 +40,7 @@ public class ExchangeCategoryServiceImpl implements ExchangeCategoryService {
         validateNameUnique(null, reqVO.getName());
         // 插入，默认状态为「未生效」
         ExchangeCategoryDO exchangeCategory = BeanUtils.toBean(reqVO, ExchangeCategoryDO.class);
-        exchangeCategory.setStatus("未生效");
-        exchangeCategory.setProductCount(0);
+        exchangeCategory.setStatus("0");
         exchangeCategoryMapper.insert(exchangeCategory);
         return exchangeCategory.getId();
     }
@@ -59,10 +58,10 @@ public class ExchangeCategoryServiceImpl implements ExchangeCategoryService {
     public void enable(Long id) {
         ExchangeCategoryDO exchangeCategory = validateExists(id);
         // 未生效→已生效，或 已禁用→已生效
-        if (!"未生效".equals(exchangeCategory.getStatus()) && !"已禁用".equals(exchangeCategory.getStatus())) {
+        if (!"0".equals(exchangeCategory.getStatus()) && !"-1".equals(exchangeCategory.getStatus())) {
             throw exception(EXCHANGE_CATEGORY_NOT_EXISTS);
         }
-        exchangeCategory.setStatus("已生效");
+        exchangeCategory.setStatus("1");
         exchangeCategoryMapper.updateById(exchangeCategory);
     }
 
@@ -70,10 +69,10 @@ public class ExchangeCategoryServiceImpl implements ExchangeCategoryService {
     public void disable(Long id) {
         ExchangeCategoryDO exchangeCategory = validateExists(id);
         // 已生效→已禁用
-        if (!"已生效".equals(exchangeCategory.getStatus())) {
+        if (!"1".equals(exchangeCategory.getStatus())) {
             throw exception(EXCHANGE_CATEGORY_NOT_EXISTS);
         }
-        exchangeCategory.setStatus("已禁用");
+        exchangeCategory.setStatus("0");
         exchangeCategoryMapper.updateById(exchangeCategory);
     }
 

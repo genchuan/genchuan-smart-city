@@ -6,6 +6,10 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.cardconfig.vo.CardConfigPageReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.CardConfigDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Mapper
 public interface CardConfigMapper extends BaseMapperX<CardConfigDO> {
@@ -18,5 +22,8 @@ public interface CardConfigMapper extends BaseMapperX<CardConfigDO> {
                 .eqIfPresent(CardConfigDO::getStatus, reqVO.getStatus())
                 .orderByDesc(CardConfigDO::getId));
     }
+
+    List<CardConfigDO> selectListByTimeRange(@Param("startTime") LocalDateTime startTime,
+                                              @Param("endTime") LocalDateTime endTime);
 
 }

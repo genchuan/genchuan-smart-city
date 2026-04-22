@@ -22,6 +22,6 @@ public interface CardConfigService {
 
     void disable(Long id);
 
-    CardConfigChartRespVO getChart(String timeRange);
+    CardConfigChartRespVO getChart(Long startTime, Long endTime);
 
 }

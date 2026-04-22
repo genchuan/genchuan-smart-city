@@ -55,24 +55,24 @@ public class CardOrderController {
     @PutMapping("/activate")
     @Operation(summary = "激活卡种订单")
     @PreAuthorize("@ss.hasPermission('marketop:card-order:update')")
-    public CommonResult<Boolean> activate(@RequestParam("id") Long id) {
-        cardOrderService.activate(id);
+    public CommonResult<Boolean> activate(@RequestBody CardOrderActivateReqVO reqVO) {
+        cardOrderService.activate(reqVO.getId());
         return CommonResult.success(true);
     }
 
     @PutMapping("/invoice")
     @Operation(summary = "开票卡种订单")
     @PreAuthorize("@ss.hasPermission('marketop:card-order:update')")
-    public CommonResult<Boolean> invoice(@RequestParam("id") Long id) {
-        cardOrderService.invoice(id);
+    public CommonResult<Boolean> invoice(@RequestBody CardOrderInvoiceReqVO reqVO) {
+        cardOrderService.invoice(reqVO.getId());
         return CommonResult.success(true);
     }
 
     @PutMapping("/cancel")
     @Operation(summary = "取消卡种订单")
     @PreAuthorize("@ss.hasPermission('marketop:card-order:update')")
-    public CommonResult<Boolean> cancel(@RequestParam("id") Long id) {
-        cardOrderService.cancel(id);
+    public CommonResult<Boolean> cancel(@RequestBody CardOrderCancelReqVO reqVO) {
+        cardOrderService.cancel(reqVO.getId());
         return CommonResult.success(true);
     }
 

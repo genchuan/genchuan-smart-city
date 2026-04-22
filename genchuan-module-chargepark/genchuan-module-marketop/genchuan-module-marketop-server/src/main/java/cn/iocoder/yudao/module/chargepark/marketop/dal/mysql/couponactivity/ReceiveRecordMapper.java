@@ -6,6 +6,10 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.receiverecord.vo.ReceiveRecordPageReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.ReceiveRecordDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Mapper
 public interface ReceiveRecordMapper extends BaseMapperX<ReceiveRecordDO> {
@@ -19,5 +23,9 @@ public interface ReceiveRecordMapper extends BaseMapperX<ReceiveRecordDO> {
                 .betweenIfPresent(ReceiveRecordDO::getReceiveTime, reqVO.getReceiveTime())
                 .orderByDesc(ReceiveRecordDO::getId));
     }
+
+    List<ReceiveRecordDO> selectListByTimeRange(@Param("startTime") LocalDateTime startTime,
+                                                 @Param("endTime") LocalDateTime endTime,
+                                                 @Param("stationId") Long stationId);
 
 }

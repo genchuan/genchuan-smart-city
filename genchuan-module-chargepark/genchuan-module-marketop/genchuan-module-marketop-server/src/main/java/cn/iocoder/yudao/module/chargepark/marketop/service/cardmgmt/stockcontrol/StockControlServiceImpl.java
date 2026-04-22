@@ -12,7 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.*;
@@ -48,7 +52,7 @@ public class StockControlServiceImpl implements StockControlService {
     @Override
     public void warn(Long id) {
         StockControlDO stockControl = validateExists(id);
-        stockControl.setWarnStatus("已告警");
+        stockControl.setWarnStatus("-1");
         stockControlMapper.updateById(stockControl);
         // TODO: 推送库存预警通知
     }
@@ -71,13 +75,38 @@ public class StockControlServiceImpl implements StockControlService {
     }
 
     @Override
-    public StockControlChartRespVO getChart(String timeRange) {
-        // TODO: 实现图表统计逻辑，暂时返回空数据
+    public StockControlChartRespVO getChart(Long startTime, Long endTime, Long stationId) {
+        LocalDateTime startDateTime = startTime != null
+                ? LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(startTime), ZoneId.systemDefault())
+                : null;
+        LocalDateTime endDateTime = endTime != null
+                ? LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(endTime), ZoneId.systemDefault())
+                : null;
+
+        List<StockControlDO> records = stockControlMapper.selectListByTimeRange(startDateTime, endDateTime, stationId);
+
         StockControlChartRespVO respVO = new StockControlChartRespVO();
-        respVO.setTotalStock(0);
-        respVO.setWarnCount(0);
-        respVO.setTrendList(new ArrayList<>());
-        respVO.setStockList(new ArrayList<>());
+
+        // 总库存量 = 所有记录的 current_stock 总和
+        int totalStock = records.stream()
+                .mapToInt(r -> r.getCurrentStock() != null ? r.getCurrentStock() : 0)
+                .sum();
+        respVO.setTotalStock(totalStock);
+
+        // 预警数量 = warnStatus 为已告警的记录数
+        int warnStockCount = (int) records.stream()
+                .filter(r -> "-1".equals(r.getWarnStatus()))
+                .count();
+        respVO.setWarnStockCount(warnStockCount);
+
+        // stockTrend 先空着，后续实现
+        respVO.setStockTrend(new ArrayList<>());
+
+        // stockDistribution = 根据 cardId 关联 card_config 表，通过 type 分类统计数量
+        List<StockControlChartRespVO.DistributionItem> distributionList =
+                stockControlMapper.selectDistributionByType(startDateTime, endDateTime, stationId);
+        respVO.setStockDistribution(distributionList);
+
         return respVO;
     }
 
@@ -93,11 +122,11 @@ public class StockControlServiceImpl implements StockControlService {
         int current = stockControl.getCurrentStock();
         int threshold = stockControl.getWarnThreshold() != null ? stockControl.getWarnThreshold() : 0;
         if (current <= 0) {
-            stockControl.setStatus("预警库存");
+            stockControl.setStatus("-1");
         } else if (current <= threshold) {
-            stockControl.setStatus("低库存");
+            stockControl.setStatus("1");
         } else {
-            stockControl.setStatus("正常库存");
+            stockControl.setStatus("0");
         }
     }
 

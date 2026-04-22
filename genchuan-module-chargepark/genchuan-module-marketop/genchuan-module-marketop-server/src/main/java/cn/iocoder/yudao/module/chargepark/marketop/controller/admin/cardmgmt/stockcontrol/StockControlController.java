@@ -56,8 +56,8 @@ public class StockControlController {
     @PutMapping("/warn")
     @Operation(summary = "库存预警")
     @PreAuthorize("@ss.hasPermission('marketop:stock-control:update')")
-    public CommonResult<Boolean> warn(@RequestParam("id") Long id) {
-        stockControlService.warn(id);
+    public CommonResult<Boolean> warn(@RequestBody StockControlWarnReqVO reqVO) {
+        stockControlService.warn(reqVO.getId());
         return CommonResult.success(true);
     }
 
@@ -82,8 +82,10 @@ public class StockControlController {
     @GetMapping("/chart")
     @Operation(summary = "库存管控图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:stock-control:query')")
-    public CommonResult<StockControlChartRespVO> getChart(@RequestParam(value = "timeRange", required = false) String timeRange) {
-        return CommonResult.success(stockControlService.getChart(timeRange));
+    public CommonResult<StockControlChartRespVO> getChart(@RequestParam(value = "startTime", required = false) Long startTime,
+                                                          @RequestParam(value = "endTime", required = false) Long endTime,
+                                                          @RequestParam(value = "stationId", required = false) Long stationId) {
+        return CommonResult.success(stockControlService.getChart(startTime, endTime, stationId));
     }
 
 }

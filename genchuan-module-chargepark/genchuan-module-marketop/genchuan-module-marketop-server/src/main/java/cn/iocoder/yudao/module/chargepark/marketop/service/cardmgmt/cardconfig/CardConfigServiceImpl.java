@@ -12,8 +12,14 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.*;
@@ -40,7 +46,7 @@ public class CardConfigServiceImpl implements CardConfigService {
         // 校验名称唯一
         validateNameUnique(null, reqVO.getName());
         CardConfigDO cardConfig = BeanUtils.toBean(reqVO, CardConfigDO.class);
-        cardConfig.setStatus("未生效");
+        cardConfig.setStatus("0");
         cardConfig.setSaleCount(0);
         cardConfigMapper.insert(cardConfig);
         return cardConfig.getId();
@@ -56,10 +62,10 @@ public class CardConfigServiceImpl implements CardConfigService {
     @Override
     public void enable(Long id) {
         CardConfigDO cardConfig = validateExists(id);
-        if (!"未生效".equals(cardConfig.getStatus())) {
+        if (!"0".equals(cardConfig.getStatus())) {
             throw exception(CARD_CONFIG_NOT_EXISTS);
         }
-        cardConfig.setStatus("已生效");
+        cardConfig.setStatus("1");
         cardConfig.setAuditTime(LocalDateTime.now());
         cardConfig.setEffectTime(LocalDateTime.now());
         cardConfigMapper.updateById(cardConfig);
@@ -68,20 +74,49 @@ public class CardConfigServiceImpl implements CardConfigService {
     @Override
     public void disable(Long id) {
         CardConfigDO cardConfig = validateExists(id);
-        if (!"已生效".equals(cardConfig.getStatus())) {
+        if (!"1".equals(cardConfig.getStatus())) {
             throw exception(CARD_CONFIG_NOT_EXISTS);
         }
-        cardConfig.setStatus("未生效");
+        cardConfig.setStatus("0");
         cardConfigMapper.updateById(cardConfig);
     }
 
     @Override
-    public CardConfigChartRespVO getChart(String timeRange) {
-        // TODO: 实现图表统计逻辑，暂时返回空数据
+    public CardConfigChartRespVO getChart(Long startTime, Long endTime) {
+        LocalDateTime startDateTime = startTime != null
+                ? LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(startTime), ZoneId.systemDefault())
+                : null;
+        LocalDateTime endDateTime = endTime != null
+                ? LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(endTime), ZoneId.systemDefault())
+                : null;
+
+        List<CardConfigDO> records = cardConfigMapper.selectListByTimeRange(startDateTime, endDateTime);
+
         CardConfigChartRespVO respVO = new CardConfigChartRespVO();
-        respVO.setEnableCount(0);
-        respVO.setSalesCount(0);
-        respVO.setTypeList(new ArrayList<>());
+        // 生效卡种数 = 状态为1的记录数
+        int enableCount = (int) records.stream().filter(r -> "1".equals(r.getStatus())).count();
+        respVO.setEnableCount(enableCount);
+
+        // 总数
+        int saleCount = records.size();
+        respVO.setSalesCount(saleCount);
+
+        // type分组统计
+        Map<String, Long> typeCountMap = records.stream()
+                .filter(r -> r.getType() != null)
+                .collect(Collectors.groupingBy(CardConfigDO::getType, Collectors.counting()));
+
+        List<CardConfigChartRespVO.TypeRateItem> typeRatio = new ArrayList<>();
+        typeCountMap.forEach((type, count) -> {
+            CardConfigChartRespVO.TypeRateItem item = new CardConfigChartRespVO.TypeRateItem();
+            item.setType(type);
+            item.setRate(saleCount > 0
+                    ? BigDecimal.valueOf(count).divide(BigDecimal.valueOf(saleCount), 4, RoundingMode.HALF_UP)
+                    : BigDecimal.ZERO);
+            typeRatio.add(item);
+        });
+        respVO.setTypeRatio(typeRatio);
+
         return respVO;
     }
 
