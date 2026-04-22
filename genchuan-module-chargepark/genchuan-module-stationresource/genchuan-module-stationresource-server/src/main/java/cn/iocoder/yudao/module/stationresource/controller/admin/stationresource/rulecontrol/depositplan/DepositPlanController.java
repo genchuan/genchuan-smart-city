@@ -37,7 +37,7 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 @RestController
 @RequestMapping("/stationresource/deposit-plan")
 @Validated
-@Hidden
+//@Hidden
 public class DepositPlanController {
 
     @Resource
