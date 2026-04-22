@@ -1,12 +1,15 @@
 package cn.iocoder.yudao.module.studentmgmt.service.honormgmt;
 
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.honormgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.honormgmt.HonorMgmtDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.honormgmt.HonorMgmtMapper;
-import cn.iocoder.yudao.module.studentmgmt.enums.HonorStatusEnum;
+import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
@@ -31,6 +34,10 @@ public class HonorMgmtServiceImpl implements HonorMgmtService {
 
     @Resource
     private HonorMgmtMapper honorMgmtMapper;
+    @Resource
+    private DictDataApi dictDataApi;
+
+
 
     @Override
     @LogRecord(type = STUDENT_HONOR_TYPE, subType = STUDENT_HONOR_CREATE_SUB_TYPE, bizNo = "{{#honorMgmt.id}}",
@@ -197,9 +204,18 @@ public class HonorMgmtServiceImpl implements HonorMgmtService {
             }
             // 去掉最尾的逗号
             honorName = honorName.substring(0, honorName.length() - 1);
-            String label = HonorStatusEnum.getNameByKey(status);
+            String dictDataLabel = "";
+            CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.HONOR_MGMT_STATUS.getType());
+            if (dictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : dictDataList.getData()) {
+                    if (dictData.getValue().equals(status)) {
+                        dictDataLabel = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
             LogRecordContext.putVariable("honor", honorMgmtDOS.get(0));
-            LogRecordContext.putVariable("status", label);
+            LogRecordContext.putVariable("status", dictDataLabel);
             LogRecordContext.putVariable("honorName", honorName);
             return true;
         }

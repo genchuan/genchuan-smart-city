@@ -15,6 +15,7 @@ public enum ViolaateStatusEnum {
     VIOLATE_MGMT_VIOLATE_STATUS_APPROVE("approve", "已执行"),
     VIOLATE_MGMT_VIOLATE_STATUS_WARN("warn", "已预警");
 
+    public static final String DICT_TYPE = "violate_mgmt_status";
     /**
      * 状态
      * <p>

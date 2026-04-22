@@ -15,6 +15,8 @@ public enum ClubStatusEnum {
     Club_STATUS_1("1", "已通过"),
     Club_STATUS_2("2", "已建档");
 
+    public static final String DICT_TYPE = "club_mgmt_status";
+
     /**
      * 状态
      * <p>

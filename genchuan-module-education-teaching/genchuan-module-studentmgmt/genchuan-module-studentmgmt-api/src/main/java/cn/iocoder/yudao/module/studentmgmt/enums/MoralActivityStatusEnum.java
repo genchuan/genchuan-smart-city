@@ -14,6 +14,7 @@ public enum MoralActivityStatusEnum {
     ONGOING("ongoing","'进行中'"),
     ENDED("ended","'已结束'");
 
+    public static final String DICT_TYPE = "moral_activity_status";
     /**
      * 状态
      * <p>

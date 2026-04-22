@@ -13,6 +13,7 @@ public enum MoralResourceStatusEnum {
     OFFLINE("online","'未上架'"),
     ONLINE("online","'已上架'");
 
+    public static final String DICT_TYPE = "moral_activity_activity_type";
     /**
      * 状态
      * <p>

@@ -14,6 +14,7 @@ public enum FundSystemStatusEnum {
     FUND_SYSTEM_STATUS_0("0", "待审核"),
     FUND_SYSTEM_STATUS_1("1", "已汇总");
 
+    public static final String DICT_TYPE = "fund_system_status";
     /**
      * 状态
      * <p>

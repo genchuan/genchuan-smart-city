@@ -15,6 +15,7 @@ public enum PunishTypeEnum {
     VIOLATE_MGMT_PUNISH_TYPE_PROBATION(3, "留校察看"),
     VIOLATE_MGMT_PUNISH_TYPE_DISMISSAL(4, "开除");
 
+    public static final String DICT_TYPE = "violate_mgmt_punish_type";
     /**
      * 状态
      * <p>

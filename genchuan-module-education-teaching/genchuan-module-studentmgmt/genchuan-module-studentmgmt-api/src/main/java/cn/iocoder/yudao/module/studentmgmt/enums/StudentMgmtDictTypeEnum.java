@@ -141,8 +141,17 @@ public enum StudentMgmtDictTypeEnum {
     /**
      * 奖助勤贷审核状态（待审核 / 已通过 / 已完成）
      */
-    AID_WORK_STATUS("aid_work_status", "奖助勤贷审核状态");
+    AID_WORK_STATUS("aid_work_status", "奖助勤贷审核状态"),
+    // ==================== 德育资源 ====================
+    MORAL_RESOURCE_RESOURCE_TYPE("moral_resource_resource_type", "德育资源类型"),
+    /**
+     * 德育资源审核状态（待审核 / 已通过 / 已完成）
+     */
+    MORAL_RESOURCE_STATUS("moral_resource_status", "德育资源审核状态"),
 
+
+
+    ;
     // ==================== 枚举属性 ====================
     /**
      * 字典类型
