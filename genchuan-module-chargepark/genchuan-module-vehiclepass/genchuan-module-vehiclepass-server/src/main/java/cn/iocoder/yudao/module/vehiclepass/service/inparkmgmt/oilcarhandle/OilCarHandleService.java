@@ -2,10 +2,7 @@ package cn.iocoder.yudao.module.vehiclepass.service.inparkmgmt.oilcarhandle;
 
 import java.util.*;
 
-import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandleBatchHandleReqVO;
-import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandlePageReqVO;
-import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandleRespVO;
-import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandleSaveReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.*;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.inparkmgmt.oilcarhandle.OilCarHandleDO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -77,5 +74,26 @@ public interface OilCarHandleService {
      * @param reqVO 批量处置请求
      */
     void batchHandle(OilCarHandleBatchHandleReqVO reqVO);
+
+    /**
+     * 处置油车占位
+     *
+     * @param reqVO 处置请求
+     */
+    void handle(OilCarHandleHandleReqVO reqVO);
+
+    /**
+     * 忽略油车占位
+     *
+     * @param reqVO 忽略请求
+     */
+    void ignore(OilCarHandleIgnoreReqVO reqVO);
+
+    /**
+     * 更新处置进度
+     *
+     * @param reqVO 更新进度请求
+     */
+    void updateProgress(OilCarHandleUpdateProgressReqVO reqVO);
 
 }

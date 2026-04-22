@@ -66,6 +66,10 @@ public class OilCarHandleDO extends BaseDO {
      */
     private String handleMethod;
     /**
+     * 处置进度
+     */
+    private String handleProgress;
+    /**
      * 处理类型：处置 / 忽略
      */
     private String handleType;

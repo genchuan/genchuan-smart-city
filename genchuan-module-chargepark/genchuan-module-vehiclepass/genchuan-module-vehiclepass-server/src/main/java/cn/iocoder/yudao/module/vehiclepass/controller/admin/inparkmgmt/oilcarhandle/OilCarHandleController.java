@@ -1,9 +1,6 @@
 package cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle;
 
-import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandlePageReqVO;
-import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandleRespVO;
-import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandleBatchHandleReqVO;
-import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandleSaveReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.*;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.inparkmgmt.oilcarhandle.OilCarHandleDO;
 import cn.iocoder.yudao.module.vehiclepass.service.inparkmgmt.oilcarhandle.OilCarHandleService;
 import org.springframework.web.bind.annotation.*;
@@ -102,6 +99,30 @@ public class OilCarHandleController {
     @PreAuthorize("@ss.hasPermission('vehiclepass:oil-car-handle:batch-handle')")
     public CommonResult<Boolean> batchHandle(@Valid @RequestBody OilCarHandleBatchHandleReqVO reqVO) {
         carHandleService.batchHandle(reqVO);
+        return success(true);
+    }
+
+    @PutMapping("/handle")
+    @Operation(summary = "处置油车占位")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:oil-car-handle:handle')")
+    public CommonResult<Boolean> handle(@Valid @RequestBody OilCarHandleHandleReqVO reqVO) {
+        carHandleService.handle(reqVO);
+        return success(true);
+    }
+
+    @PutMapping("/ignore")
+    @Operation(summary = "忽略油车占位")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:oil-car-handle:ignore')")
+    public CommonResult<Boolean> ignore(@Valid @RequestBody OilCarHandleIgnoreReqVO reqVO) {
+        carHandleService.ignore(reqVO);
+        return success(true);
+    }
+
+    @PutMapping("/update-progress")
+    @Operation(summary = "更新处置进度")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:oil-car-handle:update-progress')")
+    public CommonResult<Boolean> updateProgress(@Valid @RequestBody OilCarHandleUpdateProgressReqVO reqVO) {
+        carHandleService.updateProgress(reqVO);
         return success(true);
     }
 

@@ -2,6 +2,9 @@ package cn.iocoder.yudao.module.vehiclepass.service.inparkmgmt.oilcarhandle;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandleBatchHandleReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandleHandleReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandleIgnoreReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandleUpdateProgressReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandlePageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandleRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandleSaveReqVO;
@@ -123,6 +126,53 @@ public class OilCarHandleServiceImpl implements OilCarHandleService {
 
             carHandleMapper.updateById(updateObj);
         }
+    }
+
+    @Override
+    public void handle(OilCarHandleHandleReqVO reqVO) {
+        OilCarHandleDO carHandle = carHandleMapper.selectById(reqVO.getId());
+        if (carHandle == null) {
+            throw exception(CAR_HANDLE_NOT_EXISTS);
+        }
+
+        OilCarHandleDO updateObj = new OilCarHandleDO();
+        updateObj.setId(reqVO.getId());
+        updateObj.setHandleUserId(SecurityFrameworkUtils.getLoginUserId());
+        updateObj.setHandleTime(LocalDateTime.now());
+        updateObj.setStatus("处理中");
+        updateObj.setHandleMethod(reqVO.getHandleMethod());
+        updateObj.setHandleType("处置");
+        carHandleMapper.updateById(updateObj);
+    }
+
+    @Override
+    public void ignore(OilCarHandleIgnoreReqVO reqVO) {
+        OilCarHandleDO carHandle = carHandleMapper.selectById(reqVO.getId());
+        if (carHandle == null) {
+            throw exception(CAR_HANDLE_NOT_EXISTS);
+        }
+
+        OilCarHandleDO updateObj = new OilCarHandleDO();
+        updateObj.setId(reqVO.getId());
+        updateObj.setHandleUserId(SecurityFrameworkUtils.getLoginUserId());
+        updateObj.setHandleTime(LocalDateTime.now());
+        updateObj.setStatus("已关闭");
+        updateObj.setHandleType("忽略");
+        updateObj.setIgnoreReason(reqVO.getIgnoreReason());
+        carHandleMapper.updateById(updateObj);
+    }
+
+    @Override
+    public void updateProgress(OilCarHandleUpdateProgressReqVO reqVO) {
+        OilCarHandleDO carHandle = carHandleMapper.selectById(reqVO.getId());
+        if (carHandle == null) {
+            throw exception(CAR_HANDLE_NOT_EXISTS);
+        }
+
+        OilCarHandleDO updateObj = new OilCarHandleDO();
+        updateObj.setId(reqVO.getId());
+        updateObj.setHandleProgress(reqVO.getHandleProgress());
+        carHandleMapper.updateById(updateObj);
     }
 
 }
