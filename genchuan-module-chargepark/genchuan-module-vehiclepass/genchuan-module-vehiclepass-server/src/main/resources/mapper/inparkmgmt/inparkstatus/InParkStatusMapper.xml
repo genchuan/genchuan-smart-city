@@ -56,4 +56,48 @@
         WHERE p.id = #{id} AND p.deleted = 0
     </select>
 
+    <!-- 查询车辆分布（含经纬度） -->
+    <select id="selectCarLocationList" resultType="map">
+        SELECT
+            p.car_no AS plateNo,
+            ai.lon,
+            ai.lat,
+            ps.location AS spaceName
+        FROM in_park_status p
+        LEFT JOIN station_info s ON p.station_id = s.id AND s.deleted = 0
+        LEFT JOIN area_info ai ON s.area_id = ai.id AND ai.deleted = 0
+        LEFT JOIN parking_space_info ps ON p.space_id = ps.id AND ps.deleted = 0
+        WHERE p.deleted = 0
+        <if test="stationId != null">
+            AND p.station_id = #{stationId}
+        </if>
+    </select>
+
+    <!-- 查询在停量趋势（按小时统计今天） -->
+    <select id="selectInParkCountTrend" resultType="map">
+        SELECT
+            DATE_FORMAT(p.in_time, '%H:00') AS time,
+            COUNT(*) AS count
+        FROM in_park_status p
+        WHERE p.deleted = 0
+        AND DATE(p.in_time) = CURDATE()
+        <if test="stationId != null">
+            AND p.station_id = #{stationId}
+        </if>
+        GROUP BY DATE_FORMAT(p.in_time, '%H:00')
+        ORDER BY time
+    </select>
+
+    <!-- 查询在停车辆数和超时长车辆数 -->
+    <select id="selectInParkStats" resultType="map">
+        SELECT
+            COUNT(*) AS inParkCarCount,
+            SUM(CASE WHEN p.over_time = '是' THEN 1 ELSE 0 END) AS overTimeCarCount
+        FROM in_park_status p
+        WHERE p.deleted = 0
+        <if test="stationId != null">
+            AND p.station_id = #{stationId}
+        </if>
+    </select>
+
 </mapper>

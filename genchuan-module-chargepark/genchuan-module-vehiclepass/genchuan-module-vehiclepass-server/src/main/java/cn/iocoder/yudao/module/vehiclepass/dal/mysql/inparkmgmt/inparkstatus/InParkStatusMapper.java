@@ -47,4 +47,19 @@ public interface InParkStatusMapper extends BaseMapperX<InParkStatusDO> {
      */
     Map<String, Object> selectLocationById(@Param("id") Long id);
 
+    /**
+     * 查询车辆分布（含经纬度）
+     */
+    List<Map<String, Object>> selectCarLocationList(@Param("stationId") Long stationId);
+
+    /**
+     * 查询在停量趋势
+     */
+    List<Map<String, Object>> selectInParkCountTrend(@Param("stationId") Long stationId);
+
+    /**
+     * 查询在停车辆数和超时长车辆数
+     */
+    Map<String, Object> selectInParkStats(@Param("stationId") Long stationId);
+
 }

@@ -2,6 +2,8 @@ package cn.iocoder.yudao.module.vehiclepass.service.inparkmgmt.inparkstatus;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusAlarmReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusLocationReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusLocationRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusPageReqVO;
@@ -140,6 +142,46 @@ public class InParkStatusServiceImpl implements InParkStatusService {
         updateObj.setId(reqVO.getId());
         updateObj.setRemark(reqVO.getAlarmContent());
         parkStatusMapper.updateById(updateObj);
+    }
+
+    @Override
+    public InParkStatusChartRespVO getInParkStatusChart(InParkStatusChartReqVO chartReqVO) {
+        InParkStatusChartRespVO respVO = new InParkStatusChartRespVO();
+
+        // 1. 车辆分布
+        List<Map<String, Object>> carLocationList = parkStatusMapper.selectCarLocationList(chartReqVO.getStationId());
+        List<InParkStatusChartRespVO.CarLocation> carLocations = new ArrayList<>();
+        for (Map<String, Object> map : carLocationList) {
+            InParkStatusChartRespVO.CarLocation item = new InParkStatusChartRespVO.CarLocation();
+            item.setPlateNo((String) map.get("plateNo"));
+            Object lonObj = map.get("lon");
+            Object latObj = map.get("lat");
+            if (lonObj != null) item.setLon(new java.math.BigDecimal(lonObj.toString()));
+            if (latObj != null) item.setLat(new java.math.BigDecimal(latObj.toString()));
+            item.setSpaceName((String) map.get("spaceName"));
+            carLocations.add(item);
+        }
+        respVO.setCarLocationList(carLocations);
+
+        // 2. 在停量趋势
+        List<Map<String, Object>> trendList = parkStatusMapper.selectInParkCountTrend(chartReqVO.getStationId());
+        List<InParkStatusChartRespVO.InParkCountTrend> trends = new ArrayList<>();
+        for (Map<String, Object> map : trendList) {
+            InParkStatusChartRespVO.InParkCountTrend item = new InParkStatusChartRespVO.InParkCountTrend();
+            item.setTime((String) map.get("time"));
+            item.setCount(((Number) map.get("count")).longValue());
+            trends.add(item);
+        }
+        respVO.setInParkCountTrend(trends);
+
+        // 3. 卡片数据
+        Map<String, Object> stats = parkStatusMapper.selectInParkStats(chartReqVO.getStationId());
+        InParkStatusChartRespVO.CardData cardData = new InParkStatusChartRespVO.CardData();
+        cardData.setInParkCarCount(((Number) stats.get("inParkCarCount")).longValue());
+        cardData.setOverTimeCarCount(((Number) stats.get("overTimeCarCount")).longValue());
+        respVO.setCardData(cardData);
+
+        return respVO;
     }
 
 }

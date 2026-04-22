@@ -3,6 +3,8 @@ package cn.iocoder.yudao.module.vehiclepass.service.inparkmgmt.inparkstatus;
 import java.util.*;
 
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusAlarmReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusLocationReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusLocationRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusPageReqVO;
@@ -94,4 +96,12 @@ public interface InParkStatusService {
      * @param reqVO 告警请求
      */
     void alarmParkStatus(InParkStatusAlarmReqVO reqVO);
+
+    /**
+     * 获取在停状态统计
+     *
+     * @param chartReqVO 统计请求
+     * @return 统计数据
+     */
+    InParkStatusChartRespVO getInParkStatusChart(InParkStatusChartReqVO chartReqVO);
 }

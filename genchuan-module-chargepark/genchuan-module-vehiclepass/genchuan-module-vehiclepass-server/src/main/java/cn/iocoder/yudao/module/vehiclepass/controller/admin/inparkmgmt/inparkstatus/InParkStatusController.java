@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus;
 
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusAlarmReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusLocationReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusLocationRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusPageReqVO;
@@ -121,6 +123,13 @@ public class InParkStatusController {
     public CommonResult<Boolean> alarmParkStatus(@Valid @RequestBody InParkStatusAlarmReqVO reqVO) {
         parkStatusService.alarmParkStatus(reqVO);
         return success(true);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "在停状态统计")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:in-park-status:chart')")
+    public CommonResult<InParkStatusChartRespVO> getInParkStatusChart(@Valid InParkStatusChartReqVO reqVO) {
+        return success(parkStatusService.getInParkStatusChart(reqVO));
     }
 
     @GetMapping("/export-excel")
