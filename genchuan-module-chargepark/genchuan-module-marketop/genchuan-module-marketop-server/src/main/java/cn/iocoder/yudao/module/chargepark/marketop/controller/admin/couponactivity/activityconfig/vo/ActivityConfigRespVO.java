@@ -55,6 +55,12 @@ public class ActivityConfigRespVO {
     @Schema(description = "创建者")
     private String creator;
 
+    @Schema(description = "创建者名称")
+    private String creatorName;
+
+    @Schema(description = "审核人名称")
+    private String auditorName;
+
     @Schema(description = "创建时间")
     private LocalDateTime createTime;
 

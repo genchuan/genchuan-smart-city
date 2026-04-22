@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity;
 
+import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -15,6 +16,10 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivit
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityChartRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointActivityDO;
 import cn.iocoder.yudao.module.chargepark.marketop.service.pointactivity.pointactivity.PointActivityService;
+import cn.iocoder.yudao.module.stationresource.api.station.StationInfoApi;
+import cn.iocoder.yudao.module.stationresource.api.station.dto.StationInfoRespDTO;
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,8 +31,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Tag(name = "管理后台 - 积分活动列表")
 @RestController
@@ -37,12 +42,19 @@ public class PointActivityController {
     @Resource
     private PointActivityService pointActivityService;
 
+    @Resource
+    private AdminUserApi adminUserApi;
+
+    @Resource
+    private StationInfoApi stationInfoApi;
+
     @GetMapping("/page")
     @Operation(summary = "获得积分活动分页")
     @PreAuthorize("@ss.hasPermission('marketop:point-activity:query')")
     public CommonResult<PageResult<PointActivityRespVO>> getPage(PointActivityPageReqVO reqVO) {
         PageResult<PointActivityDO> pageResult = pointActivityService.getPage(reqVO);
         PageResult<PointActivityRespVO> bean = BeanUtils.toBean(pageResult, PointActivityRespVO.class);
+        injectUserNames(bean.getList());
         return CommonResult.success(bean);
     }
 
@@ -52,7 +64,9 @@ public class PointActivityController {
     @PreAuthorize("@ss.hasPermission('marketop:point-activity:query')")
     public CommonResult<PointActivityRespVO> get(@RequestParam("id") Long id) {
         PointActivityDO pointActivity = pointActivityService.get(id);
-        return CommonResult.success(BeanUtils.toBean(pointActivity, PointActivityRespVO.class));
+        PointActivityRespVO respVO = BeanUtils.toBean(pointActivity, PointActivityRespVO.class);
+        injectUserNames(Collections.singletonList(respVO));
+        return CommonResult.success(respVO);
     }
 
     @PostMapping("/create")
@@ -128,6 +142,57 @@ public class PointActivityController {
     @PreAuthorize("@ss.hasPermission('marketop:point-activity:query')")
     public CommonResult<PointActivityChartRespVO> getChart(PointActivityChartReqVO reqVO) {
         return CommonResult.success(pointActivityService.getChart(reqVO));
+    }
+
+    private void injectUserNames(List<PointActivityRespVO> list) {
+        if (list == null || list.isEmpty()) return;
+        // 收集所有需要查询的用户ID
+        Set<Long> userIds = new HashSet<>();
+        Set<Long> stationIds = new HashSet<>();
+        for (var item : list) {
+            if (StrUtil.isNotBlank(item.getCreator())) {
+                userIds.add(Long.valueOf(item.getCreator()));
+            }
+            if (item.getAuditorId() != null) {
+                userIds.add(item.getAuditorId());
+            }
+            if (StrUtil.isNotBlank(item.getStationIds())) {
+                Arrays.stream(item.getStationIds().split(","))
+                        .filter(StrUtil::isNotBlank).map(String::trim).map(Long::valueOf)
+                        .forEach(stationIds::add);
+            }
+        }
+        // 翻译用户名称
+        if (!userIds.isEmpty()) {
+            Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
+            for (var item : list) {
+                if (StrUtil.isNotBlank(item.getCreator())) {
+                    AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
+                    if (user != null) item.setCreatorName(user.getNickname());
+                }
+                if (item.getAuditorId() != null) {
+                    AdminUserRespDTO user = userMap.get(item.getAuditorId());
+                    if (user != null) item.setAuditorName(user.getNickname());
+                }
+            }
+        }
+        // 翻译场站名称
+        if (!stationIds.isEmpty()) {
+            Map<Long, StationInfoRespDTO> stationMap = stationInfoApi.getStationMap(stationIds);
+            for (var item : list) {
+                if (StrUtil.isNotBlank(item.getStationIds())) {
+                    String names = Arrays.stream(item.getStationIds().split(","))
+                            .filter(StrUtil::isNotBlank).map(String::trim)
+                            .map(id -> {
+                                StationInfoRespDTO s = stationMap.get(Long.valueOf(id));
+                                return s != null ? s.getName() : null;
+                            })
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.joining(","));
+                    item.setStationNames(names);
+                }
+            }
+        }
     }
 
 }

@@ -18,9 +18,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
+import cn.hutool.core.util.StrUtil;
+
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Tag(name = "管理后台 - 奖品管理")
 @RestController
@@ -30,12 +33,17 @@ public class PrizeMgmtController {
     @Resource
     private PrizeMgmtService prizeMgmtService;
 
+    @Resource
+    private AdminUserApi adminUserApi;
+
     @GetMapping("/page")
     @Operation(summary = "获得奖品管理分页")
     @PreAuthorize("@ss.hasPermission('marketop:prize-mgmt:query')")
     public CommonResult<PageResult<PrizeMgmtRespVO>> getPage(PrizeMgmtPageReqVO reqVO) {
         PageResult<PrizeMgmtDO> pageResult = prizeMgmtService.getPage(reqVO);
-        return CommonResult.success(BeanUtils.toBean(pageResult, PrizeMgmtRespVO.class));
+        PageResult<PrizeMgmtRespVO> bean = BeanUtils.toBean(pageResult, PrizeMgmtRespVO.class);
+        injectUserNames(bean.getList());
+        return CommonResult.success(bean);
     }
 
     @GetMapping("/get")
@@ -44,7 +52,9 @@ public class PrizeMgmtController {
     @PreAuthorize("@ss.hasPermission('marketop:prize-mgmt:query')")
     public CommonResult<PrizeMgmtRespVO> get(@RequestParam("id") Long id) {
         PrizeMgmtDO prizeMgmt = prizeMgmtService.get(id);
-        return CommonResult.success(BeanUtils.toBean(prizeMgmt, PrizeMgmtRespVO.class));
+        PrizeMgmtRespVO respVO = BeanUtils.toBean(prizeMgmt, PrizeMgmtRespVO.class);
+        if (respVO != null) injectUserNames(Collections.singletonList(respVO));
+        return CommonResult.success(respVO);
     }
 
     @PostMapping("/create")
@@ -112,6 +122,23 @@ public class PrizeMgmtController {
     @PreAuthorize("@ss.hasPermission('marketop:prize-mgmt:query')")
     public CommonResult<PrizeMgmtChartRespVO> getChart(PrizeMgmtChartReqVO reqVO) {
         return CommonResult.success(prizeMgmtService.getChart(reqVO));
+    }
+
+    private void injectUserNames(List<PrizeMgmtRespVO> list) {
+        Set<Long> userIds = new HashSet<>();
+        for (var item : list) {
+            if (StrUtil.isNotBlank(item.getCreator())) {
+                userIds.add(Long.valueOf(item.getCreator()));
+            }
+        }
+        if (userIds.isEmpty()) return;
+        Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
+        for (var item : list) {
+            if (StrUtil.isNotBlank(item.getCreator())) {
+                AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
+                if (user != null) item.setCreatorName(user.getNickname());
+            }
+        }
     }
 
 }

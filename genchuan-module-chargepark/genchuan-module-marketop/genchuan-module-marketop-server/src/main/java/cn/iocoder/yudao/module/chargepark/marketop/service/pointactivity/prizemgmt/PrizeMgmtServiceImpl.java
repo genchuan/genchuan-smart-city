@@ -10,6 +10,7 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivit
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.prizemgmt.vo.PrizeMgmtUpdateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PrizeMgmtDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.PrizeMgmtMapper;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.PrizeMgmtStatusEnum;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -17,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.*;
@@ -42,7 +44,7 @@ public class PrizeMgmtServiceImpl implements PrizeMgmtService {
     public Long create(PrizeMgmtCreateReqVO reqVO) {
         validateNameUnique(null, reqVO.getName());
         PrizeMgmtDO prizeMgmt = BeanUtils.toBean(reqVO, PrizeMgmtDO.class);
-        prizeMgmt.setStatus("1");
+        prizeMgmt.setStatus(PrizeMgmtStatusEnum.NORMAL.getValue());
         prizeMgmt.setSendCount(0);
         prizeMgmtMapper.insert(prizeMgmt);
         return prizeMgmt.getId();
@@ -61,20 +63,20 @@ public class PrizeMgmtServiceImpl implements PrizeMgmtService {
     @Override
     public void enable(Long id) {
         PrizeMgmtDO prizeMgmt = validateExists(id);
-        if (!"0".equals(prizeMgmt.getStatus())) {
+        if (!Objects.equals(PrizeMgmtStatusEnum.DISABLED.getValue(), prizeMgmt.getStatus())) {
             throw exception(PRIZE_MGMT_NOT_EXISTS);
         }
-        prizeMgmt.setStatus("1");
+        prizeMgmt.setStatus(PrizeMgmtStatusEnum.NORMAL.getValue());
         prizeMgmtMapper.updateById(prizeMgmt);
     }
 
     @Override
     public void disable(Long id) {
         PrizeMgmtDO prizeMgmt = validateExists(id);
-        if (!"1".equals(prizeMgmt.getStatus())) {
+        if (!Objects.equals(PrizeMgmtStatusEnum.NORMAL.getValue(), prizeMgmt.getStatus())) {
             throw exception(PRIZE_MGMT_NOT_EXISTS);
         }
-        prizeMgmt.setStatus("0");
+        prizeMgmt.setStatus(PrizeMgmtStatusEnum.DISABLED.getValue());
         prizeMgmtMapper.updateById(prizeMgmt);
     }
 
@@ -104,7 +106,7 @@ public class PrizeMgmtServiceImpl implements PrizeMgmtService {
         for (PrizeMgmtImportExcelVO excelVO : list) {
             validateNameUnique(null, excelVO.getName());
             PrizeMgmtDO prizeMgmt = BeanUtils.toBean(excelVO, PrizeMgmtDO.class);
-            prizeMgmt.setStatus("1");
+            prizeMgmt.setStatus(PrizeMgmtStatusEnum.NORMAL.getValue());
             prizeMgmt.setSendCount(0);
             prizeMgmtMapper.insert(prizeMgmt);
         }

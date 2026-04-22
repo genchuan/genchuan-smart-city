@@ -1,11 +1,14 @@
 package cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.cardconfig;
 
+import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.cardconfig.vo.*;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.CardConfigDO;
 import cn.iocoder.yudao.module.chargepark.marketop.service.cardmgmt.cardconfig.CardConfigService;
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,6 +16,9 @@ import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Tag(name = "管理后台 - 卡种配置")
 @RestController
@@ -22,12 +28,17 @@ public class CardConfigController {
     @Resource
     private CardConfigService cardConfigService;
 
+    @Resource
+    private AdminUserApi adminUserApi;
+
     @GetMapping("/page")
     @Operation(summary = "获得卡种配置分页")
     @PreAuthorize("@ss.hasPermission('marketop:card-config:query')")
     public CommonResult<PageResult<CardConfigRespVO>> getPage(CardConfigPageReqVO reqVO) {
         PageResult<CardConfigDO> pageResult = cardConfigService.getPage(reqVO);
-        return CommonResult.success(BeanUtils.toBean(pageResult, CardConfigRespVO.class));
+        PageResult<CardConfigRespVO> bean = BeanUtils.toBean(pageResult, CardConfigRespVO.class);
+        injectUserNames(bean.getList());
+        return CommonResult.success(bean);
     }
 
     @GetMapping("/get")
@@ -36,7 +47,9 @@ public class CardConfigController {
     @PreAuthorize("@ss.hasPermission('marketop:card-config:query')")
     public CommonResult<CardConfigRespVO> get(@RequestParam("id") Long id) {
         CardConfigDO cardConfig = cardConfigService.get(id);
-        return CommonResult.success(BeanUtils.toBean(cardConfig, CardConfigRespVO.class));
+        CardConfigRespVO respVO = BeanUtils.toBean(cardConfig, CardConfigRespVO.class);
+        injectUserNames(Collections.singletonList(respVO));
+        return CommonResult.success(respVO);
     }
 
     @PostMapping("/create")
@@ -76,6 +89,31 @@ public class CardConfigController {
     public CommonResult<CardConfigChartRespVO> getChart(@RequestParam(value = "startTime", required = false) Long startTime,
                                                         @RequestParam(value = "endTime", required = false) Long endTime) {
         return CommonResult.success(cardConfigService.getChart(startTime, endTime));
+    }
+
+    private void injectUserNames(List<CardConfigRespVO> list) {
+        // 收集所有需要查询的用户ID
+        Set<Long> userIds = new HashSet<>();
+        for (var item : list) {
+            if (StrUtil.isNotBlank(item.getCreator())) {
+                userIds.add(Long.valueOf(item.getCreator()));
+            }
+            if (item.getAuditorId() != null) {
+                userIds.add(item.getAuditorId());
+            }
+        }
+        if (userIds.isEmpty()) return;
+        Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
+        for (var item : list) {
+            if (StrUtil.isNotBlank(item.getCreator())) {
+                AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
+                if (user != null) item.setCreatorName(user.getNickname());
+            }
+            if (item.getAuditorId() != null) {
+                AdminUserRespDTO user = userMap.get(item.getAuditorId());
+                if (user != null) item.setAuditorName(user.getNickname());
+            }
+        }
     }
 
 }

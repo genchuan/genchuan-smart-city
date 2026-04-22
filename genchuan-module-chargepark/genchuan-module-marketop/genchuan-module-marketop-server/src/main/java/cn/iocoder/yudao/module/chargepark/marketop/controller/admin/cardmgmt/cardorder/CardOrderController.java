@@ -16,8 +16,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
+import cn.hutool.core.util.StrUtil;
+
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
 @Tag(name = "管理后台 - 卡种订单")
 @RestController
@@ -27,12 +31,17 @@ public class CardOrderController {
     @Resource
     private CardOrderService cardOrderService;
 
+    @Resource
+    private AdminUserApi adminUserApi;
+
     @GetMapping("/page")
     @Operation(summary = "获得卡种订单分页")
     @PreAuthorize("@ss.hasPermission('marketop:card-order:query')")
     public CommonResult<PageResult<CardOrderRespVO>> getPage(CardOrderPageReqVO reqVO) {
         PageResult<CardOrderDO> pageResult = cardOrderService.getPage(reqVO);
-        return CommonResult.success(BeanUtils.toBean(pageResult, CardOrderRespVO.class));
+        PageResult<CardOrderRespVO> bean = BeanUtils.toBean(pageResult, CardOrderRespVO.class);
+        injectUserNames(bean.getList());
+        return CommonResult.success(bean);
     }
 
     @GetMapping("/get")
@@ -41,7 +50,9 @@ public class CardOrderController {
     @PreAuthorize("@ss.hasPermission('marketop:card-order:query')")
     public CommonResult<CardOrderRespVO> get(@RequestParam("id") Long id) {
         CardOrderDO cardOrder = cardOrderService.get(id);
-        return CommonResult.success(BeanUtils.toBean(cardOrder, CardOrderRespVO.class));
+        CardOrderRespVO respVO = BeanUtils.toBean(cardOrder, CardOrderRespVO.class);
+        if (respVO != null) injectUserNames(Collections.singletonList(respVO));
+        return CommonResult.success(respVO);
     }
 
     @PutMapping("/pay")
@@ -100,6 +111,23 @@ public class CardOrderController {
     @PreAuthorize("@ss.hasPermission('marketop:card-order:query')")
     public CommonResult<CardOrderChartRespVO> getChart(@RequestParam(value = "timeRange", required = false) String timeRange) {
         return CommonResult.success(cardOrderService.getChart(timeRange));
+    }
+
+    private void injectUserNames(List<CardOrderRespVO> list) {
+        Set<Long> userIds = new HashSet<>();
+        for (var item : list) {
+            if (StrUtil.isNotBlank(item.getCreator())) {
+                userIds.add(Long.valueOf(item.getCreator()));
+            }
+        }
+        if (userIds.isEmpty()) return;
+        Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
+        for (var item : list) {
+            if (StrUtil.isNotBlank(item.getCreator())) {
+                AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
+                if (user != null) item.setCreatorName(user.getNickname());
+            }
+        }
     }
 
 }

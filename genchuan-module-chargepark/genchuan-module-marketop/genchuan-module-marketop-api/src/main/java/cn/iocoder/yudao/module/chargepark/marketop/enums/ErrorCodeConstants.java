@@ -56,5 +56,6 @@ public interface ErrorCodeConstants {
 
     // ========== 决策分析 1-100-201 ~ 1-100-250 ==========
     ErrorCode MARKET_OP_REPORT_NOT_EXISTS = new ErrorCode(1_100_201, "营销运营报表不存在");
+    ErrorCode CYCLE_REPORT_NOT_EXISTS = new ErrorCode(1_100_202, "周期报表不存在");
 
 }
