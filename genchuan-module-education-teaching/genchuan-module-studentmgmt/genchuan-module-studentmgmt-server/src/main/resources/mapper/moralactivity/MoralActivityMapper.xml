@@ -9,4 +9,83 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="selectTotalCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT COUNT(1) AS totalCount
+        FROM moral_activity
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND create_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+    </select>
+    <select id="selectStatusCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT status AS status, COUNT(1) AS totalCount
+        FROM moral_activity
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND create_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+        GROUP BY status
+    </select>
+    <select id="selectTypeCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT activity_type AS activityType, COUNT(1) AS totalCount
+        FROM moral_activity
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND create_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+        <if test="activityType != null and activityType != '' ">
+            AND activity_type = #{activityType}
+        </if>
+        GROUP BY activity_type
+    </select>
+
+    <select id="selectMonthTrend" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT DATE_FORMAT(create_time, '%Y-%m') AS date, COUNT(1) AS totalCount
+        FROM moral_activity
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND create_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+        GROUP BY date
+        ORDER BY date ASC
+    </select>
+    <select id="selectJoinTrend" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT DATE_FORMAT(start_time, '%Y-%m') AS date, COUNT(1) AS totalCount
+        FROM moral_activity
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND start_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND start_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+        GROUP BY date
+        ORDER BY date ASC
+    </select>
+    <select id="selectJoinCountByType" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM moral_activity
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND start_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND start_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+        <if test="activityType != null and activityType != '' ">
+            AND activity_type = #{activityType}
+        </if>
+    </select>
 </mapper>

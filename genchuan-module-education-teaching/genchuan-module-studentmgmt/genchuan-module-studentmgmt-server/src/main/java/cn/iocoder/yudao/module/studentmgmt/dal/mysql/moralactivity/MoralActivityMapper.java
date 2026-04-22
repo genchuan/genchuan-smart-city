@@ -1,11 +1,13 @@
 package cn.iocoder.yudao.module.studentmgmt.dal.mysql.moralactivity;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.moralactivity.MoralActivityDO;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.moralactivity.vo.*;
 
@@ -36,4 +38,15 @@ public interface MoralActivityMapper extends BaseMapperX<MoralActivityDO> {
                 .orderByDesc(MoralActivityDO::getId));
     }
 
+    JSONObject selectTotalCount(LocalDateTime startTime, LocalDateTime endTime, String status);
+
+    List<JSONObject> selectStatusCount(LocalDateTime startTime, LocalDateTime endTime);
+
+    List<JSONObject> selectTypeCount(LocalDateTime startTime, LocalDateTime endTime, String activityType);
+
+    List<JSONObject> selectMonthTrend(LocalDateTime startTime, LocalDateTime endTime);
+
+    List<JSONObject> selectJoinTrend(LocalDateTime startTime, LocalDateTime endTime);
+
+    Long selectJoinCountByType(LocalDateTime finalStartTime, LocalDateTime finalEndTime, String activityType);
 }
