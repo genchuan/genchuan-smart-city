@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.vehiclepass.service.inparkmgmt.inparkstatus;
 
 import java.util.*;
 
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusAlarmReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusLocationReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusLocationRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusPageReqVO;
@@ -86,4 +87,11 @@ public interface InParkStatusService {
      * @param id 记录ID
      */
     void remindParkStatus(Long id);
+
+    /**
+     * 告警在场车辆
+     *
+     * @param reqVO 告警请求
+     */
+    void alarmParkStatus(InParkStatusAlarmReqVO reqVO);
 }

@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.vehiclepass.service.inparkmgmt.inparkstatus;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusAlarmReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusLocationReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusLocationRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusPageReqVO;
@@ -124,6 +125,21 @@ public class InParkStatusServiceImpl implements InParkStatusService {
             throw exception(PARK_STATUS_NOT_EXISTS);
         }
         // TODO: 调用短信或推送服务提醒车主
+    }
+
+    @Override
+    public void alarmParkStatus(InParkStatusAlarmReqVO reqVO) {
+        // 校验记录存在
+        InParkStatusDO parkStatus = parkStatusMapper.selectById(reqVO.getId());
+        if (parkStatus == null) {
+            throw exception(PARK_STATUS_NOT_EXISTS);
+        }
+        // TODO: 调用短信或推送服务提醒车主
+        // 更新告警内容到备注
+        InParkStatusDO updateObj = new InParkStatusDO();
+        updateObj.setId(reqVO.getId());
+        updateObj.setRemark(reqVO.getAlarmContent());
+        parkStatusMapper.updateById(updateObj);
     }
 
 }

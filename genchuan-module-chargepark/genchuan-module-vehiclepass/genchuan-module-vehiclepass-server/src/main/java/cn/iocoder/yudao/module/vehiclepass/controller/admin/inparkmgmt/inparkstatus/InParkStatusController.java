@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus;
 
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusAlarmReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusLocationReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusLocationRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusPageReqVO;
@@ -111,6 +112,14 @@ public class InParkStatusController {
     @PreAuthorize("@ss.hasPermission('vehiclepass:in-park-status:remind')")
     public CommonResult<Boolean> remindParkStatus(@RequestParam("id") Long id) {
         parkStatusService.remindParkStatus(id);
+        return success(true);
+    }
+
+    @PutMapping("/alarm")
+    @Operation(summary = "告警在场车辆")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:in-park-status:alarm')")
+    public CommonResult<Boolean> alarmParkStatus(@Valid @RequestBody InParkStatusAlarmReqVO reqVO) {
+        parkStatusService.alarmParkStatus(reqVO);
         return success(true);
     }
 
