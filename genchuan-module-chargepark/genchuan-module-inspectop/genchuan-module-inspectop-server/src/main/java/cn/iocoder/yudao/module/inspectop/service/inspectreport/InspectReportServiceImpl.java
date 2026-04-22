@@ -175,10 +175,10 @@ public class InspectReportServiceImpl implements InspectReportService {
         // 4. 获取当前时间（作为审核时间）
         LocalDateTime auditTime = LocalDateTime.now();
 
-        // 5. 更新审核信息，状态改为1（待审核）
+        // 5. 更新审核信息，状态改为4（已驳回）
         LambdaUpdateWrapper<InspectReportDO> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper
-                .set(InspectReportDO::getStatus, "1")                // 状态：待审核
+                .set(InspectReportDO::getStatus, "4")                // 状态：已驳回
                 .set(InspectReportDO::getAuditUserId, auditUserId)   // 审核人ID
                 .set(InspectReportDO::getAuditTime, auditTime)       // 审核时间
                 .set(InspectReportDO::getRemark, auditRemark)   // 驳回理由
