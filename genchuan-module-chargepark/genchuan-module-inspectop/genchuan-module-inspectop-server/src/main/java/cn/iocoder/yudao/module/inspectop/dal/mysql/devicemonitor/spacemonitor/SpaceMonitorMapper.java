@@ -10,6 +10,7 @@ import cn.iocoder.yudao.module.inspectop.dal.dataobject.devicemonitor.spacemonit
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * 车位状态监测 Mapper

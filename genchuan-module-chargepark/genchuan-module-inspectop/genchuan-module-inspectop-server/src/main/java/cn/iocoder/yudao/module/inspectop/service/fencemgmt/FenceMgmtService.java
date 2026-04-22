@@ -57,6 +57,27 @@ public interface FenceMgmtService {
      * @param pageReqVO 分页查询
      * @return 电子围栏分页
      */
-    PageResult<FenceMgmtDO> getFenceMgmtPage(FenceMgmtPageReqVO pageReqVO);
+    PageResult<FenceMgmtRespVO> getFenceMgmtPage(FenceMgmtPageReqVO pageReqVO);
+
+    /**
+     * 生效电子围栏
+     *
+     * @param id 编号
+     */
+    void enableFenceMgmt(Long id);
+
+    /**
+     * 禁用电子围栏
+     *
+     * @param id 编号
+     */
+    void disableFenceMgmt(Long id);
+
+    /**
+     * 获得电子围栏图表统计数据
+     *
+     * @return 图表统计数据
+     */
+    FenceMgmtChartRespVO getFenceMgmtChart();
 
 }
