@@ -13,4 +13,5 @@ public interface ErrorCodeConstants {
     //类型需要为人工补录
     ErrorCode RECORD_TYPE_NOT_MANUAL = new ErrorCode(500, "入场记录类型非人工补录");
 
+    ErrorCode PARK_STATUS_NOT_EXISTS = new ErrorCode(500, "在停状态不存在");
 }

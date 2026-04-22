@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.vehiclepass.dal.mysql.inparkmgmt.inparkstatus.InParkStatusMapper">
+
+    <select id="selectPageJoinSpaceStation" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusRespVO">
+        SELECT
+            p.id,
+            p.station_id AS stationId,
+            s.name AS stationName,
+            p.space_id AS spaceId,
+            ps.location AS spaceName,
+            p.car_no AS carNo,
+            p.in_time AS inTime,
+            p.over_time AS overTime,
+            p.status,
+            p.remark,
+            p.reserve1,
+            p.reserve2,
+            p.creator,
+            p.updater,
+            p.create_time AS createTime,
+            p.update_time AS updateTime
+        FROM in_park_status p
+        LEFT JOIN station_info s ON p.station_id = s.id AND s.deleted = 0
+        LEFT JOIN parking_space_info ps ON p.space_id = ps.id AND ps.deleted = 0
+        WHERE p.deleted = 0
+        <if test="reqVO.carNo != null and reqVO.carNo != ''">
+            AND p.car_no LIKE CONCAT('%', #{reqVO.carNo}, '%')
+        </if>
+        <if test="reqVO.spaceId != null">
+            AND p.space_id = #{reqVO.spaceId}
+        </if>
+        <if test="reqVO.inTime != null and reqVO.inTime.size() == 2">
+            AND p.in_time BETWEEN #{reqVO.inTime[0]} AND #{reqVO.inTime[1]}
+        </if>
+        <if test="reqVO.status != null and reqVO.status != ''">
+            AND p.status = #{reqVO.status}
+        </if>
+        <if test="reqVO.stationId != null">
+            AND p.station_id = #{reqVO.stationId}
+        </if>
+        ORDER BY p.id DESC
+    </select>
+
+</mapper>

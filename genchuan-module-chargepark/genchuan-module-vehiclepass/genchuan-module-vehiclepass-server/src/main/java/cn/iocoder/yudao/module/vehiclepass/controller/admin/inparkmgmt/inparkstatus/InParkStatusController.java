@@ -1,0 +1,113 @@
+package cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus;
+
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusPageReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusSaveReqVO;
+import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.inparkmgmt.inparkstatus.InParkStatusDO;
+import cn.iocoder.yudao.module.vehiclepass.service.inparkmgmt.inparkstatus.InParkStatusService;
+import org.springframework.web.bind.annotation.*;
+import jakarta.annotation.Resource;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.security.access.prepost.PreAuthorize;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Operation;
+
+import jakarta.validation.constraints.*;
+import jakarta.validation.*;
+import jakarta.servlet.http.*;
+import java.util.*;
+import java.io.IOException;
+
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
+
+import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+
+import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
+
+
+@Tag(name = "管理后台 - 在停状态")
+@RestController
+@RequestMapping("/in/park-status")
+@Validated
+public class InParkStatusController {
+
+    @Resource
+    private InParkStatusService parkStatusService;
+
+    @PostMapping("/create")
+    @Operation(summary = "创建在停状态")
+    @PreAuthorize("@ss.hasPermission('in:park-status:create')")
+    public CommonResult<Long> createParkStatus(@Valid @RequestBody InParkStatusSaveReqVO createReqVO) {
+        return success(parkStatusService.createParkStatus(createReqVO));
+    }
+
+    @PutMapping("/update")
+    @Operation(summary = "更新在停状态")
+    @PreAuthorize("@ss.hasPermission('in:park-status:update')")
+    public CommonResult<Boolean> updateParkStatus(@Valid @RequestBody InParkStatusSaveReqVO updateReqVO) {
+        parkStatusService.updateParkStatus(updateReqVO);
+        return success(true);
+    }
+
+    @DeleteMapping("/delete")
+    @Operation(summary = "删除在停状态")
+    @Parameter(name = "id", description = "编号", required = true)
+    @PreAuthorize("@ss.hasPermission('in:park-status:delete')")
+    public CommonResult<Boolean> deleteParkStatus(@RequestParam("id") Long id) {
+        parkStatusService.deleteParkStatus(id);
+        return success(true);
+    }
+
+    @DeleteMapping("/delete-list")
+    @Parameter(name = "ids", description = "编号", required = true)
+    @Operation(summary = "批量删除在停状态")
+    @PreAuthorize("@ss.hasPermission('in:park-status:delete')")
+    public CommonResult<Boolean> deleteParkStatusList(@RequestParam("ids") List<Long> ids) {
+        parkStatusService.deleteParkStatusListByIds(ids);
+        return success(true);
+    }
+
+    @GetMapping("/get")
+    @Operation(summary = "获得在停状态")
+    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+    @PreAuthorize("@ss.hasPermission('in:park-status:query')")
+    public CommonResult<InParkStatusRespVO> getParkStatus(@RequestParam("id") Long id) {
+        InParkStatusDO parkStatus = parkStatusService.getParkStatus(id);
+        return success(BeanUtils.toBean(parkStatus, InParkStatusRespVO.class));
+    }
+
+    @GetMapping("/page")
+    @Operation(summary = "获得在停状态分页")
+    @PreAuthorize("@ss.hasPermission('in:park-status:query')")
+    public CommonResult<PageResult<InParkStatusRespVO>> getParkStatusPage(@Valid InParkStatusPageReqVO pageReqVO) {
+        PageResult<InParkStatusDO> pageResult = parkStatusService.getParkStatusPage(pageReqVO);
+        return success(BeanUtils.toBean(pageResult, InParkStatusRespVO.class));
+    }
+
+    @GetMapping("/my/page")
+    @Operation(summary = "获得在停状态分页")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:in-park-status:query')")
+    public CommonResult<PageResult<InParkStatusRespVO>> getInParkStatusPage(@Valid InParkStatusPageReqVO pageReqVO) {
+        return success(parkStatusService.getInParkStatusPage(pageReqVO));
+    }
+
+    @GetMapping("/export-excel")
+    @Operation(summary = "导出在停状态 Excel")
+    @PreAuthorize("@ss.hasPermission('in:park-status:export')")
+    @ApiAccessLog(operateType = EXPORT)
+    public void exportParkStatusExcel(@Valid InParkStatusPageReqVO pageReqVO,
+                                      HttpServletResponse response) throws IOException {
+        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        List<InParkStatusDO> list = parkStatusService.getParkStatusPage(pageReqVO).getList();
+        // 导出 Excel
+        ExcelUtils.write(response, "在停状态.xls", "数据", InParkStatusRespVO.class,
+                BeanUtils.toBean(list, InParkStatusRespVO.class));
+    }
+
+}
