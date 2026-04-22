@@ -48,5 +48,5 @@ public interface MoralActivityMapper extends BaseMapperX<MoralActivityDO> {
 
     List<JSONObject> selectJoinTrend(LocalDateTime startTime, LocalDateTime endTime);
 
-    Long selectJoinCountByType(LocalDateTime finalStartTime, LocalDateTime finalEndTime, String activityType);
+    Long selectJoinCountByType(LocalDateTime startTime, LocalDateTime endTime, String activityType);
 }

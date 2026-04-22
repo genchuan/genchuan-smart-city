@@ -4,6 +4,145 @@
 -- 说明：包含行为管理、资助系统、社团管理等模块的字典数据
 -- ============================================
 
+-- ==================== 零、清理已存在的字典数据 ====================
+
+-- 删除所有相关的字典数据（必须先删除字典数据，再删除字典类型）
+DELETE FROM `system_dict_data` WHERE `dict_type` IN (
+                                                     'work_home_record_type',
+                                                     'assess_mgmt_cycle',
+                                                     'student_info_education_level',
+                                                     'student_info_study_form',
+                                                     'student_info_student_type',
+                                                     'student_info_status',
+                                                     'honor_mgmt_honor_type',
+                                                     'honor_mgmt_status',
+                                                     'assess_mgmt_assess_type',
+                                                     'assess_mgmt_status',
+                                                     'violate_mgmt_violate_type',
+                                                     'violate_mgmt_punish_type',
+                                                     'violate_mgmt_status',
+                                                     'mental_mgmt_mental_status',
+                                                     'mental_mgmt_risk_level',
+                                                     'mental_mgmt_status',
+                                                     'behavior_mgmt_leave_type',
+                                                     'behavior_mgmt_audit_level',
+                                                     'behavior_mgmt_attendance_sync',
+                                                     'behavior_mgmt_status',
+                                                     'fund_system_fund_type',
+                                                     'fund_system_status',
+                                                     'club_mgmt_club_type',
+                                                     'club_mgmt_venue_apply_status',
+                                                     'club_mgmt_status',
+                                                     'aid_work_aid_type',
+                                                     'aid_work_process_status',
+                                                     'aid_work_status',
+                                                     'dorm_check_check_status',
+                                                     'dorm_check_status',
+                                                     'dorm_check_abnormal_type',
+                                                     'access_apply_apply_type',
+                                                     'access_apply_status',
+                                                     'repair_mgmt_repair_type',
+                                                     'repair_mgmt_status',
+                                                     'repair_mgmt_check_status',
+                                                     'stay_mgmt_status',
+                                                     'treat_mgmt_treat_type',
+                                                     'treat_mgmt_status',
+                                                     'register_mgmt_status',
+                                                     'class_assign_status',
+                                                     'check_in_account_status',
+                                                     'check_in_status',
+                                                     'new_push_status',
+                                                     'coop_enterprise_enterprise_type',
+                                                     'coop_enterprise_status',
+                                                     'study_up_school_type',
+                                                     'study_up_status',
+                                                     'leave_handle_checkout_status',
+                                                     'leave_handle_status',
+                                                     'report_time_scale',
+                                                     'dorm_compare_cycle',
+                                                     'moral_activity_activity_type',
+                                                     'moral_activity_status',
+                                                     'promote_mgmt_status',
+                                                     'target_mgmt_evaluator_type',
+                                                     'dorm_assign_status',
+                                                     'duty_mgmt_check_in_status',
+                                                     'duty_mgmt_status',
+                                                     'moral_activity_type',
+                                                     'target_mgmt_score_type',
+                                                     'target_mgmt_status',
+                                                     'duty_mgmt_transfer_status',
+                                                     'duty_mgmt_car_status',
+                                                     'moral_resource_status'
+    );
+
+-- 删除所有相关的字典类型
+DELETE FROM `system_dict_type` WHERE `type` IN (
+                                                'work_home_record_type',
+                                                'assess_mgmt_cycle',
+                                                'student_info_education_level',
+                                                'student_info_study_form',
+                                                'student_info_student_type',
+                                                'student_info_status',
+                                                'honor_mgmt_honor_type',
+                                                'honor_mgmt_status',
+                                                'assess_mgmt_assess_type',
+                                                'assess_mgmt_status',
+                                                'violate_mgmt_violate_type',
+                                                'violate_mgmt_punish_type',
+                                                'violate_mgmt_status',
+                                                'mental_mgmt_mental_status',
+                                                'mental_mgmt_risk_level',
+                                                'mental_mgmt_status',
+                                                'behavior_mgmt_leave_type',
+                                                'behavior_mgmt_audit_level',
+                                                'behavior_mgmt_attendance_sync',
+                                                'behavior_mgmt_status',
+                                                'fund_system_fund_type',
+                                                'fund_system_status',
+                                                'club_mgmt_club_type',
+                                                'club_mgmt_venue_apply_status',
+                                                'club_mgmt_status',
+                                                'aid_work_aid_type',
+                                                'aid_work_process_status',
+                                                'aid_work_status',
+                                                'dorm_check_check_status',
+                                                'dorm_check_status',
+                                                'dorm_check_abnormal_type',
+                                                'access_apply_apply_type',
+                                                'access_apply_status',
+                                                'repair_mgmt_repair_type',
+                                                'repair_mgmt_status',
+                                                'repair_mgmt_check_status',
+                                                'stay_mgmt_status',
+                                                'treat_mgmt_treat_type',
+                                                'treat_mgmt_status',
+                                                'register_mgmt_status',
+                                                'class_assign_status',
+                                                'check_in_account_status',
+                                                'check_in_status',
+                                                'new_push_status',
+                                                'coop_enterprise_enterprise_type',
+                                                'coop_enterprise_status',
+                                                'study_up_school_type',
+                                                'study_up_status',
+                                                'leave_handle_checkout_status',
+                                                'leave_handle_status',
+                                                'report_time_scale',
+                                                'dorm_compare_cycle',
+                                                'moral_activity_activity_type',
+                                                'moral_activity_status',
+                                                'promote_mgmt_status',
+                                                'target_mgmt_evaluator_type',
+                                                'dorm_assign_status',
+                                                'duty_mgmt_check_in_status',
+                                                'duty_mgmt_status',
+                                                'moral_activity_type',
+                                                'target_mgmt_score_type',
+                                                'target_mgmt_status',
+                                                'duty_mgmt_transfer_status',
+                                                'duty_mgmt_car_status',
+                                                'moral_resource_status'
+    );
 -- ==================== 一、字典类型 (system_dict_type) ====================
 
 -- 1. 学工首页记录类型
@@ -703,3 +842,18 @@ VALUES
     (1, '无   ', 'none', 'duty_mgmt_car_status', 0, 'info', '', '未申请出车', 'admin', NOW(), 'admin', NOW(), 0, 1),
     (2, '待审批', 'pending', 'duty_mgmt_car_status', 0, 'warning', '', '出车申请待审批', 'admin', NOW(), 'admin', NOW(), 0, 1),
     (3, '已通过', 'approved', 'duty_mgmt_car_status', 0, 'success', '', '出车申请已通过', 'admin', NOW(), 'admin', NOW(), 0, 1);
+
+-- ----------------------------
+-- 德育资源状态 - 字典类型
+-- ----------------------------
+INSERT INTO system_dict_type (id, name, type, status, remark, creator, create_time, updater, update_time, deleted, deleted_time)
+VALUES (2000, '德育资源状态', 'moral_resource_status', 0, '德育资源的上架状态', 'admin', SYSDATE, '', NULL, '0', NULL);
+
+-- ----------------------------
+-- 德育资源状态 - 字典数据
+-- ----------------------------
+INSERT INTO system_dict_data (id, sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted)
+VALUES (2000, 1, '未上架', 'disable', 'moral_resource_status', 0, 'danger', '', '德育资源未上架状态', 'admin', SYSDATE, '', NULL, '0');
+
+INSERT INTO system_dict_data (id, sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted)
+VALUES (2001, 2, '已上架', 'enable', 'moral_resource_status', 0, 'success', '', '德育资源已上架状态', 'admin', SYSDATE, '', NULL, '0');

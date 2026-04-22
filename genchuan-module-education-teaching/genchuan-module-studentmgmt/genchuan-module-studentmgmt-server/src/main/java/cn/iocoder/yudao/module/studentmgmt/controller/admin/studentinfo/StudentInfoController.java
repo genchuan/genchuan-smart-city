@@ -110,9 +110,9 @@ public class StudentInfoController {
 
 
     @GetMapping("/chart")
-    @Operation(summary = "卡片/圆环图/柱状图/统计(学生信息分布看板)")
+    @Operation(summary = "学生信息分布看板")
     @PreAuthorize("@ss.hasPermission('studentmgmt:student-info:query')")
-    public CommonResult<StudentInfoDashboardVO> getStudentDashboard(@Valid @RequestBody StudentInfoChartReqVO reqVO) {
+    public CommonResult<StudentInfoDashboardVO> getStudentDashboard(@Valid StudentInfoChartReqVO reqVO) {
         StudentInfoDashboardVO dashboardVO = studentInfoService.getStudentInfoDashboard(reqVO);
         return success(dashboardVO);
     }
@@ -120,7 +120,7 @@ public class StudentInfoController {
     @GetMapping("/chart/distributionCount")
     @Operation(summary = "按年级 / 专业 / 班级分布统计")
     @PreAuthorize("@ss.hasPermission('studentmgmt:student-info:query')")
-    public CommonResult<List<StudentInfoDistributionCountRespVO>> getDistributionCount(@Valid @RequestBody StudentInfoDistributionCountReqVO reqVO) {
+    public CommonResult<List<StudentInfoDistributionCountRespVO>> getDistributionCount(@Valid StudentInfoDistributionCountReqVO reqVO) {
         List<StudentInfoDistributionCountRespVO> dashboardVO = studentInfoService.getDistributionCount(reqVO);
         return success(dashboardVO);
     }
@@ -128,7 +128,7 @@ public class StudentInfoController {
     @GetMapping("/chart/coreIndex")
     @Operation(summary = "按学生核心指标统计")
     @PreAuthorize("@ss.hasPermission('studentmgmt:student-info:query')")
-    public CommonResult<List<StudentInfoCoreIndexRespVO>> getCoreIndex(@Valid @RequestBody StudentInfoCoreIndexReqVO reqVO) {
+    public CommonResult<List<StudentInfoCoreIndexRespVO>> getCoreIndex(@Valid StudentInfoCoreIndexReqVO reqVO) {
         List<StudentInfoCoreIndexRespVO> dashboardVO = studentInfoService.getCoreIndex(reqVO);
         return success(dashboardVO);
     }

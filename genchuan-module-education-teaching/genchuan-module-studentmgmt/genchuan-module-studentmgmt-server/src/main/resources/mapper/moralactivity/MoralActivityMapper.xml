@@ -75,7 +75,7 @@
         ORDER BY date ASC
     </select>
     <select id="selectJoinCountByType" resultType="java.lang.Long">
-        SELECT COUNT(1)
+        SELECT COUNT(1) as totalCount
         FROM moral_activity
         WHERE deleted = 0
         <if test="startTime != null">
