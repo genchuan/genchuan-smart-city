@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
 
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @TableName("exchange_order")
 @KeySequence("exchange_order_seq")
@@ -20,21 +20,41 @@ public class ExchangeOrderDO extends BaseDO {
 
     @TableId
     private Long id;
-    /** 主订单ID */
-    private Long orderId;
-    /** 类目ID */
-    private Long categoryId;
-    /** 用户ID */
+
+    /** 订单编号(唯一) */
+    private String no;
+
+    /** 用户ID(关联system_user) */
     private Long userId;
-    /** 金额 */
-    private BigDecimal amount;
-    /** 订单状态（待支付/已支付/已完成/已取消） */
-    private String status;
-    /** 备注 */
-    private String remark;
-    /** 发货状态 */
-    private String deliverStatus;
-    /** 快递单号 */
-    private String expressNo;
+
+    /** 类目ID(关联exchange_category) */
+    private Long categoryId;
+
+    /** 商品名称 */
+    private String goodsName;
+
+    /** 消耗积分 */
+    private Integer costPoint;
+
+    /** 支付状态(待支付/已支付/已完成/已取消) */
+    private String payStatus;
+
+    /** 支付时间 */
+    private LocalDateTime payTime;
+
+    /** 发货时间 */
+    private LocalDateTime shipTime;
+
+    /** 物流信息 */
+    private String logisticsInfo;
+
+    /** 归档时间 */
+    private LocalDateTime archiveTime;
+
+    /** 备用字段1 */
+    private String reserve1;
+
+    /** 备用字段2 */
+    private String reserve2;
 
 }
