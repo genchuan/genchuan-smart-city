@@ -22,4 +22,6 @@ public interface ErrorCodeConstants {
     ErrorCode OPEN_NOT_EXISTS = new ErrorCode(500, "开闸不存在");
 
     ErrorCode CHECK_NOT_EXISTS = new ErrorCode(500, "缴费核验不存在");
+
+    ErrorCode LEAVE_NOT_EXISTS = new ErrorCode(500, "无牌出场不存在");
 }

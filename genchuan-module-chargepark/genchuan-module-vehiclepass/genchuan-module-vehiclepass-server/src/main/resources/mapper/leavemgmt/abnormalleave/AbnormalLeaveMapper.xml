@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.vehiclepass.dal.mysql.leavemgmt.abnormalleave.AbnormalLeaveMapper">
+
+    <select id="selectPageJoin" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveRespVO">
+        SELECT
+            a.id AS id,
+            a.plate_no AS plateNo,
+            a.abnormal_type AS abnormalType,
+            a.identify_time AS identifyTime,
+            a.status AS status,
+            a.station_id AS stationId,
+            s.name AS stationName,
+            a.handle_user_id AS handleUserId,
+            u.nickname AS handleUserName,
+            a.handle_time AS handleTime,
+            a.handle_progress AS handleProgress,
+            a.ignore_reason AS ignoreReason,
+            a.remark AS remark,
+            a.reserve1 AS reserve1,
+            a.reserve2 AS reserve2,
+            a.creator AS creator,
+            a.updater AS updater,
+            a.create_time AS createTime,
+            a.update_time AS updateTime
+        FROM abnormal_leave a
+        LEFT JOIN station_info s ON a.station_id = s.id AND s.deleted = 0
+        LEFT JOIN user_info u ON a.handle_user_id = u.id AND u.deleted = 0
+        WHERE a.deleted = 0
+        <if test="reqVO.plateNo != null and reqVO.plateNo != ''">
+            AND a.plate_no LIKE CONCAT('%', #{reqVO.plateNo}, '%')
+        </if>
+        <if test="reqVO.abnormalType != null and reqVO.abnormalType != ''">
+            AND a.abnormal_type = #{reqVO.abnormalType}
+        </if>
+        <if test="reqVO.identifyTime != null and reqVO.identifyTime.length == 2">
+            AND a.identify_time BETWEEN FROM_UNIXTIME(#{reqVO.identifyTime[0]}) AND FROM_UNIXTIME(#{reqVO.identifyTime[1]})
+        </if>
+        <if test="reqVO.status != null and reqVO.status != ''">
+            AND a.status = #{reqVO.status}
+        </if>
+        <if test="reqVO.stationId != null">
+            AND a.station_id = #{reqVO.stationId}
+        </if>
+        <if test="reqVO.handleUserId != null">
+            AND a.handle_user_id = #{reqVO.handleUserId}
+        </if>
+        <if test="reqVO.remark != null and reqVO.remark != ''">
+            AND a.remark LIKE CONCAT('%', #{reqVO.remark}, '%')
+        </if>
+        ORDER BY a.id DESC
+    </select>
+
+</mapper>

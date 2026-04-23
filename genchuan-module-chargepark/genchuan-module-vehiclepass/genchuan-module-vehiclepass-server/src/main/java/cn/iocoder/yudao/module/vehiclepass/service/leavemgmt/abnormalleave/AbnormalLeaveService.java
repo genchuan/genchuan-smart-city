@@ -1,0 +1,73 @@
+package cn.iocoder.yudao.module.vehiclepass.service.leavemgmt.abnormalleave;
+
+import java.util.*;
+
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeavePageReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveSaveReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveRespVO;
+import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.leavemgmt.abnormalleave.AbnormalLeaveDO;
+import jakarta.validation.*;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
+
+/**
+ * 异常离场 Service 接口
+ *
+ * @author 亘川智城
+ */
+public interface AbnormalLeaveService {
+
+    /**
+     * 创建异常离场
+     *
+     * @param createReqVO 创建信息
+     * @return 编号
+     */
+    Long createLeave(@Valid AbnormalLeaveSaveReqVO createReqVO);
+
+    /**
+     * 更新异常离场
+     *
+     * @param updateReqVO 更新信息
+     */
+    void updateLeave(@Valid AbnormalLeaveSaveReqVO updateReqVO);
+
+    /**
+     * 删除异常离场
+     *
+     * @param id 编号
+     */
+    void deleteLeave(Long id);
+
+    /**
+     * 批量删除异常离场
+     *
+     * @param ids 编号
+     */
+    void deleteLeaveListByIds(List<Long> ids);
+
+    /**
+     * 获得异常离场
+     *
+     * @param id 编号
+     * @return 异常离场
+     */
+    AbnormalLeaveDO getLeave(Long id);
+
+    /**
+     * 获得异常离场分页
+     *
+     * @param pageReqVO 分页查询
+     * @return 异常离场分页
+     */
+    PageResult<AbnormalLeaveDO> getLeavePage(AbnormalLeavePageReqVO pageReqVO);
+
+    /**
+     * 获得异常离场分页（使用JOIN查询）
+     *
+     * @param pageReqVO 分页查询
+     * @return 异常离场分页（含关联表字段）
+     */
+    PageResult<AbnormalLeaveRespVO> getLeavePageWithJoin(AbnormalLeavePageReqVO pageReqVO);
+
+}
