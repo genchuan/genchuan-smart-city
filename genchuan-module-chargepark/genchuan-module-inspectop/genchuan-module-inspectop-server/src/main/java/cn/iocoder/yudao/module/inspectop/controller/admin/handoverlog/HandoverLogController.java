@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.inspectop.controller.admin.handoverlog;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -33,6 +34,7 @@ import cn.iocoder.yudao.module.inspectop.service.handoverlog.HandoverLogService;
 @RestController
 @RequestMapping("/inspectop/handover-log")
 @Validated
+@Hidden
 public class HandoverLogController {
 
     @Resource
