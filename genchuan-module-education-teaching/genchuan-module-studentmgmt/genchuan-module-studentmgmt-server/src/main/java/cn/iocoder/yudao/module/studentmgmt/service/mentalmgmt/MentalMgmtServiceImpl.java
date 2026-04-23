@@ -1,9 +1,6 @@
 package cn.iocoder.yudao.module.studentmgmt.service.mentalmgmt;
 
-import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
-import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.util.date.LocalDateTimeUtils;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
@@ -12,8 +9,9 @@ import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.mentalmgmt.MentalMgmtD
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.mentalmgmt.MentalMgmtMapper;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
-import cn.iocoder.yudao.module.studentmgmt.enums.*;
-import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
+import cn.iocoder.yudao.module.studentmgmt.enums.MentalMentalStatusEnum;
+import cn.iocoder.yudao.module.studentmgmt.enums.MentalRiskLevelEnum;
+import cn.iocoder.yudao.module.studentmgmt.enums.MentalStatusEnum;
 import com.alibaba.fastjson.JSONObject;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
@@ -42,8 +40,6 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
     private MentalMgmtMapper mentalMgmtMapper;
     @Resource
     private StudentInfoMapper studentInfoMapper;
-    @Resource
-    private DictDataApi dictDataApi;
 
     @Override
     @LogRecord(type = VIOLATE_TYPE, subType = VIOLATE_CREATE_SUB_TYPE, bizNo = "{{#mental.id}}",
@@ -123,7 +119,7 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
 //            LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
 //            String username = SecurityFrameworkUtils.getLoginUserNickname();
             LocalDateTime now = LocalDateTime.now();
-            mentalMgmtDO.setConsultTime(LocalDateTimeUtils.parse(reqVO.getConsultTime()));
+            mentalMgmtDO.setConsultTime(reqVO.getConsultTime());
             mentalMgmtDO.setUpdateTime(now);
             // 查询所有学生的姓名
             StudentInfoDO studentInfoDO = studentInfoMapper.selectById(mentalMgmtDO.getStudentId());
@@ -175,33 +171,24 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
             success = MENTAL_UPDATE_STATUS_SUCCESS)
     public boolean updateStatus(MentalMgmtUpdateStatusReqVO reqVO) {
         MentalMgmtDO mentalMgmtDO = validateMentalMgmtExists(reqVO.getId());
-        if (mentalMgmtDO.getConsultTime() != null) {
-//            LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
-            String username = SecurityFrameworkUtils.getLoginUserNickname();
-            LocalDateTime now = LocalDateTime.now();
-            mentalMgmtDO.setUpdateTime(now);
-            // 查询所有学生的姓名
-            StudentInfoDO studentInfoDO = studentInfoMapper.selectById(mentalMgmtDO.getStudentId());
-            // 获取所有学生的姓名
-            String studentName = studentInfoDO.getName();
-            mentalMgmtDO.setStatus(reqVO.getStatus());
-            mentalMgmtMapper.updateById(mentalMgmtDO);
 
+//            LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
+        String username = SecurityFrameworkUtils.getLoginUserNickname();
+        LocalDateTime now = LocalDateTime.now();
+        mentalMgmtDO.setUpdateTime(now);
+        // 查询所有学生的姓名
+        StudentInfoDO studentInfoDO = studentInfoMapper.selectById(mentalMgmtDO.getStudentId());
+        // 获取所有学生的姓名
+        String studentName = studentInfoDO.getName();
+        mentalMgmtDO.setStatus(reqVO.getStatus());
+        int i = mentalMgmtMapper.updateById(mentalMgmtDO);
+
+        if (i > 0) {
             // 记录操作日志上下文
             LogRecordContext.putVariable("mental", mentalMgmtDO);
             LogRecordContext.putVariable("studentName", studentName);
             LogRecordContext.putVariable("username", username);
-            String dictDataLabel = "";
-            CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(MentalStatusEnum.DICT_TYPE);
-            if (dictDataList.getData() != null) {
-                for (DictDataRespDTO dictData : dictDataList.getData()) {
-                    if (dictData.getValue().equals(reqVO.getStatus())) {
-                        dictDataLabel = dictData.getLabel();
-                        break;
-                    }
-                }
-            }
-            LogRecordContext.putVariable("status", dictDataLabel);
+            LogRecordContext.putVariable("status", MentalStatusEnum.getNameByKey(reqVO.getStatus()));
             return true;
         }
 
@@ -213,19 +200,19 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
         MentalMgmtChartRespVO vo = new MentalMgmtChartRespVO();
         // 1. 卡片数据
         // totalCount (integer): 心理档案总数量。
-        vo.setTotalCount(mentalMgmtMapper.selectTotalCount("", "",""));
+        vo.setTotalCount(mentalMgmtMapper.selectTotalCount("", "", ""));
         // focusCount (integer): 心理状态关注的学生数量。
-        vo.setFocusCount(mentalMgmtMapper.selectTotalCount(MentalMentalStatusEnum.MENTAL_MGMT_MENTAL_STATUS_FOCUS.getStatus(),"", ""));
+        vo.setFocusCount(mentalMgmtMapper.selectTotalCount(MentalMentalStatusEnum.MENTAL_MGMT_MENTAL_STATUS_FOCUS.getStatus(), "", ""));
         // highRiskCount (integer): 心理状态高危的学生数量。
-        vo.setHighRiskCount(mentalMgmtMapper.selectTotalCount(MentalMentalStatusEnum.MENTAL_MGMT_MENTAL_STATUS_HIGH_RISK.getStatus(),"", ""));
+        vo.setHighRiskCount(mentalMgmtMapper.selectTotalCount(MentalMentalStatusEnum.MENTAL_MGMT_MENTAL_STATUS_HIGH_RISK.getStatus(), "", ""));
         // lowRiskCount (integer): 风险等级低学生的数量。
-        vo.setLowRiskCount(mentalMgmtMapper.selectTotalCount("", MentalRiskLevelEnum.MENTAL_MGMT_RISK_LEVEL_LOW.getStatus(),""));
+        vo.setLowRiskCount(mentalMgmtMapper.selectTotalCount("", MentalRiskLevelEnum.MENTAL_MGMT_RISK_LEVEL_LOW.getStatus(), ""));
         // midRiskCount (integer): 风险等级中的学生的数量。
-        vo.setMidRiskCount(mentalMgmtMapper.selectTotalCount("", MentalRiskLevelEnum.MENTAL_MGMT_RISK_LEVEL_MEDIUM.getStatus(),""));
+        vo.setMidRiskCount(mentalMgmtMapper.selectTotalCount("", MentalRiskLevelEnum.MENTAL_MGMT_RISK_LEVEL_MEDIUM.getStatus(), ""));
         // highRiskLevelCount (integer): 风险等级高的学生的数量。
         vo.setHighRiskLevelCount(mentalMgmtMapper.selectTotalCount("", MentalRiskLevelEnum.MENTAL_MGMT_RISK_LEVEL_HIGH.getStatus(), ""));
         // waitEvaluateCount (integer): 待评估状态的档案数量。
-        vo.setWaitEvaluateCount(mentalMgmtMapper.selectTotalCount("","", MentalStatusEnum.MENTAL_STATUS_WAIT_EVALUATE.getStatus()));
+        vo.setWaitEvaluateCount(mentalMgmtMapper.selectTotalCount("", "", MentalStatusEnum.MENTAL_STATUS_WAIT_EVALUATE.getStatus()));
         // consultingCount (integer): 咨询中状态的档案数量。
         vo.setConsultingCount(mentalMgmtMapper.selectTotalCount("", "", MentalStatusEnum.MENTAL_STATUS_CONSULTING.getStatus()));
         // intervenedCount (integer): 已干预状态的档案数量。
@@ -243,36 +230,14 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
         List<JSONObject> statusList = mentalMgmtMapper.selectMentalStatusDistributionCount();
         // 对应的key值转换成枚举值
         statusList.forEach(item -> {
-            String dictDataLabel = "";
-            String status = item.getString("name");
-            CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.MENTAL_MGMT_MENTAL_STATUS.getType());
-            if (dictDataList.getData() != null) {
-                for (DictDataRespDTO dictData : dictDataList.getData()) {
-                    if (dictData.getValue().equals(status)) {
-                        dictDataLabel = dictData.getLabel();
-                        break;
-                    }
-                }
-            }
-            item.put("name", dictDataLabel);
+            item.put("name", MentalMentalStatusEnum.getNameByKey(item.getString("name")));
         });
         vo.setMentalStatusDistribution(statusList);
 
         // 风险等级分布数据
         List<JSONObject> riskList = mentalMgmtMapper.selectRiskLevelDistributionCount();
         riskList.forEach(item -> {
-            String dictDataLabel = "";
-            String name = item.getString("name");
-            CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.MENTAL_MGMT_RISK_LEVEL.getType());
-            if (dictDataList.getData() != null) {
-                for (DictDataRespDTO dictData : dictDataList.getData()) {
-                    if (dictData.getValue().equals(name)) {
-                        dictDataLabel = dictData.getLabel();
-                        break;
-                    }
-                }
-            }
-            item.put("name", dictDataLabel);
+            item.put("name", MentalRiskLevelEnum.getNameByKey(item.getString("name")));
         });
         vo.setRiskLevelDistribution(riskList);
 

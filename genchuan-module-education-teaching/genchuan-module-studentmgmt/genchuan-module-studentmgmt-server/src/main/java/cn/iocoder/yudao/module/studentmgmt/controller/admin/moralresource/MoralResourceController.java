@@ -120,7 +120,7 @@ public class MoralResourceController {
     @GetMapping("/chart")
     @Operation(summary = "德育资源学习看板")
     @PreAuthorize("@ss.hasPermission('studentmgmt:moral-resource:query')")
-    public CommonResult<MoralResourceChartRespVO> chart(@Valid @RequestBody MoralResourceChartReqVO reqVO) {
+    public CommonResult<MoralResourceChartRespVO> chart(@Valid MoralResourceChartReqVO reqVO) {
         MoralResourceChartRespVO vo = moralResourceService.chart(reqVO);
         return success(vo);
     }

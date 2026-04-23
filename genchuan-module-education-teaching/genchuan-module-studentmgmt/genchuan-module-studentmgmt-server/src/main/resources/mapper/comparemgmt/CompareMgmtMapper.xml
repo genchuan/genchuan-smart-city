@@ -9,4 +9,42 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="selectRankList" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+            class_name AS class_name,
+            total_score AS total_score,
+            rank_no AS rank_no
+        FROM compare_mgmt
+        WHERE deleted = 0
+        AND cycle = #{cycle}
+        ORDER BY total_score DESC
+    </select>
+    <select id="selectStatusCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        `status`,
+        COUNT(`status`)
+        FROM compare_mgmt
+        WHERE deleted = 0
+        AND cycle = #{cycle}
+        GROUP BY `status`
+        ORDER BY `status`
+    </select>
+    <select id="selectCycleCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        cycle AS cycle,
+        COUNT(cycle) AS count
+        FROM compare_mgmt
+        WHERE deleted = 0
+        AND cycle = #{cycle}
+    </select>
+    <select id="selectScoreRank" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        class_name AS class_name,
+        total_score AS total_score,
+        rank_no AS rank_no
+        FROM compare_mgmt
+        WHERE deleted = 0
+        AND cycle = #{cycle}
+        ORDER BY class_name DESC
+    </select>
 </mapper>

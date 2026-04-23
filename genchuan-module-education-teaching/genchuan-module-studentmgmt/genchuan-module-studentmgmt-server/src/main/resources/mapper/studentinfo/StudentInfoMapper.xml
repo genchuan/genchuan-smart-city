@@ -92,9 +92,8 @@
     <select id="selectBaseInfoList"
             resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.studentinfo.vo.StudentInfoBaseVO">
         SELECT
-            id,
-            student_no AS studentNo,
-            name
+            id as value,
+            name as label
         FROM student_info
         WHERE deleted = 0
     </select>

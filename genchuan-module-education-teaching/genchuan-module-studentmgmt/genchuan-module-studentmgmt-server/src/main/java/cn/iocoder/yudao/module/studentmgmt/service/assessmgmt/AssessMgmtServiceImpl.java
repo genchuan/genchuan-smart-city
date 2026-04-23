@@ -6,6 +6,7 @@ import cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.assessmgmt.AssessMgmtDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.assessmgmt.AssessMgmtMapper;
 import cn.iocoder.yudao.module.studentmgmt.enums.AssessStatusEnum;
+import com.alibaba.fastjson.JSONObject;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.service.impl.DiffParseFunction;
 import com.mzt.logapi.starter.annotation.LogRecord;
@@ -137,9 +138,19 @@ public class AssessMgmtServiceImpl implements AssessMgmtService {
         // topRankClass (string): 本期排名第一的班级。
         vo.setTopRankClass(assessMgmtMapper.selectTopRankClass(cycle,AssessStatusEnum.PUBLISHED.getStatus()));
         // assessTypeCount (object): 各考评类型的记录数统计，key 为考评类型编码，value 为数量。
-        vo.setAssessTypeCount(assessMgmtMapper.selectAssessTypeCount(cycle,AssessStatusEnum.PUBLISHED.getStatus()));
+        List<JSONObject> assessTypeCountList = assessMgmtMapper.selectAssessTypeCount(cycle, AssessStatusEnum.PUBLISHED.getStatus());
+        JSONObject assessTypeCount = new JSONObject();
+        for (JSONObject jsonObject : assessTypeCountList) {
+            assessTypeCount.put(jsonObject.getString("assess_type"), jsonObject.getInteger("count"));
+        }
+        vo.setAssessTypeCount(assessTypeCount);
         // statusCount (object): 各状态的记录数统计，key 为状态编码，value 为数量。
-        vo.setStatusCount(assessMgmtMapper.selectStatusCount(cycle, AssessStatusEnum.PUBLISHED.getStatus()));
+        List<JSONObject> statusCountList = assessMgmtMapper.selectStatusCount(cycle, AssessStatusEnum.PUBLISHED.getStatus());
+        JSONObject statusCount = new JSONObject();
+        for (JSONObject jsonObject : statusCountList) {
+            statusCount.put(jsonObject.getString("status"), jsonObject.getInteger("count"));
+        }
+        vo.setStatusCount(statusCount);
 
 ////        vo.setPendingPublishCount(assessMgmtMapper.selectTotalAssessCount(cycle, AssessStatusEnum.UN_PUBLISH.getStatus(), ""));
 //
