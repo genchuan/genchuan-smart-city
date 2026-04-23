@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +39,7 @@ public class PayRefundController {
     @GetMapping("/get")
     @Operation(summary = "获得退款订单详情")
     @Parameter(name = "id", description = "主键", required = true, example = "1024")
+    /*@PreAuthorize("@ss.hasPermission('ordertrade:pay-refund:query')")*/
     public CommonResult<PayRefundRespVO> getPayRefund(@RequestParam("id") Long id) {
         PayRefundDO obj = payRefundService.getPayRefund(id);
         return success(BeanUtils.toBean(obj, PayRefundRespVO.class));
@@ -45,6 +47,7 @@ public class PayRefundController {
 
     @GetMapping("/page")
     @Operation(summary = "获得退款订单分页列表")
+    /*@PreAuthorize("@ss.hasPermission('ordertrade:pay-refund:query')")*/
     public CommonResult<PageResult<PayRefundRespVO>> getPayRefundPage(@Valid PayRefundPageReqVO pageReqVO) {
         PageResult<PayRefundDO> pageResult = payRefundService.getPayRefundPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, PayRefundRespVO.class));
@@ -53,6 +56,7 @@ public class PayRefundController {
     @GetMapping("/export")
     @Operation(summary = "导出退款订单 Excel")
     @ApiAccessLog(operateType = EXPORT)
+    /*@PreAuthorize("@ss.hasPermission('ordertrade:pay-refund:query')")*/
     public void exportPayRefundExcel(@Valid PayRefundPageReqVO pageReqVO,
                                      HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
@@ -61,9 +65,10 @@ public class PayRefundController {
                 BeanUtils.toBean(list, PayRefundRespVO.class));
     }
 
-    @PutMapping("/execute")
+    @PostMapping("/execute")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "执行退款")
+   /* @PreAuthorize("@ss.hasPermission('ordertrade:pay-refund:execute')")*/
     public CommonResult<Boolean> executePayRefund(@Valid @RequestBody IdReqVO reqVO) {
         payRefundService.executePayRefund(reqVO);
         return success(true);
@@ -72,6 +77,7 @@ public class PayRefundController {
     @PutMapping("/cancel")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "取消退款")
+   /* @PreAuthorize("@ss.hasPermission('ordertrade:pay-refund:cancel')")*/
     public CommonResult<Boolean> cancelPayRefund(@Valid @RequestBody IdReqVO reqVO) {
         payRefundService.cancelPayRefund(reqVO);
         return success(true);
@@ -79,6 +85,7 @@ public class PayRefundController {
 
     @GetMapping("/chart")
     @Operation(summary = "获得退款订单统计图表数据")
+   /* @PreAuthorize("@ss.hasPermission('ordertrade:pay-refund:query')")*/
     public CommonResult<PayRefundChartRespVO> getPayRefundChart(@Valid PayRefundChartReqVO chartReqVO) {
         return success(payRefundService.getPayRefundChart(chartReqVO));
     }

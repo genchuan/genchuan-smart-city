@@ -2,10 +2,8 @@ package cn.iocoder.yudao.module.ordertrade.controller.admin.splitsetttle;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.splitsetttle.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.splitsetttle.SplitRateDO;
 import cn.iocoder.yudao.module.ordertrade.service.splitsetttle.SplitRateService;
@@ -13,15 +11,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.util.List;
-
-import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.UPDATE;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
@@ -68,17 +61,6 @@ public class SplitRateController {
     public CommonResult<PageResult<SplitRateRespVO>> getSplitRatePage(@Valid SplitRatePageReqVO pageReqVO) {
         PageResult<SplitRateDO> pageResult = splitRateService.getSplitRatePage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, SplitRateRespVO.class));
-    }
-
-    @GetMapping("/export")
-    @Operation(summary = "导出分账比例 Excel")
-    @ApiAccessLog(operateType = EXPORT)
-    public void exportSplitRateExcel(@Valid SplitRatePageReqVO pageReqVO,
-                                     HttpServletResponse response) throws IOException {
-        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<SplitRateDO> list = splitRateService.getSplitRatePage(pageReqVO).getList();
-        ExcelUtils.write(response, "分账比例.xls", "数据", SplitRateRespVO.class,
-                BeanUtils.toBean(list, SplitRateRespVO.class));
     }
 
     @PutMapping("/enable")

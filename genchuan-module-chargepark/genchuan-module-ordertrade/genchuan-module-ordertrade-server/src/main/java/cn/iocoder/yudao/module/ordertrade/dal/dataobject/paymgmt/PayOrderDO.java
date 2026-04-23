@@ -1,37 +1,39 @@
 package cn.iocoder.yudao.module.ordertrade.dal.dataobject.paymgmt;
 
+import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 
 @TableName("pay_order")
 @Data
-public class PayOrderDO {
+@EqualsAndHashCode(callSuper = true)
+public class PayOrderDO extends BaseDO {
 
     @TableId
     private Long id;
-
-    private String merchantOrderId;
-
-    private String channelOrderNo;
-
     private Long appId;
-
+    private Long channelId;
     private String channelCode;
-
-    private Integer amount;
-
+    private Long userId;
+    private Integer userType;
+    private String merchantOrderId;
+    private String subject;
+    private String body;
+    private String notifyUrl;
+    private Integer price;
+    private Double channelFeeRate;
+    private Integer channelFeePrice;
     private Integer status;
-
+    private String userIp;
     private LocalDateTime expireTime;
-
-    private LocalDateTime notifyTime;
-
     private LocalDateTime successTime;
-
-    private LocalDateTime createTime;
-
-    private LocalDateTime updateTime;
+    private Long extensionId;
+    private String no;
+    private Integer refundPrice;
+    private String channelUserId;
+    private String channelOrderNo;
 }

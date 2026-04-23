@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +39,7 @@ public class PayTransferController {
     @GetMapping("/get")
     @Operation(summary = "获得转账订单详情")
     @Parameter(name = "id", description = "主键", required = true, example = "1024")
+    /*@PreAuthorize("@ss.hasPermission('ordertrade:pay-transfer:query')")*/
     public CommonResult<PayTransferRespVO> getPayTransfer(@RequestParam("id") Long id) {
         PayTransferDO obj = payTransferService.getPayTransfer(id);
         return success(BeanUtils.toBean(obj, PayTransferRespVO.class));
@@ -45,6 +47,7 @@ public class PayTransferController {
 
     @GetMapping("/page")
     @Operation(summary = "获得转账订单分页列表")
+   /* @PreAuthorize("@ss.hasPermission('ordertrade:pay-transfer:query')")*/
     public CommonResult<PageResult<PayTransferRespVO>> getPayTransferPage(@Valid PayTransferPageReqVO pageReqVO) {
         PageResult<PayTransferDO> pageResult = payTransferService.getPayTransferPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, PayTransferRespVO.class));
@@ -53,6 +56,7 @@ public class PayTransferController {
     @GetMapping("/export")
     @Operation(summary = "导出转账订单 Excel")
     @ApiAccessLog(operateType = EXPORT)
+    /*@PreAuthorize("@ss.hasPermission('ordertrade:pay-transfer:query')")*/
     public void exportPayTransferExcel(@Valid PayTransferPageReqVO pageReqVO,
                                        HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
@@ -61,9 +65,10 @@ public class PayTransferController {
                 BeanUtils.toBean(list, PayTransferRespVO.class));
     }
 
-    @PutMapping("/execute")
+    @PostMapping("/execute")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "执行转账")
+    /*@PreAuthorize("@ss.hasPermission('ordertrade:pay-transfer:execute')")*/
     public CommonResult<Boolean> executePayTransfer(@Valid @RequestBody IdReqVO reqVO) {
         payTransferService.executePayTransfer(reqVO);
         return success(true);
@@ -72,6 +77,7 @@ public class PayTransferController {
     @PutMapping("/cancel")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "取消转账")
+   /* @PreAuthorize("@ss.hasPermission('ordertrade:pay-transfer:cancel')")*/
     public CommonResult<Boolean> cancelPayTransfer(@Valid @RequestBody IdReqVO reqVO) {
         payTransferService.cancelPayTransfer(reqVO);
         return success(true);
@@ -79,6 +85,7 @@ public class PayTransferController {
 
     @GetMapping("/chart")
     @Operation(summary = "获得转账订单统计图表数据")
+    /*@PreAuthorize("@ss.hasPermission('ordertrade:pay-transfer:query')")*/
     public CommonResult<PayTransferChartRespVO> getPayTransferChart(@Valid PayTransferChartReqVO chartReqVO) {
         return success(payTransferService.getPayTransferChart(chartReqVO));
     }

@@ -17,7 +17,4 @@ public class PayWalletPageReqVO extends PageParam {
 
     @Schema(description = "用户类型")
     private Integer userType;
-
-    @Schema(description = "状态：0正常/1冻结")
-    private Integer status;
 }

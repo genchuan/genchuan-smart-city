@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +39,7 @@ public class PayWalletController {
     @GetMapping("/get")
     @Operation(summary = "获得钱包详情")
     @Parameter(name = "id", description = "主键", required = true, example = "1024")
+    /*@PreAuthorize("@ss.hasPermission('ordertrade:pay-wallet:query')")*/
     public CommonResult<PayWalletRespVO> getPayWallet(@RequestParam("id") Long id) {
         PayWalletDO obj = payWalletService.getPayWallet(id);
         return success(BeanUtils.toBean(obj, PayWalletRespVO.class));
@@ -45,6 +47,7 @@ public class PayWalletController {
 
     @GetMapping("/page")
     @Operation(summary = "获得钱包分页列表")
+    /*@PreAuthorize("@ss.hasPermission('ordertrade:pay-wallet:query')")*/
     public CommonResult<PageResult<PayWalletRespVO>> getPayWalletPage(@Valid PayWalletPageReqVO pageReqVO) {
         PageResult<PayWalletDO> pageResult = payWalletService.getPayWalletPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, PayWalletRespVO.class));
@@ -53,6 +56,7 @@ public class PayWalletController {
     @GetMapping("/export")
     @Operation(summary = "导出钱包 Excel")
     @ApiAccessLog(operateType = EXPORT)
+    /*@PreAuthorize("@ss.hasPermission('ordertrade:pay-wallet:query')")*/
     public void exportPayWalletExcel(@Valid PayWalletPageReqVO pageReqVO,
                                      HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
@@ -61,17 +65,19 @@ public class PayWalletController {
                 BeanUtils.toBean(list, PayWalletRespVO.class));
     }
 
-    @PutMapping("/recharge")
+    @PostMapping("/recharge")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "充值")
+    /*@PreAuthorize("@ss.hasPermission('ordertrade:pay-wallet:recharge')")*/
     public CommonResult<Boolean> rechargePayWallet(@Valid @RequestBody IdReqVO reqVO) {
         payWalletService.rechargePayWallet(reqVO);
         return success(true);
     }
 
-    @PutMapping("/withdraw")
+    @PostMapping("/withdraw")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "提现")
+    /*@PreAuthorize("@ss.hasPermission('ordertrade:pay-wallet:withdraw')")*/
     public CommonResult<Boolean> withdrawPayWallet(@Valid @RequestBody IdReqVO reqVO) {
         payWalletService.withdrawPayWallet(reqVO);
         return success(true);
@@ -80,6 +86,7 @@ public class PayWalletController {
     @PutMapping("/unfreeze")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "解冻钱包")
+    /*@PreAuthorize("@ss.hasPermission('ordertrade:pay-wallet:unfreeze')")*/
     public CommonResult<Boolean> unfreezePayWallet(@Valid @RequestBody IdReqVO reqVO) {
         payWalletService.unfreezePayWallet(reqVO);
         return success(true);
@@ -87,6 +94,7 @@ public class PayWalletController {
 
     @GetMapping("/chart")
     @Operation(summary = "获得钱包统计图表数据")
+    /*@PreAuthorize("@ss.hasPermission('ordertrade:pay-wallet:query')")*/
     public CommonResult<PayWalletChartRespVO> getPayWalletChart(@Valid PayWalletChartReqVO chartReqVO) {
         return success(payWalletService.getPayWalletChart(chartReqVO));
     }

@@ -2,10 +2,8 @@ package cn.iocoder.yudao.module.ordertrade.controller.admin.paymgmt;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.paymgmt.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.paymgmt.PayAppDO;
 import cn.iocoder.yudao.module.ordertrade.service.paymgmt.PayAppService;
@@ -13,15 +11,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.util.List;
-
-import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.UPDATE;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
@@ -47,14 +41,6 @@ public class PayAppController {
         return success(true);
     }
 
-    @DeleteMapping("/delete")
-    @Operation(summary = "删除支付应用")
-    @Parameter(name = "id", description = "主键", required = true)
-    public CommonResult<Boolean> deletePayApp(@RequestParam("id") Long id) {
-        payAppService.deletePayApp(id);
-        return success(true);
-    }
-
     @GetMapping("/get")
     @Operation(summary = "获得支付应用详情")
     @Parameter(name = "id", description = "主键", required = true, example = "1024")
@@ -65,20 +51,10 @@ public class PayAppController {
 
     @GetMapping("/page")
     @Operation(summary = "获得支付应用分页列表")
+   /* @PreAuthorize("@ss.hasPermission('ordertrade:pay-app:query')")*/
     public CommonResult<PageResult<PayAppRespVO>> getPayAppPage(@Valid PayAppPageReqVO pageReqVO) {
         PageResult<PayAppDO> pageResult = payAppService.getPayAppPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, PayAppRespVO.class));
-    }
-
-    @GetMapping("/export")
-    @Operation(summary = "导出支付应用 Excel")
-    @ApiAccessLog(operateType = EXPORT)
-    public void exportPayAppExcel(@Valid PayAppPageReqVO pageReqVO,
-                                  HttpServletResponse response) throws IOException {
-        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<PayAppDO> list = payAppService.getPayAppPage(pageReqVO).getList();
-        ExcelUtils.write(response, "支付应用.xls", "数据", PayAppRespVO.class,
-                BeanUtils.toBean(list, PayAppRespVO.class));
     }
 
     @PutMapping("/enable")

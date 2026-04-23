@@ -82,7 +82,7 @@ public class AgentRecordController {
                 BeanUtils.toBean(list, AgentRecordRespVO.class));
     }
 
-    @PutMapping("/check")
+    @PostMapping("/check")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "核查代付记录")
     public CommonResult<Boolean> checkAgentRecord(@Valid @RequestBody IdReqVO reqVO) {
