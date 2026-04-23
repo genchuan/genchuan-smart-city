@@ -70,4 +70,18 @@ public interface PayCheckService {
      */
     PageResult<PayCheckRespVO> getCheckPageWithJoin(PayCheckPageReqVO pageReqVO);
 
+    /**
+     * 放行缴费核验
+     *
+     * @param id 编号
+     */
+    void releaseCheck(Long id);
+
+    /**
+     * 催缴缴费核验
+     *
+     * @param id 编号
+     */
+    void remindCheck(Long id);
+
 }

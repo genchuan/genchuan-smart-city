@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.time.LocalDateTime;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
@@ -93,6 +94,30 @@ public class PayCheckServiceImpl implements PayCheckService {
         com.baomidou.mybatisplus.core.metadata.IPage<PayCheckRespVO> pageResult = checkMapper.selectPageJoin(page, pageReqVO);
         // 转换为PageResult
         return new PageResult<>(pageResult.getRecords(), pageResult.getTotal());
+    }
+
+    @Override
+    public void releaseCheck(Long id) {
+        // 校验存在
+        validateCheckExists(id);
+        // 更新为已缴清状态
+        PayCheckDO updateObj = new PayCheckDO();
+        updateObj.setId(id);
+        updateObj.setStatus("已缴清");
+        updateObj.setCheckTime(LocalDateTime.now());
+        checkMapper.updateById(updateObj);
+    }
+
+    @Override
+    public void remindCheck(Long id) {
+        // 校验存在
+        validateCheckExists(id);
+        // 更新为欠费状态，发送催缴通知
+        PayCheckDO updateObj = new PayCheckDO();
+        updateObj.setId(id);
+        updateObj.setStatus("欠费");
+        checkMapper.updateById(updateObj);
+        // TODO: 发送催缴通知逻辑（如短信、推送等）
     }
 
 }

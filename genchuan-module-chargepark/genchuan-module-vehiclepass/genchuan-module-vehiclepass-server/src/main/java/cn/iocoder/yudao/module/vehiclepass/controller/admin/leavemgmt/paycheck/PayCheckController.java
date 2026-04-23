@@ -3,6 +3,8 @@ package cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckSaveReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckReleaseReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckRemindReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.leavemgmt.paycheck.PayCheckDO;
 import cn.iocoder.yudao.module.vehiclepass.service.leavemgmt.paycheck.PayCheckService;
 import org.springframework.web.bind.annotation.*;
@@ -95,6 +97,22 @@ public class PayCheckController {
     @PreAuthorize("@ss.hasPermission('vehiclepass:pay-check:query')")
     public CommonResult<PageResult<PayCheckRespVO>> getMyCheckPage(@Valid PayCheckPageReqVO pageReqVO) {
         return success(checkService.getCheckPageWithJoin(pageReqVO));
+    }
+
+    @PutMapping("/release")
+    @Operation(summary = "放行缴费核验")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:pay-check:release')")
+    public CommonResult<Boolean> releaseCheck(@Valid @RequestBody PayCheckReleaseReqVO reqVO) {
+        checkService.releaseCheck(reqVO.getId());
+        return success(true);
+    }
+
+    @PutMapping("/remind")
+    @Operation(summary = "催缴缴费核验")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:pay-check:remind')")
+    public CommonResult<Boolean> remindCheck(@Valid @RequestBody PayCheckRemindReqVO reqVO) {
+        checkService.remindCheck(reqVO.getId());
+        return success(true);
     }
 
     @GetMapping("/export-excel")
