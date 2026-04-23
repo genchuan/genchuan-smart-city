@@ -113,9 +113,9 @@ public class AllOrderController {
         return success(true);
     }
     @PutMapping("/invoice")
-    @ApiAccessLog(operateType = UPDATE)  // ← 加这一行
+    @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "申请开票")
-    public CommonResult<Boolean> invoiceAllOrder(@Valid @RequestBody IdReqVO reqVO) {
+    public CommonResult<Boolean> invoiceAllOrder(@Valid @RequestBody InvoiceOrderReqVO reqVO) {
         allOrderService.invoiceAllOrder(reqVO);
         return success(true);
     }

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.inspectop.dal.mysql.assetinfo.AssetInfoMapper">
+
+    <!-- 定义结果映射器，将数据库列映射到 AssetInfoRespVO 属性 -->
+    <resultMap id="AssetInfoRespVOResultMap" type="cn.iocoder.yudao.module.inspectop.controller.admin.assetinfo.vo.AssetInfoRespVO">
+        <!-- 主键ID -->
+        <id column="id" property="id" jdbcType="BIGINT"/>
+
+        <!-- AssetInfoDO 基础字段 -->
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="purchase_time" property="purchaseTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="station_id" property="stationId" jdbcType="BIGINT"/>
+        <result column="reserve1" property="reserve1" jdbcType="VARCHAR"/>
+        <result column="reserve2" property="reserve2" jdbcType="VARCHAR"/>
+
+        <!-- BaseDO 基础字段 -->
+        <result column="creator" property="creator" jdbcType="VARCHAR"/>
+        <result column="updater" property="updater" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+
+        <!-- 关联查询字段 -->
+        <result column="station_name" property="stationName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 分页查询方法（关联查询 station_info 表获取场站名称） -->
+    <select id="selectPageWithJoin" resultMap="AssetInfoRespVOResultMap">
+        SELECT
+        ai.id,
+        ai.name,
+        ai.type,
+        ai.purchase_time,
+        ai.status,
+        ai.station_id,
+        ai.reserve1,
+        ai.reserve2,
+        ai.creator,
+        ai.updater,
+        ai.create_time,
+        ai.update_time,
+        si.name AS station_name
+        FROM asset_info ai
+        LEFT JOIN station_info si ON ai.station_id = si.id
+        <where>
+            <!-- 资产名称（模糊查询） -->
+            <if test="reqVO.name != null and reqVO.name != ''">
+                AND ai.name LIKE CONCAT('%', #{reqVO.name}, '%')
+            </if>
+
+            <!-- 资产类型 -->
+            <if test="reqVO.type != null and reqVO.type != ''">
+                AND ai.type = #{reqVO.type}
+            </if>
+
+            <!-- 采购时间范围查询 -->
+            <if test="reqVO.purchaseTime != null and reqVO.purchaseTime.length == 2">
+                AND ai.purchase_time BETWEEN #{reqVO.purchaseTime[0]} AND #{reqVO.purchaseTime[1]}
+            </if>
+
+            <!-- 资产状态 -->
+            <if test="reqVO.status != null and reqVO.status != ''">
+                AND ai.status = #{reqVO.status}
+            </if>
+
+            <!-- 所属场站ID -->
+            <if test="reqVO.stationId != null">
+                AND ai.station_id = #{reqVO.stationId}
+            </if>
+
+            <!-- 备用字段1 -->
+            <if test="reqVO.reserve1 != null and reqVO.reserve1 != ''">
+                AND ai.reserve1 = #{reqVO.reserve1}
+            </if>
+
+            <!-- 备用字段2 -->
+            <if test="reqVO.reserve2 != null and reqVO.reserve2 != ''">
+                AND ai.reserve2 = #{reqVO.reserve2}
+            </if>
+
+            <!-- 创建者 -->
+            <if test="reqVO.creator != null and reqVO.creator != ''">
+                AND ai.creator = #{reqVO.creator}
+            </if>
+
+            <!-- 更新者 -->
+            <if test="reqVO.updater != null and reqVO.updater != ''">
+                AND ai.updater = #{reqVO.updater}
+            </if>
+
+            <!-- 创建时间范围 -->
+            <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+                AND ai.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+
+            <!-- 更新时间范围 -->
+            <if test="reqVO.updateTime != null and reqVO.updateTime.length == 2">
+                AND ai.update_time BETWEEN #{reqVO.updateTime[0]} AND #{reqVO.updateTime[1]}
+            </if>
+        </where>
+        ORDER BY ai.id DESC
+    </select>
+
+    <!-- 查询资产类型分布数据 -->
+    <select id="selectTypeData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.assetinfo.vo.AssetInfoChartRespVO$TypeData">
+        SELECT
+            type AS typeName,
+            COUNT(*) AS count
+        FROM asset_info
+        WHERE type IS NOT NULL AND type != ''
+        GROUP BY type
+        ORDER BY count DESC
+    </select>
+
+    <!-- 查询资产卡片统计数据 -->
+    <select id="selectCardData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.assetinfo.vo.AssetInfoChartRespVO$CardData">
+        SELECT
+            COUNT(*) AS totalAsset,
+            SUM(CASE WHEN status = '1' THEN 1 ELSE 0 END) AS normalAsset
+        FROM asset_info
+    </select>
+
+</mapper>

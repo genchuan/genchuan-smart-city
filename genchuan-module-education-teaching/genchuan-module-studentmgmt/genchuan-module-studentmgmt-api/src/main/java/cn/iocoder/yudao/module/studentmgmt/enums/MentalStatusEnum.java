@@ -15,6 +15,7 @@ public enum MentalStatusEnum {
     MENTAL_STATUS_CONSULTING("consulting", "咨询中"),
     MENTAL_STATUS_INTERVENED("intervened", "已干预");
 
+    public static final String DICT_TYPE = "mental_mgmt_status";
     /**
      * 状态
      * <p>

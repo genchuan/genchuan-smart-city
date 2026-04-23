@@ -42,7 +42,7 @@ public interface CarChargeOrderService {
 
     void refundCarChargeOrder(IdReqVO reqVO);
 
-    /** Invoice - 单条操作（IdReqVO） */
+    /** Invoice - 单条操作（InvoiceOrderReqVO） */
 
-    void invoiceCarChargeOrder(IdReqVO reqVO);
+    void invoiceCarChargeOrder(InvoiceOrderReqVO reqVO);
 }

@@ -8,8 +8,6 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.moralactivity.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.moralactivity.MoralActivityDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.moralactivity.MoralActivityMapper;
-import cn.iocoder.yudao.module.studentmgmt.enums.AidWorkStatusEnum;
-import cn.iocoder.yudao.module.studentmgmt.enums.AidWorkTypeEnum;
 import cn.iocoder.yudao.module.studentmgmt.enums.MoralActivityStatusEnum;
 import cn.iocoder.yudao.module.studentmgmt.enums.MoralActivityTypeEnum;
 import com.alibaba.fastjson.JSONObject;
@@ -172,18 +170,7 @@ public class MoralActivityServiceImpl implements MoralActivityService {
         JSONObject newTypeJson = new JSONObject();
         typeJson.forEach(json -> {
             String type = json.getString("activityType");
-
             String dictDataLabel = type;
-//            CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(MoralActivityTypeEnum.DICT_TYPE);
-//            if (dictDataList.getData() != null) {
-//                for (DictDataRespDTO dictData : dictDataList.getData()) {
-//                    if (dictData.getValue().equals(type)) {
-//                        dictDataLabel = dictData.getLabel();
-//                        break;
-//                    }
-//                }
-//            }
-//            String dictDataLabel = MoralActivityStatusEnum.getNameByKey(type);
             Long count = json.getLong("totalCount");
             newTypeJson.put(dictDataLabel, count);
         });

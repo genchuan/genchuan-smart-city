@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
 @Data
 public class MoralResourceChartReqVO {
 
-    @Schema(description = "开始时间，格式时间戳", requiredMode = Schema.RequiredMode.REQUIRED, example = "1776211200000")
+    @Schema(description = "开始时间，格式时间戳", example = "1776211200000")
     private LocalDateTime startTime;
 
-    @Schema(description = "结束时间，格式时间戳", requiredMode = Schema.RequiredMode.REQUIRED, example = "1776211200000")
+    @Schema(description = "结束时间，格式时间戳", example = "1776211200000")
     private LocalDateTime endTime;
 
 }

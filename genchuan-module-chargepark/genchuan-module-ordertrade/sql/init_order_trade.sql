@@ -191,6 +191,7 @@ CREATE TABLE IF NOT EXISTS `invoice_list` (
   `order_id`      BIGINT        NOT NULL                COMMENT '关联订单ID',
   `title`         VARCHAR(64)   NOT NULL                COMMENT '发票抬头',
   `tax_no`        VARCHAR(20)   NOT NULL                COMMENT '税号',
+  `email`         VARCHAR(100)  NOT NULL                COMMENT '接收邮箱',
   `amount`        DECIMAL(10,2) NOT NULL                COMMENT '开票金额(元)',
   `status`        VARCHAR(20)   NOT NULL DEFAULT 'pending_audit' COMMENT '状态(pending_audit/pending_invoice/invoiced/rejected)',
   `auditor_id`    BIGINT        DEFAULT NULL            COMMENT '审核人ID',
@@ -304,6 +305,42 @@ CREATE TABLE IF NOT EXISTS `reconcile_record` (
   `create_time`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='对账记录表';
+
+-- -----------------------------------------------------------
+-- 9-1. 周期报表 cycle_report
+-- -----------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `cycle_report` (
+  `id`                        BIGINT       NOT NULL AUTO_INCREMENT COMMENT '报表记录 ID',
+  `report_cycle`              VARCHAR(20)  NOT NULL                COMMENT '报表周期（日报/周报/月报/季报/半年报/年报/自定义报表）',
+  `stat_time`                 VARCHAR(50)  NOT NULL                COMMENT '统计时段（如 2026-04-22 00:00:00-2026-04-22 23:59:59）',
+  `stat_start_time`           DATETIME     NOT NULL                COMMENT '统计开始时间',
+  `stat_end_time`             DATETIME     NOT NULL                COMMENT '统计结束时间',
+  `cycle_order_count`         INT          NOT NULL DEFAULT 0      COMMENT '周期订单量',
+  `cycle_revenue`             DECIMAL(12,2) NOT NULL DEFAULT 0.00  COMMENT '周期营收（元）',
+  `pay_rate`                  DECIMAL(6,2) NOT NULL DEFAULT 0.00   COMMENT '支付率（%）',
+  `charge_quantity`           DECIMAL(12,2) NOT NULL DEFAULT 0.00  COMMENT '充电量（度）',
+  `lend_count`                INT          NOT NULL DEFAULT 0      COMMENT '借出量（次）',
+  `refund_amount`             DECIMAL(12,2) NOT NULL DEFAULT 0.00  COMMENT '退款金额（元）',
+  `wait_handle_abnormal_count` INT         NOT NULL DEFAULT 0      COMMENT '待处置异常数',
+  `collect_complete_rate`     DECIMAL(6,2) NOT NULL DEFAULT 0.00   COMMENT '追缴完成率（%）',
+  `check_accuracy_rate`       DECIMAL(6,2) NOT NULL DEFAULT 0.00   COMMENT '核算准确率（%）',
+  `generate_status`           VARCHAR(20)  NOT NULL DEFAULT '已生成' COMMENT '报表生成状态',
+  `operator`                  VARCHAR(64)  NOT NULL DEFAULT ''     COMMENT '操作人',
+  `year_on_year`              VARCHAR(20)  NULL                    COMMENT '同比数据（如 +12.5%）',
+  `chain_ratio`               VARCHAR(20)  NULL                    COMMENT '环比数据（如 +8.3%）',
+  `export_count`              INT          NOT NULL DEFAULT 0      COMMENT '报表导出次数',
+  `remark`                    VARCHAR(500) NULL                    COMMENT '备注',
+  `creator`                   VARCHAR(64)  NOT NULL DEFAULT ''     COMMENT '创建者',
+  `updater`                   VARCHAR(64)  NOT NULL DEFAULT ''     COMMENT '更新者',
+  `deleted`                   BIT(1)       NOT NULL DEFAULT b'0'   COMMENT '是否删除',
+  `tenant_id`                 BIGINT       NOT NULL DEFAULT 0      COMMENT '租户 ID',
+  `create_time`               DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time`               DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_report_cycle`    (`report_cycle`),
+  KEY `idx_generate_status` (`generate_status`),
+  KEY `idx_create_time`     (`create_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订单交易周期报表表';
 
 
 -- ============================================================

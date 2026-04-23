@@ -14,6 +14,7 @@ public enum ViolaateTypeEnum {
     VIOLATE_MGMT_VIOLATE_TYPE_BEHAVIOR("behavior", "行为违规"),
     VIOLATE_MGMT_VIOLATE_TYPE_OTHER("other", "其他");
 
+    public static final String DICT_TYPE = "violate_mgmt_violate_type";
     /**
      * 状态
      * <p>

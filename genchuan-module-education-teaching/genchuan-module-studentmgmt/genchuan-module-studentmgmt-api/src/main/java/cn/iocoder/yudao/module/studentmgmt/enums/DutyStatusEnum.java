@@ -10,12 +10,13 @@ import lombok.Getter;
  */
 public enum DutyStatusEnum {
 
-    // 状态：待打卡/待调班审批/待出车审批/已完成，关联芋道字典表：club_mgmt_status
+    // 状态：待打卡/待调班审批/待出车审批/已完成，关联芋道字典表：duty_mgmt_status
     DUTY_STATUS_PENDING_CHECKIN("pending_checkin", "待打卡"),
     DUTY_STATUS_PENDING_TRANSFER("pending_transfer", "待调班审批"),
     DUTY_STATUS_PENDING_CAR("pending_car", "待出车审批"),
     DUTY_STATUS_COMPLETED("completed", "已完成");
 
+    public static final String DICT_TYPE = "duty_mgmt_status";
     /**
      * 状态
      * <p>

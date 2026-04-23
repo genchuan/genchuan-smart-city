@@ -11,6 +11,7 @@
         <module>genchuan-module-inspectop</module>
         <module>genchuan-module-marketop</module>
         <module>genchuan-module-carservice</module>
+        <module>genchuan-module-vehiclepass</module>
     </modules>
     <description>
         充电停车一体化管理模块，包含营销运营等功能。

@@ -16,6 +16,8 @@ public enum DutyTransferStatusEnum {
     TRANSFER_STATUS_PENDING_APPROVED("approved", "已通过"),
     TRANSFER_STATUS_REJECTED("rejected", "已驳回");
 
+    public static final String DICT_TYPE = "duty_mgmt_transfer_status";
+
 
     /**
      * 状态

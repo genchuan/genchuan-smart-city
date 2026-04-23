@@ -11,9 +11,9 @@ import lombok.Getter;
 public enum AssessStatusEnum {
 
     UN_PUBLISH("un_publish", "未发布"),
-    PUBLISHED("published", "已发布"),
-    ;
+    PUBLISHED("published", "已发布");
 
+    public static final String DICT_TYPE = "assess_mgmt_status";
     /**
      * 状态
      * <p>

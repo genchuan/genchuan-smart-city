@@ -14,6 +14,8 @@ public enum BehaviorAttendanceSyncEnum {
     ATTENDANCE_SYNC_0("0", "未同步"),
     ATTENDANCE_SYNC_1("1", "已同步");
 
+    public static final String DICT_TYPE = "behavior_mgmt_attendance_sync";
+
     /**
      * 状态
      * <p>

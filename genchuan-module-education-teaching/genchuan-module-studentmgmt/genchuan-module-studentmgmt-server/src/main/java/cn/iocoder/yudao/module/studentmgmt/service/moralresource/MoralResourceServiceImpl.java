@@ -1,10 +1,10 @@
 package cn.iocoder.yudao.module.studentmgmt.service.moralresource;
 
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.moralactivity.vo.ChartActivityCountRespVO;
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.moralactivity.vo.MoralActivityChartRespVO;
-import cn.iocoder.yudao.module.studentmgmt.enums.AidWorkStatusEnum;
-import cn.iocoder.yudao.module.studentmgmt.enums.AidWorkTypeEnum;
+import cn.iocoder.yudao.framework.common.biz.system.dict.DictDataCommonApi;
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.module.studentmgmt.enums.MoralResourceStatusEnum;
+import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
 import com.alibaba.fastjson.JSONObject;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
 import java.util.*;
+
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.moralresource.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.moralresource.MoralResourceDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -37,6 +38,8 @@ public class MoralResourceServiceImpl implements MoralResourceService {
 
     @Resource
     private MoralResourceMapper moralResourceMapper;
+    @Resource
+    private DictDataCommonApi dictDataApi;
 
     @Override
     public Long createMoralResource(MoralResourceSaveReqVO createReqVO) {
@@ -66,16 +69,16 @@ public class MoralResourceServiceImpl implements MoralResourceService {
     }
 
     @Override
-        public void deleteMoralResourceListByIds(List<Long> ids) {
+    public void deleteMoralResourceListByIds(List<Long> ids) {
         // 删除
         moralResourceMapper.deleteByIds(ids);
-        }
+    }
 
 
     private MoralResourceDO validateMoralResourceExists(Long id) {
         MoralResourceDO moralResource = moralResourceMapper.selectById(id);
 
-        if ( moralResource == null) {
+        if (moralResource == null) {
             throw exception(MORAL_RESOURCE_NOT_EXISTS);
         }
         return moralResource;
@@ -150,7 +153,7 @@ public class MoralResourceServiceImpl implements MoralResourceService {
         if (startTime != null && startTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
             startTime = null;
         }
-        if (endTime !=null && endTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
+        if (endTime != null && endTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
             endTime = null;
         }
 
@@ -159,10 +162,19 @@ public class MoralResourceServiceImpl implements MoralResourceService {
         List<JSONObject> typeJson = moralResourceMapper.selectTypeCount(startTime, endTime);
         JSONObject newTypeJson = new JSONObject();
         typeJson.forEach(json -> {
-            String type = json.getString("activityType");
-            String nameByKey = AidWorkTypeEnum.getNameByKey(type);
+            String type = json.getString("type");
+            String dictDataLabel = "";
+            CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.MORAL_RESOURCE_RESOURCE_TYPE.getType());
+            if (dictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : dictDataList.getData()) {
+                    if (dictData.getValue().equals(type)) {
+                        dictDataLabel = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
             Long count = json.getLong("count");
-            newTypeJson.put(nameByKey, count);
+            newTypeJson.put(dictDataLabel, count);
         });
         vo.setResourceTypeCount(newTypeJson);
 
@@ -171,10 +183,19 @@ public class MoralResourceServiceImpl implements MoralResourceService {
         JSONObject newStatusJson = new JSONObject();
         // 将statusMap里的status转为枚举的 name
         statusJson.forEach((json) -> {
+            String dictDataLabel = "";
             String status = json.getString("status");
-            String nameByKey = AidWorkStatusEnum.getNameByKey(status);
+            CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.MORAL_RESOURCE_STATUS.getType());
+            if (dictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : dictDataList.getData()) {
+                    if (dictData.getValue().equals(status)) {
+                        dictDataLabel = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
             Long count = json.getLong("count");
-            newStatusJson.put(nameByKey, count);
+            newStatusJson.put(dictDataLabel, count);
         });
         vo.setStatusCount(newStatusJson);
 
@@ -183,7 +204,7 @@ public class MoralResourceServiceImpl implements MoralResourceService {
         vo.setLearnTrend(learnTrend);
 
         // 月度学习完成率趋势
-        List<JSONObject> rateTrend = moralResourceMapper.selectRateTrend (startTime, endTime);
+        List<JSONObject> rateTrend = moralResourceMapper.selectRateTrend(startTime, endTime);
         vo.setRateTrend(rateTrend);
 
         return vo;
@@ -196,7 +217,7 @@ public class MoralResourceServiceImpl implements MoralResourceService {
         if (startTime != null && startTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
             startTime = null;
         }
-        if (endTime !=null && endTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
+        if (endTime != null && endTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
             endTime = null;
         }
         // 按类型统计
@@ -208,8 +229,17 @@ public class MoralResourceServiceImpl implements MoralResourceService {
         List typeList = new ArrayList<>();
         typeJson.forEach(json -> {
             String type = json.getString("type");
-            String nameByKey = AidWorkTypeEnum.getNameByKey(type);
-            typeList.add(nameByKey);
+            String dictDataLabel = "";
+            CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.MORAL_RESOURCE_RESOURCE_TYPE.getType());
+            if (dictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : dictDataList.getData()) {
+                    if (dictData.getValue().equals(type)) {
+                        dictDataLabel = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            typeList.add(dictDataList);
 //            "resourceCountList": [5,7,3],
             Long typeCount = moralResourceMapper.selectTypeCountByType(finalStartTime, finalEndTime, type);
             resourceCountList.add(typeCount);

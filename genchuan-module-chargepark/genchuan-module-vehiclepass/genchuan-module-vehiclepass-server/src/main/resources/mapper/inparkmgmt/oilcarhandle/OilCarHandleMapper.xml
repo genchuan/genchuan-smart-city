@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.vehiclepass.dal.mysql.inparkmgmt.oilcarhandle.OilCarHandleMapper">
+
+    <select id="selectPageJoin" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandleRespVO">
+        SELECT
+            o.id,
+            o.plate_no AS plateNo,
+            o.space_id AS spaceId,
+            p.location AS spaceName,
+            o.identify_time AS identifyTime,
+            o.occupy_type AS occupyType,
+            o.status,
+            o.station_id AS stationId,
+            s.name AS stationName,
+            o.handle_user_id AS handleUserId,
+            u.nickname AS handleUserName,
+            o.handle_time AS handleTime,
+            o.handle_method AS handleMethod,
+            o.ignore_reason AS ignoreReason,
+            o.remark,
+            o.reserve1,
+            o.reserve2,
+            o.creator,
+            o.updater,
+            o.create_time AS createTime,
+            o.update_time AS updateTime
+        FROM oil_car_handle o
+        LEFT JOIN station_info s ON o.station_id = s.id AND s.deleted = 0
+        LEFT JOIN user_info u ON o.handle_user_id = u.id AND u.deleted = 0
+        LEFT JOIN parking_space_info p ON o.space_id = p.id AND p.deleted = 0
+        WHERE o.deleted = 0
+        <if test="reqVO.plateNo != null and reqVO.plateNo != ''">
+            AND o.plate_no LIKE CONCAT('%', #{reqVO.plateNo}, '%')
+        </if>
+        <if test="reqVO.spaceId != null">
+            AND o.space_id = #{reqVO.spaceId}
+        </if>
+        <if test="reqVO.identifyTime != null and reqVO.identifyTime.size() == 2">
+            AND o.identify_time BETWEEN #{reqVO.identifyTime[0]} AND #{reqVO.identifyTime[1]}
+        </if>
+        <if test="reqVO.occupyType != null and reqVO.occupyType != ''">
+            AND o.occupy_type = #{reqVO.occupyType}
+        </if>
+        <if test="reqVO.status != null and reqVO.status != ''">
+            AND o.status = #{reqVO.status}
+        </if>
+        <if test="reqVO.stationId != null">
+            AND o.station_id = #{reqVO.stationId}
+        </if>
+        <if test="reqVO.handleUserId != null">
+            AND o.handle_user_id = #{reqVO.handleUserId}
+        </if>
+        <if test="reqVO.remark != null and reqVO.remark != ''">
+            AND o.remark LIKE CONCAT('%', #{reqVO.remark}, '%')
+        </if>
+        ORDER BY o.id DESC
+    </select>
+
+    <!-- 查询处置进度趋势（按天统计） -->
+    <select id="selectHandleProgressTrend" resultType="map">
+        SELECT
+            DATE(o.identify_time) AS date,
+            COUNT(*) AS count
+        FROM oil_car_handle o
+        WHERE o.deleted = 0
+        <if test="startTime != null and startTime != ''">
+            AND o.identify_time >= FROM_UNIXTIME(#{startTime})
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND o.identify_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
+        <if test="stationId != null">
+            AND o.station_id = #{stationId}
+        </if>
+        GROUP BY DATE(o.identify_time)
+        ORDER BY date
+    </select>
+
+    <!-- 查询各场站处置量 -->
+    <select id="selectStationHandleCount" resultType="map">
+        SELECT
+            s.name AS stationName,
+            COUNT(o.id) AS count
+        FROM oil_car_handle o
+        LEFT JOIN station_info s ON o.station_id = s.id AND s.deleted = 0
+        WHERE o.deleted = 0
+        <if test="startTime != null and startTime != ''">
+            AND o.identify_time >= FROM_UNIXTIME(#{startTime})
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND o.identify_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
+        <if test="stationId != null">
+            AND o.station_id = #{stationId}
+        </if>
+        GROUP BY o.station_id, s.name
+        ORDER BY count DESC
+    </select>
+
+    <!-- 查询待处置数和处置完成率 -->
+    <select id="selectHandleStats" resultType="map">
+        SELECT
+            SUM(CASE WHEN o.status = '未处理' OR o.status = '处理中' THEN 1 ELSE 0 END) AS waitHandleCount,
+            ROUND(SUM(CASE WHEN o.status = '已关闭' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(*), 0), 1) AS handleCompleteRate
+        FROM oil_car_handle o
+        WHERE o.deleted = 0
+        <if test="startTime != null and startTime != ''">
+            AND o.identify_time >= FROM_UNIXTIME(#{startTime})
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND o.identify_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
+        <if test="stationId != null">
+            AND o.station_id = #{stationId}
+        </if>
+    </select>
+
+</mapper>

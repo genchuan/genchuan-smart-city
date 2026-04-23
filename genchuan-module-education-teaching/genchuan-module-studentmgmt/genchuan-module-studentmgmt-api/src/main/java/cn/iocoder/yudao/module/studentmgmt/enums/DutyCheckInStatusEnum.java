@@ -14,6 +14,8 @@ public enum DutyCheckInStatusEnum {
     DUTY_CHCECK_IN_STATUS_NOT_CHECKED_IN("not_checked_in", "未打卡"),
     DUTY_CHCECK_IN_STATUS_CHECKED_IN("checked_in", "已打卡");
 
+    public static final String DICT_TYPE = "duty_mgmt_check_in_status";
+
     /**
      * 状态
      * <p>

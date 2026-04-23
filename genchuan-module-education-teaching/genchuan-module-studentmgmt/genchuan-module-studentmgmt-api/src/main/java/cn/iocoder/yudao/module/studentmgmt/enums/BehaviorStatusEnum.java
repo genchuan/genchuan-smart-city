@@ -16,6 +16,7 @@ public enum BehaviorStatusEnum {
     BEHAVIOR_MGMT_STATUS_2("2", "已驳回"),
     BEHAVIOR_MGMT_STATUS_3("3", "已撤销");
 
+    public static final String DICT_TYPE = "behavior_mgmt_status";
     /**
      * 状态
      * <p>

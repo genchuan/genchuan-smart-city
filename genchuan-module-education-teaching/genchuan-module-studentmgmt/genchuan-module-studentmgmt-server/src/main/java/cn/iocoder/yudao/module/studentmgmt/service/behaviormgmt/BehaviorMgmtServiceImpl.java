@@ -1,14 +1,15 @@
 package cn.iocoder.yudao.module.studentmgmt.service.behaviormgmt;
 
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
-import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.dormcheck.DormCheckMapper;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
 import cn.iocoder.yudao.module.studentmgmt.enums.*;
 import cn.iocoder.yudao.module.system.api.dept.DeptApi;
 import cn.iocoder.yudao.module.system.api.dept.dto.DeptRespDTO;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import com.alibaba.fastjson.JSONObject;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
@@ -27,7 +28,6 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.behaviormgmt.BehaviorMgmtMapper;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.module.studentmgmt.enums.ErrorCodeConstants.*;
 import static cn.iocoder.yudao.module.studentmgmt.enums.LogRecordConstants.*;
 
@@ -49,6 +49,8 @@ public class BehaviorMgmtServiceImpl implements BehaviorMgmtService {
     private StudentInfoMapper studentInfoMapper;
     @Resource
     private DeptApi deptApi;
+    @Resource
+    private DictDataApi dictDataApi;
 
     @Override
     public Long createBehaviorMgmt(BehaviorMgmtSaveReqVO createReqVO) {
@@ -185,7 +187,17 @@ public class BehaviorMgmtServiceImpl implements BehaviorMgmtService {
             // 将key转换成name
             List<JSONObject> leaveTypeList = behaviorMgmtMapper.selectLeaveTypeCountByClassName(startTime, endTime, className);
             leaveTypeList.forEach(item -> {
-                item.put("name", BehaviorLevelTypeEnum.getNameByKey(item.getString("name")));
+                String dictDataLabel = "";
+                CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(BehaviorLevelTypeEnum.DICT_TYPE);
+                if (dictDataList.getData() != null) {
+                    for (DictDataRespDTO dictData : dictDataList.getData()) {
+                        if (dictData.getValue().equals(item.get("name"))) {
+                            dictDataLabel = dictData.getLabel();
+                            break;
+                        }
+                    }
+                }
+                item.put("name", dictDataLabel);
             });
             vo.setLeaveTypeDistribution(leaveTypeList);
             List<JSONObject> dailyLeaveTrendList = behaviorMgmtMapper.selectDailyLeaveTrendByClassName(startTime, endTime, className);
@@ -203,7 +215,18 @@ public class BehaviorMgmtServiceImpl implements BehaviorMgmtService {
         // 将key转换成name
         List<JSONObject> leaveTypeList = behaviorMgmtMapper.selectLeaveTypeCount(startTime, endTime);
         leaveTypeList.forEach(item -> {
-            item.put("name", BehaviorLevelTypeEnum.getNameByKey(item.getString("name")));
+            String dictDataLabel = "";
+            String status = item.getString("name");
+            CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.BEHAVIOR_MGMT_LEAVE_TYPE.getType());
+            if (dictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : dictDataList.getData()) {
+                    if (dictData.getValue().equals(status)) {
+                        dictDataLabel = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.put("name", dictDataLabel);
         });
         vo.setLeaveTypeDistribution(leaveTypeList);
         List<JSONObject> dailyLeaveTrendList = behaviorMgmtMapper.selectDailyLeaveTrend(startTime, endTime);

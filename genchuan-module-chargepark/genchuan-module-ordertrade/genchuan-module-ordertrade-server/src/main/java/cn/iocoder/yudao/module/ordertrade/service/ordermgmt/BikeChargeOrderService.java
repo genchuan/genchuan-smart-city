@@ -42,7 +42,7 @@ public interface BikeChargeOrderService {
 
     void refundBikeChargeOrder(IdReqVO reqVO);
 
-    /** Invoice - 单条操作（IdReqVO） */
+    /** Invoice - 单条操作（InvoiceOrderReqVO） */
 
-    void invoiceBikeChargeOrder(IdReqVO reqVO);
+    void invoiceBikeChargeOrder(InvoiceOrderReqVO reqVO);
 }

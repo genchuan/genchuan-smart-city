@@ -117,6 +117,14 @@ public class HonorMgmtController {
         return success(respVO);
     }
 
+    @GetMapping("/chart/honorCount")
+    @Operation(summary = "各班级 / 类型荣誉数量统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:honor-mgmt:query')")
+    public CommonResult<List<HonorCountRespVO>> getChart(@Valid HonorCountReqVO reqVO) {
+        List<HonorCountRespVO> list = honorMgmtService.honorCount(reqVO);
+        return success(list);
+    }
+
 
     @PutMapping("/audit")
     @Parameter(name = "ids", description = "编号", required = true)

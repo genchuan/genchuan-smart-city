@@ -14,6 +14,7 @@ public enum AidWorkProcessStatusEnum {
     AID_WORK_PROCESS_STATUS_ENUM_0("0", "跟进中"),
     AID_WORK_PROCESS_STATUS_ENUM_1("1", "已完成");
 
+    public static final String DICT_TYPE = "aid_work_process_status";
     /**
      * 状态
      * <p>

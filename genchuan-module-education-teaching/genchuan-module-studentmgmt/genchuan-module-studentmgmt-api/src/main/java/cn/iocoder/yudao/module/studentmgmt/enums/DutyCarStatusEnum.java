@@ -15,6 +15,7 @@ public enum DutyCarStatusEnum {
     CAR_STATUS_PENDING("pending", "待审批"),
     CAR_STATUS_APPROVED("approved", "已通过");
 
+    public static final String DICT_TYPE = "duty_mgmt_car_status";
 
     /**
      * 状态

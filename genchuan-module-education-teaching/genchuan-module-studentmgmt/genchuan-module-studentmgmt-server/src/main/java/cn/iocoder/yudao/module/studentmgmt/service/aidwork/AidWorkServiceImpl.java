@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.studentmgmt.service.aidwork;
 
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
@@ -9,6 +11,8 @@ import cn.iocoder.yudao.module.studentmgmt.dal.mysql.aidwork.AidWorkMapper;
 import cn.iocoder.yudao.module.studentmgmt.enums.AidWorkProcessStatusEnum;
 import cn.iocoder.yudao.module.studentmgmt.enums.AidWorkStatusEnum;
 import cn.iocoder.yudao.module.studentmgmt.enums.AidWorkTypeEnum;
+import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import com.alibaba.fastjson.JSONObject;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.service.impl.DiffParseFunction;
@@ -40,6 +44,8 @@ public class AidWorkServiceImpl implements AidWorkService {
 
     @Resource
     private AidWorkMapper aidWorkMapper;
+    @Resource
+    private DictDataApi dictDataApi;
 
     @Override
     @LogRecord(type = AID_TYPE, subType = AID_CREATE_SUB_TYPE, bizNo = "{{#aid.id}}",
@@ -179,9 +185,18 @@ public class AidWorkServiceImpl implements AidWorkService {
         Map<String, Long> newTypeMap = new HashMap<>();
         typeMap.forEach(map -> {
             String type = String.valueOf(map.get("type"));
-            String nameByKey = AidWorkTypeEnum.getNameByKey(type);
+            String dictDataLabel = "";
+            CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(AidWorkTypeEnum.DICT_TYPE);
+            if (dictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : dictDataList.getData()) {
+                    if (dictData.getValue().equals(type)) {
+                        dictDataLabel = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
             Long count = map.get("count");
-            newTypeMap.put(nameByKey, count);
+            newTypeMap.put(dictDataLabel, count);
         });
 
         vo.setTypeCountMap(newTypeMap);
@@ -190,9 +205,18 @@ public class AidWorkServiceImpl implements AidWorkService {
         // 将statusMap里的status转为枚举的 name
         statusMap.forEach((map) -> {
             String status = String.valueOf(map.get("status"));
-            String nameByKey = AidWorkStatusEnum.getNameByKey(status);
+            String dictDataLabel = "";
+            CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.VIOLATE_MGMT_STATUS.getType());
+            if (dictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : dictDataList.getData()) {
+                    if (dictData.getValue().equals(status)) {
+                        dictDataLabel = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
             Long count = map.get("count");
-            newStatusMap.put(nameByKey, count);
+            newStatusMap.put(dictDataLabel, count);
         });
         vo.setStatusCountMap(newStatusMap);
 
@@ -219,10 +243,19 @@ public class AidWorkServiceImpl implements AidWorkService {
         typeMap.forEach(map -> {
             JSONObject data = new JSONObject();
             String type = String.valueOf(map.get("type"));
-            String nameByKey = AidWorkTypeEnum.getNameByKey(type);
+            String dictDataLabel = "";
+            CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.AID_WORK_AID_TYPE.getType());
+            if (dictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : dictDataList.getData()) {
+                    if (dictData.getValue().equals(type)) {
+                        dictDataLabel = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
 
             AidWorkApplyCountRespVO vo = new AidWorkApplyCountRespVO();
-            vo.setName(nameByKey);
+            vo.setName(dictDataLabel);
             vo.setType(type);
             Long countTotal = map.get("count");
             vo.setApplyCount( countTotal);

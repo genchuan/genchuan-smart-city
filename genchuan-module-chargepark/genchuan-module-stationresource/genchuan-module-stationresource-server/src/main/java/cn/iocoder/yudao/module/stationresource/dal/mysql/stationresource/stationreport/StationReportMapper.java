@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.stationreport;
 
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.ops.StationOpReportChartReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.ops.StationOpReportChartRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.ops.StationOpReportCreateReqVO;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.stationmgmt.stationinfo.StationInfoDO;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.stationreport.StationReportDO;
@@ -9,6 +11,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Mapper
@@ -33,4 +36,18 @@ public interface StationReportMapper extends BaseMapperX<StationReportDO> {
 
     // ====================== 7. deposit_plan 押金订单量 ======================
     Map<String, Object> selectDepositPlanReport(StationOpReportCreateReqVO reqVO);
+
+
+    // ====================== 8. 地图数据 ======================
+    List<StationOpReportChartRespVO.MapData> selectMapData(StationOpReportChartReqVO reqVO);
+
+    // ====================== 9. 柱状图数据 ======================
+    List<StationOpReportChartRespVO.BarData> selectBarData(StationOpReportChartReqVO reqVO);
+
+    // ====================== 10. 折线图数据 ======================
+    List<StationOpReportChartRespVO.LineData> selectLineData(StationOpReportChartReqVO reqVO);
+
+    List<StationOpReportChartRespVO.StationMapData> getStationMapData(StationOpReportChartReqVO reqVO);
+
+    List<StationOpReportChartRespVO.ParkSpaceMapData> getParkSpaceMapData(StationOpReportChartReqVO reqVO);
 }

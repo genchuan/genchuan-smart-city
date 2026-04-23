@@ -44,4 +44,7 @@ public interface InvoiceListMapper extends BaseMapperX<InvoiceListDO> {
 
     @Select("SELECT COUNT(*) FROM invoice_list WHERE deleted = 0")
     Long selectTotalCount();
+
+    @Select("SELECT * FROM invoice_list WHERE deleted = 0 AND order_id = #{orderId} LIMIT 1")
+    InvoiceListDO selectByOrderId(@Param("orderId") Long orderId);
 }

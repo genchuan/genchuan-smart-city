@@ -6,6 +6,8 @@ import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.ordermgmt.OfftimeParkOrderDO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.refundmgmt.RefundApplyDO;
+import cn.iocoder.yudao.module.ordertrade.dal.dataobject.invoicemgmt.InvoiceListDO;
+import cn.iocoder.yudao.module.ordertrade.dal.mysql.invoicemgmt.InvoiceListMapper;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.ordermgmt.OfftimeParkOrderMapper;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.refundmgmt.RefundApplyMapper;
 import cn.iocoder.yudao.module.ordertrade.framework.tool.OrderUtils;
@@ -32,6 +34,7 @@ public class OfftimeParkOrderServiceImpl implements OfftimeParkOrderService {
 
     @Resource private OfftimeParkOrderMapper offtimeParkOrderMapper;
     @Resource private RefundApplyMapper refundApplyMapper;
+    @Resource private InvoiceListMapper invoiceListMapper;
 
     @Override public Long createOfftimeParkOrder(OfftimeParkOrderSaveReqVO v) {
         OfftimeParkOrderDO o = BeanUtils.toBean(v, OfftimeParkOrderDO.class);
@@ -120,13 +123,25 @@ public class OfftimeParkOrderServiceImpl implements OfftimeParkOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void invoiceOfftimeParkOrder(IdReqVO reqVO) {
+    public void invoiceOfftimeParkOrder(InvoiceOrderReqVO reqVO) {
         OfftimeParkOrderDO order = offtimeParkOrderMapper.selectById(reqVO.getId());
         if (order == null) throw exception(OFFTIME_PARK_ORDER_NOT_EXISTS);
         if (!"paid".equals(order.getStatus()) && !"completed".equals(order.getStatus())) {
             throw exception(ALL_ORDER_STATUS_CANNOT_INVOICE);
         }
-        // 开票由发票模块处理
+        if (invoiceListMapper.selectByOrderId(reqVO.getId()) != null) {
+            throw exception(INVOICE_LIST_ALREADY_APPLIED);
+        }
+        InvoiceListDO invoice = new InvoiceListDO();
+        invoice.setInvoiceNo("INV" + java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 14).toUpperCase());
+        invoice.setOrderId(reqVO.getId());
+        invoice.setTitle(reqVO.getInvoiceTitle());
+        invoice.setTaxNo(reqVO.getInvoiceTaxNo());
+        invoice.setReserve1(reqVO.getInvoiceEmail());
+        invoice.setAmount(order.getAmount());
+        invoice.setStatus("pending_audit");
+        invoice.setRemark(reqVO.getRemark());
+        invoiceListMapper.insert(invoice);
     }
 
     private void validateExists(Long id) {
