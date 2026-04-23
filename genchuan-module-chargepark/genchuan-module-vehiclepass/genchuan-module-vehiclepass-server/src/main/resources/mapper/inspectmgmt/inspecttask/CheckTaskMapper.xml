@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.vehiclepass.dal.mysql.inspectmgmt.inspecttask.CheckTaskMapper">
+
+    <select id="selectPageJoin" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.CheckTaskRespVO">
+        SELECT
+            t.id AS id,
+            t.task_type AS taskType,
+            t.dispatch_time AS dispatchTime,
+            t.deadline_time AS deadlineTime,
+            t.status AS status,
+            t.area_id AS areaId,
+            a.name AS areaName,
+            t.execute_user_id AS executeUserId,
+            u.nickname AS executeUserName,
+            t.finish_time AS finishTime,
+            t.task_progress AS taskProgress,
+            t.transfer_reason AS transferReason,
+            t.remark AS remark,
+            t.reserve1 AS reserve1,
+            t.reserve2 AS reserve2,
+            t.creator AS creator,
+            t.updater AS updater,
+            t.create_time AS createTime,
+            t.update_time AS updateTime
+        FROM check_task t
+        LEFT JOIN area_info a ON t.area_id = a.id AND a.deleted = 0
+        LEFT JOIN user_info u ON t.execute_user_id = u.id AND u.deleted = 0
+        WHERE t.deleted = 0
+        <if test="reqVO.taskType != null and reqVO.taskType != ''">
+            AND t.task_type = #{reqVO.taskType}
+        </if>
+        <if test="reqVO.dispatchTimeNew != null and reqVO.dispatchTimeNew.length == 2">
+            AND t.dispatch_time BETWEEN FROM_UNIXTIME(#{reqVO.dispatchTimeNew[0]}) AND FROM_UNIXTIME(#{reqVO.dispatchTimeNew[1]})
+        </if>
+        <if test="reqVO.deadlineTimeNew != null and reqVO.deadlineTimeNew.length == 2">
+            AND t.deadline_time BETWEEN FROM_UNIXTIME(#{reqVO.deadlineTimeNew[0]}) AND FROM_UNIXTIME(#{reqVO.deadlineTimeNew[1]})
+        </if>
+        <if test="reqVO.status != null and reqVO.status != ''">
+            AND t.status = #{reqVO.status}
+        </if>
+        <if test="reqVO.areaId != null">
+            AND t.area_id = #{reqVO.areaId}
+        </if>
+        <if test="reqVO.executeUserId != null">
+            AND t.execute_user_id = #{reqVO.executeUserId}
+        </if>
+        <if test="reqVO.finishTimeNew != null and reqVO.finishTimeNew.length == 2">
+            AND t.finish_time BETWEEN FROM_UNIXTIME(#{reqVO.finishTimeNew[0]}) AND FROM_UNIXTIME(#{reqVO.finishTimeNew[1]})
+        </if>
+        <if test="reqVO.taskProgress != null and reqVO.taskProgress != ''">
+            AND t.task_progress LIKE CONCAT('%', #{reqVO.taskProgress}, '%')
+        </if>
+        <if test="reqVO.transferReason != null and reqVO.transferReason != ''">
+            AND t.transfer_reason LIKE CONCAT('%', #{reqVO.transferReason}, '%')
+        </if>
+        <if test="reqVO.remark != null and reqVO.remark != ''">
+            AND t.remark LIKE CONCAT('%', #{reqVO.remark}, '%')
+        </if>
+        ORDER BY t.id DESC
+    </select>
+
+    <!-- 任务类型分布统计 -->
+    <select id="selectTaskTypeCount" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.InspectTaskChartRespVO$TaskTypeCount">
+        SELECT
+            t.task_type AS typeName,
+            COUNT(*) AS count
+        FROM check_task t
+        WHERE t.deleted = 0
+        <if test="reqVO.startTime != null and reqVO.endTime != null">
+            AND t.create_time BETWEEN FROM_UNIXTIME(#{reqVO.startTime}) AND FROM_UNIXTIME(#{reqVO.endTime})
+        </if>
+        <if test="reqVO.areaId != null">
+            AND t.area_id = #{reqVO.areaId}
+        </if>
+        GROUP BY t.task_type
+    </select>
+
+    <!-- 任务处理时效趋势统计 -->
+    <select id="selectTaskHandleTrend" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.InspectTaskChartRespVO$TaskHandleTrend">
+        SELECT
+            DATE(t.dispatch_time) AS date,
+            AVG(TIMESTAMPDIFF(HOUR, t.dispatch_time, t.finish_time) / 24) AS duration
+        FROM check_task t
+        WHERE t.deleted = 0
+        AND t.status = '已完成'
+        <if test="reqVO.startTime != null and reqVO.endTime != null">
+            AND t.dispatch_time BETWEEN FROM_UNIXTIME(#{reqVO.startTime}) AND FROM_UNIXTIME(#{reqVO.endTime})
+        </if>
+        <if test="reqVO.areaId != null">
+            AND t.area_id = #{reqVO.areaId}
+        </if>
+        GROUP BY DATE(t.dispatch_time)
+        ORDER BY date ASC
+    </select>
+
+    <!-- 待处理任务数统计 -->
+    <select id="selectWaitHandleTaskCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM check_task t
+        WHERE t.deleted = 0
+        AND t.status IN ('待派发', '待认领', '处理中')
+        <if test="reqVO.startTime != null and reqVO.endTime != null">
+            AND t.create_time BETWEEN FROM_UNIXTIME(#{reqVO.startTime}) AND FROM_UNIXTIME(#{reqVO.endTime})
+        </if>
+        <if test="reqVO.areaId != null">
+            AND t.area_id = #{reqVO.areaId}
+        </if>
+    </select>
+
+    <!-- 已完成任务数统计 -->
+    <select id="selectFinishedTaskCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM check_task t
+        WHERE t.deleted = 0
+        AND t.status = '已完成'
+        <if test="reqVO.startTime != null and reqVO.endTime != null">
+            AND t.create_time BETWEEN FROM_UNIXTIME(#{reqVO.startTime}) AND FROM_UNIXTIME(#{reqVO.endTime})
+        </if>
+        <if test="reqVO.areaId != null">
+            AND t.area_id = #{reqVO.areaId}
+        </if>
+    </select>
+
+    <select id="selectPageJoin" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.CheckTaskRespVO">
+        SELECT
+            t.id AS id,
+            t.task_type AS taskType,
+            t.dispatch_time AS dispatchTime,
+            t.deadline_time AS deadlineTime,
+            t.status AS status,
+            t.area_id AS areaId,
+            a.name AS areaName,
+            t.execute_user_id AS executeUserId,
+            u.nickname AS executeUserName,
+            t.finish_time AS finishTime,
+            t.task_progress AS taskProgress,
+            t.transfer_reason AS transferReason,
+            t.remark AS remark,
+            t.reserve1 AS reserve1,
+            t.reserve2 AS reserve2,
+            t.creator AS creator,
+            t.updater AS updater,
+            t.create_time AS createTime,
+            t.update_time AS updateTime
+        FROM check_task t
+        LEFT JOIN area_info a ON t.area_id = a.id AND a.deleted = 0
+        LEFT JOIN user_info u ON t.execute_user_id = u.id AND u.deleted = 0
+        WHERE t.deleted = 0
+        <if test="reqVO.taskType != null and reqVO.taskType != ''">
+            AND t.task_type = #{reqVO.taskType}
+        </if>
+        <if test="reqVO.dispatchTimeNew != null and reqVO.dispatchTimeNew.length == 2">
+            AND t.dispatch_time BETWEEN FROM_UNIXTIME(#{reqVO.dispatchTimeNew[0]}) AND FROM_UNIXTIME(#{reqVO.dispatchTimeNew[1]})
+        </if>
+        <if test="reqVO.deadlineTimeNew != null and reqVO.deadlineTimeNew.length == 2">
+            AND t.deadline_time BETWEEN FROM_UNIXTIME(#{reqVO.deadlineTimeNew[0]}) AND FROM_UNIXTIME(#{reqVO.deadlineTimeNew[1]})
+        </if>
+        <if test="reqVO.status != null and reqVO.status != ''">
+            AND t.status = #{reqVO.status}
+        </if>
+        <if test="reqVO.areaId != null">
+            AND t.area_id = #{reqVO.areaId}
+        </if>
+        <if test="reqVO.executeUserId != null">
+            AND t.execute_user_id = #{reqVO.executeUserId}
+        </if>
+        <if test="reqVO.finishTimeNew != null and reqVO.finishTimeNew.length == 2">
+            AND t.finish_time BETWEEN FROM_UNIXTIME(#{reqVO.finishTimeNew[0]}) AND FROM_UNIXTIME(#{reqVO.finishTimeNew[1]})
+        </if>
+        <if test="reqVO.taskProgress != null and reqVO.taskProgress != ''">
+            AND t.task_progress LIKE CONCAT('%', #{reqVO.taskProgress}, '%')
+        </if>
+        <if test="reqVO.transferReason != null and reqVO.transferReason != ''">
+            AND t.transfer_reason LIKE CONCAT('%', #{reqVO.transferReason}, '%')
+        </if>
+        <if test="reqVO.remark != null and reqVO.remark != ''">
+            AND t.remark LIKE CONCAT('%', #{reqVO.remark}, '%')
+        </if>
+        ORDER BY t.id DESC
+    </select>
+
+</mapper>

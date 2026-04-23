@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.vehiclepass.dal.mysql.leavemgmt.leaverecord.LeaveRecordMapper">
+
+    <select id="selectPageJoin" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leaverecord.vo.LeaveRecordRespVO">
+        SELECT
+            l.id,
+            l.plate_no AS plateNo,
+            l.enter_time AS enterTime,
+            l.leave_time AS leaveTime,
+            l.park_duration AS parkDuration,
+            l.status,
+            l.station_id AS stationId,
+            s.name AS stationName,
+            l.remark,
+            l.proof_image AS proofImage,
+            l.is_corrected AS isCorrected,
+            l.reserve1,
+            l.reserve2,
+            l.creator,
+            l.updater,
+            l.create_time AS createTime,
+            l.update_time AS updateTime
+        FROM leave_record l
+        LEFT JOIN station_info s ON l.station_id = s.id AND s.deleted = 0
+        WHERE l.deleted = 0
+        <if test="reqVO.plateNo != null and reqVO.plateNo != ''">
+            AND l.plate_no LIKE CONCAT('%', #{reqVO.plateNo}, '%')
+        </if>
+        <if test="reqVO.enterTime != null and reqVO.enterTime.length == 2">
+            AND l.enter_time BETWEEN FROM_UNIXTIME(#{reqVO.enterTime[0]}) AND FROM_UNIXTIME(#{reqVO.enterTime[1]})
+        </if>
+        <if test="reqVO.leaveTime != null and reqVO.leaveTime.length == 2">
+            AND l.leave_time BETWEEN FROM_UNIXTIME(#{reqVO.leaveTime[0]}) AND FROM_UNIXTIME(#{reqVO.leaveTime[1]})
+        </if>
+        <if test="reqVO.parkDuration != null">
+            AND l.park_duration = #{reqVO.parkDuration}
+        </if>
+        <if test="reqVO.status != null and reqVO.status != ''">
+            AND l.status = #{reqVO.status}
+        </if>
+        <if test="reqVO.stationId != null">
+            AND l.station_id = #{reqVO.stationId}
+        </if>
+        <if test="reqVO.remark != null and reqVO.remark != ''">
+            AND l.remark LIKE CONCAT('%', #{reqVO.remark}, '%')
+        </if>
+        <if test="reqVO.proofImage != null and reqVO.proofImage != ''">
+            AND l.proof_image LIKE CONCAT('%', #{reqVO.proofImage}, '%')
+        </if>
+        <if test="reqVO.isCorrected != null">
+            AND l.is_corrected = #{reqVO.isCorrected}
+        </if>
+        ORDER BY l.id DESC
+    </select>
+
+    <!-- 查询离场量趋势（按天统计） -->
+    <select id="selectLeaveCountTrend" resultType="map">
+        SELECT
+            DATE(l.leave_time) AS date,
+            COUNT(*) AS count
+        FROM leave_record l
+        WHERE l.deleted = 0
+        <if test="startTime != null and startTime != ''">
+            AND l.leave_time >= FROM_UNIXTIME(#{startTime})
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND l.leave_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
+        <if test="stationId != null">
+            AND l.station_id = #{stationId}
+        </if>
+        GROUP BY DATE(l.leave_time)
+        ORDER BY date
+    </select>
+
+    <!-- 查询各时段离场量 -->
+    <select id="selectHourLeaveCount" resultType="map">
+        SELECT
+            DATE_FORMAT(l.leave_time, '%H:00') AS hour,
+            COUNT(*) AS count
+        FROM leave_record l
+        WHERE l.deleted = 0
+        <if test="startTime != null and startTime != ''">
+            AND l.leave_time >= FROM_UNIXTIME(#{startTime})
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND l.leave_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
+        <if test="stationId != null">
+            AND l.station_id = #{stationId}
+        </if>
+        GROUP BY DATE_FORMAT(l.leave_time, '%H:00')
+        ORDER BY hour
+    </select>
+
+    <!-- 查询今日离场量和离场峰值 -->
+    <select id="selectLeaveStats" resultType="map">
+        SELECT
+            SUM(CASE WHEN DATE(l.leave_time) = CURDATE() THEN 1 ELSE 0 END) AS todayLeaveCount,
+            (SELECT COUNT(*) FROM leave_record l2 WHERE l2.deleted = 0
+                AND DATE(l2.leave_time) = CURDATE()
+                <if test="startTime != null and startTime != ''">
+                    AND l2.leave_time >= FROM_UNIXTIME(#{startTime})
+                </if>
+                <if test="endTime != null and endTime != ''">
+                    AND l2.leave_time &lt;= FROM_UNIXTIME(#{endTime})
+                </if>
+                <if test="stationId != null">
+                    AND l2.station_id = #{stationId}
+                </if>
+                GROUP BY DATE_FORMAT(l2.leave_time, '%H:00')
+                ORDER BY COUNT(*) DESC LIMIT 1) AS leavePeak
+        FROM leave_record l
+        WHERE l.deleted = 0
+        <if test="startTime != null and startTime != ''">
+            AND l.leave_time >= FROM_UNIXTIME(#{startTime})
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND l.leave_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
+        <if test="stationId != null">
+            AND l.station_id = #{stationId}
+        </if>
+    </select>
+
+</mapper>
