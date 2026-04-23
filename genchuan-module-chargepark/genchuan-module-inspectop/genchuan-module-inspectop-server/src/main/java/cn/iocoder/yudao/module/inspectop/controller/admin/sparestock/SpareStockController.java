@@ -29,7 +29,7 @@ import cn.iocoder.yudao.module.inspectop.controller.admin.sparestock.vo.*;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.sparestock.SpareStockDO;
 import cn.iocoder.yudao.module.inspectop.service.sparestock.SpareStockService;
 
-@Tag(name = "管理后台 - 备件仓储")
+@Tag(name = "巡查巡检 - 备件仓储")
 @RestController
 @RequestMapping("/inspectop/spare-stock")
 @Validated

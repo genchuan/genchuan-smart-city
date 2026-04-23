@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import jakarta.validation.constraints.*;
 
-@Schema(description = "管理后台 - 库存调配 Request VO")
+@Schema(description = "巡查巡检 - 库存调配 Request VO")
 @Data
 public class AssetStockAllocateReqVO {
 

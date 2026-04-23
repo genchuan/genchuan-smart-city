@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.inspectop.dal.mysql.handoverlog.HandoverLogMapper">
+
+    <!-- 定义结果映射器，将数据库列映射到 HandoverLogRespVO 属性 -->
+    <resultMap id="HandoverLogRespVOResultMap" type="cn.iocoder.yudao.module.inspectop.controller.admin.handoverlog.vo.HandoverLogRespVO">
+        <!-- 主键ID -->
+        <id column="id" property="id" jdbcType="BIGINT"/>
+
+        <!-- HandoverLogDO 基础字段 -->
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="handover_date" property="handoverDate" jdbcType="TIMESTAMP"/>
+        <result column="content" property="content" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="confirm_user_id" property="confirmUserId" jdbcType="BIGINT"/>
+        <result column="confirm_time" property="confirmTime" jdbcType="TIMESTAMP"/>
+        <result column="reserve1" property="reserve1" jdbcType="VARCHAR"/>
+        <result column="reserve2" property="reserve2" jdbcType="VARCHAR"/>
+
+        <!-- BaseDO 基础字段 -->
+        <result column="creator" property="creator" jdbcType="VARCHAR"/>
+        <result column="updater" property="updater" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- 分页查询方法（关联查询人员姓名） -->
+    <select id="selectPageWithJoin" resultMap="HandoverLogRespVOResultMap">
+        SELECT
+        hl.id,
+        hl.user_id,
+        hl.handover_date,
+        hl.content,
+        hl.status,
+        hl.confirm_user_id,
+        hl.confirm_time,
+        hl.reserve1,
+        hl.reserve2,
+        hl.creator,
+        hl.updater,
+        hl.create_time,
+        hl.update_time,
+        iu.name AS user_name  -- 从 inspect_user 表获取人员姓名
+        FROM handover_log hl
+        LEFT JOIN inspect_user iu ON hl.user_id = iu.id
+        <where>
+            <!-- 交接人员ID -->
+            <if test="reqVO.userId != null">
+                AND hl.user_id = #{reqVO.userId}
+            </if>
+
+            <!-- 交接日期范围 -->
+            <if test="reqVO.handoverDate != null and reqVO.handoverDate.length == 2">
+                AND hl.handover_date BETWEEN #{reqVO.handoverDate[0]} AND #{reqVO.handoverDate[1]}
+            </if>
+
+            <!-- 交接内容 -->
+            <if test="reqVO.content != null and reqVO.content != ''">
+                AND hl.content LIKE CONCAT('%', #{reqVO.content}, '%')
+            </if>
+
+            <!-- 日志状态 -->
+            <if test="reqVO.status != null and reqVO.status != ''">
+                AND hl.status = #{reqVO.status}
+            </if>
+
+            <!-- 确认人ID -->
+            <if test="reqVO.confirmUserId != null">
+                AND hl.confirm_user_id = #{reqVO.confirmUserId}
+            </if>
+
+            <!-- 确认时间范围 -->
+            <if test="reqVO.confirmTime != null and reqVO.confirmTime.length == 2">
+                AND hl.confirm_time BETWEEN #{reqVO.confirmTime[0]} AND #{reqVO.confirmTime[1]}
+            </if>
+
+            <!-- 备用字段1 -->
+            <if test="reqVO.reserve1 != null and reqVO.reserve1 != ''">
+                AND hl.reserve1 = #{reqVO.reserve1}
+            </if>
+
+            <!-- 备用字段2 -->
+            <if test="reqVO.reserve2 != null and reqVO.reserve2 != ''">
+                AND hl.reserve2 = #{reqVO.reserve2}
+            </if>
+
+            <!-- 创建者 -->
+            <if test="reqVO.creator != null and reqVO.creator != ''">
+                AND hl.creator = #{reqVO.creator}
+            </if>
+
+            <!-- 更新者 -->
+            <if test="reqVO.updater != null and reqVO.updater != ''">
+                AND hl.updater = #{reqVO.updater}
+            </if>
+
+            <!-- 创建时间范围 -->
+            <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+                AND hl.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+
+            <!-- 更新时间范围 -->
+            <if test="reqVO.updateTime != null and reqVO.updateTime.length == 2">
+                AND hl.update_time BETWEEN #{reqVO.updateTime[0]} AND #{reqVO.updateTime[1]}
+            </if>
+
+            <!-- 只查询未删除的记录 -->
+            AND hl.deleted = 0
+        </where>
+        ORDER BY hl.id DESC
+    </select>
+
+    <!-- 原有的简单分页方法（可保留） -->
+    <select id="selectPage" resultType="cn.iocoder.yudao.module.inspectop.dal.dataobject.handoverlog.HandoverLogDO">
+        <!-- 这里保持原有的简单分页逻辑，如果不需要可以删除 -->
+    </select>
+
+    <!-- 查询交接日志趋势统计数据 -->
+    <select id="selectTrendStatistics" resultType="java.util.Map">
+        SELECT
+            DATE(handover_date) AS time,
+            COUNT(*) AS logCount
+        FROM handover_log
+        WHERE deleted = 0
+          AND handover_date >= #{startTime}
+          AND handover_date &lt;= #{endTime}
+        GROUP BY DATE(handover_date)
+        ORDER BY time
+    </select>
+
+    <!-- 查询交接日志卡片统计数据 -->
+    <select id="selectCardStatistics" resultType="java.util.Map">
+        SELECT
+            COUNT(*) AS totalCount,
+            SUM(CASE WHEN status = '2' THEN 1 ELSE 0 END) AS confirmedCount
+        FROM handover_log
+        WHERE deleted = 0
+          AND handover_date >= #{startTime}
+          AND handover_date &lt;= #{endTime}
+    </select>
+
+
+
+</mapper>

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import java.util.List;
 
-@Schema(description = "管理后台 - 资产盘点图表统计 Response VO")
+@Schema(description = "巡查巡检 - 资产盘点图表统计 Response VO")
 @Data
 @Builder
 @NoArgsConstructor

@@ -29,7 +29,7 @@ import cn.iocoder.yudao.module.inspectop.controller.admin.assetstock.vo.*;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.assetstock.AssetStockDO;
 import cn.iocoder.yudao.module.inspectop.service.assetstock.AssetStockService;
 
-@Tag(name = "管理后台 - 库存管理")
+@Tag(name = "巡查巡检 - 库存管理")
 @RestController
 @RequestMapping("/inspectop/asset-stock")
 @Validated

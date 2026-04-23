@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import jakarta.validation.constraints.*;
 
-@Schema(description = "管理后台 - 资产信息禁用 Request VO")
+@Schema(description = "巡查巡检 - 资产信息禁用 Request VO")
 @Data
 public class AssetInfoDisableReqVO {
 

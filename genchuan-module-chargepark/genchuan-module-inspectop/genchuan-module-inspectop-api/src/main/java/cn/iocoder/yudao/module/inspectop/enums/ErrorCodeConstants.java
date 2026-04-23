@@ -69,4 +69,15 @@ public interface ErrorCodeConstants {
 
     // ========== 备件仓储 ==========
     ErrorCode SPARE_STOCK_NOT_EXISTS = new ErrorCode(500, "备件仓储不存在");
+
+    // ========== 排班查看 ==========
+    ErrorCode SCHEDULE_VIEW_NOT_EXISTS = new ErrorCode(500, "排班查看不存在");
+
+    // ========== 换班申请 ==========
+    ErrorCode SHIFT_APPLY_NOT_EXISTS = new ErrorCode(500, "换班申请不存在");
+
+    // ========== 交接日志 ==========
+    ErrorCode HANDOVER_LOG_NOT_EXISTS = new ErrorCode(500, "交接日志不存在");
+
+
 }

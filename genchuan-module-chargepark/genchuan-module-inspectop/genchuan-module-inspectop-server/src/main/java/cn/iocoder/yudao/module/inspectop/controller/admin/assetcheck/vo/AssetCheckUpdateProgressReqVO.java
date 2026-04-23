@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
 
-@Schema(description = "管理后台 - 资产盘点更新进度 Request VO")
+@Schema(description = "巡查巡检 - 资产盘点更新进度 Request VO")
 @Data
 public class AssetCheckUpdateProgressReqVO {
 

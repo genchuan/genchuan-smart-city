@@ -5,7 +5,7 @@ import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 库存统计图表 Request VO")
+@Schema(description = "巡查巡检 - 库存统计图表 Request VO")
 @Data
 public class AssetStockChartReqVO {
 

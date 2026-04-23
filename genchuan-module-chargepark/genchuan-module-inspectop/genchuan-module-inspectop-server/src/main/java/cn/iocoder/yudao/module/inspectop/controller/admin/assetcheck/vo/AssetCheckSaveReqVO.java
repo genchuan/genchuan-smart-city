@@ -7,7 +7,7 @@ import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 资产盘点新增/修改 Request VO")
+@Schema(description = "巡查巡检 - 资产盘点新增/修改 Request VO")
 @Data
 public class AssetCheckSaveReqVO {
 
