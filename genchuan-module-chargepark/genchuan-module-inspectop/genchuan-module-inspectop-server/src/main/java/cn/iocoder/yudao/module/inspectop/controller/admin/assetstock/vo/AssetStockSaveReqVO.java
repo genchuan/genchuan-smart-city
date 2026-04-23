@@ -5,7 +5,7 @@ import lombok.*;
 import java.util.*;
 import jakarta.validation.constraints.*;
 
-@Schema(description = "管理后台 - 库存管理新增/修改 Request VO")
+@Schema(description = "巡查巡检 - 库存管理新增/修改 Request VO")
 @Data
 public class AssetStockSaveReqVO {
 

@@ -6,7 +6,7 @@ import cn.idev.excel.annotation.ExcelProperty;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 资产信息导入 Request VO")
+@Schema(description = "巡查巡检 - 资产信息导入 Request VO")
 @Data
 public class AssetInfoImportReqVO {
 

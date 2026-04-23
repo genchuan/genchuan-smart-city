@@ -7,7 +7,7 @@ import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 备件仓储新增/修改 Request VO")
+@Schema(description = "巡查巡检 - 备件仓储新增/修改 Request VO")
 @Data
 public class SpareStockSaveReqVO {
 

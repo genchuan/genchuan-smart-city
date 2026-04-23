@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import java.util.*;
 
-@Schema(description = "管理后台 - 库存统计图表 Response VO")
+@Schema(description = "巡查巡检 - 库存统计图表 Response VO")
 @Data
 public class AssetStockChartRespVO {
 

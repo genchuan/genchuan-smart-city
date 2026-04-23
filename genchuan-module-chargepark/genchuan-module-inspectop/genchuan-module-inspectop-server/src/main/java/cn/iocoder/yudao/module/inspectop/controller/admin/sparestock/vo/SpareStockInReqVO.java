@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import jakarta.validation.constraints.NotNull;
 
-@Schema(description = "管理后台 - 备件仓储入库 Request VO")
+@Schema(description = "巡查巡检 - 备件仓储入库 Request VO")
 @Data
 public class SpareStockInReqVO {
 

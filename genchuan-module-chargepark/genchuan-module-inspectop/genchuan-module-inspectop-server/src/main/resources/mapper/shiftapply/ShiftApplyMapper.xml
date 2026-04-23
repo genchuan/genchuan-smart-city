@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.inspectop.dal.mysql.shiftapply.ShiftApplyMapper">
+    <!-- 定义结果映射器，将数据库列映射到 ShiftApplyRespVO 属性 -->
+    <resultMap id="ShiftApplyRespVOResultMap" type="cn.iocoder.yudao.module.inspectop.controller.admin.shiftapply.vo.ShiftApplyRespVO">
+        <!-- 主键ID -->
+        <id column="id" property="id" jdbcType="BIGINT"/>
+
+        <!-- ShiftApplyDO 基础字段 -->
+        <result column="apply_user_id" property="applyUserId" jdbcType="BIGINT"/>
+        <result column="target_user_id" property="targetUserId" jdbcType="BIGINT"/>
+        <result column="old_date" property="oldDate" jdbcType="TIMESTAMP"/>
+        <result column="new_date" property="newDate" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="audit_user_id" property="auditUserId" jdbcType="BIGINT"/>
+        <result column="audit_time" property="auditTime" jdbcType="TIMESTAMP"/>
+        <result column="effect_time" property="effectTime" jdbcType="TIMESTAMP"/>
+        <result column="reserve1" property="reserve1" jdbcType="VARCHAR"/>
+        <result column="reserve2" property="reserve2" jdbcType="VARCHAR"/>
+
+        <!-- BaseDO 基础字段 -->
+        <result column="creator" property="creator" jdbcType="VARCHAR"/>
+        <result column="updater" property="updater" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+
+        <!-- 关联查询字段 - 申请人姓名和换班对象姓名 -->
+        <result column="apply_user_name" property="applyUserName" jdbcType="VARCHAR"/>
+        <result column="target_user_name" property="targetUserName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 分页查询方法（关联查询申请人姓名和换班对象姓名） -->
+    <select id="selectPageWithJoin" resultMap="ShiftApplyRespVOResultMap">
+        SELECT
+        sa.id,
+        sa.apply_user_id,
+        sa.target_user_id,
+        sa.old_date,
+        sa.new_date,
+        sa.status,
+        sa.audit_user_id,
+        sa.audit_time,
+        sa.effect_time,
+        sa.reserve1,
+        sa.reserve2,
+        sa.creator,
+        sa.updater,
+        sa.create_time,
+        sa.update_time,
+        apply_user.name AS apply_user_name,    -- 申请人姓名
+        target_user.name AS target_user_name   -- 换班对象姓名
+        FROM shift_apply sa
+        LEFT JOIN inspect_user apply_user ON sa.apply_user_id = apply_user.id
+        LEFT JOIN inspect_user target_user ON sa.target_user_id = target_user.id
+        <where>
+            <!-- 申请人ID -->
+            <if test="reqVO.applyUserId != null">
+                AND sa.apply_user_id = #{reqVO.applyUserId}
+            </if>
+
+            <!-- 换班对象ID -->
+            <if test="reqVO.targetUserId != null">
+                AND sa.target_user_id = #{reqVO.targetUserId}
+            </if>
+
+            <!-- 原日期范围 -->
+            <if test="reqVO.oldDate != null and reqVO.oldDate.length == 2">
+                AND sa.old_date BETWEEN #{reqVO.oldDate[0]} AND #{reqVO.oldDate[1]}
+            </if>
+
+            <!-- 新日期范围 -->
+            <if test="reqVO.newDate != null and reqVO.newDate.length == 2">
+                AND sa.new_date BETWEEN #{reqVO.newDate[0]} AND #{reqVO.newDate[1]}
+            </if>
+
+            <!-- 申请状态 -->
+            <if test="reqVO.status != null and reqVO.status != ''">
+                AND sa.status = #{reqVO.status}
+            </if>
+
+            <!-- 审核人ID -->
+            <if test="reqVO.auditUserId != null">
+                AND sa.audit_user_id = #{reqVO.auditUserId}
+            </if>
+
+            <!-- 审核时间范围 -->
+            <if test="reqVO.auditTime != null and reqVO.auditTime.length == 2">
+                AND sa.audit_time BETWEEN #{reqVO.auditTime[0]} AND #{reqVO.auditTime[1]}
+            </if>
+
+            <!-- 生效时间范围 -->
+            <if test="reqVO.effectTime != null and reqVO.effectTime.length == 2">
+                AND sa.effect_time BETWEEN #{reqVO.effectTime[0]} AND #{reqVO.effectTime[1]}
+            </if>
+
+            <!-- 备用字段1 -->
+            <if test="reqVO.reserve1 != null and reqVO.reserve1 != ''">
+                AND sa.reserve1 = #{reqVO.reserve1}
+            </if>
+
+            <!-- 备用字段2 -->
+            <if test="reqVO.reserve2 != null and reqVO.reserve2 != ''">
+                AND sa.reserve2 = #{reqVO.reserve2}
+            </if>
+
+            <!-- 创建者 -->
+            <if test="reqVO.creator != null and reqVO.creator != ''">
+                AND sa.creator = #{reqVO.creator}
+            </if>
+
+            <!-- 更新者 -->
+            <if test="reqVO.updater != null and reqVO.updater != ''">
+                AND sa.updater = #{reqVO.updater}
+            </if>
+
+            <!-- 创建时间范围 -->
+            <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+                AND sa.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+
+            <!-- 更新时间范围 -->
+            <if test="reqVO.updateTime != null and reqVO.updateTime.length == 2">
+                AND sa.update_time BETWEEN #{reqVO.updateTime[0]} AND #{reqVO.updateTime[1]}
+            </if>
+
+            <!-- 只查询未删除的记录 -->
+            AND sa.deleted = 0
+        </where>
+        ORDER BY sa.id DESC
+    </select>
+
+    <!-- 查询换班申请趋势统计数据 -->
+    <select id="selectTrendStatistics" resultType="java.util.Map">
+        SELECT
+            DATE(create_time) AS time,
+            COUNT(*) AS applyCount
+        FROM shift_apply
+        WHERE deleted = 0
+          AND create_time &gt;= #{startTime}
+          AND create_time &lt;= #{endTime}
+        GROUP BY DATE(create_time)
+        ORDER BY time
+    </select>
+
+    <!-- 查询换班申请卡片统计数据 -->
+    <select id="selectCardStatistics" resultType="java.util.Map">
+        SELECT
+            COUNT(*) AS totalCount,
+            SUM(CASE WHEN status = '2' THEN 1 ELSE 0 END) AS passedCount
+        FROM shift_apply
+        WHERE deleted = 0
+          AND create_time &gt;= #{startTime}
+          AND create_time &lt;= #{endTime}
+    </select>
+</mapper>

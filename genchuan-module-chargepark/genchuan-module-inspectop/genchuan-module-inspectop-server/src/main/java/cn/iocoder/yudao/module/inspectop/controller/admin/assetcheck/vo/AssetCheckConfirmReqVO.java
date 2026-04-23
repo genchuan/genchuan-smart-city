@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import jakarta.validation.constraints.NotNull;
 
-@Schema(description = "管理后台 - 资产盘点确认 Request VO")
+@Schema(description = "巡查巡检 - 资产盘点确认 Request VO")
 @Data
 public class AssetCheckConfirmReqVO {
 
