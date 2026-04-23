@@ -2,11 +2,56 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.iocoder.yudao.module.vehiclepass.dal.mysql.specialpass.passrecord.PassRecordMapper">
 
-    <!--
-        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
-        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
-        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
-        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
-     -->
+    <select id="selectPageJoin" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordRespVO">
+        SELECT
+            p.id,
+            p.plate_no AS plateNo,
+            p.pass_reason AS passReason,
+            p.pass_time AS passTime,
+            p.image_url AS imageUrl,
+            p.status,
+            p.station_id AS stationId,
+            s.name AS stationName,
+            p.operator_id AS operatorId,
+            u.nickname AS operatorName,
+            p.operator_time AS operatorTime,
+            p.check_result AS checkResult,
+            p.remark,
+            p.reserve1,
+            p.reserve2,
+            p.creator,
+            p.updater,
+            p.create_time AS createTime,
+            p.update_time AS updateTime
+        FROM pass_record p
+        LEFT JOIN station_info s ON p.station_id = s.id AND s.deleted = 0
+        LEFT JOIN user_info u ON p.operator_id = u.id AND u.deleted = 0
+        WHERE p.deleted = 0
+        <if test="reqVO.plateNo != null and reqVO.plateNo != ''">
+            AND p.plate_no LIKE CONCAT('%', #{reqVO.plateNo}, '%')
+        </if>
+        <if test="reqVO.passReason != null and reqVO.passReason != ''">
+            AND p.pass_reason = #{reqVO.passReason}
+        </if>
+        <if test="reqVO.passTime != null and reqVO.passTime.length == 2">
+            AND p.pass_time BETWEEN FROM_UNIXTIME(#{reqVO.passTime[0]}) AND FROM_UNIXTIME(#{reqVO.passTime[1]})
+        </if>
+        <if test="reqVO.status != null and reqVO.status != ''">
+            AND p.status = #{reqVO.status}
+        </if>
+        <if test="reqVO.stationId != null">
+            AND p.station_id = #{reqVO.stationId}
+        </if>
+        <if test="reqVO.operatorId != null">
+            AND p.operator_id = #{reqVO.operatorId}
+        </if>
+        <if test="reqVO.remark != null and reqVO.remark != ''">
+            AND p.remark LIKE CONCAT('%', #{reqVO.remark}, '%')
+        </if>
+        <if test="reqVO.imageUrl != null and reqVO.imageUrl != ''">
+            AND p.image_url LIKE CONCAT('%', #{reqVO.imageUrl}, '%')
+        </if>
+        ORDER BY p.id DESC
+    </select>
 
 </mapper>

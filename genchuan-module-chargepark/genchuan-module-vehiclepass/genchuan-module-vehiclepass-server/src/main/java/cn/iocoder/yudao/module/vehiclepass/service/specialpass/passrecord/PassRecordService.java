@@ -3,6 +3,8 @@ package cn.iocoder.yudao.module.vehiclepass.service.specialpass.passrecord;
 import java.util.*;
 
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordPageReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordCheckReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.specialpass.passrecord.PassRecordDO;
 import jakarta.validation.*;
@@ -60,5 +62,20 @@ public interface PassRecordService {
      * @return 放行记录分页
      */
     PageResult<PassRecordDO> getRecordPage(PassRecordPageReqVO pageReqVO);
+
+    /**
+     * 获得放行记录分页（含关联名称）
+     *
+     * @param pageReqVO 分页查询
+     * @return 放行记录分页
+     */
+    PageResult<PassRecordRespVO> getRecordPageWithJoin(PassRecordPageReqVO pageReqVO);
+
+    /**
+     * 核查放行记录
+     *
+     * @param reqVO 请求
+     */
+    void check(PassRecordCheckReqVO reqVO);
 
 }

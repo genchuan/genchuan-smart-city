@@ -2,18 +2,24 @@ package cn.iocoder.yudao.module.vehiclepass.service.specialpass.passrecord;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordPageReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordCheckReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.specialpass.passrecord.PassRecordDO;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.specialpass.passrecord.PassRecordMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.time.LocalDateTime;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 
 
 
@@ -83,6 +89,27 @@ public class PassRecordServiceImpl implements PassRecordService {
     @Override
     public PageResult<PassRecordDO> getRecordPage(PassRecordPageReqVO pageReqVO) {
         return recordMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public PageResult<PassRecordRespVO> getRecordPageWithJoin(PassRecordPageReqVO pageReqVO) {
+        Page<PassRecordRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        IPage<PassRecordRespVO> pageResult = recordMapper.selectPageJoin(page, pageReqVO);
+        return new PageResult<>(pageResult.getRecords(), pageResult.getTotal());
+    }
+
+    @Override
+    public void check(PassRecordCheckReqVO reqVO) {
+        PassRecordDO record = recordMapper.selectById(reqVO.getId());
+        if (record == null) {
+            throw exception(RECORD_NOT_EXISTS);
+        }
+        PassRecordDO updateObj = new PassRecordDO();
+        updateObj.setId(reqVO.getId());
+        updateObj.setCheckResult(reqVO.getCheckResult());
+        updateObj.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
+        updateObj.setOperatorTime(LocalDateTime.now());
+        recordMapper.updateById(updateObj);
     }
 
 }

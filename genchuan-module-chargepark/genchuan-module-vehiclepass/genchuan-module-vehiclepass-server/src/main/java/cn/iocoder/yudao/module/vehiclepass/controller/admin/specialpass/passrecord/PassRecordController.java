@@ -1,7 +1,8 @@
-package cn.iocoder.yudao.module.pass.controller.admin.record;
+package cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord;
 
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordCheckReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.specialpass.passrecord.PassRecordDO;
 import cn.iocoder.yudao.module.vehiclepass.service.specialpass.passrecord.PassRecordService;
@@ -38,20 +39,20 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 public class PassRecordController {
 
     @Resource
-    private PassRecordService recordService;
+    private PassRecordService passRecordService;
 
     @PostMapping("/create")
     @Operation(summary = "创建放行记录")
     @PreAuthorize("@ss.hasPermission('pass:record:create')")
     public CommonResult<Long> createRecord(@Valid @RequestBody PassRecordSaveReqVO createReqVO) {
-        return success(recordService.createRecord(createReqVO));
+        return success(passRecordService.createRecord(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新放行记录")
     @PreAuthorize("@ss.hasPermission('pass:record:update')")
     public CommonResult<Boolean> updateRecord(@Valid @RequestBody PassRecordSaveReqVO updateReqVO) {
-        recordService.updateRecord(updateReqVO);
+        passRecordService.updateRecord(updateReqVO);
         return success(true);
     }
 
@@ -60,7 +61,7 @@ public class PassRecordController {
     @Parameter(name = "id", description = "编号", required = true)
     @PreAuthorize("@ss.hasPermission('pass:record:delete')")
     public CommonResult<Boolean> deleteRecord(@RequestParam("id") Long id) {
-        recordService.deleteRecord(id);
+        passRecordService.deleteRecord(id);
         return success(true);
     }
 
@@ -69,7 +70,7 @@ public class PassRecordController {
     @Operation(summary = "批量删除放行记录")
     @PreAuthorize("@ss.hasPermission('pass:record:delete')")
     public CommonResult<Boolean> deleteRecordList(@RequestParam("ids") List<Long> ids) {
-        recordService.deleteRecordListByIds(ids);
+        passRecordService.deleteRecordListByIds(ids);
         return success(true);
     }
 
@@ -78,7 +79,7 @@ public class PassRecordController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('pass:record:query')")
     public CommonResult<PassRecordRespVO> getRecord(@RequestParam("id") Long id) {
-        PassRecordDO record = recordService.getRecord(id);
+        PassRecordDO record = passRecordService.getRecord(id);
         return success(BeanUtils.toBean(record, PassRecordRespVO.class));
     }
 
@@ -86,8 +87,15 @@ public class PassRecordController {
     @Operation(summary = "获得放行记录分页")
     @PreAuthorize("@ss.hasPermission('pass:record:query')")
     public CommonResult<PageResult<PassRecordRespVO>> getRecordPage(@Valid PassRecordPageReqVO pageReqVO) {
-        PageResult<PassRecordDO> pageResult = recordService.getRecordPage(pageReqVO);
+        PageResult<PassRecordDO> pageResult = passRecordService.getRecordPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, PassRecordRespVO.class));
+    }
+
+    @GetMapping("/my/page")
+    @Operation(summary = "放行记录筛选刷新")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:pass-record:query')")
+    public CommonResult<PageResult<PassRecordRespVO>> getMyRecordPage(@Valid PassRecordPageReqVO pageReqVO) {
+        return success(passRecordService.getRecordPageWithJoin(pageReqVO));
     }
 
     @GetMapping("/export-excel")
@@ -97,10 +105,18 @@ public class PassRecordController {
     public void exportRecordExcel(@Valid PassRecordPageReqVO pageReqVO,
                                   HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<PassRecordDO> list = recordService.getRecordPage(pageReqVO).getList();
+        PageResult<PassRecordRespVO> pageResult = passRecordService.getRecordPageWithJoin(pageReqVO);
         // 导出 Excel
         ExcelUtils.write(response, "放行记录.xls", "数据", PassRecordRespVO.class,
-                BeanUtils.toBean(list, PassRecordRespVO.class));
+                pageResult.getList());
+    }
+
+    @PutMapping("/check")
+    @Operation(summary = "核查放行记录")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:pass-record:check')")
+    public CommonResult<Boolean> check(@Valid @RequestBody PassRecordCheckReqVO reqVO) {
+        passRecordService.check(reqVO);
+        return success(true);
     }
 
 }
