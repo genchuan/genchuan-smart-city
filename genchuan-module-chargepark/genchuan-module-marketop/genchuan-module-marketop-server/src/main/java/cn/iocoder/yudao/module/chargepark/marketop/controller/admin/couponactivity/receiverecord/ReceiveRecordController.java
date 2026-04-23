@@ -6,7 +6,9 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.receiverecord.vo.*;
+import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.CouponMgmtDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.ReceiveRecordDO;
+import cn.iocoder.yudao.module.chargepark.marketop.service.couponactivity.couponmgmt.CouponMgmtService;
 import cn.iocoder.yudao.module.chargepark.marketop.service.couponactivity.receiverecord.ReceiveRecordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -34,6 +36,9 @@ public class ReceiveRecordController {
 
     @Resource
     private AdminUserApi adminUserApi;
+
+    @Resource
+    private CouponMgmtService couponMgmtService;
 
     @GetMapping("/page")
     @Operation(summary = "获得领用记录分页")
@@ -84,18 +89,46 @@ public class ReceiveRecordController {
     }
 
     private void injectUserNames(List<ReceiveRecordRespVO> list) {
+        if (list == null || list.isEmpty()) return;
         Set<Long> userIds = new HashSet<>();
+        Set<Long> couponIds = new HashSet<>();
         for (var item : list) {
             if (StrUtil.isNotBlank(item.getCreator())) {
                 userIds.add(Long.valueOf(item.getCreator()));
             }
+            if (item.getUserId() != null) {
+                userIds.add(item.getUserId());
+            }
+            if (item.getCouponId() != null) {
+                couponIds.add(item.getCouponId());
+            }
         }
-        if (userIds.isEmpty()) return;
-        Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
-        for (var item : list) {
-            if (StrUtil.isNotBlank(item.getCreator())) {
-                AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
-                if (user != null) item.setCreatorName(user.getNickname());
+        // 翻译用户名称
+        if (!userIds.isEmpty()) {
+            Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
+            for (var item : list) {
+                if (StrUtil.isNotBlank(item.getCreator())) {
+                    AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
+                    if (user != null) item.setCreatorName(user.getNickname());
+                }
+                if (item.getUserId() != null) {
+                    AdminUserRespDTO user = userMap.get(item.getUserId());
+                    if (user != null) item.setUserName(user.getNickname());
+                }
+            }
+        }
+        // 翻译优惠券名称
+        if (!couponIds.isEmpty()) {
+            Map<Long, String> couponNameMap = new HashMap<>();
+            for (Long couponId : couponIds) {
+                CouponMgmtDO coupon = couponMgmtService.get(couponId);
+                if (coupon != null) couponNameMap.put(couponId, coupon.getName());
+            }
+            for (var item : list) {
+                if (item.getCouponId() != null) {
+                    String name = couponNameMap.get(item.getCouponId());
+                    if (name != null) item.setCouponName(name);
+                }
             }
         }
     }

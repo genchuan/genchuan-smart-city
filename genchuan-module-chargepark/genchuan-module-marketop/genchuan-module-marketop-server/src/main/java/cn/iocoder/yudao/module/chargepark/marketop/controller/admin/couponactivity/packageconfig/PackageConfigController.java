@@ -5,7 +5,9 @@ import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.packageconfig.vo.*;
+import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.CouponMgmtDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.PackageConfigDO;
+import cn.iocoder.yudao.module.chargepark.marketop.service.couponactivity.couponmgmt.CouponMgmtService;
 import cn.iocoder.yudao.module.chargepark.marketop.service.couponactivity.packageconfig.PackageConfigService;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
@@ -32,6 +34,9 @@ public class PackageConfigController {
 
     @Resource
     private AdminUserApi adminUserApi;
+
+    @Resource
+    private CouponMgmtService couponMgmtService;
 
     @GetMapping("/page")
     @Operation(summary = "获得券包配置分页")
@@ -100,8 +105,9 @@ public class PackageConfigController {
     }
 
     private void injectUserNames(List<PackageConfigRespVO> list) {
-        // 收集所有需要查询的用户ID
+        if (list == null || list.isEmpty()) return;
         Set<Long> userIds = new HashSet<>();
+        Set<Long> couponIds = new HashSet<>();
         for (var item : list) {
             if (StrUtil.isNotBlank(item.getCreator())) {
                 userIds.add(Long.valueOf(item.getCreator()));
@@ -109,17 +115,42 @@ public class PackageConfigController {
             if (item.getAuditorId() != null) {
                 userIds.add(item.getAuditorId());
             }
-        }
-        if (userIds.isEmpty()) return;
-        Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
-        for (var item : list) {
-            if (StrUtil.isNotBlank(item.getCreator())) {
-                AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
-                if (user != null) item.setCreatorName(user.getNickname());
+            if (StrUtil.isNotBlank(item.getCouponIds())) {
+                Arrays.stream(item.getCouponIds().split(","))
+                        .filter(StrUtil::isNotBlank).map(String::trim).map(Long::valueOf)
+                        .forEach(couponIds::add);
             }
-            if (item.getAuditorId() != null) {
-                AdminUserRespDTO user = userMap.get(item.getAuditorId());
-                if (user != null) item.setAuditorName(user.getNickname());
+        }
+        // 翻译用户名称
+        if (!userIds.isEmpty()) {
+            Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
+            for (var item : list) {
+                if (StrUtil.isNotBlank(item.getCreator())) {
+                    AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
+                    if (user != null) item.setCreatorName(user.getNickname());
+                }
+                if (item.getAuditorId() != null) {
+                    AdminUserRespDTO user = userMap.get(item.getAuditorId());
+                    if (user != null) item.setAuditorName(user.getNickname());
+                }
+            }
+        }
+        // 翻译优惠券名称
+        if (!couponIds.isEmpty()) {
+            Map<Long, String> couponNameMap = new HashMap<>();
+            for (Long couponId : couponIds) {
+                CouponMgmtDO coupon = couponMgmtService.get(couponId);
+                if (coupon != null) couponNameMap.put(couponId, coupon.getName());
+            }
+            for (var item : list) {
+                if (StrUtil.isNotBlank(item.getCouponIds())) {
+                    String names = Arrays.stream(item.getCouponIds().split(","))
+                            .filter(StrUtil::isNotBlank).map(String::trim)
+                            .map(id -> couponNameMap.get(Long.valueOf(id)))
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.joining(","));
+                    item.setCouponNames(names);
+                }
             }
         }
     }

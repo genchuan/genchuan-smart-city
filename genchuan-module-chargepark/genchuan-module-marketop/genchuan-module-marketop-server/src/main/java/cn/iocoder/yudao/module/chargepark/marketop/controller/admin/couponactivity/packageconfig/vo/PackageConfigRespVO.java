@@ -22,6 +22,9 @@ public class PackageConfigRespVO {
     @Schema(description = "包含优惠券ID列表")
     private String couponIds;
 
+    @Schema(description = "包含优惠券名称列表")
+    private String couponNames;
+
     @Schema(description = "价格")
     private BigDecimal price;
 

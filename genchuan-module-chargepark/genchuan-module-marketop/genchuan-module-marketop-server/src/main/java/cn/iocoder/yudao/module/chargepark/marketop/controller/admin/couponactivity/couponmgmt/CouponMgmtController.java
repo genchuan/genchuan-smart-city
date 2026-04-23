@@ -155,6 +155,12 @@ public class CouponMgmtController {
             if (StrUtil.isNotBlank(item.getCreator())) {
                 userIds.add(Long.valueOf(item.getCreator()));
             }
+            if (item.getSenderId() != null) {
+                userIds.add(item.getSenderId());
+            }
+            if (item.getReceiverId() != null) {
+                userIds.add(item.getReceiverId());
+            }
             if (StrUtil.isNotBlank(item.getStationIds())) {
                 Arrays.stream(item.getStationIds().split(","))
                         .filter(StrUtil::isNotBlank).map(String::trim).map(Long::valueOf)
@@ -168,6 +174,14 @@ public class CouponMgmtController {
                 if (StrUtil.isNotBlank(item.getCreator())) {
                     AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
                     if (user != null) item.setCreatorName(user.getNickname());
+                }
+                if (item.getSenderId() != null) {
+                    AdminUserRespDTO user = userMap.get(item.getSenderId());
+                    if (user != null) item.setSenderName(user.getNickname());
+                }
+                if (item.getReceiverId() != null) {
+                    AdminUserRespDTO user = userMap.get(item.getReceiverId());
+                    if (user != null) item.setReceiverName(user.getNickname());
                 }
             }
         }

@@ -15,6 +15,9 @@ public class StockControlRespVO {
     @Schema(description = "卡种ID")
     private Long cardId;
 
+    @Schema(description = "卡种名称")
+    private String cardName;
+
     @Schema(description = "当前库存")
     private Integer currentStock;
 

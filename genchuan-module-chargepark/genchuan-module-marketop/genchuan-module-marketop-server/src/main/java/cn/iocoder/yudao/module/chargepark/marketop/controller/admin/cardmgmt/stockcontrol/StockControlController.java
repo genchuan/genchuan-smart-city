@@ -6,7 +6,9 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.stockcontrol.vo.*;
+import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.CardConfigDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.StockControlDO;
+import cn.iocoder.yudao.module.chargepark.marketop.service.cardmgmt.cardconfig.CardConfigService;
 import cn.iocoder.yudao.module.chargepark.marketop.service.cardmgmt.stockcontrol.StockControlService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -34,6 +36,9 @@ public class StockControlController {
 
     @Resource
     private AdminUserApi adminUserApi;
+
+    @Resource
+    private CardConfigService cardConfigService;
 
     @GetMapping("/page")
     @Operation(summary = "获得库存管控分页")
@@ -100,18 +105,39 @@ public class StockControlController {
     }
 
     private void injectUserNames(List<StockControlRespVO> list) {
+        if (list == null || list.isEmpty()) return;
         Set<Long> userIds = new HashSet<>();
+        Set<Long> cardIds = new HashSet<>();
         for (var item : list) {
             if (StrUtil.isNotBlank(item.getCreator())) {
                 userIds.add(Long.valueOf(item.getCreator()));
             }
+            if (item.getCardId() != null) {
+                cardIds.add(item.getCardId());
+            }
         }
-        if (userIds.isEmpty()) return;
-        Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
-        for (var item : list) {
-            if (StrUtil.isNotBlank(item.getCreator())) {
-                AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
-                if (user != null) item.setCreatorName(user.getNickname());
+        // 翻译创建者名称
+        if (!userIds.isEmpty()) {
+            Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
+            for (var item : list) {
+                if (StrUtil.isNotBlank(item.getCreator())) {
+                    AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
+                    if (user != null) item.setCreatorName(user.getNickname());
+                }
+            }
+        }
+        // 翻译卡种名称
+        if (!cardIds.isEmpty()) {
+            Map<Long, String> cardNameMap = new HashMap<>();
+            for (Long cardId : cardIds) {
+                CardConfigDO card = cardConfigService.get(cardId);
+                if (card != null) cardNameMap.put(cardId, card.getName());
+            }
+            for (var item : list) {
+                if (item.getCardId() != null) {
+                    String name = cardNameMap.get(item.getCardId());
+                    if (name != null) item.setCardName(name);
+                }
             }
         }
     }
