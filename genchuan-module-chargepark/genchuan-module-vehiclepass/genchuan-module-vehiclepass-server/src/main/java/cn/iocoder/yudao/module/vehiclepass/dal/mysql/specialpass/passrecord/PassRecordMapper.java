@@ -41,4 +41,14 @@ public interface PassRecordMapper extends BaseMapperX<PassRecordDO> {
 
     IPage<PassRecordRespVO> selectPageJoin(Page<?> page, @Param("reqVO") PassRecordPageReqVO reqVO);
 
+    /**
+     * 查询放行量趋势（按天统计）
+     */
+    List<Map<String, Object>> selectPassCountTrend(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("stationId") Long stationId);
+
+    /**
+     * 查询今日放行量和异常放行占比
+     */
+    Map<String, Object> selectPassStats(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("stationId") Long stationId);
+
 }

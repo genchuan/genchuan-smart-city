@@ -5,6 +5,8 @@ import java.util.*;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordCheckReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.specialpass.passrecord.PassRecordDO;
 import jakarta.validation.*;
@@ -77,5 +79,13 @@ public interface PassRecordService {
      * @param reqVO 请求
      */
     void check(PassRecordCheckReqVO reqVO);
+
+    /**
+     * 获取统计图表数据
+     *
+     * @param reqVO 统计请求
+     * @return 统计数据
+     */
+    PassRecordChartRespVO getChart(PassRecordChartReqVO reqVO);
 
 }

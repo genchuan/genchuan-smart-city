@@ -54,4 +54,42 @@
         ORDER BY p.id DESC
     </select>
 
+    <!-- 查询放行量趋势（按天统计） -->
+    <select id="selectPassCountTrend" resultType="map">
+        SELECT
+            DATE(p.pass_time) AS date,
+            COUNT(*) AS count
+        FROM pass_record p
+        WHERE p.deleted = 0
+        <if test="startTime != null and startTime != ''">
+            AND p.pass_time >= FROM_UNIXTIME(#{startTime})
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND p.pass_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
+        <if test="stationId != null">
+            AND p.station_id = #{stationId}
+        </if>
+        GROUP BY DATE(p.pass_time)
+        ORDER BY date
+    </select>
+
+    <!-- 查询今日放行量和异常放行占比 -->
+    <select id="selectPassStats" resultType="map">
+        SELECT
+            SUM(CASE WHEN DATE(p.pass_time) = CURDATE() THEN 1 ELSE 0 END) AS todayPassCount,
+            ROUND(SUM(CASE WHEN p.status = '异常记录' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(*), 0), 1) AS abnormalPassRate
+        FROM pass_record p
+        WHERE p.deleted = 0
+        <if test="startTime != null and startTime != ''">
+            AND p.pass_time >= FROM_UNIXTIME(#{startTime})
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND p.pass_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
+        <if test="stationId != null">
+            AND p.station_id = #{stationId}
+        </if>
+    </select>
+
 </mapper>

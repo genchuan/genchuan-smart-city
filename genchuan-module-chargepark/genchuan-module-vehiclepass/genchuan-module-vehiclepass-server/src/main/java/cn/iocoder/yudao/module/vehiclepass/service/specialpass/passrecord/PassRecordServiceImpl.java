@@ -4,6 +4,8 @@ import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordCheckReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.specialpass.passrecord.PassRecordDO;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.specialpass.passrecord.PassRecordMapper;
@@ -110,6 +112,38 @@ public class PassRecordServiceImpl implements PassRecordService {
         updateObj.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
         updateObj.setOperatorTime(LocalDateTime.now());
         recordMapper.updateById(updateObj);
+    }
+
+    @Override
+    public PassRecordChartRespVO getChart(PassRecordChartReqVO reqVO) {
+        // 查询放行量趋势
+        List<Map<String, Object>> trendList = recordMapper.selectPassCountTrend(
+                reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
+        List<PassRecordChartRespVO.PassCountTrend> passCountTrends = new ArrayList<>();
+        for (Map<String, Object> trend : trendList) {
+            PassRecordChartRespVO.PassCountTrend item = new PassRecordChartRespVO.PassCountTrend();
+            item.setDate(trend.get("date") != null ? trend.get("date").toString() : null);
+            item.setCount(trend.get("count") != null ? Long.parseLong(trend.get("count").toString()) : 0L);
+            passCountTrends.add(item);
+        }
+
+        // 查询今日放行量和异常放行占比
+        Map<String, Object> stats = recordMapper.selectPassStats(
+                reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
+        PassRecordChartRespVO.CardData cardData = new PassRecordChartRespVO.CardData();
+        if (stats != null) {
+            cardData.setTodayPassCount(stats.get("todayPassCount") != null ? Long.parseLong(stats.get("todayPassCount").toString()) : 0L);
+            cardData.setAbnormalPassRate(stats.get("abnormalPassRate") != null ? Double.parseDouble(stats.get("abnormalPassRate").toString()) : 0.0);
+        } else {
+            cardData.setTodayPassCount(0L);
+            cardData.setAbnormalPassRate(0.0);
+        }
+
+        // 组装返回
+        PassRecordChartRespVO respVO = new PassRecordChartRespVO();
+        respVO.setPassCountTrend(passCountTrends);
+        respVO.setCardData(cardData);
+        return respVO;
     }
 
 }

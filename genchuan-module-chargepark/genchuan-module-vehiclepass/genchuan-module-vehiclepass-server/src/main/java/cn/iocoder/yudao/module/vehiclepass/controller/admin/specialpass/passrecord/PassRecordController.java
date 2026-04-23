@@ -3,6 +3,8 @@ package cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrec
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordCheckReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.specialpass.passrecord.PassRecordDO;
 import cn.iocoder.yudao.module.vehiclepass.service.specialpass.passrecord.PassRecordService;
@@ -117,6 +119,13 @@ public class PassRecordController {
     public CommonResult<Boolean> check(@Valid @RequestBody PassRecordCheckReqVO reqVO) {
         passRecordService.check(reqVO);
         return success(true);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "获取放行记录统计")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:pass-record:chart')")
+    public CommonResult<PassRecordChartRespVO> getChart(@Valid PassRecordChartReqVO reqVO) {
+        return success(passRecordService.getChart(reqVO));
     }
 
 }
