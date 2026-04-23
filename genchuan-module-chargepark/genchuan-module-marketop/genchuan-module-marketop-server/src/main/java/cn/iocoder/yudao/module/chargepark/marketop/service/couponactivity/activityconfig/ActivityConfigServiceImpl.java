@@ -78,39 +78,19 @@ public class ActivityConfigServiceImpl implements ActivityConfigService {
     }
 
     @Override
-    public ActivityConfigChartRespVO getChart(Long startTime, Long endTime) {
+    public ActivityConfigChartRespVO getChart() {
         ActivityConfigChartRespVO respVO = new ActivityConfigChartRespVO();
 
-        // 构建时间范围查询条件
-        LocalDateTime startDateTime = startTime != null
-                ? LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(startTime), java.time.ZoneId.systemDefault()) : null;
-        LocalDateTime endDateTime = endTime != null
-                ? LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(endTime), java.time.ZoneId.systemDefault()) : null;
-
         // EnableCount: status为1的记录数
-        LambdaQueryWrapperX<ActivityConfigDO> enableWrapper = new LambdaQueryWrapperX<ActivityConfigDO>()
-                .eq(ActivityConfigDO::getStatus, "1");
-        if (startDateTime != null) {
-            enableWrapper.ge(ActivityConfigDO::getCreateTime, startDateTime);
-        }
-        if (endDateTime != null) {
-            enableWrapper.le(ActivityConfigDO::getCreateTime, endDateTime);
-        }
-        Long enableCount = activityConfigMapper.selectCount(enableWrapper);
+        Long enableCount = activityConfigMapper.selectCount(new LambdaQueryWrapperX<ActivityConfigDO>()
+                .eq(ActivityConfigDO::getStatus, "1"));
         respVO.setEnableCount(enableCount != null ? enableCount.intValue() : 0);
 
         // JoinRate: 暂不计算
         respVO.setJoinRate(0);
 
         // TypeList: 按type分组统计
-        LambdaQueryWrapperX<ActivityConfigDO> typeWrapper = new LambdaQueryWrapperX<>();
-        if (startDateTime != null) {
-            typeWrapper.ge(ActivityConfigDO::getCreateTime, startDateTime);
-        }
-        if (endDateTime != null) {
-            typeWrapper.le(ActivityConfigDO::getCreateTime, endDateTime);
-        }
-        List<ActivityConfigDO> allList = activityConfigMapper.selectList(typeWrapper);
+        List<ActivityConfigDO> allList = activityConfigMapper.selectList(new LambdaQueryWrapperX<>());
         List<ActivityConfigChartRespVO.TypeCountItem> typeList = allList.stream()
                 .collect(Collectors.groupingBy(ActivityConfigDO::getType, Collectors.counting()))
                 .entrySet().stream()

@@ -82,10 +82,8 @@ public class ReceiveRecordController {
     @GetMapping("/chart")
     @Operation(summary = "领用记录图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:receive-record:query')")
-    public CommonResult<ReceiveRecordChartRespVO> getChart(@RequestParam(value = "startTime", required = false) Long startTime,
-                                                           @RequestParam(value = "endTime", required = false) Long endTime,
-                                                           @RequestParam(value = "stationId", required = false) Long stationId) {
-        return CommonResult.success(receiveRecordService.getChart(startTime, endTime, stationId));
+    public CommonResult<ReceiveRecordChartRespVO> getChart() {
+        return CommonResult.success(receiveRecordService.getChart());
     }
 
     private void injectUserNames(List<ReceiveRecordRespVO> list) {

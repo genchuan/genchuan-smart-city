@@ -6,7 +6,6 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityChartReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityExportExcelVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityPageReqVO;
@@ -140,8 +139,8 @@ public class PointActivityController {
     @GetMapping("/chart")
     @Operation(summary = "积分活动图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:point-activity:query')")
-    public CommonResult<PointActivityChartRespVO> getChart(PointActivityChartReqVO reqVO) {
-        return CommonResult.success(pointActivityService.getChart(reqVO));
+    public CommonResult<PointActivityChartRespVO> getChart() {
+        return CommonResult.success(pointActivityService.getChart());
     }
 
     private void injectUserNames(List<PointActivityRespVO> list) {

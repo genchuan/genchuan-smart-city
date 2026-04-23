@@ -114,8 +114,8 @@ public class CardOrderController {
     @GetMapping("/chart")
     @Operation(summary = "卡种订单图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:card-order:query')")
-    public CommonResult<CardOrderChartRespVO> getChart(@RequestParam(value = "timeRange", required = false) String timeRange) {
-        return CommonResult.success(cardOrderService.getChart(timeRange));
+    public CommonResult<CardOrderChartRespVO> getChart() {
+        return CommonResult.success(cardOrderService.getChart());
     }
 
     private void injectUserNames(List<CardOrderRespVO> list) {

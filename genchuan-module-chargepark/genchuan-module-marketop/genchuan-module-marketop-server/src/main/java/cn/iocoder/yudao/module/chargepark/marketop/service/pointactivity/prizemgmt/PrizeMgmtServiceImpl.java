@@ -2,7 +2,6 @@ package cn.iocoder.yudao.module.chargepark.marketop.service.pointactivity.prizem
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.prizemgmt.vo.PrizeMgmtChartReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.prizemgmt.vo.PrizeMgmtChartRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.prizemgmt.vo.PrizeMgmtCreateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.prizemgmt.vo.PrizeMgmtImportExcelVO;
@@ -81,10 +80,9 @@ public class PrizeMgmtServiceImpl implements PrizeMgmtService {
     }
 
     @Override
-    public PrizeMgmtChartRespVO getChart(PrizeMgmtChartReqVO reqVO) {
-        // TODO: prizeCount 和 sendCount 后续实现
+    public PrizeMgmtChartRespVO getChart() {
         // TypeList: 按 type 分组统计数量
-        List<Map<String, Object>> typeCountList = prizeMgmtMapper.selectTypeCountList(reqVO);
+        List<Map<String, Object>> typeCountList = prizeMgmtMapper.selectTypeCountList();
         List<PrizeMgmtChartRespVO.TypeCountItem> typeList = typeCountList.stream().map(m -> {
             PrizeMgmtChartRespVO.TypeCountItem item = new PrizeMgmtChartRespVO.TypeCountItem();
             item.setType((String) m.get("type"));

@@ -115,8 +115,8 @@ public class ExchangeOrderController {
     @GetMapping("/chart")
     @Operation(summary = "兑换订单统计图表")
     @PreAuthorize("@ss.hasPermission('marketop:exchange-order:query')")
-    public CommonResult<ExchangeOrderChartRespVO> getChart(@RequestParam(value = "timeRange", required = false) String timeRange) {
-        return CommonResult.success(exchangeOrderService.getChart(timeRange));
+    public CommonResult<ExchangeOrderChartRespVO> getChart() {
+        return CommonResult.success(exchangeOrderService.getChart());
     }
 
     private void injectUserNames(List<ExchangeOrderRespVO> list) {

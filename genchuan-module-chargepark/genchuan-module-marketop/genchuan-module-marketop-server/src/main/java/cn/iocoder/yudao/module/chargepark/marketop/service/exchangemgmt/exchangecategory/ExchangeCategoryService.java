@@ -22,6 +22,6 @@ public interface ExchangeCategoryService {
 
     void disable(Long id);
 
-    ExchangeCategoryChartRespVO getChart(String timeRange);
+    ExchangeCategoryChartRespVO getChart();
 
 }

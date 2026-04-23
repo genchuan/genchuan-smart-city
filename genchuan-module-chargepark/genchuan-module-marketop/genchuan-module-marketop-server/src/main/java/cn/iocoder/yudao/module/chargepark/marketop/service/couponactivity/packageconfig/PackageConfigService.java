@@ -22,6 +22,6 @@ public interface PackageConfigService {
 
     void disable(Long id);
 
-    PackageConfigChartRespVO getChart(Long startTime, Long endTime);
+    PackageConfigChartRespVO getChart();
 
 }

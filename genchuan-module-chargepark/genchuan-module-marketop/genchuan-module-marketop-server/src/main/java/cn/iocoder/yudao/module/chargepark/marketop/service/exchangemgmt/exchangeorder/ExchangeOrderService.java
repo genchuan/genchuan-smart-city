@@ -19,6 +19,6 @@ public interface ExchangeOrderService {
 
     void cancel(Long id);
 
-    ExchangeOrderChartRespVO getChart(String timeRange);
+    ExchangeOrderChartRespVO getChart();
 
 }

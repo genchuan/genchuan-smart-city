@@ -80,24 +80,10 @@ public class PackageConfigServiceImpl implements PackageConfigService {
     }
 
     @Override
-    public PackageConfigChartRespVO getChart(Long startTime, Long endTime) {
+    public PackageConfigChartRespVO getChart() {
         PackageConfigChartRespVO respVO = new PackageConfigChartRespVO();
 
-        // 构建时间范围
-        LocalDateTime startDateTime = startTime != null
-                ? LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(startTime), ZoneId.systemDefault()) : null;
-        LocalDateTime endDateTime = endTime != null
-                ? LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(endTime), ZoneId.systemDefault()) : null;
-
-        // 构建查询条件
-        LambdaQueryWrapperX<PackageConfigDO> wrapper = new LambdaQueryWrapperX<>();
-        if (startDateTime != null) {
-            wrapper.ge(PackageConfigDO::getCreateTime, startDateTime);
-        }
-        if (endDateTime != null) {
-            wrapper.le(PackageConfigDO::getCreateTime, endDateTime);
-        }
-        List<PackageConfigDO> allList = packageConfigMapper.selectList(wrapper);
+        List<PackageConfigDO> allList = packageConfigMapper.selectList(new LambdaQueryWrapperX<>());
 
         // enableCount: status为1的数量
         long enableCount = allList.stream().filter(item -> "1".equals(item.getStatus())).count();

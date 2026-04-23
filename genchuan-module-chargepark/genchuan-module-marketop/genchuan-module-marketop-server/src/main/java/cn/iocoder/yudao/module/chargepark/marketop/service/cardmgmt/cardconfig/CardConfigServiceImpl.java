@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.chargepark.marketop.service.cardmgmt.cardconfig;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.cardconfig.vo.CardConfigChartRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.cardconfig.vo.CardConfigCreateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.cardconfig.vo.CardConfigPageReqVO;
@@ -84,15 +85,8 @@ public class CardConfigServiceImpl implements CardConfigService {
     }
 
     @Override
-    public CardConfigChartRespVO getChart(Long startTime, Long endTime) {
-        LocalDateTime startDateTime = startTime != null
-                ? LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(startTime), ZoneId.systemDefault())
-                : null;
-        LocalDateTime endDateTime = endTime != null
-                ? LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(endTime), ZoneId.systemDefault())
-                : null;
-
-        List<CardConfigDO> records = cardConfigMapper.selectListByTimeRange(startDateTime, endDateTime);
+    public CardConfigChartRespVO getChart() {
+        List<CardConfigDO> records = cardConfigMapper.selectList(new LambdaQueryWrapperX<>());
 
         CardConfigChartRespVO respVO = new CardConfigChartRespVO();
         // 生效卡种数 = 状态为1的记录数

@@ -1,7 +1,6 @@
 package cn.iocoder.yudao.module.chargepark.marketop.service.pointactivity.prizemgmt;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.prizemgmt.vo.PrizeMgmtChartReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.prizemgmt.vo.PrizeMgmtChartRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.prizemgmt.vo.PrizeMgmtCreateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.prizemgmt.vo.PrizeMgmtImportExcelVO;
@@ -26,7 +25,7 @@ public interface PrizeMgmtService {
 
     void disable(Long id);
 
-    PrizeMgmtChartRespVO getChart(PrizeMgmtChartReqVO reqVO);
+    PrizeMgmtChartRespVO getChart();
 
     /**
      * 导入奖品列表

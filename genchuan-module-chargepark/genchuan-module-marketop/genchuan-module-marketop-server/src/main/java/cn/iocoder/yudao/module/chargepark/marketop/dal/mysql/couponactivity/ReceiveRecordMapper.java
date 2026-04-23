@@ -7,9 +7,11 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivi
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.ReceiveRecordDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ReceiveRecordMapper extends BaseMapperX<ReceiveRecordDO> {
@@ -24,8 +26,11 @@ public interface ReceiveRecordMapper extends BaseMapperX<ReceiveRecordDO> {
                 .orderByDesc(ReceiveRecordDO::getId));
     }
 
-    List<ReceiveRecordDO> selectListByTimeRange(@Param("startTime") LocalDateTime startTime,
-                                                 @Param("endTime") LocalDateTime endTime,
-                                                 @Param("stationId") Long stationId);
+    @Select("SELECT DATE(create_time) AS date, COUNT(*) AS count " +
+            "FROM receive_record " +
+            "WHERE deleted = 0 AND create_time >= #{startTime} " +
+            "GROUP BY DATE(create_time) " +
+            "ORDER BY DATE(create_time) ASC")
+    List<Map<String, Object>> selectCountByDay(@Param("startTime") LocalDateTime startTime);
 
 }
