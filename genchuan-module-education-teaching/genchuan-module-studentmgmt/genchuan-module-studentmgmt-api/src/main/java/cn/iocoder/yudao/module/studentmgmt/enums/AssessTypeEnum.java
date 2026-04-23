@@ -15,6 +15,7 @@ public enum AssessTypeEnum {
     CIVILIZED_CLASS("civilized_class","'文明班级评比'"),
     BLACKBOARD("blackboard","'黑板报评比'");
 
+    public static final String DICT_TYPE = "assess_mgmt_assess_type";
     /**
      * 状态
      * <p>

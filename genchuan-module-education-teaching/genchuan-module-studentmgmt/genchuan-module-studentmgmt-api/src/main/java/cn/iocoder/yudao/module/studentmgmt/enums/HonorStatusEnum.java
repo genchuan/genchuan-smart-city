@@ -10,12 +10,13 @@ import lombok.Getter;
  */
 public enum HonorStatusEnum {
 
-    // 状态：待评估/咨询中/已干预，关联芋道字典表：mental_mgmt_status
+    // 状态：待评估/咨询中/已干预，关联芋道字典表：honor_mgmt_status
     HONOR_MGMT_STATUS_0("0", "待审核"),
     HONOR_MGMT_STATUS_1("1", "已通过"),
     HONOR_MGMT_STATUS_2("2", "已推送"),
     HONOR_MGMT_STATUS_3("3", "不通过");
 
+    public static final String DICT_TYPE = "honor_mgmt_status";
     /**
      * 状态
      * <p>

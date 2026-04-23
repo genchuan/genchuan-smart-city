@@ -15,6 +15,7 @@ public enum DormCheckStatusEnum {
     DORM_CHECK_CHECK_STATUS_1("1", "迟到"),
     DORM_CHECK_CHECK_STATUS_2("2", "未到");
 
+    public static final String DICT_TYPE = "dorm_check_check_status";
     /**
      * 状态
      * <p>

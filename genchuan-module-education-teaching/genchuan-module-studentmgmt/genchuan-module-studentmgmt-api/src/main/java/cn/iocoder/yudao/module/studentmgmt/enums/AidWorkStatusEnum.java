@@ -14,7 +14,7 @@ public enum AidWorkStatusEnum {
     AID_WORK_STATUS_0("0", "待审核"),
     AID_WORK_STATUS_1("1", "已通过"),
     AID_WORK_STATUS_2("2", "已完成");
-
+    public static final String DICT_TYPE = "violate_mgmt_status";
     /**
      * 状态
      * <p>

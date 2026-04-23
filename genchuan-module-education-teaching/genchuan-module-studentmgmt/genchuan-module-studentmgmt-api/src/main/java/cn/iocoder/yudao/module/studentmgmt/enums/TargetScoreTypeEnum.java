@@ -8,10 +8,12 @@ import lombok.Getter;
 /**
  * 目标管理计分方式
  */
-public enum TargetTypeEnum {
+public enum TargetScoreTypeEnum {
 
     cumulative("cumulative","'通过累加方式计分'"),
     api("api","'通过接口方式计分'");
+
+    public static final String DICT_TYPE = "target_mgmt_score_type";
 
     /**
      * 状态
@@ -27,7 +29,7 @@ public enum TargetTypeEnum {
 
     // 根据key获取名称
     public static String getNameByKey(String key) {
-        for (TargetTypeEnum value : values()) {
+        for (TargetScoreTypeEnum value : values()) {
             if (value.status.equals(key)) {
                 return value.name;
             }
