@@ -64,8 +64,8 @@ public class ExchangeOrderController {
     @PutMapping("/pay")
     @Operation(summary = "支付兑换订单")
     @PreAuthorize("@ss.hasPermission('marketop:exchange-order:pay')")
-    public CommonResult<Boolean> pay(@RequestParam("id") Long id) {
-        exchangeOrderService.pay(id);
+    public CommonResult<Boolean> pay(@Valid @RequestBody ExchangeOrderPayReqVO reqVO) {
+        exchangeOrderService.pay(reqVO.getId());
         return CommonResult.success(true);
     }
 
@@ -80,8 +80,8 @@ public class ExchangeOrderController {
     @PutMapping("/cancel")
     @Operation(summary = "取消兑换订单")
     @PreAuthorize("@ss.hasPermission('marketop:exchange-order:cancel')")
-    public CommonResult<Boolean> cancel(@RequestParam("id") Long id) {
-        exchangeOrderService.cancel(id);
+    public CommonResult<Boolean> cancel(@Valid @RequestBody ExchangeOrderCancelReqVO reqVO) {
+        exchangeOrderService.cancel(reqVO.getId());
         return CommonResult.success(true);
     }
 

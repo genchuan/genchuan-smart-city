@@ -8,6 +8,7 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.exchangemgmt
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.exchangemgmt.exchangecategory.vo.ExchangeCategoryUpdateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.exchangemgmt.ExchangeCategoryDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.exchangemgmt.ExchangeCategoryMapper;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.ExchangeCategoryStatusEnum;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -40,7 +41,7 @@ public class ExchangeCategoryServiceImpl implements ExchangeCategoryService {
         validateNameUnique(null, reqVO.getName());
         // 插入，默认状态为「未生效」
         ExchangeCategoryDO exchangeCategory = BeanUtils.toBean(reqVO, ExchangeCategoryDO.class);
-        exchangeCategory.setStatus("0");
+        exchangeCategory.setStatus(ExchangeCategoryStatusEnum.NOT_EFFECTIVE.getValue());
         exchangeCategoryMapper.insert(exchangeCategory);
         return exchangeCategory.getId();
     }
@@ -58,10 +59,11 @@ public class ExchangeCategoryServiceImpl implements ExchangeCategoryService {
     public void enable(Long id) {
         ExchangeCategoryDO exchangeCategory = validateExists(id);
         // 未生效→已生效，或 已禁用→已生效
-        if (!"0".equals(exchangeCategory.getStatus()) && !"-1".equals(exchangeCategory.getStatus())) {
+        if (!ExchangeCategoryStatusEnum.NOT_EFFECTIVE.getValue().equals(exchangeCategory.getStatus()) &&
+                !ExchangeCategoryStatusEnum.DISABLED.getValue().equals(exchangeCategory.getStatus())) {
             throw exception(EXCHANGE_CATEGORY_NOT_EXISTS);
         }
-        exchangeCategory.setStatus("1");
+        exchangeCategory.setStatus(ExchangeCategoryStatusEnum.EFFECTIVE.getValue());
         exchangeCategoryMapper.updateById(exchangeCategory);
     }
 
@@ -69,7 +71,7 @@ public class ExchangeCategoryServiceImpl implements ExchangeCategoryService {
     public void disable(Long id) {
         ExchangeCategoryDO exchangeCategory = validateExists(id);
         // 已生效→已禁用
-        if (!"1".equals(exchangeCategory.getStatus())) {
+        if (!ExchangeCategoryStatusEnum.EFFECTIVE.getValue().equals(exchangeCategory.getStatus())) {
             throw exception(EXCHANGE_CATEGORY_NOT_EXISTS);
         }
         exchangeCategory.setStatus("0");
