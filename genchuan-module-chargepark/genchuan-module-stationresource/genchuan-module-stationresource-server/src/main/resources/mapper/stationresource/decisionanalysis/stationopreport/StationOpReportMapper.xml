@@ -14,83 +14,121 @@
             NOW() AS createTime
     </select>
 
-    <!-- 2. 分页查询（正确ID + 正确resultType） -->
     <select id="selectReportPage" resultType="cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.decisionanalysis.stationopreport.StationOpReportDO">
         SELECT
-            (@row := @row + 1) AS id,
-            '月报' AS reportType,
+            1 AS id,
+            #{query.reportType} AS reportType,
             DATE_FORMAT(NOW(), '%Y-%m') AS reportTime,
-            (SELECT MIN(create_time) FROM station_info WHERE deleted = 0) AS startTime,
-            (SELECT MAX(create_time) FROM station_info WHERE deleted = 0) AS endTime,
+            #{query.startTime} AS startTime,
+            #{query.endTime} AS endTime,
             'system' AS creator,
-            NOW() AS createTime
-        WHERE 1=1
-        <!-- 关键：时间筛选条件（前端传了就拼接） -->
-        <if test="startTime != null">
-            AND NOW() >= #{startTime}
-        </if>
-        <if test="endTime != null">
-            AND NOW() &lt;= #{endTime}
-        </if>
+            NOW() AS createTime,
+
+            -- 指标都来自独立子查询，绝不关联，绝不重复
+            IFNULL((SELECT COUNT(DISTINCT id) FROM station_info WHERE deleted = 0), 0) AS station_count,
+            IFNULL((SELECT SUM(space_total) FROM station_info WHERE deleted = 0), 0) AS total_space_count,
+            IFNULL((
+                       SELECT ROUND(
+                                              SUM(CASE WHEN real_status = '占用' THEN 1 ELSE 0 END) / COUNT(*) * 100, 2
+                                  )
+                       FROM parking_space_info
+                       WHERE deleted = 0
+                   ), 0) AS space_use_rate,
+            IFNULL((
+                       SELECT ROUND(AVG(match_rate), 2)
+                       FROM fee_rule
+                       WHERE deleted = 0 AND status = '已生效'
+                   ), 0) AS rule_match_rate,
+            IFNULL((
+                       SELECT SUM(today_income)
+                       FROM charge_park_link
+                       WHERE deleted = 0
+                         AND create_time BETWEEN #{query.startTime} AND #{query.endTime}
+                   ), 0) AS revenue,
+            IFNULL((
+                       SELECT SUM(today_income)
+                       FROM charge_park_link
+                       WHERE deleted = 0
+                         AND create_time BETWEEN DATE_SUB(#{query.startTime}, INTERVAL 1 YEAR) AND DATE_SUB(#{query.endTime}, INTERVAL 1 YEAR)
+                   ), 0) AS last_year_revenue,
+            IFNULL((
+                       SELECT SUM(today_income)
+                       FROM charge_park_link
+                       WHERE deleted = 0
+                         AND create_time BETWEEN DATE_SUB(#{query.startTime}, INTERVAL 1 MONTH) AND DATE_SUB(#{query.endTime}, INTERVAL 1 MONTH)
+                   ), 0) AS last_month_revenue,
+
+            -- 同比、环比
+            ROUND(IF((SELECT SUM(today_income) FROM charge_park_link WHERE deleted = 0 AND create_time BETWEEN DATE_SUB(#{query.startTime}, INTERVAL 1 YEAR) AND DATE_SUB(#{query.endTime}, INTERVAL 1 YEAR)) = 0, 0,
+                     ((SELECT SUM(today_income) FROM charge_park_link WHERE deleted = 0 AND create_time BETWEEN #{query.startTime} AND #{query.endTime}) -
+                      (SELECT SUM(today_income) FROM charge_park_link WHERE deleted = 0 AND create_time BETWEEN DATE_SUB(#{query.startTime}, INTERVAL 1 YEAR) AND DATE_SUB(#{query.endTime}, INTERVAL 1 YEAR)))
+                         / (SELECT SUM(today_income) FROM charge_park_link WHERE deleted = 0 AND create_time BETWEEN DATE_SUB(#{query.startTime}, INTERVAL 1 YEAR) AND DATE_SUB(#{query.endTime}, INTERVAL 1 YEAR)) * 100), 2) AS year_on_year,
+
+            ROUND(IF((SELECT SUM(today_income) FROM charge_park_link WHERE deleted = 0 AND create_time BETWEEN DATE_SUB(#{query.startTime}, INTERVAL 1 MONTH) AND DATE_SUB(#{query.endTime}, INTERVAL 1 MONTH)) = 0, 0,
+                     ((SELECT SUM(today_income) FROM charge_park_link WHERE deleted = 0 AND create_time BETWEEN #{query.startTime} AND #{query.endTime}) -
+                      (SELECT SUM(today_income) FROM charge_park_link WHERE deleted = 0 AND create_time BETWEEN DATE_SUB(#{query.startTime}, INTERVAL 1 MONTH) AND DATE_SUB(#{query.endTime}, INTERVAL 1 MONTH)))
+                         / (SELECT SUM(today_income) FROM charge_park_link WHERE deleted = 0 AND create_time BETWEEN DATE_SUB(#{query.startTime}, INTERVAL 1 MONTH) AND DATE_SUB(#{query.endTime}, INTERVAL 1 MONTH)) * 100), 2) AS month_on_month
     </select>
 
 
-    <!-- 分页查询报表（基于现有业务表动态统计，无独立报表表） -->
-<!--    <select id="selectReportPage" resultType="java.util.Map">-->
+    <!-- 2. 分页查询（正确ID + 正确resultType + 真实同比环比） -->
+<!--    <select id="selectReportPage" resultType="cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.decisionanalysis.stationopreport.StationOpReportDO">-->
 <!--        SELECT-->
-<!--        t.id,-->
-<!--        t.report_type,-->
-<!--        t.report_time,-->
-<!--        t.start_time,-->
-<!--        t.end_time,-->
-<!--        t.creator,-->
-<!--        t.create_time,-->
-<!--        /* 场站数 */-->
-<!--        (SELECT COUNT(DISTINCT s.id) FROM station_info s-->
-<!--        WHERE s.deleted = 0 AND s.tenant_id = 1) AS station_count,-->
-<!--        /* 车位使用率 */-->
-<!--        ROUND(-->
-<!--        (SELECT COUNT(p.id) FROM parking_space_info p-->
-<!--        WHERE p.deleted = 0 AND p.real_status = '占用')-->
-<!--        / NULLIF((SELECT COUNT(p2.id) FROM parking_space_info p2 WHERE p2.deleted = 0),1) * 100, 2-->
-<!--        ) AS space_use_rate,-->
-<!--        /* 规则匹配率 */-->
-<!--        ROUND(-->
-<!--        (SELECT COUNT(f.id) FROM fee_rule f WHERE f.deleted = 0 AND f.status = '已生效')-->
-<!--        / NULLIF((SELECT COUNT(f2.id) FROM fee_rule f2 WHERE f2.deleted = 0),1) * 100, 2-->
-<!--        ) AS rule_match_rate,-->
-<!--        0 AS year_on_year,-->
-<!--        0 AS month_on_month-->
-<!--        FROM (-->
-<!--        /* 虚拟报表数据：自动生成 + 自定义报表 */-->
-<!--        SELECT-->
-<!--        1 AS id,-->
-<!--        #{query.reportType} AS report_type,-->
-<!--        DATE_FORMAT(NOW(), '%Y-%m') AS report_time,-->
-<!--        UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 30 DAY)) AS start_time,-->
-<!--        UNIX_TIMESTAMP(NOW()) AS end_time,-->
+<!--        (@row := @row + 1) AS id,-->
+<!--        #{query.reportType} AS reportType,-->
+<!--        DATE_FORMAT(NOW(), '%Y-%m') AS reportTime,-->
+<!--        #{query.startTime} AS startTime,-->
+<!--        #{query.endTime} AS endTime,-->
 <!--        'system' AS creator,-->
-<!--        UNIX_TIMESTAMP(NOW()) AS create_time-->
-<!--        UNION ALL-->
+<!--        NOW() AS createTime,-->
+<!--        IFNULL(stat.station_count, 0) AS station_count,-->
+<!--        IFNULL(stat.total_space_count, 0) AS total_space_count,-->
+<!--        IFNULL(stat.space_use_rate, 0) AS space_use_rate,-->
+<!--        IFNULL(stat.rule_match_rate, 0) AS rule_match_rate,-->
+<!--        IFNULL(stat.revenue, 0) AS revenue,-->
+<!--        &#45;&#45; 同比、环比计算结果-->
+<!--        ROUND(IF(stat.last_year_revenue = 0, NULL,-->
+<!--        (stat.revenue - stat.last_year_revenue) / stat.last_year_revenue * 100), 2) AS year_on_year,-->
+<!--        ROUND(IF(stat.last_month_revenue = 0, NULL,-->
+<!--        (stat.revenue - stat.last_month_revenue) / stat.last_month_revenue * 100), 2) AS month_on_month-->
+<!--        FROM (-->
 <!--        SELECT-->
-<!--        2 AS id,-->
-<!--        '自定义报表' AS report_type,-->
-<!--        DATE_FORMAT(NOW(), '%Y-%m-%d') AS report_time,-->
-<!--        UNIX_TIMESTAMP(#{query.startTime}) AS start_time,-->
-<!--        UNIX_TIMESTAMP(#{query.endTime}) AS end_time,-->
-<!--        'admin' AS creator,-->
-<!--        UNIX_TIMESTAMP(NOW()) AS create_time-->
-<!--        ) t-->
-<!--        WHERE 1=1-->
-<!--        <if test="query.reportType != null and query.reportType != ''">-->
-<!--            AND t.report_type = #{query.reportType}-->
+<!--        &#45;&#45; 1. 场站数-->
+<!--        COUNT(DISTINCT s.id) AS station_count,-->
+<!--        &#45;&#45; 2. 总车位数-->
+<!--        IFNULL(SUM(s.space_total), 0) AS total_space_count,-->
+<!--        &#45;&#45; 3. 车位使用率-->
+<!--        CASE WHEN IFNULL(SUM(s.space_total), 0) = 0 THEN 0-->
+<!--        ELSE ROUND(IFNULL(SUM(CASE WHEN p.real_status = '占用' THEN 1 ELSE 0 END), 0)-->
+<!--        / SUM(s.space_total) * 100, 2)-->
+<!--        END AS space_use_rate,-->
+<!--        &#45;&#45; 4. 规则匹配率-->
+<!--        IFNULL(ROUND(AVG(r.match_rate), 2), 0) AS rule_match_rate,-->
+<!--        &#45;&#45; 5. 本期营收（按 charge_park_link.income_date 过滤）-->
+<!--        IFNULL(SUM(CASE WHEN c.create_time BETWEEN #{query.startTime} AND #{query.endTime}-->
+<!--        THEN c.today_income ELSE 0 END), 0) AS revenue,-->
+<!--        &#45;&#45; 6. 去年同期营收-->
+<!--        IFNULL(SUM(CASE WHEN c.create_time BETWEEN-->
+<!--        DATE_SUB(#{query.startTime}, INTERVAL 1 YEAR)-->
+<!--        AND DATE_SUB(#{query.endTime}, INTERVAL 1 YEAR)-->
+<!--        THEN c.today_income ELSE 0 END), 0) AS last_year_revenue,-->
+<!--        &#45;&#45; 7. 上月营收-->
+<!--        IFNULL(SUM(CASE WHEN c.create_time BETWEEN-->
+<!--        DATE_SUB(#{query.startTime}, INTERVAL 1 MONTH)-->
+<!--        AND DATE_SUB(#{query.endTime}, INTERVAL 1 MONTH)-->
+<!--        THEN c.today_income ELSE 0 END), 0) AS last_month_revenue-->
+<!--        FROM station_info s-->
+<!--        LEFT JOIN parking_space_info p ON s.id = p.station_id AND p.deleted = 0-->
+<!--        LEFT JOIN fee_rule r ON s.id = r.station_id AND r.deleted = 0-->
+<!--        LEFT JOIN charge_park_link c ON s.id = c.station_id AND c.deleted = 0-->
+<!--        WHERE s.deleted = 0-->
+<!--        <if test="query.startTime != null">-->
+<!--            AND s.create_time >= #{query.startTime}-->
 <!--        </if>-->
-<!--        <if test="query.startTime != null and query.startTime != ''">-->
-<!--            AND FROM_UNIXTIME(t.start_time) >= #{query.startTime}-->
+<!--        <if test="query.endTime != null">-->
+<!--            AND s.create_time &lt;= #{query.endTime}-->
 <!--        </if>-->
-<!--        <if test="query.endTime != null and query.endTime != ''">-->
-<!--            AND FROM_UNIXTIME(t.end_time) &lt;= #{query.endTime}-->
-<!--        </if>-->
+<!--        ) stat, (SELECT @row := 0) r-->
 <!--    </select>-->
 
     <!-- 3. 卡片统计（真实业务表） -->
@@ -108,17 +146,7 @@
     </select>
 
     <!-- 4. 折线图 -->
-<!--    <select id="selectOperateLine" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.decisionanalysis.stationopreport.vo.ops.StationOpReportChartRespVO$OperateLineVO">-->
-<!--        SELECT-->
-<!--            DATE_FORMAT(s.create_time, '%Y-%m-%d') AS date,-->
-<!--            IFNULL(SUM(cpl.today_order_count), 0) AS orderCount,-->
-<!--            IFNULL(SUM(cpl.today_income), 0) AS income-->
-<!--        FROM station_info s-->
-<!--                 LEFT JOIN charge_park_link cpl ON s.id = cpl.station_id-->
-<!--        WHERE s.deleted = 0-->
-<!--        GROUP BY DATE_FORMAT(s.create_time, '%Y-%m-%d')-->
-<!--        ORDER BY date ASC-->
-<!--    </select>-->
+
     <select id="selectOperateLine" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.decisionanalysis.stationopreport.vo.ops.StationOpReportChartRespVO$OperateLineVO">
         SELECT
             DATE_FORMAT(cpl.create_time, '%Y-%m-%d') AS date,

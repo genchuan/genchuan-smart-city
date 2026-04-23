@@ -6,15 +6,15 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 /**
- * 状态
+ * 德育活动状态
  */
-public enum AidWorkStatusEnum {
+public enum MoralActivityTypeEnum {
 
-    // 状态（待审核 / 已通过 / 已完成），关联芋道字典表：violate_mgmt_status
-    AID_WORK_STATUS_0("0", "待审核"),
-    AID_WORK_STATUS_1("1", "已通过"),
-    AID_WORK_STATUS_2("2", "已完成");
+    UNPUBLISHED("unpublished","'未发布'"),
+    ONGOING("ongoing","'进行中'"),
+    ENDED("ended","'已结束'");
 
+    public static final String DICT_TYPE = "moral_activity_activity_type";
     /**
      * 状态
      * <p>
@@ -29,12 +29,11 @@ public enum AidWorkStatusEnum {
 
     // 根据key获取名称
     public static String getNameByKey(String key) {
-        for (AidWorkStatusEnum value : values()) {
+        for (MoralActivityTypeEnum value : values()) {
             if (value.status.equals(key)) {
                 return value.name;
             }
         }
-        return "";
+        return null;
     }
-
 }

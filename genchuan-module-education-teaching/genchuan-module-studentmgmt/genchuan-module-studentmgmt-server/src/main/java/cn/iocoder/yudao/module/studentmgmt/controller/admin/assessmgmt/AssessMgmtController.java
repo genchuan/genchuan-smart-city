@@ -108,7 +108,7 @@ public class AssessMgmtController {
     @PutMapping("/chart")
     @Operation(summary = "考评信息分布看板")
     @PreAuthorize("@ss.hasPermission('studentmgmt:assess-mgmt:query')")
-    public CommonResult<AssessMgmtChartRespVO> chart(@Valid @RequestBody AssessMgmtChartReqVO reqVO) {
+    public CommonResult<AssessMgmtChartRespVO> chart(@Valid AssessMgmtChartReqVO reqVO) {
         AssessMgmtChartRespVO respVO = assessMgmtService.chart(reqVO);
         return success(respVO);
     }
@@ -116,7 +116,7 @@ public class AssessMgmtController {
     @PutMapping("/chart/dimensionScore")
     @Operation(summary = "班级多维度考评得分统计")
     @PreAuthorize("@ss.hasPermission('studentmgmt:assess-mgmt:query')")
-    public CommonResult<List<AssessMgmtDimensionScoreRespVO>> dimensionScore(@Valid @RequestBody AssessMgmtChartReqVO reqVO) {
+    public CommonResult<List<AssessMgmtDimensionScoreRespVO>> dimensionScore(@Valid AssessMgmtChartReqVO reqVO) {
         List<AssessMgmtDimensionScoreRespVO> list = assessMgmtService.dimensionScore(reqVO);
         return success(list);
     }
@@ -124,7 +124,7 @@ public class AssessMgmtController {
     @GetMapping("/chart/cycleTrend")
     @Operation(summary = "班级考评周期趋势统计")
     @PreAuthorize("@ss.hasPermission('studentmgmt:assess-info:query')")
-    public CommonResult<List<AssessMgmtCycleTrendRespVO>> cycleTrend(@Valid @RequestBody AssessMgmtCycleTrendReqVO reqVO) {
+    public CommonResult<List<AssessMgmtCycleTrendRespVO>> cycleTrend(@Valid AssessMgmtCycleTrendReqVO reqVO) {
         List<AssessMgmtCycleTrendRespVO> dashboardVO = assessMgmtService.cycleTrend(reqVO);
         return success(dashboardVO);
     }

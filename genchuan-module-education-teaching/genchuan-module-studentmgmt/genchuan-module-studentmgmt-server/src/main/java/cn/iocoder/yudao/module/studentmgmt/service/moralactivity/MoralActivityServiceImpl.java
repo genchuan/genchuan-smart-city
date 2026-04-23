@@ -1,5 +1,8 @@
 package cn.iocoder.yudao.module.studentmgmt.service.moralactivity;
 
+import cn.iocoder.yudao.framework.common.biz.system.dict.DictDataCommonApi;
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.moralactivity.vo.*;
@@ -8,6 +11,7 @@ import cn.iocoder.yudao.module.studentmgmt.dal.mysql.moralactivity.MoralActivity
 import cn.iocoder.yudao.module.studentmgmt.enums.AidWorkStatusEnum;
 import cn.iocoder.yudao.module.studentmgmt.enums.AidWorkTypeEnum;
 import cn.iocoder.yudao.module.studentmgmt.enums.MoralActivityStatusEnum;
+import cn.iocoder.yudao.module.studentmgmt.enums.MoralActivityTypeEnum;
 import com.alibaba.fastjson.JSONObject;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
@@ -34,6 +38,9 @@ public class MoralActivityServiceImpl implements MoralActivityService {
 
     @Resource
     private MoralActivityMapper moralActivityMapper;
+
+    @Resource
+    private DictDataCommonApi dictDataApi;
 
     @Override
     public Long createMoralActivity(MoralActivitySaveReqVO createReqVO) {
@@ -152,10 +159,10 @@ public class MoralActivityServiceImpl implements MoralActivityService {
 
         LocalDateTime startTime = reqVO.getStartTime();
         LocalDateTime endTime = reqVO.getEndTime();
-        if (startTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
+        if (startTime != null && startTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
             startTime = null;
         }
-        if (endTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
+        if (endTime != null && endTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
             endTime = null;
         }
 
@@ -165,9 +172,20 @@ public class MoralActivityServiceImpl implements MoralActivityService {
         JSONObject newTypeJson = new JSONObject();
         typeJson.forEach(json -> {
             String type = json.getString("activityType");
-            String nameByKey = AidWorkTypeEnum.getNameByKey(type);
-            Long count = json.getLong("count");
-            newTypeJson.put(nameByKey, count);
+
+            String dictDataLabel = type;
+//            CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(MoralActivityTypeEnum.DICT_TYPE);
+//            if (dictDataList.getData() != null) {
+//                for (DictDataRespDTO dictData : dictDataList.getData()) {
+//                    if (dictData.getValue().equals(type)) {
+//                        dictDataLabel = dictData.getLabel();
+//                        break;
+//                    }
+//                }
+//            }
+//            String dictDataLabel = MoralActivityStatusEnum.getNameByKey(type);
+            Long count = json.getLong("totalCount");
+            newTypeJson.put(dictDataLabel, count);
         });
         vo.setActivityTypeCount(newTypeJson);
 
@@ -177,9 +195,18 @@ public class MoralActivityServiceImpl implements MoralActivityService {
         // 将statusMap里的status转为枚举的 name
         statusJson.forEach((json) -> {
             String status = json.getString("status");
-            String nameByKey = AidWorkStatusEnum.getNameByKey(status);
-            Long count = json.getLong("count");
-            newStatusJson.put(nameByKey, count);
+            String dictDataLabel = status;
+//            CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(MoralActivityTypeEnum.DICT_TYPE);
+//            if (dictDataList.getData() != null) {
+//                for (DictDataRespDTO dictData : dictDataList.getData()) {
+//                    if (dictData.getValue().equals(status)) {
+//                        dictDataLabel = dictData.getLabel();
+//                        break;
+//                    }
+//                }
+//            }
+            Long count = json.getLong("totalCount");
+            newStatusJson.put(dictDataLabel, count);
         });
         vo.setStatusCount(newStatusJson);
 
@@ -198,36 +225,44 @@ public class MoralActivityServiceImpl implements MoralActivityService {
     public ChartActivityCountRespVO activityCount(MoralActivityChartReqVO reqVO) {
         LocalDateTime startTime = reqVO.getStartTime();
         LocalDateTime endTime = reqVO.getEndTime();
-        if (startTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
+        if (startTime != null && startTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
             startTime = null;
         }
-        if (endTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
+        if (endTime != null && endTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
             endTime = null;
         }
         // 按类型统计
         List<JSONObject> typeJson = moralActivityMapper.selectTypeCount(startTime, endTime, "");
 
-        LocalDateTime finalStartTime = startTime;
-        LocalDateTime finalEndTime = endTime;
         List activityCountList = new ArrayList<>();
         List joinCountList = new ArrayList<>();
         List typeList = new ArrayList<>();
-        typeJson.forEach(json -> {
+        for (JSONObject json : typeJson) {
+
             String type = json.getString("activityType");
-            String nameByKey = AidWorkTypeEnum.getNameByKey(type);
-            typeList.add(nameByKey);
+            String dictDataLabel = type;
+            CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(MoralActivityTypeEnum.DICT_TYPE);
+            if (dictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : dictDataList.getData()) {
+                    if (dictData.getValue().equals(type)) {
+                        dictDataLabel = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            typeList.add(dictDataLabel);
 //            "activityCountList": [5,7,3],
-            List<JSONObject> typeJsonList = moralActivityMapper.selectTypeCount(finalStartTime, finalEndTime, type);
+            List<JSONObject> typeJsonList = moralActivityMapper.selectTypeCount(startTime, endTime, type);
             if (typeJsonList != null) {
                 JSONObject jsonObject = typeJsonList.get(0);
-                activityCountList.add(jsonObject.getLong("count"));
+                activityCountList.add(jsonObject.getLong("totalCount"));
             }
 
 //            "joinCountList": [200, 280, 50]
-            Long joinCount = moralActivityMapper.selectJoinCountByType(finalStartTime, finalEndTime, type);
+            Long joinCount = moralActivityMapper.selectJoinCountByType(startTime, endTime, type);
             joinCountList.add(joinCount);
 
-        });
+        }
         ChartActivityCountRespVO vo = new ChartActivityCountRespVO();
         vo.setActivityCountList(activityCountList);
         vo.setJoinCountList(joinCountList);

@@ -152,10 +152,10 @@ public class AidWorkServiceImpl implements AidWorkService {
 
         LocalDateTime startTime = reqVO.getStartTime();
         LocalDateTime endTime = reqVO.getEndTime();
-        if (startTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
+        if (startTime != null && startTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
             startTime = null;
         }
-        if (endTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
+        if (endTime !=null && endTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
             endTime = null;
         }
 
@@ -203,10 +203,10 @@ public class AidWorkServiceImpl implements AidWorkService {
     public List<AidWorkApplyCountRespVO> applyCount(@Valid AidWorkApplyCountReqVO reqVO) {
         LocalDateTime startTime = reqVO.getStartTime();
         LocalDateTime endTime = reqVO.getEndTime();
-        if (startTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
+        if (startTime != null && startTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
             startTime = null;
         }
-        if (endTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
+        if (endTime !=null && endTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
             endTime = null;
         }
 

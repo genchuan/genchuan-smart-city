@@ -30,7 +30,11 @@ public interface StationOpReportMapper extends BaseMapperX<StationOpReportDO> {
 
     List<StationOpReportChartRespVO.AreaBarVO> selectAreaBar(@Param("reportId") Long reportId);
 
-    Page<StationOpReportDO> selectReportPage(Page<StationOpReportDO> mpPage);
+//    Page<StationOpReportDO> selectReportPage(Page<StationOpReportDO> mpPage);
+    Page<StationOpReportDO> selectReportPage(
+            @Param("query") StationOpReportPageReqVO pageReqVO,
+            Page<StationOpReportDO> page
+    );
     /**
      * 分页查询报表（统计SQL）
      */

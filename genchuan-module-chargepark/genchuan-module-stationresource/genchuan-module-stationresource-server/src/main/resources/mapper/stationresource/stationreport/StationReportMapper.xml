@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.stationreport.StationReportMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+    <!-- 1. area_info 片区统计：总片区数、覆盖场站数 -->
+    <select id="selectAreaReport" resultType="java.util.Map">
+        SELECT
+            COUNT(id) AS totalAreaCount,
+            IFNULL(SUM(station_count), 0) AS coverStationCount
+        FROM area_info
+        WHERE deleted = 0
+    </select>
+
+    <!-- 2. station_info 场站统计：总站场数、正常运营数 -->
+    <select id="selectStationReport" resultType="java.util.Map">
+        SELECT
+            COUNT(id) AS totalStationCount,
+            SUM(CASE WHEN status = '已生效' THEN 1 ELSE 0 END) AS normalOperateCount
+        FROM station_info
+        WHERE deleted = 0
+    </select>
+
+    <!-- 3. parking_space_info 车位统计：总车位数、可用车位数 -->
+    <select id="selectSpaceReport" resultType="java.util.Map">
+        SELECT
+            COUNT(id) AS totalSpaceCount,
+            SUM(CASE WHEN real_status = '空闲' THEN 1 ELSE 0 END) AS availableSpaceCount
+        FROM parking_space_info
+        WHERE deleted = 0
+    </select>
+
+    <!-- 4. 生效规则数：时段权限 + 收费规则 + 充停联动 -->
+    <select id="selectEffectiveRuleReport" resultType="java.util.Map">
+        SELECT
+            (
+                    (SELECT COUNT(id) FROM time_permission WHERE deleted = 0 AND status = '已生效') +
+                    (SELECT COUNT(id) FROM fee_rule WHERE deleted = 0 AND status = '已生效') +
+                    (SELECT COUNT(id) FROM charge_park_link WHERE deleted = 0 AND status = '已生效')
+            ) AS effectiveRuleCount
+        FROM DUAL
+    </select>
+
+    <!-- 5. charge_park_link 订单量 + 营收（按时间范围） -->
+    <select id="selectChargeParkOrderReport" resultType="java.util.Map">
+        SELECT
+            IFNULL(SUM(today_order_count), 0) AS orderCount,
+            IFNULL(SUM(today_income), 0) AS revenue
+        FROM charge_park_link
+        WHERE deleted = 0
+          AND create_time BETWEEN #{reportStartTime} AND #{reportEndTime}
+    </select>
+
+    <!-- 6. debt_expand 追缴完成率 -->
+    <select id="selectDebtExpandReport" resultType="java.util.Map">
+        SELECT IFNULL(AVG(recovery_rate), 0) AS recoveryRate
+        FROM debt_expand
+        WHERE deleted = 0
+    </select>
+
+    <!-- 7. deposit_plan 押金订单量 -->
+    <select id="selectDepositPlanReport" resultType="java.util.Map">
+        SELECT IFNULL(SUM(deposit_order_count), 0) AS depositOrderCount
+        FROM deposit_plan
+        WHERE deleted = 0
+    </select>
+</mapper>
