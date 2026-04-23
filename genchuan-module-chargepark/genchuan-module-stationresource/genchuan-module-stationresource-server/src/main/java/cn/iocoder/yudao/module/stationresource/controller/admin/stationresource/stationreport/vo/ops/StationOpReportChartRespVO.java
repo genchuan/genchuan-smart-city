@@ -16,14 +16,23 @@ public class StationOpReportChartRespVO {
     @Schema(description = "地图数据")
     private List<MapData> mapData;
 
-    @Schema(description = "地图数据-场站")
+    @Schema(description = "地图数据-场站",hidden = true, accessMode = Schema.AccessMode.READ_ONLY)
     private List<StationMapData> stationMapData;
 
-    @Schema(description = "地图数据-车位")
+    @Schema(description = "地图数据-车位",hidden = true, accessMode = Schema.AccessMode.READ_ONLY)
     private List<ParkSpaceMapData> parkSpaceMapData;
 
     @Schema(description = "柱状图数据")
     private List<BarData> barData;
+
+    @Schema(description = "柱状图数据-场站类型")
+    private List<StationTypeBarData> stationTypeBarData;
+
+    @Schema(description = "柱状图数据-场站订单数量")
+    private List<StationOrderCountBarData> stationOrderCountBarData;
+
+    @Schema(description = "柱状图数据-场站追缴成功率数量")
+    private List<StationRecoverFinishBarData> stationRecoverFinishBarData;
 
     @Schema(description = "折线图数据")
     private List<LineData> lineData;
@@ -99,6 +108,31 @@ public class StationOpReportChartRespVO {
         private String stationType;
         @Schema(description = "场站数量", example = "8")
         private Integer stationCount;
+    }
+    @Data
+    @Schema(description = "柱状图数据-场站类型")
+    public static class StationTypeBarData {
+        @Schema(description = "场站类型名称", example = "丰泽区")
+        private String stationType;
+        @Schema(description = "场站数量", example = "8")
+        private Integer stationCount;
+    }
+
+    @Data
+    @Schema(description = "柱状图数据-场站订单数量")
+    public static class StationOrderCountBarData {
+        @Schema(description = "场站名称", example = "丰泽区场站")
+        private String stationName;
+        @Schema(description = "订单数量", example = "8")
+        private Integer orderCount;
+    }
+    @Data
+    @Schema(description = "柱状图数据-场站追缴完成率")
+    public static class StationRecoverFinishBarData {
+        @Schema(description = "场站名称", example = "丰泽区场站")
+        private String stationName;
+        @Schema(description = "追缴完成", example = "8")
+        private Integer recoverFinish;
     }
 
     @Data

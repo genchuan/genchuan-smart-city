@@ -13,28 +13,6 @@
         WHERE a.deleted = 0
     </select>
 
-    <!-- 9. 柱状图数据：片区场站数 + 场站类型统计 -->
-<!--    <select id="selectBarData" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.ops.StationOpReportChartRespVO$BarData">-->
-<!--        SELECT-->
-<!--            area_name AS areaName,-->
-<!--            NULL AS stationType,-->
-<!--            station_count AS stationCount-->
-<!--        FROM (-->
-<!--                 SELECT a.name AS area_name, COUNT(s.id) AS station_count-->
-<!--                 FROM area_info a-->
-<!--                          LEFT JOIN station_info s ON a.id = s.area_id-->
-<!--                 WHERE a.deleted = 0 AND s.deleted = 0-->
-<!--                 GROUP BY a.name-->
-<!--             ) t1-->
-<!--        UNION ALL-->
-<!--        SELECT-->
-<!--            NULL AS areaName,-->
-<!--            s.type AS stationType,-->
-<!--            COUNT(s.id) AS stationCount-->
-<!--        FROM station_info s-->
-<!--        WHERE s.deleted = 0-->
-<!--        GROUP BY s.type-->
-<!--    </select>-->
     <select id="selectBarData" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.ops.StationOpReportChartRespVO$BarData">
         SELECT
             area_name AS areaName,
@@ -69,7 +47,7 @@
                  LEFT JOIN debt_expand de ON s.id = de.station_id
                  LEFT JOIN time_permission tp ON s.id = tp.station_id
         WHERE s.deleted = 0
-          AND s.create_time BETWEEN #{reportStartTime} AND #{reportEndTime}
+       <!--     AND s.create_time BETWEEN #{reportStartTime} AND #{reportEndTime}  -->
         GROUP BY DATE_FORMAT(s.create_time, '%Y-%m-%d')
         ORDER BY date
     </select>
@@ -157,5 +135,43 @@
             left join station_info s on p.station_id = s.id
                  left join area_info a on s.area_id = a.id
         WHERE p.deleted = 0
+    </select>
+
+    <select id="selectStationTypeBarData"
+            resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.ops.StationOpReportChartRespVO$StationTypeBarData">
+        SELECT
+            s.type AS stationType,
+            COUNT(s.id) AS stationCount
+        FROM station_info s
+        WHERE s.deleted = 0
+        GROUP BY s.type
+    </select>
+    <select id="selectStationOrderCountBarData"
+            resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.ops.StationOpReportChartRespVO$StationOrderCountBarData">
+        select
+            s.name as stationName,
+            count(*) as orderCount
+        from
+            all_order o
+        left join station_info  s on o.station_id=s.id
+        where 1=1
+
+        <if test="reportStartTime != null">
+            and o.create_order_time >= #{reportStartTime}
+        </if>
+        <if test="reportEndTime != null">
+            and o.create_order_time &lt;= #{reportEndTime}
+        </if>
+        group by s.name
+    </select>
+    <select id="selectStationRecoverFinishBarData"
+            resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.ops.StationOpReportChartRespVO$StationRecoverFinishBarData">
+        select
+            s.name    as stationName,
+            coalesce(avg(d.recovery_rate),0) as recoverFinish
+        from
+            debt_expand d
+        left join station_info s on d.station_id=s.id
+        group by s.name
     </select>
 </mapper>

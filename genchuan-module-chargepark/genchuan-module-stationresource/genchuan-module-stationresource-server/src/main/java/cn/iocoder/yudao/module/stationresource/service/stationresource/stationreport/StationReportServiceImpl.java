@@ -130,12 +130,23 @@ public class StationReportServiceImpl implements StationReportService {
         // 地图数据（片区+经纬度）
         List<StationOpReportChartRespVO.MapData> mapData = stationReportMapper.selectMapData(reqVO);
         resp.setMapData(mapData);
-
-        // 柱状图数据（片区场站数、场站类型分布）
-        List<StationOpReportChartRespVO.BarData> barData = stationReportMapper.selectBarData(reqVO);
-        resp.setBarData(barData);
         List<StationOpReportChartRespVO.StationMapData> stationMapData = stationReportMapper.getStationMapData(reqVO);
         resp.setStationMapData(stationMapData);
+
+        // 柱状图数据（片区场站数、场站类型分布）
+            //片区场站
+        List<StationOpReportChartRespVO.BarData> barData = stationReportMapper.selectBarData(reqVO);
+        resp.setBarData(barData);
+            // TODO 场站类型 分类 的场站数目
+        List<StationOpReportChartRespVO.StationTypeBarData> stationTypeBarData = stationReportMapper.selectStationTypeBarData(reqVO);
+        resp.setStationTypeBarData(stationTypeBarData);
+            // TODO 场站订单数目
+        List<StationOpReportChartRespVO.StationOrderCountBarData> stationOrderCountBarData = stationReportMapper.selectStationOrderCountBarData(reqVO);
+        resp.setStationOrderCountBarData(stationOrderCountBarData);
+            // TODO 场站 追缴完成率
+        List<StationOpReportChartRespVO.StationRecoverFinishBarData> stationRecoverFinishBarData = stationReportMapper.selectStationRecoverFinishBarData(reqVO);
+        resp.setStationRecoverFinishBarData(stationRecoverFinishBarData);
+
             //车位
         List<StationOpReportChartRespVO.ParkSpaceMapData> parkSpaceMapData = stationReportMapper.getParkSpaceMapData(reqVO);
         resp.setParkSpaceMapData(parkSpaceMapData);
@@ -145,79 +156,6 @@ public class StationReportServiceImpl implements StationReportService {
         resp.setLineData(lineData);
 
         return resp;
-    }
-    /**
-     * 片区信息 Mapper
-     */
-    @Resource
-    private AreaInfoMapper areaInfoMapper;
-
-    /**
-     * 场站信息 Mapper
-     */
-    @Resource
-    private StationInfoMapper stationInfoMapper;
-
-    /**
-     * 车位信息 Mapper
-     */
-    @Resource
-    private ParkingSpaceInfoMapper parkingSpaceInfoMapper;
-
-    /**
-     * 时段权限 Mapper
-     */
-    @Resource
-    private TimePermissionMapper timePermissionMapper;
-
-    /**
-     * 收费规则 Mapper
-     */
-    @Resource
-    private FeeRuleMapper feeRuleMapper;
-
-    /**
-     * 充停联动 Mapper
-     */
-    @Resource
-    private ChargeParkLinkMapper chargeParkLinkMapper;
-
-    /**
-     * 欠费补缴 Mapper
-     */
-    @Resource
-    private DebtExpandMapper debtExpandMapper;
-
-    /**
-     * 押金方案 Mapper
-     */
-    @Resource
-    private DepositPlanMapper depositPlanMapper;
-
-    /**
-     * 获得场站资源报表分页
-     *
-     * @param pageReqVO 分页查询条件
-     * @return 分页结果
-     */
-    @Override
-    public PageResult<StationReportDO> getReportPage(StationReportPageReqVO pageReqVO) {
-        // 构建查询条件
-        LambdaQueryWrapper<StationReportDO> qw = new LambdaQueryWrapper<StationReportDO>()
-                // 报表周期查询
-                .eq(StrUtil.isNotBlank(pageReqVO.getReportCycle()), StationReportDO::getReportCycle, pageReqVO.getReportCycle())
-                // 生成状态查询
-                .eq(StrUtil.isNotBlank(pageReqVO.getGenerateStatus()), StationReportDO::getGenerateStatus, pageReqVO.getGenerateStatus())
-                // 时间范围查询
-                .between(StrUtil.isAllNotBlank(pageReqVO.getStartTime(), pageReqVO.getEndTime()),
-                        StationReportDO::getReportStartTime, pageReqVO.getStartTime(), pageReqVO.getEndTime())
-                // 按ID倒序
-                .orderByDesc(StationReportDO::getId);
-
-        // 分页查询
-        IPage<StationReportDO> page = stationReportMapper.selectPage(MyBatisUtils.buildPage(pageReqVO), qw);
-//        return PageResult.of(page);
-        return null;
     }
 
     /**
@@ -235,275 +173,6 @@ public class StationReportServiceImpl implements StationReportService {
             throw exception("场站报表不存在");
         }
         return report;
-    }
-
-    /**
-     * 创建并生成场站资源报表
-     *
-     * @param reqVO 创建参数
-     * @return 生成结果
-     */
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Map<String, Object> createReport(StationReportCreateReqVO reqVO) {
-        // 1. 构建报表DO，设置初始状态：生成中
-        StationReportDO report = BeanUtils.toBean(reqVO, StationReportDO.class);
-        report.setGenerateStatus("生成中");
-        String username = SecurityFrameworkUtils.getLoginUserNickname() != null ? SecurityFrameworkUtils.getLoginUserNickname() : "系统";
-        report.setOperator(username);
-        report.setExportCount(0L);
-        report.setGenerateTime(null);
-
-        // 2. 插入数据库
-        stationReportMapper.insert(report);
-
-        // 3. 异步执行数据统计
-        asyncGenerateReport(report.getId(), reqVO);
-
-        // 4. 返回前端提示信息
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", report.getId());
-        map.put("success", true);
-        map.put("msg", "报表生成中，生成完成后自动刷新");
-        return map;
-    }
-
-    /**
-     * 异步生成报表数据（统计业务数据）
-     *
-     * @param reportId 报表ID
-     * @param reqVO    参数
-     */
-    @Async
-    public void asyncGenerateReport(Long reportId, StationReportCreateReqVO reqVO) {
-        try {
-            log.info("[asyncGenerateReport] 开始生成报表：{}", reportId);
-
-            // 执行统计逻辑，获取数据
-            StationReportDO update = buildRealTimeData(reqVO);
-            update.setId(reportId);
-            update.setGenerateStatus("已生成");
-            update.setGenerateTime(LocalDateTime.now());
-
-            // 更新报表状态和统计数据
-            stationReportMapper.updateById(update);
-            log.info("[asyncGenerateReport] 报表生成成功：{}", reportId);
-        } catch (Exception e) {
-            // 异常时标记为生成失败
-            log.error("[asyncGenerateReport] 报表生成失败", e);
-            StationReportDO update = new StationReportDO();
-            update.setId(reportId);
-            update.setGenerateStatus("生成失败");
-            stationReportMapper.updateById(update);
-        }
-    }
-
-    /**
-     * 实时统计所有业务数据，组装报表信息
-     *
-     * @param reqVO 请求参数
-     * @return 统计后的报表DO
-     */
-    private StationReportDO buildRealTimeData(StationReportCreateReqVO reqVO) {
-//        StationReportDO data = new StationReportDO();
-//
-//        // 1. 统计总片区数量 → Long
-//        Long totalAreaNum = areaInfoMapper.selectCount(new LambdaQueryWrapper<AreaInfoDO>()
-//                .eq(AreaInfoDO::getDeleted, false));
-//        data.setTotalAreaNum(totalAreaNum);
-//
-//        // 2. 统计覆盖场站总数 → Integer
-//        Long coverStationNum = areaInfoMapper.selectSumStationCount();
-//        data.setCoverStationNum(coverStationNum == null ? 0 : coverStationNum);
-//
-//        // 3. 统计总站场数量 → Long
-//        Long totalStationNum = stationInfoMapper.selectCount(new LambdaQueryWrapper<StationInfoDO>()
-//                .eq(StationInfoDO::getDeleted, false));
-//        data.setTotalStationNum(totalStationNum);
-//
-//        // 4. 统计正常运营（已生效）场站数量 → Long
-//        Long normalStationNum = stationInfoMapper.selectCount(new LambdaQueryWrapper<StationInfoDO>()
-//                .eq(StationInfoDO::getDeleted, false)
-//                .eq(StationInfoDO::getStatus, "已生效"));
-//        data.setNormalOperateStationNum(normalStationNum);
-//
-//        // 5. 统计总车位数 → Long
-//        Long totalSpaceNum = parkingSpaceInfoMapper.selectCount(new LambdaQueryWrapper<ParkingSpaceInfoDO>()
-//                .eq(ParkingSpaceInfoDO::getDeleted, false));
-//        data.setTotalSpaceNum(totalSpaceNum);
-//
-//        // 6. 统计可用车位（空闲状态） → Long
-//        Long availableSpaceNum = parkingSpaceInfoMapper.selectCount(new LambdaQueryWrapper<ParkingSpaceInfoDO>()
-//                .eq(ParkingSpaceInfoDO::getDeleted, false)
-//                .eq(ParkingSpaceInfoDO::getRealStatus, "空闲"));
-//        data.setAvailableSpaceNum(availableSpaceNum);
-//
-//        // 7. 统计已生效的规则总数 → Long
-//        Long ruleNum = 0L;
-//        ruleNum += timePermissionMapper.selectCount(new LambdaQueryWrapper<TimePermissionDO>()
-//                .eq(TimePermissionDO::getDeleted, false).eq(TimePermissionDO::getStatus, "已生效"));
-//        ruleNum += feeRuleMapper.selectCount(new LambdaQueryWrapper<FeeRuleDO>()
-//                .eq(FeeRuleDO::getDeleted, false).eq(FeeRuleDO::getStatus, "已生效"));
-//        ruleNum += chargeParkLinkMapper.selectCount(new LambdaQueryWrapper<ChargeParkLinkDO>()
-//                .eq(ChargeParkLinkDO::getDeleted, false).eq(ChargeParkLinkDO::getStatus, "已生效"));
-//        data.setEffectiveRuleNum(ruleNum);
-//
-//        // 8. 统计追缴完成率
-//        BigDecimal recoveryRate = debtExpandMapper.selectAvgRecoveryRate();
-//        data.setRecoveryRate(Objects.requireNonNullElse(recoveryRate, BigDecimal.ZERO));
-//
-//        // 9. 统计押金订单数量
-//        Integer depositOrderNum = depositPlanMapper.selectSumDepositOrderCount();
-//        data.setDepositOrderNum(Objects.requireNonNullElse(depositOrderNum, 0));
-//
-//        // 10. 订单量与营收（预留扩展）
-//        data.setOrderNum(0L);
-//        data.setIncome(BigDecimal.ZERO);
-
-//        return data;
-
-        return null;
-    }
-
-    /**
-     * 导出场站资源报表
-     *
-     * @param reqVO    查询条件
-     * @param response 响应
-     */
-    @Override
-    public void exportReport(StationReportPageReqVO reqVO, HttpServletResponse response) {
-        // 报表导出逻辑，可使用ExcelUtils实现
-        log.info("exportReport 导出完成");
-    }
-
-    /**
-     * 获取场站报表图表数据
-     *
-     * @param reqVO 查询参数
-     * @return 图表VO
-     */
-    @Override
-    public StationReportChartRespVO getReportChart(StationReportChartReqVO reqVO) {
-//        // 获取统计数据
-//        StationReportDO data = buildRealTimeData(reqVO);
-//
-//        // 转换为卡片数据
-//        StationReportChartRespVO vo = new StationReportChartRespVO();
-//        StationReportChartRespVO.CardData card = BeanUtils.toBean(data, StationReportChartRespVO.CardData.class);
-//        vo.setCardData(card);
-//
-//        // 地图、柱状图、折线图（预留扩展）
-//        vo.setMapData(Collections.emptyList());
-//        vo.setBarData(Collections.emptyList());
-//        vo.setLineData(Collections.emptyList());
-//
-//        return vo;
-        return null;
-    }
-
-    @Override
-    public StationReportDO getReportPage2(StationOpReportCreateReqVO reqVO) {
-        // ========== 核心：自动根据报表类型计算时间(自定义报表：保留前端传入的 startTime、endTime 不变) ==========
-        String reportType = reqVO.getReportCycle();
-        if (reportType!=null){
-            //如果不是自定义报表，自动计算时间
-            if (StrUtil.isNotBlank(reportType) && !"自定义报表".equals(reportType)) {
-                // 非自定义：自动计算 开始/结束 时间
-                Date[] dates = autoCalcReportTime(reportType);
-                // 覆盖前端传入的时间（自动生成）
-                // 方式1：使用 Date -> LocalDateTime 直接转换（推荐，无格式问题）
-                reqVO.setReportStartTime(LocalDateTime.ofInstant(dates[0].toInstant(), ZoneId.systemDefault()));
-                reqVO.setReportEndTime(LocalDateTime.ofInstant(dates[1].toInstant(), ZoneId.systemDefault()));
-            }
-        }
-
-        System.out.println("cs2026-04-22 11:24:10:"+reqVO);
-
-        //构造返回参数
-        StationReportDO respVO = new StationReportDO();
-
-        //1.设置reportCycle,reportStartTime，reportEndTime
-        respVO.setReportCycle(reqVO.getReportCycle());
-        respVO.setReportStartTime(reqVO.getReportStartTime());
-        respVO.setReportEndTime(reqVO.getReportEndTime());
-
-        // 2. 开始统计业务数据（基于现有业务表，不新增冗余表）
-        //----------------------- area_info-------------------------------------------------------------
-        // 【总片区数】统计：从 area_info 表统计未删除、有效片区的总数量
-        // 【覆盖场站数】统计：从 area_info 表对 station_count 字段进行求和
-        Map<String, Object> areaMap = stationReportMapper.selectAreaReport(reqVO);
-        respVO.setTotalAreaCount(((Number) areaMap.get("totalAreaCount")).longValue());
-        // TODO 5145 场站数 估计得从 场站表
-//        respVO.setCoverStationCount(((Number) areaMap.get("coverStationCount")).longValue());
-
-        // 【总站场数】统计：从 station_info 表统计未删除、有效场站的总数量
-        // 【正常运营数】统计：从 station_info 表统计 status = 已生效 的场站数量
-        Map<String, Object> stationMap = stationReportMapper.selectStationReport(reqVO);
-        respVO.setTotalStationCount(((Number) stationMap.get("totalStationCount")).longValue());
-        respVO.setNormalOperateCount(((Number) stationMap.get("normalOperateCount")).longValue());
-        // TODO 5145 场站数 估计得从 场站表
-        respVO.setCoverStationCount(((Number) stationMap.get("totalStationCount")).longValue());
-
-        //-------------------------parking_space_info-----------------------------------------------------------
-        // 【总车位数】统计：从 parking_space_info 表统计未删除、有效车位的总数量
-        // 【可用车位数】统计：从 parking_space_info 表统计 real_status = 空闲 的车位数量
-        Map<String, Object> spaceMap = stationReportMapper.selectSpaceReport(reqVO);
-        respVO.setTotalSpaceCount(((Number) spaceMap.get("totalSpaceCount")).longValue());
-        respVO.setAvailableSpaceCount(((Number) spaceMap.get("availableSpaceCount")).longValue());
-
-        //------------------------------------------------------------------------------------
-        // 【生效规则数】统计：
-        //      ① time_permission 表中 status = 已生效 的数量
-        //      ② fee_rule 表中 status = 已生效 的数量
-        //      ③ charge_park_link 表中 status = 已生效 的数量
-        //      三者求和得到总生效规则数
-        Map<String, Object> ruleMap = stationReportMapper.selectEffectiveRuleReport(reqVO);
-        respVO.setEffectiveRuleCount(((Number) ruleMap.get("effectiveRuleCount")).longValue());
-
-        //----------------------------charge_park_link--------------------------------------------------------
-        // 【订单量】统计：从业务表charge_park_link.today_order_count统计当前周期内的订单总数
-        // 【营收】统计：从业务表charge_park_link.today_income统计当前周期内的营收总金额
-        Map<String, Object> orderMap = stationReportMapper.selectChargeParkOrderReport(reqVO);
-        respVO.setOrderCount(((Number) orderMap.get("orderCount")).longValue());
-        respVO.setRevenue((BigDecimal) orderMap.get("revenue"));
-
-        //------------------------------------------------------------------------------------
-        // 【追缴完成率】统计：从 debt_expand 表计算 recovery_rate 字段的平均值
-        Map<String, Object> debtMap = stationReportMapper.selectDebtExpandReport(reqVO);
-        respVO.setRecoveryRate((BigDecimal) debtMap.get("recoveryRate"));
-
-        // 【押金订单量】统计：从 deposit_plan 表对 deposit_order_count 字段进行求和
-        Map<String, Object> depositMap = stationReportMapper.selectDepositPlanReport(reqVO);
-        respVO.setDepositOrderCount(((Number) depositMap.get("depositOrderCount")).longValue());
-
-
-        //------------------------------------------------------------------------------------
-        // 【生成状态】设置：生成中 / 已生成 / 生成失败,默认已生成
-        // 【报表生成时间】设置：当前系统时间
-        // 【操作人】设置：当前登录用户昵称/姓名（来自 system_user），先固定写死system
-        // 【导出次数】设置：默认 0
-        respVO.setGenerateStatus("已生成");
-        respVO.setGenerateTime(LocalDateTime.now());
-        respVO.setOperator("system");
-        respVO.setExportCount(0L);
-        respVO.setStatCode(VrvNameUtil.generateCode("stationre"));
-
-        //------------------------------------------------------------------------------------
-        // 【创建者】设置：当前登录用户，先固定写死1
-        // 【创建时间】设置：当前系统时间
-        // 【更新时间】设置：当前系统时间
-        //------------------------------------------------------------------------------------
-        respVO.setCreator("1");
-        respVO.setUpdater("1");
-//        respVO.setCreateTime(LocalDateTime.now());
-//        respVO.setUpdateTime(LocalDateTime.now());
-
-
-        // TODO 插入
-        stationReportMapper.insert(respVO);
-        // 3. 封装最终返回数据
-        return respVO;
     }
 
     @Override
@@ -530,6 +199,7 @@ public class StationReportServiceImpl implements StationReportService {
 
     @Override
     public Long addReport(StationOpReportCreateReqVO reqVO) {
+        System.out.println("cs2026-04-23 16:34:06:"+reqVO);
         // ========== 核心：自动根据报表类型计算时间(自定义报表：保留前端传入的 startTime、endTime 不变) ==========
         String reportType = reqVO.getReportCycle();
         if (reportType!=null){
@@ -543,8 +213,24 @@ public class StationReportServiceImpl implements StationReportService {
                 reqVO.setReportEndTime(LocalDateTime.ofInstant(dates[1].toInstant(), ZoneId.systemDefault()));
             }
         }
-
+        System.out.println("cs2026-04-23 16:35:07:"+reqVO);
+        //去掉毫秒，方便后续的报表唯一性校验：
+        reqVO.setReportStartTime(reqVO.getReportStartTime().withNano(0));
+        reqVO.setReportEndTime(reqVO.getReportEndTime().withNano(0));
         System.out.println("cs2026-04-22 11:24:10:"+reqVO);
+
+        // ========== 【核心：判断重复报表】 ==========
+        // 根据 周期 + 开始时间 + 结束时间 查询是否已存在
+        LambdaQueryWrapper<StationReportDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(StationReportDO::getReportCycle, reqVO.getReportCycle());
+        queryWrapper.eq(StationReportDO::getReportStartTime, reqVO.getReportStartTime());
+        queryWrapper.eq(StationReportDO::getReportEndTime, reqVO.getReportEndTime());
+        // 按 ID 倒序 → 最新的在最前面
+        queryWrapper.orderByDesc(StationReportDO::getId);
+        // 只取第一条（完美解决多条重复报错）
+        queryWrapper.last("LIMIT 1");
+
+        StationReportDO existReport = stationReportMapper.selectOne(queryWrapper);
 
         //构造返回参数
         StationReportDO respVO = new StationReportDO();
@@ -626,10 +312,15 @@ public class StationReportServiceImpl implements StationReportService {
 //        respVO.setUpdateTime(LocalDateTime.now());
 
 
-        // TODO 插入
-        stationReportMapper.insert(respVO);
-        // 3. 封装最终返回数据
-        return respVO.getId();
+        // ========== 存在则更新最新一条，不存在则插入 ==========
+        if (existReport != null) {
+            respVO.setId(existReport.getId());
+            stationReportMapper.updateById(respVO);
+            return existReport.getId();
+        } else {
+            stationReportMapper.insert(respVO);
+            return respVO.getId();
+        }
     }
 
 

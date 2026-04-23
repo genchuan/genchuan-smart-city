@@ -54,13 +54,7 @@ public class StationReportController {
         Long id =   stationReportService.addReport(reqVO);
         return success(id);
     }
-    @GetMapping("/page2")
-    @Operation(summary = "2-获得场站资源报表分页",hidden = true)
-    @PreAuthorize("@ss.hasPermission('stationresource:station-report:query')")
-    public CommonResult<StationReportDO> getReportPage2(@Valid StationOpReportCreateReqVO pageReqVO) {
-        StationReportDO pageResult = stationReportService.getReportPage2(pageReqVO);
-        return success(pageResult);
-    }
+
 
     @GetMapping("/page")
     @Operation(summary = "获得场站资源报表分页")
@@ -109,19 +103,5 @@ public class StationReportController {
     }
     //================================上面是最新的==================================================
 
-
-
-
-
-
-
-
-//    @GetMapping("/chart")
-//    @Operation(summary = "场站资源报表数据可视化（图表）")
-//    @PreAuthorize("@ss.hasPermission('stationresource:station-report:chart')")
-//    public CommonResult<StationReportChartRespVO> getReportChart(@Valid StationReportChartReqVO reqVO) {
-//        StationReportChartRespVO chartData = stationReportService.getReportChart(reqVO);
-//        return success(chartData);
-//    }
 
 }
