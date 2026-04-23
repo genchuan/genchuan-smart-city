@@ -2,9 +2,7 @@ package cn.iocoder.yudao.module.stationresource.service.stationresource.stationr
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.*;
-import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.ops.StationOpReportCreateReqVO;
-import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.ops.StationOpReportPageReqVO;
-import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.ops.StationOpReportRespVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.ops.*;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.stationreport.StationReportDO;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -63,4 +61,6 @@ public interface StationReportService {
     PageResult<StationReportDO> getPage(StationOpReportPageReqVO pageReqVO);
 
     Long addReport(StationOpReportCreateReqVO reqVO);
+
+    StationOpReportChartRespVO getReportChartData(StationOpReportChartReqVO reqVO);
 }
