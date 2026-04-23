@@ -50,4 +50,10 @@ public interface StationReportMapper extends BaseMapperX<StationReportDO> {
     List<StationOpReportChartRespVO.StationMapData> getStationMapData(StationOpReportChartReqVO reqVO);
 
     List<StationOpReportChartRespVO.ParkSpaceMapData> getParkSpaceMapData(StationOpReportChartReqVO reqVO);
+
+    List<StationOpReportChartRespVO.StationTypeBarData> selectStationTypeBarData(StationOpReportChartReqVO reqVO);
+
+    List<StationOpReportChartRespVO.StationOrderCountBarData> selectStationOrderCountBarData(StationOpReportChartReqVO reqVO);
+
+    List<StationOpReportChartRespVO.StationRecoverFinishBarData> selectStationRecoverFinishBarData(StationOpReportChartReqVO reqVO);
 }
