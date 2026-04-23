@@ -29,7 +29,7 @@ import cn.iocoder.yudao.module.inspectop.controller.admin.assetcheck.vo.*;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.assetcheck.AssetCheckDO;
 import cn.iocoder.yudao.module.inspectop.service.assetcheck.AssetCheckService;
 
-@Tag(name = "管理后台 - 资产盘点")
+@Tag(name = "巡查巡检 - 资产盘点")
 @RestController
 @RequestMapping("/inspectop/asset-check")
 @Validated

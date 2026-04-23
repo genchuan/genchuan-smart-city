@@ -4,6 +4,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.merchantreconcile.vo.*;
+import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.IdReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.merchantreconcile.ReconcileBillDO;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.merchantreconcile.ReconcileBillMapper;
 import jakarta.annotation.Resource;
@@ -14,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -69,10 +71,37 @@ public class ReconcileBillServiceImpl implements ReconcileBillService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public void reconcileReconcileBill(IdReqVO reqVO) {
+        ReconcileBillDO bill = reconcileBillMapper.selectById(reqVO.getId());
+        if (bill == null) throw exception(RECONCILE_BILL_NOT_EXISTS);
+        ReconcileBillDO update = new ReconcileBillDO();
+        update.setId(reqVO.getId());
+        update.setStatus("reconciling");
+        update.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
+        reconcileBillMapper.updateById(update);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void batchReconcileReconcileBill(List<Long> ids) {
+        ids.forEach(id -> {
+            ReconcileBillDO bill = reconcileBillMapper.selectById(id);
+            if (bill == null) return;
+            ReconcileBillDO update = new ReconcileBillDO();
+            update.setId(id);
+            update.setStatus("reconciling");
+            update.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
+            reconcileBillMapper.updateById(update);
+        });
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public void confirmReconcileBill(Long id) {
         ReconcileBillDO bill = reconcileBillMapper.selectById(id);
         if (bill == null) throw exception(RECONCILE_BILL_NOT_EXISTS);
-        if (!"pending".equals(bill.getStatus())) throw exception(RECONCILE_BILL_STATUS_CANNOT_CONFIRM);
+        if (!"pending".equals(bill.getStatus()) && !"reconciling".equals(bill.getStatus()))
+            throw exception(RECONCILE_BILL_STATUS_CANNOT_CONFIRM);
         ReconcileBillDO update = new ReconcileBillDO();
         update.setId(id);
         update.setStatus("confirmed");
@@ -83,26 +112,13 @@ public class ReconcileBillServiceImpl implements ReconcileBillService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void disputeReconcileBill(Long id, String reason) {
-        ReconcileBillDO bill = reconcileBillMapper.selectById(id);
-        if (bill == null) throw exception(RECONCILE_BILL_NOT_EXISTS);
-        if (!"pending".equals(bill.getStatus())) throw exception(RECONCILE_BILL_STATUS_CANNOT_DISPUTE);
-        ReconcileBillDO update = new ReconcileBillDO();
-        update.setId(id);
-        update.setStatus("disputed");
-        update.setRemark(reason);
-        update.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
-        reconcileBillMapper.updateById(update);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void resolveReconcileBill(Long id) {
-        ReconcileBillDO bill = reconcileBillMapper.selectById(id);
+    public void fixReconcileBill(IdReqVO reqVO) {
+        ReconcileBillDO bill = reconcileBillMapper.selectById(reqVO.getId());
         if (bill == null) throw exception(RECONCILE_BILL_NOT_EXISTS);
         ReconcileBillDO update = new ReconcileBillDO();
-        update.setId(id);
-        update.setStatus("resolved");
+        update.setId(reqVO.getId());
+        update.setDiffAmount(java.math.BigDecimal.ZERO);
+        update.setStatus("fixed");
         update.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
         reconcileBillMapper.updateById(update);
     }

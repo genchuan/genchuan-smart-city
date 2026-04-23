@@ -62,12 +62,33 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Override
     public UserInfoDO getUserInfo(Long id) {
-        return userInfoMapper.selectById(id);
+        UserInfoDO user = userInfoMapper.selectById(id);
+        if (user != null) {
+            String phone = user.getPhone();
+            if (phone != null && phone.length() >= 11) {
+                // 保留前3位和后4位，中间4位星号
+                String masked = phone.substring(0, 3) + "****" + phone.substring(phone.length() - 4);
+                user.setPhone(masked);
+            }
+            // 如果手机号长度不足11位，原样返回或置空，可根据需求调整
+        }
+        return user;
     }
 
     @Override
     public PageResult<UserInfoDO> getUserInfoPage(UserInfoPageReqVO pageReqVO) {
-        return userInfoMapper.selectPage(pageReqVO);
+        PageResult<UserInfoDO> pageResult = userInfoMapper.selectPage(pageReqVO);
+        // 对手机号进行脱敏处理
+        for (UserInfoDO user : pageResult.getList()) {
+            String phone = user.getPhone();
+            if (phone != null && phone.length() >= 11) {
+                // 保留前3位和后4位，中间4位星号
+                String masked = phone.substring(0, 3) + "****" + phone.substring(phone.length() - 4);
+                user.setPhone(masked);
+            }
+            // 如果手机号长度不足11位，原样返回或置空，可根据需求调整
+        }
+        return pageResult;
     }
 
     @Override

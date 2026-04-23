@@ -38,7 +38,7 @@ public class ParkingSpaceChartRespVO {
     public static class CardDataDTO {
         @Schema(description = "总车位数", example = "2450")
         private Long totalSpaceCount;
-
+//
         @Schema(description = "可用车位数（空闲）", example = "1280")
         private Long availableSpaceCount;
     }

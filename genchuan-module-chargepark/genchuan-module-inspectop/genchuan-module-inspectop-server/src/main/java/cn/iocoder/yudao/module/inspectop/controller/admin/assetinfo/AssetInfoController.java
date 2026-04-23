@@ -31,7 +31,7 @@ import cn.iocoder.yudao.module.inspectop.dal.dataobject.assetinfo.AssetInfoDO;
 import cn.iocoder.yudao.module.inspectop.service.assetinfo.AssetInfoService;
 import org.springframework.web.multipart.MultipartFile;
 
-@Tag(name = "管理后台 - 资产信息")
+@Tag(name = "巡查巡检 - 资产信息")
 @RestController
 @RequestMapping("/inspectop/asset-info")
 @Validated

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.vehiclepass.dal.mysql.leavemgmt.paycheck.PayCheckMapper">
+
+    <select id="selectPageJoin" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckRespVO">
+        SELECT
+            p.id,
+            p.plate_no AS plateNo,
+            p.park_fee AS parkFee,
+            p.status,
+            p.check_time AS checkTime,
+            p.station_id AS stationId,
+            s.name AS stationName,
+            p.check_user_id AS checkUserId,
+            u.nickname AS checkUserName,
+            p.check_result AS checkResult,
+            p.remark,
+            p.reserve1,
+            p.reserve2,
+            p.creator,
+            p.updater,
+            p.create_time AS createTime,
+            p.update_time AS updateTime
+        FROM pay_check p
+        LEFT JOIN station_info s ON p.station_id = s.id AND s.deleted = 0
+        LEFT JOIN user_info u ON p.check_user_id = u.id AND u.deleted = 0
+        WHERE p.deleted = 0
+        <if test="reqVO.plateNo != null and reqVO.plateNo != ''">
+            AND p.plate_no LIKE CONCAT('%', #{reqVO.plateNo}, '%')
+        </if>
+        <if test="reqVO.parkFee != null">
+            AND p.park_fee = #{reqVO.parkFee}
+        </if>
+        <if test="reqVO.status != null and reqVO.status != ''">
+            AND p.status = #{reqVO.status}
+        </if>
+        <if test="reqVO.checkTime != null and reqVO.checkTime.length == 2">
+            AND p.check_time BETWEEN FROM_UNIXTIME(#{reqVO.checkTime[0]}) AND FROM_UNIXTIME(#{reqVO.checkTime[1]})
+        </if>
+        <if test="reqVO.stationId != null">
+            AND p.station_id = #{reqVO.stationId}
+        </if>
+        <if test="reqVO.checkUserId != null">
+            AND p.check_user_id = #{reqVO.checkUserId}
+        </if>
+        <if test="reqVO.checkResult != null and reqVO.checkResult != ''">
+            AND p.check_result LIKE CONCAT('%', #{reqVO.checkResult}, '%')
+        </if>
+        <if test="reqVO.remark != null and reqVO.remark != ''">
+            AND p.remark LIKE CONCAT('%', #{reqVO.remark}, '%')
+        </if>
+        ORDER BY p.id DESC
+    </select>
+
+    <!-- 统计核验成功率趋势 -->
+    <select id="selectChartTrend" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckChartRespVO$CheckSuccessTrend">
+        SELECT
+            DATE(p.check_time) AS date,
+            ROUND(SUM(CASE WHEN p.status = '已缴清' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) AS rate
+        FROM pay_check p
+        WHERE p.deleted = 0
+        AND p.check_time IS NOT NULL
+        <if test="reqVO.startTime != null and reqVO.startTime != ''">
+            AND p.check_time >= FROM_UNIXTIME(#{reqVO.startTime})
+        </if>
+        <if test="reqVO.endTime != null and reqVO.endTime != ''">
+            AND p.check_time &lt; FROM_UNIXTIME(#{reqVO.endTime})
+        </if>
+        <if test="reqVO.stationId != null">
+            AND p.station_id = #{reqVO.stationId}
+        </if>
+        GROUP BY DATE(p.check_time)
+        ORDER BY date ASC
+    </select>
+
+    <!-- 统计总体核验成功率 -->
+    <select id="selectCheckSuccessRate" resultType="java.lang.Double">
+        SELECT
+            ROUND(SUM(CASE WHEN p.status = '已缴清' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(*), 0), 2)
+        FROM pay_check p
+        WHERE p.deleted = 0
+        <if test="reqVO.startTime != null and reqVO.startTime != ''">
+            AND p.check_time >= FROM_UNIXTIME(#{reqVO.startTime})
+        </if>
+        <if test="reqVO.endTime != null and reqVO.endTime != ''">
+            AND p.check_time &lt; FROM_UNIXTIME(#{reqVO.endTime})
+        </if>
+        <if test="reqVO.stationId != null">
+            AND p.station_id = #{reqVO.stationId}
+        </if>
+    </select>
+
+    <!-- 统计平均核验时长（小时） -->
+    <select id="selectAvgCheckDuration" resultType="java.lang.Double">
+        SELECT
+            ROUND(AVG(TIMESTAMPDIFF(SECOND, p.create_time, p.check_time) / 3600.0), 2)
+        FROM pay_check p
+        WHERE p.deleted = 0
+        AND p.check_time IS NOT NULL
+        <if test="reqVO.startTime != null and reqVO.startTime != ''">
+            AND p.create_time >= FROM_UNIXTIME(#{reqVO.startTime})
+        </if>
+        <if test="reqVO.endTime != null and reqVO.endTime != ''">
+            AND p.create_time &lt; FROM_UNIXTIME(#{reqVO.endTime})
+        </if>
+        <if test="reqVO.stationId != null">
+            AND p.station_id = #{reqVO.stationId}
+        </if>
+    </select>
+
+</mapper>

@@ -1,11 +1,11 @@
 package cn.iocoder.yudao.module.studentmgmt.service.comparemgmt;
 
-import java.util.*;
-import jakarta.validation.*;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.comparemgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.comparemgmt.CompareMgmtDO;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 评比管理 Service 接口
@@ -26,8 +26,9 @@ public interface CompareMgmtService {
      * 更新评比管理
      *
      * @param updateReqVO 更新信息
+     * @return
      */
-    void updateCompareMgmt(@Valid CompareMgmtSaveReqVO updateReqVO);
+    boolean updateCompareMgmt(@Valid CompareMgmtUpdateReqVO updateReqVO);
 
     /**
      * 删除评比管理
@@ -59,4 +60,11 @@ public interface CompareMgmtService {
      */
     PageResult<CompareMgmtDO> getCompareMgmtPage(CompareMgmtPageReqVO pageReqVO);
 
+    boolean score(@Valid CompareMgmtScoreReqVO reqVO);
+
+    boolean award(@Valid CompareMgmtAwardReqVO reqVO);
+
+    CompareMgmtChartRespVO chart(@Valid CompareMgmtChartReqVO reqVO);
+
+    CompareMgmtScoreRankRespVO scoreRank(@Valid CompareMgmtChartReqVO reqVO);
 }

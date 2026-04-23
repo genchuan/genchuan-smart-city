@@ -18,9 +18,9 @@ public interface PayAppMapper extends BaseMapperX<PayAppDO> {
                 .orderByDesc(PayAppDO::getId));
     }
 
-    @Select("SELECT COUNT(*) FROM pay_app WHERE status = 1")
+    @Select("SELECT COUNT(*) FROM pay_app WHERE status = 1 AND deleted = 0")
     Long selectEnabledCount();
 
-    @Select("SELECT COUNT(*) FROM pay_app")
+    @Select("SELECT COUNT(*) FROM pay_app WHERE deleted = 0")
     Long selectTotalCount();
 }

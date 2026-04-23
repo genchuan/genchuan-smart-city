@@ -82,7 +82,7 @@ public class SettleStatusController {
                 BeanUtils.toBean(list, SettleStatusRespVO.class));
     }
 
-    @PutMapping("/check")
+    @PostMapping("/check")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "核查结算状态")
     public CommonResult<Boolean> checkSettleStatus(@Valid @RequestBody IdReqVO reqVO) {

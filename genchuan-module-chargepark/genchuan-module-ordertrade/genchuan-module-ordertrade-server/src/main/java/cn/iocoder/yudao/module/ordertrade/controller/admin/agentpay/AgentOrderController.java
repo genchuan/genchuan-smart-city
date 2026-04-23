@@ -92,7 +92,7 @@ public class AgentOrderController {
                 BeanUtils.toBean(list, AgentOrderRespVO.class));
     }
 
-    @PutMapping("/pay")
+    @PostMapping("/pay")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "支付代付订单")
     public CommonResult<Boolean> payAgentOrder(@Valid @RequestBody IdReqVO reqVO) {
@@ -100,7 +100,7 @@ public class AgentOrderController {
         return success(true);
     }
 
-    @PutMapping("/invoice")
+    @PostMapping("/invoice")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "开票")
     public CommonResult<Boolean> invoiceAgentOrder(@Valid @RequestBody IdReqVO reqVO) {

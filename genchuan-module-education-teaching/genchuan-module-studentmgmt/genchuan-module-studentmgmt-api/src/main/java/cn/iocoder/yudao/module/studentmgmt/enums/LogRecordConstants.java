@@ -114,6 +114,8 @@ public interface LogRecordConstants {
     String CLUB_UPDATE_SUCCESS = "更新了社团【{{#club.clubName}}】: {_DIFF{#updateReqVO}}";
     String CLUB_AUDIT_SUB_TYPE = "审核社团";
     String CLUB_AUDIT_SUCCESS = "审核了社团";
+    String CLUB_ARCHIVE_SUB_TYPE = "建档社团";
+    String CLUB_ARCHIVE_SUCCESS = "建档了社团";
 
     // ======================= Aid 奖助勤贷 =======================
 

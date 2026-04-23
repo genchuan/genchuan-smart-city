@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.vehiclepass.dal.mysql.specialpass.gateopen.GateOpenMapper">
+
+    <select id="selectPageJoin" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenRespVO">
+        SELECT
+            g.id,
+            g.station_id AS stationId,
+            s.name AS stationName,
+            g.open_reason AS openReason,
+            g.apply_user_id AS applyUserId,
+            u.nickname AS applyUserName,
+            g.apply_time AS applyTime,
+            g.status,
+            g.audit_user_id AS auditUserId,
+            au.nickname AS auditUserName,
+            g.audit_time AS auditTime,
+            g.execute_time AS executeTime,
+            g.reject_reason AS rejectReason,
+            g.remark,
+            g.reserve1,
+            g.reserve2,
+            g.creator,
+            g.updater,
+            g.create_time AS createTime,
+            g.update_time AS updateTime
+        FROM gate_open g
+        LEFT JOIN station_info s ON g.station_id = s.id AND s.deleted = 0
+        LEFT JOIN user_info u ON g.apply_user_id = u.id AND u.deleted = 0
+        LEFT JOIN user_info au ON g.audit_user_id = au.id AND au.deleted = 0
+        WHERE g.deleted = 0
+        <if test="reqVO.stationId != null">
+            AND g.station_id = #{reqVO.stationId}
+        </if>
+        <if test="reqVO.openReason != null and reqVO.openReason != ''">
+            AND g.open_reason = #{reqVO.openReason}
+        </if>
+        <if test="reqVO.applyUserId != null">
+            AND g.apply_user_id = #{reqVO.applyUserId}
+        </if>
+        <if test="reqVO.applyTime != null and reqVO.applyTime.length == 2">
+            AND g.apply_time BETWEEN FROM_UNIXTIME(#{reqVO.applyTime[0]}) AND FROM_UNIXTIME(#{reqVO.applyTime[1]})
+        </if>
+        <if test="reqVO.status != null and reqVO.status != ''">
+            AND g.status = #{reqVO.status}
+        </if>
+        <if test="reqVO.auditUserId != null">
+            AND g.audit_user_id = #{reqVO.auditUserId}
+        </if>
+        <if test="reqVO.remark != null and reqVO.remark != ''">
+            AND g.remark LIKE CONCAT('%', #{reqVO.remark}, '%')
+        </if>
+        ORDER BY g.id DESC
+    </select>
+
+    <!-- 查询开闸申请趋势（按天统计） -->
+    <select id="selectOpenApplyTrend" resultType="map">
+        SELECT
+            DATE(g.apply_time) AS date,
+            COUNT(*) AS count
+        FROM gate_open g
+        WHERE g.deleted = 0
+        <if test="startTime != null and startTime != ''">
+            AND g.apply_time >= FROM_UNIXTIME(#{startTime})
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND g.apply_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
+        <if test="stationId != null">
+            AND g.station_id = #{stationId}
+        </if>
+        GROUP BY DATE(g.apply_time)
+        ORDER BY date
+    </select>
+
+    <!-- 查询各场站开闸量 -->
+    <select id="selectStationOpenCount" resultType="map">
+        SELECT
+            s.name AS stationName,
+            COUNT(g.id) AS count
+        FROM gate_open g
+        LEFT JOIN station_info s ON g.station_id = s.id AND s.deleted = 0
+        WHERE g.deleted = 0
+        <if test="startTime != null and startTime != ''">
+            AND g.apply_time >= FROM_UNIXTIME(#{startTime})
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND g.apply_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
+        <if test="stationId != null">
+            AND g.station_id = #{stationId}
+        </if>
+        GROUP BY g.station_id, s.name
+        ORDER BY count DESC
+    </select>
+
+    <!-- 查询申请量和审批通过率 -->
+    <select id="selectOpenStats" resultType="map">
+        SELECT
+            COUNT(*) AS applyCount,
+            ROUND(SUM(CASE WHEN g.status = '已通过' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(*), 0), 1) AS auditPassRate
+        FROM gate_open g
+        WHERE g.deleted = 0
+        <if test="startTime != null and startTime != ''">
+            AND g.apply_time >= FROM_UNIXTIME(#{startTime})
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND g.apply_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
+        <if test="stationId != null">
+            AND g.station_id = #{stationId}
+        </if>
+    </select>
+
+</mapper>

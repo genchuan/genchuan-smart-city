@@ -36,7 +36,19 @@ public class PayCallbackServiceImpl implements PayCallbackService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void retryPayCallback(IdReqVO reqVO) {
+    public void processPayCallback(IdReqVO reqVO) {
+        PayCallbackDO callback = payCallbackMapper.selectById(reqVO.getId());
+        if (callback == null) throw exception(PAY_CALLBACK_NOT_EXISTS);
+        PayCallbackDO update = new PayCallbackDO();
+        update.setId(reqVO.getId());
+        update.setStatus(10);
+        update.setLastExecuteTime(LocalDateTime.now());
+        payCallbackMapper.updateById(update);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void repushPayCallback(IdReqVO reqVO) {
         PayCallbackDO callback = payCallbackMapper.selectById(reqVO.getId());
         if (callback == null) throw exception(PAY_CALLBACK_NOT_EXISTS);
         PayCallbackDO update = new PayCallbackDO();

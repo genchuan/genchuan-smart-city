@@ -18,4 +18,5 @@ public class BindParkingSpaceReqVO {
     @Schema(description = "绑定设备ID", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "设备ID不能为空")
     private Long deviceId;
+    //
 }

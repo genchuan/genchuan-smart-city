@@ -9,15 +9,12 @@ import lombok.Data;
 @Data
 @ExcelIgnoreUnannotated
 public class StudentInfoBaseVO {
-    @Schema(description = "主键 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "18139")
-    @ExcelProperty("主键 ID")
-    private Long id;
 
     @Schema(description = "学号", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("学号")
-    private String studentNo;
+    private String value;
 
     @Schema(description = "姓名", requiredMode = Schema.RequiredMode.REQUIRED, example = "芋艿")
     @ExcelProperty("姓名")
-    private String name;
+    private String label;
 }

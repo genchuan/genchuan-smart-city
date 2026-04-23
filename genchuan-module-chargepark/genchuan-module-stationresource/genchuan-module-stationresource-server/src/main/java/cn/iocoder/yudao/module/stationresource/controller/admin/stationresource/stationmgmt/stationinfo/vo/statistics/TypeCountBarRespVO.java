@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Schema(description = "各类型场站数量统计")
 public class TypeCountBarRespVO {
-
+//
     @Schema(description = "类型名称", example = "商业")
     private String name;
 

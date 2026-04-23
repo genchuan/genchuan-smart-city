@@ -108,6 +108,29 @@ public class ClubMgmtController {
         boolean isSuccess = clubMgmtService.audit(reqVO);
         return success(isSuccess);
     }
+    @PutMapping("/archive")
+    @Operation(summary = "审核社团")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:club-mgmt:archive')")
+    public CommonResult<Boolean> archive(@Valid @RequestBody ClubMgmtArchiveReqVO reqVO) {
+        boolean isSuccess = clubMgmtService.archive(reqVO);
+        return success(isSuccess);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "社团运营统计看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:club-mgmt:query')")
+    public CommonResult<ClubMgmtChartRespVO> chart(@Valid ClubMgmtChartReqVO reqVO) {
+        ClubMgmtChartRespVO vo = clubMgmtService.chart(reqVO);
+        return success(vo);
+    }
+
+    @GetMapping("/chart/clubDistribution")
+    @Operation(summary = "各社团人数 / 类型分布统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:club-mgmt:query')")
+    public CommonResult<ClubMgmtClubDistributionRespVO> clubDistribution(@Valid ClubMgmtChartReqVO reqVO) {
+        ClubMgmtClubDistributionRespVO vo = clubMgmtService.clubDistribution(reqVO);
+        return success(vo);
+    }
 
 
 }

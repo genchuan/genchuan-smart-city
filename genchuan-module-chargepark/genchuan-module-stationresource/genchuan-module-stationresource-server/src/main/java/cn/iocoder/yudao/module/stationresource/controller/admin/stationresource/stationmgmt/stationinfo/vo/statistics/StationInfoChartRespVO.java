@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @Schema(description = "场站信息统计（地图+柱状图+卡片）")
 public class StationInfoChartRespVO {
-
+//
     @Schema(description = "地图点位列表")
     private List<StationMapRespVO> stationMapList;
 

@@ -129,7 +129,7 @@ public class InvoiceListController {
         return success(true);
     }
 
-    @PutMapping("/batch-invoice")
+    @PostMapping("/batch-invoice")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "批量开票")
     public CommonResult<Boolean> batchInvoiceList(@RequestBody List<Long> ids) {

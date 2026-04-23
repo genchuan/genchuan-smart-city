@@ -1,12 +1,12 @@
 package cn.iocoder.yudao.module.studentmgmt.service.mentalmgmt;
 
-import java.util.*;
-
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
-import jakarta.validation.*;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.mentalmgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.mentalmgmt.MentalMgmtDO;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 心理管理 Service 接口

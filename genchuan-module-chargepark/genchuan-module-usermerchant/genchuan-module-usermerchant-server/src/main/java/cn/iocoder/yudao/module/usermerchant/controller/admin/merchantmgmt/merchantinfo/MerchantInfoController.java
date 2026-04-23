@@ -1,0 +1,135 @@
+package cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantinfo;
+
+import io.swagger.v3.oas.annotations.Parameters;
+import org.springframework.web.bind.annotation.*;
+import jakarta.annotation.Resource;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.security.access.prepost.PreAuthorize;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Operation;
+
+import jakarta.validation.*;
+import jakarta.servlet.http.*;
+import java.util.*;
+import java.io.IOException;
+
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
+
+import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+
+import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
+
+import cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantinfo.vo.*;
+import cn.iocoder.yudao.module.usermerchant.dal.dataobject.merchantmgmt.merchantinfo.MerchantInfoDO;
+import cn.iocoder.yudao.module.usermerchant.service.merchantmgmt.merchantinfo.MerchantInfoService;
+import org.springframework.web.multipart.MultipartFile;
+
+@Tag(name = "管理后台 - 商户信息")
+@RestController
+@RequestMapping("/usermerchant/merchant-info")
+@Validated
+public class MerchantInfoController {
+
+    @Resource
+    private MerchantInfoService merchantInfoService;
+
+    @GetMapping("/page")
+    @Operation(summary = "获得商户信息分页")
+    @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:query')")
+    public CommonResult<PageResult<MerchantInfoPageRespVO>> getMerchantInfoPage(@Valid MerchantInfoPageReqVO pageReqVO) {
+        PageResult<MerchantInfoDO> pageResult = merchantInfoService.getMerchantInfoPage(pageReqVO);
+        return success(BeanUtils.toBean(pageResult, MerchantInfoPageRespVO.class));
+    }
+
+    @PostMapping("/create")
+    @Operation(summary = "创建商户信息")
+    @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:create')")
+    public CommonResult<Boolean> createMerchantInfo(@Valid @RequestBody MerchantInfoCreateReqVO createReqVO) {
+        return success(merchantInfoService.createMerchantInfo(createReqVO));
+    }
+
+    @PostMapping("/import")
+    @Operation(summary = "导入商户信息")
+    @Parameters({
+            @Parameter(name = "file", description = "Excel 文件", required = true),
+            @Parameter(name = "updateSupport", description = "是否支持更新，默认为 false", example = "true")
+    })
+    @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:import')")
+    @ApiAccessLog(operateType = IMPORT)
+    public CommonResult<Boolean> importExcel(@RequestParam("file") MultipartFile file,
+                                             @RequestParam(value = "updateSupport", required = false, defaultValue = "false") Boolean updateSupport) throws Exception {
+        List<MerchantInfoImportExcelVO> list = ExcelUtils.read(file, MerchantInfoImportExcelVO.class);
+        return success(merchantInfoService.importInfos(list, updateSupport));
+    }
+
+    @GetMapping("/export")
+    @Operation(summary = "导出商户信息 Excel")
+    @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:export')")
+    @ApiAccessLog(operateType = EXPORT)
+    public void exportMerchantInfoExcel(@Valid MerchantInfoPageReqVO pageReqVO,
+                                        HttpServletResponse response) throws IOException {
+        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        List<MerchantInfoDO> list = merchantInfoService.getMerchantInfoPage(pageReqVO).getList();
+        // 导出 Excel
+        ExcelUtils.write(response, "商户信息.xls", "数据", MerchantInfoPageRespVO.class,
+                BeanUtils.toBean(list, MerchantInfoPageRespVO.class));
+    }
+
+    @PutMapping("/approve")
+    @Operation(summary = "审核通过")
+    @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:approve')")
+    public CommonResult<Boolean> approve(@Valid @RequestBody MerchantInfoSaveReqVO reqVO) {
+        merchantInfoService.batchUpdatePlateAuth(reqVO,1);
+        return success(true);
+    }
+
+    @PutMapping("/reject")
+    @Operation(summary = "审核驳回")
+    @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:reject')")
+    public CommonResult<Boolean> reject(@Valid @RequestBody MerchantInfoSaveReqVO reqVO) {
+        merchantInfoService.batchUpdatePlateAuth(reqVO,2);
+        return success(true);
+    }
+
+    @PutMapping("/update")
+    @Operation(summary = "更新商户信息")
+    @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:update')")
+    public CommonResult<Boolean> updateMerchantInfo(@Valid @RequestBody MerchantInfoSaveReqVO updateReqVO) {
+        merchantInfoService.updateMerchantInfo(updateReqVO);
+        return success(true);
+    }
+
+    @DeleteMapping("/delete")
+    @Operation(summary = "删除商户信息")
+    @Parameter(name = "id", description = "编号", required = true)
+    @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:delete')")
+    public CommonResult<Boolean> deleteMerchantInfo(@RequestParam("id") Long id) {
+        merchantInfoService.deleteMerchantInfo(id);
+        return success(true);
+    }
+
+    @DeleteMapping("/delete-list")
+    @Parameter(name = "ids", description = "编号", required = true)
+    @Operation(summary = "批量删除商户信息")
+                @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:delete')")
+    public CommonResult<Boolean> deleteMerchantInfoList(@RequestParam("ids") List<Long> ids) {
+        merchantInfoService.deleteMerchantInfoListByIds(ids);
+        return success(true);
+    }
+
+    @GetMapping("/get")
+    @Operation(summary = "获得商户信息")
+    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+    @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:query')")
+    public CommonResult<MerchantInfoPageRespVO> getMerchantInfo(@RequestParam("id") Long id) {
+        MerchantInfoDO merchantInfo = merchantInfoService.getMerchantInfo(id);
+        return success(BeanUtils.toBean(merchantInfo, MerchantInfoPageRespVO.class));
+    }
+
+}

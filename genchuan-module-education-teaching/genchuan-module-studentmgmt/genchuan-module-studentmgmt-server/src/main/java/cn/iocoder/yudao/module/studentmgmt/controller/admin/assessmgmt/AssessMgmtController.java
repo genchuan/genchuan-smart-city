@@ -105,7 +105,7 @@ public class AssessMgmtController {
         return success(isPublish);
     }
 
-    @PutMapping("/chart")
+    @GetMapping("/chart")
     @Operation(summary = "考评信息分布看板")
     @PreAuthorize("@ss.hasPermission('studentmgmt:assess-mgmt:query')")
     public CommonResult<AssessMgmtChartRespVO> chart(@Valid AssessMgmtChartReqVO reqVO) {
@@ -113,7 +113,7 @@ public class AssessMgmtController {
         return success(respVO);
     }
 
-    @PutMapping("/chart/dimensionScore")
+    @GetMapping("/chart/dimensionScore")
     @Operation(summary = "班级多维度考评得分统计")
     @PreAuthorize("@ss.hasPermission('studentmgmt:assess-mgmt:query')")
     public CommonResult<List<AssessMgmtDimensionScoreRespVO>> dimensionScore(@Valid AssessMgmtChartReqVO reqVO) {

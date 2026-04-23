@@ -14,7 +14,7 @@ public class MentalMgmtInterveneReqVO {
     @ExcelProperty("主键 ID")
     private Long id;
 
-    @Schema(description = "咨询预约时间")
+    @Schema(description = "咨询预约时间", requiredMode = Schema.RequiredMode.REQUIRED)
     private LocalDateTime interveneTime;
    @Schema(description = "干预内容")
     private String interveneContent;

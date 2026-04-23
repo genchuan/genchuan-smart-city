@@ -242,4 +242,33 @@ public class ViolateMgmtServiceImpl implements ViolateMgmtService {
         vo.setTypeCountList(typeCountList);
         return null;
     }
+
+    @Override
+    public List<ViolateWarnIndexRespVO> warnIndex(ViolateWarnIndexReqVO reqVO) {
+        ViolateWarnIndexRespVO vo = new ViolateWarnIndexRespVO();
+        // cycle (string, optional): 统计周期，可选周 / 月 / 学期，默认当前月。
+        String cycle = reqVO.getCycle();
+
+        /*vo.setClassCountList(violateMgmtMapper.selectViolateClassCount(startTime, endTime));
+        List<JSONObject> countList = violateMgmtMapper.selectViolateTypeCount(startTime, endTime);
+        // 累加所有类型的总统计数
+        long totalCount = countList.stream().mapToLong(jsonObject -> jsonObject.getLong("count")).sum();
+
+        List<JSONObject> typeCountList = new ArrayList<>();
+        // 获取所有违纪类型字典信息
+        List<String> dbValues = DictFrameworkUtils.getDictDataValueList(StudentMgmtDictTypeEnum.VIOLATE_MGMT_VIOLATE_TYPE.getType());
+        // 将countList里的key转换成字典信息，并计算百分比
+        for (JSONObject jsonObject : countList) {
+            JSONObject typeCountJson = new JSONObject();
+            // 名称
+            typeCountJson.put("typeName", DictFrameworkUtils.parseDictDataLabel(StudentMgmtDictTypeEnum.VIOLATE_MGMT_VIOLATE_TYPE.getType(), jsonObject.getString("violate_type")));
+            // 数量
+            typeCountJson.put("count", jsonObject.getLong("count"));
+            // 百分比
+            typeCountJson.put("percent", String.format("%.2f", jsonObject.getLong("num") * 100.0 / totalCount));
+            typeCountList.add(typeCountJson);
+        }
+        vo.setTypeCountList(typeCountList);*/
+        return null;
+    }
 }

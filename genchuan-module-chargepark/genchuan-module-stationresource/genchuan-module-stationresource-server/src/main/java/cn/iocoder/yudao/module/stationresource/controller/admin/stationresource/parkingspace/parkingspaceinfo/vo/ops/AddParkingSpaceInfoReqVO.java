@@ -43,4 +43,5 @@ public class AddParkingSpaceInfoReqVO {
     @Schema(description = "备用字段2")
     private String reserve2;
 
+//
 }

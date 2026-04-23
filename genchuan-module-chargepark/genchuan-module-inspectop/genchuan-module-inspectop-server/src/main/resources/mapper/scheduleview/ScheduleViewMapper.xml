@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.inspectop.dal.mysql.scheduleview.ScheduleViewMapper">
+    <!-- 定义结果映射器，将数据库列映射到 ScheduleViewRespVO 属性 -->
+    <resultMap id="ScheduleViewRespVOResultMap" type="cn.iocoder.yudao.module.inspectop.controller.admin.scheduleview.vo.ScheduleViewRespVO">
+        <!-- 主键ID -->
+        <id column="id" property="id" jdbcType="BIGINT"/>
+
+        <!-- ScheduleViewDO 基础字段 -->
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="schedule_date" property="scheduleDate" jdbcType="DATE"/>
+        <result column="shift_type" property="shiftType" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="reserve1" property="reserve1" jdbcType="VARCHAR"/>
+        <result column="reserve2" property="reserve2" jdbcType="VARCHAR"/>
+
+        <!-- BaseDO 基础字段 -->
+        <result column="creator" property="creator" jdbcType="VARCHAR"/>
+        <result column="updater" property="updater" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+
+        <!-- 关联查询字段 - 人员姓名 -->
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 分页查询方法（关联查询人员姓名） -->
+    <select id="selectPageWithJoin" resultMap="ScheduleViewRespVOResultMap">
+        SELECT
+        sv.id,
+        sv.user_id,
+        sv.schedule_date,
+        sv.shift_type,
+        sv.status,
+        sv.reserve1,
+        sv.reserve2,
+        sv.creator,
+        sv.updater,
+        sv.create_time,
+        sv.update_time,
+        iu.name AS user_name  -- 从 inspect_user 表获取人员姓名
+        FROM schedule_view sv
+        LEFT JOIN inspect_user iu ON sv.user_id = iu.id
+        <where>
+            <!-- 巡检人员ID -->
+            <if test="reqVO.userId != null">
+                AND sv.user_id = #{reqVO.userId}
+            </if>
+
+            <!-- 排班日期范围 -->
+            <if test="reqVO.scheduleDate != null and reqVO.scheduleDate.length == 2">
+                AND sv.schedule_date BETWEEN #{reqVO.scheduleDate[0]} AND #{reqVO.scheduleDate[1]}
+            </if>
+
+            <!-- 班次类型 -->
+            <if test="reqVO.shiftType != null and reqVO.shiftType != ''">
+                AND sv.shift_type = #{reqVO.shiftType}
+            </if>
+
+            <!-- 排班状态 -->
+            <if test="reqVO.status != null and reqVO.status != ''">
+                AND sv.status = #{reqVO.status}
+            </if>
+
+            <!-- 备用字段1 -->
+            <if test="reqVO.reserve1 != null and reqVO.reserve1 != ''">
+                AND sv.reserve1 = #{reqVO.reserve1}
+            </if>
+
+            <!-- 备用字段2 -->
+            <if test="reqVO.reserve2 != null and reqVO.reserve2 != ''">
+                AND sv.reserve2 = #{reqVO.reserve2}
+            </if>
+
+            <!-- 创建者 -->
+            <if test="reqVO.creator != null and reqVO.creator != ''">
+                AND sv.creator = #{reqVO.creator}
+            </if>
+
+            <!-- 更新者 -->
+            <if test="reqVO.updater != null and reqVO.updater != ''">
+                AND sv.updater = #{reqVO.updater}
+            </if>
+
+            <!-- 创建时间范围 -->
+            <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+                AND sv.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+
+            <!-- 更新时间范围 -->
+            <if test="reqVO.updateTime != null and reqVO.updateTime.length == 2">
+                AND sv.update_time BETWEEN #{reqVO.updateTime[0]} AND #{reqVO.updateTime[1]}
+            </if>
+
+            <!-- 只查询未删除的记录 -->
+            AND sv.deleted = 0
+        </where>
+        ORDER BY sv.id DESC
+    </select>
+
+    <!-- 在 ScheduleViewMapper.xml 中添加以下SQL -->
+    <!-- 查询排班统计图表数据 -->
+    <select id="selectScheduleViewChartData" resultMap="ScheduleViewChartDataResultMap">
+        SELECT
+        sv.user_id,
+        iu.name AS user_name,
+        sv.schedule_date,
+        sv.shift_type,
+        COUNT(*) OVER(PARTITION BY sv.user_id) AS schedule_count
+        FROM schedule_view sv
+        LEFT JOIN inspect_user iu ON sv.user_id = iu.id
+        WHERE sv.deleted = 0
+        <if test="reqVO.month != null and reqVO.month != ''">
+            AND DATE_FORMAT(sv.schedule_date, '%Y-%m') = #{reqVO.month}
+        </if>
+        <if test="reqVO.month == null or reqVO.month == ''">
+            AND DATE_FORMAT(sv.schedule_date, '%Y-%m') = DATE_FORMAT(CURRENT_DATE, '%Y-%m')
+        </if>
+        ORDER BY sv.schedule_date, sv.user_id
+    </select>
+
+    <!-- 查询排班统计卡片数据 -->
+    <select id="selectScheduleViewCardData" resultMap="ScheduleViewChartCardDataResultMap">
+        WITH schedule_stats AS (
+        SELECT
+        sv.user_id,
+        COUNT(*) as user_schedule_count
+        FROM schedule_view sv
+        WHERE sv.deleted = 0
+        <if test="reqVO.month != null and reqVO.month != ''">
+            AND DATE_FORMAT(sv.schedule_date, '%Y-%m') = #{reqVO.month}
+        </if>
+        <if test="reqVO.month == null or reqVO.month == ''">
+            AND DATE_FORMAT(sv.schedule_date, '%Y-%m') = DATE_FORMAT(CURRENT_DATE, '%Y-%m')
+        </if>
+        GROUP BY sv.user_id
+        )
+        SELECT
+        COALESCE(SUM(user_schedule_count), 0) AS schedule_count,
+        COALESCE(COUNT(*), 0) AS on_duty_count
+        FROM schedule_stats
+    </select>
+
+    <!-- 结果映射定义 -->
+    <resultMap id="ScheduleViewChartDataResultMap" type="cn.iocoder.yudao.module.inspectop.controller.admin.scheduleview.vo.ScheduleViewChartData">
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="schedule_date" property="scheduleDate" jdbcType="TIMESTAMP"/>
+        <result column="shift_type" property="shiftType" jdbcType="VARCHAR"/>
+        <result column="schedule_count" property="scheduleCount" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="ScheduleViewChartCardDataResultMap" type="cn.iocoder.yudao.module.inspectop.controller.admin.scheduleview.vo.ScheduleViewChartCardData">
+        <result column="schedule_count" property="scheduleCount" jdbcType="INTEGER"/>
+        <result column="on_duty_count" property="onDutyCount" jdbcType="INTEGER"/>
+    </resultMap>
+
+</mapper>

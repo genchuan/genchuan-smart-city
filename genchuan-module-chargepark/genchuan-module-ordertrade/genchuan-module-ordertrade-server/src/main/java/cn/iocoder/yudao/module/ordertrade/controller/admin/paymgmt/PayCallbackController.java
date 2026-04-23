@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +39,7 @@ public class PayCallbackController {
     @GetMapping("/get")
     @Operation(summary = "获得回调通知详情")
     @Parameter(name = "id", description = "主键", required = true, example = "1024")
+    /*@PreAuthorize("@ss.hasPermission('ordertrade:pay-callback:query')")*/
     public CommonResult<PayCallbackRespVO> getPayCallback(@RequestParam("id") Long id) {
         PayCallbackDO obj = payCallbackService.getPayCallback(id);
         return success(BeanUtils.toBean(obj, PayCallbackRespVO.class));
@@ -45,6 +47,7 @@ public class PayCallbackController {
 
     @GetMapping("/page")
     @Operation(summary = "获得回调通知分页列表")
+    /*@PreAuthorize("@ss.hasPermission('ordertrade:pay-callback:query')")*/
     public CommonResult<PageResult<PayCallbackRespVO>> getPayCallbackPage(@Valid PayCallbackPageReqVO pageReqVO) {
         PageResult<PayCallbackDO> pageResult = payCallbackService.getPayCallbackPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, PayCallbackRespVO.class));
@@ -53,6 +56,7 @@ public class PayCallbackController {
     @GetMapping("/export")
     @Operation(summary = "导出回调通知 Excel")
     @ApiAccessLog(operateType = EXPORT)
+    /*@PreAuthorize("@ss.hasPermission('ordertrade:pay-callback:query')")*/
     public void exportPayCallbackExcel(@Valid PayCallbackPageReqVO pageReqVO,
                                        HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
@@ -61,16 +65,27 @@ public class PayCallbackController {
                 BeanUtils.toBean(list, PayCallbackRespVO.class));
     }
 
-    @PutMapping("/retry")
+    @PostMapping("/process")
+    @ApiAccessLog(operateType = UPDATE)
+    @Operation(summary = "手动处理回调通知")
+    /*@PreAuthorize("@ss.hasPermission('ordertrade:pay-callback:process')")*/
+    public CommonResult<Boolean> processPayCallback(@Valid @RequestBody IdReqVO reqVO) {
+        payCallbackService.processPayCallback(reqVO);
+        return success(true);
+    }
+
+    @PostMapping("/repush")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "重推回调通知")
-    public CommonResult<Boolean> retryPayCallback(@Valid @RequestBody IdReqVO reqVO) {
-        payCallbackService.retryPayCallback(reqVO);
+    /*@PreAuthorize("@ss.hasPermission('ordertrade:pay-callback:repush')")*/
+    public CommonResult<Boolean> repushPayCallback(@Valid @RequestBody IdReqVO reqVO) {
+        payCallbackService.repushPayCallback(reqVO);
         return success(true);
     }
 
     @GetMapping("/chart")
     @Operation(summary = "获得回调通知统计图表数据")
+   /* @PreAuthorize("@ss.hasPermission('ordertrade:pay-callback:query')")*/
     public CommonResult<PayCallbackChartRespVO> getPayCallbackChart(@Valid PayCallbackChartReqVO chartReqVO) {
         return success(payCallbackService.getPayCallbackChart(chartReqVO));
     }

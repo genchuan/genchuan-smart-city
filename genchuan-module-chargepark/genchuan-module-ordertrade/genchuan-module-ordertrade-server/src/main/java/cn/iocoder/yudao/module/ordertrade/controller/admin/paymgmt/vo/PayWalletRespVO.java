@@ -1,9 +1,6 @@
 package cn.iocoder.yudao.module.ordertrade.controller.admin.paymgmt.vo;
 
 import cn.idev.excel.annotation.ExcelProperty;
-import cn.iocoder.yudao.module.ordertrade.enums.PayWalletStatusEnum;
-import cn.iocoder.yudao.module.ordertrade.framework.excel.IntegerEnumExcelConverter;
-import cn.iocoder.yudao.module.ordertrade.framework.excel.IntegerEnumFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -27,16 +24,19 @@ public class PayWalletRespVO {
 
     @Schema(description = "余额（分）")
     @ExcelProperty("余额（分）")
-    private Long balance;
+    private Integer balance;
 
-    @Schema(description = "冻结余额（分）")
-    @ExcelProperty("冻结余额（分）")
-    private Long freezeBalance;
+    @Schema(description = "冻结金额（分）")
+    @ExcelProperty("冻结金额（分）")
+    private Integer freezePrice;
 
-    @Schema(description = "状态")
-    @ExcelProperty(value = "状态", converter = IntegerEnumExcelConverter.class)
-    @IntegerEnumFormat(PayWalletStatusEnum.class)
-    private Integer status;
+    @Schema(description = "累计支出（分）")
+    @ExcelProperty("累计支出（分）")
+    private Integer totalExpense;
+
+    @Schema(description = "累计充值（分）")
+    @ExcelProperty("累计充值（分）")
+    private Integer totalRecharge;
 
     @Schema(description = "创建时间")
     @ExcelProperty("创建时间")

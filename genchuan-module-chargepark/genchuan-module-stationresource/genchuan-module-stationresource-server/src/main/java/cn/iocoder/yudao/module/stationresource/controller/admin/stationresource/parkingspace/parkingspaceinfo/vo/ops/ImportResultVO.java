@@ -25,6 +25,6 @@ public class ImportResultVO {
 
         @Schema(description = "错误信息", example = "车位编号已存在")
         private String message;
-
+//
     }
 }

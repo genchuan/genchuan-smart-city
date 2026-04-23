@@ -7,6 +7,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.merchantreconcile.vo.*;
+import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.IdReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.merchantreconcile.ReconcileRecordDO;
 import cn.iocoder.yudao.module.ordertrade.service.merchantreconcile.ReconcileRecordService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.UPDATE;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 @Tag(name = "订单交易 - 商户对账 - 对账记录")
@@ -78,6 +80,14 @@ public class ReconcileRecordController {
         List<ReconcileRecordDO> list = reconcileRecordService.getReconcileRecordPage(pageReqVO).getList();
         ExcelUtils.write(response, "对账记录.xls", "数据", ReconcileRecordRespVO.class,
                 BeanUtils.toBean(list, ReconcileRecordRespVO.class));
+    }
+
+    @PostMapping("/check")
+    @ApiAccessLog(operateType = UPDATE)
+    @Operation(summary = "核查对账记录")
+    public CommonResult<Boolean> checkReconcileRecord(@Valid @RequestBody IdReqVO reqVO) {
+        reconcileRecordService.checkReconcileRecord(reqVO);
+        return success(true);
     }
 
     @GetMapping("/chart")
