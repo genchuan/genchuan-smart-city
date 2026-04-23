@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 @Data
 public class AssessMgmtPublishReqVO {
 
-    @Schema(description = "主键 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1600")
-    private Long id;
+    @Schema(description = "主键 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1,2,4")
+    private Long[] ids;
 
 
 }

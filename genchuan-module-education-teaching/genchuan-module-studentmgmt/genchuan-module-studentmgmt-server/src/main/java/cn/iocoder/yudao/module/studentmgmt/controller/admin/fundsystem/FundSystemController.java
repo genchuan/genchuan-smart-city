@@ -111,7 +111,7 @@ public class FundSystemController {
         return success(isSuccess);
     }
 
-    @PutMapping("/chart")
+    @GetMapping("/chart")
     @Operation(summary = "资助信息统计看板")
     @PreAuthorize("@ss.hasPermission('studentmgmt:fund-system:query')")
     public CommonResult<FundSystemChartRespVO> chart(@Valid FundSystemChartReqVO reqVO) {
@@ -119,7 +119,7 @@ public class FundSystemController {
         return success(dashboardVO);
     }
 
-    @PutMapping("/fundCount")
+    @GetMapping("/fundCount")
     @Operation(summary = "各年级资助人数 / 类型分布统计")
     @PreAuthorize("@ss.hasPermission('studentmgmt:fund-system:query')")
     public CommonResult<FundSystemFundCountRespVO> fundCount(@Valid @RequestBody FundSystemFundCountReqVO reqVO) {

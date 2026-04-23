@@ -60,4 +60,10 @@ public interface ClubMgmtService {
     PageResult<ClubMgmtDO> getClubMgmtPage(ClubMgmtPageReqVO pageReqVO);
 
     boolean audit(@Valid ClubMgmtAuditReqVO reqVO);
+
+    boolean archive(@Valid ClubMgmtArchiveReqVO reqVO);
+
+    ClubMgmtChartRespVO chart(@Valid ClubMgmtChartReqVO reqVO);
+
+    ClubMgmtClubDistributionRespVO clubDistribution(@Valid ClubMgmtChartReqVO reqVO);
 }

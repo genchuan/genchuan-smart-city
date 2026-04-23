@@ -99,19 +99,24 @@ public class FundSystemServiceImpl implements FundSystemService {
     @LogRecord(type = FUND_SYSTEM_TYPE, subType = FUND_SYSTEM_AUDIT_SUB_TYPE, bizNo = "{{#fund.id}}",
             success = FUND_SYSTEM_AUDIT_SUCCESS)
     public boolean audit(FundSystemAuditReqVO reqVO) {
-        FundSystemDO fundSystemDO = validateFundSystemExists(reqVO.getId());
-        fundSystemDO.setAuditTime(LocalDateTime.now());
-        // 获取当前用户
-//        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
-//        SecurityFrameworkUtils.getLoginUserNickname();
-        String username = SecurityFrameworkUtils.getLoginUserNickname();
-        fundSystemDO.setAuditUser(username);
-        fundSystemDO.setStatus(reqVO.getStatus());
+        Long[] ids = reqVO.getIds();
+        int total = 0;
+        for (Long id : ids) {
+            FundSystemDO fundSystemDO = validateFundSystemExists(id);
+            fundSystemDO.setAuditTime(LocalDateTime.now());
+            // 获取当前用户
+    //        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
+    //        SecurityFrameworkUtils.getLoginUserNickname();
+            String username = SecurityFrameworkUtils.getLoginUserNickname();
+            fundSystemDO.setAuditUser(username);
+            fundSystemDO.setStatus(reqVO.getStatus());
 
-        int i = fundSystemMapper.updateById(fundSystemDO);
-        if (i > 0) {
-            // 记录操作日志上下文
+            int i = fundSystemMapper.updateById(fundSystemDO);
+            total += i;
             LogRecordContext.putVariable("fund", fundSystemDO);
+        }
+        if (total > 0) {
+            // 记录操作日志上下文
             return true;
         }
         return false;

@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 @Data
 public class FundSystemAuditReqVO {
 
-    @Schema(description = "主键 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "15012")
-    private Long id;
+    @Schema(description = "主键 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1,2")
+    private Long[] ids;
 
     @Schema(description = "状态：待审核/已汇总", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @NotEmpty(message = "状态：待审核/已汇总不能为空")

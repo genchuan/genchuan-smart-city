@@ -104,7 +104,7 @@ public class DutyMgmtController {
                 BeanUtils.toBean(list, DutyMgmtRespVO.class));
     }
 
-    @PutMapping("/schedule")
+    @PostMapping("/schedule")
     @Operation(summary = "排班")
     @PreAuthorize("@ss.hasPermission('studentmgmt:duty-mgmt:schedule')")
     public CommonResult<Boolean> schedule(@Valid @RequestBody DutyMgmtScheduleReqVO reqVo) {
@@ -160,7 +160,7 @@ public class DutyMgmtController {
         return success(isSuccess);
     }
 
-    @PutMapping("/chart")
+    @GetMapping("/chart")
     @Operation(summary = "值班调度看板")
     @PreAuthorize("@ss.hasPermission('studentmgmt:duty-mgmt:chart')")
     public CommonResult<DutyMgmtChartRespVO> chart(@Valid DutyMgmtChartReqVO reqVo) {
@@ -168,7 +168,7 @@ public class DutyMgmtController {
         return success(respVO);
     }
 
-    @PutMapping("/chart/dutyIndex")
+    @GetMapping("/chart/dutyIndex")
     @Operation(summary = "值班核心指标统计")
     @PreAuthorize("@ss.hasPermission('studentmgmt:duty-mgmt:dutyIndex')")
     public CommonResult<DutyMgmtChartIndexRespVO> dutyIndex(@Valid DutyMgmtChartReqVO reqVo) {

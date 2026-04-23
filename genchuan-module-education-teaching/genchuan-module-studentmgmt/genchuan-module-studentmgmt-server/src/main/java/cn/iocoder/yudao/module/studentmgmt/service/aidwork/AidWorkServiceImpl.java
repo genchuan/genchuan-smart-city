@@ -112,19 +112,25 @@ public class AidWorkServiceImpl implements AidWorkService {
     @LogRecord(type = AID_TYPE, subType = AID_AUDIT_SUB_TYPE, bizNo = "{{#aid.id}}",
             success = AID_AUDIT_SUCCESS)
     public boolean audit(AidWorkAuditReqVO reqVO) {
-        AidWorkDO aidWorkDO = validateAidWorkExists(reqVO.getId());
-        aidWorkDO.setAuditTime(LocalDateTime.now());
-        // 获取当前用户
-        String username = SecurityFrameworkUtils.getLoginUserNickname();
-        aidWorkDO.setAuditUser(username);
-        aidWorkDO.setStatus(reqVO.getAuditResult());
-        aidWorkDO.setProcessStatus(AidWorkProcessStatusEnum.AID_WORK_PROCESS_STATUS_ENUM_1.getStatus());
+        Long[] ids = reqVO.getIds();
+        int total = 0;
+        for (Long id : ids) {
+            AidWorkDO aidWorkDO = validateAidWorkExists(id);
+            aidWorkDO.setAuditTime(LocalDateTime.now());
+            // 获取当前用户
+            String username = SecurityFrameworkUtils.getLoginUserNickname();
+            aidWorkDO.setAuditUser(username);
+            aidWorkDO.setStatus(reqVO.getAuditResult());
+            aidWorkDO.setProcessStatus(AidWorkProcessStatusEnum.AID_WORK_PROCESS_STATUS_ENUM_1.getStatus());
 
-        int i = aidWorkMapper.updateById(aidWorkDO);
-        if (i > 0) {
+            int i = aidWorkMapper.updateById(aidWorkDO);
+            total += i;
+
             // 记录操作日志上下文
             LogRecordContext.putVariable("aid", aidWorkDO);
             LogRecordContext.putVariable("status", true);
+        }
+        if (total > 0) {
             return true;
         }
         return false;
@@ -140,7 +146,7 @@ public class AidWorkServiceImpl implements AidWorkService {
         // 获取当前用户
         String username = SecurityFrameworkUtils.getLoginUserNickname();
         aidWorkDO.setAuditUser(username);
-        aidWorkDO.setProcessStatus(AidWorkProcessStatusEnum.AID_WORK_PROCESS_STATUS_ENUM_1.getStatus());
+        aidWorkDO.setProcessStatus(reqVO.getProcessStatus());
 
         int i = aidWorkMapper.updateById(aidWorkDO);
         if (i > 0) {
@@ -161,7 +167,7 @@ public class AidWorkServiceImpl implements AidWorkService {
         if (startTime != null && startTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
             startTime = null;
         }
-        if (endTime !=null && endTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
+        if (endTime != null && endTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
             endTime = null;
         }
 
@@ -230,7 +236,7 @@ public class AidWorkServiceImpl implements AidWorkService {
         if (startTime != null && startTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
             startTime = null;
         }
-        if (endTime !=null && endTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
+        if (endTime != null && endTime.isBefore(LocalDateTime.of(2020, 1, 1, 0, 0, 0))) {
             endTime = null;
         }
 
@@ -258,7 +264,7 @@ public class AidWorkServiceImpl implements AidWorkService {
             vo.setName(dictDataLabel);
             vo.setType(type);
             Long countTotal = map.get("count");
-            vo.setApplyCount( countTotal);
+            vo.setApplyCount(countTotal);
 
             List<JSONObject> statusList = aidWorkMapper.selectStatusCountByType(finalStartTime, finalEndTime, type);
             statusList.forEach(statusJson -> {

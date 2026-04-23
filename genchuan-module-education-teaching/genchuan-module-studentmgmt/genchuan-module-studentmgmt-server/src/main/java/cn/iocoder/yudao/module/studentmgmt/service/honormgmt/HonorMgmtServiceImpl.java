@@ -5,28 +5,20 @@ import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.aidwork.vo.AidWorkApplyCountRespVO;
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.behaviormgmt.vo.BehaviorMgmtAttendanceCountRespVO;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.honormgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.honormgmt.HonorMgmtDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.honormgmt.HonorMgmtMapper;
-import cn.iocoder.yudao.module.studentmgmt.enums.AidWorkStatusEnum;
-import cn.iocoder.yudao.module.studentmgmt.enums.BehaviorStatusEnum;
-import cn.iocoder.yudao.module.studentmgmt.enums.DormCheckStatusEnum;
 import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
 import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
-import com.alibaba.fastjson.JSONObject;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.studentmgmt.enums.ErrorCodeConstants.HONOR_MGMT_NOT_EXISTS;
@@ -45,8 +37,6 @@ public class HonorMgmtServiceImpl implements HonorMgmtService {
     private HonorMgmtMapper honorMgmtMapper;
     @Resource
     private DictDataApi dictDataApi;
-
-
 
     @Override
     @LogRecord(type = STUDENT_HONOR_TYPE, subType = STUDENT_HONOR_CREATE_SUB_TYPE, bizNo = "{{#honorMgmt.id}}",

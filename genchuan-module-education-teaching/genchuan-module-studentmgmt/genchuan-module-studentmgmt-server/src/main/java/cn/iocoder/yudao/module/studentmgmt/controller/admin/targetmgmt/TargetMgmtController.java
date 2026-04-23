@@ -106,7 +106,7 @@ public class TargetMgmtController {
     @PreAuthorize("@ss.hasPermission('studentmgmt:target-mgmt:config')")
     public CommonResult<Boolean> config(@Valid @RequestBody TargetMgmtConfigReqVO reqVO) {
         boolean isSuccess = targetMgmtService.config(reqVO);
-        return success(true);
+        return success(isSuccess);
     }
     @PutMapping("/enable")
     @Operation(summary = "启用")

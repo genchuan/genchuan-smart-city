@@ -103,7 +103,7 @@ public class BehaviorMgmtController {
 
 
     @PutMapping("/audit")
-    @Operation(summary = "更新行为管理")
+    @Operation(summary = "审批")
     @PreAuthorize("@ss.hasPermission('studentmgmt:behavior-mgmt:update')")
     public CommonResult<Boolean> audit(@Valid @RequestBody BehaviorMgmtAuditReqVO reqVO) {
         boolean isSuccess = behaviorMgmtService.audit(reqVO);
@@ -130,7 +130,7 @@ public class BehaviorMgmtController {
     @GetMapping("/attendanceCount")
     @Operation(summary = "各班级请假次数 / 考勤异常人数统计")
     @PreAuthorize("@ss.hasPermission('studentmgmt:behavior-mgmt:update')")
-    public CommonResult<BehaviorMgmtAttendanceCountRespVO> attendanceCount(@Valid @RequestBody BehaviorMgmtAttendanceCountReqVO reqVO) {
+    public CommonResult<BehaviorMgmtAttendanceCountRespVO> attendanceCount(@Valid BehaviorMgmtAttendanceCountReqVO reqVO) {
         BehaviorMgmtAttendanceCountRespVO dashboardVO = behaviorMgmtService.attendanceCount(reqVO);
         return success(dashboardVO);
     }

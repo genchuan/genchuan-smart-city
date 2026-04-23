@@ -9,7 +9,7 @@ import lombok.Data;
 public class ClubMgmtAuditReqVO {
 
     @Schema(description = "主键 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "23257")
-    private Long id;
+    private Long[] ids;
 
     @Schema(description = "状态：待审核/已通过/已建档", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @NotEmpty(message = "状态：待审核/已通过/已建档不能为空")

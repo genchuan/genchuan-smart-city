@@ -8,7 +8,7 @@ import lombok.Data;
 public class AidWorkAuditReqVO {
 
     @Schema(description = "主键 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "19452")
-    private Long id;
+    private Long[] ids;
 
 
     @Schema(description = "备注", example = "随便")

@@ -8,7 +8,7 @@ import lombok.Data;
 public class DutyMgmtShiftApplyReqVO {
 
     @Schema(description = "主键 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    private Long id;
+    private Long[] ids;
 
     @Schema(description = "调班原因", requiredMode = Schema.RequiredMode.REQUIRED)
     private String transferReason;

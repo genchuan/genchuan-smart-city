@@ -117,7 +117,7 @@ public class MoralResourceController {
         return success(isSuccess);
     }
 
-    @PutMapping("/chart")
+    @GetMapping("/chart")
     @Operation(summary = "德育资源学习看板")
     @PreAuthorize("@ss.hasPermission('studentmgmt:moral-resource:query')")
     public CommonResult<MoralResourceChartRespVO> chart(@Valid @RequestBody MoralResourceChartReqVO reqVO) {
@@ -125,7 +125,7 @@ public class MoralResourceController {
         return success(vo);
     }
 
-    @PutMapping("/chart/resourceCount")
+    @GetMapping("/chart/resourceCount")
     @Operation(summary = "资源类型 / 学习完成率统计")
     @PreAuthorize("@ss.hasPermission('studentmgmt:moral-resource:query')")
     public CommonResult<ChartResourceCountRespVO> resourceCount(@Valid @RequestBody MoralResourceChartReqVO reqVO) {
