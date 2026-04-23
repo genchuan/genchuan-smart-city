@@ -1,15 +1,16 @@
 package cn.iocoder.yudao.module.studentmgmt.service.fundsystem;
 
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.fundsystem.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.fundsystem.FundSystemDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.fundsystem.FundSystemMapper;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
-import cn.iocoder.yudao.module.studentmgmt.enums.BehaviorLevelTypeEnum;
 import cn.iocoder.yudao.module.studentmgmt.enums.FundSystemStatusEnum;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import com.alibaba.fastjson.JSONObject;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
@@ -38,6 +39,9 @@ public class FundSystemServiceImpl implements FundSystemService {
     private FundSystemMapper fundSystemMapper;
     @Resource
     private StudentInfoMapper studentInfoMapper;
+
+    @Resource
+    private DictDataApi dictDataApi;
 
     @Override
     public Long createFundSystem(FundSystemSaveReqVO createReqVO) {
@@ -141,7 +145,17 @@ public class FundSystemServiceImpl implements FundSystemService {
         List<JSONObject> typeList = fundSystemMapper.selectFundTypeDistribution(startTime, endTime, FundSystemStatusEnum.FUND_SYSTEM_STATUS_1.getStatus());
         // 将key转换成name
         typeList.forEach(item -> {
-            item.put("name", FundSystemStatusEnum.getNameByKey(item.getString("name")));
+            String dictDataLabel = "";
+            CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(FundSystemStatusEnum.DICT_TYPE);
+            if (dictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : dictDataList.getData()) {
+                    if (dictData.getValue().equals(item.get("name"))) {
+                        dictDataLabel = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.put("name", dictDataLabel);
         });
 
         vo.setFundTypeDistribution(typeList);
@@ -169,10 +183,20 @@ public class FundSystemServiceImpl implements FundSystemService {
             JSONObject json = new JSONObject();
 
             List<JSONObject> typeList = fundSystemMapper.selectFundTypeGradeDistribution(startTime, endTime,
-                    FundSystemStatusEnum.FUND_SYSTEM_STATUS_1.getStatus(),grade );
+                    FundSystemStatusEnum.FUND_SYSTEM_STATUS_1.getStatus(), grade);
             // 将key转换成namegr
             typeList.forEach(item -> {
-                item.put("name", FundSystemStatusEnum.getNameByKey(item.getString("name")));
+                String dictDataLabel = "";
+                CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(FundSystemStatusEnum.DICT_TYPE);
+                if (dictDataList.getData() != null) {
+                    for (DictDataRespDTO dictData : dictDataList.getData()) {
+                        if (dictData.getValue().equals(item.getString("name"))) {
+                            dictDataLabel = dictData.getLabel();
+                            break;
+                        }
+                    }
+                }
+                item.put("name", dictDataLabel);
             });
 
 

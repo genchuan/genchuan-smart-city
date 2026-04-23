@@ -15,6 +15,8 @@ public enum MentalRiskLevelEnum {
     MENTAL_MGMT_RISK_LEVEL_MEDIUM("medium", "中"),
     MENTAL_MGMT_RISK_LEVEL_HIGH("high", "高");
 
+    public static final String DICT_TYPE = "mental_mgmt_risk_level";
+
     /**
      * 状态
      * <p>

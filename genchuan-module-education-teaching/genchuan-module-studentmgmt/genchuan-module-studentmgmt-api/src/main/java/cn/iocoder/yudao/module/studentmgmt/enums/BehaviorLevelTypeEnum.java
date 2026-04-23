@@ -14,6 +14,7 @@ public enum BehaviorLevelTypeEnum {
     BEHAVIOR_MGMT_LEVEL_TYPE_1("1", "事假"),
     BEHAVIOR_MGMT_LEVEL_TYPE_2("2", "病假"),
     BEHAVIOR_MGMT_LEVEL_TYPE_3("3", "其他");
+    public static final String DICT_TYPE = "behavior_mgmt_leave_type";
 
     /**
      * 状态

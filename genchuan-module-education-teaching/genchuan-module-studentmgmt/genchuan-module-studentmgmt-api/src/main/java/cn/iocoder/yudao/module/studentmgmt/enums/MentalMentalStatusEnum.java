@@ -14,6 +14,7 @@ public enum MentalMentalStatusEnum {
     MENTAL_MGMT_MENTAL_STATUS_NORMAL ("normal", "正常"),
     MENTAL_MGMT_MENTAL_STATUS_FOCUS("focus", "关注"),
     MENTAL_MGMT_MENTAL_STATUS_HIGH_RISK("high_risk", "高危");
+    private static final String DICT_TYPE = "mental_mgmt_mental_status";
 
     /**
      * 状态

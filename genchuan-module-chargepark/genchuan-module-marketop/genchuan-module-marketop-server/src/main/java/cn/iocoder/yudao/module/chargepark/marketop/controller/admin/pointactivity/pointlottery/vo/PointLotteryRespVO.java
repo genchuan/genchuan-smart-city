@@ -18,8 +18,14 @@ public class PointLotteryRespVO {
     @Schema(description = "用户ID")
     private Long userId;
 
+    @Schema(description = "用户名称")
+    private String userName;
+
     @Schema(description = "奖品ID")
     private Long prizeId;
+
+    @Schema(description = "奖品名称")
+    private String prizeName;
 
     @Schema(description = "抽奖时间")
     private LocalDateTime lotteryTime;
@@ -35,6 +41,9 @@ public class PointLotteryRespVO {
 
     @Schema(description = "发放人")
     private Long senderId;
+
+    @Schema(description = "发放人名称")
+    private String senderName;
 
     @Schema(description = "核查结果")
     private String checkResult;

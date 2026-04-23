@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.inspectop.dal.mysql.assetstock.AssetStockMapper">
+
+    <!-- 定义结果映射器，将数据库列映射到 AssetStockRespVO 属性 -->
+    <resultMap id="AssetStockRespVOResultMap" type="cn.iocoder.yudao.module.inspectop.controller.admin.assetstock.vo.AssetStockRespVO">
+        <!-- 主键ID -->
+        <id column="id" property="id" jdbcType="BIGINT"/>
+
+        <!-- AssetStockDO 基础字段 -->
+        <result column="asset_id" property="assetId" jdbcType="BIGINT"/>
+        <result column="current_stock" property="currentStock" jdbcType="INTEGER"/>
+        <result column="warn_threshold" property="warnThreshold" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="station_id" property="stationId" jdbcType="BIGINT"/>
+        <result column="reserve1" property="reserve1" jdbcType="VARCHAR"/>
+        <result column="reserve2" property="reserve2" jdbcType="VARCHAR"/>
+
+        <!-- BaseDO 基础字段 -->
+        <result column="creator" property="creator" jdbcType="VARCHAR"/>
+        <result column="updater" property="updater" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+
+        <!-- 关联查询字段 -->
+        <result column="station_name" property="stationName" jdbcType="VARCHAR"/>
+        <result column="asset_name" property="assetName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 分页查询方法（关联查询 station_info 和 asset_info 表获取关联名称） -->
+    <select id="selectPageWithJoin" resultMap="AssetStockRespVOResultMap">
+        SELECT
+        ast.id,
+        ast.asset_id,
+        ast.current_stock,
+        ast.warn_threshold,
+        ast.status,
+        ast.station_id,
+        ast.reserve1,
+        ast.reserve2,
+        ast.creator,
+        ast.updater,
+        ast.create_time,
+        ast.update_time,
+        si.name AS station_name,
+        ai.name AS asset_name
+        FROM asset_stock ast
+        LEFT JOIN station_info si ON ast.station_id = si.id
+        LEFT JOIN asset_info ai ON ast.asset_id = ai.id
+        <where>
+            <!-- 资产ID -->
+            <if test="reqVO.assetId != null">
+                AND ast.asset_id = #{reqVO.assetId}
+            </if>
+
+            <!-- 当前库存 -->
+            <if test="reqVO.currentStock != null">
+                AND ast.current_stock = #{reqVO.currentStock}
+            </if>
+
+            <!-- 预警阈值 -->
+            <if test="reqVO.warnThreshold != null">
+                AND ast.warn_threshold = #{reqVO.warnThreshold}
+            </if>
+
+            <!-- 库存状态 -->
+            <if test="reqVO.status != null and reqVO.status != ''">
+                AND ast.status = #{reqVO.status}
+            </if>
+
+            <!-- 所属场站ID -->
+            <if test="reqVO.stationId != null">
+                AND ast.station_id = #{reqVO.stationId}
+            </if>
+
+            <!-- 备用字段1 -->
+            <if test="reqVO.reserve1 != null and reqVO.reserve1 != ''">
+                AND ast.reserve1 = #{reqVO.reserve1}
+            </if>
+
+            <!-- 备用字段2 -->
+            <if test="reqVO.reserve2 != null and reqVO.reserve2 != ''">
+                AND ast.reserve2 = #{reqVO.reserve2}
+            </if>
+
+            <!-- 创建者 -->
+            <if test="reqVO.creator != null and reqVO.creator != ''">
+                AND ast.creator = #{reqVO.creator}
+            </if>
+
+            <!-- 更新者 -->
+            <if test="reqVO.updater != null and reqVO.updater != ''">
+                AND ast.updater = #{reqVO.updater}
+            </if>
+
+            <!-- 创建时间范围 -->
+            <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+                AND ast.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+
+            <!-- 更新时间范围 -->
+            <if test="reqVO.updateTime != null and reqVO.updateTime.length == 2">
+                AND ast.update_time BETWEEN #{reqVO.updateTime[0]} AND #{reqVO.updateTime[1]}
+            </if>
+        </where>
+        ORDER BY ast.id DESC
+    </select>
+
+
+    <!-- 查询库存趋势数据 -->
+    <select id="selectTrendData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.assetstock.vo.AssetStockChartRespVO$TrendData">
+        SELECT
+        DATE_FORMAT(create_time, '%m') AS time,
+        SUM(current_stock) AS stockCount
+        FROM asset_stock
+        <where>
+            <if test="timeRange != null and timeRange.length == 2">
+                AND create_time BETWEEN #{timeRange[0]} AND #{timeRange[1]}
+            </if>
+        </where>
+        GROUP BY DATE_FORMAT(create_time, '%m')
+        ORDER BY time
+    </select>
+
+    <!-- 查询资产库存分布数据 -->
+    <select id="selectStockData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.assetstock.vo.AssetStockChartRespVO$StockData">
+        SELECT
+        ai.name AS assetName,
+        SUM(ast.current_stock) AS currentStock
+        FROM asset_stock ast
+        LEFT JOIN asset_info ai ON ast.asset_id = ai.id
+        <where>
+            <if test="timeRange != null and timeRange.length == 2">
+                AND ast.create_time BETWEEN #{timeRange[0]} AND #{timeRange[1]}
+            </if>
+        </where>
+        GROUP BY ast.asset_id, ai.name
+        ORDER BY currentStock DESC
+    </select>
+
+    <!-- 查询卡片统计数据 -->
+    <select id="selectCardData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.assetstock.vo.AssetStockChartRespVO$CardData">
+        SELECT
+        SUM(current_stock) AS totalStock,
+        SUM(CASE WHEN status IN ('2', '3') THEN 1 ELSE 0 END) AS warnStockCount
+        FROM asset_stock
+        <where>
+            <if test="timeRange != null and timeRange.length == 2">
+                AND create_time BETWEEN #{timeRange[0]} AND #{timeRange[1]}
+            </if>
+        </where>
+    </select>
+
+</mapper>

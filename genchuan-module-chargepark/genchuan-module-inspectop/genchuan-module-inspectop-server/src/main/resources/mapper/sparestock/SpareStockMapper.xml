@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.inspectop.dal.mysql.sparestock.SpareStockMapper">
+
+    <!-- 查询库存趋势数据 -->
+    <select id="selectTrendData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.sparestock.vo.SpareStockChartRespVO$TrendData">
+        SELECT
+        DATE_FORMAT(create_time, '%m') AS time,
+        SUM(current_stock) AS stockCount
+        FROM spare_stock
+        <where>
+            deleted = 0
+            <if test="timeRange != null and timeRange.length == 2">
+                AND create_time BETWEEN #{timeRange[0]} AND #{timeRange[1]}
+            </if>
+        </where>
+        GROUP BY DATE_FORMAT(create_time, '%m')
+        ORDER BY time
+    </select>
+
+    <!-- 查询备件库存分布数据 -->
+    <select id="selectStockData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.sparestock.vo.SpareStockChartRespVO$StockData">
+        SELECT
+        spare_name AS spareName,
+        SUM(current_stock) AS currentStock
+        FROM spare_stock
+        <where>
+            deleted = 0
+            <if test="timeRange != null and timeRange.length == 2">
+                AND create_time BETWEEN #{timeRange[0]} AND #{timeRange[1]}
+            </if>
+        </where>
+        GROUP BY spare_id, spare_name
+        ORDER BY currentStock DESC
+    </select>
+
+    <!-- 查询卡片统计数据 -->
+    <select id="selectCardData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.sparestock.vo.SpareStockChartRespVO$CardData">
+        SELECT
+        SUM(current_stock) AS spareStock,
+        SUM(CASE WHEN current_stock &lt; 10 THEN 1 ELSE 0 END) AS replenishCount
+        FROM spare_stock
+        <where>
+            deleted = 0
+            <if test="timeRange != null and timeRange.length == 2">
+                AND create_time BETWEEN #{timeRange[0]} AND #{timeRange[1]}
+            </if>
+        </where>
+    </select>
+
+</mapper>

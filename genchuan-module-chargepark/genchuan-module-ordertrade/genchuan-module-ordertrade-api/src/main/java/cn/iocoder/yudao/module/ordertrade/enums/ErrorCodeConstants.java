@@ -71,6 +71,7 @@ public interface ErrorCodeConstants {
 
     // ========== 发票列表 ==========
     ErrorCode INVOICE_LIST_NOT_EXISTS            = new ErrorCode(1_030_017_000, "发票记录不存在");
+    ErrorCode INVOICE_LIST_ALREADY_APPLIED       = new ErrorCode(1_030_017_004, "该订单已申请开票，请勿重复提交");
     ErrorCode INVOICE_LIST_STATUS_CANNOT_APPROVE = new ErrorCode(1_030_017_001, "发票不是待审核状态，无法审核通过");
     ErrorCode INVOICE_LIST_STATUS_CANNOT_REJECT  = new ErrorCode(1_030_017_002, "发票不是待审核状态，无法驳回");
     ErrorCode INVOICE_LIST_STATUS_CANNOT_INVOICE = new ErrorCode(1_030_017_003, "发票不是待开票状态，无法开票");
@@ -150,5 +151,8 @@ public interface ErrorCodeConstants {
     // ========== 代付记录 ==========
     ErrorCode AGENT_RECORD_NOT_EXISTS            = new ErrorCode(1_030_033_000, "代付记录不存在");
     ErrorCode AGENT_RECORD_STATUS_CANNOT_CHECK   = new ErrorCode(1_030_033_001, "代付记录不是异常状态，无需核查");
+
+    // ========== 周期报表 ==========
+    ErrorCode CYCLE_REPORT_NOT_EXISTS            = new ErrorCode(1_030_034_000, "周期报表记录不存在");
 
 }

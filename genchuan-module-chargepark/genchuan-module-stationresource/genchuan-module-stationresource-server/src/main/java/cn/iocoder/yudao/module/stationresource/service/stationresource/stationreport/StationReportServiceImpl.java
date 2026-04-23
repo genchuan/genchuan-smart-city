@@ -11,9 +11,7 @@ import cn.iocoder.yudao.framework.mybatis.core.util.MyBatisUtils;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.framework.tenant.core.context.TenantContextHolder;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.*;
-import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.ops.StationOpReportCreateReqVO;
-import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.ops.StationOpReportPageReqVO;
-import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.ops.StationOpReportRespVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.ops.*;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.areamgmt.areainfo.AreaInfoDO;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.parkingspace.parkingspaceinfo.ParkingSpaceInfoDO;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.rulecontrol.chargeparklink.ChargeParkLinkDO;
@@ -69,6 +67,85 @@ public class StationReportServiceImpl implements StationReportService {
     @Resource
     private StationReportMapper stationReportMapper;
 
+    @Override
+    public StationOpReportChartRespVO getReportChartData(StationOpReportChartReqVO reqVO) {
+        // ========== 核心：自动根据报表类型计算时间(自定义报表：保留前端传入的 startTime、endTime 不变) ==========
+        String reportType = reqVO.getReportCycle();
+        if (reportType!=null){
+            //如果不是自定义报表，自动计算时间
+            if (StrUtil.isNotBlank(reportType) && !"自定义报表".equals(reportType)) {
+                // 非自定义：自动计算 开始/结束 时间
+                Date[] dates = autoCalcReportTime(reportType);
+                // 覆盖前端传入的时间（自动生成）
+                // 方式1：使用 Date -> LocalDateTime 直接转换（推荐，无格式问题）
+                reqVO.setReportStartTime(LocalDateTime.ofInstant(dates[0].toInstant(), ZoneId.systemDefault()));
+                reqVO.setReportEndTime(LocalDateTime.ofInstant(dates[1].toInstant(), ZoneId.systemDefault()));
+            }
+        }
+
+        System.out.println("cs2026-04-22 11:24:10:"+reqVO);
+
+        // 1. 构建返回对象
+        StationOpReportChartRespVO resp = new StationOpReportChartRespVO();
+        StationOpReportChartRespVO.CardData cardData = new StationOpReportChartRespVO.CardData();
+
+        // ========== 卡片数据统计（全部走 stationReportMapper + XML） ==========
+        // 1. 片区统计：总片区数、覆盖场站数
+        Map<String, Object> areaMap = stationReportMapper.selectAreaReport(
+                BeanUtils.toBean(reqVO, StationOpReportCreateReqVO.class));
+        cardData.setTotalAreaCount(((Number) areaMap.get("totalAreaCount")).intValue());
+        cardData.setCoverStationCount(((Number) areaMap.get("coverStationCount")).intValue());
+
+        // 2. 场站统计：总站场数、正常运营数
+        Map<String, Object> stationMap = stationReportMapper.selectStationReport(BeanUtils.toBean(reqVO, StationOpReportCreateReqVO.class));
+        cardData.setTotalStationCount(((Number) stationMap.get("totalStationCount")).intValue());
+        cardData.setNormalOperateCount(((Number) stationMap.get("normalOperateCount")).intValue());
+
+        // 3. 车位统计：总车位数、可用车位数
+        Map<String, Object> spaceMap = stationReportMapper.selectSpaceReport(BeanUtils.toBean(reqVO, StationOpReportCreateReqVO.class));
+        cardData.setTotalSpaceCount(((Number) spaceMap.get("totalSpaceCount")).intValue());
+        cardData.setAvailableSpaceCount(((Number) spaceMap.get("availableSpaceCount")).intValue());
+
+        // 4. 生效规则数
+        Map<String, Object> ruleMap = stationReportMapper.selectEffectiveRuleReport(BeanUtils.toBean(reqVO, StationOpReportCreateReqVO.class));
+        cardData.setEffectiveRuleCount(((Number) ruleMap.get("effectiveRuleCount")).intValue());
+
+        // 5. 订单量 + 营收
+        Map<String, Object> orderMap = stationReportMapper.selectChargeParkOrderReport(BeanUtils.toBean(reqVO, StationOpReportCreateReqVO.class));
+        cardData.setOrderCount(((Number) orderMap.get("orderCount")).intValue());
+        cardData.setRevenue((BigDecimal) orderMap.get("revenue"));
+
+        // 6. 追缴完成率
+        Map<String, Object> debtMap = stationReportMapper.selectDebtExpandReport(BeanUtils.toBean(reqVO, StationOpReportCreateReqVO.class));
+        cardData.setRecoveryRate((BigDecimal) debtMap.get("recoveryRate"));
+
+        // 7. 押金订单量
+        Map<String, Object> depositMap = stationReportMapper.selectDepositPlanReport(BeanUtils.toBean(reqVO, StationOpReportCreateReqVO.class));
+        cardData.setDepositOrderCount(((Number) depositMap.get("depositOrderCount")).intValue());
+
+        // 封装卡片数据
+        resp.setCardData(cardData);
+
+        // ========== 地图数据、柱状图、折线图（补充完整） ==========
+        // 地图数据（片区+经纬度）
+        List<StationOpReportChartRespVO.MapData> mapData = stationReportMapper.selectMapData(reqVO);
+        resp.setMapData(mapData);
+
+        // 柱状图数据（片区场站数、场站类型分布）
+        List<StationOpReportChartRespVO.BarData> barData = stationReportMapper.selectBarData(reqVO);
+        resp.setBarData(barData);
+        List<StationOpReportChartRespVO.StationMapData> stationMapData = stationReportMapper.getStationMapData(reqVO);
+        resp.setStationMapData(stationMapData);
+            //车位
+        List<StationOpReportChartRespVO.ParkSpaceMapData> parkSpaceMapData = stationReportMapper.getParkSpaceMapData(reqVO);
+        resp.setParkSpaceMapData(parkSpaceMapData);
+
+        // 折线图数据（日期趋势：订单、拓场进度、权限使用）
+        List<StationOpReportChartRespVO.LineData> lineData = stationReportMapper.selectLineData(reqVO);
+        resp.setLineData(lineData);
+
+        return resp;
+    }
     /**
      * 片区信息 Mapper
      */
@@ -554,6 +631,8 @@ public class StationReportServiceImpl implements StationReportService {
         // 3. 封装最终返回数据
         return respVO.getId();
     }
+
+
 
     /**
      * 根据报表类型，自动计算 开始时间、结束时间

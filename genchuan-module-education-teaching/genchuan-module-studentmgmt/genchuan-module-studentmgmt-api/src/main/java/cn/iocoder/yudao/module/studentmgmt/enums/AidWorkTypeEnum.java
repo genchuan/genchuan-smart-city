@@ -16,6 +16,8 @@ public enum AidWorkTypeEnum {
     AID_WORK_STATUS_3("3", "助学金"),
     AID_WORK_STATUS_4("4", "助学贷款");
 
+    public static final String DICT_TYPE = "aid_work_aid_type";
+
     /**
      * 状态
      * <p>

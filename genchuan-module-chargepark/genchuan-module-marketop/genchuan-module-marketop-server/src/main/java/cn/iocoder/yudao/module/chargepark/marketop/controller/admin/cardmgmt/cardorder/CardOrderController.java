@@ -6,7 +6,9 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.cardorder.vo.*;
+import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.CardConfigDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.CardOrderDO;
+import cn.iocoder.yudao.module.chargepark.marketop.service.cardmgmt.cardconfig.CardConfigService;
 import cn.iocoder.yudao.module.chargepark.marketop.service.cardmgmt.cardorder.CardOrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,8 +18,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
+import cn.hutool.core.util.StrUtil;
+
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
 @Tag(name = "管理后台 - 卡种订单")
 @RestController
@@ -27,12 +33,20 @@ public class CardOrderController {
     @Resource
     private CardOrderService cardOrderService;
 
+    @Resource
+    private AdminUserApi adminUserApi;
+
+    @Resource
+    private CardConfigService cardConfigService;
+
     @GetMapping("/page")
     @Operation(summary = "获得卡种订单分页")
     @PreAuthorize("@ss.hasPermission('marketop:card-order:query')")
     public CommonResult<PageResult<CardOrderRespVO>> getPage(CardOrderPageReqVO reqVO) {
         PageResult<CardOrderDO> pageResult = cardOrderService.getPage(reqVO);
-        return CommonResult.success(BeanUtils.toBean(pageResult, CardOrderRespVO.class));
+        PageResult<CardOrderRespVO> bean = BeanUtils.toBean(pageResult, CardOrderRespVO.class);
+        injectUserNames(bean.getList());
+        return CommonResult.success(bean);
     }
 
     @GetMapping("/get")
@@ -41,7 +55,9 @@ public class CardOrderController {
     @PreAuthorize("@ss.hasPermission('marketop:card-order:query')")
     public CommonResult<CardOrderRespVO> get(@RequestParam("id") Long id) {
         CardOrderDO cardOrder = cardOrderService.get(id);
-        return CommonResult.success(BeanUtils.toBean(cardOrder, CardOrderRespVO.class));
+        CardOrderRespVO respVO = BeanUtils.toBean(cardOrder, CardOrderRespVO.class);
+        if (respVO != null) injectUserNames(Collections.singletonList(respVO));
+        return CommonResult.success(respVO);
     }
 
     @PutMapping("/pay")
@@ -100,6 +116,44 @@ public class CardOrderController {
     @PreAuthorize("@ss.hasPermission('marketop:card-order:query')")
     public CommonResult<CardOrderChartRespVO> getChart(@RequestParam(value = "timeRange", required = false) String timeRange) {
         return CommonResult.success(cardOrderService.getChart(timeRange));
+    }
+
+    private void injectUserNames(List<CardOrderRespVO> list) {
+        if (list == null || list.isEmpty()) return;
+        Set<Long> userIds = new HashSet<>();
+        Set<Long> cardIds = new HashSet<>();
+        for (var item : list) {
+            if (StrUtil.isNotBlank(item.getCreator())) {
+                userIds.add(Long.valueOf(item.getCreator()));
+            }
+            if (item.getCardId() != null) {
+                cardIds.add(item.getCardId());
+            }
+        }
+        // 翻译创建者名称
+        if (!userIds.isEmpty()) {
+            Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
+            for (var item : list) {
+                if (StrUtil.isNotBlank(item.getCreator())) {
+                    AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
+                    if (user != null) item.setCreatorName(user.getNickname());
+                }
+            }
+        }
+        // 翻译卡种名称
+        if (!cardIds.isEmpty()) {
+            Map<Long, String> cardNameMap = new HashMap<>();
+            for (Long cardId : cardIds) {
+                CardConfigDO card = cardConfigService.get(cardId);
+                if (card != null) cardNameMap.put(cardId, card.getName());
+            }
+            for (var item : list) {
+                if (item.getCardId() != null) {
+                    String name = cardNameMap.get(item.getCardId());
+                    if (name != null) item.setCardName(name);
+                }
+            }
+        }
     }
 
 }

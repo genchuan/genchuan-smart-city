@@ -22,6 +22,9 @@ public class PackageConfigRespVO {
     @Schema(description = "包含优惠券ID列表")
     private String couponIds;
 
+    @Schema(description = "包含优惠券名称列表")
+    private String couponNames;
+
     @Schema(description = "价格")
     private BigDecimal price;
 
@@ -51,6 +54,12 @@ public class PackageConfigRespVO {
 
     @Schema(description = "创建者")
     private String creator;
+
+    @Schema(description = "创建者名称")
+    private String creatorName;
+
+    @Schema(description = "审核人名称")
+    private String auditorName;
 
     @Schema(description = "创建时间")
     private LocalDateTime createTime;

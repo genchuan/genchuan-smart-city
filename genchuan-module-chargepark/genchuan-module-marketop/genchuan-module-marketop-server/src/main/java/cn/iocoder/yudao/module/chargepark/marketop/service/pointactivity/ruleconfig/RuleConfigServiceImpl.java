@@ -9,6 +9,7 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivit
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.ruleconfig.vo.RuleConfigUpdateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.RuleConfigDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.RuleConfigMapper;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.RuleConfigStatusEnum;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.*;
@@ -43,7 +45,7 @@ public class RuleConfigServiceImpl implements RuleConfigService {
     public Long create(RuleConfigCreateReqVO reqVO) {
         validateNameUnique(null, reqVO.getName());
         RuleConfigDO ruleConfig = BeanUtils.toBean(reqVO, RuleConfigDO.class);
-        ruleConfig.setStatus("0");
+        ruleConfig.setStatus(RuleConfigStatusEnum.NOT_EFFECTIVE.getValue());
         ruleConfig.setMatchCount(0);
         ruleConfigMapper.insert(ruleConfig);
         return ruleConfig.getId();
@@ -62,10 +64,10 @@ public class RuleConfigServiceImpl implements RuleConfigService {
     @Override
     public void enable(Long id) {
         RuleConfigDO ruleConfig = validateExists(id);
-        if (!"0".equals(ruleConfig.getStatus())) {
+        if (!Objects.equals(RuleConfigStatusEnum.NOT_EFFECTIVE.getValue(), ruleConfig.getStatus())) {
             throw exception(RULE_CONFIG_NOT_EXISTS); // 状态不合法
         }
-        ruleConfig.setStatus("1");
+        ruleConfig.setStatus(RuleConfigStatusEnum.EFFECTIVE.getValue());
         ruleConfig.setAuditTime(LocalDateTime.now());
         ruleConfig.setEffectTime(LocalDateTime.now());
         ruleConfigMapper.updateById(ruleConfig);
@@ -74,10 +76,10 @@ public class RuleConfigServiceImpl implements RuleConfigService {
     @Override
     public void disable(Long id) {
         RuleConfigDO ruleConfig = validateExists(id);
-        if (!"1".equals(ruleConfig.getStatus())) {
+        if (!Objects.equals(RuleConfigStatusEnum.EFFECTIVE.getValue(), ruleConfig.getStatus())) {
             throw exception(RULE_CONFIG_NOT_EXISTS);
         }
-        ruleConfig.setStatus("0");
+        ruleConfig.setStatus(RuleConfigStatusEnum.NOT_EFFECTIVE.getValue());
         ruleConfigMapper.updateById(ruleConfig);
     }
 

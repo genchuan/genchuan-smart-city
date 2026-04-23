@@ -22,6 +22,9 @@ public class CardOrderRespVO {
     @Schema(description = "卡种ID")
     private Long cardId;
 
+    @Schema(description = "卡种名称")
+    private String cardName;
+
     @Schema(description = "订单金额")
     private BigDecimal amount;
 
@@ -42,6 +45,9 @@ public class CardOrderRespVO {
 
     @Schema(description = "创建者")
     private String creator;
+
+    @Schema(description = "创建者名称")
+    private String creatorName;
 
     @Schema(description = "创建时间")
     private LocalDateTime createTime;

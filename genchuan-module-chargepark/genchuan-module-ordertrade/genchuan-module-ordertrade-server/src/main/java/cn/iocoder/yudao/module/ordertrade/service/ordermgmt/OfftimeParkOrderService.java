@@ -38,7 +38,7 @@ public interface OfftimeParkOrderService {
 
     void refundOfftimeParkOrder(IdReqVO reqVO);
 
-    /** Invoice - 单条操作（IdReqVO） */
+    /** Invoice - 单条操作（InvoiceOrderReqVO） */
 
-    void invoiceOfftimeParkOrder(IdReqVO reqVO);
+    void invoiceOfftimeParkOrder(InvoiceOrderReqVO reqVO);
 }

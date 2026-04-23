@@ -38,7 +38,7 @@ public interface AllOrderService {
 
     void refundAllOrder(IdReqVO reqVO);
 
-    /** Invoice - 单条操作（IdReqVO） */
+    /** Invoice - 单条操作（InvoiceOrderReqVO） */
 
-    void invoiceAllOrder(IdReqVO reqVO);
+    void invoiceAllOrder(InvoiceOrderReqVO reqVO);
 }

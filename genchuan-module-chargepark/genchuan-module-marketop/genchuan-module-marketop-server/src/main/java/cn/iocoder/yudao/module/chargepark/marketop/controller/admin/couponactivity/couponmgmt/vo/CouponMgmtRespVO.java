@@ -31,11 +31,17 @@ public class CouponMgmtRespVO {
     @Schema(description = "发放人")
     private Long senderId;
 
+    @Schema(description = "发放人名称")
+    private String senderName;
+
     @Schema(description = "发放时间")
     private LocalDateTime sendTime;
 
     @Schema(description = "领取人")
     private Long receiverId;
+
+    @Schema(description = "领取人名称")
+    private String receiverName;
 
     @Schema(description = "核销时间")
     private LocalDateTime verifyTime;
@@ -49,6 +55,9 @@ public class CouponMgmtRespVO {
     @Schema(description = "适用场站")
     private String stationIds;
 
+    @Schema(description = "适用场站名称")
+    private String stationNames;
+
     @Schema(description = "领取量")
     private Integer sendCount;
 
@@ -57,6 +66,9 @@ public class CouponMgmtRespVO {
 
     @Schema(description = "创建者")
     private String creator;
+
+    @Schema(description = "创建者名称")
+    private String creatorName;
 
     @Schema(description = "创建时间")
     private LocalDateTime createTime;

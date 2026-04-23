@@ -78,4 +78,5 @@ public interface HonorMgmtService {
 
     PageResult<HonorMgmtPageRespVO> getHonorMgmtJoinPage(@Valid HonorMgmtPageReqVO pageReqVO);
 
+    List<HonorCountRespVO> honorCount(@Valid HonorCountReqVO reqVO);
 }

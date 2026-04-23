@@ -13,6 +13,8 @@ public enum TargetStatusEnum {
     DISABLE("disable","'停用'"),
     ENABLE("enable","'启用'");
 
+    public static final String DICT_TYPE = "target_mgmt_status";
+
     /**
      * 状态
      * <p>

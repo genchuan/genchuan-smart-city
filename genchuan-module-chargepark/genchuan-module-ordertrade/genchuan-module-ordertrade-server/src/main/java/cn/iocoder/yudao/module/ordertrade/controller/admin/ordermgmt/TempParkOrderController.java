@@ -128,7 +128,7 @@ public class TempParkOrderController {
     @PutMapping("/invoice")
     @ApiAccessLog(operateType = UPDATE)  // ← 加这一行
     @Operation(summary = "申请开票")
-    public CommonResult<Boolean> invoiceTempParkOrder(@Valid @RequestBody IdReqVO reqVO) {
+    public CommonResult<Boolean> invoiceTempParkOrder(@Valid @RequestBody InvoiceOrderReqVO reqVO) {
         tempParkOrderService.invoiceTempParkOrder(reqVO);
         return success(true);
     }

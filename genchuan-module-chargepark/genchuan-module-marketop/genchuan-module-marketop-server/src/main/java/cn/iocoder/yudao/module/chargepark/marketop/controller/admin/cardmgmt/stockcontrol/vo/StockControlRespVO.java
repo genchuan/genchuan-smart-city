@@ -15,6 +15,9 @@ public class StockControlRespVO {
     @Schema(description = "卡种ID")
     private Long cardId;
 
+    @Schema(description = "卡种名称")
+    private String cardName;
+
     @Schema(description = "当前库存")
     private Integer currentStock;
 
@@ -32,6 +35,9 @@ public class StockControlRespVO {
 
     @Schema(description = "创建者")
     private String creator;
+
+    @Schema(description = "创建者名称")
+    private String creatorName;
 
     @Schema(description = "创建时间")
     private LocalDateTime createTime;

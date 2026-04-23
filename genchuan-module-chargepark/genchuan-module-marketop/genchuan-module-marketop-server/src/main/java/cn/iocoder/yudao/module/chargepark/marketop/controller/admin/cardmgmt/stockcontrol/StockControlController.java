@@ -6,7 +6,9 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.stockcontrol.vo.*;
+import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.CardConfigDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.StockControlDO;
+import cn.iocoder.yudao.module.chargepark.marketop.service.cardmgmt.cardconfig.CardConfigService;
 import cn.iocoder.yudao.module.chargepark.marketop.service.cardmgmt.stockcontrol.StockControlService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,8 +19,12 @@ import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
+import cn.hutool.core.util.StrUtil;
+
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
 @Tag(name = "管理后台 - 库存管控")
 @RestController
@@ -28,12 +34,20 @@ public class StockControlController {
     @Resource
     private StockControlService stockControlService;
 
+    @Resource
+    private AdminUserApi adminUserApi;
+
+    @Resource
+    private CardConfigService cardConfigService;
+
     @GetMapping("/page")
     @Operation(summary = "获得库存管控分页")
     @PreAuthorize("@ss.hasPermission('marketop:stock-control:query')")
     public CommonResult<PageResult<StockControlRespVO>> getPage(StockControlPageReqVO reqVO) {
         PageResult<StockControlDO> pageResult = stockControlService.getPage(reqVO);
-        return CommonResult.success(BeanUtils.toBean(pageResult, StockControlRespVO.class));
+        PageResult<StockControlRespVO> bean = BeanUtils.toBean(pageResult, StockControlRespVO.class);
+        injectUserNames(bean.getList());
+        return CommonResult.success(bean);
     }
 
     @GetMapping("/get")
@@ -42,7 +56,9 @@ public class StockControlController {
     @PreAuthorize("@ss.hasPermission('marketop:stock-control:query')")
     public CommonResult<StockControlRespVO> get(@RequestParam("id") Long id) {
         StockControlDO stockControl = stockControlService.get(id);
-        return CommonResult.success(BeanUtils.toBean(stockControl, StockControlRespVO.class));
+        StockControlRespVO respVO = BeanUtils.toBean(stockControl, StockControlRespVO.class);
+        if (respVO != null) injectUserNames(Collections.singletonList(respVO));
+        return CommonResult.success(respVO);
     }
 
     @PutMapping("/restock")
@@ -86,6 +102,44 @@ public class StockControlController {
                                                           @RequestParam(value = "endTime", required = false) Long endTime,
                                                           @RequestParam(value = "stationId", required = false) Long stationId) {
         return CommonResult.success(stockControlService.getChart(startTime, endTime, stationId));
+    }
+
+    private void injectUserNames(List<StockControlRespVO> list) {
+        if (list == null || list.isEmpty()) return;
+        Set<Long> userIds = new HashSet<>();
+        Set<Long> cardIds = new HashSet<>();
+        for (var item : list) {
+            if (StrUtil.isNotBlank(item.getCreator())) {
+                userIds.add(Long.valueOf(item.getCreator()));
+            }
+            if (item.getCardId() != null) {
+                cardIds.add(item.getCardId());
+            }
+        }
+        // 翻译创建者名称
+        if (!userIds.isEmpty()) {
+            Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
+            for (var item : list) {
+                if (StrUtil.isNotBlank(item.getCreator())) {
+                    AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
+                    if (user != null) item.setCreatorName(user.getNickname());
+                }
+            }
+        }
+        // 翻译卡种名称
+        if (!cardIds.isEmpty()) {
+            Map<Long, String> cardNameMap = new HashMap<>();
+            for (Long cardId : cardIds) {
+                CardConfigDO card = cardConfigService.get(cardId);
+                if (card != null) cardNameMap.put(cardId, card.getName());
+            }
+            for (var item : list) {
+                if (item.getCardId() != null) {
+                    String name = cardNameMap.get(item.getCardId());
+                    if (name != null) item.setCardName(name);
+                }
+            }
+        }
     }
 
 }

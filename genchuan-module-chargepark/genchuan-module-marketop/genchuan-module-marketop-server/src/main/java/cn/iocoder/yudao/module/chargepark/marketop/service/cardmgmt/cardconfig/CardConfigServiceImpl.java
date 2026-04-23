@@ -8,6 +8,7 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.car
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.cardconfig.vo.CardConfigUpdateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.CardConfigDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.cardmgmt.CardConfigMapper;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.CardConfigStatusEnum;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -19,6 +20,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -46,7 +48,7 @@ public class CardConfigServiceImpl implements CardConfigService {
         // 校验名称唯一
         validateNameUnique(null, reqVO.getName());
         CardConfigDO cardConfig = BeanUtils.toBean(reqVO, CardConfigDO.class);
-        cardConfig.setStatus("0");
+        cardConfig.setStatus(CardConfigStatusEnum.NOT_EFFECTIVE.getValue());
         cardConfig.setSaleCount(0);
         cardConfigMapper.insert(cardConfig);
         return cardConfig.getId();
@@ -62,10 +64,10 @@ public class CardConfigServiceImpl implements CardConfigService {
     @Override
     public void enable(Long id) {
         CardConfigDO cardConfig = validateExists(id);
-        if (!"0".equals(cardConfig.getStatus())) {
+        if (!Objects.equals(CardConfigStatusEnum.NOT_EFFECTIVE.getValue(), cardConfig.getStatus())) {
             throw exception(CARD_CONFIG_NOT_EXISTS);
         }
-        cardConfig.setStatus("1");
+        cardConfig.setStatus(CardConfigStatusEnum.EFFECTIVE.getValue());
         cardConfig.setAuditTime(LocalDateTime.now());
         cardConfig.setEffectTime(LocalDateTime.now());
         cardConfigMapper.updateById(cardConfig);
@@ -74,10 +76,10 @@ public class CardConfigServiceImpl implements CardConfigService {
     @Override
     public void disable(Long id) {
         CardConfigDO cardConfig = validateExists(id);
-        if (!"1".equals(cardConfig.getStatus())) {
+        if (!Objects.equals(CardConfigStatusEnum.EFFECTIVE.getValue(), cardConfig.getStatus())) {
             throw exception(CARD_CONFIG_NOT_EXISTS);
         }
-        cardConfig.setStatus("0");
+        cardConfig.setStatus(CardConfigStatusEnum.NOT_EFFECTIVE.getValue());
         cardConfigMapper.updateById(cardConfig);
     }
 

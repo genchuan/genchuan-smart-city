@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.studentmgmt.service.mentalmgmt;
 
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.date.LocalDateTimeUtils;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
@@ -10,10 +12,8 @@ import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.mentalmgmt.MentalMgmtD
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.mentalmgmt.MentalMgmtMapper;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
-import cn.iocoder.yudao.module.studentmgmt.enums.MentalMentalStatusEnum;
-import cn.iocoder.yudao.module.studentmgmt.enums.MentalRiskLevelEnum;
-import cn.iocoder.yudao.module.studentmgmt.enums.MentalStatusEnum;
-import cn.iocoder.yudao.module.studentmgmt.enums.ViolaateStatusEnum;
+import cn.iocoder.yudao.module.studentmgmt.enums.*;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import com.alibaba.fastjson.JSONObject;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
@@ -42,6 +42,8 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
     private MentalMgmtMapper mentalMgmtMapper;
     @Resource
     private StudentInfoMapper studentInfoMapper;
+    @Resource
+    private DictDataApi dictDataApi;
 
     @Override
     @LogRecord(type = VIOLATE_TYPE, subType = VIOLATE_CREATE_SUB_TYPE, bizNo = "{{#mental.id}}",
@@ -189,7 +191,17 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
             LogRecordContext.putVariable("mental", mentalMgmtDO);
             LogRecordContext.putVariable("studentName", studentName);
             LogRecordContext.putVariable("username", username);
-            LogRecordContext.putVariable("status", MentalStatusEnum.getNameByKey(reqVO.getStatus()));
+            String dictDataLabel = "";
+            CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(MentalStatusEnum.DICT_TYPE);
+            if (dictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : dictDataList.getData()) {
+                    if (dictData.getValue().equals(reqVO.getStatus())) {
+                        dictDataLabel = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            LogRecordContext.putVariable("status", dictDataLabel);
             return true;
         }
 
@@ -231,14 +243,36 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
         List<JSONObject> statusList = mentalMgmtMapper.selectMentalStatusDistributionCount();
         // 对应的key值转换成枚举值
         statusList.forEach(item -> {
-            item.put("name", MentalMentalStatusEnum.getNameByKey(item.getString("name")));
+            String dictDataLabel = "";
+            String status = item.getString("name");
+            CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.MENTAL_MGMT_MENTAL_STATUS.getType());
+            if (dictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : dictDataList.getData()) {
+                    if (dictData.getValue().equals(status)) {
+                        dictDataLabel = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.put("name", dictDataLabel);
         });
         vo.setMentalStatusDistribution(statusList);
 
         // 风险等级分布数据
         List<JSONObject> riskList = mentalMgmtMapper.selectRiskLevelDistributionCount();
         riskList.forEach(item -> {
-            item.put("name", MentalRiskLevelEnum.getNameByKey(item.getString("name")));
+            String dictDataLabel = "";
+            String name = item.getString("name");
+            CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.MENTAL_MGMT_RISK_LEVEL.getType());
+            if (dictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : dictDataList.getData()) {
+                    if (dictData.getValue().equals(name)) {
+                        dictDataLabel = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.put("name", dictDataLabel);
         });
         vo.setRiskLevelDistribution(riskList);
 
