@@ -18,8 +18,14 @@ public class ReceiveRecordRespVO {
     @Schema(description = "用户ID")
     private Long userId;
 
+    @Schema(description = "用户名称")
+    private String userName;
+
     @Schema(description = "优惠券ID")
     private Long couponId;
+
+    @Schema(description = "优惠券名称")
+    private String couponName;
 
     @Schema(description = "领取时间")
     private LocalDateTime receiveTime;

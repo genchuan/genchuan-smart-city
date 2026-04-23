@@ -31,11 +31,17 @@ public class CouponMgmtRespVO {
     @Schema(description = "发放人")
     private Long senderId;
 
+    @Schema(description = "发放人名称")
+    private String senderName;
+
     @Schema(description = "发放时间")
     private LocalDateTime sendTime;
 
     @Schema(description = "领取人")
     private Long receiverId;
+
+    @Schema(description = "领取人名称")
+    private String receiverName;
 
     @Schema(description = "核销时间")
     private LocalDateTime verifyTime;
