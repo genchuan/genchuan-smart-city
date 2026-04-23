@@ -26,7 +26,7 @@ public interface PayRefundMapper extends BaseMapperX<PayRefundDO> {
 
     @Select("<script>" +
             "SELECT DATE_FORMAT(create_time,'%Y-%m-%d') AS date, COUNT(*) AS count " +
-            "FROM pay_refund WHERE 1=1 " +
+            "FROM pay_refund WHERE deleted = 0 " +
             "<if test='startTime != null'> AND create_time &gt;= #{startTime} </if>" +
             "<if test='endTime != null'>   AND create_time &lt;= #{endTime}   </if>" +
             "GROUP BY DATE_FORMAT(create_time,'%Y-%m-%d') ORDER BY date" +
@@ -34,11 +34,11 @@ public interface PayRefundMapper extends BaseMapperX<PayRefundDO> {
     List<Map<String, Object>> selectTrend(@Param("startTime") LocalDateTime startTime,
                                           @Param("endTime") LocalDateTime endTime);
 
-    @Select("SELECT COUNT(*) FROM pay_refund WHERE create_time BETWEEN #{startTime} AND #{endTime}")
+    @Select("SELECT COUNT(*) FROM pay_refund WHERE deleted = 0 AND create_time BETWEEN #{startTime} AND #{endTime}")
     Long selectTodayCount(@Param("startTime") LocalDateTime startTime,
                           @Param("endTime") LocalDateTime endTime);
 
-    @Select("SELECT COUNT(*) FROM pay_refund WHERE status = 20 AND create_time BETWEEN #{startTime} AND #{endTime}")
+    @Select("SELECT COUNT(*) FROM pay_refund WHERE deleted = 0 AND status = 20 AND create_time BETWEEN #{startTime} AND #{endTime}")
     Long selectTodaySuccessCount(@Param("startTime") LocalDateTime startTime,
                                  @Param("endTime") LocalDateTime endTime);
 }

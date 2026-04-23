@@ -17,6 +17,10 @@ public class PayAppRespVO {
     @ExcelProperty("主键ID")
     private Long id;
 
+    @Schema(description = "应用标识")
+    @ExcelProperty("应用标识")
+    private String appKey;
+
     @Schema(description = "应用名")
     @ExcelProperty("应用名")
     private String name;
@@ -29,6 +33,18 @@ public class PayAppRespVO {
     @Schema(description = "备注")
     @ExcelProperty("备注")
     private String remark;
+
+    @Schema(description = "支付结果回调地址")
+    @ExcelProperty("支付结果回调地址")
+    private String orderNotifyUrl;
+
+    @Schema(description = "退款结果回调地址")
+    @ExcelProperty("退款结果回调地址")
+    private String refundNotifyUrl;
+
+    @Schema(description = "转账结果回调地址")
+    @ExcelProperty("转账结果回调地址")
+    private String transferNotifyUrl;
 
     @Schema(description = "创建时间")
     @ExcelProperty("创建时间")

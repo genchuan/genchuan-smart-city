@@ -21,13 +21,25 @@ public class PayCallbackRespVO {
     @ExcelProperty("应用ID")
     private Long appId;
 
-    @Schema(description = "类型")
-    @ExcelProperty("类型")
+    @Schema(description = "通知类型")
+    @ExcelProperty("通知类型")
     private Integer type;
+
+    @Schema(description = "数据编号")
+    @ExcelProperty("数据编号")
+    private Long dataId;
 
     @Schema(description = "商户订单号")
     @ExcelProperty("商户订单号")
     private String merchantOrderId;
+
+    @Schema(description = "商户退款编号")
+    @ExcelProperty("商户退款编号")
+    private String merchantRefundId;
+
+    @Schema(description = "商户转账编号")
+    @ExcelProperty("商户转账编号")
+    private String merchantTransferId;
 
     @Schema(description = "状态")
     @ExcelProperty(value = "状态", converter = IntegerEnumExcelConverter.class)
@@ -38,9 +50,21 @@ public class PayCallbackRespVO {
     @ExcelProperty("下次通知时间")
     private LocalDateTime nextNotifyTime;
 
+    @Schema(description = "最后执行时间")
+    @ExcelProperty("最后执行时间")
+    private LocalDateTime lastExecuteTime;
+
     @Schema(description = "通知次数")
     @ExcelProperty("通知次数")
     private Integer notifyTimes;
+
+    @Schema(description = "最大通知次数")
+    @ExcelProperty("最大通知次数")
+    private Integer maxNotifyTimes;
+
+    @Schema(description = "通知地址")
+    @ExcelProperty("通知地址")
+    private String notifyUrl;
 
     @Schema(description = "创建时间")
     @ExcelProperty("创建时间")

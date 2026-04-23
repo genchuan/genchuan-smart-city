@@ -113,7 +113,7 @@ public class InvoiceAuditController {
         return success(true);
     }
 
-    @PutMapping("/batch-audit")
+    @PostMapping("/batch-audit")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "批量审核")
     public CommonResult<Boolean> batchAuditInvoiceAudit(@RequestBody List<Long> ids) {

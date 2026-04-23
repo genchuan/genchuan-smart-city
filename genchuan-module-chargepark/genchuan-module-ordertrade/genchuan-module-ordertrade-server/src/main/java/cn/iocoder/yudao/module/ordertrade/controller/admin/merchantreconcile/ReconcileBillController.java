@@ -7,6 +7,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.merchantreconcile.vo.*;
+import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.IdReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.merchantreconcile.ReconcileBillDO;
 import cn.iocoder.yudao.module.ordertrade.service.merchantreconcile.ReconcileBillService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -81,31 +82,35 @@ public class ReconcileBillController {
                 BeanUtils.toBean(list, ReconcileBillRespVO.class));
     }
 
-    @PutMapping("/confirm")
+    @PostMapping("/reconcile")
+    @ApiAccessLog(operateType = UPDATE)
+    @Operation(summary = "发起对账")
+    public CommonResult<Boolean> reconcileReconcileBill(@Valid @RequestBody IdReqVO reqVO) {
+        reconcileBillService.reconcileReconcileBill(reqVO);
+        return success(true);
+    }
+
+    @PostMapping("/batch-reconcile")
+    @ApiAccessLog(operateType = UPDATE)
+    @Operation(summary = "批量对账")
+    public CommonResult<Boolean> batchReconcileReconcileBill(@RequestBody List<Long> ids) {
+        reconcileBillService.batchReconcileReconcileBill(ids);
+        return success(true);
+    }
+
+    @PostMapping("/confirm")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "确认对账账单")
-    @Parameter(name = "id", description = "主键", required = true)
-    public CommonResult<Boolean> confirmReconcileBill(@RequestParam("id") Long id) {
-        reconcileBillService.confirmReconcileBill(id);
+    public CommonResult<Boolean> confirmReconcileBill(@Valid @RequestBody IdReqVO reqVO) {
+        reconcileBillService.confirmReconcileBill(reqVO.getId());
         return success(true);
     }
 
-    @PutMapping("/dispute")
+    @PostMapping("/fix")
     @ApiAccessLog(operateType = UPDATE)
-    @Operation(summary = "提出对账异议")
-    @Parameter(name = "id", description = "主键", required = true)
-    public CommonResult<Boolean> disputeReconcileBill(@RequestParam("id") Long id,
-                                                      @RequestParam(value = "reason", required = false) String reason) {
-        reconcileBillService.disputeReconcileBill(id, reason);
-        return success(true);
-    }
-
-    @PutMapping("/resolve")
-    @ApiAccessLog(operateType = UPDATE)
-    @Operation(summary = "解决对账异议")
-    @Parameter(name = "id", description = "主键", required = true)
-    public CommonResult<Boolean> resolveReconcileBill(@RequestParam("id") Long id) {
-        reconcileBillService.resolveReconcileBill(id);
+    @Operation(summary = "修正对账差异")
+    public CommonResult<Boolean> fixReconcileBill(@Valid @RequestBody IdReqVO reqVO) {
+        reconcileBillService.fixReconcileBill(reqVO);
         return success(true);
     }
 

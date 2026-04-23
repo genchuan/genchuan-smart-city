@@ -11,6 +11,9 @@ public class PayAppSaveReqVO {
     @Schema(description = "主键ID（更新时必填）")
     private Long id;
 
+    @Schema(description = "应用标识")
+    private String appKey;
+
     @Schema(description = "应用名", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "应用名不能为空")
     private String name;
@@ -20,4 +23,13 @@ public class PayAppSaveReqVO {
 
     @Schema(description = "备注")
     private String remark;
+
+    @Schema(description = "支付结果回调地址")
+    private String orderNotifyUrl;
+
+    @Schema(description = "退款结果回调地址")
+    private String refundNotifyUrl;
+
+    @Schema(description = "转账结果回调地址")
+    private String transferNotifyUrl;
 }

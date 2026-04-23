@@ -1,29 +1,22 @@
 package cn.iocoder.yudao.module.ordertrade.dal.dataobject.paymgmt;
 
+import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-
-import java.time.LocalDateTime;
+import lombok.EqualsAndHashCode;
 
 @TableName("pay_wallet")
 @Data
-public class PayWalletDO {
+@EqualsAndHashCode(callSuper = true)
+public class PayWalletDO extends BaseDO {
 
     @TableId
     private Long id;
-
     private Long userId;
-
     private Integer userType;
-
-    private Long balance;
-
-    private Long freezeBalance;
-
-    private Integer status;
-
-    private LocalDateTime createTime;
-
-    private LocalDateTime updateTime;
+    private Integer balance;
+    private Integer freezePrice;
+    private Integer totalExpense;
+    private Integer totalRecharge;
 }

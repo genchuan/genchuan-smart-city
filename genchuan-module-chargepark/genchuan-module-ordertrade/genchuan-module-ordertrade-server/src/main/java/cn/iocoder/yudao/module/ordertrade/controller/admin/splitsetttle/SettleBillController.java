@@ -98,7 +98,7 @@ public class SettleBillController {
         return success(true);
     }
 
-    @PutMapping("/settle")
+    @PostMapping("/settle")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "结算")
     public CommonResult<Boolean> settleSettleBill(@Valid @RequestBody IdReqVO reqVO) {
@@ -106,7 +106,7 @@ public class SettleBillController {
         return success(true);
     }
 
-    @PutMapping("/regenerate")
+    @PostMapping("/regenerate")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "重新生成结算单据")
     public CommonResult<Boolean> regenerateSettleBill(@Valid @RequestBody IdReqVO reqVO) {
@@ -114,7 +114,7 @@ public class SettleBillController {
         return success(true);
     }
 
-    @PutMapping("/batch-audit")
+    @PostMapping("/batch-audit")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "批量审核结算单据")
     public CommonResult<Boolean> batchAuditSettleBill(@RequestBody List<Long> ids) {

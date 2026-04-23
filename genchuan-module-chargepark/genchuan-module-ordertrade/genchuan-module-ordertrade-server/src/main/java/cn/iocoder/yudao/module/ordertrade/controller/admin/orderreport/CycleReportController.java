@@ -27,9 +27,9 @@ import java.util.List;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
-@Tag(name = "订单交易 - 订单交易报表 - 周期报表")
+@Tag(name = "订单交易 - 决策分析 - 交易运营报表")
 @RestController
-@RequestMapping("/ordertrade/cycle-report")
+@RequestMapping("/ordertrade/trade-op-report")
 @Validated
 public class CycleReportController {
 
@@ -67,7 +67,7 @@ public class CycleReportController {
 
     @GetMapping("/chart")
     @Operation(summary = "图表 - 卡片+折线+柱状+饼图")
-    @PreAuthorize("@ss.hasPermission('ordertrade:cycle-report:query')")
+    @PreAuthorize("@ss.hasPermission('ordertrade:trade-op-report:query')")
     public CommonResult<CycleReportChartRespVO> getCycleReportChart(@Valid CycleReportChartReqVO chartReqVO) {
         return success(cycleReportService.getCycleReportChart(chartReqVO));
     }

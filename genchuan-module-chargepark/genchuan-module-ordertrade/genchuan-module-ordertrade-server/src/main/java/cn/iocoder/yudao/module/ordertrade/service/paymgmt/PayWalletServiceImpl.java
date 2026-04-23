@@ -37,8 +37,7 @@ public class PayWalletServiceImpl implements PayWalletService {
     public void rechargePayWallet(IdReqVO reqVO) {
         PayWalletDO wallet = payWalletMapper.selectById(reqVO.getId());
         if (wallet == null) throw exception(PAY_WALLET_NOT_EXISTS);
-        if (Integer.valueOf(1).equals(wallet.getStatus())) throw exception(PAY_WALLET_STATUS_CANNOT_RECHARGE);
-        // 充值逻辑（实际金额应从请求中传入，此处简化处理）
+        if (wallet.getFreezePrice() != null && wallet.getFreezePrice() > 0) throw exception(PAY_WALLET_STATUS_CANNOT_RECHARGE);
     }
 
     @Override
@@ -46,7 +45,7 @@ public class PayWalletServiceImpl implements PayWalletService {
     public void withdrawPayWallet(IdReqVO reqVO) {
         PayWalletDO wallet = payWalletMapper.selectById(reqVO.getId());
         if (wallet == null) throw exception(PAY_WALLET_NOT_EXISTS);
-        if (Integer.valueOf(1).equals(wallet.getStatus())) throw exception(PAY_WALLET_STATUS_CANNOT_WITHDRAW);
+        if (wallet.getFreezePrice() != null && wallet.getFreezePrice() > 0) throw exception(PAY_WALLET_STATUS_CANNOT_WITHDRAW);
     }
 
     @Override
@@ -56,8 +55,7 @@ public class PayWalletServiceImpl implements PayWalletService {
         if (wallet == null) throw exception(PAY_WALLET_NOT_EXISTS);
         PayWalletDO update = new PayWalletDO();
         update.setId(reqVO.getId());
-        update.setStatus(0);
-        update.setFreezeBalance(0L);
+        update.setFreezePrice(0);
         payWalletMapper.updateById(update);
     }
 

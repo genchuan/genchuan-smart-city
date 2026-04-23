@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.ordertrade.service.merchantreconcile;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.merchantreconcile.vo.*;
+import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.IdReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.merchantreconcile.ReconcileRecordDO;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.merchantreconcile.ReconcileRecordMapper;
 import jakarta.annotation.Resource;
@@ -82,6 +83,17 @@ public class ReconcileRecordServiceImpl implements ReconcileRecordService {
             resp.setMatchRate(BigDecimal.ZERO);
         }
         return resp;
+    }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional(rollbackFor = Exception.class)
+    public void checkReconcileRecord(IdReqVO reqVO) {
+        ReconcileRecordDO record = reconcileRecordMapper.selectById(reqVO.getId());
+        if (record == null) throw exception(RECONCILE_RECORD_NOT_EXISTS);
+        ReconcileRecordDO update = new ReconcileRecordDO();
+        update.setId(reqVO.getId());
+        update.setMatchResult("checked");
+        reconcileRecordMapper.updateById(update);
     }
 
     private void validateExists(Long id) {

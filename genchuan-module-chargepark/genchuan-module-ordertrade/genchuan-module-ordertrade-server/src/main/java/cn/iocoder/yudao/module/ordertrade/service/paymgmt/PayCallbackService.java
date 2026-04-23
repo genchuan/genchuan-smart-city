@@ -11,7 +11,9 @@ public interface PayCallbackService {
 
     PageResult<PayCallbackDO> getPayCallbackPage(PayCallbackPageReqVO pageReqVO);
 
-    void retryPayCallback(IdReqVO reqVO);
+    void processPayCallback(IdReqVO reqVO);
+
+    void repushPayCallback(IdReqVO reqVO);
 
     PayCallbackChartRespVO getPayCallbackChart(PayCallbackChartReqVO chartReqVO);
 }

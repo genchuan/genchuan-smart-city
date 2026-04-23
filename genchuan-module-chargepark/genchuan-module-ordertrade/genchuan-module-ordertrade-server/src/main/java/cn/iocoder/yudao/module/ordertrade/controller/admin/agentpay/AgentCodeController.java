@@ -100,7 +100,7 @@ public class AgentCodeController {
         return success(true);
     }
 
-    @PutMapping("/regenerate")
+    @PostMapping("/regenerate")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "重新生成代付码")
     @Parameter(name = "id", description = "主键", required = true)
