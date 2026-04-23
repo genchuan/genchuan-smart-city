@@ -38,7 +38,7 @@ public interface TempParkOrderService {
 
     void refundTempParkOrder(IdReqVO reqVO);
 
-    /** Invoice - 单条操作（IdReqVO） */
+    /** Invoice - 单条操作（InvoiceOrderReqVO） */
 
-    void invoiceTempParkOrder(IdReqVO reqVO);
+    void invoiceTempParkOrder(InvoiceOrderReqVO reqVO);
 }

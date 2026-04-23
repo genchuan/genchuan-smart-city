@@ -133,7 +133,7 @@ public class CarChargeOrderController {
     @PutMapping("/invoice")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "申请开票")
-    public CommonResult<Boolean> invoiceCarChargeOrder(@Valid @RequestBody IdReqVO reqVO) {
+    public CommonResult<Boolean> invoiceCarChargeOrder(@Valid @RequestBody InvoiceOrderReqVO reqVO) {
         carChargeOrderService.invoiceCarChargeOrder(reqVO);
         return success(true);
     }
