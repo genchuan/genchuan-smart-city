@@ -9,4 +9,170 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <!-- 定义结果映射器，将数据库列映射到 InspectTaskRespVO 属性 -->
+    <resultMap id="InspectTaskRespVOResultMap" type="cn.iocoder.yudao.module.inspectop.controller.admin.inspecttask.vo.InspectTaskRespVO">
+        <!-- 主键ID -->
+        <id column="id" property="id" jdbcType="BIGINT"/>
+
+        <!-- InspectTaskDO 基础字段 -->
+        <result column="plan_id" property="planId" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="dispatch_time" property="dispatchTime" jdbcType="TIMESTAMP"/>
+        <result column="claim_time" property="claimTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="progress" property="progress" jdbcType="INTEGER"/>
+        <result column="is_archive" property="isArchive" jdbcType="BIT"/>
+        <result column="reserve1" property="reserve1" jdbcType="VARCHAR"/>
+        <result column="reserve2" property="reserve2" jdbcType="VARCHAR"/>
+
+        <!-- BaseDO 基础字段 -->
+        <result column="creator" property="creator" jdbcType="VARCHAR"/>
+        <result column="updater" property="updater" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+
+        <!-- 关联查询字段 - 计划名称 -->
+        <result column="plan_name" property="planName" jdbcType="VARCHAR"/>
+        <!-- 关联查询字段 - 人员姓名 -->
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 分页查询方法（关联查询计划名称和人员姓名） -->
+    <select id="selectPageWithJoin" resultMap="InspectTaskRespVOResultMap">
+        SELECT
+        it.id,
+        it.plan_id,
+        it.user_id,
+        it.dispatch_time,
+        it.claim_time,
+        it.status,
+        it.progress,
+        it.is_archive,
+        it.reserve1,
+        it.reserve2,
+        it.creator,
+        it.updater,
+        it.create_time,
+        it.update_time,
+        ip.name AS plan_name,  -- 从 inspect_plan 表获取计划名称
+        iu.name AS user_name   -- 从 inspect_user 表获取人员姓名
+        FROM inspect_task it
+        LEFT JOIN inspect_plan ip ON it.plan_id = ip.id
+        LEFT JOIN inspect_user iu ON it.user_id = iu.id
+        <where>
+            <!-- 计划ID -->
+            <if test="reqVO.planId != null">
+                AND it.plan_id = #{reqVO.planId}
+            </if>
+
+            <!-- 人员ID -->
+            <if test="reqVO.userId != null">
+                AND it.user_id = #{reqVO.userId}
+            </if>
+
+            <!-- 派发时间范围 -->
+            <if test="reqVO.dispatchTime != null and reqVO.dispatchTime.length == 2">
+                AND it.dispatch_time BETWEEN #{reqVO.dispatchTime[0]} AND #{reqVO.dispatchTime[1]}
+            </if>
+
+            <!-- 认领时间范围 -->
+            <if test="reqVO.claimTime != null and reqVO.claimTime.length == 2">
+                AND it.claim_time BETWEEN #{reqVO.claimTime[0]} AND #{reqVO.claimTime[1]}
+            </if>
+
+            <!-- 任务状态 -->
+            <if test="reqVO.status != null and reqVO.status != ''">
+                AND it.status = #{reqVO.status}
+            </if>
+
+            <!-- 执行进度 -->
+            <if test="reqVO.progress != null">
+                AND it.progress = #{reqVO.progress}
+            </if>
+
+            <!-- 是否归档 -->
+            <if test="reqVO.isArchive != null">
+                AND it.is_archive = #{reqVO.isArchive}
+            </if>
+
+            <!-- 备用字段1 -->
+            <if test="reqVO.reserve1 != null and reqVO.reserve1 != ''">
+                AND it.reserve1 = #{reqVO.reserve1}
+            </if>
+
+            <!-- 备用字段2 -->
+            <if test="reqVO.reserve2 != null and reqVO.reserve2 != ''">
+                AND it.reserve2 = #{reqVO.reserve2}
+            </if>
+
+            <!-- 创建者 -->
+            <if test="reqVO.creator != null and reqVO.creator != ''">
+                AND it.creator = #{reqVO.creator}
+            </if>
+
+            <!-- 更新者 -->
+            <if test="reqVO.updater != null and reqVO.updater != ''">
+                AND it.updater = #{reqVO.updater}
+            </if>
+
+            <!-- 创建时间范围 -->
+            <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+                AND it.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+
+            <!-- 更新时间范围 -->
+            <if test="reqVO.updateTime != null and reqVO.updateTime.length == 2">
+                AND it.update_time BETWEEN #{reqVO.updateTime[0]} AND #{reqVO.updateTime[1]}
+            </if>
+
+            <!-- 只查询未删除的记录 -->
+            AND it.deleted = 0
+        </where>
+        ORDER BY it.id DESC
+    </select>
+
+    <!-- 查询任务类型分布数据 - 通过关联inspect_plan表获取巡检类型 -->
+    <select id="selectTaskTypeDistribution" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.inspecttask.vo.InspectTaskChartRespVO$TypeData">
+        SELECT
+        COALESCE(ip.type, '未分类') AS typeName,
+        COUNT(*) AS count
+        FROM inspect_task it
+        LEFT JOIN inspect_plan ip ON it.plan_id = ip.id
+        WHERE it.deleted = 0
+        <if test="timeRange != null and timeRange.length == 2">
+            AND it.create_time BETWEEN #{timeRange[0]} AND #{timeRange[1]}
+        </if>
+        GROUP BY ip.type
+        ORDER BY count DESC
+    </select>
+
+    <!-- 查询任务处理时效趋势数据 -->
+    <select id="selectTaskTrendData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.inspecttask.vo.InspectTaskChartRespVO$TrendData">
+        SELECT
+        DATE_FORMAT(it.create_time, '%m') AS time,
+        AVG(
+        CASE
+        WHEN it.status = '3' AND it.claim_time IS NOT NULL AND it.update_time IS NOT NULL
+        THEN TIMESTAMPDIFF(MINUTE, it.claim_time, it.update_time)
+        ELSE 0
+        END
+        ) AS avgHandleTime
+        FROM inspect_task it
+        WHERE it.deleted = 0
+        <if test="timeRange != null and timeRange.length == 2">
+            AND it.create_time BETWEEN #{timeRange[0]} AND #{timeRange[1]}
+        </if>
+        GROUP BY DATE_FORMAT(it.create_time, '%m')
+        ORDER BY time
+    </select>
+
+    <!-- 查询任务卡片统计数据 -->
+    <select id="selectTaskCardData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.inspecttask.vo.InspectTaskChartRespVO$CardData">
+        SELECT
+            SUM(CASE WHEN it.status = '1' THEN 1 ELSE 0 END) AS waitTaskCount,
+            SUM(CASE WHEN it.status = '3' THEN 1 ELSE 0 END) AS finishTaskCount
+        FROM inspect_task it
+        WHERE it.deleted = 0
+    </select>
+
 </mapper>

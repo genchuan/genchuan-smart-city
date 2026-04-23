@@ -36,6 +36,7 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 @RestController
 @RequestMapping("/stationresource/black-white-list")
 @Validated
+//@Hidden
 public class BlackWhiteListController {
 
     @Resource

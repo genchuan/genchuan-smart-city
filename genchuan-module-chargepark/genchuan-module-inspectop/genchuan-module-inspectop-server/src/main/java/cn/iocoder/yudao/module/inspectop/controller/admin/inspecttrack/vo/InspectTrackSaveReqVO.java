@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 巡检轨迹新增/修改 Request VO")
+@Schema(description = "巡查巡检 - 巡检轨迹新增/修改 Request VO")
 @Data
 public class InspectTrackSaveReqVO {
 
@@ -38,6 +38,12 @@ public class InspectTrackSaveReqVO {
 
     @Schema(description = "轨迹点")
     private String points;
+
+    @Schema(description = "核查状态：0-未核查 1-已核查 2-核查中")
+    private Integer checkStatus;
+
+    @Schema(description = "核查备注")
+    private String checkRemark;
 
     @Schema(description = "备用字段1")
     private String reserve1;

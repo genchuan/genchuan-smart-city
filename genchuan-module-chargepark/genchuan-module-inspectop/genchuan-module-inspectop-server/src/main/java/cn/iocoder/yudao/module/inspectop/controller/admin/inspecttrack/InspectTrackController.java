@@ -29,7 +29,7 @@ import cn.iocoder.yudao.module.inspectop.controller.admin.inspecttrack.vo.*;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.inspecttrack.InspectTrackDO;
 import cn.iocoder.yudao.module.inspectop.service.inspecttrack.InspectTrackService;
 
-@Tag(name = "管理后台 - 巡检轨迹")
+@Tag(name = "巡查巡检 - 巡检轨迹")
 @RestController
 @RequestMapping("/inspectop/inspect-track")
 @Validated
@@ -84,8 +84,33 @@ public class InspectTrackController {
     @Operation(summary = "获得巡检轨迹分页")
     @PreAuthorize("@ss.hasPermission('inspectop:inspect-track:query')")
     public CommonResult<PageResult<InspectTrackRespVO>> getInspectTrackPage(@Valid InspectTrackPageReqVO pageReqVO) {
-        PageResult<InspectTrackDO> pageResult = inspectTrackService.getInspectTrackPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, InspectTrackRespVO.class));
+        PageResult<InspectTrackRespVO> pageResult = inspectTrackService.getInspectTrackPage(pageReqVO);
+        return success(pageResult);
+    }
+
+    @GetMapping("/replay")
+    @Operation(summary = "回放")
+    @Parameter(name = "id", description = "轨迹ID", required = true, example = "1")
+    @PreAuthorize("@ss.hasPermission('inspectop:inspect-track:replay')")
+    public CommonResult<InspectTrackReplayRespVO> getInspectTrackReplay(@RequestParam("id") Long id) {
+        InspectTrackReplayRespVO replayRespVO = inspectTrackService.getInspectTrackReplay(id);
+        return success(replayRespVO);
+    }
+
+    @PutMapping("/check")
+    @Operation(summary = "核查")
+    @PreAuthorize("@ss.hasPermission('inspectop:inspect-track:check')")
+    public CommonResult<Boolean> checkInspectTrack(@Valid @RequestBody InspectTrackCheckReqVO checkReqVO) {
+        Boolean result = inspectTrackService.checkInspectTrack(checkReqVO);
+        return success(result);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "获得巡检轨迹图表统计数据")
+    @PreAuthorize("@ss.hasPermission('inspectop:inspect-track:chart')")
+    public CommonResult<InspectTrackChartRespVO> getInspectTrackChart(@Valid InspectTrackChartReqVO reqVO) {
+        InspectTrackChartRespVO chartData = inspectTrackService.getInspectTrackChart(reqVO);
+        return success(chartData);
     }
 
     @GetMapping("/export-excel")
@@ -95,7 +120,7 @@ public class InspectTrackController {
     public void exportInspectTrackExcel(@Valid InspectTrackPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<InspectTrackDO> list = inspectTrackService.getInspectTrackPage(pageReqVO).getList();
+        List<InspectTrackRespVO> list = inspectTrackService.getInspectTrackPage(pageReqVO).getList();
         // 导出 Excel
         ExcelUtils.write(response, "巡检轨迹.xls", "数据", InspectTrackRespVO.class,
                         BeanUtils.toBean(list, InspectTrackRespVO.class));

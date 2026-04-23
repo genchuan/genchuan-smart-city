@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.studentmgmt.dal.mysql.assessmgmt.AssessMgmtMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+    <select id="selectTotalAssessCount" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM assess_mgmt
+        WHERE deleted = 0
+        <if test="cycle != null">
+            AND cycle = #{cycle}
+        </if>
+        <if test="assessType != null">
+            AND assess_type = #{assessType}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+
+    </select>
+    <select id="selectAssessScore" resultType="java.math.BigDecimal">
+        SELECT AVG(score) FROM assess_mgmt
+        WHERE deleted = 0
+        <if test="grade != null">
+            AND grade = #{grade}
+        </if>
+        <if test="major != null">
+            AND major = #{major}
+        </if>
+        <if test="assessType != null">
+            AND assess_type = #{assessType}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+    <select id="selectTodayPublishCount" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM assess_mgmt
+        WHERE deleted = 0 AND status = '已发布' AND publish_time >= DATE(NOW()) AND publish_time &lt; DATE(NOW())
+        <if test="grade != null">
+            AND grade = #{grade}
+        </if>
+        <if test="major != null">
+            AND major = #{major}
+        </if>
+
+        <if test="status != null">
+        </if>
+    </select>
+
+    <select id="dimensionScore"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.AssessMgmtDimensionScoreRespVO">
+        SELECT
+        class_name,
+        ROUND(AVG(CASE WHEN assess_type = 'class_clean' THEN score ELSE NULL END),2) AS classCleanScore,
+        ROUND(AVG(CASE WHEN assess_type = 'morning_exercise' THEN score ELSE NULL END),2) AS morningExerciseScore,
+        ROUND(AVG(CASE WHEN assess_type = 'civilized_class' THEN score ELSE NULL END),2) AS civilClassScore,
+        ROUND(AVG(CASE WHEN assess_type = 'blackboard' THEN score ELSE NULL END),2) AS blackboardScore,
+        ROUND(SUM(score),2) AS totalScore
+        FROM assess_mgmt
+        WHERE deleted = 0
+        <if test="cycle != null and cycle != ''">
+            AND cycle = #{cycle}
+        </if>
+        GROUP BY class_name
+        ORDER BY totalScore DESC
+    </select>
+    <select id="cycleTrend"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.AssessMgmtCycleTrendRespVO">
+        SELECT
+        cycle AS cycleName,
+        ROUND(AVG(score),2) AS avgScore,
+        create_time,
+        rank_no AS rankNo
+        FROM assess_mgmt
+        WHERE deleted = 0
+        <if test="className != null and className != ''">
+            AND class_name = #{className}
+        </if>
+        GROUP BY cycle, create_time, rank_no
+        ORDER BY cycle, create_time
+
+    </select>
+    <select id="selectAvgScore" resultType="java.math.BigDecimal">
+        SELECT AVG(score) FROM assess_mgmt
+        WHERE deleted = 0
+        <if test="cycle != null and cycle != ''">
+            AND cycle = #{cycle}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+    <select id="selectTopRankClass" resultType="java.lang.String">
+        SELECT class_name FROM assess_mgmt
+        WHERE deleted = 0
+        <if test="cycle != null and cycle != ''">
+            AND cycle = #{cycle}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        ORDER BY score DESC
+        LIMIT 1
+    </select>
+    <select id="selectAssessTypeCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT assess_type, COUNT(1) AS count FROM assess_mgmt
+        WHERE deleted = 0
+        <if test="cycle != null and cycle != ''">
+            AND cycle = #{cycle}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        GROUP BY assess_type
+    </select>
+    <select id="selectStatusCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT status, COUNT(1) AS count FROM assess_mgmt
+        WHERE deleted = 0
+        <if test="cycle != null and cycle != ''">
+            AND cycle = #{cycle}
+        </if>
+        GROUP BY status
+    </select>
+
+</mapper>

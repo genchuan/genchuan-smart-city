@@ -29,7 +29,7 @@ import cn.iocoder.yudao.module.inspectop.controller.admin.inspectreport.vo.*;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.inspectreport.InspectReportDO;
 import cn.iocoder.yudao.module.inspectop.service.inspectreport.InspectReportService;
 
-@Tag(name = "管理后台 - 巡检上报")
+@Tag(name = "巡查巡检 - 巡检上报")
 @RestController
 @RequestMapping("/inspectop/inspect-report")
 @Validated
@@ -84,8 +84,48 @@ public class InspectReportController {
     @Operation(summary = "获得巡检上报分页")
     @PreAuthorize("@ss.hasPermission('inspectop:inspect-report:query')")
     public CommonResult<PageResult<InspectReportRespVO>> getInspectReportPage(@Valid InspectReportPageReqVO pageReqVO) {
-        PageResult<InspectReportDO> pageResult = inspectReportService.getInspectReportPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, InspectReportRespVO.class));
+        PageResult<InspectReportRespVO> pageResult = inspectReportService.getInspectReportPage(pageReqVO);
+        return success(pageResult);
+    }
+
+    @PutMapping("/batch-audit")
+    @Operation(summary = "批量审核巡检上报")
+    @PreAuthorize("@ss.hasPermission('inspectop:inspect-report:batch-audit')")
+    public CommonResult<Boolean> batchAuditInspectReport(@Valid @RequestBody InspectReportBatchAuditReqVO batchAuditReqVO) {
+        inspectReportService.batchAuditInspectReport(batchAuditReqVO);
+        return success(true);
+    }
+
+    @PutMapping("/approve")
+    @Operation(summary = "通过巡检上报")
+    @PreAuthorize("@ss.hasPermission('inspectop:inspect-report:approve')")
+    public CommonResult<Boolean> approveInspectReport(@Valid @RequestBody InspectReportApproveReqVO approveReqVO) {
+        inspectReportService.approveInspectReport(approveReqVO);
+        return success(true);
+    }
+
+    @PutMapping("/reject")
+    @Operation(summary = "驳回巡检上报")
+    @PreAuthorize("@ss.hasPermission('inspectop:inspect-report:reject')")
+    public CommonResult<Boolean> rejectInspectReport(@Valid @RequestBody InspectReportRejectReqVO rejectReqVO) {
+        inspectReportService.rejectInspectReport(rejectReqVO);
+        return success(true);
+    }
+
+    @PutMapping("/process")
+    @Operation(summary = "执行巡检上报")
+    @PreAuthorize("@ss.hasPermission('inspectop:inspect-report:process')")
+    public CommonResult<Boolean> processInspectReport(@Valid @RequestBody InspectReportProcessReqVO processReqVO) {
+        inspectReportService.processInspectReport(processReqVO);
+        return success(true);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "获取巡检上报图表数据")
+    @PreAuthorize("@ss.hasPermission('inspectop:inspect-report:chart')")
+    public CommonResult<InspectReportChartRespVO> getInspectReportChartData(
+            @RequestParam(value = "timeRange", required = false) String[] timeRange) {
+        return success(inspectReportService.getInspectReportChartData(timeRange));
     }
 
     @GetMapping("/export-excel")
@@ -95,7 +135,7 @@ public class InspectReportController {
     public void exportInspectReportExcel(@Valid InspectReportPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<InspectReportDO> list = inspectReportService.getInspectReportPage(pageReqVO).getList();
+        List<InspectReportRespVO> list = inspectReportService.getInspectReportPage(pageReqVO).getList();
         // 导出 Excel
         ExcelUtils.write(response, "巡检上报.xls", "数据", InspectReportRespVO.class,
                         BeanUtils.toBean(list, InspectReportRespVO.class));

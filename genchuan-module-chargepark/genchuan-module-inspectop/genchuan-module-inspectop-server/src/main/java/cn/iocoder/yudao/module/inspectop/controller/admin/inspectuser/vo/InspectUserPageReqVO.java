@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
-@Schema(description = "管理后台 - 巡检人员分页 Request VO")
+@Schema(description = "巡查巡检 - 巡检人员分页 Request VO")
 @Data
 public class InspectUserPageReqVO extends PageParam {
 

@@ -24,11 +24,11 @@ public class MinioConfig {
     }
 
     public static class MinioProperties {
-        private String endpoint = "http://192.168.8.68:9000";
-        private String publicEndpoint = "http://112.47.127.21:9000";
-        private String accessKey = "minioadmin";
-        private String accessSecret = "minioadmin123";
-        private String bucket = "shunchang";
+        private String endpoint = "http://127.0.0.1:9000";
+        private String publicEndpoint = "http://127.0.0.1:9000";
+        private String accessKey = "username";
+        private String accessSecret = "password";
+        private String bucket = "bucket";
 
         // getter和setter方法
         public String getEndpoint() { return endpoint; }

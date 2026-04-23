@@ -1,0 +1,144 @@
+package cn.iocoder.yudao.module.chargepark.marketop.service.couponactivity.activityconfig;
+
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.activityconfig.vo.ActivityConfigChartRespVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.activityconfig.vo.ActivityConfigCreateReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.activityconfig.vo.ActivityConfigPageReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.activityconfig.vo.ActivityConfigUpdateReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.ActivityConfigDO;
+import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.couponactivity.ActivityConfigMapper;
+import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.*;
+
+@Service
+@Validated
+public class ActivityConfigServiceImpl implements ActivityConfigService {
+
+    @Resource
+    private ActivityConfigMapper activityConfigMapper;
+
+    @Override
+    public PageResult<ActivityConfigDO> getPage(ActivityConfigPageReqVO reqVO) {
+        return activityConfigMapper.selectPage(reqVO);
+    }
+
+    @Override
+    public ActivityConfigDO get(Long id) {
+        return activityConfigMapper.selectById(id);
+    }
+
+    @Override
+    public Long create(ActivityConfigCreateReqVO reqVO) {
+        // 校验名称唯一
+        validateNameUnique(null, reqVO.getName());
+        ActivityConfigDO activityConfig = BeanUtils.toBean(reqVO, ActivityConfigDO.class);
+        activityConfig.setStatus("1");
+        activityConfig.setJoinCount(0);
+        activityConfigMapper.insert(activityConfig);
+        return activityConfig.getId();
+    }
+
+    @Override
+    public void update(ActivityConfigUpdateReqVO reqVO) {
+        validateExists(reqVO.getId());
+        ActivityConfigDO updateObj = BeanUtils.toBean(reqVO, ActivityConfigDO.class);
+        activityConfigMapper.updateById(updateObj);
+    }
+
+    @Override
+    public void enable(Long id) {
+        ActivityConfigDO activityConfig = validateExists(id);
+        if (!"0".equals(activityConfig.getStatus())) {
+            throw exception(ACTIVITY_CONFIG_NOT_EXISTS);
+        }
+        activityConfig.setStatus("1");
+        activityConfig.setAuditTime(LocalDateTime.now());
+        activityConfig.setEffectTime(LocalDateTime.now());
+        activityConfigMapper.updateById(activityConfig);
+    }
+
+    @Override
+    public void disable(Long id) {
+        ActivityConfigDO activityConfig = validateExists(id);
+        if (!"1".equals(activityConfig.getStatus())) {
+            throw exception(ACTIVITY_CONFIG_NOT_EXISTS);
+        }
+        activityConfig.setStatus("0");
+        activityConfigMapper.updateById(activityConfig);
+    }
+
+    @Override
+    public ActivityConfigChartRespVO getChart(Long startTime, Long endTime) {
+        ActivityConfigChartRespVO respVO = new ActivityConfigChartRespVO();
+
+        // 构建时间范围查询条件
+        LocalDateTime startDateTime = startTime != null
+                ? LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(startTime), java.time.ZoneId.systemDefault()) : null;
+        LocalDateTime endDateTime = endTime != null
+                ? LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(endTime), java.time.ZoneId.systemDefault()) : null;
+
+        // EnableCount: status为1的记录数
+        LambdaQueryWrapperX<ActivityConfigDO> enableWrapper = new LambdaQueryWrapperX<ActivityConfigDO>()
+                .eq(ActivityConfigDO::getStatus, "1");
+        if (startDateTime != null) {
+            enableWrapper.ge(ActivityConfigDO::getCreateTime, startDateTime);
+        }
+        if (endDateTime != null) {
+            enableWrapper.le(ActivityConfigDO::getCreateTime, endDateTime);
+        }
+        Long enableCount = activityConfigMapper.selectCount(enableWrapper);
+        respVO.setEnableCount(enableCount != null ? enableCount.intValue() : 0);
+
+        // JoinRate: 暂不计算
+        respVO.setJoinRate(0);
+
+        // TypeList: 按type分组统计
+        LambdaQueryWrapperX<ActivityConfigDO> typeWrapper = new LambdaQueryWrapperX<>();
+        if (startDateTime != null) {
+            typeWrapper.ge(ActivityConfigDO::getCreateTime, startDateTime);
+        }
+        if (endDateTime != null) {
+            typeWrapper.le(ActivityConfigDO::getCreateTime, endDateTime);
+        }
+        List<ActivityConfigDO> allList = activityConfigMapper.selectList(typeWrapper);
+        List<ActivityConfigChartRespVO.TypeCountItem> typeList = allList.stream()
+                .collect(Collectors.groupingBy(ActivityConfigDO::getType, Collectors.counting()))
+                .entrySet().stream()
+                .map(entry -> {
+                    ActivityConfigChartRespVO.TypeCountItem item = new ActivityConfigChartRespVO.TypeCountItem();
+                    item.setType(entry.getKey());
+                    item.setCount(entry.getValue().intValue());
+                    return item;
+                })
+                .collect(Collectors.toList());
+        respVO.setTypeList(typeList);
+
+        return respVO;
+    }
+
+    private ActivityConfigDO validateExists(Long id) {
+        ActivityConfigDO activityConfig = activityConfigMapper.selectById(id);
+        if (activityConfig == null) {
+            throw exception(ACTIVITY_CONFIG_NOT_EXISTS);
+        }
+        return activityConfig;
+    }
+
+    private void validateNameUnique(Long id, String name) {
+        ActivityConfigDO existing = activityConfigMapper.selectOne(ActivityConfigDO::getName, name);
+        if (existing != null && !existing.getId().equals(id)) {
+            throw exception(ACTIVITY_CONFIG_NAME_EXISTS);
+        }
+    }
+
+}

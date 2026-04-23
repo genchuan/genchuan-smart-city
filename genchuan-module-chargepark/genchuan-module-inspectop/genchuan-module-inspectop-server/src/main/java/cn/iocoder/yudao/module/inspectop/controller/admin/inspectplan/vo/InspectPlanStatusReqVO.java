@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-@Schema(description = "管理后台 - 巡检计划状态更新 Request VO")
+@Schema(description = "巡查巡检 - 巡检计划状态更新 Request VO")
 @Data
 public class InspectPlanStatusReqVO {
 

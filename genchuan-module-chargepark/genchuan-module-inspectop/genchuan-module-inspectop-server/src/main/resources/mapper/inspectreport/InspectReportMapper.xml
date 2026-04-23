@@ -2,11 +2,121 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.iocoder.yudao.module.inspectop.dal.mysql.inspectreport.InspectReportMapper">
 
-    <!--
-        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
-        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
-        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
-        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
-     -->
+    <!-- 文件: InspectReportMapper.xml -->
+    <!-- 在 <mapper> 标签内新增以下 <resultMap> 和 <select> 节点 -->
+    <resultMap id="InspectReportRespVOResultMap" type="cn.iocoder.yudao.module.inspectop.controller.admin.inspectreport.vo.InspectReportRespVO">
+        <!-- 主键ID -->
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <!-- InspectReportDO 基础字段 -->
+        <result column="task_id" property="taskId" jdbcType="BIGINT"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="report_time" property="reportTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="audit_user_id" property="auditUserId" jdbcType="BIGINT"/>
+        <result column="audit_time" property="auditTime" jdbcType="TIMESTAMP"/>
+        <result column="process_user_id" property="processUserId" jdbcType="BIGINT"/>
+        <result column="process_time" property="processTime" jdbcType="TIMESTAMP"/>
+        <result column="content" property="content" jdbcType="VARCHAR"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="reserve1" property="reserve1" jdbcType="VARCHAR"/>
+        <result column="reserve2" property="reserve2" jdbcType="VARCHAR"/>
+        <!-- BaseDO 基础字段 -->
+        <result column="creator" property="creator" jdbcType="VARCHAR"/>
+        <result column="updater" property="updater" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <!-- 关联查询字段 - 处置人姓名 -->
+        <result column="process_user_name" property="processUserName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 分页查询方法（关联查询处置人姓名） -->
+    <select id="selectPageWithJoin" resultMap="InspectReportRespVOResultMap">
+        SELECT
+        ir.id,
+        ir.task_id,
+        ir.type,
+        ir.report_time,
+        ir.status,
+        ir.audit_user_id,
+        ir.audit_time,
+        ir.process_user_id,
+        ir.process_time,
+        ir.content,
+        ir.remark,
+        ir.reserve1,
+        ir.reserve2,
+        ir.creator,
+        ir.updater,
+        ir.create_time,
+        ir.update_time,
+        iu.name AS process_user_name  -- 从 inspect_user 表获取处置人姓名
+        FROM inspect_report ir
+        LEFT JOIN inspect_user iu ON ir.process_user_id = iu.id
+        <where>
+            <!-- 原有的所有查询条件，从原有的 default 方法中迁移过来 -->
+            <if test="reqVO.taskId != null">
+                AND ir.task_id = #{reqVO.taskId}
+            </if>
+            <if test="reqVO.type != null and reqVO.type != ''">
+                AND ir.type = #{reqVO.type}
+            </if>
+            <if test="reqVO.processUserId != null">
+                AND ir.process_user_id = #{reqVO.processUserId}
+            </if>
+            <!-- ... 其他条件 ... -->
+            AND ir.deleted = 0
+        </where>
+        ORDER BY ir.id DESC
+    </select>
+
+    <!-- 上报量趋势数据查询 - 修复only_full_group_by错误 -->
+    <select id="selectReportTrendData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.inspectreport.vo.InspectReportChartRespVO$TrendData">
+        SELECT
+        DATE_FORMAT(report_time, '%m-%d') AS time,
+        COUNT(*) AS reportCount
+        FROM inspect_report
+        WHERE deleted = 0
+        <if test="timeRange != null and timeRange.length == 2">
+            AND report_time BETWEEN #{timeRange[0]} AND #{timeRange[1]}
+        </if>
+        GROUP BY DATE_FORMAT(report_time, '%m-%d'), DATE(report_time)
+        ORDER BY MIN(DATE(report_time)) ASC
+    </select>
+
+    <!-- 上报类型分布数据查询 - 保持原有逻辑，添加tenant_id -->
+    <select id="selectReportTypeDistribution" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.inspectreport.vo.InspectReportChartRespVO$TypeData">
+        SELECT
+        type AS typeName,
+        COUNT(*) AS count
+        FROM inspect_report
+        WHERE deleted = 0
+        <if test="timeRange != null and timeRange.length == 2">
+            AND report_time BETWEEN #{timeRange[0]} AND #{timeRange[1]}
+        </if>
+        GROUP BY type
+        ORDER BY count DESC
+    </select>
+
+    <!-- 卡片统计数据查询 - 优化SQL，添加tenant_id -->
+    <select id="selectReportCardData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.inspectreport.vo.InspectReportChartRespVO$CardData">
+        WITH report_stats AS (
+        SELECT
+        COUNT(CASE WHEN status = '1' THEN 1 END) AS wait_audit_count,
+        COUNT(CASE WHEN process_user_id IS NOT NULL THEN 1 END) AS assigned_count,
+        COUNT(CASE WHEN status = '3' THEN 1 END) AS completed_count
+        FROM inspect_report
+        WHERE deleted = 0
+        <if test="timeRange != null and timeRange.length == 2">
+            AND report_time BETWEEN #{timeRange[0]} AND #{timeRange[1]}
+        </if>
+        )
+        SELECT
+        wait_audit_count AS waitAuditCount,
+        CASE
+        WHEN assigned_count = 0 THEN CAST(0.0 AS DECIMAL(10,2))
+        ELSE ROUND(completed_count * 1.0 / assigned_count * 100, 2)
+        END AS processFinishRate
+        FROM report_stats
+    </select>
 
 </mapper>

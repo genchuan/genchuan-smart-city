@@ -7,7 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import cn.idev.excel.annotation.*;
 
-@Schema(description = "管理后台 - 电子围栏 Response VO")
+@Schema(description = "巡查巡检 - 电子围栏 Response VO")
 @Data
 @ExcelIgnoreUnannotated
 public class FenceMgmtRespVO {
@@ -27,6 +27,10 @@ public class FenceMgmtRespVO {
     @Schema(description = "关联巡检人员ID")
     @ExcelProperty("关联巡检人员ID")
     private Long userId;
+
+    @Schema(description = "巡检人员姓名")
+    @ExcelProperty("巡检人员姓名")
+    private String userName;
 
     @Schema(description = "围栏状态", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("围栏状态")

@@ -12,7 +12,7 @@ import org.springframework.util.StringUtils;
 @Component
 public class UrlConvert {
 
-    @Value("${file.inner-url-prefix:http://192.168.8.68:9000}")
+    @Value("${file.inner-url-prefix:http://127.0.0.1:9000}")
     private String innerUrlPrefix;
 
     @Value("${file.public-url-prefix:http://112.47.127.21:59000}")

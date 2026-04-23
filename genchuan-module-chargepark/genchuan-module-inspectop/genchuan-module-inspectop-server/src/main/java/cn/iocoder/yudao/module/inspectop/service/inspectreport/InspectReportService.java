@@ -57,6 +57,46 @@ public interface InspectReportService {
      * @param pageReqVO 分页查询
      * @return 巡检上报分页
      */
-    PageResult<InspectReportDO> getInspectReportPage(InspectReportPageReqVO pageReqVO);
+    PageResult<InspectReportRespVO> getInspectReportPage(InspectReportPageReqVO pageReqVO);
+
+    /**
+     * 批量审核巡检上报
+     *
+     * @param batchAuditReqVO 批量审核信息
+     */
+    void batchAuditInspectReport(@Valid InspectReportBatchAuditReqVO batchAuditReqVO);
+
+    /**
+     * 通过巡检上报
+     * 将状态改为已完成(3)，设置审核人ID和审核时间
+     *
+     * @param approveReqVO 通过审核信息
+     */
+    void approveInspectReport(@Valid InspectReportApproveReqVO approveReqVO);
+
+    /**
+     * 驳回巡检上报
+     * 将状态改为待审核(1)，设置审核人ID、审核时间和驳回理由
+     *
+     * @param rejectReqVO 驳回信息
+     */
+    void rejectInspectReport(@Valid InspectReportRejectReqVO rejectReqVO);
+
+    /**
+     * 执行巡检上报
+     * 将状态改为待处置(2)，设置处置人ID和处置时间
+     *
+     * @param processReqVO 执行信息
+     */
+    void processInspectReport(@Valid InspectReportProcessReqVO processReqVO);
+
+    /**
+     * 获取巡检上报图表数据
+     * 包含上报量趋势、类型分布和卡片统计数据
+     *
+     * @param timeRange 时间范围
+     * @return 图表数据
+     */
+    InspectReportChartRespVO getInspectReportChartData(String[] timeRange);
 
 }

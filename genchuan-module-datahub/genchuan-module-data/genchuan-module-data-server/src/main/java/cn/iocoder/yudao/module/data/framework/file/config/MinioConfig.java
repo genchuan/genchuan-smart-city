@@ -24,7 +24,7 @@ public class MinioConfig {
     }
 
     public static class MinioProperties {
-        private String endpoint = "http://192.168.8.68:9000";
+        private String endpoint = "http://127.0.0.1:9000";
         private String publicEndpoint = "http://112.47.127.21:59000";
         private String accessKey = "minioadmin";
         private String accessSecret = "minioadmin123";

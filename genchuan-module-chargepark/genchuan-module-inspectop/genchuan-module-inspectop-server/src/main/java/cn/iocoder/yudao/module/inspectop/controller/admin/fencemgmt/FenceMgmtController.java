@@ -29,7 +29,7 @@ import cn.iocoder.yudao.module.inspectop.controller.admin.fencemgmt.vo.*;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.fencemgmt.FenceMgmtDO;
 import cn.iocoder.yudao.module.inspectop.service.fencemgmt.FenceMgmtService;
 
-@Tag(name = "管理后台 - 电子围栏")
+@Tag(name = "巡查巡检 - 电子围栏")
 @RestController
 @RequestMapping("/inspectop/fence-mgmt")
 @Validated
@@ -84,8 +84,32 @@ public class FenceMgmtController {
     @Operation(summary = "获得电子围栏分页")
     @PreAuthorize("@ss.hasPermission('inspectop:fence-mgmt:query')")
     public CommonResult<PageResult<FenceMgmtRespVO>> getFenceMgmtPage(@Valid FenceMgmtPageReqVO pageReqVO) {
-        PageResult<FenceMgmtDO> pageResult = fenceMgmtService.getFenceMgmtPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, FenceMgmtRespVO.class));
+        PageResult<FenceMgmtRespVO> pageResult = fenceMgmtService.getFenceMgmtPage(pageReqVO);
+        return success(pageResult);
+    }
+
+    @PutMapping("/enable")
+    @Operation(summary = "生效电子围栏")
+    @PreAuthorize("@ss.hasPermission('inspectop:fence-mgmt:enable')")
+    public CommonResult<Boolean> enableFenceMgmt(@Valid @RequestBody FenceMgmtStatusReqVO reqVO) {
+        fenceMgmtService.enableFenceMgmt(reqVO.getId());
+        return success(true);
+    }
+
+    @PutMapping("/disable")
+    @Operation(summary = "禁用电子围栏")
+    @PreAuthorize("@ss.hasPermission('inspectop:fence-mgmt:disable')")
+    public CommonResult<Boolean> disableFenceMgmt(@Valid @RequestBody FenceMgmtStatusReqVO reqVO) {
+        fenceMgmtService.disableFenceMgmt(reqVO.getId());
+        return success(true);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "获得电子围栏图表统计数据")
+    @PreAuthorize("@ss.hasPermission('inspectop:fence-mgmt:chart')")
+    public CommonResult<FenceMgmtChartRespVO> getFenceMgmtChart() {
+        FenceMgmtChartRespVO chartData = fenceMgmtService.getFenceMgmtChart();
+        return success(chartData);
     }
 
     @GetMapping("/export-excel")
@@ -95,7 +119,7 @@ public class FenceMgmtController {
     public void exportFenceMgmtExcel(@Valid FenceMgmtPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<FenceMgmtDO> list = fenceMgmtService.getFenceMgmtPage(pageReqVO).getList();
+        List<FenceMgmtRespVO> list = fenceMgmtService.getFenceMgmtPage(pageReqVO).getList();
         // 导出 Excel
         ExcelUtils.write(response, "电子围栏.xls", "数据", FenceMgmtRespVO.class,
                         BeanUtils.toBean(list, FenceMgmtRespVO.class));

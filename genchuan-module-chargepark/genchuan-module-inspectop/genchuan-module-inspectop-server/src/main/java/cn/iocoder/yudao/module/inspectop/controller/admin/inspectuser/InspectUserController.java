@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.inspectop.controller.admin.inspectuser;
 
+import cn.iocoder.yudao.module.inspectop.framework.ImportRespVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -28,8 +29,9 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 import cn.iocoder.yudao.module.inspectop.controller.admin.inspectuser.vo.*;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.inspectuser.InspectUserDO;
 import cn.iocoder.yudao.module.inspectop.service.inspectuser.InspectUserService;
+import org.springframework.web.multipart.MultipartFile;
 
-@Tag(name = "管理后台 - 巡检人员")
+@Tag(name = "巡查巡检 - 巡检人员")
 @RestController
 @RequestMapping("/inspectop/inspect-user")
 @Validated
@@ -86,6 +88,54 @@ public class InspectUserController {
     public CommonResult<PageResult<InspectUserRespVO>> getInspectUserPage(@Valid InspectUserPageReqVO pageReqVO) {
         PageResult<InspectUserDO> pageResult = inspectUserService.getInspectUserPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, InspectUserRespVO.class));
+    }
+
+    @PostMapping("/import")
+    @Operation(summary = "导入巡检人员")
+    @PreAuthorize("@ss.hasPermission('inspectop:inspect-user:import')")
+    public CommonResult<ImportRespVO> importInspectUser(
+            @RequestPart("file") MultipartFile file,
+            @RequestParam(value = "updateSupport", defaultValue = "false") Boolean updateSupport) throws IOException {
+
+        // 检查文件是否为空
+        if (file.isEmpty()) {
+            throw new RuntimeException("请选择要导入的文件");
+        }
+
+        // 检查文件格式
+        String filename = file.getOriginalFilename();
+        if (filename != null && !(filename.endsWith(".xls") || filename.endsWith(".xlsx"))) {
+            throw new RuntimeException("请上传Excel文件（.xls 或 .xlsx格式）");
+        }
+
+        ImportRespVO respVO = inspectUserService.importInspectUser(file, updateSupport);
+        return success(respVO);
+    }
+
+    @PutMapping("/enable")
+    @Operation(summary = "启用巡检人员")
+    @PreAuthorize("@ss.hasPermission('inspectop:inspect-user:enable')")
+    public CommonResult<Boolean> enableInspectUser(@Valid @RequestBody InspectUserStatusReqVO reqVO) {
+        // 状态值 "1" 对应 "启用"
+        inspectUserService.enableInspectUser(reqVO.getId());
+        return success(true);
+    }
+
+    @PutMapping("/disable")
+    @Operation(summary = "禁用巡检人员")
+    @PreAuthorize("@ss.hasPermission('inspectop:inspect-user:disable')")
+    public CommonResult<Boolean> disableInspectUser(@Valid @RequestBody InspectUserStatusReqVO reqVO) {
+        // 状态值 "2" 对应 "禁用"
+        inspectUserService.disableInspectUser(reqVO.getId());
+        return success(true);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "获取巡检人员统计图表")
+    @PreAuthorize("@ss.hasPermission('inspectop:inspect-user:chart')")
+    public CommonResult<InspectUserChartRespVO> getInspectUserChart() {
+        InspectUserChartRespVO chartData = inspectUserService.getInspectUserChart();
+        return success(chartData);
     }
 
     @GetMapping("/export-excel")
