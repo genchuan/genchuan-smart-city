@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.vehiclepass.dal.mysql.leavemgmt.paycheck.PayCheckMapper">
+
+    <select id="selectPageJoin" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckRespVO">
+        SELECT
+            p.id,
+            p.plate_no AS plateNo,
+            p.park_fee AS parkFee,
+            p.status,
+            p.check_time AS checkTime,
+            p.station_id AS stationId,
+            s.name AS stationName,
+            p.check_user_id AS checkUserId,
+            u.nickname AS checkUserName,
+            p.check_result AS checkResult,
+            p.remark,
+            p.reserve1,
+            p.reserve2,
+            p.creator,
+            p.updater,
+            p.create_time AS createTime,
+            p.update_time AS updateTime
+        FROM pay_check p
+        LEFT JOIN station_info s ON p.station_id = s.id AND s.deleted = 0
+        LEFT JOIN user_info u ON p.check_user_id = u.id AND u.deleted = 0
+        WHERE p.deleted = 0
+        <if test="reqVO.plateNo != null and reqVO.plateNo != ''">
+            AND p.plate_no LIKE CONCAT('%', #{reqVO.plateNo}, '%')
+        </if>
+        <if test="reqVO.parkFee != null">
+            AND p.park_fee = #{reqVO.parkFee}
+        </if>
+        <if test="reqVO.status != null and reqVO.status != ''">
+            AND p.status = #{reqVO.status}
+        </if>
+        <if test="reqVO.checkTime != null and reqVO.checkTime.length == 2">
+            AND p.check_time BETWEEN FROM_UNIXTIME(#{reqVO.checkTime[0]}) AND FROM_UNIXTIME(#{reqVO.checkTime[1]})
+        </if>
+        <if test="reqVO.stationId != null">
+            AND p.station_id = #{reqVO.stationId}
+        </if>
+        <if test="reqVO.checkUserId != null">
+            AND p.check_user_id = #{reqVO.checkUserId}
+        </if>
+        <if test="reqVO.checkResult != null and reqVO.checkResult != ''">
+            AND p.check_result LIKE CONCAT('%', #{reqVO.checkResult}, '%')
+        </if>
+        <if test="reqVO.remark != null and reqVO.remark != ''">
+            AND p.remark LIKE CONCAT('%', #{reqVO.remark}, '%')
+        </if>
+        ORDER BY p.id DESC
+    </select>
+
+</mapper>

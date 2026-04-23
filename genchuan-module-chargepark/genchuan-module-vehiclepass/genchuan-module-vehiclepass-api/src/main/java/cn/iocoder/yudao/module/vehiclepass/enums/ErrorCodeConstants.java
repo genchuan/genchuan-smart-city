@@ -20,4 +20,6 @@ public interface ErrorCodeConstants {
     ErrorCode CAR_HANDLE_NOT_EXISTS = new ErrorCode(500, "油车占位处置不存在");
 
     ErrorCode OPEN_NOT_EXISTS = new ErrorCode(500, "开闸不存在");
+
+    ErrorCode CHECK_NOT_EXISTS = new ErrorCode(500, "缴费核验不存在");
 }
