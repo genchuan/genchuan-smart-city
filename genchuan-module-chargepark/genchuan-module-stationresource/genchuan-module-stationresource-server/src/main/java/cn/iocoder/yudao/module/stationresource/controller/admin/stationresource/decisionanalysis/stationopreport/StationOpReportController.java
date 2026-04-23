@@ -33,7 +33,7 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 @Tag(name = "管理后台 - 场站运营报表")
 @RestController
-@RequestMapping("/stationresource/station-op-report")
+@RequestMapping("/stationresource/station-op-report2")
 @Validated
 //@Hidden
 public class StationOpReportController {
