@@ -6,6 +6,7 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.exchangemgmt
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.exchangemgmt.exchangeorder.vo.ExchangeOrderPageReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.exchangemgmt.ExchangeOrderDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.exchangemgmt.ExchangeOrderMapper;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.ExchangeOrderPayStatusEnum;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.module.chargepark.marketop.enums.ExchangeOrderPayStatusEnum.*;
 import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.*;
 
 @Service
@@ -36,22 +38,23 @@ public class ExchangeOrderServiceImpl implements ExchangeOrderService {
     @Override
     public void pay(Long id) {
         ExchangeOrderDO exchangeOrder = validateExists(id);
-        if (!"待支付".equals(exchangeOrder.getStatus())) {
+        if (!WAITING.getValue().equals(exchangeOrder.getPayStatus())) {
             throw exception(EXCHANGE_ORDER_STATUS_ERROR);
         }
-        exchangeOrder.setStatus("已支付");
+        exchangeOrder.setPayStatus(PAID.getValue());
+        exchangeOrder.setPayTime(LocalDateTime.now());
         exchangeOrderMapper.updateById(exchangeOrder);
     }
 
     @Override
     public void deliver(ExchangeOrderDeliverReqVO reqVO) {
         ExchangeOrderDO exchangeOrder = validateExists(reqVO.getId());
-        if (!"已支付".equals(exchangeOrder.getStatus())) {
+        if (!PAID.getValue().equals(exchangeOrder.getPayStatus())) {
             throw exception(EXCHANGE_ORDER_STATUS_ERROR);
         }
-        exchangeOrder.setStatus("已完成");
-        exchangeOrder.setDeliverStatus("已发货");
-        exchangeOrder.setExpressNo(reqVO.getExpressNo());
+        exchangeOrder.setPayStatus(COMPLETED.getValue());
+        exchangeOrder.setShipTime(LocalDateTime.now());
+        exchangeOrder.setLogisticsInfo(reqVO.getExpressNo());
         exchangeOrderMapper.updateById(exchangeOrder);
         // TODO: 推送物流通知
     }
@@ -59,10 +62,10 @@ public class ExchangeOrderServiceImpl implements ExchangeOrderService {
     @Override
     public void cancel(Long id) {
         ExchangeOrderDO exchangeOrder = validateExists(id);
-        if (!"待支付".equals(exchangeOrder.getStatus())) {
+        if (!WAITING.getValue().equals(exchangeOrder.getPayStatus())) {
             throw exception(EXCHANGE_ORDER_STATUS_ERROR);
         }
-        exchangeOrder.setStatus("已取消");
+        exchangeOrder.setPayStatus(CANCELLED.getValue());
         exchangeOrderMapper.updateById(exchangeOrder);
         // TODO: 返还用户积分
     }

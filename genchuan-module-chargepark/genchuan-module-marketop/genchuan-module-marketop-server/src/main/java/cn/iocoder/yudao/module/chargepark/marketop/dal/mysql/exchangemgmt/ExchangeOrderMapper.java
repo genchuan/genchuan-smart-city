@@ -11,13 +11,17 @@ import org.apache.ibatis.annotations.Mapper;
 public interface ExchangeOrderMapper extends BaseMapperX<ExchangeOrderDO> {
 
     default PageResult<ExchangeOrderDO> selectPage(ExchangeOrderPageReqVO reqVO) {
-        return selectPage(reqVO, new LambdaQueryWrapperX<ExchangeOrderDO>()
-                .eqIfPresent(ExchangeOrderDO::getOrderId, reqVO.getOrderId())
+        LambdaQueryWrapperX<ExchangeOrderDO> wrapper = new LambdaQueryWrapperX<ExchangeOrderDO>()
+                .likeIfPresent(ExchangeOrderDO::getNo, reqVO.getNo())
                 .eqIfPresent(ExchangeOrderDO::getCategoryId, reqVO.getCategoryId())
                 .eqIfPresent(ExchangeOrderDO::getUserId, reqVO.getUserId())
-                .eqIfPresent(ExchangeOrderDO::getStatus, reqVO.getStatus())
-                .betweenIfPresent(ExchangeOrderDO::getCreateTime, reqVO.getCreateTime())
-                .orderByDesc(ExchangeOrderDO::getId));
+                .eqIfPresent(ExchangeOrderDO::getPayStatus, reqVO.getPayStatus())
+                .orderByDesc(ExchangeOrderDO::getId);
+
+        if (reqVO.getStartTime() != null && reqVO.getEndTime() != null) {
+            wrapper.between(ExchangeOrderDO::getCreateTime, reqVO.getStartTime(), reqVO.getEndTime());
+        }
+        return selectPage(reqVO, wrapper);
     }
 
 }
