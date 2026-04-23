@@ -4,6 +4,13 @@ import java.util.*;
 
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenCreateReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenApproveReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenRejectReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenExecuteReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenReapplyReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.specialpass.gateopen.GateOpenDO;
 import jakarta.validation.*;
@@ -24,6 +31,14 @@ public interface GateOpenService {
      * @return 编号
      */
     Long createOpen(@Valid GateOpenSaveReqVO createReqVO);
+
+    /**
+     * 新增申请
+     *
+     * @param createReqVO 创建信息
+     * @return 编号
+     */
+    Long createOpenApply(@Valid GateOpenCreateReqVO createReqVO);
 
     /**
      * 更新开闸管理
@@ -69,5 +84,41 @@ public interface GateOpenService {
      * @return 开闸管理分页
      */
     PageResult<GateOpenRespVO> getOpenPageWithJoin(GateOpenPageReqVO pageReqVO);
+
+    /**
+     * 通过审批
+     *
+     * @param reqVO 请求
+     */
+    void approve(GateOpenApproveReqVO reqVO);
+
+    /**
+     * 驳回
+     *
+     * @param reqVO 请求
+     */
+    void reject(GateOpenRejectReqVO reqVO);
+
+    /**
+     * 执行开闸
+     *
+     * @param reqVO 请求
+     */
+    void execute(GateOpenExecuteReqVO reqVO);
+
+    /**
+     * 重新申请
+     *
+     * @param reqVO 请求
+     */
+    void reapply(GateOpenReapplyReqVO reqVO);
+
+    /**
+     * 获取统计图表数据
+     *
+     * @param reqVO 统计请求
+     * @return 统计数据
+     */
+    GateOpenChartRespVO getChart(GateOpenChartReqVO reqVO);
 
 }

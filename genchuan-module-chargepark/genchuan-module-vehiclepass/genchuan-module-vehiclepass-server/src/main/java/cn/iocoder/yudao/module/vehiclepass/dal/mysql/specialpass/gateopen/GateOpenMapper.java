@@ -44,4 +44,19 @@ public interface GateOpenMapper extends BaseMapperX<GateOpenDO> {
 
     IPage<GateOpenRespVO> selectPageJoin(Page<?> page, @Param("reqVO") GateOpenPageReqVO reqVO);
 
+    /**
+     * 查询开闸申请趋势（按天统计）
+     */
+    List<Map<String, Object>> selectOpenApplyTrend(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("stationId") Long stationId);
+
+    /**
+     * 查询各场站开闸量
+     */
+    List<Map<String, Object>> selectStationOpenCount(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("stationId") Long stationId);
+
+    /**
+     * 查询申请量和审批通过率
+     */
+    Map<String, Object> selectOpenStats(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("stationId") Long stationId);
+
 }
