@@ -1,7 +1,10 @@
 package cn.iocoder.yudao.module.inspectop.dal.mysql.sparestock;
 
 import java.util.*;
-
+import org.apache.ibatis.annotations.Param;
+import cn.iocoder.yudao.module.inspectop.controller.admin.sparestock.vo.SpareStockChartRespVO;
+import java.time.LocalDateTime;
+import java.util.List;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
@@ -33,5 +36,34 @@ public interface SpareStockMapper extends BaseMapperX<SpareStockDO> {
                 .betweenIfPresent(SpareStockDO::getUpdateTime, reqVO.getUpdateTime())
                 .orderByDesc(SpareStockDO::getId));
     }
+
+    default SpareStockDO selectBySpareId(Long spareId) {
+        return selectOne(SpareStockDO::getSpareId, spareId);
+    }
+
+
+    /**
+     * 查询库存趋势数据
+     *
+     * @param timeRange 时间范围
+     * @return 库存趋势列表
+     */
+    List<SpareStockChartRespVO.TrendData> selectTrendData(@Param("timeRange") LocalDateTime[] timeRange);
+
+    /**
+     * 查询备件库存分布数据
+     *
+     * @param timeRange 时间范围
+     * @return 库存分布列表
+     */
+    List<SpareStockChartRespVO.StockData> selectStockData(@Param("timeRange") LocalDateTime[] timeRange);
+
+    /**
+     * 查询卡片统计数据
+     *
+     * @param timeRange 时间范围
+     * @return 卡片统计数据
+     */
+    SpareStockChartRespVO.CardData selectCardData(@Param("timeRange") LocalDateTime[] timeRange);
 
 }

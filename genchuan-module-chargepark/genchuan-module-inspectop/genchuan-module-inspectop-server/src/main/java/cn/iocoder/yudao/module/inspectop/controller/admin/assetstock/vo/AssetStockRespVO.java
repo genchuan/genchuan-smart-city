@@ -20,6 +20,10 @@ public class AssetStockRespVO {
     @ExcelProperty("资产ID")
     private Long assetId;
 
+    @Schema(description = "资产名称")
+    @ExcelProperty("资产名称")
+    private String assetName;
+
     @Schema(description = "当前库存", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("当前库存")
     private Integer currentStock;
@@ -35,6 +39,10 @@ public class AssetStockRespVO {
     @Schema(description = "所属场站ID")
     @ExcelProperty("所属场站ID")
     private Long stationId;
+
+    @Schema(description = "场站名称")
+    @ExcelProperty("场站名称")
+    private String stationName;
 
     @Schema(description = "备用字段1")
     @ExcelProperty("备用字段1")
