@@ -13,8 +13,6 @@ import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.CrossModule
 import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.UserNameInjector;
 import cn.iocoder.yudao.module.chargepark.carservice.service.carguide.ChargeParkMapService;
 import cn.iocoder.yudao.module.chargepark.carservice.service.decision.ServiceOpReportService;
-import cn.iocoder.yudao.module.stationresource.api.station.StationInfoApi;
-import cn.iocoder.yudao.module.stationresource.api.station.dto.StationInfoRespDTO;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -35,7 +33,9 @@ import java.nio.charset.StandardCharsets;
 
 import java.util.List;
 
+import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
+import static cn.iocoder.yudao.module.chargepark.carservice.enums.ErrorCodeConstants.CHARGE_PARK_MAP_NOT_EXISTS;
 
 @Slf4j
 @Tag(name = "车辆引导 - 充停地图")
@@ -52,9 +52,6 @@ public class ChargeParkMapController {
 
     @Resource
     private AdminUserApi adminUserApi;
-
-    @Resource
-    private StationInfoApi stationInfoApi;
 
     @Resource
     private CrossModuleValidator crossModuleValidator;
@@ -94,41 +91,31 @@ public class ChargeParkMapController {
     public CommonResult<String> navigateChargeParkMap(@Valid ChargeParkMapNavigateReqVO reqVO) {
         ChargeParkMapDO record = chargeParkMapService.getChargeParkMap(reqVO.getId());
         if (record == null) {
-            return success(null);
+            throw exception(CHARGE_PARK_MAP_NOT_EXISTS);
         }
-        // 按 targetId 从 stationresource 拿真实场站坐标;下游异常或拿不到就回退合法的"lon,lat"字符串
-        String to = resolveCoord(reqVO.getTargetId(), record.getQueryLocation());
+        String to = parseLonLat(record.getQueryLocation());
         if (to == null) {
-            return success(null); // 没有可用坐标,不构造半成品 URL
+            return success(null); // query_location 格式非法,无法生成导航 URL
         }
         return success(mapUrlTemplate.replace("{to}", to));
     }
 
-    /** 返回可直接拼到地图 URL 的 "lon,lat",拿不到返回 null */
-    private String resolveCoord(Long stationId, String queryLocation) {
-        // 1. 真实场站坐标
+    /** 严格校验 "lon,lat" 格式,合法返回原串,非法返回 null */
+    private String parseLonLat(String queryLocation) {
+        if (queryLocation == null) {
+            return null;
+        }
+        String[] parts = queryLocation.split(",");
+        if (parts.length != 2) {
+            return null;
+        }
         try {
-            CommonResult<StationInfoRespDTO> r = stationInfoApi.getStation(stationId);
-            StationInfoRespDTO station = r == null ? null : r.getData();
-            if (station != null && station.getLon() != null && station.getLat() != null) {
-                return station.getLon().toPlainString() + "," + station.getLat().toPlainString();
-            }
-        } catch (Exception ex) {
-            log.warn("[navigate] stationresource RPC 失败 stationId={}", stationId, ex);
+            Double.parseDouble(parts[0].trim());
+            Double.parseDouble(parts[1].trim());
+            return queryLocation;
+        } catch (NumberFormatException ignored) {
+            return null;
         }
-        // 2. 兜底:queryLocation 必须严格符合 "lon,lat" 格式才用,否则 null
-        if (queryLocation != null) {
-            String[] parts = queryLocation.split(",");
-            if (parts.length == 2) {
-                try {
-                    Double.parseDouble(parts[0].trim());
-                    Double.parseDouble(parts[1].trim());
-                    return queryLocation;
-                } catch (NumberFormatException ignored) {
-                }
-            }
-        }
-        return null;
     }
 
     @GetMapping("/reserve")

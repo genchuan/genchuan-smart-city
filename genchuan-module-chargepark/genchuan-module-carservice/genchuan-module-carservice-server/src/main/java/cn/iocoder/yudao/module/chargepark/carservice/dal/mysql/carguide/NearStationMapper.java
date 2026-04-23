@@ -18,7 +18,6 @@ public interface NearStationMapper extends BaseMapperX<NearStationDO> {
     default PageResult<NearStationDO> selectPage(NearStationPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<NearStationDO>()
                 .eqIfPresent(NearStationDO::getUserId, reqVO.getUserId())
-                .likeIfPresent(NearStationDO::getQueryLocationName, reqVO.getQueryLocationName())
                 .betweenIfPresent(NearStationDO::getQueryTime, reqVO.getQueryTime())
                 .orderByDesc(NearStationDO::getId));
     }

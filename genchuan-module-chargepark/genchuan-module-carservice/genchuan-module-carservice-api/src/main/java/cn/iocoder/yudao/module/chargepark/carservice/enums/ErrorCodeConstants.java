@@ -12,6 +12,8 @@ public interface ErrorCodeConstants {
     // ========== 救援服务 1-100-001-xxx ==========
     ErrorCode RESCUE_INFO_NOT_EXISTS = new ErrorCode(1_100_001_001, "救援信息不存在");
     ErrorCode RESCUE_INFO_STATUS_INVALID = new ErrorCode(1_100_001_002, "救援状态不允许此操作");
+    ErrorCode RESCUE_INFO_ALREADY_ARCHIVED_EVALUATE = new ErrorCode(1_100_001_003, "该救援信息已归档,不能再评价");
+    ErrorCode RESCUE_INFO_ALREADY_ARCHIVED = new ErrorCode(1_100_001_004, "该救援信息已归档,请勿重复归档");
 
     // ========== 车辆引导 1-100-002-xxx ==========
     ErrorCode CHARGE_PARK_MAP_NOT_EXISTS = new ErrorCode(1_100_002_001, "充停地图查询记录不存在");
