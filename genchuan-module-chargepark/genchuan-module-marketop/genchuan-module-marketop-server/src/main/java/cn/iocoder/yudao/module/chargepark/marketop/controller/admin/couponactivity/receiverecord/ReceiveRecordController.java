@@ -17,8 +17,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
+import cn.hutool.core.util.StrUtil;
+
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
 @Tag(name = "管理后台 - 领用记录")
 @RestController
@@ -28,12 +32,17 @@ public class ReceiveRecordController {
     @Resource
     private ReceiveRecordService receiveRecordService;
 
+    @Resource
+    private AdminUserApi adminUserApi;
+
     @GetMapping("/page")
     @Operation(summary = "获得领用记录分页")
     @PreAuthorize("@ss.hasPermission('marketop:receive-record:query')")
     public CommonResult<PageResult<ReceiveRecordRespVO>> getPage(ReceiveRecordPageReqVO reqVO) {
         PageResult<ReceiveRecordDO> pageResult = receiveRecordService.getPage(reqVO);
-        return CommonResult.success(BeanUtils.toBean(pageResult, ReceiveRecordRespVO.class));
+        PageResult<ReceiveRecordRespVO> bean = BeanUtils.toBean(pageResult, ReceiveRecordRespVO.class);
+        injectUserNames(bean.getList());
+        return CommonResult.success(bean);
     }
 
     @GetMapping("/get")
@@ -42,7 +51,9 @@ public class ReceiveRecordController {
     @PreAuthorize("@ss.hasPermission('marketop:receive-record:query')")
     public CommonResult<ReceiveRecordRespVO> get(@RequestParam("id") Long id) {
         ReceiveRecordDO receiveRecord = receiveRecordService.get(id);
-        return CommonResult.success(BeanUtils.toBean(receiveRecord, ReceiveRecordRespVO.class));
+        ReceiveRecordRespVO respVO = BeanUtils.toBean(receiveRecord, ReceiveRecordRespVO.class);
+        if (respVO != null) injectUserNames(Collections.singletonList(respVO));
+        return CommonResult.success(respVO);
     }
 
     @PutMapping("/check")
@@ -70,6 +81,23 @@ public class ReceiveRecordController {
                                                            @RequestParam(value = "endTime", required = false) Long endTime,
                                                            @RequestParam(value = "stationId", required = false) Long stationId) {
         return CommonResult.success(receiveRecordService.getChart(startTime, endTime, stationId));
+    }
+
+    private void injectUserNames(List<ReceiveRecordRespVO> list) {
+        Set<Long> userIds = new HashSet<>();
+        for (var item : list) {
+            if (StrUtil.isNotBlank(item.getCreator())) {
+                userIds.add(Long.valueOf(item.getCreator()));
+            }
+        }
+        if (userIds.isEmpty()) return;
+        Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
+        for (var item : list) {
+            if (StrUtil.isNotBlank(item.getCreator())) {
+                AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
+                if (user != null) item.setCreatorName(user.getNickname());
+            }
+        }
     }
 
 }

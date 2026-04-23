@@ -10,6 +10,7 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivit
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityUpdateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointActivityDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.PointActivityMapper;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.PointActivityStatusEnum;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -20,6 +21,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.*;
@@ -55,7 +57,7 @@ public class PointActivityServiceImpl implements PointActivityService {
         PointActivityDO pointActivity = BeanUtils.toBean(reqVO, PointActivityDO.class);
         pointActivity.setStartTime(startTime);
         pointActivity.setEndTime(endTime);
-        pointActivity.setStatus("1"); // 待生效
+        pointActivity.setStatus(PointActivityStatusEnum.PENDING.getValue()); // 待生效
         pointActivity.setJoinCount(0);
         pointActivity.setRemainPoint(reqVO.getRemainPoint());
         pointActivityMapper.insert(pointActivity);
@@ -72,10 +74,10 @@ public class PointActivityServiceImpl implements PointActivityService {
     @Override
     public void enable(Long id) {
         PointActivityDO pointActivity = validateExists(id);
-        if (!"4".equals(pointActivity.getStatus())) { // 暂停中
+        if (!PointActivityStatusEnum.PAUSED.getValue().equals(pointActivity.getStatus())) { // 暂停中
             throw exception(POINT_ACTIVITY_STATUS_ERROR);
         }
-        pointActivity.setStatus("2"); // 进行中
+        pointActivity.setStatus(PointActivityStatusEnum.IN_PROGRESS.getValue()); // 进行中
         pointActivity.setAuditTime(LocalDateTime.now());
         // auditorId 由 Controller 层通过 SecurityFrameworkUtils 获取后设置
         pointActivityMapper.updateById(pointActivity);
@@ -84,7 +86,7 @@ public class PointActivityServiceImpl implements PointActivityService {
     @Override
     public void pause(Long id) {
         PointActivityDO pointActivity = validateExists(id);
-        if (!"2".equals(pointActivity.getStatus())) { // 进行中
+        if (Objects.equals(PointActivityStatusEnum.IN_PROGRESS.getValue(), pointActivity.getStatus())) { // 进行中
             throw exception(POINT_ACTIVITY_STATUS_ERROR);
         }
         pointActivity.setStatus("4"); // 已暂停
@@ -163,10 +165,10 @@ public class PointActivityServiceImpl implements PointActivityService {
     @Override
     public void activate(Long id) {
         PointActivityDO pointActivity = validateExists(id);
-        if (!"1".equals(pointActivity.getStatus())) { // 待生效
+        if (Objects.equals(PointActivityStatusEnum.PENDING.getValue(), pointActivity.getStatus())) { // 待生效
             throw exception(POINT_ACTIVITY_STATUS_ERROR);
         }
-        pointActivity.setStatus("2"); // 进行中
+        pointActivity.setStatus(PointActivityStatusEnum.IN_PROGRESS.getValue()); // 进行中
         pointActivity.setAuditTime(LocalDateTime.now());
         // auditorId 由 Controller 层通过 SecurityFrameworkUtils 获取后设置
         pointActivityMapper.updateById(pointActivity);

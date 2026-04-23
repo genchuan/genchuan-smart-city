@@ -5,12 +5,14 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivit
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointlottery.vo.PointLotteryPageReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointLotteryDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.PointLotteryMapper;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.PointLotteryStatusEnum;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.*;
@@ -35,10 +37,10 @@ public class PointLotteryServiceImpl implements PointLotteryService {
     @Override
     public void check(Long id, String checkResult) {
         PointLotteryDO lottery = validateExists(id);
-        if (!"2".equals(lottery.getStatus())) {
+        if (Objects.equals(lottery.getStatus(), PointLotteryStatusEnum.NORMAL.getValue())) {
             throw exception(POINT_LOTTERY_STATUS_ERROR);
         }
-        lottery.setStatus("1");
+        lottery.setStatus(PointLotteryStatusEnum.CHECKED.getValue());
         lottery.setCheckResult(checkResult);
         pointLotteryMapper.updateById(lottery);
     }

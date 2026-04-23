@@ -19,8 +19,14 @@ public class ExchangeOrderRespVO {
     @Schema(description = "类目ID")
     private Long categoryId;
 
+    @Schema(description = "类目名称")
+    private String categoryName;
+
     @Schema(description = "用户ID")
     private Long userId;
+
+    @Schema(description = "用户名称")
+    private String userName;
 
     @Schema(description = "金额")
     private BigDecimal amount;
@@ -36,6 +42,9 @@ public class ExchangeOrderRespVO {
 
     @Schema(description = "创建者")
     private String creator;
+
+    @Schema(description = "创建者名称")
+    private String creatorName;
 
     @Schema(description = "创建时间")
     private LocalDateTime createTime;

@@ -1,11 +1,14 @@
 package cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.packageconfig;
 
+import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.packageconfig.vo.*;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.PackageConfigDO;
 import cn.iocoder.yudao.module.chargepark.marketop.service.couponactivity.packageconfig.PackageConfigService;
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,6 +19,9 @@ import lombok.Data;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 @Tag(name = "管理后台 - 券包配置")
 @RestController
 @RequestMapping("/marketop/package-config")
@@ -24,12 +30,17 @@ public class PackageConfigController {
     @Resource
     private PackageConfigService packageConfigService;
 
+    @Resource
+    private AdminUserApi adminUserApi;
+
     @GetMapping("/page")
     @Operation(summary = "获得券包配置分页")
     @PreAuthorize("@ss.hasPermission('marketop:package-config:query')")
     public CommonResult<PageResult<PackageConfigRespVO>> getPage(PackageConfigPageReqVO reqVO) {
         PageResult<PackageConfigDO> pageResult = packageConfigService.getPage(reqVO);
-        return CommonResult.success(BeanUtils.toBean(pageResult, PackageConfigRespVO.class));
+        PageResult<PackageConfigRespVO> bean = BeanUtils.toBean(pageResult, PackageConfigRespVO.class);
+        injectUserNames(bean.getList());
+        return CommonResult.success(bean);
     }
 
     @GetMapping("/get")
@@ -38,7 +49,9 @@ public class PackageConfigController {
     @PreAuthorize("@ss.hasPermission('marketop:package-config:query')")
     public CommonResult<PackageConfigRespVO> get(@RequestParam("id") Long id) {
         PackageConfigDO packageConfig = packageConfigService.get(id);
-        return CommonResult.success(BeanUtils.toBean(packageConfig, PackageConfigRespVO.class));
+        PackageConfigRespVO respVO = BeanUtils.toBean(packageConfig, PackageConfigRespVO.class);
+        injectUserNames(Collections.singletonList(respVO));
+        return CommonResult.success(respVO);
     }
 
     @PostMapping("/create")
@@ -84,6 +97,31 @@ public class PackageConfigController {
     public static class IdReq {
         @NotNull(message = "id不能为空")
         private Long id;
+    }
+
+    private void injectUserNames(List<PackageConfigRespVO> list) {
+        // 收集所有需要查询的用户ID
+        Set<Long> userIds = new HashSet<>();
+        for (var item : list) {
+            if (StrUtil.isNotBlank(item.getCreator())) {
+                userIds.add(Long.valueOf(item.getCreator()));
+            }
+            if (item.getAuditorId() != null) {
+                userIds.add(item.getAuditorId());
+            }
+        }
+        if (userIds.isEmpty()) return;
+        Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
+        for (var item : list) {
+            if (StrUtil.isNotBlank(item.getCreator())) {
+                AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
+                if (user != null) item.setCreatorName(user.getNickname());
+            }
+            if (item.getAuditorId() != null) {
+                AdminUserRespDTO user = userMap.get(item.getAuditorId());
+                if (user != null) item.setAuditorName(user.getNickname());
+            }
+        }
     }
 
 }

@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.chargepark.marketop.controller.admin.exchangemgmt.exchangecategory;
 
+import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -8,6 +9,8 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.exchangemgmt.exchangecategory.vo.*;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.exchangemgmt.ExchangeCategoryDO;
 import cn.iocoder.yudao.module.chargepark.marketop.service.exchangemgmt.exchangecategory.ExchangeCategoryService;
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,8 +21,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Tag(name = "管理后台 - 兑换类目")
 @RestController
@@ -29,12 +32,17 @@ public class ExchangeCategoryController {
     @Resource
     private ExchangeCategoryService exchangeCategoryService;
 
+    @Resource
+    private AdminUserApi adminUserApi;
+
     @GetMapping("/page")
     @Operation(summary = "获得兑换类目分页")
     @PreAuthorize("@ss.hasPermission('marketop:exchange-category:query')")
     public CommonResult<PageResult<ExchangeCategoryRespVO>> getPage(ExchangeCategoryPageReqVO reqVO) {
         PageResult<ExchangeCategoryDO> pageResult = exchangeCategoryService.getPage(reqVO);
-        return CommonResult.success(BeanUtils.toBean(pageResult, ExchangeCategoryRespVO.class));
+        PageResult<ExchangeCategoryRespVO> bean = BeanUtils.toBean(pageResult, ExchangeCategoryRespVO.class);
+        injectUserNames(bean.getList());
+        return CommonResult.success(bean);
     }
 
     @GetMapping("/get")
@@ -43,7 +51,9 @@ public class ExchangeCategoryController {
     @PreAuthorize("@ss.hasPermission('marketop:exchange-category:query')")
     public CommonResult<ExchangeCategoryRespVO> get(@RequestParam("id") Long id) {
         ExchangeCategoryDO exchangeCategory = exchangeCategoryService.get(id);
-        return CommonResult.success(BeanUtils.toBean(exchangeCategory, ExchangeCategoryRespVO.class));
+        ExchangeCategoryRespVO respVO = BeanUtils.toBean(exchangeCategory, ExchangeCategoryRespVO.class);
+        injectUserNames(Collections.singletonList(respVO));
+        return CommonResult.success(respVO);
     }
 
     @PostMapping("/create")
@@ -102,6 +112,31 @@ public class ExchangeCategoryController {
     @PreAuthorize("@ss.hasPermission('marketop:exchange-category:query')")
     public CommonResult<ExchangeCategoryChartRespVO> getChart(@RequestParam(value = "timeRange", required = false) String timeRange) {
         return CommonResult.success(exchangeCategoryService.getChart(timeRange));
+    }
+
+    private void injectUserNames(List<ExchangeCategoryRespVO> list) {
+        // 收集所有需要查询的用户ID
+        Set<Long> userIds = new HashSet<>();
+        for (var item : list) {
+            if (StrUtil.isNotBlank(item.getCreator())) {
+                userIds.add(Long.valueOf(item.getCreator()));
+            }
+            if (item.getAuditorId() != null) {
+                userIds.add(item.getAuditorId());
+            }
+        }
+        if (userIds.isEmpty()) return;
+        Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
+        for (var item : list) {
+            if (StrUtil.isNotBlank(item.getCreator())) {
+                AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
+                if (user != null) item.setCreatorName(user.getNickname());
+            }
+            if (item.getAuditorId() != null) {
+                AdminUserRespDTO user = userMap.get(item.getAuditorId());
+                if (user != null) item.setAuditorName(user.getNickname());
+            }
+        }
     }
 
 }

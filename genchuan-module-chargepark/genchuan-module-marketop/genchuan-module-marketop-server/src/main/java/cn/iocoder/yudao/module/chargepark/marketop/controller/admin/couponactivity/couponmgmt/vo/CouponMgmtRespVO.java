@@ -49,6 +49,9 @@ public class CouponMgmtRespVO {
     @Schema(description = "适用场站")
     private String stationIds;
 
+    @Schema(description = "适用场站名称")
+    private String stationNames;
+
     @Schema(description = "领取量")
     private Integer sendCount;
 
@@ -57,6 +60,9 @@ public class CouponMgmtRespVO {
 
     @Schema(description = "创建者")
     private String creator;
+
+    @Schema(description = "创建者名称")
+    private String creatorName;
 
     @Schema(description = "创建时间")
     private LocalDateTime createTime;

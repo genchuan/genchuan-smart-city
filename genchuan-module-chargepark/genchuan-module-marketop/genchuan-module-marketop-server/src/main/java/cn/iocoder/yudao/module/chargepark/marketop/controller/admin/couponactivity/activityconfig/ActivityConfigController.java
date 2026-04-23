@@ -1,11 +1,14 @@
 package cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.activityconfig;
 
+import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.activityconfig.vo.*;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.ActivityConfigDO;
 import cn.iocoder.yudao.module.chargepark.marketop.service.couponactivity.activityconfig.ActivityConfigService;
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,6 +19,9 @@ import lombok.Data;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 @Tag(name = "管理后台 - 活动配置")
 @RestController
 @RequestMapping("/marketop/activity-config")
@@ -24,12 +30,17 @@ public class ActivityConfigController {
     @Resource
     private ActivityConfigService activityConfigService;
 
+    @Resource
+    private AdminUserApi adminUserApi;
+
     @GetMapping("/page")
     @Operation(summary = "获得活动配置分页")
     @PreAuthorize("@ss.hasPermission('marketop:activity-config:query')")
     public CommonResult<PageResult<ActivityConfigRespVO>> getPage(ActivityConfigPageReqVO reqVO) {
         PageResult<ActivityConfigDO> pageResult = activityConfigService.getPage(reqVO);
-        return CommonResult.success(BeanUtils.toBean(pageResult, ActivityConfigRespVO.class));
+        PageResult<ActivityConfigRespVO> bean = BeanUtils.toBean(pageResult, ActivityConfigRespVO.class);
+        injectUserNames(bean.getList());
+        return CommonResult.success(bean);
     }
 
     @GetMapping("/get")
@@ -38,7 +49,9 @@ public class ActivityConfigController {
     @PreAuthorize("@ss.hasPermission('marketop:activity-config:query')")
     public CommonResult<ActivityConfigRespVO> get(@RequestParam("id") Long id) {
         ActivityConfigDO activityConfig = activityConfigService.get(id);
-        return CommonResult.success(BeanUtils.toBean(activityConfig, ActivityConfigRespVO.class));
+        ActivityConfigRespVO respVO = BeanUtils.toBean(activityConfig, ActivityConfigRespVO.class);
+        injectUserNames(Collections.singletonList(respVO));
+        return CommonResult.success(respVO);
     }
 
     @PostMapping("/create")
@@ -85,6 +98,31 @@ public class ActivityConfigController {
             @RequestParam(value = "startTime", required = false) Long startTime,
             @RequestParam(value = "endTime", required = false) Long endTime) {
         return CommonResult.success(activityConfigService.getChart(startTime, endTime));
+    }
+
+    private void injectUserNames(List<ActivityConfigRespVO> list) {
+        // 收集所有需要查询的用户ID
+        Set<Long> userIds = new HashSet<>();
+        for (var item : list) {
+            if (StrUtil.isNotBlank(item.getCreator())) {
+                userIds.add(Long.valueOf(item.getCreator()));
+            }
+            if (item.getAuditorId() != null) {
+                userIds.add(item.getAuditorId());
+            }
+        }
+        if (userIds.isEmpty()) return;
+        Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
+        for (var item : list) {
+            if (StrUtil.isNotBlank(item.getCreator())) {
+                AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
+                if (user != null) item.setCreatorName(user.getNickname());
+            }
+            if (item.getAuditorId() != null) {
+                AdminUserRespDTO user = userMap.get(item.getAuditorId());
+                if (user != null) item.setAuditorName(user.getNickname());
+            }
+        }
     }
 
 }

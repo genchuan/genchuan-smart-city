@@ -20,9 +20,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
+import cn.iocoder.yudao.module.stationresource.api.station.StationInfoApi;
+import cn.iocoder.yudao.module.stationresource.api.station.dto.StationInfoRespDTO;
+import cn.hutool.core.util.StrUtil;
+
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Tag(name = "管理后台 - 优惠券")
 @RestController
@@ -32,12 +37,20 @@ public class CouponMgmtController {
     @Resource
     private CouponMgmtService couponMgmtService;
 
+    @Resource
+    private AdminUserApi adminUserApi;
+
+    @Resource
+    private StationInfoApi stationInfoApi;
+
     @GetMapping("/page")
     @Operation(summary = "获得优惠券分页")
     @PreAuthorize("@ss.hasPermission('marketop:coupon-mgmt:query')")
     public CommonResult<PageResult<CouponMgmtRespVO>> getPage(CouponMgmtPageReqVO reqVO) {
         PageResult<CouponMgmtDO> pageResult = couponMgmtService.getPage(reqVO);
-        return CommonResult.success(BeanUtils.toBean(pageResult, CouponMgmtRespVO.class));
+        PageResult<CouponMgmtRespVO> bean = BeanUtils.toBean(pageResult, CouponMgmtRespVO.class);
+        injectUserNames(bean.getList());
+        return CommonResult.success(bean);
     }
 
     @GetMapping("/get")
@@ -46,7 +59,9 @@ public class CouponMgmtController {
     @PreAuthorize("@ss.hasPermission('marketop:coupon-mgmt:query')")
     public CommonResult<CouponMgmtRespVO> get(@RequestParam("id") Long id) {
         CouponMgmtDO couponMgmt = couponMgmtService.get(id);
-        return CommonResult.success(BeanUtils.toBean(couponMgmt, CouponMgmtRespVO.class));
+        CouponMgmtRespVO respVO = BeanUtils.toBean(couponMgmt, CouponMgmtRespVO.class);
+        if (respVO != null) injectUserNames(Collections.singletonList(respVO));
+        return CommonResult.success(respVO);
     }
 
     @PostMapping("/create")
@@ -130,6 +145,49 @@ public class CouponMgmtController {
             @RequestParam(value = "endTime", required = false) Long endTime,
             @RequestParam(value = "stationId", required = false) Long stationId) {
         return CommonResult.success(couponMgmtService.getChart(startTime, endTime, stationId));
+    }
+
+    private void injectUserNames(List<CouponMgmtRespVO> list) {
+        if (list == null || list.isEmpty()) return;
+        Set<Long> userIds = new HashSet<>();
+        Set<Long> stationIds = new HashSet<>();
+        for (var item : list) {
+            if (StrUtil.isNotBlank(item.getCreator())) {
+                userIds.add(Long.valueOf(item.getCreator()));
+            }
+            if (StrUtil.isNotBlank(item.getStationIds())) {
+                Arrays.stream(item.getStationIds().split(","))
+                        .filter(StrUtil::isNotBlank).map(String::trim).map(Long::valueOf)
+                        .forEach(stationIds::add);
+            }
+        }
+        // 翻译用户名称
+        if (!userIds.isEmpty()) {
+            Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
+            for (var item : list) {
+                if (StrUtil.isNotBlank(item.getCreator())) {
+                    AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
+                    if (user != null) item.setCreatorName(user.getNickname());
+                }
+            }
+        }
+        // 翻译场站名称
+        if (!stationIds.isEmpty()) {
+            Map<Long, StationInfoRespDTO> stationMap = stationInfoApi.getStationMap(stationIds);
+            for (var item : list) {
+                if (StrUtil.isNotBlank(item.getStationIds())) {
+                    String names = Arrays.stream(item.getStationIds().split(","))
+                            .filter(StrUtil::isNotBlank).map(String::trim)
+                            .map(id -> {
+                                StationInfoRespDTO s = stationMap.get(Long.valueOf(id));
+                                return s != null ? s.getName() : null;
+                            })
+                            .filter(Objects::nonNull)
+                            .collect(java.util.stream.Collectors.joining(","));
+                    item.setStationNames(names);
+                }
+            }
+        }
     }
 
     @Data
