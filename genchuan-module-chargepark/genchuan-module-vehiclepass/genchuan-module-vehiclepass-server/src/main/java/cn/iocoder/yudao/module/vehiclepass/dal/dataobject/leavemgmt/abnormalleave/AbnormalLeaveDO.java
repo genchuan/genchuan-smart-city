@@ -36,6 +36,8 @@ public class AbnormalLeaveDO extends BaseDO {
 
     private Long handleUserId;
 
+    private String handleType;
+
     private LocalDateTime handleTime;
 
     private String handleProgress;

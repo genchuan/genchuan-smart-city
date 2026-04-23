@@ -3,6 +3,10 @@ package cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormall
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeavePageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveSaveReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveBatchHandleReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveCheckReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveIgnoreReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveUpdateProgressReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.leavemgmt.abnormalleave.AbnormalLeaveDO;
 import cn.iocoder.yudao.module.vehiclepass.service.leavemgmt.abnormalleave.AbnormalLeaveService;
 import org.springframework.web.bind.annotation.*;
@@ -94,6 +98,38 @@ public class AbnormalLeaveController {
     @PreAuthorize("@ss.hasPermission('vehiclepass:abnormal-leave:query')")
     public CommonResult<PageResult<AbnormalLeaveRespVO>> getMyLeavePage(@Valid AbnormalLeavePageReqVO pageReqVO) {
         return success(leaveService.getLeavePageWithJoin(pageReqVO));
+    }
+
+    @PostMapping("/batch-handle")
+    @Operation(summary = "批量处置异常离场")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:abnormal-leave:batch-handle')")
+    public CommonResult<Boolean> batchHandle(@Valid @RequestBody AbnormalLeaveBatchHandleReqVO reqVO) {
+        leaveService.batchHandle(reqVO);
+        return success(true);
+    }
+
+    @PutMapping("/check")
+    @Operation(summary = "核查异常离场")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:abnormal-leave:check')")
+    public CommonResult<Boolean> checkLeave(@Valid @RequestBody AbnormalLeaveCheckReqVO reqVO) {
+        leaveService.checkLeave(reqVO);
+        return success(true);
+    }
+
+    @PutMapping("/ignore")
+    @Operation(summary = "忽略异常离场")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:abnormal-leave:ignore')")
+    public CommonResult<Boolean> ignoreLeave(@Valid @RequestBody AbnormalLeaveIgnoreReqVO reqVO) {
+        leaveService.ignoreLeave(reqVO);
+        return success(true);
+    }
+
+    @PutMapping("/update-progress")
+    @Operation(summary = "更新处置进度")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:abnormal-leave:update-progress')")
+    public CommonResult<Boolean> updateProgress(@Valid @RequestBody AbnormalLeaveUpdateProgressReqVO reqVO) {
+        leaveService.updateProgress(reqVO);
+        return success(true);
     }
 
     @GetMapping("/export-excel")

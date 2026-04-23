@@ -5,6 +5,10 @@ import java.util.*;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeavePageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveBatchHandleReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveCheckReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveIgnoreReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveUpdateProgressReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.leavemgmt.abnormalleave.AbnormalLeaveDO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -69,5 +73,33 @@ public interface AbnormalLeaveService {
      * @return 异常离场分页（含关联表字段）
      */
     PageResult<AbnormalLeaveRespVO> getLeavePageWithJoin(AbnormalLeavePageReqVO pageReqVO);
+
+    /**
+     * 批量处置异常离场
+     *
+     * @param reqVO 批量处置请求
+     */
+    void batchHandle(AbnormalLeaveBatchHandleReqVO reqVO);
+
+    /**
+     * 核查异常离场
+     *
+     * @param reqVO 核查请求
+     */
+    void checkLeave(AbnormalLeaveCheckReqVO reqVO);
+
+    /**
+     * 忽略异常离场
+     *
+     * @param reqVO 忽略请求
+     */
+    void ignoreLeave(AbnormalLeaveIgnoreReqVO reqVO);
+
+    /**
+     * 更新处置进度
+     *
+     * @param reqVO 更新进度请求
+     */
+    void updateProgress(AbnormalLeaveUpdateProgressReqVO reqVO);
 
 }

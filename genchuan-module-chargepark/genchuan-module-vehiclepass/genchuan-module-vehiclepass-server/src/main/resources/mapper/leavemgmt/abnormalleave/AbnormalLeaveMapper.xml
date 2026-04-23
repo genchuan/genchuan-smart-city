@@ -12,6 +12,7 @@
             a.station_id AS stationId,
             s.name AS stationName,
             a.handle_user_id AS handleUserId,
+            a.handle_type AS handleType,
             u.nickname AS handleUserName,
             a.handle_time AS handleTime,
             a.handle_progress AS handleProgress,

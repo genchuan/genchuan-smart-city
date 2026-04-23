@@ -4,6 +4,10 @@ import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeavePageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveBatchHandleReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveCheckReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveIgnoreReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveUpdateProgressReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.leavemgmt.abnormalleave.AbnormalLeaveDO;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.leavemgmt.abnormalleave.AbnormalLeaveMapper;
 import org.springframework.stereotype.Service;
@@ -12,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
@@ -92,6 +97,65 @@ public class AbnormalLeaveServiceImpl implements AbnormalLeaveService {
         com.baomidou.mybatisplus.core.metadata.IPage<AbnormalLeaveRespVO> pageResult = leaveMapper.selectPageJoin(page, pageReqVO);
         // 转换为PageResult
         return new PageResult<>(pageResult.getRecords(), pageResult.getTotal());
+    }
+
+    @Override
+    public void batchHandle(AbnormalLeaveBatchHandleReqVO reqVO) {
+        // 批量更新处置状态
+        for (Long id : reqVO.getIds()) {
+            AbnormalLeaveDO updateObj = new AbnormalLeaveDO();
+            updateObj.setId(id);
+            if ("核查".equals(reqVO.getHandleType())) {
+                updateObj.setStatus("处理中");
+                updateObj.setHandleProgress("已核查");
+                updateObj.setHandleType("核查");
+            } else if ("忽略".equals(reqVO.getHandleType())) {
+                updateObj.setStatus("已关闭");
+                updateObj.setHandleType("忽略");
+            }
+            updateObj.setHandleTime(LocalDateTime.now());
+            leaveMapper.updateById(updateObj);
+        }
+    }
+
+    @Override
+    public void checkLeave(AbnormalLeaveCheckReqVO reqVO) {
+        // 校验存在
+        validateLeaveExists(reqVO.getId());
+        // 更新为处理中状态，已核查
+        AbnormalLeaveDO updateObj = new AbnormalLeaveDO();
+        updateObj.setId(reqVO.getId());
+        updateObj.setStatus("处理中");
+        updateObj.setHandleProgress("已核查");
+        updateObj.setHandleType("核查");
+        updateObj.setHandleTime(LocalDateTime.now());
+        leaveMapper.updateById(updateObj);
+    }
+
+    @Override
+    public void ignoreLeave(AbnormalLeaveIgnoreReqVO reqVO) {
+        // 校验存在
+        validateLeaveExists(reqVO.getId());
+        // 更新为已关闭状态，设置忽略理由
+        AbnormalLeaveDO updateObj = new AbnormalLeaveDO();
+        updateObj.setId(reqVO.getId());
+        updateObj.setStatus("已关闭");
+        updateObj.setIgnoreReason(reqVO.getIgnoreReason());
+        updateObj.setHandleType("忽略");
+        updateObj.setHandleTime(LocalDateTime.now());
+        leaveMapper.updateById(updateObj);
+    }
+
+    @Override
+    public void updateProgress(AbnormalLeaveUpdateProgressReqVO reqVO) {
+        // 校验存在
+        validateLeaveExists(reqVO.getId());
+        // 更新处置进度
+        AbnormalLeaveDO updateObj = new AbnormalLeaveDO();
+        updateObj.setId(reqVO.getId());
+        updateObj.setHandleProgress(reqVO.getHandleProgress());
+        updateObj.setHandleTime(LocalDateTime.now());
+        leaveMapper.updateById(updateObj);
     }
 
 }
