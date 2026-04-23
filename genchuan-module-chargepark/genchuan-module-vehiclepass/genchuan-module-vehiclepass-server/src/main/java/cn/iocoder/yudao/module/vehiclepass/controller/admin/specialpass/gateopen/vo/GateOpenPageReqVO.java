@@ -1,11 +1,13 @@
 package cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.*;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import org.springframework.format.annotation.DateTimeFormat;
-import java.time.LocalDateTime;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
@@ -22,9 +24,8 @@ public class GateOpenPageReqVO extends PageParam {
     @Schema(description = "申请人ID，关联system_user用户表", example = "12006")
     private Long applyUserId;
 
-    @Schema(description = "申请时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDateTime[] applyTime;
+    @Schema(description = "申请时间，时间戳格式", example = "[\"1775011986\",\"1775098386\"]")
+    private String[] applyTime;
 
     @Schema(description = "状态：待审批 / 已通过 / 已驳回 / 已执行，关联字典gate_open_status", example = "1")
     private String status;

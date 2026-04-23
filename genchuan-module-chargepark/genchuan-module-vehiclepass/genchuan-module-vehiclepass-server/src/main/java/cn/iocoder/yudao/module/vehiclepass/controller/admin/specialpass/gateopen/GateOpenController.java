@@ -90,6 +90,13 @@ public class GateOpenController {
         return success(BeanUtils.toBean(pageResult, GateOpenRespVO.class));
     }
 
+    @GetMapping("/my/page")
+    @Operation(summary = "开闸管理筛选刷新")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:gate-open:query')")
+    public CommonResult<PageResult<GateOpenRespVO>> getMyOpenPage(@Valid GateOpenPageReqVO pageReqVO) {
+        return success(openService.getOpenPageWithJoin(pageReqVO));
+    }
+
     @GetMapping("/export-excel")
     @Operation(summary = "导出开闸管理 Excel")
     @PreAuthorize("@ss.hasPermission('gate:open:export')")
@@ -97,10 +104,10 @@ public class GateOpenController {
     public void exportOpenExcel(@Valid GateOpenPageReqVO pageReqVO,
                                 HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<GateOpenDO> list = openService.getOpenPage(pageReqVO).getList();
+        PageResult<GateOpenRespVO> pageResult = openService.getOpenPageWithJoin(pageReqVO);
         // 导出 Excel
         ExcelUtils.write(response, "开闸管理.xls", "数据", GateOpenRespVO.class,
-                BeanUtils.toBean(list, GateOpenRespVO.class));
+                pageResult.getList());
     }
 
 }

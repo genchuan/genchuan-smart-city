@@ -6,8 +6,12 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenPageReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.specialpass.gateopen.GateOpenDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 开闸管理 Mapper
@@ -37,5 +41,7 @@ public interface GateOpenMapper extends BaseMapperX<GateOpenDO> {
                 .betweenIfPresent(GateOpenDO::getUpdateTime, reqVO.getUpdateTime())
                 .orderByDesc(GateOpenDO::getId));
     }
+
+    IPage<GateOpenRespVO> selectPageJoin(Page<?> page, @Param("reqVO") GateOpenPageReqVO reqVO);
 
 }

@@ -3,7 +3,6 @@ package cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateope
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import java.util.*;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import cn.idev.excel.annotation.*;
 
@@ -20,6 +19,10 @@ public class GateOpenRespVO {
     @ExcelProperty("场站ID，关联场站表")
     private Long stationId;
 
+    @Schema(description = "场站名称")
+    @ExcelProperty("场站名称")
+    private String stationName;
+
     @Schema(description = "开闸原因：紧急通行 / 故障处理 / 其他，关联字典gate_open_open_reason", requiredMode = Schema.RequiredMode.REQUIRED, example = "不对")
     @ExcelProperty("开闸原因：紧急通行 / 故障处理 / 其他，关联字典gate_open_open_reason")
     private String openReason;
@@ -27,6 +30,10 @@ public class GateOpenRespVO {
     @Schema(description = "申请人ID，关联system_user用户表", requiredMode = Schema.RequiredMode.REQUIRED, example = "12006")
     @ExcelProperty("申请人ID，关联system_user用户表")
     private Long applyUserId;
+
+    @Schema(description = "申请人姓名")
+    @ExcelProperty("申请人姓名")
+    private String applyUserName;
 
     @Schema(description = "申请时间", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("申请时间")
@@ -39,6 +46,10 @@ public class GateOpenRespVO {
     @Schema(description = "审批人ID，关联system_user用户表", example = "30477")
     @ExcelProperty("审批人ID，关联system_user用户表")
     private Long auditUserId;
+
+    @Schema(description = "审批人姓名")
+    @ExcelProperty("审批人姓名")
+    private String auditUserName;
 
     @Schema(description = "审批时间")
     @ExcelProperty("审批时间")

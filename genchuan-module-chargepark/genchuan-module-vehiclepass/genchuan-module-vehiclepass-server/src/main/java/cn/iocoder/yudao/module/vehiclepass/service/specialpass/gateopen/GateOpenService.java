@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.vehiclepass.service.specialpass.gateopen;
 import java.util.*;
 
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenPageReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.specialpass.gateopen.GateOpenDO;
 import jakarta.validation.*;
@@ -60,5 +61,13 @@ public interface GateOpenService {
      * @return 开闸管理分页
      */
     PageResult<GateOpenDO> getOpenPage(GateOpenPageReqVO pageReqVO);
+
+    /**
+     * 获得开闸管理分页（含关联名称）
+     *
+     * @param pageReqVO 分页查询
+     * @return 开闸管理分页
+     */
+    PageResult<GateOpenRespVO> getOpenPageWithJoin(GateOpenPageReqVO pageReqVO);
 
 }

@@ -2,9 +2,12 @@ package cn.iocoder.yudao.module.vehiclepass.service.specialpass.gateopen;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenPageReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.specialpass.gateopen.GateOpenDO;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.specialpass.gateopen.GateOpenMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -82,6 +85,13 @@ public class GateOpenServiceImpl implements GateOpenService {
     @Override
     public PageResult<GateOpenDO> getOpenPage(GateOpenPageReqVO pageReqVO) {
         return openMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public PageResult<GateOpenRespVO> getOpenPageWithJoin(GateOpenPageReqVO pageReqVO) {
+        Page<GateOpenRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        IPage<GateOpenRespVO> pageResult = openMapper.selectPageJoin(page, pageReqVO);
+        return new PageResult<>(pageResult.getRecords(), pageResult.getTotal());
     }
 
 }
