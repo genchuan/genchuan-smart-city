@@ -5,6 +5,10 @@ import java.util.*;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leaverecord.vo.LeaveRecordPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leaverecord.vo.LeaveRecordRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leaverecord.vo.LeaveRecordCreateReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leaverecord.vo.LeaveRecordUpdateReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leaverecord.vo.LeaveRecordCorrectReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leaverecord.vo.LeaveRecordChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leaverecord.vo.LeaveRecordChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leaverecord.vo.LeaveRecordSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.leavemgmt.leaverecord.LeaveRecordDO;
 import jakarta.validation.*;
@@ -78,5 +82,27 @@ public interface LeaveRecordService {
      * @return 编号
      */
     Long createRecordSupplement(@Valid LeaveRecordCreateReqVO reqVO);
+
+    /**
+     * 编辑离场记录
+     *
+     * @param reqVO 更新信息
+     */
+    void updateRecordForEdit(@Valid LeaveRecordUpdateReqVO reqVO);
+
+    /**
+     * 修正离场记录
+     *
+     * @param reqVO 修正信息
+     */
+    void correctRecord(@Valid LeaveRecordCorrectReqVO reqVO);
+
+    /**
+     * 获取统计图表数据
+     *
+     * @param reqVO 统计请求
+     * @return 统计数据
+     */
+    LeaveRecordChartRespVO getChart(@Valid LeaveRecordChartReqVO reqVO);
 
 }

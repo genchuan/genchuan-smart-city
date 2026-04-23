@@ -3,6 +3,10 @@ package cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leavereco
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leaverecord.vo.LeaveRecordPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leaverecord.vo.LeaveRecordRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leaverecord.vo.LeaveRecordCreateReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leaverecord.vo.LeaveRecordUpdateReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leaverecord.vo.LeaveRecordCorrectReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leaverecord.vo.LeaveRecordChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leaverecord.vo.LeaveRecordChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leaverecord.vo.LeaveRecordSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.leavemgmt.leaverecord.LeaveRecordDO;
 import cn.iocoder.yudao.module.vehiclepass.service.leavemgmt.leaverecord.LeaveRecordService;
@@ -63,6 +67,22 @@ public class LeaveRecordController {
         return success(true);
     }
 
+    @PutMapping("/edit")
+    @Operation(summary = "编辑离场记录")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:leave-record:update')")
+    public CommonResult<Boolean> updateRecordForEdit(@Valid @RequestBody LeaveRecordUpdateReqVO reqVO) {
+        leaveRecordService.updateRecordForEdit(reqVO);
+        return success(true);
+    }
+
+    @PutMapping("/correct")
+    @Operation(summary = "修正离场记录")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:leave-record:correct')")
+    public CommonResult<Boolean> correctRecord(@Valid @RequestBody LeaveRecordCorrectReqVO reqVO) {
+        leaveRecordService.correctRecord(reqVO);
+        return success(true);
+    }
+
     @DeleteMapping("/delete")
     @Operation(summary = "删除离场记录")
     @Parameter(name = "id", description = "编号", required = true)
@@ -116,6 +136,13 @@ public class LeaveRecordController {
         // 导出 Excel
         ExcelUtils.write(response, "离场记录.xls", "数据", LeaveRecordRespVO.class,
                 pageResult.getList());
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "获取离场记录统计")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:leave-record:chart')")
+    public CommonResult<LeaveRecordChartRespVO> getChart(@Valid LeaveRecordChartReqVO reqVO) {
+        return success(leaveRecordService.getChart(reqVO));
     }
 
 }

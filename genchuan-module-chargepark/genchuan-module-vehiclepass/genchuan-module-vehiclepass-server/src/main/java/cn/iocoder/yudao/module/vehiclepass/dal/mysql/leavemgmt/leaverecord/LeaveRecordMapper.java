@@ -39,4 +39,19 @@ public interface LeaveRecordMapper extends BaseMapperX<LeaveRecordDO> {
 
     IPage<LeaveRecordRespVO> selectPageJoin(Page<?> page, @Param("reqVO") LeaveRecordPageReqVO reqVO);
 
+    /**
+     * 查询离场量趋势（按天统计）
+     */
+    List<Map<String, Object>> selectLeaveCountTrend(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("stationId") Long stationId);
+
+    /**
+     * 查询各时段离场量
+     */
+    List<Map<String, Object>> selectHourLeaveCount(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("stationId") Long stationId);
+
+    /**
+     * 查询今日离场量和离场峰值
+     */
+    Map<String, Object> selectLeaveStats(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("stationId") Long stationId);
+
 }
