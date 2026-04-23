@@ -5,6 +5,8 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.v
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckReleaseReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckRemindReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.leavemgmt.paycheck.PayCheckDO;
 import cn.iocoder.yudao.module.vehiclepass.service.leavemgmt.paycheck.PayCheckService;
 import org.springframework.web.bind.annotation.*;
@@ -113,6 +115,13 @@ public class PayCheckController {
     public CommonResult<Boolean> remindCheck(@Valid @RequestBody PayCheckRemindReqVO reqVO) {
         checkService.remindCheck(reqVO.getId());
         return success(true);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "缴费核验统计")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:pay-check:chart')")
+    public CommonResult<PayCheckChartRespVO> getChart(@Valid PayCheckChartReqVO reqVO) {
+        return success(checkService.getChart(reqVO));
     }
 
     @GetMapping("/export-excel")

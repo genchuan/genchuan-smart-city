@@ -5,6 +5,8 @@ import java.util.*;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.leavemgmt.paycheck.PayCheckDO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -83,5 +85,13 @@ public interface PayCheckService {
      * @param id 编号
      */
     void remindCheck(Long id);
+
+    /**
+     * 获取缴费核验统计
+     *
+     * @param reqVO 统计请求
+     * @return 统计结果
+     */
+    PayCheckChartRespVO getChart(PayCheckChartReqVO reqVO);
 
 }

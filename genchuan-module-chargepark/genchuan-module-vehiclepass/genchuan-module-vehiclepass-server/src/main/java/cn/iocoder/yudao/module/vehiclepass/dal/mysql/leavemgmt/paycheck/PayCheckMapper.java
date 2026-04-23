@@ -7,6 +7,8 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.leavemgmt.paycheck.PayCheckDO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -38,5 +40,29 @@ public interface PayCheckMapper extends BaseMapperX<PayCheckDO> {
     }
 
     IPage<PayCheckRespVO> selectPageJoin(Page<?> page, @Param("reqVO") PayCheckPageReqVO reqVO);
+
+    /**
+     * 统计核验成功率趋势
+     *
+     * @param reqVO 查询参数
+     * @return 趋势数据
+     */
+    List<PayCheckChartRespVO.CheckSuccessTrend> selectChartTrend(@Param("reqVO") PayCheckChartReqVO reqVO);
+
+    /**
+     * 统计核验成功率（总体）
+     *
+     * @param reqVO 查询参数
+     * @return 成功率
+     */
+    Double selectCheckSuccessRate(@Param("reqVO") PayCheckChartReqVO reqVO);
+
+    /**
+     * 统计平均核验时长（小时）
+     *
+     * @param reqVO 查询参数
+     * @return 平均时长
+     */
+    Double selectAvgCheckDuration(@Param("reqVO") PayCheckChartReqVO reqVO);
 
 }

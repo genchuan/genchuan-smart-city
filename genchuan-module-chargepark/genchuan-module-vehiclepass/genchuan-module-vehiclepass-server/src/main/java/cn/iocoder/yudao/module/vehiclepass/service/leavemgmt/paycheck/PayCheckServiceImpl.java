@@ -4,6 +4,8 @@ import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.leavemgmt.paycheck.PayCheckDO;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.leavemgmt.paycheck.PayCheckMapper;
 import org.springframework.stereotype.Service;
@@ -118,6 +120,25 @@ public class PayCheckServiceImpl implements PayCheckService {
         updateObj.setStatus("欠费");
         checkMapper.updateById(updateObj);
         // TODO: 发送催缴通知逻辑（如短信、推送等）
+    }
+
+    @Override
+    public PayCheckChartRespVO getChart(PayCheckChartReqVO reqVO) {
+        PayCheckChartRespVO respVO = new PayCheckChartRespVO();
+
+        // 获取成功率趋势
+        List<PayCheckChartRespVO.CheckSuccessTrend> trendList = checkMapper.selectChartTrend(reqVO);
+        respVO.setCheckSuccessTrend(trendList);
+
+        // 获取卡片数据
+        PayCheckChartRespVO.CardData cardData = new PayCheckChartRespVO.CardData();
+        Double successRate = checkMapper.selectCheckSuccessRate(reqVO);
+        Double avgDuration = checkMapper.selectAvgCheckDuration(reqVO);
+        cardData.setCheckSuccessRate(successRate != null ? successRate : 0.0);
+        cardData.setAvgCheckDuration(avgDuration != null ? avgDuration : 0.0);
+        respVO.setCardData(cardData);
+
+        return respVO;
     }
 
 }
