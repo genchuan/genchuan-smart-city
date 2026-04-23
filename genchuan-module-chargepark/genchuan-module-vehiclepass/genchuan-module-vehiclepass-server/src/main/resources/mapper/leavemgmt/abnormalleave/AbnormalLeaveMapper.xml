@@ -52,4 +52,78 @@
         ORDER BY a.id DESC
     </select>
 
+    <!-- 统计异常离场趋势 -->
+    <select id="selectChartTrend" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveChartRespVO$AbnormalLeaveTrend">
+        SELECT
+            DATE(a.identify_time) AS date,
+            COUNT(*) AS count
+        FROM abnormal_leave a
+        WHERE a.deleted = 0
+        <if test="reqVO.startTime != null and reqVO.startTime != ''">
+            AND a.identify_time >= FROM_UNIXTIME(#{reqVO.startTime})
+        </if>
+        <if test="reqVO.endTime != null and reqVO.endTime != ''">
+            AND a.identify_time &lt; FROM_UNIXTIME(#{reqVO.endTime})
+        </if>
+        <if test="reqVO.stationId != null">
+            AND a.station_id = #{reqVO.stationId}
+        </if>
+        GROUP BY DATE(a.identify_time)
+        ORDER BY date ASC
+    </select>
+
+    <!-- 统计各场站异常数 -->
+    <select id="selectStationAbnormalCount" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveChartRespVO$StationAbnormalCount">
+        SELECT
+            s.name AS stationName,
+            COUNT(a.id) AS count
+        FROM abnormal_leave a
+        LEFT JOIN station_info s ON a.station_id = s.id AND s.deleted = 0
+        WHERE a.deleted = 0
+        <if test="reqVO.startTime != null and reqVO.startTime != ''">
+            AND a.identify_time >= FROM_UNIXTIME(#{reqVO.startTime})
+        </if>
+        <if test="reqVO.endTime != null and reqVO.endTime != ''">
+            AND a.identify_time &lt; FROM_UNIXTIME(#{reqVO.endTime})
+        </if>
+        <if test="reqVO.stationId != null">
+            AND a.station_id = #{reqVO.stationId}
+        </if>
+        GROUP BY s.name
+        ORDER BY count DESC
+    </select>
+
+    <!-- 统计待处置数量 -->
+    <select id="selectWaitHandleCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM abnormal_leave a
+        WHERE a.deleted = 0 AND a.status = '未处理'
+        <if test="reqVO.startTime != null and reqVO.startTime != ''">
+            AND a.identify_time >= FROM_UNIXTIME(#{reqVO.startTime})
+        </if>
+        <if test="reqVO.endTime != null and reqVO.endTime != ''">
+            AND a.identify_time &lt; FROM_UNIXTIME(#{reqVO.endTime})
+        </if>
+        <if test="reqVO.stationId != null">
+            AND a.station_id = #{reqVO.stationId}
+        </if>
+    </select>
+
+    <!-- 统计处置完成率 -->
+    <select id="selectHandleCompleteRate" resultType="java.lang.Double">
+        SELECT
+            ROUND(COUNT(CASE WHEN a.status != '未处理' THEN 1 END) * 100.0 / NULLIF(COUNT(*), 0), 1)
+        FROM abnormal_leave a
+        WHERE a.deleted = 0
+        <if test="reqVO.startTime != null and reqVO.startTime != ''">
+            AND a.identify_time >= FROM_UNIXTIME(#{reqVO.startTime})
+        </if>
+        <if test="reqVO.endTime != null and reqVO.endTime != ''">
+            AND a.identify_time &lt; FROM_UNIXTIME(#{reqVO.endTime})
+        </if>
+        <if test="reqVO.stationId != null">
+            AND a.station_id = #{reqVO.stationId}
+        </if>
+    </select>
+
 </mapper>

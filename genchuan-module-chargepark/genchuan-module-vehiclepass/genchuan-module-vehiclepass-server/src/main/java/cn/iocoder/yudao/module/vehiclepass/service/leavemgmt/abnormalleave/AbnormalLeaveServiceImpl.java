@@ -8,6 +8,8 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalle
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveCheckReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveIgnoreReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveUpdateProgressReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.leavemgmt.abnormalleave.AbnormalLeaveDO;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.leavemgmt.abnormalleave.AbnormalLeaveMapper;
 import org.springframework.stereotype.Service;
@@ -156,6 +158,26 @@ public class AbnormalLeaveServiceImpl implements AbnormalLeaveService {
         updateObj.setHandleProgress(reqVO.getHandleProgress());
         updateObj.setHandleTime(LocalDateTime.now());
         leaveMapper.updateById(updateObj);
+    }
+
+    @Override
+    public AbnormalLeaveChartRespVO getChart(AbnormalLeaveChartReqVO reqVO) {
+        AbnormalLeaveChartRespVO respVO = new AbnormalLeaveChartRespVO();
+
+        // 异常离场趋势
+        respVO.setAbnormalLeaveTrend(leaveMapper.selectChartTrend(reqVO));
+
+        // 各场站异常数
+        respVO.setStationAbnormalCount(leaveMapper.selectStationAbnormalCount(reqVO));
+
+        // 卡片数据
+        AbnormalLeaveChartRespVO.CardData cardData = new AbnormalLeaveChartRespVO.CardData();
+        cardData.setWaitHandleCount(leaveMapper.selectWaitHandleCount(reqVO));
+        Double rate = leaveMapper.selectHandleCompleteRate(reqVO);
+        cardData.setHandleCompleteRate(rate != null ? rate : 0.0);
+        respVO.setCardData(cardData);
+
+        return respVO;
     }
 
 }

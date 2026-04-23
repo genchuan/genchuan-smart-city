@@ -7,6 +7,8 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalle
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveCheckReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveIgnoreReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveUpdateProgressReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.leavemgmt.abnormalleave.AbnormalLeaveDO;
 import cn.iocoder.yudao.module.vehiclepass.service.leavemgmt.abnormalleave.AbnormalLeaveService;
 import org.springframework.web.bind.annotation.*;
@@ -130,6 +132,13 @@ public class AbnormalLeaveController {
     public CommonResult<Boolean> updateProgress(@Valid @RequestBody AbnormalLeaveUpdateProgressReqVO reqVO) {
         leaveService.updateProgress(reqVO);
         return success(true);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "异常离场统计")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:abnormal-leave:chart')")
+    public CommonResult<AbnormalLeaveChartRespVO> getChart(@Valid AbnormalLeaveChartReqVO reqVO) {
+        return success(leaveService.getChart(reqVO));
     }
 
     @GetMapping("/export-excel")

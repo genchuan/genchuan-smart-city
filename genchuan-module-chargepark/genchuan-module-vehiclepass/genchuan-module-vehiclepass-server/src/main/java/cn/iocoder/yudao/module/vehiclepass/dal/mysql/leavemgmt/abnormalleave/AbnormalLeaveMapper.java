@@ -7,6 +7,8 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeavePageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.leavemgmt.abnormalleave.AbnormalLeaveDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -35,5 +37,25 @@ public interface AbnormalLeaveMapper extends BaseMapperX<AbnormalLeaveDO> {
     }
 
     IPage<AbnormalLeaveRespVO> selectPageJoin(Page<?> page, @Param("reqVO") AbnormalLeavePageReqVO reqVO);
+
+    /**
+     * 统计异常离场趋势
+     */
+    List<AbnormalLeaveChartRespVO.AbnormalLeaveTrend> selectChartTrend(@Param("reqVO") AbnormalLeaveChartReqVO reqVO);
+
+    /**
+     * 统计各场站异常数
+     */
+    List<AbnormalLeaveChartRespVO.StationAbnormalCount> selectStationAbnormalCount(@Param("reqVO") AbnormalLeaveChartReqVO reqVO);
+
+    /**
+     * 统计待处置数量
+     */
+    Long selectWaitHandleCount(@Param("reqVO") AbnormalLeaveChartReqVO reqVO);
+
+    /**
+     * 统计处置完成率
+     */
+    Double selectHandleCompleteRate(@Param("reqVO") AbnormalLeaveChartReqVO reqVO);
 
 }

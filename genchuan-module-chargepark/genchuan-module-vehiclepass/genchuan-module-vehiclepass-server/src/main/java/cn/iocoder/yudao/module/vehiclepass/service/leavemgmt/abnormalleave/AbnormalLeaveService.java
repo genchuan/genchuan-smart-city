@@ -9,6 +9,8 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalle
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveCheckReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveIgnoreReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveUpdateProgressReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.leavemgmt.abnormalleave.AbnormalLeaveDO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -101,5 +103,13 @@ public interface AbnormalLeaveService {
      * @param reqVO 更新进度请求
      */
     void updateProgress(AbnormalLeaveUpdateProgressReqVO reqVO);
+
+    /**
+     * 获取异常离场统计
+     *
+     * @param reqVO 统计请求
+     * @return 统计结果
+     */
+    AbnormalLeaveChartRespVO getChart(AbnormalLeaveChartReqVO reqVO);
 
 }
