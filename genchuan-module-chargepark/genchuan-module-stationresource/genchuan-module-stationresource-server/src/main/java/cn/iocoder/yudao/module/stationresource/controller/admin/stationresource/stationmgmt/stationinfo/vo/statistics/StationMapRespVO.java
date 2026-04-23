@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Schema(description = "场站地图点位")
 public class StationMapRespVO {
-
+//
     @Schema(description = "场站ID", example = "1")
     private Long id;
 

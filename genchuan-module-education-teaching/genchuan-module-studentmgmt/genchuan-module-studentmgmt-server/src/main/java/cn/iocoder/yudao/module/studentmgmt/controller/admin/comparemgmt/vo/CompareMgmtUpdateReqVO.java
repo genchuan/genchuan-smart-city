@@ -4,9 +4,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
-@Schema(description = "管理后台 - 评比管理新增/修改 Request VO")
+@Schema(description = "管理后台 - 评比管理修改 Request VO")
 @Data
-public class CompareMgmtSaveReqVO {
+public class CompareMgmtUpdateReqVO {
+
+    @Schema(description = "主键 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "14512")
+    private Long id;
 
     @Schema(description = "班级", requiredMode = Schema.RequiredMode.REQUIRED, example = "王五")
     @NotEmpty(message = "班级不能为空")
@@ -15,7 +18,6 @@ public class CompareMgmtSaveReqVO {
     @Schema(description = "评比周期：周/月/学期", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotEmpty(message = "评比周期：周/月/学期不能为空")
     private String cycle;
-
 
     @Schema(description = "备注", example = "你说的对")
     private String remark;

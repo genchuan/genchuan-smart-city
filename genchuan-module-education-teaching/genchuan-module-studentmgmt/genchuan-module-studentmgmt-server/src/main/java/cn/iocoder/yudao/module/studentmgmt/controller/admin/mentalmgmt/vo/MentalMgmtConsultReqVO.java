@@ -2,8 +2,6 @@ package cn.iocoder.yudao.module.studentmgmt.controller.admin.mentalmgmt.vo;
 
 import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -17,6 +15,6 @@ public class MentalMgmtConsultReqVO {
     private Long id;
 
     @Schema(description = "咨询预约时间")
-    private String consultTime;
+    private LocalDateTime consultTime;
 
 }

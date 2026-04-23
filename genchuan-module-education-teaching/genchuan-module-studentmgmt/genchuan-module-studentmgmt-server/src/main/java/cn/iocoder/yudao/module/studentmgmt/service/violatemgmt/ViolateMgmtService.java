@@ -70,4 +70,5 @@ public interface ViolateMgmtService {
 
     ViolateCountDashboardVO violateCount(@Valid ViolateChartReqVO reqVO);
 
+    List<ViolateWarnIndexRespVO> warnIndex(@Valid ViolateWarnIndexReqVO reqVO);
 }

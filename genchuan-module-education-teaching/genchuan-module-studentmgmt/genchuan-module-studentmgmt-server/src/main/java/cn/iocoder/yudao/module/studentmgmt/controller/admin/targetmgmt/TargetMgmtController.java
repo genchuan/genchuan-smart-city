@@ -106,7 +106,7 @@ public class TargetMgmtController {
     @PreAuthorize("@ss.hasPermission('studentmgmt:target-mgmt:config')")
     public CommonResult<Boolean> config(@Valid @RequestBody TargetMgmtConfigReqVO reqVO) {
         boolean isSuccess = targetMgmtService.config(reqVO);
-        return success(true);
+        return success(isSuccess);
     }
     @PutMapping("/enable")
     @Operation(summary = "启用")
@@ -127,7 +127,7 @@ public class TargetMgmtController {
     @Operation(summary = "德育指标配置看板")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('studentmgmt:target-mgmt:query')")
-    public CommonResult<TargetMgmtChartRespVO> chart(@Valid @RequestBody TargetMgmtChartReqVO reqVO) {
+    public CommonResult<TargetMgmtChartRespVO> chart(@Valid TargetMgmtChartReqVO reqVO) {
         TargetMgmtChartRespVO vo = targetMgmtService.chart(reqVO);
         return success(vo);
     }

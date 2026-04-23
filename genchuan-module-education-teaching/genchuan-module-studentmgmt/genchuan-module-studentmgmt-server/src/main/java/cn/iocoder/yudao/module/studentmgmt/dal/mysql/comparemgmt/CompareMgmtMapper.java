@@ -1,13 +1,14 @@
 package cn.iocoder.yudao.module.studentmgmt.dal.mysql.comparemgmt;
 
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.comparemgmt.vo.CompareMgmtPageReqVO;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.comparemgmt.CompareMgmtDO;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.annotations.Mapper;
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.comparemgmt.vo.*;
+
+import java.util.List;
 
 /**
  * 评比管理 Mapper
@@ -33,5 +34,13 @@ public interface CompareMgmtMapper extends BaseMapperX<CompareMgmtDO> {
                 .betweenIfPresent(CompareMgmtDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(CompareMgmtDO::getId));
     }
+
+    List<JSONObject> selectRankList(String cycle);
+
+    List<JSONObject> selectStatusCount(String cycle);
+
+    List<JSONObject> selectCycleCount(String cycle);
+
+    List<JSONObject> selectScoreRank(String cycle);
 
 }

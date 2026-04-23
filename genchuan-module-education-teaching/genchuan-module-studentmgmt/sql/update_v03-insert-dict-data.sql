@@ -872,3 +872,15 @@ VALUES
     (2, '图书', 'book', 'moral_resource_resource_type', 0, 'success', '', '德育图书资源', 'admin', NOW(), 'admin', NOW(), 0),
     (3, '专题包', 'package', 'moral_resource_resource_type', 0, 'warning', '', '德育专题包资源', 'admin', NOW(), 'admin', NOW(), 0);
 
+
+
+-- 插入字典类型
+INSERT INTO system_dict_type (name, type, status, remark, creator, create_time, updater, update_time, deleted, tenant_id)
+VALUES ('评比状态', 'compare_mgmt_status', 0, '评比管理状态', 'admin', NOW(), 'admin', NOW(), 0, 1);
+
+-- 插入字典数据
+INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted, tenant_id)
+VALUES
+    (1, '打分中', 'scoring', 'compare_mgmt_status', 0, 'warning', '', '评比正在打分中', 'admin', NOW(), 'admin', NOW(), 0, 1),
+    (2, '已汇总', 'summarized', 'compare_mgmt_status', 0, 'success', '', '评比分数已汇总', 'admin', NOW(), 'admin', NOW(), 0, 1);
+

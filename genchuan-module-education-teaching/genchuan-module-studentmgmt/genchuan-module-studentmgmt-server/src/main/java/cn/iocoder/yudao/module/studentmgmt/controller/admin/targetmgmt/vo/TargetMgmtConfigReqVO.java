@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class TargetMgmtConfigReqVO {
 
     @Schema(description = "主键 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "20828")
-    private Long id;
+    private Long[] ids;
 
 
     @Schema(description = "指标总分", requiredMode = Schema.RequiredMode.REQUIRED)

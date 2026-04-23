@@ -8,7 +8,7 @@ import lombok.Data;
 public class DutyMgmtVehicleApplyReqVO {
 
     @Schema(description = "主键 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    private Long id;
+    private Long[] ids;
 
     @Schema(description = "出车事由）", requiredMode = Schema.RequiredMode.REQUIRED, example = "出差")
     private String carReason;

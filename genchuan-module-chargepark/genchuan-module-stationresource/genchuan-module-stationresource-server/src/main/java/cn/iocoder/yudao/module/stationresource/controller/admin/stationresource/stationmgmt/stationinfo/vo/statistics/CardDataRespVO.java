@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Schema(description = "场站统计卡片数据")
 public class CardDataRespVO {
-
+//
     @Schema(description = "总站数", example = "120")
     private Long totalStationCount;
 

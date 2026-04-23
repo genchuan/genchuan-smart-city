@@ -1,11 +1,13 @@
 package cn.iocoder.yudao.module.studentmgmt.dal.mysql.clubmgmt;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.clubmgmt.ClubMgmtDO;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.clubmgmt.vo.*;
 
@@ -35,4 +37,19 @@ public interface ClubMgmtMapper extends BaseMapperX<ClubMgmtDO> {
                 .orderByDesc(ClubMgmtDO::getId));
     }
 
+    Long selectTotalCount(LocalDateTime startTime, LocalDateTime endTime);
+
+    Long selectTotalMemberCount(LocalDateTime startTime, LocalDateTime endTime);
+
+    Long selectPendingAuditCount(LocalDateTime startTime, LocalDateTime endTime, String status);
+
+    Long selectVenueApplyCount(LocalDateTime startTime, LocalDateTime endTime);
+
+    List<JSONObject> selectClubTypeDistribution(LocalDateTime startTime, LocalDateTime endTime);
+
+    List<JSONObject> selectMonthlyApplyTrend(LocalDateTime startTime, LocalDateTime endTime);
+
+    List<JSONObject> selectClubStatistics(LocalDateTime startTime, LocalDateTime endTime);
+
+    List<JSONObject> selectTypeMemberDistribution(LocalDateTime startTime, LocalDateTime endTime);
 }

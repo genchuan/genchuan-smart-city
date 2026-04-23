@@ -157,5 +157,13 @@ public class ViolateMgmtController {
         return success(dashboardVO);
     }
 
+    @GetMapping("/chart/warnIndex")
+    @Operation(summary = "各班级违纪次数 / 类型分布统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:violate-info:query')")
+    public CommonResult<List<ViolateWarnIndexRespVO>> warnIndex(@Valid ViolateWarnIndexReqVO reqVO) {
+        List<ViolateWarnIndexRespVO> list = violateMgmtService.warnIndex(reqVO);
+        return success(list);
+    }
+
 
 }

@@ -9,4 +9,69 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="selectTotalCount" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM club_mgmt
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND apply_time between #{startTime} AND #{endTime}
+        </if>
+    </select>
+    <select id="selectTotalMemberCount" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM club_mgmt
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND apply_time between #{startTime} AND #{endTime}
+        </if>
+    </select>
+    <select id="selectPendingAuditCount" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM club_mgmt
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND apply_time between #{startTime} AND #{endTime}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+    <select id="selectVenueApplyCount" resultType="java.lang.Long">
+        SELECT COUNT(venue_apply_status) FROM club_mgmt
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND apply_time between #{startTime} AND #{endTime}
+        </if>
+        AND venue_apply_status is not null
+
+    </select>
+    <select id="selectClubTypeDistribution" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT club_type as type, COUNT(*) AS count FROM club_mgmt
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND apply_time between #{startTime} AND #{endTime}
+        </if>
+        GROUP BY club_type
+    </select>
+    <select id="selectMonthlyApplyTrend" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT DATE_FORMAT(apply_time, '%Y-%m') AS month, COUNT(*) AS count FROM club_mgmt
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND apply_time between #{startTime} AND #{endTime}
+        </if>
+        GROUP BY month
+    </select>
+    <select id="selectClubStatistics" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT club_name AS clubName, COUNT(student_id) AS memberCount,club_type as clubType FROM club_mgmt
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND apply_time between #{startTime} AND #{endTime}
+        </if>
+        GROUP BY club_name,club_type
+    </select>
+    <select id="selectTypeMemberDistribution" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT club_type AS name, COUNT(student_id) AS count FROM club_mgmt
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND apply_time between #{startTime} AND #{endTime}
+        </if>
+        GROUP BY club_type
+    </select>
 </mapper>

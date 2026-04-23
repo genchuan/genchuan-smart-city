@@ -139,11 +139,12 @@ public class MoralActivityServiceImpl implements MoralActivityService {
         // 校验存在
         MoralActivityDO moralActivity = validateMoralActivityExists(reqVO.getId());
         // 更新
-        moralActivity.setJoinNum(moralActivity.getJoinNum() + 1);
         // 判断当前时间是否在活动时间之后，如果是，则设置状态为已结束
         if (LocalDateTime.now().isAfter(moralActivity.getEndTime())) {
             moralActivity.setStatus(MoralActivityStatusEnum.ENDED.getStatus());
         }
+        moralActivity.setContent(reqVO.getContent());
+        moralActivity.setJoinNum(reqVO.getJoinNum());
         int i = moralActivityMapper.updateById(moralActivity);
         if (i > 0) {
             return true;

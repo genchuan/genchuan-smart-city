@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo;
 
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
+import com.alibaba.fastjson.JSONObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -31,10 +32,10 @@ public class AssessMgmtChartRespVO {
     private String topRankClass;
     @Schema(description = "各考评类型的记录数统计", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("各考评类型的记录数统计")
-    private Object assessTypeCount;
+    private JSONObject assessTypeCount;
     @Schema(description = "各状态的记录数统计", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("各状态的记录数统计")
-    private Object statusCount;
+    private JSONObject statusCount;
 
 //
 //    @Schema(description = "考评记录总数", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")

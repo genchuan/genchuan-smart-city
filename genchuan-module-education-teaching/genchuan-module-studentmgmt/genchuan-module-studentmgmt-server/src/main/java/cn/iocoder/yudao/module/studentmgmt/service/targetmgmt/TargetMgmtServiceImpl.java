@@ -96,14 +96,20 @@ public class TargetMgmtServiceImpl implements TargetMgmtService {
             subType = TARGET_CONFIG_SUB_TYPE, bizNo = "{{#reqVO.id}}",
             success = TARGET_CONFIG_SUCCESS)
     public boolean config(TargetMgmtConfigReqVO reqVO) {
-        // 校验存在
-        TargetMgmtDO targetMgmtDO = validateTargetMgmtExists(reqVO.getId());
-        // 更新
-        TargetMgmtDO updateObj = BeanUtils.toBean(reqVO, TargetMgmtDO.class);
-        int i = targetMgmtMapper.updateById(updateObj);
-        // 记录操作日志上下文
-        LogRecordContext.putVariable("target", targetMgmtDO);
-        return i > 0;
+        int total = 0;
+        for (Long id : reqVO.getIds()) {
+            // 校验存在
+            TargetMgmtDO targetMgmtDO = validateTargetMgmtExists(id);
+            // 更新
+            TargetMgmtDO updateObj = BeanUtils.toBean(reqVO, TargetMgmtDO.class);
+            int i = targetMgmtMapper.updateById(updateObj);
+            total += i;
+            // 记录操作日志上下文
+            LogRecordContext.putVariable("target", targetMgmtDO);
+
+        }
+
+        return total > 0;
     }
 
     @Override
@@ -139,7 +145,7 @@ public class TargetMgmtServiceImpl implements TargetMgmtService {
             // 校验存在
             TargetMgmtDO targetMgmtDO = validateTargetMgmtExists(Long.valueOf(id));
             // 更新
-            targetMgmtDO.setEnableTime(LocalDateTime.now());
+            targetMgmtDO.setDisableTime(LocalDateTime.now());
             targetMgmtDO.setStatus(TargetStatusEnum.DISABLE.getStatus());
             int i = targetMgmtMapper.updateById(targetMgmtDO);
             total += i;

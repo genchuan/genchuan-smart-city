@@ -135,24 +135,29 @@ public class DutyMgmtServiceImpl implements DutyMgmtService {
     @LogRecord(type = DUTY_TYPE, subType = DUTY_CHECK_IN_SUB_TYPE, bizNo = "{{#duty.id}}",
             success = DUTY_CHECK_IN_SUCCESS)
     public boolean checkin(DutyMgmtCheckinReqVO reqVo) {
+        Long[] ids = reqVo.getIds();
+        int total = 0;
+        for (Long id : ids) {
+            DutyMgmtDO dutyMgmt = validateDutyMgmtExists(id);
+            if (DutyCheckInStatusEnum.DUTY_CHCECK_IN_STATUS_CHECKED_IN.getStatus().equals(dutyMgmt.getCheckInStatus())) {
+                throw exception(DUTY_MGMT_CHECK_IN_STATUS_CHECKED_IN);
+            }
 
-        DutyMgmtDO dutyMgmt = validateDutyMgmtExists(reqVo.getId());
-        if (DutyCheckInStatusEnum.DUTY_CHCECK_IN_STATUS_CHECKED_IN.getStatus().equals(dutyMgmt.getCheckInStatus())) {
-            throw exception(DUTY_MGMT_CHECK_IN_STATUS_CHECKED_IN);
-        }
+            dutyMgmt.setCheckInStatus(DutyCheckInStatusEnum.DUTY_CHCECK_IN_STATUS_CHECKED_IN.getStatus());
 
-        dutyMgmt.setCheckInStatus(DutyCheckInStatusEnum.DUTY_CHCECK_IN_STATUS_CHECKED_IN.getStatus());
+            if (dutyMgmt.getStatus().equals(DutyStatusEnum.DUTY_STATUS_PENDING_CHECKIN.getStatus())) {
+                dutyMgmt.setStatus(DutyStatusEnum.DUTY_STATUS_COMPLETED.getStatus());
+            }
+            dutyMgmt.setCheckInTime(LocalDateTime.now());
+            int insert = dutyMgmtMapper.updateById(dutyMgmt);
+            // 记录操作日志上下文
+            LogRecordContext.putVariable("duty", dutyMgmt);
+            total = total + insert;
+        }
+            if (total > 0) {
+                return true;
+            }
 
-        if (dutyMgmt.getStatus().equals(DutyStatusEnum.DUTY_STATUS_PENDING_CHECKIN.getStatus())) {
-            dutyMgmt.setStatus(DutyStatusEnum.DUTY_STATUS_COMPLETED.getStatus());
-        }
-        dutyMgmt.setCheckInTime(LocalDateTime.now());
-        int insert = dutyMgmtMapper.updateById(dutyMgmt);
-        // 记录操作日志上下文
-        LogRecordContext.putVariable("duty", dutyMgmt);
-        if (insert > 0) {
-            return true;
-        }
         return false;
     }
 
@@ -166,35 +171,39 @@ public class DutyMgmtServiceImpl implements DutyMgmtService {
     @LogRecord(type = DUTY_TYPE, subType = DUTY_SHIFT_APPLY_SUB_TYPE, bizNo = "{{#duty.id}}",
             success = DUTY_SHIFT_APPLY_SUCCESS)
     public boolean shiftApply(@Valid DutyMgmtShiftApplyReqVO reqVo) {
+        Long[] ids = reqVo.getIds();
+        int total = 0;
+        for (Long id : ids) {
+            DutyMgmtDO dutyMgmt = validateDutyMgmtExists(id);
 
-        DutyMgmtDO dutyMgmt = validateDutyMgmtExists(reqVo.getId());
-
-        // 签到状态为已签到，则不能调班
-        if (DutyCheckInStatusEnum.DUTY_CHCECK_IN_STATUS_CHECKED_IN.getStatus().equals(dutyMgmt.getCheckInStatus())) {
-            throw exception("已签到，不可调班");
-        }
-
-        // 状态不待打卡，则不能调班
-        if (!dutyMgmt.getStatus().equals(DutyStatusEnum.DUTY_STATUS_PENDING_CHECKIN.getStatus())) {
-            throw exception("非打卡状态，不可调班");
-        }
-
-        // 状态不是为空，或不是为驳回，则不能调班
-        if (StringUtils.isNotBlank(dutyMgmt.getTransferStatus())) {
-            if (!dutyMgmt.getTransferStatus().equals(DutyTransferStatusEnum.TRANSFER_STATUS_REJECTED.getStatus())) {
-                throw exception("当前调班状态，不可申请");
+            // 签到状态为已签到，则不能调班
+            if (DutyCheckInStatusEnum.DUTY_CHCECK_IN_STATUS_CHECKED_IN.getStatus().equals(dutyMgmt.getCheckInStatus())) {
+                throw exception("已签到，不可调班");
             }
+
+            // 状态不待打卡，则不能调班
+            if (!dutyMgmt.getStatus().equals(DutyStatusEnum.DUTY_STATUS_PENDING_CHECKIN.getStatus())) {
+                throw exception("非打卡状态，不可调班");
+            }
+
+            // 状态不是为空，或不是为驳回，则不能调班
+            if (StringUtils.isNotBlank(dutyMgmt.getTransferStatus())) {
+                if (!dutyMgmt.getTransferStatus().equals(DutyTransferStatusEnum.TRANSFER_STATUS_REJECTED.getStatus())) {
+                    throw exception("当前调班状态，不可申请");
+                }
+            }
+
+            dutyMgmt.setTransferReason(reqVo.getTransferReason());
+            dutyMgmt.setTransferStatus(DutyTransferStatusEnum.TRANSFER_STATUS_PENDING_PENDING.getStatus());
+            dutyMgmt.setStatus(DutyStatusEnum.DUTY_STATUS_PENDING_TRANSFER.getStatus());
+
+            int insert = dutyMgmtMapper.updateById(dutyMgmt);
+            total = total + insert;
+            // 记录操作日志上下文
+            LogRecordContext.putVariable("duty", dutyMgmt);
         }
 
-
-        dutyMgmt.setTransferReason(reqVo.getTransferReason());
-        dutyMgmt.setTransferStatus(DutyTransferStatusEnum.TRANSFER_STATUS_PENDING_PENDING.getStatus());
-        dutyMgmt.setStatus(DutyStatusEnum.DUTY_STATUS_PENDING_TRANSFER.getStatus());
-
-        int insert = dutyMgmtMapper.updateById(dutyMgmt);
-        // 记录操作日志上下文
-        LogRecordContext.putVariable("duty", dutyMgmt);
-        if (insert > 0) {
+        if (total > 0) {
             return true;
         }
         return false;
@@ -240,26 +249,31 @@ public class DutyMgmtServiceImpl implements DutyMgmtService {
     @LogRecord(type = DUTY_TYPE, subType = DUTY_VEHICLE_APPLY_SUB_TYPE, bizNo = "{{#duty.id}}",
             success = DUTY_VEHICLE_APPLY_SUCCESS)
     public boolean vehicleApply(DutyMgmtVehicleApplyReqVO reqVo) {
+        Long[] ids = reqVo.getIds();
+        int total = 0;
+        for (Long id : ids) {
+            DutyMgmtDO dutyMgmt = validateDutyMgmtExists(id);
 
-        DutyMgmtDO dutyMgmt = validateDutyMgmtExists(reqVo.getId());
-
-        // 状态不待打卡，则不能调班
-        if (StringUtils.isNotBlank(dutyMgmt.getCarStatus())) {
-            if (!dutyMgmt.getCarStatus().equals(DutyCarStatusEnum.CAR_STATUS_APPROVED.getStatus())) {
-                throw exception("当前出车状态，不可申请");
+            // 状态不待打卡，则不能调班
+            if (StringUtils.isNotBlank(dutyMgmt.getCarStatus())) {
+                if (!dutyMgmt.getCarStatus().equals(DutyCarStatusEnum.CAR_STATUS_APPROVED.getStatus())) {
+                    throw exception("当前出车状态，不可申请");
+                }
             }
+
+            dutyMgmt.setCarStatus(DutyCarStatusEnum.CAR_STATUS_PENDING.getStatus());
+            dutyMgmt.setCarReason(reqVo.getCarReason());
+            dutyMgmt.setCarDestination(reqVo.getCarDestination());
+
+            dutyMgmt.setStatus(DutyStatusEnum.DUTY_STATUS_PENDING_CAR.getStatus());
+
+            int insert = dutyMgmtMapper.updateById(dutyMgmt);
+            total = total + insert;
+            // 记录操作日志上下文
+            LogRecordContext.putVariable("duty", dutyMgmt);
+
         }
-
-        dutyMgmt.setCarStatus(DutyCarStatusEnum.CAR_STATUS_PENDING.getStatus());
-        dutyMgmt.setCarReason(reqVo.getCarReason());
-        dutyMgmt.setCarDestination(reqVo.getCarDestination());
-
-        dutyMgmt.setStatus(DutyStatusEnum.DUTY_STATUS_PENDING_CAR.getStatus());
-
-        int insert = dutyMgmtMapper.updateById(dutyMgmt);
-        // 记录操作日志上下文
-        LogRecordContext.putVariable("duty", dutyMgmt);
-        if (insert > 0) {
+        if (total > 0) {
             return true;
         }
         return false;

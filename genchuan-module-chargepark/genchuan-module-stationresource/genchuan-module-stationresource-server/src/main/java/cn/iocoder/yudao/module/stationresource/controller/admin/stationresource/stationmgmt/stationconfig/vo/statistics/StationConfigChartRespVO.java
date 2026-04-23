@@ -29,7 +29,7 @@ public class StationConfigChartRespVO {
     public static class CardDataDTO {
         @Schema(description = "已配置场站数量", example = "98")
         private Integer configedStationCount;
-
+//
         @Schema(description = "已生效配置数量", example = "25")
         private Integer enableConfigCount;
     }

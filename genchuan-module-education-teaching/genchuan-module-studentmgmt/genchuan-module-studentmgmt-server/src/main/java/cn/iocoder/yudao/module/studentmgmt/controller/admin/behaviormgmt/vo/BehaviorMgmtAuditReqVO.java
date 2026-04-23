@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class BehaviorMgmtAuditReqVO {
 
     @Schema(description = "主键 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "3836")
-    private Long id;
+    private Long[] ids;
 
     @Schema(description = "状态：待审批/已通过/已驳回", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @NotEmpty(message = "状态：待审批/已通过/已驳回不能为空")

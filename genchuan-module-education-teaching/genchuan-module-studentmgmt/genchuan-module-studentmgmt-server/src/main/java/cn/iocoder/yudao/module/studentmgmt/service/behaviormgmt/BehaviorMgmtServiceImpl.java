@@ -108,18 +108,23 @@ public class BehaviorMgmtServiceImpl implements BehaviorMgmtService {
     @LogRecord(type = BEHAVIOR_TYPE, subType = BEHAVIOR_AUDIT_SUB_TYPE, bizNo = "{{#behavior.id}}",
             success = BEHAVIOR_AUDIT_SUCCESS)
     public boolean audit(BehaviorMgmtAuditReqVO reqVO) {
-        BehaviorMgmtDO behaviorMgmtDO = validateBehaviorMgmtExists(reqVO.getId());
-        behaviorMgmtDO.setAuditTime(LocalDateTime.now());
-        // 获取当前用户
-//        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
-        String username = SecurityFrameworkUtils.getLoginUserNickname();
-        behaviorMgmtDO.setAuditUser(username);
-        behaviorMgmtDO.setStatus(reqVO.getStatus());
+        Long[] ids = reqVO.getIds();
+        int total = 0;
+        for (Long id : ids) {
+            BehaviorMgmtDO behaviorMgmtDO = validateBehaviorMgmtExists(id);
+            behaviorMgmtDO.setAuditTime(LocalDateTime.now());
+            // 获取当前用户
+            //        LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
+            String username = SecurityFrameworkUtils.getLoginUserNickname();
+            behaviorMgmtDO.setAuditUser(username);
+            behaviorMgmtDO.setStatus(reqVO.getStatus());
 
-        int i = behaviorMgmtMapper.updateById(behaviorMgmtDO);
-        if (i > 0) {
-            // 记录操作日志上下文
+            int i = behaviorMgmtMapper.updateById(behaviorMgmtDO);
             LogRecordContext.putVariable("behavior", behaviorMgmtDO);
+            total += i;
+        }
+        if (total > 0) {
+            // 记录操作日志上下文
             return true;
         }
         return false;
