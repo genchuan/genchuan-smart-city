@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.vehiclepass.service.leavemgmt.paycheck;
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckSaveReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.leavemgmt.paycheck.PayCheckDO;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.leavemgmt.paycheck.PayCheckMapper;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
@@ -81,6 +83,16 @@ public class PayCheckServiceImpl implements PayCheckService {
     @Override
     public PageResult<PayCheckDO> getCheckPage(PayCheckPageReqVO pageReqVO) {
         return checkMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public PageResult<PayCheckRespVO> getCheckPageWithJoin(PayCheckPageReqVO pageReqVO) {
+        // 构建分页参数
+        Page<PayCheckRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        // 调用JOIN查询
+        com.baomidou.mybatisplus.core.metadata.IPage<PayCheckRespVO> pageResult = checkMapper.selectPageJoin(page, pageReqVO);
+        // 转换为PageResult
+        return new PageResult<>(pageResult.getRecords(), pageResult.getTotal());
     }
 
 }

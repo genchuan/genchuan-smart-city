@@ -26,7 +26,6 @@ public interface PayCheckMapper extends BaseMapperX<PayCheckDO> {
                 .eqIfPresent(PayCheckDO::getPlateNo, reqVO.getPlateNo())
                 .eqIfPresent(PayCheckDO::getParkFee, reqVO.getParkFee())
                 .eqIfPresent(PayCheckDO::getStatus, reqVO.getStatus())
-                .betweenIfPresent(PayCheckDO::getCheckTime, reqVO.getCheckTime())
                 .eqIfPresent(PayCheckDO::getStationId, reqVO.getStationId())
                 .eqIfPresent(PayCheckDO::getCheckUserId, reqVO.getCheckUserId())
                 .eqIfPresent(PayCheckDO::getCheckResult, reqVO.getCheckResult())
@@ -35,9 +34,9 @@ public interface PayCheckMapper extends BaseMapperX<PayCheckDO> {
                 .eqIfPresent(PayCheckDO::getReserve2, reqVO.getReserve2())
                 .eqIfPresent(PayCheckDO::getCreator, reqVO.getCreator())
                 .eqIfPresent(PayCheckDO::getUpdater, reqVO.getUpdater())
-                .betweenIfPresent(PayCheckDO::getCreateTime, reqVO.getCreateTime())
-                .betweenIfPresent(PayCheckDO::getUpdateTime, reqVO.getUpdateTime())
                 .orderByDesc(PayCheckDO::getId));
     }
+
+    IPage<PayCheckRespVO> selectPageJoin(Page<?> page, @Param("reqVO") PayCheckPageReqVO reqVO);
 
 }

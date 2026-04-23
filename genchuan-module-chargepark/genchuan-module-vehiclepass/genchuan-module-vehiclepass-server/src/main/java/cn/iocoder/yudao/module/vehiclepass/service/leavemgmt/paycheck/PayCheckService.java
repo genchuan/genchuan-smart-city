@@ -4,6 +4,7 @@ import java.util.*;
 
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckSaveReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.leavemgmt.paycheck.PayCheckDO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -60,5 +61,13 @@ public interface PayCheckService {
      * @return 缴费核验分页
      */
     PageResult<PayCheckDO> getCheckPage(PayCheckPageReqVO pageReqVO);
+
+    /**
+     * 获得缴费核验分页（使用JOIN查询）
+     *
+     * @param pageReqVO 分页查询
+     * @return 缴费核验分页（含关联表字段）
+     */
+    PageResult<PayCheckRespVO> getCheckPageWithJoin(PayCheckPageReqVO pageReqVO);
 
 }

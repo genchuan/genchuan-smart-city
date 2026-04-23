@@ -90,6 +90,13 @@ public class PayCheckController {
         return success(BeanUtils.toBean(pageResult, PayCheckRespVO.class));
     }
 
+    @GetMapping("/my/page")
+    @Operation(summary = "缴费核验筛选刷新")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:pay-check:query')")
+    public CommonResult<PageResult<PayCheckRespVO>> getMyCheckPage(@Valid PayCheckPageReqVO pageReqVO) {
+        return success(checkService.getCheckPageWithJoin(pageReqVO));
+    }
+
     @GetMapping("/export-excel")
     @Operation(summary = "导出缴费核验 Excel")
     @PreAuthorize("@ss.hasPermission('pay:check:export')")
