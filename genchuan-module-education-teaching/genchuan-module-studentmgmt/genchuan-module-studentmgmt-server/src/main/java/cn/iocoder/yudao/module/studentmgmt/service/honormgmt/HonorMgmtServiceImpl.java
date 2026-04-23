@@ -5,19 +5,28 @@ import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.aidwork.vo.AidWorkApplyCountRespVO;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.behaviormgmt.vo.BehaviorMgmtAttendanceCountRespVO;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.honormgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.honormgmt.HonorMgmtDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.honormgmt.HonorMgmtMapper;
+import cn.iocoder.yudao.module.studentmgmt.enums.AidWorkStatusEnum;
+import cn.iocoder.yudao.module.studentmgmt.enums.BehaviorStatusEnum;
+import cn.iocoder.yudao.module.studentmgmt.enums.DormCheckStatusEnum;
 import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
 import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
+import com.alibaba.fastjson.JSONObject;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.studentmgmt.enums.ErrorCodeConstants.HONOR_MGMT_NOT_EXISTS;
@@ -225,6 +234,40 @@ public class HonorMgmtServiceImpl implements HonorMgmtService {
     @Override
     public PageResult<HonorMgmtPageRespVO> getHonorMgmtJoinPage(HonorMgmtPageReqVO pageReqVO) {
         return honorMgmtMapper.selectJoinPage(pageReqVO);
+    }
+
+    @Override
+    public List<HonorCountRespVO> honorCount(HonorCountReqVO reqVO) {
+        // 1. 卡片数据
+        LocalDateTime startTime = reqVO.getStartTime();
+        LocalDateTime endTime = reqVO.getEndTime();
+
+        // 统计维度
+        String dimension = reqVO.getDimension();
+        List<HonorCountRespVO> list = new ArrayList<>();
+
+        if(dimension.equals("type")){
+            // 按类型统计数据
+            list = honorMgmtMapper.selectCountByType(startTime, endTime);
+            for (HonorCountRespVO honorCountRespVO : list) {
+                String name = honorCountRespVO.getName();
+                // 获取类型名称
+                CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.HONOR_MGMT_HONOR_TYPE.getType());
+                if (dictDataList.getData() != null) {
+                    for (DictDataRespDTO dictData : dictDataList.getData()) {
+                        if (dictData.getValue().equals(name)) {
+                            honorCountRespVO.setName(dictData.getLabel());
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        else if(dimension.equals("class")){
+            // 按班级统计数据
+            list = honorMgmtMapper.selectCountByClass(startTime, endTime);
+        }
+        return list;
     }
 
 }

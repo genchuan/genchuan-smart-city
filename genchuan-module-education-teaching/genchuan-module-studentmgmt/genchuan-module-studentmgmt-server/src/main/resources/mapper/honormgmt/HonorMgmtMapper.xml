@@ -46,4 +46,30 @@
             AND major = #{major}
         </if>
     </select>
+    <select id="selectCountByType"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.honormgmt.vo.HonorCountRespVO">
+        SELECT honor_type AS name, COUNT(1) AS count
+        FROM honor_mgmt
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND get_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND get_time &lt; #{endTime}
+        </if>
+        GROUP BY honor_type
+    </select>
+    <select id="selectCountByClass"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.honormgmt.vo.HonorCountRespVO">
+        SELECT s.class_name AS `name`,  COUNT(1) AS count
+        FROM  `honor_mgmt` AS h  LEFT JOIN student_info AS s ON s.id = h.student_id
+        WHERE h.deleted = 0
+        <if test="startTime != null">
+            AND get_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND get_time &lt; #{endTime}
+        </if>
+        GROUP BY s.class_name
+    </select>
 </mapper>

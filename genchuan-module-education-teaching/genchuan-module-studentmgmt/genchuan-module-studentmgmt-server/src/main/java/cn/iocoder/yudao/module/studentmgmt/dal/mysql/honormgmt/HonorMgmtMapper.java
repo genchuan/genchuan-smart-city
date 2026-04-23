@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.studentmgmt.dal.mysql.honormgmt;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -7,6 +8,7 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.honormgmt.HonorMgmtDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
@@ -99,4 +101,8 @@ public interface HonorMgmtMapper extends BaseMapperX<HonorMgmtDO> {
 
     Integer audit(@Param("ids") List<Long> ids, @Param("auditRemark") String auditRemark,
                   @Param("auditUser") String auditUser, @Param("status") String status);
+
+    List<HonorCountRespVO> selectCountByType(LocalDateTime startTime, LocalDateTime endTime);
+
+    List<HonorCountRespVO> selectCountByClass(LocalDateTime startTime, LocalDateTime endTime);
 }
