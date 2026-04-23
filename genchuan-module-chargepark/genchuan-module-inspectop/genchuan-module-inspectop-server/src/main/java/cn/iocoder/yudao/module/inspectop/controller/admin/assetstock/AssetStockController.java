@@ -84,8 +84,32 @@ public class AssetStockController {
     @Operation(summary = "获得库存管理分页")
     @PreAuthorize("@ss.hasPermission('inspectop:asset-stock:query')")
     public CommonResult<PageResult<AssetStockRespVO>> getAssetStockPage(@Valid AssetStockPageReqVO pageReqVO) {
-        PageResult<AssetStockDO> pageResult = assetStockService.getAssetStockPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, AssetStockRespVO.class));
+        PageResult<AssetStockRespVO> pageResult = assetStockService.getAssetStockPage(pageReqVO);
+        return success(pageResult);
+    }
+
+    @PutMapping("/allocate")
+    @Operation(summary = "调配库存")
+    @PreAuthorize("@ss.hasPermission('inspectop:asset-stock:allocate')")
+    public CommonResult<Boolean> allocateAssetStock(@Valid @RequestBody AssetStockAllocateReqVO allocateReqVO) {
+        assetStockService.allocateAssetStock(allocateReqVO);
+        return success(true);
+    }
+
+    @PutMapping("/alarm")
+    @Operation(summary = "更新库存告警状态")
+    @PreAuthorize("@ss.hasPermission('inspectop:asset-stock:alarm')")
+    public CommonResult<Boolean> alarmAssetStock(@Valid @RequestBody AssetStockAlarmReqVO alarmReqVO) {
+        assetStockService.alarmAssetStock(alarmReqVO);
+        return success(true);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "获取库存统计图表")
+    @PreAuthorize("@ss.hasPermission('inspectop:asset-stock:chart')")
+    public CommonResult<AssetStockChartRespVO> getAssetStockChart(@Valid AssetStockChartReqVO reqVO) {
+        AssetStockChartRespVO chartData = assetStockService.getAssetStockChart(reqVO);
+        return success(chartData);
     }
 
     @GetMapping("/export-excel")
@@ -93,12 +117,11 @@ public class AssetStockController {
     @PreAuthorize("@ss.hasPermission('inspectop:asset-stock:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportAssetStockExcel(@Valid AssetStockPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                      HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<AssetStockDO> list = assetStockService.getAssetStockPage(pageReqVO).getList();
+        // 这里不再需要BeanUtils转换，因为Service已经返回了VO
+        List<AssetStockRespVO> list = assetStockService.getAssetStockPage(pageReqVO).getList();
         // 导出 Excel
-        ExcelUtils.write(response, "库存管理.xls", "数据", AssetStockRespVO.class,
-                        BeanUtils.toBean(list, AssetStockRespVO.class));
+        ExcelUtils.write(response, "库存管理.xls", "数据", AssetStockRespVO.class, list);
     }
-
 }

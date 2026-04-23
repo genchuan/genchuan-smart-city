@@ -59,4 +59,33 @@ public interface SpareStockService {
      */
     PageResult<SpareStockDO> getSpareStockPage(SpareStockPageReqVO pageReqVO);
 
+    /**
+     * 备件入库
+     *
+     * @param reqVO 入库信息
+     */
+    void inSpareStock(@Valid SpareStockInReqVO reqVO);
+
+    /**
+     * 备件出库
+     *
+     * @param reqVO 出库信息
+     */
+    void outSpareStock(@Valid SpareStockOutReqVO reqVO);
+
+    /**
+     * 备件补货
+     *
+     * @param reqVO 补货信息
+     */
+    void replenishSpareStock(@Valid SpareStockReplenishReqVO reqVO);
+
+    /**
+     * 获得备件仓储统计图表
+     *
+     * @param reqVO 查询条件
+     * @return 图表统计结果
+     */
+    SpareStockChartRespVO getSpareStockChart(SpareStockChartReqVO reqVO);
+
 }

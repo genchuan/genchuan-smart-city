@@ -88,6 +88,38 @@ public class SpareStockController {
         return success(BeanUtils.toBean(pageResult, SpareStockRespVO.class));
     }
 
+    @PostMapping("/in")
+    @Operation(summary = "备件入库")
+    @PreAuthorize("@ss.hasPermission('inspectop:spare-stock:in')")
+    public CommonResult<Boolean> inSpareStock(@Valid @RequestBody SpareStockInReqVO reqVO) {
+        spareStockService.inSpareStock(reqVO);
+        return success(true);
+    }
+
+    @PostMapping("/out")
+    @Operation(summary = "备件出库")
+    @PreAuthorize("@ss.hasPermission('inspectop:spare-stock:out')")
+    public CommonResult<Boolean> outSpareStock(@Valid @RequestBody SpareStockOutReqVO reqVO) {
+        spareStockService.outSpareStock(reqVO);
+        return success(true);
+    }
+
+    @PutMapping("/replenish")
+    @Operation(summary = "备件补货")
+    @PreAuthorize("@ss.hasPermission('inspectop:spare-stock:replenish')")
+    public CommonResult<Boolean> replenishSpareStock(@Valid @RequestBody SpareStockReplenishReqVO reqVO) {
+        spareStockService.replenishSpareStock(reqVO);
+        return success(true);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "获得备件仓储统计图表")
+    @PreAuthorize("@ss.hasPermission('inspectop:spare-stock:chart')")
+    public CommonResult<SpareStockChartRespVO> getSpareStockChart(@Valid SpareStockChartReqVO reqVO) {
+        SpareStockChartRespVO chartData = spareStockService.getSpareStockChart(reqVO);
+        return success(chartData);
+    }
+
     @GetMapping("/export-excel")
     @Operation(summary = "导出备件仓储 Excel")
     @PreAuthorize("@ss.hasPermission('inspectop:spare-stock:export')")

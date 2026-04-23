@@ -57,6 +57,27 @@ public interface AssetStockService {
      * @param pageReqVO 分页查询
      * @return 库存管理分页
      */
-    PageResult<AssetStockDO> getAssetStockPage(AssetStockPageReqVO pageReqVO);
+    PageResult<AssetStockRespVO> getAssetStockPage(AssetStockPageReqVO pageReqVO);
 
+    /**
+     * 调配库存
+     *
+     * @param allocateReqVO 调配信息
+     */
+    void allocateAssetStock(@Valid AssetStockAllocateReqVO allocateReqVO);
+
+    /**
+     * 更新库存告警状态
+     *
+     * @param alarmReqVO 告警信息
+     */
+    void alarmAssetStock(@Valid AssetStockAlarmReqVO alarmReqVO);
+
+    /**
+     * 获得库存统计图表
+     *
+     * @param reqVO 查询条件
+     * @return 图表统计结果
+     */
+    AssetStockChartRespVO getAssetStockChart(AssetStockChartReqVO reqVO);
 }
