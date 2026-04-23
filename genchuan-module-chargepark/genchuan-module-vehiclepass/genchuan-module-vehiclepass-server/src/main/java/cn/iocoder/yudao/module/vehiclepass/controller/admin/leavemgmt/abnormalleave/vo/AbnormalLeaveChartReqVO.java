@@ -8,11 +8,11 @@ import jakarta.validation.constraints.*;
 @Data
 public class AbnormalLeaveChartReqVO {
 
-    @Schema(description = "统计开始时间，时间戳格式", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "统计开始时间，时间戳格式", requiredMode = Schema.RequiredMode.REQUIRED,example = "1674147200")
     @NotBlank(message = "统计开始时间不能为空")
     private String startTime;
 
-    @Schema(description = "统计结束时间，时间戳格式", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "统计结束时间，时间戳格式", requiredMode = Schema.RequiredMode.REQUIRED,example = "1974147200")
     @NotBlank(message = "统计结束时间不能为空")
     private String endTime;
 
