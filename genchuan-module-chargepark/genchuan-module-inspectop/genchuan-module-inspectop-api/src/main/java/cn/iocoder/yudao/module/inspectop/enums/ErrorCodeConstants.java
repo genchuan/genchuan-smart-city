@@ -53,8 +53,20 @@ public interface ErrorCodeConstants {
     // ========== 电子围栏 ==========
     ErrorCode FENCE_MGMT_NOT_EXISTS = new ErrorCode(500, "电子围栏不存在");
 
+    // ========== 资产信息 ==========
+    ErrorCode ASSET_INFO_NOT_EXISTS = new ErrorCode(500, "资产信息不存在");
+    ErrorCode ASSET_INFO_IMPORT_DATA_EMPTY = new ErrorCode(501, "导入数据不能为空");
+    ErrorCode ASSET_INFO_NAME_NOT_NULL = new ErrorCode(502, "资产名称不能为空");
+    ErrorCode ASSET_INFO_TYPE_NOT_NULL = new ErrorCode(503, "资产类型不能为空");
+    ErrorCode ASSET_INFO_STATUS_NOT_NULL = new ErrorCode(504, "资产状态不能为空");
+    ErrorCode ASSET_INFO_STATION_ID_NOT_NULL = new ErrorCode(505, "所属场站ID不能为空");
+    ErrorCode ASSET_INFO_EXISTS = new ErrorCode(506, "资产信息已存在: {0}");
 
+    // ========== 库存管理 ==========
+    ErrorCode ASSET_STOCK_NOT_EXISTS = new ErrorCode(500, "库存管理不存在");
+    // ========== 资产盘点 ==========
+    ErrorCode ASSET_CHECK_NOT_EXISTS = new ErrorCode(500, "资产盘点不存在");
 
-
-
+    // ========== 备件仓储 ==========
+    ErrorCode SPARE_STOCK_NOT_EXISTS = new ErrorCode(500, "备件仓储不存在");
 }

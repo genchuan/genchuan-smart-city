@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.inspectop.dal.mysql.assetcheck.AssetCheckMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+    <!-- 修改文档3：AssetCheckMapper.xml 中的SQL查询 -->
+    <select id="selectTrendData" resultType="cn.iocoder.yudao.module.inspectop.dal.mysql.assetcheck.AssetCheckMapper$TrendData">
+        SELECT
+        DATE_FORMAT(check_time, '%m') AS time,
+        ROUND(AVG(progress), 0) AS progress
+        FROM asset_check
+        <where>
+            <!-- 参考 AssetInfoMapper.xml 的写法，使用 reqVO.属性名 -->
+            <if test="reqVO.timeRange != null and reqVO.timeRange.length == 2">
+                AND check_time BETWEEN #{reqVO.timeRange[0]} AND #{reqVO.timeRange[1]}
+            </if>
+        </where>
+        GROUP BY DATE_FORMAT(check_time, '%m')
+        ORDER BY time
+    </select>
+
+    <select id="selectCardData" resultType="cn.iocoder.yudao.module.inspectop.dal.mysql.assetcheck.AssetCheckMapper$CardData">
+        SELECT
+        COUNT(*) AS checkCount,
+        ROUND(SUM(CASE WHEN status = '3' THEN 1 ELSE 0 END) * 1.0 / COUNT(*), 2) AS checkFinishRate
+        FROM asset_check
+        <where>
+            <!-- 同样使用 reqVO.属性名 -->
+            <if test="reqVO.timeRange != null and reqVO.timeRange.length == 2">
+                AND check_time BETWEEN #{reqVO.timeRange[0]} AND #{reqVO.timeRange[1]}
+            </if>
+        </where>
+    </select>
+
+</mapper>
