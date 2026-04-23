@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.vehiclepass.dal.mysql.inparkmgmt.fakeplatecontrol.FakePlateControlMapper">
+
+    <select id="selectPageJoinStationUser" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.MyFakePlateControlRespVO">
+        SELECT
+        f.id,
+        f.plate_no AS plateNo,
+        f.identify_time AS identifyTime,
+        f.match_scene AS matchScene,
+        f.status,
+        f.station_id AS stationId,
+        s.name AS stationName,
+        f.handle_user_id AS handleUserId,
+        u.nickname AS handleUserName,
+        f.handle_time AS handleTime,
+        f.handle_progress AS handleProgress,
+        f.ignore_reason AS ignoreReason,
+        f.remark,
+        f.reserve1,
+        f.reserve2,
+        f.creator,
+        f.updater,
+        f.create_time AS createTime,
+        f.update_time AS updateTime
+        FROM fake_plate_control f
+        LEFT JOIN station_info s ON f.station_id = s.id AND s.deleted = 0
+        LEFT JOIN user_info u ON f.handle_user_id = u.id AND u.deleted = 0
+        WHERE f.deleted = 0
+        <if test="reqVO.plateNo != null and reqVO.plateNo != ''">
+            AND f.plate_no LIKE CONCAT('%', #{reqVO.plateNo}, '%')
+        </if>
+        <if test="reqVO.matchScene != null and reqVO.matchScene != ''">
+            AND f.match_scene = #{reqVO.matchScene}
+        </if>
+        <if test="reqVO.status != null and reqVO.status != ''">
+            AND f.status = #{reqVO.status}
+        </if>
+        <if test="reqVO.stationId != null">
+            AND f.station_id = #{reqVO.stationId}
+        </if>
+        <if test="reqVO.handleUserId != null">
+            AND f.handle_user_id = #{reqVO.handleUserId}
+        </if>
+        <if test="reqVO.remark != null and reqVO.remark != ''">
+            AND f.remark LIKE CONCAT('%', #{reqVO.remark}, '%')
+        </if>
+        <if test="reqVO.identifyTime != null and reqVO.identifyTime.size() == 2">
+            AND f.identify_time BETWEEN #{reqVO.identifyTime[0]} AND #{reqVO.identifyTime[1]}
+        </if>
+        ORDER BY f.id DESC
+    </select>
+
+    <!-- 查询套牌识别趋势（按天统计） -->
+    <select id="selectIdentifyTrend" resultType="map">
+        SELECT
+            DATE(f.identify_time) AS date,
+            COUNT(*) AS count
+        FROM fake_plate_control f
+        WHERE f.deleted = 0
+        <if test="startTime != null and startTime != ''">
+            AND f.identify_time >= FROM_UNIXTIME(#{startTime})
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND f.identify_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
+        <if test="stationId != null">
+            AND f.station_id = #{stationId}
+        </if>
+        GROUP BY DATE(f.identify_time)
+        ORDER BY date
+    </select>
+
+    <!-- 查询各场站套牌数 -->
+    <select id="selectStationFakeCount" resultType="map">
+        SELECT
+            s.name AS stationName,
+            COUNT(f.id) AS count
+        FROM fake_plate_control f
+        LEFT JOIN station_info s ON f.station_id = s.id AND s.deleted = 0
+        WHERE f.deleted = 0
+        <if test="startTime != null and startTime != ''">
+            AND f.identify_time >= FROM_UNIXTIME(#{startTime})
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND f.identify_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
+        <if test="stationId != null">
+            AND f.station_id = #{stationId}
+        </if>
+        GROUP BY f.station_id, s.name
+        ORDER BY count DESC
+    </select>
+
+    <!-- 查询待处置数和处置完成率 -->
+    <select id="selectHandleStats" resultType="map">
+        SELECT
+            SUM(CASE WHEN f.status = '未处理' OR f.status = '处理中' THEN 1 ELSE 0 END) AS waitHandleCount,
+            ROUND(SUM(CASE WHEN f.status = '已关闭' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(*), 0), 1) AS handleCompleteRate
+        FROM fake_plate_control f
+        WHERE f.deleted = 0
+        <if test="startTime != null and startTime != ''">
+            AND f.identify_time >= FROM_UNIXTIME(#{startTime})
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND f.identify_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
+        <if test="stationId != null">
+            AND f.station_id = #{stationId}
+        </if>
+    </select>
+
+</mapper>
