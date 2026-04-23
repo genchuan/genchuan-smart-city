@@ -34,6 +34,7 @@ Build:
           ["genchuan-module-ordertrade-server"]="genchuan-module-chargepark/genchuan-module-ordertrade/genchuan-module-ordertrade-server"
           ["genchuan-module-marketop-server"]="genchuan-module-chargepark/genchuan-module-marketop/genchuan-module-marketop-server"
           ["genchuan-module-carservice-server"]="genchuan-module-chargepark/genchuan-module-carservice/genchuan-module-carservice-server"
+          ["genchuan-module-vehiclepass-server"]="genchuan-module-chargepark/genchuan-module-vehiclepass/genchuan-module-vehiclepass-server"
       )
 
       # ===================== 核心优化逻辑 =====================
