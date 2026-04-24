@@ -9,7 +9,6 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @TableName("reconcile_bill")
@@ -28,29 +27,26 @@ public class ReconcileBillDO extends BaseDO {
     /** 商户ID */
     private Long merchantId;
 
-    /** 商户名称 */
-    private String merchantName;
+    /** 对账周期，如 2026-03、2026-W14 */
+    private String cycle;
 
-    /** 对账日期 */
-    private LocalDate billDate;
+    /** 平台金额(元) */
+    private BigDecimal platformAmount;
 
-    /** 系统订单总金额 */
-    private BigDecimal sysAmount;
-
-    /** 商户上报总金额 */
+    /** 商户金额(元) */
     private BigDecimal merchantAmount;
 
-    /** 差异金额 */
-    private BigDecimal diffAmount;
-
-    /** 对账状态：pending/confirmed/disputed/resolved */
+    /** 对账状态：pending/reconciled/abnormal */
     private String status;
+
+    /** 对账人ID */
+    private Long reconcilerId;
+
+    /** 对账时间 */
+    private LocalDateTime reconcileTime;
 
     /** 确认时间 */
     private LocalDateTime confirmTime;
-
-    /** 操作人ID */
-    private Long operatorId;
 
     /** 备注 */
     private String remark;

@@ -19,10 +19,8 @@ public interface ReconcileRecordMapper extends BaseMapperX<ReconcileRecordDO> {
     default PageResult<ReconcileRecordDO> selectPage(ReconcileRecordPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<ReconcileRecordDO>()
                 .eqIfPresent(ReconcileRecordDO::getBillId, reqVO.getBillId())
-                .likeIfPresent(ReconcileRecordDO::getBillNo, reqVO.getBillNo())
-                .likeIfPresent(ReconcileRecordDO::getOrderNo, reqVO.getOrderNo())
-                .eqIfPresent(ReconcileRecordDO::getMatchResult, reqVO.getMatchResult())
-                .eqIfPresent(ReconcileRecordDO::getMerchantId, reqVO.getMerchantId())
+                .eqIfPresent(ReconcileRecordDO::getStatus, reqVO.getStatus())
+                .eqIfPresent(ReconcileRecordDO::getCheckerId, reqVO.getCheckerId())
                 .orderByDesc(ReconcileRecordDO::getId));
     }
 
@@ -36,8 +34,8 @@ public interface ReconcileRecordMapper extends BaseMapperX<ReconcileRecordDO> {
     List<Map<String, Object>> selectTrend(@Param("startTime") LocalDateTime startTime,
                                           @Param("endTime") LocalDateTime endTime);
 
-    @Select("SELECT COUNT(*) FROM reconcile_record WHERE deleted = 0 AND match_result = 'unmatched'")
-    Long selectUnmatchedCount();
+    @Select("SELECT COUNT(*) FROM reconcile_record WHERE deleted = 0 AND status = 'abnormal'")
+    Long selectAbnormalCount();
 
     @Select("SELECT COUNT(*) FROM reconcile_record WHERE deleted = 0")
     Long selectTotalCount();

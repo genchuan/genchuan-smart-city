@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.time.LocalDate;
-
 @Schema(description = "管理后台 - 商户对账单分页查询 Request VO")
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -20,9 +18,9 @@ public class ReconcileBillPageReqVO extends PageParam {
     @Schema(description = "商户ID")
     private Long merchantId;
 
-    @Schema(description = "对账状态：pending/confirmed/disputed/resolved")
+    @Schema(description = "对账状态：pending/reconciled/abnormal")
     private String status;
 
-    @Schema(description = "对账日期")
-    private LocalDate billDate;
+    @Schema(description = "对账周期，如 2026-03、2026-W14")
+    private String cycle;
 }

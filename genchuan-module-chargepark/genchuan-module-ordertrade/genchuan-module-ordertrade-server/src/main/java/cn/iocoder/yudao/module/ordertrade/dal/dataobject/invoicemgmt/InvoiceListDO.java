@@ -29,6 +29,8 @@ public class InvoiceListDO extends BaseDO {
 
     private String taxNo;
 
+    private String email;
+
     private BigDecimal amount;
 
     private String status;
