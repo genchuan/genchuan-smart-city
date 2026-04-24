@@ -32,4 +32,6 @@ public interface ErrorCodeConstants {
     ErrorCode INPUT_NOT_EXISTS = new ErrorCode(500, "车辆录入不存在");
 
     ErrorCode QUERY_NOT_EXISTS = new ErrorCode(500, "泊位查询不存在");
+
+    ErrorCode PARK_NOT_EXISTS = new ErrorCode(500, "车位不存在");
 }
