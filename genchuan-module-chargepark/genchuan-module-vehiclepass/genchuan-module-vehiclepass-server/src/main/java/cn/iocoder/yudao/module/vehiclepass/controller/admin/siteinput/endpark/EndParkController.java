@@ -37,7 +37,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 @Tag(name = "管理后台 - 结束停车")
 @RestController
-@RequestMapping("/end/park")
+@RequestMapping("/vehiclepass/space-query")
 @Validated
 public class EndParkController {
 

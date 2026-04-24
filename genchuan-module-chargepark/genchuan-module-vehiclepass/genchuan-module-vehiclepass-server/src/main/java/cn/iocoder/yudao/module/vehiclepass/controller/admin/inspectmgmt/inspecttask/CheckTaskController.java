@@ -40,7 +40,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 @Tag(name = "管理后台 - 稽查任务")
 @RestController
-@RequestMapping("/check/task")
+@RequestMapping("/vehiclepass/inspect-task")
 @Validated
 public class CheckTaskController {
 

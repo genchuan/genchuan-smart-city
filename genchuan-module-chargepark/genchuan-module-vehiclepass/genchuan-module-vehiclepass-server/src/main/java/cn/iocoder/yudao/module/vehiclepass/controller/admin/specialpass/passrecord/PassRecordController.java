@@ -36,7 +36,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 @Tag(name = "管理后台 - 放行记录")
 @RestController
-@RequestMapping("/pass/record")
+@RequestMapping("/vehiclepass/pass-record")
 @Validated
 public class PassRecordController {
 

@@ -31,7 +31,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 @Tag(name = "管理后台 - 入场记录")
 @RestController
-@RequestMapping("/enter/record")
+@RequestMapping("/vehiclepass/enter-record")
 @Validated
 public class EnterRecordController {
 

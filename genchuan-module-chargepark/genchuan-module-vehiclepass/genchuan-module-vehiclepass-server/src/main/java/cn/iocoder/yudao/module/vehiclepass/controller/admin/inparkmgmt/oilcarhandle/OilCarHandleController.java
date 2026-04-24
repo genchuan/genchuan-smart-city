@@ -30,7 +30,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 @Tag(name = "管理后台 - 油车占位处置")
 @RestController
-@RequestMapping("/oil/car-handle")
+@RequestMapping("/vehiclepass/oil-car-handle")
 @Validated
 public class OilCarHandleController {
 

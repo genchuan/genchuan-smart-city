@@ -37,7 +37,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 @Tag(name = "管理后台 - 缴费核验")
 @RestController
-@RequestMapping("/pay/check")
+@RequestMapping("/vehiclepass/pay-check")
 @Validated
 public class PayCheckController {
 

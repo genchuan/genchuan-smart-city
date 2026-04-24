@@ -39,7 +39,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 @Tag(name = "管理后台 - 车辆录入")
 @RestController
-@RequestMapping("/car/input")
+@RequestMapping("/vehiclepass/car-input")
 @Validated
 public class CarInputController {
 

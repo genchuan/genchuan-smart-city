@@ -40,7 +40,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 @Tag(name = "管理后台 - 开闸管理")
 @RestController
-@RequestMapping("/gate/open")
+@RequestMapping("/vehiclepass/gate-open")
 @Validated
 public class GateOpenController {
 

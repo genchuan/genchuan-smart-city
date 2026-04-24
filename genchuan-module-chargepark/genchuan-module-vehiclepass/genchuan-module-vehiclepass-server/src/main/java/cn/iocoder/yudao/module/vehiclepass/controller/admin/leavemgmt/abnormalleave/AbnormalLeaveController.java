@@ -38,7 +38,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 @Tag(name = "管理后台 - 异常离场")
 @RestController
-@RequestMapping("/abnormal/leave")
+@RequestMapping("/vehiclepass/abnormal-leave")
 @Validated
 public class AbnormalLeaveController {
 

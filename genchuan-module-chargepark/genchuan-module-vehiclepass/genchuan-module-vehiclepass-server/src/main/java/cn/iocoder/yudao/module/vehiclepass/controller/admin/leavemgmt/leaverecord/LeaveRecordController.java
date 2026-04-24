@@ -38,7 +38,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 @Tag(name = "管理后台 - 离场记录")
 @RestController
-@RequestMapping("/leave/record")
+@RequestMapping("/vehiclepass/leave-record")
 @Validated
 public class LeaveRecordController {
 

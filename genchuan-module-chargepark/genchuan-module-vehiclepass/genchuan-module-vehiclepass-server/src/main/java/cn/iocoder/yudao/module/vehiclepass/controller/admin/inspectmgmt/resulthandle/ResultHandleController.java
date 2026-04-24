@@ -40,7 +40,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 @Tag(name = "管理后台 - 结果处置")
 @RestController
-@RequestMapping("/result/handle")
+@RequestMapping("/vehiclepass/result-handle")
 @Validated
 public class ResultHandleController {
 

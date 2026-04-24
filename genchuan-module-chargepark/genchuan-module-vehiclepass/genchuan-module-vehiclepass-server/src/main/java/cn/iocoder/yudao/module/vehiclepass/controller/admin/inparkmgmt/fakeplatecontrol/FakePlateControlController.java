@@ -39,7 +39,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 @Tag(name = "管理后台 - 套牌管控")
 @RestController
-@RequestMapping("/fake/plate-control")
+@RequestMapping("/vehiclepass/fake-plate-control")
 @Validated
 public class FakePlateControlController {
 

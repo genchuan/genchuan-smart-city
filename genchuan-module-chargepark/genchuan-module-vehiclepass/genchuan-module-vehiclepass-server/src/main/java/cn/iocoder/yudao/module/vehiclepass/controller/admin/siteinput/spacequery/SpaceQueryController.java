@@ -37,7 +37,7 @@ import cn.iocoder.yudao.module.vehiclepass.service.siteinput.spacequery.SpaceQue
 
 @Tag(name = "管理后台 - 泊位查询")
 @RestController
-@RequestMapping("/space/query")
+@RequestMapping("/vehiclepass/space-query")
 @Validated
 public class SpaceQueryController {
 

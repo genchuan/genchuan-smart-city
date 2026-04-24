@@ -38,7 +38,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 @Tag(name = "管理后台 - 在停状态")
 @RestController
-@RequestMapping("/in/park-status")
+@RequestMapping("/vehiclepass/in-park-status")
 @Validated
 public class InParkStatusController {
 
