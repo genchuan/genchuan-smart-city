@@ -65,6 +65,9 @@ public interface ErrorCodeConstants {
     ErrorCode DORM_CHECK_NOT_EXISTS = new ErrorCode(500, "宿舍考勤不存在");
     // ========== 宿舍评比 ==========
     ErrorCode DORM_COMPARE_NOT_EXISTS = new ErrorCode(500, "宿舍评比不存在");
+    // 自动校验记录是否为未打分状态，避免重复打分；
+    ErrorCode DORM_COMPARE_STATUS_SCORING = new ErrorCode(500, "已打分");
+
     // ========== 值班管理 ==========
     ErrorCode DUTY_MGMT_NOT_EXISTS = new ErrorCode(500, "值班管理不存在");
     ErrorCode DUTY_MGMT_CHECK_IN_STATUS_CHECKED_IN = new ErrorCode(500, "该用户已打卡，请勿重复打卡");

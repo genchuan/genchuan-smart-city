@@ -27,7 +27,7 @@ public interface DormCompareService {
      *
      * @param updateReqVO 更新信息
      */
-    void updateDormCompare(@Valid DormCompareSaveReqVO updateReqVO);
+    void updateDormCompare(@Valid DormCompareUpdateReqVO updateReqVO);
 
     /**
      * 删除宿舍评比
@@ -59,4 +59,13 @@ public interface DormCompareService {
      */
     PageResult<DormCompareDO> getDormComparePage(DormComparePageReqVO pageReqVO);
 
+    boolean score(List<DormCompareScoreReqVO> reqList);
+
+    boolean summary(DormCompareSummaryReqVO reqVo);
+
+    boolean push(@Valid DormComparePushReqVO reqVo);
+
+    DormCompareChartRespVO chart( DormCompareChartReqVO reqVo);
+
+    DormCompareRankRespVO scoreRank(@Valid DormCompareChartReqVO reqVo);
 }

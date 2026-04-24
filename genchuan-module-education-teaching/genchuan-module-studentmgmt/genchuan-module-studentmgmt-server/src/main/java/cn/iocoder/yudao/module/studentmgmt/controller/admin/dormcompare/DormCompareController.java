@@ -48,11 +48,11 @@ public class DormCompareController {
     @PutMapping("/update")
     @Operation(summary = "更新宿舍评比")
     @PreAuthorize("@ss.hasPermission('studentmgmt:dorm-compare:update')")
-    public CommonResult<Boolean> updateDormCompare(@Valid @RequestBody DormCompareSaveReqVO updateReqVO) {
+    public CommonResult<Boolean> updateDormCompare(@Valid @RequestBody DormCompareUpdateReqVO updateReqVO) {
         dormCompareService.updateDormCompare(updateReqVO);
         return success(true);
-    }
 
+    }
     @DeleteMapping("/delete")
     @Operation(summary = "删除宿舍评比")
     @Parameter(name = "id", description = "编号", required = true)
@@ -99,6 +99,44 @@ public class DormCompareController {
         // 导出 Excel
         ExcelUtils.write(response, "宿舍评比.xls", "数据", DormCompareRespVO.class,
                         BeanUtils.toBean(list, DormCompareRespVO.class));
+    }
+    @PutMapping("/score")
+    @Operation(summary = "打分")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:dorm-compare:score')")
+    public CommonResult<Boolean> score(@Valid @RequestBody List<DormCompareScoreReqVO> reqList) {
+        boolean isSuccess = dormCompareService.score(reqList);
+        return success(isSuccess);
+    }
+    @PutMapping("/summary")
+    @Operation(summary = "汇总")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:dorm-compare:summary')")
+    public CommonResult<Boolean> summary(@Valid @RequestBody DormCompareSummaryReqVO reqVo) {
+        boolean isSuccess = dormCompareService.summary(reqVo);
+        return success(isSuccess);
+    }
+
+    @PutMapping("/push")
+    @Operation(summary = "推送")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:dorm-compare:push')")
+    public CommonResult<Boolean> push(@Valid @RequestBody DormComparePushReqVO reqVo) {
+        boolean isSuccess = dormCompareService.push(reqVo);
+        return success(isSuccess);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "宿舍评比得分看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:dorm-compare:query')")
+    public CommonResult<DormCompareChartRespVO> chart(@Valid DormCompareChartReqVO reqVo) {
+        DormCompareChartRespVO vo = dormCompareService.chart(reqVo);
+        return success(vo);
+    }
+
+    @GetMapping("/chart/scoreRank")
+    @Operation(summary = "宿舍得分排名统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:dorm-compare:query')")
+    public CommonResult<DormCompareRankRespVO> scoreRank(@Valid DormCompareChartReqVO reqVo) {
+        DormCompareRankRespVO vo = dormCompareService.scoreRank(reqVo);
+        return success(vo);
     }
 
 }

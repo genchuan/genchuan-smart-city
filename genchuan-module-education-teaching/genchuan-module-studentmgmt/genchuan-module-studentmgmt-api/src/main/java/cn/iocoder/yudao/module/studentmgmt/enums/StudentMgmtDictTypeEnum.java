@@ -153,6 +153,12 @@ public enum StudentMgmtDictTypeEnum {
     //状态 (未分配 / 已分配)，关联芋道字典表：bed_mgmt_status
     BED_MGMT_STATUS("bed_mgmt_status", "床位管理状态"),
 
+    // ==================== 宿舍评比 ====================
+    //状态（打分中 / 已汇总），关联芋道字典表：dorm_compare_status。
+    DORM_COMPARE_STATUS("dorm_compare_status", "床位管理状态"),
+    // 评比周期（周 / 月 / 学期），关联芋道字典表：dorm_compare_cycle
+    DORM_COMPARE_CYCLE("dorm_compare_cycle", "宿舍评比周期"),
+
 
     ;
     // ==================== 枚举属性 ====================
