@@ -73,16 +73,16 @@ public class StationInfoController {
     @PutMapping("/enable")
     @Operation(summary = "批量生效场站")
     @PreAuthorize("@ss.hasPermission('stationresource:station-info:update')")
-    public CommonResult<Boolean> enableStationInfo(@Valid @RequestBody StatusUpdateReq req) {
-        stationInfoService.updateStationStatus(req.getIds(), "已生效");
+    public CommonResult<Boolean> enableStationInfo(@RequestBody  List<Long> ids) {
+        stationInfoService.updateStationStatus(ids, "已生效");
         return success(true);
     }
 
     @PutMapping("/disable")
     @Operation(summary = "批量禁用场站")
     @PreAuthorize("@ss.hasPermission('stationresource:station-info:update')")
-    public CommonResult<Boolean> disableStationInfo(@Valid @RequestBody StatusUpdateReq req) {
-        stationInfoService.updateStationStatus(req.getIds(), "已禁用");
+    public CommonResult<Boolean> disableStationInfo(@RequestBody  List<Long> ids) {
+        stationInfoService.updateStationStatus(ids, "已禁用");
         return success(true);
     }
     @GetMapping("/import-template")

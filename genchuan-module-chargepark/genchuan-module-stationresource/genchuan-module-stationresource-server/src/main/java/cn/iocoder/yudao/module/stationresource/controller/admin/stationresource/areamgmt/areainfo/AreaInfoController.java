@@ -62,16 +62,16 @@ public class AreaInfoController {
     @PutMapping("/enable")
     @Operation(summary = "批量生效片区信息")
     @PreAuthorize("@ss.hasPermission('stationresource:area-info:update')")
-    public CommonResult<Boolean> enableAreaInfo(@Valid @RequestBody AreaInfoEnableReqVO reqVO) {
-        areaInfoService.updateAreaInfoStatus(reqVO.getIds(), true);
+    public CommonResult<Boolean> enableAreaInfo(@RequestBody  List<Long> ids) {
+        areaInfoService.updateAreaInfoStatus(ids, true);
         return success(true);
     }
 
     @PutMapping("/disable")
     @Operation(summary = "批量禁用片区信息")
     @PreAuthorize("@ss.hasPermission('stationresource:area-info:update')")
-    public CommonResult<Boolean> disableAreaInfo(@Valid @RequestBody AreaInfoDisableReqVO reqVO) {
-        areaInfoService.updateAreaInfoStatus(reqVO.getIds(), false);
+    public CommonResult<Boolean> disableAreaInfo(@RequestBody  List<Long> ids) {
+        areaInfoService.updateAreaInfoStatus(ids, false);
         return success(true);
     }
 
