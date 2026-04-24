@@ -4,6 +4,9 @@ import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputCreateReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputAuditReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputConfirmReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputCorrectReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.siteinput.carinput.CarInputDO;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.siteinput.carinput.CarInputMapper;
@@ -105,6 +108,42 @@ public class CarInputServiceImpl implements CarInputService {
         input.setStatus("待审核");
         input.setInputTime(LocalDateTime.now());
         inputMapper.insert(input);
+    }
+
+    @Override
+    public void audit(CarInputAuditReqVO reqVO) {
+        validateInputExists(reqVO.getId());
+        CarInputDO updateObj = new CarInputDO();
+        updateObj.setId(reqVO.getId());
+        if ("通过".equals(reqVO.getAuditResult())) {
+            updateObj.setStatus("已通过");
+        } else if ("驳回".equals(reqVO.getAuditResult())) {
+            updateObj.setStatus("已驳回");
+        }
+        updateObj.setAuditTime(LocalDateTime.now());
+        updateObj.setAuditComment(reqVO.getAuditComment());
+        inputMapper.updateById(updateObj);
+    }
+
+    @Override
+    public void confirm(Long id) {
+        validateInputExists(id);
+        CarInputDO updateObj = new CarInputDO();
+        updateObj.setId(id);
+        updateObj.setStatus("已通过");
+        inputMapper.updateById(updateObj);
+    }
+
+    @Override
+    public void correct(CarInputCorrectReqVO reqVO) {
+        validateInputExists(reqVO.getId());
+        CarInputDO updateObj = new CarInputDO();
+        updateObj.setId(reqVO.getId());
+        updateObj.setPlateNo(reqVO.getPlateNo());
+        updateObj.setSpaceId(reqVO.getSpaceId());
+        updateObj.setAreaId(reqVO.getAreaId());
+        updateObj.setRemark(reqVO.getRemark());
+        inputMapper.updateById(updateObj);
     }
 
 }

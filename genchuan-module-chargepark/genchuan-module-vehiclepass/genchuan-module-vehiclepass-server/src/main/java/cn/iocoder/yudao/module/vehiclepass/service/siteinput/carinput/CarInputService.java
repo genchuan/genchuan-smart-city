@@ -5,6 +5,9 @@ import java.util.*;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputCreateReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputAuditReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputConfirmReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputCorrectReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.siteinput.carinput.CarInputDO;
 import jakarta.validation.*;
@@ -77,5 +80,26 @@ public interface CarInputService {
      * @param createReqVO 创建信息
      */
     void createInputByReq(@Valid CarInputCreateReqVO createReqVO);
+
+    /**
+     * 审核车辆录入
+     *
+     * @param reqVO 审核请求
+     */
+    void audit(CarInputAuditReqVO reqVO);
+
+    /**
+     * 确认车辆录入
+     *
+     * @param id 记录ID
+     */
+    void confirm(Long id);
+
+    /**
+     * 修正车辆录入
+     *
+     * @param reqVO 修正请求
+     */
+    void correct(CarInputCorrectReqVO reqVO);
 
 }

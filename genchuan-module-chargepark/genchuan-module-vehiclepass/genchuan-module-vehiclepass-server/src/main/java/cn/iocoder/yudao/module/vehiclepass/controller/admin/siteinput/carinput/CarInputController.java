@@ -3,6 +3,9 @@ package cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputCreateReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputAuditReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputConfirmReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputCorrectReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.siteinput.carinput.CarInputDO;
 import cn.iocoder.yudao.module.vehiclepass.service.siteinput.carinput.CarInputService;
@@ -102,6 +105,30 @@ public class CarInputController {
         // 导出 Excel
         ExcelUtils.write(response, "车辆录入.xls", "数据", CarInputRespVO.class,
                 BeanUtils.toBean(list, CarInputRespVO.class));
+    }
+
+    @PutMapping("/audit")
+    @Operation(summary = "审核车辆录入")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:car-input:audit')")
+    public CommonResult<Boolean> audit(@Valid @RequestBody CarInputAuditReqVO reqVO) {
+        inputService.audit(reqVO);
+        return success(true);
+    }
+
+    @PutMapping("/confirm")
+    @Operation(summary = "确认车辆录入")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:car-input:confirm')")
+    public CommonResult<Boolean> confirm(@Valid @RequestBody CarInputConfirmReqVO reqVO) {
+        inputService.confirm(reqVO.getId());
+        return success(true);
+    }
+
+    @PutMapping("/correct")
+    @Operation(summary = "修正车辆录入")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:car-input:correct')")
+    public CommonResult<Boolean> correct(@Valid @RequestBody CarInputCorrectReqVO reqVO) {
+        inputService.correct(reqVO);
+        return success(true);
     }
 
 }
