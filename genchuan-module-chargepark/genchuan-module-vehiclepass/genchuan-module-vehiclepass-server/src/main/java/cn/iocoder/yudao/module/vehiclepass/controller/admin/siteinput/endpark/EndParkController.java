@@ -3,6 +3,9 @@ package cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkSaveReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkPayReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkConfirmReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkCancelReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.siteinput.endpark.EndParkDO;
 import cn.iocoder.yudao.module.vehiclepass.service.siteinput.endpark.EndParkService;
 import org.springframework.web.bind.annotation.*;
@@ -86,6 +89,30 @@ public class EndParkController {
     @PreAuthorize("@ss.hasPermission('vehiclepass:end-park:query')")
     public CommonResult<PageResult<EndParkRespVO>> getParkPage(@Valid EndParkPageReqVO pageReqVO) {
         return success(parkService.getParkPageWithJoin(pageReqVO));
+    }
+
+    @PutMapping("/pay")
+    @Operation(summary = "支付结束停车")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:end-park:pay')")
+    public CommonResult<Boolean> pay(@Valid @RequestBody EndParkPayReqVO payReqVO) {
+        parkService.pay(payReqVO);
+        return success(true);
+    }
+
+    @PutMapping("/confirm")
+    @Operation(summary = "确认结束停车")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:end-park:confirm')")
+    public CommonResult<Boolean> confirm(@Valid @RequestBody EndParkConfirmReqVO confirmReqVO) {
+        parkService.confirm(confirmReqVO);
+        return success(true);
+    }
+
+    @PutMapping("/cancel")
+    @Operation(summary = "取消结束停车")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:end-park:cancel')")
+    public CommonResult<Boolean> cancel(@Valid @RequestBody EndParkCancelReqVO cancelReqVO) {
+        parkService.cancel(cancelReqVO);
+        return success(true);
     }
 
     @GetMapping("/export-excel")

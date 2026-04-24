@@ -4,6 +4,9 @@ import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkSaveReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkPayReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkConfirmReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkCancelReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.siteinput.endpark.EndParkDO;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.siteinput.endpark.EndParkMapper;
 import org.springframework.stereotype.Service;
@@ -69,13 +72,6 @@ public class EndParkServiceImpl implements EndParkService {
         parkMapper.deleteByIds(ids);
     }
 
-
-    private void validateParkExists(Long id) {
-        if (parkMapper.selectById(id) == null) {
-            throw exception(PARK_NOT_EXISTS);
-        }
-    }
-
     @Override
     public EndParkDO getPark(Long id) {
         return parkMapper.selectById(id);
@@ -91,6 +87,36 @@ public class EndParkServiceImpl implements EndParkService {
         Page<EndParkRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
         com.baomidou.mybatisplus.core.metadata.IPage<EndParkRespVO> pageResult = parkMapper.selectPageJoin(page, pageReqVO);
         return new PageResult<>(pageResult.getRecords(), pageResult.getTotal());
+    }
+
+    @Override
+    public void pay(EndParkPayReqVO payReqVO) {
+        EndParkDO park = validateParkExists(payReqVO.getId());
+        park.setStatus("已支付");
+        parkMapper.updateById(park);
+    }
+
+    @Override
+    public void confirm(EndParkConfirmReqVO confirmReqVO) {
+        EndParkDO park = validateParkExists(confirmReqVO.getId());
+        park.setStatus("已确认");
+        parkMapper.updateById(park);
+    }
+
+    @Override
+    public void cancel(EndParkCancelReqVO cancelReqVO) {
+        EndParkDO park = validateParkExists(cancelReqVO.getId());
+        park.setStatus("已取消");
+        park.setRemark(cancelReqVO.getCancelReason());
+        parkMapper.updateById(park);
+    }
+
+    private EndParkDO validateParkExists(Long id) {
+        EndParkDO park = parkMapper.selectById(id);
+        if (park == null) {
+            throw exception(PARK_NOT_EXISTS);
+        }
+        return park;
     }
 
 }
