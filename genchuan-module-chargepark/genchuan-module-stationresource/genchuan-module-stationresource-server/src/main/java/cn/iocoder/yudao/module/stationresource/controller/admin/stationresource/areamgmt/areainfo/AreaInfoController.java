@@ -4,6 +4,7 @@ import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.AreaInfoRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.ops.*;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.statistics.AreaInfoChartRespVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.lxscommon.vo.BatchStatusUpdateReqVO;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.areamgmt.areainfo.AreaInfoDO;
 import cn.iocoder.yudao.module.stationresource.service.stationresource.areamgmt.areainfo.AreaInfoService;
 import cn.iocoder.yudao.module.stationresource.vrv.utils.common.excel.VrvExcelUtils;
@@ -62,16 +63,16 @@ public class AreaInfoController {
     @PutMapping("/enable")
     @Operation(summary = "批量生效片区信息")
     @PreAuthorize("@ss.hasPermission('stationresource:area-info:update')")
-    public CommonResult<Boolean> enableAreaInfo(@RequestBody  List<Long> ids) {
-        areaInfoService.updateAreaInfoStatus(ids, true);
+    public CommonResult<Boolean> enableAreaInfo(@Valid @RequestBody BatchStatusUpdateReqVO reqVO) {
+        areaInfoService.updateAreaInfoStatus(reqVO.getIds(), true);
         return success(true);
     }
 
     @PutMapping("/disable")
     @Operation(summary = "批量禁用片区信息")
     @PreAuthorize("@ss.hasPermission('stationresource:area-info:update')")
-    public CommonResult<Boolean> disableAreaInfo(@RequestBody  List<Long> ids) {
-        areaInfoService.updateAreaInfoStatus(ids, false);
+    public CommonResult<Boolean> disableAreaInfo(@Valid @RequestBody BatchStatusUpdateReqVO reqVO) {
+        areaInfoService.updateAreaInfoStatus(reqVO.getIds(), false);
         return success(true);
     }
 

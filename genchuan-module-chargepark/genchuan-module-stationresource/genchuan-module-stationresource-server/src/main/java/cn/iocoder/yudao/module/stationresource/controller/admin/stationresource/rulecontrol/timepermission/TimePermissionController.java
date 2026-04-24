@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.lxscommon.vo.BatchStatusUpdateReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.timepermission.vo.TimePermissionPageReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.timepermission.vo.TimePermissionRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.timepermission.vo.ops.ImportRespVO;
@@ -60,16 +61,16 @@ public class TimePermissionController {
     @PutMapping("/enable")
     @Operation(summary = "批量生效时段权限")
     @PreAuthorize("@ss.hasPermission('stationresource:time-permission:update')")
-    public CommonResult<Boolean> enableTimePermission(@RequestBody List<Long> ids) {
-        timePermissionService.enableTimePermission(ids);
+    public CommonResult<Boolean> enableTimePermission(@Valid @RequestBody BatchStatusUpdateReqVO reqVO) {
+        timePermissionService.enableTimePermission(reqVO.getIds());
         return CommonResult.success(true);
     }
 
     @PutMapping("/disable")
     @Operation(summary = "批量禁用时段权限")
     @PreAuthorize("@ss.hasPermission('stationresource:time-permission:update')")
-    public CommonResult<Boolean> disableTimePermission(@RequestBody List<Long> ids) {
-        timePermissionService.disableTimePermission(ids);
+    public CommonResult<Boolean> disableTimePermission(@Valid @RequestBody BatchStatusUpdateReqVO reqVO) {
+        timePermissionService.disableTimePermission(reqVO.getIds());
         return CommonResult.success(true);
     }
     // ==================== 【导入接口】 ====================

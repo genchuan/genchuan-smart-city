@@ -5,6 +5,7 @@ package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource
 
 
 
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.lxscommon.vo.BatchStatusUpdateReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.debtexpand.vo.chart.DebtExpandChartRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.debtexpand.vo.ops.DebtExpandStatusReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.debtexpand.vo.ops.ImportRespVO;
@@ -70,16 +71,16 @@ public class DebtExpandController {
     @PutMapping("/enable")
     @Operation(summary = "生效/启用拓场配置")
     @PreAuthorize("@ss.hasPermission('stationresource:debt-expand:update')")
-    public CommonResult<Boolean> enableDebtExpand(@RequestBody  List<Long> ids) {
-        debtExpandService.updateDebtExpandStatus(ids, "已生效");
+    public CommonResult<Boolean> enableDebtExpand(@Valid @RequestBody BatchStatusUpdateReqVO reqVO) {
+        debtExpandService.updateDebtExpandStatus(reqVO.getIds(), "已生效");
         return success(true);
     }
 
     @PutMapping("/disable")
     @Operation(summary = "禁用拓场配置")
     @PreAuthorize("@ss.hasPermission('stationresource:debt-expand:update')")
-    public CommonResult<Boolean> disableDebtExpand(@RequestBody  List<Long> ids) {
-        debtExpandService.updateDebtExpandStatus(ids, "已禁用");
+    public CommonResult<Boolean> disableDebtExpand(@Valid @RequestBody BatchStatusUpdateReqVO reqVO) {
+        debtExpandService.updateDebtExpandStatus(reqVO.getIds(), "已禁用");
         return success(true);
     }
     @GetMapping("/export")

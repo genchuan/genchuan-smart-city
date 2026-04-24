@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.lxscommon.vo.BatchStatusUpdateReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ops.ImportResultVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.feerule.vo.FeeRulePageReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.feerule.vo.FeeRuleRespVO;
@@ -56,16 +57,16 @@ public class FeeRuleController {
     @PutMapping("/enable")
     @Operation(summary = "批量生效收费规则")
     @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:update')")
-    public CommonResult<Boolean> enableFeeRule(@RequestBody List<Long> ids) {
-        feeRuleService.enableFeeRule(ids);
+    public CommonResult<Boolean> enableFeeRule(@Valid @RequestBody BatchStatusUpdateReqVO reqVO) {
+        feeRuleService.enableFeeRule(reqVO.getIds());
         return CommonResult.success(true);
     }
 
     @PutMapping("/disable")
     @Operation(summary = "批量禁用收费规则")
     @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:update')")
-    public CommonResult<Boolean> disableFeeRule(@RequestBody List<Long> ids) {
-        feeRuleService.disableFeeRule(ids);
+    public CommonResult<Boolean> disableFeeRule(@Valid @RequestBody BatchStatusUpdateReqVO reqVO) {
+        feeRuleService.disableFeeRule(reqVO.getIds());
         return CommonResult.success(true);
     }
     @PutMapping("/fee-rule/update")

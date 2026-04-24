@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.lxscommon.vo.BatchStatusUpdateReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.chargeparklink.vo.ChargeParkLinkPageReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.chargeparklink.vo.ChargeParkLinkRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.chargeparklink.vo.ChargeParkLinkSaveReqVO;
@@ -75,8 +76,8 @@ public class ChargeParkLinkController {
     @PutMapping("/enable")
     @Operation(summary = "批量生效")
     @PreAuthorize("@ss.hasPermission('stationresource:charge-park-link:update')")
-    public CommonResult<Boolean> enable(@RequestBody List<Long> ids) {
-        chargeParkLinkService.enableChargeParkLink(ids);
+    public CommonResult<Boolean> enable(@Valid @RequestBody BatchStatusUpdateReqVO reqVO) {
+        chargeParkLinkService.enableChargeParkLink(reqVO.getIds());
         return success(true);
     }
 
@@ -84,8 +85,8 @@ public class ChargeParkLinkController {
     @PutMapping("/disable")
     @Operation(summary = "批量禁用")
     @PreAuthorize("@ss.hasPermission('stationresource:charge-park-link:update')")
-    public CommonResult<Boolean> disable(@RequestBody List<Long> ids) {
-        chargeParkLinkService.disableChargeParkLink(ids);
+    public CommonResult<Boolean> disable(@Valid @RequestBody BatchStatusUpdateReqVO reqVO) {
+        chargeParkLinkService.disableChargeParkLink(reqVO.getIds());
         return success(true);
     }
 
