@@ -9,6 +9,8 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resultha
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleApproveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleRejectReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleExecuteReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.inspectmgmt.resulthandle.ResultHandleDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
@@ -100,5 +102,13 @@ public interface ResultHandleService {
      * @param reqVO 执行请求
      */
     void execute(ResultHandleExecuteReqVO reqVO);
+
+    /**
+     * 获取结果处置统计
+     *
+     * @param reqVO 统计请求
+     * @return 统计结果
+     */
+    ResultHandleChartRespVO getChart(ResultHandleChartReqVO reqVO);
 
 }

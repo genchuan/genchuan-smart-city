@@ -8,6 +8,8 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resultha
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleApproveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleRejectReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleExecuteReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.inspectmgmt.resulthandle.ResultHandleDO;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.inspectmgmt.resulthandle.ResultHandleMapper;
 import org.springframework.stereotype.Service;
@@ -142,6 +144,24 @@ public class ResultHandleServiceImpl implements ResultHandleService {
         updateObj.setId(reqVO.getId());
         updateObj.setRectifyStatus(reqVO.getRectifyStatus());
         handleMapper.updateById(updateObj);
+    }
+
+    @Override
+    public ResultHandleChartRespVO getChart(ResultHandleChartReqVO reqVO) {
+        ResultHandleChartRespVO respVO = new ResultHandleChartRespVO();
+
+        // 处置结果占比
+        respVO.setHandleResultRate(handleMapper.selectHandleResultRate(reqVO));
+
+        // 卡片数据
+        ResultHandleChartRespVO.CardData cardData = new ResultHandleChartRespVO.CardData();
+        Double handleCompleteRate = handleMapper.selectHandleCompleteRate(reqVO);
+        cardData.setHandleCompleteRate(handleCompleteRate != null ? handleCompleteRate : 0.0);
+        Double violationRectifyRate = handleMapper.selectViolationRectifyRate(reqVO);
+        cardData.setViolationRectifyRate(violationRectifyRate != null ? violationRectifyRate : 0.0);
+        respVO.setCardData(cardData);
+
+        return respVO;
     }
 
 }

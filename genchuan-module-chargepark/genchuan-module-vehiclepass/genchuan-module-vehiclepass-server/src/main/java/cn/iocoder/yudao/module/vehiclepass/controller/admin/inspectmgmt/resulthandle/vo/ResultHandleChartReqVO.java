@@ -1,12 +1,12 @@
-package cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo;
+package cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo;
 
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
-@Schema(description = "管理后台 - 稽查任务统计 Request VO")
+@Schema(description = "管理后台 - 结果处置统计 Request VO")
 @Data
-public class InspectTaskChartReqVO {
+public class ResultHandleChartReqVO {
 
     @Schema(description = "统计开始时间，时间戳格式", requiredMode = Schema.RequiredMode.REQUIRED, example = "1774147200")
     @NotBlank(message = "统计开始时间不能为空")

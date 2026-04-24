@@ -7,6 +7,8 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandlePageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.inspectmgmt.resulthandle.ResultHandleDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -46,5 +48,20 @@ public interface ResultHandleMapper extends BaseMapperX<ResultHandleDO> {
      * 分页查询（使用JOIN查询关联表）
      */
     IPage<ResultHandleRespVO> selectPageJoin(Page<?> page, @Param("reqVO") ResultHandlePageReqVO reqVO);
+
+    /**
+     * 统计处置结果占比
+     */
+    List<ResultHandleChartRespVO.HandleResultRate> selectHandleResultRate(@Param("reqVO") ResultHandleChartReqVO reqVO);
+
+    /**
+     * 统计处置完成率
+     */
+    Double selectHandleCompleteRate(@Param("reqVO") ResultHandleChartReqVO reqVO);
+
+    /**
+     * 统计违规整改率
+     */
+    Double selectViolationRectifyRate(@Param("reqVO") ResultHandleChartReqVO reqVO);
 
 }

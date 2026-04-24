@@ -27,6 +27,8 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resultha
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleApproveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleRejectReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleExecuteReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.inspectmgmt.resulthandle.ResultHandleDO;
 import cn.iocoder.yudao.module.vehiclepass.service.inspectmgmt.resulthandle.ResultHandleService;
 
@@ -124,6 +126,13 @@ public class ResultHandleController {
     public CommonResult<Boolean> execute(@Valid @RequestBody ResultHandleExecuteReqVO reqVO) {
         handleService.execute(reqVO);
         return success(true);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "结果处置统计")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:result-handle:chart')")
+    public CommonResult<ResultHandleChartRespVO> getChart(@Valid ResultHandleChartReqVO reqVO) {
+        return success(handleService.getChart(reqVO));
     }
 
     @GetMapping("/export-excel")

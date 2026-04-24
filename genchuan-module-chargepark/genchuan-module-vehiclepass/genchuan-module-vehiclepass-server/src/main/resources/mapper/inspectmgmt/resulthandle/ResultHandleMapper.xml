@@ -58,4 +58,54 @@
         ORDER BY r.id DESC
     </select>
 
+    <!-- 处置结果占比统计 -->
+    <select id="selectHandleResultRate" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleChartRespVO$HandleResultRate">
+        SELECT
+            r.status AS name,
+            COUNT(*) AS value
+        FROM result_handle r
+        WHERE r.deleted = 0
+        <if test="reqVO.startTime != null and reqVO.endTime != null">
+            AND r.create_time BETWEEN FROM_UNIXTIME(#{reqVO.startTime}) AND FROM_UNIXTIME(#{reqVO.endTime})
+        </if>
+        <if test="reqVO.areaId != null">
+            AND r.area_id = #{reqVO.areaId}
+        </if>
+        GROUP BY r.status
+    </select>
+
+    <!-- 处置完成率统计 -->
+    <select id="selectHandleCompleteRate" resultType="java.lang.Double">
+        SELECT
+            IFNULL(
+                SUM(CASE WHEN r.status = '已完成' THEN 1 ELSE 0 END) * 100.0 / COUNT(*),
+                0
+            ) AS rate
+        FROM result_handle r
+        WHERE r.deleted = 0
+        <if test="reqVO.startTime != null and reqVO.endTime != null">
+            AND r.create_time BETWEEN FROM_UNIXTIME(#{reqVO.startTime}) AND FROM_UNIXTIME(#{reqVO.endTime})
+        </if>
+        <if test="reqVO.areaId != null">
+            AND r.area_id = #{reqVO.areaId}
+        </if>
+    </select>
+
+    <!-- 违规整改率统计 -->
+    <select id="selectViolationRectifyRate" resultType="java.lang.Double">
+        SELECT
+            IFNULL(
+                SUM(CASE WHEN r.rectify_status = '已整改' THEN 1 ELSE 0 END) * 100.0 / COUNT(*),
+                0
+            ) AS rate
+        FROM result_handle r
+        WHERE r.deleted = 0
+        <if test="reqVO.startTime != null and reqVO.endTime != null">
+            AND r.create_time BETWEEN FROM_UNIXTIME(#{reqVO.startTime}) AND FROM_UNIXTIME(#{reqVO.endTime})
+        </if>
+        <if test="reqVO.areaId != null">
+            AND r.area_id = #{reqVO.areaId}
+        </if>
+    </select>
+
 </mapper>
