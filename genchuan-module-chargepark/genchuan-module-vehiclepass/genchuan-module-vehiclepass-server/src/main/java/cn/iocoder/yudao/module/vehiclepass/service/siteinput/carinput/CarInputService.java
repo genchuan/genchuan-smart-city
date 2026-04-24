@@ -4,6 +4,7 @@ import java.util.*;
 
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputCreateReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.siteinput.carinput.CarInputDO;
 import jakarta.validation.*;
@@ -69,5 +70,12 @@ public interface CarInputService {
      * @return 车辆录入分页（含关联表字段）
      */
     PageResult<CarInputRespVO> getInputPageWithJoin(CarInputPageReqVO pageReqVO);
+
+    /**
+     * 新增车辆录入
+     *
+     * @param createReqVO 创建信息
+     */
+    void createInputByReq(@Valid CarInputCreateReqVO createReqVO);
 
 }

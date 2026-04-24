@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.vehiclepass.service.siteinput.carinput;
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputCreateReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.siteinput.carinput.CarInputDO;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.siteinput.carinput.CarInputMapper;
@@ -12,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
@@ -95,6 +97,14 @@ public class CarInputServiceImpl implements CarInputService {
         com.baomidou.mybatisplus.core.metadata.IPage<CarInputRespVO> pageResult = inputMapper.selectPageJoin(page, pageReqVO);
         // 转换为PageResult
         return new PageResult<>(pageResult.getRecords(), pageResult.getTotal());
+    }
+
+    @Override
+    public void createInputByReq(CarInputCreateReqVO createReqVO) {
+        CarInputDO input = BeanUtils.toBean(createReqVO, CarInputDO.class);
+        input.setStatus("待审核");
+        input.setInputTime(LocalDateTime.now());
+        inputMapper.insert(input);
     }
 
 }

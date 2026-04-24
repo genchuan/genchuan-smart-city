@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput;
 
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputCreateReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.siteinput.carinput.CarInputDO;
 import cn.iocoder.yudao.module.vehiclepass.service.siteinput.carinput.CarInputService;
@@ -42,9 +43,10 @@ public class CarInputController {
 
     @PostMapping("/create")
     @Operation(summary = "创建车辆录入")
-    @PreAuthorize("@ss.hasPermission('car:input:create')")
-    public CommonResult<Long> createInput(@Valid @RequestBody CarInputSaveReqVO createReqVO) {
-        return success(inputService.createInput(createReqVO));
+    @PreAuthorize("@ss.hasPermission('vehiclepass:car-input:create')")
+    public CommonResult<Boolean> createInput(@Valid @RequestBody CarInputCreateReqVO createReqVO) {
+        inputService.createInputByReq(createReqVO);
+        return success(true);
     }
 
     @PutMapping("/update")
