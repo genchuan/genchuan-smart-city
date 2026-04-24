@@ -86,9 +86,8 @@ public class CardConfigController {
     @GetMapping("/chart")
     @Operation(summary = "卡种配置图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:card-config:query')")
-    public CommonResult<CardConfigChartRespVO> getChart(@RequestParam(value = "startTime", required = false) Long startTime,
-                                                        @RequestParam(value = "endTime", required = false) Long endTime) {
-        return CommonResult.success(cardConfigService.getChart(startTime, endTime));
+    public CommonResult<CardConfigChartRespVO> getChart() {
+        return CommonResult.success(cardConfigService.getChart());
     }
 
     private void injectUserNames(List<CardConfigRespVO> list) {

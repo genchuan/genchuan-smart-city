@@ -189,7 +189,8 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
         long total = numLong(agg, "total");
         long success = numLong(agg, "success_cnt");
         double avgResp = numDouble(agg, "avg_resp");
-        resp.setQuerySuccessRate(toRate(success, total));
+        // 前端按百分比数值直接展示(返 1 会显示 "1%"),这里统一乘 100 到 0~100 区间
+        resp.setQuerySuccessRate(toRate(success, total).multiply(BigDecimal.valueOf(100)));
         resp.setAvgResponseDuration((int) Math.round(avgResp));
 
         // 场站分布 & 热力图数据 → 通过 Feign 从 stationresource 模块取,下游挂掉时降级为空列表

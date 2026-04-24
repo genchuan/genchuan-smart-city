@@ -12,8 +12,4 @@ public class ChargeParkMapNavigateReqVO {
     @NotNull(message = "查询记录 ID 不能为空")
     private Long id;
 
-    @Schema(description = "目标场站 / 车位 ID（前端从查询结果中选中的场站或车位）", requiredMode = Schema.RequiredMode.REQUIRED, example = "101")
-    @NotNull(message = "目标 ID 不能为空")
-    private Long targetId;
-
 }

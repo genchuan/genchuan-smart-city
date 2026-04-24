@@ -120,8 +120,8 @@ public class PrizeMgmtController {
     @GetMapping("/chart")
     @Operation(summary = "奖品管理图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:prize-mgmt:query')")
-    public CommonResult<PrizeMgmtChartRespVO> getChart(PrizeMgmtChartReqVO reqVO) {
-        return CommonResult.success(prizeMgmtService.getChart(reqVO));
+    public CommonResult<PrizeMgmtChartRespVO> getChart() {
+        return CommonResult.success(prizeMgmtService.getChart());
     }
 
     private void injectUserNames(List<PrizeMgmtRespVO> list) {

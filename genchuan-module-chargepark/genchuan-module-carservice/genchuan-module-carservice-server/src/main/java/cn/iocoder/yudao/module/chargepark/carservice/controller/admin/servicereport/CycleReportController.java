@@ -62,6 +62,21 @@ public class CycleReportController {
         return success(cycleReportService.pageCycleReport(reqVO));
     }
 
+    @GetMapping("/page-all")
+    @Operation(summary = "按时间范围混合查询 - 区间内完整落入的日/周/月/季/半年/年报全部返回",
+            description = "仅接受 statStartTime + statEndTime(含可选 pageNo/pageSize)。" +
+                    "后端遍历 6 种周期,凡是完整落在区间内的窗口都纳入。按颗粒度从大到小 + 时间倒序排序。")
+    @PreAuthorize("@ss.hasPermission('carservice:cycle-report:query')")
+    public CommonResult<PageResult<CycleReportRespVO>> pageAllCycleReport(
+            @RequestParam("statStartTime")
+            @org.springframework.format.annotation.DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") java.time.LocalDateTime statStartTime,
+            @RequestParam("statEndTime")
+            @org.springframework.format.annotation.DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") java.time.LocalDateTime statEndTime,
+            @RequestParam(value = "pageNo", defaultValue = "1") Integer pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "20") Integer pageSize) {
+        return success(cycleReportService.pageAllCycleReport(statStartTime, statEndTime, pageNo, pageSize));
+    }
+
     @PostMapping("/create")
     @Operation(summary = "生成 - 按 statType + statStartTime + statEndTime 生成一份报表")
     @PreAuthorize("@ss.hasPermission('carservice:cycle-report:create')")

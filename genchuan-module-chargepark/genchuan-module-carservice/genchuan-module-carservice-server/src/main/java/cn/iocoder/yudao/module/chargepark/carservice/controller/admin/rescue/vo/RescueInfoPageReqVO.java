@@ -24,6 +24,10 @@ public class RescueInfoPageReqVO extends PageParam {
             allowableValues = {"待派发", "待认领", "处理中", "已完成"})
     private String status;
 
+    @Schema(description = "归档状态,关联字典 rescue_info_archive_status", example = "未归档",
+            allowableValues = {"已归档", "未归档"})
+    private String archiveStatus;
+
     @Schema(description = "救援位置汉字地址（模糊查询）", example = "泉州")
     private String locationName;
 

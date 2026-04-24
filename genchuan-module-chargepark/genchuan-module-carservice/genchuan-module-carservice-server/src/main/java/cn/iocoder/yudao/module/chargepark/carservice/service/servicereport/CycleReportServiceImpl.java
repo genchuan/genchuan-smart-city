@@ -20,6 +20,7 @@ import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.findcar.Spac
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.rescue.RescueInfoDO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.reserve.ReserveListDO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.serviceconfig.WordingMgmtDO;
+import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.servicereport.CycleReportDO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.carguide.ChargeParkMapMapper;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.carguide.NearStationMapper;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.carguide.SpacePushMapper;
@@ -31,6 +32,12 @@ import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.findcar.SpaceLoca
 import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.rescue.RescueInfoMapper;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.reserve.ReserveListMapper;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.serviceconfig.WordingMgmtMapper;
+import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.servicereport.CycleReportMapper;
+
+import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.module.chargepark.carservice.enums.ErrorCodeConstants.CYCLE_REPORT_DETAIL_DATA_INVALID;
+import static cn.iocoder.yudao.module.chargepark.carservice.enums.ErrorCodeConstants.CYCLE_REPORT_NOT_EXISTS;
+import static cn.iocoder.yudao.module.chargepark.carservice.enums.ErrorCodeConstants.SERVICE_OP_REPORT_PARAM_INVALID;
 import cn.iocoder.yudao.module.chargepark.carservice.enums.servicereport.CycleReportCycleEnum;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
@@ -113,50 +120,52 @@ public class CycleReportServiceImpl implements CycleReportService {
     @Resource private NearStationMapper nearStationMapper;
     @Resource private PathPlanMapper pathPlanMapper;
     @Resource private AdminUserApi adminUserApi;
+    @Resource private CycleReportMapper cycleReportMapper;
 
     // =========================================================================
     // 对外接口
     // =========================================================================
 
     @Override
-    @Cacheable(cacheNames = "carservice:report:cycle-report-page#600s",
-            key = "T(cn.iocoder.yudao.framework.tenant.core.context.TenantContextHolder).getTenantId() + ':' + #reqVO.reportCycle + ':' + #reqVO.statStartTime + '~' + #reqVO.statEndTime + ':' + #reqVO.generateStatus + ':' + #reqVO.pageNo + '/' + #reqVO.pageSize")
     public PageResult<CycleReportRespVO> pageCycleReport(CycleReportPageReqVO reqVO) {
-        CycleReportCycleEnum cycle = CycleReportCycleEnum.fromLabel(reqVO.getReportCycle());
-        // 默认行为:进入页面无 statStartTime/statEndTime → 取"当期"完整窗口
-        LocalDateTime[] range = resolveDefaultRange(cycle, reqVO.getStatStartTime(), reqVO.getStatEndTime());
-        LocalDateTime rangeStart = range[0];
-        LocalDateTime rangeEnd = range[1];
+        // 直接查 cycle_report 表(冻结快照)
+        PageResult<CycleReportDO> page = cycleReportMapper.selectPage(reqVO);
+        PageResult<CycleReportRespVO> result = new PageResult<>();
+        result.setTotal(page.getTotal());
+        result.setList(page.getList().stream().map(this::toRespVO).collect(Collectors.toList()));
+        return result;
+    }
 
-        // 按周期切窗
-        List<Window> windows = splitWindows(cycle, rangeStart, rangeEnd);
-
-        // 每窗现算一份 RespVO
-        String operator = currentLoginName();
-        LocalDateTime now = LocalDateTime.now();
-        List<CycleReportRespVO> all = new ArrayList<>(windows.size());
-        for (Window w : windows) {
-            CycleReportRespVO vo = buildRespVO(cycle, w.start, w.end, operator, now);
-            // generateStatus 过滤
-            if (reqVO.getGenerateStatus() != null && !reqVO.getGenerateStatus().isEmpty()
-                    && !reqVO.getGenerateStatus().equals(vo.getGenerateStatus())) {
-                continue;
-            }
-            all.add(vo);
+    @Override
+    public PageResult<CycleReportRespVO> pageAllCycleReport(LocalDateTime statStartTime,
+                                                            LocalDateTime statEndTime,
+                                                            Integer pageNo, Integer pageSize) {
+        if (statStartTime == null || statEndTime == null || statEndTime.isBefore(statStartTime)) {
+            throw new IllegalArgumentException("统计时间范围不合法");
         }
+        int pn = pageNo == null || pageNo < 1 ? 1 : pageNo;
+        int ps = pageSize == null || pageSize < 1 ? 20 : Math.min(pageSize, 200);
+        PageResult<CycleReportDO> page = cycleReportMapper.selectPageByTimeRange(statStartTime, statEndTime, pn, ps);
+        PageResult<CycleReportRespVO> result = new PageResult<>();
+        result.setTotal(page.getTotal());
+        result.setList(page.getList().stream().map(this::toRespVO).collect(Collectors.toList()));
+        return result;
+    }
 
-        // 内存分页
-        int pageNo = reqVO.getPageNo() == null || reqVO.getPageNo() < 1 ? 1 : reqVO.getPageNo();
-        int pageSize = reqVO.getPageSize() == null || reqVO.getPageSize() < 1 ? 10 : reqVO.getPageSize();
-        int from = (pageNo - 1) * pageSize;
-        int to = Math.min(all.size(), from + pageSize);
-        // 必须 new ArrayList<>(subList):SubList 没有默认构造器,Jackson 反序列化 Redis 缓存时会挂
-        List<CycleReportRespVO> slice = from < to ? new ArrayList<>(all.subList(from, to)) : new ArrayList<>();
-
-        PageResult<CycleReportRespVO> page = new PageResult<>();
-        page.setList(slice);
-        page.setTotal((long) all.size());
-        return page;
+    /** 切窗但**只纳入完全落在区间内**的窗口(不切半窗、不兜底 CUSTOM) */
+    private List<Window> splitFullWindowsOnly(CycleReportCycleEnum cycle, LocalDateTime rs, LocalDateTime re) {
+        List<Window> wins = new ArrayList<>();
+        LocalDate rsDate = rs.toLocalDate(), reDate = re.toLocalDate();
+        LocalDate cursor = rsDate;
+        int safety = 0;
+        while (!cursor.isAfter(reDate) && safety++ < MAX_WINDOWS) {
+            LocalDate[] w = currentWindowOf(cycle, cursor);
+            if (!w[0].isBefore(rsDate) && !w[1].isAfter(reDate)) {
+                wins.add(new Window(cycle, w[0].atStartOfDay(), w[1].atTime(23, 59, 59)));
+            }
+            cursor = w[1].plusDays(1);
+        }
+        return wins;
     }
 
     @Override
@@ -164,33 +173,115 @@ public class CycleReportServiceImpl implements CycleReportService {
         LocalDateTime start = reqVO.getStatStartTime();
         LocalDateTime end = reqVO.getStatEndTime();
         if (end.isBefore(start)) {
-            throw new IllegalArgumentException("统计结束时间不能早于开始时间");
+            throw exception(SERVICE_OP_REPORT_PARAM_INVALID);
         }
         CycleReportCycleEnum cycle = CycleReportCycleEnum.fromLabel(reqVO.getStatType());
-        // "生成"在无表模式下等价于"返回该筛选首窗 id",不做任何落库
-        List<Window> windows = splitWindows(cycle, start, end);
-        if (windows.isEmpty()) {
-            throw new IllegalArgumentException("生成窗口为空,请检查统计时段");
+        // 每次调用都插入一条新快照,不做幂等查重;由调用方决定何时触发
+
+        // 现场聚合数据 → 复用已有 buildRespVO,然后把聚合结果拷到 DO + detail_data JSON
+        String operator = currentLoginName();
+        LocalDateTime now = LocalDateTime.now();
+        CycleReportRespVO vo = buildRespVO(cycle, start, end, operator, now);
+
+        CycleReportDO row = new CycleReportDO();
+        row.setReportCycle(cycle.getLabel());
+        row.setStatStartTime(start);
+        row.setStatEndTime(end);
+        row.setStatTimeLabel(vo.getStatTime());
+        row.setRescueCompleteRate(vo.getRescueCompleteRate());
+        row.setReserveSuccessRate(vo.getReserveSuccessRate());
+        row.setComplaintHandleRate(vo.getComplaintHandleRate());
+        row.setFindCarSuccessRate(vo.getFindCarSuccessRate());
+        row.setSpacePushSuccessRate(vo.getSpacePushSuccessRate());
+        row.setRescueTotal(vo.getRescueTotal());
+        row.setReserveTotal(vo.getReserveTotal());
+        row.setComplaintTotal(vo.getComplaintTotal());
+        row.setSpacePushTotal(vo.getSpacePushTotal());
+        row.setEffectiveWordingCount(vo.getEffectiveWordingCount());
+        row.setYearOnYearGrowthRate(vo.getYearOnYearGrowthRate());
+        row.setMonthOnMonthGrowthRate(vo.getMonthOnMonthGrowthRate());
+        row.setServiceStatusRatio(vo.getServiceStatusRatio());
+        row.setGenerateStatus("已生成");
+        row.setGenerateTime(now);
+        row.setOperator(operator);
+        row.setOperatorUserId(SecurityFrameworkUtils.getLoginUserId());
+        try {
+            row.setDetailData(MAPPER.writeValueAsString(buildDetailData(start, end)));
+        } catch (Exception ex) {
+            log.warn("[createCycleReport] detail_data 序列化失败,置空", ex);
+            row.setDetailData(null);
         }
-        Window first = windows.get(0);
-        return encodeId(cycle, first.start, first.end);
+        cycleReportMapper.insert(row);
+        return row.getId();
+    }
+
+    /** DO → 列表 VO 的映射 */
+    private CycleReportRespVO toRespVO(CycleReportDO d) {
+        CycleReportRespVO v = new CycleReportRespVO();
+        v.setId(d.getId());
+        v.setReportCycle(d.getReportCycle());
+        v.setStatTime(d.getStatTimeLabel());
+        v.setRescueCompleteRate(d.getRescueCompleteRate());
+        v.setReserveSuccessRate(d.getReserveSuccessRate());
+        v.setComplaintHandleRate(d.getComplaintHandleRate());
+        v.setFindCarSuccessRate(d.getFindCarSuccessRate());
+        v.setSpacePushSuccessRate(d.getSpacePushSuccessRate());
+        v.setEffectiveWordingCount(d.getEffectiveWordingCount());
+        v.setRescueTotal(d.getRescueTotal());
+        v.setReserveTotal(d.getReserveTotal());
+        v.setComplaintTotal(d.getComplaintTotal());
+        v.setSpacePushTotal(d.getSpacePushTotal());
+        v.setGenerateStatus(d.getGenerateStatus());
+        v.setGenerateTime(d.getGenerateTime());
+        v.setOperator(d.getOperator());
+        v.setOperatorUserId(d.getOperatorUserId());
+        v.setYearOnYearGrowthRate(d.getYearOnYearGrowthRate());
+        v.setMonthOnMonthGrowthRate(d.getMonthOnMonthGrowthRate());
+        v.setServiceStatusRatio(d.getServiceStatusRatio());
+        v.setCreator(d.getCreator());
+        v.setCreateTime(d.getCreateTime());
+        v.setUpdateTime(d.getUpdateTime());
+        return v;
+    }
+
+    /** DB 载入 id,拆回 Window(供 /get /chart /compare /pageDetail 等后续复用现有私有聚合方法) */
+    private Window loadWindowFromDB(Long id) {
+        CycleReportDO d = cycleReportMapper.selectById(id);
+        if (d == null) {
+            throw exception(CYCLE_REPORT_NOT_EXISTS);
+        }
+        return new Window(CycleReportCycleEnum.fromLabel(d.getReportCycle()),
+                d.getStatStartTime(), d.getStatEndTime());
     }
 
     @Override
     public CycleReportDetailRespVO getCycleReport(Long id) {
-        Window w = decodeId(id);
-        String operator = currentLoginName();
-        LocalDateTime now = LocalDateTime.now();
-        CycleReportRespVO base = buildRespVO(w.cycle, w.start, w.end, operator, now);
+        CycleReportDO d = cycleReportMapper.selectById(id);
+        if (d == null) {
+            throw exception(CYCLE_REPORT_NOT_EXISTS);
+        }
+        CycleReportRespVO base = toRespVO(d);
         CycleReportDetailRespVO detail = new CycleReportDetailRespVO();
         copyRespFields(base, detail);
-        detail.setDetailData(buildDetailData(w.start, w.end));
+        // detail_data 为空 → 老 seed 数据,本期尚未聚合真实明细,直接给空 map(不再静默回退实时算避免数据漂移)
+        if (d.getDetailData() == null || d.getDetailData().isEmpty()) {
+            detail.setDetailData(new LinkedHashMap<>());
+            return detail;
+        }
+        // 快照存在时必须能解析成功,否则数据损坏,抛业务异常让运维看见
+        try {
+            detail.setDetailData(MAPPER.readValue(d.getDetailData(),
+                    new com.fasterxml.jackson.core.type.TypeReference<Map<String, List<Map<String, Object>>>>() {}));
+        } catch (Exception ex) {
+            log.error("[getCycleReport] detail_data 解析失败 id={}", id, ex);
+            throw exception(CYCLE_REPORT_DETAIL_DATA_INVALID);
+        }
         return detail;
     }
 
     @Override
     public Map<String, Object> compareYoY(Long id) {
-        Window w = decodeId(id);
+        Window w = loadWindowFromDB(id);
         LocalDateTime prevStart = w.start.minusYears(1);
         LocalDateTime prevEnd = w.end.minusYears(1);
         return buildCompareResult(w.start, w.end, prevStart, prevEnd, "yoy");
@@ -198,7 +289,7 @@ public class CycleReportServiceImpl implements CycleReportService {
 
     @Override
     public Map<String, Object> compareMoM(Long id) {
-        Window w = decodeId(id);
+        Window w = loadWindowFromDB(id);
         long seconds = java.time.Duration.between(w.start, w.end).toSeconds();
         LocalDateTime prevEnd = w.start;
         LocalDateTime prevStart = w.start.minusSeconds(seconds);
@@ -207,7 +298,7 @@ public class CycleReportServiceImpl implements CycleReportService {
 
     @Override
     public Map<String, List<Map<String, Object>>> getFullDetailForExport(Long id) {
-        Window w = decodeId(id);
+        Window w = loadWindowFromDB(id);
         LocalDateTime s = w.start, e = w.end;
         Map<String, List<Map<String, Object>>> d = new LinkedHashMap<>();
         d.put("rescueDetail", toMapList(rescueInfoMapper.selectList(new LambdaQueryWrapperX<RescueInfoDO>()
@@ -232,7 +323,7 @@ public class CycleReportServiceImpl implements CycleReportService {
 
     @Override
     public PageResult<Map<String, Object>> pageDetail(Long id, String dimension, Integer pageNo, Integer pageSize) {
-        Window w = decodeId(id);
+        Window w = loadWindowFromDB(id);
         LocalDateTime s = w.start, e = w.end;
         int pn = pageNo == null || pageNo < 1 ? 1 : pageNo;
         int ps = pageSize == null || pageSize < 1 ? 20 : Math.min(pageSize, 200);
@@ -286,8 +377,6 @@ public class CycleReportServiceImpl implements CycleReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = "carservice:report:cycle-report-chart#600s",
-            key = "#reqVO.reportCycle + ':' + #reqVO.statStartTime + '~' + #reqVO.statEndTime")
     public CycleReportChartRespVO chartCycleReport(CycleReportChartReqVO reqVO) {
         LocalDateTime start = reqVO.getStatStartTime();
         LocalDateTime end = reqVO.getStatEndTime();

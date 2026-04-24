@@ -116,7 +116,7 @@ public class OfftimeRuleController {
         return success(BeanUtils.toBean(rule, OfftimeRuleRespVO.class));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出错时规则 Excel")
     @PreAuthorize("@ss.hasPermission('stationresource:offtime-rule:export')")
     @ApiAccessLog(operateType = EXPORT)

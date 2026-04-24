@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.chargepark.marketop.service.couponactivity.receiverecord;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.receiverecord.vo.ReceiveRecordChartRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.receiverecord.vo.ReceiveRecordPageReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.ReceiveRecordDO;
@@ -51,45 +52,41 @@ public class ReceiveRecordServiceImpl implements ReceiveRecordService {
     }
 
     @Override
-    public ReceiveRecordChartRespVO getChart(Long startTime, Long endTime, Long stationId) {
-
-        LocalDateTime startDateTime = startTime != null
-                ? LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(startTime), ZoneId.systemDefault())
-                : null;
-        LocalDateTime endDateTime = endTime != null
-                ? LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(endTime), ZoneId.systemDefault())
-                : null;
-
-        // 查询时间范围内的所有记录
-        List<ReceiveRecordDO> records = receiveRecordMapper.selectListByTimeRange(
-                startDateTime, endDateTime, stationId);
-
+    public ReceiveRecordChartRespVO getChart() {
         ReceiveRecordChartRespVO respVO = new ReceiveRecordChartRespVO();
+
         // 总记录数
-        int receiveCount = records.size();
-        respVO.setReceiveCount(receiveCount);
+        Long receiveCount = receiveRecordMapper.selectCount(new LambdaQueryWrapperX<>());
+        respVO.setReceiveCount(receiveCount.intValue());
 
         // 核销率 = 状态为1的记录数 / 总记录数
-        long verifiedCount = records.stream().filter(r -> "1".equals(r.getStatus())).count();
+        Long verifiedCount = receiveRecordMapper.selectCount(new LambdaQueryWrapperX<ReceiveRecordDO>()
+                .eq(ReceiveRecordDO::getStatus, "1"));
         BigDecimal verifyRate = receiveCount > 0
                 ? BigDecimal.valueOf(verifiedCount).divide(BigDecimal.valueOf(receiveCount), 4, RoundingMode.HALF_UP)
                 : BigDecimal.ZERO;
         respVO.setVerifyRate(verifyRate);
 
-        // 趋势列表：按 receive_time 的日期部分分组统计
-        Map<LocalDate, Long> trendMap = records.stream()
-                .filter(r -> r.getReceiveTime() != null)
-                .collect(Collectors.groupingBy(r -> r.getReceiveTime().toLocalDate(), Collectors.counting()));
-
+        // 近30天按天统计，补全缺失日期
+        LocalDateTime startTime = LocalDateTime.now().minusDays(30);
+        List<Map<String, Object>> countByDay = receiveRecordMapper.selectCountByDay(startTime);
+        Map<String, Integer> dayCountMap = new java.util.LinkedHashMap<>();
+        LocalDate today = LocalDate.now();
+        for (int i = 29; i >= 0; i--) {
+            dayCountMap.put(today.minusDays(i).toString(), 0);
+        }
+        for (Map<String, Object> row : countByDay) {
+            String date = row.get("date").toString();
+            int count = ((Number) row.get("count")).intValue();
+            dayCountMap.put(date, count);
+        }
         List<ReceiveRecordChartRespVO.TrendItem> trendList = new ArrayList<>();
-        trendMap.forEach((date, count) -> {
+        for (Map.Entry<String, Integer> entry : dayCountMap.entrySet()) {
             ReceiveRecordChartRespVO.TrendItem item = new ReceiveRecordChartRespVO.TrendItem();
-            item.setDate(date.toString());
-            item.setCount(count.intValue());
+            item.setStartTime(entry.getKey());
+            item.setCount(entry.getValue());
             trendList.add(item);
-        });
-        // 按日期排序
-        trendList.sort((a, b) -> a.getDate().compareTo(b.getDate()));
+        }
         respVO.setTrendList(trendList);
 
         return respVO;

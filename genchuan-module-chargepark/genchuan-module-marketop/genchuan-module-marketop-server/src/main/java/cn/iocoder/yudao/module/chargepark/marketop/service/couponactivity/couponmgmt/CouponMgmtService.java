@@ -27,7 +27,7 @@ public interface CouponMgmtService {
 
     void resend(Long id, Long receiverId, Long newValidTime);
 
-    CouponMgmtChartRespVO getChart(Long startTime, Long endTime, Long stationId);
+    CouponMgmtChartRespVO getChart();
 
     void importCouponMgmtList(List<CouponMgmtImportExcelVO> list);
 

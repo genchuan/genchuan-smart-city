@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationChartRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationNavigateReqVO;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationNearbyListRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationPageReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationReserveReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationRespVO;
@@ -81,6 +82,17 @@ public class NearStationController {
             injectUserNames(List.of(respVO));
         }
         return success(respVO);
+    }
+
+    @GetMapping("/nearby-stations")
+    @Operation(summary = "按查询记录 id 列出附近场站（用作导航/预订的场站选择源）")
+    @Parameter(name = "id", description = "near_station 查询记录 ID", required = true, example = "21")
+    @Parameter(name = "radiusKm", description = "半径(km),不传默认 5", example = "5")
+    @PreAuthorize("@ss.hasPermission('carservice:near-station:query')")
+    public CommonResult<NearStationNearbyListRespVO> listNearbyStations(
+            @RequestParam("id") Long id,
+            @RequestParam(value = "radiusKm", required = false) Double radiusKm) {
+        return success(nearStationService.listNearbyStations(id, radiusKm));
     }
 
     @GetMapping("/navigate")

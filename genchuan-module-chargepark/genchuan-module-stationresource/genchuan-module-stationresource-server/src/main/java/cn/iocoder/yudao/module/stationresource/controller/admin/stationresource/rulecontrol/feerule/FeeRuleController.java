@@ -115,7 +115,7 @@ public class FeeRuleController {
         return success(BeanUtils.toBean(feeRule, FeeRuleRespVO.class));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出收费规则 Excel")
     @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:export')")
     @ApiAccessLog(operateType = EXPORT)

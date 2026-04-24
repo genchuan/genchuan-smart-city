@@ -94,10 +94,8 @@ public class ActivityConfigController {
     @GetMapping("/chart")
     @Operation(summary = "活动配置图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:activity-config:query')")
-    public CommonResult<ActivityConfigChartRespVO> getChart(
-            @RequestParam(value = "startTime", required = false) Long startTime,
-            @RequestParam(value = "endTime", required = false) Long endTime) {
-        return CommonResult.success(activityConfigService.getChart(startTime, endTime));
+    public CommonResult<ActivityConfigChartRespVO> getChart() {
+        return CommonResult.success(activityConfigService.getChart());
     }
 
     private void injectUserNames(List<ActivityConfigRespVO> list) {

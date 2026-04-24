@@ -149,6 +149,9 @@ public enum StudentMgmtDictTypeEnum {
      */
     MORAL_RESOURCE_STATUS("moral_resource_status", "德育资源审核状态"),
 
+    // ==================== 床位管理 ====================
+    //状态 (未分配 / 已分配)，关联芋道字典表：bed_mgmt_status
+    BED_MGMT_STATUS("bed_mgmt_status", "床位管理状态"),
 
 
     ;

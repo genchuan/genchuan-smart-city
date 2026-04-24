@@ -11,7 +11,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -46,12 +52,41 @@ public class PointLotteryServiceImpl implements PointLotteryService {
     }
 
     @Override
-    public PointLotteryChartRespVO getChart(String timeRange) {
-        // TODO: 实现图表统计逻辑
+    public PointLotteryChartRespVO getChart() {
+        // 总抽奖量
+        Long totalCount = pointLotteryMapper.selectTotalCount();
+        // 中奖数 (prize_id = 0)
+        Long winCount = pointLotteryMapper.selectWinCount();
+        // 中奖率
+        BigDecimal winRate = totalCount > 0
+                ? new BigDecimal(winCount).divide(new BigDecimal(totalCount), 4, RoundingMode.HALF_UP)
+                : BigDecimal.ZERO;
+
+        // 近30天按天统计抽奖总数，补全缺失日期
+        LocalDateTime startTime = LocalDateTime.now().minusDays(30);
+        List<Map<String, Object>> lotteryByDay = pointLotteryMapper.selectCountByDay(startTime);
+        Map<String, Integer> dayCountMap = new LinkedHashMap<>();
+        LocalDate today = LocalDate.now();
+        for (int i = 29; i >= 0; i--) {
+            dayCountMap.put(today.minusDays(i).toString(), 0);
+        }
+        for (Map<String, Object> row : lotteryByDay) {
+            String date = row.get("date").toString();
+            int count = ((Number) row.get("count")).intValue();
+            dayCountMap.put(date, count);
+        }
+        List<PointLotteryChartRespVO.TrendItem> trendList = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : dayCountMap.entrySet()) {
+            PointLotteryChartRespVO.TrendItem item = new PointLotteryChartRespVO.TrendItem();
+            item.setLotteryTime(entry.getKey());
+            item.setCount(entry.getValue());
+            trendList.add(item);
+        }
+
         PointLotteryChartRespVO respVO = new PointLotteryChartRespVO();
-        respVO.setLotteryCount(0);
-        respVO.setWinRate(BigDecimal.ZERO);
-        respVO.setTrendList(new ArrayList<>());
+        respVO.setLotteryCount(totalCount.intValue());
+        respVO.setWinRate(winRate);
+        respVO.setTrendList(trendList);
         return respVO;
     }
 

@@ -122,7 +122,7 @@ public class BlackWhiteListController {
         return success(BeanUtils.toBean(info, BlackWhiteListRespVO.class));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出黑白名单 Excel")
     @PreAuthorize("@ss.hasPermission('stationresource:black-white-list:export')")
     @ApiAccessLog(operateType = EXPORT)

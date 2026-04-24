@@ -93,9 +93,8 @@ public class PackageConfigController {
     @GetMapping("/chart")
     @Operation(summary = "券包配置图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:package-config:query')")
-    public CommonResult<PackageConfigChartRespVO> getChart(@RequestParam(value = "startTime", required = false) Long startTime,
-                                                           @RequestParam(value = "endTime", required = false) Long endTime) {
-        return CommonResult.success(packageConfigService.getChart(startTime, endTime));
+    public CommonResult<PackageConfigChartRespVO> getChart() {
+        return CommonResult.success(packageConfigService.getChart());
     }
 
     @Data

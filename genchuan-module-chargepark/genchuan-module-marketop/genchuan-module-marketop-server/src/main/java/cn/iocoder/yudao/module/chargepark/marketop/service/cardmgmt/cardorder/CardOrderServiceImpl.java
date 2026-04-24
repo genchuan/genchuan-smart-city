@@ -10,7 +10,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.*;
@@ -39,7 +44,7 @@ public class CardOrderServiceImpl implements CardOrderService {
             throw exception(CARD_ORDER_STATUS_ERROR);
         }
         cardOrder.setPayStatus("已支付");
-        cardOrder.setPayTime(java.time.LocalDateTime.now());
+        cardOrder.setPayTime(LocalDateTime.now());
         cardOrderMapper.updateById(cardOrder);
     }
 
@@ -50,9 +55,8 @@ public class CardOrderServiceImpl implements CardOrderService {
             throw exception(CARD_ORDER_STATUS_ERROR);
         }
         cardOrder.setPayStatus("已完成");
-        cardOrder.setActiveTime(java.time.LocalDateTime.now());
+        cardOrder.setActiveTime(LocalDateTime.now());
         cardOrderMapper.updateById(cardOrder);
-        // TODO: 推送用户通知
     }
 
     @Override
@@ -76,13 +80,56 @@ public class CardOrderServiceImpl implements CardOrderService {
     }
 
     @Override
-    public CardOrderChartRespVO getChart(String timeRange) {
-        // TODO: 实现图表统计逻辑，暂时返回空数据
+    public CardOrderChartRespVO getChart() {
         CardOrderChartRespVO respVO = new CardOrderChartRespVO();
-        respVO.setTodayOrderCount(0);
-        respVO.setTodayRevenue(BigDecimal.ZERO);
-        respVO.setTrendList(new ArrayList<>());
-        respVO.setTypeCountList(new ArrayList<>());
+
+        // 今日订单数
+        Long todayOrderCount = cardOrderMapper.selectTodayCount();
+        respVO.setTodayOrderCount(todayOrderCount.intValue());
+
+        // 今日营收
+        BigDecimal todayRevenue = cardOrderMapper.selectTodayRevenue();
+        respVO.setTodayRevenue(todayRevenue);
+
+        // 近30天按天统计，补全缺失日期
+        LocalDateTime startTime = LocalDateTime.now().minusDays(30);
+        List<Map<String, Object>> countByDay = cardOrderMapper.selectCountByDay(startTime);
+        Map<String, Map<String, Object>> dayDataMap = new LinkedHashMap<>();
+        LocalDate today = LocalDate.now();
+        for (int i = 29; i >= 0; i--) {
+            String key = today.minusDays(i).toString();
+            Map<String, Object> val = new LinkedHashMap<>();
+            val.put("count", 0);
+            val.put("amount", BigDecimal.ZERO);
+            dayDataMap.put(key, val);
+        }
+        for (Map<String, Object> row : countByDay) {
+            String date = row.get("date").toString();
+            Map<String, Object> val = new LinkedHashMap<>();
+            val.put("count", ((Number) row.get("count")).intValue());
+            val.put("amount", row.get("amount") instanceof BigDecimal ? row.get("amount") : new BigDecimal(row.get("amount").toString()));
+            dayDataMap.put(date, val);
+        }
+        List<CardOrderChartRespVO.TrendItem> trendList = new ArrayList<>();
+        for (Map.Entry<String, Map<String, Object>> entry : dayDataMap.entrySet()) {
+            CardOrderChartRespVO.TrendItem item = new CardOrderChartRespVO.TrendItem();
+            item.setDate(entry.getKey());
+            item.setCount((Integer) entry.getValue().get("count"));
+            item.setAmount((BigDecimal) entry.getValue().get("amount"));
+            trendList.add(item);
+        }
+        respVO.setTrendList(trendList);
+
+        // 按卡种类型统计订单数
+        List<Map<String, Object>> typeCountList = cardOrderMapper.selectTypeCountList();
+        List<CardOrderChartRespVO.TypeCountItem> typeItems = typeCountList.stream().map(m -> {
+            CardOrderChartRespVO.TypeCountItem item = new CardOrderChartRespVO.TypeCountItem();
+            item.setType((String) m.get("type"));
+            item.setCount(((Number) m.get("count")).intValue());
+            return item;
+        }).toList();
+        respVO.setTypeCountList(typeItems);
+
         return respVO;
     }
 
