@@ -34,7 +34,6 @@ import cn.iocoder.yudao.module.inspectop.service.scheduleview.ScheduleViewServic
 @RestController
 @RequestMapping("/inspectop/schedule-view")
 @Validated
-@Hidden
 public class ScheduleViewController {
 
     @Resource
