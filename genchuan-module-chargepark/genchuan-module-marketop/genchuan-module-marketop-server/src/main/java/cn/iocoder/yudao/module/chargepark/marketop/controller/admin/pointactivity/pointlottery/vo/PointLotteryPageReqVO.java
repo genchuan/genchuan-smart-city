@@ -5,11 +5,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import java.time.LocalDateTime;
-
-import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
 @Schema(description = "管理后台 - 积分抽奖分页 Request VO")
 @Data
@@ -32,8 +27,19 @@ public class PointLotteryPageReqVO extends PageParam {
     @Schema(description = "同步状态")
     private String syncStatus;
 
+    @Schema(description = "发放人")
+    private Long senderId;
+
+    @Schema(description = "核查结果")
+    private String checkResult;
+
     @Schema(description = "抽奖时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDateTime[] lotteryTime;
+    private String lotteryTime;
+
+    @Schema(description = "开始时间")
+    private Long startTime;
+
+    @Schema(description = "结束时间")
+    private Long endTime;
 
 }

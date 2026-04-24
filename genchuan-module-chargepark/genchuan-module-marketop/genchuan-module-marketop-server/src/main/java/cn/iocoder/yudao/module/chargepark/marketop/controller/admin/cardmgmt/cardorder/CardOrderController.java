@@ -43,6 +43,13 @@ public class CardOrderController {
     @Operation(summary = "获得卡种订单分页")
     @PreAuthorize("@ss.hasPermission('marketop:card-order:query')")
     public CommonResult<PageResult<CardOrderRespVO>> getPage(CardOrderPageReqVO reqVO) {
+        // 如果startTime和endTime都为空，且date不为空，将date转为当天开始和结束时间
+        if (reqVO.getStartTime() == null && reqVO.getEndTime() == null
+                && reqVO.getDate() != null && !reqVO.getDate().isEmpty()) {
+            java.time.LocalDate localDate = java.time.LocalDate.parse(reqVO.getDate());
+            reqVO.setStartTime(localDate.atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
+            reqVO.setEndTime(localDate.plusDays(1).atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
+        }
         PageResult<CardOrderDO> pageResult = cardOrderService.getPage(reqVO);
         PageResult<CardOrderRespVO> bean = BeanUtils.toBean(pageResult, CardOrderRespVO.class);
         injectUserNames(bean.getList());

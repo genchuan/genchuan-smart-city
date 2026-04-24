@@ -16,11 +16,23 @@ import java.util.List;
 public interface StockControlMapper extends BaseMapperX<StockControlDO> {
 
     default PageResult<StockControlDO> selectPage(StockControlPageReqVO reqVO) {
-        return selectPage(reqVO, new LambdaQueryWrapperX<StockControlDO>()
+        LambdaQueryWrapperX<StockControlDO> wrapper = new LambdaQueryWrapperX<StockControlDO>()
                 .eqIfPresent(StockControlDO::getCardId, reqVO.getCardId())
                 .eqIfPresent(StockControlDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(StockControlDO::getWarnStatus, reqVO.getWarnStatus())
-                .orderByDesc(StockControlDO::getId));
+                .orderByDesc(StockControlDO::getId);
+        if (reqVO.getStartTime() != null && reqVO.getEndTime() != null) {
+            wrapper.between(StockControlDO::getCreateTime,
+                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getStartTime()), java.time.ZoneId.systemDefault()),
+                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getEndTime()), java.time.ZoneId.systemDefault()));
+        } else if (reqVO.getStartTime() != null) {
+            wrapper.ge(StockControlDO::getCreateTime,
+                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getStartTime()), java.time.ZoneId.systemDefault()));
+        } else if (reqVO.getEndTime() != null) {
+            wrapper.le(StockControlDO::getCreateTime,
+                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getEndTime()), java.time.ZoneId.systemDefault()));
+        }
+        return selectPage(reqVO, wrapper);
     }
 
     List<StockControlDO> selectListByTimeRange(@Param("startTime") LocalDateTime startTime,

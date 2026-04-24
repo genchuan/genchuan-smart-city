@@ -21,4 +21,13 @@ public class StockControlPageReqVO extends PageParam {
     @Schema(description = "告警状态")
     private String warnStatus;
 
+    @Schema(description = "日期筛选，格式如：2026-04-24")
+    private String date;
+
+    @Schema(description = "开始时间")
+    private Long startTime;
+
+    @Schema(description = "结束时间")
+    private Long endTime;
+
 }
