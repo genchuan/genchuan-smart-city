@@ -4,6 +4,8 @@ import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -33,14 +35,14 @@ public class DefaultDBFieldHandler implements MetaObjectHandler {
                 baseDO.setUpdateTime(current);
             }
 
-            Long userId = SecurityFrameworkUtils.getLoginUserId();
+            String userName = SecurityFrameworkUtils.getLoginUserNickname()==null?"亘川智城":SecurityFrameworkUtils.getLoginUserNickname();
             // 当前登录用户不为空，创建人为空，则当前登录用户为创建人
-            if (Objects.nonNull(userId) && Objects.isNull(baseDO.getCreator())) {
-                baseDO.setCreator(userId.toString());
+            if (Objects.nonNull(userName) && Objects.isNull(baseDO.getCreator())) {
+                baseDO.setCreator(userName);
             }
             // 当前登录用户不为空，更新人为空，则当前登录用户为更新人
-            if (Objects.nonNull(userId) && Objects.isNull(baseDO.getUpdater())) {
-                baseDO.setUpdater(userId.toString());
+            if (Objects.nonNull(userName) && Objects.isNull(baseDO.getUpdater())) {
+                baseDO.setUpdater(userName);
             }
         }
     }
@@ -55,9 +57,9 @@ public class DefaultDBFieldHandler implements MetaObjectHandler {
 
         // 当前登录用户不为空，更新人为空，则当前登录用户为更新人
         Object modifier = getFieldValByName("updater", metaObject);
-        Long userId = SecurityFrameworkUtils.getLoginUserId();
-        if (Objects.nonNull(userId) && Objects.isNull(modifier)) {
-            setFieldValByName("updater", userId.toString(), metaObject);
+        String userName = SecurityFrameworkUtils.getLoginUserNickname()==null?"亘川智城":SecurityFrameworkUtils.getLoginUserNickname();
+        if (Objects.nonNull(userName) && Objects.isNull(modifier)) {
+            setFieldValByName("updater", userName, metaObject);
         }
     }
 }
