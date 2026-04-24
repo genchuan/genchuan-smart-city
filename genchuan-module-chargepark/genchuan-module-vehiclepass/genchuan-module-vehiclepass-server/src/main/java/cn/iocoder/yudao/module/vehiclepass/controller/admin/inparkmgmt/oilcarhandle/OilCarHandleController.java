@@ -81,16 +81,8 @@ public class OilCarHandleController {
 
     @GetMapping("/page")
     @Operation(summary = "获得油车占位处置分页")
-    @PreAuthorize("@ss.hasPermission('oil:car-handle:query')")
-    public CommonResult<PageResult<OilCarHandleRespVO>> getCarHandlePage(@Valid OilCarHandlePageReqVO pageReqVO) {
-        PageResult<OilCarHandleDO> pageResult = carHandleService.getCarHandlePage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, OilCarHandleRespVO.class));
-    }
-
-    @GetMapping("/my/page")
-    @Operation(summary = "油车占位处置筛选刷新")
     @PreAuthorize("@ss.hasPermission('vehiclepass:oil-car-handle:query')")
-    public CommonResult<PageResult<OilCarHandleRespVO>> getMyCarHandlePage(@Valid OilCarHandlePageReqVO pageReqVO) {
+    public CommonResult<PageResult<OilCarHandleRespVO>> getCarHandlePage(@Valid OilCarHandlePageReqVO pageReqVO) {
         return success(carHandleService.getCarHandlePageWithJoin(pageReqVO));
     }
 
@@ -140,10 +132,8 @@ public class OilCarHandleController {
     public void exportCarHandleExcel(@Valid OilCarHandlePageReqVO pageReqVO,
                                      HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<OilCarHandleDO> list = carHandleService.getCarHandlePage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "油车占位处置.xls", "数据", OilCarHandleRespVO.class,
-                BeanUtils.toBean(list, OilCarHandleRespVO.class));
+        PageResult<OilCarHandleRespVO> pageResult = carHandleService.getCarHandlePageWithJoin(pageReqVO);
+        ExcelUtils.write(response, "油车占位处置.xls", "数据", OilCarHandleRespVO.class, pageResult.getList());
     }
 
 }

@@ -91,7 +91,7 @@ public class EnterRecordController {
     @GetMapping("/page")
     @Operation(summary = "获得入场记录分页")
     @PreAuthorize("@ss.hasPermission('vehiclepass:enter-record:query')")
-    public CommonResult<PageResult<MyEnterRecordRespVO>> page(MyEnterRecordPageReqVO reqVO) {
+    public CommonResult<PageResult<MyEnterRecordRespVO>> page(EnterRecordPageReqVO reqVO) {
         PageResult<MyEnterRecordRespVO> result = enterRecordService.getEnterRecordPage(reqVO);
         return success(result);
     }
@@ -103,10 +103,8 @@ public class EnterRecordController {
     public void exportRecordExcel(@Valid EnterRecordPageReqVO pageReqVO,
                                   HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<EnterRecordDO> list = enterRecordService.getRecordPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "入场记录.xls", "数据", EnterRecordRespVO.class,
-                BeanUtils.toBean(list, EnterRecordRespVO.class));
+        PageResult<MyEnterRecordRespVO> pageResult = enterRecordService.getEnterRecordPage(pageReqVO);
+        ExcelUtils.write(response, "入场记录.xls", "数据", MyEnterRecordRespVO.class, pageResult.getList());
     }
 
     @PostMapping("/create")

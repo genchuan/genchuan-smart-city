@@ -93,14 +93,6 @@ public class CheckTaskController {
     @Operation(summary = "获得稽查任务分页")
     @PreAuthorize("@ss.hasPermission('check:task:query')")
     public CommonResult<PageResult<CheckTaskRespVO>> getTaskPage(@Valid CheckTaskPageReqVO pageReqVO) {
-        PageResult<CheckTaskDO> pageResult = taskService.getTaskPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, CheckTaskRespVO.class));
-    }
-
-    @GetMapping("/my/page")
-    @Operation(summary = "稽查任务筛选刷新")
-    @PreAuthorize("@ss.hasPermission('vehiclepass:inspect-task:query')")
-    public CommonResult<PageResult<CheckTaskRespVO>> getMyTaskPage(@Valid CheckTaskPageReqVO pageReqVO) {
         return success(taskService.getTaskPageWithJoin(pageReqVO));
     }
 
@@ -166,10 +158,8 @@ public class CheckTaskController {
     public void exportTaskExcel(@Valid CheckTaskPageReqVO pageReqVO,
                                 HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<CheckTaskDO> list = taskService.getTaskPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "稽查任务.xls", "数据", CheckTaskRespVO.class,
-                BeanUtils.toBean(list, CheckTaskRespVO.class));
+        PageResult<CheckTaskRespVO> pageResult = taskService.getTaskPageWithJoin(pageReqVO);
+        ExcelUtils.write(response, "稽查任务.xls", "数据", CheckTaskRespVO.class, pageResult.getList());
     }
 
 }

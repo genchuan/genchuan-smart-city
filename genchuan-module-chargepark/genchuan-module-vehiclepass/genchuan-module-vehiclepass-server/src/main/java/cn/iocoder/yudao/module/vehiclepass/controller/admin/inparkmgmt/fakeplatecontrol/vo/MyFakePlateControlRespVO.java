@@ -22,14 +22,8 @@ public class MyFakePlateControlRespVO {
     @Schema(description = "处置状态", example = "未处理")
     private String status;
 
-    @Schema(description = "场站ID", example = "1")
-    private Long stationId;
-
     @Schema(description = "场站名称", example = "XX停车场")
-    private String stationName; // 关联显示名称
-
-    @Schema(description = "处置人ID", example = "1")
-    private Long handleUserId;
+    private String stationName;
 
     @Schema(description = "处置人姓名", example = "管理员")
     private String handleUserName; // 关联显示名称

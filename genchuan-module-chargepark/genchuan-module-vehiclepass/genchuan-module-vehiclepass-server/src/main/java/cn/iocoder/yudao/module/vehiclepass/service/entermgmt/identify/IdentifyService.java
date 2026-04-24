@@ -58,7 +58,7 @@ public interface IdentifyService {
      * @param pageReqVO 分页查询
      * @return 车牌识别分页
      */
-    PageResult<IdentifyDO> getIdentifyPage(IdentifyPageReqVO pageReqVO);
+    PageResult<IdentifyRespVO> getIdentifyPage(IdentifyPageReqVO pageReqVO);
     /**
      * 手动录入车牌识别
      *

@@ -114,14 +114,6 @@ public class LeaveRecordController {
     @Operation(summary = "获得离场记录分页")
     @PreAuthorize("@ss.hasPermission('leave:record:query')")
     public CommonResult<PageResult<LeaveRecordRespVO>> getRecordPage(@Valid LeaveRecordPageReqVO pageReqVO) {
-        PageResult<LeaveRecordDO> pageResult = leaveRecordService.getRecordPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, LeaveRecordRespVO.class));
-    }
-
-    @GetMapping("/my/page")
-    @Operation(summary = "离场记录筛选刷新")
-    @PreAuthorize("@ss.hasPermission('vehiclepass:leave-record:query')")
-    public CommonResult<PageResult<LeaveRecordRespVO>> getMyRecordPage(@Valid LeaveRecordPageReqVO pageReqVO) {
         return success(leaveRecordService.getRecordPageWithJoin(pageReqVO));
     }
 

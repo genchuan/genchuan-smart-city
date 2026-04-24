@@ -90,16 +90,9 @@ public class FakePlateControlController {
 
     @GetMapping("/page")
     @Operation(summary = "获得套牌管控分页")
-    @PreAuthorize("@ss.hasPermission('fake:plate-control:query')")
-    public CommonResult<PageResult<FakePlateControlRespVO>> getPlateControlPage(@Valid FakePlateControlPageReqVO pageReqVO) {
-        PageResult<FakePlateControlDO> pageResult = plateControlService.getPlateControlPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, FakePlateControlRespVO.class));
-    }
-
-    @GetMapping("/my/page")
     @PreAuthorize("@ss.hasPermission('vehiclepass:fake-plate-control:query')")
-    public CommonResult<PageResult<MyFakePlateControlRespVO>> page(FakePlateControlPageReqVO reqVO) {
-        return CommonResult.success(plateControlService.getFakePlateControlPage(reqVO));
+    public CommonResult<PageResult<MyFakePlateControlRespVO>> getPlateControlPage(@Valid FakePlateControlPageReqVO pageReqVO) {
+        return success(plateControlService.getFakePlateControlPage(pageReqVO));
     }
 
     @PostMapping("/batch-handle")
@@ -148,10 +141,8 @@ public class FakePlateControlController {
     public void exportPlateControlExcel(@Valid FakePlateControlPageReqVO pageReqVO,
                                         HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<FakePlateControlDO> list = plateControlService.getPlateControlPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "套牌管控.xls", "数据", FakePlateControlRespVO.class,
-                BeanUtils.toBean(list, FakePlateControlRespVO.class));
+        PageResult<MyFakePlateControlRespVO> pageResult = plateControlService.getFakePlateControlPage(pageReqVO);
+        ExcelUtils.write(response, "套牌管控.xls", "数据", MyFakePlateControlRespVO.class, pageResult.getList());
     }
 
 }
