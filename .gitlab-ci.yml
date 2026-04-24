@@ -17,6 +17,7 @@ Build:
           ["yudao-gateway"]="yudao-gateway"
           ["yudao-module-system-server"]="yudao-module-system/yudao-module-system-server"
           ["yudao-module-infra-server"]="yudao-module-infra/yudao-module-infra-server"
+          ["yudao-module-pay-server"]="yudao-module-pay/yudao-module-pay-server"
           ["genchuan-module-studentmgmt-server"]="genchuan-module-education-teaching/genchuan-module-studentmgmt/genchuan-module-studentmgmt-server"
           ["genchuan-module-envirhealth-server"]="genchuan-module-urban/genchuan-module-envirhealth/genchuan-module-envirhealth-server"
           ["genchuan-module-facility-server"]="genchuan-module-urban/genchuan-module-facility/genchuan-module-facility-server"
@@ -35,6 +36,7 @@ Build:
           ["genchuan-module-marketop-server"]="genchuan-module-chargepark/genchuan-module-marketop/genchuan-module-marketop-server"
           ["genchuan-module-carservice-server"]="genchuan-module-chargepark/genchuan-module-carservice/genchuan-module-carservice-server"
           ["genchuan-module-vehiclepass-server"]="genchuan-module-chargepark/genchuan-module-vehiclepass/genchuan-module-vehiclepass-server"
+          
       )
 
       # ===================== 核心优化逻辑 =====================

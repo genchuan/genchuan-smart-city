@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Data
 public class AddReq {
 
+
     @Schema(description = "[片区编号] 唯一标识片区编号", requiredMode = Schema.RequiredMode.REQUIRED, example = "AREA-20250601-001")
     @NotEmpty(message = "[片区编号] 唯一标识片区编号不能为空")
     private String areaNo;
@@ -38,6 +39,9 @@ public class AddReq {
 
     @Schema(description = "[负责人ID] 关联芋道用户表system_user", example = "10001")
     private Long leaderId;
+    @Schema(description = "[负责人名称] 片区名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "张得法")
+//    @NotEmpty(message = "[负责人名称] 负责人名称不能为空")
+    private String leaderName;
 
     @Schema(description = "[联系电话] 联系电话", example = "13800138000")
     private String phone;

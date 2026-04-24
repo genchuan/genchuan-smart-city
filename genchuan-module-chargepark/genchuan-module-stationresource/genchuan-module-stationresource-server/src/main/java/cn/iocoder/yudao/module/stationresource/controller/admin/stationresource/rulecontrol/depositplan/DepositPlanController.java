@@ -117,7 +117,7 @@ public class DepositPlanController {
         return success(BeanUtils.toBean(depositPlan, DepositPlanRespVO.class));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出押金方案 Excel")
     @PreAuthorize("@ss.hasPermission('stationresource:deposit-plan:export')")
     @ApiAccessLog(operateType = EXPORT)

@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.chargepark.carservice.service.carguide;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationNearbyListRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationNearbyRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationPageReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationSaveReqVO;
@@ -91,16 +92,20 @@ public class NearStationServiceImpl implements NearStationService {
     }
 
     @Override
-    public List<NearStationNearbyRespVO> listNearbyStations(Long id, Double radiusKm) {
+    public NearStationNearbyListRespVO listNearbyStations(Long id, Double radiusKm) {
         NearStationDO record = nearStationMapper.selectById(id);
         if (record == null) {
             throw exception(NEAR_STATION_NOT_EXISTS);
         }
+        double r = (radiusKm == null || radiusKm <= 0) ? DEFAULT_RADIUS_KM : radiusKm;
+        NearStationNearbyListRespVO resp = new NearStationNearbyListRespVO();
+        resp.setRadiusKm(BigDecimal.valueOf(r).setScale(2, RoundingMode.HALF_UP));
+
         double[] center = parseLonLat(record.getQueryLocation());
         if (center == null) {
-            return Collections.emptyList(); // query_location 不合法,直接给空
+            resp.setList(Collections.emptyList());
+            return resp;
         }
-        double r = (radiusKm == null || radiusKm <= 0) ? DEFAULT_RADIUS_KM : radiusKm;
 
         List<StationInfoRespDTO> stations;
         try {
@@ -108,10 +113,11 @@ public class NearStationServiceImpl implements NearStationService {
             stations = rpc == null || rpc.getData() == null ? new ArrayList<>() : rpc.getData();
         } catch (Exception ex) {
             log.warn("[listNearbyStations] stationresource RPC 失败,降级返回空列表", ex);
-            return Collections.emptyList();
+            resp.setList(Collections.emptyList());
+            return resp;
         }
 
-        return stations.stream()
+        List<NearStationNearbyRespVO> list = stations.stream()
                 .filter(s -> s.getLon() != null && s.getLat() != null)
                 .map(s -> {
                     double km = haversineKm(center[0], center[1],
@@ -128,6 +134,8 @@ public class NearStationServiceImpl implements NearStationService {
                 .filter(vo -> vo.getDistanceKm().doubleValue() <= r)
                 .sorted(Comparator.comparing(NearStationNearbyRespVO::getDistanceKm))
                 .collect(Collectors.toList());
+        resp.setList(list);
+        return resp;
     }
 
     /** 解析 "lon,lat" 字符串,不合法返回 null */

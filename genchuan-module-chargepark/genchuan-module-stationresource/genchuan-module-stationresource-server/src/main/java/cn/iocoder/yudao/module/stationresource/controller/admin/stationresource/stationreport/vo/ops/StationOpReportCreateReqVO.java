@@ -15,11 +15,11 @@ public class StationOpReportCreateReqVO {
     private String reportCycle;
 
 //    @NotNull(message = "开始时间不能为空")
-    @Schema(description = "开始时间 yyyy-MM-dd HH:mm:ss", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "开始时间 时间戳", requiredMode = Schema.RequiredMode.REQUIRED,example = "1742010986000")
     private LocalDateTime reportStartTime;
 
 //    @NotNull(message = "结束时间不能为空")
-    @Schema(description = "结束时间 yyyy-MM-dd HH:mm:ss", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "结束时间 时间戳", requiredMode = Schema.RequiredMode.REQUIRED,example = "1778011986000")
     private LocalDateTime reportEndTime;
 
     @Schema(description = "备注")

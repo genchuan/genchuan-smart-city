@@ -170,7 +170,7 @@ public class AssetCheckServiceImpl implements AssetCheckService {
 
         // 3. 可选的业务逻辑：检查当前状态是否可以确认
         // 如果只有特定状态才能确认，可以添加以下检查
-         if (!"2".equals(assetCheck.getStatus())) { // 假设只有状态为2（已执行）的可以确认
+         if (!"3".equals(assetCheck.getStatus())) { // 只有状态为3（已执行）的可以确认
              throw exception("只有特定状态才能确认");
          }
 

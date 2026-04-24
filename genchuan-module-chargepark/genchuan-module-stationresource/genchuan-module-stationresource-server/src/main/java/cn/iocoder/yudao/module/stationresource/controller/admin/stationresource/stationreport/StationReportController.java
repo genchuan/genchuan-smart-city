@@ -7,6 +7,8 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.*;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.extraops.StationOpHistoryReportCreateReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.extraops.StationOpReportBatchBackReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.ops.*;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.stationreport.StationReportDO;
 import cn.iocoder.yudao.module.stationresource.service.stationresource.stationreport.StationReportService;
@@ -39,6 +41,21 @@ public class StationReportController {
     @Resource
     private StationReportService stationReportService;
 
+    @PostMapping("/create-batch-back")
+    @Operation(summary = "批量生成：当前周期 + 往前 N 个周期报表")
+    @PreAuthorize("@ss.hasPermission('stationresource:station-report:create')")
+    public CommonResult<List<Long>> createBatchBackReport(
+            @Valid @RequestBody StationOpReportBatchBackReqVO reqVO) {
+        List<Long> ids = stationReportService.addBatchBackReport(reqVO);
+        return success(ids);
+    }
+    @PostMapping("/create-history")
+    @Operation(summary = "生成历史场站资源报表")
+    @PreAuthorize("@ss.hasPermission('stationresource:station-report:create')")
+    public CommonResult<Long> createHistoryReport(@Valid @RequestBody StationOpHistoryReportCreateReqVO reqVO) {
+        Long id = stationReportService.addHistoryReport(reqVO);
+        return success(id);
+    }
 
     @GetMapping("/chart")
     @Operation(summary = "获取场站资源周期报表图表数据", description = "适配Echarts全维度可视化数据")
@@ -64,7 +81,7 @@ public class StationReportController {
         return success(BeanUtils.toBean(pageResult, StationReportRespVO.class));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出场站资源报表 Excel")
     @PreAuthorize("@ss.hasPermission('stationresource:station-report:export')")
     @ApiAccessLog(operateType = EXPORT)
