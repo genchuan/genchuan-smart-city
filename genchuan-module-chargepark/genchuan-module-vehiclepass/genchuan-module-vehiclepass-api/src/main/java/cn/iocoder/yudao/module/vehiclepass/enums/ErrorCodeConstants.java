@@ -26,4 +26,6 @@ public interface ErrorCodeConstants {
     ErrorCode LEAVE_NOT_EXISTS = new ErrorCode(500, "无牌出场不存在");
 
     ErrorCode TASK_NOT_EXISTS = new ErrorCode(500, "稽查任务不存在");
+
+    ErrorCode HANDLE_NOT_EXISTS = new ErrorCode(500, "结果处置不存在");
 }
