@@ -6,6 +6,8 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.v
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputAuditReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputConfirmReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputCorrectReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.siteinput.carinput.CarInputDO;
 import cn.iocoder.yudao.module.vehiclepass.service.siteinput.carinput.CarInputService;
@@ -129,6 +131,13 @@ public class CarInputController {
     public CommonResult<Boolean> correct(@Valid @RequestBody CarInputCorrectReqVO reqVO) {
         inputService.correct(reqVO);
         return success(true);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "车辆录入统计")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:car-input:chart')")
+    public CommonResult<CarInputChartRespVO> getChart(@Valid CarInputChartReqVO reqVO) {
+        return success(inputService.getChart(reqVO));
     }
 
 }

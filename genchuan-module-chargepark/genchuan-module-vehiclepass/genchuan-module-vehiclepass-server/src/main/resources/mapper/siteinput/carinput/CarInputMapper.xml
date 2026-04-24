@@ -58,4 +58,51 @@
         ORDER BY c.id DESC
     </select>
 
+    <!-- 录入量趋势统计 -->
+    <select id="selectInputCountTrend" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputChartRespVO$InputCountTrend">
+        SELECT
+            DATE(c.input_time) AS date,
+            COUNT(*) AS count
+        FROM car_input c
+        WHERE c.deleted = 0
+        <if test="reqVO.startTime != null and reqVO.endTime != null">
+            AND c.input_time BETWEEN FROM_UNIXTIME(#{reqVO.startTime}) AND FROM_UNIXTIME(#{reqVO.endTime})
+        </if>
+        <if test="reqVO.areaId != null">
+            AND c.area_id = #{reqVO.areaId}
+        </if>
+        GROUP BY DATE(c.input_time)
+        ORDER BY date ASC
+    </select>
+
+    <!-- 录入量统计 -->
+    <select id="selectInputCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM car_input c
+        WHERE c.deleted = 0
+        <if test="reqVO.startTime != null and reqVO.endTime != null">
+            AND c.input_time BETWEEN FROM_UNIXTIME(#{reqVO.startTime}) AND FROM_UNIXTIME(#{reqVO.endTime})
+        </if>
+        <if test="reqVO.areaId != null">
+            AND c.area_id = #{reqVO.areaId}
+        </if>
+    </select>
+
+    <!-- 审核通过率统计 -->
+    <select id="selectAuditPassRate" resultType="java.lang.Double">
+        SELECT
+            IFNULL(
+                SUM(CASE WHEN c.status = '已通过' THEN 1 ELSE 0 END) * 100.0 / COUNT(*),
+                0
+            ) AS rate
+        FROM car_input c
+        WHERE c.deleted = 0
+        <if test="reqVO.startTime != null and reqVO.endTime != null">
+            AND c.input_time BETWEEN FROM_UNIXTIME(#{reqVO.startTime}) AND FROM_UNIXTIME(#{reqVO.endTime})
+        </if>
+        <if test="reqVO.areaId != null">
+            AND c.area_id = #{reqVO.areaId}
+        </if>
+    </select>
+
 </mapper>

@@ -7,6 +7,8 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.siteinput.carinput.CarInputDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -46,5 +48,20 @@ public interface CarInputMapper extends BaseMapperX<CarInputDO> {
      * 分页查询（使用JOIN查询关联表）
      */
     IPage<CarInputRespVO> selectPageJoin(Page<?> page, @Param("reqVO") CarInputPageReqVO reqVO);
+
+    /**
+     * 统计录入量趋势
+     */
+    List<CarInputChartRespVO.InputCountTrend> selectInputCountTrend(@Param("reqVO") CarInputChartReqVO reqVO);
+
+    /**
+     * 统计录入量
+     */
+    Long selectInputCount(@Param("reqVO") CarInputChartReqVO reqVO);
+
+    /**
+     * 统计审核通过率
+     */
+    Double selectAuditPassRate(@Param("reqVO") CarInputChartReqVO reqVO);
 
 }

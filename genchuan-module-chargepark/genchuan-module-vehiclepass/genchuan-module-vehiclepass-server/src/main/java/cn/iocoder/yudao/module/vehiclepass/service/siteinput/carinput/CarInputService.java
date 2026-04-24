@@ -8,6 +8,8 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.v
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputAuditReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputConfirmReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputCorrectReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.siteinput.carinput.CarInputDO;
 import jakarta.validation.*;
@@ -101,5 +103,13 @@ public interface CarInputService {
      * @param reqVO 修正请求
      */
     void correct(CarInputCorrectReqVO reqVO);
+
+    /**
+     * 获取车辆录入统计
+     *
+     * @param reqVO 统计请求
+     * @return 统计结果
+     */
+    CarInputChartRespVO getChart(CarInputChartReqVO reqVO);
 
 }

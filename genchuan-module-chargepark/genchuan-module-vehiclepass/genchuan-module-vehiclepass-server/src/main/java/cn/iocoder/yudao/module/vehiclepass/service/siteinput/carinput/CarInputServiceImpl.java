@@ -7,6 +7,8 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.v
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputAuditReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputConfirmReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputCorrectReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.siteinput.carinput.CarInputDO;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.siteinput.carinput.CarInputMapper;
@@ -144,6 +146,23 @@ public class CarInputServiceImpl implements CarInputService {
         updateObj.setAreaId(reqVO.getAreaId());
         updateObj.setRemark(reqVO.getRemark());
         inputMapper.updateById(updateObj);
+    }
+
+    @Override
+    public CarInputChartRespVO getChart(CarInputChartReqVO reqVO) {
+        CarInputChartRespVO respVO = new CarInputChartRespVO();
+
+        // 录入量趋势
+        respVO.setInputCountTrend(inputMapper.selectInputCountTrend(reqVO));
+
+        // 卡片数据
+        CarInputChartRespVO.CardData cardData = new CarInputChartRespVO.CardData();
+        cardData.setInputCount(inputMapper.selectInputCount(reqVO));
+        Double auditPassRate = inputMapper.selectAuditPassRate(reqVO);
+        cardData.setAuditPassRate(auditPassRate != null ? auditPassRate : 0.0);
+        respVO.setCardData(cardData);
+
+        return respVO;
     }
 
 }
