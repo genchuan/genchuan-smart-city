@@ -20,7 +20,7 @@ public interface BlackWhiteListMapper extends BaseMapperX<BlackWhiteListDO> {
 
     default PageResult<BlackWhiteListDO> selectPage(BlackWhiteListPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<BlackWhiteListDO>()
-                .eqIfPresent(BlackWhiteListDO::getPlateNo, reqVO.getPlateNo())
+                .likeIfPresent(BlackWhiteListDO::getPlateNo, reqVO.getPlateNo())
                 .eqIfPresent(BlackWhiteListDO::getType, reqVO.getType())
                 .eqIfPresent(BlackWhiteListDO::getSubType, reqVO.getSubType())
                 .betweenIfPresent(BlackWhiteListDO::getStartTime, reqVO.getStartTime())

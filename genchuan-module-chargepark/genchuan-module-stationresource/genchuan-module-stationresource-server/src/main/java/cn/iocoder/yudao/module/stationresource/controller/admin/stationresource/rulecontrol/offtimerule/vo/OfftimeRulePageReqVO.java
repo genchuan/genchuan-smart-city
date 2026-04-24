@@ -18,8 +18,8 @@ public class OfftimeRulePageReqVO extends PageParam {
     private Long stationId;
 
     @Schema(description = "[空闲时段] 错时优惠时段描述")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private String[] offTime;
+//    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private String offTime;
 
     @Schema(description = "[错时费率] 单位：元/小时或元/次")
     private BigDecimal offFee;
