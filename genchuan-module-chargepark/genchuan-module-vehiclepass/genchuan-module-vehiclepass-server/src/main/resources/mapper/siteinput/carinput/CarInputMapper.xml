@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.vehiclepass.dal.mysql.siteinput.carinput.CarInputMapper">
+
+    <select id="selectPageJoin" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputRespVO">
+        SELECT
+            c.id AS id,
+            c.plate_no AS plateNo,
+            c.space_id AS spaceId,
+            s.space_no AS spaceNo,
+            c.input_time AS inputTime,
+            c.status AS status,
+            c.area_id AS areaId,
+            a.name AS areaName,
+            c.input_user_id AS inputUserId,
+            u1.nickname AS inputUserName,
+            c.audit_user_id AS auditUserId,
+            u2.nickname AS auditUserName,
+            c.audit_time AS auditTime,
+            c.audit_comment AS auditComment,
+            c.remark AS remark,
+            c.reserve1 AS reserve1,
+            c.reserve2 AS reserve2,
+            c.creator AS creator,
+            c.updater AS updater,
+            c.create_time AS createTime,
+            c.update_time AS updateTime
+        FROM car_input c
+        LEFT JOIN area_info a ON c.area_id = a.id AND a.deleted = 0
+        LEFT JOIN user_info u1 ON c.input_user_id = u1.id AND u1.deleted = 0
+        LEFT JOIN user_info u2 ON c.audit_user_id = u2.id AND u2.deleted = 0
+        LEFT JOIN parking_space_info s ON c.space_id = s.id AND s.deleted = 0
+        WHERE c.deleted = 0
+        <if test="reqVO.plateNo != null and reqVO.plateNo != ''">
+            AND c.plate_no LIKE CONCAT('%', #{reqVO.plateNo}, '%')
+        </if>
+        <if test="reqVO.spaceId != null">
+            AND c.space_id = #{reqVO.spaceId}
+        </if>
+        <if test="reqVO.inputTimeNew != null and reqVO.inputTimeNew.length == 2">
+            AND c.input_time BETWEEN FROM_UNIXTIME(#{reqVO.inputTimeNew[0]}) AND FROM_UNIXTIME(#{reqVO.inputTimeNew[1]})
+        </if>
+        <if test="reqVO.status != null and reqVO.status != ''">
+            AND c.status = #{reqVO.status}
+        </if>
+        <if test="reqVO.areaId != null">
+            AND c.area_id = #{reqVO.areaId}
+        </if>
+        <if test="reqVO.inputUserId != null">
+            AND c.input_user_id = #{reqVO.inputUserId}
+        </if>
+        <if test="reqVO.auditUserId != null">
+            AND c.audit_user_id = #{reqVO.auditUserId}
+        </if>
+        <if test="reqVO.remark != null and reqVO.remark != ''">
+            AND c.remark LIKE CONCAT('%', #{reqVO.remark}, '%')
+        </if>
+        ORDER BY c.id DESC
+    </select>
+
+</mapper>
