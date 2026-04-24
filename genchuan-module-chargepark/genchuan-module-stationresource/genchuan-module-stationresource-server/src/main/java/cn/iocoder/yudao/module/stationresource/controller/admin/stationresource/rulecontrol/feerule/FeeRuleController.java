@@ -92,7 +92,7 @@ public class FeeRuleController {
         FeeRuleImportResp result = feeRuleService.importFeeRule(file, updateSupport);
         return success(result);
     }
-    @PostMapping("/add")
+    @PostMapping("/create")
     @Operation(summary = "新增收费规则")
     @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:create')")
     public CommonResult<Boolean> addFeeRule(@Valid @RequestBody AddFeeRuleReqVO reqVO) {
