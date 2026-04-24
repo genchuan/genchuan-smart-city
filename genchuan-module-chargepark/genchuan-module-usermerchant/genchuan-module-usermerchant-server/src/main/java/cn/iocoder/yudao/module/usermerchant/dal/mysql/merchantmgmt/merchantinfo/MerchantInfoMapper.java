@@ -3,9 +3,15 @@ package cn.iocoder.yudao.module.usermerchant.dal.mysql.merchantmgmt.merchantinfo
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.vo.UserInfoChartRespVO;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.merchantmgmt.merchantinfo.MerchantInfoDO;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantinfo.vo.*;
+import org.apache.ibatis.annotations.Param;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 商户信息 Mapper
@@ -30,5 +36,24 @@ public interface MerchantInfoMapper extends BaseMapperX<MerchantInfoDO> {
                 .eqIfPresent(MerchantInfoDO::getRemark, reqVO.getRemark())
                 .orderByDesc(MerchantInfoDO::getId));
     }
+
+    List<MerchantInfoChartRespVO.MerchantGrowthTrendVO> selectMerchantGrowthTrend(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
+            @Param("granularity") String granularity
+    );
+
+    List<MerchantInfoChartRespVO.MerchantTypeDistributionVO> selectMerchantTypeDistribution(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
+    Long selectTotalMerchantCount(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    Long selectNewMerchantCount(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    Long getIdByNickname(String merchantName);
+
+    void increaseWalletBalance(@Param("merchantId") Long merchantId, @Param("amount") BigDecimal amount);
 
 }

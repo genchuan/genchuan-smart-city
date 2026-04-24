@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.usermerchant.dal.mysql.merchantmgmt.merchantrecharge.MerchantRechargeMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+    <update id="batchUpdateStatusForConfirm">
+        UPDATE merchant_recharge
+        SET status = '已支付',
+        confirm_time = #{now}
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        AND status = '待支付'
+    </update>
+
+    <!-- 折线图：按时间粒度统计充值金额总和 -->
+    <select id="selectRechargeAmountTrend" resultType="cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantrecharge.vo.MerchantRechargeChartRespVO$RechargeAmountTrendVO">
+        SELECT
+        <choose>
+            <when test="granularity == 'year'">
+                DATE_FORMAT(create_time, '%Y') as date,
+                SUM(amount) as amount
+            </when>
+            <when test="granularity == 'month'">
+                DATE_FORMAT(create_time, '%Y-%m') as date,
+                SUM(amount) as amount
+            </when>
+            <when test="granularity == 'day'">
+                DATE_FORMAT(create_time, '%Y-%m-%d') as date,
+                SUM(amount) as amount
+            </when>
+            <otherwise>
+                DATE(create_time) as date,
+                SUM(amount) as amount
+            </otherwise>
+        </choose>
+        FROM merchant_recharge
+        WHERE deleted = 0
+        <if test="start != null">
+            AND create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt;= #{end}
+        </if>
+        GROUP BY date
+        ORDER BY date ASC
+    </select>
+
+    <!-- 总充值金额 -->
+    <select id="selectTotalRechargeAmount" resultType="java.math.BigDecimal">
+        SELECT SUM(amount)
+        FROM merchant_recharge
+        WHERE deleted = 0
+        <if test="start != null">
+            AND create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt;= #{end}
+        </if>
+    </select>
+
+    <!-- 充值成功率：已支付订单数 / 总订单数 -->
+    <select id="selectRechargeSuccessRate" resultType="java.math.BigDecimal">
+        SELECT ROUND(
+        IFNULL(
+        SUM(CASE WHEN status = '已支付' THEN 1 ELSE 0 END) /
+        NULLIF(COUNT(*), 0)
+        , 0), 2
+        ) AS successRate
+        FROM merchant_recharge
+        WHERE deleted = 0
+        <if test="start != null">
+            AND create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt;= #{end}
+        </if>
+    </select>
+
+</mapper>

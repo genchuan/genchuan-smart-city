@@ -9,26 +9,22 @@ import java.time.LocalDateTime;
 @Data
 public class MerchantLinkSaveReqVO {
 
-    @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "4526")
+    @Schema(description = "主键ID")
     private Long id;
 
-    @Schema(description = "商户ID，关联merchant_info.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "31982")
-    @NotNull(message = "商户ID，关联merchant_info.id不能为空")
+    @Schema(description = "商户ID，关联merchant_info.id")
     private Long merchantId;
 
-    @Schema(description = "对接类型：数据对接/接口对接/商品同步/核销同步", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @NotEmpty(message = "对接类型：数据对接/接口对接/商品同步/核销同步不能为空")
+    @Schema(description = "对接类型：数据对接/接口对接/商品同步/核销同步")
     private String linkType;
 
-    @Schema(description = "接口地址", requiredMode = Schema.RequiredMode.REQUIRED, example = "https://www.iocoder.cn")
-    @NotEmpty(message = "接口地址不能为空")
+    @Schema(description = "接口地址")
     private String apiUrl;
 
     @Schema(description = "接口密钥")
     private String apiKey;
 
-    @Schema(description = "对接状态：未对接/已对接", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @NotEmpty(message = "对接状态：未对接/已对接不能为空")
+    @Schema(description = "对接状态：未对接/已对接")
     private String status;
 
     @Schema(description = "对接生效时间")

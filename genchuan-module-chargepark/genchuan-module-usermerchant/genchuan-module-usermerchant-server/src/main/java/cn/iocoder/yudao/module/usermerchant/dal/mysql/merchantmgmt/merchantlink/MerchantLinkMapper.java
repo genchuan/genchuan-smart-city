@@ -1,13 +1,17 @@
 package cn.iocoder.yudao.module.usermerchant.dal.mysql.merchantmgmt.merchantlink;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.usercar.vo.UserCarChartRespVO;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.merchantmgmt.merchantlink.MerchantLinkDO;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantlink.vo.*;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 商户对接 Mapper
@@ -35,5 +39,13 @@ public interface MerchantLinkMapper extends BaseMapperX<MerchantLinkDO> {
                 .betweenIfPresent(MerchantLinkDO::getUpdateTime, reqVO.getUpdateTime())
                 .orderByDesc(MerchantLinkDO::getId));
     }
+
+    List<MerchantLinkChartRespVO.LinkTypeDistributionVO> selectLinkTypeDistribution(@Param("start") LocalDateTime start,
+                                                                             @Param("end") LocalDateTime end,
+                                                                             @Param("granularity") String granularity);
+
+    Long selectLinkMerchantCount(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+    BigDecimal selectLinkSuccessRate(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
 }
