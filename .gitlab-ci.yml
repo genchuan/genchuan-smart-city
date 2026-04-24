@@ -35,6 +35,7 @@ Build:
           ["genchuan-module-marketop-server"]="genchuan-module-chargepark/genchuan-module-marketop/genchuan-module-marketop-server"
           ["genchuan-module-carservice-server"]="genchuan-module-chargepark/genchuan-module-carservice/genchuan-module-carservice-server"
           ["genchuan-module-vehiclepass-server"]="genchuan-module-chargepark/genchuan-module-vehiclepass/genchuan-module-vehiclepass-server"
+          ["genchuan-module-pay-server"]="genchuan-module-pay/genchuan-module-pay-server"
       )
 
       # ===================== 核心优化逻辑 =====================
