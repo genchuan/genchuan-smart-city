@@ -82,7 +82,7 @@ public class DebtExpandController {
         debtExpandService.updateDebtExpandStatus(reqVO.getIds(), "已禁用");
         return success(true);
     }
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出联合追缴拓场配置 Excel")
     @PreAuthorize("@ss.hasPermission('stationresource:debt-expand:export')")
     @ApiAccessLog(operateType = EXPORT)

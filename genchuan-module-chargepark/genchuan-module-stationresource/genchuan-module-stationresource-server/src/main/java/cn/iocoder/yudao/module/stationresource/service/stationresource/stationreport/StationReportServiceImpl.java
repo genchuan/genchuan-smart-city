@@ -11,6 +11,8 @@ import cn.iocoder.yudao.framework.mybatis.core.util.MyBatisUtils;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.framework.tenant.core.context.TenantContextHolder;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.*;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.extraops.StationOpHistoryReportCreateReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.extraops.StationOpReportBatchBackReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationreport.vo.ops.*;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.areamgmt.areainfo.AreaInfoDO;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.parkingspace.parkingspaceinfo.ParkingSpaceInfoDO;
@@ -66,6 +68,135 @@ public class StationReportServiceImpl implements StationReportService {
      */
     @Resource
     private StationReportMapper stationReportMapper;
+
+    /**
+     * 【独立方法】批量生成：当前周期 + 往前 N 个周期
+     * 完全不影响历史报表、原有生成报表
+     */
+    @Override
+    public List<Long> addBatchBackReport(StationOpReportBatchBackReqVO reqVO) {
+        // 1. 校验
+        String reportCycle = reqVO.getReportCycle();
+        Integer backNum = reqVO.getBackNum();
+        if (backNum < 0 || backNum > 36) {
+            throw exception("回溯周期必须在 0~36 之间");
+        }
+
+        List<String> allow = Arrays.asList("日报","周报","月报","季报","半年报","年报");
+        if (!allow.contains(reportCycle)) {
+            throw exception("仅支持日报/周报/月报/季报/半年报/年报");
+        }
+
+        List<Long> resultIds = new ArrayList<>();
+        Date now = new Date();
+
+        // 2. 循环生成：0=当前，1=上一个…backNum=往前N个
+        for (int i = 0; i <= backNum; i++) {
+            // 偏移日期
+            Date targetDate = getOffsetDate(now, reportCycle, i);
+
+            // 计算该周期的起止时间
+            Date[] cycle = autoCalcHistoryReportTime(reportCycle, targetDate);
+            LocalDateTime start = LocalDateTime.ofInstant(cycle[0].toInstant(), ZoneId.systemDefault());
+            LocalDateTime end = LocalDateTime.ofInstant(cycle[1].toInstant(), ZoneId.systemDefault());
+
+            // 组装成你原有VO，直接复用你【最稳定的 addReport】
+            StationOpReportCreateReqVO newReq = new StationOpReportCreateReqVO();
+            newReq.setReportCycle(reportCycle);
+            newReq.setReportStartTime(start.withNano(0));
+            newReq.setReportEndTime(end.withNano(0));
+            newReq.setRemark(reqVO.getRemark());
+
+            // 直接调用你原来的方法！！！
+            Long id = addReport(newReq);
+            resultIds.add(id);
+        }
+
+        return resultIds;
+    }
+
+    // ===================== 内部小工具（你可以直接放在ServiceImpl里）=====================
+    private Date getOffsetDate(Date baseDate, String cycle, int offset) {
+        if (offset == 0) return baseDate;
+        switch (cycle) {
+            case "日报": return DateUtil.offsetDay(baseDate, -offset);
+            case "周报": return DateUtil.offsetWeek(baseDate, -offset);
+            case "月报": return DateUtil.offsetMonth(baseDate, -offset);
+            case "季报": return DateUtil.offsetMonth(baseDate, -offset * 3);
+            case "半年报": return DateUtil.offsetMonth(baseDate, -offset * 6);
+            case "年报": return DateUtil.offsetYear(baseDate, -offset);
+            default: return baseDate;
+        }
+    }
+    @Override
+    public Long addHistoryReport(StationOpHistoryReportCreateReqVO reqVO) {
+        System.out.println("历史报表生成请求：" + reqVO);
+
+        // ========== 核心：根据 目标日期 + 周期 自动计算历史时间 ==========
+        String reportType = reqVO.getReportCycle();
+        Date targetDate = Date.from(reqVO.getTargetDate().atZone(ZoneId.systemDefault()).toInstant());
+
+        // 计算历史周期的开始/结束时间
+        Date[] dates = autoCalcHistoryReportTime(reportType, targetDate);
+        LocalDateTime startTime = LocalDateTime.ofInstant(dates[0].toInstant(), ZoneId.systemDefault());
+        LocalDateTime endTime = LocalDateTime.ofInstant(dates[1].toInstant(), ZoneId.systemDefault());
+
+        // 组装成你原有 VO，完全复用原有逻辑
+        StationOpReportCreateReqVO newReq = new StationOpReportCreateReqVO();
+        newReq.setReportCycle(reportType);
+        newReq.setReportStartTime(startTime.withNano(0));
+        newReq.setReportEndTime(endTime.withNano(0));
+        newReq.setRemark(reqVO.getRemark());
+
+        // ========== 直接调用你原来的 addReport 完成统计！！！ ==========
+        return addReport(newReq);
+    }
+
+    /**
+     * 【历史报表专用】根据周期类型 + 目标日期，计算该周期的起止时间
+     */
+    private Date[] autoCalcHistoryReportTime(String reportType, Date targetDate) {
+        Date startTime;
+        Date endTime;
+
+        switch (reportType) {
+            case "日报":
+                startTime = DateUtil.beginOfDay(targetDate);
+                endTime = DateUtil.endOfDay(targetDate);
+                break;
+            case "周报":
+                startTime = DateUtil.beginOfWeek(targetDate);
+                endTime = DateUtil.endOfWeek(targetDate);
+                break;
+            case "月报":
+                startTime = DateUtil.beginOfMonth(targetDate);
+                endTime = DateUtil.endOfMonth(targetDate);
+                break;
+            case "季报":
+                startTime = DateUtil.beginOfQuarter(targetDate);
+                endTime = DateUtil.endOfQuarter(targetDate);
+                break;
+            case "半年报":
+                int month = DateUtil.month(targetDate) + 1;
+                int year = DateUtil.year(targetDate);
+                if (month <= 6) {
+                    startTime = DateUtil.parse(year + "-01-01");
+                    endTime = DateUtil.parse(year + "-06-30");
+                } else {
+                    startTime = DateUtil.parse(year + "-07-01");
+                    endTime = DateUtil.parse(year + "-12-31");
+                }
+                break;
+            case "年报":
+                startTime = DateUtil.beginOfYear(targetDate);
+                endTime = DateUtil.endOfYear(targetDate);
+                break;
+            default:
+                startTime = DateUtil.beginOfDay(targetDate);
+                endTime = DateUtil.endOfDay(targetDate);
+        }
+        return new Date[]{startTime, endTime};
+    }
 
     @Override
     public StationOpReportChartRespVO getReportChartData(StationOpReportChartReqVO reqVO) {
@@ -200,15 +331,35 @@ public class StationReportServiceImpl implements StationReportService {
     @Override
     public Long addReport(StationOpReportCreateReqVO reqVO) {
         System.out.println("cs2026-04-23 16:34:06:"+reqVO);
-        // ========== 核心：自动根据报表类型计算时间(自定义报表：保留前端传入的 startTime、endTime 不变) ==========
+
+        // ===================== 1. 报表类型强校验 =====================
+        List<String> allowTypes = Arrays.asList(
+                "日报", "周报", "月报", "季报", "半年报", "年报", "自定义报表"
+        );
+        if (StrUtil.isBlank(reqVO.getReportCycle()) || !allowTypes.contains(reqVO.getReportCycle())) {
+            throw exception("报表类型只能是：日报/周报/月报/季报/半年报/年报/自定义报表");
+        }
+
+        // ===================== 2. 自定义报表：强制校验时间必须传 =====================
         String reportType = reqVO.getReportCycle();
-        if (reportType!=null){
-            //如果不是自定义报表，自动计算时间
-            if (StrUtil.isNotBlank(reportType) && !"自定义报表".equals(reportType)) {
-                // 非自定义：自动计算 开始/结束 时间
+        if ("自定义报表".equals(reportType)) {
+            if (reqVO.getReportStartTime() == null) {
+                throw exception("自定义报表必须传入开始时间");
+            }
+            if (reqVO.getReportEndTime() == null) {
+                throw exception("自定义报表必须传入结束时间");
+            }
+            if (reqVO.getReportStartTime().isAfter(reqVO.getReportEndTime())) {
+                throw exception("开始时间不能晚于结束时间");
+            }
+        }
+
+        // ===================== 3. 非自定义：自动计算时间；自定义：不覆盖时间 =====================
+// ===================== 3. 非自定义：自动计算时间；自定义：不覆盖时间 =====================
+        if (!"自定义报表".equals(reportType)) {
+            // 修复：如果已经有时间（历史/批量报表），不再重新计算！
+            if (reqVO.getReportStartTime() == null) {
                 Date[] dates = autoCalcReportTime(reportType);
-                // 覆盖前端传入的时间（自动生成）
-                // 方式1：使用 Date -> LocalDateTime 直接转换（推荐，无格式问题）
                 reqVO.setReportStartTime(LocalDateTime.ofInstant(dates[0].toInstant(), ZoneId.systemDefault()));
                 reqVO.setReportEndTime(LocalDateTime.ofInstant(dates[1].toInstant(), ZoneId.systemDefault()));
             }

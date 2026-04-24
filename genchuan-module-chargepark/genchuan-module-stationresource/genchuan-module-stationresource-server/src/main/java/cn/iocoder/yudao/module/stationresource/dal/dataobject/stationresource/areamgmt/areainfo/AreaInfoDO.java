@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.areamgmt.areainfo;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.*;
@@ -57,6 +58,8 @@ public class AreaInfoDO extends BaseDO {
      * [负责人ID] 关联芋道用户表system_user
      */
     private Long leaderId;
+
+    private String leaderName;
     /**
      * [负责人] 关联芋道用户表system_user
      */
