@@ -5,7 +5,6 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.bedmgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.bedmgmt.BedMgmtDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 床位管理 Service 接口
@@ -59,4 +58,13 @@ public interface BedMgmtService {
      */
     PageResult<BedMgmtDO> getBedMgmtPage(BedMgmtPageReqVO pageReqVO);
 
+    boolean assign(@Valid BedMgmtAssignReqVO reqVO);
+
+    boolean adjust(@Valid BedMgmtAdjustReqVO reqVO);
+
+    BedMgmtChartRespVO chart(@Valid BedMgmtChartReqVO reqVO);
+
+    BedMgmtBedDistributionRespVO bedDistribution();
+
+    BedMgmtBedIndexRespVO bedIndex();
 }

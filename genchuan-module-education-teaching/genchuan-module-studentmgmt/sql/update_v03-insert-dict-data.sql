@@ -72,7 +72,11 @@ DELETE FROM `system_dict_data` WHERE `dict_type` IN (
                                                      'target_mgmt_status',
                                                      'duty_mgmt_transfer_status',
                                                      'duty_mgmt_car_status',
-                                                     'moral_resource_status'
+                                                     'moral_resource_status',
+                                                     'bed_mgmt_status',
+                                                     'moral_resource_resource_type',
+                                                     'compare_mgmt_status'
+
     );
 
 -- 删除所有相关的字典类型
@@ -141,7 +145,10 @@ DELETE FROM `system_dict_type` WHERE `type` IN (
                                                 'target_mgmt_status',
                                                 'duty_mgmt_transfer_status',
                                                 'duty_mgmt_car_status',
-                                                'moral_resource_status'
+                                                'moral_resource_status',
+                                                'bed_mgmt_status',
+                                                'moral_resource_resource_type',
+                                                'compare_mgmt_status'
     );
 -- ==================== 一、字典类型 (system_dict_type) ====================
 
@@ -884,3 +891,11 @@ VALUES
     (1, '打分中', 'scoring', 'compare_mgmt_status', 0, 'warning', '', '评比正在打分中', 'admin', NOW(), 'admin', NOW(), 0, 1),
     (2, '已汇总', 'summarized', 'compare_mgmt_status', 0, 'success', '', '评比分数已汇总', 'admin', NOW(), 'admin', NOW(), 0, 1);
 
+-- 床位分配状态 状态 (未分配 / 已分配)，关联芋道字典表：bed_mgmt_status
+INSERT INTO system_dict_type (name, type, status, remark, creator, create_time, updater, update_time, deleted, tenant_id)
+VALUES ('床位分配状态', 'bed_mgmt_status', 0, '床位分配状态', 'admin', NOW(), 'admin', NOW(), 0, 1);
+
+INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted, tenant_id)
+VALUES
+    (1, '未分配', 'unallocated', 'bed_mgmt_status', 0, 'info', '', '未分配的床位', 'admin', NOW(), 'admin', NOW(), 0, 1),
+    (2, '已分配', 'allocated', 'bed_mgmt_status', 0, 'success', '', '已分配的床位', 'admin', NOW(), 'admin', NOW(), 0, 1);

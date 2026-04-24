@@ -160,6 +160,71 @@ public class CycleReportServiceImpl implements CycleReportService {
     }
 
     @Override
+    @Cacheable(cacheNames = "carservice:report:cycle-report-page-all#600s",
+            key = "T(cn.iocoder.yudao.framework.tenant.core.context.TenantContextHolder).getTenantId() + ':' + #statStartTime + '~' + #statEndTime + ':' + #pageNo + '/' + #pageSize")
+    public PageResult<CycleReportRespVO> pageAllCycleReport(LocalDateTime statStartTime,
+                                                            LocalDateTime statEndTime,
+                                                            Integer pageNo, Integer pageSize) {
+        if (statStartTime == null || statEndTime == null || statEndTime.isBefore(statStartTime)) {
+            throw new IllegalArgumentException("统计时间范围不合法");
+        }
+        String operator = currentLoginName();
+        LocalDateTime now = LocalDateTime.now();
+
+        // 扫 6 种周期,凡是**完整**落在 [start, end] 内的窗口都纳入(CUSTOM 不纳入,因为它无固定粒度)
+        List<CycleReportCycleEnum> cycles = Arrays.asList(
+                CycleReportCycleEnum.ANNUAL,
+                CycleReportCycleEnum.SEMI_ANNUAL,
+                CycleReportCycleEnum.QUARTERLY,
+                CycleReportCycleEnum.MONTHLY,
+                CycleReportCycleEnum.WEEKLY,
+                CycleReportCycleEnum.DAILY
+        );
+        List<CycleReportRespVO> all = new ArrayList<>();
+        for (CycleReportCycleEnum c : cycles) {
+            List<Window> wins = splitFullWindowsOnly(c, statStartTime, statEndTime);
+            for (Window w : wins) {
+                all.add(buildRespVO(c, w.start, w.end, operator, now));
+            }
+        }
+        // 排序:颗粒度从大到小(年>半年>季>月>周>日) + 同类按 start 倒序
+        all.sort((a, b) -> {
+            int codeA = (int) cycleCode(CycleReportCycleEnum.fromLabel(a.getReportCycle()));
+            int codeB = (int) cycleCode(CycleReportCycleEnum.fromLabel(b.getReportCycle()));
+            if (codeA != codeB) return Integer.compare(codeB, codeA); // 颗粒度从大到小:年(6)→半年→季→月→周→日(1)
+            // 同周期按 id 倒序(id 里 startEpochDay 大 → 时间新)
+            return Long.compare(b.getId(), a.getId());
+        });
+
+        int pn = pageNo == null || pageNo < 1 ? 1 : pageNo;
+        int ps = pageSize == null || pageSize < 1 ? 20 : Math.min(pageSize, 200);
+        int from = (pn - 1) * ps;
+        int to = Math.min(all.size(), from + ps);
+        List<CycleReportRespVO> slice = from < to ? new ArrayList<>(all.subList(from, to)) : new ArrayList<>();
+
+        PageResult<CycleReportRespVO> page = new PageResult<>();
+        page.setList(slice);
+        page.setTotal((long) all.size());
+        return page;
+    }
+
+    /** 切窗但**只纳入完全落在区间内**的窗口(不切半窗、不兜底 CUSTOM) */
+    private List<Window> splitFullWindowsOnly(CycleReportCycleEnum cycle, LocalDateTime rs, LocalDateTime re) {
+        List<Window> wins = new ArrayList<>();
+        LocalDate rsDate = rs.toLocalDate(), reDate = re.toLocalDate();
+        LocalDate cursor = rsDate;
+        int safety = 0;
+        while (!cursor.isAfter(reDate) && safety++ < MAX_WINDOWS) {
+            LocalDate[] w = currentWindowOf(cycle, cursor);
+            if (!w[0].isBefore(rsDate) && !w[1].isAfter(reDate)) {
+                wins.add(new Window(cycle, w[0].atStartOfDay(), w[1].atTime(23, 59, 59)));
+            }
+            cursor = w[1].plusDays(1);
+        }
+        return wins;
+    }
+
+    @Override
     public Long createCycleReport(CycleReportCreateReqVO reqVO) {
         LocalDateTime start = reqVO.getStatStartTime();
         LocalDateTime end = reqVO.getStatEndTime();

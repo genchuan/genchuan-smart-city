@@ -20,6 +20,14 @@ public interface CycleReportService {
     /** 分页查询已生成的周期报表 */
     PageResult<CycleReportRespVO> pageCycleReport(CycleReportPageReqVO reqVO);
 
+    /**
+     * 仅按时间范围查询:后端扫 6 种周期(日/周/月/季/半年/年),
+     * 凡是完整落在 [start, end] 内的窗口都纳入,混合返回。
+     */
+    PageResult<CycleReportRespVO> pageAllCycleReport(java.time.LocalDateTime statStartTime,
+                                                    java.time.LocalDateTime statEndTime,
+                                                    Integer pageNo, Integer pageSize);
+
     /** 手动触发生成一份周期报表,返回 id */
     Long createCycleReport(@Valid CycleReportCreateReqVO reqVO);
 
