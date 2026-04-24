@@ -3,7 +3,6 @@ package cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
-import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityChartReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityPageReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointActivityDO;
 import cn.iocoder.yudao.module.chargepark.marketop.framework.utils.DateUtils;
@@ -32,31 +31,14 @@ public interface PointActivityMapper extends BaseMapperX<PointActivityDO> {
         return selectPage(reqVO, queryWrapperX);
     }
 
-    default Long selectCountByChart(PointActivityChartReqVO reqVO) {
-        LambdaQueryWrapperX<PointActivityDO> queryWrapperX = new LambdaQueryWrapperX<>();
-        if (reqVO.getStartTime() != null) {
-            String startTime = DateUtils.longToDateTime(reqVO.getStartTime());
-            queryWrapperX.le(PointActivityDO::getStartTime, startTime);
-        }
-        if (reqVO.getEndTime() != null) {
-            String endTime = DateUtils.longToDateTime(reqVO.getEndTime());
-            queryWrapperX.ge(PointActivityDO::getEndTime, endTime);
-        }
-        if (reqVO.getStationId() != null) {
-            queryWrapperX.apply("FIND_IN_SET({0}, station_ids)", reqVO.getStationId());
-        }
-        return selectCount(queryWrapperX);
+    default Long selectCountByChart() {
+        return selectCount(new LambdaQueryWrapperX<>());
     }
 
-    @Select("<script>" +
-            "SELECT type, COUNT(*) as count FROM point_activity " +
-            "<where>" +
-            "<if test='startTime != null'> AND start_time &lt;= #{startTime}</if>" +
-            "<if test='endTime != null'> AND end_time &gt;= #{endTime}</if>" +
-            "<if test='stationId != null'> AND FIND_IN_SET(#{stationId}, station_ids) &gt; 0</if>" +
-            "</where>" +
-            "GROUP BY type" +
-            "</script>")
-    List<java.util.Map<String, Object>> selectTypeCountList(PointActivityChartReqVO reqVO);
+    @Select("SELECT type, COUNT(*) as count FROM point_activity GROUP BY type")
+    List<java.util.Map<String, Object>> selectTypeCountList();
+
+    @Select("SELECT IFNULL(SUM(join_count), 0) FROM point_activity")
+    Long selectSumJoinCount();
 
 }

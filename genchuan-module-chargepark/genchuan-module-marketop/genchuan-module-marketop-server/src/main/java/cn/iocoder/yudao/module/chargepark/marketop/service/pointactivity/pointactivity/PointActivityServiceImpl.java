@@ -2,7 +2,6 @@ package cn.iocoder.yudao.module.chargepark.marketop.service.pointactivity.pointa
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityChartReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityChartRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityCreateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityImportExcelVO;
@@ -10,17 +9,21 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivit
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityUpdateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointActivityDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.PointActivityMapper;
+import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.PointLotteryMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.PointActivityStatusEnum;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -32,6 +35,9 @@ public class PointActivityServiceImpl implements PointActivityService {
 
     @Resource
     private PointActivityMapper pointActivityMapper;
+
+    @Resource
+    private PointLotteryMapper pointLotteryMapper;
 
     @Override
     public PageResult<PointActivityDO> getPage(PointActivityPageReqVO reqVO) {
@@ -74,9 +80,9 @@ public class PointActivityServiceImpl implements PointActivityService {
     @Override
     public void enable(Long id) {
         PointActivityDO pointActivity = validateExists(id);
-        if (!PointActivityStatusEnum.PAUSED.getValue().equals(pointActivity.getStatus())) { // 暂停中
-            throw exception(POINT_ACTIVITY_STATUS_ERROR);
-        }
+//        if (!PointActivityStatusEnum.PAUSED.getValue().equals(pointActivity.getStatus())) { // 暂停中
+//            throw exception(POINT_ACTIVITY_STATUS_ERROR);
+//        }
         pointActivity.setStatus(PointActivityStatusEnum.IN_PROGRESS.getValue()); // 进行中
         pointActivity.setAuditTime(LocalDateTime.now());
         // auditorId 由 Controller 层通过 SecurityFrameworkUtils 获取后设置
@@ -86,20 +92,21 @@ public class PointActivityServiceImpl implements PointActivityService {
     @Override
     public void pause(Long id) {
         PointActivityDO pointActivity = validateExists(id);
-        if (Objects.equals(PointActivityStatusEnum.IN_PROGRESS.getValue(), pointActivity.getStatus())) { // 进行中
-            throw exception(POINT_ACTIVITY_STATUS_ERROR);
-        }
+//        if (Objects.equals(PointActivityStatusEnum.IN_PROGRESS.getValue(), pointActivity.getStatus())) { // 进行中
+//            throw exception(POINT_ACTIVITY_STATUS_ERROR);
+//        }
         pointActivity.setStatus("4"); // 已暂停
         pointActivityMapper.updateById(pointActivity);
     }
 
     @Override
-    public PointActivityChartRespVO getChart(PointActivityChartReqVO reqVO) {
-        // TODO: trendList和参与人数后续实现
+    public PointActivityChartRespVO getChart() {
         // 活动总数
-        Long activityCount = pointActivityMapper.selectCountByChart(reqVO);
+        Long activityCount = pointActivityMapper.selectCountByChart();
+        // 累计参与用户数 = join_count 相加
+        Long userCount = pointActivityMapper.selectSumJoinCount();
         // 按类型分组的数量
-        List<java.util.Map<String, Object>> typeCountList = pointActivityMapper.selectTypeCountList(reqVO);
+        List<Map<String, Object>> typeCountList = pointActivityMapper.selectTypeCountList();
         List<PointActivityChartRespVO.TypeCountItem> typeItems = typeCountList.stream()
                 .map(map -> {
                     PointActivityChartRespVO.TypeCountItem item = new PointActivityChartRespVO.TypeCountItem();
@@ -107,9 +114,33 @@ public class PointActivityServiceImpl implements PointActivityService {
                     item.setCount(((Number) map.get("count")).intValue());
                     return item;
                 }).toList();
+
+        // 近30天 point_lottery 按天统计记录数，date 使用 startTime
+        LocalDateTime startTime = LocalDateTime.now().minusDays(30);
+        List<Map<String, Object>> lotteryByDay = pointLotteryMapper.selectCountByDay(startTime);
+        // 构建近30天每日数据，补全缺失日期
+        Map<String, Integer> dayCountMap = new LinkedHashMap<>();
+        LocalDate today = LocalDate.now();
+        for (int i = 29; i >= 0; i--) {
+            dayCountMap.put(today.minusDays(i).toString(), 0);
+        }
+        for (Map<String, Object> row : lotteryByDay) {
+            String date = row.get("date").toString();
+            int count = ((Number) row.get("count")).intValue();
+            dayCountMap.put(date, count);
+        }
+        List<PointActivityChartRespVO.TrendItem> trendList = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : dayCountMap.entrySet()) {
+            PointActivityChartRespVO.TrendItem item = new PointActivityChartRespVO.TrendItem();
+            item.setStartTime(entry.getKey());
+            item.setCount(entry.getValue());
+            trendList.add(item);
+        }
+
         PointActivityChartRespVO respVO = new PointActivityChartRespVO();
         respVO.setActivityCount(activityCount.intValue());
-        respVO.setTrendList(new ArrayList<>());
+        respVO.setUserCount(userCount.intValue());
+        respVO.setTrendList(trendList);
         respVO.setTypeCountList(typeItems);
         return respVO;
     }
@@ -165,9 +196,9 @@ public class PointActivityServiceImpl implements PointActivityService {
     @Override
     public void activate(Long id) {
         PointActivityDO pointActivity = validateExists(id);
-        if (Objects.equals(PointActivityStatusEnum.PENDING.getValue(), pointActivity.getStatus())) { // 待生效
-            throw exception(POINT_ACTIVITY_STATUS_ERROR);
-        }
+//        if (Objects.equals(PointActivityStatusEnum.PENDING.getValue(), pointActivity.getStatus())) { // 待生效
+//            throw exception(POINT_ACTIVITY_STATUS_ERROR);
+//        }
         pointActivity.setStatus(PointActivityStatusEnum.IN_PROGRESS.getValue()); // 进行中
         pointActivity.setAuditTime(LocalDateTime.now());
         // auditorId 由 Controller 层通过 SecurityFrameworkUtils 获取后设置

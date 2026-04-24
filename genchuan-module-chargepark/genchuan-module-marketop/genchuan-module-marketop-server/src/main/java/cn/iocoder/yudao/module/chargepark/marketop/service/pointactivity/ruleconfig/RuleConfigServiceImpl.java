@@ -2,7 +2,6 @@ package cn.iocoder.yudao.module.chargepark.marketop.service.pointactivity.ruleco
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.ruleconfig.vo.RuleConfigChartReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.ruleconfig.vo.RuleConfigChartRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.ruleconfig.vo.RuleConfigCreateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.ruleconfig.vo.RuleConfigPageReqVO;
@@ -84,16 +83,16 @@ public class RuleConfigServiceImpl implements RuleConfigService {
     }
 
     @Override
-    public RuleConfigChartRespVO getChart(RuleConfigChartReqVO reqVO) {
+    public RuleConfigChartRespVO getChart() {
         // enableCount = status = "1" 的总数
-        Long enableCount = ruleConfigMapper.selectEnableCount(reqVO);
+        Long enableCount = ruleConfigMapper.selectEnableCount();
         // matchRate = 生效规则的 gift_ratio 平均值
-        BigDecimal matchRate = ruleConfigMapper.selectAvgGiftRatio(reqVO);
+        BigDecimal matchRate = ruleConfigMapper.selectAvgGiftRatio();
         if (matchRate == null) {
             matchRate = BigDecimal.ZERO;
         }
         // typeList = 按 type 分组，计算占比
-        List<Map<String, Object>> typeCountList = ruleConfigMapper.selectTypeCountList(reqVO);
+        List<Map<String, Object>> typeCountList = ruleConfigMapper.selectTypeCountList();
         long totalCount = typeCountList.stream().mapToLong(m -> ((Number) m.get("count")).longValue()).sum();
         List<RuleConfigChartRespVO.TypeRateItem> typeList = typeCountList.stream().map(m -> {
             RuleConfigChartRespVO.TypeRateItem item = new RuleConfigChartRespVO.TypeRateItem();

@@ -110,8 +110,8 @@ public class ExchangeCategoryController {
     @GetMapping("/chart")
     @Operation(summary = "兑换类目统计图表")
     @PreAuthorize("@ss.hasPermission('marketop:exchange-category:query')")
-    public CommonResult<ExchangeCategoryChartRespVO> getChart(@RequestParam(value = "timeRange", required = false) String timeRange) {
-        return CommonResult.success(exchangeCategoryService.getChart(timeRange));
+    public CommonResult<ExchangeCategoryChartRespVO> getChart() {
+        return CommonResult.success(exchangeCategoryService.getChart());
     }
 
     private void injectUserNames(List<ExchangeCategoryRespVO> list) {

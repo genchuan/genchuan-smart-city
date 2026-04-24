@@ -26,7 +26,7 @@ public interface PointActivityService {
 
     void pause(Long id);
 
-    PointActivityChartRespVO getChart(PointActivityChartReqVO reqVO);
+    PointActivityChartRespVO getChart();
 
     /**
      * 导入积分活动列表

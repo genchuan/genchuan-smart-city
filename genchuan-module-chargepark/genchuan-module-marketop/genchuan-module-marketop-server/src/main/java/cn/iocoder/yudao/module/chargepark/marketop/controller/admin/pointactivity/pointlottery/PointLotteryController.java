@@ -80,8 +80,8 @@ public class PointLotteryController {
     @GetMapping("/chart")
     @Operation(summary = "积分抽奖图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:point-lottery:query')")
-    public CommonResult<PointLotteryChartRespVO> getChart(@RequestParam(value = "timeRange", required = false) String timeRange) {
-        return CommonResult.success(pointLotteryService.getChart(timeRange));
+    public CommonResult<PointLotteryChartRespVO> getChart() {
+        return CommonResult.success(pointLotteryService.getChart());
     }
 
     private void injectNames(List<PointLotteryRespVO> list) {

@@ -19,6 +19,6 @@ public interface CardOrderService {
 
     void cancel(Long id);
 
-    CardOrderChartRespVO getChart(String timeRange);
+    CardOrderChartRespVO getChart();
 
 }

@@ -24,7 +24,7 @@ public class PointActivityChartRespVO {
     @Data
     public static class TrendItem {
         @Schema(description = "日期")
-        private String date;
+        private String startTime;
         @Schema(description = "参与人数")
         private Integer count;
     }
