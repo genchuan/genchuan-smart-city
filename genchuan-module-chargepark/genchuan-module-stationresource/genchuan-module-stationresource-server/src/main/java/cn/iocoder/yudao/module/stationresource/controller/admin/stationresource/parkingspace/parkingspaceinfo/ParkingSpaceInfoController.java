@@ -112,7 +112,7 @@ public class ParkingSpaceInfoController {
         return success(BeanUtils.toBean(pageResult, ParkingSpaceInfoRespVO.class));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出车位信息 Excel")
     @PreAuthorize("@ss.hasPermission('stationresource:parking-space-info:export')")
     @ApiAccessLog(operateType = EXPORT)

@@ -159,7 +159,7 @@ public class ChargeParkLinkController {
         return success(BeanUtils.toBean(pageResult, ChargeParkLinkRespVO.class));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出充停联动 Excel")
     @PreAuthorize("@ss.hasPermission('stationresource:charge-park-link:export')")
     @ApiAccessLog(operateType = EXPORT)

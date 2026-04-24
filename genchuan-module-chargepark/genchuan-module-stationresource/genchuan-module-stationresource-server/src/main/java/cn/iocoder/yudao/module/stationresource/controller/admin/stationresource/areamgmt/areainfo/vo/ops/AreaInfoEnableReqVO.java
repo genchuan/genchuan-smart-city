@@ -11,8 +11,8 @@ import java.util.List;
 @Schema(description = "片区信息 - 批量生效 Request VO")
 public class AreaInfoEnableReqVO {
 
-    @Schema(description = "片区编号列表", requiredMode = Schema.RequiredMode.REQUIRED, example = "[1,2,3]")
-    @NotEmpty(message = "片区编号列表不能为空")
+    @Schema(description = "片区id列表", requiredMode = Schema.RequiredMode.REQUIRED, example = "[1,2,3]")
+    @NotEmpty(message = "片区id列表不能为空")
     private List<Long> ids;
 
 }

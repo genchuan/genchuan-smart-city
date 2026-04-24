@@ -114,7 +114,7 @@ public class TimePermissionController {
         return success(BeanUtils.toBean(pageResult, TimePermissionRespVO.class));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出时段权限 Excel")
     @PreAuthorize("@ss.hasPermission('stationresource:time-permission:export')")
     @ApiAccessLog(operateType = EXPORT)
