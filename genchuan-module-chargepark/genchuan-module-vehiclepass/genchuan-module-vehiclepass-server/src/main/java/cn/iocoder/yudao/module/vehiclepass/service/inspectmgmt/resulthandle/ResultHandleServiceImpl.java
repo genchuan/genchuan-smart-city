@@ -5,6 +5,9 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resultha
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleBatchHandleReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleApproveReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleRejectReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleExecuteReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.inspectmgmt.resulthandle.ResultHandleDO;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.inspectmgmt.resulthandle.ResultHandleMapper;
 import org.springframework.stereotype.Service;
@@ -105,6 +108,40 @@ public class ResultHandleServiceImpl implements ResultHandleService {
             updateObj.setStatus("待处置");
             handleMapper.updateById(updateObj);
         }
+    }
+
+    @Override
+    public void approve(Long id) {
+        // 校验存在
+        validateHandleExists(id);
+        // 更新为已通过
+        ResultHandleDO updateObj = new ResultHandleDO();
+        updateObj.setId(id);
+        updateObj.setStatus("已完成");
+        handleMapper.updateById(updateObj);
+    }
+
+    @Override
+    public void reject(ResultHandleRejectReqVO reqVO) {
+        // 校验存在
+        validateHandleExists(reqVO.getId());
+        // 更新为已驳回
+        ResultHandleDO updateObj = new ResultHandleDO();
+        updateObj.setId(reqVO.getId());
+        updateObj.setStatus("已驳回");
+        updateObj.setRejectReason(reqVO.getRejectReason());
+        handleMapper.updateById(updateObj);
+    }
+
+    @Override
+    public void execute(ResultHandleExecuteReqVO reqVO) {
+        // 校验存在
+        validateHandleExists(reqVO.getId());
+        // 更新整改状态
+        ResultHandleDO updateObj = new ResultHandleDO();
+        updateObj.setId(reqVO.getId());
+        updateObj.setRectifyStatus(reqVO.getRectifyStatus());
+        handleMapper.updateById(updateObj);
     }
 
 }

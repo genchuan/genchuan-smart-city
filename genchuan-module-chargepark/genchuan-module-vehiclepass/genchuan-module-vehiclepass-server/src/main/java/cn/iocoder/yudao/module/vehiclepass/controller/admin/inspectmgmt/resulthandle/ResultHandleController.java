@@ -24,6 +24,9 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resultha
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleBatchHandleReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleApproveReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleRejectReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleExecuteReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.inspectmgmt.resulthandle.ResultHandleDO;
 import cn.iocoder.yudao.module.vehiclepass.service.inspectmgmt.resulthandle.ResultHandleService;
 
@@ -96,6 +99,30 @@ public class ResultHandleController {
     @PreAuthorize("@ss.hasPermission('vehiclepass:result-handle:batch-handle')")
     public CommonResult<Boolean> batchHandle(@Valid @RequestBody ResultHandleBatchHandleReqVO reqVO) {
         handleService.batchHandle(reqVO);
+        return success(true);
+    }
+
+    @PutMapping("/approve")
+    @Operation(summary = "通过结果处置")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:result-handle:approve')")
+    public CommonResult<Boolean> approve(@Valid @RequestBody ResultHandleApproveReqVO reqVO) {
+        handleService.approve(reqVO.getId());
+        return success(true);
+    }
+
+    @PutMapping("/reject")
+    @Operation(summary = "驳回结果处置")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:result-handle:reject')")
+    public CommonResult<Boolean> reject(@Valid @RequestBody ResultHandleRejectReqVO reqVO) {
+        handleService.reject(reqVO);
+        return success(true);
+    }
+
+    @PutMapping("/execute")
+    @Operation(summary = "执行结果处置")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:result-handle:execute')")
+    public CommonResult<Boolean> execute(@Valid @RequestBody ResultHandleExecuteReqVO reqVO) {
+        handleService.execute(reqVO);
         return success(true);
     }
 
