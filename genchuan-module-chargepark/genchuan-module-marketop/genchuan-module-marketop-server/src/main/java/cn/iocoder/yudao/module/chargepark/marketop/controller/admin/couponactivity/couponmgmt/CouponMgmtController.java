@@ -140,11 +140,8 @@ public class CouponMgmtController {
     @GetMapping("/chart")
     @Operation(summary = "优惠券图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:coupon-mgmt:query')")
-    public CommonResult<CouponMgmtChartRespVO> getChart(
-            @RequestParam(value = "startTime", required = false) Long startTime,
-            @RequestParam(value = "endTime", required = false) Long endTime,
-            @RequestParam(value = "stationId", required = false) Long stationId) {
-        return CommonResult.success(couponMgmtService.getChart(startTime, endTime, stationId));
+    public CommonResult<CouponMgmtChartRespVO> getChart() {
+        return CommonResult.success(couponMgmtService.getChart());
     }
 
     private void injectUserNames(List<CouponMgmtRespVO> list) {

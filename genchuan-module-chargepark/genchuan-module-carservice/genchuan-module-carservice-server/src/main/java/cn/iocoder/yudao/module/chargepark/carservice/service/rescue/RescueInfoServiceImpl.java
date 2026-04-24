@@ -19,6 +19,7 @@ import cn.iocoder.yudao.module.chargepark.carservice.framework.statemachine.Stat
 import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.CrossModuleValidator;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
@@ -27,6 +28,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.module.chargepark.carservice.enums.ErrorCodeConstants.RESCUE_INFO_ALREADY_ARCHIVED;
+import static cn.iocoder.yudao.module.chargepark.carservice.enums.ErrorCodeConstants.RESCUE_INFO_ALREADY_ARCHIVED_EVALUATE;
 import static cn.iocoder.yudao.module.chargepark.carservice.enums.ErrorCodeConstants.RESCUE_INFO_NOT_EXISTS;
 import static cn.iocoder.yudao.module.chargepark.carservice.enums.ErrorCodeConstants.RESCUE_INFO_STATUS_INVALID;
 
@@ -187,8 +190,11 @@ public class RescueInfoServiceImpl implements RescueInfoService {
         validateStatus(rescue, RescueStatusEnum.PROCESSING);
         RescueInfoDO update = new RescueInfoDO();
         update.setId(reqVO.getId());
-        update.setProgress(reqVO.getProgress());
-        if (reqVO.getPhoto() != null) {
+        // 空字符串视为未传,避免把原值洗成空
+        if (StringUtils.hasText(reqVO.getProgress())) {
+            update.setProgress(reqVO.getProgress());
+        }
+        if (StringUtils.hasText(reqVO.getPhoto())) {
             update.setPhoto(reqVO.getPhoto());
         }
         // 弹窗勾选「标记为已完成」时(complete=true),自动流转为已完成并回写完成时间、处理时长
@@ -237,6 +243,9 @@ public class RescueInfoServiceImpl implements RescueInfoService {
     public void evaluateRescueInfo(RescueInfoEvaluateReqVO reqVO) {
         RescueInfoDO rescue = validateRescueInfoExists(reqVO.getId());
         validateStatus(rescue, RescueStatusEnum.COMPLETED);
+        if (RescueArchiveStatusEnum.ARCHIVED.getLabel().equals(rescue.getArchiveStatus())) {
+            throw exception(RESCUE_INFO_ALREADY_ARCHIVED_EVALUATE);
+        }
         RescueInfoDO update = new RescueInfoDO();
         update.setId(reqVO.getId());
         update.setScore(reqVO.getScore());
@@ -248,6 +257,9 @@ public class RescueInfoServiceImpl implements RescueInfoService {
     public void archiveRescueInfo(Long id) {
         RescueInfoDO rescue = validateRescueInfoExists(id);
         validateStatus(rescue, RescueStatusEnum.COMPLETED);
+        if (RescueArchiveStatusEnum.ARCHIVED.getLabel().equals(rescue.getArchiveStatus())) {
+            throw exception(RESCUE_INFO_ALREADY_ARCHIVED);
+        }
         RescueInfoDO update = new RescueInfoDO();
         update.setId(id);
         update.setArchiveStatus(RescueArchiveStatusEnum.ARCHIVED.getLabel());

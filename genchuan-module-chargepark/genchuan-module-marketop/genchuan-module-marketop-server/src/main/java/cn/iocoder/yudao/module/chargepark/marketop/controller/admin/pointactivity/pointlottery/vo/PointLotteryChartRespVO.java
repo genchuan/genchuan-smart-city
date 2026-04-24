@@ -22,7 +22,7 @@ public class PointLotteryChartRespVO {
     @Data
     public static class TrendItem {
         @Schema(description = "日期")
-        private String date;
+        private String lotteryTime;
         @Schema(description = "抽奖量")
         private Integer count;
     }

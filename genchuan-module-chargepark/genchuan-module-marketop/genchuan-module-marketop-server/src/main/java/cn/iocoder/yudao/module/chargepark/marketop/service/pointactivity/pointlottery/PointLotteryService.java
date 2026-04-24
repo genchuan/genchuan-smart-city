@@ -13,6 +13,6 @@ public interface PointLotteryService {
 
     void check(Long id, String checkResult);
 
-    PointLotteryChartRespVO getChart(String timeRange);
+    PointLotteryChartRespVO getChart();
 
 }

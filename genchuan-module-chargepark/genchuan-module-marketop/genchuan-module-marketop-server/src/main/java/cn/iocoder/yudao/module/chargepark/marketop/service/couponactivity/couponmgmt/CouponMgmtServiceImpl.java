@@ -104,27 +104,10 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
     }
 
     @Override
-    public CouponMgmtChartRespVO getChart(Long startTime, Long endTime, Long stationId) {
+    public CouponMgmtChartRespVO getChart() {
         CouponMgmtChartRespVO respVO = new CouponMgmtChartRespVO();
 
-        // 构建时间范围
-        LocalDateTime startDateTime = startTime != null
-                ? LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(startTime), ZoneId.systemDefault()) : null;
-        LocalDateTime endDateTime = endTime != null
-                ? LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(endTime), ZoneId.systemDefault()) : null;
-
-        // 构建基础查询条件
-        LambdaQueryWrapperX<CouponMgmtDO> baseWrapper = new LambdaQueryWrapperX<>();
-        if (startDateTime != null) {
-            baseWrapper.ge(CouponMgmtDO::getCreateTime, startDateTime);
-        }
-        if (endDateTime != null) {
-            baseWrapper.le(CouponMgmtDO::getCreateTime, endDateTime);
-        }
-        if (stationId != null) {
-            baseWrapper.apply("FIND_IN_SET({0}, station_ids)", stationId);
-        }
-        List<CouponMgmtDO> allList = couponMgmtMapper.selectList(baseWrapper);
+        List<CouponMgmtDO> allList = couponMgmtMapper.selectList(new LambdaQueryWrapperX<>());
 
         // sendCount: status为1的记录数
         long sendCount = allList.stream().filter(item -> "1".equals(item.getStatus())).count();

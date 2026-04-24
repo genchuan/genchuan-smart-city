@@ -6,7 +6,6 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityChartReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityExportExcelVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityPageReqVO;
@@ -31,6 +30,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -48,10 +52,19 @@ public class PointActivityController {
     @Resource
     private StationInfoApi stationInfoApi;
 
-    @GetMapping("/page")
+@GetMapping("/page")
     @Operation(summary = "获得积分活动分页")
     @PreAuthorize("@ss.hasPermission('marketop:point-activity:query')")
     public CommonResult<PageResult<PointActivityRespVO>> getPage(PointActivityPageReqVO reqVO) {
+        // 如果没有传startTime和endTime，但传了date，则用date转换
+        if (reqVO.getStartTime() == null && reqVO.getEndTime() == null && StrUtil.isNotBlank(reqVO.getDate())) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate localDate = LocalDate.parse(reqVO.getDate(), formatter);
+            LocalDateTime startDateTime = localDate.atStartOfDay();
+            LocalDateTime endDateTime = localDate.atTime(LocalTime.MAX);
+            reqVO.setStartTime(startDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+            reqVO.setEndTime(endDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+        }
         PageResult<PointActivityDO> pageResult = pointActivityService.getPage(reqVO);
         PageResult<PointActivityRespVO> bean = BeanUtils.toBean(pageResult, PointActivityRespVO.class);
         injectUserNames(bean.getList());
@@ -140,8 +153,8 @@ public class PointActivityController {
     @GetMapping("/chart")
     @Operation(summary = "积分活动图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:point-activity:query')")
-    public CommonResult<PointActivityChartRespVO> getChart(PointActivityChartReqVO reqVO) {
-        return CommonResult.success(pointActivityService.getChart(reqVO));
+    public CommonResult<PointActivityChartRespVO> getChart() {
+        return CommonResult.success(pointActivityService.getChart());
     }
 
     private void injectUserNames(List<PointActivityRespVO> list) {

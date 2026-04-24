@@ -110,7 +110,7 @@ public class StationInfoController {
         return success(id);
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出场站信息 Excel")
     @PreAuthorize("@ss.hasPermission('stationresource:station-info:export')")
     @ApiAccessLog(operateType = EXPORT)

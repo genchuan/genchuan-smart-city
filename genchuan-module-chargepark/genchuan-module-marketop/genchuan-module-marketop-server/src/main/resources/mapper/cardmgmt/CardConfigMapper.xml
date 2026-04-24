@@ -3,15 +3,4 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.cardmgmt.CardConfigMapper">
 
-    <select id="selectListByTimeRange" resultType="cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.CardConfigDO">
-        SELECT * FROM card_config
-        WHERE deleted = 0
-          <if test="startTime != null">
-              AND create_time &gt;= #{startTime}
-          </if>
-          <if test="endTime != null">
-              AND create_time &lt;= #{endTime}
-          </if>
-    </select>
-
 </mapper>

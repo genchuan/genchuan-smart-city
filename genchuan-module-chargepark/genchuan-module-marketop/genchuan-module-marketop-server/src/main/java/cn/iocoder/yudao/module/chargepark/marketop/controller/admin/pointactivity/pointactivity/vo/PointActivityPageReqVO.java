@@ -32,4 +32,7 @@ public class PointActivityPageReqVO extends PageParam {
     @Schema(description = "结束时间")
     private Long endTime;
 
+    @Schema(description = "日期筛选，格式如：2026-04-24")
+    private String date;
+
 }

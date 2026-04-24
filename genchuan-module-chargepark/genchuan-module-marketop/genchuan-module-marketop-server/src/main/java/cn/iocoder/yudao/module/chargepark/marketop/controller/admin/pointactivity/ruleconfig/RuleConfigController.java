@@ -94,8 +94,8 @@ public class RuleConfigController {
     @GetMapping("/chart")
     @Operation(summary = "规则配置图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:rule-config:query')")
-    public CommonResult<RuleConfigChartRespVO> getChart(RuleConfigChartReqVO reqVO) {
-        return CommonResult.success(ruleConfigService.getChart(reqVO));
+    public CommonResult<RuleConfigChartRespVO> getChart() {
+        return CommonResult.success(ruleConfigService.getChart());
     }
 
     private void injectUserNames(List<RuleConfigRespVO> list) {

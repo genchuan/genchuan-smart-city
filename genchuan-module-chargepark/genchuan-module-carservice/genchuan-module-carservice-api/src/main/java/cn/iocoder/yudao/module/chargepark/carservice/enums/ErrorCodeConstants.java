@@ -12,6 +12,8 @@ public interface ErrorCodeConstants {
     // ========== 救援服务 1-100-001-xxx ==========
     ErrorCode RESCUE_INFO_NOT_EXISTS = new ErrorCode(1_100_001_001, "救援信息不存在");
     ErrorCode RESCUE_INFO_STATUS_INVALID = new ErrorCode(1_100_001_002, "救援状态不允许此操作");
+    ErrorCode RESCUE_INFO_ALREADY_ARCHIVED_EVALUATE = new ErrorCode(1_100_001_003, "该救援信息已归档,不能再评价");
+    ErrorCode RESCUE_INFO_ALREADY_ARCHIVED = new ErrorCode(1_100_001_004, "该救援信息已归档,请勿重复归档");
 
     // ========== 车辆引导 1-100-002-xxx ==========
     ErrorCode CHARGE_PARK_MAP_NOT_EXISTS = new ErrorCode(1_100_002_001, "充停地图查询记录不存在");
@@ -41,6 +43,8 @@ public interface ErrorCodeConstants {
 
     // ========== 决策分析 1-100-007-xxx ==========
     ErrorCode SERVICE_OP_REPORT_PARAM_INVALID = new ErrorCode(1_100_007_001, "服务运营报表参数无效");
+    ErrorCode CYCLE_REPORT_NOT_EXISTS = new ErrorCode(1_100_007_101, "周期报表不存在");
+    ErrorCode CYCLE_REPORT_DETAIL_DATA_INVALID = new ErrorCode(1_100_007_102, "周期报表快照数据损坏,请联系运维");
 
     // ========== 跨模块外键校验 1-100-008-xxx ==========
     ErrorCode STATION_NOT_EXISTS = new ErrorCode(1_100_008_001, "场站不存在");

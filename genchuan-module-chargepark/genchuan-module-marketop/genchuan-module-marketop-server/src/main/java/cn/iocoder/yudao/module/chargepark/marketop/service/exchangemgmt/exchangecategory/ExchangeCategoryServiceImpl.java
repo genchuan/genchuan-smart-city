@@ -79,8 +79,7 @@ public class ExchangeCategoryServiceImpl implements ExchangeCategoryService {
     }
 
     @Override
-    public ExchangeCategoryChartRespVO getChart(String timeRange) {
-        // TODO: 实现图表统计逻辑，暂时返回空数据
+    public ExchangeCategoryChartRespVO getChart() {
         ExchangeCategoryChartRespVO respVO = new ExchangeCategoryChartRespVO();
         respVO.setCategoryCount(0);
         respVO.setProductCount(0);
