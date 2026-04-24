@@ -54,4 +54,32 @@
         ORDER BY p.id DESC
     </select>
 
+    <select id="selectEndCountTrend" resultType="map">
+        SELECT
+            DATE(p.end_time) AS date,
+            COUNT(*) AS count
+        FROM end_park p
+        WHERE p.deleted = 0
+        AND p.end_time BETWEEN FROM_UNIXTIME(#{reqVO.startTime}) AND DATE_ADD(FROM_UNIXTIME(#{reqVO.endTime}), INTERVAL 1 DAY)
+        <if test="reqVO.areaId != null">
+            AND p.area_id = #{reqVO.areaId}
+        </if>
+        GROUP BY DATE(p.end_time)
+        ORDER BY date ASC
+    </select>
+
+    <select id="selectChartData" resultType="map">
+        SELECT
+            COUNT(*) AS endCount,
+            CASE WHEN COUNT(*) = 0 THEN 0.0
+                 ELSE ROUND(SUM(CASE WHEN p.status = '已支付' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1)
+            END AS paySuccessRate
+        FROM end_park p
+        WHERE p.deleted = 0
+        AND p.end_time BETWEEN FROM_UNIXTIME(#{reqVO.startTime}) AND DATE_ADD(FROM_UNIXTIME(#{reqVO.endTime}), INTERVAL 1 DAY)
+        <if test="reqVO.areaId != null">
+            AND p.area_id = #{reqVO.areaId}
+        </if>
+    </select>
+
 </mapper>

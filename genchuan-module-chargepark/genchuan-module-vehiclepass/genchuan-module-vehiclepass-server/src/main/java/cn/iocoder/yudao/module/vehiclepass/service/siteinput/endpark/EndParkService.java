@@ -8,6 +8,8 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkPayReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkConfirmReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkCancelReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.siteinput.endpark.EndParkDO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -93,5 +95,13 @@ public interface EndParkService {
      * @param cancelReqVO 取消信息
      */
     void cancel(EndParkCancelReqVO cancelReqVO);
+
+    /**
+     * 获取结束停车统计
+     *
+     * @param chartReqVO 统计请求
+     * @return 统计数据
+     */
+    EndParkChartRespVO getChart(EndParkChartReqVO chartReqVO);
 
 }

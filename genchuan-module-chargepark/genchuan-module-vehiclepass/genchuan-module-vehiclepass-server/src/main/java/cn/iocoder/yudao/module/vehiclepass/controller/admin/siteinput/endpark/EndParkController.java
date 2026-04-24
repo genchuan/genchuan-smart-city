@@ -6,6 +6,8 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkPayReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkConfirmReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkCancelReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.siteinput.endpark.EndParkDO;
 import cn.iocoder.yudao.module.vehiclepass.service.siteinput.endpark.EndParkService;
 import org.springframework.web.bind.annotation.*;
@@ -113,6 +115,13 @@ public class EndParkController {
     public CommonResult<Boolean> cancel(@Valid @RequestBody EndParkCancelReqVO cancelReqVO) {
         parkService.cancel(cancelReqVO);
         return success(true);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "获取结束停车统计")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:end-park:chart')")
+    public CommonResult<EndParkChartRespVO> getChart(@Valid EndParkChartReqVO chartReqVO) {
+        return success(parkService.getChart(chartReqVO));
     }
 
     @GetMapping("/export-excel")

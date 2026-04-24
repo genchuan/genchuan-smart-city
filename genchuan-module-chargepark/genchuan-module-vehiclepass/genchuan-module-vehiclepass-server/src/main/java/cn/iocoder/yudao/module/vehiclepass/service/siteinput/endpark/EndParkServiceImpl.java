@@ -7,6 +7,8 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkPayReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkConfirmReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkCancelReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.siteinput.endpark.EndParkDO;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.siteinput.endpark.EndParkMapper;
 import org.springframework.stereotype.Service;
@@ -117,6 +119,42 @@ public class EndParkServiceImpl implements EndParkService {
             throw exception(PARK_NOT_EXISTS);
         }
         return park;
+    }
+
+    @Override
+    public EndParkChartRespVO getChart(EndParkChartReqVO chartReqVO) {
+        // 获取结束量趋势
+        List<Map<String, Object>> trendList = parkMapper.selectEndCountTrend(chartReqVO);
+        List<EndParkChartRespVO.EndCountTrend> endCountTrend = new ArrayList<>();
+        if (trendList != null) {
+            for (Map<String, Object> map : trendList) {
+                if (map.get("date") != null && map.get("count") != null) {
+                    EndParkChartRespVO.EndCountTrend trend = EndParkChartRespVO.EndCountTrend.builder()
+                            .date(map.get("date").toString())
+                            .count(((Number) map.get("count")).longValue())
+                            .build();
+                    endCountTrend.add(trend);
+                }
+            }
+        }
+
+        // 获取卡片统计数据
+        Map<String, Object> chartData = parkMapper.selectChartData(chartReqVO);
+        Long endCount = 0L;
+        Double paySuccessRate = 0.0;
+        if (chartData != null) {
+            endCount = chartData.get("endCount") != null ? ((Number) chartData.get("endCount")).longValue() : 0L;
+            paySuccessRate = chartData.get("paySuccessRate") != null ? ((Number) chartData.get("paySuccessRate")).doubleValue() : 0.0;
+        }
+        EndParkChartRespVO.CardData cardData = EndParkChartRespVO.CardData.builder()
+                .endCount(endCount)
+                .paySuccessRate(paySuccessRate)
+                .build();
+
+        return EndParkChartRespVO.builder()
+                .endCountTrend(endCountTrend)
+                .cardData(cardData)
+                .build();
     }
 
 }
