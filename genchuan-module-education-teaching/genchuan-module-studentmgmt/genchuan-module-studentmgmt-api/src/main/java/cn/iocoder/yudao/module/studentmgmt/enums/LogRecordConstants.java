@@ -218,4 +218,13 @@ public interface LogRecordConstants {
 
     String MORAL_RESOURCE_UPDATE_SUB_TYPE = "更新德育资源";
     String MORAL_RESOURCE_UPDATE_SUCCESS = "更新了德育资源【{{#assessMgmt.className}}】: {_DIFF{#updateReqVO}}";
+
+    // ======================= bed mgmt 床位管理 =======================
+
+    String BED_MGMT_TYPE = "床位管理";
+    String BED_MGMT_ASSIGN_SUB_TYPE = "分配床位";
+    String BED_MGMT_ASSIGN_SUB_TYPE_SUCCESS = "分配了床位";
+    String BED_MGMT_ADJUST_SUB_TYPE = "调整床位";
+    String BED_MGMT_ADJUST_SUB_TYPE_SUCCESS = "调整了床位{{#content}}";
+
 }

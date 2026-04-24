@@ -9,4 +9,58 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="selectTotalBed" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM bed_mgmt WHERE deleted = 0
+        <if test="status != null and status != '' ">
+            AND status = #{status}
+        </if>
+        <if test="building != null and building != '' ">
+            AND building = #{building}
+        </if>
+    </select>
+    <select id="selectUsageRate" resultType="java.math.BigDecimal">
+        SELECT ROUND(COUNT(1) / (SELECT COUNT(1) FROM bed_mgmt) * 100, 2) FROM bed_mgmt
+        WHERE deleted = 0
+        <if test="building != null and building != '' ">
+            AND building = #{building}
+        </if>
+    </select>
+    <select id="selectDistinctBuilding" resultType="java.lang.String">
+        SELECT DISTINCT(building) FROM bed_mgmt
+        WHERE deleted = 0
+        ORDER BY building ASC
+    </select>
+    <select id="selectAssignAndAdjustCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        COUNT(IF(assign_time is not null, 1, NULL)) AS assignCount,
+        COUNT(IF(adjust_time is not null, 1, NULL)) AS adjustCount
+        FROM bed_mgmt
+        WHERE deleted = 0
+    </select>
+    <select id="selectTodayAssignAndAdjustCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        COUNT(IF(assign_time is not null and TO_DAYS(assign_time) = TO_DAYS(NOW()), 1, NULL)) AS newAssignCount,
+        COUNT(IF(adjust_time is not null and TO_DAYS(adjust_time) = TO_DAYS(NOW()), 1, NULL)) AS newAdjustCount
+        FROM bed_mgmt
+        WHERE deleted = 0
+    </select>
+
+    <select id="select7dayAssignCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        DATE_FORMAT(assign_time, '%Y-%m-%d') AS assignTime,
+        COUNT(IF(assign_time is not null, 1, NULL)) AS assign
+        FROM bed_mgmt
+        WHERE deleted = 0
+        and (assign_time between date_sub(now(), interval 7 DAY) and now())
+        GROUP BY assignTime
+    </select>
+    <select id="select7dayAdjustCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        DATE_FORMAT(adjust_time, '%Y-%m-%d') AS adjustTime,
+        COUNT(IF(adjust_time is not null, 1, NULL)) AS adjust
+        FROM bed_mgmt
+        WHERE deleted = 0
+        and (adjust_time between date_sub(now(), interval 7 DAY) and now())
+        GROUP BY adjustTime
+    </select>
 </mapper>

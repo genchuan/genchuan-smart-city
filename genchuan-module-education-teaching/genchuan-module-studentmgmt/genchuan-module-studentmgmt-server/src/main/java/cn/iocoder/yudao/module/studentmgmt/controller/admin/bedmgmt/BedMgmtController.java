@@ -100,5 +100,40 @@ public class BedMgmtController {
         ExcelUtils.write(response, "床位管理.xls", "数据", BedMgmtRespVO.class,
                         BeanUtils.toBean(list, BedMgmtRespVO.class));
     }
+    @PutMapping("/assign")
+    @Operation(summary = "分配")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:bed-mgmt:assign')")
+    public CommonResult<Boolean> assign(@Valid @RequestBody BedMgmtAssignReqVO reqVO) {
+        boolean isSuccess = bedMgmtService.assign(reqVO);
+        return success(isSuccess);
+    }
+    @PutMapping("/adjust")
+    @Operation(summary = "调整")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:bed-mgmt:adjust')")
+    public CommonResult<Boolean> adjust(@Valid @RequestBody BedMgmtAdjustReqVO reqVO) {
+        boolean isSuccess = bedMgmtService.adjust(reqVO);
+        return success(isSuccess);
+    }
+    @GetMapping("/chart")
+    @Operation(summary = "宿舍床位分布看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:bed-mgmt:query')")
+    public CommonResult<BedMgmtChartRespVO> chart(@Valid BedMgmtChartReqVO reqVO) {
+        BedMgmtChartRespVO vo = bedMgmtService.chart(reqVO);
+        return success(vo);
+    }
+    @GetMapping("/chart/bedDistribution")
+    @Operation(summary = "楼栋床位占比统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:bed-mgmt:query')")
+    public CommonResult<BedMgmtBedDistributionRespVO> bedDistribution() {
+        BedMgmtBedDistributionRespVO vo = bedMgmtService.bedDistribution();
+        return success(vo);
+    }
+    @GetMapping("/chart/bedIndex")
+    @Operation(summary = "床位核心指标统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:bed-mgmt:query')")
+    public CommonResult<BedMgmtBedIndexRespVO> bedIndex() {
+        BedMgmtBedIndexRespVO vo = bedMgmtService.bedIndex();
+        return success(vo);
+    }
 
 }
