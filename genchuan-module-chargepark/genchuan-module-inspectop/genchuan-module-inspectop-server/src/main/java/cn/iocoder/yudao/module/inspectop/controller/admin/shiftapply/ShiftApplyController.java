@@ -34,7 +34,6 @@ import cn.iocoder.yudao.module.inspectop.service.shiftapply.ShiftApplyService;
 @RestController
 @RequestMapping("/inspectop/shift-apply")
 @Validated
-@Hidden
 public class ShiftApplyController {
 
     @Resource

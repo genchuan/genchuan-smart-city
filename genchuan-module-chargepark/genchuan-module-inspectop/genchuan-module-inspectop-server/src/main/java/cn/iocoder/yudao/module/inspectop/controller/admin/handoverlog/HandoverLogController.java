@@ -34,7 +34,6 @@ import cn.iocoder.yudao.module.inspectop.service.handoverlog.HandoverLogService;
 @RestController
 @RequestMapping("/inspectop/handover-log")
 @Validated
-@Hidden
 public class HandoverLogController {
 
     @Resource
