@@ -20,11 +20,9 @@ public class ViolateChartReqVO {
 
     // ========== 卡片数据 ==========
     @Schema(description = "发起时间，前端传参对应的 long 类型时间戳", requiredMode = Schema.RequiredMode.REQUIRED)
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY)
     private LocalDateTime startTime;
 
     @Schema(description = "结束时间，前端传参对应的 long 类型时间戳", requiredMode = Schema.RequiredMode.REQUIRED)
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY)
     private LocalDateTime endTime;
 
 

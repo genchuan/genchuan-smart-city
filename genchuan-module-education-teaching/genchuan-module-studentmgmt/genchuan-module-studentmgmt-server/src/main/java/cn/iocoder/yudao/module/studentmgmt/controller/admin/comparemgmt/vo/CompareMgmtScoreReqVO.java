@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 public class CompareMgmtScoreReqVO {
 
     @Schema(description = "主键 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    private Long id;
+    private Long[] ids;
 
     @Schema(description = "总得分", requiredMode = Schema.RequiredMode.REQUIRED, example = "90")
     @NotNull(message = "总得分不能为空")

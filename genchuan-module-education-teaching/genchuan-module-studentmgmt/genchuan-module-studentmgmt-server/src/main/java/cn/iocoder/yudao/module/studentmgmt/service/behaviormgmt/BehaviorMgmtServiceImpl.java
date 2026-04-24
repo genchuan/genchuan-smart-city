@@ -118,6 +118,7 @@ public class BehaviorMgmtServiceImpl implements BehaviorMgmtService {
             String username = SecurityFrameworkUtils.getLoginUserNickname();
             behaviorMgmtDO.setAuditUser(username);
             behaviorMgmtDO.setStatus(reqVO.getStatus());
+            behaviorMgmtDO.setRemark(reqVO.getRemark());
 
             int i = behaviorMgmtMapper.updateById(behaviorMgmtDO);
             LogRecordContext.putVariable("behavior", behaviorMgmtDO);
