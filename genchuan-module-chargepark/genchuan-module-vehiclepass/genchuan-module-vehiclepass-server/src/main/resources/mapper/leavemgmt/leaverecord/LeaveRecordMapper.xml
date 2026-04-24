@@ -10,7 +10,6 @@
             l.leave_time AS leaveTime,
             l.park_duration AS parkDuration,
             l.status,
-            l.station_id AS stationId,
             s.name AS stationName,
             l.remark,
             l.proof_image AS proofImage,

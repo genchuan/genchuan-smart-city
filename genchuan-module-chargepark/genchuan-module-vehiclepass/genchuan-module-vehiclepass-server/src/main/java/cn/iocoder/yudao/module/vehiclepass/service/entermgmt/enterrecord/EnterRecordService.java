@@ -72,6 +72,14 @@ public interface EnterRecordService {
     PageResult<MyEnterRecordRespVO> getEnterRecordPage(MyEnterRecordPageReqVO reqVO);
 
     /**
+     * 获得入场记录分页（基于 EnterRecordPageReqVO）
+     *
+     * @param reqVO 分页查询
+     * @return 入场记录分页
+     */
+    PageResult<MyEnterRecordRespVO> getEnterRecordPage(EnterRecordPageReqVO reqVO);
+
+    /**
      * 创建入场记录（人工补录）
      */
     Boolean createEnterRecord(EnterRecordCreateReqVO createReqVO);

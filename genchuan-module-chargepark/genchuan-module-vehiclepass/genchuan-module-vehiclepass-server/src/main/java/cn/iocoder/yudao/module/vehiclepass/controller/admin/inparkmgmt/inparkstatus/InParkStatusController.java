@@ -38,7 +38,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 @Tag(name = "管理后台 - 在停状态")
 @RestController
-@RequestMapping("/in/park-status")
+@RequestMapping("/vehiclepass/in-park-status")
 @Validated
 public class InParkStatusController {
 
@@ -89,16 +89,8 @@ public class InParkStatusController {
 
     @GetMapping("/page")
     @Operation(summary = "获得在停状态分页")
-    @PreAuthorize("@ss.hasPermission('in:park-status:query')")
-    public CommonResult<PageResult<InParkStatusRespVO>> getParkStatusPage(@Valid InParkStatusPageReqVO pageReqVO) {
-        PageResult<InParkStatusDO> pageResult = parkStatusService.getParkStatusPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, InParkStatusRespVO.class));
-    }
-
-    @GetMapping("/my/page")
-    @Operation(summary = "获得在停状态分页")
     @PreAuthorize("@ss.hasPermission('vehiclepass:in-park-status:query')")
-    public CommonResult<PageResult<InParkStatusRespVO>> getInParkStatusPage(@Valid InParkStatusPageReqVO pageReqVO) {
+    public CommonResult<PageResult<InParkStatusRespVO>> getParkStatusPage(@Valid InParkStatusPageReqVO pageReqVO) {
         return success(parkStatusService.getInParkStatusPage(pageReqVO));
     }
 
@@ -139,10 +131,8 @@ public class InParkStatusController {
     public void exportParkStatusExcel(@Valid InParkStatusPageReqVO pageReqVO,
                                       HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<InParkStatusDO> list = parkStatusService.getParkStatusPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "在停状态.xls", "数据", InParkStatusRespVO.class,
-                BeanUtils.toBean(list, InParkStatusRespVO.class));
+        PageResult<InParkStatusRespVO> pageResult = parkStatusService.getInParkStatusPage(pageReqVO);
+        ExcelUtils.write(response, "在停状态.xls", "数据", InParkStatusRespVO.class, pageResult.getList());
     }
 
 }
