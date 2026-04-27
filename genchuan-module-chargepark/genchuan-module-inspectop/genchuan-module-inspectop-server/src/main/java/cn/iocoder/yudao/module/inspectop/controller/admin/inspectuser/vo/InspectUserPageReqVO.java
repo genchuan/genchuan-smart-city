@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.inspectop.controller.admin.inspectuser.vo;
 
+import cn.idev.excel.annotation.ExcelProperty;
 import lombok.*;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,6 +19,9 @@ public class InspectUserPageReqVO extends PageParam {
 
     @Schema(description = "手机号")
     private String phone;
+
+    @Schema(description = "场站ID", requiredMode = Schema.RequiredMode.REQUIRED)
+    private Long stationId;
 
     @Schema(description = "所属片区")
     private String area;

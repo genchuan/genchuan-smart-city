@@ -24,6 +24,10 @@ public class InspectUserRespVO {
     @ExcelProperty("手机号")
     private String phone;
 
+    @Schema(description = "场站ID", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("场站ID")
+    private Long stationId;
+
     @Schema(description = "所属片区")
     @ExcelProperty("所属片区")
     private String area;

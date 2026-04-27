@@ -1,16 +1,14 @@
+// 文件: CycleReportDO.java
+// 路径: cn/iocoder/yudao/module/inspectop/dal/dataobject/cyclereport/CycleReportDO.java
 package cn.iocoder.yudao.module.inspectop.dal.dataobject.cyclereport;
 
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
-import com.baomidou.mybatisplus.annotation.KeySequence;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * 巡检运维报表 DO
- */
 @TableName("cycle_report")
 @KeySequence("cycle_report_seq")
 @Data
@@ -20,15 +18,23 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CycleReportDO extends BaseDO {
-
     /**
-     * 报表主键 ID
+     * 主键ID
      */
+    @TableId
     private Long id;
     /**
      * 报表周期
      */
     private String reportCycle;
+    /**
+     * 场站ID
+     */
+    private Long stationId;
+    /**
+     * 场站名称
+     */
+    private String stationName;
     /**
      * 统计开始时间
      */
@@ -74,11 +80,7 @@ public class CycleReportDO extends BaseDO {
      */
     private Integer stockWarnNum;
     /**
-     * 所属场站 ID
-     */
-    private Long stationId;
-    /**
-     * 生成状态（生成中 / 已生成）
+     * 生成状态
      */
     private String generateStatus;
     /**
@@ -90,7 +92,7 @@ public class CycleReportDO extends BaseDO {
      */
     private String operator;
     /**
-     * 报表导出次数
+     * 导出次数
      */
     private Integer exportCount;
     /**
@@ -102,15 +104,7 @@ public class CycleReportDO extends BaseDO {
      */
     private String chainRatioData;
     /**
-     * 租户 ID
+     * 租户ID
      */
     private Long tenantId;
-    /**
-     * 预留字段1
-     */
-    private String reserve1;
-    /**
-     * 预留字段2
-     */
-    private String reserve2;
 }
