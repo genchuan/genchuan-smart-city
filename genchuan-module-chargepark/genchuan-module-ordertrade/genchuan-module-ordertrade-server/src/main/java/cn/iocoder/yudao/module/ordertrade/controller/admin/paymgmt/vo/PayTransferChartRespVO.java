@@ -13,6 +13,14 @@ public class PayTransferChartRespVO {
     @Schema(description = "转账订单趋势数据（折线图）")
     private List<Map<String, Object>> trendData;
 
-    @Schema(description = "今日转账订单量")
-    private Long todayTransferCount;
+    @Schema(description = "今日核心指标（卡片）")
+    private CardData cardData;
+
+    @Data
+    @Schema(description = "卡片指标")
+    public static class CardData {
+
+        @Schema(description = "今日转账订单量")
+        private Long todayTransferCount;
+    }
 }

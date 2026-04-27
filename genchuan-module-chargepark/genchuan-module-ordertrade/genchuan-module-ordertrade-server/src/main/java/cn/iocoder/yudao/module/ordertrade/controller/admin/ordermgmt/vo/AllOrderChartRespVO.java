@@ -21,12 +21,17 @@ public class AllOrderChartRespVO {
     @Schema(description = "订单类型分布数据（柱状图）")
     private List<Map<String,Object>> typeData;
 
-    @Schema(description = "今日订单量")
-    private Integer todayOrderCount;
+    @Schema(description = "今日核心指标（卡片）")
+    private CardData cardData;
 
-    @Schema(description = "今日营收")
-    private BigDecimal todayRevenue;
-
-    @Schema(description = "今日支付率（%）")
-    private BigDecimal payRate;
+    @Data
+    @Schema(description = "卡片指标")
+    public static class CardData {
+        @Schema(description = "今日订单量")
+        private Integer todayOrderCount;
+        @Schema(description = "今日营收")
+        private BigDecimal todayRevenue;
+        @Schema(description = "今日支付率（%）")
+        private BigDecimal payRate;
+    }
 }

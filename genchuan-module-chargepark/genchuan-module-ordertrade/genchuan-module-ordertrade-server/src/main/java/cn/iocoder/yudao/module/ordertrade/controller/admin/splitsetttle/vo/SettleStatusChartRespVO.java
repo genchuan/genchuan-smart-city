@@ -14,9 +14,17 @@ public class SettleStatusChartRespVO {
     @Schema(description = "结算状态占比数据（饼图）")
     private List<Map<String, Object>> statusData;
 
-    @Schema(description = "结算完成率（%）")
-    private BigDecimal completeRate;
+    @Schema(description = "今日核心指标（卡片）")
+    private CardData cardData;
 
-    @Schema(description = "异常结算占比（%）")
-    private BigDecimal abnormalRate;
+    @Data
+    @Schema(description = "卡片指标")
+    public static class CardData {
+
+        @Schema(description = "结算完成率（%）")
+        private BigDecimal completeRate;
+
+        @Schema(description = "异常结算占比（%）")
+        private BigDecimal abnormalRate;
+    }
 }

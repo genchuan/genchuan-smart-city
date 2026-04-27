@@ -13,9 +13,15 @@ public class AgentRuleChartRespVO {
     @Schema(description = "规则使用分布数据（柱状图）")
     private List<Map<String, Object>> useDistData;
 
-    @Schema(description = "生效规则数")
-    private Long enabledCount;
+    @Schema(description = "今日核心指标（卡片）")
+    private CardData cardData;
 
-    @Schema(description = "代付订单量（今日）")
-    private Long todayOrderCount;
+    @Data
+    @Schema(description = "卡片指标")
+    public static class CardData {
+        @Schema(description = "生效规则数")
+        private Long enabledCount;
+        @Schema(description = "代付订单量（今日）")
+        private Long todayOrderCount;
+    }
 }

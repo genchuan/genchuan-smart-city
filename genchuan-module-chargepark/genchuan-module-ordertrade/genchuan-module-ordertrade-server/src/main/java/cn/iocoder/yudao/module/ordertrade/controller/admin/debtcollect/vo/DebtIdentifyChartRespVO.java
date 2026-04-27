@@ -21,9 +21,17 @@ public class DebtIdentifyChartRespVO {
     @Schema(description = "各场站逃费数据（柱状图）")
     private List<Map<String,Object>> stationData;
 
-    @Schema(description = "待识别数（卡片）")
-    private Integer waitIdentifyCount;
+    @Schema(description = "今日核心指标（卡片）")
+    private CardData cardData;
 
-    @Schema(description = "识别成功率（%）（卡片）")
-    private BigDecimal identifySuccessRate;
+    @Data
+    @Schema(description = "卡片指标")
+    public static class CardData {
+
+        @Schema(description = "待识别数（卡片）")
+        private Integer waitIdentifyCount;
+
+        @Schema(description = "识别成功率（%）（卡片）")
+        private BigDecimal identifySuccessRate;
+    }
 }

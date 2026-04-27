@@ -124,18 +124,21 @@ public class ReconcileBillServiceImpl implements ReconcileBillService {
         LocalDateTime end = chartReqVO.getEndTime() != null ? chartReqVO.getEndTime() : LocalDateTime.now();
 
         resp.setTrendData(reconcileBillMapper.selectTrend(start, end));
-        resp.setPendingCount(reconcileBillMapper.selectPendingCount());
-        resp.setDisputedCount(reconcileBillMapper.selectDisputedCount());
-        resp.setConfirmedCount(reconcileBillMapper.selectConfirmedCount());
 
-        Long confirmedCount = resp.getConfirmedCount();
+        ReconcileBillChartRespVO.CardData card = new ReconcileBillChartRespVO.CardData();
+        card.setPendingCount(reconcileBillMapper.selectPendingCount());
+        card.setDisputedCount(reconcileBillMapper.selectDisputedCount());
+        card.setConfirmedCount(reconcileBillMapper.selectConfirmedCount());
+
+        Long confirmedCount = card.getConfirmedCount();
         Long totalCount = reconcileBillMapper.selectTotalCount();
         if (totalCount != null && totalCount > 0) {
-            resp.setConfirmRate(new BigDecimal(confirmedCount).multiply(BigDecimal.valueOf(100))
+            card.setConfirmRate(new BigDecimal(confirmedCount).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(totalCount), 1, RoundingMode.HALF_UP));
         } else {
-            resp.setConfirmRate(BigDecimal.ZERO);
+            card.setConfirmRate(BigDecimal.ZERO);
         }
+        resp.setCardData(card);
         return resp;
     }
 

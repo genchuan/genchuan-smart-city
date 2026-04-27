@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -131,6 +132,7 @@ public class AllOrderController {
 
     @GetMapping("/chart")
     @Operation(summary = "获得全部订单统计图表数据（折线图+柱状图/饼图+卡片）")
+ /*   @PreAuthorize("@ss.hasPermission('ordertrade:all-order:query')")*/
     public CommonResult<AllOrderChartRespVO> getAllOrderChart(@Valid AllOrderChartReqVO chartReqVO) {
         return success(allOrderService.getAllOrderChart(chartReqVO));
     }

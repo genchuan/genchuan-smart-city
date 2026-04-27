@@ -137,16 +137,19 @@ public class SettleBillServiceImpl implements SettleBillService {
         LocalDateTime end = chartReqVO.getEndTime() != null ? chartReqVO.getEndTime() : LocalDateTime.now();
 
         resp.setTrendData(settleBillMapper.selectTrend(start, end));
-        resp.setTotalSettleAmount(settleBillMapper.selectTotalSettleAmount());
+
+        SettleBillChartRespVO.CardData card = new SettleBillChartRespVO.CardData();
+        card.setTotalSettleAmount(settleBillMapper.selectTotalSettleAmount());
 
         Long settledCount = settleBillMapper.selectSettledCount();
         Long totalCount = settleBillMapper.selectTotalCount();
         if (totalCount != null && totalCount > 0) {
-            resp.setSettleCompleteRate(new BigDecimal(settledCount).multiply(BigDecimal.valueOf(100))
+            card.setSettleCompleteRate(new BigDecimal(settledCount).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(totalCount), 1, RoundingMode.HALF_UP));
         } else {
-            resp.setSettleCompleteRate(BigDecimal.ZERO);
+            card.setSettleCompleteRate(BigDecimal.ZERO);
         }
+        resp.setCardData(card);
         return resp;
     }
 

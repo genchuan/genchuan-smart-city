@@ -85,16 +85,19 @@ public class AgentRecordServiceImpl implements AgentRecordService {
         LocalDateTime now = LocalDateTime.now();
 
         resp.setTrendData(agentRecordMapper.selectTrend(start, end));
-        resp.setTodayCount(agentRecordMapper.selectTodayCount(todayStart, now));
+
+        AgentRecordChartRespVO.CardData card = new AgentRecordChartRespVO.CardData();
+        card.setTodayCount(agentRecordMapper.selectTodayCount(todayStart, now));
 
         Long normalCount = agentRecordMapper.selectNormalCount();
         Long totalCount = agentRecordMapper.selectTotalCount();
         if (totalCount != null && totalCount > 0) {
-            resp.setSuccessRate(new BigDecimal(normalCount).multiply(BigDecimal.valueOf(100))
+            card.setSuccessRate(new BigDecimal(normalCount).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(totalCount), 1, RoundingMode.HALF_UP));
         } else {
-            resp.setSuccessRate(BigDecimal.ZERO);
+            card.setSuccessRate(BigDecimal.ZERO);
         }
+        resp.setCardData(card);
         return resp;
     }
 

@@ -18,9 +18,17 @@ public class AmountCheckChartRespVO {
     @Schema(description = "核算量趋势数据（折线图）")
     private List<Map<String,Object>> trendData;
 
-    @Schema(description = "核算总数（卡片）")
-    private Integer totalCheckCount;
+    @Schema(description = "今日核心指标（卡片）")
+    private CardData cardData;
 
-    @Schema(description = "核算准确率（%）（卡片）")
-    private BigDecimal checkAccuracy;
+    @Data
+    @Schema(description = "卡片指标")
+    public static class CardData {
+
+        @Schema(description = "核算总数（卡片）")
+        private Integer totalCheckCount;
+
+        @Schema(description = "核算准确率（%）（卡片）")
+        private BigDecimal checkAccuracy;
+    }
 }
