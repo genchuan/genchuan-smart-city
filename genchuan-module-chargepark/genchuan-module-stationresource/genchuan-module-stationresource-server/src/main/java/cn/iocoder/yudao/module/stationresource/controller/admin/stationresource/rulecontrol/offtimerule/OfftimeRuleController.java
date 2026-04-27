@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.lxscommon.vo.BatchStatusUpdateReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.offtimerule.vo.*;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.offtimerule.vo.ops.OfftimeRuleChartRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.offtimerule.vo.ops.OfftimeRuleCreateReqVO;
@@ -53,16 +54,16 @@ public class OfftimeRuleController {
     @PutMapping("/enable")
     @Operation(summary = "批量生效错时规则")
     @PreAuthorize("@ss.hasPermission('stationresource:offtime-rule:update')")
-    public CommonResult<Boolean> enableOfftimeRule(@RequestBody List<Long> ids) {
-        offtimeRuleService.enableOfftimeRule(ids);
+    public CommonResult<Boolean> enableOfftimeRule(@Valid @RequestBody BatchStatusUpdateReqVO reqVO) {
+        offtimeRuleService.enableOfftimeRule(reqVO.getIds());
         return CommonResult.success(true);
     }
 
     @PutMapping("/disable")
     @Operation(summary = "批量禁用错时规则")
     @PreAuthorize("@ss.hasPermission('stationresource:offtime-rule:update')")
-    public CommonResult<Boolean> disableOfftimeRule(@RequestBody List<Long> ids) {
-        offtimeRuleService.disableOfftimeRule(ids);
+    public CommonResult<Boolean> disableOfftimeRule(@Valid @RequestBody BatchStatusUpdateReqVO reqVO) {
+        offtimeRuleService.disableOfftimeRule(reqVO.getIds());
         return CommonResult.success(true);
     }
 

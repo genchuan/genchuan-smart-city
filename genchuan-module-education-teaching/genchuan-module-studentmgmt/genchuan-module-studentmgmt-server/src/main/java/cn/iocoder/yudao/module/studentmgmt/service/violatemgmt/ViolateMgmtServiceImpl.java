@@ -1,8 +1,13 @@
 package cn.iocoder.yudao.module.studentmgmt.service.violatemgmt;
 
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.dict.core.DictFrameworkUtils;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.violatemgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
+import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.violatemgmt.ViolateMgmtDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
+import cn.iocoder.yudao.module.studentmgmt.dal.mysql.violatemgmt.ViolateMgmtMapper;
 import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
 import cn.iocoder.yudao.module.studentmgmt.enums.ViolaateStatusEnum;
 import com.alibaba.fastjson.JSONObject;
@@ -10,23 +15,18 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.service.impl.DiffParseFunction;
 import com.mzt.logapi.starter.annotation.LogRecord;
-import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.violatemgmt.vo.*;
-import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.violatemgmt.ViolateMgmtDO;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
-import cn.iocoder.yudao.module.studentmgmt.dal.mysql.violatemgmt.ViolateMgmtMapper;
-
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.module.studentmgmt.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.studentmgmt.enums.ErrorCodeConstants.STUDENT_INFO_NOT_EXISTS;
+import static cn.iocoder.yudao.module.studentmgmt.enums.ErrorCodeConstants.VIOLATE_MGMT_NOT_EXISTS;
 import static cn.iocoder.yudao.module.studentmgmt.enums.LogRecordConstants.*;
 
 /**
@@ -45,8 +45,7 @@ public class ViolateMgmtServiceImpl implements ViolateMgmtService {
     private StudentInfoMapper studentInfoMapper;
 
     @Override
-    @LogRecord(type = VIOLATE_TYPE, subType = VIOLATE_CREATE_SUB_TYPE, bizNo = "{{#violate.id}}",
-            success = VIOLATE_CREATE_SUCCESS)
+    @LogRecord(type = VIOLATE_TYPE, subType = VIOLATE_CREATE_SUB_TYPE, bizNo = "{{#violate.id}}", success = VIOLATE_CREATE_SUCCESS)
     public Long createViolateMgmt(ViolateMgmtSaveReqVO createReqVO) {
         // 插入
         ViolateMgmtDO violateMgmt = BeanUtils.toBean(createReqVO, ViolateMgmtDO.class);
@@ -66,8 +65,7 @@ public class ViolateMgmtServiceImpl implements ViolateMgmtService {
     }
 
     @Override
-    @LogRecord(type = VIOLATE_TYPE, subType = VIOLATE_UPDATE_SUB_TYPE, bizNo = "{{#updateReqVO.id}}",
-            success = VIOLATE_UPDATE_SUCCESS)
+    @LogRecord(type = VIOLATE_TYPE, subType = VIOLATE_UPDATE_SUB_TYPE, bizNo = "{{#updateReqVO.id}}", success = VIOLATE_UPDATE_SUCCESS)
     public void updateViolateMgmt(ViolateMgmtSaveReqVO updateReqVO) {
         // 校验存在
         ViolateMgmtDO violateMgmtDO = validateViolateMgmtExists(updateReqVO.getId());
@@ -88,15 +86,15 @@ public class ViolateMgmtServiceImpl implements ViolateMgmtService {
     }
 
     @Override
-        public void deleteViolateMgmtListByIds(List<Long> ids) {
+    public void deleteViolateMgmtListByIds(List<Long> ids) {
         // 删除
         violateMgmtMapper.deleteByIds(ids);
-        }
+    }
 
 
     private ViolateMgmtDO validateViolateMgmtExists(Long id) {
         ViolateMgmtDO violateMgmtDO = violateMgmtMapper.selectById(id);
-        if ( violateMgmtDO == null) {
+        if (violateMgmtDO == null) {
             throw exception(VIOLATE_MGMT_NOT_EXISTS);
         }
         return violateMgmtDO;
@@ -113,8 +111,7 @@ public class ViolateMgmtServiceImpl implements ViolateMgmtService {
     }
 
     @Override
-    @LogRecord(type = VIOLATE_TYPE, subType = VIOLATE_UPDATE_AUDIT_STATUS_SUB_TYPE, bizNo = "{{#id}}",
-            success = VIOLATE_UPDATE_AUDIT_STATUS_SUCCESS)
+    @LogRecord(type = VIOLATE_TYPE, subType = VIOLATE_UPDATE_AUDIT_STATUS_SUB_TYPE, bizNo = "{{#id}}", success = VIOLATE_UPDATE_AUDIT_STATUS_SUCCESS)
     public boolean auditViolateMgmtListByIds(List<Long> ids, Long userId) {
         List<ViolateMgmtDO> violateMgmtDOS = violateMgmtMapper.selectByIds(ids);
 
@@ -145,7 +142,7 @@ public class ViolateMgmtServiceImpl implements ViolateMgmtService {
             violateMgmtDO.setPushTime(LocalDateTime.now());
             int i = violateMgmtMapper.updateById(violateMgmtDO);
 
-            if (i > 0 ) {
+            if (i > 0) {
                 // 查询所有学生的姓名
                 StudentInfoDO studentInfoDO = studentInfoMapper.selectById(violateMgmtDO.getStudentId());
                 // 获取学生的姓名
@@ -178,7 +175,7 @@ public class ViolateMgmtServiceImpl implements ViolateMgmtService {
             violateMgmtDO.setStatus(ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_WARN.getStatus());
             int i = violateMgmtMapper.updateById(violateMgmtDO);
 
-            if (i > 0 ) {
+            if (i > 0) {
                 // 查询所有学生的姓名
                 StudentInfoDO studentInfoDO = studentInfoMapper.selectById(violateMgmtDO.getStudentId());
                 // 获取所有学生的姓名
@@ -205,12 +202,21 @@ public class ViolateMgmtServiceImpl implements ViolateMgmtService {
         vo.setTotalCount(violateMgmtMapper.selectTotalCount(startTime, endTime, "", ""));
         vo.setPendingCount(violateMgmtMapper.selectTotalCount(startTime, endTime, ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_PENDING.getStatus(), ""));
         vo.setWarnCount(violateMgmtMapper.selectTotalCount(startTime, endTime, ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_WARN.getStatus(), ""));
-        vo.setHighRiskStudentCount(violateMgmtMapper.selectHighRiskStudentCount(startTime, endTime));
+        Long highRiskStudentCount = violateMgmtMapper.selectHighRiskStudentCount(startTime, endTime);
+        if (highRiskStudentCount != null) {
+            vo.setHighRiskStudentCount(highRiskStudentCount);
+        } else {
+            vo.setHighRiskStudentCount(0L);
+        }
 
         List<JSONObject> jsonObjects = violateMgmtMapper.selectViolateTypeCount(startTime, endTime);
+        JSONObject violateTypeCount = new JSONObject();
         for (JSONObject jsonObject : jsonObjects) {
-            vo.getViolateTypeCount().put(jsonObject.getString("violate_type"), jsonObject.getLong("count"));
+            String typeName = jsonObject.getString("violate_type");
+            Long count = jsonObject.getLong("count");
+            violateTypeCount.put(typeName, count);
         }
+        vo.setViolateTypeCount(violateTypeCount);
         return vo;
     }
 
@@ -236,11 +242,11 @@ public class ViolateMgmtServiceImpl implements ViolateMgmtService {
             // 数量
             typeCountJson.put("count", jsonObject.getLong("count"));
             // 百分比
-            typeCountJson.put("percent", String.format("%.2f", jsonObject.getLong("num") * 100.0 / totalCount));
+            typeCountJson.put("percent", String.format("%.2f", jsonObject.getLong("count") * 100.0 / totalCount));
             typeCountList.add(typeCountJson);
         }
         vo.setTypeCountList(typeCountList);
-        return null;
+        return vo;
     }
 
     @Override

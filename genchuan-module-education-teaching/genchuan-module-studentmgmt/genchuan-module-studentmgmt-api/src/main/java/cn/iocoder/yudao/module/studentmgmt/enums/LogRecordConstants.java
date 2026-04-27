@@ -227,4 +227,26 @@ public interface LogRecordConstants {
     String BED_MGMT_ADJUST_SUB_TYPE = "调整床位";
     String BED_MGMT_ADJUST_SUB_TYPE_SUCCESS = "调整了床位{{#content}}";
 
+    // ======================= 宿舍评比 =======================
+
+    String DORM_COMPARE_TYPE = "宿舍评比";
+    String DORM_COMPARE_SCORE_SUB_TYPE = "打分宿舍评比";
+    String DORM_COMPARE_SCORE_SUB_TYPE_SUCCESS = "宿舍{{#dormCompare.dormNum}}，得了{{#dormCompare.score}}分";
+    String DORM_COMPARE_SUMMARY_SUB_TYPE = "汇总宿舍评比";
+    String DORM_COMPARE_SUMMARY_SUB_TYPE_SUCCESS = "宿舍评比已汇总";
+    String DORM_COMPARE_PUSH_SUB_TYPE = "推送宿舍评比";
+    String DORM_COMPARE_PUSH_SUB_TYPE_SUCCESS = "推送宿舍评比";
+    String DORM_COMPARE_UPDATE_SUB_TYPE = "更新宿舍评比";
+    String DORM_COMPARE_UPDATE_SUB_TYPE_SUCCESS = "更新了考评【{{#dormCompare.dormNum}}】: {_DIFF{#updateReqVO}}";
+
+    // ======================= 宿舍考勤 =======================
+    String DORM_CHECK_TYPE = "宿舍考勤";
+    String DORM_CHECK_CREATE_SUB_TYPE = "打卡宿舍考勤";
+    String DORM_CHECK_CREATE_SUB_TYPE_SUCCESS = "宿舍{{#dormCompare.dormNum}}，打卡";
+    String DORM_CHECK_RECHECK_SUB_TYPE = "补卡宿舍考勤";
+    String DORM_CHECK_RECHECK_SUB_TYPE_SUCCESS = "宿舍考勤已补卡";
+    String DORM_CHECK_PUSH_SUB_TYPE = "推送宿舍考勤";
+    String DORM_CHECK_PUSH_SUB_TYPE_SUCCESS = "推送宿舍考勤";
+
+
 }

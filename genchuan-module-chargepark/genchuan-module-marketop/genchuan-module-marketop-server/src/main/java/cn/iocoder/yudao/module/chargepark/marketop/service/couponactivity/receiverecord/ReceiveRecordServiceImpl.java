@@ -83,7 +83,7 @@ public class ReceiveRecordServiceImpl implements ReceiveRecordService {
         List<ReceiveRecordChartRespVO.TrendItem> trendList = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : dayCountMap.entrySet()) {
             ReceiveRecordChartRespVO.TrendItem item = new ReceiveRecordChartRespVO.TrendItem();
-            item.setStartTime(entry.getKey());
+            item.setDate(entry.getKey());
             item.setCount(entry.getValue());
             trendList.add(item);
         }

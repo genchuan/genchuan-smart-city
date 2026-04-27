@@ -39,10 +39,24 @@ public class DormCheckController {
     private DormCheckService dormCheckService;
 
     @PostMapping("/create")
-    @Operation(summary = "创建宿舍考勤")
+    @Operation(summary = "打卡")
     @PreAuthorize("@ss.hasPermission('studentmgmt:dorm-check:create')")
-    public CommonResult<Long> createDormCheck(@Valid @RequestBody DormCheckSaveReqVO createReqVO) {
+    public CommonResult<Boolean> createDormCheck(@Valid @RequestBody DormCheckCreateReqVO createReqVO) {
         return success(dormCheckService.createDormCheck(createReqVO));
+    }
+
+    @PutMapping("/recheck")
+    @Operation(summary = "补卡")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:dorm-check:recheck')")
+    public CommonResult<Boolean> recheck(@Valid @RequestBody DormCheckRecheckReqVO reqVO) {
+        return success(dormCheckService.recheck(reqVO));
+    }
+
+    @PutMapping("/push")
+    @Operation(summary = "推送")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:dorm-check:push')")
+    public CommonResult<Boolean> push(@Valid @RequestBody DormCheckPushReqVO reqVO) {
+        return success(dormCheckService.push(reqVO));
     }
 
     @PutMapping("/update")
@@ -101,4 +115,18 @@ public class DormCheckController {
                         BeanUtils.toBean(list, DormCheckRespVO.class));
     }
 
+    @GetMapping("/chart")
+    @Operation(summary = "宿舍考勤预警看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:dorm-check:query')")
+    public CommonResult<DormCheckChartRespVO> chart(@Valid DormCheckChartReqVO reqVO) {
+        DormCheckChartRespVO vo = dormCheckService.chart(reqVO);
+        return success(vo);
+    }
+    @GetMapping("/checkCount")
+    @Operation(summary = "各班级考勤异常人数 / 在寝率统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:dorm-check:query')")
+    public CommonResult<DormCheckChartCountRespVO> checkCount(@Valid DormCheckChartCountReqVO reqVO) {
+        DormCheckChartCountRespVO vo = dormCheckService.checkCount(reqVO);
+        return success(vo);
+    }
 }

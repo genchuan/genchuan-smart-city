@@ -42,6 +42,13 @@ public class PointLotteryController {
     @Operation(summary = "获得积分抽奖分页")
     @PreAuthorize("@ss.hasPermission('marketop:point-lottery:query')")
     public CommonResult<PageResult<PointLotteryRespVO>> getPage(PointLotteryPageReqVO reqVO) {
+        // 如果startTime和endTime都为null，且lotteryTime不为空，将lotteryTime转为当天开始和结束时间
+        if (reqVO.getStartTime() == null && reqVO.getEndTime() == null
+                && reqVO.getLotteryTime() != null && !reqVO.getLotteryTime().isEmpty()) {
+            java.time.LocalDate date = java.time.LocalDate.parse(reqVO.getLotteryTime());
+            reqVO.setStartTime(date.atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
+            reqVO.setEndTime(date.plusDays(1).atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
+        }
         PageResult<PointLotteryDO> pageResult = pointLotteryService.getPage(reqVO);
         PageResult<PointLotteryRespVO> bean = BeanUtils.toBean(pageResult, PointLotteryRespVO.class);
         injectNames(bean.getList());

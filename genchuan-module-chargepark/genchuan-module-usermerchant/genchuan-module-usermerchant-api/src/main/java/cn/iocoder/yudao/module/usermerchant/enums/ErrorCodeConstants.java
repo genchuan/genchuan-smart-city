@@ -19,5 +19,10 @@ public interface ErrorCodeConstants {
     ErrorCode MERCHANT_INFO_NOT_EXISTS = new ErrorCode(500, "商户信息不存在");
     // ========== 商户对接==========
     ErrorCode MERCHANT_LINK_NOT_EXISTS = new ErrorCode(500, "商户对接不存在");
+    // ========== 商户充值==========
+    ErrorCode MERCHANT_RECHARGE_NOT_EXISTS = new ErrorCode(500, "商户充值不存在");
+    ErrorCode ORDER_NO_REACHED_LIMIT = new ErrorCode(500, "充值订单编号达到极限");
+    // ========== 商户发券==========
+    ErrorCode MERCHANT_SEND_COUPON_NOT_EXISTS = new ErrorCode(500, "商户发券不存在");
 
 }

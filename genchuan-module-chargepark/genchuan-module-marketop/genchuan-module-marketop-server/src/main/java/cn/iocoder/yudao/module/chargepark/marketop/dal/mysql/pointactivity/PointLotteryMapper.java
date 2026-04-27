@@ -16,21 +16,34 @@ import java.util.Map;
 public interface PointLotteryMapper extends BaseMapperX<PointLotteryDO> {
 
     default PageResult<PointLotteryDO> selectPage(PointLotteryPageReqVO reqVO) {
-        return selectPage(reqVO, new LambdaQueryWrapperX<PointLotteryDO>()
+        LambdaQueryWrapperX<PointLotteryDO> wrapper = new LambdaQueryWrapperX<PointLotteryDO>()
                 .likeIfPresent(PointLotteryDO::getNo, reqVO.getNo())
                 .eqIfPresent(PointLotteryDO::getUserId, reqVO.getUserId())
                 .eqIfPresent(PointLotteryDO::getPrizeId, reqVO.getPrizeId())
                 .eqIfPresent(PointLotteryDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(PointLotteryDO::getSyncStatus, reqVO.getSyncStatus())
-                .betweenIfPresent(PointLotteryDO::getLotteryTime, reqVO.getLotteryTime())
-                .orderByDesc(PointLotteryDO::getId));
+                .eqIfPresent(PointLotteryDO::getSenderId, reqVO.getSenderId())
+                .likeIfPresent(PointLotteryDO::getCheckResult, reqVO.getCheckResult())
+                .orderByDesc(PointLotteryDO::getId);
+        if (reqVO.getStartTime() != null && reqVO.getEndTime() != null) {
+            wrapper.between(PointLotteryDO::getLotteryTime,
+                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getStartTime()), java.time.ZoneId.systemDefault()),
+                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getEndTime()), java.time.ZoneId.systemDefault()));
+        } else if (reqVO.getStartTime() != null) {
+            wrapper.ge(PointLotteryDO::getLotteryTime,
+                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getStartTime()), java.time.ZoneId.systemDefault()));
+        } else if (reqVO.getEndTime() != null) {
+            wrapper.le(PointLotteryDO::getLotteryTime,
+                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getEndTime()), java.time.ZoneId.systemDefault()));
+        }
+        return selectPage(reqVO, wrapper);
     }
 
-    @Select("SELECT DATE(create_time) AS date, COUNT(*) AS count " +
+    @Select("SELECT DATE(lottery_time) AS date, COUNT(*) AS count " +
             "FROM point_lottery " +
-            "WHERE create_time >= #{startTime} " +
-            "GROUP BY DATE(create_time) " +
-            "ORDER BY DATE(create_time) ASC")
+            "WHERE lottery_time >= #{startTime} " +
+            "GROUP BY DATE(lottery_time) " +
+            "ORDER BY DATE(lottery_time) ASC")
     List<Map<String, Object>> selectCountByDay(LocalDateTime startTime);
 
     @Select("SELECT COUNT(*) FROM point_lottery")

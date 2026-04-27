@@ -35,10 +35,6 @@ public class ReconcileBillServiceImpl implements ReconcileBillService {
         if (obj.getStatus() == null) {
             obj.setStatus("pending");
         }
-        // 计算差异金额
-        if (obj.getSysAmount() != null && obj.getMerchantAmount() != null) {
-            obj.setDiffAmount(obj.getSysAmount().subtract(obj.getMerchantAmount()));
-        }
         reconcileBillMapper.insert(obj);
         return obj.getId();
     }
@@ -47,9 +43,6 @@ public class ReconcileBillServiceImpl implements ReconcileBillService {
     public void updateReconcileBill(ReconcileBillSaveReqVO updateReqVO) {
         validateExists(updateReqVO.getId());
         ReconcileBillDO update = BeanUtils.toBean(updateReqVO, ReconcileBillDO.class);
-        if (update.getSysAmount() != null && update.getMerchantAmount() != null) {
-            update.setDiffAmount(update.getSysAmount().subtract(update.getMerchantAmount()));
-        }
         reconcileBillMapper.updateById(update);
     }
 
@@ -77,7 +70,7 @@ public class ReconcileBillServiceImpl implements ReconcileBillService {
         ReconcileBillDO update = new ReconcileBillDO();
         update.setId(reqVO.getId());
         update.setStatus("reconciling");
-        update.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
+        update.setReconcilerId(SecurityFrameworkUtils.getLoginUserId());
         reconcileBillMapper.updateById(update);
     }
 
@@ -90,7 +83,7 @@ public class ReconcileBillServiceImpl implements ReconcileBillService {
             ReconcileBillDO update = new ReconcileBillDO();
             update.setId(id);
             update.setStatus("reconciling");
-            update.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
+            update.setReconcilerId(SecurityFrameworkUtils.getLoginUserId());
             reconcileBillMapper.updateById(update);
         });
     }
@@ -106,7 +99,7 @@ public class ReconcileBillServiceImpl implements ReconcileBillService {
         update.setId(id);
         update.setStatus("confirmed");
         update.setConfirmTime(LocalDateTime.now());
-        update.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
+        update.setReconcilerId(SecurityFrameworkUtils.getLoginUserId());
         reconcileBillMapper.updateById(update);
     }
 
@@ -117,9 +110,8 @@ public class ReconcileBillServiceImpl implements ReconcileBillService {
         if (bill == null) throw exception(RECONCILE_BILL_NOT_EXISTS);
         ReconcileBillDO update = new ReconcileBillDO();
         update.setId(reqVO.getId());
-        update.setDiffAmount(java.math.BigDecimal.ZERO);
         update.setStatus("fixed");
-        update.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
+        update.setReconcilerId(SecurityFrameworkUtils.getLoginUserId());
         reconcileBillMapper.updateById(update);
     }
 

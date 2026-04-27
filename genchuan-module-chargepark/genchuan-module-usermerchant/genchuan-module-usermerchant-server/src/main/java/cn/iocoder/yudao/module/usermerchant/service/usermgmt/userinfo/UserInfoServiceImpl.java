@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.usermerchant.service.usermgmt.userinfo;
 
+import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -145,11 +146,16 @@ public class UserInfoServiceImpl implements UserInfoService {
         //拆分时间范围
         String timeRange = chartReqVO.getTimeRange();
 
-        // 解析时间范围，获取开始时间、结束时间以及分组类型（日/月/年）
-        TimeRangeParser.TimeRangeParsed parsed = TimeRangeParser.parse(timeRange);
-        if (parsed == null) {
-            // 若解析失败，可返回空数据或抛异常
-            return chartRespVO;
+        TimeRangeParser.TimeRangeParsed parsed;
+        if (StrUtil.isBlank(timeRange)) {
+            // 未传时间范围：全量查询，start 和 end 为 null，粒度默认 day
+            parsed = new TimeRangeParser.TimeRangeParsed(null, null, "day");
+        } else {
+            parsed = TimeRangeParser.parse(timeRange);
+            if (parsed == null) {
+                // 解析失败，返回空数据
+                return chartRespVO;
+            }
         }
         //折线图渲染
         // 折线图数据

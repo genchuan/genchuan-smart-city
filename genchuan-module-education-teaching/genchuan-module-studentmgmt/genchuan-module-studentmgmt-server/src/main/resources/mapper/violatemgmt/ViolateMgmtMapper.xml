@@ -49,7 +49,7 @@
             AND violate_time &lt;= #{endTime}
         </if>
         GROUP BY student_id
-        HAVING num >3
+        HAVING count >3
 
     </select>
     <select id="selectViolateTypeCount" resultType="com.alibaba.fastjson.JSONObject">

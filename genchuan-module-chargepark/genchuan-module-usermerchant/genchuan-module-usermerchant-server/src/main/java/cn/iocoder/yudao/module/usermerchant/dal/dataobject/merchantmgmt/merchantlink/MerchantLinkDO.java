@@ -69,6 +69,10 @@ public class MerchantLinkDO extends BaseDO {
      * 备用字段2
      */
     private String reserve2;
-
+    /**
+     * 商户名称
+     */
+    @TableField(exist = false)
+    private String merchantName;
 
 }

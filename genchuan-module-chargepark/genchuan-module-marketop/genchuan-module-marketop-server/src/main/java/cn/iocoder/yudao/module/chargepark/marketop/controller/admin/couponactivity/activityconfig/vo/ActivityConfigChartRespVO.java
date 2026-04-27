@@ -18,10 +18,21 @@ public class ActivityConfigChartRespVO {
     @Schema(description = "活动类型分布")
     private List<TypeCountItem> typeList;
 
+    @Schema(description = "适用人群分布")
+    private List<UserGroupCountItem> userGroupList;
+
     @Data
     public static class TypeCountItem {
         @Schema(description = "活动类型")
         private String type;
+        @Schema(description = "数量")
+        private Integer count;
+    }
+
+    @Data
+    public static class UserGroupCountItem {
+        @Schema(description = "活动类型")
+        private String userGroup;
         @Schema(description = "数量")
         private Integer count;
     }

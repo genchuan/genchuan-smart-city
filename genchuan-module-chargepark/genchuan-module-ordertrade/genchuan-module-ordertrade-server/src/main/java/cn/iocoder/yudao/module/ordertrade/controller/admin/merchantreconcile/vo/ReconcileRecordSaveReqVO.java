@@ -4,8 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 @Schema(description = "管理后台 - 对账记录新增/修改 Request VO")
 @Data
 public class ReconcileRecordSaveReqVO {
@@ -17,29 +15,11 @@ public class ReconcileRecordSaveReqVO {
     @NotNull(message = "对账单ID不能为空")
     private Long billId;
 
-    @Schema(description = "对账单号")
-    private String billNo;
-
-    @Schema(description = "商户ID")
-    private Long merchantId;
-
-    @Schema(description = "订单编号")
-    private String orderNo;
-
-    @Schema(description = "系统金额")
-    private BigDecimal sysAmount;
-
-    @Schema(description = "商户上报金额")
-    private BigDecimal merchantAmount;
-
-    @Schema(description = "差异金额")
-    private BigDecimal diffAmount;
-
-    @Schema(description = "对账结果：matched/unmatched/only_sys/only_merchant")
-    private String matchResult;
+    @Schema(description = "状态：normal/abnormal")
+    private String status;
 
     @Schema(description = "异常原因")
-    private String diffReason;
+    private String errorReason;
 
     @Schema(description = "备注")
     private String remark;

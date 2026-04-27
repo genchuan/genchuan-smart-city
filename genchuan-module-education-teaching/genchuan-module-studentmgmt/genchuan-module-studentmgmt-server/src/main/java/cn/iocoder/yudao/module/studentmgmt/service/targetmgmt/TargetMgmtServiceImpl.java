@@ -5,6 +5,7 @@ import cn.iocoder.yudao.module.studentmgmt.enums.TargetStatusEnum;
 import com.alibaba.fastjson.JSONObject;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -101,8 +102,23 @@ public class TargetMgmtServiceImpl implements TargetMgmtService {
             // 校验存在
             TargetMgmtDO targetMgmtDO = validateTargetMgmtExists(id);
             // 更新
-            TargetMgmtDO updateObj = BeanUtils.toBean(reqVO, TargetMgmtDO.class);
-            int i = targetMgmtMapper.updateById(updateObj);
+            if (reqVO.getTotalScore() != null) {
+                targetMgmtDO.setTotalScore(reqVO.getTotalScore());
+            }
+            if (reqVO.getWarnThreshold() != null) {
+                targetMgmtDO.setWarnThreshold(reqVO.getWarnThreshold());
+            }
+            if (StringUtils.isNotBlank(reqVO.getRemark())) {
+                targetMgmtDO.setRemark(reqVO.getRemark());
+            }
+            if (StringUtils.isNotBlank(reqVO.getEvaluatorType())) {
+                targetMgmtDO.setEvaluatorType(reqVO.getEvaluatorType());
+            }
+            if (StringUtils.isNotBlank(reqVO.getScoreType())) {
+                targetMgmtDO.setScoreType(reqVO.getScoreType());
+            }
+            targetMgmtDO.setStatus(TargetStatusEnum.ENABLE.getStatus());
+            int i = targetMgmtMapper.updateById(targetMgmtDO);
             total += i;
             // 记录操作日志上下文
             LogRecordContext.putVariable("target", targetMgmtDO);

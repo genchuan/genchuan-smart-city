@@ -10,12 +10,11 @@ import lombok.Getter;
  */
 public enum DormCheckStatusEnum {
 
-    // 考勤状态（正常 / 迟到 / 未到），关联芋道字典表：dorm_check_check_status
-    DORM_CHECK_CHECK_STATUS_0("0", "正常"),
-    DORM_CHECK_CHECK_STATUS_1("1", "迟到"),
-    DORM_CHECK_CHECK_STATUS_2("2", "未到");
+    // 考勤状态（正常 / 迟到 / 未到），关联芋道字典表：dorm_check_status
+    DORM_CHECK_STATUS_0("0", "正常"),
+    DORM_CHECK_STATUS_1("1", "异常");
 
-    public static final String DICT_TYPE = "dorm_check_check_status";
+    public static final String DICT_TYPE = "dorm_check_status";
     /**
      * 状态
      * <p>

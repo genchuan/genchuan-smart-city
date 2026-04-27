@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.lxscommon.vo.BatchStatusUpdateReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.depositplan.vo.DepositPlanPageReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.depositplan.vo.DepositPlanRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.depositplan.vo.ops.DepositPlanChartRespVO;
@@ -54,16 +55,16 @@ public class DepositPlanController {
     @PutMapping("/enable")
     @Operation(summary = "批量生效押金方案")
     @PreAuthorize("@ss.hasPermission('stationresource:deposit-plan:update')")
-    public CommonResult<Boolean> enableDepositPlan(@RequestBody List<Long> ids) {
-        depositPlanService.enableDepositPlan(ids);
+    public CommonResult<Boolean> enableDepositPlan(@Valid @RequestBody BatchStatusUpdateReqVO reqVO) {
+        depositPlanService.enableDepositPlan(reqVO.getIds());
         return CommonResult.success(true);
     }
 
     @PutMapping("/disable")
     @Operation(summary = "批量禁用押金方案")
     @PreAuthorize("@ss.hasPermission('stationresource:deposit-plan:update')")
-    public CommonResult<Boolean> disableDepositPlan(@RequestBody List<Long> ids) {
-        depositPlanService.disableDepositPlan(ids);
+    public CommonResult<Boolean> disableDepositPlan(@Valid @RequestBody BatchStatusUpdateReqVO reqVO) {
+        depositPlanService.disableDepositPlan(reqVO.getIds());
         return CommonResult.success(true);
     }
 

@@ -22,7 +22,7 @@ public class ReceiveRecordChartRespVO {
     @Data
     public static class TrendItem {
         @Schema(description = "日期")
-        private String startTime;
+        private String date;
         @Schema(description = "领取数量")
         private Integer count;
     }

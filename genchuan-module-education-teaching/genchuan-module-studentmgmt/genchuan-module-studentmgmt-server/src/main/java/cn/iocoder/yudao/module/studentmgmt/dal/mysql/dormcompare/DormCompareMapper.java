@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.dormcompare.DormCompareDO;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.dormcompare.vo.*;
 
@@ -35,4 +36,9 @@ public interface DormCompareMapper extends BaseMapperX<DormCompareDO> {
                 .orderByDesc(DormCompareDO::getId));
     }
 
+    DormCompareChartRespVO selectTotalCompareCount(String cycle);
+
+    List<JSONObject> selectDormStats(String cycle);
+
+    List<JSONObject> selectTotalCompareCountTop10(String cycle);
 }
