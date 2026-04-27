@@ -62,9 +62,9 @@ public class PrizeMgmtServiceImpl implements PrizeMgmtService {
     @Override
     public void enable(Long id) {
         PrizeMgmtDO prizeMgmt = validateExists(id);
-        if (!Objects.equals(PrizeMgmtStatusEnum.DISABLED.getValue(), prizeMgmt.getStatus())) {
-            throw exception(PRIZE_MGMT_NOT_EXISTS);
-        }
+//        if (!Objects.equals(PrizeMgmtStatusEnum.DISABLED.getValue(), prizeMgmt.getStatus())) {
+//            throw exception(PRIZE_MGMT_NOT_EXISTS);
+//        }
         prizeMgmt.setStatus(PrizeMgmtStatusEnum.NORMAL.getValue());
         prizeMgmtMapper.updateById(prizeMgmt);
     }
@@ -72,9 +72,9 @@ public class PrizeMgmtServiceImpl implements PrizeMgmtService {
     @Override
     public void disable(Long id) {
         PrizeMgmtDO prizeMgmt = validateExists(id);
-        if (!Objects.equals(PrizeMgmtStatusEnum.NORMAL.getValue(), prizeMgmt.getStatus())) {
-            throw exception(PRIZE_MGMT_NOT_EXISTS);
-        }
+//        if (!Objects.equals(PrizeMgmtStatusEnum.NORMAL.getValue(), prizeMgmt.getStatus())) {
+//            throw exception(PRIZE_MGMT_NOT_EXISTS);
+//        }
         prizeMgmt.setStatus(PrizeMgmtStatusEnum.DISABLED.getValue());
         prizeMgmtMapper.updateById(prizeMgmt);
     }
