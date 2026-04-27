@@ -91,7 +91,7 @@ public class TimePermissionController {
         return CommonResult.success(result);
     }
     // ==================== 新增接口（新增的） ====================
-    @PostMapping("/add")
+    @PostMapping("/create")
     @Operation(summary = "创建时段权限")
     @PreAuthorize("@ss.hasPermission('stationresource:time-permission:create')")
     public CommonResult<Boolean> addTimePermission(@Valid @RequestBody TimePermissionCreateReqVO createReqVO) {
