@@ -24,5 +24,9 @@ public interface ErrorCodeConstants {
     ErrorCode ORDER_NO_REACHED_LIMIT = new ErrorCode(500, "充值订单编号达到极限");
     // ========== 商户发券==========
     ErrorCode MERCHANT_SEND_COUPON_NOT_EXISTS = new ErrorCode(500, "商户发券不存在");
+    // ========== 集团信息==========
+    ErrorCode GROUP_INFO_NOT_EXISTS = new ErrorCode(500, "集团信息不存在");
+    // ========== 集团车辆==========
+    ErrorCode GROUP_CAR_NOT_EXISTS = new ErrorCode(500, "集团车辆不存在");
 
 }
