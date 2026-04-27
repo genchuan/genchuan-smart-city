@@ -95,7 +95,7 @@ public class PointActivityServiceImpl implements PointActivityService {
 //        if (Objects.equals(PointActivityStatusEnum.IN_PROGRESS.getValue(), pointActivity.getStatus())) { // 进行中
 //            throw exception(POINT_ACTIVITY_STATUS_ERROR);
 //        }
-        pointActivity.setStatus("4"); // 已暂停
+        pointActivity.setStatus(PointActivityStatusEnum.PAUSED.getValue()); // 已暂停
         pointActivityMapper.updateById(pointActivity);
     }
 
@@ -132,7 +132,7 @@ public class PointActivityServiceImpl implements PointActivityService {
         List<PointActivityChartRespVO.TrendItem> trendList = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : dayCountMap.entrySet()) {
             PointActivityChartRespVO.TrendItem item = new PointActivityChartRespVO.TrendItem();
-            item.setStartTime(entry.getKey());
+            item.setDate(entry.getKey());
             item.setCount(entry.getValue());
             trendList.add(item);
         }

@@ -5,6 +5,7 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantinfo.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.merchantmgmt.merchantinfo.MerchantInfoDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import jakarta.validation.constraints.NotEmpty;
 
 /**
  * 商户信息 Service 接口
@@ -70,4 +71,19 @@ public interface MerchantInfoService {
      * @param reqVO 更新信息
      */
     void batchUpdatePlateAuth(@Valid MerchantInfoSaveReqVO reqVO,int index);
+
+    /**
+     * 批量更新用户信息
+     *
+     * @param ids 编号
+     */
+    void updateMerchantStatus(List<Long> ids, String status);
+
+    /**
+     * 商户信息统计可视化
+     *
+     * @param chartReqVO 时间范围
+     * @return 统计信息
+     */
+    MerchantInfoChartRespVO getMerchantInfoChart(@Valid MerchantInfoChartReqVO chartReqVO);
 }

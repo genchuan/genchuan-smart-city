@@ -101,10 +101,19 @@ public class RuleConfigServiceImpl implements RuleConfigService {
             item.setRate(totalCount > 0 ? BigDecimal.valueOf(count * 100.0 / totalCount) : BigDecimal.ZERO);
             return item;
         }).toList();
+        // typeCountList = 按 type 分组统计数量
+        List<RuleConfigChartRespVO.TypeCountItem> typeCountItems = typeCountList.stream().map(m -> {
+            RuleConfigChartRespVO.TypeCountItem item = new RuleConfigChartRespVO.TypeCountItem();
+            item.setType((String) m.get("type"));
+            item.setCount(((Number) m.get("count")).intValue());
+            return item;
+        }).toList();
+
         RuleConfigChartRespVO respVO = new RuleConfigChartRespVO();
         respVO.setEnableCount(enableCount.intValue());
         respVO.setMatchRate(matchRate);
         respVO.setTypeList(typeList);
+        respVO.setTypeCountList(typeCountItems);
         return respVO;
     }
 

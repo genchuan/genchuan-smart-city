@@ -19,10 +19,10 @@ public interface StationInfoMapper extends BaseMapperX<StationInfoDO> {
 
     default PageResult<StationInfoDO> selectPage(StationInfoPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<StationInfoDO>()
-                .eqIfPresent(StationInfoDO::getStationNo, reqVO.getStationNo())
+                .likeIfPresent(StationInfoDO::getStationNo, reqVO.getStationNo())
                 .likeIfPresent(StationInfoDO::getName, reqVO.getName())
                 .eqIfPresent(StationInfoDO::getType, reqVO.getType())
-                .eqIfPresent(StationInfoDO::getAddress, reqVO.getAddress())
+                .likeIfPresent(StationInfoDO::getAddress, reqVO.getAddress())
                 .eqIfPresent(StationInfoDO::getSpaceTotal, reqVO.getSpaceTotal())
                 .eqIfPresent(StationInfoDO::getUserId, reqVO.getUserId())
                 .eqIfPresent(StationInfoDO::getFeeStandard, reqVO.getFeeStandard())

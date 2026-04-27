@@ -26,10 +26,25 @@ public class PointActivityPageReqVO extends PageParam {
     @Schema(description = "活动状态")
     private String status;
 
+    @Schema(description = "积分规则")
+    private String rule;
+
+    @Schema(description = "活动描述")
+    private String description;
+
+    @Schema(description = "审核人")
+    private Long auditorId;
+
+    @Schema(description = "适用场站ID")
+    private Long stationId;
+
     @Schema(description = "开始时间")
     private Long startTime;
 
     @Schema(description = "结束时间")
     private Long endTime;
+
+    @Schema(description = "日期筛选，格式如：2026-04-24")
+    private String date;
 
 }

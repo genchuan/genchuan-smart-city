@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.vehiclecharging.controller.admin.ratesetting;
 
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.ratesetting.vo.*;
 import cn.iocoder.yudao.module.vehiclecharging.controller.admin.ratesetting.vo.chart.*;
+import cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo.StatusMonitorRespVO;
 import cn.iocoder.yudao.module.vehiclecharging.dal.dataobject.ratesetting.RateSettingDO;
 import cn.iocoder.yudao.module.vehiclecharging.service.ratesetting.RateSettingService;
 import org.springframework.web.bind.annotation.*;
@@ -149,8 +150,16 @@ public class RateSettingController {
     @ApiAccessLog(operateType = EXPORT)
     public void exportRateSettingExcel(@Valid RateSettingPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
+
+
+
         pageReqVO.setPageSize(9999);
         List<RateSettingRespVO> list = rateSettingService.getRateSettingPage(pageReqVO).getList();
+
+        // 1、强制设置响应头，确保浏览器触发下载
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setCharacterEncoding("utf-8");
+        response.setHeader("Content-Disposition", "attachment; filename*=" + "excel");
         // 导出 Excel
         ExcelUtils.write(response, "费率设置.xls", "数据", RateSettingRespVO.class,
                         BeanUtils.toBean(list, RateSettingRespVO.class));

@@ -1,7 +1,7 @@
 package cn.iocoder.yudao.module.chargepark.carservice.service.carguide;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationNearbyRespVO;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationNearbyListRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationPageReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationSaveReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.carguide.NearStationDO;
@@ -33,8 +33,8 @@ public interface NearStationService {
      *
      * @param id        near_station 查询记录 ID
      * @param radiusKm  半径(km),null 时默认 5
-     * @return 升序(近→远)的场站列表
+     * @return 包含实际使用的 radiusKm + 升序(近→远)的场站列表
      */
-    List<NearStationNearbyRespVO> listNearbyStations(Long id, Double radiusKm);
+    NearStationNearbyListRespVO listNearbyStations(Long id, Double radiusKm);
 
 }

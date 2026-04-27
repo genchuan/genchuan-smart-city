@@ -75,7 +75,9 @@ DELETE FROM `system_dict_data` WHERE `dict_type` IN (
                                                      'moral_resource_status',
                                                      'bed_mgmt_status',
                                                      'moral_resource_resource_type',
-                                                     'compare_mgmt_status'
+                                                     'compare_mgmt_status',
+                                                     'dorm_compare_cycle',
+                                                     'dorm_compare_status'
 
     );
 
@@ -148,7 +150,9 @@ DELETE FROM `system_dict_type` WHERE `type` IN (
                                                 'moral_resource_status',
                                                 'bed_mgmt_status',
                                                 'moral_resource_resource_type',
-                                                'compare_mgmt_status'
+                                                'compare_mgmt_status',
+                                                'dorm_compare_cycle',
+                                                'dorm_compare_status'
     );
 -- ==================== 一、字典类型 (system_dict_type) ====================
 
@@ -899,3 +903,24 @@ INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type,
 VALUES
     (1, '未分配', 'unallocated', 'bed_mgmt_status', 0, 'info', '', '未分配的床位', 'admin', NOW(), 'admin', NOW(), 0, 1),
     (2, '已分配', 'allocated', 'bed_mgmt_status', 0, 'success', '', '已分配的床位', 'admin', NOW(), 'admin', NOW(), 0, 1);
+
+-- 状态（打分中 / 已汇总），关联芋道字典表：dorm_compare_status。
+INSERT INTO system_dict_type (name, type, status, remark, creator, create_time, updater, update_time, deleted, tenant_id)
+VALUES ('宿舍评比状态', 'dorm_compare_status', 0, '宿舍评比状态', 'admin', NOW(), 'admin', NOW(), 0, 1);
+
+INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted, tenant_id)
+VALUES
+    (1, '未打分', 'unscored', 'dorm_compare_status', 0, 'warning', '', '评比未打分中', 'admin', NOW(), 'admin', NOW(), 0, 1),
+    (2, '打分中', 'scoring', 'dorm_compare_status', 0, 'warning', '', '评比正在打分中', 'admin', NOW(), 'admin', NOW(), 0, 1),
+    (3, '已汇总', 'summarized', 'dorm_compare_status', 0, 'success', '', '评比分数已汇总', 'admin', NOW(), 'admin', NOW(), 0, 1);
+
+-- 评比周期（周 / 月 / 学期），关联芋道字典表：dorm_compare_cycle
+INSERT INTO system_dict_type (name, type, status, remark, creator, create_time, updater, update_time, deleted, tenant_id)
+VALUES ('评比周期', 'dorm_compare_cycle', 0, '评比周期', 'admin', NOW(), 'admin', NOW(), 0, 1);
+
+INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted, tenant_id)
+VALUES
+    (1, '周', 'week', 'dorm_compare_cycle', 0, 'info', '', '评比周期为周', 'admin', NOW(), 'admin', NOW(), 0, 1),
+    (2, '月', 'month', 'dorm_compare_cycle', 0, 'success', '', '评比周期为月', 'admin', NOW(), 'admin', NOW(), 0, 1),
+    (3, '学期', 'term', 'dorm_compare_cycle', 0, 'warning', '', '评比周期为学期', 'admin', NOW(), 'admin', NOW(), 0, 1);
+

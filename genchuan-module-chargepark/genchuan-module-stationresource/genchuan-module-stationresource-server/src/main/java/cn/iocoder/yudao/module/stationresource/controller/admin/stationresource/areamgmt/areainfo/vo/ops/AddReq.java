@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.ops;
 
+import cn.idev.excel.annotation.ExcelIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 @Schema(description = "管理后台 - 片区信息新增/修改 Request VO")
 @Data
 public class AddReq {
+
 
     @Schema(description = "[片区编号] 唯一标识片区编号", requiredMode = Schema.RequiredMode.REQUIRED, example = "AREA-20250601-001")
     @NotEmpty(message = "[片区编号] 唯一标识片区编号不能为空")
@@ -38,6 +40,9 @@ public class AddReq {
 
     @Schema(description = "[负责人ID] 关联芋道用户表system_user", example = "10001")
     private Long leaderId;
+    @Schema(description = "[负责人名称] 片区名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "张得法")
+//    @NotEmpty(message = "[负责人名称] 负责人名称不能为空")
+    private String leaderName;
 
     @Schema(description = "[联系电话] 联系电话", example = "13800138000")
     private String phone;
@@ -69,11 +74,13 @@ public class AddReq {
      * 经度
      */
     @Schema(description = "[经度] ", example = "111")
+    @ExcelIgnore
     private Double lon;
 
     /**
      * 纬度
      */
     @Schema(description = "[纬度] ", example = "111")
+    @ExcelIgnore
     private Double lat;
 }

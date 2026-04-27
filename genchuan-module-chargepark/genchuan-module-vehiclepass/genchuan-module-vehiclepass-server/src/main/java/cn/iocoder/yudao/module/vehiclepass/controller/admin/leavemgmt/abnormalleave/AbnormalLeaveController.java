@@ -38,7 +38,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 @Tag(name = "管理后台 - 异常离场")
 @RestController
-@RequestMapping("/abnormal/leave")
+@RequestMapping("/vehiclepass/abnormal-leave")
 @Validated
 public class AbnormalLeaveController {
 
@@ -91,14 +91,6 @@ public class AbnormalLeaveController {
     @Operation(summary = "获得异常离场分页")
     @PreAuthorize("@ss.hasPermission('abnormal:leave:query')")
     public CommonResult<PageResult<AbnormalLeaveRespVO>> getLeavePage(@Valid AbnormalLeavePageReqVO pageReqVO) {
-        PageResult<AbnormalLeaveDO> pageResult = leaveService.getLeavePage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, AbnormalLeaveRespVO.class));
-    }
-
-    @GetMapping("/my/page")
-    @Operation(summary = "异常离场筛选刷新")
-    @PreAuthorize("@ss.hasPermission('vehiclepass:abnormal-leave:query')")
-    public CommonResult<PageResult<AbnormalLeaveRespVO>> getMyLeavePage(@Valid AbnormalLeavePageReqVO pageReqVO) {
         return success(leaveService.getLeavePageWithJoin(pageReqVO));
     }
 
@@ -148,10 +140,8 @@ public class AbnormalLeaveController {
     public void exportLeaveExcel(@Valid AbnormalLeavePageReqVO pageReqVO,
                                  HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<AbnormalLeaveDO> list = leaveService.getLeavePage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "异常离场.xls", "数据", AbnormalLeaveRespVO.class,
-                BeanUtils.toBean(list, AbnormalLeaveRespVO.class));
+        PageResult<AbnormalLeaveRespVO> pageResult = leaveService.getLeavePageWithJoin(pageReqVO);
+        ExcelUtils.write(response, "异常离场.xls", "数据", AbnormalLeaveRespVO.class, pageResult.getList());
     }
 
 }

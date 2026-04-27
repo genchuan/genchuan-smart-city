@@ -47,6 +47,13 @@ public class CouponMgmtController {
     @Operation(summary = "获得优惠券分页")
     @PreAuthorize("@ss.hasPermission('marketop:coupon-mgmt:query')")
     public CommonResult<PageResult<CouponMgmtRespVO>> getPage(CouponMgmtPageReqVO reqVO) {
+        // 如果startTime和endTime都为空，且date不为空，将date转为当天开始和结束时间
+        if (reqVO.getStartTime() == null && reqVO.getEndTime() == null
+                && reqVO.getDate() != null && !reqVO.getDate().isEmpty()) {
+            java.time.LocalDate localDate = java.time.LocalDate.parse(reqVO.getDate());
+            reqVO.setStartTime(localDate.atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
+            reqVO.setEndTime(localDate.plusDays(1).atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
+        }
         PageResult<CouponMgmtDO> pageResult = couponMgmtService.getPage(reqVO);
         PageResult<CouponMgmtRespVO> bean = BeanUtils.toBean(pageResult, CouponMgmtRespVO.class);
         injectUserNames(bean.getList());

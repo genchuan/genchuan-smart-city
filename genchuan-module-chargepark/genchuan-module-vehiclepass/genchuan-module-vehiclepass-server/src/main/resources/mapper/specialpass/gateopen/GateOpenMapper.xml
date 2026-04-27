@@ -5,14 +5,11 @@
     <select id="selectPageJoin" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenRespVO">
         SELECT
             g.id,
-            g.station_id AS stationId,
             s.name AS stationName,
             g.open_reason AS openReason,
-            g.apply_user_id AS applyUserId,
             u.nickname AS applyUserName,
             g.apply_time AS applyTime,
             g.status,
-            g.audit_user_id AS auditUserId,
             au.nickname AS auditUserName,
             g.audit_time AS auditTime,
             g.execute_time AS executeTime,

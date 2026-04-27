@@ -10,6 +10,7 @@ import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.dutymgmt.DutyMgmtDO;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.dutymgmt.vo.*;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 值班管理 Mapper
@@ -42,7 +43,7 @@ public interface DutyMgmtMapper extends BaseMapperX<DutyMgmtDO> {
     }
 
     DutyMgmtChartRespVO selectTotalDutyCount(LocalDateTime startTime, LocalDateTime endTime);
-    JSONObject selectTotalDutyCountByCheckInStatus(LocalDateTime startTime, LocalDateTime endTime, String checkInStatus);
+    JSONObject selectTotalDutyCountByCheckInStatus(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime, @Param("checkInStatus") String checkInStatus);
 
     List<String> selectMonthList(LocalDateTime startTime, LocalDateTime endTime);
 

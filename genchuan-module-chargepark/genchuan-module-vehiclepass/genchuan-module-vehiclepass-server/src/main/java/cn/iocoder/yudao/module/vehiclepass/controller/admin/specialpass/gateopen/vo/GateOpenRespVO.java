@@ -15,10 +15,6 @@ public class GateOpenRespVO {
     @ExcelProperty("主键ID")
     private Long id;
 
-    @Schema(description = "场站ID，关联场站表", requiredMode = Schema.RequiredMode.REQUIRED, example = "5128")
-    @ExcelProperty("场站ID，关联场站表")
-    private Long stationId;
-
     @Schema(description = "场站名称")
     @ExcelProperty("场站名称")
     private String stationName;
@@ -26,10 +22,6 @@ public class GateOpenRespVO {
     @Schema(description = "开闸原因：紧急通行 / 故障处理 / 其他，关联字典gate_open_open_reason", requiredMode = Schema.RequiredMode.REQUIRED, example = "不对")
     @ExcelProperty("开闸原因：紧急通行 / 故障处理 / 其他，关联字典gate_open_open_reason")
     private String openReason;
-
-    @Schema(description = "申请人ID，关联system_user用户表", requiredMode = Schema.RequiredMode.REQUIRED, example = "12006")
-    @ExcelProperty("申请人ID，关联system_user用户表")
-    private Long applyUserId;
 
     @Schema(description = "申请人姓名")
     @ExcelProperty("申请人姓名")
@@ -42,10 +34,6 @@ public class GateOpenRespVO {
     @Schema(description = "状态：待审批 / 已通过 / 已驳回 / 已执行，关联字典gate_open_status", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @ExcelProperty("状态：待审批 / 已通过 / 已驳回 / 已执行，关联字典gate_open_status")
     private String status;
-
-    @Schema(description = "审批人ID，关联system_user用户表", example = "30477")
-    @ExcelProperty("审批人ID，关联system_user用户表")
-    private Long auditUserId;
 
     @Schema(description = "审批人姓名")
     @ExcelProperty("审批人姓名")

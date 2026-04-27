@@ -96,19 +96,24 @@ public class CompareMgmtServiceImpl implements CompareMgmtService {
     }
 
     @Override
-    @LogRecord(type = COMPARE_TYPE, subType = COMPARE_SCORE_SUB_TYPE, bizNo = "{{#reqVO.id}}",
+    @LogRecord(type = COMPARE_TYPE, subType = COMPARE_SCORE_SUB_TYPE, bizNo = "{{#compare.id}}",
             success = COMPARE_SCORE_SUCCESS)
     public boolean score(CompareMgmtScoreReqVO reqVO) {
-        // 校验存在
-        CompareMgmtDO compareMgmtDO = validateCompareMgmtExists(reqVO.getId());
-        // 更新
-        CompareMgmtDO updateObj = BeanUtils.toBean(reqVO, CompareMgmtDO.class);
-        // 打分完成后自动将状态修改为 “已汇总”
-        updateObj.setStatus("已汇总");
-        int i = compareMgmtMapper.updateById(updateObj);
-        if (i > 0) {
+        Long[] ids = reqVO.getIds();
+        int total = 0;
+        for (Long id : ids) {
+            // 校验存在
+            CompareMgmtDO compareMgmtDO = validateCompareMgmtExists(id);
+            // 更新
+            CompareMgmtDO updateObj = BeanUtils.toBean(reqVO, CompareMgmtDO.class);
+            // 打分完成后自动将状态修改为 “已汇总”
+            updateObj.setStatus("已汇总");
+            int i = compareMgmtMapper.updateById(updateObj);
+            total += i;
             // 记录操作日志上下文
             LogRecordContext.putVariable("compare", compareMgmtDO);
+        }
+        if (total > 0) {
             return true;
         }
         return false;

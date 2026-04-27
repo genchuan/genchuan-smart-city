@@ -112,6 +112,7 @@ public class MoralActivityServiceImpl implements MoralActivityService {
         if (total > 0) {
             // 记录操作日志上下文
             LogRecordContext.putVariable("id", reqVO.getIds()[0]);
+            return true;
         }
         return false;
     }

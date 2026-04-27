@@ -19,7 +19,13 @@ public interface PointActivityMapper extends BaseMapperX<PointActivityDO> {
                 .likeIfPresent(PointActivityDO::getName, reqVO.getName())
                 .eqIfPresent(PointActivityDO::getType, reqVO.getType())
                 .eqIfPresent(PointActivityDO::getStatus, reqVO.getStatus())
+                .likeIfPresent(PointActivityDO::getRule, reqVO.getRule())
+                .likeIfPresent(PointActivityDO::getDescription, reqVO.getDescription())
+                .eqIfPresent(PointActivityDO::getAuditorId, reqVO.getAuditorId())
                 .orderByDesc(PointActivityDO::getId);
+        if (reqVO.getStationId() != null) {
+            queryWrapperX.apply("FIND_IN_SET({0}, station_ids)", reqVO.getStationId());
+        }
         if (reqVO.getStartTime() != null) {
             String startTime = DateUtils.longToDateTime(reqVO.getStartTime());
             queryWrapperX.le(PointActivityDO::getStartTime, startTime);

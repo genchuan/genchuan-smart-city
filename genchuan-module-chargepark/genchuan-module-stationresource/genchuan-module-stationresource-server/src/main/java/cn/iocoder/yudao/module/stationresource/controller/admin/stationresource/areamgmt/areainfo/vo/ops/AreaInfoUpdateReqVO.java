@@ -5,8 +5,6 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-
-
 @Data
 @Schema(description = "管理后台 - 片区信息更新 Request VO")
 public class AreaInfoUpdateReqVO {
@@ -23,9 +21,24 @@ public class AreaInfoUpdateReqVO {
     @NotEmpty(message = "片区名称不能为空")
     private String name;
 
-    @Schema(description = "所属行政区划", requiredMode = Schema.RequiredMode.REQUIRED, example = "福建省泉州市丰泽区")
-    @NotEmpty(message = "所属行政区划不能为空")
+    // ===================== 新增字段 START =====================
+    @Schema(description = "省份", requiredMode = Schema.RequiredMode.REQUIRED, example = "福建省")
+    @NotEmpty(message = "省份不能为空")
+    private String province;
+
+    @Schema(description = "城市", requiredMode = Schema.RequiredMode.REQUIRED, example = "泉州市")
+    @NotEmpty(message = "城市不能为空")
+    private String city;
+    // ===================== 新增字段 END =====================
+
+    @Schema(description = "区县", requiredMode = Schema.RequiredMode.REQUIRED, example = "丰泽区")
+    @NotEmpty(message = "区县不能为空")
     private String district;
+
+    // ===================== 新增字段 START =====================
+    @Schema(description = "详细地址", example = "福建省泉州市丰泽区滨海街100号")
+    private String address;
+    // ===================== 新增字段 END =====================
 
     @Schema(description = "负责人ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @NotNull(message = "负责人ID不能为空")
@@ -34,8 +47,10 @@ public class AreaInfoUpdateReqVO {
     @Schema(description = "联系电话", example = "13812345678")
     private String phone;
 
-    @Schema(description = "备注", example = "核心城区片区")
+    // ===================== 新增字段 START =====================
+    @Schema(description = "备注", example = "核心城区充电片区")
     private String remark;
+    // ===================== 新增字段 END =====================
 
     @Schema(description = "备用字段1")
     private String reserve1;

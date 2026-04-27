@@ -16,17 +16,9 @@ public class InParkStatusRespVO {
     @ExcelProperty("主键ID")
     private Long id;
 
-    @Schema(description = "场站ID，关联场站表station_info", requiredMode = Schema.RequiredMode.REQUIRED, example = "14863")
-    @ExcelProperty("场站ID，关联场站表station_info")
-    private Long stationId;
-
     @Schema(description = "场站名称")
     @ExcelProperty("场站名称")
     private String stationName;
-
-    @Schema(description = "车位ID，关联车位表parking_space_info", requiredMode = Schema.RequiredMode.REQUIRED, example = "16153")
-    @ExcelProperty("车位ID，关联车位表parking_space_info")
-    private Long spaceId;
 
     @Schema(description = "车位名称")
     @ExcelProperty("车位名称")

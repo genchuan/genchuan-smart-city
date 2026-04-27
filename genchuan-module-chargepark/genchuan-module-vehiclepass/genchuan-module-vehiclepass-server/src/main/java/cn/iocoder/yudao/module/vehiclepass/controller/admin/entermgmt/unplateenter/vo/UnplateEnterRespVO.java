@@ -30,8 +30,8 @@ public class UnplateEnterRespVO {
     @Schema(description = "场站名称")
     private String stationName;
 
-    @Schema(description = "审核人ID")
-    private Long auditUserId;
+    @Schema(description = "审核人")
+    private String auditUserName;
 
     @Schema(description = "审核时间")
     private LocalDateTime auditTime;
