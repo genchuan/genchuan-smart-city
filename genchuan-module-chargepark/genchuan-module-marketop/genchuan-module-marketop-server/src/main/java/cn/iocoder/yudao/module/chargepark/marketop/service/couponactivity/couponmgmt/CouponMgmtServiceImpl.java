@@ -66,9 +66,9 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
     @Override
     public void send(Long id, Long userId) {
         CouponMgmtDO couponMgmt = validateExists(id);
-        if (!"0".equals(couponMgmt.getStatus())) {
-            throw exception(COUPON_MGMT_STATUS_ERROR);
-        }
+//        if (!"0".equals(couponMgmt.getStatus())) {
+//            throw exception(COUPON_MGMT_STATUS_ERROR);
+//        }
         couponMgmt.setStatus("1");
         Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
         couponMgmt.setSenderId(loginUserId); // 发放人为当前操作用户，由Controller层设置
@@ -80,9 +80,9 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
     @Override
     public void verify(Long id) {
         CouponMgmtDO couponMgmt = validateExists(id);
-        if (!"1".equals(couponMgmt.getStatus())) {
-            throw exception(COUPON_MGMT_STATUS_ERROR);
-        }
+//        if (!"1".equals(couponMgmt.getStatus())) {
+//            throw exception(COUPON_MGMT_STATUS_ERROR);
+//        }
         couponMgmt.setStatus("2");
         couponMgmt.setVerifyTime(LocalDateTime.now());
         couponMgmtMapper.updateById(couponMgmt);
@@ -91,9 +91,9 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
     @Override
     public void resend(Long id, Long receiverId, Long newValidTime) {
         CouponMgmtDO couponMgmt = validateExists(id);
-        if (!"2".equals(couponMgmt.getStatus())) {
-            throw exception(COUPON_MGMT_STATUS_ERROR);
-        }
+//        if (!"2".equals(couponMgmt.getStatus())) {
+//            throw exception(COUPON_MGMT_STATUS_ERROR);
+//        }
         Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
         couponMgmt.setStatus("1");
         couponMgmt.setSenderId(loginUserId);
