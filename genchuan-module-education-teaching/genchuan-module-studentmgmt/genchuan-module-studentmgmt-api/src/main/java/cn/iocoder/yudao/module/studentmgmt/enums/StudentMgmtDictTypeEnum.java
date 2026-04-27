@@ -174,6 +174,10 @@ public enum StudentMgmtDictTypeEnum {
     ACCESS_APPLY_APPLY_TYPE("access_apply_apply_type", "出入申请类型"),
 
 
+    // 验收状态（未验收 / 已验收，关联芋道字典表：repair_mgmt_check_status）
+    REPAIR_MGMT_CHECK_STATUS("repair_mgmt_check_status", "报修管理验收状态"),
+
+
     ;
     // ==================== 枚举属性 ====================
     /**
