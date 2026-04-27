@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @TableName("reconcile_record")
@@ -21,35 +20,23 @@ public class ReconcileRecordDO extends BaseDO {
     @TableId
     private Long id;
 
-    /** 所属对账单ID */
+    /** 关联单据ID */
     private Long billId;
 
-    /** 对账单号 */
-    private String billNo;
+    /** 状态：normal/abnormal */
+    private String status;
 
-    /** 商户ID */
-    private Long merchantId;
-
-    /** 订单编号 */
-    private String orderNo;
-
-    /** 系统金额 */
-    private BigDecimal sysAmount;
-
-    /** 商户上报金额 */
-    private BigDecimal merchantAmount;
-
-    /** 差异金额 */
-    private BigDecimal diffAmount;
-
-    /** 对账结果：matched/unmatched/only_sys/only_merchant */
-    private String matchResult;
+    /** 状态更新时间（业务字段） */
+    private LocalDateTime updateTime;
 
     /** 异常原因 */
-    private String diffReason;
+    private String errorReason;
 
-    /** 处理时间 */
-    private LocalDateTime handleTime;
+    /** 核查人ID */
+    private Long checkerId;
+
+    /** 核查时间 */
+    private LocalDateTime checkTime;
 
     /** 备注 */
     private String remark;
