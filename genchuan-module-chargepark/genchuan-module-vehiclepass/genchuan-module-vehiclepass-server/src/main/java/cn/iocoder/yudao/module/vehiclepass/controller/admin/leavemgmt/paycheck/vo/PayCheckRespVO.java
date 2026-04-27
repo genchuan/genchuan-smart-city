@@ -33,17 +33,9 @@ public class PayCheckRespVO {
     @ExcelProperty("核验时间")
     private LocalDateTime checkTime;
 
-    @Schema(description = "场站ID，关联场站表", requiredMode = Schema.RequiredMode.REQUIRED, example = "30722")
-    @ExcelProperty("场站ID，关联场站表")
-    private Long stationId;
-
     @Schema(description = "场站名称")
     @ExcelProperty("场站名称")
     private String stationName;
-
-    @Schema(description = "核验人ID，关联system_user用户表", example = "7217")
-    @ExcelProperty("核验人ID，关联system_user用户表")
-    private Long checkUserId;
 
     @Schema(description = "核验人姓名")
     @ExcelProperty("核验人姓名")

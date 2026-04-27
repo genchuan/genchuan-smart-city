@@ -20,10 +20,6 @@ public class OilCarHandleRespVO {
     @ExcelProperty("车牌")
     private String plateNo;
 
-    @Schema(description = "车位ID，关联车位表", example = "27831")
-    @ExcelProperty("车位ID，关联车位表")
-    private Long spaceId;
-
     @Schema(description = "车位名称", example = "A区001")
     @ExcelProperty("车位名称")
     private String spaceName;
@@ -40,17 +36,9 @@ public class OilCarHandleRespVO {
     @ExcelProperty("处置状态：未处理 / 处理中 / 已关闭，关联字典oil_car_handle_status")
     private String status;
 
-    @Schema(description = "场站ID，关联场站表", requiredMode = Schema.RequiredMode.REQUIRED, example = "8546")
-    @ExcelProperty("场站ID，关联场站表")
-    private Long stationId;
-
     @Schema(description = "场站名称", example = "XX停车场")
     @ExcelProperty("场站名称")
     private String stationName;
-
-    @Schema(description = "处置人ID，关联system_user用户表", example = "15483")
-    @ExcelProperty("处置人ID，关联system_user用户表")
-    private Long handleUserId;
 
     @Schema(description = "处置人姓名", example = "管理员")
     @ExcelProperty("处置人姓名")

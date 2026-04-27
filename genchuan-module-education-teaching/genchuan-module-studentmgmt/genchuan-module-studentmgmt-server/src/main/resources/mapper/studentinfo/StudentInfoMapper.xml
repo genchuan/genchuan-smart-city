@@ -69,7 +69,7 @@
             FROM student_info
             WHERE deleted = 0
             AND create_time &gt;= #{startTime}
-            AND create_time &lt;= #{endTime}
+            AND create_time <![CDATA[ <= ]]> #{endTime}
             GROUP BY DATE_FORMAT(create_time, '%Y-%m-%d')
 
             UNION ALL
@@ -82,7 +82,7 @@
             FROM student_info
             WHERE deleted = 0
             AND update_time &gt;= #{startTime}
-            AND update_time &lt;= #{endTime}
+            AND update_time <![CDATA[ <= ]]> #{endTime}
             AND status='异动'
             GROUP BY DATE_FORMAT(update_time, '%Y-%m-%d')
             ) all_dates

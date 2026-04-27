@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationinfo;
 
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.ops.ImportRespVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.lxscommon.vo.BatchStatusUpdateReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationinfo.vo.StationInfoPageReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationinfo.vo.StationInfoRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationinfo.vo.StationInfoSaveReqVO;
@@ -73,16 +74,16 @@ public class StationInfoController {
     @PutMapping("/enable")
     @Operation(summary = "批量生效场站")
     @PreAuthorize("@ss.hasPermission('stationresource:station-info:update')")
-    public CommonResult<Boolean> enableStationInfo(@Valid @RequestBody StatusUpdateReq req) {
-        stationInfoService.updateStationStatus(req.getIds(), "已生效");
+    public CommonResult<Boolean> enableStationInfo(@Valid @RequestBody BatchStatusUpdateReqVO reqVO) {
+        stationInfoService.updateStationStatus(reqVO.getIds(), "已生效");
         return success(true);
     }
 
     @PutMapping("/disable")
     @Operation(summary = "批量禁用场站")
     @PreAuthorize("@ss.hasPermission('stationresource:station-info:update')")
-    public CommonResult<Boolean> disableStationInfo(@Valid @RequestBody StatusUpdateReq req) {
-        stationInfoService.updateStationStatus(req.getIds(), "已禁用");
+    public CommonResult<Boolean> disableStationInfo(@Valid @RequestBody BatchStatusUpdateReqVO reqVO) {
+        stationInfoService.updateStationStatus(reqVO.getIds(), "已禁用");
         return success(true);
     }
     @GetMapping("/import-template")

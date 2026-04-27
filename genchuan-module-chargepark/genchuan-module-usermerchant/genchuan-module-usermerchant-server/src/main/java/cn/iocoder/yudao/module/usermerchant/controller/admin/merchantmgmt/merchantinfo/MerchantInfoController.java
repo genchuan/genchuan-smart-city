@@ -69,7 +69,7 @@ public class MerchantInfoController {
     }
 
     @GetMapping("/export")
-    @Operation(summary = "导出商户信息 Excel")
+    @Operation(summary = "导出商户信息")
     @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportMerchantInfoExcel(@Valid MerchantInfoPageReqVO pageReqVO,
@@ -93,8 +93,33 @@ public class MerchantInfoController {
     @Operation(summary = "审核驳回")
     @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:reject')")
     public CommonResult<Boolean> reject(@Valid @RequestBody MerchantInfoSaveReqVO reqVO) {
-        merchantInfoService.batchUpdatePlateAuth(reqVO,2);
+        merchantInfoService.batchUpdatePlateAuth(reqVO,0);
         return success(true);
+    }
+
+    @PutMapping("/disable")
+    @Operation(summary = "禁用商户")
+    @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:disable')")
+    public CommonResult<Boolean> disableMerchantInfo(@Valid @RequestBody MerchantInfoDisableReqVO reqVO) {
+        merchantInfoService.updateMerchantStatus(reqVO.getIds(), "禁用");
+        return success(true);
+    }
+
+    @PutMapping("/enable")
+    @Operation(summary = "启用商户")
+    @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:enable')")
+    public CommonResult<Boolean> enableMerchantInfo(@Valid @RequestBody MerchantInfoEnableReqVO reqVO) {
+        merchantInfoService.updateMerchantStatus(reqVO.getIds(), "正常");
+        return success(true);
+    }
+
+    @GetMapping("/get")
+    @Operation(summary = "获得商户信息")
+    @Parameter(name = "id", description = "编号", required = true, example = "1")
+    @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:query')")
+    public CommonResult<MerchantInfoPageRespVO> getMerchantInfo(@RequestParam("id") Long id) {
+        MerchantInfoDO merchantInfo = merchantInfoService.getMerchantInfo(id);
+        return success(BeanUtils.toBean(merchantInfo, MerchantInfoPageRespVO.class));
     }
 
     @PutMapping("/update")
@@ -105,31 +130,29 @@ public class MerchantInfoController {
         return success(true);
     }
 
-    @DeleteMapping("/delete")
-    @Operation(summary = "删除商户信息")
-    @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:delete')")
-    public CommonResult<Boolean> deleteMerchantInfo(@RequestParam("id") Long id) {
-        merchantInfoService.deleteMerchantInfo(id);
-        return success(true);
-    }
-
-    @DeleteMapping("/delete-list")
-    @Parameter(name = "ids", description = "编号", required = true)
-    @Operation(summary = "批量删除商户信息")
-                @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:delete')")
-    public CommonResult<Boolean> deleteMerchantInfoList(@RequestParam("ids") List<Long> ids) {
-        merchantInfoService.deleteMerchantInfoListByIds(ids);
-        return success(true);
-    }
-
-    @GetMapping("/get")
-    @Operation(summary = "获得商户信息")
-    @Parameter(name = "id", description = "编号", required = true, example = "1024")
+    @GetMapping("/chart")
+    @Operation(summary = "商户信息统计")
     @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:query')")
-    public CommonResult<MerchantInfoPageRespVO> getMerchantInfo(@RequestParam("id") Long id) {
-        MerchantInfoDO merchantInfo = merchantInfoService.getMerchantInfo(id);
-        return success(BeanUtils.toBean(merchantInfo, MerchantInfoPageRespVO.class));
+    public CommonResult<MerchantInfoChartRespVO> getMerchantInfoChart(@Valid MerchantInfoChartReqVO chartReqVO) {
+        return success(merchantInfoService.getMerchantInfoChart(chartReqVO));
     }
+
+//    @DeleteMapping("/delete")
+//    @Operation(summary = "删除商户信息")
+//    @Parameter(name = "id", description = "编号", required = true)
+//    @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:delete')")
+//    public CommonResult<Boolean> deleteMerchantInfo(@RequestParam("id") Long id) {
+//        merchantInfoService.deleteMerchantInfo(id);
+//        return success(true);
+//    }
+//
+//    @DeleteMapping("/delete-list")
+//    @Parameter(name = "ids", description = "编号", required = true)
+//    @Operation(summary = "批量删除商户信息")
+//                @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:delete')")
+//    public CommonResult<Boolean> deleteMerchantInfoList(@RequestParam("ids") List<Long> ids) {
+//        merchantInfoService.deleteMerchantInfoListByIds(ids);
+//        return success(true);
+//    }
 
 }

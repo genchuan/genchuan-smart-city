@@ -1,4 +1,4 @@
-package cn.iocoder.yudao.module.vehiclepass.service.leavemgmt.inspectmgmt.inspecttask;
+package cn.iocoder.yudao.module.vehiclepass.service.inspectmgmt.inspecttask;
 
 import java.util.*;
 

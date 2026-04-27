@@ -9,4 +9,89 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <!-- 商户增长趋势（折线图） -->
+    <select id="selectMerchantGrowthTrend" resultType="cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantinfo.vo.MerchantInfoChartRespVO$MerchantGrowthTrendVO">
+        SELECT
+        <choose>
+            <when test="granularity == 'year'">
+                DATE_FORMAT(create_time, '%Y') as date,
+                COUNT(*) as count
+            </when>
+            <when test="granularity == 'month'">
+                DATE_FORMAT(create_time, '%Y-%m') as date,
+                COUNT(*) as count
+            </when>
+            <when test="granularity == 'day'">
+                DATE_FORMAT(create_time, '%Y-%m-%d') as date,
+                COUNT(*) as count
+            </when>
+            <otherwise>
+                DATE(create_time) as date,
+                COUNT(*) as count
+            </otherwise>
+        </choose>
+        FROM merchant_info
+        WHERE deleted = 0
+        <if test="start != null">
+            AND create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt;= #{end}
+        </if>
+        GROUP BY date
+        ORDER BY date ASC
+    </select>
+
+    <!-- 商户类型分布（柱状图） -->
+    <select id="selectMerchantTypeDistribution" resultType="cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantinfo.vo.MerchantInfoChartRespVO$MerchantTypeDistributionVO">
+        SELECT merchant_type as type, COUNT(*) as count
+        FROM merchant_info
+        WHERE deleted = 0
+        <if test="start != null">
+            AND create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt;= #{end}
+        </if>
+        GROUP BY merchant_type
+    </select>
+
+    <!-- 总商户数统计 -->
+    <select id="selectTotalMerchantCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM merchant_info
+        WHERE deleted = 0
+        <if test="start != null">
+            AND create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt;= #{end}
+        </if>
+    </select>
+
+    <!-- 新增商户数（注册时间在时间范围内） -->
+    <select id="selectNewMerchantCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM merchant_info
+        WHERE deleted = 0
+        <if test="start != null">
+            AND create_time >= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt;= #{end}
+        </if>
+    </select>
+
+    <select id="getIdByNickname" resultType="java.lang.Long">
+        SELECT id
+        FROM merchant_info
+        WHERE deleted = 0 AND name = #{nickname}
+    </select>
+
+    <update id="increaseWalletBalance">
+        UPDATE merchant_info
+        SET wallet_balance = wallet_balance + #{amount}
+        WHERE id = #{merchantId}
+    </update>
+
 </mapper>

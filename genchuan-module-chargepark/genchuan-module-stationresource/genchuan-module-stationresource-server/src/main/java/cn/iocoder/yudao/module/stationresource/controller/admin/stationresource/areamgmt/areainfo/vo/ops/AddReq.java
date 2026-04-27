@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.ops;
 
+import cn.idev.excel.annotation.ExcelIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
@@ -73,11 +74,13 @@ public class AddReq {
      * 经度
      */
     @Schema(description = "[经度] ", example = "111")
+    @ExcelIgnore
     private Double lon;
 
     /**
      * 纬度
      */
     @Schema(description = "[纬度] ", example = "111")
+    @ExcelIgnore
     private Double lat;
 }

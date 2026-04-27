@@ -1,5 +1,9 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantlink.vo;
 
+import cn.idev.excel.annotation.ExcelProperty;
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.FlexibleTimestampDeserializer;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,6 +20,10 @@ public class MerchantLinkPageReqVO extends PageParam {
     @Schema(description = "商户ID，关联merchant_info.id", example = "31982")
     private Long merchantId;
 
+    @TableField(exist = false)
+    @Schema(description = "商户名称")
+    private String merchantName;
+
     @Schema(description = "对接类型：数据对接/接口对接/商品同步/核销同步", example = "2")
     private String linkType;
 
@@ -29,11 +37,11 @@ public class MerchantLinkPageReqVO extends PageParam {
     private String status;
 
     @Schema(description = "对接生效时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
     private LocalDateTime[] effectTime;
 
     @Schema(description = "最后同步时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
     private LocalDateTime[] lastSyncTime;
 
     @Schema(description = "备注", example = "随便")
@@ -52,11 +60,11 @@ public class MerchantLinkPageReqVO extends PageParam {
     private String updater;
 
     @Schema(description = "创建时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
     private LocalDateTime[] createTime;
 
     @Schema(description = "更新时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
     private LocalDateTime[] updateTime;
 
 }

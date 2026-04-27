@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 public class FundSystemChartReqVO {
 
-    @Schema(description = "统计时间范围，开始时间和结束时间", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @Schema(description = "统计时间范围，开始时间和结束时间")
     @NotEmpty(message = "统计时间范围，开始时间和结束时间")
     private LocalDateTime[] timeRange;
 

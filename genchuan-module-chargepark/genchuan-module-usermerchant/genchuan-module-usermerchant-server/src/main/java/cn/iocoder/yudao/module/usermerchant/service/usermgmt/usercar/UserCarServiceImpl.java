@@ -218,11 +218,16 @@ public class UserCarServiceImpl implements UserCarService {
         UserCarChartRespVO chartRespVO = new UserCarChartRespVO();
         String timeRange = chartReqVO.getTimeRange();
 
-        // 使用工具类解析时间范围
-        TimeRangeParser.TimeRangeParsed parsed = TimeRangeParser.parse(timeRange);
-        if (parsed == null) {
-            // 若解析失败，可返回空数据或抛异常
-            return chartRespVO;
+        TimeRangeParser.TimeRangeParsed parsed;
+        if (StrUtil.isBlank(timeRange)) {
+            // 未传时间范围：全量查询，start 和 end 为 null，粒度默认 day
+            parsed = new TimeRangeParser.TimeRangeParsed(null, null, "day");
+        } else {
+            parsed = TimeRangeParser.parse(timeRange);
+            if (parsed == null) {
+                // 解析失败，返回空数据
+                return chartRespVO;
+            }
         }
         // 柱状图数据
         List<UserCarChartRespVO.CarTypeDistributionVO> typeDistribution = userCarMapper.selectCarTypeDistribution(

@@ -177,14 +177,18 @@ public class PlateAuthServiceImpl implements PlateAuthService {
     @Override
     public PlateAuthChartRespVO getPlateAuthChart(PlateAuthChartReqVO chartReqVO) {
         PlateAuthChartRespVO chartRespVO = new PlateAuthChartRespVO();
-        //拆分时间范围
         String timeRange = chartReqVO.getTimeRange();
 
-        // 解析时间范围，获取开始时间、结束时间以及分组类型（日/月/年）
-        TimeRangeParser.TimeRangeParsed parsed = TimeRangeParser.parse(timeRange);
-        if (parsed == null) {
-            // 若解析失败，可返回空数据或抛异常
-            return chartRespVO;
+        TimeRangeParser.TimeRangeParsed parsed;
+        if (StrUtil.isBlank(timeRange)) {
+            // 未传时间范围：全量查询，start 和 end 为 null，粒度默认 day
+            parsed = new TimeRangeParser.TimeRangeParsed(null, null, "day");
+        } else {
+            parsed = TimeRangeParser.parse(timeRange);
+            if (parsed == null) {
+                // 解析失败，返回空数据
+                return chartRespVO;
+            }
         }
         //折线图渲染
         List<PlateAuthChartRespVO.AuthTrendVO> authTrend = plateAuthMapper.selectAuthTrend(

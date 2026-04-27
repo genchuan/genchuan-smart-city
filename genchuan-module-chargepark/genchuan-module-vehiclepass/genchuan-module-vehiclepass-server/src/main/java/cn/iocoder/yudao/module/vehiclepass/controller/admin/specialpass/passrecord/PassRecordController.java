@@ -36,7 +36,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 @Tag(name = "管理后台 - 放行记录")
 @RestController
-@RequestMapping("/pass/record")
+@RequestMapping("/vehiclepass/pass-record")
 @Validated
 public class PassRecordController {
 
@@ -89,14 +89,6 @@ public class PassRecordController {
     @Operation(summary = "获得放行记录分页")
     @PreAuthorize("@ss.hasPermission('pass:record:query')")
     public CommonResult<PageResult<PassRecordRespVO>> getRecordPage(@Valid PassRecordPageReqVO pageReqVO) {
-        PageResult<PassRecordDO> pageResult = passRecordService.getRecordPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, PassRecordRespVO.class));
-    }
-
-    @GetMapping("/my/page")
-    @Operation(summary = "放行记录筛选刷新")
-    @PreAuthorize("@ss.hasPermission('vehiclepass:pass-record:query')")
-    public CommonResult<PageResult<PassRecordRespVO>> getMyRecordPage(@Valid PassRecordPageReqVO pageReqVO) {
         return success(passRecordService.getRecordPageWithJoin(pageReqVO));
     }
 

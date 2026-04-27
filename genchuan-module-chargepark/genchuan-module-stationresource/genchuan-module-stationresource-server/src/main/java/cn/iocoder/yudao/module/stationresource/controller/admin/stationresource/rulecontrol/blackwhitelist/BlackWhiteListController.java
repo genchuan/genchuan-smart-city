@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.lxscommon.vo.BatchStatusUpdateReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.blackwhitelist.vo.BlackWhiteListPageReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.blackwhitelist.vo.BlackWhiteListRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.blackwhitelist.vo.ops.BlackWhiteListChartRespVO;
@@ -55,16 +56,16 @@ public class BlackWhiteListController {
     @PutMapping("/enable")
     @Operation(summary = "批量生效黑白名单")
     @PreAuthorize("@ss.hasPermission('stationresource:black-white-list:update')")
-    public CommonResult<Boolean> enableList(@RequestBody List<Long> ids) {
-        blackWhiteListService.enableList(ids);
+    public CommonResult<Boolean> enableList(@Valid @RequestBody BatchStatusUpdateReqVO reqVO) {
+        blackWhiteListService.enableList(reqVO.getIds());
         return success(true);
     }
 
     @PutMapping("/disable")
     @Operation(summary = "批量禁用黑白名单")
     @PreAuthorize("@ss.hasPermission('stationresource:black-white-list:update')")
-    public CommonResult<Boolean> disableList(@RequestBody List<Long> ids) {
-        blackWhiteListService.disableList(ids);
+    public CommonResult<Boolean> disableList(@Valid @RequestBody BatchStatusUpdateReqVO reqVO) {
+        blackWhiteListService.disableList(reqVO.getIds());
         return success(true);
     }
 

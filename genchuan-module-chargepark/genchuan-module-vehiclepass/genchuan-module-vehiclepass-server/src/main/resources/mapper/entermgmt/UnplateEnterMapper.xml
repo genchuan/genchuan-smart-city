@@ -10,7 +10,7 @@
         u.phone,
         u.register_time AS registerTime,
         u.status,
-        u.audit_user_id AS auditUserId,
+        IFNULL(ui.nickname, '') AS auditUserName,
         u.audit_time AS auditTime,
         u.audit_comment AS auditComment,
         u.remark,
@@ -23,6 +23,7 @@
         s.name AS stationName
         FROM unplate_enter u
         LEFT JOIN station_info s ON u.station_id = s.id
+        LEFT JOIN user_info ui ON u.audit_user_id = ui.id
         WHERE u.deleted = 0
         <if test="reqVO.carType != null and reqVO.carType != ''">
             AND u.car_type = #{reqVO.carType}

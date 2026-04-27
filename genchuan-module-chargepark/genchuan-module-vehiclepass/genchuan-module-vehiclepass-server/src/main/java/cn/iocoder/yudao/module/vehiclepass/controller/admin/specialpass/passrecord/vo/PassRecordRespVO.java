@@ -36,17 +36,9 @@ public class PassRecordRespVO {
     @ExcelProperty("状态：正常记录 / 异常记录，关联字典：pass_record_status")
     private String status;
 
-    @Schema(description = "场站ID，关联场站表", requiredMode = Schema.RequiredMode.REQUIRED, example = "10614")
-    @ExcelProperty("场站ID，关联场站表")
-    private Long stationId;
-
     @Schema(description = "场站名称")
     @ExcelProperty("场站名称")
     private String stationName;
-
-    @Schema(description = "操作人ID，关联芋道用户表 system_user", example = "48")
-    @ExcelProperty("操作人ID，关联芋道用户表 system_user")
-    private Long operatorId;
 
     @Schema(description = "操作人姓名")
     @ExcelProperty("操作人姓名")

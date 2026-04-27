@@ -1,11 +1,16 @@
 package cn.iocoder.yudao.module.usermerchant.service.merchantmgmt.merchantinfo;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.vo.UserInfoChartReqVO;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.vo.UserInfoChartRespVO;
+import cn.iocoder.yudao.module.usermerchant.dal.dataobject.usermgmt.userinfo.UserInfoDO;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.NameQueryHelper;
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -84,7 +89,17 @@ public class MerchantInfoServiceImpl implements MerchantInfoService {
 
     @Override
     public MerchantInfoDO getMerchantInfo(Long id) {
-        return merchantInfoMapper.selectById(id);
+        MerchantInfoDO merchant = merchantInfoMapper.selectById(id);
+        if (merchant != null) {
+            String phone = merchant.getPhone();
+            if (phone != null && phone.length() >= 11) {
+                // 保留前3位和后4位，中间4位星号
+                String masked = phone.substring(0, 3) + "****" + phone.substring(phone.length() - 4);
+                merchant.setPhone(masked);
+            }
+            // 如果手机号长度不足11位，原样返回或置空，可根据需求调整
+        }
+        return merchant;
     }
 
     @Override
@@ -183,6 +198,58 @@ public class MerchantInfoServiceImpl implements MerchantInfoService {
     private Long getCurrentUserId() {
         LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
         return loginUser != null ? loginUser.getId() : null;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateMerchantStatus(List<Long> ids, String status) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return;
+        }
+        // 使用 UpdateWrapper 批量更新状态
+        UpdateWrapper<MerchantInfoDO> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.in("id", ids)
+                .set("status", status);
+        merchantInfoMapper.update(null, updateWrapper);
+    }
+
+    @Override
+    public MerchantInfoChartRespVO getMerchantInfoChart(MerchantInfoChartReqVO chartReqVO) {
+        MerchantInfoChartRespVO chartRespVO = new MerchantInfoChartRespVO();
+        String timeRange = chartReqVO.getTimeRange();
+
+        LocalDateTime start = null;
+        LocalDateTime end = null;
+        String granularity = "day"; // 默认按日分组
+
+        // 如果传入了时间范围，则尝试解析
+        if (StrUtil.isNotBlank(timeRange)) {
+            TimeRangeParser.TimeRangeParsed parsed = TimeRangeParser.parse(timeRange);
+            if (parsed == null) {
+                // 解析失败，返回空数据（或可抛异常）
+                return chartRespVO;
+            }
+            start = parsed.getStart();
+            end = parsed.getEnd();
+            granularity = parsed.getGranularity();
+        }
+        // 否则 start, end 保持 null（全量），granularity 保持默认 "day"
+
+        // 折线图数据
+        List<MerchantInfoChartRespVO.MerchantGrowthTrendVO> growthTrend =
+                merchantInfoMapper.selectMerchantGrowthTrend(start, end, granularity);
+        chartRespVO.setMerchantGrowthTrend(growthTrend);
+
+        // 柱状图数据（仅使用时间范围筛选，不涉及分组）
+        List<MerchantInfoChartRespVO.MerchantTypeDistributionVO> typeDistribution =
+                merchantInfoMapper.selectMerchantTypeDistribution(start, end);
+        chartRespVO.setMerchantTypeDistribution(typeDistribution);
+
+        // 总数统计
+        chartRespVO.setTotalMerchantCount(merchantInfoMapper.selectTotalMerchantCount(start, end));
+        chartRespVO.setNewMerchantCount(merchantInfoMapper.selectNewMerchantCount(start, end));
+
+        return chartRespVO;
     }
 
 }

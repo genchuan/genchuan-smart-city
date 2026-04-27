@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.vehiclepass.dal.mysql.siteinput.spacequery.SpaceQueryMapper">
+
+    <select id="selectPageJoin" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.spacequery.vo.SpaceQueryRespVO">
+        SELECT
+            q.id AS id,
+            q.space_no AS spaceNo,
+            q.query_time AS queryTime,
+            q.query_user_id AS queryUserId,
+            u.nickname AS queryUserName,
+            q.area_id AS areaId,
+            a.name AS areaName,
+            q.space_status AS spaceStatus,
+            q.remark AS remark,
+            q.reserve1 AS reserve1,
+            q.reserve2 AS reserve2,
+            q.creator AS creator,
+            q.updater AS updater,
+            q.create_time AS createTime,
+            q.update_time AS updateTime
+        FROM space_query q
+        LEFT JOIN area_info a ON q.area_id = a.id AND a.deleted = 0
+        LEFT JOIN user_info u ON q.query_user_id = u.id AND u.deleted = 0
+        WHERE q.deleted = 0
+        <if test="reqVO.spaceNo != null and reqVO.spaceNo != ''">
+            AND q.space_no LIKE CONCAT('%', #{reqVO.spaceNo}, '%')
+        </if>
+        <if test="reqVO.queryTimeNew != null and reqVO.queryTimeNew.length == 2">
+            AND q.query_time BETWEEN FROM_UNIXTIME(#{reqVO.queryTimeNew[0]}) AND FROM_UNIXTIME(#{reqVO.queryTimeNew[1]})
+        </if>
+        <if test="reqVO.queryUserId != null">
+            AND q.query_user_id = #{reqVO.queryUserId}
+        </if>
+        <if test="reqVO.areaId != null">
+            AND q.area_id = #{reqVO.areaId}
+        </if>
+        <if test="reqVO.spaceStatus != null and reqVO.spaceStatus != ''">
+            AND q.space_status = #{reqVO.spaceStatus}
+        </if>
+        <if test="reqVO.remark != null and reqVO.remark != ''">
+            AND q.remark LIKE CONCAT('%', #{reqVO.remark}, '%')
+        </if>
+        ORDER BY q.id DESC
+    </select>
+
+    <select id="selectLocation" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.spacequery.vo.SpaceQueryLocationRespVO">
+        SELECT
+            a.lon AS lon,
+            a.lat AS lat,
+            q.space_no AS spaceName,
+            a.name AS areaName
+        FROM space_query q
+        LEFT JOIN area_info a ON q.area_id = a.id AND a.deleted = 0
+        WHERE q.id = #{id} AND q.deleted = 0
+    </select>
+
+    <select id="selectSpaceLocationList" resultType="map">
+        SELECT
+            q.space_no AS spaceNo,
+            a.lon AS lon,
+            a.lat AS lat,
+            q.space_status AS spaceStatus
+        FROM space_query q
+        LEFT JOIN area_info a ON q.area_id = a.id AND a.deleted = 0
+        WHERE q.deleted = 0
+        <if test="reqVO.areaId != null">
+            AND q.area_id = #{reqVO.areaId}
+        </if>
+        GROUP BY q.id, q.space_no, a.lon, a.lat, q.space_status
+    </select>
+
+    <select id="selectChartData" resultType="map">
+        SELECT
+            COUNT(*) AS queryCount,
+            100.0 AS querySuccessRate
+        FROM space_query q
+        WHERE q.deleted = 0
+        <if test="reqVO.areaId != null">
+            AND q.area_id = #{reqVO.areaId}
+        </if>
+    </select>
+
+</mapper>
