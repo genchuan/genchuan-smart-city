@@ -7,6 +7,7 @@ import cn.iocoder.yudao.module.ordertrade.controller.admin.merchantreconcile.vo.
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.IdReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.merchantreconcile.ReconcileBillDO;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.merchantreconcile.ReconcileBillMapper;
+import cn.iocoder.yudao.module.ordertrade.enums.ReconcileBillStatusEnum;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,7 +70,7 @@ public class ReconcileBillServiceImpl implements ReconcileBillService {
         if (bill == null) throw exception(RECONCILE_BILL_NOT_EXISTS);
         ReconcileBillDO update = new ReconcileBillDO();
         update.setId(reqVO.getId());
-        update.setStatus("reconciling");
+        update.setStatus(ReconcileBillStatusEnum.RECONCILED.getValue());
         update.setReconcilerId(SecurityFrameworkUtils.getLoginUserId());
         reconcileBillMapper.updateById(update);
     }
@@ -82,7 +83,7 @@ public class ReconcileBillServiceImpl implements ReconcileBillService {
             if (bill == null) return;
             ReconcileBillDO update = new ReconcileBillDO();
             update.setId(id);
-            update.setStatus("reconciling");
+            update.setStatus(ReconcileBillStatusEnum.RECONCILED.getValue());
             update.setReconcilerId(SecurityFrameworkUtils.getLoginUserId());
             reconcileBillMapper.updateById(update);
         });
@@ -110,7 +111,8 @@ public class ReconcileBillServiceImpl implements ReconcileBillService {
         if (bill == null) throw exception(RECONCILE_BILL_NOT_EXISTS);
         ReconcileBillDO update = new ReconcileBillDO();
         update.setId(reqVO.getId());
-        update.setStatus("fixed");
+        //update.setStatus("fixed");
+        update.setReserve1(reqVO.getFixReason());
         update.setReconcilerId(SecurityFrameworkUtils.getLoginUserId());
         reconcileBillMapper.updateById(update);
     }
