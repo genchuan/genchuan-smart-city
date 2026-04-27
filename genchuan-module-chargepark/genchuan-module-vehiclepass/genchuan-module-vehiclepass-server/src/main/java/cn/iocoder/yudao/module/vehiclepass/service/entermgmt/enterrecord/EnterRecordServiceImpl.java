@@ -173,18 +173,23 @@ public class EnterRecordServiceImpl implements EnterRecordService {
 
     @Override
     public EnterRecordChartRespVO getChart(EnterRecordChartReqVO reqVO) {
-        // 1. 秒级时间戳 → LocalDateTime（纯JDK，零依赖，永不报错）
-        long startSecond = Long.parseLong(reqVO.getStartTime());
-        long endSecond = Long.parseLong(reqVO.getEndTime());
+        // 1. 时间戳处理（如果没传则为空，表示查询全部）
+        LocalDateTime startTime = null;
+        LocalDateTime endTime = null;
 
-        LocalDateTime startTime = LocalDateTime.ofInstant(
-                Instant.ofEpochSecond(startSecond),
-                ZoneId.systemDefault()
-        );
-        LocalDateTime endTime = LocalDateTime.ofInstant(
-                Instant.ofEpochSecond(endSecond),
-                ZoneId.systemDefault()
-        );
+        if (reqVO.getStartTime() != null && reqVO.getEndTime() != null) {
+            long startSecond = Long.parseLong(reqVO.getStartTime());
+            long endSecond = Long.parseLong(reqVO.getEndTime());
+
+            startTime = LocalDateTime.ofInstant(
+                    Instant.ofEpochSecond(startSecond),
+                    ZoneId.systemDefault()
+            );
+            endTime = LocalDateTime.ofInstant(
+                    Instant.ofEpochSecond(endSecond),
+                    ZoneId.systemDefault()
+            );
+        }
         Long stationId = reqVO.getStationId();
 
         // 折线图

@@ -62,7 +62,9 @@
         SELECT DATE(t1.enter_time) AS date, COUNT(*) AS count
         FROM enter_record t1
         WHERE t1.deleted = 0
-        AND t1.enter_time BETWEEN #{start} AND #{end}
+        <if test="start != null and end != null">
+            AND t1.enter_time BETWEEN #{start} AND #{end}
+        </if>
         <if test="stationId != null">
             AND t1.station_id = #{stationId}
         </if>
@@ -75,7 +77,9 @@
         SELECT DATE_FORMAT(t1.enter_time, '%H:00') AS hour, COUNT(*) AS count
         FROM enter_record t1
         WHERE t1.deleted = 0
-        AND t1.enter_time BETWEEN #{start} AND #{end}
+        <if test="start != null and end != null">
+            AND t1.enter_time BETWEEN #{start} AND #{end}
+        </if>
         <if test="stationId != null">
             AND t1.station_id = #{stationId}
         </if>
