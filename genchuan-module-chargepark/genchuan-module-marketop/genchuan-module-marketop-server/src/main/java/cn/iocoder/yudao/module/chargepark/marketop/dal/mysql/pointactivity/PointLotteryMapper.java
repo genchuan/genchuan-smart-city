@@ -39,11 +39,11 @@ public interface PointLotteryMapper extends BaseMapperX<PointLotteryDO> {
         return selectPage(reqVO, wrapper);
     }
 
-    @Select("SELECT DATE(create_time) AS date, COUNT(*) AS count " +
+    @Select("SELECT DATE(lottery_time) AS date, COUNT(*) AS count " +
             "FROM point_lottery " +
-            "WHERE create_time >= #{startTime} " +
-            "GROUP BY DATE(create_time) " +
-            "ORDER BY DATE(create_time) ASC")
+            "WHERE lottery_time >= #{startTime} " +
+            "GROUP BY DATE(lottery_time) " +
+            "ORDER BY DATE(lottery_time) ASC")
     List<Map<String, Object>> selectCountByDay(LocalDateTime startTime);
 
     @Select("SELECT COUNT(*) FROM point_lottery")
