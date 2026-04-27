@@ -6,15 +6,16 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 /**
- * 状态
+ * 异常类型
  */
-public enum DormCheckStatusEnum {
+public enum DormCheckAbnormalTypeEnum {
 
-    // 考勤状态（正常 / 迟到 / 未到），关联芋道字典表：dorm_check_status
-    DORM_CHECK_STATUS_0("0", "正常"),
-    DORM_CHECK_STATUS_1("1", "异常");
+    // 异常类型（无 / 晚归 / 未归），关联芋道字典表：dorm_check_abnormal_type
+    DORM_CHECK_ABNORMAL_TYPE_0("0", "无"),
+    DORM_CHECK_ABNORMAL_TYPE_1("1", "晚归"),
+    DORM_CHECK_ABNORMAL_TYPE_2("2", "未归");
 
-    public static final String DICT_TYPE = "dorm_check_status";
+    public static final String DICT_TYPE = "dorm_check_abnormal_type";
     /**
      * 状态
      * <p>
@@ -28,7 +29,7 @@ public enum DormCheckStatusEnum {
 
     // 根据key获取名称
     public static String getNameByKey(String key) {
-        for (DormCheckStatusEnum value : values()) {
+        for (DormCheckAbnormalTypeEnum value : values()) {
             if (value.status.equals(key)) {
                 return value.name;
             }

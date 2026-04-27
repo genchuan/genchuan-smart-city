@@ -56,4 +56,40 @@
             AND className = #{className}
         </if>
     </select>
+    <select id="selectTotalCheckCount"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.dormcheck.vo.DormCheckChartRespVO">
+        SELECT
+        COUNT(1) AS totalCheck,
+        SUM(IF(check_status =  #{status}, 1, 0)) AS normalCount,
+        SUM(IF(check_status !=  #{status}, 1, 0)) AS abnormalCount,
+        ROUND(SUM(IF(check_status =  #{status}, 1, 0)) / COUNT(1), 2) AS inRate,
+        SUM(IF(check_status !=  #{status}, 1, 0)) AS warningCount
+        FROM `dorm_check`
+        WHERE deleted =0
+        <if test="checkTime != null">
+            AND DATE_FORMAT(check_time,'%Y-%m-%d') = #{checkTime}
+        </if>
+
+    </select>
+    <select id="getAbnormalStatsList" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT abnormal_type, count(1) AS count FROM dorm_check
+        WHERE deleted = 0 AND `status` = #{status}
+        <if test="checkTime != null">
+            AND DATE_FORMAT(check_time,'%Y-%m-%d') = #{checkTime}
+        </if>
+        GROUP BY abnormal_type
+    </select>
+    <select id="getCoreIndex" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+            ROUND(SUM(IF(check_status = 0, 1, 0)) / COUNT(1),2) AS inRate,
+            SUM(IF(check_status !=  0, 1, 0)) AS abnormalCount
+        FROM dorm_check WHERE
+        student_id IN (
+            SELECT id FROM student_info WHERE class_name=#{className}
+        )
+        <if test="checkTime != null">
+            AND DATE_FORMAT(check_time,'%Y-%m-%d') = #{checkTime}
+        </if>
+
+    </select>
 </mapper>

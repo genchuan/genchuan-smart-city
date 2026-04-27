@@ -188,7 +188,7 @@ public class BehaviorMgmtServiceImpl implements BehaviorMgmtService {
             vo.setPendingAuditCount(behaviorMgmtMapper.selectTotalCountByClassName(startTime, endTime, BehaviorStatusEnum.BEHAVIOR_MGMT_STATUS_0.getStatus(), "", "", className));
             vo.setSyncCount(behaviorMgmtMapper.selectTotalCountByClassName(startTime, endTime, "", BehaviorAttendanceSyncEnum.ATTENDANCE_SYNC_1.getStatus(), "", className));
 
-            vo.setAttendanceAbnormalCount(dormCheckMapper.selectAbnormalCount(startTime, endTime, DormCheckStatusEnum.DORM_CHECK_CHECK_STATUS_0.getStatus()));
+            vo.setAttendanceAbnormalCount(dormCheckMapper.selectAbnormalCount(startTime, endTime, DormCheckStatusEnum.DORM_CHECK_STATUS_0.getStatus()));
 
             // 将key转换成name
             List<JSONObject> leaveTypeList = behaviorMgmtMapper.selectLeaveTypeCountByClassName(startTime, endTime, className);
@@ -216,7 +216,7 @@ public class BehaviorMgmtServiceImpl implements BehaviorMgmtService {
         vo.setPendingAuditCount(behaviorMgmtMapper.selectTotalCount(startTime, endTime, BehaviorStatusEnum.BEHAVIOR_MGMT_STATUS_0.getStatus(), "", ""));
         vo.setSyncCount(behaviorMgmtMapper.selectTotalCount(startTime, endTime, "", BehaviorAttendanceSyncEnum.ATTENDANCE_SYNC_1.getStatus(), ""));
 
-        vo.setAttendanceAbnormalCount(dormCheckMapper.selectAbnormalCount(startTime, endTime, DormCheckStatusEnum.DORM_CHECK_CHECK_STATUS_0.getStatus()));
+        vo.setAttendanceAbnormalCount(dormCheckMapper.selectAbnormalCount(startTime, endTime, DormCheckStatusEnum.DORM_CHECK_STATUS_0.getStatus()));
 
         // 将key转换成name
         List<JSONObject> leaveTypeList = behaviorMgmtMapper.selectLeaveTypeCount(startTime, endTime);
@@ -265,7 +265,7 @@ public class BehaviorMgmtServiceImpl implements BehaviorMgmtService {
             classStatistics.put("className", className);
             classStatistics.put("leaveCount", leaveCount);
             // 查询abnormalCount考勤异常人数
-            Integer abnormalCount = dormCheckMapper.selectAbnormalCountByClassName(startTime, endTime, DormCheckStatusEnum.DORM_CHECK_CHECK_STATUS_0.getStatus(), className);
+            Integer abnormalCount = dormCheckMapper.selectAbnormalCountByClassName(startTime, endTime, DormCheckStatusEnum.DORM_CHECK_STATUS_0.getStatus(), className);
             classStatistics.put("abnormalCount", abnormalCount);
             list.add(classStatistics);
         }

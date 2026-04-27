@@ -159,6 +159,14 @@ public enum StudentMgmtDictTypeEnum {
     // 评比周期（周 / 月 / 学期），关联芋道字典表：dorm_compare_cycle
     DORM_COMPARE_CYCLE("dorm_compare_cycle", "宿舍评比周期"),
 
+    // ==================== 宿舍考勤表：dorm_check ====================
+    //状态（正常 / 异常），关联芋道字典表：dorm_check_status。
+    DORM_CHECK_STATUS("dorm_check_status", "宿舍考勤状态"),
+    // 考勤状态（正常 / 迟到 / 未到），关联芋道字典表：dorm_check_check_status
+    DORM_CHECK_CHECK_STATUS("dorm_check_check_status", "宿舍考勤状态"),
+    // 异常类型（无 / 晚归 / 未归），关联芋道字典表：dorm_check_abnormal_type
+    DORM_CHECK_ABNORMAL_TYPE("dorm_check_abnormal_type", "宿舍考勤异常类型"),
+
 
     ;
     // ==================== 枚举属性 ====================
