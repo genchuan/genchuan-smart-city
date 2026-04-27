@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo;
 
+import cn.idev.excel.annotation.ExcelIgnore;
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,44 +25,55 @@ public class PunishReviewLedgerRespVO {
     private String ledgerCode;
 
     @Schema(description = "逾期标识")
-    @ExcelProperty("[逾期标识]")
+//    @ExcelProperty("[逾期标识]")
+    @ExcelIgnore
     private Integer overdueFlag;
 
+    @Schema(description = "[复审状态] 如：待复审/已下发/已撤销", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @ExcelProperty("[复审状态]")
+    private String reviewStatus;
 
     @Schema(description = "缴费截止时间")
     @ExcelProperty("[缴费截止时间]")
     private LocalDateTime paymentDeadlineTime;
 
     @Schema(description = "[企业ID] 关联enterprise_info.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "32251")
-    @ExcelProperty("[企业ID]")
+//    @ExcelProperty("[企业ID]")
+    @ExcelIgnore
     private Long entId;
 
     @Schema(description = "[企业名称] 企业名称", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("[企业名称]")
+//    @ExcelIgnore
     private String entName;
 
     @Schema(description = "[违规类型ID] 关联illegal_type_dict.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "28353")
-    @ExcelProperty("[违规类型ID]")
+//    @ExcelProperty("[违规类型ID]")
+    @ExcelIgnore
     private Long illegalTypeId;
 
     @Schema(description = "[违规等级ID] 关联illegal_level_dict.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "20209")
-    @ExcelProperty("[违规等级ID]")
+//    @ExcelProperty("[违规等级ID]")
+    @ExcelIgnore
     private Long illegalLevelId;
 
     @Schema(description = "[企业整改记录id]", example = "4516")
-    @ExcelProperty("[企业整改记录id]")
+//    @ExcelProperty("[企业整改记录id]")
+    @ExcelIgnore
     private Long entRectifyRecordId;
 
     @Schema(description = "[处罚通知书id]", example = "31157")
-    @ExcelProperty("[处罚通知书id]")
+//    @ExcelProperty("[处罚通知书id]")
+    @ExcelIgnore
     private Long punishNoticeId;
 
     @Schema(description = "[执法复审台账编号] 关联law_review_ledger.ledger_code")
-    @ExcelProperty("[执法复审台账编号]")
+//    @ExcelProperty("[执法复审台账编号]")
+    @ExcelIgnore
     private String lawLedgerCode;
 
     @Schema(description = "[违规证据链接] JSON字符串格式，可多链接", example = "https://www.iocoder.cn")
-    @ExcelProperty("[违规证据链接]")
+    @ExcelProperty("[违规证据]")
     private String evidenceUrl;
 
     @Schema(description = "[草拟处罚金额] 单位：元", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -72,20 +84,20 @@ public class PunishReviewLedgerRespVO {
     @ExcelProperty("[处罚法律依据]")
     private String legalBasis;
 
-    @Schema(description = "[复审状态] 如：待复审/已下发/已撤销", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("[复审状态]")
-    private String reviewStatus;
+
 
     @Schema(description = "[复审人] ")
-    @ExcelProperty("[复审人]")
+//    @ExcelProperty("[复审人id]")
+    @ExcelIgnore
     private Long reviewBy;
 
     @Schema(description = "[复审人名称]")
-    @ExcelProperty("[复审人名称]")
+    @ExcelProperty("[复审人]")
     private String reviewByName;
 
     @Schema(description = "[撤销原因ID] 关联cancel_reason_dict.id，仅已撤销状态赋值", example = "15547")
-    @ExcelProperty("[撤销原因ID]")
+//    @ExcelProperty("[撤销原因ID]")
+    @ExcelIgnore
     private Long cancelReasonId;
 
     @Schema(description = "[草拟时间]", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -105,19 +117,23 @@ public class PunishReviewLedgerRespVO {
     private LocalDateTime createTime;
 
     @Schema(description = "[通用扩展字段1]")
-    @ExcelProperty("[通用扩展字段1]")
+//    @ExcelProperty("[通用扩展字段1]")
+    @ExcelIgnore
     private String extCommon1;
 
     @Schema(description = "[通用扩展字段2]")
-    @ExcelProperty("[通用扩展字段2]")
+//    @ExcelProperty("[通用扩展字段2]")
+    @ExcelIgnore
     private String extCommon2;
 
     @Schema(description = "[通用扩展字段3]")
-    @ExcelProperty("[通用扩展字段3]")
+//    @ExcelProperty("[通用扩展字段3]")
+    @ExcelIgnore
     private String extCommon3;
 
     @Schema(description = "[通用扩展字段4]")
-    @ExcelProperty("[通用扩展字段4]")
+//    @ExcelProperty("[通用扩展字段4]")
+    @ExcelIgnore
     private String extCommon4;
 
 }

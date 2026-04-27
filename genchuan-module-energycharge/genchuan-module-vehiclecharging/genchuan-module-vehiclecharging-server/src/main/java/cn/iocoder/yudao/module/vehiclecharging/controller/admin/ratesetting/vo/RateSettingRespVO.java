@@ -13,7 +13,8 @@ import cn.idev.excel.annotation.*;
 public class RateSettingRespVO {
 
     @Schema(description = "[主键ID] 主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "19547")
-    @ExcelProperty("[主键ID] 主键ID")
+//    @ExcelProperty("[主键ID] 主键ID")
+    @ExcelIgnore
     private Long id;
 
     @Schema(description = "[方案编号] 方案编号", requiredMode = Schema.RequiredMode.REQUIRED)
