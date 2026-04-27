@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.studentmgmt.service.dutymgmt;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.dutymgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.dutymgmt.DutyMgmtDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.dutymgmt.DutyMgmtMapper;
@@ -193,6 +194,8 @@ public class DutyMgmtServiceImpl implements DutyMgmtService {
                 }
             }
 
+            String loginUserNickname = SecurityFrameworkUtils.getLoginUserNickname();
+            dutyMgmt.setTransferUser(loginUserNickname);
             dutyMgmt.setTransferReason(reqVo.getTransferReason());
             dutyMgmt.setTransferStatus(DutyTransferStatusEnum.TRANSFER_STATUS_PENDING_PENDING.getStatus());
             dutyMgmt.setStatus(DutyStatusEnum.DUTY_STATUS_PENDING_TRANSFER.getStatus());

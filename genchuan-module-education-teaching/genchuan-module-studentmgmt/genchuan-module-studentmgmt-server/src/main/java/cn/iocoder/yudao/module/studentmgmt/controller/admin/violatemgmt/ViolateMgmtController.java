@@ -144,7 +144,7 @@ public class ViolateMgmtController {
     @GetMapping("/chart")
     @Operation(summary = "学生违纪预警看板")
     @PreAuthorize("@ss.hasPermission('studentmgmt:violate-info:query')")
-    public CommonResult<ViolateDashboardVO> chart(@Valid ViolateChartReqVO reqVO) {
+    public CommonResult<ViolateDashboardVO> chart(@Valid @RequestBody ViolateChartReqVO reqVO) {
         ViolateDashboardVO dashboardVO = violateMgmtService.chart(reqVO);
         return success(dashboardVO);
     }

@@ -9,4 +9,44 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+
+    <select id="selectTotalCompareCount"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.dormcompare.vo.DormCompareChartRespVO">
+        SELECT
+            COUNT(1) AS totalCompare,
+            AVG(score) AS avgScore,
+            MAX(score) AS highScore,
+            MIN(score) AS lowScore
+        FROM
+            dorm_compare
+        WHERE
+            deleted = 0
+            <if test="cycle != null and cycle != ''">
+                AND cycle = #{cycle}
+            </if>
+    </select>
+    <select id="selectDormStats" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        dorm_num as dormNum, score,rank_no as 'rank'
+        FROM
+            dorm_compare
+        WHERE
+            deleted = 0
+            <if test="cycle != null and cycle != ''">
+                AND cycle = #{cycle}
+            </if>
+    </select>
+    <select id="selectTotalCompareCountTop10" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        dorm_num as dormNum, score,rank_no as 'rank'
+        FROM
+        dorm_compare
+        WHERE
+        deleted = 0
+        <if test="cycle != null and cycle != ''">
+            AND cycle = #{cycle}
+        </if>
+        ORDER BY rank_no
+        LIMIT 10
+    </select>
 </mapper>

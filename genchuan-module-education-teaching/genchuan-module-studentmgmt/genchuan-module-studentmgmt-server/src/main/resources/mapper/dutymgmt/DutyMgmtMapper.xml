@@ -59,7 +59,7 @@
     <select id="selectTotalDutyCountByMonth" resultType="com.alibaba.fastjson.JSONObject">
         SELECT
         COUNT(*) AS totalCount
-        <if test="checkInStatus != null and checkInStatus != '' ">
+        <if test="status != null and status != '' ">
             ,SUM(CASE WHEN check_in_status = #{status} THEN 1 ELSE 0 END) AS statusCount
         </if>
         FROM duty_mgmt

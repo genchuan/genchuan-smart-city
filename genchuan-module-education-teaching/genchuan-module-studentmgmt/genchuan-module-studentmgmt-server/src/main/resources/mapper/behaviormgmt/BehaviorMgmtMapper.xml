@@ -101,4 +101,18 @@
             AND b.create_time >= #{startDateTime} and b.create_time <![CDATA[ <= ]]> #{endDateTime}
         </if>
     </select>
+    <select id="selectLeaveRecordByStudentIds"
+            resultType="cn.iocoder.yudao.module.studentmgmt.dal.dataobject.behaviormgmt.BehaviorMgmtDO">
+        SELECT * FROM behavior_mgmt
+        WHERE deleted=0
+        <if test="studentIds != null and studentIds.size() > 0">
+            AND student_id IN
+            <foreach item="item" collection="studentIds" separator="," open="(" close=")" index="">
+                #{item}
+            </foreach>
+        </if>
+
+        AND start_time  <![CDATA[ <= ]]> now() AND end_time >= now()
+
+    </select>
 </mapper>

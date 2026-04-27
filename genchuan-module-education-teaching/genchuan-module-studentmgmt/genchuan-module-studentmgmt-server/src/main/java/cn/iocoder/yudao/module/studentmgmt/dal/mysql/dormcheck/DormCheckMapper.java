@@ -1,12 +1,14 @@
 package cn.iocoder.yudao.module.studentmgmt.dal.mysql.dormcheck;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.dormcheck.DormCheckDO;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.dormcheck.vo.*;
 import org.apache.ibatis.annotations.Param;
@@ -43,4 +45,10 @@ public interface DormCheckMapper extends BaseMapperX<DormCheckDO> {
     Integer selectAbnormalCount(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime, @Param("checkStatus") String checkStatus);
 
     Integer selectAbnormalCountByClassName(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime, @Param("status") String status, @Param("className") String className);
+
+    DormCheckChartRespVO selectTotalCheckCount(LocalDate checkTime, String status);
+
+    List<JSONObject> getAbnormalStatsList(LocalDate checkTime);
+
+    JSONObject getCoreIndex(String className, LocalDate checkTime);
 }

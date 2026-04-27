@@ -106,9 +106,7 @@ public class MoralResourceServiceImpl implements MoralResourceService {
             moralResource.setStatus(MoralResourceStatusEnum.ONLINE.getStatus());
             moralResource.setPublishTime(LocalDateTime.now());
 
-            // 更新
-            MoralResourceDO updateObj = BeanUtils.toBean(reqVO, MoralResourceDO.class);
-            int i = moralResourceMapper.updateById(updateObj);
+            int i = moralResourceMapper.updateById(moralResource);
             total += i;
         }
         if (total > 0) {
@@ -131,9 +129,7 @@ public class MoralResourceServiceImpl implements MoralResourceService {
             moralResource.setStatus(MoralResourceStatusEnum.OFFLINE.getStatus());
             moralResource.setPublishTime(LocalDateTime.now());
 
-            // 更新
-            MoralResourceDO updateObj = BeanUtils.toBean(reqVO, MoralResourceDO.class);
-            int i = moralResourceMapper.updateById(updateObj);
+            int i = moralResourceMapper.updateById(moralResource);
             total += i;
         }
         if (total > 0) {
