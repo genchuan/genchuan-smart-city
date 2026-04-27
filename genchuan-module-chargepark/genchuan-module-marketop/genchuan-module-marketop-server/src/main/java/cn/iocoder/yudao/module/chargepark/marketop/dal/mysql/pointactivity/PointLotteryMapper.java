@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointlottery.vo.PointLotteryPageReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointLotteryDO;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -25,14 +26,12 @@ public interface PointLotteryMapper extends BaseMapperX<PointLotteryDO> {
                 .eqIfPresent(PointLotteryDO::getSenderId, reqVO.getSenderId())
                 .likeIfPresent(PointLotteryDO::getCheckResult, reqVO.getCheckResult())
                 .orderByDesc(PointLotteryDO::getId);
-        if (reqVO.getStartTime() != null && reqVO.getEndTime() != null) {
-            wrapper.between(PointLotteryDO::getLotteryTime,
-                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getStartTime()), java.time.ZoneId.systemDefault()),
-                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getEndTime()), java.time.ZoneId.systemDefault()));
-        } else if (reqVO.getStartTime() != null) {
+
+        if (reqVO.getStartTime() != null) {
             wrapper.ge(PointLotteryDO::getLotteryTime,
                     java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getStartTime()), java.time.ZoneId.systemDefault()));
-        } else if (reqVO.getEndTime() != null) {
+        }
+        if (reqVO.getEndTime() != null) {
             wrapper.le(PointLotteryDO::getLotteryTime,
                     java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getEndTime()), java.time.ZoneId.systemDefault()));
         }
