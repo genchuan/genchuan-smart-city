@@ -1,11 +1,13 @@
 package cn.iocoder.yudao.module.studentmgmt.dal.mysql.accessapply;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.accessapply.AccessApplyDO;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.accessapply.vo.*;
 
@@ -33,4 +35,11 @@ public interface AccessApplyMapper extends BaseMapperX<AccessApplyDO> {
                 .orderByDesc(AccessApplyDO::getId));
     }
 
+    AccessApplyChartRespVO selectTotalApplyCount(LocalDateTime startTime, LocalDateTime endTime, String className, String status);
+
+    List<JSONObject> selectApplyTrend(LocalDateTime startTime, LocalDateTime endTime, String className);
+
+    List<JSONObject> selectApplyTypeDistribution(LocalDateTime startTime, LocalDateTime endTime, String className);
+
+    List<JSONObject> selectClassStatistics(LocalDateTime startTime, LocalDateTime endTime, String applyType);
 }
