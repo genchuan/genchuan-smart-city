@@ -2,15 +2,14 @@ package cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merch
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import java.util.*;
-import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDateTime;
 import cn.idev.excel.annotation.*;
 
 @Schema(description = "管理后台 - 商户对接 Response VO")
 @Data
 @ExcelIgnoreUnannotated
-public class MerchantLinkRespVO {
+public class MerchantLinkPageRespVO {
 
     @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "4526")
     @ExcelProperty("主键ID")
@@ -19,6 +18,10 @@ public class MerchantLinkRespVO {
     @Schema(description = "商户ID，关联merchant_info.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "31982")
     @ExcelProperty("商户ID，关联merchant_info.id")
     private Long merchantId;
+
+    @Schema(description = "商户名称")
+    @ExcelProperty("商户名称")
+    private String merchantName;
 
     @Schema(description = "对接类型：数据对接/接口对接/商品同步/核销同步", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
     @ExcelProperty("对接类型：数据对接/接口对接/商品同步/核销同步")

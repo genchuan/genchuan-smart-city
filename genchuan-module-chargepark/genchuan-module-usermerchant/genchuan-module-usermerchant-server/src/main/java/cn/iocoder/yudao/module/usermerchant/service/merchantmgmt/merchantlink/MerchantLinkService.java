@@ -19,7 +19,7 @@ public interface MerchantLinkService {
      * @param createReqVO 创建信息
      * @return 编号
      */
-    Long createMerchantLink(@Valid MerchantLinkSaveReqVO createReqVO);
+    Boolean createMerchantLink(@Valid MerchantLinkSaveReqVO createReqVO);
 
     /**
      * 更新商户对接
@@ -58,4 +58,27 @@ public interface MerchantLinkService {
      */
     PageResult<MerchantLinkDO> getMerchantLinkPage(MerchantLinkPageReqVO pageReqVO);
 
+    /**
+     * 保存商户对接
+     *
+     * @param saveReqVO 创建信息
+     * @return 编号
+     */
+    Boolean saveMerchantLink(MerchantLinkSaveReqVO saveReqVO);
+
+    /**
+     * 批量修改商户对接
+     *
+     * @param reqVO 编号数组
+     * @param status 状态
+     */
+    void linkMerchantLink(@Valid MerchantLinkLinkReqVO reqVO, String status);
+
+    /**
+     * 商户对接统计可视化
+     *
+     * @param chartReqVO 时间范围
+     * @return 统计信息
+     */
+    MerchantLinkChartRespVO getMerchantLinkChart(@Valid MerchantLinkChartReqVO chartReqVO);
 }
