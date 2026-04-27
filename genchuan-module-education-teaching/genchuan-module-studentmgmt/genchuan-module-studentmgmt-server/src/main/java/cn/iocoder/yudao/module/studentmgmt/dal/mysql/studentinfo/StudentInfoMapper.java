@@ -90,4 +90,5 @@ public interface StudentInfoMapper extends BaseMapperX<StudentInfoDO> {
     List<String> selectAllClass(@Param("grade") String grade);
 
 
+    Integer selectCountByClassName(String className);
 }

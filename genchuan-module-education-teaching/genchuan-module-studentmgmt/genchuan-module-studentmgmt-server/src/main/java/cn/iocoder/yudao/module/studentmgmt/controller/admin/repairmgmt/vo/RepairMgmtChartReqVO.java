@@ -5,7 +5,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Schema(description = "管理后台 - 反馈 Request VO")
+@Schema(description = "管理后台 - 宿舍报修处置看板 Request VO")
 @Data
 public class RepairMgmtChartReqVO {
 

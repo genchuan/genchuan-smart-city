@@ -177,6 +177,8 @@ public enum StudentMgmtDictTypeEnum {
     // 验收状态（未验收 / 已验收，关联芋道字典表：repair_mgmt_check_status）
     REPAIR_MGMT_CHECK_STATUS("repair_mgmt_check_status", "报修管理验收状态"),
 
+    // 状态（待确认 / 待审核 / 已通过，关联芋道字典表：stay_mgmt_status）
+    STAY_MGMT_STATUS("stay_mgmt_status", "留宿管理状态"),
 
     ;
     // ==================== 枚举属性 ====================
