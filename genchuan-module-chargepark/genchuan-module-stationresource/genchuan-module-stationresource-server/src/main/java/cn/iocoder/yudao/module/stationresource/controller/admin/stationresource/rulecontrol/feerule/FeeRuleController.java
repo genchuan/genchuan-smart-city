@@ -69,21 +69,21 @@ public class FeeRuleController {
         feeRuleService.disableFeeRule(reqVO.getIds());
         return CommonResult.success(true);
     }
-    @PutMapping("/fee-rule/update")
+    @PutMapping("/update")
     @Operation(summary = "更新收费规则")
     @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:update')")
     public CommonResult<Boolean> updateFeeRule2(@Valid @RequestBody FeeRuleUpdateReqVO updateReqVO) {
         feeRuleService.updateFeeRuleBiz(updateReqVO);
         return success(true);
     }
-    @GetMapping("/fee-rule/import-template")
+    @GetMapping("/import-template")
     @Operation(summary = "下载收费规则导入模板")
     @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:import')")
     public void importFeeRuleTemplate(HttpServletResponse response) throws Exception {
         VrvExcelUtils.downloadImportTemplate(response, AddFeeRuleReqVO.class);
     }
 
-    @PostMapping("/fee-rule/import")
+    @PostMapping("/import")
     @Operation(summary = "导入收费规则", description = "上传Excel文件")
     @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:import')")
     public CommonResult<FeeRuleImportResp> importFeeRule(
@@ -92,7 +92,7 @@ public class FeeRuleController {
         FeeRuleImportResp result = feeRuleService.importFeeRule(file, updateSupport);
         return success(result);
     }
-    @PostMapping("/add")
+    @PostMapping("/create")
     @Operation(summary = "新增收费规则")
     @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:create')")
     public CommonResult<Boolean> addFeeRule(@Valid @RequestBody AddFeeRuleReqVO reqVO) {

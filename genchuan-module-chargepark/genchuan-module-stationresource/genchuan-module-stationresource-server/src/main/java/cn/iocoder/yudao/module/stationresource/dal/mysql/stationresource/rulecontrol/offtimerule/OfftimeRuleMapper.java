@@ -21,7 +21,7 @@ public interface OfftimeRuleMapper extends BaseMapperX<OfftimeRuleDO> {
     default PageResult<OfftimeRuleDO> selectPage(OfftimeRulePageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<OfftimeRuleDO>()
                 .eqIfPresent(OfftimeRuleDO::getStationId, reqVO.getStationId())
-                .betweenIfPresent(OfftimeRuleDO::getOffTime, reqVO.getOffTime())
+                .likeIfPresent(OfftimeRuleDO::getOffTime, reqVO.getOffTime())
                 .eqIfPresent(OfftimeRuleDO::getOffFee, reqVO.getOffFee())
                 .eqIfPresent(OfftimeRuleDO::getStatus, reqVO.getStatus())
                 .betweenIfPresent(OfftimeRuleDO::getAuditTime, reqVO.getAuditTime())
