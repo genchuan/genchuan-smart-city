@@ -20,9 +20,6 @@ public class CardConfigPageReqVO extends PageParam {
     @Schema(description = "卡种类型")
     private String type;
 
-    @Schema(description = "卡种类型")
-    private String cardType;
-
     @Schema(description = "适用范围")
     private String scope;
 

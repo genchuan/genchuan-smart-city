@@ -20,7 +20,7 @@ public class CardOrderChartRespVO {
     private List<TrendItem> trendList;
 
     @Schema(description = "卡种类型订单分布")
-    private List<TypeCountItem> typeCountList;
+    private List<PayStatusCountItem> payStatusCountList;
 
     @Data
     public static class TrendItem {
@@ -33,9 +33,9 @@ public class CardOrderChartRespVO {
     }
 
     @Data
-    public static class TypeCountItem {
+    public static class PayStatusCountItem {
         @Schema(description = "卡种类型")
-        private String cardType;
+        private String payStatus;
         @Schema(description = "订单数")
         private Integer count;
     }

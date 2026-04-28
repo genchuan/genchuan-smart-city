@@ -107,13 +107,14 @@ public class CardConfigServiceImpl implements CardConfigService {
         respVO.setTypeRatio(typeRatio);
 
         // typeCountList: 按type分组统计数量
-        List<CardConfigChartRespVO.TypeCountItem> typeCountItems = typeCountList.stream().map(m -> {
-            CardConfigChartRespVO.TypeCountItem item = new CardConfigChartRespVO.TypeCountItem();
-            item.setCardType((String) m.get("type"));
+        List<Map<String, Object>> scopeCountList = cardConfigMapper.selectScopeCountList();
+        List<CardConfigChartRespVO.ScopeCountItem> typeCountItems = scopeCountList.stream().map(m -> {
+            CardConfigChartRespVO.ScopeCountItem item = new CardConfigChartRespVO.ScopeCountItem();
+            item.setScope((String) m.get("scope"));
             item.setCount(((Number) m.get("count")).intValue());
             return item;
         }).collect(Collectors.toList());
-        respVO.setTypeCountList(typeCountItems);
+        respVO.setScopeCountList(typeCountItems);
 
         return respVO;
     }

@@ -16,26 +16,26 @@ public class CardConfigChartRespVO {
     @Schema(description = "总销量")
     private Integer salesCount;
 
-    @Schema(description = "卡种类型销售分布")
+    @Schema(description = "卡种类型分布")
     private List<TypeRateItem> typeRatio;
 
-    @Schema(description = "卡种类型销售分布")
-    private List<TypeCountItem> typeCountList;
+    @Schema(description = "适用范围分布")
+    private List<ScopeCountItem> ScopeCountList;
 
 
     @Data
     public static class TypeRateItem {
         @Schema(description = "卡种类型")
         private String type;
-        @Schema(description = "销售占比")
+        @Schema(description = "占比")
         private BigDecimal rate;
     }
 
     @Data
-    public static class TypeCountItem {
-        @Schema(description = "卡种类型")
-        private String cardType;
-        @Schema(description = "销售占比")
+    public static class ScopeCountItem {
+        @Schema(description = "适用范围")
+        private String scope;
+        @Schema(description = "数量")
         private Integer count;
     }
 

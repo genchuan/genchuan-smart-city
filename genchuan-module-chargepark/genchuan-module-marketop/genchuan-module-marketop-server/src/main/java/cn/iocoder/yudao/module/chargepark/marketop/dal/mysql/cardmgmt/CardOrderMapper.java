@@ -96,4 +96,10 @@ public interface CardOrderMapper extends BaseMapperX<CardOrderDO> {
             "GROUP BY cc.type")
     List<Map<String, Object>> selectTypeCountList();
 
+    @Select("SELECT pay_status, COUNT(id) AS count " +
+            "FROM card_order  " +
+            "WHERE deleted = 0 " +
+            "GROUP BY pay_status")
+    List<Map<String, Object>> selectPayStatusCountList();
+
 }

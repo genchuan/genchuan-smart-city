@@ -36,9 +36,6 @@ public class CardConfigController {
     @Operation(summary = "获得卡种配置分页")
     @PreAuthorize("@ss.hasPermission('marketop:card-config:query')")
     public CommonResult<PageResult<CardConfigRespVO>> getPage(CardConfigPageReqVO reqVO) {
-        if (StringUtils.isNotBlank(reqVO.getCardType())){
-            reqVO.setType(reqVO.getCardType());
-        }
         PageResult<CardConfigDO> pageResult = cardConfigService.getPage(reqVO);
         PageResult<CardConfigRespVO> bean = BeanUtils.toBean(pageResult, CardConfigRespVO.class);
         injectUserNames(bean.getList());

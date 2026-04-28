@@ -111,14 +111,14 @@ public class CardOrderServiceImpl implements CardOrderService {
         respVO.setTrendList(trendList);
 
         // 按卡种类型统计订单数
-        List<Map<String, Object>> typeCountList = cardOrderMapper.selectTypeCountList();
-        List<CardOrderChartRespVO.TypeCountItem> typeItems = typeCountList.stream().map(m -> {
-            CardOrderChartRespVO.TypeCountItem item = new CardOrderChartRespVO.TypeCountItem();
-            item.setCardType((String) m.get("type"));
+        List<Map<String, Object>> typeCountList = cardOrderMapper.selectPayStatusCountList();
+        List<CardOrderChartRespVO.PayStatusCountItem> typeItems = typeCountList.stream().map(m -> {
+            CardOrderChartRespVO.PayStatusCountItem item = new CardOrderChartRespVO.PayStatusCountItem();
+            item.setPayStatus((String) m.get("pay_status"));
             item.setCount(((Number) m.get("count")).intValue());
             return item;
         }).toList();
-        respVO.setTypeCountList(typeItems);
+        respVO.setPayStatusCountList(typeItems);
 
         return respVO;
     }
