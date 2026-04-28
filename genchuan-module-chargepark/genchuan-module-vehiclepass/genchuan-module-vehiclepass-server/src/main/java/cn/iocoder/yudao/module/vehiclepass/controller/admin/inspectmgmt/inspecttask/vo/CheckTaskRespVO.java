@@ -32,19 +32,9 @@ public class CheckTaskRespVO {
     @ExcelProperty("状态：待派发/待认领/处理中/已完成/已归档 关联字典inspect_task_status")
     private String status;
 
-    @Schema(description = "片区ID，关联片区表", example = "7751")
-    @ExcelProperty("片区ID")
-    private Long areaId;
-
     @Schema(description = "片区名称")
     @ExcelProperty("片区名称")
     private String areaName;
-
-    @Schema(description = "执行人ID，关联system_user用户表", example = "10872")
-    @ExcelProperty("执行人ID")
-    private Long executeUserId;
-
-    @Schema(description = "执行人姓名")
     @ExcelProperty("执行人姓名")
     private String executeUserName;
 

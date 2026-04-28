@@ -19,4 +19,8 @@ public class IdReqVO {
 
     @Schema(description = "备注/原因（取消、驳回等操作时填写）")
     private String remark;
+
+
+    @Schema(description = "备注/原因（取消、驳回等操作时填写）")
+    private String fixReason;
 }

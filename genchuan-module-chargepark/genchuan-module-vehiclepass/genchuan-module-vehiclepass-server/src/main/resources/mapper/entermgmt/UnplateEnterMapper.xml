@@ -10,7 +10,7 @@
         u.phone,
         u.register_time AS registerTime,
         u.status,
-        u.audit_user_id AS auditUserId,
+        IFNULL(ui.nickname, '') AS auditUserName,
         u.audit_time AS auditTime,
         u.audit_comment AS auditComment,
         u.remark,
@@ -23,6 +23,7 @@
         s.name AS stationName
         FROM unplate_enter u
         LEFT JOIN station_info s ON u.station_id = s.id
+        LEFT JOIN user_info ui ON u.audit_user_id = ui.id
         WHERE u.deleted = 0
         <if test="reqVO.carType != null and reqVO.carType != ''">
             AND u.car_type = #{reqVO.carType}
@@ -58,7 +59,9 @@
             COUNT(u.id) AS count
         FROM station_info s
         LEFT JOIN unplate_enter u ON u.station_id = s.id AND u.deleted = 0
-            AND u.register_time BETWEEN FROM_UNIXTIME(CAST(#{reqVO.startTime} AS UNSIGNED)) AND FROM_UNIXTIME(CAST(#{reqVO.endTime} AS UNSIGNED))
+            <if test="reqVO.startTime != null and reqVO.endTime != null">
+                AND u.register_time BETWEEN FROM_UNIXTIME(CAST(#{reqVO.startTime} AS UNSIGNED)) AND FROM_UNIXTIME(CAST(#{reqVO.endTime} AS UNSIGNED))
+            </if>
         WHERE s.deleted = 0
         <if test="reqVO.stationId != null">
             AND s.id = #{reqVO.stationId}
@@ -74,7 +77,9 @@
             SUM(CASE WHEN status = '已通过' THEN 1 ELSE 0 END) AS auditPassCount
         FROM unplate_enter
         WHERE deleted = 0
-        AND register_time BETWEEN FROM_UNIXTIME(CAST(#{reqVO.startTime} AS UNSIGNED)) AND FROM_UNIXTIME(CAST(#{reqVO.endTime} AS UNSIGNED))
+        <if test="reqVO.startTime != null and reqVO.endTime != null">
+            AND register_time BETWEEN FROM_UNIXTIME(CAST(#{reqVO.startTime} AS UNSIGNED)) AND FROM_UNIXTIME(CAST(#{reqVO.endTime} AS UNSIGNED))
+        </if>
         <if test="reqVO.stationId != null">
             AND station_id = #{reqVO.stationId}
         </if>

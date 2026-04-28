@@ -37,7 +37,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 @Tag(name = "管理后台 - 缴费核验")
 @RestController
-@RequestMapping("/pay/check")
+@RequestMapping("/vehiclepass/pay-check")
 @Validated
 public class PayCheckController {
 
@@ -90,14 +90,6 @@ public class PayCheckController {
     @Operation(summary = "获得缴费核验分页")
     @PreAuthorize("@ss.hasPermission('pay:check:query')")
     public CommonResult<PageResult<PayCheckRespVO>> getCheckPage(@Valid PayCheckPageReqVO pageReqVO) {
-        PageResult<PayCheckDO> pageResult = checkService.getCheckPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, PayCheckRespVO.class));
-    }
-
-    @GetMapping("/my/page")
-    @Operation(summary = "缴费核验筛选刷新")
-    @PreAuthorize("@ss.hasPermission('vehiclepass:pay-check:query')")
-    public CommonResult<PageResult<PayCheckRespVO>> getMyCheckPage(@Valid PayCheckPageReqVO pageReqVO) {
         return success(checkService.getCheckPageWithJoin(pageReqVO));
     }
 
@@ -131,10 +123,8 @@ public class PayCheckController {
     public void exportCheckExcel(@Valid PayCheckPageReqVO pageReqVO,
                                  HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<PayCheckDO> list = checkService.getCheckPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "缴费核验.xls", "数据", PayCheckRespVO.class,
-                BeanUtils.toBean(list, PayCheckRespVO.class));
+        PageResult<PayCheckRespVO> pageResult = checkService.getCheckPageWithJoin(pageReqVO);
+        ExcelUtils.write(response, "缴费核验.xls", "数据", PayCheckRespVO.class, pageResult.getList());
     }
 
 }

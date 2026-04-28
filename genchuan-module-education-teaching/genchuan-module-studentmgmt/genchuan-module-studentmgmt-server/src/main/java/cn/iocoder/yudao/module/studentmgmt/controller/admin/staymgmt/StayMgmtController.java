@@ -101,4 +101,33 @@ public class StayMgmtController {
                         BeanUtils.toBean(list, StayMgmtRespVO.class));
     }
 
+    @PutMapping("/confirm")
+    @Operation(summary = "确认")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:stay-mgmt:confirm')")
+    public CommonResult<Boolean> confirm(@Valid @RequestBody StayMgmtConfirmReqVO reqVO) {
+        Boolean isSuccess = stayMgmtService.confirm(reqVO);
+        return success(isSuccess);
+    }
+    @PutMapping("/audit")
+    @Operation(summary = "确认")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:stay-mgmt:audit')")
+    public CommonResult<Boolean> audit(@Valid @RequestBody StayMgmtConfirmReqVO reqVO) {
+        Boolean isSuccess = stayMgmtService.audit(reqVO);
+        return success(isSuccess);
+    }
+    @GetMapping("/chart")
+    @Operation(summary = "周末留宿统计看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:stay-mgmt:chart')")
+    public CommonResult<StayMgmtChartRespVO> chart(@Valid StayMgmtChartReqVO reqVO) {
+        StayMgmtChartRespVO vo = stayMgmtService.chart(reqVO);
+        return success(vo);
+    }
+    @GetMapping("/stayCount")
+    @Operation(summary = "各班级留宿人数统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:stay-mgmt:stayCount')")
+    public CommonResult<StayMgmtStayCountRespVO> stayCount(@Valid StayMgmtStayCountReqVO reqVO) {
+        StayMgmtStayCountRespVO vo = stayMgmtService.stayCount(reqVO);
+        return success(vo);
+    }
+
 }

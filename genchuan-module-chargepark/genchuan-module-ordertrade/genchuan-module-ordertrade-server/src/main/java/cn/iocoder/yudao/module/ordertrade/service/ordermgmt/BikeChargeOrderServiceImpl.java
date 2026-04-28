@@ -55,9 +55,11 @@ public class BikeChargeOrderServiceImpl implements BikeChargeOrderService {
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(bikeChargeOrderMapper.selectTrend(start, end));
         resp.setStationData(bikeChargeOrderMapper.selectGroupByStatus());
-        resp.setTodayOrderCount(bikeChargeOrderMapper.selectTodayCount(todayStart, now).intValue());
-        resp.setTodayChargeQuantity(bikeChargeOrderMapper.selectTodayChargeQuantity(todayStart, now));
-        resp.setTodayRevenue(bikeChargeOrderMapper.selectTodayRevenue(todayStart, now));
+        BikeChargeOrderChartRespVO.CardData card = new BikeChargeOrderChartRespVO.CardData();
+        card.setTodayOrderCount(bikeChargeOrderMapper.selectTodayCount(todayStart, now).intValue());
+        card.setTodayChargeQuantity(bikeChargeOrderMapper.selectTodayChargeQuantity(todayStart, now));
+        card.setTodayRevenue(bikeChargeOrderMapper.selectTodayRevenue(todayStart, now));
+        resp.setCardData(card);
         return resp;
     }
 

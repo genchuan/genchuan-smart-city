@@ -32,17 +32,9 @@ public class AbnormalLeaveRespVO {
     @ExcelProperty("处置状态")
     private String status;
 
-    @Schema(description = "场站ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("场站ID")
-    private Long stationId;
-
     @Schema(description = "场站名称")
     @ExcelProperty("场站名称")
     private String stationName;
-
-    @Schema(description = "处置人ID")
-    @ExcelProperty("处置人ID")
-    private Long handleUserId;
 
     @Schema(description = "处置人姓名")
     @ExcelProperty("处置人姓名")

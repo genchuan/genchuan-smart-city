@@ -128,7 +128,7 @@ public class MoralResourceController {
     @GetMapping("/chart/resourceCount")
     @Operation(summary = "资源类型 / 学习完成率统计")
     @PreAuthorize("@ss.hasPermission('studentmgmt:moral-resource:query')")
-    public CommonResult<ChartResourceCountRespVO> resourceCount(@Valid @RequestBody MoralResourceChartReqVO reqVO) {
+    public CommonResult<ChartResourceCountRespVO> resourceCount(@Valid MoralResourceChartReqVO reqVO) {
         ChartResourceCountRespVO vo = moralResourceService.resourceCount(reqVO);
         return success(vo);
     }

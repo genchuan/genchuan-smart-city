@@ -81,8 +81,8 @@ public class IdentifyServiceImpl implements IdentifyService {
     }
 
     @Override
-    public PageResult<IdentifyDO> getIdentifyPage(IdentifyPageReqVO pageReqVO) {
-        return identifyMapper.selectPage(pageReqVO);
+    public PageResult<IdentifyRespVO> getIdentifyPage(IdentifyPageReqVO pageReqVO) {
+        return identifyMapper.selectPageWithStation(pageReqVO);
     }
 
     @Override

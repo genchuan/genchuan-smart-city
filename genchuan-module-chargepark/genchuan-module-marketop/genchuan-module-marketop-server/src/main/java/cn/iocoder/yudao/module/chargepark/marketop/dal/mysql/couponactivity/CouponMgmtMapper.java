@@ -11,12 +11,36 @@ import org.apache.ibatis.annotations.Mapper;
 public interface CouponMgmtMapper extends BaseMapperX<CouponMgmtDO> {
 
     default PageResult<CouponMgmtDO> selectPage(CouponMgmtPageReqVO reqVO) {
-        return selectPage(reqVO, new LambdaQueryWrapperX<CouponMgmtDO>()
+        LambdaQueryWrapperX<CouponMgmtDO> wrapper = new LambdaQueryWrapperX<CouponMgmtDO>()
                 .likeIfPresent(CouponMgmtDO::getName, reqVO.getName())
                 .eqIfPresent(CouponMgmtDO::getType, reqVO.getType())
                 .eqIfPresent(CouponMgmtDO::getStatus, reqVO.getStatus())
-                .betweenIfPresent(CouponMgmtDO::getValidTime, reqVO.getValidTime())
-                .orderByDesc(CouponMgmtDO::getId));
+                .orderByDesc(CouponMgmtDO::getId);
+        // validTime 范围
+        if (reqVO.getValidStartTime() != null && reqVO.getValidEndTime() != null) {
+            wrapper.between(CouponMgmtDO::getValidTime,
+                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getValidStartTime()), java.time.ZoneId.systemDefault()),
+                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getValidEndTime()), java.time.ZoneId.systemDefault()));
+        } else if (reqVO.getValidStartTime() != null) {
+            wrapper.ge(CouponMgmtDO::getValidTime,
+                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getValidStartTime()), java.time.ZoneId.systemDefault()));
+        } else if (reqVO.getValidEndTime() != null) {
+            wrapper.le(CouponMgmtDO::getValidTime,
+                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getValidEndTime()), java.time.ZoneId.systemDefault()));
+        }
+        // createTime 范围
+        if (reqVO.getStartTime() != null && reqVO.getEndTime() != null) {
+            wrapper.between(CouponMgmtDO::getCreateTime,
+                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getStartTime()), java.time.ZoneId.systemDefault()),
+                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getEndTime()), java.time.ZoneId.systemDefault()));
+        } else if (reqVO.getStartTime() != null) {
+            wrapper.ge(CouponMgmtDO::getCreateTime,
+                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getStartTime()), java.time.ZoneId.systemDefault()));
+        } else if (reqVO.getEndTime() != null) {
+            wrapper.le(CouponMgmtDO::getCreateTime,
+                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getEndTime()), java.time.ZoneId.systemDefault()));
+        }
+        return selectPage(reqVO, wrapper);
     }
 
 }

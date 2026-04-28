@@ -79,8 +79,10 @@ public class PayAppServiceImpl implements PayAppService {
     @Override
     public PayAppChartRespVO getPayAppChart(PayAppChartReqVO chartReqVO) {
         PayAppChartRespVO resp = new PayAppChartRespVO();
-        resp.setEnabledCount(payAppMapper.selectEnabledCount());
-        resp.setTotalCount(payAppMapper.selectTotalCount());
+        PayAppChartRespVO.CardData card = new PayAppChartRespVO.CardData();
+        card.setEnabledCount(payAppMapper.selectEnabledCount());
+        card.setTotalCount(payAppMapper.selectTotalCount());
+        resp.setCardData(card);
         return resp;
     }
 

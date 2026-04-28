@@ -86,32 +86,40 @@ public class CardConfigServiceImpl implements CardConfigService {
 
     @Override
     public CardConfigChartRespVO getChart() {
-        List<CardConfigDO> records = cardConfigMapper.selectList(new LambdaQueryWrapperX<>());
-
         CardConfigChartRespVO respVO = new CardConfigChartRespVO();
+
         // 生效卡种数 = 状态为1的记录数
-        int enableCount = (int) records.stream().filter(r -> "1".equals(r.getStatus())).count();
-        respVO.setEnableCount(enableCount);
+        Long enableCount = cardConfigMapper.selectCount(new LambdaQueryWrapperX<CardConfigDO>()
+                .eq(CardConfigDO::getStatus, "1"));
+        respVO.setEnableCount(enableCount != null ? enableCount.intValue() : 0);
 
         // 总数
-        int saleCount = records.size();
-        respVO.setSalesCount(saleCount);
+        Long totalCount = cardConfigMapper.selectCount(new LambdaQueryWrapperX<>());
+        respVO.setSalesCount(totalCount != null ? totalCount.intValue() : 0);
 
         // type分组统计
-        Map<String, Long> typeCountMap = records.stream()
-                .filter(r -> r.getType() != null)
-                .collect(Collectors.groupingBy(CardConfigDO::getType, Collectors.counting()));
+        List<Map<String, Object>> typeCountList = cardConfigMapper.selectTypeCountList();
+        long sum = typeCountList.stream().mapToLong(m -> ((Number) m.get("count")).longValue()).sum();
 
-        List<CardConfigChartRespVO.TypeRateItem> typeRatio = new ArrayList<>();
-        typeCountMap.forEach((type, count) -> {
+        List<CardConfigChartRespVO.TypeRateItem> typeRatio = typeCountList.stream().map(m -> {
             CardConfigChartRespVO.TypeRateItem item = new CardConfigChartRespVO.TypeRateItem();
-            item.setType(type);
-            item.setRate(saleCount > 0
-                    ? BigDecimal.valueOf(count).divide(BigDecimal.valueOf(saleCount), 4, RoundingMode.HALF_UP)
+            item.setType((String) m.get("type"));
+            long count = ((Number) m.get("count")).longValue();
+            item.setRate(sum > 0
+                    ? BigDecimal.valueOf(count).divide(BigDecimal.valueOf(sum), 4, RoundingMode.HALF_UP)
                     : BigDecimal.ZERO);
-            typeRatio.add(item);
-        });
+            return item;
+        }).collect(Collectors.toList());
         respVO.setTypeRatio(typeRatio);
+
+        // typeCountList: 按type分组统计数量
+        List<CardConfigChartRespVO.TypeCountItem> typeCountItems = typeCountList.stream().map(m -> {
+            CardConfigChartRespVO.TypeCountItem item = new CardConfigChartRespVO.TypeCountItem();
+            item.setType((String) m.get("type"));
+            item.setCount(((Number) m.get("count")).intValue());
+            return item;
+        }).collect(Collectors.toList());
+        respVO.setTypeCountList(typeCountItems);
 
         return respVO;
     }

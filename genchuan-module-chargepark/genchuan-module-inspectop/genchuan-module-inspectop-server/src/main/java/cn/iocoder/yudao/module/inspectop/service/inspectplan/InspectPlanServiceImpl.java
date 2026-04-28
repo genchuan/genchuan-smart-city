@@ -10,6 +10,7 @@ import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import cn.iocoder.yudao.module.inspectop.controller.admin.inspectplan.vo.*;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.inspectplan.InspectPlanDO;
@@ -186,6 +187,17 @@ public class InspectPlanServiceImpl implements InspectPlanService {
         InspectPlanDO updateObj = new InspectPlanDO();
         updateObj.setId(id);
         updateObj.setStatus(status);
+        if (status == "0"){
+            updateObj.setProgress(50);
+            updateObj.setEffectTime(LocalDateTime.now());
+        }
+        if (status == "2"){
+            updateObj.setProgress(80);
+        }
+        if (status == "3"){
+            updateObj.setProgress(100);
+            updateObj.setFinishTime(LocalDateTime.now());
+        }
 
         // 执行更新
         inspectPlanMapper.updateById(updateObj);

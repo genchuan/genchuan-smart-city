@@ -91,8 +91,8 @@ public class IdentifyController {
     @Operation(summary = "获得车牌识别分页")
     @PreAuthorize("@ss.hasPermission('plate:identify:query')")
     public CommonResult<PageResult<IdentifyRespVO>> getIdentifyPage(@Valid IdentifyPageReqVO pageReqVO) {
-        PageResult<IdentifyDO> pageResult = identifyService.getIdentifyPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, IdentifyRespVO.class));
+        PageResult<IdentifyRespVO> pageResult = identifyService.getIdentifyPage(pageReqVO);
+        return success(pageResult);
     }
 
     @GetMapping("/export-excel")
@@ -102,10 +102,8 @@ public class IdentifyController {
     public void exportIdentifyExcel(@Valid IdentifyPageReqVO pageReqVO,
                                     HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<IdentifyDO> list = identifyService.getIdentifyPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "车牌识别.xls", "数据", IdentifyRespVO.class,
-                BeanUtils.toBean(list, IdentifyRespVO.class));
+        PageResult<IdentifyRespVO> pageResult = identifyService.getIdentifyPage(pageReqVO);
+        ExcelUtils.write(response, "车牌识别.xls", "数据", IdentifyRespVO.class, pageResult.getList());
     }
 
     @PutMapping("/correct")

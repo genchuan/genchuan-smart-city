@@ -44,6 +44,13 @@ public class ReceiveRecordController {
     @Operation(summary = "获得领用记录分页")
     @PreAuthorize("@ss.hasPermission('marketop:receive-record:query')")
     public CommonResult<PageResult<ReceiveRecordRespVO>> getPage(ReceiveRecordPageReqVO reqVO) {
+        // 如果startTime和endTime都为空，且date不为空，将date转为当天开始和结束时间
+        if (reqVO.getStartTime() == null && reqVO.getEndTime() == null
+                && reqVO.getDate() != null && !reqVO.getDate().isEmpty()) {
+            java.time.LocalDate localDate = java.time.LocalDate.parse(reqVO.getDate());
+            reqVO.setStartTime(localDate.atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
+            reqVO.setEndTime(localDate.plusDays(1).atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
+        }
         PageResult<ReceiveRecordDO> pageResult = receiveRecordService.getPage(reqVO);
         PageResult<ReceiveRecordRespVO> bean = BeanUtils.toBean(pageResult, ReceiveRecordRespVO.class);
         injectUserNames(bean.getList());
@@ -92,7 +99,8 @@ public class ReceiveRecordController {
         Set<Long> couponIds = new HashSet<>();
         for (var item : list) {
             if (StrUtil.isNotBlank(item.getCreator())) {
-                userIds.add(Long.valueOf(item.getCreator()));
+                Long id = safeParseLong(item.getCreator());
+                if (id != null) userIds.add(id);
             }
             if (item.getUserId() != null) {
                 userIds.add(item.getUserId());
@@ -106,7 +114,7 @@ public class ReceiveRecordController {
             Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
             for (var item : list) {
                 if (StrUtil.isNotBlank(item.getCreator())) {
-                    AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
+                    AdminUserRespDTO user = userMap.get(safeParseLong(item.getCreator()));
                     if (user != null) item.setCreatorName(user.getNickname());
                 }
                 if (item.getUserId() != null) {
@@ -128,6 +136,15 @@ public class ReceiveRecordController {
                     if (name != null) item.setCouponName(name);
                 }
             }
+        }
+    }
+
+    private Long safeParseLong(String s) {
+        if (s == null) return null;
+        try {
+            return Long.valueOf(s);
+        } catch (NumberFormatException e) {
+            return null;
         }
     }
 

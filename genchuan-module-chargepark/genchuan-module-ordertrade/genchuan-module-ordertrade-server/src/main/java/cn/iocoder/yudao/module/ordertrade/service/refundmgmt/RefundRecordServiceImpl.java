@@ -46,13 +46,15 @@ public class RefundRecordServiceImpl implements RefundRecordService {
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(refundRecordMapper.selectTrend(start, end));
-        resp.setTotalRefundAmount(refundRecordMapper.selectTotalRefundAmount());
+        RefundRecordChartRespVO.CardData card = new RefundRecordChartRespVO.CardData();
+        card.setTotalRefundAmount(refundRecordMapper.selectTotalRefundAmount());
         Long all     = refundRecordMapper.selectCountByStatus(null);
         Long success = refundRecordMapper.selectCountByStatus("normal");
         if (all != null && all > 0) {
-            resp.setRefundSuccessRate(new BigDecimal(success).multiply(BigDecimal.valueOf(100))
+            card.setRefundSuccessRate(new BigDecimal(success).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(all), 1, java.math.RoundingMode.HALF_UP));
-        } else { resp.setRefundSuccessRate(BigDecimal.ZERO); }
+        } else { card.setRefundSuccessRate(BigDecimal.ZERO); }
+        resp.setCardData(card);
         return resp;
     }
 

@@ -21,7 +21,7 @@ public interface ReconcileBillMapper extends BaseMapperX<ReconcileBillDO> {
                 .likeIfPresent(ReconcileBillDO::getBillNo, reqVO.getBillNo())
                 .eqIfPresent(ReconcileBillDO::getMerchantId, reqVO.getMerchantId())
                 .eqIfPresent(ReconcileBillDO::getStatus, reqVO.getStatus())
-                .eqIfPresent(ReconcileBillDO::getBillDate, reqVO.getBillDate())
+                .eqIfPresent(ReconcileBillDO::getCycle, reqVO.getCycle())
                 .orderByDesc(ReconcileBillDO::getId));
     }
 

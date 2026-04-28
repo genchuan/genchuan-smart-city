@@ -25,6 +25,9 @@ public class InspectUserSaveReqVO {
     @Schema(description = "所属片区")
     private String area;
 
+    @Schema(description = "场站ID", requiredMode = Schema.RequiredMode.REQUIRED)
+    private Long stationId;
+
     @Schema(description = "绑定设备ID")
     private Long deviceId;
 

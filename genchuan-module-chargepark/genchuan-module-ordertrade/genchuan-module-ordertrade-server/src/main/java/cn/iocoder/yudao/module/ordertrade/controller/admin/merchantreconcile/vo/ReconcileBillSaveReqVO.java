@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Schema(description = "管理后台 - 商户对账单新增/修改 Request VO")
 @Data
@@ -18,23 +17,17 @@ public class ReconcileBillSaveReqVO {
     @NotNull(message = "商户ID不能为空")
     private Long merchantId;
 
-    @Schema(description = "商户名称")
-    private String merchantName;
+    @Schema(description = "对账周期，如 2026-03、2026-W14", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "对账周期不能为空")
+    private String cycle;
 
-    @Schema(description = "对账日期", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "对账日期不能为空")
-    private LocalDate billDate;
+    @Schema(description = "平台金额(元)")
+    private BigDecimal platformAmount;
 
-    @Schema(description = "系统订单总金额")
-    private BigDecimal sysAmount;
-
-    @Schema(description = "商户上报总金额")
+    @Schema(description = "商户金额(元)")
     private BigDecimal merchantAmount;
 
-    @Schema(description = "差异金额")
-    private BigDecimal diffAmount;
-
-    @Schema(description = "对账状态：pending/confirmed/disputed/resolved")
+    @Schema(description = "对账状态：pending/reconciled/abnormal")
     private String status;
 
     @Schema(description = "备注")

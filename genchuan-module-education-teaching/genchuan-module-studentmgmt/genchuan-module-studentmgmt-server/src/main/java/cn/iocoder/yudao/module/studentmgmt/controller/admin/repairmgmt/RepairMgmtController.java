@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
+
 import java.util.*;
 import java.io.IOException;
 
@@ -18,11 +19,13 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.repairmgmt.vo.*;
@@ -65,7 +68,7 @@ public class RepairMgmtController {
     @DeleteMapping("/delete-list")
     @Parameter(name = "ids", description = "编号", required = true)
     @Operation(summary = "批量删除报修管理")
-                @PreAuthorize("@ss.hasPermission('studentmgmt:repair-mgmt:delete')")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:repair-mgmt:delete')")
     public CommonResult<Boolean> deleteRepairMgmtList(@RequestParam("ids") List<Long> ids) {
         repairMgmtService.deleteRepairMgmtListByIds(ids);
         return success(true);
@@ -93,12 +96,45 @@ public class RepairMgmtController {
     @PreAuthorize("@ss.hasPermission('studentmgmt:repair-mgmt:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportRepairMgmtExcel(@Valid RepairMgmtPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                      HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<RepairMgmtDO> list = repairMgmtService.getRepairMgmtPage(pageReqVO).getList();
         // 导出 Excel
         ExcelUtils.write(response, "报修管理.xls", "数据", RepairMgmtRespVO.class,
-                        BeanUtils.toBean(list, RepairMgmtRespVO.class));
+                BeanUtils.toBean(list, RepairMgmtRespVO.class));
     }
+
+    @PutMapping("/assign")
+    @Operation(summary = "派单")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:repair-mgmt:assign')")
+    public CommonResult<Boolean> assign(@Valid @RequestBody RepairMgmtAssignReqVO reqVO) {
+        Boolean isSuccess = repairMgmtService.assign(reqVO);
+        return success(isSuccess);
+    }
+
+    @PutMapping("/feedback")
+    @Operation(summary = "派单")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:repair-mgmt:feedback')")
+    public CommonResult<Boolean> feedback(@Valid @RequestBody RepairMgmtFeedbackReqVO reqVO) {
+        Boolean isSuccess = repairMgmtService.feedback(reqVO);
+        return success(isSuccess);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "宿舍报修处置看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:repair-mgmt:query')")
+    public CommonResult<RepairMgmtChartRespVO> chart(@Valid @RequestBody RepairMgmtChartReqVO reqVO) {
+        RepairMgmtChartRespVO vo = repairMgmtService.chart(reqVO);
+        return success(vo);
+    }
+
+    @GetMapping("/repairCount")
+    @Operation(summary = "报修类型 / 维修完成率统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:repair-mgmt:query')")
+    public CommonResult<RepairMgmtCountRespVO> repairCount(@Valid RepairMgmtCountReqVO reqVO) {
+        RepairMgmtCountRespVO vo = repairMgmtService.repairCount(reqVO);
+        return success(vo);
+    }
+
 
 }

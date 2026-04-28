@@ -48,13 +48,15 @@ public class AbnormalOrderServiceImpl implements AbnormalOrderService {
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(abnormalOrderMapper.selectTrend(start, end));
         resp.setTypeData(abnormalOrderMapper.selectGroupByStatus());
-        resp.setWaitProcessCount(abnormalOrderMapper.selectCountByStatus("unhandled").intValue());
+        AbnormalOrderChartRespVO.CardData card = new AbnormalOrderChartRespVO.CardData();
+        card.setWaitProcessCount(abnormalOrderMapper.selectCountByStatus("unhandled").intValue());
         Long all    = abnormalOrderMapper.selectCountByStatus(null);
         Long closed = abnormalOrderMapper.selectCountByStatus("closed");
         if (all != null && all > 0) {
-            resp.setProcessCompleteRate(new BigDecimal(closed).multiply(BigDecimal.valueOf(100))
+            card.setProcessCompleteRate(new BigDecimal(closed).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(all), 1, java.math.RoundingMode.HALF_UP));
-        } else { resp.setProcessCompleteRate(BigDecimal.ZERO); }
+        } else { card.setProcessCompleteRate(BigDecimal.ZERO); }
+        resp.setCardData(card);
         return resp;
     }
 

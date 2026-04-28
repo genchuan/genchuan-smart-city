@@ -27,11 +27,8 @@ public class ReconcileRecordServiceImpl implements ReconcileRecordService {
     @Override
     public Long createReconcileRecord(ReconcileRecordSaveReqVO createReqVO) {
         ReconcileRecordDO obj = BeanUtils.toBean(createReqVO, ReconcileRecordDO.class);
-        if (obj.getDiffAmount() == null && obj.getSysAmount() != null && obj.getMerchantAmount() != null) {
-            obj.setDiffAmount(obj.getSysAmount().subtract(obj.getMerchantAmount()));
-        }
-        if (obj.getMatchResult() == null) {
-            obj.setMatchResult("unmatched");
+        if (obj.getStatus() == null) {
+            obj.setStatus("normal");
         }
         reconcileRecordMapper.insert(obj);
         return obj.getId();
@@ -41,9 +38,6 @@ public class ReconcileRecordServiceImpl implements ReconcileRecordService {
     public void updateReconcileRecord(ReconcileRecordSaveReqVO updateReqVO) {
         validateExists(updateReqVO.getId());
         ReconcileRecordDO update = BeanUtils.toBean(updateReqVO, ReconcileRecordDO.class);
-        if (update.getSysAmount() != null && update.getMerchantAmount() != null) {
-            update.setDiffAmount(update.getSysAmount().subtract(update.getMerchantAmount()));
-        }
         reconcileRecordMapper.updateById(update);
     }
 
@@ -70,18 +64,21 @@ public class ReconcileRecordServiceImpl implements ReconcileRecordService {
         LocalDateTime end = chartReqVO.getEndTime() != null ? chartReqVO.getEndTime() : LocalDateTime.now();
 
         resp.setTrendData(reconcileRecordMapper.selectTrend(start, end));
-        Long unmatchedCount = reconcileRecordMapper.selectUnmatchedCount();
+
+        ReconcileRecordChartRespVO.CardData card = new ReconcileRecordChartRespVO.CardData();
+        Long unmatchedCount = reconcileRecordMapper.selectAbnormalCount();
         Long totalCount = reconcileRecordMapper.selectTotalCount();
-        resp.setUnmatchedCount(unmatchedCount);
-        resp.setTotalCount(totalCount);
+        card.setUnmatchedCount(unmatchedCount);
+        card.setTotalCount(totalCount);
 
         if (totalCount != null && totalCount > 0) {
             long matchedCount = totalCount - (unmatchedCount != null ? unmatchedCount : 0L);
-            resp.setMatchRate(new BigDecimal(matchedCount).multiply(BigDecimal.valueOf(100))
+            card.setMatchRate(new BigDecimal(matchedCount).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(totalCount), 1, RoundingMode.HALF_UP));
         } else {
-            resp.setMatchRate(BigDecimal.ZERO);
+            card.setMatchRate(BigDecimal.ZERO);
         }
+        resp.setCardData(card);
         return resp;
     }
 
@@ -92,7 +89,9 @@ public class ReconcileRecordServiceImpl implements ReconcileRecordService {
         if (record == null) throw exception(RECONCILE_RECORD_NOT_EXISTS);
         ReconcileRecordDO update = new ReconcileRecordDO();
         update.setId(reqVO.getId());
-        update.setMatchResult("checked");
+        update.setStatus("normal");
+        update.setCheckerId(cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId());
+        update.setCheckTime(LocalDateTime.now());
         reconcileRecordMapper.updateById(update);
     }
 

@@ -155,16 +155,19 @@ public class InvoiceListServiceImpl implements InvoiceListService {
         LocalDateTime now = LocalDateTime.now();
 
         resp.setTrendData(invoiceListMapper.selectTrend(start, end));
-        resp.setTodayInvoiceCount(invoiceListMapper.selectTodayCount(todayStart, now));
+
+        InvoiceListChartRespVO.CardData card = new InvoiceListChartRespVO.CardData();
+        card.setTodayInvoiceCount(invoiceListMapper.selectTodayCount(todayStart, now));
 
         Long invoicedCount = invoiceListMapper.selectInvoicedCount();
         Long totalCount = invoiceListMapper.selectTotalCount();
         if (totalCount != null && totalCount > 0) {
-            resp.setSuccessRate(new BigDecimal(invoicedCount).multiply(BigDecimal.valueOf(100))
+            card.setSuccessRate(new BigDecimal(invoicedCount).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(totalCount), 1, RoundingMode.HALF_UP));
         } else {
-            resp.setSuccessRate(BigDecimal.ZERO);
+            card.setSuccessRate(BigDecimal.ZERO);
         }
+        resp.setCardData(card);
         return resp;
     }
 

@@ -153,6 +153,32 @@ public enum StudentMgmtDictTypeEnum {
     //状态 (未分配 / 已分配)，关联芋道字典表：bed_mgmt_status
     BED_MGMT_STATUS("bed_mgmt_status", "床位管理状态"),
 
+    // ==================== 宿舍评比 ====================
+    //状态（打分中 / 已汇总），关联芋道字典表：dorm_compare_status。
+    DORM_COMPARE_STATUS("dorm_compare_status", "床位管理状态"),
+    // 评比周期（周 / 月 / 学期），关联芋道字典表：dorm_compare_cycle
+    DORM_COMPARE_CYCLE("dorm_compare_cycle", "宿舍评比周期"),
+
+    // ==================== 宿舍考勤表：dorm_check ====================
+    //状态（正常 / 异常），关联芋道字典表：dorm_check_status。
+    DORM_CHECK_STATUS("dorm_check_status", "宿舍考勤状态"),
+    // 考勤状态（正常 / 迟到 / 未到），关联芋道字典表：dorm_check_check_status
+    DORM_CHECK_CHECK_STATUS("dorm_check_check_status", "宿舍考勤状态"),
+    // 异常类型（无 / 晚归 / 未归），关联芋道字典表：dorm_check_abnormal_type
+    DORM_CHECK_ABNORMAL_TYPE("dorm_check_abnormal_type", "宿舍考勤异常类型"),
+
+    // ==================== 出入申请：access_apply ====================
+    // 状态（待审核 / 已通过，关联芋道字典表：access_apply_status）
+    ACCESS_APPLY_STATUS("access_apply_status", "宿舍考勤异常类型"),
+//    申请类型（应急出入 / 其他，关联芋道字典表：access_apply_apply_type）
+    ACCESS_APPLY_APPLY_TYPE("access_apply_apply_type", "出入申请类型"),
+
+
+    // 验收状态（未验收 / 已验收，关联芋道字典表：repair_mgmt_check_status）
+    REPAIR_MGMT_CHECK_STATUS("repair_mgmt_check_status", "报修管理验收状态"),
+
+    // 状态（待确认 / 待审核 / 已通过，关联芋道字典表：stay_mgmt_status）
+    STAY_MGMT_STATUS("stay_mgmt_status", "留宿管理状态"),
 
     ;
     // ==================== 枚举属性 ====================

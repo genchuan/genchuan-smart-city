@@ -44,6 +44,13 @@ public class StockControlController {
     @Operation(summary = "获得库存管控分页")
     @PreAuthorize("@ss.hasPermission('marketop:stock-control:query')")
     public CommonResult<PageResult<StockControlRespVO>> getPage(StockControlPageReqVO reqVO) {
+        // 如果startTime和endTime都为空，且date不为空，将date转为当天开始和结束时间
+        if (reqVO.getStartTime() == null && reqVO.getEndTime() == null
+                && reqVO.getDate() != null && !reqVO.getDate().isEmpty()) {
+            java.time.LocalDate localDate = java.time.LocalDate.parse(reqVO.getDate());
+            reqVO.setStartTime(localDate.atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
+            reqVO.setEndTime(localDate.plusDays(1).atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
+        }
         PageResult<StockControlDO> pageResult = stockControlService.getPage(reqVO);
         PageResult<StockControlRespVO> bean = BeanUtils.toBean(pageResult, StockControlRespVO.class);
         injectUserNames(bean.getList());
@@ -110,7 +117,8 @@ public class StockControlController {
         Set<Long> cardIds = new HashSet<>();
         for (var item : list) {
             if (StrUtil.isNotBlank(item.getCreator())) {
-                userIds.add(Long.valueOf(item.getCreator()));
+                Long id = safeParseLong(item.getCreator());
+                if (id != null) userIds.add(id);
             }
             if (item.getCardId() != null) {
                 cardIds.add(item.getCardId());
@@ -121,7 +129,7 @@ public class StockControlController {
             Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
             for (var item : list) {
                 if (StrUtil.isNotBlank(item.getCreator())) {
-                    AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
+                    AdminUserRespDTO user = userMap.get(safeParseLong(item.getCreator()));
                     if (user != null) item.setCreatorName(user.getNickname());
                 }
             }
@@ -139,6 +147,15 @@ public class StockControlController {
                     if (name != null) item.setCardName(name);
                 }
             }
+        }
+    }
+
+    private Long safeParseLong(String s) {
+        if (s == null) return null;
+        try {
+            return Long.valueOf(s);
+        } catch (NumberFormatException e) {
+            return null;
         }
     }
 

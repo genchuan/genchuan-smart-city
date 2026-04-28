@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationconfig;
 
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.lxscommon.vo.BatchStatusUpdateReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationconfig.vo.StationConfigPageReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationconfig.vo.StationConfigRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationconfig.vo.StationConfigSaveReqVO;
@@ -62,8 +63,8 @@ public class StationConfigController {
     @PutMapping("/enable")
     @Operation(summary = "批量生效场站配置")
     @PreAuthorize("@ss.hasPermission('stationresource:station-config:update')")
-    public CommonResult<Boolean> enableStationConfig(@RequestBody List<Long> ids) {
-        stationConfigService.enableStationConfig(ids);
+    public CommonResult<Boolean> enableStationConfig(@Valid @RequestBody BatchStatusUpdateReqVO reqVO) {
+        stationConfigService.enableStationConfig(reqVO.getIds());
         return success(true);
     }
 
@@ -71,8 +72,8 @@ public class StationConfigController {
     @PutMapping("/disable")
     @Operation(summary = "批量禁用场站配置")
     @PreAuthorize("@ss.hasPermission('stationresource:station-config:update')")
-    public CommonResult<Boolean> disableStationConfig(@RequestBody List<Long> ids) {
-        stationConfigService.disableStationConfig(ids);
+    public CommonResult<Boolean> disableStationConfig(@Valid @RequestBody BatchStatusUpdateReqVO reqVO) {
+        stationConfigService.disableStationConfig(reqVO.getIds());
         return success(true);
     }
     @PutMapping("/update")

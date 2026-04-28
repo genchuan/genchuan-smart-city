@@ -40,7 +40,7 @@ import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 @Tag(name = "管理后台 - 开闸管理")
 @RestController
-@RequestMapping("/gate/open")
+@RequestMapping("/vehiclepass/gate-open")
 @Validated
 public class GateOpenController {
 
@@ -100,14 +100,6 @@ public class GateOpenController {
     @Operation(summary = "获得开闸管理分页")
     @PreAuthorize("@ss.hasPermission('gate:open:query')")
     public CommonResult<PageResult<GateOpenRespVO>> getOpenPage(@Valid GateOpenPageReqVO pageReqVO) {
-        PageResult<GateOpenDO> pageResult = openService.getOpenPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, GateOpenRespVO.class));
-    }
-
-    @GetMapping("/my/page")
-    @Operation(summary = "开闸管理筛选刷新")
-    @PreAuthorize("@ss.hasPermission('vehiclepass:gate-open:query')")
-    public CommonResult<PageResult<GateOpenRespVO>> getMyOpenPage(@Valid GateOpenPageReqVO pageReqVO) {
         return success(openService.getOpenPageWithJoin(pageReqVO));
     }
 

@@ -18,9 +18,17 @@ public class DebtRecordChartRespVO {
     @Schema(description = "逃费记录趋势数据（折线图）")
     private List<Map<String,Object>> trendData;
 
-    @Schema(description = "逃费总金额（卡片）")
-    private BigDecimal totalArrearAmount;
+    @Schema(description = "今日核心指标（卡片）")
+    private CardData cardData;
 
-    @Schema(description = "追缴完成率（%）（卡片）")
-    private BigDecimal collectCompleteRate;
+    @Data
+    @Schema(description = "卡片指标")
+    public static class CardData {
+
+        @Schema(description = "逃费总金额（卡片）")
+        private BigDecimal totalArrearAmount;
+
+        @Schema(description = "追缴完成率（%）（卡片）")
+        private BigDecimal collectCompleteRate;
+    }
 }

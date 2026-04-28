@@ -99,16 +99,9 @@ public class UnplateEnterController {
 
     @GetMapping("/page")
     @Operation(summary = "获得无牌入场分页")
-    @PreAuthorize("@ss.hasPermission('unplate:enter:query')")
-    public CommonResult<PageResult<UnplateEnterRespVO>> getEnterPage(@Valid UnplateEnterPageReqVO pageReqVO) {
-        PageResult<UnplateEnterDO> pageResult = enterService.getEnterPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, UnplateEnterRespVO.class));
-    }
-    @GetMapping("/my/page")
-    @Operation(summary = "获得无牌入场分页")
     @PreAuthorize("@ss.hasPermission('vehiclepass:unplate-enter:query')")
-    public CommonResult<PageResult<UnplateEnterRespVO>> getUnplateEnterPage(@Valid UnplateEnterPageReqVO reqVO) {
-        return CommonResult.success(enterService.getUnplateEnterPage(reqVO));
+    public CommonResult<PageResult<UnplateEnterRespVO>> getEnterPage(@Valid UnplateEnterPageReqVO pageReqVO) {
+        return success(enterService.getUnplateEnterPage(pageReqVO));
     }
 
     @PutMapping("/audit")
@@ -149,10 +142,8 @@ public class UnplateEnterController {
     public void exportEnterExcel(@Valid UnplateEnterPageReqVO pageReqVO,
                                  HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<UnplateEnterDO> list = enterService.getEnterPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "无牌入场.xls", "数据", UnplateEnterRespVO.class,
-                BeanUtils.toBean(list, UnplateEnterRespVO.class));
+        PageResult<UnplateEnterRespVO> pageResult = enterService.getUnplateEnterPage(pageReqVO);
+        ExcelUtils.write(response, "无牌入场.xls", "数据", UnplateEnterRespVO.class, pageResult.getList());
     }
 
 }

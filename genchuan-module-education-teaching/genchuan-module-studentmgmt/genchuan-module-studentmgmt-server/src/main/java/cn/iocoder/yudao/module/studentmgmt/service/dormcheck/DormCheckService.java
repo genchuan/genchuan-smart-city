@@ -20,7 +20,7 @@ public interface DormCheckService {
      * @param createReqVO 创建信息
      * @return 编号
      */
-    Long createDormCheck(@Valid DormCheckSaveReqVO createReqVO);
+    boolean createDormCheck(@Valid DormCheckCreateReqVO createReqVO);
 
     /**
      * 更新宿舍考勤
@@ -59,4 +59,11 @@ public interface DormCheckService {
      */
     PageResult<DormCheckDO> getDormCheckPage(DormCheckPageReqVO pageReqVO);
 
+    Boolean recheck(@Valid DormCheckRecheckReqVO reqVO);
+
+    Boolean push(@Valid DormCheckPushReqVO reqVO);
+
+    DormCheckChartRespVO chart(@Valid DormCheckChartReqVO reqVO);
+
+    DormCheckChartCountRespVO checkCount(@Valid DormCheckChartCountReqVO reqVO);
 }

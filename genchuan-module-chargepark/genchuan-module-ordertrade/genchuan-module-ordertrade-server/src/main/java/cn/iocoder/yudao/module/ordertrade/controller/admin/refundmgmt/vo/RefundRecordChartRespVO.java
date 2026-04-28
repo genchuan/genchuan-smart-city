@@ -18,9 +18,17 @@ public class RefundRecordChartRespVO {
     @Schema(description = "退款金额趋势数据（折线图）")
     private List<Map<String,Object>> trendData;
 
-    @Schema(description = "退款总金额（卡片）")
-    private BigDecimal totalRefundAmount;
+    @Schema(description = "今日核心指标（卡片）")
+    private CardData cardData;
 
-    @Schema(description = "退款成功率（%）（卡片）")
-    private BigDecimal refundSuccessRate;
+    @Data
+    @Schema(description = "卡片指标")
+    public static class CardData {
+
+        @Schema(description = "退款总金额（卡片）")
+        private BigDecimal totalRefundAmount;
+
+        @Schema(description = "退款成功率（%）（卡片）")
+        private BigDecimal refundSuccessRate;
+    }
 }

@@ -101,4 +101,27 @@ public class AccessApplyController {
                         BeanUtils.toBean(list, AccessApplyRespVO.class));
     }
 
+    @PutMapping("/audit")
+    @Operation(summary = "审核")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:access-apply:audit')")
+    public CommonResult<Boolean> audit(@Valid @RequestBody AccessApplyAuditReqVO updateReqVO) {
+        boolean isSuccess = accessApplyService.audit(updateReqVO);
+        return success(isSuccess);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "宿舍出入统计看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:access-apply:query')")
+    public CommonResult<AccessApplyChartRespVO> getAccessApply(@Valid AccessApplyChartReqVO reqVO) {
+        AccessApplyChartRespVO vo = accessApplyService.chart(reqVO);
+        return success(vo);
+    }
+    @GetMapping("/applyCount")
+    @Operation(summary = "各班级申请次数 / 类型分布统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:access-apply:query')")
+    public CommonResult<AccessApplyCountRespVO> applyCount(@Valid AccessApplyCountReqVO reqVO) {
+        AccessApplyCountRespVO vo = accessApplyService.applyCount(reqVO);
+        return success(vo);
+    }
+
 }

@@ -24,6 +24,10 @@ public class InspectTaskRespVO {
     @ExcelProperty("所属计划")
     private String planName;
 
+    @Schema(description = "任务类型")
+    @ExcelProperty("任务类型")
+    private String planTypeName;
+
     @Schema(description = "巡检人员ID")
     @ExcelProperty("巡检人员ID")
     private Long userId;

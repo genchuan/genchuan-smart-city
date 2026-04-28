@@ -90,18 +90,24 @@ public class ActivityConfigServiceImpl implements ActivityConfigService {
         respVO.setJoinRate(0);
 
         // TypeList: 按type分组统计
-        List<ActivityConfigDO> allList = activityConfigMapper.selectList(new LambdaQueryWrapperX<>());
-        List<ActivityConfigChartRespVO.TypeCountItem> typeList = allList.stream()
-                .collect(Collectors.groupingBy(ActivityConfigDO::getType, Collectors.counting()))
-                .entrySet().stream()
-                .map(entry -> {
-                    ActivityConfigChartRespVO.TypeCountItem item = new ActivityConfigChartRespVO.TypeCountItem();
-                    item.setType(entry.getKey());
-                    item.setCount(entry.getValue().intValue());
-                    return item;
-                })
-                .collect(Collectors.toList());
+        List<java.util.Map<String, Object>> typeCountList = activityConfigMapper.selectTypeCountList();
+        List<ActivityConfigChartRespVO.TypeCountItem> typeList = typeCountList.stream().map(m -> {
+            ActivityConfigChartRespVO.TypeCountItem item = new ActivityConfigChartRespVO.TypeCountItem();
+            item.setType((String) m.get("type"));
+            item.setCount(((Number) m.get("count")).intValue());
+            return item;
+        }).collect(Collectors.toList());
         respVO.setTypeList(typeList);
+
+        // UserGroupList: 按userGroup分组统计
+        List<java.util.Map<String, Object>> userGroupCountList = activityConfigMapper.selectUserGroupCountList();
+        List<ActivityConfigChartRespVO.UserGroupCountItem> userGroupList = userGroupCountList.stream().map(m -> {
+            ActivityConfigChartRespVO.UserGroupCountItem item = new ActivityConfigChartRespVO.UserGroupCountItem();
+            item.setUserGroup((String) m.get("userGroup"));
+            item.setCount(((Number) m.get("count")).intValue());
+            return item;
+        }).collect(Collectors.toList());
+        respVO.setUserGroupList(userGroupList);
 
         return respVO;
     }

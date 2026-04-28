@@ -59,4 +59,11 @@ public interface StayMgmtService {
      */
     PageResult<StayMgmtDO> getStayMgmtPage(StayMgmtPageReqVO pageReqVO);
 
+    Boolean confirm(@Valid StayMgmtConfirmReqVO reqVO);
+
+    Boolean audit(@Valid StayMgmtConfirmReqVO reqVO);
+
+    StayMgmtChartRespVO chart(@Valid StayMgmtChartReqVO reqVO);
+
+    StayMgmtStayCountRespVO stayCount(@Valid StayMgmtStayCountReqVO reqVO);
 }

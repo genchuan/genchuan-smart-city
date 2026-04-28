@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.vehiclecharging.controller.admin.statusmonitor.vo;
 
+import cn.idev.excel.annotation.ExcelIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.math.BigDecimal;
@@ -13,11 +14,13 @@ import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 public class StatusMonitorRespVO {
 
     @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "3465")
-    @ExcelProperty("主键ID")
+//    @ExcelProperty("主键ID")
+    @ExcelIgnore
     private Long id;
 
     @Schema(description = "地区名称", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("地区名称")
+//    @ExcelProperty("地区名称")
+    @ExcelIgnore
     private String areaName;
 
     @Schema(description = "设备编号", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -25,19 +28,21 @@ public class StatusMonitorRespVO {
     private String deviceCode;
 
     @Schema(description = "所属场站ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "6947")
-    @ExcelProperty("所属场站ID")
+//    @ExcelProperty("所属场站ID")
+    @ExcelIgnore
     private Long stationId;
 
     @Schema(description = "场站名称")
-    @ExcelProperty("场站名称")
+    @ExcelProperty("所属场站")
     private String stationName;
 
     @Schema(description = "所属车位ID", example = "11972")
-    @ExcelProperty("所属车位ID")
+//    @ExcelProperty("所属车位ID")
+    @ExcelIgnore
     private Long lotId;
 
     @Schema(description = "车位编号")
-    @ExcelProperty("车位编号")
+    @ExcelProperty("所属车位")
     private String lotCode;
 
     @Schema(description = "设备类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
@@ -45,7 +50,8 @@ public class StatusMonitorRespVO {
     private String deviceType;
 
     @Schema(description = "设备类型名称")
-    @ExcelProperty("设备类型名称")
+//    @ExcelProperty("设备类型名称")
+    @ExcelIgnore
     private String deviceTypeName;
 
     @Schema(description = "电压 单位：V")
@@ -65,7 +71,8 @@ public class StatusMonitorRespVO {
     private String alarmLevel;
 
     @Schema(description = "告警等级名称")
-    @ExcelProperty("告警等级名称")
+//    @ExcelProperty("告警等级名称")
+    @ExcelIgnore
     private String alarmLevelName;
 
     @Schema(description = "监测状态", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
@@ -73,15 +80,21 @@ public class StatusMonitorRespVO {
     private String monitorStatus;
 
     @Schema(description = "监测状态名称")
-    @ExcelProperty("监测状态名称")
+//    @ExcelProperty("监测状态名称")
+    @ExcelIgnore
     private String monitorStatusName;
 
     @Schema(description = "处置人员")
     @ExcelProperty("处置人员")
     private String disposeUser;
 
+    @Schema(description = "备注", example = "你猜")
+    @ExcelProperty("备注")
+//    @ExcelIgnore
+    private String remark;
     @Schema(description = "处置人员名称")
-    @ExcelProperty("处置人员名称")
+//    @ExcelProperty("处置人员名称")
+    @ExcelIgnore
     private String disposeUserName;
 
     @Schema(description = "处置措施")
@@ -96,24 +109,26 @@ public class StatusMonitorRespVO {
     @ExcelProperty("监测时间")
     private LocalDateTime monitorTime;
 
-    @Schema(description = "备注", example = "你猜")
-    @ExcelProperty("备注")
-    private String remark;
+
 
     @Schema(description = "创建人")
-    @ExcelProperty("创建人")
+//    @ExcelProperty("创建人")
+    @ExcelIgnore
     private String creator;
 
     @Schema(description = "创建人名称")
-    @ExcelProperty("创建人名称")
+//    @ExcelProperty("创建人名称")
+    @ExcelIgnore
     private String createByName;
 
     @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("创建时间")
+//    @ExcelProperty("创建时间")
+    @ExcelIgnore
     private LocalDateTime createTime;
 
     @Schema(description = "更新时间")
-    @ExcelProperty("更新时间")
+//    @ExcelProperty("更新时间")
+    @ExcelIgnore
     private LocalDateTime updateTime;
 
 }

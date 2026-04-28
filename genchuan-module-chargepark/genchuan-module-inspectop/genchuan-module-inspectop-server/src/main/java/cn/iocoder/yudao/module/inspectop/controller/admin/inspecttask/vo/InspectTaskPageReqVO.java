@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.inspectop.controller.admin.inspecttask.vo;
 
+import cn.idev.excel.annotation.ExcelProperty;
 import lombok.*;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,6 +16,14 @@ public class InspectTaskPageReqVO extends PageParam {
 
     @Schema(description = "关联计划ID")
     private Long planId;
+
+    @Schema(description = "所属计划")
+    @ExcelProperty("所属计划")
+    private String planName;
+
+    @Schema(description = "任务类型")
+    @ExcelProperty("任务类型")
+    private String planTypeName;
 
     @Schema(description = "巡检人员ID")
     private Long userId;

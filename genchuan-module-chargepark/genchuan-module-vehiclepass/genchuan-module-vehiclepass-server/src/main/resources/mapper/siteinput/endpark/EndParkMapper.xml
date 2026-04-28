@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.vehiclepass.dal.mysql.siteinput.endpark.EndParkMapper">
+
+    <select id="selectPageJoin" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.endpark.vo.EndParkRespVO">
+        SELECT
+            p.id AS id,
+            p.plate_no AS plateNo,
+            p.space_id AS spaceId,
+            p.end_time AS endTime,
+            p.status AS status,
+            p.area_id AS areaId,
+            a.name AS areaName,
+            p.operator_id AS operatorId,
+            u.nickname AS operatorName,
+            p.order_no AS orderNo,
+            p.remark AS remark,
+            p.reserve1 AS reserve1,
+            p.reserve2 AS reserve2,
+            p.creator AS creator,
+            p.updater AS updater,
+            p.create_time AS createTime,
+            p.update_time AS updateTime,
+            s.space_no AS spaceNo
+        FROM end_park p
+        LEFT JOIN area_info a ON p.area_id = a.id AND a.deleted = 0
+        LEFT JOIN user_info u ON p.operator_id = u.id AND u.deleted = 0
+        LEFT JOIN parking_space_info s ON p.space_id = s.id AND s.deleted = 0
+        WHERE p.deleted = 0
+        <if test="reqVO.plateNo != null and reqVO.plateNo != ''">
+            AND p.plate_no LIKE CONCAT('%', #{reqVO.plateNo}, '%')
+        </if>
+        <if test="reqVO.spaceId != null">
+            AND p.space_id = #{reqVO.spaceId}
+        </if>
+        <if test="reqVO.endTimeNew != null and reqVO.endTimeNew.length == 2">
+            AND p.end_time BETWEEN FROM_UNIXTIME(#{reqVO.endTimeNew[0]}) AND FROM_UNIXTIME(#{reqVO.endTimeNew[1]})
+        </if>
+        <if test="reqVO.status != null and reqVO.status != ''">
+            AND p.status = #{reqVO.status}
+        </if>
+        <if test="reqVO.areaId != null">
+            AND p.area_id = #{reqVO.areaId}
+        </if>
+        <if test="reqVO.operatorId != null">
+            AND p.operator_id = #{reqVO.operatorId}
+        </if>
+        <if test="reqVO.orderNo != null and reqVO.orderNo != ''">
+            AND p.order_no LIKE CONCAT('%', #{reqVO.orderNo}, '%')
+        </if>
+        <if test="reqVO.remark != null and reqVO.remark != ''">
+            AND p.remark LIKE CONCAT('%', #{reqVO.remark}, '%')
+        </if>
+        ORDER BY p.id DESC
+    </select>
+
+    <select id="selectEndCountTrend" resultType="map">
+        SELECT
+            DATE(p.end_time) AS date,
+            COUNT(*) AS count
+        FROM end_park p
+        WHERE p.deleted = 0
+        <if test="reqVO.startTime != null and reqVO.endTime != null">
+            AND p.end_time BETWEEN FROM_UNIXTIME(#{reqVO.startTime}) AND DATE_ADD(FROM_UNIXTIME(#{reqVO.endTime}), INTERVAL 1 DAY)
+        </if>
+        <if test="reqVO.areaId != null">
+            AND p.area_id = #{reqVO.areaId}
+        </if>
+        GROUP BY DATE(p.end_time)
+        ORDER BY date ASC
+    </select>
+
+    <select id="selectChartData" resultType="map">
+        SELECT
+            COUNT(*) AS endCount,
+            CASE WHEN COUNT(*) = 0 THEN 0.0
+                 ELSE ROUND(SUM(CASE WHEN p.status = '已支付' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1)
+            END AS paySuccessRate
+        FROM end_park p
+        WHERE p.deleted = 0
+        <if test="reqVO.startTime != null and reqVO.endTime != null">
+            AND p.end_time BETWEEN FROM_UNIXTIME(#{reqVO.startTime}) AND DATE_ADD(FROM_UNIXTIME(#{reqVO.endTime}), INTERVAL 1 DAY)
+        </if>
+        <if test="reqVO.areaId != null">
+            AND p.area_id = #{reqVO.areaId}
+        </if>
+    </select>
+
+</mapper>

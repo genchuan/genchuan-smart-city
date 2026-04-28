@@ -67,16 +67,19 @@ public class PayCallbackServiceImpl implements PayCallbackService {
         LocalDateTime now = LocalDateTime.now();
 
         resp.setTrendData(payCallbackMapper.selectTrend(start, end));
-        resp.setTodayNotifyCount(payCallbackMapper.selectTodayCount(todayStart, now));
+
+        PayCallbackChartRespVO.CardData card = new PayCallbackChartRespVO.CardData();
+        card.setTodayNotifyCount(payCallbackMapper.selectTodayCount(todayStart, now));
 
         Long totalCount = payCallbackMapper.selectTodayCount(todayStart, now);
         Long successCount = payCallbackMapper.selectTodaySuccessCount(todayStart, now);
         if (totalCount != null && totalCount > 0) {
-            resp.setSuccessRate(new BigDecimal(successCount).multiply(BigDecimal.valueOf(100))
+            card.setSuccessRate(new BigDecimal(successCount).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(totalCount), 1, RoundingMode.HALF_UP));
         } else {
-            resp.setSuccessRate(BigDecimal.ZERO);
+            card.setSuccessRate(BigDecimal.ZERO);
         }
+        resp.setCardData(card);
         return resp;
     }
 }

@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.ops;
 
+import cn.idev.excel.annotation.ExcelIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
@@ -19,29 +20,29 @@ public class AddReq {
     @NotEmpty(message = "[片区名称] 片区名称不能为空")
     private String name;
 
-    @Schema(description = "[上级片区ID] 可以为null，表示顶层", example = "1001")
-    private Long parentId;
+//    @Schema(description = "[上级片区ID] 可以为null，表示顶层", example = "1001")
+//    private Long parentId;
 
-    @Schema(description = "[省份] 省份", requiredMode = Schema.RequiredMode.REQUIRED, example = "福建省")
-    @NotEmpty(message = "[省份] 省份不能为空")
-    private String province;
+//    @Schema(description = "[省份] 省份", requiredMode = Schema.RequiredMode.REQUIRED, example = "福建省")
+//    @NotEmpty(message = "[省份] 省份不能为空")
+//    private String province;
 
-    @Schema(description = "[城市] 城市", requiredMode = Schema.RequiredMode.REQUIRED, example = "泉州市")
-    @NotEmpty(message = "[城市] 城市不能为空")
-    private String city;
+//    @Schema(description = "[城市] 城市", requiredMode = Schema.RequiredMode.REQUIRED, example = "泉州市")
+//    @NotEmpty(message = "[城市] 城市不能为空")
+//    private String city;
 
-    @Schema(description = "[区县] 区县", requiredMode = Schema.RequiredMode.REQUIRED, example = "丰泽区")
-    @NotEmpty(message = "[区县] 区县不能为空")
+    @Schema(description = "[所属行政区划] 所属行政区划", requiredMode = Schema.RequiredMode.REQUIRED, example = "丰泽区")
+    @NotEmpty(message = "[所属行政区划] 所属行政区划不能为空")
     private String district;
 
-    @Schema(description = "[详细地址] 详细地址", example = "福建省泉州市丰泽区滨海街100号")
-    private String address;
+//    @Schema(description = "[详细地址] 详细地址", example = "福建省泉州市丰泽区滨海街100号")
+//    private String address;
 
-    @Schema(description = "[负责人ID] 关联芋道用户表system_user", example = "10001")
-    private Long leaderId;
-    @Schema(description = "[负责人名称] 片区名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "张得法")
-//    @NotEmpty(message = "[负责人名称] 负责人名称不能为空")
-    private String leaderName;
+//    @Schema(description = "[负责人ID] 关联芋道用户表system_user", example = "10001")
+//    private Long leaderId;
+//    @Schema(description = "[负责人名称] 片区名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "张得法")
+////    @NotEmpty(message = "[负责人名称] 负责人名称不能为空")
+//    private String leaderName;
 
     @Schema(description = "[联系电话] 联系电话", example = "13800138000")
     private String phone;
@@ -60,7 +61,7 @@ public class AddReq {
     private String reserve2;
 
     // ==================== 新增字段：前端隐藏，后端自己处理 ====================
-    @Schema(description = "[负责人] 关联芋道用户表system_user", hidden = true)
+    @Schema(description = "[负责人] 关联芋道用户表system_user")
     private Long userId;
 
     @Schema(description = "[绑定时间]", hidden = true)
@@ -73,11 +74,13 @@ public class AddReq {
      * 经度
      */
     @Schema(description = "[经度] ", example = "111")
+    @ExcelIgnore
     private Double lon;
 
     /**
      * 纬度
      */
     @Schema(description = "[纬度] ", example = "111")
+    @ExcelIgnore
     private Double lat;
 }

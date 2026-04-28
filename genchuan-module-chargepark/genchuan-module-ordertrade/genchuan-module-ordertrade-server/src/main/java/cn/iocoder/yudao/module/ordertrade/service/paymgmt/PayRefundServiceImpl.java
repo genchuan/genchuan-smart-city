@@ -67,16 +67,19 @@ public class PayRefundServiceImpl implements PayRefundService {
         LocalDateTime now = LocalDateTime.now();
 
         resp.setTrendData(payRefundMapper.selectTrend(start, end));
-        resp.setTodayRefundCount(payRefundMapper.selectTodayCount(todayStart, now));
+
+        PayRefundChartRespVO.CardData card = new PayRefundChartRespVO.CardData();
+        card.setTodayRefundCount(payRefundMapper.selectTodayCount(todayStart, now));
 
         Long totalCount = payRefundMapper.selectTodayCount(todayStart, now);
         Long successCount = payRefundMapper.selectTodaySuccessCount(todayStart, now);
         if (totalCount != null && totalCount > 0) {
-            resp.setSuccessRate(new BigDecimal(successCount).multiply(BigDecimal.valueOf(100))
+            card.setSuccessRate(new BigDecimal(successCount).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(totalCount), 1, RoundingMode.HALF_UP));
         } else {
-            resp.setSuccessRate(BigDecimal.ZERO);
+            card.setSuccessRate(BigDecimal.ZERO);
         }
+        resp.setCardData(card);
         return resp;
     }
 }

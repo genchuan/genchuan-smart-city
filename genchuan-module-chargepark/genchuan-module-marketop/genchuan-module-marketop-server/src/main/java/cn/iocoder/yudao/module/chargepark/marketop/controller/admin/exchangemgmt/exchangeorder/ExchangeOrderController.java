@@ -126,7 +126,8 @@ public class ExchangeOrderController {
         Set<Long> categoryIds = new HashSet<>();
         for (var item : list) {
             if (StrUtil.isNotBlank(item.getCreator())) {
-                userIds.add(Long.valueOf(item.getCreator()));
+                Long id = safeParseLong(item.getCreator());
+                if (id != null) userIds.add(id);
             }
             if (item.getUserId() != null) {
                 userIds.add(item.getUserId());
@@ -140,7 +141,7 @@ public class ExchangeOrderController {
             Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
             for (var item : list) {
                 if (StrUtil.isNotBlank(item.getCreator())) {
-                    AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
+                    AdminUserRespDTO user = userMap.get(safeParseLong(item.getCreator()));
                     if (user != null) item.setCreatorName(user.getNickname());
                 }
                 if (item.getUserId() != null) {
@@ -162,6 +163,15 @@ public class ExchangeOrderController {
                     if (name != null) item.setCategoryName(name);
                 }
             }
+        }
+    }
+
+    private Long safeParseLong(String s) {
+        if (s == null) return null;
+        try {
+            return Long.valueOf(s);
+        } catch (NumberFormatException e) {
+            return null;
         }
     }
 
