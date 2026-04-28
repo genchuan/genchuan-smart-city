@@ -59,7 +59,7 @@ public class MemberConfigController {
     @Operation(summary = "会员配置生效")
     @PreAuthorize("@ss.hasPermission('member:config:enable')")
     public CommonResult<Boolean> enableMemberConfig(@Valid @RequestBody MemberConfigStatusReqVO reqVO) {
-        memberConfigService.updateConfigStatus(reqVO.getIds(), "正常");
+        memberConfigService.updateConfigStatus(reqVO.getIds(), "生效");
         return success(true);
     }
 
@@ -67,7 +67,7 @@ public class MemberConfigController {
     @Operation(summary = "会员配置禁用")
     @PreAuthorize("@ss.hasPermission('member:config:disable')")
     public CommonResult<Boolean> disableMemberConfig(@Valid @RequestBody MemberConfigStatusReqVO reqVO) {
-        memberConfigService.updateConfigStatus(reqVO.getIds(), "禁用");
+        memberConfigService.updateConfigStatus(reqVO.getIds(), "失效");
         return success(true);
     }
 

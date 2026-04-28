@@ -8,6 +8,7 @@ import cn.iocoder.yudao.module.usermerchant.convert.membercenter.memberaddress.A
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberaddress.MemberAddressDO;
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.memberaddress.MemberAddressMapper;
 import cn.iocoder.yudao.module.usermerchant.service.membercenter.memberaddress.AddressService;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.ADDR
  */
 @Service
 @Validated
+@DS("member")
 public class AddressServiceImpl implements AddressService {
 
     @Resource

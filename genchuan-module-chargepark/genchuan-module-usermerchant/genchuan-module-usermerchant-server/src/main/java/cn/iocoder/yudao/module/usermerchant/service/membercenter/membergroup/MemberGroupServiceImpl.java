@@ -12,6 +12,7 @@ import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.membergr
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.membergroup.MemberGroupMapper;
 import cn.iocoder.yudao.module.usermerchant.service.membercenter.membergroup.MemberGroupService;
 import cn.iocoder.yudao.module.usermerchant.service.membercenter.memberuser.MemberUserService;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -28,6 +29,7 @@ import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
  */
 @Service
 @Validated
+@DS("member")
 public class MemberGroupServiceImpl implements MemberGroupService {
 
     @Resource

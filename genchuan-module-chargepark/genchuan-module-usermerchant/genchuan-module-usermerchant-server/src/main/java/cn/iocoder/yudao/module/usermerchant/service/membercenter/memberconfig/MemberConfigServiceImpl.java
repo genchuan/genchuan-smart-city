@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.usermerchant.convert.membercenter.memberconfig.Me
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberconfig.MemberConfigDO;
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.memberconfig.MemberConfigMapper;
 import cn.iocoder.yudao.module.usermerchant.service.membercenter.memberconfig.MemberConfigService;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.MEMB
  */
 @Service
 @Validated
+@DS("member")
 public class MemberConfigServiceImpl implements MemberConfigService {
 
     @Resource
@@ -62,14 +64,14 @@ public class MemberConfigServiceImpl implements MemberConfigService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateConfigStatus(List<Long> ids, String Status) {
+    public void updateConfigStatus(List<Long> ids, String status) {
         if (org.springframework.util.CollectionUtils.isEmpty(ids)) {
             return;
         }
         // 使用 UpdateWrapper 批量更新状态
         UpdateWrapper<MemberConfigDO> updateWrapper = new UpdateWrapper<>();
         updateWrapper.in("id", ids)
-                .set("status", Status);
+                .set("status", status);
         memberConfigMapper.update(null, updateWrapper);
     }
 

@@ -5,6 +5,7 @@ import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.member
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberlevel.MemberLevelRecordDO;
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.memberlevel.MemberLevelRecordMapper;
 import cn.iocoder.yudao.module.usermerchant.service.membercenter.memberlevel.MemberLevelRecordService;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -16,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
  */
 @Service
 @Validated
+@DS("member")
 public class MemberLevelRecordServiceImpl implements MemberLevelRecordService {
 
     @Resource

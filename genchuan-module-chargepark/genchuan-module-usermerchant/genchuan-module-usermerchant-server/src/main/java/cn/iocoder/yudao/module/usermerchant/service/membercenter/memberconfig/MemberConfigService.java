@@ -45,7 +45,7 @@ public interface MemberConfigService {
      *
      * @param ids 编号
      */
-    void updateConfigStatus(List<Long> ids, String Status);
+    void updateConfigStatus(List<Long> ids, String status);
 
     /**
      * 获得会员配置

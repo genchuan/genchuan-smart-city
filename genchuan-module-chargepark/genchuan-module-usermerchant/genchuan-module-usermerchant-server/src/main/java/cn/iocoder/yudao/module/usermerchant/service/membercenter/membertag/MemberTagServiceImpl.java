@@ -12,6 +12,7 @@ import cn.iocoder.yudao.module.usermerchant.convert.membercenter.membertag.Membe
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.membertag.MemberTagDO;
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.membertag.MemberTagMapper;
 import cn.iocoder.yudao.module.usermerchant.service.membercenter.memberuser.MemberUserService;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -28,6 +29,7 @@ import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
  */
 @Service
 @Validated
+@DS("member")
 public class MemberTagServiceImpl implements MemberTagService {
 
     @Resource

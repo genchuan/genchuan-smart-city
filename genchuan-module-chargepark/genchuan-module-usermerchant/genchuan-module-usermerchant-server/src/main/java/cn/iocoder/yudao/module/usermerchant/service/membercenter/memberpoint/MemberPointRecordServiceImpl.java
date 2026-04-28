@@ -12,6 +12,7 @@ import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.memberpoint.M
 import cn.iocoder.yudao.module.usermerchant.enums.MemberPointBizTypeEnum;
 import cn.iocoder.yudao.module.usermerchant.service.membercenter.memberpoint.MemberPointRecordService;
 import cn.iocoder.yudao.module.usermerchant.service.membercenter.memberuser.MemberUserService;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +36,7 @@ import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
 @Slf4j
 @Service
 @Validated
+@DS("member")
 public class MemberPointRecordServiceImpl implements MemberPointRecordService {
 
     @Resource

@@ -9,6 +9,7 @@ import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberle
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.memberlevel.MemberExperienceRecordMapper;
 import cn.iocoder.yudao.module.usermerchant.enums.MemberExperienceBizTypeEnum;
 import cn.iocoder.yudao.module.usermerchant.service.membercenter.memberlevel.MemberExperienceRecordService;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -20,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
  */
 @Service
 @Validated
+@DS("member")
 public class MemberExperienceRecordServiceImpl implements MemberExperienceRecordService {
 
     @Resource

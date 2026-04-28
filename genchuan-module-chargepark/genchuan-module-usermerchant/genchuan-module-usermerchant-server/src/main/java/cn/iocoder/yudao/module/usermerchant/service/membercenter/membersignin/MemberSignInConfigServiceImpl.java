@@ -6,6 +6,7 @@ import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.member
 import cn.iocoder.yudao.module.usermerchant.convert.membercenter.membersignin.MemberSignInConfigConvert;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.membersignin.MemberSignInConfigDO;
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.membersignin.MemberSignInConfigMapper;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -22,6 +23,7 @@ import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
  */
 @Service
 @Validated
+@DS("member")
 public class MemberSignInConfigServiceImpl implements MemberSignInConfigService {
 
     @Resource

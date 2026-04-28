@@ -16,6 +16,7 @@ import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberus
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.memberlevel.MemberLevelMapper;
 import cn.iocoder.yudao.module.usermerchant.enums.MemberExperienceBizTypeEnum;
 import cn.iocoder.yudao.module.usermerchant.service.membercenter.memberuser.MemberUserService;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.google.common.annotations.VisibleForTesting;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,7 @@ import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
 @Slf4j
 @Service
 @Validated
+@DS("member")
 public class MemberLevelServiceImpl implements MemberLevelService {
 
     @Resource

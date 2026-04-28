@@ -24,6 +24,7 @@ import cn.iocoder.yudao.module.system.api.sms.dto.code.SmsCodeUseReqDTO;
 import cn.iocoder.yudao.module.system.api.social.SocialClientApi;
 import cn.iocoder.yudao.module.system.api.social.dto.SocialWxPhoneNumberInfoRespDTO;
 import cn.iocoder.yudao.module.system.enums.sms.SmsSceneEnum;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.google.common.annotations.VisibleForTesting;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
@@ -49,6 +50,7 @@ import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
 @Service
 @Valid
 @Slf4j
+@DS("member")
 public class MemberUserServiceImpl implements MemberUserService {
 
     @Resource
