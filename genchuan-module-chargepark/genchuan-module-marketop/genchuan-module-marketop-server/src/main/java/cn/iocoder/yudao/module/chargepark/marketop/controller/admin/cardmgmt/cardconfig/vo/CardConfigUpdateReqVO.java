@@ -20,6 +20,9 @@ public class CardConfigUpdateReqVO {
     @Schema(description = "适用范围")
     private String scope;
 
+    @Schema(description = "卡种类型")
+    private String type;
+
     @Schema(description = "价格")
     private BigDecimal price;
 
