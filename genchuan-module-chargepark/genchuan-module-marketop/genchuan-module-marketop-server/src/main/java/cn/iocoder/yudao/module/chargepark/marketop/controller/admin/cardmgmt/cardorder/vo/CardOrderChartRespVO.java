@@ -35,7 +35,7 @@ public class CardOrderChartRespVO {
     @Data
     public static class TypeCountItem {
         @Schema(description = "卡种类型")
-        private String type;
+        private String cardType;
         @Schema(description = "订单数")
         private Integer count;
     }

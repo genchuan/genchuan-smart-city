@@ -114,7 +114,7 @@ public class CardOrderServiceImpl implements CardOrderService {
         List<Map<String, Object>> typeCountList = cardOrderMapper.selectTypeCountList();
         List<CardOrderChartRespVO.TypeCountItem> typeItems = typeCountList.stream().map(m -> {
             CardOrderChartRespVO.TypeCountItem item = new CardOrderChartRespVO.TypeCountItem();
-            item.setType((String) m.get("type"));
+            item.setCardType((String) m.get("type"));
             item.setCount(((Number) m.get("count")).intValue());
             return item;
         }).toList();
