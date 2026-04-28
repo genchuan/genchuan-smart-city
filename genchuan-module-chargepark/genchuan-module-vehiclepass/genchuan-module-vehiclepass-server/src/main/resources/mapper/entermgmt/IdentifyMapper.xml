@@ -66,8 +66,10 @@
         FROM plate_identify pi
         INNER JOIN station_info s ON pi.station_id = s.id
         WHERE pi.deleted = 0
-        AND pi.create_time >= FROM_UNIXTIME(#{startTime})
-        AND pi.create_time &lt;= FROM_UNIXTIME(#{endTime})
+        <if test="startTime != null and endTime != null">
+            AND pi.create_time >= FROM_UNIXTIME(#{startTime})
+            AND pi.create_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
         <if test="stationId != null">
             AND pi.station_id = #{stationId}
         </if>
@@ -81,8 +83,10 @@
         SUM(CASE WHEN pi.status = '识别成功' THEN 1 ELSE 0 END) AS successNum
         FROM plate_identify pi
         WHERE pi.deleted = 0
-        AND pi.create_time >= FROM_UNIXTIME(#{startTime})
-        AND pi.create_time &lt;= FROM_UNIXTIME(#{endTime})
+        <if test="startTime != null and endTime != null">
+            AND pi.create_time >= FROM_UNIXTIME(#{startTime})
+            AND pi.create_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
         <if test="stationId != null">
             AND pi.station_id = #{stationId}
         </if>
@@ -98,8 +102,10 @@
         FROM plate_identify pi
         INNER JOIN station_info s ON pi.station_id = s.id  <!-- 内连接场站表 -->
         WHERE pi.deleted = 0
-        AND pi.create_time >= FROM_UNIXTIME(#{startTime})
-        AND pi.create_time &lt;= FROM_UNIXTIME(#{endTime})
+        <if test="startTime != null and endTime != null">
+            AND pi.create_time >= FROM_UNIXTIME(#{startTime})
+            AND pi.create_time &lt;= FROM_UNIXTIME(#{endTime})
+        </if>
         <if test="stationId != null">
             AND pi.station_id = #{stationId}
         </if>

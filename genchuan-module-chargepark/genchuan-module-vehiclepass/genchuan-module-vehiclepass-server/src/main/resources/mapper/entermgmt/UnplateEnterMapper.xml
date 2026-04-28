@@ -59,7 +59,9 @@
             COUNT(u.id) AS count
         FROM station_info s
         LEFT JOIN unplate_enter u ON u.station_id = s.id AND u.deleted = 0
-            AND u.register_time BETWEEN FROM_UNIXTIME(CAST(#{reqVO.startTime} AS UNSIGNED)) AND FROM_UNIXTIME(CAST(#{reqVO.endTime} AS UNSIGNED))
+            <if test="reqVO.startTime != null and reqVO.endTime != null">
+                AND u.register_time BETWEEN FROM_UNIXTIME(CAST(#{reqVO.startTime} AS UNSIGNED)) AND FROM_UNIXTIME(CAST(#{reqVO.endTime} AS UNSIGNED))
+            </if>
         WHERE s.deleted = 0
         <if test="reqVO.stationId != null">
             AND s.id = #{reqVO.stationId}
@@ -75,7 +77,9 @@
             SUM(CASE WHEN status = '已通过' THEN 1 ELSE 0 END) AS auditPassCount
         FROM unplate_enter
         WHERE deleted = 0
-        AND register_time BETWEEN FROM_UNIXTIME(CAST(#{reqVO.startTime} AS UNSIGNED)) AND FROM_UNIXTIME(CAST(#{reqVO.endTime} AS UNSIGNED))
+        <if test="reqVO.startTime != null and reqVO.endTime != null">
+            AND register_time BETWEEN FROM_UNIXTIME(CAST(#{reqVO.startTime} AS UNSIGNED)) AND FROM_UNIXTIME(CAST(#{reqVO.endTime} AS UNSIGNED))
+        </if>
         <if test="reqVO.stationId != null">
             AND station_id = #{reqVO.stationId}
         </if>
