@@ -22,32 +22,32 @@ public class AreaInfoRespVO {
     @ExcelProperty("[片区名称]")
     private String name;
 
-    @Schema(description = "[上级片区ID] 上级片区ID", example = "6415")
-    @ExcelProperty("[上级片区ID]")
-    private Long parentId;
+//    @Schema(description = "[上级片区ID] 上级片区ID", example = "6415")
+//    @ExcelProperty("[上级片区ID]")
+//    private Long parentId;
+//
+//    @Schema(description = "[省份] 省份", requiredMode = Schema.RequiredMode.REQUIRED)
+//    @ExcelProperty("[省份]")
+//    private String province;
+//
+//    @Schema(description = "[城市] 城市", requiredMode = Schema.RequiredMode.REQUIRED)
+//    @ExcelProperty("[城市]")
+//    private String city;
 
-    @Schema(description = "[省份] 省份", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("[省份]")
-    private String province;
-
-    @Schema(description = "[城市] 城市", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("[城市]")
-    private String city;
-
-    @Schema(description = "[区县] 区县", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("[区县]")
+    @Schema(description = "[所属行政区划] 所属行政区划", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("[所属行政区划]")
     private String district;
 
-    @Schema(description = "[详细地址] 详细地址")
-    @ExcelProperty("[详细地址]")
-    private String address;
+//    @Schema(description = "[详细地址] 详细地址")
+//    @ExcelProperty("[详细地址]")
+//    private String address;
 
-    @Schema(description = "[负责人ID] 关联芋道用户表system_user", example = "18361")
-    @ExcelProperty("[负责人ID]")
-    private Long leaderId;
-    @Schema(description = "[负责人名称] 片区名称",  example = "张得法")
-    @ExcelProperty("[负责人名称]")
-    private String leaderName;
+//    @Schema(description = "[负责人ID] 关联芋道用户表system_user", example = "18361")
+//    @ExcelProperty("[负责人ID]")
+//    private Long leaderId;
+//    @Schema(description = "[负责人名称] 片区名称",  example = "张得法")
+//    @ExcelProperty("[负责人名称]")
+//    private String leaderName;
 
 
     @Schema(description = "[负责人] 关联芋道用户表system_user", example = "18362")
@@ -98,9 +98,9 @@ public class AreaInfoRespVO {
     @ExcelProperty("[删除标识]")
     private Boolean deleted;
 
-    @Schema(description = "[租户ID] 关联芋道租户表system_tenant", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("[租户ID]")
-    private Long tenantId;
+//    @Schema(description = "[租户ID] 关联芋道租户表system_tenant", requiredMode = Schema.RequiredMode.REQUIRED)
+//    @ExcelProperty("[租户ID]")
+//    private Long tenantId;
 
     @Schema(description = "[创建时间] 记录创建时间")
     @ExcelProperty("[创建时间]")

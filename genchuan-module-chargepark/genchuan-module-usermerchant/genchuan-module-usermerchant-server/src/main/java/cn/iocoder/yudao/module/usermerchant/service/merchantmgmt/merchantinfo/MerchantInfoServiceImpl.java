@@ -89,17 +89,7 @@ public class MerchantInfoServiceImpl implements MerchantInfoService {
 
     @Override
     public MerchantInfoDO getMerchantInfo(Long id) {
-        MerchantInfoDO merchant = merchantInfoMapper.selectById(id);
-        if (merchant != null) {
-            String phone = merchant.getPhone();
-            if (phone != null && phone.length() >= 11) {
-                // 保留前3位和后4位，中间4位星号
-                String masked = phone.substring(0, 3) + "****" + phone.substring(phone.length() - 4);
-                merchant.setPhone(masked);
-            }
-            // 如果手机号长度不足11位，原样返回或置空，可根据需求调整
-        }
-        return merchant;
+        return merchantInfoMapper.selectById(id);
     }
 
     @Override

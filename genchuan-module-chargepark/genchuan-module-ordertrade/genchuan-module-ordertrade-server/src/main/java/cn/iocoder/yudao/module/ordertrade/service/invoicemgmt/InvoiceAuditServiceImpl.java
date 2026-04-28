@@ -137,16 +137,19 @@ public class InvoiceAuditServiceImpl implements InvoiceAuditService {
         LocalDateTime now = LocalDateTime.now();
 
         resp.setTrendData(invoiceAuditMapper.selectTrend(start, end));
-        resp.setPendingCount(invoiceAuditMapper.selectPendingCount());
+
+        InvoiceAuditChartRespVO.CardData card = new InvoiceAuditChartRespVO.CardData();
+        card.setPendingCount(invoiceAuditMapper.selectPendingCount());
 
         Long approvedCount = invoiceAuditMapper.selectApprovedCount();
         Long totalCount = invoiceAuditMapper.selectTotalCount();
         if (totalCount != null && totalCount > 0) {
-            resp.setApproveRate(new BigDecimal(approvedCount).multiply(BigDecimal.valueOf(100))
+            card.setApproveRate(new BigDecimal(approvedCount).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(totalCount), 1, RoundingMode.HALF_UP));
         } else {
-            resp.setApproveRate(BigDecimal.ZERO);
+            card.setApproveRate(BigDecimal.ZERO);
         }
+        resp.setCardData(card);
         return resp;
     }
 

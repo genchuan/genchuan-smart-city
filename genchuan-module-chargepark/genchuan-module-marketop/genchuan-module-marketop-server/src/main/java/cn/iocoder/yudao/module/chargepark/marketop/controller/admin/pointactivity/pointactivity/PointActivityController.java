@@ -164,14 +164,17 @@ public class PointActivityController {
         Set<Long> stationIds = new HashSet<>();
         for (var item : list) {
             if (StrUtil.isNotBlank(item.getCreator())) {
-                userIds.add(Long.valueOf(item.getCreator()));
+                Long id = safeParseLong(item.getCreator());
+                if (id != null) userIds.add(id);
             }
             if (item.getAuditorId() != null) {
                 userIds.add(item.getAuditorId());
             }
             if (StrUtil.isNotBlank(item.getStationIds())) {
                 Arrays.stream(item.getStationIds().split(","))
-                        .filter(StrUtil::isNotBlank).map(String::trim).map(Long::valueOf)
+                        .filter(StrUtil::isNotBlank).map(String::trim)
+                        .map(s -> safeParseLong(s))
+                        .filter(Objects::nonNull)
                         .forEach(stationIds::add);
             }
         }
@@ -180,7 +183,7 @@ public class PointActivityController {
             Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
             for (var item : list) {
                 if (StrUtil.isNotBlank(item.getCreator())) {
-                    AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
+                    AdminUserRespDTO user = userMap.get(safeParseLong(item.getCreator()));
                     if (user != null) item.setCreatorName(user.getNickname());
                 }
                 if (item.getAuditorId() != null) {
@@ -196,15 +199,26 @@ public class PointActivityController {
                 if (StrUtil.isNotBlank(item.getStationIds())) {
                     String names = Arrays.stream(item.getStationIds().split(","))
                             .filter(StrUtil::isNotBlank).map(String::trim)
-                            .map(id -> {
-                                StationInfoRespDTO s = stationMap.get(Long.valueOf(id));
-                                return s != null ? s.getName() : null;
+                            .map(s -> {
+                                Long id = safeParseLong(s);
+                                if (id == null) return null;
+                                StationInfoRespDTO station = stationMap.get(id);
+                                return station != null ? station.getName() : null;
                             })
                             .filter(Objects::nonNull)
                             .collect(Collectors.joining(","));
                     item.setStationNames(names);
                 }
             }
+        }
+    }
+
+    private Long safeParseLong(String s) {
+        if (s == null) return null;
+        try {
+            return Long.valueOf(s);
+        } catch (NumberFormatException e) {
+            return null;
         }
     }
 

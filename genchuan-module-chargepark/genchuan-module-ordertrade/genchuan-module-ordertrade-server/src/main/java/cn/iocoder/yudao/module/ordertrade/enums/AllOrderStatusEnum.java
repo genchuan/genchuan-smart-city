@@ -12,7 +12,10 @@ public enum AllOrderStatusEnum {
     COMPLETED("completed",     "已完成"),
     CANCELLED("cancelled",     "已取消"),
     REFUNDING("refunding",     "退款中"),
-    REFUNDED("refunded",       "已退款");
+    REFUNDED("refunded",       "已退款"),
+
+    CHARGING("charging", "充电中"),
+    LENDING("lending", "借出中");
 
     private final String value;
     private final String label;

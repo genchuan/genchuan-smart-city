@@ -14,9 +14,17 @@ public class SettleBillChartRespVO {
     @Schema(description = "结算单据趋势数据（折线图）")
     private List<Map<String, Object>> trendData;
 
-    @Schema(description = "结算金额")
-    private BigDecimal totalSettleAmount;
+    @Schema(description = "今日核心指标（卡片）")
+    private CardData cardData;
 
-    @Schema(description = "结算完成率（%）")
-    private BigDecimal settleCompleteRate;
+    @Data
+    @Schema(description = "卡片指标")
+    public static class CardData {
+
+        @Schema(description = "结算金额")
+        private BigDecimal totalSettleAmount;
+
+        @Schema(description = "结算完成率（%）")
+        private BigDecimal settleCompleteRate;
+    }
 }

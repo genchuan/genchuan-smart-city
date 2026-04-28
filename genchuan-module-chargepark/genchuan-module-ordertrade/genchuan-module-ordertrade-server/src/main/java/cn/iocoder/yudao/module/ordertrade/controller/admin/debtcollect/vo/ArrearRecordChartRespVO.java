@@ -18,9 +18,17 @@ public class ArrearRecordChartRespVO {
     @Schema(description = "欠费金额趋势数据（折线图）")
     private List<Map<String,Object>> trendData;
 
-    @Schema(description = "欠费总金额（卡片）")
-    private BigDecimal totalArrearAmount;
+    @Schema(description = "今日核心指标（卡片）")
+    private CardData cardData;
 
-    @Schema(description = "结清率（%）（卡片）")
-    private BigDecimal clearRate;
+    @Data
+    @Schema(description = "卡片指标")
+    public static class CardData {
+
+        @Schema(description = "欠费总金额（卡片）")
+        private BigDecimal totalArrearAmount;
+
+        @Schema(description = "结清率（%）（卡片）")
+        private BigDecimal clearRate;
+    }
 }

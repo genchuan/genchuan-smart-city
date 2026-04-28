@@ -49,13 +49,15 @@ public class AmountCheckServiceImpl implements AmountCheckService {
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(amountCheckMapper.selectTrend(start, end));
-        resp.setTotalCheckCount(amountCheckMapper.selectCountByStatus(null).intValue());
+        AmountCheckChartRespVO.CardData card = new AmountCheckChartRespVO.CardData();
+        card.setTotalCheckCount(amountCheckMapper.selectCountByStatus(null).intValue());
         Long all     = amountCheckMapper.selectCountByStatus(null);
         Long passed  = amountCheckMapper.selectCountByStatus("checked");
         if (all != null && all > 0) {
-            resp.setCheckAccuracy(new BigDecimal(passed).multiply(BigDecimal.valueOf(100))
+            card.setCheckAccuracy(new BigDecimal(passed).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(all), 1, java.math.RoundingMode.HALF_UP));
-        } else { resp.setCheckAccuracy(BigDecimal.ZERO); }
+        } else { card.setCheckAccuracy(BigDecimal.ZERO); }
+        resp.setCardData(card);
         return resp;
     }
 

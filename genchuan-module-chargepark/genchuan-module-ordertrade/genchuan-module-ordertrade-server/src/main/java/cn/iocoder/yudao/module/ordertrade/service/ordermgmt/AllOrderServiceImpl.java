@@ -72,14 +72,15 @@ public class AllOrderServiceImpl implements AllOrderService {
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(allOrderMapper.selectTrend(start, end));
         resp.setTypeData(allOrderMapper.selectGroupByStatus());
-        resp.setTodayOrderCount(allOrderMapper.selectTodayCount(todayStart, now).intValue());
-        resp.setTodayRevenue(allOrderMapper.selectTodayRevenue(todayStart, now));
         Long total = allOrderMapper.selectTodayCount(todayStart, now);
         Long paid  = allOrderMapper.selectTodayPaidCount(todayStart, now);
-        if (total != null && total > 0) {
-            resp.setPayRate(new BigDecimal(paid).multiply(BigDecimal.valueOf(100))
-                    .divide(new BigDecimal(total), 1, RoundingMode.HALF_UP));
-        } else { resp.setPayRate(BigDecimal.ZERO); }
+        AllOrderChartRespVO.CardData card = new AllOrderChartRespVO.CardData();
+        card.setTodayOrderCount(total != null ? total.intValue() : 0);
+        card.setTodayRevenue(allOrderMapper.selectTodayRevenue(todayStart, now));
+        card.setPayRate(total != null && total > 0
+                ? new BigDecimal(paid).multiply(BigDecimal.valueOf(100)).divide(new BigDecimal(total), 1, RoundingMode.HALF_UP)
+                : BigDecimal.ZERO);
+        resp.setCardData(card);
         return resp;
     }
 

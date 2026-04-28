@@ -111,8 +111,10 @@ public class AgentOrderServiceImpl implements AgentOrderService {
         LocalDateTime now = LocalDateTime.now();
 
         resp.setTrendData(agentOrderMapper.selectTrend(start, end));
-        resp.setTodayOrderCount(agentOrderMapper.selectTodayCount(todayStart, now));
-        resp.setTodayAmount(agentOrderMapper.selectTodayAmount(todayStart, now));
+        AgentOrderChartRespVO.CardData card = new AgentOrderChartRespVO.CardData();
+        card.setTodayOrderCount(agentOrderMapper.selectTodayCount(todayStart, now));
+        card.setTodayAmount(agentOrderMapper.selectTodayAmount(todayStart, now));
+        resp.setCardData(card);
         return resp;
     }
 

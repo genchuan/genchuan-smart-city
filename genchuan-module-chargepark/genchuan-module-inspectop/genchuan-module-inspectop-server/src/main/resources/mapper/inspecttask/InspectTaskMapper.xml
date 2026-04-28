@@ -55,6 +55,7 @@
         it.create_time,
         it.update_time,
         ip.name AS plan_name,  -- 从 inspect_plan 表获取计划名称
+        ip.type AS plan_type_name,  -- 从 inspect_plan 表获取类型名称
         iu.name AS user_name   -- 从 inspect_user 表获取人员姓名
         FROM inspect_task it
         LEFT JOIN inspect_plan ip ON it.plan_id = ip.id

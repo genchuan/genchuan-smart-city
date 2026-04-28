@@ -23,6 +23,9 @@ public class RuleConfigChartRespVO {
     @Schema(description = "规则类型分布")
     private List<TypeCountItem> typeCountList;
 
+    @Schema(description = "场景分布")
+    private List<SceneCountItem>  sceneCountList;
+
     @Data
     public static class TypeRateItem {
         @Schema(description = "规则类型")
@@ -39,4 +42,11 @@ public class RuleConfigChartRespVO {
         private Integer count;
     }
 
+    @Data
+    public static class SceneCountItem {
+        @Schema(description = "奖品类型")
+        private String scene;
+        @Schema(description = "数量")
+        private Integer count;
+    }
 }

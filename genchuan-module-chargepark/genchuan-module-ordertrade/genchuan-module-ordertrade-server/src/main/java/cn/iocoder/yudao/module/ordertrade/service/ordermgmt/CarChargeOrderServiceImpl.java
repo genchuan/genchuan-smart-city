@@ -55,9 +55,11 @@ public class CarChargeOrderServiceImpl implements CarChargeOrderService {
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(carChargeOrderMapper.selectTrend(start, end));
         resp.setStationData(carChargeOrderMapper.selectGroupByStatus());
-        resp.setTodayOrderCount(carChargeOrderMapper.selectTodayCount(todayStart, now).intValue());
-        resp.setTodayChargeQuantity(carChargeOrderMapper.selectTodayChargeQuantity(todayStart, now));
-        resp.setTodayRevenue(carChargeOrderMapper.selectTodayRevenue(todayStart, now));
+        CarChargeOrderChartRespVO.CardData card = new CarChargeOrderChartRespVO.CardData();
+        card.setTodayOrderCount(carChargeOrderMapper.selectTodayCount(todayStart, now).intValue());
+        card.setTodayChargeQuantity(carChargeOrderMapper.selectTodayChargeQuantity(todayStart, now));
+        card.setTodayRevenue(carChargeOrderMapper.selectTodayRevenue(todayStart, now));
+        resp.setCardData(card);
         return resp;
     }
 

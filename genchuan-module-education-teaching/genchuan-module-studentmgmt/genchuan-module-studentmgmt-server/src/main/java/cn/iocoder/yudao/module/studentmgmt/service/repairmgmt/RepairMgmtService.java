@@ -59,4 +59,11 @@ public interface RepairMgmtService {
      */
     PageResult<RepairMgmtDO> getRepairMgmtPage(RepairMgmtPageReqVO pageReqVO);
 
+    Boolean assign(@Valid RepairMgmtAssignReqVO reqVO);
+
+    Boolean feedback(@Valid RepairMgmtFeedbackReqVO reqVO);
+
+    RepairMgmtChartRespVO chart(@Valid RepairMgmtChartReqVO reqVO);
+
+    RepairMgmtCountRespVO repairCount(@Valid RepairMgmtCountReqVO reqVO);
 }

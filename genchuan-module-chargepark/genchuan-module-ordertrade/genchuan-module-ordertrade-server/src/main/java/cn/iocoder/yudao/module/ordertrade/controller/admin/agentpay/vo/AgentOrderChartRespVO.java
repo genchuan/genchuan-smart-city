@@ -14,9 +14,15 @@ public class AgentOrderChartRespVO {
     @Schema(description = "代付订单趋势数据（折线图）")
     private List<Map<String, Object>> trendData;
 
-    @Schema(description = "今日代付订单量")
-    private Long todayOrderCount;
+    @Schema(description = "今日核心指标（卡片）")
+    private CardData cardData;
 
-    @Schema(description = "今日代付金额")
-    private BigDecimal todayAmount;
+    @Data
+    @Schema(description = "卡片指标")
+    public static class CardData {
+        @Schema(description = "今日代付订单量")
+        private Long todayOrderCount;
+        @Schema(description = "今日代付金额")
+        private BigDecimal todayAmount;
+    }
 }
