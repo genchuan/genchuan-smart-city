@@ -80,14 +80,14 @@ public class MemberConfigController {
         return success(BeanUtils.toBean(memberConfig, MemberConfigRespVO.class));
     }
 
-//    @PutMapping("/update")
-//    @Operation(summary = "更新会员配置")
-//    @PreAuthorize("@ss.hasPermission('usermerchant:member-config:update')")
-//    public CommonResult<Boolean> updateMemberConfig(@Valid @RequestBody MemberConfigSaveReqVO updateReqVO) {
-//        memberConfigService.updateMemberConfig(updateReqVO);
-//        return success(true);
-//    }
-//
+    @PutMapping("/update")
+    @Operation(summary = "更新会员配置")
+    @PreAuthorize("@ss.hasPermission('member:config:update')")
+    public CommonResult<Boolean> updateMemberConfig(@Valid @RequestBody MemberConfigUpdateReqVO updateReqVO) {
+        memberConfigService.updateConfig(updateReqVO);
+        return success(true);
+    }
+
 //    @DeleteMapping("/delete")
 //    @Operation(summary = "删除会员配置")
 //    @Parameter(name = "id", description = "编号", required = true)

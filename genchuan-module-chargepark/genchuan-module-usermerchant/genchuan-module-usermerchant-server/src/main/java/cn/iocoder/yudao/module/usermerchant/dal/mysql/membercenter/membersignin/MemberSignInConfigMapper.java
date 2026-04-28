@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.membersignin
 
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.membersignin.MemberSignInConfigDO;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
  * @author QingX
  */
 @Mapper
+@DS("member")
 public interface MemberSignInConfigMapper extends BaseMapperX<MemberSignInConfigDO> {
 
     default MemberSignInConfigDO selectByDay(Integer day) {

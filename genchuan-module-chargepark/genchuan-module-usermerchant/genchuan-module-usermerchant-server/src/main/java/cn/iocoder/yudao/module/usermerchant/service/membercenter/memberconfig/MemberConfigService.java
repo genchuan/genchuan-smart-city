@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.usermerchant.service.membercenter.memberconfig;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberconfig.vo.MemberConfigPageReqVO;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberconfig.vo.MemberConfigSaveReqVO;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberconfig.vo.MemberConfigUpdateReqVO;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberconfig.MemberConfigDO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -60,4 +61,11 @@ public interface MemberConfigService {
      * @return 第一条积分配置
      */
     MemberConfigDO getConfig();
+
+    /**
+     * 更新会员配置
+     *
+     * @param updateReqVO 更新信息
+     */
+    void updateConfig(@Valid MemberConfigUpdateReqVO updateReqVO);
 }

@@ -28,6 +28,8 @@ public interface ErrorCodeConstants {
     ErrorCode GROUP_INFO_NOT_EXISTS = new ErrorCode(500, "集团信息不存在");
     // ========== 集团车辆==========
     ErrorCode GROUP_CAR_NOT_EXISTS = new ErrorCode(500, "集团车辆不存在");
+    // ========== 会员配置==========
+    ErrorCode MEMBER_CONFIG_NOT_EXISTS = new ErrorCode(500, "会员配置不存在");
     // ========== 用户相关  1-004-001-000 ============
     ErrorCode USER_NOT_EXISTS = new ErrorCode(1_004_001_000, "用户不存在");
     ErrorCode USER_MOBILE_NOT_EXISTS = new ErrorCode(1_004_001_001, "手机号未注册用户");

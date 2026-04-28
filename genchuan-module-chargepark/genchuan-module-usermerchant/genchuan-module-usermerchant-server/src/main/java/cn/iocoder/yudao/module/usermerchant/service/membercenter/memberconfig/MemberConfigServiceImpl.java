@@ -1,10 +1,12 @@
 package cn.iocoder.yudao.module.usermerchant.service.membercenter.memberconfig;
 
+import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberconfig.vo.MemberConfigPageReqVO;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberconfig.vo.MemberConfigSaveReqVO;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberconfig.vo.MemberConfigUpdateReqVO;
 import cn.iocoder.yudao.module.usermerchant.convert.membercenter.memberconfig.MemberConfigConvert;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberconfig.MemberConfigDO;
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.memberconfig.MemberConfigMapper;
@@ -16,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
+
+import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.MEMBER_CONFIG_NOT_EXISTS;
 
 /**
  * 会员配置 Service 实现类
@@ -72,6 +76,21 @@ public class MemberConfigServiceImpl implements MemberConfigService {
     @Override
     public MemberConfigDO getMemberConfig(Long id) {
         return memberConfigMapper.selectById(id);
+    }
+
+    @Override
+    public void updateConfig(MemberConfigUpdateReqVO updateReqVO) {
+        // 校验存在
+        validateMemberConfigExists(updateReqVO.getId());
+        // 更新
+        MemberConfigDO updateObj = BeanUtils.toBean(updateReqVO, MemberConfigDO.class);
+        memberConfigMapper.updateById(updateObj);
+    }
+
+    private void validateMemberConfigExists(Long id) {
+        if (memberConfigMapper.selectById(id) == null) {
+            throw new ServiceException(MEMBER_CONFIG_NOT_EXISTS);
+        }
     }
 
     @Override

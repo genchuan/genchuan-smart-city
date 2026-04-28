@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membertag.vo.MemberTagPageReqVO;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.membertag.MemberTagDO;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -13,6 +14,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @author 芋道源码
  */
 @Mapper
+@DS("member")
 public interface MemberTagMapper extends BaseMapperX<MemberTagDO> {
 
     default PageResult<MemberTagDO> selectPage(MemberTagPageReqVO reqVO) {

@@ -4,6 +4,7 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberlevel.vo.level.MemberLevelListReqVO;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberlevel.MemberLevelDO;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
  * @author owen
  */
 @Mapper
+@DS("member")
 public interface MemberLevelMapper extends BaseMapperX<MemberLevelDO> {
 
     default List<MemberLevelDO> selectList(MemberLevelListReqVO reqVO) {

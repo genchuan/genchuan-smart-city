@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membersignin.vo.record.MemberSignInRecordPageReqVO;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.membersignin.MemberSignInRecordDO;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -18,6 +19,7 @@ import java.util.Set;
  * @author 芋道源码
  */
 @Mapper
+@DS("member")
 public interface MemberSignInRecordMapper extends BaseMapperX<MemberSignInRecordDO> {
 
     default PageResult<MemberSignInRecordDO> selectPage(MemberSignInRecordPageReqVO reqVO, Set<Long> userIds) {

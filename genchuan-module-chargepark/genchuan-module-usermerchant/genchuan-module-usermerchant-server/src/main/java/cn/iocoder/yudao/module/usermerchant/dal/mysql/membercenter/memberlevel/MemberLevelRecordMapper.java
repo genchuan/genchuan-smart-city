@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberlevel.vo.record.MemberLevelRecordPageReqVO;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberlevel.MemberLevelRecordDO;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -13,6 +14,7 @@ import org.apache.ibatis.annotations.Mapper;
  * @author owen
  */
 @Mapper
+@DS("member")
 public interface MemberLevelRecordMapper extends BaseMapperX<MemberLevelRecordDO> {
 
     default PageResult<MemberLevelRecordDO> selectPage(MemberLevelRecordPageReqVO reqVO) {
