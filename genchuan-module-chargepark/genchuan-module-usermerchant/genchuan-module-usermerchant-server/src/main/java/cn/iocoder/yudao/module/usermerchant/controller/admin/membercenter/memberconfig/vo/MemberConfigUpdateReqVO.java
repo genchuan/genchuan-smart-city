@@ -1,6 +1,5 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberconfig.vo;
 
-import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

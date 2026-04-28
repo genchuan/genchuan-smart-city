@@ -23,8 +23,8 @@ public class MemberConfigApiImpl implements MemberConfigApi {
     private MemberConfigService memberConfigService;
 
     @Override
-    public CommonResult<MemberConfigRespDTO> getConfig() {
-        return success(MemberConfigConvert.INSTANCE.convert01(memberConfigService.getConfig()));
+    public CommonResult<MemberConfigRespDTO> getMemberConfig(Long id) {
+        return success(MemberConfigConvert.INSTANCE.convert01(memberConfigService.getMemberConfig(id)));
     }
 
 }

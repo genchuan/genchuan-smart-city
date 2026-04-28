@@ -10,4 +10,8 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class MemberConfigSaveReqVO extends MemberConfigBaseVO {
+
+    @Schema(description = "自增主键")
+    private Long id;
+
 }

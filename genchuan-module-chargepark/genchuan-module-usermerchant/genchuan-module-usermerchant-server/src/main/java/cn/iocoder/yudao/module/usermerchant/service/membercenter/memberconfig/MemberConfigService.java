@@ -1,9 +1,7 @@
 package cn.iocoder.yudao.module.usermerchant.service.membercenter.memberconfig;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberconfig.vo.MemberConfigPageReqVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberconfig.vo.MemberConfigSaveReqVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberconfig.vo.MemberConfigUpdateReqVO;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberconfig.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberconfig.MemberConfigDO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -34,9 +32,9 @@ public interface MemberConfigService {
     Long createMemberConfig(@Valid MemberConfigSaveReqVO createReqVO);
 
     /**
-     * 保存会员配置
+     * 保存会员配置（新增或更新）
      *
-     * @param saveReqVO 更新信息
+     * @param saveReqVO 保存信息
      */
     void saveConfig(@Valid MemberConfigSaveReqVO saveReqVO);
 
@@ -56,16 +54,17 @@ public interface MemberConfigService {
     MemberConfigDO getMemberConfig(Long id);
 
     /**
-     * 获得会员配置 old ver
-     *
-     * @return 第一条积分配置
-     */
-    MemberConfigDO getConfig();
-
-    /**
      * 更新会员配置
      *
      * @param updateReqVO 更新信息
      */
     void updateConfig(@Valid MemberConfigUpdateReqVO updateReqVO);
+
+    /**
+     * 会员配置统计可视化
+     *
+     * @param chartReqVO 时间范围
+     * @return 统计信息
+     */
+    MemberConfigChartRespVO getMemberConfigChart(@Valid MemberConfigChartReqVO chartReqVO);
 }

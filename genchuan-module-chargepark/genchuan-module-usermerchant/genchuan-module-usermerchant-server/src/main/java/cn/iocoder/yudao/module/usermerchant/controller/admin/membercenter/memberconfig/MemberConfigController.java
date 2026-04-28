@@ -4,6 +4,8 @@ import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberconfig.vo.*;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.vo.UserInfoChartReqVO;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.vo.UserInfoChartRespVO;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.vo.UserInfoDisableReqVO;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.vo.UserInfoEnableReqVO;
 import cn.iocoder.yudao.module.usermerchant.convert.membercenter.memberconfig.MemberConfigConvert;
@@ -86,6 +88,13 @@ public class MemberConfigController {
     public CommonResult<Boolean> updateMemberConfig(@Valid @RequestBody MemberConfigUpdateReqVO updateReqVO) {
         memberConfigService.updateConfig(updateReqVO);
         return success(true);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "会员配置统计")
+    @PreAuthorize("@ss.hasPermission('member:config:query')")
+    public CommonResult<MemberConfigChartRespVO> getMemberConfigChart(@Valid MemberConfigChartReqVO chartReqVO) {
+        return success(memberConfigService.getMemberConfigChart(chartReqVO));
     }
 
 //    @DeleteMapping("/delete")

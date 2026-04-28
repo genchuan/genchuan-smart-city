@@ -16,6 +16,6 @@ public interface MemberConfigApi {
 
     @GetMapping(PREFIX + "/get")
     @Operation(summary = "获得用户配置")
-    CommonResult<MemberConfigRespDTO> getConfig();
+    CommonResult<MemberConfigRespDTO> getMemberConfig(Long id);
 
 }
