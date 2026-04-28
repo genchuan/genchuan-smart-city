@@ -1,6 +1,9 @@
 package cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.memberconfig;
 
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberconfig.vo.MemberConfigPageReqVO;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberconfig.MemberConfigDO;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import org.apache.ibatis.annotations.Mapper;
@@ -13,4 +16,18 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 @DS("member")
 public interface MemberConfigMapper extends BaseMapperX<MemberConfigDO> {
+
+    default PageResult<MemberConfigDO> selectPage(MemberConfigPageReqVO reqVO) {
+        return selectPage(reqVO, new LambdaQueryWrapperX<MemberConfigDO>()
+                .eqIfPresent(MemberConfigDO::getPointTradeDeductEnable, reqVO.getPointTradeDeductEnable())
+                .eqIfPresent(MemberConfigDO::getPointTradeDeductUnitPrice, reqVO.getPointTradeDeductUnitPrice())
+                .eqIfPresent(MemberConfigDO::getPointTradeDeductMaxPrice, reqVO.getPointTradeDeductMaxPrice())
+                .eqIfPresent(MemberConfigDO::getPointTradeGivePoint, reqVO.getPointTradeGivePoint())
+                .eqIfPresent(MemberConfigDO::getCreator, reqVO.getCreator())
+                .betweenIfPresent(MemberConfigDO::getCreateTime, reqVO.getCreateTime())
+                .eqIfPresent(MemberConfigDO::getUpdater, reqVO.getUpdater())
+                .betweenIfPresent(MemberConfigDO::getUpdateTime, reqVO.getUpdateTime())
+                .orderByDesc(MemberConfigDO::getId));
+    }
+
 }

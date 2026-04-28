@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.vo.UserInfoChartRespVO;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.merchantmgmt.merchantinfo.MerchantInfoDO;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantinfo.vo.*;
 import org.apache.ibatis.annotations.Param;
@@ -19,6 +20,7 @@ import java.util.List;
  * @author 亘川智城
  */
 @Mapper
+@DS("master")
 public interface MerchantInfoMapper extends BaseMapperX<MerchantInfoDO> {
 
     default PageResult<MerchantInfoDO> selectPage(MerchantInfoPageReqVO reqVO) {
