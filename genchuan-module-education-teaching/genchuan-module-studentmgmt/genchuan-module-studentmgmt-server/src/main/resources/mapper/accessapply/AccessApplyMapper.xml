@@ -13,8 +13,8 @@
             resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.accessapply.vo.AccessApplyChartRespVO">
         SELECT
         COUNT(1) AS totalApplyCount,
-        COUNT(CASE WHEN a.status = #{status} THEN 1 ELSE 0 END) AS passedCount,
-        COUNT(CASE WHEN a.status != #{status} THEN 1 ELSE 0 END) AS pendingAuditCount
+        SUM(CASE WHEN a.status = #{status} THEN 1 ELSE 0 END) AS passedCount,
+        SUM(CASE WHEN a.status != #{status} THEN 1 ELSE 0 END) AS pendingAuditCount
         FROM `access_apply` AS a LEFT JOIN student_info AS s  ON a.student_id = s.id
         WHERE a.deleted = 0
         <if test="startTime != null">
@@ -56,8 +56,8 @@
         SELECT
         s.class_name AS className,
         COUNT(1) AS totalCount,
-        COUNT(CASE WHEN a.apply_type = #{applyType} THEN 1 ELSE 0 END) AS emergencyCount,
-        COUNT(CASE WHEN a.apply_type != #{applyType} THEN 1 ELSE 0 END) AS otherCount
+        SUM(CASE WHEN a.apply_type = #{applyType} THEN 1 ELSE 0 END) AS emergencyCount,
+        SUM(CASE WHEN a.apply_type != #{applyType} THEN 1 ELSE 0 END) AS otherCount
         FROM `access_apply` AS a LEFT JOIN student_info AS s  ON a.student_id = s.id
         WHERE a.deleted = 0
         <if test="startTime != null">

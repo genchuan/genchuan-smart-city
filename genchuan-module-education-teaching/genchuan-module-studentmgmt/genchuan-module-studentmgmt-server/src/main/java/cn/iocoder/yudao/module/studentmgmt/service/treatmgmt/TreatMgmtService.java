@@ -59,4 +59,15 @@ public interface TreatMgmtService {
      */
     PageResult<TreatMgmtDO> getTreatMgmtPage(TreatMgmtPageReqVO pageReqVO);
 
+    Boolean appoint(@Valid TreatMgmtAppointReqVO reqVO);
+
+    Boolean audit(@Valid TreatMgmtAuditReqVO reqVO);
+
+    Boolean register(@Valid TreatMgmtRegisterReqVO reqVO);
+
+    Boolean feedback(@Valid TreatMgmtFeedbackReqVO reqVO);
+
+    TreatMgmtChartRespVO chart(@Valid TreatMgmtChartReqVO reqVO);
+
+    TreatMgmtDistributionRespVO treatDistribution(@Valid TreatMgmtChartReqVO reqVO);
 }
