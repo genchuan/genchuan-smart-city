@@ -5,6 +5,8 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.car
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.cardorder.vo.CardOrderPageReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.CardOrderDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.cardmgmt.CardOrderMapper;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.CardOrderInvoiceStatusEnum;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.CardOrderPayStatusEnum;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -40,10 +42,7 @@ public class CardOrderServiceImpl implements CardOrderService {
     @Override
     public void pay(Long id) {
         CardOrderDO cardOrder = validateExists(id);
-        if (!"待支付".equals(cardOrder.getPayStatus())) {
-            throw exception(CARD_ORDER_STATUS_ERROR);
-        }
-        cardOrder.setPayStatus("已支付");
+        cardOrder.setPayStatus(CardOrderPayStatusEnum.PAID.getValue());
         cardOrder.setPayTime(LocalDateTime.now());
         cardOrderMapper.updateById(cardOrder);
     }
@@ -51,10 +50,7 @@ public class CardOrderServiceImpl implements CardOrderService {
     @Override
     public void activate(Long id) {
         CardOrderDO cardOrder = validateExists(id);
-        if (!"已支付".equals(cardOrder.getPayStatus())) {
-            throw exception(CARD_ORDER_STATUS_ERROR);
-        }
-        cardOrder.setPayStatus("已完成");
+        cardOrder.setPayStatus(CardOrderPayStatusEnum.COMPLETED.getValue());
         cardOrder.setActiveTime(LocalDateTime.now());
         cardOrderMapper.updateById(cardOrder);
     }
@@ -62,20 +58,14 @@ public class CardOrderServiceImpl implements CardOrderService {
     @Override
     public void invoice(Long id) {
         CardOrderDO cardOrder = validateExists(id);
-        if (!"0".equals(cardOrder.getInvoiceStatus())) {
-            throw exception(CARD_ORDER_STATUS_ERROR);
-        }
-        cardOrder.setInvoiceStatus("1");
+        cardOrder.setInvoiceStatus(CardOrderInvoiceStatusEnum.INVOICED.getValue());
         cardOrderMapper.updateById(cardOrder);
     }
 
     @Override
     public void cancel(Long id) {
         CardOrderDO cardOrder = validateExists(id);
-        if (!"0".equals(cardOrder.getPayStatus())) {
-            throw exception(CARD_ORDER_STATUS_ERROR);
-        }
-        cardOrder.setPayStatus("-1");
+        cardOrder.setPayStatus(CardOrderPayStatusEnum.CANCELLED.getValue());
         cardOrderMapper.updateById(cardOrder);
     }
 
