@@ -167,6 +167,18 @@ public enum StudentMgmtDictTypeEnum {
     // 异常类型（无 / 晚归 / 未归），关联芋道字典表：dorm_check_abnormal_type
     DORM_CHECK_ABNORMAL_TYPE("dorm_check_abnormal_type", "宿舍考勤异常类型"),
 
+    // ==================== 出入申请：access_apply ====================
+    // 状态（待审核 / 已通过，关联芋道字典表：access_apply_status）
+    ACCESS_APPLY_STATUS("access_apply_status", "宿舍考勤异常类型"),
+//    申请类型（应急出入 / 其他，关联芋道字典表：access_apply_apply_type）
+    ACCESS_APPLY_APPLY_TYPE("access_apply_apply_type", "出入申请类型"),
+
+
+    // 验收状态（未验收 / 已验收，关联芋道字典表：repair_mgmt_check_status）
+    REPAIR_MGMT_CHECK_STATUS("repair_mgmt_check_status", "报修管理验收状态"),
+
+    // 状态（待确认 / 待审核 / 已通过，关联芋道字典表：stay_mgmt_status）
+    STAY_MGMT_STATUS("stay_mgmt_status", "留宿管理状态"),
 
     ;
     // ==================== 枚举属性 ====================
