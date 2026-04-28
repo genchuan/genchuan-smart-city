@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivi
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.CouponMgmtUpdateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.CouponMgmtDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.couponactivity.CouponMgmtMapper;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.CouponMgmtStatusEnum;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -66,10 +67,10 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
     @Override
     public void send(Long id, Long userId) {
         CouponMgmtDO couponMgmt = validateExists(id);
-        if (!"0".equals(couponMgmt.getStatus())) {
-            throw exception(COUPON_MGMT_STATUS_ERROR);
-        }
-        couponMgmt.setStatus("1");
+//        if (!"0".equals(couponMgmt.getStatus())) {
+//            throw exception(COUPON_MGMT_STATUS_ERROR);
+//        }
+        couponMgmt.setStatus(CouponMgmtStatusEnum.RECEIVED.getValue());
         Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
         couponMgmt.setSenderId(loginUserId); // 发放人为当前操作用户，由Controller层设置
         couponMgmt.setSendTime(LocalDateTime.now());
@@ -80,10 +81,10 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
     @Override
     public void verify(Long id) {
         CouponMgmtDO couponMgmt = validateExists(id);
-        if (!"1".equals(couponMgmt.getStatus())) {
-            throw exception(COUPON_MGMT_STATUS_ERROR);
-        }
-        couponMgmt.setStatus("2");
+//        if (!"1".equals(couponMgmt.getStatus())) {
+//            throw exception(COUPON_MGMT_STATUS_ERROR);
+//        }
+        couponMgmt.setStatus(CouponMgmtStatusEnum.USED.getValue());
         couponMgmt.setVerifyTime(LocalDateTime.now());
         couponMgmtMapper.updateById(couponMgmt);
     }
@@ -91,11 +92,11 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
     @Override
     public void resend(Long id, Long receiverId, Long newValidTime) {
         CouponMgmtDO couponMgmt = validateExists(id);
-        if (!"2".equals(couponMgmt.getStatus())) {
-            throw exception(COUPON_MGMT_STATUS_ERROR);
-        }
+//        if (!"2".equals(couponMgmt.getStatus())) {
+//            throw exception(COUPON_MGMT_STATUS_ERROR);
+//        }
         Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
-        couponMgmt.setStatus("1");
+        couponMgmt.setStatus(CouponMgmtStatusEnum.NOT_RECEIVED.getValue());
         couponMgmt.setSenderId(loginUserId);
         couponMgmt.setSendTime(LocalDateTime.now());
         couponMgmt.setReceiverId(receiverId);
