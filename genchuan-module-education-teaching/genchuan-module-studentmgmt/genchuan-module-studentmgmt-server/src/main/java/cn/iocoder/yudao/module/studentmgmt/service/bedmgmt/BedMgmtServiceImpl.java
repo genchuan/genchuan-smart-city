@@ -133,9 +133,9 @@ public class BedMgmtServiceImpl implements BedMgmtService {
     @LogRecord(type = BED_MGMT_TYPE, subType = BED_MGMT_ADJUST_SUB_TYPE, bizNo = "{{#reqVO.newBedId}}",
             success = BED_MGMT_ADJUST_SUB_TYPE_SUCCESS)
     public boolean adjust(BedMgmtAdjustReqVO reqVO) {
-        Long oldBedId = reqVO.getOldBedId();
-        Long newBedId = reqVO.getNewBedId();
-        Long studentId = reqVO.getStudentId();
+        Long oldBedId = Long.valueOf(reqVO.getOldBedId());
+        Long newBedId = Long.valueOf(reqVO.getNewBedId());
+        Long studentId = Long.valueOf(reqVO.getStudentId());
         LocalDateTime adjustTime = reqVO.getAdjustTime();
 
         BedMgmtDO bedMgmt = bedMgmtMapper.selectById(oldBedId);

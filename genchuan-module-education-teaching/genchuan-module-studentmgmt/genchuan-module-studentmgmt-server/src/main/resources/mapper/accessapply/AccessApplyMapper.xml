@@ -63,5 +63,6 @@
         <if test="startTime != null">
             AND a.apply_time BETWEEN #{startTime} AND #{endTime}
         </if>
+        GROUP BY s.class_name
     </select>
 </mapper>

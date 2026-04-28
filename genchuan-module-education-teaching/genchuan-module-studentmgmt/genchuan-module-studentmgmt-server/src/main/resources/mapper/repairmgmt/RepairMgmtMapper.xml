@@ -38,6 +38,7 @@
         <if test="startTime != null">
             AND apply_time between #{startTime} AND #{endTime}
         </if>
+        GROUP BY DATE_FORMAT(apply_time, '%Y-%m-%d')
     </select>
     <select id="selectTypeDistributionList" resultType="com.alibaba.fastjson.JSONObject">
         SELECT

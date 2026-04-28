@@ -6,14 +6,16 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 /**
- * 德育资源状态
+ * 状态
  */
-public enum MoralResourceStatusEnum {
+public enum ClubVenueApplyStatusEnum {
 
-    OFFLINE("offline","'未上架'"),
-    ONLINE("online","'已上架'");
+    VENUE_APPLY_STATUS_0("0", "无"),
+    VENUE_APPLY_STATUS_1("1", "待申请"),
+    VENUE_APPLY_STATUS_2("2", "已通过");
 
-    public static final String DICT_TYPE = "moral_activity_activity_type";
+    public static final String DICT_TYPE = "club_mgmt_venue_apply_status";
+
     /**
      * 状态
      * <p>
@@ -25,14 +27,15 @@ public enum MoralResourceStatusEnum {
      */
     private final String name;
 
-
     // 根据key获取名称
     public static String getNameByKey(String key) {
-        for (MoralResourceStatusEnum value : values()) {
+        for (ClubVenueApplyStatusEnum value : values()) {
             if (value.status.equals(key)) {
                 return value.name;
             }
         }
         return null;
     }
+
+
 }

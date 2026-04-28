@@ -115,6 +115,13 @@ public class ClubMgmtController {
         boolean isSuccess = clubMgmtService.archive(reqVO);
         return success(isSuccess);
     }
+    @PutMapping("/venueApply")
+    @Operation(summary = "场馆申请")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:club-mgmt:venueApply')")
+    public CommonResult<Boolean> venueApply(@Valid @RequestBody ClubMgmtVenueApplyReqVO reqVO) {
+        boolean isSuccess = clubMgmtService.venueApply(reqVO);
+        return success(isSuccess);
+    }
 
     @GetMapping("/chart")
     @Operation(summary = "社团运营统计看板")

@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 public class StayMgmtStayCountReqVO {
 
-    @Schema(description = "统计时间范围", requiredMode = Schema.RequiredMode.REQUIRED, example = "10528")
+    @Schema(description = "统计时间范围", requiredMode = Schema.RequiredMode.REQUIRED, example = "时间范围参数需要符合yyyy-MM-dd HH:mm:ss格式,如：2023-01-01 00:00:00,2027-01-31 23:59:59")
     private LocalDateTime[] timeRange ;
 
 }

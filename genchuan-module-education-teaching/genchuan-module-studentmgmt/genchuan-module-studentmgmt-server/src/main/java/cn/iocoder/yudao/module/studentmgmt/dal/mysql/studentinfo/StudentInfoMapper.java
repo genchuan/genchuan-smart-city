@@ -10,7 +10,6 @@ import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInf
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.studentinfo.vo.*;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 
 /**
  * 学生信息 Mapper
@@ -78,10 +77,11 @@ public interface StudentInfoMapper extends BaseMapperX<StudentInfoDO> {
      *
      * @param startTime
      * @param endTime
+     * @param status
      * @return
      */
     List<StudentInfoCoreIndexRespVO> getCoreIndex(@Param("startTime") LocalDateTime startTime,
-                                            @Param("endTime") LocalDateTime endTime);
+                                                  @Param("endTime") LocalDateTime endTime, String status);
 
     List<StudentInfoBaseVO> selectBaseInfoList();
 

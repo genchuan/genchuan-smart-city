@@ -113,17 +113,25 @@ public class RepairMgmtController {
     }
 
     @PutMapping("/feedback")
-    @Operation(summary = "派单")
+    @Operation(summary = "反馈")
     @PreAuthorize("@ss.hasPermission('studentmgmt:repair-mgmt:feedback')")
     public CommonResult<Boolean> feedback(@Valid @RequestBody RepairMgmtFeedbackReqVO reqVO) {
         Boolean isSuccess = repairMgmtService.feedback(reqVO);
         return success(isSuccess);
     }
 
+    @PutMapping("/accept")
+    @Operation(summary = "验收")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:repair-mgmt:feedback')")
+    public CommonResult<Boolean> accept(@Valid @RequestBody RepairMgmtAcceptReqVO reqVO) {
+        Boolean isSuccess = repairMgmtService.accept(reqVO);
+        return success(isSuccess);
+    }
+
     @GetMapping("/chart")
     @Operation(summary = "宿舍报修处置看板")
     @PreAuthorize("@ss.hasPermission('studentmgmt:repair-mgmt:query')")
-    public CommonResult<RepairMgmtChartRespVO> chart(@Valid @RequestBody RepairMgmtChartReqVO reqVO) {
+    public CommonResult<RepairMgmtChartRespVO> chart(@Valid RepairMgmtChartReqVO reqVO) {
         RepairMgmtChartRespVO vo = repairMgmtService.chart(reqVO);
         return success(vo);
     }

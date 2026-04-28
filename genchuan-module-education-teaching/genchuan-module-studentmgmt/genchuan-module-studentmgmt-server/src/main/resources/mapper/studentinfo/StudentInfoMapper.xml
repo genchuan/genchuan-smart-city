@@ -83,7 +83,7 @@
             WHERE deleted = 0
             AND update_time &gt;= #{startTime}
             AND update_time <![CDATA[ <= ]]> #{endTime}
-            AND status='异动'
+            AND status=#{status}
             GROUP BY DATE_FORMAT(update_time, '%Y-%m-%d')
             ) all_dates
         GROUP BY all_dates.date

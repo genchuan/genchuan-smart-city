@@ -4,6 +4,7 @@ import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.accessapply.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.accessapply.AccessApplyDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.accessapply.AccessApplyMapper;
@@ -76,10 +77,12 @@ public class AccessApplyServiceImpl implements AccessApplyService {
         }
 
 
-    private void validateAccessApplyExists(Long id) {
-        if (accessApplyMapper.selectById(id) == null) {
+    private AccessApplyDO validateAccessApplyExists(Long id) {
+        AccessApplyDO accessApplyDO = accessApplyMapper.selectById(id);
+        if ( accessApplyDO== null) {
             throw exception(ACCESS_APPLY_NOT_EXISTS);
         }
+        return accessApplyDO;
     }
 
     @Override
@@ -97,10 +100,20 @@ public class AccessApplyServiceImpl implements AccessApplyService {
         int total = 0;
         for (Long id : updateReqVO.getIds()) {
             // 校验存在
-            validateAccessApplyExists(id);
+            AccessApplyDO accessApplyDO = validateAccessApplyExists(id);
+            // 仅允许审核待审核状态的申请
+            if (!AccessApplyStatusEnum.PENDING.getStatus().equals(accessApplyDO.getStatus())) {
+                throw exception(id + "，仅允许审核待审核状态的申请");
+            }
+            // 获取当前用户
+            String username = SecurityFrameworkUtils.getLoginUserNickname();
+            accessApplyDO.setAuditUser(username);
+            //自动填充审核人、审核时间，更新申请状态为 “已通过”
+            accessApplyDO.setApplyTime(LocalDateTime.now());
+            accessApplyDO.setStatus(AccessApplyStatusEnum.APPROVE.getStatus());
+
             // 更新
-            AccessApplyDO updateObj = BeanUtils.toBean(updateReqVO, AccessApplyDO.class);
-            int i = accessApplyMapper.updateById(updateObj);
+            int i = accessApplyMapper.updateById(accessApplyDO);
             total = total + i;
         }
         if (total > 0) {

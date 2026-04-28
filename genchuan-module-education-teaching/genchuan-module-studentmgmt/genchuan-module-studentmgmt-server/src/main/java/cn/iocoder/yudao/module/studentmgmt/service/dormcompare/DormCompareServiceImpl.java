@@ -146,7 +146,8 @@ public class DormCompareServiceImpl implements DormCompareService {
             // 汇总时间，将记录状态更新为已汇总；
             dormCompareDO.setSumTime(reqVo.getSumTime());
             dormCompareDO.setStatus(DormCompareStatusEnum.DORM_COMPARE_STATUS_SUMMARIZED.getStatus());
-            dormCompareMapper.updateById(dormCompareDO);
+            int i1 = dormCompareMapper.updateById(dormCompareDO);
+            total += i1;
 
             String cycle = dormCompareDO.getCycle();
             // 查询该周期下的所有评分是否已经全部完成打分评比
@@ -196,6 +197,7 @@ public class DormCompareServiceImpl implements DormCompareService {
             // 更新记录的推送时间
             dormCompareDO.setPushTime(reqVo.getPushTime());
             int i = dormCompareMapper.updateById(dormCompareDO);
+            total += i;
 
             // 记录操作日志上下文
             LogRecordContext.putVariable("dormCompare", dormCompareDO);
