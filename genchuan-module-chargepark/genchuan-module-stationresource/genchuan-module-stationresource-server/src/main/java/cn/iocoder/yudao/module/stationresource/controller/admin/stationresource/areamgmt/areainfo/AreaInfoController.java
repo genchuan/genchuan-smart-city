@@ -46,6 +46,7 @@ public class AreaInfoController {
     @Resource
     private AreaInfoService areaInfoService;
 
+
     @GetMapping("/chart")
     @Operation(summary = "片区数据可视化图表（地图+柱状图+卡片）")
     @PreAuthorize("@ss.hasPermission('stationresource:area-info:query')")

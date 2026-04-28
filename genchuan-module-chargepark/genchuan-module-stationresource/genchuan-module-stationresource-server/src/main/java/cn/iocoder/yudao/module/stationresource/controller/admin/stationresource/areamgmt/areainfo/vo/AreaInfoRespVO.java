@@ -45,9 +45,9 @@ public class AreaInfoRespVO {
 //    @Schema(description = "[负责人ID] 关联芋道用户表system_user", example = "18361")
 //    @ExcelProperty("[负责人ID]")
 //    private Long leaderId;
-//    @Schema(description = "[负责人名称] 片区名称",  example = "张得法")
-//    @ExcelProperty("[负责人名称]")
-//    private String leaderName;
+    @Schema(description = "[负责人名称] 片区名称",  example = "张得法")
+    @ExcelProperty("[负责人名称]")
+    private String leaderName;
 
 
     @Schema(description = "[负责人] 关联芋道用户表system_user", example = "18362")
