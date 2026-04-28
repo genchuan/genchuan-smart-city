@@ -109,7 +109,7 @@ public class CardConfigServiceImpl implements CardConfigService {
         // typeCountList: 按type分组统计数量
         List<CardConfigChartRespVO.TypeCountItem> typeCountItems = typeCountList.stream().map(m -> {
             CardConfigChartRespVO.TypeCountItem item = new CardConfigChartRespVO.TypeCountItem();
-            item.setType((String) m.get("type"));
+            item.setCardType((String) m.get("type"));
             item.setCount(((Number) m.get("count")).intValue());
             return item;
         }).collect(Collectors.toList());

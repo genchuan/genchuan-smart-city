@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +36,9 @@ public class CardConfigController {
     @Operation(summary = "获得卡种配置分页")
     @PreAuthorize("@ss.hasPermission('marketop:card-config:query')")
     public CommonResult<PageResult<CardConfigRespVO>> getPage(CardConfigPageReqVO reqVO) {
+        if (StringUtils.isNotBlank(reqVO.getCardType())){
+            reqVO.setType(reqVO.getCardType());
+        }
         PageResult<CardConfigDO> pageResult = cardConfigService.getPage(reqVO);
         PageResult<CardConfigRespVO> bean = BeanUtils.toBean(pageResult, CardConfigRespVO.class);
         injectUserNames(bean.getList());
