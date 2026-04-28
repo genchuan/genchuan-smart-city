@@ -67,12 +67,6 @@
         SELECT COUNT(*)
         FROM user_info
         WHERE deleted = 0
-        <if test="start != null">
-            AND create_time >= #{start}
-        </if>
-        <if test="end != null">
-            AND create_time &lt;= #{end}
-        </if>
     </select>
 
     <!-- 新增用户数（假设新用户是指注册时间在时间范围内） -->
