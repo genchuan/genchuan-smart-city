@@ -20,6 +20,9 @@ public class NewPileAlarmPageReqVO extends PageParam {
     @Schema(description = "场站ID", example = "1001")
     private String stationId;
 
+    @Schema(description = "场站名称", example = "场站")
+    private String stationName;
+
     @Schema(description = "故障类型", example = "硬件故障")
     private String faultType;
 
