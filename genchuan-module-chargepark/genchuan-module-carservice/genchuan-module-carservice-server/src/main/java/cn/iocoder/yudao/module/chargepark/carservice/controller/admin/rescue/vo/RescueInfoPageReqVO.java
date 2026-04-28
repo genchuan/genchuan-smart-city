@@ -1,11 +1,13 @@
 package cn.iocoder.yudao.module.chargepark.carservice.controller.admin.rescue.vo;
 
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
@@ -15,6 +17,16 @@ public class RescueInfoPageReqVO extends PageParam {
 
     @Schema(description = "用户 ID", example = "1001")
     private Long userId;
+
+    @Schema(description = "用户昵称(模糊查询,RPC 反查 system_user 拿 ids 后过滤 user_id)", example = "张")
+    private String userName;
+
+    /**
+     * 用户名模糊查询命中的 user_id 集合,Service 层内部填充,前端不要传也不要展示
+     */
+    @JsonIgnore
+    @Schema(hidden = true)
+    private Collection<Long> userIds;
 
     @Schema(description = "救援类型,关联字典 rescue_info_rescue_type", example = "道路救援",
             allowableValues = {"道路救援", "充电故障救援", "停车故障救援"})

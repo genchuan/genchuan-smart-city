@@ -24,7 +24,7 @@ import java.util.Map;
 public interface ReportStatMapper {
 
     @Select("<script>SELECT DATE(create_time) AS day, COUNT(*) AS cnt FROM rescue_info " +
-            "WHERE create_time &gt;= #{since} " +
+            "WHERE deleted = 0 AND create_time &gt;= #{since} " +
             "<if test='end != null'>AND create_time &lt;= #{end}</if> " +
             "GROUP BY DATE(create_time) ORDER BY day</script>")
     List<Map<String, Object>> rescueInfoDailyCount(@Param("since") LocalDateTime since,
