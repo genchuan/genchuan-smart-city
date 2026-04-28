@@ -13,6 +13,8 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @Data
 public class AreaInfoPageReqVO extends PageParam {
 
+    @Schema(description = "[片区id] ",hidden = true)
+    private Long id;
     @Schema(description = "[片区编号] 唯一标识片区编号")
     private String areaNo;
 

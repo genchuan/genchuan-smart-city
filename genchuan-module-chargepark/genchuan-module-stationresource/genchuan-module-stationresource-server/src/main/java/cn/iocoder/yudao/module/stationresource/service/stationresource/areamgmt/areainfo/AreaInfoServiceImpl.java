@@ -194,9 +194,21 @@ public class AreaInfoServiceImpl implements AreaInfoService {
         }
     }
 
+    /**
+     * 根据ID查询单条片区信息（复用分页接口，保证数据结构一致：包含实时场站数、负责人名称）
+     * @param id 片区ID
+     * @return 片区详情DO
+     */
     @Override
     public AreaInfoDO getAreaInfo(Long id) {
-        return areaInfoMapper.selectById(id);
+        // 构造分页查询条件，只查当前ID，限制1条
+        AreaInfoPageReqVO req = new AreaInfoPageReqVO();
+        req.setId(id);
+        req.setPageSize(1);
+
+        System.out.println("cs2026-04-28 15:03:34:"+req);
+        // 调用分页接口获取列表，返回第一条数据（保证与列表展示的字段一致）
+        return getAreaInfoPage(req).getList().stream().findFirst().orElse(null);
     }
 
     @Override

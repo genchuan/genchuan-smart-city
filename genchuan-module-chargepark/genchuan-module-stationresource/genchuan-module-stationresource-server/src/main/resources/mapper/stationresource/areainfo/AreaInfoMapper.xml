@@ -63,6 +63,9 @@
         LEFT JOIN station_info s ON a.id = s.area_id AND s.deleted = 0  <!-- 关联场站 -->
         WHERE a.deleted = 0
 
+        <if test="pageReqVO.id != null">
+            AND a.id = #{pageReqVO.id}
+        </if>
         <if test="pageReqVO.userId != null">
             AND a.user_id = #{pageReqVO.userId}
         </if>
