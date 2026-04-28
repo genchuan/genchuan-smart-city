@@ -75,19 +75,21 @@ public class SettleStatusServiceImpl implements SettleStatusService {
         SettleStatusChartRespVO resp = new SettleStatusChartRespVO();
         resp.setStatusData(settleStatusMapper.selectGroupByStatus());
 
+        SettleStatusChartRespVO.CardData card = new SettleStatusChartRespVO.CardData();
         Long normalCount = settleStatusMapper.selectNormalCount();
         Long totalCount = settleStatusMapper.selectTotalCount();
         Long abnormalCount = settleStatusMapper.selectAbnormalCount();
 
         if (totalCount != null && totalCount > 0) {
-            resp.setCompleteRate(new BigDecimal(normalCount).multiply(BigDecimal.valueOf(100))
+            card.setCompleteRate(new BigDecimal(normalCount).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(totalCount), 1, RoundingMode.HALF_UP));
-            resp.setAbnormalRate(new BigDecimal(abnormalCount).multiply(BigDecimal.valueOf(100))
+            card.setAbnormalRate(new BigDecimal(abnormalCount).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(totalCount), 1, RoundingMode.HALF_UP));
         } else {
-            resp.setCompleteRate(BigDecimal.ZERO);
-            resp.setAbnormalRate(BigDecimal.ZERO);
+            card.setCompleteRate(BigDecimal.ZERO);
+            card.setAbnormalRate(BigDecimal.ZERO);
         }
+        resp.setCardData(card);
         return resp;
     }
 

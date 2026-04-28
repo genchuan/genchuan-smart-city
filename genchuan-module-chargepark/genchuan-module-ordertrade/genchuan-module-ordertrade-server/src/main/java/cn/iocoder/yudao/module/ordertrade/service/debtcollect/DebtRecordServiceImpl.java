@@ -49,14 +49,16 @@ public class DebtRecordServiceImpl implements DebtRecordService {
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(debtRecordMapper.selectTrend(start, end));
-        resp.setTotalArrearAmount(debtRecordMapper.selectTotalArrearAmount());
+        DebtRecordChartRespVO.CardData card = new DebtRecordChartRespVO.CardData();
+        card.setTotalArrearAmount(debtRecordMapper.selectTotalArrearAmount());
         Long total = debtRecordMapper.selectTodayCount(todayStart, now);
         Long completed = debtRecordMapper.selectCountByStatus("completed");
         Long all = debtRecordMapper.selectCountByStatus(null);
         if (all != null && all > 0) {
-            resp.setCollectCompleteRate(new BigDecimal(completed).multiply(BigDecimal.valueOf(100))
+            card.setCollectCompleteRate(new BigDecimal(completed).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(all), 1, java.math.RoundingMode.HALF_UP));
-        } else { resp.setCollectCompleteRate(BigDecimal.ZERO); }
+        } else { card.setCollectCompleteRate(BigDecimal.ZERO); }
+        resp.setCardData(card);
         return resp;
     }
 

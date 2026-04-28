@@ -1,11 +1,14 @@
 package cn.iocoder.yudao.module.studentmgmt.dal.mysql.staymgmt;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.dormcheck.vo.DormCheckChartRespVO;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.staymgmt.StayMgmtDO;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.staymgmt.vo.*;
 
@@ -34,4 +37,12 @@ public interface StayMgmtMapper extends BaseMapperX<StayMgmtDO> {
                 .orderByDesc(StayMgmtDO::getId));
     }
 
+    StayMgmtChartRespVO selectTotalCount(LocalDateTime startTime, LocalDateTime endTime, String className,
+                                          String pendingConfirm, String pendingAudit, String passed);
+
+    List<JSONObject> getWeekendTrend(LocalDateTime startTime, LocalDateTime endTime, String className);
+
+    List<JSONObject> getStatusDistribution(LocalDateTime startTime, LocalDateTime endTime, String className);
+
+    List<JSONObject> getClassStatisticsList(LocalDateTime startTime, LocalDateTime endTime);
 }

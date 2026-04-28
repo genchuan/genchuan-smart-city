@@ -11,9 +11,12 @@ import jakarta.validation.Valid;
 public interface CycleReportService {
 
     /**
-     * 获得巡检运维报表分页
+     * 获得巡检运维报表存储分页
+     *
+     * @param pageReqVO 分页查询
+     * @return 巡检运维报表存储分页
      */
-    PageResult<CycleReportRespVO> getCycleReportPage(CycleReportPageReqVO pageReqVO);
+    PageResult<CycleReportDO> getCycleReportPage(CycleReportPageReqVO pageReqVO);
 
     /**
      * 实时生成巡检运维报表（不存储）
@@ -21,4 +24,7 @@ public interface CycleReportService {
      * 返回：直接返回报表数据，不返回生成状态
      */
     CycleReportRespVO generateCycleReport(CycleReportGenerateReqVO generateReqVO);
+
+    // 新增图表查询方法
+    CycleReportChartRespVO getCycleReportChart(CycleReportChartReqVO reqVO);
 }

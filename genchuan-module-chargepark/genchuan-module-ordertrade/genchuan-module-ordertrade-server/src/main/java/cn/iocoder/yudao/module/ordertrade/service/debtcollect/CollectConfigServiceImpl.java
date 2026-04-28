@@ -42,13 +42,15 @@ public class CollectConfigServiceImpl implements CollectConfigService {
     public CollectConfigChartRespVO getCollectConfigChart(CollectConfigChartReqVO v) {
         CollectConfigChartRespVO resp = new CollectConfigChartRespVO();
         resp.setTypeData(collectConfigMapper.selectGroupByCollectMethod());
-        resp.setEnableConfigCount(collectConfigMapper.selectCountByStatus("active").intValue());
+        CollectConfigChartRespVO.CardData card = new CollectConfigChartRespVO.CardData();
+        card.setEnableConfigCount(collectConfigMapper.selectCountByStatus("active").intValue());
         Long total  = collectConfigMapper.selectCountByStatus(null);
         Long active = collectConfigMapper.selectCountByStatus("active");
         if (total != null && total > 0) {
-            resp.setCollectTriggerRate(new BigDecimal(active).multiply(BigDecimal.valueOf(100))
+            card.setCollectTriggerRate(new BigDecimal(active).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(total), 1, java.math.RoundingMode.HALF_UP));
-        } else { resp.setCollectTriggerRate(BigDecimal.ZERO); }
+        } else { card.setCollectTriggerRate(BigDecimal.ZERO); }
+        resp.setCardData(card);
         return resp;
     }
 

@@ -10,12 +10,10 @@ import java.time.LocalDateTime;
 @Data
 public class EnterRecordChartReqVO {
 
-    @Schema(description = "开始时间戳", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "开始时间不能为空")
+    @Schema(description = "开始时间戳", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String startTime;
 
-    @Schema(description = "结束时间戳", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "结束时间不能为空")
+    @Schema(description = "结束时间戳", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String endTime;
 
     @Schema(description = "场站ID")

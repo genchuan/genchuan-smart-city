@@ -59,4 +59,9 @@ public interface AccessApplyService {
      */
     PageResult<AccessApplyDO> getAccessApplyPage(AccessApplyPageReqVO pageReqVO);
 
+    boolean audit(@Valid AccessApplyAuditReqVO updateReqVO);
+
+    AccessApplyChartRespVO chart(@Valid AccessApplyChartReqVO reqVO);
+
+    AccessApplyCountRespVO applyCount(@Valid AccessApplyCountReqVO reqVO);
 }

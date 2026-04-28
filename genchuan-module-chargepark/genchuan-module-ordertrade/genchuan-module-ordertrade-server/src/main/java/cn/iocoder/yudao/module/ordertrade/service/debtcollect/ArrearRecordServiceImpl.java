@@ -46,13 +46,15 @@ public class ArrearRecordServiceImpl implements ArrearRecordService {
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(arrearRecordMapper.selectTrend(start, end));
-        resp.setTotalArrearAmount(arrearRecordMapper.selectTotalArrearAmount());
+        ArrearRecordChartRespVO.CardData card = new ArrearRecordChartRespVO.CardData();
+        card.setTotalArrearAmount(arrearRecordMapper.selectTotalArrearAmount());
         Long all     = arrearRecordMapper.selectCountByStatus(null);
         Long cleared = arrearRecordMapper.selectCountByStatus("cleared");
         if (all != null && all > 0) {
-            resp.setClearRate(new BigDecimal(cleared).multiply(BigDecimal.valueOf(100))
+            card.setClearRate(new BigDecimal(cleared).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(all), 1, java.math.RoundingMode.HALF_UP));
-        } else { resp.setClearRate(BigDecimal.ZERO); }
+        } else { card.setClearRate(BigDecimal.ZERO); }
+        resp.setCardData(card);
         return resp;
     }
 

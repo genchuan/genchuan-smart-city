@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.vehiclepass.dal.mysql.passreport.cyclereport.CycleReportMapper">
+
+    <!-- 分页关联查询场站名称 -->
+    <select id="selectPageJoin" resultType="cn.iocoder.yudao.module.vehiclepass.dal.dataobject.passreport.cyclereport.CycleReportDO">
+        SELECT r.*, s.name AS stationName
+        FROM vp_cycle_report r
+        LEFT JOIN station_info s ON r.station_id = s.id AND s.deleted = 0
+        <where>
+            r.deleted = 0
+            AND r.tenant_id = #{reqVO.tenantId}
+            <if test="reqVO.reportCycle != null and reqVO.reportCycle != ''">
+                AND r.report_cycle = #{reqVO.reportCycle}
+            </if>
+            <if test="reqVO.stationId != null">
+                AND r.station_id = #{reqVO.stationId}
+            </if>
+            <if test="reqVO.reportStatus != null and reqVO.reportStatus != ''">
+                AND r.report_status = #{reqVO.reportStatus}
+            </if>
+            <if test="reqVO.beginTime != null">
+                AND r.stat_start_time &gt;= #{reqVO.beginTime}
+            </if>
+            <if test="reqVO.endTime != null">
+                AND r.stat_end_time &lt;= #{reqVO.endTime}
+            </if>
+        </where>
+        ORDER BY r.create_time DESC
+    </select>
+
+    <!-- 查询场站名称 -->
+    <select id="selectStationName" resultType="string">
+        SELECT name FROM station_info WHERE id = #{id} AND deleted = 0
+    </select>
+
+    <!-- 入场量 -->
+    <select id="selectEnterCount" resultType="int">
+        SELECT COUNT(*)
+        FROM enter_record
+        WHERE station_id = #{stationId}
+        AND deleted = 0
+        AND tenant_id = #{tenantId}
+        AND enter_time BETWEEN #{startTime} AND #{endTime}
+    </select>
+
+    <!-- 离场量 -->
+    <select id="selectLeaveCount" resultType="int">
+        SELECT COUNT(*)
+        FROM leave_record
+        WHERE station_id = #{stationId}
+        AND deleted = 0
+        AND tenant_id = #{tenantId}
+        AND leave_time BETWEEN #{startTime} AND #{endTime}
+    </select>
+
+    <!-- 在停车辆数（统计截止时间点仍在场内的车辆） -->
+    <select id="selectParkingCount" resultType="int">
+        SELECT COUNT(*)
+        FROM in_park_status
+        WHERE station_id = #{stationId}
+        AND deleted = 0
+        AND tenant_id = #{tenantId}
+        AND status = '正常'
+        AND in_time &lt;= #{endTime}
+    </select>
+
+    <!-- 识别成功率（plate_identify 中成功占比） -->
+    <select id="selectIdentifySuccessRate" resultType="java.math.BigDecimal">
+        SELECT COALESCE(
+        SUM(CASE WHEN status = '识别成功' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(*), 0),
+        0
+        )
+        FROM plate_identify
+        WHERE station_id = #{stationId}
+        AND deleted = 0
+        AND tenant_id = #{tenantId}
+        AND create_time BETWEEN #{startTime} AND #{endTime}
+    </select>
+
+    <!-- 核验成功率（pay_check 中已缴清占比） -->
+    <select id="selectCheckSuccessRate" resultType="java.math.BigDecimal">
+        SELECT COALESCE(
+        SUM(CASE WHEN status = '已缴清' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(*), 0),
+        0
+        )
+        FROM pay_check
+        WHERE station_id = #{stationId}
+        AND deleted = 0
+        AND tenant_id = #{tenantId}
+        AND check_time BETWEEN #{startTime} AND #{endTime}
+    </select>
+
+    <!-- 异常处置率（abnormal_leave 中已关闭占比） -->
+    <select id="selectAbnormalHandleRate" resultType="java.math.BigDecimal">
+        SELECT COALESCE(
+        SUM(CASE WHEN status = '已关闭' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(*), 0),
+        0
+        )
+        FROM abnormal_leave
+        WHERE station_id = #{stationId}
+        AND deleted = 0
+        AND tenant_id = #{tenantId}
+        AND identify_time BETWEEN #{startTime} AND #{endTime}
+    </select>
+
+    <!-- ETC通行成功率（假设从 pass_record 中统计 ETC 原因的正常记录占比） -->
+    <select id="selectEtcPassSuccessRate" resultType="java.math.BigDecimal">
+        SELECT COALESCE(
+        SUM(CASE WHEN status = '正常记录' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(*), 0),
+        0
+        )
+        FROM pass_record
+        WHERE station_id = #{stationId}
+        AND deleted = 0
+        AND tenant_id = #{tenantId}
+        AND pass_reason = 'ETC'
+        AND pass_time BETWEEN #{startTime} AND #{endTime}
+    </select>
+
+</mapper>

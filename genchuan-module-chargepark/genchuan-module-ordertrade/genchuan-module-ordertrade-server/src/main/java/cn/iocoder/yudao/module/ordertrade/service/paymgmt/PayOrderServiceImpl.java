@@ -81,16 +81,14 @@ public class PayOrderServiceImpl implements PayOrderService {
 
         resp.setTrendData(payOrderMapper.selectTrend(start, end));
         resp.setChannelData(payOrderMapper.selectGroupByChannel());
-        resp.setTodayOrderCount(payOrderMapper.selectTodayCount(todayStart, now));
-
         Long totalCount = payOrderMapper.selectTodayCount(todayStart, now);
         Long successCount = payOrderMapper.selectTodaySuccessCount(todayStart, now);
-        if (totalCount != null && totalCount > 0) {
-            resp.setSuccessRate(new BigDecimal(successCount).multiply(BigDecimal.valueOf(100))
-                    .divide(new BigDecimal(totalCount), 1, RoundingMode.HALF_UP));
-        } else {
-            resp.setSuccessRate(BigDecimal.ZERO);
-        }
+        PayOrderChartRespVO.CardData card = new PayOrderChartRespVO.CardData();
+        card.setTodayOrderCount(totalCount);
+        card.setSuccessRate(totalCount != null && totalCount > 0
+                ? new BigDecimal(successCount).multiply(BigDecimal.valueOf(100)).divide(new BigDecimal(totalCount), 1, RoundingMode.HALF_UP)
+                : BigDecimal.ZERO);
+        resp.setCardData(card);
         return resp;
     }
 }

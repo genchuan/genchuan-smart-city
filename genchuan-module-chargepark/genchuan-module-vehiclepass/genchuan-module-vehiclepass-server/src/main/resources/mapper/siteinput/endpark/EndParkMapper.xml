@@ -60,7 +60,9 @@
             COUNT(*) AS count
         FROM end_park p
         WHERE p.deleted = 0
-        AND p.end_time BETWEEN FROM_UNIXTIME(#{reqVO.startTime}) AND DATE_ADD(FROM_UNIXTIME(#{reqVO.endTime}), INTERVAL 1 DAY)
+        <if test="reqVO.startTime != null and reqVO.endTime != null">
+            AND p.end_time BETWEEN FROM_UNIXTIME(#{reqVO.startTime}) AND DATE_ADD(FROM_UNIXTIME(#{reqVO.endTime}), INTERVAL 1 DAY)
+        </if>
         <if test="reqVO.areaId != null">
             AND p.area_id = #{reqVO.areaId}
         </if>
@@ -76,7 +78,9 @@
             END AS paySuccessRate
         FROM end_park p
         WHERE p.deleted = 0
-        AND p.end_time BETWEEN FROM_UNIXTIME(#{reqVO.startTime}) AND DATE_ADD(FROM_UNIXTIME(#{reqVO.endTime}), INTERVAL 1 DAY)
+        <if test="reqVO.startTime != null and reqVO.endTime != null">
+            AND p.end_time BETWEEN FROM_UNIXTIME(#{reqVO.startTime}) AND DATE_ADD(FROM_UNIXTIME(#{reqVO.endTime}), INTERVAL 1 DAY)
+        </if>
         <if test="reqVO.areaId != null">
             AND p.area_id = #{reqVO.areaId}
         </if>

@@ -129,4 +129,170 @@
         <!-- 映射关系 -->
     </resultMap>
 
+    <!-- 1. 查询地图数据（统计全部场站） -->
+    <select id="selectMapData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.cyclereport.vo.CycleReportChartRespVO$MapData">
+        SELECT
+        si.name AS stationName,
+        <!-- 设备状态：根据正常/异常设备比例判断 -->
+        CASE
+        WHEN (COALESCE(device.normalDeviceNum, 0) + COALESCE(device.abnormalDeviceNum, 0)) = 0 THEN '无数据'
+        WHEN COALESCE(device.abnormalDeviceNum, 0) = 0 THEN '正常'
+        WHEN COALESCE(device.abnormalDeviceNum, 0) * 1.0 / (COALESCE(device.normalDeviceNum, 0) + COALESCE(device.abnormalDeviceNum, 0))  THEN '良好'
+        ELSE '告警'
+        END AS deviceStatus,
+        <!-- 巡检人员状态：根据在线人员数量判断 -->
+        CASE
+        WHEN COALESCE(user.onlineCount, 0) = 0 THEN '离线'
+        ELSE '在线'
+        END AS userOnlineStatus
+        FROM station_info si
+        LEFT JOIN (
+        <!-- 查询每个场站的设备状态 -->
+        SELECT
+        station_id,
+        SUM(CASE WHEN alarm_status IN ('0', '未告警') THEN 1 ELSE 0 END) AS normalDeviceNum,
+        SUM(CASE WHEN alarm_status NOT IN ('0', '未告警') THEN 1 ELSE 0 END) AS abnormalDeviceNum
+        FROM (
+        SELECT station_id, alarm_status FROM car_charge_monitor WHERE deleted = 0
+        UNION ALL
+        SELECT station_id, alarm_status FROM bike_charge_monitor WHERE deleted = 0
+        UNION ALL
+        SELECT station_id, alarm_status FROM share_charge_monitor WHERE deleted = 0
+        ) all_devices
+        GROUP BY station_id
+        ) device ON si.id = device.station_id
+        LEFT JOIN (
+        <!-- 查询每个场站的在线巡检人员数量 -->
+        SELECT
+        iu.station_id,
+        COUNT(*) AS onlineCount
+        FROM inspect_user iu
+        WHERE iu.deleted = 0
+        AND iu.online_status = '1'
+        GROUP BY iu.station_id
+        ) user ON si.id = user.station_id
+        WHERE si.deleted = 0
+        ORDER BY si.id
+    </select>
+
+    <!-- 2. 查询柱状图数据（统计全部场站） -->
+    <select id="selectBarData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.cyclereport.vo.CycleReportChartRespVO$BarData">
+        SELECT
+        si.name AS stationName,
+        COALESCE(device.abnormalDeviceNum, 0) AS abnormalDeviceNum,
+        COALESCE(task.taskCount, 0) AS taskTypeNum,
+        COALESCE(oil.oilOccupyNum, 0) AS oilOccupyNum
+        FROM station_info si
+        LEFT JOIN (
+        <!-- 查询每个场站的异常设备数 -->
+        SELECT
+        station_id,
+        COUNT(*) AS abnormalDeviceNum
+        FROM (
+        SELECT station_id FROM car_charge_monitor
+        WHERE deleted = 0 AND alarm_status NOT IN ('0', '未告警')
+        UNION ALL
+        SELECT station_id FROM bike_charge_monitor
+        WHERE deleted = 0 AND alarm_status NOT IN ('0', '未告警')
+        UNION ALL
+        SELECT station_id FROM share_charge_monitor
+        WHERE deleted = 0 AND alarm_status NOT IN ('0', '未告警')
+        ) abnormal_devices
+        GROUP BY station_id
+        ) device ON si.id = device.station_id
+        LEFT JOIN (
+        <!-- 查询每个场站的巡检任务数（通过inspect_plan表关联） -->
+        SELECT
+        COUNT(*) AS taskCount
+        FROM inspect_task it
+        LEFT JOIN inspect_plan ip ON it.plan_id = ip.id
+        WHERE it.deleted = 0
+        AND ip.deleted = 0
+        <if test="reqVO.statTimeStart != null and reqVO.statTimeEnd != null">
+            AND it.dispatch_time BETWEEN #{reqVO.statTimeStart} AND #{reqVO.statTimeEnd}
+        </if>
+        )
+        LEFT JOIN (
+        <!-- 查询每个场站的油车占位数 -->
+        SELECT
+        om.station_id,
+        COUNT(*) AS oilOccupyNum
+        FROM oil_monitor om
+        WHERE om.deleted = 0
+        AND om.process_status IN ('1', '2', '待处理', '处理中')
+        <if test="reqVO.statTimeStart != null and reqVO.statTimeEnd != null">
+            AND om.identify_time BETWEEN #{reqVO.statTimeStart} AND #{reqVO.statTimeEnd}
+        </if>
+        GROUP BY om.station_id
+        ) oil ON si.id = oil.station_id
+        WHERE si.deleted = 0
+        ORDER BY si.id
+    </select>
+
+    <!-- 3. 查询折线图数据（统计全部场站） -->
+    <select id="selectLineData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.cyclereport.vo.CycleReportChartRespVO$LineData">
+        WITH date_series AS (
+        <!-- 生成日期序列，从开始时间到结束时间，每天一个点 -->
+        SELECT DATE_FORMAT(#{reqVO.statTimeStart}, '%Y-%m-%d') AS report_date
+        UNION ALL
+        SELECT DATE_ADD(report_date, INTERVAL 1 DAY)
+        FROM date_series
+        WHERE DATE_FORMAT(#{reqVO.statTimeEnd}, '%Y-%m-%d') > report_date
+        )
+        SELECT
+        ds.report_date AS date,
+        COALESCE(device.updateCount, 0) AS deviceUpdateNum,
+        COALESCE(task.avgHandleTime, 0) AS taskHandleTime,
+        COALESCE(report.reportCount, 0) AS reportNum
+        FROM date_series ds
+        LEFT JOIN (
+        <!-- 每天设备状态更新数量 -->
+        SELECT
+        DATE(monitor_time) AS report_date,
+        COUNT(*) AS updateCount
+        FROM (
+        SELECT monitor_time FROM car_charge_monitor WHERE deleted = 0
+        UNION ALL
+        SELECT monitor_time FROM bike_charge_monitor WHERE deleted = 0
+        UNION ALL
+        SELECT monitor_time FROM share_charge_monitor WHERE deleted = 0
+        ) all_monitor
+        WHERE 1=1
+        <if test="reqVO.statTimeStart != null and reqVO.statTimeEnd != null">
+            AND monitor_time BETWEEN #{reqVO.statTimeStart} AND #{reqVO.statTimeEnd}
+        </if>
+        GROUP BY DATE(monitor_time)
+        ) device ON ds.report_date = device.report_date
+        LEFT JOIN (
+        <!-- 每天任务平均处理时效 -->
+        SELECT
+        DATE(it.dispatch_time) AS report_date,
+        CASE
+        WHEN COUNT(*) = 0 THEN 0
+        ELSE AVG(TIMESTAMPDIFF(HOUR, it.dispatch_time, COALESCE(it.claim_time, it.update_time)))
+        END AS avgHandleTime
+        FROM inspect_task it
+        LEFT JOIN inspect_plan ip ON it.plan_id = ip.id
+        WHERE it.deleted = 0
+        AND ip.deleted = 0
+        <if test="reqVO.statTimeStart != null and reqVO.statTimeEnd != null">
+            AND it.dispatch_time BETWEEN #{reqVO.statTimeStart} AND #{reqVO.statTimeEnd}
+        </if>
+        GROUP BY DATE(it.dispatch_time)
+        ) task ON ds.report_date = task.report_date
+        LEFT JOIN (
+        <!-- 每天上报数量 -->
+        SELECT
+        DATE(create_time) AS report_date,
+        COUNT(*) AS reportCount
+        FROM oil_monitor
+        WHERE deleted = 0
+        <if test="reqVO.statTimeStart != null and reqVO.statTimeEnd != null">
+            AND create_time BETWEEN #{reqVO.statTimeStart} AND #{reqVO.statTimeEnd}
+        </if>
+        GROUP BY DATE(create_time)
+        ) report ON ds.report_date = report.report_date
+        ORDER BY ds.report_date
+    </select>
+
 </mapper>

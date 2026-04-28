@@ -109,4 +109,10 @@
             AND grade = #{grade}
         </if>
     </select>
+    <select id="selectCountByClassName" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM student_info WHERE deleted = 0
+        <if test="className != null and className != '' ">
+            AND class_name = #{className}
+        </if>
+    </select>
 </mapper>

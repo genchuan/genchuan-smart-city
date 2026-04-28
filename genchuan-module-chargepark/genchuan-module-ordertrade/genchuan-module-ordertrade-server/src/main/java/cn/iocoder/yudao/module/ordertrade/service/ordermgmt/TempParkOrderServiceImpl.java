@@ -56,14 +56,15 @@ public class TempParkOrderServiceImpl implements TempParkOrderService {
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(tempParkOrderMapper.selectTrend(start, end));
         resp.setStationData(tempParkOrderMapper.selectGroupByStatus());
-        resp.setTodayOrderCount(tempParkOrderMapper.selectTodayCount(todayStart, now).intValue());
-        resp.setTodayRevenue(tempParkOrderMapper.selectTodayRevenue(todayStart, now));
         Long total = tempParkOrderMapper.selectTodayCount(todayStart, now);
         Long paid  = tempParkOrderMapper.selectTodayPaidCount(todayStart, now);
-        if (total != null && total > 0) {
-            resp.setPayRate(new BigDecimal(paid).multiply(BigDecimal.valueOf(100))
-                    .divide(new BigDecimal(total), 1, java.math.RoundingMode.HALF_UP));
-        } else { resp.setPayRate(BigDecimal.ZERO); }
+        TempParkOrderChartRespVO.CardData card = new TempParkOrderChartRespVO.CardData();
+        card.setTodayOrderCount(total != null ? total.intValue() : 0);
+        card.setTodayRevenue(tempParkOrderMapper.selectTodayRevenue(todayStart, now));
+        card.setPayRate(total != null && total > 0
+                ? new BigDecimal(paid).multiply(BigDecimal.valueOf(100)).divide(new BigDecimal(total), 1, java.math.RoundingMode.HALF_UP)
+                : BigDecimal.ZERO);
+        resp.setCardData(card);
         return resp;
     }
 

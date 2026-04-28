@@ -83,7 +83,7 @@
         ORDER BY MIN(DATE(report_time)) ASC
     </select>
 
-    <!-- 上报类型分布数据查询 - 保持原有逻辑，添加tenant_id -->
+    <!-- 上报类型分布数据查询 - 保持原有逻辑 -->
     <select id="selectReportTypeDistribution" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.inspectreport.vo.InspectReportChartRespVO$TypeData">
         SELECT
         type AS typeName,
@@ -97,7 +97,7 @@
         ORDER BY count DESC
     </select>
 
-    <!-- 卡片统计数据查询 - 优化SQL，添加tenant_id -->
+    <!-- 卡片统计数据查询 - 优化SQL -->
     <select id="selectReportCardData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.inspectreport.vo.InspectReportChartRespVO$CardData">
         WITH report_stats AS (
         SELECT
@@ -118,5 +118,6 @@
         END AS processFinishRate
         FROM report_stats
     </select>
+
 
 </mapper>

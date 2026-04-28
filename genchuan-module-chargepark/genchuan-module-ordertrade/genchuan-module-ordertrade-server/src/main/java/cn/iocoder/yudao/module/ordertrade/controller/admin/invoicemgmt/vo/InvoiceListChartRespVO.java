@@ -14,9 +14,17 @@ public class InvoiceListChartRespVO {
     @Schema(description = "开票量趋势数据（折线图）")
     private List<Map<String, Object>> trendData;
 
-    @Schema(description = "今日开票量")
-    private Long todayInvoiceCount;
+    @Schema(description = "今日核心指标（卡片）")
+    private CardData cardData;
 
-    @Schema(description = "开票成功率（%）")
-    private BigDecimal successRate;
+    @Data
+    @Schema(description = "卡片指标")
+    public static class CardData {
+
+        @Schema(description = "今日开票量")
+        private Long todayInvoiceCount;
+
+        @Schema(description = "开票成功率（%）")
+        private BigDecimal successRate;
+    }
 }

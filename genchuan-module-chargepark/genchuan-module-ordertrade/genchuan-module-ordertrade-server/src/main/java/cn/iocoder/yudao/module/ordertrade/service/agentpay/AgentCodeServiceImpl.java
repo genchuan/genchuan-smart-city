@@ -106,16 +106,19 @@ public class AgentCodeServiceImpl implements AgentCodeService {
         LocalDateTime now = LocalDateTime.now();
 
         resp.setTrendData(agentCodeMapper.selectTrend(start, end));
-        resp.setTodayGeneratedCount(agentCodeMapper.selectGeneratedCount(todayStart, now));
+
+        AgentCodeChartRespVO.CardData card = new AgentCodeChartRespVO.CardData();
+        card.setTodayGeneratedCount(agentCodeMapper.selectGeneratedCount(todayStart, now));
 
         Long usedCount = agentCodeMapper.selectUsedCount();
         Long totalCount = agentCodeMapper.selectTotalCount();
         if (totalCount != null && totalCount > 0) {
-            resp.setUseRate(new BigDecimal(usedCount).multiply(BigDecimal.valueOf(100))
+            card.setUseRate(new BigDecimal(usedCount).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(totalCount), 1, RoundingMode.HALF_UP));
         } else {
-            resp.setUseRate(BigDecimal.ZERO);
+            card.setUseRate(BigDecimal.ZERO);
         }
+        resp.setCardData(card);
         return resp;
     }
 
