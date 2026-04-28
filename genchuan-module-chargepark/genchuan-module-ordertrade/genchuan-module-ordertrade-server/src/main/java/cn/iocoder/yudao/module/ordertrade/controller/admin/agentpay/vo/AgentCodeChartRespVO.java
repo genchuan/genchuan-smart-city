@@ -14,9 +14,17 @@ public class AgentCodeChartRespVO {
     @Schema(description = "代付码生成趋势数据（折线图）")
     private List<Map<String, Object>> trendData;
 
-    @Schema(description = "今日生成量")
-    private Long todayGeneratedCount;
+    @Schema(description = "今日核心指标（卡片）")
+    private CardData cardData;
 
-    @Schema(description = "使用率（%）")
-    private BigDecimal useRate;
+    @Data
+    @Schema(description = "卡片指标")
+    public static class CardData {
+
+        @Schema(description = "今日生成量")
+        private Long todayGeneratedCount;
+
+        @Schema(description = "使用率（%）")
+        private BigDecimal useRate;
+    }
 }

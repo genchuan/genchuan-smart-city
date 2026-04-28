@@ -21,9 +21,17 @@ public class CollectTrackChartRespVO {
     @Schema(description = "追缴方式分布数据（柱状图）")
     private List<Map<String,Object>> methodData;
 
-    @Schema(description = "待追缴数（卡片）")
-    private Integer waitCollectCount;
+    @Schema(description = "今日核心指标（卡片）")
+    private CardData cardData;
 
-    @Schema(description = "追缴完成率（%）（卡片）")
-    private BigDecimal collectCompleteRate;
+    @Data
+    @Schema(description = "卡片指标")
+    public static class CardData {
+
+        @Schema(description = "待追缴数（卡片）")
+        private Integer waitCollectCount;
+
+        @Schema(description = "追缴完成率（%）（卡片）")
+        private BigDecimal collectCompleteRate;
+    }
 }

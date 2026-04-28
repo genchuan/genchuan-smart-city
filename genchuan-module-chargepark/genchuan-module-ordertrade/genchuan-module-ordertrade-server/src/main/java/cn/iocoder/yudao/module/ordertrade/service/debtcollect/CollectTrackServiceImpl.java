@@ -47,13 +47,15 @@ public class CollectTrackServiceImpl implements CollectTrackService {
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(collectTrackMapper.selectTrend(start, end));
         resp.setMethodData(collectTrackMapper.selectGroupByCollectMethod());
-        resp.setWaitCollectCount(collectTrackMapper.selectCountByStatus("pending").intValue());
+        CollectTrackChartRespVO.CardData card = new CollectTrackChartRespVO.CardData();
+        card.setWaitCollectCount(collectTrackMapper.selectCountByStatus("pending").intValue());
         Long all       = collectTrackMapper.selectCountByStatus(null);
         Long completed = collectTrackMapper.selectCountByStatus("completed");
         if (all != null && all > 0) {
-            resp.setCollectCompleteRate(new BigDecimal(completed).multiply(BigDecimal.valueOf(100))
+            card.setCollectCompleteRate(new BigDecimal(completed).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(all), 1, java.math.RoundingMode.HALF_UP));
-        } else { resp.setCollectCompleteRate(BigDecimal.ZERO); }
+        } else { card.setCollectCompleteRate(BigDecimal.ZERO); }
+        resp.setCardData(card);
         return resp;
     }
 

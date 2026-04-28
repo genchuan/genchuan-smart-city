@@ -18,9 +18,17 @@ public class CollectConfigChartRespVO {
     @Schema(description = "配置类型占比数据（饼图）")
     private List<Map<String,Object>> typeData;
 
-    @Schema(description = "已生效配置数（卡片）")
-    private Integer enableConfigCount;
+    @Schema(description = "今日核心指标（卡片）")
+    private CardData cardData;
 
-    @Schema(description = "追缴触发率（%）（卡片）")
-    private BigDecimal collectTriggerRate;
+    @Data
+    @Schema(description = "卡片指标")
+    public static class CardData {
+
+        @Schema(description = "已生效配置数（卡片）")
+        private Integer enableConfigCount;
+
+        @Schema(description = "追缴触发率（%）（卡片）")
+        private BigDecimal collectTriggerRate;
+    }
 }

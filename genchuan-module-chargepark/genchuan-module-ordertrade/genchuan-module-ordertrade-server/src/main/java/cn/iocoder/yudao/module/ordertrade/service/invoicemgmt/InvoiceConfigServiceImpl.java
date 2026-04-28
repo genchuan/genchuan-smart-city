@@ -83,7 +83,9 @@ public class InvoiceConfigServiceImpl implements InvoiceConfigService {
     public InvoiceConfigChartRespVO getInvoiceConfigChart(InvoiceConfigChartReqVO chartReqVO) {
         InvoiceConfigChartRespVO resp = new InvoiceConfigChartRespVO();
         resp.setCategoryData(invoiceConfigMapper.selectGroupByCategory());
-        resp.setEnabledCount(invoiceConfigMapper.selectEnabledCount());
+        InvoiceConfigChartRespVO.CardData card = new InvoiceConfigChartRespVO.CardData();
+        card.setEnabledCount(invoiceConfigMapper.selectEnabledCount());
+        resp.setCardData(card);
         return resp;
     }
 

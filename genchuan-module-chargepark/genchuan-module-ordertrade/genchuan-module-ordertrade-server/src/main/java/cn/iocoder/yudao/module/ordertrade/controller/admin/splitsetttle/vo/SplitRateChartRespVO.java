@@ -13,6 +13,14 @@ public class SplitRateChartRespVO {
     @Schema(description = "分账比例分布数据（柱状图）")
     private List<Map<String, Object>> splitModeData;
 
-    @Schema(description = "生效配置数")
-    private Long enabledCount;
+    @Schema(description = "今日核心指标（卡片）")
+    private CardData cardData;
+
+    @Data
+    @Schema(description = "卡片指标")
+    public static class CardData {
+
+        @Schema(description = "生效配置数")
+        private Long enabledCount;
+    }
 }

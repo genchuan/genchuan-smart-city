@@ -82,7 +82,9 @@ public class SplitRateServiceImpl implements SplitRateService {
     public SplitRateChartRespVO getSplitRateChart(SplitRateChartReqVO chartReqVO) {
         SplitRateChartRespVO resp = new SplitRateChartRespVO();
         resp.setSplitModeData(splitRateMapper.selectGroupBySplitMode());
-        resp.setEnabledCount(splitRateMapper.selectEnabledCount());
+        SplitRateChartRespVO.CardData card = new SplitRateChartRespVO.CardData();
+        card.setEnabledCount(splitRateMapper.selectEnabledCount());
+        resp.setCardData(card);
         return resp;
     }
 

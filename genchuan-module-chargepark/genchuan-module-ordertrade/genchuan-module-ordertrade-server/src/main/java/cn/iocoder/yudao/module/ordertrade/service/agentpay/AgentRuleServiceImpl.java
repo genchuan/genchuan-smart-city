@@ -148,8 +148,10 @@ public class AgentRuleServiceImpl implements AgentRuleService {
         LocalDateTime now = LocalDateTime.now();
 
         resp.setUseDistData(agentRuleMapper.selectGroupByAgentType());
-        resp.setEnabledCount(agentRuleMapper.selectEnabledCount());
-        resp.setTodayOrderCount(agentRuleMapper.selectTodayCount(todayStart, now));
+        AgentRuleChartRespVO.CardData card = new AgentRuleChartRespVO.CardData();
+        card.setEnabledCount(agentRuleMapper.selectEnabledCount());
+        card.setTodayOrderCount(agentRuleMapper.selectTodayCount(todayStart, now));
+        resp.setCardData(card);
         return resp;
     }
 

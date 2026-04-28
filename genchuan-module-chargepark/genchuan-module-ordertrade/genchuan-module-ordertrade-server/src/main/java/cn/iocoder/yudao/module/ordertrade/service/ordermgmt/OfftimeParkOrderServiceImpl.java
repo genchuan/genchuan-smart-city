@@ -56,14 +56,15 @@ public class OfftimeParkOrderServiceImpl implements OfftimeParkOrderService {
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(offtimeParkOrderMapper.selectTrend(start, end));
         resp.setStationData(offtimeParkOrderMapper.selectGroupByStatus());
-        resp.setTodayOrderCount(offtimeParkOrderMapper.selectTodayCount(todayStart, now).intValue());
-        resp.setTodayRevenue(offtimeParkOrderMapper.selectTodayRevenue(todayStart, now));
         Long total = offtimeParkOrderMapper.selectTodayCount(todayStart, now);
         Long paid  = offtimeParkOrderMapper.selectTodayPaidCount(todayStart, now);
-        if (total != null && total > 0) {
-            resp.setPayRate(new BigDecimal(paid).multiply(BigDecimal.valueOf(100))
-                    .divide(new BigDecimal(total), 1, java.math.RoundingMode.HALF_UP));
-        } else { resp.setPayRate(BigDecimal.ZERO); }
+        OfftimeParkOrderChartRespVO.CardData card = new OfftimeParkOrderChartRespVO.CardData();
+        card.setTodayOrderCount(total != null ? total.intValue() : 0);
+        card.setTodayRevenue(offtimeParkOrderMapper.selectTodayRevenue(todayStart, now));
+        card.setPayRate(total != null && total > 0
+                ? new BigDecimal(paid).multiply(BigDecimal.valueOf(100)).divide(new BigDecimal(total), 1, java.math.RoundingMode.HALF_UP)
+                : BigDecimal.ZERO);
+        resp.setCardData(card);
         return resp;
     }
 
