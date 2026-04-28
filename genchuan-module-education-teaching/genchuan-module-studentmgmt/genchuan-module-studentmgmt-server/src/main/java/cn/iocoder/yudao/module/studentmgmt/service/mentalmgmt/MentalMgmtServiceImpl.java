@@ -184,7 +184,9 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
         String username = SecurityFrameworkUtils.getLoginUserNickname();
         LocalDateTime now = LocalDateTime.now();
         mentalMgmtDO.setUpdateTime(now);
-        mentalMgmtDO.setStatus(reqVO.getStatus());
+        mentalMgmtDO.setMentalStatus(reqVO.getMentalStatus());
+        mentalMgmtDO.setRiskLevel(reqVO.getRiskLevel());
+        mentalMgmtDO.setUpdater(username);
         int i = mentalMgmtMapper.updateById(mentalMgmtDO);
 
         // 查询学生的姓名
@@ -195,7 +197,7 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
             LogRecordContext.putVariable("mental", mentalMgmtDO);
             LogRecordContext.putVariable("studentName", studentName);
             LogRecordContext.putVariable("username", username);
-            LogRecordContext.putVariable("status", MentalStatusEnum.getNameByKey(reqVO.getStatus()));
+            LogRecordContext.putVariable("status", MentalStatusEnum.getNameByKey(reqVO.getMentalStatus()));
             return true;
         }
 

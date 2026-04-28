@@ -118,7 +118,7 @@ public class ClubMgmtController {
     @PutMapping("/venueApply")
     @Operation(summary = "场馆申请")
     @PreAuthorize("@ss.hasPermission('studentmgmt:club-mgmt:venueApply')")
-    public CommonResult<Boolean> venueApply(@Valid @RequestBody ClubMgmtVenueApplyReqVO reqVO) {
+    public CommonResult<Boolean> venueApply(@Valid ClubMgmtVenueApplyReqVO reqVO) {
         boolean isSuccess = clubMgmtService.venueApply(reqVO);
         return success(isSuccess);
     }

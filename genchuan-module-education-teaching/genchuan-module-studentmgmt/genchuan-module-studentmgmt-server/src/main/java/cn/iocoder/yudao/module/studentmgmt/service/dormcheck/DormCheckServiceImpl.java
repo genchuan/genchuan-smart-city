@@ -191,17 +191,21 @@ public class DormCheckServiceImpl implements DormCheckService {
             success = DORM_CHECK_PUSH_SUB_TYPE_SUCCESS)
     public Boolean push(DormCheckPushReqVO reqVO) {
         int total = 0;
+        LocalDateTime pushTime = reqVO.getPushTime();
+        if (pushTime == null) {
+            pushTime = LocalDateTime.now();
+        }
         for (Long id : reqVO.getIds()) {
             // 校验存在
             DormCheckDO dormCheck = validateDormCheckExists(id);
-            String status = dormCheck.getStatus();
+//            String status = dormCheck.getStatus();
             // 自动校验记录是否为异常状态，正常记录不允许推送
-            if (status.equals(DormCheckStatusEnum.DORM_CHECK_STATUS_0.getStatus())) {
-                // 状态为正常，则无需推送
-                throw exception(id + "，状态为正常，无需推送");
-//                continue;
-            }
-            dormCheck.setPushTime(reqVO.getPushTime());
+//            if (status.equals(DormCheckStatusEnum.DORM_CHECK_STATUS_0.getStatus())) {
+//                // 状态为正常，则无需推送
+//                throw exception(id + "，状态为正常，无需推送");
+////                continue;
+//            }
+            dormCheck.setPushTime(pushTime);
             // TODO 同步考勤异常信息与预警提醒；
 
             int i = dormCheckMapper.updateById(dormCheck);

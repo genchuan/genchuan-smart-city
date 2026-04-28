@@ -145,7 +145,7 @@ public class RepairMgmtServiceImpl implements RepairMgmtService {
         //自动填充验收人、验收时间，更新验收状态为 “已验收”，
         repairMgmt.setCheckUser(loginUserNickname);
         repairMgmt.setCheckTime(LocalDateTime.now());
-        repairMgmt.setStatus(RepairCheckStatusEnum.checked.getStatus());
+        repairMgmt.setCheckStatus(RepairCheckStatusEnum.checked.getStatus());
         repairMgmt.setRemark(reqVO.getRemark());
         int i = repairMgmtMapper.updateById(repairMgmt);
         if (i > 0) {
