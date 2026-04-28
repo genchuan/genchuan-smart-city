@@ -65,9 +65,6 @@ public class CardConfigServiceImpl implements CardConfigService {
     @Override
     public void enable(Long id) {
         CardConfigDO cardConfig = validateExists(id);
-        if (!Objects.equals(CardConfigStatusEnum.NOT_EFFECTIVE.getValue(), cardConfig.getStatus())) {
-            throw exception(CARD_CONFIG_NOT_EXISTS);
-        }
         cardConfig.setStatus(CardConfigStatusEnum.EFFECTIVE.getValue());
         cardConfig.setAuditTime(LocalDateTime.now());
         cardConfig.setEffectTime(LocalDateTime.now());
@@ -77,9 +74,6 @@ public class CardConfigServiceImpl implements CardConfigService {
     @Override
     public void disable(Long id) {
         CardConfigDO cardConfig = validateExists(id);
-        if (!Objects.equals(CardConfigStatusEnum.EFFECTIVE.getValue(), cardConfig.getStatus())) {
-            throw exception(CARD_CONFIG_NOT_EXISTS);
-        }
         cardConfig.setStatus(CardConfigStatusEnum.NOT_EFFECTIVE.getValue());
         cardConfigMapper.updateById(cardConfig);
     }
