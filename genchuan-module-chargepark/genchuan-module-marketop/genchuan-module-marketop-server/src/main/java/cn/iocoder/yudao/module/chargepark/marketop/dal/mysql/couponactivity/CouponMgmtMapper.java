@@ -5,7 +5,10 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.CouponMgmtPageReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.CouponMgmtDO;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.time.LocalDate;
 
 @Mapper
 public interface CouponMgmtMapper extends BaseMapperX<CouponMgmtDO> {
@@ -40,6 +43,13 @@ public interface CouponMgmtMapper extends BaseMapperX<CouponMgmtDO> {
             wrapper.le(CouponMgmtDO::getCreateTime,
                     java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getEndTime()), java.time.ZoneId.systemDefault()));
         }
+
+        if (StringUtils.isNotBlank(reqVO.getDate())){
+            java.time.LocalDate startDate = java.time.LocalDate.parse(reqVO.getDate());
+            LocalDate endDate = startDate.plusDays(1);
+            wrapper.between(CouponMgmtDO::getSendTime, startDate, endDate);
+        }
+
         return selectPage(reqVO, wrapper);
     }
 
