@@ -195,7 +195,7 @@ public class InspectReportServiceImpl implements InspectReportService {
         validateInspectReportExists(id);
 
         // 3. 获取当前登录用户ID（作为处置人ID）
-        Long processUserId = SecurityFrameworkUtils.getLoginUserId();
+//        Long processUserId = SecurityFrameworkUtils.getLoginUserId();
 
         // 4. 获取当前时间（作为处置时间）
         LocalDateTime processTime = LocalDateTime.now();
@@ -204,7 +204,7 @@ public class InspectReportServiceImpl implements InspectReportService {
         LambdaUpdateWrapper<InspectReportDO> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper
                 .set(InspectReportDO::getStatus, "4")                // 状态：处理中
-                .set(InspectReportDO::getProcessUserId, processUserId) // 处置人ID
+                .set(InspectReportDO::getProcessUserId,processReqVO.getProcessUserId()) // 处置人ID
                 .set(InspectReportDO::getProcessTime, processTime)   // 处置时间
                 .eq(InspectReportDO::getId, id);
 
