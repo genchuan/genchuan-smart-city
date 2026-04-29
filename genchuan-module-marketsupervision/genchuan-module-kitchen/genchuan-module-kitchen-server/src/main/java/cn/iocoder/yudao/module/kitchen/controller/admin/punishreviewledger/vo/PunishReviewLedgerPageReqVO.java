@@ -67,6 +67,12 @@ public class PunishReviewLedgerPageReqVO extends PageParam {
     @Schema(description = "[草拟处罚金额] 单位：元")
     private BigDecimal draftPunishAmt;
 
+    @Schema(description = "[草拟处罚金额最小值] 单位：元")
+    private BigDecimal draftPunishAmtMin;
+
+    @Schema(description = "[草拟处罚金额最大值] 单位：元")
+    private BigDecimal draftPunishAmtMax;
+
     @Schema(description = "[处罚法律依据]")
     private String legalBasis;
 
