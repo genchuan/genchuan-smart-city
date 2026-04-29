@@ -57,7 +57,7 @@ public interface DebtExpandService {
      * @param id 编号
      * @return 联合追缴拓场配置
      */
-    DebtExpandDO getDebtExpand(Long id);
+    DebtExpandRespVO getDebtExpand(Long id);
 
     /**
      * 获得联合追缴拓场配置分页

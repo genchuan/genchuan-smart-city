@@ -205,8 +205,12 @@ public class DebtExpandServiceImpl implements DebtExpandService {
     }
 
     @Override
-    public DebtExpandDO getDebtExpand(Long id) {
-        return debtExpandMapper.selectById(id);
+    public DebtExpandRespVO getDebtExpand(Long id) {
+        DebtExpandPageReqVO reqVO =new DebtExpandPageReqVO();
+        reqVO.setId(id);
+        reqVO.setPageSize(1);
+        DebtExpandRespVO debtExpandRespVO = getDebtExpandPage(reqVO).getList().stream().findFirst().orElse(null);
+        return debtExpandRespVO;
     }
 
     @Override

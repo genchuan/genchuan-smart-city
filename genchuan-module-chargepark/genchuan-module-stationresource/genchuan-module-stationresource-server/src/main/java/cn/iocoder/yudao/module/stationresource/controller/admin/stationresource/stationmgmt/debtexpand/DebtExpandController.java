@@ -142,7 +142,7 @@ public class DebtExpandController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('stationresource:debt-expand:query')")
     public CommonResult<DebtExpandRespVO> getDebtExpand(@RequestParam("id") Long id) {
-        DebtExpandDO debtExpand = debtExpandService.getDebtExpand(id);
+        DebtExpandRespVO debtExpand = debtExpandService.getDebtExpand(id);
         return success(BeanUtils.toBean(debtExpand, DebtExpandRespVO.class));
     }
 
