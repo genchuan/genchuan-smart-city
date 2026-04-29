@@ -78,7 +78,7 @@ DELETE FROM `system_dict_data` WHERE `dict_type` IN (
                                                      'compare_mgmt_status',
                                                      'dorm_compare_cycle',
                                                      'dorm_compare_status',
-                                                     communicate_mgmt_status
+                                                     'communicate_mgmt_status'
 
     );
 
@@ -154,7 +154,7 @@ DELETE FROM `system_dict_type` WHERE `type` IN (
                                                 'compare_mgmt_status',
                                                 'dorm_compare_cycle',
                                                 'dorm_compare_status',
-                                                communicate_mgmt_status
+                                                'communicate_mgmt_status'
     );
 -- ==================== 一、字典类型 (system_dict_type) ====================
 
@@ -898,6 +898,7 @@ VALUES
 -- 状态（未发布 / 已发布），关联芋道字典表：communicate_mgmt_status
 INSERT INTO system_dict_type (name, type, status, remark, creator, create_time, updater, update_time, deleted)
 VALUES ('沟通状态', 'communicate_mgmt_status', 0, '沟通状态', 'admin', NOW(), 'admin', NOW(), 0);
+
 INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted)
 VALUES
     (1, '未发布', 'unpublished', 'communicate_mgmt_status', 0, 'info', '', '沟通未发布', 'admin', NOW(), 'admin', NOW(), 0),
