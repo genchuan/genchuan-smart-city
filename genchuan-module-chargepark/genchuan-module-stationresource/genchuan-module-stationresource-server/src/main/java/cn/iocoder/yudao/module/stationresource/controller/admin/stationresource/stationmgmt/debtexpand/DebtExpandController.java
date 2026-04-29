@@ -28,6 +28,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.io.IOException;
 
@@ -88,12 +91,26 @@ public class DebtExpandController {
     @PreAuthorize("@ss.hasPermission('stationresource:debt-expand:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportDebtExpandExcel(@Valid DebtExpandPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                      HttpServletResponse response) throws IOException {
+        // 0. 配置
+        String inputFileName = "联合追缴拓场配置_";
+
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<DebtExpandDO> list = debtExpandService.getDebtExpandPage(pageReqVO).getList();
-        // 导出 Excel
+
+        // 1、强制设置响应头，确保浏览器触发下载
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setCharacterEncoding("utf-8");
+        // 2、动态生成文件名，带上当前日期
+        String dateStr = java.time.LocalDate.now().toString();
+        String fileOriginName = inputFileName + dateStr + ".xls";
+        String fileName = URLEncoder.encode(fileOriginName, StandardCharsets.UTF_8.toString())
+                .replaceAll("\\+", "%20").replace("UTF-8","");
+        response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
+
+        // 3、调用 ExcelUtils 导出
         ExcelUtils.write(response, "联合追缴拓场配置.xls", "数据", DebtExpandRespVO.class,
-                        BeanUtils.toBean(list, DebtExpandRespVO.class));
+                BeanUtils.toBean(list, DebtExpandRespVO.class));
     }
     // ========== 1. 下载导入模板 ==========
     @GetMapping("/import-template")
