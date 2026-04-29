@@ -1,10 +1,12 @@
 package cn.iocoder.yudao.module.studentmgmt.dal.mysql.classassign;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.ChartTrendVO;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.classassign.ClassAssignDO;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.classassign.vo.*;
@@ -32,4 +34,7 @@ public interface ClassAssignMapper extends BaseMapperX<ClassAssignDO> {
                 .orderByDesc(ClassAssignDO::getId));
     }
 
+    List<ChartTrendVO> select7dayTrendCount();
+
+    ClassAssignChartRespVO selectTotalCount(LocalDateTime startTime, LocalDateTime endTime, String assigned, String unassigned);
 }

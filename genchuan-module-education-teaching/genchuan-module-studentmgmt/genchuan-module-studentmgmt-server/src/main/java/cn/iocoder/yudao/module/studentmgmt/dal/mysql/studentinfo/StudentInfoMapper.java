@@ -6,7 +6,9 @@ import java.util.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.ChartCountVO;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.studentinfo.vo.*;
 import org.apache.ibatis.annotations.Param;
@@ -91,4 +93,10 @@ public interface StudentInfoMapper extends BaseMapperX<StudentInfoDO> {
 
 
     Integer selectCountByClassName(String className);
+
+    List<ChartCountVO> selectClassStudentCount(LocalDateTime startTime, LocalDateTime endTime);
+
+    List<JSONObject> selectMajorAssignRate(LocalDateTime startTime, LocalDateTime endTime, Integer totalStudentCount);
+
+    Integer selectTotalStudentCountByTime(LocalDateTime startTime, LocalDateTime endTime);
 }
