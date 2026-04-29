@@ -98,4 +98,16 @@ public class StationInfoRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
+    @Schema(description = "[创建者] 创建人账号/姓名")
+    @ExcelProperty("创建者")
+    private String creator;
+
+    @Schema(description = "[更新者] 更新人账号/姓名")
+    @ExcelProperty("更新者")
+    private String updater;
+
+    @Schema(description = "[更新时间] 记录最后更新时间")
+    @ExcelProperty("更新时间")
+    private LocalDateTime updateTime;
+
 }
