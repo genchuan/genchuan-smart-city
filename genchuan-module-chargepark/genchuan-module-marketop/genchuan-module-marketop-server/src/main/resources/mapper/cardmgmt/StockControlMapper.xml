@@ -34,4 +34,27 @@
         GROUP BY cc.type
     </select>
 
+    <select id="selectStockTrend" resultType="java.util.Map">
+        SELECT DATE(create_time) AS date, SUM(current_stock) AS count
+        FROM stock_control
+        WHERE deleted = 0
+          <if test="startTime != null">
+              AND create_time &gt;= #{startTime}
+          </if>
+          <if test="endTime != null">
+              AND create_time &lt;= #{endTime}
+          </if>
+          <if test="stationId != null">
+              AND station_id = #{stationId}
+          </if>
+        GROUP BY DATE(create_time)
+        ORDER BY DATE(create_time) ASC
+    </select>
+
+    <select id="selectByCardIdAndStationId" resultType="cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.StockControlDO">
+        SELECT * FROM stock_control
+        WHERE deleted = 0 AND card_id = #{cardId} AND station_id = #{stationId}
+        LIMIT 1
+    </select>
+
 </mapper>

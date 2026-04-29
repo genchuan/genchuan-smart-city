@@ -123,6 +123,14 @@ public class CardOrderServiceImpl implements CardOrderService {
         return respVO;
     }
 
+    @Override
+    public List<CardOrderDO> getListByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return cardOrderMapper.selectBatchIds(ids);
+    }
+
     private CardOrderDO validateExists(Long id) {
         CardOrderDO cardOrder = cardOrderMapper.selectById(id);
         if (cardOrder == null) {

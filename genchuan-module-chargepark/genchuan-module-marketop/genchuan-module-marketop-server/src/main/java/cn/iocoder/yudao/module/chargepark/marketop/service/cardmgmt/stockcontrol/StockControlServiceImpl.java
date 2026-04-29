@@ -12,11 +12,10 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -43,7 +42,7 @@ public class StockControlServiceImpl implements StockControlService {
     public void restock(StockControlRestockReqVO reqVO) {
         StockControlDO stockControl = validateExists(reqVO.getId());
         // 补货: 增加当前库存
-        stockControl.setCurrentStock(stockControl.getCurrentStock() + reqVO.getQuantity());
+        stockControl.setCurrentStock(stockControl.getCurrentStock() + reqVO.getNum());
         // 更新库存状态
         updateStockStatus(stockControl);
         stockControl.setSyncTime(LocalDateTime.now());
@@ -60,19 +59,29 @@ public class StockControlServiceImpl implements StockControlService {
 
     @Override
     public void allocate(StockControlAllocateReqVO reqVO) {
-        // 跨区域调配库存: 根据 cardId 查找库存记录并扣减
-        StockControlDO stockControl = stockControlMapper.selectOne(StockControlDO::getCardId, reqVO.getCardId());
-        if (stockControl == null) {
+        // 查询源场站库存记录
+        StockControlDO source = stockControlMapper.selectByCardIdAndStationId(reqVO.getCardId(), reqVO.getSourceStationId());
+        if (source == null) {
             throw exception(STOCK_CONTROL_NOT_EXISTS);
         }
-        if (stockControl.getCurrentStock() < reqVO.getQuantity()) {
+        if (source.getCurrentStock() < reqVO.getNumber()) {
             throw exception(STOCK_INSUFFICIENT);
         }
-        stockControl.setCurrentStock(stockControl.getCurrentStock() - reqVO.getQuantity());
-        updateStockStatus(stockControl);
-        stockControl.setSyncTime(LocalDateTime.now());
-        stockControlMapper.updateById(stockControl);
-        // TODO: 创建目标场站库存记录或增加目标场站库存
+        // 查询目标场站库存记录
+        StockControlDO target = stockControlMapper.selectByCardIdAndStationId(reqVO.getCardId(), reqVO.getTargetStationId());
+        if (target == null) {
+            throw exception(STOCK_CONTROL_NOT_EXISTS);
+        }
+        // 源场站扣减
+        source.setCurrentStock(source.getCurrentStock() - reqVO.getNumber());
+        updateStockStatus(source);
+        source.setSyncTime(LocalDateTime.now());
+        stockControlMapper.updateById(source);
+        // 目标场站增加
+        target.setCurrentStock(target.getCurrentStock() + reqVO.getNumber());
+        updateStockStatus(target);
+        target.setSyncTime(LocalDateTime.now());
+        stockControlMapper.updateById(target);
     }
 
     @Override
@@ -100,8 +109,27 @@ public class StockControlServiceImpl implements StockControlService {
                 .count();
         respVO.setWarnStockCount(warnStockCount);
 
-        // stockTrend 先空着，后续实现
-        respVO.setStockTrend(new ArrayList<>());
+        // stockTrend: 按create_time转日期分组统计current_stock总和，默认近30天，补全缺失日期
+        LocalDateTime trendStart = startDateTime != null ? startDateTime : LocalDateTime.now().minusDays(30);
+        List<Map<String, Object>> trendRows = stockControlMapper.selectStockTrend(trendStart, endDateTime, stationId);
+        Map<String, Integer> dayCountMap = new LinkedHashMap<>();
+        LocalDate today = LocalDate.now();
+        for (int i = 29; i >= 0; i--) {
+            dayCountMap.put(today.minusDays(i).toString(), 0);
+        }
+        for (Map<String, Object> row : trendRows) {
+            String date = row.get("date").toString();
+            int count = ((Number) row.get("count")).intValue();
+            dayCountMap.put(date, count);
+        }
+        List<StockControlChartRespVO.TrendItem> trendList = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : dayCountMap.entrySet()) {
+            StockControlChartRespVO.TrendItem item = new StockControlChartRespVO.TrendItem();
+            item.setDate(entry.getKey());
+            item.setCount(entry.getValue());
+            trendList.add(item);
+        }
+        respVO.setStockTrend(trendList);
 
         // stockDistribution = 根据 cardId 关联 card_config 表，通过 type 分类统计数量
         List<StockControlChartRespVO.DistributionItem> distributionList =
