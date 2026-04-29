@@ -43,7 +43,7 @@
         <if test="reqVO.remark != null and reqVO.remark != ''">
             AND f.remark LIKE CONCAT('%', #{reqVO.remark}, '%')
         </if>
-        <if test="reqVO.identifyTime != null and reqVO.identifyTime.size() == 2">
+        <if test="reqVO.identifyTime != null and reqVO.identifyTime.length == 2">
             AND f.identify_time BETWEEN #{reqVO.identifyTime[0]} AND #{reqVO.identifyTime[1]}
         </if>
         ORDER BY f.id DESC
