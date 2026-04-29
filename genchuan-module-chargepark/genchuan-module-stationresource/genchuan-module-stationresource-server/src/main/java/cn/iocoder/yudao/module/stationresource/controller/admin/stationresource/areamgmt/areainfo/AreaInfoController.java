@@ -19,6 +19,9 @@ import io.swagger.v3.oas.annotations.Operation;
 
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.io.IOException;
 
@@ -152,12 +155,26 @@ public class AreaInfoController {
     @PreAuthorize("@ss.hasPermission('stationresource:area-info:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportAreaInfoExcel(@Valid AreaInfoPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                    HttpServletResponse response) throws IOException {
+        // 0. 配置
+        String inputFileName = "片区信息_";
+
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<AreaInfoDO> list = areaInfoService.getAreaInfoPage(pageReqVO).getList();
-        // 导出 Excel
+
+        // 1、强制设置响应头，确保浏览器触发下载
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setCharacterEncoding("utf-8");
+        // 2、动态生成文件名，带上当前日期
+        String dateStr = java.time.LocalDate.now().toString(); // 例如 "2026-03-10"
+        String fileOriginName = inputFileName + dateStr + ".xls";
+        String fileName = URLEncoder.encode(fileOriginName, StandardCharsets.UTF_8.toString())
+                .replaceAll("\\+", "%20").replace("UTF-8","");
+        response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
+
+        // 3、调用 ExcelUtils 导出
         ExcelUtils.write(response, "片区信息.xls", "数据", AreaInfoRespVO.class,
-                        BeanUtils.toBean(list, AreaInfoRespVO.class));
+                BeanUtils.toBean(list, AreaInfoRespVO.class));
     }
 
 }
