@@ -64,24 +64,24 @@ public class StockControlServiceImpl implements StockControlService {
         if (source == null) {
             throw exception(STOCK_CONTROL_NOT_EXISTS);
         }
-        if (source.getCurrentStock() < reqVO.getNumber()) {
+        if (source.getCurrentStock() < reqVO.getNum()) {
             throw exception(STOCK_INSUFFICIENT);
         }
-        // 查询目标场站库存记录
-        StockControlDO target = stockControlMapper.selectByCardIdAndStationId(reqVO.getCardId(), reqVO.getTargetStationId());
-        if (target == null) {
-            throw exception(STOCK_CONTROL_NOT_EXISTS);
-        }
-        // 源场站扣减
-        source.setCurrentStock(source.getCurrentStock() - reqVO.getNumber());
-        updateStockStatus(source);
-        source.setSyncTime(LocalDateTime.now());
-        stockControlMapper.updateById(source);
-        // 目标场站增加
-        target.setCurrentStock(target.getCurrentStock() + reqVO.getNumber());
-        updateStockStatus(target);
-        target.setSyncTime(LocalDateTime.now());
-        stockControlMapper.updateById(target);
+//        // 查询目标场站库存记录
+//        StockControlDO target = stockControlMapper.selectByCardIdAndStationId(reqVO.getCardId(), reqVO.getTargetStationId());
+//        if (target == null) {
+//            throw exception(STOCK_CONTROL_NOT_EXISTS);
+//        }
+//        // 源场站扣减
+//        source.setCurrentStock(source.getCurrentStock() - reqVO.getNumber());
+//        updateStockStatus(source);
+//        source.setSyncTime(LocalDateTime.now());
+//        stockControlMapper.updateById(source);
+//        // 目标场站增加
+//        target.setCurrentStock(target.getCurrentStock() + reqVO.getNumber());
+//        updateStockStatus(target);
+//        target.setSyncTime(LocalDateTime.now());
+//        stockControlMapper.updateById(target);
     }
 
     @Override

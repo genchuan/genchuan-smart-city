@@ -12,4 +12,6 @@ public class CardOrderInvoiceReqVO {
     @NotNull(message = "id不能为空")
     private Long id;
 
+    @Schema(description = "发票信息", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String invoiceInfo;
 }

@@ -23,6 +23,6 @@ public class StockControlAllocateReqVO {
 
     @Schema(description = "调配数量", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "调配数量不能为空")
-    private Integer number;
+    private Integer num;
 
 }
