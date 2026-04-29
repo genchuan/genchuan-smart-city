@@ -9,4 +9,52 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="selectTotalCount"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.communicatemgmt.vo.CommunicateMgmtChartRespVO">
+        SELECT
+        COUNT(1) AS totalMsgCount,
+        SUM(CASE WHEN status = #{status} THEN 1 ELSE 0 END) AS publishedMsgCount,
+        SUM(CASE WHEN status != #{status} THEN 1 ELSE 0 END) AS unpublishedMsgCount,
+        SUM(CASE WHEN reply_content IS NOT NULL THEN 1 ELSE 0 END) AS totalReplyCount,
+        ROUND(AVG(CASE WHEN reply_content IS NOT NULL THEN interact_rate ELSE 0 END),2) AS avgInteractRate
+        FROM communicate_mgmt
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND create_time between #{startTime} AND #{endTime}
+        </if>
+    </select>
+    <select id="selectRecentWeekInteractTrend" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        DATE_FORMAT(reply_time, '%Y-%m-%d') AS date,
+        COUNT(1) AS count
+        FROM communicate_mgmt
+        WHERE deleted = 0
+        AND (reply_time between date_sub(now(), interval 7 DAY) and now())
+        GROUP BY date
+    </select>
+    <select id="selectMsgTypeCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+<!--        msg_type AS msgType,-->
+        COUNT(1) AS count
+        FROM communicate_mgmt
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND create_time between #{startTime} AND #{endTime}
+        </if>
+<!--        GROUP BY msg_type-->
+    </select>
+    <select id="selectClassInteractRate" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+<!--        class_id AS classId,-->
+        ROUND(AVG(interact_rate),2) AS interactRate
+        FROM communicate_mgmt
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND create_time between #{startTime} AND #{endTime}
+        </if>
+<!--        GROUP BY class_id-->
+    </select>
+    <select id="selectReplyTimeDistribution" resultType="com.alibaba.fastjson.JSONObject">
+
+    </select>
 </mapper>

@@ -12,7 +12,7 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @Data
 public class ClubMgmtChartReqVO {
 
-    @Schema(description = "统计时间范围", requiredMode = Schema.RequiredMode.REQUIRED,example = "时间范围参数需要符合yyyy-MM-dd HH:mm:ss格式,如：2023-01-01 00:00:00,2027-01-31 23:59:59")
+    @Schema(description = "统计时间范围，时间范围参数需要符合yyyy-MM-dd HH:mm:ss格式", example = "2023-01-01 00:00:00,2027-01-31 23:59:59")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] timeRange;
 
