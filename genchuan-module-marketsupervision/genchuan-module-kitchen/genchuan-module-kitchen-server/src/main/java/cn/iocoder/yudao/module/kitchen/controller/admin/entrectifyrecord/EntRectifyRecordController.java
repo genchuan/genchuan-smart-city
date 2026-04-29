@@ -83,7 +83,7 @@ public class EntRectifyRecordController {
         return success(id);
     }
     @PostMapping("/create")
-    @Operation(summary = "（勿用）创建企业整改记录")
+    @Operation(summary = "（次级）创建企业整改记录")
     //@PreAuthorize("@ss.hasPermission('kitchen:ent-rectify-record:create')")
     public CommonResult<Long> createEntRectifyRecord(@Valid @RequestBody EntRectifyRecordSaveReqVO createReqVO) {
         return success(entRectifyRecordService.createEntRectifyRecord(createReqVO));

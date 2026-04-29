@@ -128,7 +128,7 @@ public class PunishReviewLedgerController {
         return success(id);
     }
     @PostMapping("/create")
-    @Operation(summary = "（勿用）创建处罚通知书复审台账")
+    @Operation(summary = "（次级）创建处罚通知书复审台账")
     //@PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:create')")
     @SysOpeLog
     public CommonResult<Long> createPunishReviewLedger(@Valid @RequestBody PunishReviewLedgerSaveReqVO createReqVO) {
