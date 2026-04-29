@@ -5,7 +5,6 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.module.inspectop.controller.admin.inspectreport.vo.*;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.inspectreport.InspectReportDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 巡检上报 Service 接口
@@ -68,7 +67,7 @@ public interface InspectReportService {
 
     /**
      * 通过巡检上报
-     * 将状态改为已完成(3)，设置审核人ID和审核时间
+     * 将状态改为待处置(2)，设置审核人ID和审核时间
      *
      * @param approveReqVO 通过审核信息
      */
@@ -76,7 +75,7 @@ public interface InspectReportService {
 
     /**
      * 驳回巡检上报
-     * 将状态改为待审核(1)，设置审核人ID、审核时间和驳回理由
+     * 将状态改为已驳回(5)，设置审核人ID、审核时间和驳回理由
      *
      * @param rejectReqVO 驳回信息
      */
@@ -84,7 +83,7 @@ public interface InspectReportService {
 
     /**
      * 执行巡检上报
-     * 将状态改为待处置(2)，设置处置人ID和处置时间
+     * 将状态改为处理中(4)，设置处置人ID和处置时间
      *
      * @param processReqVO 执行信息
      */

@@ -13,14 +13,12 @@ import java.util.*;
 import cn.iocoder.yudao.module.inspectop.controller.admin.inspectreport.vo.*;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.inspectreport.InspectReportDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.inspectop.dal.mysql.inspectreport.InspectReportMapper;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.inspectop.enums.ErrorCodeConstants.*;
 
 /**
@@ -147,10 +145,10 @@ public class InspectReportServiceImpl implements InspectReportService {
         // 4. 获取当前时间（作为审核时间）
         LocalDateTime auditTime = LocalDateTime.now();
 
-        // 5. 更新审核信息，状态改为3（已完成）
+        // 5. 更新审核信息，状态改为2（待处置）
         LambdaUpdateWrapper<InspectReportDO> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper
-                .set(InspectReportDO::getStatus, "3")                // 状态：已完成
+                .set(InspectReportDO::getStatus, "2")                // 状态：待处置
                 .set(InspectReportDO::getAuditUserId, auditUserId)   // 审核人ID
                 .set(InspectReportDO::getAuditTime, auditTime)       // 审核时间
                 .set(InspectReportDO::getRemark, auditRemark)   // 审核备注
@@ -175,10 +173,10 @@ public class InspectReportServiceImpl implements InspectReportService {
         // 4. 获取当前时间（作为审核时间）
         LocalDateTime auditTime = LocalDateTime.now();
 
-        // 5. 更新审核信息，状态改为4（已驳回）
+        // 5. 更新审核信息，状态改为5（已驳回）
         LambdaUpdateWrapper<InspectReportDO> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper
-                .set(InspectReportDO::getStatus, "4")                // 状态：已驳回
+                .set(InspectReportDO::getStatus, "5")                // 状态：已驳回
                 .set(InspectReportDO::getAuditUserId, auditUserId)   // 审核人ID
                 .set(InspectReportDO::getAuditTime, auditTime)       // 审核时间
                 .set(InspectReportDO::getRemark, auditRemark)   // 驳回理由
@@ -202,10 +200,10 @@ public class InspectReportServiceImpl implements InspectReportService {
         // 4. 获取当前时间（作为处置时间）
         LocalDateTime processTime = LocalDateTime.now();
 
-        // 5. 更新处置信息，状态改为2（待处置）
+        // 5. 更新处置信息，状态改为2（处理中）
         LambdaUpdateWrapper<InspectReportDO> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper
-                .set(InspectReportDO::getStatus, "2")                // 状态：待处置
+                .set(InspectReportDO::getStatus, "4")                // 状态：处理中
                 .set(InspectReportDO::getProcessUserId, processUserId) // 处置人ID
                 .set(InspectReportDO::getProcessTime, processTime)   // 处置时间
                 .eq(InspectReportDO::getId, id);

@@ -60,10 +60,6 @@
             <if test="reqVO.type != null and reqVO.type != ''">
                 AND ir.type = #{reqVO.type}
             </if>
-            <if test="reqVO.processUserId != null">
-                AND ir.process_user_id = #{reqVO.processUserId}
-            </if>
-            <!-- ... 其他条件 ... -->
             AND ir.deleted = 0
         </where>
         ORDER BY ir.id DESC
