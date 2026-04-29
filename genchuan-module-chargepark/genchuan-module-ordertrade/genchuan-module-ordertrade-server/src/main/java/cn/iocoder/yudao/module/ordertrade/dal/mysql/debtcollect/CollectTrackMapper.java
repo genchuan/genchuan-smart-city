@@ -26,7 +26,8 @@ public interface CollectTrackMapper extends BaseMapperX<CollectTrackDO> {
                 .eqIfPresent(CollectTrackDO::getCollectMethod, reqVO.getCollectMethod())
                 .eqIfPresent(CollectTrackDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(CollectTrackDO::getAreaId, reqVO.getAreaId())
-                .betweenIfPresent(CollectTrackDO::getCollectTime, reqVO.getCollectTime())
+                .geIfPresent(CollectTrackDO::getCollectTime, reqVO.getCollectTimeStart())
+                .leIfPresent(CollectTrackDO::getCollectTime, reqVO.getCollectTimeEnd())
                 .orderByDesc(CollectTrackDO::getId));
     }
 

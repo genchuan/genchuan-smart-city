@@ -8,6 +8,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.ordermgmt.AllOrderDO;
+import cn.iocoder.yudao.module.ordertrade.rpc.stationresource.StationNameHelper;
 import cn.iocoder.yudao.module.ordertrade.service.ordermgmt.AllOrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -39,6 +40,8 @@ public class AllOrderController {
 
     @Resource
     private AllOrderService allOrderService;
+    @Resource
+    private StationNameHelper stationNameHelper;
 
     // ==================== ① 标准CRUD ====================
 /*
@@ -76,14 +79,18 @@ public class AllOrderController {
     @Parameter(name = "id", description = "主键", required = true, example = "1024")
     public CommonResult<AllOrderRespVO> getAllOrder(@RequestParam("id") Long id) {
         AllOrderDO obj = allOrderService.getAllOrder(id);
-        return success(BeanUtils.toBean(obj, AllOrderRespVO.class));
+        AllOrderRespVO vo = BeanUtils.toBean(obj, AllOrderRespVO.class);
+        stationNameHelper.fillStationName(vo, AllOrderRespVO::getStationId, AllOrderRespVO::setStationName);
+        return success(vo);
     }
 
     @GetMapping("/page")
     @Operation(summary = "获得全部订单分页列表")
     public CommonResult<PageResult<AllOrderRespVO>> getAllOrderPage(@Valid AllOrderPageReqVO pageReqVO) {
         PageResult<AllOrderDO> pageResult = allOrderService.getAllOrderPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, AllOrderRespVO.class));
+        PageResult<AllOrderRespVO> voPage = BeanUtils.toBean(pageResult, AllOrderRespVO.class);
+        stationNameHelper.fillStationNames(voPage.getList(), AllOrderRespVO::getStationId, AllOrderRespVO::setStationName);
+        return success(voPage);
     }
 
     @GetMapping("/export")
@@ -93,8 +100,9 @@ public class AllOrderController {
                                  HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<AllOrderDO> list = allOrderService.getAllOrderPage(pageReqVO).getList();
-        ExcelUtils.write(response, "全部订单.xls", "数据", AllOrderRespVO.class,
-                BeanUtils.toBean(list, AllOrderRespVO.class));
+        List<AllOrderRespVO> voList = BeanUtils.toBean(list, AllOrderRespVO.class);
+        stationNameHelper.fillStationNames(voList, AllOrderRespVO::getStationId, AllOrderRespVO::setStationName);
+        ExcelUtils.write(response, "全部订单.xls", "数据", AllOrderRespVO.class, voList);
     }
 
     // ==================== ② 业务操作接口 ====================

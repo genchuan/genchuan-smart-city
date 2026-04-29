@@ -8,6 +8,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.ordermgmt.OfftimeParkOrderDO;
+import cn.iocoder.yudao.module.ordertrade.rpc.stationresource.StationNameHelper;
 import cn.iocoder.yudao.module.ordertrade.service.ordermgmt.OfftimeParkOrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -38,6 +39,8 @@ public class OfftimeParkOrderController {
 
     @Resource
     private OfftimeParkOrderService offtimeParkOrderService;
+    @Resource
+    private StationNameHelper stationNameHelper;
 
     // ==================== ① 标准CRUD ====================
 /*
@@ -75,14 +78,18 @@ public class OfftimeParkOrderController {
     @Parameter(name = "id", description = "主键", required = true, example = "1024")
     public CommonResult<OfftimeParkOrderRespVO> getOfftimeParkOrder(@RequestParam("id") Long id) {
         OfftimeParkOrderDO obj = offtimeParkOrderService.getOfftimeParkOrder(id);
-        return success(BeanUtils.toBean(obj, OfftimeParkOrderRespVO.class));
+        OfftimeParkOrderRespVO vo = BeanUtils.toBean(obj, OfftimeParkOrderRespVO.class);
+        stationNameHelper.fillStationName(vo, OfftimeParkOrderRespVO::getStationId, OfftimeParkOrderRespVO::setStationName);
+        return success(vo);
     }
 
     @GetMapping("/page")
     @Operation(summary = "获得错时停车订单分页列表")
     public CommonResult<PageResult<OfftimeParkOrderRespVO>> getOfftimeParkOrderPage(@Valid OfftimeParkOrderPageReqVO pageReqVO) {
         PageResult<OfftimeParkOrderDO> pageResult = offtimeParkOrderService.getOfftimeParkOrderPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, OfftimeParkOrderRespVO.class));
+        PageResult<OfftimeParkOrderRespVO> voPage = BeanUtils.toBean(pageResult, OfftimeParkOrderRespVO.class);
+        stationNameHelper.fillStationNames(voPage.getList(), OfftimeParkOrderRespVO::getStationId, OfftimeParkOrderRespVO::setStationName);
+        return success(voPage);
     }
 
     @GetMapping("/export")
@@ -92,8 +99,9 @@ public class OfftimeParkOrderController {
                                  HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<OfftimeParkOrderDO> list = offtimeParkOrderService.getOfftimeParkOrderPage(pageReqVO).getList();
-        ExcelUtils.write(response, "错时停车订单.xls", "数据", OfftimeParkOrderRespVO.class,
-                BeanUtils.toBean(list, OfftimeParkOrderRespVO.class));
+        List<OfftimeParkOrderRespVO> voList = BeanUtils.toBean(list, OfftimeParkOrderRespVO.class);
+        stationNameHelper.fillStationNames(voList, OfftimeParkOrderRespVO::getStationId, OfftimeParkOrderRespVO::setStationName);
+        ExcelUtils.write(response, "错时停车订单.xls", "数据", OfftimeParkOrderRespVO.class, voList);
     }
 
     @GetMapping("/batch-export")
@@ -103,8 +111,9 @@ public class OfftimeParkOrderController {
                                       HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<OfftimeParkOrderDO> list = offtimeParkOrderService.getOfftimeParkOrderPage(pageReqVO).getList();
-        ExcelUtils.write(response, "错时停车订单批量导出.xls", "数据", OfftimeParkOrderRespVO.class,
-                BeanUtils.toBean(list, OfftimeParkOrderRespVO.class));
+        List<OfftimeParkOrderRespVO> voList = BeanUtils.toBean(list, OfftimeParkOrderRespVO.class);
+        stationNameHelper.fillStationNames(voList, OfftimeParkOrderRespVO::getStationId, OfftimeParkOrderRespVO::setStationName);
+        ExcelUtils.write(response, "错时停车订单批量导出.xls", "数据", OfftimeParkOrderRespVO.class, voList);
     }
 
     // ==================== ② 业务操作接口 ====================

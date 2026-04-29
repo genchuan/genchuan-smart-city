@@ -60,6 +60,9 @@ public class OfftimeParkOrderRespVO {
     @ExcelProperty("所属场站ID")
     private Long stationId;
 
+    @Schema(description = "所属场站名称")
+    private String stationName;
+
     @Schema(description = "支付时间")
     @ExcelProperty("支付时间")
     private LocalDateTime payTime;
