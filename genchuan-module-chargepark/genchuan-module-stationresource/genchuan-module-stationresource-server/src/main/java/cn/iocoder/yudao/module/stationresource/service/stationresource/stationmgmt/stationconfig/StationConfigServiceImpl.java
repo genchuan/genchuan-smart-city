@@ -152,8 +152,13 @@ public class StationConfigServiceImpl implements StationConfigService {
     }
 
     @Override
-    public StationConfigDO getStationConfig(Long id) {
-        return stationConfigMapper.selectById(id);
+    public StationConfigRespVO getStationConfig(Long id) {
+        StationConfigPageReqVO reqVO =new StationConfigPageReqVO();
+        reqVO.setId(id);
+        reqVO.setPageSize(1);
+        StationConfigRespVO stationConfigRespVO = getStationConfigPage(reqVO).getList().stream().findFirst().orElse(null);
+
+        return stationConfigRespVO;
     }
 
     @Override

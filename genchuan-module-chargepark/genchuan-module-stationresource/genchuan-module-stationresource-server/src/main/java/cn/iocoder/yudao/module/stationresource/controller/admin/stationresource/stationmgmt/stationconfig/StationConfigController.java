@@ -56,7 +56,7 @@ public class StationConfigController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('stationresource:station-config:query')")
     public CommonResult<StationConfigRespVO> getStationConfig(@RequestParam("id") Long id) {
-        StationConfigDO stationConfig = stationConfigService.getStationConfig(id);
+        StationConfigRespVO stationConfig = stationConfigService.getStationConfig(id);
         return success(BeanUtils.toBean(stationConfig, StationConfigRespVO.class));
     }
     // ==================== 1. 批量生效 ====================

@@ -103,7 +103,7 @@ public class ParkingSpaceInfoController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('stationresource:parking-space-info:query')")
     public CommonResult<ParkingSpaceInfoRespVO> getParkingSpaceInfo(@RequestParam("id") Long id) {
-        ParkingSpaceInfoDO parkingSpaceInfo = parkingSpaceInfoService.getParkingSpaceInfo(id);
+        ParkingSpaceInfoRespVO parkingSpaceInfo = parkingSpaceInfoService.getParkingSpaceInfo(id);
         return success(BeanUtils.toBean(parkingSpaceInfo, ParkingSpaceInfoRespVO.class));
     }
 
@@ -111,7 +111,7 @@ public class ParkingSpaceInfoController {
     @Operation(summary = "获得车位信息分页")
     @PreAuthorize("@ss.hasPermission('stationresource:parking-space-info:query')")
     public CommonResult<PageResult<ParkingSpaceInfoRespVO>> getParkingSpaceInfoPage(@Valid ParkingSpaceInfoPageReqVO pageReqVO) {
-        PageResult<ParkingSpaceInfoDO> pageResult = parkingSpaceInfoService.getParkingSpaceInfoPage(pageReqVO);
+        PageResult<ParkingSpaceInfoRespVO> pageResult = parkingSpaceInfoService.getParkingSpaceInfoPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, ParkingSpaceInfoRespVO.class));
     }
 
@@ -125,7 +125,7 @@ public class ParkingSpaceInfoController {
         String inputFileName = "车位信息_";
 
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<ParkingSpaceInfoDO> list = parkingSpaceInfoService.getParkingSpaceInfoPage(pageReqVO).getList();
+        List<ParkingSpaceInfoRespVO> list = parkingSpaceInfoService.getParkingSpaceInfoPage(pageReqVO).getList();
 
         // 1、强制设置响应头，确保浏览器触发下载
         response.setContentType("application/vnd.ms-excel;charset=UTF-8");

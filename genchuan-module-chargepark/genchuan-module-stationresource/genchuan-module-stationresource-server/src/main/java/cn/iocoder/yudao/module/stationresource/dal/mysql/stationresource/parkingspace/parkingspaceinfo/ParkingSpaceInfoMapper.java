@@ -6,9 +6,12 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ParkingSpaceInfoPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ParkingSpaceInfoRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.statistics.ParkingSpaceChartRespVO;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.parkingspace.parkingspaceinfo.ParkingSpaceInfoDO;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 车位信息 Mapper
@@ -51,4 +54,6 @@ public interface ParkingSpaceInfoMapper extends BaseMapperX<ParkingSpaceInfoDO> 
     Long selectTotalSpaceCount();
 
     Long selectAvailableSpaceCount();
+
+    Page<ParkingSpaceInfoRespVO> getPage(Page<ParkingSpaceInfoRespVO> page, @Param("pageReqVO") ParkingSpaceInfoPageReqVO pageReqVO);
 }

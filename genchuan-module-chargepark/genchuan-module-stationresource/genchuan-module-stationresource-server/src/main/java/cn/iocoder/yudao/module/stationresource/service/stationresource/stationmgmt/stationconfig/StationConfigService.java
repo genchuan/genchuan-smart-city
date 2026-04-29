@@ -54,7 +54,7 @@ public interface StationConfigService {
      * @param id 编号
      * @return 场站配置
      */
-    StationConfigDO getStationConfig(Long id);
+    StationConfigRespVO getStationConfig(Long id);
 
     /**
      * 获得场站配置分页

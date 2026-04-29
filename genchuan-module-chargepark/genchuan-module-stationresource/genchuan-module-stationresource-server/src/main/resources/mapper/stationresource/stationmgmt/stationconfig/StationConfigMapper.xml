@@ -38,6 +38,9 @@
         LEFT JOIN station_info si ON s.station_id = si.id AND si.deleted = 0
         WHERE s.deleted = 0
 
+        <if test="pageReqVO.id != null">
+            AND s.id = #{pageReqVO.id}
+        </if>
         <if test="pageReqVO.stationId != null">
             AND s.station_id = #{pageReqVO.stationId}
         </if>
