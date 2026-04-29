@@ -1,27 +1,18 @@
 package cn.iocoder.yudao.module.usermerchant.service.membercenter.memberconfig;
 
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import java.util.*;
+import jakarta.validation.*;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberconfig.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberconfig.MemberConfigDO;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-
-import java.util.List;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 会员配置 Service 接口
  *
- * @author QingX
+ * @author 亘川智城
  */
 public interface MemberConfigService {
-
-    /**
-     * 获得会员配置分页
-     *
-     * @param pageReqVO 分页查询
-     * @return 会员配置分页
-     */
-    PageResult<MemberConfigDO> getMemberConfigPage(@Valid MemberConfigPageReqVO pageReqVO);
 
     /**
      * 创建会员配置
@@ -32,18 +23,25 @@ public interface MemberConfigService {
     Long createMemberConfig(@Valid MemberConfigSaveReqVO createReqVO);
 
     /**
-     * 保存会员配置（新增或更新）
+     * 更新会员配置
      *
-     * @param saveReqVO 保存信息
+     * @param updateReqVO 更新信息
      */
-    void saveConfig(@Valid MemberConfigSaveReqVO saveReqVO);
+    void updateMemberConfig(@Valid MemberConfigSaveReqVO updateReqVO);
 
     /**
-     * 批量生效，禁用会员配置
+     * 删除会员配置
      *
-     * @param ids 编号
+     * @param id 编号
      */
-    void updateConfigStatus(List<Long> ids, String status);
+    void deleteMemberConfig(Long id);
+
+    /**
+    * 批量删除会员配置
+    *
+    * @param ids 编号
+    */
+    void deleteMemberConfigListByIds(List<Long> ids);
 
     /**
      * 获得会员配置
@@ -54,17 +52,11 @@ public interface MemberConfigService {
     MemberConfigDO getMemberConfig(Long id);
 
     /**
-     * 更新会员配置
+     * 获得会员配置分页
      *
-     * @param updateReqVO 更新信息
+     * @param pageReqVO 分页查询
+     * @return 会员配置分页
      */
-    void updateConfig(@Valid MemberConfigUpdateReqVO updateReqVO);
+    PageResult<MemberConfigDO> getMemberConfigPage(MemberConfigPageReqVO pageReqVO);
 
-    /**
-     * 会员配置统计可视化
-     *
-     * @param chartReqVO 时间范围
-     * @return 统计信息
-     */
-    MemberConfigChartRespVO getMemberConfigChart(@Valid MemberConfigChartReqVO chartReqVO);
 }

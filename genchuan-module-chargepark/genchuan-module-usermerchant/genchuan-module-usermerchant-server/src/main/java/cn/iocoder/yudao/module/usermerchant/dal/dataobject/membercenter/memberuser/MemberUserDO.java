@@ -1,69 +1,53 @@
 package cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberuser;
 
-import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
-import cn.iocoder.yudao.framework.common.enums.TerminalEnum;
-import cn.iocoder.yudao.framework.ip.core.Area;
-import cn.iocoder.yudao.framework.mybatis.core.type.LongListTypeHandler;
-import cn.iocoder.yudao.framework.tenant.core.db.TenantBaseDO;
-import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.membergroup.MemberGroupDO;
-import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberlevel.MemberLevelDO;
-import cn.iocoder.yudao.module.system.enums.common.SexEnum;
-import com.baomidou.mybatisplus.annotation.KeySequence;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.*;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
+import java.util.*;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.LocalDateTime;
+import java.time.LocalDateTime;
+import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.*;
+import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 
 /**
  * 会员用户 DO
  *
- * uk_mobile 索引：基于 {@link #mobile} 字段
- *
- * @author 芋道源码
+ * @author 亘川智城
  */
-@TableName(value = "member_user", autoResultMap = true)
+@TableName("member_user")
 @KeySequence("member_user_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。
 @Data
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberUserDO extends TenantBaseDO {
-
-    // ========== 账号信息 ==========
+public class MemberUserDO extends BaseDO {
 
     /**
-     * 用户ID
+     * 编号
      */
     @TableId
     private Long id;
     /**
-     * 手机
+     * 手机号
      */
     private String mobile;
     /**
-     * 加密后的密码
-     *
-     * 因为目前使用 {@link BCryptPasswordEncoder} 加密器，所以无需自己处理 salt 盐
+     * 密码
      */
     private String password;
     /**
-     * 帐号状态
-     *
-     * 枚举 {@link CommonStatusEnum}
+     * 状态：0-禁用，1-正常
      */
     private Integer status;
     /**
-     * 注册 IP
+     * 注册IP
      */
     private String registerIp;
     /**
      * 注册终端
-     * 枚举 {@link TerminalEnum}
      */
     private Integer registerTerminal;
     /**
@@ -74,72 +58,62 @@ public class MemberUserDO extends TenantBaseDO {
      * 最后登录时间
      */
     private LocalDateTime loginDate;
-
-    // ========== 基础信息 ==========
-
     /**
      * 用户昵称
      */
     private String nickname;
     /**
-     * 用户头像
+     * 头像
      */
     private String avatar;
-
     /**
-     * 真实名字
+     * 真实姓名
      */
     private String name;
     /**
-     * 性别
-     *
-     * 枚举 {@link SexEnum}
+     * 性别：0-未知，1-男，2-女
      */
     private Integer sex;
+    /**
+     * 所在地区ID
+     */
+    private Long areaId;
     /**
      * 出生日期
      */
     private LocalDateTime birthday;
     /**
-     * 所在地
-     *
-     * 关联 {@link Area#getId()} 字段
-     */
-    private Integer areaId;
-    /**
-     * 用户备注
+     * 会员备注
      */
     private String mark;
-
-    // ========== 其它信息 ==========
-
     /**
      * 积分
      */
     private Integer point;
-    // TODO 疯狂：增加一个 totalPoint；个人信息接口要返回
-
     /**
-     * 会员标签列表，以逗号分隔
+     * 用户标签编号列表，逗号分隔
      */
-    @TableField(typeHandler = LongListTypeHandler.class)
-    private List<Long> tagIds;
-
+    private String tagIds;
     /**
-     * 会员级别编号
-     *
-     * 关联 {@link MemberLevelDO#getId()} 字段
+     * 会员等级ID
      */
     private Long levelId;
     /**
-     * 会员经验
+     * 经验值
      */
     private Integer experience;
     /**
-     * 用户分组编号
-     *
-     * 关联 {@link MemberGroupDO#getId()} 字段
+     * 用户分组ID
      */
     private Long groupId;
+    /**
+     * 会员到期时间
+     */
+    private LocalDateTime expireTime;
+    /**
+     * 自动续费：0-关闭，1-开启
+     */
+    private Integer autoRenew;
+
 
 }

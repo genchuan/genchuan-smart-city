@@ -1,10 +1,10 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberconfig.vo;
 
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import lombok.*;
+import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import java.time.LocalDateTime;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
@@ -13,17 +13,21 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @Data
 public class MemberConfigPageReqVO extends PageParam {
 
-    @Schema(description = "是否开启积分抵扣")
-    private Boolean pointTradeDeductEnable;
+    @Schema(description = "配置类型", example = "1")
+    private String configType;
 
-    @Schema(description = "积分抵扣(单位：分)", example = "22325")
-    private Integer pointTradeDeductUnitPrice;
+    @Schema(description = "权益内容（JSON或文本）")
+    private String content;
 
-    @Schema(description = "积分抵扣最大值", example = "9825")
-    private Integer pointTradeDeductMaxPrice;
+    @Schema(description = "备注", example = "你猜")
+    private String remark;
 
-    @Schema(description = "1 元赠送多少分")
-    private Long pointTradeGivePoint;
+    @Schema(description = "状态：0-未生效，1-已生效", example = "2")
+    private Integer status;
+
+    @Schema(description = "生效时间")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime[] effectiveTime;
 
     @Schema(description = "创建者")
     private String creator;

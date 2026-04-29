@@ -1,105 +1,85 @@
 package cn.iocoder.yudao.module.usermerchant.service.membercenter.membergroup;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.collection.ListUtil;
-import cn.iocoder.yudao.framework.common.exception.ServiceException;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membergroup.vo.MemberGroupCreateReqVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membergroup.vo.MemberGroupPageReqVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membergroup.vo.MemberGroupUpdateReqVO;
-import cn.iocoder.yudao.module.usermerchant.convert.membercenter.membergroup.MemberGroupConvert;
-import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.membergroup.MemberGroupDO;
-import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.membergroup.MemberGroupMapper;
-import cn.iocoder.yudao.module.usermerchant.service.membercenter.membergroup.MemberGroupService;
-import cn.iocoder.yudao.module.usermerchant.service.membercenter.memberuser.MemberUserService;
-import com.baomidou.dynamic.datasource.annotation.DS;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membergroup.vo.*;
+import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.membergroup.MemberGroupDO;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
+import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.membergroup.MemberGroupMapper;
+
+import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
+import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
 
 /**
- * 用户分组 Service 实现类
+ * 会员分组 Service 实现类
  *
- * @author owen
+ * @author 亘川智城
  */
 @Service
 @Validated
-@DS("member")
 public class MemberGroupServiceImpl implements MemberGroupService {
 
     @Resource
     private MemberGroupMapper memberGroupMapper;
 
-    @Resource
-    private MemberUserService memberUserService;
-
     @Override
-    public Long createGroup(MemberGroupCreateReqVO createReqVO) {
+    public Long createMemberGroup(MemberGroupSaveReqVO createReqVO) {
         // 插入
-        MemberGroupDO group = MemberGroupConvert.INSTANCE.convert(createReqVO);
-        memberGroupMapper.insert(group);
+        MemberGroupDO memberGroup = BeanUtils.toBean(createReqVO, MemberGroupDO.class);
+        memberGroupMapper.insert(memberGroup);
+
         // 返回
-        return group.getId();
+        return memberGroup.getId();
     }
 
     @Override
-    public void updateGroup(MemberGroupUpdateReqVO updateReqVO) {
+    public void updateMemberGroup(MemberGroupSaveReqVO updateReqVO) {
         // 校验存在
-        validateGroupExists(updateReqVO.getId());
+        validateMemberGroupExists(updateReqVO.getId());
         // 更新
-        MemberGroupDO updateObj = MemberGroupConvert.INSTANCE.convert(updateReqVO);
+        MemberGroupDO updateObj = BeanUtils.toBean(updateReqVO, MemberGroupDO.class);
         memberGroupMapper.updateById(updateObj);
     }
 
     @Override
-    public void deleteGroup(Long id) {
+    public void deleteMemberGroup(Long id) {
         // 校验存在
-        validateGroupExists(id);
-        // 校验分组下是否有用户
-        validateGroupHasUser(id);
+        validateMemberGroupExists(id);
         // 删除
         memberGroupMapper.deleteById(id);
     }
 
-    void validateGroupExists(Long id) {
-        if (memberGroupMapper.selectById(id) == null) {
-            throw new ServiceException(GROUP_NOT_EXISTS);
+    @Override
+        public void deleteMemberGroupListByIds(List<Long> ids) {
+        // 删除
+        memberGroupMapper.deleteByIds(ids);
         }
-    }
 
-    void validateGroupHasUser(Long id) {
-        Long count = memberUserService.getUserCountByGroupId(id);
-        if (count > 0) {
-            throw new ServiceException(GROUP_HAS_USER);
+
+    private void validateMemberGroupExists(Long id) {
+        if (memberGroupMapper.selectById(id) == null) {
+            throw exception(MEMBER_GROUP_NOT_EXISTS);
         }
     }
 
     @Override
-    public MemberGroupDO getGroup(Long id) {
+    public MemberGroupDO getMemberGroup(Long id) {
         return memberGroupMapper.selectById(id);
     }
 
     @Override
-    public List<MemberGroupDO> getGroupList(Collection<Long> ids) {
-        if (CollUtil.isEmpty(ids)) {
-            return ListUtil.empty();
-        }
-        return memberGroupMapper.selectByIds(ids);
-    }
-
-    @Override
-    public PageResult<MemberGroupDO> getGroupPage(MemberGroupPageReqVO pageReqVO) {
+    public PageResult<MemberGroupDO> getMemberGroupPage(MemberGroupPageReqVO pageReqVO) {
         return memberGroupMapper.selectPage(pageReqVO);
-    }
-
-    @Override
-    public List<MemberGroupDO> getGroupListByStatus(Integer status) {
-        return memberGroupMapper.selectListByStatus(status);
     }
 
 }

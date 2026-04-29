@@ -1,19 +1,16 @@
 package cn.iocoder.yudao.module.usermerchant.service.membercenter.membertag;
 
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membertag.vo.MemberTagCreateReqVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membertag.vo.MemberTagPageReqVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membertag.vo.MemberTagUpdateReqVO;
+import java.util.*;
+import jakarta.validation.*;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membertag.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.membertag.MemberTagDO;
-import jakarta.validation.Valid;
-
-import java.util.Collection;
-import java.util.List;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 会员标签 Service 接口
  *
- * @author 芋道源码
+ * @author 亘川智城
  */
 public interface MemberTagService {
 
@@ -23,21 +20,28 @@ public interface MemberTagService {
      * @param createReqVO 创建信息
      * @return 编号
      */
-    Long createTag(@Valid MemberTagCreateReqVO createReqVO);
+    Long createMemberTag(@Valid MemberTagSaveReqVO createReqVO);
 
     /**
      * 更新会员标签
      *
      * @param updateReqVO 更新信息
      */
-    void updateTag(@Valid MemberTagUpdateReqVO updateReqVO);
+    void updateMemberTag(@Valid MemberTagSaveReqVO updateReqVO);
 
     /**
      * 删除会员标签
      *
      * @param id 编号
      */
-    void deleteTag(Long id);
+    void deleteMemberTag(Long id);
+
+    /**
+    * 批量删除会员标签
+    *
+    * @param ids 编号
+    */
+    void deleteMemberTagListByIds(List<Long> ids);
 
     /**
      * 获得会员标签
@@ -45,15 +49,7 @@ public interface MemberTagService {
      * @param id 编号
      * @return 会员标签
      */
-    MemberTagDO getTag(Long id);
-
-    /**
-     * 获得会员标签列表
-     *
-     * @param ids 编号
-     * @return 会员标签列表
-     */
-    List<MemberTagDO> getTagList(Collection<Long> ids);
+    MemberTagDO getMemberTag(Long id);
 
     /**
      * 获得会员标签分页
@@ -61,13 +57,6 @@ public interface MemberTagService {
      * @param pageReqVO 分页查询
      * @return 会员标签分页
      */
-    PageResult<MemberTagDO> getTagPage(MemberTagPageReqVO pageReqVO);
-
-    /**
-     * 获取标签列表
-     *
-     * @return 标签列表
-     */
-    List<MemberTagDO> getTagList();
+    PageResult<MemberTagDO> getMemberTagPage(MemberTagPageReqVO pageReqVO);
 
 }

@@ -1,80 +1,104 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberlevel;
 
+import org.springframework.web.bind.annotation.*;
+import jakarta.annotation.Resource;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.security.access.prepost.PreAuthorize;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Operation;
+
+import jakarta.validation.constraints.*;
+import jakarta.validation.*;
+import jakarta.servlet.http.*;
+import java.util.*;
+import java.io.IOException;
+
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberlevel.vo.level.*;
-import cn.iocoder.yudao.module.usermerchant.convert.membercenter.memberlevel.MemberLevelConvert;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
+
+import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+
+import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
+
+import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberlevel.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberlevel.MemberLevelDO;
 import cn.iocoder.yudao.module.usermerchant.service.membercenter.memberlevel.MemberLevelService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Resource;
-import jakarta.validation.Valid;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
-import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 @Tag(name = "管理后台 - 会员等级")
 @RestController
-@RequestMapping("/member/level")
+@RequestMapping("/usermerchant/member-level")
 @Validated
 public class MemberLevelController {
 
     @Resource
-    private MemberLevelService levelService;
+    private MemberLevelService memberLevelService;
 
     @PostMapping("/create")
     @Operation(summary = "创建会员等级")
-    @PreAuthorize("@ss.hasPermission('member:level:create')")
-    public CommonResult<Long> createLevel(@Valid @RequestBody MemberLevelCreateReqVO createReqVO) {
-        return success(levelService.createLevel(createReqVO));
+    @PreAuthorize("@ss.hasPermission('usermerchant:member-level:create')")
+    public CommonResult<Long> createMemberLevel(@Valid @RequestBody MemberLevelSaveReqVO createReqVO) {
+        return success(memberLevelService.createMemberLevel(createReqVO));
     }
 
     @PutMapping("/update")
     @Operation(summary = "更新会员等级")
-    @PreAuthorize("@ss.hasPermission('member:level:update')")
-    public CommonResult<Boolean> updateLevel(@Valid @RequestBody MemberLevelUpdateReqVO updateReqVO) {
-        levelService.updateLevel(updateReqVO);
+    @PreAuthorize("@ss.hasPermission('usermerchant:member-level:update')")
+    public CommonResult<Boolean> updateMemberLevel(@Valid @RequestBody MemberLevelSaveReqVO updateReqVO) {
+        memberLevelService.updateMemberLevel(updateReqVO);
         return success(true);
     }
 
     @DeleteMapping("/delete")
     @Operation(summary = "删除会员等级")
     @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('member:level:delete')")
-    public CommonResult<Boolean> deleteLevel(@RequestParam("id") Long id) {
-        levelService.deleteLevel(id);
+    @PreAuthorize("@ss.hasPermission('usermerchant:member-level:delete')")
+    public CommonResult<Boolean> deleteMemberLevel(@RequestParam("id") Long id) {
+        memberLevelService.deleteMemberLevel(id);
+        return success(true);
+    }
+
+    @DeleteMapping("/delete-list")
+    @Parameter(name = "ids", description = "编号", required = true)
+    @Operation(summary = "批量删除会员等级")
+                @PreAuthorize("@ss.hasPermission('usermerchant:member-level:delete')")
+    public CommonResult<Boolean> deleteMemberLevelList(@RequestParam("ids") List<Long> ids) {
+        memberLevelService.deleteMemberLevelListByIds(ids);
         return success(true);
     }
 
     @GetMapping("/get")
     @Operation(summary = "获得会员等级")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('member:level:query')")
-    public CommonResult<MemberLevelRespVO> getLevel(@RequestParam("id") Long id) {
-        MemberLevelDO level = levelService.getLevel(id);
-        return success(MemberLevelConvert.INSTANCE.convert(level));
+    @PreAuthorize("@ss.hasPermission('usermerchant:member-level:query')")
+    public CommonResult<MemberLevelRespVO> getMemberLevel(@RequestParam("id") Long id) {
+        MemberLevelDO memberLevel = memberLevelService.getMemberLevel(id);
+        return success(BeanUtils.toBean(memberLevel, MemberLevelRespVO.class));
     }
 
-    @GetMapping("/list-all-simple")
-    @Operation(summary = "获取会员等级精简信息列表", description = "只包含被开启的会员等级，主要用于前端的下拉选项")
-    public CommonResult<List<MemberLevelSimpleRespVO>> getSimpleLevelList() {
-        // 获用户列表，只要开启状态的
-        List<MemberLevelDO> list = levelService.getEnableLevelList();
-        // 排序后，返回给前端
-        return success(MemberLevelConvert.INSTANCE.convertSimpleList(list));
+    @GetMapping("/page")
+    @Operation(summary = "获得会员等级分页")
+    @PreAuthorize("@ss.hasPermission('usermerchant:member-level:query')")
+    public CommonResult<PageResult<MemberLevelRespVO>> getMemberLevelPage(@Valid MemberLevelPageReqVO pageReqVO) {
+        PageResult<MemberLevelDO> pageResult = memberLevelService.getMemberLevelPage(pageReqVO);
+        return success(BeanUtils.toBean(pageResult, MemberLevelRespVO.class));
     }
 
-    @GetMapping("/list")
-    @Operation(summary = "获得会员等级列表")
-    @PreAuthorize("@ss.hasPermission('member:level:query')")
-    public CommonResult<List<MemberLevelRespVO>> getLevelList(@Valid MemberLevelListReqVO listReqVO) {
-        List<MemberLevelDO> result = levelService.getLevelList(listReqVO);
-        return success(MemberLevelConvert.INSTANCE.convertList(result));
+    @GetMapping("/export-excel")
+    @Operation(summary = "导出会员等级 Excel")
+    @PreAuthorize("@ss.hasPermission('usermerchant:member-level:export')")
+    @ApiAccessLog(operateType = EXPORT)
+    public void exportMemberLevelExcel(@Valid MemberLevelPageReqVO pageReqVO,
+              HttpServletResponse response) throws IOException {
+        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        List<MemberLevelDO> list = memberLevelService.getMemberLevelPage(pageReqVO).getList();
+        // 导出 Excel
+        ExcelUtils.write(response, "会员等级.xls", "数据", MemberLevelRespVO.class,
+                        BeanUtils.toBean(list, MemberLevelRespVO.class));
     }
 
 }

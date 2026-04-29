@@ -1,123 +1,104 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberuser;
 
-import cn.hutool.core.collection.CollUtil;
-import cn.iocoder.yudao.framework.common.pojo.CommonResult;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberuser.vo.*;
-import cn.iocoder.yudao.module.usermerchant.convert.membercenter.memberuser.MemberUserConvert;
-import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.membergroup.MemberGroupDO;
-import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberlevel.MemberLevelDO;
-import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.membertag.MemberTagDO;
-import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberuser.MemberUserDO;
-import cn.iocoder.yudao.module.usermerchant.enums.MemberPointBizTypeEnum;
-import cn.iocoder.yudao.module.usermerchant.service.membercenter.membergroup.MemberGroupService;
-import cn.iocoder.yudao.module.usermerchant.service.membercenter.memberlevel.MemberLevelService;
-import cn.iocoder.yudao.module.usermerchant.service.membercenter.memberpoint.MemberPointRecordService;
-import cn.iocoder.yudao.module.usermerchant.service.membercenter.membertag.MemberTagService;
-import cn.iocoder.yudao.module.usermerchant.service.membercenter.memberuser.MemberUserService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Resource;
-import jakarta.validation.Valid;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import jakarta.annotation.Resource;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.security.access.prepost.PreAuthorize;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Operation;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
+import jakarta.validation.constraints.*;
+import jakarta.validation.*;
+import jakarta.servlet.http.*;
+import java.util.*;
+import java.io.IOException;
 
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertSet;
-import static cn.iocoder.yudao.framework.web.core.util.WebFrameworkUtils.getLoginUserId;
+
+import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+
+import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
+
+import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberuser.vo.*;
+import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberuser.MemberUserDO;
+import cn.iocoder.yudao.module.usermerchant.service.membercenter.memberuser.MemberUserService;
 
 @Tag(name = "管理后台 - 会员用户")
 @RestController
-@RequestMapping("/member/user")
+@RequestMapping("/usermerchant/member-user")
 @Validated
 public class MemberUserController {
 
     @Resource
     private MemberUserService memberUserService;
-    @Resource
-    private MemberTagService memberTagService;
-    @Resource
-    private MemberLevelService memberLevelService;
-    @Resource
-    private MemberGroupService memberGroupService;
-    @Resource
-    private MemberPointRecordService memberPointRecordService;
+
+    @PostMapping("/create")
+    @Operation(summary = "创建会员用户")
+    @PreAuthorize("@ss.hasPermission('usermerchant:member-user:create')")
+    public CommonResult<Long> createMemberUser(@Valid @RequestBody MemberUserSaveReqVO createReqVO) {
+        return success(memberUserService.createMemberUser(createReqVO));
+    }
 
     @PutMapping("/update")
     @Operation(summary = "更新会员用户")
-    @PreAuthorize("@ss.hasPermission('member:user:update')")
-    public CommonResult<Boolean> updateUser(@Valid @RequestBody MemberUserUpdateReqVO updateReqVO) {
-        memberUserService.updateUser(updateReqVO);
+    @PreAuthorize("@ss.hasPermission('usermerchant:member-user:update')")
+    public CommonResult<Boolean> updateMemberUser(@Valid @RequestBody MemberUserSaveReqVO updateReqVO) {
+        memberUserService.updateMemberUser(updateReqVO);
         return success(true);
     }
 
-    @PutMapping("/update-level")
-    @Operation(summary = "更新会员用户等级")
-    @PreAuthorize("@ss.hasPermission('member:user:update-level')")
-    public CommonResult<Boolean> updateUserLevel(@Valid @RequestBody MemberUserUpdateLevelReqVO updateReqVO) {
-        memberLevelService.updateUserLevel(updateReqVO);
+    @DeleteMapping("/delete")
+    @Operation(summary = "删除会员用户")
+    @Parameter(name = "id", description = "编号", required = true)
+    @PreAuthorize("@ss.hasPermission('usermerchant:member-user:delete')")
+    public CommonResult<Boolean> deleteMemberUser(@RequestParam("id") Long id) {
+        memberUserService.deleteMemberUser(id);
         return success(true);
     }
 
-    @PutMapping("/update-point")
-    @Operation(summary = "更新会员用户积分")
-    @PreAuthorize("@ss.hasPermission('member:user:update-point')")
-    public CommonResult<Boolean> updateUserPoint(@Valid @RequestBody MemberUserUpdatePointReqVO updateReqVO) {
-        memberPointRecordService.createPointRecord(updateReqVO.getId(), updateReqVO.getPoint(),
-                MemberPointBizTypeEnum.ADMIN, String.valueOf(getLoginUserId()));
+    @DeleteMapping("/delete-list")
+    @Parameter(name = "ids", description = "编号", required = true)
+    @Operation(summary = "批量删除会员用户")
+                @PreAuthorize("@ss.hasPermission('usermerchant:member-user:delete')")
+    public CommonResult<Boolean> deleteMemberUserList(@RequestParam("ids") List<Long> ids) {
+        memberUserService.deleteMemberUserListByIds(ids);
         return success(true);
     }
 
     @GetMapping("/get")
     @Operation(summary = "获得会员用户")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('member:user:query')")
-    public CommonResult<MemberUserRespVO> getUser(@RequestParam("id") Long id) {
-        MemberUserDO user = memberUserService.getUser(id);
-        if (user == null) {
-            return success(null);
-        }
-        MemberUserRespVO userVO = MemberUserConvert.INSTANCE.convert03(user);
-        if (user.getLevelId() != null) {
-            MemberLevelDO level = memberLevelService.getLevel(userVO.getId());
-            if (level != null) {
-                userVO.setLevelName(level.getName());
-            }
-        }
-        return success(userVO);
+    @PreAuthorize("@ss.hasPermission('usermerchant:member-user:query')")
+    public CommonResult<MemberUserRespVO> getMemberUser(@RequestParam("id") Long id) {
+        MemberUserDO memberUser = memberUserService.getMemberUser(id);
+        return success(BeanUtils.toBean(memberUser, MemberUserRespVO.class));
     }
 
     @GetMapping("/page")
     @Operation(summary = "获得会员用户分页")
-    @PreAuthorize("@ss.hasPermission('member:user:query')")
-    public CommonResult<PageResult<MemberUserRespVO>> getUserPage(@Valid MemberUserPageReqVO pageVO) {
-        PageResult<MemberUserDO> pageResult = memberUserService.getUserPage(pageVO);
-        if (CollUtil.isEmpty(pageResult.getList())) {
-            return success(PageResult.empty());
-        }
+    @PreAuthorize("@ss.hasPermission('usermerchant:member-user:query')")
+    public CommonResult<PageResult<MemberUserRespVO>> getMemberUserPage(@Valid MemberUserPageReqVO pageReqVO) {
+        PageResult<MemberUserDO> pageResult = memberUserService.getMemberUserPage(pageReqVO);
+        return success(BeanUtils.toBean(pageResult, MemberUserRespVO.class));
+    }
 
-        // 处理用户标签返显
-        Set<Long> tagIds = pageResult.getList().stream()
-                .map(MemberUserDO::getTagIds)
-                .filter(Objects::nonNull)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toSet());
-        List<MemberTagDO> tags = memberTagService.getTagList(tagIds);
-        // 处理用户级别返显
-        List<MemberLevelDO> levels = memberLevelService.getLevelList(
-                convertSet(pageResult.getList(), MemberUserDO::getLevelId));
-        // 处理用户分组返显
-        List<MemberGroupDO> groups = memberGroupService.getGroupList(
-                convertSet(pageResult.getList(), MemberUserDO::getGroupId));
-        return success(MemberUserConvert.INSTANCE.convertPage(pageResult, tags, levels, groups));
+    @GetMapping("/export-excel")
+    @Operation(summary = "导出会员用户 Excel")
+    @PreAuthorize("@ss.hasPermission('usermerchant:member-user:export')")
+    @ApiAccessLog(operateType = EXPORT)
+    public void exportMemberUserExcel(@Valid MemberUserPageReqVO pageReqVO,
+              HttpServletResponse response) throws IOException {
+        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        List<MemberUserDO> list = memberUserService.getMemberUserPage(pageReqVO).getList();
+        // 导出 Excel
+        ExcelUtils.write(response, "会员用户.xls", "数据", MemberUserRespVO.class,
+                        BeanUtils.toBean(list, MemberUserRespVO.class));
     }
 
 }

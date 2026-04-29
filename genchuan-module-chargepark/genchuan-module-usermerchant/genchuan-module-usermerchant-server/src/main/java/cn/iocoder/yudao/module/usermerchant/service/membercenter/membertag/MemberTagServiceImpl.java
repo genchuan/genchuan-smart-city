@@ -1,127 +1,85 @@
 package cn.iocoder.yudao.module.usermerchant.service.membercenter.membertag;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.collection.ListUtil;
-import cn.hutool.core.util.StrUtil;
-import cn.iocoder.yudao.framework.common.exception.ServiceException;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membertag.vo.MemberTagCreateReqVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membertag.vo.MemberTagPageReqVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membertag.vo.MemberTagUpdateReqVO;
-import cn.iocoder.yudao.module.usermerchant.convert.membercenter.membertag.MemberTagConvert;
-import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.membertag.MemberTagDO;
-import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.membertag.MemberTagMapper;
-import cn.iocoder.yudao.module.usermerchant.service.membercenter.memberuser.MemberUserService;
-import com.baomidou.dynamic.datasource.annotation.DS;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membertag.vo.*;
+import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.membertag.MemberTagDO;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
+import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.membertag.MemberTagMapper;
+
+import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
+import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
+import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
 
 /**
  * 会员标签 Service 实现类
  *
- * @author 芋道源码
+ * @author 亘川智城
  */
 @Service
 @Validated
-@DS("member")
 public class MemberTagServiceImpl implements MemberTagService {
 
     @Resource
     private MemberTagMapper memberTagMapper;
 
-    @Resource
-    private MemberUserService memberUserService;
-
     @Override
-    public Long createTag(MemberTagCreateReqVO createReqVO) {
-        // 校验名称唯一
-        validateTagNameUnique(null, createReqVO.getName());
+    public Long createMemberTag(MemberTagSaveReqVO createReqVO) {
         // 插入
-        MemberTagDO tag = MemberTagConvert.INSTANCE.convert(createReqVO);
-        memberTagMapper.insert(tag);
+        MemberTagDO memberTag = BeanUtils.toBean(createReqVO, MemberTagDO.class);
+        memberTagMapper.insert(memberTag);
+
         // 返回
-        return tag.getId();
+        return memberTag.getId();
     }
 
     @Override
-    public void updateTag(MemberTagUpdateReqVO updateReqVO) {
+    public void updateMemberTag(MemberTagSaveReqVO updateReqVO) {
         // 校验存在
-        validateTagExists(updateReqVO.getId());
-        // 校验名称唯一
-        validateTagNameUnique(updateReqVO.getId(), updateReqVO.getName());
+        validateMemberTagExists(updateReqVO.getId());
         // 更新
-        MemberTagDO updateObj = MemberTagConvert.INSTANCE.convert(updateReqVO);
+        MemberTagDO updateObj = BeanUtils.toBean(updateReqVO, MemberTagDO.class);
         memberTagMapper.updateById(updateObj);
     }
 
     @Override
-    public void deleteTag(Long id) {
+    public void deleteMemberTag(Long id) {
         // 校验存在
-        validateTagExists(id);
-        // 校验标签下是否有用户
-        validateTagHasUser(id);
+        validateMemberTagExists(id);
         // 删除
         memberTagMapper.deleteById(id);
     }
 
-    private void validateTagExists(Long id) {
+    @Override
+        public void deleteMemberTagListByIds(List<Long> ids) {
+        // 删除
+        memberTagMapper.deleteByIds(ids);
+        }
+
+
+    private void validateMemberTagExists(Long id) {
         if (memberTagMapper.selectById(id) == null) {
-            throw new ServiceException(TAG_NOT_EXISTS);
-        }
-    }
-
-    private void validateTagNameUnique(Long id, String name) {
-        if (StrUtil.isBlank(name)) {
-            return;
-        }
-        MemberTagDO tag = memberTagMapper.selelctByName(name);
-        if (tag == null) {
-            return;
-        }
-
-        // 如果 id 为空，说明不用比较是否为相同 id 的标签
-        if (id == null) {
-            throw new ServiceException(TAG_NAME_EXISTS);
-        }
-        if (!tag.getId().equals(id)) {
-            throw new ServiceException(TAG_NAME_EXISTS);
-        }
-    }
-
-    void validateTagHasUser(Long id) {
-        Long count = memberUserService.getUserCountByTagId(id);
-        if (count > 0) {
-            throw new ServiceException(TAG_HAS_USER);
+            throw exception(MEMBER_TAG_NOT_EXISTS);
         }
     }
 
     @Override
-    public MemberTagDO getTag(Long id) {
+    public MemberTagDO getMemberTag(Long id) {
         return memberTagMapper.selectById(id);
     }
 
     @Override
-    public List<MemberTagDO> getTagList(Collection<Long> ids) {
-        if (CollUtil.isEmpty(ids)) {
-            return ListUtil.empty();
-        }
-        return memberTagMapper.selectByIds(ids);
-    }
-
-    @Override
-    public PageResult<MemberTagDO> getTagPage(MemberTagPageReqVO pageReqVO) {
+    public PageResult<MemberTagDO> getMemberTagPage(MemberTagPageReqVO pageReqVO) {
         return memberTagMapper.selectPage(pageReqVO);
-    }
-
-    @Override
-    public List<MemberTagDO> getTagList() {
-        return memberTagMapper.selectList();
     }
 
 }

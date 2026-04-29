@@ -1,84 +1,62 @@
 package cn.iocoder.yudao.module.usermerchant.service.membercenter.membergroup;
 
-import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membergroup.vo.MemberGroupCreateReqVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membergroup.vo.MemberGroupPageReqVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membergroup.vo.MemberGroupUpdateReqVO;
+import java.util.*;
+import jakarta.validation.*;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membergroup.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.membergroup.MemberGroupDO;
-import jakarta.validation.Valid;
-
-import java.util.Collection;
-import java.util.List;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
- * 用户分组 Service 接口
+ * 会员分组 Service 接口
  *
- * @author owen
+ * @author 亘川智城
  */
 public interface MemberGroupService {
 
     /**
-     * 创建用户分组
+     * 创建会员分组
      *
      * @param createReqVO 创建信息
      * @return 编号
      */
-    Long createGroup(@Valid MemberGroupCreateReqVO createReqVO);
+    Long createMemberGroup(@Valid MemberGroupSaveReqVO createReqVO);
 
     /**
-     * 更新用户分组
+     * 更新会员分组
      *
      * @param updateReqVO 更新信息
      */
-    void updateGroup(@Valid MemberGroupUpdateReqVO updateReqVO);
+    void updateMemberGroup(@Valid MemberGroupSaveReqVO updateReqVO);
 
     /**
-     * 删除用户分组
+     * 删除会员分组
      *
      * @param id 编号
      */
-    void deleteGroup(Long id);
+    void deleteMemberGroup(Long id);
 
     /**
-     * 获得用户分组
+    * 批量删除会员分组
+    *
+    * @param ids 编号
+    */
+    void deleteMemberGroupListByIds(List<Long> ids);
+
+    /**
+     * 获得会员分组
      *
      * @param id 编号
-     * @return 用户分组
+     * @return 会员分组
      */
-    MemberGroupDO getGroup(Long id);
+    MemberGroupDO getMemberGroup(Long id);
 
     /**
-     * 获得用户分组列表
-     *
-     * @param ids 编号
-     * @return 用户分组列表
-     */
-    List<MemberGroupDO> getGroupList(Collection<Long> ids);
-
-    /**
-     * 获得用户分组分页
+     * 获得会员分组分页
      *
      * @param pageReqVO 分页查询
-     * @return 用户分组分页
+     * @return 会员分组分页
      */
-    PageResult<MemberGroupDO> getGroupPage(MemberGroupPageReqVO pageReqVO);
-
-    /**
-     * 获得指定状态的用户分组列表
-     *
-     * @param status 状态
-     * @return 用户分组列表
-     */
-    List<MemberGroupDO> getGroupListByStatus(Integer status);
-
-    /**
-     * 获得开启状态的用户分组列表
-     *
-     * @return 用户分组列表
-     */
-    default List<MemberGroupDO> getEnableGroupList() {
-        return getGroupListByStatus(CommonStatusEnum.ENABLE.getStatus());
-    }
+    PageResult<MemberGroupDO> getMemberGroupPage(MemberGroupPageReqVO pageReqVO);
 
 }

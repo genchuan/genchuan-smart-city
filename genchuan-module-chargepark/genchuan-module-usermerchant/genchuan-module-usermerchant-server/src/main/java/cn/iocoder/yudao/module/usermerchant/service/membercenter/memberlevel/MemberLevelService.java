@@ -1,21 +1,16 @@
 package cn.iocoder.yudao.module.usermerchant.service.membercenter.memberlevel;
 
-import cn.iocoder.yudao.framework.common.enums.CommonStatusEnum;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberlevel.vo.level.MemberLevelCreateReqVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberlevel.vo.level.MemberLevelListReqVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberlevel.vo.level.MemberLevelUpdateReqVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberuser.vo.MemberUserUpdateLevelReqVO;
+import java.util.*;
+import jakarta.validation.*;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberlevel.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberlevel.MemberLevelDO;
-import cn.iocoder.yudao.module.usermerchant.enums.MemberExperienceBizTypeEnum;
-import jakarta.validation.Valid;
-
-import java.util.Collection;
-import java.util.List;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 会员等级 Service 接口
  *
- * @author owen
+ * @author 亘川智城
  */
 public interface MemberLevelService {
 
@@ -25,21 +20,28 @@ public interface MemberLevelService {
      * @param createReqVO 创建信息
      * @return 编号
      */
-    Long createLevel(@Valid MemberLevelCreateReqVO createReqVO);
+    Long createMemberLevel(@Valid MemberLevelSaveReqVO createReqVO);
 
     /**
      * 更新会员等级
      *
      * @param updateReqVO 更新信息
      */
-    void updateLevel(@Valid MemberLevelUpdateReqVO updateReqVO);
+    void updateMemberLevel(@Valid MemberLevelSaveReqVO updateReqVO);
 
     /**
      * 删除会员等级
      *
      * @param id 编号
      */
-    void deleteLevel(Long id);
+    void deleteMemberLevel(Long id);
+
+    /**
+    * 批量删除会员等级
+    *
+    * @param ids 编号
+    */
+    void deleteMemberLevelListByIds(List<Long> ids);
 
     /**
      * 获得会员等级
@@ -47,56 +49,14 @@ public interface MemberLevelService {
      * @param id 编号
      * @return 会员等级
      */
-    MemberLevelDO getLevel(Long id);
+    MemberLevelDO getMemberLevel(Long id);
 
     /**
-     * 获得会员等级列表
+     * 获得会员等级分页
      *
-     * @param ids 编号
-     * @return 会员等级列表
+     * @param pageReqVO 分页查询
+     * @return 会员等级分页
      */
-    List<MemberLevelDO> getLevelList(Collection<Long> ids);
-
-    /**
-     * 获得会员等级列表
-     *
-     * @param listReqVO 查询参数
-     * @return 会员等级列表
-     */
-    List<MemberLevelDO> getLevelList(MemberLevelListReqVO listReqVO);
-
-    /**
-     * 获得指定状态的会员等级列表
-     *
-     * @param status 状态
-     * @return 会员等级列表
-     */
-    List<MemberLevelDO> getLevelListByStatus(Integer status);
-
-    /**
-     * 获得开启状态的会员等级列表
-     *
-     * @return 会员等级列表
-     */
-    default List<MemberLevelDO> getEnableLevelList() {
-        return getLevelListByStatus(CommonStatusEnum.ENABLE.getStatus());
-    }
-
-    /**
-     * 修改会员的等级
-     *
-     * @param updateReqVO 修改参数
-     */
-    void updateUserLevel(MemberUserUpdateLevelReqVO updateReqVO);
-
-    /**
-     * 增加会员经验
-     *
-     * @param userId     会员ID
-     * @param experience 经验
-     * @param bizType    业务类型
-     * @param bizId      业务编号
-     */
-    void addExperience(Long userId, Integer experience, MemberExperienceBizTypeEnum bizType, String bizId);
+    PageResult<MemberLevelDO> getMemberLevelPage(MemberLevelPageReqVO pageReqVO);
 
 }

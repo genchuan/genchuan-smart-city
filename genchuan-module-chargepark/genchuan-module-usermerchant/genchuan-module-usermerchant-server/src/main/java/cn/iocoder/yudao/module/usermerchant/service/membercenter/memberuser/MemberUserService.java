@@ -1,200 +1,62 @@
 package cn.iocoder.yudao.module.usermerchant.service.membercenter.memberuser;
 
-import cn.iocoder.yudao.framework.common.enums.TerminalEnum;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.validation.Mobile;
+import java.util.*;
+import jakarta.validation.*;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberuser.vo.*;
-import cn.iocoder.yudao.module.usermerchant.controller.app.membercenter.memberuser.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberuser.MemberUserDO;
-import jakarta.validation.Valid;
-
-import java.util.Collection;
-import java.util.List;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 会员用户 Service 接口
  *
- * @author 芋道源码
+ * @author 亘川智城
  */
 public interface MemberUserService {
 
     /**
-     * 通过手机查询用户
+     * 创建会员用户
      *
-     * @param mobile 手机
-     * @return 用户对象
+     * @param createReqVO 创建信息
+     * @return 编号
      */
-    MemberUserDO getUserByMobile(String mobile);
+    Long createMemberUser(@Valid MemberUserSaveReqVO createReqVO);
 
     /**
-     * 基于用户昵称，模糊匹配用户列表
-     *
-     * @param nickname 用户昵称，模糊匹配
-     * @return 用户信息的列表
-     */
-    List<MemberUserDO> getUserListByNickname(String nickname);
-
-    /**
-     * 基于手机号创建用户。
-     * 如果用户已经存在，则直接进行返回
-     *
-     * @param mobile     手机号
-     * @param registerIp 注册 IP
-     * @param terminal   终端 {@link TerminalEnum}
-     * @return 用户对象
-     */
-    MemberUserDO createUserIfAbsent(@Mobile String mobile, String registerIp, Integer terminal);
-
-    /**
-     * 创建用户
-     * 目的：三方登录时，如果未绑定用户时，自动创建对应用户
-     *
-     * @param nickname   昵称
-     * @param avtar      头像
-     * @param registerIp 注册 IP
-     * @param terminal   终端 {@link TerminalEnum}
-     * @return 用户对象
-     */
-    MemberUserDO createUser(String nickname, String avtar, String registerIp, Integer terminal);
-
-    /**
-     * 更新用户的最后登陆信息
-     *
-     * @param id      用户编号
-     * @param loginIp 登陆 IP
-     */
-    void updateUserLogin(Long id, String loginIp);
-
-    /**
-     * 通过用户 ID 查询用户
-     *
-     * @param id 用户ID
-     * @return 用户对象信息
-     */
-    MemberUserDO getUser(Long id);
-
-    /**
-     * 通过用户 ID 查询用户们
-     *
-     * @param ids 用户 ID
-     * @return 用户对象信息数组
-     */
-    List<MemberUserDO> getUserList(Collection<Long> ids);
-
-    /**
-     * 【会员】修改基本信息
-     *
-     * @param userId 用户编号
-     * @param reqVO  基本信息
-     */
-    void updateUser(Long userId, AppMemberUserUpdateReqVO reqVO);
-
-    /**
-     * 【会员】修改手机，基于手机验证码
-     *
-     * @param userId 用户编号
-     * @param reqVO  请求信息
-     */
-    void updateUserMobile(Long userId, AppMemberUserUpdateMobileReqVO reqVO);
-
-    /**
-     * 【会员】修改手机，基于微信小程序的授权码
-     *
-     * @param userId 用户编号
-     * @param reqVO 请求信息
-     */
-    void updateUserMobileByWeixin(Long userId, AppMemberUserUpdateMobileByWeixinReqVO reqVO);
-
-    /**
-     * 【会员】修改密码
-     *
-     * @param userId 用户编号
-     * @param reqVO  请求信息
-     */
-    void updateUserPassword(Long userId, AppMemberUserUpdatePasswordReqVO reqVO);
-
-    /**
-     * 【会员】忘记密码
-     *
-     * @param reqVO 请求信息
-     */
-    void resetUserPassword(AppMemberUserResetPasswordReqVO reqVO);
-
-    /**
-     * 判断密码是否匹配
-     *
-     * @param rawPassword     未加密的密码
-     * @param encodedPassword 加密后的密码
-     * @return 是否匹配
-     */
-    boolean isPasswordMatch(String rawPassword, String encodedPassword);
-
-    /**
-     * 【管理员】更新会员用户
+     * 更新会员用户
      *
      * @param updateReqVO 更新信息
      */
-    void updateUser(@Valid MemberUserUpdateReqVO updateReqVO);
+    void updateMemberUser(@Valid MemberUserSaveReqVO updateReqVO);
 
     /**
-     * 【管理员】获得会员用户分页
+     * 删除会员用户
+     *
+     * @param id 编号
+     */
+    void deleteMemberUser(Long id);
+
+    /**
+    * 批量删除会员用户
+    *
+    * @param ids 编号
+    */
+    void deleteMemberUserListByIds(List<Long> ids);
+
+    /**
+     * 获得会员用户
+     *
+     * @param id 编号
+     * @return 会员用户
+     */
+    MemberUserDO getMemberUser(Long id);
+
+    /**
+     * 获得会员用户分页
      *
      * @param pageReqVO 分页查询
      * @return 会员用户分页
      */
-    PageResult<MemberUserDO> getUserPage(MemberUserPageReqVO pageReqVO);
+    PageResult<MemberUserDO> getMemberUserPage(MemberUserPageReqVO pageReqVO);
 
-    /**
-     * 更新用户的等级和经验
-     *
-     * @param id         用户编号
-     * @param levelId    用户等级
-     * @param experience 用户经验
-     */
-    void updateUserLevel(Long id, Long levelId, Integer experience);
-
-    /**
-     * 获得指定用户分组下的用户数量
-     *
-     * @param groupId 用户分组编号
-     * @return 用户数量
-     */
-    Long getUserCountByGroupId(Long groupId);
-
-    /**
-     * 获得指定用户等级下的用户数量
-     *
-     * @param levelId 用户等级编号
-     * @return 用户数量
-     */
-    Long getUserCountByLevelId(Long levelId);
-
-    /**
-     * 获得指定会员标签下的用户数量
-     *
-     * @param tagId 用户标签编号
-     * @return 用户数量
-     */
-    Long getUserCountByTagId(Long tagId);
-
-    /**
-     * 更新用户的积分
-     *
-     * @param userId 用户编号
-     * @param point  积分数量
-     * @return 更新结果
-     */
-    boolean updateUserPoint(Long userId, Integer point);
-
-    /**
-     * 基于手机号创建用户（携带昵称）。
-     * 如果用户已经存在，则直接进行返回
-     *
-     * @param mobile     手机号
-     * @param nickname   昵称
-     * @param registerIp 注册 IP
-     * @param terminal   终端 {@link TerminalEnum}
-     * @return 用户对象
-     */
-    MemberUserDO createUserIfAbsent(String mobile, String nickname, String password, String registerIp, Integer terminal);
 }

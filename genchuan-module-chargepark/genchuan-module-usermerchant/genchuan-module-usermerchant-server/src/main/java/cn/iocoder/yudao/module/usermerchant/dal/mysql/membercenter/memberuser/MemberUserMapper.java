@@ -1,98 +1,50 @@
 package cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.memberuser;
 
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.lang.Assert;
-import cn.hutool.core.util.StrUtil;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
-import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberuser.vo.MemberUserPageReqVO;
-import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberuser.MemberUserDO;
-import com.baomidou.dynamic.datasource.annotation.DS;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import org.apache.ibatis.annotations.Mapper;
+import java.util.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberuser.MemberUserDO;
+import org.apache.ibatis.annotations.Mapper;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberuser.vo.*;
 
 /**
- * 会员 User Mapper
+ * 会员用户 Mapper
  *
- * @author 芋道源码
+ * @author 亘川智城
  */
 @Mapper
-@DS("member")
 public interface MemberUserMapper extends BaseMapperX<MemberUserDO> {
 
-    default MemberUserDO selectByMobile(String mobile) {
-        return selectOne(MemberUserDO::getMobile, mobile);
-    }
-
-    default List<MemberUserDO> selectListByNicknameLike(String nickname) {
-        return selectList(new LambdaQueryWrapperX<MemberUserDO>()
-                .likeIfPresent(MemberUserDO::getNickname, nickname));
-    }
-
     default PageResult<MemberUserDO> selectPage(MemberUserPageReqVO reqVO) {
-        // 处理 tagIds 过滤条件
-        String tagIdSql = "";
-        if (CollUtil.isNotEmpty(reqVO.getTagIds())) {
-            tagIdSql = reqVO.getTagIds().stream()
-                    .map(tagId -> "FIND_IN_SET(" + tagId + ", tag_ids)")
-                    .collect(Collectors.joining(" OR "));
-        }
-        // 分页查询
         return selectPage(reqVO, new LambdaQueryWrapperX<MemberUserDO>()
-                .likeIfPresent(MemberUserDO::getMobile, reqVO.getMobile())
+                .eqIfPresent(MemberUserDO::getMobile, reqVO.getMobile())
+                .eqIfPresent(MemberUserDO::getPassword, reqVO.getPassword())
+                .eqIfPresent(MemberUserDO::getStatus, reqVO.getStatus())
+                .eqIfPresent(MemberUserDO::getRegisterIp, reqVO.getRegisterIp())
+                .eqIfPresent(MemberUserDO::getRegisterTerminal, reqVO.getRegisterTerminal())
+                .eqIfPresent(MemberUserDO::getLoginIp, reqVO.getLoginIp())
                 .betweenIfPresent(MemberUserDO::getLoginDate, reqVO.getLoginDate())
                 .likeIfPresent(MemberUserDO::getNickname, reqVO.getNickname())
-                .betweenIfPresent(MemberUserDO::getCreateTime, reqVO.getCreateTime())
+                .eqIfPresent(MemberUserDO::getAvatar, reqVO.getAvatar())
+                .likeIfPresent(MemberUserDO::getName, reqVO.getName())
+                .eqIfPresent(MemberUserDO::getSex, reqVO.getSex())
+                .eqIfPresent(MemberUserDO::getAreaId, reqVO.getAreaId())
+                .eqIfPresent(MemberUserDO::getBirthday, reqVO.getBirthday())
+                .eqIfPresent(MemberUserDO::getMark, reqVO.getMark())
+                .eqIfPresent(MemberUserDO::getPoint, reqVO.getPoint())
+                .eqIfPresent(MemberUserDO::getTagIds, reqVO.getTagIds())
                 .eqIfPresent(MemberUserDO::getLevelId, reqVO.getLevelId())
+                .eqIfPresent(MemberUserDO::getExperience, reqVO.getExperience())
                 .eqIfPresent(MemberUserDO::getGroupId, reqVO.getGroupId())
-                .apply(StrUtil.isNotEmpty(tagIdSql), tagIdSql)
+                .betweenIfPresent(MemberUserDO::getExpireTime, reqVO.getExpireTime())
+                .eqIfPresent(MemberUserDO::getAutoRenew, reqVO.getAutoRenew())
+                .eqIfPresent(MemberUserDO::getCreator, reqVO.getCreator())
+                .betweenIfPresent(MemberUserDO::getCreateTime, reqVO.getCreateTime())
+                .eqIfPresent(MemberUserDO::getUpdater, reqVO.getUpdater())
+                .betweenIfPresent(MemberUserDO::getUpdateTime, reqVO.getUpdateTime())
                 .orderByDesc(MemberUserDO::getId));
-    }
-
-    default Long selectCountByGroupId(Long groupId) {
-        return selectCount(MemberUserDO::getGroupId, groupId);
-    }
-
-    default Long selectCountByLevelId(Long levelId) {
-        return selectCount(MemberUserDO::getLevelId, levelId);
-    }
-
-    default Long selectCountByTagId(Long tagId) {
-        return selectCount(new LambdaQueryWrapperX<MemberUserDO>()
-                .apply("FIND_IN_SET({0}, tag_ids)", tagId));
-    }
-
-    /**
-     * 更新用户积分（增加）
-     *
-     * @param id        用户编号
-     * @param incrCount 增加积分（正数）
-     */
-    default void updatePointIncr(Long id, Integer incrCount) {
-        Assert.isTrue(incrCount > 0);
-        LambdaUpdateWrapper<MemberUserDO> lambdaUpdateWrapper = new LambdaUpdateWrapper<MemberUserDO>()
-                .setSql(" point = point + " + incrCount)
-                .eq(MemberUserDO::getId, id);
-        update(null, lambdaUpdateWrapper);
-    }
-
-    /**
-     * 更新用户积分（减少）
-     *
-     * @param id        用户编号
-     * @param incrCount 增加积分（负数）
-     * @return 更新行数
-     */
-    default int updatePointDecr(Long id, Integer incrCount) {
-        Assert.isTrue(incrCount < 0);
-        LambdaUpdateWrapper<MemberUserDO> lambdaUpdateWrapper = new LambdaUpdateWrapper<MemberUserDO>()
-                .setSql(" point = point + " + incrCount) // 负数，所以使用 + 号
-                .eq(MemberUserDO::getId, id);
-        return update(null, lambdaUpdateWrapper);
     }
 
 }
