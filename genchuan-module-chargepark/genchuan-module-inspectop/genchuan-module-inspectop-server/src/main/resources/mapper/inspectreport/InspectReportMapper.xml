@@ -60,12 +60,15 @@
             <if test="reqVO.type != null and reqVO.type != ''">
                 AND ir.type = #{reqVO.type}
             </if>
+            <if test="reqVO.status != null and reqVO.status != ''">
+                AND ir.status = #{reqVO.status}
+            </if>
             AND ir.deleted = 0
         </where>
         ORDER BY ir.id DESC
     </select>
 
-    <!-- 上报量趋势数据查询 - 修复only_full_group_by错误 -->
+    <!-- 上报量趋势数据查询 -->
     <select id="selectReportTrendData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.inspectreport.vo.InspectReportChartRespVO$TrendData">
         SELECT
         DATE_FORMAT(report_time, '%m-%d') AS time,
