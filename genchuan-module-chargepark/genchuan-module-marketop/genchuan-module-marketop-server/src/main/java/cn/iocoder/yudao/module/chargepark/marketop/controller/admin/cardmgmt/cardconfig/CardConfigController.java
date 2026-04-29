@@ -95,7 +95,8 @@ public class CardConfigController {
         Set<Long> userIds = new HashSet<>();
         for (var item : list) {
             if (StrUtil.isNotBlank(item.getCreator())) {
-                userIds.add(Long.valueOf(item.getCreator()));
+                Long id = safeParseLong(item.getCreator());
+                if (id != null) userIds.add(id);
             }
             if (item.getAuditorId() != null) {
                 userIds.add(item.getAuditorId());
@@ -105,13 +106,22 @@ public class CardConfigController {
         Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
         for (var item : list) {
             if (StrUtil.isNotBlank(item.getCreator())) {
-                AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
+                AdminUserRespDTO user = userMap.get(safeParseLong(item.getCreator()));
                 if (user != null) item.setCreatorName(user.getNickname());
             }
             if (item.getAuditorId() != null) {
                 AdminUserRespDTO user = userMap.get(item.getAuditorId());
                 if (user != null) item.setAuditorName(user.getNickname());
             }
+        }
+    }
+
+    private Long safeParseLong(String s) {
+        if (s == null) return null;
+        try {
+            return Long.valueOf(s);
+        } catch (NumberFormatException e) {
+            return null;
         }
     }
 

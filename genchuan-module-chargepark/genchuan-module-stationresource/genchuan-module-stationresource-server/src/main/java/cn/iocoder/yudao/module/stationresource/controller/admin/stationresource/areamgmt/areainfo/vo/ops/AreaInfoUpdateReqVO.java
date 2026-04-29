@@ -22,13 +22,13 @@ public class AreaInfoUpdateReqVO {
     private String name;
 
     // ===================== 新增字段 START =====================
-    @Schema(description = "省份", requiredMode = Schema.RequiredMode.REQUIRED, example = "福建省")
-    @NotEmpty(message = "省份不能为空")
-    private String province;
-
-    @Schema(description = "城市", requiredMode = Schema.RequiredMode.REQUIRED, example = "泉州市")
-    @NotEmpty(message = "城市不能为空")
-    private String city;
+//    @Schema(description = "省份", requiredMode = Schema.RequiredMode.REQUIRED, example = "福建省")
+//    @NotEmpty(message = "省份不能为空")
+//    private String province;
+//
+//    @Schema(description = "城市", requiredMode = Schema.RequiredMode.REQUIRED, example = "泉州市")
+//    @NotEmpty(message = "城市不能为空")
+//    private String city;
     // ===================== 新增字段 END =====================
 
     @Schema(description = "区县", requiredMode = Schema.RequiredMode.REQUIRED, example = "丰泽区")
@@ -36,8 +36,8 @@ public class AreaInfoUpdateReqVO {
     private String district;
 
     // ===================== 新增字段 START =====================
-    @Schema(description = "详细地址", example = "福建省泉州市丰泽区滨海街100号")
-    private String address;
+//    @Schema(description = "详细地址", example = "福建省泉州市丰泽区滨海街100号")
+//    private String address;
     // ===================== 新增字段 END =====================
 
     @Schema(description = "负责人ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")

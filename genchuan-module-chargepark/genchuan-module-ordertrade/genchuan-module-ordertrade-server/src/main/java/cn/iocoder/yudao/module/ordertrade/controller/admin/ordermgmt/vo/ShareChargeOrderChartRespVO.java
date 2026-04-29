@@ -21,12 +21,17 @@ public class ShareChargeOrderChartRespVO {
     @Schema(description = "各场站订单量数据（柱状图）")
     private List<Map<String,Object>> stationData;
 
-    @Schema(description = "今日订单量")
-    private Integer todayOrderCount;
+    @Schema(description = "今日核心指标（卡片）")
+    private CardData cardData;
 
-    @Schema(description = "今日借出数")
-    private Integer todayLendCount;
-
-    @Schema(description = "今日营收")
-    private BigDecimal todayRevenue;
+    @Data
+    @Schema(description = "卡片指标")
+    public static class CardData {
+        @Schema(description = "今日订单量")
+        private Integer todayOrderCount;
+        @Schema(description = "今日借出数")
+        private Integer todayLendCount;
+        @Schema(description = "今日营收")
+        private BigDecimal todayRevenue;
+    }
 }

@@ -65,7 +65,10 @@ public class PayTransferServiceImpl implements PayTransferService {
         LocalDateTime now = LocalDateTime.now();
 
         resp.setTrendData(payTransferMapper.selectTrend(start, end));
-        resp.setTodayTransferCount(payTransferMapper.selectTodayCount(todayStart, now));
+
+        PayTransferChartRespVO.CardData card = new PayTransferChartRespVO.CardData();
+        card.setTodayTransferCount(payTransferMapper.selectTodayCount(todayStart, now));
+        resp.setCardData(card);
         return resp;
     }
 }

@@ -50,13 +50,15 @@ public class DebtIdentifyServiceImpl implements DebtIdentifyService {
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(debtIdentifyMapper.selectTrend(start, end));
         resp.setStationData(debtIdentifyMapper.selectGroupByStatus());
-        resp.setWaitIdentifyCount(debtIdentifyMapper.selectCountByStatus("pending").intValue());
+        DebtIdentifyChartRespVO.CardData card = new DebtIdentifyChartRespVO.CardData();
+        card.setWaitIdentifyCount(debtIdentifyMapper.selectCountByStatus("pending").intValue());
         Long total = debtIdentifyMapper.selectTodayCount(todayStart, now);
         Long identified = debtIdentifyMapper.selectCountByStatus("identified");
         if (total != null && total > 0) {
-            resp.setIdentifySuccessRate(new BigDecimal(identified).multiply(BigDecimal.valueOf(100))
+            card.setIdentifySuccessRate(new BigDecimal(identified).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(total), 1, java.math.RoundingMode.HALF_UP));
-        } else { resp.setIdentifySuccessRate(BigDecimal.ZERO); }
+        } else { card.setIdentifySuccessRate(BigDecimal.ZERO); }
+        resp.setCardData(card);
         return resp;
     }
 

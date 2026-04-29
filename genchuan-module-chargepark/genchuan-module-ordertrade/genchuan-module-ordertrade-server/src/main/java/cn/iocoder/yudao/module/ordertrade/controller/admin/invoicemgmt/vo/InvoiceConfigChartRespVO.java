@@ -13,6 +13,14 @@ public class InvoiceConfigChartRespVO {
     @Schema(description = "配置类型占比数据（饼图）")
     private List<Map<String, Object>> categoryData;
 
-    @Schema(description = "生效配置数")
-    private Long enabledCount;
+    @Schema(description = "今日核心指标（卡片）")
+    private CardData cardData;
+
+    @Data
+    @Schema(description = "卡片指标")
+    public static class CardData {
+
+        @Schema(description = "生效配置数")
+        private Long enabledCount;
+    }
 }

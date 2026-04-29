@@ -65,8 +65,10 @@ public class PayWalletServiceImpl implements PayWalletService {
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();
 
-        resp.setTotalBalance(payWalletMapper.selectTotalBalance());
-        resp.setTodayRechargeAmount(payWalletMapper.selectRechargeAmount(todayStart, now));
+        PayWalletChartRespVO.CardData card = new PayWalletChartRespVO.CardData();
+        card.setTotalBalance(payWalletMapper.selectTotalBalance());
+        card.setTodayRechargeAmount(payWalletMapper.selectRechargeAmount(todayStart, now));
+        resp.setCardData(card);
         return resp;
     }
 }

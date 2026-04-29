@@ -64,18 +64,21 @@ public class ReconcileRecordServiceImpl implements ReconcileRecordService {
         LocalDateTime end = chartReqVO.getEndTime() != null ? chartReqVO.getEndTime() : LocalDateTime.now();
 
         resp.setTrendData(reconcileRecordMapper.selectTrend(start, end));
+
+        ReconcileRecordChartRespVO.CardData card = new ReconcileRecordChartRespVO.CardData();
         Long unmatchedCount = reconcileRecordMapper.selectAbnormalCount();
         Long totalCount = reconcileRecordMapper.selectTotalCount();
-        resp.setUnmatchedCount(unmatchedCount);
-        resp.setTotalCount(totalCount);
+        card.setUnmatchedCount(unmatchedCount);
+        card.setTotalCount(totalCount);
 
         if (totalCount != null && totalCount > 0) {
             long matchedCount = totalCount - (unmatchedCount != null ? unmatchedCount : 0L);
-            resp.setMatchRate(new BigDecimal(matchedCount).multiply(BigDecimal.valueOf(100))
+            card.setMatchRate(new BigDecimal(matchedCount).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(totalCount), 1, RoundingMode.HALF_UP));
         } else {
-            resp.setMatchRate(BigDecimal.ZERO);
+            card.setMatchRate(BigDecimal.ZERO);
         }
+        resp.setCardData(card);
         return resp;
     }
 

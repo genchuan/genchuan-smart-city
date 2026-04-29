@@ -59,4 +59,7 @@ public interface RuleConfigMapper extends BaseMapperX<RuleConfigDO> {
     @Select("SELECT type, COUNT(*) as count FROM rule_config GROUP BY type")
     List<java.util.Map<String, Object>> selectTypeCountList();
 
+    @Select("SELECT scene, COUNT(*) as count FROM rule_config GROUP BY scene")
+    List<java.util.Map<String, Object>> selectSceneCountList();
+
 }

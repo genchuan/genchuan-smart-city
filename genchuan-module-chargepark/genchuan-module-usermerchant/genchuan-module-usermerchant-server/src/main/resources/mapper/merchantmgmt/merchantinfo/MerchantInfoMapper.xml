@@ -56,17 +56,11 @@
         GROUP BY merchant_type
     </select>
 
-    <!-- 总商户数统计 -->
+    <!-- 总商户数统计（全局，不受时间范围限制） -->
     <select id="selectTotalMerchantCount" resultType="java.lang.Long">
         SELECT COUNT(*)
         FROM merchant_info
         WHERE deleted = 0
-        <if test="start != null">
-            AND create_time >= #{start}
-        </if>
-        <if test="end != null">
-            AND create_time &lt;= #{end}
-        </if>
     </select>
 
     <!-- 新增商户数（注册时间在时间范围内） -->

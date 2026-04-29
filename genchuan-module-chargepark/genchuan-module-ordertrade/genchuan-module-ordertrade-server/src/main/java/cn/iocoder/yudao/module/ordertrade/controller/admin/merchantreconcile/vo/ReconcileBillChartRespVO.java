@@ -14,15 +14,23 @@ public class ReconcileBillChartRespVO {
     @Schema(description = "对账单趋势数据（折线图）")
     private List<Map<String, Object>> trendData;
 
-    @Schema(description = "待确认对账单数量")
-    private Long pendingCount;
+    @Schema(description = "今日核心指标（卡片）")
+    private CardData cardData;
 
-    @Schema(description = "有异议对账单数量")
-    private Long disputedCount;
+    @Data
+    @Schema(description = "卡片指标")
+    public static class CardData {
 
-    @Schema(description = "已确认对账单数量")
-    private Long confirmedCount;
+        @Schema(description = "待确认对账单数量")
+        private Long pendingCount;
 
-    @Schema(description = "对账通过率(%)")
-    private BigDecimal confirmRate;
+        @Schema(description = "有异议对账单数量")
+        private Long disputedCount;
+
+        @Schema(description = "已确认对账单数量")
+        private Long confirmedCount;
+
+        @Schema(description = "对账通过率(%)")
+        private BigDecimal confirmRate;
+    }
 }

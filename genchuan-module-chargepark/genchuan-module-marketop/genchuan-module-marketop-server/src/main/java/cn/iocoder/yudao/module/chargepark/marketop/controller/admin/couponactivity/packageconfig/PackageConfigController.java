@@ -109,14 +109,17 @@ public class PackageConfigController {
         Set<Long> couponIds = new HashSet<>();
         for (var item : list) {
             if (StrUtil.isNotBlank(item.getCreator())) {
-                userIds.add(Long.valueOf(item.getCreator()));
+                Long id = safeParseLong(item.getCreator());
+                if (id != null) userIds.add(id);
             }
             if (item.getAuditorId() != null) {
                 userIds.add(item.getAuditorId());
             }
             if (StrUtil.isNotBlank(item.getCouponIds())) {
                 Arrays.stream(item.getCouponIds().split(","))
-                        .filter(StrUtil::isNotBlank).map(String::trim).map(Long::valueOf)
+                        .filter(StrUtil::isNotBlank).map(String::trim)
+                        .map(s -> safeParseLong(s))
+                        .filter(Objects::nonNull)
                         .forEach(couponIds::add);
             }
         }
@@ -125,7 +128,7 @@ public class PackageConfigController {
             Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
             for (var item : list) {
                 if (StrUtil.isNotBlank(item.getCreator())) {
-                    AdminUserRespDTO user = userMap.get(Long.valueOf(item.getCreator()));
+                    AdminUserRespDTO user = userMap.get(safeParseLong(item.getCreator()));
                     if (user != null) item.setCreatorName(user.getNickname());
                 }
                 if (item.getAuditorId() != null) {
@@ -145,12 +148,24 @@ public class PackageConfigController {
                 if (StrUtil.isNotBlank(item.getCouponIds())) {
                     String names = Arrays.stream(item.getCouponIds().split(","))
                             .filter(StrUtil::isNotBlank).map(String::trim)
-                            .map(id -> couponNameMap.get(Long.valueOf(id)))
+                            .map(s -> {
+                                Long id = safeParseLong(s);
+                                return id != null ? couponNameMap.get(id) : null;
+                            })
                             .filter(Objects::nonNull)
                             .collect(Collectors.joining(","));
                     item.setCouponNames(names);
                 }
             }
+        }
+    }
+
+    private Long safeParseLong(String s) {
+        if (s == null) return null;
+        try {
+            return Long.valueOf(s);
+        } catch (NumberFormatException e) {
+            return null;
         }
     }
 

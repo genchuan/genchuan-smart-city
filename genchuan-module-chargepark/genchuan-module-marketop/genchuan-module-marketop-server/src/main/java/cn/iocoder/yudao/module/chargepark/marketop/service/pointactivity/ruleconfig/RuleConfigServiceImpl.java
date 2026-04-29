@@ -109,11 +109,21 @@ public class RuleConfigServiceImpl implements RuleConfigService {
             return item;
         }).toList();
 
+        // sceneCountList = 按 scene 分组统计数量
+        List<Map<String, Object>> sceneCountListData = ruleConfigMapper.selectSceneCountList();
+        List<RuleConfigChartRespVO.SceneCountItem> sceneCountItems = sceneCountListData.stream().map(m -> {
+            RuleConfigChartRespVO.SceneCountItem item = new RuleConfigChartRespVO.SceneCountItem();
+            item.setScene((String) m.get("scene"));
+            item.setCount(((Number) m.get("count")).intValue());
+            return item;
+        }).toList();
+
         RuleConfigChartRespVO respVO = new RuleConfigChartRespVO();
         respVO.setEnableCount(enableCount.intValue());
         respVO.setMatchRate(matchRate);
         respVO.setTypeList(typeList);
         respVO.setTypeCountList(typeCountItems);
+        respVO.setSceneCountList(sceneCountItems);
         return respVO;
     }
 

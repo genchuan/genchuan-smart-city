@@ -34,4 +34,7 @@ public class CouponMgmtImportExcelVO {
     @ExcelProperty("券描述")
     private String description;
 
+    @ExcelProperty("有效期")
+    private String validTime;
+
 }

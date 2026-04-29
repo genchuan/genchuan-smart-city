@@ -14,12 +14,20 @@ public class ReconcileRecordChartRespVO {
     @Schema(description = "对账记录趋势数据（折线图）")
     private List<Map<String, Object>> trendData;
 
-    @Schema(description = "不匹配记录数量")
-    private Long unmatchedCount;
+    @Schema(description = "今日核心指标（卡片）")
+    private CardData cardData;
 
-    @Schema(description = "总记录数量")
-    private Long totalCount;
+    @Data
+    @Schema(description = "卡片指标")
+    public static class CardData {
 
-    @Schema(description = "匹配率(%)")
-    private BigDecimal matchRate;
+        @Schema(description = "不匹配记录数量")
+        private Long unmatchedCount;
+
+        @Schema(description = "总记录数量")
+        private Long totalCount;
+
+        @Schema(description = "匹配率(%)")
+        private BigDecimal matchRate;
+    }
 }

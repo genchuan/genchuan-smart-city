@@ -9,4 +9,63 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="selectTotalCount"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.staymgmt.vo.StayMgmtChartRespVO">
+        SELECT
+        COUNT(1) AS totalStayCount
+        COUNT(CASE WHEN a.status = #{pendingConfirm} THEN 1 ELSE 0 END) AS pendingConfirmCount,
+        COUNT(CASE WHEN a.status = #{pendingAudit} THEN 1 ELSE 0 END) AS pendingAuditCount,
+        COUNT(CASE WHEN a.status = #{passed} THEN 1 ELSE 0 END) AS passedCount
+        FROM stay_mgmt AS a LEFT JOIN student_info AS s  ON a.student_id = s.id
+        WHERE a.deleted= 0
+        <if test="className != null">
+            AND s.class_name = #{className}
+        </if>
+        <if test="startTime != null">
+            AND stay_date between #{startTime} AND #{endTime}
+        </if>
+    </select>
+    <select id="getWeekendTrend" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        DATE_FORMAT(stay_date, '%Y-%m-%d') AS date,
+        COUNT(1) AS count
+        FROM stay_mgmt AS a LEFT JOIN student_info AS s  ON a.student_id = s.id
+        WHERE a.deleted= 0
+        <if test="className != null">
+            AND s.class_name = #{className}
+        </if>
+        <if test="startTime != null">
+            AND stay_date between #{startTime} AND #{endTime}
+        </if>
+    </select>
+    <select id="getStatusDistribution" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        a.status AS status,
+        COUNT(1) AS count
+        FROM stay_mgmt AS a LEFT JOIN student_info AS s  ON a.student_id = s.id
+        WHERE a.deleted= 0
+        <if test="className != null">
+            AND s.class_name = #{className}
+        </if>
+        <if test="startTime != null">
+            AND stay_date between #{startTime} AND #{endTime}
+        </if>
+        GROUP BY a.status
+    </select>
+    <select id="getClassStatisticsList" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        s.class_name AS className,
+        COUNT(1) AS totalCount,
+        COUNT(CASE WHEN a.status = #{pendingConfirm} THEN 1 ELSE 0 END) AS pendingConfirmCount,
+        COUNT(CASE WHEN a.status = #{pendingAudit} THEN 1 ELSE 0 END) AS pendingAuditCount,
+        COUNT(CASE WHEN a.status = #{passed} THEN 1 ELSE 0 END) AS passedCount
+        FROM stay_mgmt AS a LEFT JOIN student_info AS s  ON a.student_id = s.id
+        WHERE a.deleted= 0
+        <if test="startTime != null">
+            AND stay_date between #{startTime} AND #{endTime}
+        </if>
+
+        GROUP BY class_name
+
+    </select>
 </mapper>

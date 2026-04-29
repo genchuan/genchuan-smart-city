@@ -21,9 +21,17 @@ public class AbnormalOrderChartRespVO {
     @Schema(description = "异常类型分布数据（柱状图）")
     private List<Map<String,Object>> typeData;
 
-    @Schema(description = "待处理数（卡片）")
-    private Integer waitProcessCount;
+    @Schema(description = "今日核心指标（卡片）")
+    private CardData cardData;
 
-    @Schema(description = "处置完成率（%）（卡片）")
-    private BigDecimal processCompleteRate;
+    @Data
+    @Schema(description = "卡片指标")
+    public static class CardData {
+
+        @Schema(description = "待处理数（卡片）")
+        private Integer waitProcessCount;
+
+        @Schema(description = "处置完成率（%）（卡片）")
+        private BigDecimal processCompleteRate;
+    }
 }
