@@ -94,7 +94,7 @@ public class StationConfigController {
     @Operation(summary = "获得场站配置分页")
     @PreAuthorize("@ss.hasPermission('stationresource:station-config:query')")
     public CommonResult<PageResult<StationConfigRespVO>> getStationConfigPage(@Valid StationConfigPageReqVO pageReqVO) {
-        PageResult<StationConfigDO> pageResult = stationConfigService.getStationConfigPage(pageReqVO);
+        PageResult<StationConfigRespVO> pageResult = stationConfigService.getStationConfigPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, StationConfigRespVO.class));
     }
 

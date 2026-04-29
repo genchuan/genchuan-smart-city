@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.stationresource.service.stationresource.stationm
 import java.util.*;
 
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationconfig.vo.StationConfigPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationconfig.vo.StationConfigRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationconfig.vo.StationConfigSaveReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationconfig.vo.ops.AddStationConfigReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationconfig.vo.ops.UpdateStationConfigReqVO;
@@ -61,7 +62,7 @@ public interface StationConfigService {
      * @param pageReqVO 分页查询
      * @return 场站配置分页
      */
-    PageResult<StationConfigDO> getStationConfigPage(StationConfigPageReqVO pageReqVO);
+    PageResult<StationConfigRespVO> getStationConfigPage(StationConfigPageReqVO pageReqVO);
 
     Long addStationConfig(AddStationConfigReqVO createReqVO);
 

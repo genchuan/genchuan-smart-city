@@ -17,8 +17,13 @@ public class StationConfigRespVO {
     private Long id;
 
     @Schema(description = "[所属场站] 关联场站信息表 station_info.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "30533")
-    @ExcelProperty("[所属场站]")
+//    @ExcelProperty("[所属场站]")
+    @ExcelIgnore
     private Long stationId;
+
+    @Schema(description = "[所属场站名称]", requiredMode = Schema.RequiredMode.REQUIRED, example = "30533")
+    @ExcelProperty("[所属场站名称]")
+    private String stationName;
 
     @Schema(description = "[配置类型] 如：通行规则/收费规则/联动规则，关联芋道字典表：station_config_type", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
     @ExcelProperty("[配置类型]")

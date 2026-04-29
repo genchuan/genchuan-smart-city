@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.stationresource.service.stationresource.stationm
 
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationconfig.vo.StationConfigPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationconfig.vo.StationConfigRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationconfig.vo.StationConfigSaveReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationconfig.vo.ops.AddStationConfigReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationconfig.vo.ops.UpdateStationConfigReqVO;
@@ -10,6 +11,7 @@ import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.st
 import cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.stationmgmt.stationconfig.StationConfigMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -155,8 +157,10 @@ public class StationConfigServiceImpl implements StationConfigService {
     }
 
     @Override
-    public PageResult<StationConfigDO> getStationConfigPage(StationConfigPageReqVO pageReqVO) {
-        return stationConfigMapper.selectPage(pageReqVO);
+    public PageResult<StationConfigRespVO> getStationConfigPage(StationConfigPageReqVO pageReqVO) {
+        Page<StationConfigRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        Page<StationConfigRespVO> resultPage = stationConfigMapper.getPage(page, pageReqVO);
+        return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
     }
 
     @Override

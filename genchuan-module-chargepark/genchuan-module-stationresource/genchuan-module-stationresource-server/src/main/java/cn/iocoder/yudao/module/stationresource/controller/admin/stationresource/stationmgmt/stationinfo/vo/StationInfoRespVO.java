@@ -37,16 +37,26 @@ public class StationInfoRespVO {
     private Integer spaceTotal;
 
     @Schema(description = "[负责人] 关联芋道用户表system_user", requiredMode = Schema.RequiredMode.REQUIRED, example = "13294")
-    @ExcelProperty("负责人")
+//    @ExcelProperty("负责人")
+    @ExcelIgnore
     private Long userId;
+
+    @Schema(description = "[负责人名字]", requiredMode = Schema.RequiredMode.REQUIRED, example = "13294")
+    @ExcelProperty("负责人")
+    private String leaderName;
 
     @Schema(description = "[收费标准] VARCHAR(255)")
     @ExcelProperty("收费标准")
     private String feeStandard;
 
     @Schema(description = "[所属片区] 关联片区信息表area_info", example = "27106")
-    @ExcelProperty("所属片区")
+//    @ExcelProperty("所属片区")
+    @ExcelIgnore
     private Long areaId;
+
+    @Schema(description = "[所属片区名字]", example = "27106")
+    @ExcelProperty("所属片区名字")
+    private String areaName;
 
     @Schema(description = "[运营类型] 如：直接管理/甲方代运营/本地化部署/横向对接/数据互通，关联芋道字典表：station_info_operate_type", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @ExcelProperty("运营类型")
