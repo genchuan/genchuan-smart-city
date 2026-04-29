@@ -135,7 +135,7 @@ public class ResultHandleController {
         return success(handleService.getChart(reqVO));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出结果处置 Excel")
     @PreAuthorize("@ss.hasPermission('result:handle:export')")
     @ApiAccessLog(operateType = EXPORT)

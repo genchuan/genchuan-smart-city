@@ -134,7 +134,7 @@ public class FakePlateControlController {
         return success(plateControlService.getChart(reqVO));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出套牌管控 Excel")
     @PreAuthorize("@ss.hasPermission('fake:plate-control:export')")
     @ApiAccessLog(operateType = EXPORT)

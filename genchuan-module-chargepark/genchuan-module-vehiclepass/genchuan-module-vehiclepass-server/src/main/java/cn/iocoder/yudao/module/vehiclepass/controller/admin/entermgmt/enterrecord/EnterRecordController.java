@@ -96,7 +96,7 @@ public class EnterRecordController {
         return success(result);
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出入场记录 Excel")
     @PreAuthorize("@ss.hasPermission('enter:record:export')")
     @ApiAccessLog(operateType = EXPORT)

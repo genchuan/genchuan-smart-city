@@ -125,7 +125,7 @@ public class OilCarHandleController {
         return success(carHandleService.getChart(reqVO));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出油车占位处置 Excel")
     @PreAuthorize("@ss.hasPermission('oil:car-handle:export')")
     @ApiAccessLog(operateType = EXPORT)
