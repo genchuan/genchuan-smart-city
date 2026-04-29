@@ -7,8 +7,11 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivi
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.CouponMgmtDO;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface CouponMgmtMapper extends BaseMapperX<CouponMgmtDO> {
@@ -52,5 +55,8 @@ public interface CouponMgmtMapper extends BaseMapperX<CouponMgmtDO> {
 
         return selectPage(reqVO, wrapper);
     }
+
+    @Select("SELECT type, COUNT(*) AS count FROM coupon_mgmt GROUP BY type")
+    List<Map<String, Object>> selectTypeCountList();
 
 }

@@ -15,8 +15,9 @@ import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.CYCLE_REPORT_NOT_EXISTS;
@@ -136,10 +137,52 @@ public class CycleReportServiceImpl implements CycleReportService {
         cardData.setWarnStockCount(warnStockCount != null ? warnStockCount : 0);
         respVO.setCardData(cardData);
 
-        // 折线图、柱状图、饼图数据（TODO：后续通过 XML 聚合查询实现）
-        respVO.setLineData(List.of());
-        respVO.setBarData(List.of());
-        respVO.setPieData(List.of());
+        // ========== lineData: 近30天按日期统计数量 ==========
+        LocalDateTime lineStart = LocalDateTime.now().minusDays(30);
+        Map<String, Map<String, Object>> lineDataMap = buildLineDataMap(
+                "point_activity", cycleReportMapper.selectPointActivityCountByDay(lineStart),
+                "point_lottery", cycleReportMapper.selectPointLotteryCountByDay(lineStart),
+                "receive_record", cycleReportMapper.selectReceiveRecordCountByDay(lineStart),
+                "card_order", cycleReportMapper.selectCardOrderCountByDay(lineStart),
+                "exchange_order", cycleReportMapper.selectExchangeOrderCountByDay(lineStart),
+                "stock_control", cycleReportMapper.selectStockControlCountByDay(lineStart)
+        );
+        List<CycleReportChartRespVO.ChartLineData> lineDataList = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+        for (Map.Entry<String, Map<String, Object>> entry : lineDataMap.entrySet()) {
+            CycleReportChartRespVO.ChartLineData lineData = new CycleReportChartRespVO.ChartLineData();
+            lineData.setName(entry.getKey());
+            // 补全30天日期
+            Map<String, Object> dayMap = entry.getValue();
+            List<CycleReportChartRespVO.ChartLineItemData> items = new ArrayList<>();
+            for (int i = 29; i >= 0; i--) {
+                String date = today.minusDays(i).toString();
+                CycleReportChartRespVO.ChartLineItemData item = new CycleReportChartRespVO.ChartLineItemData();
+                item.setDate(date);
+                item.setCount(dayMap.getOrDefault(date, 0) instanceof Number ? ((Number) dayMap.getOrDefault(date, 0)).intValue() : 0);
+                items.add(item);
+            }
+            lineData.setData(items);
+            lineDataList.add(lineData);
+        }
+        respVO.setLineData(lineDataList);
+
+        // ========== barData: 按type分类统计数量 ==========
+        List<CycleReportChartRespVO.ChartBarData> barDataList = new ArrayList<>();
+        barDataList.add(buildBarData("activity_config", cycleReportMapper.selectActivityConfigTypeCount()));
+        barDataList.add(buildBarData("point_activity", cycleReportMapper.selectPointActivityTypeCount()));
+        barDataList.add(buildBarData("coupon_mgmt", cycleReportMapper.selectCouponMgmtTypeCount()));
+        barDataList.add(buildBarData("prize_mgmt", cycleReportMapper.selectPrizeMgmtTypeCount()));
+        barDataList.add(buildBarData("card_config", cycleReportMapper.selectCardConfigTypeCount()));
+        barDataList.add(buildBarData("exchange_category", cycleReportMapper.selectExchangeCategoryTypeCount()));
+        respVO.setBarData(barDataList);
+
+        // ========== pieData: 按type统计占比 ==========
+        List<CycleReportChartRespVO.ChartPieData> pieDataList = new ArrayList<>();
+        pieDataList.add(buildPieData("rule_config", cycleReportMapper.selectRuleConfigTypeCount()));
+        pieDataList.add(buildPieData("package_config", cycleReportMapper.selectPackageConfigTypeCount()));
+        pieDataList.add(buildPieData("activity_config", cycleReportMapper.selectActivityConfigTypeCountForPie()));
+        respVO.setPieData(pieDataList);
 
         return respVO;
     }
@@ -162,6 +205,58 @@ public class CycleReportServiceImpl implements CycleReportService {
             throw exception(CYCLE_REPORT_NOT_EXISTS);
         }
         return report;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Map<String, Object>> buildLineDataMap(Object... nameAndData) {
+        Map<String, Map<String, Object>> result = new LinkedHashMap<>();
+        for (int i = 0; i < nameAndData.length; i += 2) {
+            String name = (String) nameAndData[i];
+            List<Map<String, Object>> data = (List<Map<String, Object>>) nameAndData[i + 1];
+            Map<String, Object> dayMap = new LinkedHashMap<>();
+            for (Map<String, Object> row : data) {
+                String date = row.get("date").toString();
+                int count = ((Number) row.get("count")).intValue();
+                dayMap.put(date, count);
+            }
+            result.put(name, dayMap);
+        }
+        return result;
+    }
+
+    private CycleReportChartRespVO.ChartBarData buildBarData(String name, List<Map<String, Object>> typeCountList) {
+        CycleReportChartRespVO.ChartBarData barData = new CycleReportChartRespVO.ChartBarData();
+        barData.setName(name);
+        List<CycleReportChartRespVO.ChartDataItem> items = new ArrayList<>();
+        for (Map<String, Object> m : typeCountList) {
+            CycleReportChartRespVO.ChartDataItem item = new CycleReportChartRespVO.ChartDataItem();
+            item.setType(m.get("type") != null ? m.get("type").toString() : "unknown");
+            item.setCount(((Number) m.get("count")).intValue());
+            items.add(item);
+        }
+        barData.setData(items);
+        return barData;
+    }
+
+    private CycleReportChartRespVO.ChartPieData buildPieData(String name, List<Map<String, Object>> typeCountList) {
+        CycleReportChartRespVO.ChartPieData pieData = new CycleReportChartRespVO.ChartPieData();
+        pieData.setName(name);
+        int total = typeCountList.stream()
+                .mapToInt(m -> ((Number) m.get("count")).intValue())
+                .sum();
+        List<CycleReportChartRespVO.ChartRatioItem> items = new ArrayList<>();
+        for (Map<String, Object> m : typeCountList) {
+            CycleReportChartRespVO.ChartRatioItem item = new CycleReportChartRespVO.ChartRatioItem();
+            item.setType(m.get("type") != null ? m.get("type").toString() : "unknown");
+            int count = ((Number) m.get("count")).intValue();
+            BigDecimal ratio = total > 0
+                    ? BigDecimal.valueOf(count).divide(BigDecimal.valueOf(total), 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100))
+                    : BigDecimal.ZERO;
+            item.setRatio(ratio);
+            items.add(item);
+        }
+        pieData.setData(items);
+        return pieData;
     }
 
 }
