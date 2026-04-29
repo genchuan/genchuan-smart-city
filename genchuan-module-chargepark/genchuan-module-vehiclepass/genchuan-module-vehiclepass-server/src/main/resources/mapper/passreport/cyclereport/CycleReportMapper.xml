@@ -118,4 +118,129 @@
         AND pass_time BETWEEN #{startTime} AND #{endTime}
     </select>
 
+    <!-- Chart 数据查询 -->
+    <select id="selectChartByConditions" resultType="cn.iocoder.yudao.module.vehiclepass.dal.dataobject.passreport.cyclereport.CycleReportDO">
+        SELECT * FROM vp_cycle_report
+        WHERE deleted = 0
+        AND tenant_id = #{tenantId}
+        <if test="reportCycle != null and reportCycle != ''">
+            AND report_cycle = #{reportCycle}
+        </if>
+        <if test="stationId != null">
+            AND station_id = #{stationId}
+        </if>
+        <if test="statTime != null">
+            AND stat_start_time &lt;= #{statTime}
+            AND stat_end_time &gt;= #{statTime}
+        </if>
+    </select>
+
+    <!-- 地图数据 -->
+    <select id="selectMapData" resultType="map">
+        SELECT
+            s.name AS stationName,
+            COALESCE(ips.parkingCount, 0) AS parkingCount,
+            COALESCE(er.passCount, 0) AS passCount,
+            COALESCE(ROUND(ips.parkingCount / NULLIF(s.space_count, 0) * 100, 2), 0) AS spaceUseRate
+        FROM station_info s
+        LEFT JOIN (
+            SELECT station_id, COUNT(*) AS parkingCount
+            FROM in_park_status
+            WHERE deleted = 0 AND status = '正常'
+            GROUP BY station_id
+        ) ips ON s.id = ips.station_id
+        LEFT JOIN (
+            SELECT station_id, COUNT(*) AS passCount
+            FROM enter_record
+            WHERE deleted = 0
+            GROUP BY station_id
+        ) er ON s.id = er.station_id
+        WHERE s.deleted = 0
+        AND s.tenant_id = #{tenantId}
+        <if test="stationId != null">
+            AND s.id = #{stationId}
+        </if>
+    </select>
+
+    <!-- 柱状图数据 -->
+    <select id="selectBarData" resultType="map">
+        SELECT
+            s.name AS stationName,
+            COALESCE(er.enterCount, 0) + COALESCE(lr.leaveCount, 0) AS passCount,
+            COALESCE(al.abnormalCount, 0) AS abnormalCount,
+            COALESCE(pr.etcCount, 0) AS etcPassCount
+        FROM station_info s
+        LEFT JOIN (
+            SELECT station_id, COUNT(*) AS enterCount
+            FROM enter_record
+            WHERE deleted = 0
+            GROUP BY station_id
+        ) er ON s.id = er.station_id
+        LEFT JOIN (
+            SELECT station_id, COUNT(*) AS leaveCount
+            FROM leave_record
+            WHERE deleted = 0
+            GROUP BY station_id
+        ) lr ON s.id = lr.station_id
+        LEFT JOIN (
+            SELECT station_id, COUNT(*) AS abnormalCount
+            FROM abnormal_leave
+            WHERE deleted = 0
+            GROUP BY station_id
+        ) al ON s.id = al.station_id
+        LEFT JOIN (
+            SELECT station_id, COUNT(*) AS etcCount
+            FROM pass_record
+            WHERE deleted = 0 AND pass_reason = 'ETC'
+            GROUP BY station_id
+        ) pr ON s.id = pr.station_id
+        WHERE s.deleted = 0
+        AND s.tenant_id = #{tenantId}
+        <if test="stationId != null">
+            AND s.id = #{stationId}
+        </if>
+    </select>
+
+    <!-- 折线图数据 -->
+    <select id="selectLineData" resultType="map">
+        SELECT
+            DATE(r.stat_start_time) AS statTime,
+            SUM(r.enter_count) AS passCount,
+            AVG(r.identify_success_rate) AS identifySuccessRate,
+            AVG(r.abnormal_handle_rate) AS abnormalHandleRate,
+            AVG(r.check_success_rate) AS checkSuccessRate
+        FROM vp_cycle_report r
+        WHERE r.deleted = 0
+        AND r.tenant_id = #{tenantId}
+        <if test="reportCycle != null and reportCycle != ''">
+            AND r.report_cycle = #{reportCycle}
+        </if>
+        <if test="stationId != null">
+            AND r.station_id = #{stationId}
+        </if>
+        <if test="statTime != null">
+            AND r.stat_start_time &lt;= #{statTime}
+            AND r.stat_end_time &gt;= #{statTime}
+        </if>
+        GROUP BY DATE(r.stat_start_time)
+        ORDER BY statTime
+    </select>
+
+    <!-- 饼图数据 - 异常类型分布 -->
+    <select id="selectPieData" resultType="map">
+        SELECT
+            abnormal_type AS type,
+            COUNT(*) AS count
+        FROM abnormal_leave
+        WHERE deleted = 0
+        AND tenant_id = #{tenantId}
+        <if test="stationId != null">
+            AND station_id = #{stationId}
+        </if>
+        <if test="statTime != null">
+            AND identify_time &lt;= #{statTime}
+        </if>
+        GROUP BY abnormal_type
+    </select>
+
 </mapper>
