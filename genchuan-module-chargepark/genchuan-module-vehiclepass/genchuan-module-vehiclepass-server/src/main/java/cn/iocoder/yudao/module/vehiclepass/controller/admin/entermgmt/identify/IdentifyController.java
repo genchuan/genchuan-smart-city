@@ -113,6 +113,13 @@ public class IdentifyController {
         return CommonResult.success(identifyService.correctIdentify(reqVO));
     }
 
+    @PutMapping("/confirm")
+    @Operation(summary = "确认车牌识别记录")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:plate-identify:confirm')")
+    public CommonResult<Boolean> confirmIdentify(@Valid @RequestBody PlateIdentifyConfirmReqVO reqVO) {
+        return CommonResult.success(identifyService.confirmIdentify(reqVO));
+    }
+
 
     @GetMapping("/chart")
     @Operation(summary = "车牌识别统计(折线图+柱状图+卡片)")
