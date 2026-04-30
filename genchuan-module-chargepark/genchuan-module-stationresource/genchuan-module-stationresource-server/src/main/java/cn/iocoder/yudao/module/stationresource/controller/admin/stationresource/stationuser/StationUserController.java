@@ -18,6 +18,8 @@ import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import java.util.*;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -86,21 +88,33 @@ public class StationUserController {
     @Operation(summary = "获得站点用户分页")
     @PreAuthorize("@ss.hasPermission('stationresource:station-user:query')")
     public CommonResult<PageResult<StationUserRespVO>> getStationUserPage(@Valid StationUserPageReqVO pageReqVO) {
-        PageResult<StationUserDO> pageResult = stationUserService.getStationUserPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, StationUserRespVO.class));
+        return success(stationUserService.getStationUserPage(pageReqVO));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出站点用户 Excel")
     @PreAuthorize("@ss.hasPermission('stationresource:station-user:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportStationUserExcel(@Valid StationUserPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                       HttpServletResponse response) throws IOException {
+        // 0. 配置
+        String inputFileName = "站点用户_";
+
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<StationUserDO> list = stationUserService.getStationUserPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "站点用户.xls", "数据", StationUserRespVO.class,
-                        BeanUtils.toBean(list, StationUserRespVO.class));
+        List<StationUserRespVO> list = stationUserService.getStationUserPage(pageReqVO).getList();
+
+        // 1、强制设置响应头，确保浏览器触发下载
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setCharacterEncoding("utf-8");
+        // 2、动态生成文件名，带上当前日期
+        String dateStr = java.time.LocalDate.now().toString();
+        String fileOriginName = inputFileName + dateStr + ".xls";
+        String fileName = URLEncoder.encode(fileOriginName, StandardCharsets.UTF_8.toString())
+                .replaceAll("\\+", "%20").replace("UTF-8","");
+        response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
+
+        // 3、调用 ExcelUtils 导出
+        ExcelUtils.write(response, "站点用户.xls", "数据", StationUserRespVO.class, list);
     }
 
 }

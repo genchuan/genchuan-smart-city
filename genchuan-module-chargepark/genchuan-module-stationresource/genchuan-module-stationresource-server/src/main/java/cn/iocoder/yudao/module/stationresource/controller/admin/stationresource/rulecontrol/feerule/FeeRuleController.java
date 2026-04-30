@@ -105,8 +105,7 @@ public class FeeRuleController {
     @Operation(summary = "获得收费规则分页")
     @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:query')")
     public CommonResult<PageResult<FeeRuleRespVO>> getFeeRulePage(@Valid FeeRulePageReqVO pageReqVO) {
-        PageResult<FeeRuleDO> pageResult = feeRuleService.getFeeRulePage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, FeeRuleRespVO.class));
+        return success(feeRuleService.getFeeRulePage(pageReqVO));
     }
 
     @GetMapping("/get")
@@ -128,7 +127,7 @@ public class FeeRuleController {
         String inputFileName = "收费规则_";
 
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<FeeRuleDO> list = feeRuleService.getFeeRulePage(pageReqVO).getList();
+        List<FeeRuleRespVO> list = feeRuleService.getFeeRulePage(pageReqVO).getList();
 
         // 1、强制设置响应头，确保浏览器触发下载
         response.setContentType("application/vnd.ms-excel;charset=UTF-8");
@@ -141,8 +140,7 @@ public class FeeRuleController {
         response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
 
         // 3、调用 ExcelUtils 导出
-        ExcelUtils.write(response, "收费规则.xls", "数据", FeeRuleRespVO.class,
-                BeanUtils.toBean(list, FeeRuleRespVO.class));
+        ExcelUtils.write(response, "收费规则.xls", "数据", FeeRuleRespVO.class, list);
     }
     //==================================================================================
 

@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.stationresource.service.stationresource.stationu
 
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationuser.vo.StationUserPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationuser.vo.StationUserRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationuser.vo.StationUserSaveReqVO;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.stationuser.StationUserDO;
 import cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.stationuser.StationUserMapper;
@@ -14,6 +15,7 @@ import java.util.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -79,8 +81,10 @@ public class StationUserServiceImpl implements StationUserService {
     }
 
     @Override
-    public PageResult<StationUserDO> getStationUserPage(StationUserPageReqVO pageReqVO) {
-        return stationUserMapper.selectPage(pageReqVO);
+    public PageResult<StationUserRespVO> getStationUserPage(StationUserPageReqVO pageReqVO) {
+        Page<StationUserRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        Page<StationUserRespVO> resultPage = stationUserMapper.getPage(page, pageReqVO);
+        return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
     }
 
 }

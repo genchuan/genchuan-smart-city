@@ -158,8 +158,7 @@ public class ChargeParkLinkController {
     @Operation(summary = "获得充停联动分页")
     @PreAuthorize("@ss.hasPermission('stationresource:charge-park-link:query')")
     public CommonResult<PageResult<ChargeParkLinkRespVO>> getChargeParkLinkPage(@Valid ChargeParkLinkPageReqVO pageReqVO) {
-        PageResult<ChargeParkLinkDO> pageResult = chargeParkLinkService.getChargeParkLinkPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, ChargeParkLinkRespVO.class));
+        return success(chargeParkLinkService.getChargeParkLinkPage(pageReqVO));
     }
 
     @GetMapping("/export")
@@ -172,7 +171,7 @@ public class ChargeParkLinkController {
         String inputFileName = "充停联动_";
 
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<ChargeParkLinkDO> list = chargeParkLinkService.getChargeParkLinkPage(pageReqVO).getList();
+        List<ChargeParkLinkRespVO> list = chargeParkLinkService.getChargeParkLinkPage(pageReqVO).getList();
 
         // 1、强制设置响应头，确保浏览器触发下载
         response.setContentType("application/vnd.ms-excel;charset=UTF-8");
@@ -185,8 +184,7 @@ public class ChargeParkLinkController {
         response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
 
         // 3、调用 ExcelUtils 导出
-        ExcelUtils.write(response, "充停联动.xls", "数据", ChargeParkLinkRespVO.class,
-                BeanUtils.toBean(list, ChargeParkLinkRespVO.class));
+        ExcelUtils.write(response, "充停联动.xls", "数据", ChargeParkLinkRespVO.class, list);
     }
 
 }

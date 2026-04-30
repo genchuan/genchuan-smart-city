@@ -17,6 +17,9 @@ public class ChargeParkLinkPageReqVO extends PageParam {
     @Schema(description = "[所属场站] 关联场站信息表 station_info", example = "6922")
     private Long stationId;
 
+    @Schema(description = "场站名称")
+    private String stationName;
+
     @Schema(description = "[优惠类型] 如：停车减免/充电减免/费用合并", example = "2")
     private String discountType;
 
@@ -35,6 +38,9 @@ public class ChargeParkLinkPageReqVO extends PageParam {
 
     @Schema(description = "[审核人] 关联芋道用户表 system_user", example = "23331")
     private Long auditUserId;
+
+    @Schema(description = "审核人名称")
+    private String auditUserName;
 
     @Schema(description = "[今日订单量] 当日订单数量", example = "7681")
     private Integer todayOrderCount;

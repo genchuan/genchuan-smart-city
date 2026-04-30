@@ -107,8 +107,7 @@ public class DepositPlanController {
     @Operation(summary = "获得押金方案分页")
     @PreAuthorize("@ss.hasPermission('stationresource:deposit-plan:query')")
     public CommonResult<PageResult<DepositPlanRespVO>> getDepositPlanPage(@Valid DepositPlanPageReqVO pageReqVO) {
-        PageResult<DepositPlanDO> pageResult = depositPlanService.getDepositPlanPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, DepositPlanRespVO.class));
+        return success(depositPlanService.getDepositPlanPage(pageReqVO));
     }
 
     @GetMapping("/get")
@@ -130,7 +129,7 @@ public class DepositPlanController {
         String inputFileName = "押金方案_";
 
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<DepositPlanDO> list = depositPlanService.getDepositPlanPage(pageReqVO).getList();
+        List<DepositPlanRespVO> list = depositPlanService.getDepositPlanPage(pageReqVO).getList();
 
         // 1、强制设置响应头，确保浏览器触发下载
         response.setContentType("application/vnd.ms-excel;charset=UTF-8");
@@ -143,7 +142,6 @@ public class DepositPlanController {
         response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
 
         // 3、调用 ExcelUtils 导出
-        ExcelUtils.write(response, "押金方案.xls", "数据", DepositPlanRespVO.class,
-                BeanUtils.toBean(list, DepositPlanRespVO.class));
+        ExcelUtils.write(response, "押金方案.xls", "数据", DepositPlanRespVO.class, list);
     }
 }
