@@ -1,5 +1,5 @@
 # 适用于 yudao-module-system-biz 等子模块
-FROM harbor.genchuan.cn/library/eclipse-temurin:21-jre
+FROM 192.168.8.14/library/eclipse-temurin:21-jre
 
 ARG MODULE_NAME=yudao-gateway
 ARG JAR_PATH=yudao-gateway
