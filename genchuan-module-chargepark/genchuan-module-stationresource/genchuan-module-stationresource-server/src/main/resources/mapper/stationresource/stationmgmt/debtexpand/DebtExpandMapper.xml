@@ -26,6 +26,7 @@
     <!-- 3. 追缴成功率 按场站 -->
     <select id="selectRecoveryBarList" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.debtexpand.vo.chart.DebtExpandChartRespVO$RecoveryBarItem">
         SELECT
+            s.id as stationId,
             s.name AS name,
             IFNULL(ROUND(AVG(d.recovery_rate),1), 0) AS value
         FROM debt_expand d
@@ -33,5 +34,64 @@
         WHERE d.deleted = 0
         GROUP BY d.station_id, s.name
     </select>
+    <select id="getPage" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.debtexpand.vo.DebtExpandRespVO">
+        SELECT
+        d.*,
+        si.name as stationName
+        FROM debt_expand d
+        LEFT JOIN station_info si ON d.station_id = si.id AND si.deleted = 0
 
+        WHERE d.deleted = 0
+
+        <if test="pageReqVO.stationId != null">
+            AND d.station_id = #{pageReqVO.stationId}
+        </if>
+        <if test="pageReqVO.type != null and pageReqVO.type != ''">
+            AND d.type = #{pageReqVO.type}
+        </if>
+        <if test="pageReqVO.range != null and pageReqVO.range != ''">
+            AND d.range = #{pageReqVO.range}
+        </if>
+        <if test="pageReqVO.progress != null">
+            AND d.progress = #{pageReqVO.progress}
+        </if>
+        <if test="pageReqVO.status != null and pageReqVO.status != ''">
+            AND d.status = #{pageReqVO.status}
+        </if>
+        <if test="pageReqVO.auditTime != null and pageReqVO.auditTime.size() == 2">
+            AND d.audit_time BETWEEN #{pageReqVO.auditTime[0]} AND #{pageReqVO.auditTime[1]}
+        </if>
+        <if test="pageReqVO.auditUserId != null">
+            AND d.audit_user_id = #{pageReqVO.auditUserId}
+        </if>
+        <if test="pageReqVO.finishTime != null and pageReqVO.finishTime.size() == 2">
+            AND d.finish_time BETWEEN #{pageReqVO.finishTime[0]} AND #{pageReqVO.finishTime[1]}
+        </if>
+        <if test="pageReqVO.recoveryRate != null">
+            AND d.recovery_rate = #{pageReqVO.recoveryRate}
+        </if>
+        <if test="pageReqVO.remark != null and pageReqVO.remark != ''">
+            AND d.remark = #{pageReqVO.remark}
+        </if>
+        <if test="pageReqVO.reserve1 != null and pageReqVO.reserve1 != ''">
+            AND d.reserve1 = #{pageReqVO.reserve1}
+        </if>
+        <if test="pageReqVO.reserve2 != null and pageReqVO.reserve2 != ''">
+            AND d.reserve2 = #{pageReqVO.reserve2}
+        </if>
+        <if test="pageReqVO.creator != null and pageReqVO.creator != ''">
+            AND d.creator = #{pageReqVO.creator}
+        </if>
+        <if test="pageReqVO.updater != null and pageReqVO.updater != ''">
+            AND d.updater = #{pageReqVO.updater}
+        </if>
+        <if test="pageReqVO.createTime != null and pageReqVO.createTime.size() == 2">
+            AND d.create_time BETWEEN #{pageReqVO.createTime[0]} AND #{pageReqVO.createTime[1]}
+        </if>
+        <if test="pageReqVO.updateTime != null and pageReqVO.updateTime.size() == 2">
+            AND d.update_time BETWEEN #{pageReqVO.updateTime[0]} AND #{pageReqVO.updateTime[1]}
+        </if>
+
+        ORDER BY d.id DESC
+    </select>
 </mapper>

@@ -6,9 +6,12 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.debtexpand.vo.DebtExpandPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.debtexpand.vo.DebtExpandRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.debtexpand.vo.chart.DebtExpandChartRespVO;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.stationmgmt.debtexpand.DebtExpandDO;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 联合追缴拓场配置 Mapper
@@ -47,4 +50,6 @@ public interface DebtExpandMapper extends BaseMapperX<DebtExpandDO> {
 
     // 追缴成功率（按场站）
     List<DebtExpandChartRespVO.RecoveryBarItem> selectRecoveryBarList();
+
+    Page<DebtExpandRespVO> getPage(Page<DebtExpandRespVO> page, @Param("pageReqVO") DebtExpandPageReqVO pageReqVO);
 }

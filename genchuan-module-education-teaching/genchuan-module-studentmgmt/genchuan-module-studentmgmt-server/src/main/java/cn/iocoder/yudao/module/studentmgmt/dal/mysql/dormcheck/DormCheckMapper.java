@@ -44,7 +44,7 @@ public interface DormCheckMapper extends BaseMapperX<DormCheckDO> {
 
     Integer selectAbnormalCount(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime, @Param("checkStatus") String checkStatus);
 
-    Integer selectAbnormalCountByClassName(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime, @Param("status") String status, @Param("className") String className);
+    Integer selectAbnormalCountByClassName(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime, @Param("checkStatus") String checkStatus, @Param("className") String className);
 
     DormCheckChartRespVO selectTotalCheckCount(LocalDate checkTime, String status);
 

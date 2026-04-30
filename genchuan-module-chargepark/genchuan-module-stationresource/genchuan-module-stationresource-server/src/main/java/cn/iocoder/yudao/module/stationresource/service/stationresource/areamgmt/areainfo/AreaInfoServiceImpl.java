@@ -21,6 +21,8 @@ import cn.iocoder.yudao.module.stationresource.vrv.utils.procom.address.AddressT
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.beust.ah.A;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -91,11 +93,16 @@ public class AreaInfoServiceImpl implements AreaInfoService {
         AreaInfoChartRespVO resp = new AreaInfoChartRespVO();
 
         // ===================== 1. 查询所有有效片区（租户隔离 + 未删除） =====================
-        List<AreaInfoDO> areaList = areaInfoMapper.selectList(new LambdaQueryWrapper<AreaInfoDO>()
-                .eq(AreaInfoDO::getDeleted, false)
-                .orderByDesc(AreaInfoDO::getId)
-        );
+//        List<AreaInfoDO> areaList = areaInfoMapper.selectList(new LambdaQueryWrapper<AreaInfoDO>()
+//                .eq(AreaInfoDO::getDeleted, false)
+//                .orderByDesc(AreaInfoDO::getId)
+//        );
 
+        AreaInfoPageReqVO areaInfoPageReqVO =new AreaInfoPageReqVO();
+        areaInfoPageReqVO.setPageSize(9999);
+        List<AreaInfoDO> areaList = getAreaInfoPage(areaInfoPageReqVO).getList();
+
+        //如果为空
         if (CollUtil.isEmpty(areaList)) {
             resp.setAreaMapList(Collections.emptyList());
             resp.setStationCountBarList(Collections.emptyList());
@@ -114,6 +121,7 @@ public class AreaInfoServiceImpl implements AreaInfoService {
         // ===================== 3. 柱状图数据 =====================
         List<StationCountBarItemVO> barList = areaList.stream().map(area -> {
             StationCountBarItemVO bar = new StationCountBarItemVO();
+            bar.setAreaId(area.getId());
             bar.setName(area.getName());
             bar.setValue(area.getStationCount() == null ? 0 : area.getStationCount());
             return bar;
@@ -186,14 +194,28 @@ public class AreaInfoServiceImpl implements AreaInfoService {
         }
     }
 
+    /**
+     * 根据ID查询单条片区信息（复用分页接口，保证数据结构一致：包含实时场站数、负责人名称）
+     * @param id 片区ID
+     * @return 片区详情DO
+     */
     @Override
     public AreaInfoDO getAreaInfo(Long id) {
-        return areaInfoMapper.selectById(id);
+        // 构造分页查询条件，只查当前ID，限制1条
+        AreaInfoPageReqVO req = new AreaInfoPageReqVO();
+        req.setId(id);
+        req.setPageSize(1);
+
+        System.out.println("cs2026-04-28 15:03:34:"+req);
+        // 调用分页接口获取列表，返回第一条数据（保证与列表展示的字段一致）
+        return getAreaInfoPage(req).getList().stream().findFirst().orElse(null);
     }
 
     @Override
     public PageResult<AreaInfoDO> getAreaInfoPage(AreaInfoPageReqVO pageReqVO) {
-        return areaInfoMapper.selectPage(pageReqVO);
+        Page<AreaInfoDO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        Page<AreaInfoDO> resultPage = areaInfoMapper.getPage(page, pageReqVO);
+        return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
     }
 
     @Override

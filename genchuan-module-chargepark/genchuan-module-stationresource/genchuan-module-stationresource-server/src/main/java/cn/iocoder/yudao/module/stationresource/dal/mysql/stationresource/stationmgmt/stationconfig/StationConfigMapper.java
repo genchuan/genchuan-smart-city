@@ -6,9 +6,12 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationconfig.vo.StationConfigPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationconfig.vo.StationConfigRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationconfig.vo.statistics.StationConfigChartRespVO;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.stationmgmt.stationconfig.StationConfigDO;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 /**
@@ -54,4 +57,6 @@ public interface StationConfigMapper extends BaseMapperX<StationConfigDO> {
      * 已生效配置数量（status = 已生效）
      */
     Integer selectEnableConfigCount();
+
+    Page<StationConfigRespVO> getPage(Page<StationConfigRespVO> page, @Param("pageReqVO") StationConfigPageReqVO pageReqVO);
 }

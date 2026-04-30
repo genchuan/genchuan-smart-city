@@ -32,4 +32,79 @@
         WHERE deleted = 0
           AND real_status = '空闲'
     </select>
+    <select id="getPage" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ParkingSpaceInfoRespVO">
+        SELECT
+        p.*,
+        s.name AS stationName
+
+        FROM parking_space_info p
+        LEFT JOIN station_info s ON p.station_id = s.id AND s.deleted = 0
+        WHERE p.deleted = 0
+
+        <if test="pageReqVO.id != null">
+            AND p.id = #{pageReqVO.id}
+        </if>
+        <if test="pageReqVO.spaceNo != null and pageReqVO.spaceNo != ''">
+            AND p.space_no LIKE CONCAT('%', #{pageReqVO.spaceNo}, '%')
+        </if>
+        <if test="pageReqVO.stationId != null">
+            AND p.station_id = #{pageReqVO.stationId}
+        </if>
+        <if test="pageReqVO.garage != null and pageReqVO.garage != ''">
+            AND p.garage LIKE CONCAT('%', #{pageReqVO.garage}, '%')
+        </if>
+        <if test="pageReqVO.location != null and pageReqVO.location != ''">
+            AND p.location = #{pageReqVO.location}
+        </if>
+        <if test="pageReqVO.type != null and pageReqVO.type != ''">
+            AND p.type = #{pageReqVO.type}
+        </if>
+        <if test="pageReqVO.deviceType != null and pageReqVO.deviceType != ''">
+            AND p.device_type = #{pageReqVO.deviceType}
+        </if>
+        <if test="pageReqVO.qrcode != null and pageReqVO.qrcode != ''">
+            AND p.qrcode = #{pageReqVO.qrcode}
+        </if>
+        <if test="pageReqVO.status != null and pageReqVO.status != ''">
+            AND p.status = #{pageReqVO.status}
+        </if>
+        <if test="pageReqVO.realStatus != null and pageReqVO.realStatus != ''">
+            AND p.real_status = #{pageReqVO.realStatus}
+        </if>
+        <if test="pageReqVO.bindTime != null and pageReqVO.bindTime.size() == 2">
+            AND p.bind_time BETWEEN #{pageReqVO.bindTime[0]} AND #{pageReqVO.bindTime[1]}
+        </if>
+        <if test="pageReqVO.bindUserId != null">
+            AND p.bind_user_id = #{pageReqVO.bindUserId}
+        </if>
+        <if test="pageReqVO.deviceId != null">
+            AND p.device_id = #{pageReqVO.deviceId}
+        </if>
+        <if test="pageReqVO.statusUpdateTime != null and pageReqVO.statusUpdateTime.size() == 2">
+            AND p.status_update_time BETWEEN #{pageReqVO.statusUpdateTime[0]} AND #{pageReqVO.statusUpdateTime[1]}
+        </if>
+        <if test="pageReqVO.remark != null and pageReqVO.remark != ''">
+            AND p.remark = #{pageReqVO.remark}
+        </if>
+        <if test="pageReqVO.reserve1 != null and pageReqVO.reserve1 != ''">
+            AND p.reserve1 = #{pageReqVO.reserve1}
+        </if>
+        <if test="pageReqVO.reserve2 != null and pageReqVO.reserve2 != ''">
+            AND p.reserve2 = #{pageReqVO.reserve2}
+        </if>
+        <if test="pageReqVO.creator != null and pageReqVO.creator != ''">
+            AND p.creator = #{pageReqVO.creator}
+        </if>
+        <if test="pageReqVO.updater != null and pageReqVO.updater != ''">
+            AND p.updater = #{pageReqVO.updater}
+        </if>
+        <if test="pageReqVO.createTime != null and pageReqVO.createTime.size() == 2">
+            AND p.create_time BETWEEN #{pageReqVO.createTime[0]} AND #{pageReqVO.createTime[1]}
+        </if>
+        <if test="pageReqVO.updateTime != null and pageReqVO.updateTime.size() == 2">
+            AND p.update_time BETWEEN #{pageReqVO.updateTime[0]} AND #{pageReqVO.updateTime[1]}
+        </if>
+
+        ORDER BY p.id DESC
+    </select>
 </mapper>

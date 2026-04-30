@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.inspectop.controller.admin.inspectreport.vo;
 
+import cn.idev.excel.annotation.ExcelProperty;
 import lombok.*;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;

@@ -63,7 +63,7 @@ public class ExchangeOrderServiceImpl implements ExchangeOrderService {
         }
         exchangeOrder.setPayStatus(COMPLETED.getValue());
         exchangeOrder.setShipTime(LocalDateTime.now());
-        exchangeOrder.setLogisticsInfo(reqVO.getExpressNo());
+        exchangeOrder.setLogisticsInfo(reqVO.getLogisticsInfo());
         exchangeOrderMapper.updateById(exchangeOrder);
     }
 
@@ -117,14 +117,21 @@ public class ExchangeOrderServiceImpl implements ExchangeOrderService {
         for (Map<String, Object> m : categoryCountList) {
             ExchangeOrderChartRespVO.TypeItem item = new ExchangeOrderChartRespVO.TypeItem();
             Long categoryId = ((Number) m.get("category_id")).longValue();
-            ExchangeCategoryDO category = exchangeCategoryService.get(categoryId);
-            item.setCategoryName(category != null ? category.getName() : "未知");
+            item.setCategoryId(categoryId);
             item.setCount(((Number) m.get("count")).intValue());
             typeItems.add(item);
         }
         respVO.setTypeList(typeItems);
 
         return respVO;
+    }
+
+    @Override
+    public List<ExchangeOrderDO> getListByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return exchangeOrderMapper.selectBatchIds(ids);
     }
 
     private ExchangeOrderDO validateExists(Long id) {

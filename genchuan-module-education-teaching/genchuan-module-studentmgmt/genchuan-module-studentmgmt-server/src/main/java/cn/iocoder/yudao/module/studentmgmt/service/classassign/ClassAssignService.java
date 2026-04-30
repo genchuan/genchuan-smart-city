@@ -1,11 +1,12 @@
 package cn.iocoder.yudao.module.studentmgmt.service.classassign;
 
-import java.util.*;
-import jakarta.validation.*;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.BaseChartReqVO;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.classassign.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.classassign.ClassAssignDO;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 分班管理 Service 接口
@@ -59,4 +60,13 @@ public interface ClassAssignService {
      */
     PageResult<ClassAssignDO> getClassAssignPage(ClassAssignPageReqVO pageReqVO);
 
+    Boolean config(@Valid ClassAssignConfigReqVO reqVO);
+
+    Boolean assign(@Valid ClassAssignAssignReqVO reqVO);
+
+    Boolean confirm(@Valid ClassAssignConfigReqVO reqVO);
+
+    ClassAssignChartRespVO chart(@Valid BaseChartReqVO reqVO);
+
+    ClassAssignDistributionRespVo classDistribution(@Valid BaseChartReqVO reqVO);
 }

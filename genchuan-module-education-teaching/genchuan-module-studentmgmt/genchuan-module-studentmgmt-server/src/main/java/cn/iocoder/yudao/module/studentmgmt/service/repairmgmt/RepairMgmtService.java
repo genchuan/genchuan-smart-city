@@ -66,4 +66,6 @@ public interface RepairMgmtService {
     RepairMgmtChartRespVO chart(@Valid RepairMgmtChartReqVO reqVO);
 
     RepairMgmtCountRespVO repairCount(@Valid RepairMgmtCountReqVO reqVO);
+
+    Boolean accept(@Valid RepairMgmtAcceptReqVO reqVO);
 }

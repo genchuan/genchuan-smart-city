@@ -9,4 +9,26 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="select7dayTrendCount"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.ChartTrendVO">
+        SELECT
+        DATE_FORMAT(assign_time, '%Y-%m-%d') AS date,
+        COUNT(*) AS count
+        FROM class_assign
+        WHERE assign_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+        GROUP BY date
+    </select>
+    <select id="selectTotalCount"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.classassign.vo.ClassAssignChartRespVO">
+        SELECT
+        COUNT(*) AS total_assign_task_count,
+        SUM(IF(status = #{assigned}, 1, 0)) AS assigned_count,
+        SUM(IF(status = #{unassigned}, 1, 0)) AS unassigned_count,
+        SUM(IF(status = #{assigned}, student_num, 0)) AS total_assigned_student_count
+        FROM class_assign
+        WHERE deleted=0
+        <if test="startTime != null">
+            AND assign_time between #{startTime} AND #{endTime}
+        </if>
+    </select>
 </mapper>

@@ -12,9 +12,9 @@ import java.time.LocalDateTime;
 @Data
 public class DormCheckCreateReqVO {
 
-    @Schema(description = "学生 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "14725")
+    @Schema(description = "学生 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1,2,3,5")
     @NotNull(message = "学生 ID不能为空")
-    private Long[] studentId;
+    private Long[] studentIds;
 
     @Schema(description = "考勤时间", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "考勤时间不能为空")

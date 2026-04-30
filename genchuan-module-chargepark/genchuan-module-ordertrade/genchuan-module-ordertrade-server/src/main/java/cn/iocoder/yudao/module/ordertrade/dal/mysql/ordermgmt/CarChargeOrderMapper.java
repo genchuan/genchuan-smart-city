@@ -27,7 +27,8 @@ public interface CarChargeOrderMapper extends BaseMapperX<CarChargeOrderDO> {
                 .likeIfPresent(CarChargeOrderDO::getPlateNo, reqVO.getPlateNo())
                 .eqIfPresent(CarChargeOrderDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(CarChargeOrderDO::getStationId, reqVO.getStationId())
-                .betweenIfPresent(CarChargeOrderDO::getCreateOrderTime, reqVO.getCreateOrderTime())
+                .geIfPresent(CarChargeOrderDO::getCreateOrderTime, reqVO.getCreateOrderTimeStart())
+                .leIfPresent(CarChargeOrderDO::getCreateOrderTime, reqVO.getCreateOrderTimeEnd())
                 .orderByDesc(CarChargeOrderDO::getId));
     }
 

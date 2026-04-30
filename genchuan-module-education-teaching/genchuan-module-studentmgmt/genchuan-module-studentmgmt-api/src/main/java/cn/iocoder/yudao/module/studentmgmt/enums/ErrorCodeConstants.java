@@ -94,4 +94,6 @@ public interface ErrorCodeConstants {
     ErrorCode TREAT_MGMT_NOT_EXISTS = new ErrorCode(500, "就诊管理不存在");
     // ========== 社团管理  ==========
     ErrorCode CLUB_MGMT_NOT_EXISTS = new ErrorCode(500, "社团管理不存在");
+    // ========== 报到管理 ==========
+    ErrorCode CHECK_IN_NOT_EXISTS = new ErrorCode(500, "报到管理不存在");
 }

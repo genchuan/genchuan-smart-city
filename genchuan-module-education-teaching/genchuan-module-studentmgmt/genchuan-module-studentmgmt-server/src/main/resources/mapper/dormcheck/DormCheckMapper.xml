@@ -43,8 +43,9 @@
 
     </select>
     <select id="selectAbnormalCountByClassName" resultType="java.lang.Integer">
-        SELECT COUNT(1) FROM `dorm_check`
-        WHERE deleted =0
+        SELECT COUNT(1) FROM `dorm_check` AS c
+        LEFT JOIN student_info AS s ON c.student_id = s.id
+        WHERE c.deleted =0
         <if test="startDateTime != null">
             AND check_time >= #{startDateTime}
             AND check_time <![CDATA[ <= ]]> #{endDateTime}
@@ -53,7 +54,7 @@
             AND check_status != #{checkStatus}
         </if>
         <if test="className != null">
-            AND className = #{className}
+            AND class_name = #{className}
         </if>
     </select>
     <select id="selectTotalCheckCount"

@@ -52,7 +52,7 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
         // 校验名称唯一
         validateNameUnique(null, reqVO.getName());
         CouponMgmtDO couponMgmt = BeanUtils.toBean(reqVO, CouponMgmtDO.class);
-        couponMgmt.setStatus("0");
+        couponMgmt.setStatus(CouponMgmtStatusEnum.NOT_RECEIVED.getValue());
         couponMgmtMapper.insert(couponMgmt);
         return couponMgmt.getId();
     }

@@ -75,7 +75,7 @@ public class RiskReportController {
         );
     }
     @GetMapping("/export-pdf")
-    @Operation(summary = "(勿用)（可用但不推荐）导出 PDF",hidden = true)
+    @Operation(summary = "(次级)（可用但不推荐）导出 PDF")
     @ApiAccessLog(operateType = EXPORT)
 //    @SysOpeLog(operObject = "企业风险评估报告", operType = "批量导出PDF")
     public ResponseEntity<byte[]> exportPdf(@Valid EntReportPageReq pageReqVO) {

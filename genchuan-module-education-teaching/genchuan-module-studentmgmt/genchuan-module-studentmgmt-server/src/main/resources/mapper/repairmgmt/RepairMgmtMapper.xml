@@ -13,10 +13,10 @@
             resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.repairmgmt.vo.RepairMgmtChartRespVO">
         SELECT
         COUNT(1) AS totalRepairCount,
-        COUNT(CASE WHEN status = #{pending} THEN 1 ELSE 0 END) AS pendingDispatchCount,
-        COUNT(CASE WHEN status = #{repairing} THEN 1 ELSE 0 END) AS repairingCount,
-        COUNT(CASE WHEN status = #{completed} THEN 1 ELSE 0 END) AS repairedCount,
-        COUNT(CASE WHEN check_status = #{checkStatus} THEN 1 ELSE 0 END) AS acceptedCount
+        SUM(CASE WHEN status = #{pending} THEN 1 ELSE 0 END) AS pendingDispatchCount,
+        SUM(CASE WHEN status = #{repairing} THEN 1 ELSE 0 END) AS repairingCount,
+        SUM(CASE WHEN status = #{completed} THEN 1 ELSE 0 END) AS repairedCount,
+        SUM(CASE WHEN check_status = #{checkStatus} THEN 1 ELSE 0 END) AS acceptedCount
         FROM repair_mgmt
         WHERE deleted=0
         <if test="dormBuilding != null">
@@ -38,6 +38,7 @@
         <if test="startTime != null">
             AND apply_time between #{startTime} AND #{endTime}
         </if>
+        GROUP BY DATE_FORMAT(apply_time, '%Y-%m-%d')
     </select>
     <select id="selectTypeDistributionList" resultType="com.alibaba.fastjson.JSONObject">
         SELECT
@@ -57,24 +58,26 @@
         SELECT
         repair_type AS type,
         COUNT(1) AS total,
-        COUNT(CASE WHEN status = #{completed} THEN 1 ELSE 0 END) AS finished,
-        ROUND(SUM(IF(status = #{completed}, 1, 0)) / COUNT(1),2) AS finishRate,
+        SUM(CASE WHEN status = #{completed} THEN 1 ELSE 0 END) AS finished,
+        ROUND(SUM(IF(status = #{completed}, 1, 0)) / COUNT(1),2) AS finishRate
         FROM repair_mgmt
         WHERE deleted=0
         <if test="startTime != null">
             AND apply_time between #{startTime} AND #{endTime}
         </if>
+        GROUP BY repair_type
     </select>
     <select id="selectBuildingStatisticsList" resultType="com.alibaba.fastjson.JSONObject">
         SELECT
         dorm_num AS building,
         COUNT(1) AS total,
-        COUNT(CASE WHEN status = #{completed} THEN 1 ELSE 0 END) AS finished,
-        ROUND(SUM(IF(status = #{completed}, 1, 0)) / COUNT(1),2) AS finishRate,
+        SUM(CASE WHEN status = #{completed} THEN 1 ELSE 0 END) AS finished,
+        ROUND(SUM(IF(status = #{completed}, 1, 0)) / COUNT(1),2) AS finishRate
         FROM repair_mgmt
         WHERE deleted=0
         <if test="startTime != null">
             AND apply_time between #{startTime} AND #{endTime}
         </if>
+        GROUP BY dorm_num
     </select>
 </mapper>

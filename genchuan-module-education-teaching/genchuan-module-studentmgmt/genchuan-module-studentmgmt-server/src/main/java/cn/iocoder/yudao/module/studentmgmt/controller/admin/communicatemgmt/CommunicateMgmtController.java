@@ -101,4 +101,39 @@ public class CommunicateMgmtController {
                         BeanUtils.toBean(list, CommunicateMgmtRespVO.class));
     }
 
+    @PutMapping("/publish")
+    @Operation(summary = "发布")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:communicate-mgmt:publish')")
+    public CommonResult<Boolean> publish(@Valid @RequestBody CommunicateMgmtPublishReqVO reqVO) {
+        return success(communicateMgmtService.publish(reqVO));
+    }
+
+    @PutMapping("/feedback")
+    @Operation(summary = "反馈")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:communicate-mgmt:feedback')")
+    public CommonResult<Boolean> feedback(@Valid @RequestBody CommunicateMgmtFeedbackReqVO reqVO) {
+        return success(communicateMgmtService.feedback(reqVO));
+    }
+
+    @PutMapping("/reply")
+    @Operation(summary = "反馈")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:communicate-mgmt:reply')")
+    public CommonResult<Boolean> reply(@Valid @RequestBody CommunicateMgmtReplyReqVO reqVO) {
+        return success(communicateMgmtService.reply(reqVO));
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "家校协同互动看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:communicate-mgmt:chart')")
+    public CommonResult<CommunicateMgmtChartRespVO> chart(@Valid CommunicateMgmtChartReqVO reqVO) {
+        return success(communicateMgmtService.chart(reqVO));
+    }
+
+    @PutMapping("/interactIndex")
+    @Operation(summary = "互动核心指标统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:communicate-mgmt:chart')")
+    public CommonResult<CommunicateInteractIndexRespVO> interactIndex(@Valid CommunicateMgmtChartReqVO reqVO) {
+        return success(communicateMgmtService.interactIndex(reqVO));
+    }
+
 }

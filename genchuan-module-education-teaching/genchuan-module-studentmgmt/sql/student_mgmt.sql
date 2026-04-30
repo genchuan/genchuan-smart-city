@@ -250,7 +250,7 @@ CREATE TABLE `check_in`  (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键 ID',
   `student_id` bigint NOT NULL COMMENT '学生 ID',
   `exam_score` decimal(5, 1) NULL DEFAULT NULL COMMENT '中考成绩',
-  `补充信息` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '补充信息',
+  `supplyInfo` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '补充信息',
   `confirm_time` datetime NULL DEFAULT NULL COMMENT '报到确认时间',
   `audit_user` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '审核人',
   `audit_time` datetime NULL DEFAULT NULL COMMENT '审核时间',

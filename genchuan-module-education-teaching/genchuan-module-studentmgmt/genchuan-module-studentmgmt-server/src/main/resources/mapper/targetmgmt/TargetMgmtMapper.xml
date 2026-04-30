@@ -69,8 +69,8 @@
             resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.targetmgmt.vo.TargetMgmtChartIndexRespVO">
         SELECT
             COUNT(1) AS totalTargetCount,
-            COUNT(CASE WHEN `status` = #{status} THEN 1 ELSE 0 END) AS enabledTargetCount,
-            COUNT(CASE WHEN total_score <![CDATA[<]]> warn_threshold THEN 1 ELSE 0 END) AS warnTargetCount,
+        SUM(CASE WHEN `status` = #{status} THEN 1 ELSE 0 END) AS enabledTargetCount,
+        SUM(CASE WHEN total_score <![CDATA[<]]> warn_threshold THEN 1 ELSE 0 END) AS warnTargetCount,
             AVG(total_score) AS avgScore
         FROM target_mgmt
         WHERE deleted = 0

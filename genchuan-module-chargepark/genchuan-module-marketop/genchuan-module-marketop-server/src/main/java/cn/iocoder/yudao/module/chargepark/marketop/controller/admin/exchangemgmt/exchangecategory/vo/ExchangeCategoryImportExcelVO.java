@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Schema(description = "管理后台 - 兑换类目 Excel 导入 VO")
 @Data
 @Builder
@@ -25,5 +27,11 @@ public class ExchangeCategoryImportExcelVO {
 
     @ExcelProperty("类目描述")
     private String description;
+
+    @ExcelProperty("商品数量")
+    private Integer goodsCount;
+
+    @ExcelProperty("生效时间")
+    private LocalDateTime effectTime;
 
 }

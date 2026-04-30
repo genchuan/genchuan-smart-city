@@ -15,6 +15,6 @@ public class ExchangeOrderDeliverReqVO {
 
     @Schema(description = "快递单号", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotEmpty(message = "快递单号不能为空")
-    private String expressNo;
+    private String logisticsInfo;
 
 }

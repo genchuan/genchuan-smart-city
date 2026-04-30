@@ -7,9 +7,12 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivit
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointActivityDO;
 import cn.iocoder.yudao.module.chargepark.marketop.framework.utils.DateUtils;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface PointActivityMapper extends BaseMapperX<PointActivityDO> {
@@ -46,5 +49,12 @@ public interface PointActivityMapper extends BaseMapperX<PointActivityDO> {
 
     @Select("SELECT IFNULL(SUM(join_count), 0) FROM point_activity")
     Long selectSumJoinCount();
+
+    @Select("SELECT DATE(create_time) AS date, COUNT(*) AS count " +
+            "FROM point_activity " +
+            "WHERE deleted = 0 AND create_time >= #{startTime} " +
+            "GROUP BY DATE(create_time) " +
+            "ORDER BY DATE(create_time) ASC")
+    List<Map<String, Object>> selectCountByDay(@Param("startTime") LocalDateTime startTime);
 
 }

@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.stationresource.service.stationresource.parkings
 import java.util.*;
 
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ParkingSpaceInfoPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ParkingSpaceInfoRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ParkingSpaceInfoSaveReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ops.AddParkingSpaceInfoReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ops.BindParkingSpaceReqVO;
@@ -56,7 +57,7 @@ public interface ParkingSpaceInfoService {
      * @param id 编号
      * @return 车位信息
      */
-    ParkingSpaceInfoDO getParkingSpaceInfo(Long id);
+    ParkingSpaceInfoRespVO getParkingSpaceInfo(Long id);
 
     /**
      * 获得车位信息分页
@@ -64,7 +65,7 @@ public interface ParkingSpaceInfoService {
      * @param pageReqVO 分页查询
      * @return 车位信息分页
      */
-    PageResult<ParkingSpaceInfoDO> getParkingSpaceInfoPage(ParkingSpaceInfoPageReqVO pageReqVO);
+    PageResult<ParkingSpaceInfoRespVO> getParkingSpaceInfoPage(ParkingSpaceInfoPageReqVO pageReqVO);
 
     Long addParkingSpaceInfo(AddParkingSpaceInfoReqVO createReqVO);
 

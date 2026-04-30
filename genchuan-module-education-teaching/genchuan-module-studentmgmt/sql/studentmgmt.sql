@@ -743,7 +743,7 @@ CREATE TABLE `check_in` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键 ID',
     `student_id` BIGINT NOT NULL COMMENT '学生 ID',
     `exam_score` DECIMAL(5,1) DEFAULT NULL COMMENT '中考成绩',
-    `补充信息` TEXT DEFAULT NULL COMMENT '补充信息',
+    `supplyInfo` TEXT DEFAULT NULL COMMENT '补充信息',
     `confirm_time` DATETIME DEFAULT NULL COMMENT '报到确认时间',
     `audit_user` VARCHAR(64) DEFAULT NULL COMMENT '审核人',
     `audit_time` DATETIME DEFAULT NULL COMMENT '审核时间',

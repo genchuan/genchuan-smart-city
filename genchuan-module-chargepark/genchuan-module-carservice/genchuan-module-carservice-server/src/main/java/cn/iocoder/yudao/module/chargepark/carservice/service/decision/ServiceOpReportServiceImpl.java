@@ -374,12 +374,12 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     public ReserveListChartRespVO chartReserve(LocalDateTime startTime, LocalDateTime endTime) {
         ReserveListChartRespVO resp = new ReserveListChartRespVO();
         long total = reserveListMapper.selectCount(new LambdaQueryWrapperX<ReserveListDO>()
-                .geIfPresent(ReserveListDO::getCreateTime, startTime)
-                .leIfPresent(ReserveListDO::getCreateTime, endTime));
+                .geIfPresent(ReserveListDO::getReserveTime, startTime)
+                .leIfPresent(ReserveListDO::getReserveTime, endTime));
         long succeeded = reserveListMapper.selectCount(new LambdaQueryWrapperX<ReserveListDO>()
                 .in(ReserveListDO::getStatus, Arrays.asList("已生效", "已完成"))
-                .geIfPresent(ReserveListDO::getCreateTime, startTime)
-                .leIfPresent(ReserveListDO::getCreateTime, endTime));
+                .geIfPresent(ReserveListDO::getReserveTime, startTime)
+                .leIfPresent(ReserveListDO::getReserveTime, endTime));
         resp.setTotalReserveCount((int) total);
         resp.setReserveSuccessRate(toRate(succeeded, total));
         resp.setReserveTrendList(toTrendList(reportStatMapper.reserveListDailyCount(

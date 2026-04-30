@@ -1,11 +1,12 @@
 package cn.iocoder.yudao.module.studentmgmt.service.registermgmt;
 
-import java.util.*;
-import jakarta.validation.*;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.BaseChartReqVO;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.registermgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.registermgmt.RegisterMgmtDO;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 报名管理 Service 接口
@@ -59,4 +60,11 @@ public interface RegisterMgmtService {
      */
     PageResult<RegisterMgmtDO> getRegisterMgmtPage(RegisterMgmtPageReqVO pageReqVO);
 
+    Boolean audit(@Valid RegisterMgmtAuditReqVO reqVO);
+
+    Boolean confirm(@Valid RegisterMgmtConfirmReqVO reqVO);
+
+    RegisterMgmtChartRespVO chart(@Valid BaseChartReqVO reqVO);
+
+    RegisterMgmtEnrollCountRespVO enrollCount(@Valid BaseChartReqVO reqVO);
 }
