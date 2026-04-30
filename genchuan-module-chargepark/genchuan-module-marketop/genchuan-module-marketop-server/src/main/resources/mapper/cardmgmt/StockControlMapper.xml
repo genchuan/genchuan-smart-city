@@ -18,8 +18,9 @@
     </select>
 
     <select id="selectDistributionByType" resultType="cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.stockcontrol.vo.StockControlChartRespVO$DistributionItem">
-        SELECT sc.card_id AS cardId, COUNT(*) AS count
+        SELECT sc.card_id AS cardId, cc.type AS type, COUNT(*) AS count
         FROM stock_control sc
+        LEFT JOIN card_config cc ON sc.card_id = cc.id AND cc.deleted = 0
         WHERE sc.deleted = 0
           <if test="startTime != null">
               AND sc.create_time &gt;= #{startTime}

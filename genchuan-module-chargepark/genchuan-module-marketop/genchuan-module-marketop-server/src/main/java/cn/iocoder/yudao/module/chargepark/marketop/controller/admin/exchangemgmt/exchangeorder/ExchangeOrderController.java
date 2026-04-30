@@ -98,15 +98,14 @@ public class ExchangeOrderController {
     @GetMapping("/batch-export")
     @Operation(summary = "批量导出兑换订单")
     @PreAuthorize("@ss.hasPermission('marketop:exchange-order:query')")
-    public void batchExport(@RequestParam(value = "ids", required = false) List<Long> ids,
-                            ExchangeOrderPageReqVO reqVO, HttpServletResponse response) throws IOException {
-        List<ExchangeOrderDO> list;
+    public void batchExport(@RequestParam(value = "ids", required = false) List<Long> ids, HttpServletResponse response) throws IOException {
+        List<ExchangeOrderDO> list = new ArrayList<>();
         if (ids != null && !ids.isEmpty()) {
-            list = exchangeOrderService.getListByIds(ids);
-        } else {
-            reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-            list = exchangeOrderService.getPage(reqVO).getList();
-        }
+            list = exchangeOrderService.getListByIds(ids);}
+//        } else {
+//            reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+//            list = exchangeOrderService.getPage(reqVO).getList();
+//        }
         List<ExchangeOrderRespVO> voList = BeanUtils.toBean(list, ExchangeOrderRespVO.class);
         injectUserNames(voList);
         ExcelUtils.write(response, "兑换订单.xlsx", "数据", ExchangeOrderRespVO.class, voList);

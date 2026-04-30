@@ -35,6 +35,8 @@ public class StockControlChartRespVO {
         private String cardId;
         @Schema(description = "数量")
         private Integer count;
+        @Schema(description = "类型")
+        private String type;
     }
 
 }
