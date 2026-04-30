@@ -32,7 +32,11 @@ public class ShareChargeOrderPageReqVO extends PageParam {
     private String status;
     @Schema(description = "场站ID")
     private Long stationId;
-    @Schema(description = "借出时间范围")
+    @Schema(description = "借出时间-开始，格式 yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDateTime[] lendTime;
+    private LocalDateTime lendTimeStart;
+
+    @Schema(description = "借出时间-结束，格式 yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime lendTimeEnd;
 }
