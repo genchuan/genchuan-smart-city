@@ -18,9 +18,8 @@
     </select>
 
     <select id="selectDistributionByType" resultType="cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.stockcontrol.vo.StockControlChartRespVO$DistributionItem">
-        SELECT cc.type AS type, COUNT(*) AS count
+        SELECT sc.card_id AS cardId, COUNT(*) AS count
         FROM stock_control sc
-        INNER JOIN card_config cc ON sc.card_id = cc.id AND cc.deleted = 0
         WHERE sc.deleted = 0
           <if test="startTime != null">
               AND sc.create_time &gt;= #{startTime}
@@ -31,7 +30,7 @@
           <if test="stationId != null">
               AND sc.station_id = #{stationId}
           </if>
-        GROUP BY cc.type
+        GROUP BY sc.card_id
     </select>
 
     <select id="selectStockTrend" resultType="java.util.Map">

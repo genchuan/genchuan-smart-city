@@ -62,10 +62,10 @@ public class ExchangeCategoryServiceImpl implements ExchangeCategoryService {
     public void enable(Long id) {
         ExchangeCategoryDO exchangeCategory = validateExists(id);
         // 未生效→已生效，或 已禁用→已生效
-        if (!ExchangeCategoryStatusEnum.NOT_EFFECTIVE.getValue().equals(exchangeCategory.getStatus()) &&
-                !ExchangeCategoryStatusEnum.DISABLED.getValue().equals(exchangeCategory.getStatus())) {
-            throw exception(EXCHANGE_CATEGORY_NOT_EXISTS);
-        }
+//        if (!ExchangeCategoryStatusEnum.NOT_EFFECTIVE.getValue().equals(exchangeCategory.getStatus()) &&
+//                !ExchangeCategoryStatusEnum.DISABLED.getValue().equals(exchangeCategory.getStatus())) {
+//            throw exception(EXCHANGE_CATEGORY_NOT_EXISTS);
+//        }
         exchangeCategory.setStatus(ExchangeCategoryStatusEnum.EFFECTIVE.getValue());
         exchangeCategoryMapper.updateById(exchangeCategory);
     }
@@ -74,10 +74,10 @@ public class ExchangeCategoryServiceImpl implements ExchangeCategoryService {
     public void disable(Long id) {
         ExchangeCategoryDO exchangeCategory = validateExists(id);
         // 已生效→已禁用
-        if (!ExchangeCategoryStatusEnum.EFFECTIVE.getValue().equals(exchangeCategory.getStatus())) {
-            throw exception(EXCHANGE_CATEGORY_NOT_EXISTS);
-        }
-        exchangeCategory.setStatus("0");
+//        if (!ExchangeCategoryStatusEnum.EFFECTIVE.getValue().equals(exchangeCategory.getStatus())) {
+//            throw exception(EXCHANGE_CATEGORY_NOT_EXISTS);
+//        }
+        exchangeCategory.setStatus(ExchangeCategoryStatusEnum.DISABLED.getValue());
         exchangeCategoryMapper.updateById(exchangeCategory);
     }
 
