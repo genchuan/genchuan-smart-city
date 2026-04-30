@@ -8,6 +8,7 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.sto
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.StockControlDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.cardmgmt.StockControlMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.StockControlStatusEnum;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.StockControlWarnStatusEnum;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -52,7 +53,7 @@ public class StockControlServiceImpl implements StockControlService {
     @Override
     public void warn(Long id) {
         StockControlDO stockControl = validateExists(id);
-        stockControl.setWarnStatus(StockControlStatusEnum.WARNING.getValue());
+        stockControl.setWarnStatus(StockControlWarnStatusEnum.WARNED.getValue());
         stockControlMapper.updateById(stockControl);
         // TODO: 推送库存预警通知
     }
