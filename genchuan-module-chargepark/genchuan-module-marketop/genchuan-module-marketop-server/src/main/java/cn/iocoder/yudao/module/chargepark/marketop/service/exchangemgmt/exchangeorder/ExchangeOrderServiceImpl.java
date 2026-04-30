@@ -119,6 +119,10 @@ public class ExchangeOrderServiceImpl implements ExchangeOrderService {
             Long categoryId = ((Number) m.get("category_id")).longValue();
             item.setCategoryId(categoryId);
             item.setCount(((Number) m.get("count")).intValue());
+            ExchangeCategoryDO category = exchangeCategoryService.get(categoryId);
+            if (category != null) {
+                item.setName(category.getName());
+            }
             typeItems.add(item);
         }
         respVO.setTypeList(typeItems);

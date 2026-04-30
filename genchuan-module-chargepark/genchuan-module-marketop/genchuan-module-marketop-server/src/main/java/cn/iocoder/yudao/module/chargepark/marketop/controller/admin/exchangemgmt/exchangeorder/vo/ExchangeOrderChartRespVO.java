@@ -35,6 +35,8 @@ public class ExchangeOrderChartRespVO {
         private Long categoryId;
         @Schema(description = "订单数量")
         private Integer count;
+        @Schema(description = "名称")
+        private String name;
     }
 
 }
