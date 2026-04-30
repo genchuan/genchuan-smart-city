@@ -19,8 +19,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -101,10 +103,21 @@ public class ExchangeCategoryController {
     @Operation(summary = "获得导入兑换类目模板")
     public void importTemplate(HttpServletResponse response) throws IOException {
         List<ExchangeCategoryImportExcelVO> list = Arrays.asList(
-                ExchangeCategoryImportExcelVO.builder().name("数码配件").scope("全平台").sort(1).description("各类充电、数码相关配件").build(),
-                ExchangeCategoryImportExcelVO.builder().name("生活用品").scope("指定场站").sort(2).description("日常生活用品").build()
+                ExchangeCategoryImportExcelVO.builder().name("数码配件").scope("0").sort(1).description("各类充电、数码相关配件")
+                        .goodsCount(10).effectTime(LocalDateTime.of(2026, 1, 1, 0, 0, 0)).build(),
+                ExchangeCategoryImportExcelVO.builder().name("生活用品").scope("1").sort(2).description("日常生活用品")
+                        .goodsCount(20).effectTime(LocalDateTime.of(2026, 1, 1, 0, 0, 0)).build()
         );
         ExcelUtils.write(response, "兑换类目导入模板.xls", "类目列表", ExchangeCategoryImportExcelVO.class, list);
+    }
+
+    @PostMapping("/import")
+    @Operation(summary = "导入兑换类目")
+    @PreAuthorize("@ss.hasPermission('marketop:exchange-category:create')")
+    public CommonResult<Boolean> importExcel(@RequestParam("file") MultipartFile file) throws IOException {
+        List<ExchangeCategoryImportExcelVO> list = ExcelUtils.read(file, ExchangeCategoryImportExcelVO.class);
+        exchangeCategoryService.importData(list);
+        return CommonResult.success(true);
     }
 
     @GetMapping("/chart")

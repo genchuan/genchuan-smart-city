@@ -18,7 +18,7 @@ public class StockControlChartRespVO {
     @Schema(description = "库存变化趋势")
     private List<TrendItem> stockTrend;
 
-    @Schema(description = "各卡种库存分布(按type分类)")
+    @Schema(description = "各卡种库存分布(按cardId分类)")
     private List<DistributionItem> stockDistribution;
 
     @Data
@@ -31,8 +31,8 @@ public class StockControlChartRespVO {
 
     @Data
     public static class DistributionItem {
-        @Schema(description = "卡种类型")
-        private String type;
+        @Schema(description = "卡种ID")
+        private String cardId;
         @Schema(description = "数量")
         private Integer count;
     }

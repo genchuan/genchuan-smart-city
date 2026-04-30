@@ -5,6 +5,8 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.car
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.cardorder.vo.CardOrderPageReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.CardOrderDO;
 
+import java.util.List;
+
 public interface CardOrderService {
 
     PageResult<CardOrderDO> getPage(CardOrderPageReqVO reqVO);
@@ -20,5 +22,7 @@ public interface CardOrderService {
     void cancel(Long id);
 
     CardOrderChartRespVO getChart();
+
+    List<CardOrderDO> getListByIds(List<Long> ids);
 
 }

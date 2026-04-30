@@ -68,7 +68,7 @@ public class StockControlController {
         return CommonResult.success(respVO);
     }
 
-    @PutMapping("/restock")
+    @PutMapping("/replenish")
     @Operation(summary = "库存补货")
     @PreAuthorize("@ss.hasPermission('marketop:stock-control:update')")
     public CommonResult<Boolean> restock(@Valid @RequestBody StockControlRestockReqVO reqVO) {
@@ -105,10 +105,8 @@ public class StockControlController {
     @GetMapping("/chart")
     @Operation(summary = "库存管控图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:stock-control:query')")
-    public CommonResult<StockControlChartRespVO> getChart(@RequestParam(value = "startTime", required = false) Long startTime,
-                                                          @RequestParam(value = "endTime", required = false) Long endTime,
-                                                          @RequestParam(value = "stationId", required = false) Long stationId) {
-        return CommonResult.success(stockControlService.getChart(startTime, endTime, stationId));
+    public CommonResult<StockControlChartRespVO> getChart() {
+        return CommonResult.success(stockControlService.getChart(null, null, null));
     }
 
     private void injectUserNames(List<StockControlRespVO> list) {

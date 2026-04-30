@@ -6,6 +6,7 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivi
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.receiverecord.vo.ReceiveRecordPageReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.ReceiveRecordDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.couponactivity.ReceiveRecordMapper;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.ReceiveRecordStatusEnum;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -43,10 +44,10 @@ public class ReceiveRecordServiceImpl implements ReceiveRecordService {
     @Override
     public void check(Long id, String checkResult) {
         ReceiveRecordDO receiveRecord = validateExists(id);
-        if (!"0".equals(receiveRecord.getStatus()) && !"-1".equals(receiveRecord.getStatus())) {
-            throw exception(RECEIVE_RECORD_STATUS_ERROR);
-        }
-        receiveRecord.setStatus("1");
+//        if (!"0".equals(receiveRecord.getStatus()) && !"-1".equals(receiveRecord.getStatus())) {
+//            throw exception(RECEIVE_RECORD_STATUS_ERROR);
+//        }
+        receiveRecord.setStatus(ReceiveRecordStatusEnum.CHECKED.getValue());
         receiveRecord.setCheckResult(checkResult);
         receiveRecordMapper.updateById(receiveRecord);
     }

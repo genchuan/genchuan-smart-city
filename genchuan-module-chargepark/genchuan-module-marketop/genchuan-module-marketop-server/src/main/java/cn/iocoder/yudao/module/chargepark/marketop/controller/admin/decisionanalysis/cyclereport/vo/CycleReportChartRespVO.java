@@ -67,8 +67,17 @@ public class CycleReportChartRespVO {
         private String name;
 
         @Schema(description = "趋势数据")
-        private List<BigDecimal> data;
+        private List<ChartLineItemData> data;
+    }
 
+    @Data
+    public static class ChartLineItemData {
+
+        @Schema(description = "日期")
+        private String date;
+
+        @Schema(description = "数量")
+        private Integer count;
     }
 
     @Data

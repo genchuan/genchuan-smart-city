@@ -113,8 +113,9 @@ public class CardOrderController {
     @Operation(summary = "批量导出卡种订单")
     @PreAuthorize("@ss.hasPermission('marketop:card-order:query')")
     public void batchExport(@RequestParam("ids") List<Long> ids, HttpServletResponse response) throws IOException {
-        // TODO: 实现按ID批量查询并导出
-        List<CardOrderRespVO> voList = java.util.Collections.emptyList();
+        List<CardOrderDO> list = cardOrderService.getListByIds(ids);
+        List<CardOrderRespVO> voList = BeanUtils.toBean(list, CardOrderRespVO.class);
+        injectUserNames(voList);
         ExcelUtils.write(response, "卡种订单(批量).xlsx", "数据", CardOrderRespVO.class, voList);
     }
 
