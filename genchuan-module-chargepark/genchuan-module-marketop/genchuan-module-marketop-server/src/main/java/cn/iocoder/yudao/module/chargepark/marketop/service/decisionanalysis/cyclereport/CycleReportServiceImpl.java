@@ -140,12 +140,12 @@ public class CycleReportServiceImpl implements CycleReportService {
         // ========== lineData: 近30天按日期统计数量 ==========
         LocalDateTime lineStart = LocalDateTime.now().minusDays(30);
         Map<String, Map<String, Object>> lineDataMap = buildLineDataMap(
-                "point_activity", cycleReportMapper.selectPointActivityCountByDay(lineStart),
-                "point_lottery", cycleReportMapper.selectPointLotteryCountByDay(lineStart),
-                "receive_record", cycleReportMapper.selectReceiveRecordCountByDay(lineStart),
-                "card_order", cycleReportMapper.selectCardOrderCountByDay(lineStart),
-                "exchange_order", cycleReportMapper.selectExchangeOrderCountByDay(lineStart),
-                "stock_control", cycleReportMapper.selectStockControlCountByDay(lineStart)
+                "活动参与趋势", cycleReportMapper.selectPointActivityCountByDay(lineStart),
+                "抽奖里趋势", cycleReportMapper.selectPointLotteryCountByDay(lineStart),
+                "优惠券发放趋势", cycleReportMapper.selectReceiveRecordCountByDay(lineStart),
+                "订单量趋势", cycleReportMapper.selectCardOrderCountByDay(lineStart),
+//                "exchange_order", cycleReportMapper.selectExchangeOrderCountByDay(lineStart),
+                "库存趋势", cycleReportMapper.selectStockControlCountByDay(lineStart)
         );
         List<CycleReportChartRespVO.ChartLineData> lineDataList = new ArrayList<>();
         LocalDate today = LocalDate.now();
@@ -169,19 +169,19 @@ public class CycleReportServiceImpl implements CycleReportService {
 
         // ========== barData: 按type分类统计数量 ==========
         List<CycleReportChartRespVO.ChartBarData> barDataList = new ArrayList<>();
-        barDataList.add(buildBarData("activity_config", cycleReportMapper.selectActivityConfigTypeCount()));
-        barDataList.add(buildBarData("point_activity", cycleReportMapper.selectPointActivityTypeCount()));
-        barDataList.add(buildBarData("coupon_mgmt", cycleReportMapper.selectCouponMgmtTypeCount()));
-        barDataList.add(buildBarData("prize_mgmt", cycleReportMapper.selectPrizeMgmtTypeCount()));
-        barDataList.add(buildBarData("card_config", cycleReportMapper.selectCardConfigTypeCount()));
-        barDataList.add(buildBarData("exchange_category", cycleReportMapper.selectExchangeCategoryTypeCount()));
+        barDataList.add(buildBarData("活动类型分布", cycleReportMapper.selectActivityConfigTypeCount()));
+//        barDataList.add(buildBarData("point_activity", cycleReportMapper.selectPointActivityTypeCount()));
+        barDataList.add(buildBarData("优惠券类型分布", cycleReportMapper.selectCouponMgmtTypeCount()));
+        barDataList.add(buildBarData("奖品类型分布", cycleReportMapper.selectPrizeMgmtTypeCount()));
+        barDataList.add(buildBarData("卡种类型分布", cycleReportMapper.selectCardConfigTypeCount()));
+        barDataList.add(buildBarData("兑换类目订单分布", cycleReportMapper.selectExchangeCategoryTypeCount()));
         respVO.setBarData(barDataList);
 
         // ========== pieData: 按type统计占比 ==========
         List<CycleReportChartRespVO.ChartPieData> pieDataList = new ArrayList<>();
-        pieDataList.add(buildPieData("rule_config", cycleReportMapper.selectRuleConfigTypeCount()));
-        pieDataList.add(buildPieData("package_config", cycleReportMapper.selectPackageConfigTypeCount()));
-        pieDataList.add(buildPieData("activity_config", cycleReportMapper.selectActivityConfigTypeCountForPie()));
+        pieDataList.add(buildPieData("规则类型占比", cycleReportMapper.selectRuleConfigTypeCount()));
+        pieDataList.add(buildPieData("券包类型占比", cycleReportMapper.selectPackageConfigTypeCount()));
+        pieDataList.add(buildPieData("配置类型占比", cycleReportMapper.selectActivityConfigTypeCountForPie()));
         respVO.setPieData(pieDataList);
 
         return respVO;
