@@ -59,4 +59,11 @@ public interface DormAssignService {
      */
     PageResult<DormAssignDO> getDormAssignPage(DormAssignPageReqVO pageReqVO);
 
+    Boolean assign(@Valid DormAssignAssignReqVO reqVO);
+
+    Boolean adjust(@Valid DormAssignAdjustReqVO reqVO);
+
+    DormAssignChartRespVO chart(@Valid DormAssignChartReqVO reqVO);
+
+    DormAssignIndexRespVO assignIndex(@Valid DormAssignChartReqVO reqVO);
 }
