@@ -20,6 +20,8 @@ import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.StationName
 import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.UserNameInjector;
 import cn.iocoder.yudao.module.chargepark.carservice.service.decision.ServiceOpReportService;
 import cn.iocoder.yudao.module.chargepark.carservice.service.reserve.ReserveListService;
+import cn.iocoder.yudao.module.stationresource.api.parking.ParkingSpaceInfoApi;
+import cn.iocoder.yudao.module.stationresource.api.parking.dto.ParkingSpaceInfoRespDTO;
 import cn.iocoder.yudao.module.stationresource.api.station.StationInfoApi;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import io.swagger.v3.oas.annotations.Operation;
@@ -60,6 +62,9 @@ public class ReserveListController {
 
     @Resource
     private StationInfoApi stationInfoApi;
+
+    @Resource
+    private ParkingSpaceInfoApi parkingSpaceInfoApi;
 
     @GetMapping("/page")
     @Operation(summary = "筛选/刷新 预约列表")
@@ -212,6 +217,40 @@ public class ReserveListController {
                 UserNameInjector.field(ReserveListRespVO::getAuditUserId, ReserveListRespVO::setAuditUserName));
         StationNameInjector.inject(list, stationInfoApi,
                 StationNameInjector.field(ReserveListRespVO::getStationId, ReserveListRespVO::setStationName));
+        injectSpaceNos(list);
+    }
+
+    private void injectSpaceNos(List<ReserveListRespVO> list) {
+        if (list == null || list.isEmpty()) {
+            return;
+        }
+        java.util.Set<Long> spaceIds = new java.util.HashSet<>();
+        for (ReserveListRespVO v : list) {
+            if (v.getSpaceId() != null) {
+                spaceIds.add(v.getSpaceId());
+            }
+        }
+        if (spaceIds.isEmpty()) {
+            return;
+        }
+        java.util.Map<Long, ParkingSpaceInfoRespDTO> spaceMap;
+        try {
+            spaceMap = parkingSpaceInfoApi.getSpaceMap(spaceIds);
+        } catch (Exception ex) {
+            return;
+        }
+        if (spaceMap == null || spaceMap.isEmpty()) {
+            return;
+        }
+        for (ReserveListRespVO v : list) {
+            if (v.getSpaceId() == null) {
+                continue;
+            }
+            ParkingSpaceInfoRespDTO s = spaceMap.get(v.getSpaceId());
+            if (s != null) {
+                v.setSpaceNo(s.getSpaceNo());
+            }
+        }
     }
 
 }
