@@ -24,9 +24,11 @@ public class CycleReportPageReqVO extends PageParam {
     private String stationName;
 
     @Schema(description = "统计开始时间")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime statTimeStart;
 
     @Schema(description = "统计结束时间")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime statTimeEnd;
 
     @Schema(description = "正常设备数")

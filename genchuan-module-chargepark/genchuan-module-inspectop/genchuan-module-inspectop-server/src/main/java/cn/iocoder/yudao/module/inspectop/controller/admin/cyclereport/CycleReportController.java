@@ -15,14 +15,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
+import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 @Tag(name = "巡查巡检 - 巡检运维报表")
@@ -69,6 +72,30 @@ public class CycleReportController {
         // 导出 Excel
         ExcelUtils.write(response, "巡检运维报表存储.xls", "数据", CycleReportRespVO.class,
                 BeanUtils.toBean(list, CycleReportRespVO.class));
+    }
+
+    @GetMapping("/export-excel/{id}")
+    @Operation(summary = "导出单条巡检运维报表 Excel")
+    @PreAuthorize("@ss.hasPermission('inspectop:cycle-report:export')")
+    @ApiAccessLog(operateType = EXPORT)
+    public void exportCycleReportExcelById(@Parameter(description = "报表主键 ID", required = true, example = "1")
+                                           @PathVariable("id") Long id,
+                                           HttpServletResponse response) throws IOException {
+        // 1. 根据ID查询单条报表数据
+        CycleReportDO reportDO = cycleReportService.getCycleReport(id);
+        if (reportDO == null) {
+            response.sendError(HttpStatus.NOT_FOUND.value(), "报表不存在");
+            return;
+        }
+        // 2. 转换为 VO (用于Excel导出模板)
+        CycleReportRespVO respVO = BeanUtils.toBean(reportDO, CycleReportRespVO.class);
+        // 3. 导出 Excel
+        // 文件名示例：巡检运维报表_泉州丰泽充电场站_2026-01月报.xls
+        String fileName = String.format("巡检运维报表_%s_%s.xls",
+                respVO.getStationName(),
+                respVO.getReportCycle());
+        ExcelUtils.write(response, fileName, "报表详情", CycleReportRespVO.class,
+                Collections.singletonList(respVO));
     }
 
 

@@ -115,7 +115,7 @@ public class FenceMgmtServiceImpl implements FenceMgmtService {
         // 创建更新对象
         FenceMgmtDO updateObj = new FenceMgmtDO();
         updateObj.setId(id);
-        updateObj.setStatus("2"); // 禁用状态设为2
+        updateObj.setStatus("0"); // 禁用状态设为0
 
         // 执行更新
         fenceMgmtMapper.updateById(updateObj);
