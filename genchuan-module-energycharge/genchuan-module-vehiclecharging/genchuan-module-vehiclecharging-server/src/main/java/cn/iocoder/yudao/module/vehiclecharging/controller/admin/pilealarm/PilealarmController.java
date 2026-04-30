@@ -92,13 +92,12 @@ public class PilealarmController {
     @Operation(summary = "导出充电桩告警 Excel")
     @PreAuthorize("@ss.hasPermission('vehiclecharging:pilealarm:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportPilealarmExcel(@Valid PilealarmPageReqVO pageReqVO,
+    public void exportPilealarmExcel(@Valid NewPileAlarmPageReqVO pageReqVO,
                                      HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<PilealarmDO> list = pilealarmService.getPilealarmPage(pageReqVO).getList();
+        List<NewPileAlarmRespVO> list = pilealarmService.page(pageReqVO).getList();
         // 导出 Excel
-        ExcelUtils.write(response, "充电桩告警.xls", "数据", PilealarmRespVO.class,
-                BeanUtils.toBean(list, PilealarmRespVO.class));
+        ExcelUtils.write(response, "充电桩告警.xls", "数据", NewPileAlarmRespVO.class, list);
     }
     @GetMapping("/page")
     @PreAuthorize("@ss.hasPermission('vehiclecharging:pile_alarm:query')")

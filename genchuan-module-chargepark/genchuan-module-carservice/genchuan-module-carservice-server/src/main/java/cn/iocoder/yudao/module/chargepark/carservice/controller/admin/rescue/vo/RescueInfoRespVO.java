@@ -17,7 +17,6 @@ public class RescueInfoRespVO {
     private Long id;
 
     @Schema(description = "用户 ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("用户 ID")
     private Long userId;
 
     @Schema(description = "用户名（关联 system_user.nickname）")

@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.comparemgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.comparemgmt.CompareMgmtDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.comparemgmt.CompareMgmtMapper;
+import cn.iocoder.yudao.module.studentmgmt.enums.DormCompareStatusEnum;
 import com.alibaba.fastjson.JSONObject;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
@@ -105,10 +106,11 @@ public class CompareMgmtServiceImpl implements CompareMgmtService {
             // 校验存在
             CompareMgmtDO compareMgmtDO = validateCompareMgmtExists(id);
             // 更新
-            CompareMgmtDO updateObj = BeanUtils.toBean(reqVO, CompareMgmtDO.class);
+            compareMgmtDO.setScoreUser(reqVO.getScoreUser());
+            compareMgmtDO.setTotalScore(reqVO.getTotalScore());
             // 打分完成后自动将状态修改为 “已汇总”
-            updateObj.setStatus("已汇总");
-            int i = compareMgmtMapper.updateById(updateObj);
+            compareMgmtDO.setStatus(DormCompareStatusEnum.DORM_COMPARE_STATUS_SUMMARIZED.getStatus());
+            int i = compareMgmtMapper.updateById(compareMgmtDO);
             total += i;
             // 记录操作日志上下文
             LogRecordContext.putVariable("compare", compareMgmtDO);

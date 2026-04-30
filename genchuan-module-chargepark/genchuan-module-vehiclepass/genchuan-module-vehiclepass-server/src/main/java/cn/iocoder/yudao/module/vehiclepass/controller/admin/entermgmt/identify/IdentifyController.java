@@ -95,7 +95,7 @@ public class IdentifyController {
         return success(pageResult);
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出车牌识别 Excel")
     @PreAuthorize("@ss.hasPermission('plate:identify:export')")
     @ApiAccessLog(operateType = EXPORT)

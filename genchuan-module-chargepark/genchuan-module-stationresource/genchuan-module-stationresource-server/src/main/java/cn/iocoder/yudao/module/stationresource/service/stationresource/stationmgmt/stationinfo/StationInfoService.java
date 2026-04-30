@@ -4,6 +4,7 @@ import java.util.*;
 
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.ops.ImportRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationinfo.vo.StationInfoPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationinfo.vo.StationInfoRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationinfo.vo.StationInfoSaveReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationinfo.vo.ops.StationInfoCreateReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationinfo.vo.ops.StationInfoUpdateReqVO;
@@ -63,7 +64,7 @@ public interface StationInfoService {
      * @param pageReqVO 分页查询
      * @return 场站信息分页
      */
-    PageResult<StationInfoDO> getStationInfoPage(StationInfoPageReqVO pageReqVO);
+    PageResult<StationInfoRespVO> getStationInfoPage(StationInfoPageReqVO pageReqVO);
 
     Long addStationInfo(StationInfoCreateReqVO reqVO);
 

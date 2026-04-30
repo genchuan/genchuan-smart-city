@@ -50,13 +50,11 @@ public interface UnplateEnterMapper extends BaseMapperX<UnplateEnterDO> {
     /**
      * 统计各场站无牌入场数量
      */
-    @MapKey("station_id")
     List<Map<String, Object>> selectStationUnplateCount(@Param("reqVO") UnplateEnterChartReqVO reqVO);
 
     /**
      * 统计无牌入场总量和审核通过数
      */
-    @MapKey("station_id")
     Map<String, Object> selectUnplateEnterStats(@Param("reqVO") UnplateEnterChartReqVO reqVO);
 
 }

@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.repairmgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.repairmgmt.RepairMgmtDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.repairmgmt.RepairMgmtMapper;
+import cn.iocoder.yudao.module.studentmgmt.enums.RepairCheckStatusEnum;
 import cn.iocoder.yudao.module.studentmgmt.enums.RepairMgmtCheckStatusEnum;
 import cn.iocoder.yudao.module.studentmgmt.enums.RepairStatusEnum;
 import com.alibaba.fastjson.JSONObject;
@@ -13,8 +14,6 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -136,6 +135,27 @@ public class RepairMgmtServiceImpl implements RepairMgmtService {
     }
 
     @Override
+    public Boolean accept(RepairMgmtAcceptReqVO reqVO) {
+        // 校验存在
+        RepairMgmtDO repairMgmt = validateRepairMgmtExists(reqVO.getId());
+
+        // 更新
+        // 获取当前用户
+        String loginUserNickname = SecurityFrameworkUtils.getLoginUserNickname();
+        //自动填充验收人、验收时间，更新验收状态为 “已验收”，
+        repairMgmt.setCheckUser(loginUserNickname);
+        repairMgmt.setCheckTime(LocalDateTime.now());
+        repairMgmt.setCheckStatus(RepairCheckStatusEnum.checked.getStatus());
+        repairMgmt.setRemark(reqVO.getRemark());
+        int i = repairMgmtMapper.updateById(repairMgmt);
+        if (i > 0) {
+            return true;
+        }
+        return false;
+    }
+
+
+    @Override
     public RepairMgmtChartRespVO chart(RepairMgmtChartReqVO reqVO) {
         RepairMgmtChartRespVO vo = new RepairMgmtChartRespVO();
 
@@ -156,20 +176,23 @@ public class RepairMgmtServiceImpl implements RepairMgmtService {
 //        dailyTrend (array): 每日报修趋势数据，包含日期、报修数。
         List<JSONObject> totalList = repairMgmtMapper.selectDailyTrend(startTime, endTime, dormBuilding);
         List dailyTrendList = new ArrayList();
-        for (LocalDateTime date = startTime; date.isBefore(endTime); date = date.plusDays(1)) {
-            System.out.println(date + ": " + date);
+        if (startTime != null) {
+            for (LocalDateTime date = startTime; date.isBefore(endTime); date = date.plusDays(1)) {
+                System.out.println(date + ": " + date);
 
-            JSONObject jsonObject = new JSONObject();
-            // 从totalList 中查找 date
-            for (JSONObject item : totalList) {
-                String applyTime = item.getString("date");
-                if (applyTime.equals(date)) {
-                    jsonObject.put("date", date);
-                    jsonObject.put("count", item.getInteger("count"));
-                    dailyTrendList.add(jsonObject);
-                    break;
+                JSONObject jsonObject = new JSONObject();
+                // 从totalList 中查找 date
+                for (JSONObject item : totalList) {
+                    String applyTime = item.getString("date");
+                    if (applyTime.equals(date)) {
+                        jsonObject.put("date", date);
+                        jsonObject.put("count", item.getInteger("count"));
+                        dailyTrendList.add(jsonObject);
+                        break;
+                    }
                 }
             }
+
         }
 //        typeDistribution (array): 报修类型分布数据，包含类型、数量。
 

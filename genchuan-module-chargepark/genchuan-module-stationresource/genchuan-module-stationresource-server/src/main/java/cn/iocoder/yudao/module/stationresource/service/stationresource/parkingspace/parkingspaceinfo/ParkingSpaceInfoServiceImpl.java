@@ -4,7 +4,9 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.AreaInfoPageReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ParkingSpaceInfoPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ParkingSpaceInfoRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ParkingSpaceInfoSaveReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ops.AddParkingSpaceInfoReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.parkingspace.parkingspaceinfo.vo.ops.BindParkingSpaceReqVO;
@@ -21,6 +23,7 @@ import cn.iocoder.yudao.module.stationresource.vrv.utils.common.qrcode.QrCodeUti
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -359,13 +362,22 @@ public class ParkingSpaceInfoServiceImpl implements ParkingSpaceInfoService {
     }
 
     @Override
-    public ParkingSpaceInfoDO getParkingSpaceInfo(Long id) {
-        return parkingSpaceInfoMapper.selectById(id);
+    public ParkingSpaceInfoRespVO getParkingSpaceInfo(Long id) {
+        ParkingSpaceInfoPageReqVO req = new ParkingSpaceInfoPageReqVO();
+        req.setId(id);
+        req.setPageSize(1);
+
+        System.out.println("cs2026-04-28 15:03:34:"+req);
+        // 调用分页接口获取列表，返回第一条数据（保证与列表展示的字段一致）
+        return getParkingSpaceInfoPage(req).getList().stream().findFirst().orElse(null);
+
     }
 
     @Override
-    public PageResult<ParkingSpaceInfoDO> getParkingSpaceInfoPage(ParkingSpaceInfoPageReqVO pageReqVO) {
-        return parkingSpaceInfoMapper.selectPage(pageReqVO);
+    public PageResult<ParkingSpaceInfoRespVO> getParkingSpaceInfoPage(ParkingSpaceInfoPageReqVO pageReqVO) {
+        Page<ParkingSpaceInfoRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        Page<ParkingSpaceInfoRespVO> resultPage = parkingSpaceInfoMapper.getPage(page, pageReqVO);
+        return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
     }
 
 }

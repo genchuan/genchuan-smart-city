@@ -37,7 +37,10 @@ public class CycleReportServiceImpl implements CycleReportService {
         return cycleReportMapper.selectPage(pageReqVO);
     }
 
-
+    @Override
+    public CycleReportDO getCycleReport(Long id) {
+        return cycleReportMapper.selectById(id);
+    }
 
     @Override
     public CycleReportRespVO generateCycleReport(CycleReportGenerateReqVO generateReqVO) {

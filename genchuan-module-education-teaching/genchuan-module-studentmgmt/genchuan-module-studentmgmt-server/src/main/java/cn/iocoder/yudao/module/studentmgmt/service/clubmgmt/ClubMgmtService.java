@@ -66,4 +66,6 @@ public interface ClubMgmtService {
     ClubMgmtChartRespVO chart(@Valid ClubMgmtChartReqVO reqVO);
 
     ClubMgmtClubDistributionRespVO clubDistribution(@Valid ClubMgmtChartReqVO reqVO);
+
+    boolean venueApply(@Valid ClubMgmtVenueApplyReqVO reqVO);
 }

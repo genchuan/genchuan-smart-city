@@ -5,8 +5,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.studentinfo.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import cn.iocoder.yudao.module.studentmgmt.enums.StudentInfoStatusEnum;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.service.impl.DiffParseFunction;
 import com.mzt.logapi.starter.annotation.LogRecord;
@@ -164,7 +163,7 @@ public class StudentInfoServiceImpl implements StudentInfoService {
     public List<StudentInfoCoreIndexRespVO> getCoreIndex(StudentInfoCoreIndexReqVO reqVO) {
         LocalDateTime startTime = reqVO.getStartTime();
         LocalDateTime endTime = reqVO.getEndTime();
-        return studentInfoMapper.getCoreIndex(startTime, endTime);
+        return studentInfoMapper.getCoreIndex(startTime, endTime, StudentInfoStatusEnum.STUDENT_INFO_STATUS_4.getStatus());
     }
 
     @Override

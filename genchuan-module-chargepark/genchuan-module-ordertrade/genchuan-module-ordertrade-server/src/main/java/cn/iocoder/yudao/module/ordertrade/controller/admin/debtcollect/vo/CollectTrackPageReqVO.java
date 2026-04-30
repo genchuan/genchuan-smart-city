@@ -35,7 +35,11 @@ public class CollectTrackPageReqVO extends PageParam {
     private String status;
     @Schema(description = "片区ID")
     private Long areaId;
-    @Schema(description = "追缴时间范围")
+    @Schema(description = "追缴时间-开始，格式 yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDateTime[] collectTime;
+    private LocalDateTime collectTimeStart;
+
+    @Schema(description = "追缴时间-结束，格式 yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime collectTimeEnd;
 }

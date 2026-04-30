@@ -116,7 +116,7 @@ public class PayCheckController {
         return success(checkService.getChart(reqVO));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出缴费核验 Excel")
     @PreAuthorize("@ss.hasPermission('pay:check:export')")
     @ApiAccessLog(operateType = EXPORT)

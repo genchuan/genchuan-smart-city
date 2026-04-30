@@ -1,13 +1,16 @@
 package cn.iocoder.yudao.module.studentmgmt.dal.mysql.treatmgmt;
 
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.treatmgmt.vo.TreatMgmtChartRespVO;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.treatmgmt.vo.TreatMgmtPageReqVO;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.treatmgmt.TreatMgmtDO;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.annotations.Mapper;
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.treatmgmt.vo.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 就诊管理 Mapper
@@ -36,4 +39,12 @@ public interface TreatMgmtMapper extends BaseMapperX<TreatMgmtDO> {
                 .orderByDesc(TreatMgmtDO::getId));
     }
 
+    TreatMgmtChartRespVO selectTotalTreatCount(LocalDateTime startTime, LocalDateTime endTime,
+                                               String visitedStatus, String emergency, String outpatient, String other);
+
+    List<JSONObject> select7dayTreatCount();
+
+    List<JSONObject> selectTotalTreatCountByType(LocalDateTime startTime, LocalDateTime endTime);
+
+    List<JSONObject> selectGradeDistribution(LocalDateTime startTime, LocalDateTime endTime, String grade);
 }

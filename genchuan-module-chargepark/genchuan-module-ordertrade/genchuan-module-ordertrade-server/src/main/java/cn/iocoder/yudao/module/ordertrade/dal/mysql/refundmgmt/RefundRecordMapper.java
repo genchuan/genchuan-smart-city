@@ -26,7 +26,8 @@ public interface RefundRecordMapper extends BaseMapperX<RefundRecordDO> {
                 .eqIfPresent(RefundRecordDO::getApplyId, reqVO.getApplyId())
                 .eqIfPresent(RefundRecordDO::getOrderId, reqVO.getOrderId())
                 .eqIfPresent(RefundRecordDO::getStatus, reqVO.getStatus())
-                .betweenIfPresent(RefundRecordDO::getRefundTime, reqVO.getRefundTime())
+                .geIfPresent(RefundRecordDO::getRefundTime, reqVO.getRefundTimeStart())
+                .leIfPresent(RefundRecordDO::getRefundTime, reqVO.getRefundTimeEnd())
                 .orderByDesc(RefundRecordDO::getId));
     }
 

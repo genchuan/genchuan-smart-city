@@ -9,4 +9,54 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="selectTotalTreatCount"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.treatmgmt.vo.TreatMgmtChartRespVO">
+        SELECT
+        COUNT(1) AS totalTreatCount,
+        SUM(CASE WHEN a.status != #{visitedStatus} THEN 1 ELSE 0 END) AS pendingAuditCount,
+        SUM(CASE WHEN a.status = #{visitedStatus} THEN 1 ELSE 0 END) AS finishedTreatCount,
+        SUM(CASE WHEN a.treat_type = #{emergency} THEN 1 ELSE 0 END) AS emergencyCount,
+        SUM(CASE WHEN a.treat_type = #{outpatient} THEN 1 ELSE 0 END) AS outpatientCount,
+        SUM(CASE WHEN a.treat_type = #{other} THEN 1 ELSE 0 END) AS otherCount
+        FROM treat_mgmt AS a
+        WHERE deleted = 0
+        <if test="startTime !=null">
+            AND apply_time between #{startTime} and #{endTime}
+        </if>
+    </select>
+    <select id="select7dayTreatCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        DATE_FORMAT(apply_time, '%Y-%m-%d') AS applyTime,
+        COUNT(IF(apply_time is not null, 1, NULL)) AS count
+        FROM treat_mgmt
+        WHERE deleted = 0
+        AND (apply_time between date_sub(now(), interval 7 DAY) and now())
+        GROUP BY applyTime
+    </select>
+    <select id="selectTotalTreatCountByType" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        treat_type as type,
+        COUNT(1) AS count
+        FROM treat_mgmt
+        WHERE deleted = 0
+        <if test="startTime !=null">
+            AND apply_time between #{startTime} and #{endTime}
+        </if>
+        GROUP BY treat_type
+    </select>
+    <select id="selectGradeDistribution" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        s.grade AS name,
+        COUNT(1) AS value
+        FROM treat_mgmt AS t LEFT JOIN student_info AS s ON t.student_id = s.id
+        WHERE t.deleted = 0
+
+        <if test="grade != null">
+            AND s.grade = #{grade}
+        </if>
+        <if test="startTime != null">
+            AND t.apply_time between #{startTime} and  #{endTime}
+        </if>
+
+    </select>
 </mapper>

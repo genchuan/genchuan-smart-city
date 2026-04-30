@@ -27,7 +27,8 @@ public interface BikeChargeOrderMapper extends BaseMapperX<BikeChargeOrderDO> {
                 .eqIfPresent(BikeChargeOrderDO::getUserId, reqVO.getUserId())
                 .eqIfPresent(BikeChargeOrderDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(BikeChargeOrderDO::getStationId, reqVO.getStationId())
-                .betweenIfPresent(BikeChargeOrderDO::getCreateOrderTime, reqVO.getCreateOrderTime())
+                .geIfPresent(BikeChargeOrderDO::getCreateOrderTime, reqVO.getCreateOrderTimeStart())
+                .leIfPresent(BikeChargeOrderDO::getCreateOrderTime, reqVO.getCreateOrderTimeEnd())
                 .orderByDesc(BikeChargeOrderDO::getId));
     }
 

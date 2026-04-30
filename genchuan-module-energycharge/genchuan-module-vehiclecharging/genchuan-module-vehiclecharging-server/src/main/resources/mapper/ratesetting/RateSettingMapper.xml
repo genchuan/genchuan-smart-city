@@ -10,7 +10,7 @@
      -->
 
     <!-- 分页列表 -->
-    <select id="selectPage" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.ratesetting.vo.RateSettingRespVO">
+    <select id="getPage" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.ratesetting.vo.RateSettingRespVO">
         SELECT
         t.id,
         t.rate_code,
@@ -65,14 +65,16 @@
                 AND t.reserve2 LIKE CONCAT('%', #{reserve2}, '%')
             </if>
 
+            <!-- ==================== 最终根治版 ==================== -->
             <!-- 生效时间 -->
-            <if test="effectTime != null and effectTime.length == 2">
-                AND t.effect_time BETWEEN #{effectTime[0]} AND #{effectTime[1]}
+            <if test="effectTime != null">
+                AND t.effect_time >= #{effectTime}
             </if>
             <!-- 失效时间 -->
-            <if test="expireTime != null and expireTime.length == 2">
-                AND t.expire_time BETWEEN #{expireTime[0]} AND #{expireTime[1]}
+            <if test="expireTime != null">
+                AND t.expire_time &lt;= #{expireTime}
             </if>
+
             <!-- 创建时间 -->
             <if test="createTime != null and createTime.length == 2">
                 AND t.create_time BETWEEN #{createTime[0]} AND #{createTime[1]}
@@ -127,12 +129,16 @@
                 AND t.reserve2 LIKE CONCAT('%', #{reserve2}, '%')
             </if>
 
-            <if test="effectTime != null and effectTime.length == 2">
-                AND t.effect_time BETWEEN #{effectTime[0]} AND #{effectTime[1]}
+            <!-- ==================== 最终根治版 ==================== -->
+            <!-- 生效时间 -->
+            <if test="effectTime != null">
+                AND t.effect_time >= #{effectTime}
             </if>
-            <if test="expireTime != null and expireTime.length == 2">
-                AND t.expire_time BETWEEN #{expireTime[0]} AND #{expireTime[1]}
+            <!-- 失效时间 -->
+            <if test="expireTime != null">
+                AND t.expire_time &lt;= #{expireTime}
             </if>
+
             <if test="createTime != null and createTime.length == 2">
                 AND t.create_time BETWEEN #{createTime[0]} AND #{createTime[1]}
             </if>

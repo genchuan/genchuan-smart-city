@@ -30,7 +30,11 @@ public class DebtIdentifyPageReqVO extends PageParam {
     private String status;
     @Schema(description = "场站ID")
     private Long stationId;
-    @Schema(description = "识别时间范围")
+    @Schema(description = "识别时间-开始，格式 yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDateTime[] identifyTime;
+    private LocalDateTime identifyTimeStart;
+
+    @Schema(description = "识别时间-结束，格式 yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime identifyTimeEnd;
 }

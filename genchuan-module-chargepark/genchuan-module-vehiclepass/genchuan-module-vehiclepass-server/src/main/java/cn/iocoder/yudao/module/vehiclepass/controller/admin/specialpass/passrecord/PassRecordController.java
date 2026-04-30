@@ -92,7 +92,7 @@ public class PassRecordController {
         return success(passRecordService.getRecordPageWithJoin(pageReqVO));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出放行记录 Excel")
     @PreAuthorize("@ss.hasPermission('pass:record:export')")
     @ApiAccessLog(operateType = EXPORT)

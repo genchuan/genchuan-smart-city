@@ -27,7 +27,8 @@ public interface OfftimeParkOrderMapper extends BaseMapperX<OfftimeParkOrderDO> 
                 .likeIfPresent(OfftimeParkOrderDO::getPlateNo, reqVO.getPlateNo())
                 .eqIfPresent(OfftimeParkOrderDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(OfftimeParkOrderDO::getStationId, reqVO.getStationId())
-                .betweenIfPresent(OfftimeParkOrderDO::getReserveStartTime, reqVO.getReserveStartTime())
+                .geIfPresent(OfftimeParkOrderDO::getCreateOrderTime, reqVO.getCreateOrderTimeStart())
+                .leIfPresent(OfftimeParkOrderDO::getCreateOrderTime, reqVO.getCreateOrderTimeEnd())
                 .orderByDesc(OfftimeParkOrderDO::getId));
     }
 
