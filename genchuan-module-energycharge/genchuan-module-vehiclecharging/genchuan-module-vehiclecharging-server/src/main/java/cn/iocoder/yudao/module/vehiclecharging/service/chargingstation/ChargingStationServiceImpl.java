@@ -39,6 +39,28 @@ public class ChargingStationServiceImpl implements ChargingStationService{
 
     @Override
     public PageResult<ChargingStationRespVO> getChargingStationPage(ChargingStationPageReqVO reqVO) {
+        // 查询参数转换：self/franchise/joint -> 中文
+        if (reqVO.getCoopMode() != null) {
+            String coopMode = reqVO.getCoopMode();
+            if ("self".equalsIgnoreCase(coopMode)) {
+                reqVO.setCoopMode("自营");
+            } else if ("franchise".equalsIgnoreCase(coopMode)) {
+                reqVO.setCoopMode("加盟");
+            } else if ("joint".equalsIgnoreCase(coopMode)) {
+                reqVO.setCoopMode("联营");
+            }
+        }
+        // 状态转换：disabled/enabled/wait -> 已停用/已启用/未启用
+        if (reqVO.getStationStatus() != null) {
+            String status = reqVO.getStationStatus();
+            if ("enabled".equalsIgnoreCase(status)) {
+                reqVO.setStationStatus("已启用");
+            } else if ("disabled".equalsIgnoreCase(status)) {
+                reqVO.setStationStatus("已停用");
+            } else if ("wait".equalsIgnoreCase(status)) {
+                reqVO.setStationStatus("未启用");
+            }
+        }
         PageResult<ChargingStationDO> page = chargingStationMapper.selectPage(reqVO);
         return BeanUtils.toBean(page, ChargingStationRespVO.class);
     }
@@ -53,7 +75,16 @@ public class ChargingStationServiceImpl implements ChargingStationService{
         station.setStationCode(createReqVO.getStationCode());
         station.setStationName(createReqVO.getStationName());
         station.setAddress(createReqVO.getAddress());
-        station.setCoopMode(createReqVO.getCoopMode());
+        // 根据 self/franchise/joint 转中文
+        String coopMode = createReqVO.getCoopMode();
+        if ("self".equalsIgnoreCase(coopMode)) {
+            coopMode = "自营";
+        } else if ("franchise".equalsIgnoreCase(coopMode)) {
+            coopMode = "加盟";
+        } else if ("joint".equalsIgnoreCase(coopMode)) {
+            coopMode = "联营";
+        }
+        station.setCoopMode(coopMode);
         station.setOpenTime(createReqVO.getOpenTime());
         station.setPriceService(createReqVO.getPriceService());
         station.setManager(createReqVO.getManager());

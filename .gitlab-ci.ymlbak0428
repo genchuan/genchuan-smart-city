@@ -9,6 +9,8 @@ variables:
 
 Build:
   stage: BuildAndPush
+  tags:
+    - genchuan-cloud-runner
   script:
     - echo "===== 开始Maven打包 ====="
     - mvn clean package -Dmaven.test.skip=true
@@ -21,7 +23,6 @@ Build:
           ["yudao-module-infra-server"]="yudao-module-infra/yudao-module-infra-server"
           ["yudao-module-member-server"]="yudao-module-member/yudao-module-member-server"
           ["yudao-module-product-server"]="yudao-module-mall/yudao-module-product-server"
-          ["genchuan-module-studentmgmt-server"]="genchuan-module-education-teaching/genchuan-module-studentmgmt/genchuan-module-studentmgmt-server"
           ["genchuan-module-envirhealth-server"]="genchuan-module-urban/genchuan-module-envirhealth/genchuan-module-envirhealth-server"
           ["genchuan-module-facility-server"]="genchuan-module-urban/genchuan-module-facility/genchuan-module-facility-server"
           ["genchuan-module-data-server"]="genchuan-module-datahub/genchuan-module-data/genchuan-module-data-server"
@@ -35,10 +36,6 @@ Build:
           ["genchuan-module-inspectop-server"]="genchuan-module-chargepark/genchuan-module-inspectop/genchuan-module-inspectop-server"
           ["genchuan-module-stationresource-server"]="genchuan-module-chargepark/genchuan-module-stationresource/genchuan-module-stationresource-server"
           ["genchuan-module-usermerchant-server"]="genchuan-module-chargepark/genchuan-module-usermerchant/genchuan-module-usermerchant-server"
-          ["genchuan-module-ordertrade-server"]="genchuan-module-chargepark/genchuan-module-ordertrade/genchuan-module-ordertrade-server"
-          ["genchuan-module-marketop-server"]="genchuan-module-chargepark/genchuan-module-marketop/genchuan-module-marketop-server"
-          ["genchuan-module-carservice-server"]="genchuan-module-chargepark/genchuan-module-carservice/genchuan-module-carservice-server"
-          ["genchuan-module-vehiclepass-server"]="genchuan-module-chargepark/genchuan-module-vehiclepass/genchuan-module-vehiclepass-server"
         )
         for module in "${!MODULE_JAR_MAP[@]}"; do
           jarPath=${MODULE_JAR_MAP[$module]}

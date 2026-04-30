@@ -96,7 +96,7 @@ public class CarInputController {
         return success(inputService.getInputPageWithJoin(pageReqVO));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出车辆录入 Excel")
     @PreAuthorize("@ss.hasPermission('car:input:export')")
     @ApiAccessLog(operateType = EXPORT)

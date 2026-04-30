@@ -29,8 +29,14 @@
             <if test="reqVO.alarmCode != null and reqVO.alarmCode != ''">
                 AND a.alarm_code LIKE CONCAT('%', #{reqVO.alarmCode}, '%')
             </if>
+            <if test="reqVO.pileCode != null and reqVO.pileCode != ''">
+                AND p.pile_code LIKE CONCAT('%', #{reqVO.pileCode}, '%')
+            </if>
             <if test="reqVO.stationId != null">
                 AND p.station_id = #{reqVO.stationId}
+            </if>
+            <if test="reqVO.stationName != null and reqVO.stationName != ''">
+                AND s.station_name LIKE CONCAT('%', #{reqVO.stationName}, '%')
             </if>
             <if test="reqVO.faultType != null and reqVO.faultType != ''">
                 AND a.fault_type = #{reqVO.faultType}

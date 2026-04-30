@@ -33,7 +33,7 @@
         <if test="reqVO.spaceId != null">
             AND o.space_id = #{reqVO.spaceId}
         </if>
-        <if test="reqVO.identifyTime != null and reqVO.identifyTime.size() == 2">
+        <if test="reqVO.identifyTime != null and reqVO.identifyTime.length == 2">
             AND o.identify_time BETWEEN #{reqVO.identifyTime[0]} AND #{reqVO.identifyTime[1]}
         </if>
         <if test="reqVO.occupyType != null and reqVO.occupyType != ''">

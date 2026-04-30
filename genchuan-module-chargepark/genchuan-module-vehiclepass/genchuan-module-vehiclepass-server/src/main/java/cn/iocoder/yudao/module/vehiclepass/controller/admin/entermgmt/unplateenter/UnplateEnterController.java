@@ -135,7 +135,7 @@ public class UnplateEnterController {
         return success(enterService.getUnplateEnterChart(reqVO));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出无牌入场 Excel")
     @PreAuthorize("@ss.hasPermission('unplate:enter:export')")
     @ApiAccessLog(operateType = EXPORT)

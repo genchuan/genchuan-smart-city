@@ -103,7 +103,7 @@ public class GateOpenController {
         return success(openService.getOpenPageWithJoin(pageReqVO));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出开闸管理 Excel")
     @PreAuthorize("@ss.hasPermission('gate:open:export')")
     @ApiAccessLog(operateType = EXPORT)

@@ -124,7 +124,7 @@ public class InParkStatusController {
         return success(parkStatusService.getInParkStatusChart(reqVO));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出在停状态 Excel")
     @PreAuthorize("@ss.hasPermission('in:park-status:export')")
     @ApiAccessLog(operateType = EXPORT)
