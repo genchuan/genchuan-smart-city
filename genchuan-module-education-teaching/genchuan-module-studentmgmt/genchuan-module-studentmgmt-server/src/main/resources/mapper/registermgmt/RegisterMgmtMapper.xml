@@ -9,4 +9,42 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="select7dayTrendCount"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.ChartTrendVO">
+        SELECT
+        date, count
+        FROM
+        (
+        SELECT
+        DATE_FORMAT(apply_time, '%Y-%m-%d') AS date,
+        COUNT(*) AS count
+        FROM register_mgmt
+        WHERE apply_time >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+        GROUP BY date
+        ) AS subquery
+    </select>
+    <select id="selectMajorEnrollCount"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.registermgmt.vo.EnrollCountVO">
+        SELECT
+        major,
+        COUNT(*) AS apply_count,
+        SUM(IF(status = #{status}, 1, 0)) AS admit_count
+        FROM register_mgmt
+        GROUP BY major
+    </select>
+    <select id="selectTotalCount"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.registermgmt.vo.RegisterMgmtChartRespVO">
+        SELECT
+        COUNT(*) AS total_apply_count,
+        SUM(IF(status = #{pending}, 1, 0)) AS pending_audit_count,
+        SUM(IF(status = #{admitted}, 1, 0)) AS admitted_count,
+        COUNT(confirm_time) AS confirmed_count
+        FROM register_mgmt
+        WHERE deleted = 0
+        <if test="startTime != null and endTime != null">
+            AND apply_time BETWEEN #{startTime} AND #{endTime}
+        </if>
+
+    </select>
+
 </mapper>

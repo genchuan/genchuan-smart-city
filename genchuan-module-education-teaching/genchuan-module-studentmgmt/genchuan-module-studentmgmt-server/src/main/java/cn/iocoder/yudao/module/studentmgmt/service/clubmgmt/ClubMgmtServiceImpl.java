@@ -86,15 +86,15 @@ public class ClubMgmtServiceImpl implements ClubMgmtService {
     }
 
     @Override
-        public void deleteClubMgmtListByIds(List<Long> ids) {
+    public void deleteClubMgmtListByIds(List<Long> ids) {
         // 删除
         clubMgmtMapper.deleteByIds(ids);
-        }
+    }
 
 
     private ClubMgmtDO validateClubMgmtExists(Long id) {
         ClubMgmtDO clubMgmtDO = clubMgmtMapper.selectById(id);
-        if ( clubMgmtDO == null) {
+        if (clubMgmtDO == null) {
             throw exception(CLUB_MGMT_NOT_EXISTS);
         }
         return clubMgmtDO;
@@ -118,7 +118,7 @@ public class ClubMgmtServiceImpl implements ClubMgmtService {
         int total = 0;
         for (Long id : ids) {
             ClubMgmtDO clubMgmtDO = clubMgmtMapper.selectById(id);
-            if ( clubMgmtDO == null) {
+            if (clubMgmtDO == null) {
                 throw exception(CLUB_MGMT_NOT_EXISTS);
             }
             clubMgmtDO.setAuditTime(LocalDateTime.now());
@@ -128,11 +128,12 @@ public class ClubMgmtServiceImpl implements ClubMgmtService {
             clubMgmtDO.setStatus(reqVO.getStatus());
 
             int i = clubMgmtMapper.updateById(clubMgmtDO);
+            total += i;
             // 记录操作日志上下文
             LogRecordContext.putVariable("club", clubMgmtDO);
 
         }
-        if (total < 1 ) {
+        if (total < 1) {
             return false;
         }
         return true;
@@ -147,7 +148,7 @@ public class ClubMgmtServiceImpl implements ClubMgmtService {
         int total = 0;
         for (Long id : ids) {
             ClubMgmtDO clubMgmtDO = clubMgmtMapper.selectById(id);
-            if ( clubMgmtDO == null) {
+            if (clubMgmtDO == null) {
                 throw exception(CLUB_MGMT_NOT_EXISTS);
             }
             // 更新状态为已建档，填充建档时间
@@ -155,11 +156,12 @@ public class ClubMgmtServiceImpl implements ClubMgmtService {
             clubMgmtDO.setArchiveTime(LocalDateTime.now());
 
             int i = clubMgmtMapper.updateById(clubMgmtDO);
+            total += i;
             // 记录操作日志上下文
             LogRecordContext.putVariable("club", clubMgmtDO);
 
         }
-        if (total < 1 ) {
+        if (total < 1) {
             return false;
         }
         return true;
@@ -189,7 +191,7 @@ public class ClubMgmtServiceImpl implements ClubMgmtService {
         vo.setPendingAuditCount(clubMgmtMapper.selectPendingAuditCount(startTime, endTime, ClubStatusEnum.Club_STATUS_0.getStatus()));
         vo.setVenueApplyCount(clubMgmtMapper.selectVenueApplyCount(startTime, endTime));
 
-        List<JSONObject> clubTypeList =clubMgmtMapper.selectClubTypeDistribution(startTime, endTime);
+        List<JSONObject> clubTypeList = clubMgmtMapper.selectClubTypeDistribution(startTime, endTime);
         // 获取字典数据
         List<DictDataRespDTO> dictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.CLUB_MGMT_CLUB_TYPE.getType()).getData();
         clubTypeList.forEach(item -> {
@@ -229,7 +231,7 @@ public class ClubMgmtServiceImpl implements ClubMgmtService {
 //        typeMemberDistribution (array): 各类型社团的成员人数分布，包含类型名称、对应成员总数。
 
 
-        List<JSONObject> clubStatisticsList =clubMgmtMapper.selectClubStatistics(startTime, endTime);
+        List<JSONObject> clubStatisticsList = clubMgmtMapper.selectClubStatistics(startTime, endTime);
         // 获取字典数据
         List<DictDataRespDTO> dictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.CLUB_MGMT_CLUB_TYPE.getType()).getData();
         clubStatisticsList.forEach(item -> {
@@ -265,6 +267,32 @@ public class ClubMgmtServiceImpl implements ClubMgmtService {
         vo.setTypeMemberDistribution(typeMemberDistribution);
 
         return vo;
+    }
+
+    @Override
+    public boolean venueApply(ClubMgmtVenueApplyReqVO reqVO) {
+
+        ClubMgmtDO clubMgmtDO = clubMgmtMapper.selectById(reqVO.getId());
+        if (clubMgmtDO == null) {
+            throw exception(CLUB_MGMT_NOT_EXISTS);
+        }
+        // 更新状态为已建档，填充建档时间
+        clubMgmtDO.setVenueApplyStatus(ClubVenueApplyStatusEnum.VENUE_APPLY_STATUS_1.getStatus());
+        clubMgmtDO.setClubName(reqVO.getVenueName());
+        clubMgmtDO.setApplyTime(reqVO.getApplyTime());
+        clubMgmtDO.setRemark(reqVO.getApplyReason());
+
+        int i = clubMgmtMapper.updateById(clubMgmtDO);
+
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("club", clubMgmtDO);
+
+
+        if (i > 0) {
+            return true;
+        }
+        return false;
+
     }
 
 }

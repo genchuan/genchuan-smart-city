@@ -144,7 +144,7 @@ public class ViolateMgmtController {
     @GetMapping("/chart")
     @Operation(summary = "学生违纪预警看板")
     @PreAuthorize("@ss.hasPermission('studentmgmt:violate-info:query')")
-    public CommonResult<ViolateDashboardVO> chart(@Valid @RequestBody ViolateChartReqVO reqVO) {
+    public CommonResult<ViolateDashboardVO> chart(@Valid ViolateChartReqVO reqVO) {
         ViolateDashboardVO dashboardVO = violateMgmtService.chart(reqVO);
         return success(dashboardVO);
     }
@@ -158,7 +158,7 @@ public class ViolateMgmtController {
     }
 
     @GetMapping("/chart/warnIndex")
-    @Operation(summary = "各班级违纪次数 / 类型分布统计")
+    @Operation(summary = "预警核心指标统计")
     @PreAuthorize("@ss.hasPermission('studentmgmt:violate-info:query')")
     public CommonResult<List<ViolateWarnIndexRespVO>> warnIndex(@Valid ViolateWarnIndexReqVO reqVO) {
         List<ViolateWarnIndexRespVO> list = violateMgmtService.warnIndex(reqVO);

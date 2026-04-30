@@ -13,9 +13,9 @@
             resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.staymgmt.vo.StayMgmtChartRespVO">
         SELECT
         COUNT(1) AS totalStayCount
-        COUNT(CASE WHEN a.status = #{pendingConfirm} THEN 1 ELSE 0 END) AS pendingConfirmCount,
-        COUNT(CASE WHEN a.status = #{pendingAudit} THEN 1 ELSE 0 END) AS pendingAuditCount,
-        COUNT(CASE WHEN a.status = #{passed} THEN 1 ELSE 0 END) AS passedCount
+        SUM(CASE WHEN a.status = #{pendingConfirm} THEN 1 ELSE 0 END) AS pendingConfirmCount,
+        SUM(CASE WHEN a.status = #{pendingAudit} THEN 1 ELSE 0 END) AS pendingAuditCount,
+        SUM(CASE WHEN a.status = #{passed} THEN 1 ELSE 0 END) AS passedCount
         FROM stay_mgmt AS a LEFT JOIN student_info AS s  ON a.student_id = s.id
         WHERE a.deleted= 0
         <if test="className != null">
@@ -56,9 +56,9 @@
         SELECT
         s.class_name AS className,
         COUNT(1) AS totalCount,
-        COUNT(CASE WHEN a.status = #{pendingConfirm} THEN 1 ELSE 0 END) AS pendingConfirmCount,
-        COUNT(CASE WHEN a.status = #{pendingAudit} THEN 1 ELSE 0 END) AS pendingAuditCount,
-        COUNT(CASE WHEN a.status = #{passed} THEN 1 ELSE 0 END) AS passedCount
+        SUM(CASE WHEN a.status = #{pendingConfirm} THEN 1 ELSE 0 END) AS pendingConfirmCount,
+        SUM(CASE WHEN a.status = #{pendingAudit} THEN 1 ELSE 0 END) AS pendingAuditCount,
+        SUM(CASE WHEN a.status = #{passed} THEN 1 ELSE 0 END) AS passedCount
         FROM stay_mgmt AS a LEFT JOIN student_info AS s  ON a.student_id = s.id
         WHERE a.deleted= 0
         <if test="startTime != null">

@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.classassign;
 
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.BaseChartReqVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -99,6 +100,37 @@ public class ClassAssignController {
         // 导出 Excel
         ExcelUtils.write(response, "分班管理.xls", "数据", ClassAssignRespVO.class,
                         BeanUtils.toBean(list, ClassAssignRespVO.class));
+    }
+
+    @PutMapping("/config")
+    @Operation(summary = "配置")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:class-assign:config')")
+    public CommonResult<Boolean> config(@Valid @RequestBody ClassAssignConfigReqVO reqVO) {
+        return success(classAssignService.config(reqVO));
+    }
+    @PutMapping("/assign")
+    @Operation(summary = "分班")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:class-assign:assign')")
+    public CommonResult<Boolean> assign(@Valid @RequestBody ClassAssignAssignReqVO reqVO) {
+        return success(classAssignService.assign(reqVO));
+    }
+    @PutMapping("/confirm")
+    @Operation(summary = "确认")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:class-assign:confirm')")
+    public CommonResult<Boolean> confirm(@Valid @RequestBody ClassAssignConfigReqVO reqVO) {
+        return success(classAssignService.confirm(reqVO));
+    }
+    @GetMapping("/chart")
+    @Operation(summary = "新生分班分布看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:class-assign:chart')")
+    public CommonResult<ClassAssignChartRespVO> chart(@Valid BaseChartReqVO reqVO) {
+        return success(classAssignService.chart(reqVO));
+    }
+    @GetMapping("/classDistribution")
+    @Operation(summary = "班级人数 / 专业分班占比统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:class-assign:chart')")
+    public CommonResult<ClassAssignDistributionRespVo> classDistribution(@Valid BaseChartReqVO reqVO) {
+        return success(classAssignService.classDistribution(reqVO));
     }
 
 }
