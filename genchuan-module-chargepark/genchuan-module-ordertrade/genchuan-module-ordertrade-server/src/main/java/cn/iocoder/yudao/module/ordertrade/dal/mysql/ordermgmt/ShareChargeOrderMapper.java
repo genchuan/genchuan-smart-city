@@ -5,6 +5,8 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.ShareChargeOrderPageReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.ordermgmt.ShareChargeOrderDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -20,6 +22,11 @@ import java.util.Map;
  */
 @Mapper
 public interface ShareChargeOrderMapper extends BaseMapperX<ShareChargeOrderDO> {
+
+    IPage<ShareChargeOrderDO> selectPageJoinStation(IPage<ShareChargeOrderDO> page, @Param("req") ShareChargeOrderPageReqVO reqVO);
+
+    @Select("SELECT o.*, s.name AS station_name FROM share_charge_order o LEFT JOIN station_info s ON o.station_id = s.id AND s.deleted = 0 WHERE o.id = #{id} AND o.deleted = 0")
+    ShareChargeOrderDO selectByIdJoinStation(@Param("id") Long id);
 
     default PageResult<ShareChargeOrderDO> selectPage(ShareChargeOrderPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<ShareChargeOrderDO>()

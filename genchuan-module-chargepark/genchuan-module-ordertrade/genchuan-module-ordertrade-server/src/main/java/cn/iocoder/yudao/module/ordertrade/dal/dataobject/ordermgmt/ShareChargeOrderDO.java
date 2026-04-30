@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.ordertrade.dal.dataobject.ordermgmt;
 
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -55,6 +56,10 @@ public class ShareChargeOrderDO extends BaseDO {
 
     /** 所属场站ID */
     private Long stationId;
+
+    /** 所属场站名称（关联 station_info.name，非数据库字段） */
+    @TableField(exist = false)
+    private String stationName;
 
     /** 支付方式，字典：share_charge_order_pay_method */
     private String payMethod;

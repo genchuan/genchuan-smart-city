@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.ordertrade.dal.mysql.invoicemgmt.InvoiceListMappe
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.ordermgmt.TempParkOrderMapper;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.refundmgmt.RefundApplyMapper;
 import cn.iocoder.yudao.module.ordertrade.framework.tool.OrderUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,8 +46,12 @@ public class TempParkOrderServiceImpl implements TempParkOrderService {
     }
     @Override public void deleteTempParkOrder(Long id) { validateExists(id); tempParkOrderMapper.deleteById(id); }
     @Override public void deleteTempParkOrderListByIds(List<Long> ids) { tempParkOrderMapper.deleteByIds(ids); }
-    @Override public TempParkOrderDO getTempParkOrder(Long id) { return tempParkOrderMapper.selectById(id); }
-    @Override public PageResult<TempParkOrderDO> getTempParkOrderPage(TempParkOrderPageReqVO v) { return tempParkOrderMapper.selectPage(v); }
+    @Override public TempParkOrderDO getTempParkOrder(Long id) { return tempParkOrderMapper.selectByIdJoinStation(id); }
+    @Override public PageResult<TempParkOrderDO> getTempParkOrderPage(TempParkOrderPageReqVO v) {
+        Page<TempParkOrderDO> page = new Page<>(v.getPageNo(), v.getPageSize());
+        var result = tempParkOrderMapper.selectPageJoinStation(page, v);
+        return new PageResult<>(result.getRecords(), result.getTotal());
+    }
         @Override
     public TempParkOrderChartRespVO getTempParkOrderChart(TempParkOrderChartReqVO v) {
         TempParkOrderChartRespVO resp = new TempParkOrderChartRespVO();
