@@ -99,4 +99,6 @@ public interface StudentInfoMapper extends BaseMapperX<StudentInfoDO> {
     List<JSONObject> selectMajorAssignRate(LocalDateTime startTime, LocalDateTime endTime, Integer totalStudentCount);
 
     Integer selectTotalStudentCountByTime(LocalDateTime startTime, LocalDateTime endTime);
+
+    List<StudentInfoDO> selectStudentInfoByYear(Integer year);
 }
