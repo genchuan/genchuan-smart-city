@@ -14,6 +14,8 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @Data
 public class DebtExpandPageReqVO extends PageParam {
 
+    @Schema(description = "[合作场站id]", example = "27111")
+    private Long id;
     @Schema(description = "[合作场站] 关联场站信息表 station_info", example = "27111")
     private Long stationId;
 

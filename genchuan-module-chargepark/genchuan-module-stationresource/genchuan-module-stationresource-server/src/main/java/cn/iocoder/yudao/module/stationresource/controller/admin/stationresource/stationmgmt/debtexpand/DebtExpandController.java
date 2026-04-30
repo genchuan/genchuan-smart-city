@@ -96,7 +96,7 @@ public class DebtExpandController {
         String inputFileName = "联合追缴拓场配置_";
 
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<DebtExpandDO> list = debtExpandService.getDebtExpandPage(pageReqVO).getList();
+        List<DebtExpandRespVO> list = debtExpandService.getDebtExpandPage(pageReqVO).getList();
 
         // 1、强制设置响应头，确保浏览器触发下载
         response.setContentType("application/vnd.ms-excel;charset=UTF-8");
@@ -142,7 +142,7 @@ public class DebtExpandController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('stationresource:debt-expand:query')")
     public CommonResult<DebtExpandRespVO> getDebtExpand(@RequestParam("id") Long id) {
-        DebtExpandDO debtExpand = debtExpandService.getDebtExpand(id);
+        DebtExpandRespVO debtExpand = debtExpandService.getDebtExpand(id);
         return success(BeanUtils.toBean(debtExpand, DebtExpandRespVO.class));
     }
 
@@ -150,7 +150,7 @@ public class DebtExpandController {
     @Operation(summary = "获得联合追缴拓场配置分页")
     @PreAuthorize("@ss.hasPermission('stationresource:debt-expand:query')")
     public CommonResult<PageResult<DebtExpandRespVO>> getDebtExpandPage(@Valid DebtExpandPageReqVO pageReqVO) {
-        PageResult<DebtExpandDO> pageResult = debtExpandService.getDebtExpandPage(pageReqVO);
+        PageResult<DebtExpandRespVO> pageResult = debtExpandService.getDebtExpandPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, DebtExpandRespVO.class));
     }
 

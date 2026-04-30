@@ -13,6 +13,8 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @Data
 public class ParkingSpaceInfoPageReqVO extends PageParam {
 
+    @Schema(description = "[车位id] VARCHAR(32)，唯一，必填")
+    private Long id;
     @Schema(description = "[车位编号] VARCHAR(32)，唯一，必填")
     private String spaceNo;
 

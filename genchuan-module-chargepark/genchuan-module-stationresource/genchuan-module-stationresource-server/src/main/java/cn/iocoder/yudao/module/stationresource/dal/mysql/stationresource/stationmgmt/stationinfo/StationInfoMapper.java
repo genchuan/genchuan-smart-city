@@ -6,8 +6,11 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationinfo.vo.StationInfoPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationinfo.vo.StationInfoRespVO;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.stationmgmt.stationinfo.StationInfoDO;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 场站信息 Mapper
@@ -40,4 +43,8 @@ public interface StationInfoMapper extends BaseMapperX<StationInfoDO> {
                 .orderByDesc(StationInfoDO::getId));
     }
 
+    Page<StationInfoRespVO> getPage(
+            Page<StationInfoRespVO> page,
+            @Param("pageReqVO") StationInfoPageReqVO pageReqVO
+    );
 }

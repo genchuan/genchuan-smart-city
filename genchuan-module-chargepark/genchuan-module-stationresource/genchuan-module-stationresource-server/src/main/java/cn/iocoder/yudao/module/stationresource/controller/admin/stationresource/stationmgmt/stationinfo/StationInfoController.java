@@ -124,7 +124,7 @@ public class StationInfoController {
         String inputFileName = "场站信息_";
 
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<StationInfoDO> list = stationInfoService.getStationInfoPage(pageReqVO).getList();
+        List<StationInfoRespVO> list = stationInfoService.getStationInfoPage(pageReqVO).getList();
 
         // 1、强制设置响应头，确保浏览器触发下载
         response.setContentType("application/vnd.ms-excel;charset=UTF-8");
@@ -145,7 +145,7 @@ public class StationInfoController {
     @Operation(summary = "获得场站信息分页")
     @PreAuthorize("@ss.hasPermission('stationresource:station-info:query')")
     public CommonResult<PageResult<StationInfoRespVO>> getStationInfoPage(@Valid StationInfoPageReqVO pageReqVO) {
-        PageResult<StationInfoDO> pageResult = stationInfoService.getStationInfoPage(pageReqVO);
+        PageResult<StationInfoRespVO> pageResult = stationInfoService.getStationInfoPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, StationInfoRespVO.class));
     }
     //=============================================

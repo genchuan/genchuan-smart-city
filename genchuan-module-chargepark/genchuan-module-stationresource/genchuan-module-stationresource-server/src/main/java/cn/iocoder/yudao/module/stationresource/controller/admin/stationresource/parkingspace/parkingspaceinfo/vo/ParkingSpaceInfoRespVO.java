@@ -21,8 +21,13 @@ public class ParkingSpaceInfoRespVO {
     private String spaceNo;
 
     @Schema(description = "[所属场站] 关联场站信息表station_info，必填", requiredMode = Schema.RequiredMode.REQUIRED, example = "14673")
-    @ExcelProperty("所属场站")
+//    @ExcelProperty("所属场站")
+    @ExcelIgnore
     private Long stationId;
+
+    @Schema(description = "[所属场站名称] 关联场站信息表station_info，必填", requiredMode = Schema.RequiredMode.REQUIRED, example = "14673")
+    @ExcelProperty("所属场站名称")
+    private String stationName;
 
     @Schema(description = "[所属车库] VARCHAR(64)，必填", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("所属车库")

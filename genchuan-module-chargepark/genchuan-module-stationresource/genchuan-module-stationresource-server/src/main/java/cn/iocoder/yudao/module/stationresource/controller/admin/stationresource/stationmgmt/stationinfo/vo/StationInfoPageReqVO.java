@@ -14,6 +14,8 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @Data
 public class StationInfoPageReqVO extends PageParam {
 
+    @Schema(description = "[场站id] ")
+    private Long id;
 
     @Schema(description = "[场站编号] VARCHAR(32)，唯一，必填")
     private String stationNo;

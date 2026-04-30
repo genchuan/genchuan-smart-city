@@ -18,8 +18,13 @@ public class DebtExpandRespVO {
     private Long id;
 
     @Schema(description = "[合作场站] 关联场站信息表 station_info", requiredMode = Schema.RequiredMode.REQUIRED, example = "27111")
-    @ExcelProperty("合作场站")
+//    @ExcelProperty("合作场站")
+    @ExcelIgnore
     private Long stationId;
+
+    @Schema(description = "[合作场站名称]", requiredMode = Schema.RequiredMode.REQUIRED, example = "27111")
+    @ExcelProperty("合作场站名称")
+    private String stationName;
 
     @Schema(description = "[合作类型] 如：社会停车场拓场/联合追缴", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
     @ExcelProperty("合作类型")
