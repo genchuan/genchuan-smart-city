@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 
-import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import java.util.*;
@@ -133,12 +132,61 @@ public class InspectReportController {
     @PreAuthorize("@ss.hasPermission('inspectop:inspect-report:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportInspectReportExcel(@Valid InspectReportPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                         HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<InspectReportRespVO> list = inspectReportService.getInspectReportPage(pageReqVO).getList();
+
+        // 对列表进行字典值转换
+        convertDictValues(list);
+
         // 导出 Excel
-        ExcelUtils.write(response, "巡检上报.xls", "数据", InspectReportRespVO.class,
-                        BeanUtils.toBean(list, InspectReportRespVO.class));
+        ExcelUtils.write(response, "巡检上报.xls", "数据", InspectReportRespVO.class, list);
+    }
+
+    /**
+     * 转换字典值为中文显示
+     */
+    private void convertDictValues(List<InspectReportRespVO> voList) {
+        if (voList == null || voList.isEmpty()) {
+            return;
+        }
+
+        for (InspectReportRespVO vo : voList) {
+            // 转换问题类型
+            vo.setType(convertReportType(vo.getType()));
+            // 转换上报状态
+            vo.setStatus(convertReportStatus(vo.getStatus()));
+        }
+    }
+
+    /**
+     * 转换巡检上报问题类型
+     */
+    private String convertReportType(String typeCode) {
+        if (typeCode == null) {
+            return "";
+        }
+        switch (typeCode.trim()) {
+            case "1": return "设备故障";
+            case "2": return "占位异常";
+            case "3": return "其他";
+            default: return typeCode;
+        }
+    }
+
+    /**
+     * 转换巡检上报状态
+     */
+    private String convertReportStatus(String statusCode) {
+        if (statusCode == null) {
+            return "";
+        }
+        switch (statusCode.trim()) {
+            case "1": return "待审核";
+            case "2": return "待处置";
+            case "3": return "已完成";
+            default: return statusCode;
+        }
     }
 
 }

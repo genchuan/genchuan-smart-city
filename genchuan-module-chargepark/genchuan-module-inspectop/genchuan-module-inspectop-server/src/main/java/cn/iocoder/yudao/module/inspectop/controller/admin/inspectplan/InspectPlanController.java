@@ -90,19 +90,6 @@ public class InspectPlanController {
         return success(BeanUtils.toBean(pageResult, InspectPlanRespVO.class));
     }
 
-    @GetMapping("/export-excel")
-    @Operation(summary = "导出巡检计划 Excel")
-    @PreAuthorize("@ss.hasPermission('inspectop:inspect-plan:export')")
-    @ApiAccessLog(operateType = EXPORT)
-    public void exportInspectPlanExcel(@Valid InspectPlanPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
-        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<InspectPlanDO> list = inspectPlanService.getInspectPlanPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "巡检计划.xls", "数据", InspectPlanRespVO.class,
-                        BeanUtils.toBean(list, InspectPlanRespVO.class));
-    }
-
     @PostMapping("/import")
     @Operation(summary = "导入巡检计划")
     @PreAuthorize("@ss.hasPermission('inspectop:inspect-plan:import')")
@@ -167,6 +154,91 @@ public class InspectPlanController {
     public CommonResult<InspectPlanChartRespVO> getInspectPlanChart(@Valid InspectPlanChartReqVO reqVO) {
         InspectPlanChartRespVO chartData = inspectPlanService.getInspectPlanChart(reqVO);
         return success(chartData);
+    }
+
+    @GetMapping("/export-excel")
+    @Operation(summary = "导出巡检计划 Excel")
+    @PreAuthorize("@ss.hasPermission('inspectop:inspect-plan:export')")
+    @ApiAccessLog(operateType = EXPORT)
+    public void exportInspectPlanExcel(@Valid InspectPlanPageReqVO pageReqVO,
+                                       HttpServletResponse response) throws IOException {
+        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        List<InspectPlanDO> list = inspectPlanService.getInspectPlanPage(pageReqVO).getList();
+
+        // 将DO转换为VO
+        List<InspectPlanRespVO> voList = BeanUtils.toBean(list, InspectPlanRespVO.class);
+
+        // 对VO列表进行字典值转换
+        convertDictValues(voList);
+
+        // 导出 Excel
+        ExcelUtils.write(response, "巡检计划.xls", "数据", InspectPlanRespVO.class, voList);
+    }
+
+    /**
+     * 转换字典值为中文显示
+     */
+    private void convertDictValues(List<InspectPlanRespVO> voList) {
+        if (voList == null || voList.isEmpty()) {
+            return;
+        }
+
+        for (InspectPlanRespVO vo : voList) {
+            // 转换巡检类型
+            vo.setType(convertType(vo.getType()));
+            // 转换执行周期
+            vo.setCycle(convertCycle(vo.getCycle()));
+            // 转换计划状态
+            vo.setStatus(convertStatus(vo.getStatus()));
+        }
+    }
+
+    /**
+     * 转换巡检类型
+     */
+    private String convertType(String typeCode) {
+        if (typeCode == null) {
+            return "";
+        }
+        switch (typeCode.trim()) {
+            case "1": return "日常";
+            case "2": return "专项";
+            case "3": return "临时";
+            default: return typeCode;
+        }
+    }
+
+    /**
+     * 转换执行周期
+     */
+    private String convertCycle(String cycleCode) {
+        if (cycleCode == null) {
+            return "";
+        }
+        switch (cycleCode.trim()) {
+            case "1": return "日";
+            case "2": return "周";
+            case "3": return "月";
+            case "4": return "季";
+            default: return cycleCode;
+        }
+    }
+
+    /**
+     * 转换计划状态
+     */
+    private String convertStatus(String statusCode) {
+        if (statusCode == null) {
+            return "";
+        }
+        switch (statusCode.trim()) {
+            case "0": return "已生效";
+            case "1": return "待生效";
+            case "2": return "进行中";
+            case "3": return "已完成";
+            case "4": return "已暂停";
+            default: return statusCode;
+        }
     }
 
 }

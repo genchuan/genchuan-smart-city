@@ -33,7 +33,7 @@ public class InspectReportRespVO {
     private String status;
 
     @Schema(description = "审核人ID")
-    @ExcelProperty("审核人ID")
+//    @ExcelProperty("审核人ID")
     private Long auditUserId;
 
     @Schema(description = "审核时间")
@@ -41,7 +41,7 @@ public class InspectReportRespVO {
     private LocalDateTime auditTime;
 
     @Schema(description = "处置人ID")
-    @ExcelProperty("处置人ID")
+//    @ExcelProperty("处置人ID")
     private Long processUserId;
 
     @Schema(description = "处置人姓名")
@@ -61,11 +61,11 @@ public class InspectReportRespVO {
     private String remark;
 
     @Schema(description = "备用字段1")
-    @ExcelProperty("备用字段1")
+    @ExcelProperty("审核备注")
     private String reserve1;
 
     @Schema(description = "备用字段2")
-    @ExcelProperty("备用字段2")
+//    @ExcelProperty("备用字段2")
     private String reserve2;
 
     @Schema(description = "创建者")
