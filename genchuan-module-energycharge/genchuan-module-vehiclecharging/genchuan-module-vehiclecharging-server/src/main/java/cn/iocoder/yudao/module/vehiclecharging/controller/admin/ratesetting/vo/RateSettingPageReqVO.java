@@ -27,11 +27,11 @@ public class RateSettingPageReqVO extends PageParam {
 
     @Schema(description = "[生效时间] 生效时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDateTime[] effectTime;
+    private LocalDateTime effectTime;
 
     @Schema(description = "[失效时间] 失效时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDateTime[] expireTime;
+    private LocalDateTime expireTime;
 
     @Schema(description = "[适用场站] 适用场站")
     private String applyStation;

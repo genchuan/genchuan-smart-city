@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
@@ -28,6 +29,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
@@ -128,8 +131,24 @@ public class BlackWhiteListController {
     @PreAuthorize("@ss.hasPermission('stationresource:black-white-list:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportExcel(@Valid BlackWhiteListPageReqVO pageReqVO, HttpServletResponse response) throws IOException {
-        pageReqVO.setPageSize(0);
+        // 0. 配置
+        String inputFileName = "黑白名单_";
+
+        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<BlackWhiteListDO> list = blackWhiteListService.getListPage(pageReqVO).getList();
-        ExcelUtils.write(response, "黑白名单.xls", "数据", BlackWhiteListRespVO.class, BeanUtils.toBean(list, BlackWhiteListRespVO.class));
+
+        // 1、强制设置响应头，确保浏览器触发下载
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setCharacterEncoding("utf-8");
+        // 2、动态生成文件名，带上当前日期
+        String dateStr = java.time.LocalDate.now().toString();
+        String fileOriginName = inputFileName + dateStr + ".xls";
+        String fileName = URLEncoder.encode(fileOriginName, StandardCharsets.UTF_8.toString())
+                .replaceAll("\\+", "%20").replace("UTF-8","");
+        response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
+
+        // 3、调用 ExcelUtils 导出
+        ExcelUtils.write(response, "黑白名单.xls", "数据", BlackWhiteListRespVO.class,
+                BeanUtils.toBean(list, BlackWhiteListRespVO.class));
     }
 }

@@ -26,6 +26,7 @@
     <!-- 3. 追缴成功率 按场站 -->
     <select id="selectRecoveryBarList" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.debtexpand.vo.chart.DebtExpandChartRespVO$RecoveryBarItem">
         SELECT
+            s.id as stationId,
             s.name AS name,
             IFNULL(ROUND(AVG(d.recovery_rate),1), 0) AS value
         FROM debt_expand d

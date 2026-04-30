@@ -49,7 +49,7 @@ public class SysOperationLogController {
         return success(id);
     }
     @PostMapping("/create")
-    @Operation(summary = "（勿用）创建系统操作审计日志表，存储平台全模块所有操作的审计日志信息")
+    @Operation(summary = "（次级）创建系统操作审计日志表，存储平台全模块所有操作的审计日志信息")
 //    @PreAuthorize("@ss.hasPermission('kitchen:sys-operation-log:create')")
     public CommonResult<Long> createSysOperationLog(@Valid @RequestBody SysOperationLogSaveReqVO createReqVO) {
         return success(sysOperationLogService.createSysOperationLog(createReqVO));
