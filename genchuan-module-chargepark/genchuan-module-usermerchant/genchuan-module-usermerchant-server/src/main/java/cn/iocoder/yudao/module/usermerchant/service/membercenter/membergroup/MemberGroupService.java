@@ -5,7 +5,6 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membergroup.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.membergroup.MemberGroupDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 会员分组 Service 接口
@@ -59,4 +58,19 @@ public interface MemberGroupService {
      */
     PageResult<MemberGroupDO> getMemberGroupPage(MemberGroupPageReqVO pageReqVO);
 
+    /**
+     * 保存会员分组
+     *
+     * @param saveReqVO 会员分组
+     * @return 布尔值
+     */
+    Boolean saveMemberGroup(@Valid MemberGroupSaveReqVO saveReqVO);
+
+    /**
+     * 更新会员分组状态
+     *
+     * @param ids ids
+     * @param status 状态
+     */
+    void updateGroupStatus(List<Long> ids, String status);
 }

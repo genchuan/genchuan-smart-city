@@ -5,7 +5,6 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberconfig.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberconfig.MemberConfigDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 会员配置 Service 接口
@@ -58,5 +57,20 @@ public interface MemberConfigService {
      * @return 会员配置分页
      */
     PageResult<MemberConfigDO> getMemberConfigPage(MemberConfigPageReqVO pageReqVO);
+
+    /**
+     * 保存会员配置
+     *
+     * @param saveReqVO 保存信息
+     */
+    Boolean saveMemberConfig(@Valid MemberConfigSaveReqVO saveReqVO);
+
+    /**
+     * 改变会员配置状态
+     *
+     * @param ids ids
+     * @param status 状态
+     */
+    void updateConfigStatus(List<Long> ids, String status);
 
 }

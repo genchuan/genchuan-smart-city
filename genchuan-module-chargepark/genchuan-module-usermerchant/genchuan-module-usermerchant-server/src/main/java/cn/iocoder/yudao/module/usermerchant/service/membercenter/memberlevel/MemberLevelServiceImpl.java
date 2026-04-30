@@ -1,8 +1,9 @@
 package cn.iocoder.yudao.module.usermerchant.service.membercenter.memberlevel;
 
-import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,14 +11,11 @@ import java.util.*;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberlevel.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberlevel.MemberLevelDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.memberlevel.MemberLevelMapper;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
 
 /**
@@ -80,6 +78,28 @@ public class MemberLevelServiceImpl implements MemberLevelService {
     @Override
     public PageResult<MemberLevelDO> getMemberLevelPage(MemberLevelPageReqVO pageReqVO) {
         return memberLevelMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public void updateLevelStatus(List<Long> ids, String status) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return;
+        }
+        // 使用 UpdateWrapper 批量更新状态
+        UpdateWrapper<MemberLevelDO> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.in("id", ids)
+                .set("status", status);
+        memberLevelMapper.update(null, updateWrapper);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Boolean saveMemberLevel(MemberLevelSaveReqVO saveReqVO) {
+        if (saveReqVO.getId() == null) {
+            return createMemberLevel(saveReqVO) != null;
+        }
+        updateMemberLevel(saveReqVO);
+        return true;
     }
 
 }

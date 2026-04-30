@@ -5,7 +5,6 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membertag.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.membertag.MemberTagDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 会员标签 Service 接口
@@ -59,4 +58,20 @@ public interface MemberTagService {
      */
     PageResult<MemberTagDO> getMemberTagPage(MemberTagPageReqVO pageReqVO);
 
+    /**
+     * 导入会员标签
+     *
+     * @param list 会员标签
+     * @param updateSupport 支持
+     * @return 布尔值
+     */
+    Boolean importUsers(List<MemberTagImportExcelVO> list, Boolean updateSupport);
+
+    /**
+     * 改变会员标签状态
+     *
+     * @param ids ids
+     * @param status 状态
+     */
+    void updateTagStatus(List<Long> ids, String status);
 }

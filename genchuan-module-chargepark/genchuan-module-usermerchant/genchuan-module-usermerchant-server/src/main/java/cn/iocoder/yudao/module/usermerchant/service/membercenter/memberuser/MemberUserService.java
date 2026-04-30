@@ -5,7 +5,6 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberuser.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberuser.MemberUserDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 会员用户 Service 接口
@@ -59,4 +58,20 @@ public interface MemberUserService {
      */
     PageResult<MemberUserDO> getMemberUserPage(MemberUserPageReqVO pageReqVO);
 
+    /**
+     * 导入会员用户
+     *
+     * @param list 会员用户列表
+     * @param updateSupport 是否支持
+     * @return 布尔值
+     */
+    Boolean importUsers(List<MemberUserImportExcelVO> list, Boolean updateSupport);
+
+    /**
+     * 更改会员用户状态
+     *
+     * @param ids ids
+     * @param status 状态
+     */
+    void updateUserStatus(List<Long> ids, String status);
 }

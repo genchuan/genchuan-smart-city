@@ -1,8 +1,9 @@
 package cn.iocoder.yudao.module.usermerchant.service.membercenter.membergroup;
 
-import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,14 +11,11 @@ import java.util.*;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membergroup.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.membergroup.MemberGroupDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.membergroup.MemberGroupMapper;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
 
 /**
@@ -80,6 +78,28 @@ public class MemberGroupServiceImpl implements MemberGroupService {
     @Override
     public PageResult<MemberGroupDO> getMemberGroupPage(MemberGroupPageReqVO pageReqVO) {
         return memberGroupMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public Boolean saveMemberGroup(MemberGroupSaveReqVO saveReqVO) {
+        if (saveReqVO.getId() == null) {
+            return createMemberGroup(saveReqVO) != null;
+        }
+        updateMemberGroup(saveReqVO);
+        return true;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateGroupStatus(List<Long> ids, String status) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return;
+        }
+        // 使用 UpdateWrapper 批量更新状态
+        UpdateWrapper<MemberGroupDO> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.in("id", ids)
+                .set("status", status);
+        memberGroupMapper.update(null, updateWrapper);
     }
 
 }

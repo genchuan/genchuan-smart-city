@@ -1,8 +1,9 @@
 package cn.iocoder.yudao.module.usermerchant.service.membercenter.memberconfig;
 
-import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,14 +11,11 @@ import java.util.*;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberconfig.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberconfig.MemberConfigDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.memberconfig.MemberConfigMapper;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
 
 /**
@@ -80,6 +78,28 @@ public class MemberConfigServiceImpl implements MemberConfigService {
     @Override
     public PageResult<MemberConfigDO> getMemberConfigPage(MemberConfigPageReqVO pageReqVO) {
         return memberConfigMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public Boolean saveMemberConfig(MemberConfigSaveReqVO saveReqVO) {
+        if (saveReqVO.getId() == null) {
+            return createMemberConfig(saveReqVO) != null;
+        }
+        updateMemberConfig(saveReqVO);
+        return true;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateConfigStatus(List<Long> ids, String status) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return;
+        }
+        // 使用 UpdateWrapper 批量更新状态
+        UpdateWrapper<MemberConfigDO> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.in("id", ids)
+                .set("status", status);
+        memberConfigMapper.update(null, updateWrapper);
     }
 
 }

@@ -5,7 +5,6 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberlevel.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberlevel.MemberLevelDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 会员等级 Service 接口
@@ -59,4 +58,19 @@ public interface MemberLevelService {
      */
     PageResult<MemberLevelDO> getMemberLevelPage(MemberLevelPageReqVO pageReqVO);
 
+    /**
+     * 改变会员等级状态
+     *
+     * @param ids ids
+     * @param status 状态
+     */
+    void updateLevelStatus(List<Long> ids, String status);
+
+    /**
+     * 保存会员等级
+     *
+     * @param saveReqVO 会员等级
+     * @return 布尔值
+     */
+    Boolean saveMemberLevel(@Valid MemberLevelSaveReqVO saveReqVO);
 }
