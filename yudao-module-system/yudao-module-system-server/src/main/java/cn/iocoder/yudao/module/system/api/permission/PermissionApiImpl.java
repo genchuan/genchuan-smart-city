@@ -2,9 +2,12 @@ package cn.iocoder.yudao.module.system.api.permission;
 
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.biz.system.permission.dto.DeptDataPermissionRespDTO;
+import cn.iocoder.yudao.module.system.dal.dataobject.user.AdminUserDO;
 import cn.iocoder.yudao.module.system.service.permission.PermissionService;
+import cn.iocoder.yudao.module.system.service.user.AdminUserService;
 import org.springframework.context.annotation.Primary;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.annotation.Resource;
@@ -20,6 +23,9 @@ public class PermissionApiImpl implements PermissionApi {
 
     @Resource
     private PermissionService permissionService;
+
+    @Resource
+    private AdminUserService userService;
 
     @Override
     public CommonResult<Set<Long>> getUserRoleIdListByRoleIds(Collection<Long> roleIds) {
@@ -39,6 +45,20 @@ public class PermissionApiImpl implements PermissionApi {
     @Override
     public CommonResult<DeptDataPermissionRespDTO> getDeptDataPermission(Long userId) {
         return success(permissionService.getDeptDataPermission(userId));
+    }
+
+    // 新增：设置用户角色实现
+    @Override
+    public CommonResult<Boolean> assignUserRoleByMobile(String mobile, Set<Long> roleIds) {
+        // 1. 根据手机号查询用户
+        AdminUserDO user = userService.getUserByMobile(mobile);
+        if (user == null) {
+            return CommonResult.error(404, "用户不存在");
+        }
+
+        // 2. 调用原有的assignUserRole方法设置角色
+        permissionService.assignUserRole(user.getId(), roleIds);
+        return success(true);
     }
 
 }
