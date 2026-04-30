@@ -58,20 +58,21 @@ spring:
       primary: master
       datasource:
         master:
-          url: jdbc:mysql://127.0.0.1:3306/order_trade?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
-          username: root
-          password: 123456
+          url: jdbc:mysql://183.252.11.179:3306/genchuan-module-chargepark?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
+          username: genchuan
+          password: Gyh@181612
         slave:
           lazy: true
-          url: jdbc:mysql://127.0.0.1:3306/order_trade?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
-          username: root
-          password: 123456
+          url: jdbc:mysql://183.252.11.179:3306/genchuan-module-chargepark?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
+          username: genchuan
+          password: Gyh@181612
 
   data:
     redis:
       host: 127.0.0.1
       port: 6379
       database: 0
+      password: 123456
 --- #################### 定时任务 ####################
 
 xxl:
