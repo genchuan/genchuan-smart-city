@@ -9,4 +9,45 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="selectTotalCount"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.promotemgmt.vo.PromoteMgmtChartRespVO">
+        SELECT
+            COUNT(1) AS totalCount,
+            COUNT(execute_time) AS finishedCount,
+            SUM(IF(execute_time is null, 1, 0)) AS waitExecuteCount,
+            SUM(promote_num) AS totalPromoteNum,
+            SUM(intent_num) AS totalIntentNum,
+            ROUND(SUM(intent_num) / SUM(promote_num), 2) AS intentRate
+        FROM promote_mgmt
+        WHERE deleted = 0
+        <if test="year != null">
+            AND YEAR(create_time) = #{year}
+        </if>
+    </select>
+    <select id="selectDateCountList" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+            DATE(create_time) AS date,
+            SUM(promote_num) AS promote_num,
+            SUM(intent_num) AS intent_num
+        FROM promote_mgmt
+        WHERE deleted = 0
+        <if test="year != null">
+            AND YEAR(create_time) = #{year}
+        </if>
+        GROUP BY DATE(create_time)
+        ORDER BY DATE(create_time) ASC
+    </select>
+    <select id="selectPromoteCount"
+            resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+            site AS site,
+            SUM(promote_num) AS promoteNum,
+            SUM(intent_num) AS intentNum
+        FROM promote_mgmt
+        WHERE deleted = 0
+        <if test="year != null">
+            AND YEAR(create_time) = #{year}
+        </if>
+        GROUP BY site
+    </select>
 </mapper>
