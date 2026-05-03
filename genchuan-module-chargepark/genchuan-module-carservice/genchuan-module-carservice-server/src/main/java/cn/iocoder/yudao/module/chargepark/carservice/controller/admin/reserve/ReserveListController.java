@@ -212,6 +212,16 @@ public class ReserveListController {
         return success(true);
     }
 
+    @PutMapping("/complete")
+    @Operation(summary = "完成 - 已生效 → 已完成")
+    @Parameter(name = "id", description = "编号", required = true)
+    @PreAuthorize("@ss.hasPermission('carservice:reserve-list:complete')")
+    @ApiAccessLog(operateType = UPDATE)
+    public CommonResult<Boolean> completeReserveList(@RequestParam("id") Long id) {
+        reserveListService.completeReserveList(id);
+        return success(true);
+    }
+
     @PutMapping("/evaluate")
     @Operation(summary = "评价 - 已完成状态")
     @PreAuthorize("@ss.hasPermission('carservice:reserve-list:evaluate')")
