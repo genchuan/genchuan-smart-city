@@ -2,7 +2,6 @@ package cn.iocoder.yudao.module.chargepark.carservice.controller.admin.findcar.v
 
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
-import cn.iocoder.yudao.framework.desensitize.core.slider.annotation.CarLicenseDesensitize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -25,9 +24,8 @@ public class SpaceLocationRespVO {
     @ExcelProperty("用户名")
     private String userName;
 
-    @Schema(description = "车牌号码（已脱敏，例：闽C***5）")
+    @Schema(description = "车牌号码")
     @ExcelProperty("车牌号码")
-    @CarLicenseDesensitize
     private String plateNo;
 
     @Schema(description = "查询时间")
