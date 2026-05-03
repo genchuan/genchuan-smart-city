@@ -421,12 +421,15 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
         Map<Long, ParkingSpaceInfoRespDTO> parkingMap = safeParkingSpaceMap(spaceIds);
         List<Map<String, Object>> spaceLocationList = queries.stream().map(q -> {
             Map<String, Object> m = new LinkedHashMap<>();
+            m.put("id", q.getId());
+            m.put("spaceId", q.getSpaceId());
             SpaceMonitorRespDTO mon = monitorMap.get(q.getSpaceId());
             m.put("lon", mon == null ? null : mon.getLongitude());
             m.put("lat", mon == null ? null : mon.getLatitude());
             ParkingSpaceInfoRespDTO info = parkingMap.get(q.getSpaceId());
             m.put("spaceNo", info == null ? null : info.getSpaceNo());
             m.put("plateNo", q.getPlateNo());
+            m.put("locationResult", q.getLocationResult());
             return m;
         }).collect(Collectors.toList());
         resp.setSpaceLocationList(spaceLocationList);
