@@ -354,13 +354,16 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     @Cacheable(cacheNames = "carservice:report:chart-space-push#30s")
     public SpacePushChartRespVO chartSpacePush(LocalDateTime startTime, LocalDateTime endTime) {
         SpacePushChartRespVO resp = new SpacePushChartRespVO();
+        // 推送量统计基于实际 push_time（剔除尚未推送的记录），与折线图聚合维度一致，钻取列表能命中
         long total = spacePushMapper.selectCount(new LambdaQueryWrapperX<SpacePushDO>()
-                .geIfPresent(SpacePushDO::getCreateTime, startTime)
-                .leIfPresent(SpacePushDO::getCreateTime, endTime));
+                .isNotNull(SpacePushDO::getPushTime)
+                .geIfPresent(SpacePushDO::getPushTime, startTime)
+                .leIfPresent(SpacePushDO::getPushTime, endTime));
         long success = spacePushMapper.selectCount(new LambdaQueryWrapperX<SpacePushDO>()
+                .isNotNull(SpacePushDO::getPushTime)
                 .eq(SpacePushDO::getPushResult, "成功")
-                .geIfPresent(SpacePushDO::getCreateTime, startTime)
-                .leIfPresent(SpacePushDO::getCreateTime, endTime));
+                .geIfPresent(SpacePushDO::getPushTime, startTime)
+                .leIfPresent(SpacePushDO::getPushTime, endTime));
         resp.setTotalPushCount((int) total);
         resp.setPushSuccessRate(toRate(success, total));
         resp.setPushTrendList(toTrendList(reportStatMapper.spacePushDailyCount(
