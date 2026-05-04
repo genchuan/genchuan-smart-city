@@ -225,7 +225,8 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     @Override
     @Cacheable(cacheNames = "carservice:report:chart-near-station#30s",
             unless = "#result == null || #result.stationLocationList == null || #result.stationLocationList.isEmpty()")
-    public NearStationChartRespVO chartNearStation(LocalDateTime startTime, LocalDateTime endTime) {
+    public NearStationChartRespVO chartNearStation(LocalDateTime startTime, LocalDateTime endTime,
+                                                    Double lon, Double lat) {
         NearStationChartRespVO resp = new NearStationChartRespVO();
         List<StationInfoRespDTO> stations = safeListStations();
 
@@ -242,18 +243,21 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
                 }).collect(Collectors.toList());
         resp.setStationLocationList(stationList);
 
-        // 拉时间窗内的查询记录,作为柱状图距离分桶的查询点来源
-        List<NearStationDO> queries = nearStationMapper.selectList(
-                new LambdaQueryWrapperX<NearStationDO>()
-                        .geIfPresent(NearStationDO::getCreateTime, startTime)
-                        .leIfPresent(NearStationDO::getCreateTime, endTime));
-        List<double[]> queryPoints = queries.stream()
-                .map(q -> parseLonLat(q.getQueryLocation()))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        // 距离分布柱状图:对所有场站按到查询点的距离分桶(0-1/1-3/3-5/>5km),平均每次查询的桶内数量
-        resp.setDistanceCountList(buildDistanceBuckets(queryPoints, stations));
+        // 距离分布柱状图:以"当前位置"(前端传入的 lon/lat)为参考,所有场站按到当前位置的距离分桶
+        // 未传当前位置时,退化为查询时间窗内最近一条 near_station 的查询位置作为参考点
+        Double refLon = lon, refLat = lat;
+        if (refLon == null || refLat == null) {
+            List<NearStationDO> queries = nearStationMapper.selectList(
+                    new LambdaQueryWrapperX<NearStationDO>()
+                            .geIfPresent(NearStationDO::getCreateTime, startTime)
+                            .leIfPresent(NearStationDO::getCreateTime, endTime)
+                            .orderByDesc(NearStationDO::getCreateTime).last("LIMIT 1"));
+            if (!queries.isEmpty()) {
+                double[] p = parseLonLat(queries.get(0).getQueryLocation());
+                if (p != null) { refLon = p[0]; refLat = p[1]; }
+            }
+        }
+        resp.setDistanceCountList(buildDistanceBuckets(refLon, refLat, stations));
 
         // 卡片:周边场站数 = 全部场站数;空位场站数 = 空位数 > 0 的场站数(均不限距离)
         resp.setTotalStationCount((int) stations.stream()
@@ -266,24 +270,23 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
         return resp;
     }
 
-    /** 4 个固定桶:0-1km / 1-3km / 3-5km / >5km。每桶 count = 平均每次查询该桶内的场站数量,无查询时返回 0 */
-    private List<Map<String, Object>> buildDistanceBuckets(List<double[]> queryPoints,
+    /** 4 个固定桶:0-1km / 1-3km / 3-5km / >5km。基于"当前位置"(refLon/refLat)对所有场站精确计算距离 */
+    private List<Map<String, Object>> buildDistanceBuckets(Double refLon, Double refLat,
                                                            List<StationInfoRespDTO> stations) {
         String[] labels = {"0-1km", "1-3km", "3-5km", ">5km"};
-        long[] sums = new long[4];
-        for (double[] p : queryPoints) {
+        long[] counts = new long[4];
+        if (refLon != null && refLat != null) {
             for (StationInfoRespDTO s : stations) {
                 if (s.getLon() == null || s.getLat() == null) continue;
-                double dKm = haversineKm(p[0], p[1], s.getLon().doubleValue(), s.getLat().doubleValue());
-                sums[pickBucket(dKm)]++;
+                double dKm = haversineKm(refLon, refLat, s.getLon().doubleValue(), s.getLat().doubleValue());
+                counts[pickBucket(dKm)]++;
             }
         }
         List<Map<String, Object>> result = new ArrayList<>(4);
         for (int i = 0; i < 4; i++) {
             Map<String, Object> m = new LinkedHashMap<>();
             m.put("distance", labels[i]);
-            m.put("count", queryPoints.isEmpty() ? 0
-                    : (int) Math.round((double) sums[i] / queryPoints.size()));
+            m.put("count", (int) counts[i]);
             result.add(m);
         }
         return result;

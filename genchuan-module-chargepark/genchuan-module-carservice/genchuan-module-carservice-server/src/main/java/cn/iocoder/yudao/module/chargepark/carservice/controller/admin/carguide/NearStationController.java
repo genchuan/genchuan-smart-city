@@ -157,8 +157,10 @@ public class NearStationController {
             @RequestParam(value = "startTime", required = false)
             @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
             @RequestParam(value = "endTime", required = false)
-            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
-        return success(serviceOpReportService.chartNearStation(startTime, endTime));
+            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime,
+            @RequestParam(value = "lon", required = false) Double lon,
+            @RequestParam(value = "lat", required = false) Double lat) {
+        return success(serviceOpReportService.chartNearStation(startTime, endTime, lon, lat));
     }
 
     @GetMapping("/chart-drill-bar")

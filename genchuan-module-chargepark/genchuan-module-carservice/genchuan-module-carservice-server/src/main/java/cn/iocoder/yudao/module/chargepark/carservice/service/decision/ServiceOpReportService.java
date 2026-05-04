@@ -37,7 +37,7 @@ public interface ServiceOpReportService {
 
     RescueInfoChartRespVO chartRescue(LocalDateTime startTime, LocalDateTime endTime);
     ChargeParkMapChartRespVO chartChargeParkMap(LocalDateTime startTime, LocalDateTime endTime);
-    NearStationChartRespVO chartNearStation(LocalDateTime startTime, LocalDateTime endTime);
+    NearStationChartRespVO chartNearStation(LocalDateTime startTime, LocalDateTime endTime, Double lon, Double lat);
     SpacePushChartRespVO chartSpacePush(LocalDateTime startTime, LocalDateTime endTime);
     ReserveListChartRespVO chartReserve(LocalDateTime startTime, LocalDateTime endTime);
     SpaceLocationChartRespVO chartSpaceLocation(LocalDateTime startTime, LocalDateTime endTime);
