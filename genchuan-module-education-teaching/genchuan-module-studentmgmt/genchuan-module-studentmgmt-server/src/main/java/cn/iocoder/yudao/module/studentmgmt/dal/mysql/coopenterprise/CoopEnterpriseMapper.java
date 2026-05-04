@@ -1,11 +1,14 @@
 package cn.iocoder.yudao.module.studentmgmt.dal.mysql.coopenterprise;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.ChartTrendVO;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.coopenterprise.CoopEnterpriseDO;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.coopenterprise.vo.*;
 
@@ -34,4 +37,13 @@ public interface CoopEnterpriseMapper extends BaseMapperX<CoopEnterpriseDO> {
                 .orderByDesc(CoopEnterpriseDO::getId));
     }
 
+    CoopEnterpriseChartRespVO selectTotalCount(LocalDateTime startTime, LocalDateTime endTime, String pending, String ended, Long deptId);
+
+    List<JSONObject> selectDeptCoopCountList(LocalDateTime startTime, LocalDateTime endTime, Long deptId);
+
+    List<ChartTrendVO> selectCoopTrendList(LocalDateTime startTime, LocalDateTime endTime, Long deptId);
+
+    List<JSONObject> selectTypeListList(LocalDateTime startTime, LocalDateTime endTime);
+
+    List<JSONObject> selectDistributionList(LocalDateTime startTime, LocalDateTime endTime);
 }
