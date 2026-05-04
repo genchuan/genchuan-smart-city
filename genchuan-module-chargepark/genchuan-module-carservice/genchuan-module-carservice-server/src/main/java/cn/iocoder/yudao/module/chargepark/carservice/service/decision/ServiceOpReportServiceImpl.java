@@ -354,13 +354,19 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     @Cacheable(cacheNames = "carservice:report:chart-space-push#30s")
     public SpacePushChartRespVO chartSpacePush(LocalDateTime startTime, LocalDateTime endTime) {
         SpacePushChartRespVO resp = new SpacePushChartRespVO();
-        long total = spacePushMapper.selectCount(new LambdaQueryWrapperX<SpacePushDO>()
-                .geIfPresent(SpacePushDO::getCreateTime, startTime)
-                .leIfPresent(SpacePushDO::getCreateTime, endTime));
-        long success = spacePushMapper.selectCount(new LambdaQueryWrapperX<SpacePushDO>()
-                .eq(SpacePushDO::getPushResult, "成功")
-                .geIfPresent(SpacePushDO::getCreateTime, startTime)
-                .leIfPresent(SpacePushDO::getCreateTime, endTime));
+        // 卡片统计与折线图聚合维度一致：以 push_time 为准，剔除尚未推送（push_time 为 null）的记录
+        LambdaQueryWrapperX<SpacePushDO> totalWrapper = new LambdaQueryWrapperX<SpacePushDO>()
+                .geIfPresent(SpacePushDO::getPushTime, startTime)
+                .leIfPresent(SpacePushDO::getPushTime, endTime);
+        totalWrapper.isNotNull(SpacePushDO::getPushTime);
+        long total = spacePushMapper.selectCount(totalWrapper);
+
+        LambdaQueryWrapperX<SpacePushDO> successWrapper = new LambdaQueryWrapperX<SpacePushDO>()
+                .geIfPresent(SpacePushDO::getPushTime, startTime)
+                .leIfPresent(SpacePushDO::getPushTime, endTime);
+        successWrapper.isNotNull(SpacePushDO::getPushTime).eq(SpacePushDO::getPushResult, "成功");
+        long success = spacePushMapper.selectCount(successWrapper);
+
         resp.setTotalPushCount((int) total);
         resp.setPushSuccessRate(toRate(success, total));
         resp.setPushTrendList(toTrendList(reportStatMapper.spacePushDailyCount(
