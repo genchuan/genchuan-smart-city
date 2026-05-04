@@ -222,6 +222,9 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
         return resp;
     }
 
+    /** 周边场站半径上限:5km(超出此半径的场站不计入"周边"统计、不参与柱状图分桶、不在地图渲染) */
+    private static final double NEAR_STATION_RADIUS_KM = 5.0;
+
     @Override
     @Cacheable(cacheNames = "carservice:report:chart-near-station#30s",
             unless = "#result == null || #result.stationLocationList == null || #result.stationLocationList.isEmpty()")
@@ -229,71 +232,87 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
         NearStationChartRespVO resp = new NearStationChartRespVO();
         List<StationInfoRespDTO> stations = safeListStations();
 
-        // 场站地图点位:lon / lat / stationName / hasEmpty → 来自 station_info(Feign)
-        List<Map<String, Object>> stationList = stations.stream().map(s -> {
-            Map<String, Object> m = new LinkedHashMap<>();
-            m.put("lon", s.getLon());
-            m.put("lat", s.getLat());
-            m.put("stationName", s.getName());
-            m.put("hasEmpty", nz(s.getEmptySpace()) > 0);
-            return m;
-        }).collect(Collectors.toList());
-        resp.setStationLocationList(stationList);
-
         // 拉时间窗内的 near_station 历史查询记录,作为距离分桶 & 卡片指标的聚合源
         List<NearStationDO> queries = nearStationMapper.selectList(
                 new LambdaQueryWrapperX<NearStationDO>()
                         .geIfPresent(NearStationDO::getCreateTime, startTime)
                         .leIfPresent(NearStationDO::getCreateTime, endTime));
 
-        // 距离分桶柱状图:平均每次查询,各距离区间的场站数量
-        resp.setDistanceCountList(buildDistanceBuckets(queries, stations));
+        // 解析查询点经纬度,过滤无效位置
+        List<double[]> queryPoints = queries.stream()
+                .map(q -> parseLonLat(q.getQueryLocation()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
 
-        // 卡片: 平均查询返回的周边场站总数 / 有空位场站数(按客户文档"平均"口径聚合 near_station 表)
-        if (queries.isEmpty()) {
+        // 地图点位:仅渲染落在任一查询点 5km 范围内的场站
+        List<Map<String, Object>> stationList = stations.stream()
+                .filter(s -> s.getLon() != null && s.getLat() != null)
+                .filter(s -> queryPoints.isEmpty() || queryPoints.stream().anyMatch(p ->
+                        haversineKm(p[0], p[1], s.getLon().doubleValue(), s.getLat().doubleValue()) <= NEAR_STATION_RADIUS_KM))
+                .map(s -> {
+                    Map<String, Object> m = new LinkedHashMap<>();
+                    m.put("lon", s.getLon());
+                    m.put("lat", s.getLat());
+                    m.put("stationName", s.getName());
+                    m.put("hasEmpty", nz(s.getEmptySpace()) > 0);
+                    return m;
+                }).collect(Collectors.toList());
+        resp.setStationLocationList(stationList);
+
+        // 距离分桶柱状图:平均每次查询,各距离区间(0-1/1-3/3-5km)的场站数量
+        resp.setDistanceCountList(buildDistanceBuckets(queryPoints, stations));
+
+        // 卡片:平均每次查询,5km 内的场站总数 / 有空位场站数(按文档"平均"口径,基于经纬度实算,不沿用 near_station.station_count 字段)
+        if (queryPoints.isEmpty()) {
             resp.setTotalStationCount(0);
             resp.setEmptyStationCount(0);
         } else {
-            long sumStation = queries.stream().mapToLong(q -> q.getStationCount() == null ? 0 : q.getStationCount()).sum();
-            long sumEmpty = queries.stream().mapToLong(q -> q.getEmptyStationCount() == null ? 0 : q.getEmptyStationCount()).sum();
-            resp.setTotalStationCount((int) Math.round((double) sumStation / queries.size()));
-            resp.setEmptyStationCount((int) Math.round((double) sumEmpty / queries.size()));
+            long sumStation = 0, sumEmpty = 0;
+            for (double[] p : queryPoints) {
+                for (StationInfoRespDTO s : stations) {
+                    if (s.getLon() == null || s.getLat() == null) continue;
+                    double dKm = haversineKm(p[0], p[1], s.getLon().doubleValue(), s.getLat().doubleValue());
+                    if (dKm > NEAR_STATION_RADIUS_KM) continue;
+                    sumStation++;
+                    if (nz(s.getEmptySpace()) > 0) sumEmpty++;
+                }
+            }
+            resp.setTotalStationCount((int) Math.round((double) sumStation / queryPoints.size()));
+            resp.setEmptyStationCount((int) Math.round((double) sumEmpty / queryPoints.size()));
         }
         return resp;
     }
 
-    /** 4 个固定桶:0-1km / 1-3km / 3-5km / >5km。每桶 count = 平均每次查询该桶内的场站数量 */
-    private List<Map<String, Object>> buildDistanceBuckets(List<NearStationDO> queries,
+    /** 3 个固定桶:0-1km / 1-3km / 3-5km。每桶 count = 平均每次查询该桶内的场站数量 */
+    private List<Map<String, Object>> buildDistanceBuckets(List<double[]> queryPoints,
                                                            List<StationInfoRespDTO> stations) {
-        String[] labels = {"0-1km", "1-3km", "3-5km", ">5km"};
-        long[] sums = new long[4];
-        int effectiveQueryCount = 0;
-        for (NearStationDO q : queries) {
-            double[] ref = parseLonLat(q.getQueryLocation());
-            if (ref == null) continue;
-            effectiveQueryCount++;
+        String[] labels = {"0-1km", "1-3km", "3-5km"};
+        long[] sums = new long[3];
+        for (double[] p : queryPoints) {
             for (StationInfoRespDTO s : stations) {
                 if (s.getLon() == null || s.getLat() == null) continue;
-                double dKm = haversineKm(ref[0], ref[1], s.getLon().doubleValue(), s.getLat().doubleValue());
-                sums[pickBucket(dKm)]++;
+                double dKm = haversineKm(p[0], p[1], s.getLon().doubleValue(), s.getLat().doubleValue());
+                int bucket = pickBucket(dKm);
+                if (bucket >= 0) sums[bucket]++;
             }
         }
-        List<Map<String, Object>> result = new ArrayList<>(4);
-        for (int i = 0; i < 4; i++) {
+        List<Map<String, Object>> result = new ArrayList<>(3);
+        for (int i = 0; i < 3; i++) {
             Map<String, Object> m = new LinkedHashMap<>();
             m.put("distance", labels[i]);
-            m.put("count", effectiveQueryCount == 0 ? 0
-                    : (int) Math.round((double) sums[i] / effectiveQueryCount));
+            m.put("count", queryPoints.isEmpty() ? 0
+                    : (int) Math.round((double) sums[i] / queryPoints.size()));
             result.add(m);
         }
         return result;
     }
 
+    /** @return 0/1/2 对应 0-1km / 1-3km / 3-5km;超出 5km 返回 -1 不计入 */
     private int pickBucket(double km) {
         if (km <= 1) return 0;
         if (km <= 3) return 1;
         if (km <= 5) return 2;
-        return 3;
+        return -1;
     }
 
     private double[] parseLonLat(String location) {
