@@ -1,11 +1,12 @@
 package cn.iocoder.yudao.module.studentmgmt.service.studyup;
 
-import java.util.*;
-import jakarta.validation.*;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.BaseChartReqVO;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.studyup.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studyup.StudyUpDO;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 升学管理 Service 接口
@@ -37,10 +38,10 @@ public interface StudyUpService {
     void deleteStudyUp(Long id);
 
     /**
-    * 批量删除升学管理
-    *
-    * @param ids 编号
-    */
+     * 批量删除升学管理
+     *
+     * @param ids 编号
+     */
     void deleteStudyUpListByIds(List<Long> ids);
 
     /**
@@ -59,4 +60,15 @@ public interface StudyUpService {
      */
     PageResult<StudyUpDO> getStudyUpPage(StudyUpPageReqVO pageReqVO);
 
+    StudyUpQueryRespVO query(@Valid StudyUpQueryReqVO reqVO);
+
+    Boolean select(@Valid StudyUpSelectReqVO reqVO);
+
+    Boolean plan(@Valid StudyUpPlanReqVO reqVO);
+
+    Boolean record(@Valid StudyUpRecordReqVO reqVO);
+
+    StudyUpChartRespVO chart(@Valid BaseChartReqVO reqVO);
+
+    StudyUpStudyCountRespVO studyCount(@Valid BaseChartReqVO reqVO);
 }

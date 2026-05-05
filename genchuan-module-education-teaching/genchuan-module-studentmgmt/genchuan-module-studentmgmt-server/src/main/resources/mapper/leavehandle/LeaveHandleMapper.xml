@@ -9,4 +9,43 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="selectTotalCount"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.leavehandle.vo.LeaveHandleCharRespVO">
+        SELECT
+        COUNT(1) AS totalGraduate,
+        SUM(IF(status = #{pending_confirm}, 1, 0)) AS waitConfirm,
+        SUM(IF(status = #{pending_handle}, 1, 0)) AS waitHandle,
+        SUM(IF(status = #{left}, 1, 0)) AS finishedLeave,
+        ROUND(AVG(finish_rate),2) AS finishRate
+        FROM leave_handle
+        WHERE deleted=0
+        <if test="startTime != null">
+            AND create_time BETWEEN #{startTime} AND #{endTime}
+        </if>
+    </select>
+    <select id="selectIndexCount"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.leavehandle.vo.LeaveHandleIndexRespVO">
+        SELECT
+        COUNT(1) AS totalGraduate,
+        ROUND(COUNT(checkout_time)/COUNT(1),2) AS checkoutRate,
+        ROUND(COUNT(parent_confirm_time)/COUNT(1),2) AS parentConfirmRate,
+        ROUND(COUNT(leave_time)/COUNT(1),2) AS handleFinishRate
+        FROM leave_handle
+        WHERE deleted=0
+        <if test="startTime != null">
+            AND create_time BETWEEN #{startTime} AND #{endTime}
+        </if>
+    </select>
+    <select id="selectDailyLeaveCount"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.ChartTrendVO">
+        SELECT
+        DATE_FORMAT(leave_time, '%Y-%m-%d') AS date,
+        COUNT(1) AS count
+        FROM leave_handle
+        WHERE deleted=0
+        <if test="startTime != null">
+            AND leave_time BETWEEN #{startTime} AND #{endTime}
+        </if>
+        GROUP BY DATE_FORMAT(leave_time, '%Y-%m-%d')
+    </select>
 </mapper>
