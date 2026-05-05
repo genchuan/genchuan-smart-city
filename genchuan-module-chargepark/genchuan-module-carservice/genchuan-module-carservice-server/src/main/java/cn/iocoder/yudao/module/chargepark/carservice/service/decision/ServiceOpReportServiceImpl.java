@@ -235,6 +235,7 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
                 .filter(s -> s.getLon() != null && s.getLat() != null)
                 .map(s -> {
                     Map<String, Object> m = new LinkedHashMap<>();
+                    m.put("id", s.getId());
                     m.put("lon", s.getLon());
                     m.put("lat", s.getLat());
                     m.put("stationName", s.getName());
