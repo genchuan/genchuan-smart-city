@@ -196,7 +196,12 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
         // 场站分布 & 热力图数据 → 通过 Feign 从 stationresource 模块取,下游挂掉时降级为空列表
         List<StationInfoRespDTO> stations = safeListStations();
 
-        List<Map<String, Object>> spaceList = stations.stream().map(s -> {
+        // 过滤掉缺坐标的场站(area_id 为空导致 lon/lat null),避免污染前端 bbox/网格
+        List<StationInfoRespDTO> withCoord = stations.stream()
+                .filter(s -> s.getLon() != null && s.getLat() != null)
+                .collect(Collectors.toList());
+
+        List<Map<String, Object>> spaceList = withCoord.stream().map(s -> {
             Map<String, Object> m = new LinkedHashMap<>();
             m.put("lon", s.getLon());
             m.put("lat", s.getLat());
@@ -207,7 +212,7 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
         resp.setStationSpaceList(spaceList);
 
         // 热力图:value = 使用率 = spaceCount / spaceTotal,0-1 小数
-        List<Map<String, Object>> heatList = stations.stream().map(s -> {
+        List<Map<String, Object>> heatList = withCoord.stream().map(s -> {
             Map<String, Object> m = new LinkedHashMap<>();
             m.put("lon", s.getLon());
             m.put("lat", s.getLat());
