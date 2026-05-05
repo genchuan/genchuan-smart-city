@@ -88,6 +88,8 @@ public class CycleReportDrillServiceImpl implements CycleReportDrillService {
         wrapper.orderByDesc(PointActivityDO::getId);
         PageResult<PointActivityDO> pageResult = pointActivityMapper.selectPage(reqVO, wrapper);
         List<CycleReportDrillActivityCountRespVO> list = BeanUtils.toBean(pageResult.getList(), CycleReportDrillActivityCountRespVO.class);
+        // 翻译创建者名称
+        injectCreatorNames(list, CycleReportDrillActivityCountRespVO::getCreator, CycleReportDrillActivityCountRespVO::setCreator);
         return new PageResult<>(list, pageResult.getTotal());
     }
 
@@ -102,41 +104,46 @@ public class CycleReportDrillServiceImpl implements CycleReportDrillService {
             wrapper.leIfPresent(PointLotteryDO::getLotteryTime, report.getStatEndTime());
         }
         wrapper.orderByDesc(PointLotteryDO::getId);
-        List<PointLotteryDO> allRecords = pointLotteryMapper.selectList(wrapper);
-        // 按userId分组取最早记录
-        Map<Long, PointLotteryDO> firstByUser = new LinkedHashMap<>();
-        for (PointLotteryDO r : allRecords) {
-            firstByUser.putIfAbsent(r.getUserId(), r);
-        }
-        // 手动分页
-        int total = firstByUser.size();
-        int fromIndex = (reqVO.getPageNo() - 1) * reqVO.getPageSize();
-        int toIndex = Math.min(fromIndex + reqVO.getPageSize(), total);
-        List<PointLotteryDO> pagedRecords = new ArrayList<>(firstByUser.values())
-                .subList(Math.min(fromIndex, total), toIndex);
+        PageResult<PointLotteryDO> pageResult = pointLotteryMapper.selectPage(reqVO, wrapper);
 
-        Set<Long> userIds = pagedRecords.stream().map(PointLotteryDO::getUserId).collect(Collectors.toSet());
+        // 批量获取用户信息
+        Set<Long> userIds = new HashSet<>();
+        Set<Long> prizeIds = new HashSet<>();
+        for (PointLotteryDO r : pageResult.getList()) {
+            if (r.getUserId() != null) userIds.add(r.getUserId());
+            if (r.getPrizeId() != null) prizeIds.add(r.getPrizeId());
+        }
         Map<Long, AdminUserRespDTO> userMap = userIds.isEmpty() ? Map.of() : adminUserApi.getUserMap(userIds);
 
-        List<PointActivityDO> activities = pointActivityMapper.selectList(new LambdaQueryWrapperX<PointActivityDO>()
-                .le(report.getStatStartTime() != null, PointActivityDO::getEndTime, report.getStatEndTime())
-                .ge(report.getStatEndTime() != null, PointActivityDO::getStartTime, report.getStatStartTime()));
-        PointActivityDO relatedActivity = activities.isEmpty() ? null : activities.get(0);
+        // 通过prizeId查prize_mgmt获取activityId，再查point_activity获取活动名称
+        Map<Long, Long> prizeActivityMap = new HashMap<>();
+        for (Long prizeId : prizeIds) {
+            PrizeMgmtDO prize = prizeMgmtMapper.selectById(prizeId);
+            if (prize != null && prize.getActivityId() != null) prizeActivityMap.put(prizeId, prize.getActivityId());
+        }
+        Set<Long> activityIds = new HashSet<>(prizeActivityMap.values());
+        Map<Long, PointActivityDO> activityMap = new HashMap<>();
+        for (Long actId : activityIds) {
+            PointActivityDO act = pointActivityMapper.selectById(actId);
+            if (act != null) activityMap.put(actId, act);
+        }
 
         List<CycleReportDrillJoinUserCountRespVO> list = new ArrayList<>();
-        for (PointLotteryDO r : pagedRecords) {
+        for (PointLotteryDO r : pageResult.getList()) {
             CycleReportDrillJoinUserCountRespVO resp = new CycleReportDrillJoinUserCountRespVO();
             resp.setUserId(r.getUserId());
             AdminUserRespDTO user = userMap.get(r.getUserId());
             if (user != null) resp.setUserName(user.getNickname());
             resp.setJoinTime(r.getLotteryTime());
-            if (relatedActivity != null) {
-                resp.setJoinActivityId(relatedActivity.getId());
-                resp.setJoinActivityName(relatedActivity.getName());
+            Long actId = r.getPrizeId() != null ? prizeActivityMap.get(r.getPrizeId()) : null;
+            if (actId != null) {
+                resp.setJoinActivityId(actId);
+                PointActivityDO act = activityMap.get(actId);
+                if (act != null) resp.setJoinActivityName(act.getName());
             }
             list.add(resp);
         }
-        return new PageResult<>(list, (long) total);
+        return new PageResult<>(list, pageResult.getTotal());
     }
 
     @Override
@@ -338,6 +345,33 @@ public class CycleReportDrillServiceImpl implements CycleReportDrillService {
                 AdminUserRespDTO user = userMap.get(item.getUserId());
                 if (user != null) item.setUserName(user.getNickname());
             }
+        }
+    }
+
+    private <T> void injectCreatorNames(List<T> list, java.util.function.Function<T, String> getter, java.util.function.BiConsumer<T, String> setter) {
+        if (list == null || list.isEmpty()) return;
+        Set<Long> creatorIds = new HashSet<>();
+        for (T item : list) {
+            Long id = safeParseLong(getter.apply(item));
+            if (id != null) creatorIds.add(id);
+        }
+        if (creatorIds.isEmpty()) return;
+        Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(creatorIds);
+        for (T item : list) {
+            Long id = safeParseLong(getter.apply(item));
+            if (id != null) {
+                AdminUserRespDTO user = userMap.get(id);
+                if (user != null) setter.accept(item, user.getNickname());
+            }
+        }
+    }
+
+    private Long safeParseLong(String s) {
+        if (s == null) return null;
+        try {
+            return Long.valueOf(s);
+        } catch (NumberFormatException e) {
+            return null;
         }
     }
 
