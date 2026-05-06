@@ -30,4 +30,6 @@ public class ExchangeOrderPageReqVO extends PageParam {
     @Schema(description = "结束时间")
     private Long endTime;
 
+    @Schema(description = "日期")
+    private String date;
 }

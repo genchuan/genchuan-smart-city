@@ -47,9 +47,9 @@ public class ExchangeOrderServiceImpl implements ExchangeOrderService {
     @Override
     public void pay(Long id) {
         ExchangeOrderDO exchangeOrder = validateExists(id);
-        if (!WAITING.getValue().equals(exchangeOrder.getPayStatus())) {
-            throw exception(EXCHANGE_ORDER_STATUS_ERROR);
-        }
+//        if (!WAITING.getValue().equals(exchangeOrder.getPayStatus())) {
+//            throw exception(EXCHANGE_ORDER_STATUS_ERROR);
+//        }
         exchangeOrder.setPayStatus(PAID.getValue());
         exchangeOrder.setPayTime(LocalDateTime.now());
         exchangeOrderMapper.updateById(exchangeOrder);
@@ -58,9 +58,9 @@ public class ExchangeOrderServiceImpl implements ExchangeOrderService {
     @Override
     public void deliver(ExchangeOrderDeliverReqVO reqVO) {
         ExchangeOrderDO exchangeOrder = validateExists(reqVO.getId());
-        if (!PAID.getValue().equals(exchangeOrder.getPayStatus())) {
-            throw exception(EXCHANGE_ORDER_STATUS_ERROR);
-        }
+//        if (!PAID.getValue().equals(exchangeOrder.getPayStatus())) {
+//            throw exception(EXCHANGE_ORDER_STATUS_ERROR);
+//        }
         exchangeOrder.setPayStatus(COMPLETED.getValue());
         exchangeOrder.setShipTime(LocalDateTime.now());
         exchangeOrder.setLogisticsInfo(reqVO.getLogisticsInfo());
@@ -70,9 +70,9 @@ public class ExchangeOrderServiceImpl implements ExchangeOrderService {
     @Override
     public void cancel(Long id) {
         ExchangeOrderDO exchangeOrder = validateExists(id);
-        if (!WAITING.getValue().equals(exchangeOrder.getPayStatus())) {
-            throw exception(EXCHANGE_ORDER_STATUS_ERROR);
-        }
+//        if (!WAITING.getValue().equals(exchangeOrder.getPayStatus())) {
+//            throw exception(EXCHANGE_ORDER_STATUS_ERROR);
+//        }
         exchangeOrder.setPayStatus(CANCELLED.getValue());
         exchangeOrderMapper.updateById(exchangeOrder);
     }
