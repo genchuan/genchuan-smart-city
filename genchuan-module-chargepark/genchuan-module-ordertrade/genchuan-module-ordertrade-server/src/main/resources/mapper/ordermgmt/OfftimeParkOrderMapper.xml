@@ -15,6 +15,34 @@
         @author genchuan
     -->
 
+    <!-- 分页查询（LEFT JOIN station_info 获取场站名称） -->
+    <select id="selectPageJoinStation" resultType="cn.iocoder.yudao.module.ordertrade.dal.dataobject.ordermgmt.OfftimeParkOrderDO">
+        SELECT o.*,
+               s.name AS station_name
+        FROM offtime_park_order o
+        LEFT JOIN station_info s ON o.station_id = s.id AND s.deleted = 0
+        WHERE o.deleted = 0
+        <if test="req.orderNo != null and req.orderNo != ''">
+            AND o.order_no LIKE CONCAT('%', #{req.orderNo}, '%')
+        </if>
+        <if test="req.plateNo != null and req.plateNo != ''">
+            AND o.plate_no LIKE CONCAT('%', #{req.plateNo}, '%')
+        </if>
+        <if test="req.status != null and req.status != ''">
+            AND o.status = #{req.status}
+        </if>
+        <if test="req.stationId != null">
+            AND o.station_id = #{req.stationId}
+        </if>
+        <if test="req.createOrderTimeStart != null">
+            AND o.create_order_time &gt;= #{req.createOrderTimeStart}
+        </if>
+        <if test="req.createOrderTimeEnd != null">
+            AND o.create_order_time &lt;= #{req.createOrderTimeEnd}
+        </if>
+        ORDER BY o.id DESC
+    </select>
+
     <!-- 趋势统计（折线图）：按日期分组统计数量
     <select id="selectTrend" resultType="java.util.Map">
         SELECT DATE_FORMAT(create_time, '%Y-%m-%d') AS `date`, COUNT(*) AS `count`

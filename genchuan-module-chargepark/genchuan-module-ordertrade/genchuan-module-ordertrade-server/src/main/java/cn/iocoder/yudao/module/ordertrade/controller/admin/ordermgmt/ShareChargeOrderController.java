@@ -8,7 +8,6 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.ordermgmt.ShareChargeOrderDO;
-import cn.iocoder.yudao.module.ordertrade.rpc.stationresource.StationNameHelper;
 import cn.iocoder.yudao.module.ordertrade.service.ordermgmt.ShareChargeOrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -39,8 +38,6 @@ public class ShareChargeOrderController {
 
     @Resource
     private ShareChargeOrderService shareChargeOrderService;
-    @Resource
-    private StationNameHelper stationNameHelper;
 
     // ==================== ① 标准CRUD ====================
 
@@ -78,18 +75,14 @@ public class ShareChargeOrderController {
     @Parameter(name = "id", description = "主键", required = true, example = "1024")
     public CommonResult<ShareChargeOrderRespVO> getShareChargeOrder(@RequestParam("id") Long id) {
         ShareChargeOrderDO obj = shareChargeOrderService.getShareChargeOrder(id);
-        ShareChargeOrderRespVO vo = BeanUtils.toBean(obj, ShareChargeOrderRespVO.class);
-        stationNameHelper.fillStationName(vo, ShareChargeOrderRespVO::getStationId, ShareChargeOrderRespVO::setStationName);
-        return success(vo);
+        return success(BeanUtils.toBean(obj, ShareChargeOrderRespVO.class));
     }
 
     @GetMapping("/page")
     @Operation(summary = "获得共享充电订单分页列表")
     public CommonResult<PageResult<ShareChargeOrderRespVO>> getShareChargeOrderPage(@Valid ShareChargeOrderPageReqVO pageReqVO) {
         PageResult<ShareChargeOrderDO> pageResult = shareChargeOrderService.getShareChargeOrderPage(pageReqVO);
-        PageResult<ShareChargeOrderRespVO> voPage = BeanUtils.toBean(pageResult, ShareChargeOrderRespVO.class);
-        stationNameHelper.fillStationNames(voPage.getList(), ShareChargeOrderRespVO::getStationId, ShareChargeOrderRespVO::setStationName);
-        return success(voPage);
+        return success(BeanUtils.toBean(pageResult, ShareChargeOrderRespVO.class));
     }
 
     @GetMapping("/export")
@@ -99,9 +92,7 @@ public class ShareChargeOrderController {
                                  HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<ShareChargeOrderDO> list = shareChargeOrderService.getShareChargeOrderPage(pageReqVO).getList();
-        List<ShareChargeOrderRespVO> voList = BeanUtils.toBean(list, ShareChargeOrderRespVO.class);
-        stationNameHelper.fillStationNames(voList, ShareChargeOrderRespVO::getStationId, ShareChargeOrderRespVO::setStationName);
-        ExcelUtils.write(response, "共享充电订单.xls", "数据", ShareChargeOrderRespVO.class, voList);
+        ExcelUtils.write(response, "共享充电订单.xls", "数据", ShareChargeOrderRespVO.class, BeanUtils.toBean(list, ShareChargeOrderRespVO.class));
     }
 
     @GetMapping("/batch-export")
@@ -111,9 +102,7 @@ public class ShareChargeOrderController {
                                       HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<ShareChargeOrderDO> list = shareChargeOrderService.getShareChargeOrderPage(pageReqVO).getList();
-        List<ShareChargeOrderRespVO> voList = BeanUtils.toBean(list, ShareChargeOrderRespVO.class);
-        stationNameHelper.fillStationNames(voList, ShareChargeOrderRespVO::getStationId, ShareChargeOrderRespVO::setStationName);
-        ExcelUtils.write(response, "共享充电订单批量导出.xls", "数据", ShareChargeOrderRespVO.class, voList);
+        ExcelUtils.write(response, "共享充电订单批量导出.xls", "数据", ShareChargeOrderRespVO.class, BeanUtils.toBean(list, ShareChargeOrderRespVO.class));
     }
 
     // ==================== ② 业务操作接口 ====================

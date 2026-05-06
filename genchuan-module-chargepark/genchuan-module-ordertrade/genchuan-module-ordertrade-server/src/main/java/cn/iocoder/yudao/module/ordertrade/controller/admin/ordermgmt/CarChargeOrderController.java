@@ -8,7 +8,6 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.ordermgmt.CarChargeOrderDO;
-import cn.iocoder.yudao.module.ordertrade.rpc.stationresource.StationNameHelper;
 import cn.iocoder.yudao.module.ordertrade.service.ordermgmt.CarChargeOrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -39,8 +38,6 @@ public class CarChargeOrderController {
 
     @Resource
     private CarChargeOrderService carChargeOrderService;
-    @Resource
-    private StationNameHelper stationNameHelper;
 
     // ==================== ① 标准CRUD ====================
 
@@ -78,18 +75,14 @@ public class CarChargeOrderController {
     @Parameter(name = "id", description = "主键", required = true, example = "1024")
     public CommonResult<CarChargeOrderRespVO> getCarChargeOrder(@RequestParam("id") Long id) {
         CarChargeOrderDO obj = carChargeOrderService.getCarChargeOrder(id);
-        CarChargeOrderRespVO vo = BeanUtils.toBean(obj, CarChargeOrderRespVO.class);
-        stationNameHelper.fillStationName(vo, CarChargeOrderRespVO::getStationId, CarChargeOrderRespVO::setStationName);
-        return success(vo);
+        return success(BeanUtils.toBean(obj, CarChargeOrderRespVO.class));
     }
 
     @GetMapping("/page")
     @Operation(summary = "获得汽车充电订单分页列表")
     public CommonResult<PageResult<CarChargeOrderRespVO>> getCarChargeOrderPage(@Valid CarChargeOrderPageReqVO pageReqVO) {
         PageResult<CarChargeOrderDO> pageResult = carChargeOrderService.getCarChargeOrderPage(pageReqVO);
-        PageResult<CarChargeOrderRespVO> voPage = BeanUtils.toBean(pageResult, CarChargeOrderRespVO.class);
-        stationNameHelper.fillStationNames(voPage.getList(), CarChargeOrderRespVO::getStationId, CarChargeOrderRespVO::setStationName);
-        return success(voPage);
+        return success(BeanUtils.toBean(pageResult, CarChargeOrderRespVO.class));
     }
 
     @GetMapping("/export")
@@ -99,9 +92,7 @@ public class CarChargeOrderController {
                                  HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<CarChargeOrderDO> list = carChargeOrderService.getCarChargeOrderPage(pageReqVO).getList();
-        List<CarChargeOrderRespVO> voList = BeanUtils.toBean(list, CarChargeOrderRespVO.class);
-        stationNameHelper.fillStationNames(voList, CarChargeOrderRespVO::getStationId, CarChargeOrderRespVO::setStationName);
-        ExcelUtils.write(response, "汽车充电订单.xls", "数据", CarChargeOrderRespVO.class, voList);
+        ExcelUtils.write(response, "汽车充电订单.xls", "数据", CarChargeOrderRespVO.class, BeanUtils.toBean(list, CarChargeOrderRespVO.class));
     }
 
     @GetMapping("/batch-export")
@@ -111,9 +102,7 @@ public class CarChargeOrderController {
                                       HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<CarChargeOrderDO> list = carChargeOrderService.getCarChargeOrderPage(pageReqVO).getList();
-        List<CarChargeOrderRespVO> voList = BeanUtils.toBean(list, CarChargeOrderRespVO.class);
-        stationNameHelper.fillStationNames(voList, CarChargeOrderRespVO::getStationId, CarChargeOrderRespVO::setStationName);
-        ExcelUtils.write(response, "汽车充电订单批量导出.xls", "数据", CarChargeOrderRespVO.class, voList);
+        ExcelUtils.write(response, "汽车充电订单批量导出.xls", "数据", CarChargeOrderRespVO.class, BeanUtils.toBean(list, CarChargeOrderRespVO.class));
     }
 
     // ==================== ② 业务操作接口 ====================
