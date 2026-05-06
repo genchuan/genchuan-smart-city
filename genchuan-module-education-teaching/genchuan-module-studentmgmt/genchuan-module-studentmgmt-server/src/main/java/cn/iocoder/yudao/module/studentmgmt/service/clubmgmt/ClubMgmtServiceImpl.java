@@ -278,9 +278,9 @@ public class ClubMgmtServiceImpl implements ClubMgmtService {
         }
         // 更新状态为已建档，填充建档时间
         clubMgmtDO.setVenueApplyStatus(ClubVenueApplyStatusEnum.VENUE_APPLY_STATUS_1.getStatus());
-        clubMgmtDO.setClubName(reqVO.getVenueName());
         clubMgmtDO.setApplyTime(reqVO.getApplyTime());
         clubMgmtDO.setRemark(reqVO.getApplyReason());
+        clubMgmtDO.setReserve1(reqVO.getVenueName());
 
         int i = clubMgmtMapper.updateById(clubMgmtDO);
 

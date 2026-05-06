@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.stationresource.service.stationresource.rulecont
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.depositplan.vo.DepositPlanPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.depositplan.vo.DepositPlanRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.depositplan.vo.ops.DepositPlanChartRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.depositplan.vo.ops.DepositPlanCreateReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.depositplan.vo.ops.DepositPlanImportResp;
@@ -15,7 +16,7 @@ public interface DepositPlanService {
 
     DepositPlanDO getDepositPlan(Long id);
 
-    PageResult<DepositPlanDO> getDepositPlanPage(DepositPlanPageReqVO pageReqVO);
+    PageResult<DepositPlanRespVO> getDepositPlanPage(DepositPlanPageReqVO pageReqVO);
 
     void createDepositPlan(DepositPlanCreateReqVO reqVO);
 

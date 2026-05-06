@@ -113,8 +113,7 @@ public class TimePermissionController {
     @Operation(summary = "获得时段权限分页")
     @PreAuthorize("@ss.hasPermission('stationresource:time-permission:query')")
     public CommonResult<PageResult<TimePermissionRespVO>> getTimePermissionPage(@Valid TimePermissionPageReqVO pageReqVO) {
-        PageResult<TimePermissionDO> pageResult = timePermissionService.getTimePermissionPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, TimePermissionRespVO.class));
+        return success(timePermissionService.getTimePermissionPage(pageReqVO));
     }
 
     @GetMapping("/export")
@@ -127,7 +126,7 @@ public class TimePermissionController {
         String inputFileName = "时段权限_";
 
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<TimePermissionDO> list = timePermissionService.getTimePermissionPage(pageReqVO).getList();
+        List<TimePermissionRespVO> list = timePermissionService.getTimePermissionPage(pageReqVO).getList();
 
         // 1、强制设置响应头，确保浏览器触发下载
         response.setContentType("application/vnd.ms-excel;charset=UTF-8");
@@ -140,8 +139,7 @@ public class TimePermissionController {
         response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
 
         // 3、调用 ExcelUtils 导出
-        ExcelUtils.write(response, "时段权限.xls", "数据", TimePermissionRespVO.class,
-                BeanUtils.toBean(list, TimePermissionRespVO.class));
+        ExcelUtils.write(response, "时段权限.xls", "数据", TimePermissionRespVO.class, list);
     }
 
     //====================================================================================================

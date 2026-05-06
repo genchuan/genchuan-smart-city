@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.blackwhitelist.vo;
 
+import cn.idev.excel.annotation.ExcelIgnore;
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -45,8 +46,12 @@ public class BlackWhiteListRespVO {
     private LocalDateTime auditTime;
 
     @Schema(description = "[审核人] 关联芋道用户表 system_user", example = "7329")
-    @ExcelProperty("审核人")
+    @ExcelIgnore
     private Long auditUserId;
+
+    @Schema(description = "审核人名称")
+    @ExcelProperty("审核人")
+    private String auditUserName;
 
     @Schema(description = "[拦截次数] 黑名单车辆被拦截次数", example = "3994")
     @ExcelProperty("拦截次数")
@@ -61,11 +66,13 @@ public class BlackWhiteListRespVO {
     private String remark;
 
     @Schema(description = "[备用字段1] 预留扩展")
-    @ExcelProperty("备用字段1")
+//    @ExcelProperty("备用字段1")
+    @ExcelIgnore
     private String reserve1;
 
     @Schema(description = "[备用字段2] 预留扩展")
-    @ExcelProperty("备用字段2")
+//    @ExcelProperty("备用字段2")
+    @ExcelIgnore
     private String reserve2;
 
     @Schema(description = "[创建者] 创建人账号/姓名")

@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.ordermgmt.AbnormalOrderDO;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.ordermgmt.AbnormalOrderMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +38,12 @@ public class AbnormalOrderServiceImpl implements AbnormalOrderService {
     }
     @Override public void deleteAbnormalOrder(Long id) { validateExists(id); abnormalOrderMapper.deleteById(id); }
     @Override public void deleteAbnormalOrderListByIds(List<Long> ids) { abnormalOrderMapper.deleteByIds(ids); }
-    @Override public AbnormalOrderDO getAbnormalOrder(Long id) { return abnormalOrderMapper.selectById(id); }
-    @Override public PageResult<AbnormalOrderDO> getAbnormalOrderPage(AbnormalOrderPageReqVO v) { return abnormalOrderMapper.selectPage(v); }
+    @Override public AbnormalOrderDO getAbnormalOrder(Long id) { return abnormalOrderMapper.selectByIdJoinStation(id); }
+    @Override public PageResult<AbnormalOrderDO> getAbnormalOrderPage(AbnormalOrderPageReqVO v) {
+        Page<AbnormalOrderDO> page = new Page<>(v.getPageNo(), v.getPageSize());
+        var result = abnormalOrderMapper.selectPageJoinStation(page, v);
+        return new PageResult<>(result.getRecords(), result.getTotal());
+    }
         @Override
     public AbnormalOrderChartRespVO getAbnormalOrderChart(AbnormalOrderChartReqVO v) {
         AbnormalOrderChartRespVO resp = new AbnormalOrderChartRespVO();

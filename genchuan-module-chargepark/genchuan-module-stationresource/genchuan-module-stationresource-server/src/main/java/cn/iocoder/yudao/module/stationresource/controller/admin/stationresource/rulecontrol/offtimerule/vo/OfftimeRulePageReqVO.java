@@ -17,6 +17,9 @@ public class OfftimeRulePageReqVO extends PageParam {
     @Schema(description = "[所属场站] 关联场站信息表 station_info", example = "14476")
     private Long stationId;
 
+    @Schema(description = "场站名称")
+    private String stationName;
+
     @Schema(description = "[空闲时段] 错时优惠时段描述")
 //    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private String offTime;
@@ -33,6 +36,9 @@ public class OfftimeRulePageReqVO extends PageParam {
 
     @Schema(description = "[审核人] 关联芋道用户表 system_user", example = "30078")
     private Long auditUserId;
+
+    @Schema(description = "审核人名称")
+    private String auditUserName;
 
     @Schema(description = "[错时订单量] 使用该规则的订单数量", example = "17986")
     private Integer offOrderCount;

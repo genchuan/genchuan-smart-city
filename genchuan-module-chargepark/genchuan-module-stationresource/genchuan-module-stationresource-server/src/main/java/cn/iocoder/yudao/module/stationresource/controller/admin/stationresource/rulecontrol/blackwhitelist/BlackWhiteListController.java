@@ -113,8 +113,7 @@ public class BlackWhiteListController {
     @Operation(summary = "获得黑白名单分页")
     @PreAuthorize("@ss.hasPermission('stationresource:black-white-list:query')")
     public CommonResult<PageResult<BlackWhiteListRespVO>> getBlackWhiteListPage(@Valid BlackWhiteListPageReqVO pageReqVO) {
-        PageResult<BlackWhiteListDO> pageResult = blackWhiteListService.getListPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, BlackWhiteListRespVO.class));
+        return success(blackWhiteListService.getListPage(pageReqVO));
     }
 
     @GetMapping("/get")
@@ -135,7 +134,7 @@ public class BlackWhiteListController {
         String inputFileName = "黑白名单_";
 
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<BlackWhiteListDO> list = blackWhiteListService.getListPage(pageReqVO).getList();
+        List<BlackWhiteListRespVO> list = blackWhiteListService.getListPage(pageReqVO).getList();
 
         // 1、强制设置响应头，确保浏览器触发下载
         response.setContentType("application/vnd.ms-excel;charset=UTF-8");
@@ -148,7 +147,6 @@ public class BlackWhiteListController {
         response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
 
         // 3、调用 ExcelUtils 导出
-        ExcelUtils.write(response, "黑白名单.xls", "数据", BlackWhiteListRespVO.class,
-                BeanUtils.toBean(list, BlackWhiteListRespVO.class));
+        ExcelUtils.write(response, "黑白名单.xls", "数据", BlackWhiteListRespVO.class, list);
     }
 }

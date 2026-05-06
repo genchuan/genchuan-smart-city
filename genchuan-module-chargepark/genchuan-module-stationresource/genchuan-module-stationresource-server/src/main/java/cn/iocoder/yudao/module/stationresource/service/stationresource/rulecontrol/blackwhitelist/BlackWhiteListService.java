@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.stationresource.service.stationresource.rulecont
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.blackwhitelist.vo.BlackWhiteListPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.blackwhitelist.vo.BlackWhiteListRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.blackwhitelist.vo.ops.BlackWhiteListChartRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.blackwhitelist.vo.ops.BlackWhiteListCreateReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.blackwhitelist.vo.ops.BlackWhiteListImportResp;
@@ -54,5 +55,5 @@ public interface BlackWhiteListService {
     /**
      * 获得名单分页
      */
-    PageResult<BlackWhiteListDO> getListPage(BlackWhiteListPageReqVO pageReqVO);
+    PageResult<BlackWhiteListRespVO> getListPage(BlackWhiteListPageReqVO pageReqVO);
 }

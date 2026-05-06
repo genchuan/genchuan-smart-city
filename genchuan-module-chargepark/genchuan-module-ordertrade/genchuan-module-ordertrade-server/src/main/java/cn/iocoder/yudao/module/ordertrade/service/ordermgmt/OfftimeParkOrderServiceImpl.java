@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.ordertrade.dal.mysql.invoicemgmt.InvoiceListMappe
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.ordermgmt.OfftimeParkOrderMapper;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.refundmgmt.RefundApplyMapper;
 import cn.iocoder.yudao.module.ordertrade.framework.tool.OrderUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,8 +46,12 @@ public class OfftimeParkOrderServiceImpl implements OfftimeParkOrderService {
     }
     @Override public void deleteOfftimeParkOrder(Long id) { validateExists(id); offtimeParkOrderMapper.deleteById(id); }
     @Override public void deleteOfftimeParkOrderListByIds(List<Long> ids) { offtimeParkOrderMapper.deleteByIds(ids); }
-    @Override public OfftimeParkOrderDO getOfftimeParkOrder(Long id) { return offtimeParkOrderMapper.selectById(id); }
-    @Override public PageResult<OfftimeParkOrderDO> getOfftimeParkOrderPage(OfftimeParkOrderPageReqVO v) { return offtimeParkOrderMapper.selectPage(v); }
+    @Override public OfftimeParkOrderDO getOfftimeParkOrder(Long id) { return offtimeParkOrderMapper.selectByIdJoinStation(id); }
+    @Override public PageResult<OfftimeParkOrderDO> getOfftimeParkOrderPage(OfftimeParkOrderPageReqVO v) {
+        Page<OfftimeParkOrderDO> page = new Page<>(v.getPageNo(), v.getPageSize());
+        var result = offtimeParkOrderMapper.selectPageJoinStation(page, v);
+        return new PageResult<>(result.getRecords(), result.getTotal());
+    }
         @Override
     public OfftimeParkOrderChartRespVO getOfftimeParkOrderChart(OfftimeParkOrderChartReqVO v) {
         OfftimeParkOrderChartRespVO resp = new OfftimeParkOrderChartRespVO();

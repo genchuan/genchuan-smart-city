@@ -1,11 +1,10 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.groupclient.groupcar;
 
-import cn.iocoder.yudao.module.usermerchant.controller.admin.groupclient.groupinfo.vo.GroupInfoImportExcelVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.usercar.vo.UserCarApproveReqVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.usercar.vo.UserCarRebindReqVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.usercar.vo.UserCarRejectReqVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.usercar.vo.UserCarUnbindReqVO;
+import cn.hutool.core.util.StrUtil;
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.ChartHelper;
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import io.swagger.v3.oas.annotations.Parameters;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -16,8 +15,13 @@ import io.swagger.v3.oas.annotations.Operation;
 
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -40,6 +44,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/usermerchant/group-car")
 @Validated
 public class GroupCarController {
+
+    @Autowired
+    private ChartHelper chartHelper;
 
     @Resource
     private GroupCarService groupCarService;
@@ -137,6 +144,75 @@ public class GroupCarController {
     public CommonResult<Boolean> updateGroupCar(@Valid @RequestBody GroupCarUpdateReqVO updateReqVO) {
         groupCarService.updateGroupCar(updateReqVO);
         return success(true);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "集团车辆统计")
+    @PreAuthorize("@ss.hasPermission('usermerchant:group-car:query')")
+    public CommonResult<GroupCarChartRespVO> getChart(@RequestParam(required = false) String timeRange) {
+        // 1. 解析时间范围
+        TimeRangeParser.TimeRangeParsed parsed;
+        if (StrUtil.isBlank(timeRange)) {
+            parsed = new TimeRangeParser.TimeRangeParsed(null, null, "day");
+        } else {
+            parsed = TimeRangeParser.parse(timeRange);
+            if (parsed == null) {
+                parsed = new TimeRangeParser.TimeRangeParsed(null, null, "day");
+            }
+        }
+        LocalDateTime start = parsed.getStart();
+        LocalDateTime end = parsed.getEnd();
+
+        // 2. 柱状图：按 car_type 分组统计所有车辆（不分状态）
+        ChartHelper.ChartQuery barQuery = ChartHelper.ChartQuery.builder()
+                .tableName("group_car")
+                .groupField("car_type")
+                .extraWhere("deleted = 0")
+                .dateField("create_time")
+                .start(start)
+                .end(end)
+                .build();
+        List<ChartHelper.ChartDataVO> barData = chartHelper.queryPieOrBar(barQuery);
+        List<GroupCarChartRespVO.CarTypeDistributionVO> distribution = barData.stream()
+                .map(d -> {
+                    GroupCarChartRespVO.CarTypeDistributionVO vo = new GroupCarChartRespVO.CarTypeDistributionVO();
+                    vo.setType(d.getName());
+                    vo.setCount(d.getValue().intValue());
+                    return vo;
+                }).collect(Collectors.toList());
+
+        // 3. 绑定车辆数：只统计 status = '已绑定' 的车辆
+        ChartHelper.ChartQuery bindCountQuery = ChartHelper.ChartQuery.builder()
+                .tableName("group_car")
+                .extraWhere("deleted = 0 AND status = '已绑定'")
+                .dateField("create_time")
+                .start(start)
+                .end(end)
+                .build();
+        long bindCarCount = chartHelper.queryTotalCount(bindCountQuery);
+
+        // 4. 审核通过率：分子 = 已绑定数，分母 = 待绑定 + 已绑定（排除已解绑）
+        String numeratorSql = "SELECT COUNT(*) FROM group_car WHERE deleted = 0 AND status = '已绑定'";
+        String denominatorSql = "SELECT COUNT(*) FROM group_car WHERE deleted = 0 AND status IN ('待绑定', '已绑定')";
+        // 添加时间范围条件
+        if (start != null) {
+            String startStr = start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            numeratorSql += " AND create_time >= '" + startStr + "'";
+            denominatorSql += " AND create_time >= '" + startStr + "'";
+        }
+        if (end != null) {
+            String endStr = end.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            numeratorSql += " AND create_time <= '" + endStr + "'";
+            denominatorSql += " AND create_time <= '" + endStr + "'";
+        }
+        BigDecimal auditPassRate = chartHelper.queryRate(numeratorSql, denominatorSql);
+
+        // 5. 组装响应
+        GroupCarChartRespVO respVO = new GroupCarChartRespVO();
+        respVO.setCarTypeDistribution(distribution);
+        respVO.setBindCarCount((int) bindCarCount);
+        respVO.setAuditPassRate(auditPassRate);
+        return CommonResult.success(respVO);
     }
 //————————————————————
 

@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.timepermission.vo.TimePermissionPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.timepermission.vo.TimePermissionRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.timepermission.vo.TimePermissionSaveReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.timepermission.vo.ops.ImportRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.timepermission.vo.ops.TimePermissionCreateReqVO;
@@ -15,6 +16,7 @@ import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.ru
 import cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.rulecontrol.timepermission.TimePermissionMapper;
 import cn.iocoder.yudao.module.stationresource.vrv.utils.common.excel.VrvExcelUtils;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -232,8 +234,10 @@ public class TimePermissionServiceImpl implements TimePermissionService {
     }
 
     @Override
-    public PageResult<TimePermissionDO> getTimePermissionPage(TimePermissionPageReqVO pageReqVO) {
-        return timePermissionMapper.selectPage(pageReqVO);
+    public PageResult<TimePermissionRespVO> getTimePermissionPage(TimePermissionPageReqVO pageReqVO) {
+        Page<TimePermissionRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        Page<TimePermissionRespVO> resultPage = timePermissionMapper.getPage(page, pageReqVO);
+        return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
     }
 
     // ==================== 【新增 + 唯一性校验】 ====================

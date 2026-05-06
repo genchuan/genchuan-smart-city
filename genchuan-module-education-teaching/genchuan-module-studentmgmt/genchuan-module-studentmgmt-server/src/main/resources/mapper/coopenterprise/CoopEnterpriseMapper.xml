@@ -9,4 +9,88 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="selectTotalCount"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.coopenterprise.vo.CoopEnterpriseChartRespVO">
+        SELECT
+            COUNT(1) AS totalEnterprise,
+            SUM(IF(status = #{pending}, 1, 0)) AS cooperatingEnterprise,
+            SUM(IF(status = #{ended}, 1, 0)) AS finishedEnterprise
+        FROM coop_enterprise
+        WHERE deleted = 0
+        <if test="deptId != null">
+             AND dept_id = #{deptId}
+        </if>
+        <if test="startTime != null">
+            AND coop_start_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND coop_end_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+
+    </select>
+    <select id="selectDeptCoopCountList" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+            dept_id AS deptId,
+            COUNT(1) AS coopCount
+        FROM coop_enterprise
+        WHERE deleted = 0
+        <if test="deptId != null">
+            AND dept_id = #{deptId}
+        </if>
+        <if test="startTime != null">
+            AND coop_start_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND coop_end_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+        GROUP BY dept_id
+    </select>
+    <select id="selectCoopTrendList"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.ChartTrendVO">
+        SELECT
+        DATE_FORMAT(coop_start_time, '%Y-%m-%d') AS date,
+        COUNT(1) AS count
+        FROM coop_enterprise
+        WHERE deleted = 0
+        <if test="deptId != null">
+            AND dept_id = #{deptId}
+        </if>
+        <if test="startTime != null">
+            AND coop_start_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND coop_end_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+        GROUP BY date
+        ORDER BY date
+    </select>
+    <select id="selectTypeListList" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        enterprise_type AS type,
+        COUNT(1) AS coopCount
+        FROM coop_enterprise
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND coop_start_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND coop_end_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+        GROUP BY enterprise_type
+    </select>
+    <select id="selectDistributionList" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        dept_id AS deptId,
+        COUNT(1) AS coopCount
+        FROM coop_enterprise
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND coop_start_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND coop_end_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+        GROUP BY dept_id
+    </select>
+
 </mapper>

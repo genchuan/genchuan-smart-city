@@ -8,7 +8,6 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.ordermgmt.TempParkOrderDO;
-import cn.iocoder.yudao.module.ordertrade.rpc.stationresource.StationNameHelper;
 import cn.iocoder.yudao.module.ordertrade.service.ordermgmt.TempParkOrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -39,8 +38,6 @@ public class TempParkOrderController {
 
     @Resource
     private TempParkOrderService tempParkOrderService;
-    @Resource
-    private StationNameHelper stationNameHelper;
 
     // ==================== ① 标准CRUD ====================
 /*
@@ -80,18 +77,14 @@ public class TempParkOrderController {
     @Parameter(name = "id", description = "主键", required = true, example = "1024")
     public CommonResult<TempParkOrderRespVO> getTempParkOrder(@RequestParam("id") Long id) {
         TempParkOrderDO obj = tempParkOrderService.getTempParkOrder(id);
-        TempParkOrderRespVO vo = BeanUtils.toBean(obj, TempParkOrderRespVO.class);
-        stationNameHelper.fillStationName(vo, TempParkOrderRespVO::getStationId, TempParkOrderRespVO::setStationName);
-        return success(vo);
+        return success(BeanUtils.toBean(obj, TempParkOrderRespVO.class));
     }
 
     @GetMapping("/page")
     @Operation(summary = "获得临时停车订单分页列表")
     public CommonResult<PageResult<TempParkOrderRespVO>> getTempParkOrderPage(@Valid TempParkOrderPageReqVO pageReqVO) {
         PageResult<TempParkOrderDO> pageResult = tempParkOrderService.getTempParkOrderPage(pageReqVO);
-        PageResult<TempParkOrderRespVO> voPage = BeanUtils.toBean(pageResult, TempParkOrderRespVO.class);
-        stationNameHelper.fillStationNames(voPage.getList(), TempParkOrderRespVO::getStationId, TempParkOrderRespVO::setStationName);
-        return success(voPage);
+        return success(BeanUtils.toBean(pageResult, TempParkOrderRespVO.class));
     }
 
     @GetMapping("/export")
@@ -101,9 +94,7 @@ public class TempParkOrderController {
                                  HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<TempParkOrderDO> list = tempParkOrderService.getTempParkOrderPage(pageReqVO).getList();
-        List<TempParkOrderRespVO> voList = BeanUtils.toBean(list, TempParkOrderRespVO.class);
-        stationNameHelper.fillStationNames(voList, TempParkOrderRespVO::getStationId, TempParkOrderRespVO::setStationName);
-        ExcelUtils.write(response, "临时停车订单.xls", "数据", TempParkOrderRespVO.class, voList);
+        ExcelUtils.write(response, "临时停车订单.xls", "数据", TempParkOrderRespVO.class, BeanUtils.toBean(list, TempParkOrderRespVO.class));
     }
 
     @GetMapping("/batch-export")
@@ -113,9 +104,7 @@ public class TempParkOrderController {
                                       HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<TempParkOrderDO> list = tempParkOrderService.getTempParkOrderPage(pageReqVO).getList();
-        List<TempParkOrderRespVO> voList = BeanUtils.toBean(list, TempParkOrderRespVO.class);
-        stationNameHelper.fillStationNames(voList, TempParkOrderRespVO::getStationId, TempParkOrderRespVO::setStationName);
-        ExcelUtils.write(response, "临时停车订单批量导出.xls", "数据", TempParkOrderRespVO.class, voList);
+        ExcelUtils.write(response, "临时停车订单批量导出.xls", "数据", TempParkOrderRespVO.class, BeanUtils.toBean(list, TempParkOrderRespVO.class));
     }
 
     // ==================== ② 业务操作接口 ====================

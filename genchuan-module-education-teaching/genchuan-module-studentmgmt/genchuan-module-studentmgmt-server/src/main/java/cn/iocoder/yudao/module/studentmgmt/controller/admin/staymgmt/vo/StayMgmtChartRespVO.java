@@ -24,7 +24,5 @@ public class StayMgmtChartRespVO {
     private List<JSONObject> weekendTrend;
     @Schema(description = "留宿申请状态分布数据")
     private List<JSONObject> statusDistribution;
-    @Schema(description = "留宿类型分布数据")
-    private List<JSONObject> typeDistribution;
 
 }

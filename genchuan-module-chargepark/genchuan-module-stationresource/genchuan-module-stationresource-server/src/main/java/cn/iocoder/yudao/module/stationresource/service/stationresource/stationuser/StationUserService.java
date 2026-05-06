@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.stationresource.service.stationresource.stationu
 import java.util.*;
 
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationuser.vo.StationUserPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationuser.vo.StationUserRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationuser.vo.StationUserSaveReqVO;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.stationuser.StationUserDO;
 import jakarta.validation.*;
@@ -59,6 +60,6 @@ public interface StationUserService {
      * @param pageReqVO 分页查询
      * @return 站点用户分页
      */
-    PageResult<StationUserDO> getStationUserPage(StationUserPageReqVO pageReqVO);
+    PageResult<StationUserRespVO> getStationUserPage(StationUserPageReqVO pageReqVO);
 
 }

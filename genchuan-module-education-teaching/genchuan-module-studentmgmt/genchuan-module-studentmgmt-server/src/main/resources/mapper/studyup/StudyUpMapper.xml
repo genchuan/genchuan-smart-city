@@ -9,4 +9,61 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="selectByStudentId"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.studyup.vo.StudyUpQueryRespVO">
+        SELECT
+        id, student_id AS studentId, school_name AS schoolName, school_type AS schoolType, major, plan_content AS planContent,
+        plan_time AS planTime, record_time AS recordTime, status, remark
+        FROM study_up
+        WHERE student_id = #{studentId}
+    </select>
+    <select id="selectTotalCount"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.studyup.vo.StudyUpChartRespVO">
+        SELECT
+        COUNT(id) AS totalCount,
+        COUNT(IF(status = #{pending_plan}, 1, NULL)) AS waitPlanStudent,
+        COUNT(IF(status = #{planned}, 1, NULL)) AS plannedStudent
+        FROM study_up
+        WHERE deleted =0
+        <if test="startTime != null">
+            AND plan_time between #{startTime} AND #{endTime}
+        </if>
+    </select>
+
+    <select id="selectSchoolTopCount" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT school_name, COUNT(school_name) AS count FROM `study_up`
+        WHERE deleted =0
+        <if test="startTime != null">
+            AND plan_time between #{startTime} AND #{endTime}
+        </if>
+        GROUP BY school_name
+        ORDER BY COUNT(school_name) DESC
+        LIMIT 0, 10
+
+    </select>
+    <select id="selectIntentionDistributionList"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.ChartCountVO">
+        SELECT
+        major AS name,
+        COUNT(school_type) AS value
+        FROM study_up
+        WHERE deleted =0
+        <if test="startTime != null">
+            AND plan_time between #{startTime} AND #{endTime}
+        </if>
+        GROUP BY major
+
+    </select>
+    <select id="selectSchoolTypeDistributionList"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.ChartCountVO">
+        SELECT
+        school_type AS name,
+        COUNT(school_type) AS value
+        FROM study_up
+        WHERE deleted =0
+        <if test="startTime != null">
+            AND plan_time between #{startTime} AND #{endTime}
+        </if>
+        GROUP BY school_type
+    </select>
 </mapper>

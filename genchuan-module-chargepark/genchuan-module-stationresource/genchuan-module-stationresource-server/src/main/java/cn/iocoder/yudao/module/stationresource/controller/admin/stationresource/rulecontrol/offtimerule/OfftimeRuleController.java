@@ -106,8 +106,7 @@ public class OfftimeRuleController {
     @Operation(summary = "获得错时规则分页")
     @PreAuthorize("@ss.hasPermission('stationresource:offtime-rule:query')")
     public CommonResult<PageResult<OfftimeRuleRespVO>> getOfftimeRulePage(@Valid OfftimeRulePageReqVO pageReqVO) {
-        PageResult<OfftimeRuleDO> pageResult = offtimeRuleService.getOfftimeRulePage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, OfftimeRuleRespVO.class));
+        return success(offtimeRuleService.getOfftimeRulePage(pageReqVO));
     }
 
     @GetMapping("/get")
@@ -129,7 +128,7 @@ public class OfftimeRuleController {
         String inputFileName = "错时规则_";
 
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<OfftimeRuleDO> list = offtimeRuleService.getOfftimeRulePage(pageReqVO).getList();
+        List<OfftimeRuleRespVO> list = offtimeRuleService.getOfftimeRulePage(pageReqVO).getList();
 
         // 1、强制设置响应头，确保浏览器触发下载
         response.setContentType("application/vnd.ms-excel;charset=UTF-8");
@@ -142,8 +141,7 @@ public class OfftimeRuleController {
         response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
 
         // 3、调用 ExcelUtils 导出
-        ExcelUtils.write(response, "错时规则.xls", "数据", OfftimeRuleRespVO.class,
-                BeanUtils.toBean(list, OfftimeRuleRespVO.class));
+        ExcelUtils.write(response, "错时规则.xls", "数据", OfftimeRuleRespVO.class, list);
     }
 
 }

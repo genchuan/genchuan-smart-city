@@ -1,33 +1,30 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.studyup;
 
-import org.springframework.web.bind.annotation.*;
-import jakarta.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.security.access.prepost.PreAuthorize;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Operation;
-
-import jakarta.validation.constraints.*;
-import jakarta.validation.*;
-import jakarta.servlet.http.*;
-import java.util.*;
-import java.io.IOException;
-
+import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
-
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-
-import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
-import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
-
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.BaseChartReqVO;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.studyup.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studyup.StudyUpDO;
 import cn.iocoder.yudao.module.studentmgmt.service.studyup.StudyUpService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.List;
+
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 @Tag(name = "学生管理后台 - 升学管理")
 @RestController
@@ -65,7 +62,7 @@ public class StudyUpController {
     @DeleteMapping("/delete-list")
     @Parameter(name = "ids", description = "编号", required = true)
     @Operation(summary = "批量删除升学管理")
-                @PreAuthorize("@ss.hasPermission('studentmgmt:study-up:delete')")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:study-up:delete')")
     public CommonResult<Boolean> deleteStudyUpList(@RequestParam("ids") List<Long> ids) {
         studyUpService.deleteStudyUpListByIds(ids);
         return success(true);
@@ -93,12 +90,53 @@ public class StudyUpController {
     @PreAuthorize("@ss.hasPermission('studentmgmt:study-up:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportStudyUpExcel(@Valid StudyUpPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                   HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<StudyUpDO> list = studyUpService.getStudyUpPage(pageReqVO).getList();
         // 导出 Excel
         ExcelUtils.write(response, "升学管理.xls", "数据", StudyUpRespVO.class,
-                        BeanUtils.toBean(list, StudyUpRespVO.class));
+                BeanUtils.toBean(list, StudyUpRespVO.class));
     }
 
+    @GetMapping("/query")
+    @Operation(summary = "查询")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:study-up:query')")
+    public CommonResult<StudyUpQueryRespVO> query(@Valid @RequestBody StudyUpQueryReqVO reqVO) {
+        return success(studyUpService.query(reqVO));
+    }
+
+    @PutMapping("/select")
+    @Operation(summary = "选择")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:study-up:select')")
+    public CommonResult<Boolean> select(@Valid @RequestBody StudyUpSelectReqVO reqVO) {
+        return success(studyUpService.select(reqVO));
+    }
+
+    @PutMapping("/plan")
+    @Operation(summary = "规划")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:study-up:plan')")
+    public CommonResult<Boolean> plan(@Valid @RequestBody StudyUpPlanReqVO reqVO) {
+        return success(studyUpService.plan(reqVO));
+    }
+
+    @PutMapping("/record")
+    @Operation(summary = "记录")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:study-up:record')")
+    public CommonResult<Boolean> record(@Valid @RequestBody StudyUpRecordReqVO reqVO) {
+        return success(studyUpService.record(reqVO));
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "学生升学统计看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:study-up:chart')")
+    public CommonResult<StudyUpChartRespVO> chart(@Valid BaseChartReqVO reqVO) {
+        return success(studyUpService.chart(reqVO));
+    }
+
+    @GetMapping("/chart/studyCount")
+    @Operation(summary = "升学意向 / 院校选择统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:study-up:query')")
+    public CommonResult<StudyUpStudyCountRespVO> studyCount(@Valid BaseChartReqVO reqVO) {
+        return success(studyUpService.studyCount(reqVO));
+    }
 }

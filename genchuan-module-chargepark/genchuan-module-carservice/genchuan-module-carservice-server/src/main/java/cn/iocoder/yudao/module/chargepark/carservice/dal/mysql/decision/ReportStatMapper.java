@@ -37,10 +37,10 @@ public interface ReportStatMapper {
     List<Map<String, Object>> reserveListDailyCount(@Param("since") LocalDateTime since,
                                                     @Param("end") LocalDateTime end);
 
-    @Select("<script>SELECT DATE(create_time) AS day, COUNT(*) AS cnt FROM space_push " +
-            "WHERE create_time &gt;= #{since} " +
-            "<if test='end != null'>AND create_time &lt;= #{end}</if> " +
-            "GROUP BY DATE(create_time) ORDER BY day</script>")
+    @Select("<script>SELECT DATE(push_time) AS day, COUNT(*) AS cnt FROM space_push " +
+            "WHERE push_time IS NOT NULL AND push_time &gt;= #{since} " +
+            "<if test='end != null'>AND push_time &lt;= #{end}</if> " +
+            "GROUP BY DATE(push_time) ORDER BY day</script>")
     List<Map<String, Object>> spacePushDailyCount(@Param("since") LocalDateTime since,
                                                   @Param("end") LocalDateTime end);
 

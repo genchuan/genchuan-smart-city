@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.dormassign.DormAssignDO;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.dormassign.vo.*;
 
@@ -34,4 +35,9 @@ public interface DormAssignMapper extends BaseMapperX<DormAssignDO> {
                 .orderByDesc(DormAssignDO::getId));
     }
 
+    DormAssignChartRespVO selectTotalCount(Integer year);
+
+    List<JSONObject> selectBuildingAssignCountList(Integer year);
+
+    DormAssignIndexRespVO selectIndexCount(Integer year);
 }

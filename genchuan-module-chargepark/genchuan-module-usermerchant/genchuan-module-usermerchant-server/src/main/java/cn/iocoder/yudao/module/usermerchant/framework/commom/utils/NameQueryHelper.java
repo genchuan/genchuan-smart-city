@@ -56,6 +56,15 @@ public class NameQueryHelper {
         NameQueryHelper.jdbcTemplate = jdbcTemplate;
     }
 
+    /**
+     * 根据名称查询对应的 ID（单条）
+     *
+     * @param tableName  表名（需安全）
+     * @param nameField  名称字段名
+     * @param nameValue  名称值
+     * @param idField    ID 字段名
+     * @return 对应的 ID，未找到返回 null
+     */
     private static Long getIdByName(String tableName, String nameField, String nameValue, String idField) {
         if (isBlank(tableName) || isBlank(nameField) || isBlank(nameValue) || isBlank(idField)) {
             return null;
@@ -70,6 +79,15 @@ public class NameQueryHelper {
         }
     }
 
+    /**
+     * 根据 ID 查询名称（单条）
+     *
+     * @param tableName  表名（需安全）
+     * @param idField    ID 字段名
+     * @param id         ID 值
+     * @param nameField  名称字段名
+     * @return 名称，未找到返回 null
+     */
     @Nullable
     public static String getNamesById(String tableName, String idField, Long id, String nameField) {
         if (isBlank(tableName) || isBlank(idField) || id == null || isBlank(nameField)) {
@@ -85,6 +103,15 @@ public class NameQueryHelper {
         }
     }
 
+    /**
+     * 批量根据 ID 查询名称（返回 Map<ID, 名称>）
+     *
+     * @param tableName  表名（需安全）
+     * @param idField    ID 字段名
+     * @param ids        ID 集合
+     * @param nameField  名称字段名
+     * @return ID -> 名称 的映射，不存在的 ID 不会出现在 Map 中
+     */
     public static Map<Long, String> getNamesByIds(String tableName, String idField, Collection<Long> ids, String nameField) {
         if (CollUtil.isEmpty(ids) || isBlank(tableName) || isBlank(idField) || isBlank(nameField)) {
             return Collections.emptyMap();
@@ -107,6 +134,18 @@ public class NameQueryHelper {
         }
     }
 
+    /**
+     * 通用方法：根据名称查询ID，然后执行分页查询，并将名称填充到结果列表中
+     *
+     * @param nameTable           名称所在的表名
+     * @param nameField           名称字段名
+     * @param nameValue           名称值
+     * @param idField             名称表的ID字段名
+     * @param pageQueryExecutor   分页查询执行器，接收ID，返回 PageResult<T>
+     * @param nameSetter          名称设置器，接收 (结果对象, 名称值) 并设置到对象中
+     * @param <T>                 结果对象类型
+     * @return 分页结果（若名称不存在，返回空分页）
+     */
     public static <T> PageResult<T> queryPageByName(String nameTable, String nameField, String nameValue,
                                                     String idField,
                                                     Function<Long, PageResult<T>> pageQueryExecutor,
