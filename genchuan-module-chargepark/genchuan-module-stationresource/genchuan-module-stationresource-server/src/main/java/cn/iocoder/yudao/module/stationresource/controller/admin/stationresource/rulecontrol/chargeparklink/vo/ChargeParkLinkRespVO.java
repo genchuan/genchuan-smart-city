@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.chargeparklink.vo;
 
+import cn.idev.excel.annotation.ExcelIgnore;
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,8 +19,12 @@ public class ChargeParkLinkRespVO {
     private Long id;
 
     @Schema(description = "[所属场站] 关联场站信息表 station_info", requiredMode = Schema.RequiredMode.REQUIRED, example = "6922")
-    @ExcelProperty("所属场站")
+    @ExcelIgnore
     private Long stationId;
+
+    @Schema(description = "场站名称")
+    @ExcelProperty("所属场站")
+    private String stationName;
 
     @Schema(description = "[优惠类型] 如：停车减免/充电减免/费用合并", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
     @ExcelProperty("优惠类型")
@@ -42,8 +47,12 @@ public class ChargeParkLinkRespVO {
     private LocalDateTime auditTime;
 
     @Schema(description = "[审核人] 关联芋道用户表 system_user", example = "23331")
-    @ExcelProperty("审核人")
+    @ExcelIgnore
     private Long auditUserId;
+
+    @Schema(description = "审核人名称")
+    @ExcelProperty("审核人")
+    private String auditUserName;
 
     @Schema(description = "[今日订单量] 当日订单数量", example = "7681")
     @ExcelProperty("今日订单量")
@@ -62,11 +71,13 @@ public class ChargeParkLinkRespVO {
     private String remark;
 
     @Schema(description = "[备用字段1] 预留扩展")
-    @ExcelProperty("备用字段1")
+//    @ExcelProperty("备用字段1")
+    @ExcelIgnore
     private String reserve1;
 
     @Schema(description = "[备用字段2] 预留扩展")
-    @ExcelProperty("备用字段2")
+//    @ExcelProperty("备用字段2")
+    @ExcelIgnore
     private String reserve2;
 
     @Schema(description = "[创建者] 创建人账号/姓名")

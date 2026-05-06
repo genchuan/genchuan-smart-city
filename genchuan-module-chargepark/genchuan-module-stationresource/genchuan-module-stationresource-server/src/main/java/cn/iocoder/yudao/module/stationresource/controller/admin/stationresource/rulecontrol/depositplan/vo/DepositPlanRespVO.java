@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.depositplan.vo;
 
+import cn.idev.excel.annotation.ExcelIgnore;
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,8 +19,12 @@ public class DepositPlanRespVO {
     private Long id;
 
     @Schema(description = "[所属场站] 关联场站信息表 station_info", requiredMode = Schema.RequiredMode.REQUIRED, example = "652")
-    @ExcelProperty("所属场站")
+    @ExcelIgnore
     private Long stationId;
+
+    @Schema(description = "场站名称")
+    @ExcelProperty("所属场站")
+    private String stationName;
 
     @Schema(description = "[押金金额] 单位：元", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("押金金额")
@@ -38,8 +43,12 @@ public class DepositPlanRespVO {
     private LocalDateTime auditTime;
 
     @Schema(description = "[审核人] 关联芋道用户表 system_user", example = "31342")
-    @ExcelProperty("审核人")
+    @ExcelIgnore
     private Long auditUserId;
+
+    @Schema(description = "审核人名称")
+    @ExcelProperty("审核人")
+    private String auditUserName;
 
     @Schema(description = "[押金订单量] 产生押金的订单总数", example = "29840")
     @ExcelProperty("押金订单量")
@@ -50,11 +59,13 @@ public class DepositPlanRespVO {
     private String remark;
 
     @Schema(description = "[备用字段1] 预留扩展")
-    @ExcelProperty("备用字段1")
+//    @ExcelProperty("备用字段1")
+    @ExcelIgnore
     private String reserve1;
 
     @Schema(description = "[备用字段2] 预留扩展")
-    @ExcelProperty("备用字段2")
+//    @ExcelProperty("备用字段2")
+    @ExcelIgnore
     private String reserve2;
 
     @Schema(description = "[创建者] 创建人账号/姓名")

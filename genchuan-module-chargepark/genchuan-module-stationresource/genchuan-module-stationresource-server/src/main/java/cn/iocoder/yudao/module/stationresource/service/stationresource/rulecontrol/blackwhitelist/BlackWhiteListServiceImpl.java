@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.blackwhitelist.vo.BlackWhiteListPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.blackwhitelist.vo.BlackWhiteListRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.blackwhitelist.vo.ops.BlackWhiteListChartRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.blackwhitelist.vo.ops.BlackWhiteListCreateReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.blackwhitelist.vo.ops.BlackWhiteListImportResp;
@@ -15,6 +16,7 @@ import cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.rulecon
 import cn.iocoder.yudao.module.stationresource.vrv.utils.common.excel.VrvExcelUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -216,7 +218,9 @@ public class BlackWhiteListServiceImpl implements BlackWhiteListService {
     }
 
     @Override
-    public PageResult<BlackWhiteListDO> getListPage(BlackWhiteListPageReqVO pageReqVO) {
-        return blackWhiteListMapper.selectPage(pageReqVO);
+    public PageResult<BlackWhiteListRespVO> getListPage(BlackWhiteListPageReqVO pageReqVO) {
+        Page<BlackWhiteListRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        Page<BlackWhiteListRespVO> resultPage = blackWhiteListMapper.getPage(page, pageReqVO);
+        return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
     }
 }

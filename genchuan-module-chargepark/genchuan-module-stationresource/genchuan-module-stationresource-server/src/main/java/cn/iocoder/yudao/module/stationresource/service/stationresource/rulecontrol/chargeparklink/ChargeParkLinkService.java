@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.stationresource.service.stationresource.rulecont
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.chargeparklink.vo.ChargeParkLinkPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.chargeparklink.vo.ChargeParkLinkRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.chargeparklink.vo.ChargeParkLinkSaveReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.chargeparklink.vo.ops.ChargeParkLinkChartRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.chargeparklink.vo.ops.ChargeParkLinkCreateReqVO;
@@ -80,6 +81,6 @@ public interface ChargeParkLinkService {
      * @param pageReqVO 分页查询
      * @return 充停联动分页
      */
-    PageResult<ChargeParkLinkDO> getChargeParkLinkPage(ChargeParkLinkPageReqVO pageReqVO);
+    PageResult<ChargeParkLinkRespVO> getChargeParkLinkPage(ChargeParkLinkPageReqVO pageReqVO);
 
 }

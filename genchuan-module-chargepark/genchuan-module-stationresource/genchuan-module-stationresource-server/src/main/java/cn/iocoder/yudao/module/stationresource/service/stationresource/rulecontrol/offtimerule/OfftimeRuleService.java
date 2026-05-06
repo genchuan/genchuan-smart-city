@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.stationresource.service.stationresource.rulecont
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.offtimerule.vo.OfftimeRulePageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.offtimerule.vo.OfftimeRuleRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.offtimerule.vo.ops.OfftimeRuleChartRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.offtimerule.vo.ops.OfftimeRuleCreateReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.offtimerule.vo.ops.OfftimeRuleImportResp;
@@ -32,7 +33,7 @@ public interface OfftimeRuleService {
      * @param pageReqVO 分页查询
      * @return 错时规则分页
      */
-    PageResult<OfftimeRuleDO> getOfftimeRulePage(OfftimeRulePageReqVO pageReqVO);
+    PageResult<OfftimeRuleRespVO> getOfftimeRulePage(OfftimeRulePageReqVO pageReqVO);
 
     /**
      * 新增错时规则

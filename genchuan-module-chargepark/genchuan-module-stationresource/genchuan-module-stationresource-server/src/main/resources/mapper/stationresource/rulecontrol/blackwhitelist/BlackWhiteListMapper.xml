@@ -27,4 +27,66 @@
         WHERE deleted = 0
         GROUP BY type
     </select>
+    <select id="getPage" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.blackwhitelist.vo.BlackWhiteListRespVO">
+        SELECT t.*, u.nickname AS audit_user_name
+        FROM black_white_list t
+        LEFT JOIN station_user u ON t.audit_user_id = u.id
+        WHERE t.deleted = 0
+        <if test="pageReqVO.plateNo != null and pageReqVO.plateNo != ''">
+            AND t.plate_no LIKE CONCAT('%', #{pageReqVO.plateNo}, '%')
+        </if>
+        <if test="pageReqVO.type != null">
+            AND t.type = #{pageReqVO.type}
+        </if>
+        <if test="pageReqVO.subType != null">
+            AND t.sub_type = #{pageReqVO.subType}
+        </if>
+        <if test="pageReqVO.startTime != null and pageReqVO.startTime.size() == 2">
+            AND t.start_time BETWEEN #{pageReqVO.startTime[0]} AND #{pageReqVO.startTime[1]}
+        </if>
+        <if test="pageReqVO.endTime != null and pageReqVO.endTime.size() == 2">
+            AND t.end_time BETWEEN #{pageReqVO.endTime[0]} AND #{pageReqVO.endTime[1]}
+        </if>
+        <if test="pageReqVO.status != null and pageReqVO.status != ''">
+            AND t.status = #{pageReqVO.status}
+        </if>
+        <if test="pageReqVO.auditTime != null and pageReqVO.auditTime.size() == 2">
+            AND t.audit_time BETWEEN #{pageReqVO.auditTime[0]} AND #{pageReqVO.auditTime[1]}
+        </if>
+        <if test="pageReqVO.auditUserId != null">
+            AND t.audit_user_id = #{pageReqVO.auditUserId}
+        </if>
+        <if test="pageReqVO.auditUserName != null and pageReqVO.auditUserName != ''">
+            AND u.nickname LIKE CONCAT('%', #{pageReqVO.auditUserName}, '%')
+        </if>
+        <if test="pageReqVO.interceptCount != null">
+            AND t.intercept_count = #{pageReqVO.interceptCount}
+        </if>
+        <if test="pageReqVO.certInfo != null and pageReqVO.certInfo != ''">
+            AND t.cert_info = #{pageReqVO.certInfo}
+        </if>
+        <if test="pageReqVO.remark != null and pageReqVO.remark != ''">
+            AND t.remark = #{pageReqVO.remark}
+        </if>
+        <if test="pageReqVO.reserve1 != null and pageReqVO.reserve1 != ''">
+            AND t.reserve1 = #{pageReqVO.reserve1}
+        </if>
+        <if test="pageReqVO.reserve2 != null and pageReqVO.reserve2 != ''">
+            AND t.reserve2 = #{pageReqVO.reserve2}
+        </if>
+        <if test="pageReqVO.creator != null and pageReqVO.creator != ''">
+            AND t.creator = #{pageReqVO.creator}
+        </if>
+        <if test="pageReqVO.updater != null and pageReqVO.updater != ''">
+            AND t.updater = #{pageReqVO.updater}
+        </if>
+        <if test="pageReqVO.createTime != null and pageReqVO.createTime.size() == 2">
+            AND t.create_time BETWEEN #{pageReqVO.createTime[0]} AND #{pageReqVO.createTime[1]}
+        </if>
+        <if test="pageReqVO.updateTime != null and pageReqVO.updateTime.size() == 2">
+            AND t.update_time BETWEEN #{pageReqVO.updateTime[0]} AND #{pageReqVO.updateTime[1]}
+        </if>
+        ORDER BY t.id DESC
+    </select>
+
 </mapper>
