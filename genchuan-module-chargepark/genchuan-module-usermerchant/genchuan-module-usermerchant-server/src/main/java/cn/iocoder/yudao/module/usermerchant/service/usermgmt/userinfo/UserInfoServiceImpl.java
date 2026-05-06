@@ -148,7 +148,6 @@ public class UserInfoServiceImpl implements UserInfoService {
             }
         }
         //折线图渲染
-        // 折线图数据
         List<UserInfoChartRespVO.UserGrowthTrendVO> growthTrend = userInfoMapper.selectUserGrowthTrend(
                 parsed.getStart(), parsed.getEnd(), parsed.getGranularity());
         chartRespVO.setUserGrowthTrend(growthTrend);

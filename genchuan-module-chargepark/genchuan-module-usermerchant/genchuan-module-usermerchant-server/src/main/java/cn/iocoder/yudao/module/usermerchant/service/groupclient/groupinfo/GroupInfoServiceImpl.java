@@ -4,6 +4,8 @@ import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,9 @@ import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
 @Service
 @Validated
 public class GroupInfoServiceImpl implements GroupInfoService {
+
+    @Resource
+    private AdminUserApi adminUserApi;
 
     @Resource
     private GroupInfoMapper groupInfoMapper;
@@ -94,6 +99,7 @@ public class GroupInfoServiceImpl implements GroupInfoService {
             }
             // 如果手机号长度不足11位，原样返回或置空，可根据需求调整
         }
+
         return pageResult;
     }
 
