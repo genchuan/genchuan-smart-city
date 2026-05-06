@@ -34,8 +34,8 @@
         <if test="req.status != null and req.status != ''">
             AND o.status = #{req.status}
         </if>
-        <if test="req.stationId != null">
-            AND o.station_id = #{req.stationId}
+        <if test="req.stationName != null and req.stationName != ''">
+            AND s.name LIKE CONCAT('%', #{req.stationName}, '%')
         </if>
         <if test="req.createOrderTimeStart != null">
             AND o.create_order_time &gt;= #{req.createOrderTimeStart}

@@ -30,8 +30,8 @@ public class ShareChargeOrderPageReqVO extends PageParam {
     @ExcelProperty(value = "订单状态", converter = EnumExcelConverter.class)
     @EnumFormat(ChargeOrderStatusEnum.class)   // ← 指向枚举类
     private String status;
-    @Schema(description = "场站ID")
-    private Long stationId;
+    @Schema(description = "场站名称，模糊查询")
+    private String stationName;
     @Schema(description = "借出时间-开始，格式 yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime lendTimeStart;
