@@ -78,7 +78,9 @@ DELETE FROM `system_dict_data` WHERE `dict_type` IN (
                                                      'compare_mgmt_status',
                                                      'dorm_compare_cycle',
                                                      'dorm_compare_status',
-                                                     'communicate_mgmt_status'
+                                                     'communicate_mgmt_status',
+                                                     'parent_reply_status',
+                                                     'parent_reply_read_status'
 
     );
 
@@ -154,7 +156,9 @@ DELETE FROM `system_dict_type` WHERE `type` IN (
                                                 'compare_mgmt_status',
                                                 'dorm_compare_cycle',
                                                 'dorm_compare_status',
-                                                'communicate_mgmt_status'
+                                                'communicate_mgmt_status',
+                                                'parent_reply_status',
+                                                'parent_reply_read_status'
     );
 -- ==================== 一、字典类型 (system_dict_type) ====================
 
