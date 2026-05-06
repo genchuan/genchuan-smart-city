@@ -88,6 +88,84 @@ public class InspectUserServiceImpl implements InspectUserService {
         return inspectUserMapper.selectPage(pageReqVO);
     }
 
+    @Override
+    public PageResult<InspectUserRespVO> getInspectUserPageWithTaskCount(InspectUserPageReqVO pageReqVO) {
+        // 1. 获取基础分页数据
+        PageResult<InspectUserDO> pageResult = inspectUserMapper.selectPage(pageReqVO);
+
+        // 如果查询结果为空，返回空分页
+        if (CollUtil.isEmpty(pageResult.getList())) {
+            return new PageResult<>(Collections.emptyList(), pageResult.getTotal());
+        }
+
+        // 2. 获取所有人员ID
+        List<Long> userIds = convertList(pageResult.getList(), InspectUserDO::getId);
+
+        // 3. 批量查询任务数量
+        List<Map<String, Object>> taskCountList = inspectUserMapper.selectTaskCountByUserIds(userIds);
+
+        // 4. 将查询结果转换为Map<Long, Integer>格式
+        Map<Long, Integer> taskCountMap = new HashMap<>();
+        for (Map<String, Object> map : taskCountList) {
+            // 注意：数据库返回的数值类型可能是Long，需要正确处理
+            Long userId = null;
+            Integer taskCount = 0;
+
+            Object userIdObj = map.get("userId");
+            Object taskCountObj = map.get("taskCount");
+
+            if (userIdObj instanceof Number) {
+                userId = ((Number) userIdObj).longValue();
+            }
+
+            if (taskCountObj instanceof Number) {
+                taskCount = ((Number) taskCountObj).intValue();
+            }
+
+            if (userId != null) {
+                taskCountMap.put(userId, taskCount);
+            }
+        }
+
+        // 5. 转换DO为VO，并设置任务记录文本
+        List<InspectUserRespVO> voList = new ArrayList<>();
+        for (InspectUserDO inspectUser : pageResult.getList()) {
+            // 转换基础属性
+            InspectUserRespVO respVO = BeanUtils.toBean(inspectUser, InspectUserRespVO.class);
+
+            // 获取任务数量并设置文本
+            Integer taskCount = taskCountMap.get(inspectUser.getId());
+            if (taskCount == null) {
+                taskCount = 0;
+            }
+            respVO.setTaskRecordText(taskCount + "条任务记录");
+
+            voList.add(respVO);
+        }
+
+        // 6. 返回VO分页结果
+        return new PageResult<>(voList, pageResult.getTotal());
+    }
+
+    @Override
+    public InspectUserRespVO getInspectUserWithTaskCount(Long id) {
+        // 1. 获取巡检人员基本信息
+        InspectUserDO inspectUser = getInspectUser(id);
+        if (inspectUser == null) {
+            return null;
+        }
+        // 2. 转换为RespVO
+        InspectUserRespVO respVO = BeanUtils.toBean(inspectUser, InspectUserRespVO.class);
+        // 3. 查询关联任务数量
+        Integer taskCount = inspectUserMapper.selectTaskCountByUserId(id);
+        if (taskCount == null) {
+            taskCount = 0;
+        }
+        // 4. 拼接任务记录文本
+        respVO.setTaskRecordText(taskCount + "条任务记录");
+        return respVO;
+    }
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ImportRespVO importInspectUser(MultipartFile file, boolean updateSupport) {

@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.inspectop.controller.admin.inspectuser;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.iocoder.yudao.module.inspectop.dal.mysql.inspectuser.InspectUserMapper;
 import cn.iocoder.yudao.module.inspectop.framework.ImportRespVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
@@ -25,6 +27,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
+import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 
 import cn.iocoder.yudao.module.inspectop.controller.admin.inspectuser.vo.*;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.inspectuser.InspectUserDO;
@@ -73,21 +76,23 @@ public class InspectUserController {
         return success(true);
     }
 
+    @GetMapping("/page")
+    @Operation(summary = "获得巡检人员分页")
+    @PreAuthorize("@ss.hasPermission('inspectop:inspect-user:query')")
+    public CommonResult<PageResult<InspectUserRespVO>> getInspectUserPage(@Valid InspectUserPageReqVO pageReqVO) {
+        // 使用新的Service方法
+        PageResult<InspectUserRespVO> pageResult = inspectUserService.getInspectUserPageWithTaskCount(pageReqVO);
+        return success(pageResult);
+    }
+
     @GetMapping("/get")
     @Operation(summary = "获得巡检人员")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('inspectop:inspect-user:query')")
     public CommonResult<InspectUserRespVO> getInspectUser(@RequestParam("id") Long id) {
-        InspectUserDO inspectUser = inspectUserService.getInspectUser(id);
-        return success(BeanUtils.toBean(inspectUser, InspectUserRespVO.class));
-    }
-
-    @GetMapping("/page")
-    @Operation(summary = "获得巡检人员分页")
-    @PreAuthorize("@ss.hasPermission('inspectop:inspect-user:query')")
-    public CommonResult<PageResult<InspectUserRespVO>> getInspectUserPage(@Valid InspectUserPageReqVO pageReqVO) {
-        PageResult<InspectUserDO> pageResult = inspectUserService.getInspectUserPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, InspectUserRespVO.class));
+        // 调用新的Service方法
+        InspectUserRespVO inspectUserRespVO = inspectUserService.getInspectUserWithTaskCount(id);
+        return success(inspectUserRespVO);
     }
 
     @PostMapping("/import")
@@ -143,12 +148,77 @@ public class InspectUserController {
     @PreAuthorize("@ss.hasPermission('inspectop:inspect-user:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportInspectUserExcel(@Valid InspectUserPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                       HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        // 1. 获取数据列表
         List<InspectUserDO> list = inspectUserService.getInspectUserPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "巡检人员.xls", "数据", InspectUserRespVO.class,
-                        BeanUtils.toBean(list, InspectUserRespVO.class));
+        // 2. 将DO列表转换为RespVO列表（这是原有逻辑）
+        List<InspectUserRespVO> voList = BeanUtils.toBean(list, InspectUserRespVO.class);
+
+        // 【新增】3. 对VO列表中的字典值进行转换（数字 -> 中文）
+        convertDictValues(voList);
+
+        // 4. 导出 Excel
+        ExcelUtils.write(response, "巡检人员.xls", "数据", InspectUserRespVO.class, voList);
+    }
+
+    /**
+     * 【新增】转换字典值为中文显示
+     * 此方法会修改传入的 voList 中每个对象的 status 和 onlineStatus 字段。
+     * @param voList 巡检人员响应VO列表
+     */
+    private void convertDictValues(List<InspectUserRespVO> voList) {
+        if (voList == null || voList.isEmpty()) {
+            return;
+        }
+        for (InspectUserRespVO vo : voList) {
+            // 转换人员状态
+            vo.setStatus(convertUserStatus(vo.getStatus()));
+            // 转换在线状态
+            vo.setOnlineStatus(convertUserOnlineStatus(vo.getOnlineStatus()));
+        }
+    }
+
+    /**
+     * 【新增】转换巡检人员状态字典值
+     * 根据您提供的映射：1-正常、2-禁用
+     * @param statusCode 状态编码（例如 "1", "2"）
+     * @return 对应的中文状态描述
+     */
+    private String convertUserStatus(String statusCode) {
+        if (statusCode == null) {
+            return "";
+        }
+        switch (statusCode.trim()) {
+            case "1":
+                return "正常";
+            case "2":
+                return "禁用";
+            default:
+                // 如果遇到未知编码，可以选择返回原编码或空字符串，这里返回原编码以便排查。
+                return statusCode;
+        }
+    }
+
+    /**
+     * 【新增】转换巡检人员在线状态字典值
+     * 根据您提供的映射：1-在线、2-离线
+     * @param onlineStatusCode 在线状态编码（例如 "1", "2"）
+     * @return 对应的中文状态描述
+     */
+    private String convertUserOnlineStatus(String onlineStatusCode) {
+        if (onlineStatusCode == null) {
+            return "";
+        }
+        switch (onlineStatusCode.trim()) {
+            case "1":
+                return "在线";
+            case "2":
+                return "离线";
+            default:
+                // 如果遇到未知编码，可以选择返回原编码或空字符串，这里返回原编码以便排查。
+                return onlineStatusCode;
+        }
     }
 
 }
