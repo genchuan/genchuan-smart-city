@@ -189,4 +189,18 @@ public class IdentifyServiceImpl implements IdentifyService {
         return resp;
     }
 
+    @Override
+    public Boolean confirmIdentify(PlateIdentifyConfirmReqVO reqVO) {
+        // 校验存在
+        IdentifyDO identify = identifyMapper.selectById(reqVO.getId());
+        if (identify == null) {
+            throw exception(IDENTIFY_NOT_EXISTS);
+        }
+        // 设置为已修正
+        IdentifyDO updateObj = new IdentifyDO();
+        updateObj.setId(reqVO.getId());
+        updateObj.setIsCorrected(true);
+        return identifyMapper.updateById(updateObj) > 0;
+    }
+
 }
