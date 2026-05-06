@@ -15,19 +15,19 @@ public class PlateAuthPageRespVO {
     @ExcelProperty("主键ID")
     private Long id;
 
-    @Schema(description = "所属用户ID，关联 user_info 表 id", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("所属用户ID，关联 user_info 表 id")
+    @Schema(description = "所属用户ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @ExcelProperty("所属用户ID")
     private Long userId;
 
-    @Schema(description = "关联车辆ID，关联 user_car 表 id", example = "1")
-    @ExcelProperty("关联车辆ID，关联 user_car 表 id")
+    @Schema(description = "关联车辆ID", example = "1")
+    @ExcelProperty("关联车辆ID")
     private Long carId;
 
     @Schema(description = "车牌号码", requiredMode = Schema.RequiredMode.REQUIRED, example = "闽 C12345")
     @ExcelProperty("车牌号码")
     private String plateNo;
 
-    @Schema(description = "行驶证图片地址", requiredMode = Schema.RequiredMode.REQUIRED, example = "/genchuan/chargePark/userMerchant/driving/123.jpg")
+    @Schema(description = "行驶证图片地址", requiredMode = Schema.RequiredMode.REQUIRED, example = "example.com/car.jpg")
     @ExcelProperty("行驶证图片地址")
     private String drivingLicense;
 
@@ -35,12 +35,12 @@ public class PlateAuthPageRespVO {
     @ExcelProperty("认证申请时间")
     private LocalDateTime applyTime;
 
-    @Schema(description = "认证状态：待审核/已认证/已驳回，关联芋道字典表 plate_auth_status", requiredMode = Schema.RequiredMode.REQUIRED, example = "待审核")
-    @ExcelProperty("认证状态：待审核/已认证/已驳回，关联芋道字典表 plate_auth_status")
+    @Schema(description = "认证状态：待审核/已认证/已驳回", requiredMode = Schema.RequiredMode.REQUIRED, example = "待审核")
+    @ExcelProperty("认证状态：待审核/已认证/已驳回")
     private String status;
 
-    @Schema(description = "审核人ID，关联芋道用户表 system_user", example = "1")
-    @ExcelProperty("审核人ID，关联芋道用户表 system_user")
+    @Schema(description = "审核人ID", example = "1")
+    @ExcelProperty("审核人ID")
     private Long auditorId;
 
     @Schema(description = "审核时间")

@@ -59,4 +59,12 @@ public interface MemberSignService {
      */
     PageResult<MemberSignDO> getMemberSignPage(MemberSignPageReqVO pageReqVO);
 
+    /**
+     * 会员签到统计
+     *
+     * @param timeRange 时间范围
+     * @return 统计数据
+     */
+    MemberSignChartRespVO getChart(String timeRange);
+
 }

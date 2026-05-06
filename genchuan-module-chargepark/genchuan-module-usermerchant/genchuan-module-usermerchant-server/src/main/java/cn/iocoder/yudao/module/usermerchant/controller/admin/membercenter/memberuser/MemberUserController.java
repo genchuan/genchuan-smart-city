@@ -1,6 +1,5 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberuser;
 
-import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.ChartHelper;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -79,7 +78,7 @@ public class MemberUserController {
     }
 
     @GetMapping("/export")
-    @Operation(summary = "导出会员用户 Excel")
+    @Operation(summary = "导出会员用户")
     @PreAuthorize("@ss.hasPermission('usermerchant:member-user:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportMemberUserExcel(@Valid MemberUserPageReqVO pageReqVO,
@@ -129,27 +128,16 @@ public class MemberUserController {
     @PreAuthorize("@ss.hasPermission('usermerchant:member-user:query')")
     public CommonResult<MemberUserChartRespVO> getChart(@RequestParam(required = false) String timeRange) {
         // 1. 解析时间范围
-        TimeRangeParser.TimeRangeParsed parsed;
-        if (StrUtil.isBlank(timeRange)) {
-            parsed = new TimeRangeParser.TimeRangeParsed(null, null, "day");
-        } else {
-            parsed = TimeRangeParser.parse(timeRange);
-            if (parsed == null) {
-                parsed = new TimeRangeParser.TimeRangeParsed(null, null, "day");
-            }
-        }
-        LocalDateTime start = parsed.getStart();
-        LocalDateTime end = parsed.getEnd();
-        String granularity = parsed.getGranularity();
+        TimeRangeParser.TimeRangeParsed parsed = TimeRangeParser.parseOrDefault(timeRange);
 
         // 1. 折线图: 按时间聚合会员增长
         ChartHelper.ChartQuery lineQuery = ChartHelper.ChartQuery.builder()
                 .tableName("member_user")
                 .dateField("create_time")
                 .aggregate(ChartHelper.AggregateType.COUNT)
-                .start(start)
-                .end(end)
-                .granularity(granularity)
+                .start(parsed.getStart())
+                .end(parsed.getEnd())
+                .granularity(parsed.getGranularity())
                 .build();
         List<ChartHelper.ChartDataVO> trendData = chartHelper.queryLineChart(lineQuery);
         List<MemberUserChartRespVO.MemberGrowthTrendVO> growthTrend = trendData.stream()

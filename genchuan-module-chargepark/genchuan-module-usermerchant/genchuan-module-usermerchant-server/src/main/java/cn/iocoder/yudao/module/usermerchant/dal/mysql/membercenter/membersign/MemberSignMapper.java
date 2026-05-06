@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.membersign;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -8,6 +9,7 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.membersign.MemberSignDO;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membersign.vo.*;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 会员签到 Mapper
@@ -31,5 +33,16 @@ public interface MemberSignMapper extends BaseMapperX<MemberSignDO> {
                 .betweenIfPresent(MemberSignDO::getUpdateTime, reqVO.getUpdateTime())
                 .orderByDesc(MemberSignDO::getId));
     }
+
+    List<MemberSignChartRespVO.SignTrendVO> selectSignTrend(@Param("start") LocalDateTime start,
+                                                            @Param("end") LocalDateTime end,
+                                                            @Param("granularity") String granularity);
+
+    List<MemberSignChartRespVO.SignUserDistributionVO> selectSignUserDistribution(@Param("start") LocalDateTime start,
+                                                                                  @Param("end") LocalDateTime end);
+
+    Long selectTodaySignCount();
+
+    Long selectTotalMemberCount();
 
 }
