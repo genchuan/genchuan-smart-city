@@ -1,13 +1,17 @@
 package cn.iocoder.yudao.module.studentmgmt.dal.mysql.leavehandle;
 
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.ChartTrendVO;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.leavehandle.vo.LeaveHandleCharRespVO;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.leavehandle.vo.LeaveHandleIndexRespVO;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.leavehandle.vo.LeaveHandlePageReqVO;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.leavehandle.LeaveHandleDO;
 import org.apache.ibatis.annotations.Mapper;
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.leavehandle.vo.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 离校办理 Mapper
@@ -16,6 +20,7 @@ import cn.iocoder.yudao.module.studentmgmt.controller.admin.leavehandle.vo.*;
  */
 @Mapper
 public interface LeaveHandleMapper extends BaseMapperX<LeaveHandleDO> {
+
 
     default PageResult<LeaveHandleDO> selectPage(LeaveHandlePageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<LeaveHandleDO>()
@@ -36,4 +41,10 @@ public interface LeaveHandleMapper extends BaseMapperX<LeaveHandleDO> {
                 .orderByDesc(LeaveHandleDO::getId));
     }
 
+    LeaveHandleCharRespVO selectTotalCount(LocalDateTime startTime, LocalDateTime endTime,
+                                           String pending_confirm, String pending_handle, String left);
+
+    LeaveHandleIndexRespVO selectIndexCount(LocalDateTime startTime, LocalDateTime endTime);
+
+    List<ChartTrendVO> selectDailyLeaveCount(LocalDateTime startTime, LocalDateTime endTime);
 }

@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.staymgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.staymgmt.StayMgmtDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.staymgmt.StayMgmtMapper;
@@ -129,6 +130,9 @@ public class StayMgmtServiceImpl implements StayMgmtService {
             if (!stayMgmt.getStatus().equals(StayStatusEnum.PENDING_AUDIT.getStatus())) {
                 throw exception("仅允许确认待确认状态的申请");
             }
+            String loginUserNickname = SecurityFrameworkUtils.getLoginUserNickname();
+            stayMgmt.setAuditUser(loginUserNickname);
+            stayMgmt.setAuditTime(LocalDateTime.now());
             stayMgmt.setParentConfirmTime(LocalDateTime.now());
             stayMgmt.setStatus(StayStatusEnum.PASSED.getStatus());
             // 更新
@@ -155,6 +159,7 @@ public class StayMgmtServiceImpl implements StayMgmtService {
         ;
         // 班级ID
         Long classId = reqVO.getClassId();
+        String className = null;
         // 判断是否有按班级查询
         if (null != classId) {
             // 通过classId 查询 System模块的 dept.id 的名称，减少关联查询
@@ -163,41 +168,57 @@ public class StayMgmtServiceImpl implements StayMgmtService {
             if (data == null) {
                 throw new ServiceException(ErrorCodeConstants.DEPT_NOT_EXISTS);
             }
-            String className = data.getName();
+            className = data.getName();
+        }
+        // 1. 卡片数据
+        //totalCount (integer): 本期考评总记录数。
+        vo = stayMgmtMapper.selectTotalCount(startTime, endTime, className,
+                StayStatusEnum.PENDING_CONFIRM.getStatus(),
+                StayStatusEnum.PENDING_AUDIT.getStatus(),
+                StayStatusEnum.PASSED.getStatus()
+        );
+        if (vo.getPassedCount() == null) {
+            vo.setPassedCount(0);
+        }
+        if (vo.getPendingAuditCount() == null) {
+            vo.setPendingAuditCount(0);
+        }
+        if (vo.getPendingConfirmCount() == null) {
+            vo.setPendingConfirmCount(0);
+        }
+        if (vo.getTotalStayCount() == null) {
+            vo.setTotalStayCount(0);
+        }
 
-            // 1. 卡片数据
-            //totalCount (integer): 本期考评总记录数。
-            vo = stayMgmtMapper.selectTotalCount(startTime, endTime, className,
-                    StayStatusEnum.PENDING_CONFIRM.getStatus(),
-                    StayStatusEnum.PENDING_AUDIT.getStatus(),
-                    StayStatusEnum.PASSED.getStatus()
-            );
-            // weekendTrend (array): 周末留宿趋势数据，包含日期、留宿人数。
-            List<JSONObject> weekendTrendList = stayMgmtMapper.getWeekendTrend(startTime, endTime, className);
-            //statusDistribution (array): 留宿申请状态分布数据，包含状态、数量。
-            List<JSONObject> statusDistributionList = stayMgmtMapper.getStatusDistribution(startTime, endTime, className);
-            // 将statusDistributionList里的status字段转为中文
-            List<JSONObject> statusList = new ArrayList<>();
-            for (JSONObject jsonObject : statusDistributionList) {
-                String status = jsonObject.getString("status");
+        // weekendTrend (array): 周末留宿趋势数据，包含日期、留宿人数。
+        List<JSONObject> weekendTrendList = stayMgmtMapper.getWeekendTrend(startTime, endTime, className);
+        if (weekendTrendList == null) {
+            weekendTrendList = new ArrayList<>();
+        }
+        //statusDistribution (array): 留宿申请状态分布数据，包含状态、数量。
+        List<JSONObject> statusDistributionList = stayMgmtMapper.getStatusDistribution(startTime, endTime, className);
+        // 将statusDistributionList里的status字段转为中文
+        List<JSONObject> statusList = new ArrayList<>();
+        for (JSONObject jsonObject : statusDistributionList) {
+            String status = jsonObject.getString("status");
 
-                String dictDataLabel = status;
-                CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(StayStatusEnum.DICT_TYPE);
-                if (dictDataList.getData() != null) {
-                    for (DictDataRespDTO dictData : dictDataList.getData()) {
-                        if (dictData.getValue().equals(status)) {
-                            dictDataLabel = dictData.getLabel();
-                            break;
-                        }
+            String dictDataLabel = status;
+            CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(StayStatusEnum.DICT_TYPE);
+            if (dictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : dictDataList.getData()) {
+                    if (dictData.getValue().equals(status)) {
+                        dictDataLabel = dictData.getLabel();
+                        break;
                     }
                 }
-                jsonObject.put("status", dictDataLabel);
-                statusList.add(jsonObject);
-
             }
-            vo.setWeekendTrend(weekendTrendList);
-            vo.setStatusDistribution(statusList);
+            jsonObject.put("status", dictDataLabel);
+            statusList.add(jsonObject);
+
         }
+        vo.setWeekendTrend(weekendTrendList);
+        vo.setStatusDistribution(statusList);
+
         return vo;
 
     }

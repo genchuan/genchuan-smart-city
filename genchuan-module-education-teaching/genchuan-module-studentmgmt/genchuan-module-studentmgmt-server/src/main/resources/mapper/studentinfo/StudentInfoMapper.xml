@@ -145,4 +145,14 @@
             AND create_time between #{startTime} AND #{endTime}
         </if>
     </select>
+    <select id="selectStudentInfoByYear"
+            resultType="cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO">
+        SELECT
+            *
+        FROM student_info
+        WHERE deleted = 0
+        <if test="year != null">
+            AND YEAR(create_time) = #{year}
+        </if>
+    </select>
 </mapper>

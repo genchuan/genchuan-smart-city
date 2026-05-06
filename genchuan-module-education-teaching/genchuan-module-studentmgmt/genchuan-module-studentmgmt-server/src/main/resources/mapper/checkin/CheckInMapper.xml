@@ -21,7 +21,7 @@
         FROM check_in
         WHERE deleted = 0
         <if test="year != null">
-            AND YEAR(confirm_time) = #{year}
+            AND YEAR(create_time) = #{year}
         </if>
     </select>
     <select id="selectDateList" resultType="com.alibaba.fastjson.JSONObject">
@@ -32,7 +32,7 @@
         FROM check_in
         WHERE deleted = 0
         <if test="year != null">
-            AND YEAR(confirm_time) = #{year}
+            AND YEAR(create_time) = #{year}
         </if>
         GROUP BY DATE_FORMAT(confirm_time, '%Y-%m-%d')
     </select>
@@ -47,7 +47,7 @@
         FROM check_in
         WHERE deleted = 0
         <if test="year != null">
-            AND YEAR(confirm_time) = #{year}
+            AND YEAR(create_time) = #{year}
         </if>
     </select>
 </mapper>

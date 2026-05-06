@@ -100,5 +100,29 @@ public class DormAssignController {
         ExcelUtils.write(response, "宿舍分配.xls", "数据", DormAssignRespVO.class,
                         BeanUtils.toBean(list, DormAssignRespVO.class));
     }
+    @PutMapping("/assign")
+    @Operation(summary = "分配")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:dorm-assign:assign')")
+    public CommonResult<Boolean> assign(@Valid @RequestBody DormAssignAssignReqVO reqVO) {
+        return success(dormAssignService.assign(reqVO));
+    }
+    @PutMapping("/adjust")
+    @Operation(summary = "调整")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:dorm-assign:adjust')")
+    public CommonResult<Boolean> adjust(@Valid @RequestBody DormAssignAdjustReqVO reqVO) {
+        return success(dormAssignService.adjust(reqVO));
+    }
+    @GetMapping("/chart")
+    @Operation(summary = "新生宿舍分配看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:dorm-assign:query')")
+    public CommonResult<DormAssignChartRespVO> chart(@Valid DormAssignChartReqVO reqVO) {
+        return success(dormAssignService.chart(reqVO));
+    }
+    @GetMapping("/chart/assignIndex")
+    @Operation(summary = "分配核心指标统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:dorm-assign:query')")
+    public CommonResult<DormAssignIndexRespVO> assignIndex(@Valid DormAssignChartReqVO reqVO) {
+        return success(dormAssignService.assignIndex(reqVO));
+    }
 
 }

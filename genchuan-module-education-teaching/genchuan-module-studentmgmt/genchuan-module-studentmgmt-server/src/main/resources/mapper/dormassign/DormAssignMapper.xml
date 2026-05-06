@@ -9,4 +9,42 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="selectTotalCount"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.dormassign.vo.DormAssignChartRespVO">
+        SELECT
+            COUNT(1) AS totalCount,
+            COUNT(assign_time) AS finishedCount,
+            COUNT(1) - COUNT(assign_time) AS waitAssignCount,
+            ROUND(COUNT(assign_time) / COUNT(1), 2) AS progress
+        FROM dorm_assign
+        WHERE deleted = 0
+        <if test="year != null">
+            AND YEAR(create_time) = #{year}
+        </if>
+    </select>
+    <select id="selectBuildingAssignCountList" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        dorm_num AS building,
+            COUNT(assign_time) AS assignCount,
+            COUNT(bed_id) AS bedCount
+        FROM dorm_assign
+        WHERE deleted = 0
+        <if test="year != null">
+            AND YEAR(create_time) = #{year}
+        </if>
+        GROUP BY dorm_num
+    </select>
+    <select id="selectIndexCount"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.dormassign.vo.DormAssignIndexRespVO">
+        SELECT
+            COUNT(1) AS totalStudentCount,
+            COUNT(assign_time) AS assignedCount,
+            ROUND(COUNT(assign_time) / COUNT(1), 2) AS assignRate,
+            COUNT(1) - COUNT(assign_time) AS emptyBedCount
+        FROM dorm_assign
+        WHERE deleted = 0
+        <if test="year != null">
+            AND YEAR(create_time) = #{year}
+        </if>
+    </select>
 </mapper>

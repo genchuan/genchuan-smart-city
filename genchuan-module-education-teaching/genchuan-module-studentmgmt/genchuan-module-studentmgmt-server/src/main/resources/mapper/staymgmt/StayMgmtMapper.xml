@@ -12,7 +12,7 @@
     <select id="selectTotalCount"
             resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.staymgmt.vo.StayMgmtChartRespVO">
         SELECT
-        COUNT(1) AS totalStayCount
+        COUNT(1) AS totalStayCount,
         SUM(CASE WHEN a.status = #{pendingConfirm} THEN 1 ELSE 0 END) AS pendingConfirmCount,
         SUM(CASE WHEN a.status = #{pendingAudit} THEN 1 ELSE 0 END) AS pendingAuditCount,
         SUM(CASE WHEN a.status = #{passed} THEN 1 ELSE 0 END) AS passedCount
@@ -37,6 +37,7 @@
         <if test="startTime != null">
             AND stay_date between #{startTime} AND #{endTime}
         </if>
+        GROUP BY DATE_FORMAT( a.stay_date, '%Y-%m-%d' )
     </select>
     <select id="getStatusDistribution" resultType="com.alibaba.fastjson.JSONObject">
         SELECT
