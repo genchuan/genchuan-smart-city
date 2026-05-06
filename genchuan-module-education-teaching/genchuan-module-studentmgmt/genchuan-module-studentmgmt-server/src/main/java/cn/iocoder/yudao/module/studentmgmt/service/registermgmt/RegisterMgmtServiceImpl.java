@@ -136,6 +136,9 @@ public class RegisterMgmtServiceImpl implements RegisterMgmtService {
                 RegisterStatusEnum.ADMITTED.getStatus()
         );
         // 如果统计为空，则设置为0
+        if (vo == null) {
+            vo = new RegisterMgmtChartRespVO();
+        }
         if (vo.getAdmittedCount() == null) {
             vo.setAdmittedCount(0);
         }

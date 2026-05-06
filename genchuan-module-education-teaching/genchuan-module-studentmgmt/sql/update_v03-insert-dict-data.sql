@@ -905,4 +905,19 @@ VALUES
     (2, '已发布', 'published', 'communicate_mgmt_status', 0, 'success', '', '沟通已发布', 'admin', NOW(), 'admin', NOW(), 0);
 
 
+-- 阅读状态：未读/已读，VARCHAR(20)，必填，默认未读，关联芋道字典表：parent_reply_read_status
+INSERT INTO system_dict_type (name, type, status, remark, creator, create_time, updater, update_time, deleted)
+    VALUES ('阅读状态', 'parent_reply_read_status', 0, '阅读状态', 'admin', NOW(), 'admin', NOW(), 0);
+INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted)
+    VALUES
+        (1, '未读', 'unread', 'parent_reply_read_status', 0, 'info', '', '未读', 'admin', NOW(), 'admin', NOW(), 0),
+        (2, '已读', 'read', 'parent_reply_read_status', 0, 'success', '', '已读', 'admin', NOW(), 'admin', NOW(), 0);
+
+-- reply_status（回复状态：未回复/已回复，VARCHAR(20)，必填，默认未回复，关联芋道字典表：parent_reply_status
+INSERT INTO system_dict_type (name, type, status, remark, creator, create_time, updater, update_time, deleted)
+VALUES ('回复状态', 'parent_reply_status', 0, '回复状态', 'admin', NOW(), 'admin', NOW(), 0);
+INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted)
+VALUES
+    (1, '未回复', 'unreplied', 'parent_reply_status', 0, 'info', '', '未回复', 'admin', NOW(), 'admin', NOW(), 0),
+    (2, '已回复', 'replied', 'parent_reply_status', 0, 'success', '', '已回复', 'admin', NOW(), 'admin', NOW(), 0);
 
