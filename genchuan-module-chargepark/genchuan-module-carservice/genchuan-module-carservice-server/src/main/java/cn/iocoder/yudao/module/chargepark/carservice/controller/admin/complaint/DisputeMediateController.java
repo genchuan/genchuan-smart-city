@@ -7,6 +7,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.DisputeMediateChartRespVO;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.DisputeMediateConfirmReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.DisputeMediateMediateReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.DisputeMediatePageReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.DisputeMediateRespVO;
@@ -89,7 +90,6 @@ public class DisputeMediateController {
         if ("pdf".equalsIgnoreCase(format)) {
             PdfUtils.write(response, "纠纷调解.pdf", "纠纷调解台账",
                     PdfUtils.headers(
-                            "id", "ID",
                             "userName", "用户",
                             "merchantId", "商户",
                             "content", "纠纷内容",
@@ -150,12 +150,11 @@ public class DisputeMediateController {
     }
 
     @PutMapping("/confirm")
-    @Operation(summary = "确认 - 调解中 → 已完成")
-    @Parameter(name = "id", description = "编号", required = true)
+    @Operation(summary = "确认 - 调解中 → 已关闭")
     @PreAuthorize("@ss.hasPermission('carservice:dispute-mediate:confirm')")
     @ApiAccessLog(operateType = UPDATE)
-    public CommonResult<Boolean> confirmDisputeMediate(@RequestParam("id") Long id) {
-        disputeMediateService.confirmDisputeMediate(id);
+    public CommonResult<Boolean> confirmDisputeMediate(@Valid @RequestBody DisputeMediateConfirmReqVO reqVO) {
+        disputeMediateService.confirmDisputeMediate(reqVO);
         return success(true);
     }
 

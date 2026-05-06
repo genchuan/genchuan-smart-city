@@ -61,6 +61,10 @@ public class DisputeMediateDO extends BaseDO {
      */
     private LocalDateTime confirmTime;
     /**
+     * 调解确认结果
+     */
+    private String confirmResult;
+    /**
      * 备用字段 1
      */
     private String reserve1;
