@@ -34,7 +34,6 @@ public interface AllOrderMapper extends BaseMapperX<AllOrderDO> {
                 .eqIfPresent(AllOrderDO::getOrderType, reqVO.getOrderType())
                 .likeIfPresent(AllOrderDO::getPlateNo, reqVO.getPlateNo())
                 .eqIfPresent(AllOrderDO::getStatus, reqVO.getStatus())
-                .eqIfPresent(AllOrderDO::getStationId, reqVO.getStationId())
                 .geIfPresent(AllOrderDO::getCreateOrderTime, reqVO.getCreateOrderTimeStart())
                 .leIfPresent(AllOrderDO::getCreateOrderTime, reqVO.getCreateOrderTimeEnd())
                 .geIfPresent(AllOrderDO::getPayTime, reqVO.getPayTimeStart())
