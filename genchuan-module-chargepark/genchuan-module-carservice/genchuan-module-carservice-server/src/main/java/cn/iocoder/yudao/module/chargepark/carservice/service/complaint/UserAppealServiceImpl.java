@@ -177,7 +177,7 @@ public class UserAppealServiceImpl implements UserAppealService {
         validateStatus(appeal, UserAppealStatusEnum.HANDLING);
         UserAppealDO update = new UserAppealDO();
         update.setId(reqVO.getId());
-        update.setStatus(UserAppealStatusEnum.CLOSED.getLabel());
+        update.setStatus(UserAppealStatusEnum.COMPLETED.getLabel());
         update.setFeedbackContent(reqVO.getFeedbackContent());
         update.setFeedbackTime(LocalDateTime.now());
         userAppealMapper.updateById(update);
