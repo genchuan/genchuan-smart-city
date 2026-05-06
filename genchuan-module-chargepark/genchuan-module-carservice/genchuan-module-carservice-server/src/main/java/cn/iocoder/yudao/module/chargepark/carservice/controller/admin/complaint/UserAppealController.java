@@ -93,7 +93,6 @@ public class UserAppealController {
         if ("pdf".equalsIgnoreCase(format)) {
             PdfUtils.write(response, "用户申诉.pdf", "用户申诉台账",
                     PdfUtils.headers(
-                            "id", "ID",
                             "userName", "用户",
                             "orderId", "订单",
                             "content", "申诉内容",

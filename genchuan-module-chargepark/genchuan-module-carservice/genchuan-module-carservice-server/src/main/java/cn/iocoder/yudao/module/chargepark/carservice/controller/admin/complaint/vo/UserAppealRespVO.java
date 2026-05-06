@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 public class UserAppealRespVO {
 
     @Schema(description = "主键 ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("主键 ID")
     private Long id;
 
     @Schema(description = "用户 ID", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -81,11 +80,9 @@ public class UserAppealRespVO {
     private String rejectReason;
 
     @Schema(description = "备用字段 1")
-    @ExcelProperty("备用字段 1")
     private String reserve1;
 
     @Schema(description = "备用字段 2")
-    @ExcelProperty("备用字段 2")
     private String reserve2;
 
     @Schema(description = "创建者")

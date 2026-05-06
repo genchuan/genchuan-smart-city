@@ -105,10 +105,10 @@ public class UserAppealServiceImpl implements UserAppealService {
         validateStatus(appeal, UserAppealStatusEnum.WAITING_AUDIT);
         UserAppealDO update = new UserAppealDO();
         update.setId(reqVO.getId());
-        // 通过 → 待处置；驳回 → 已完成（终态）
+        // 通过 → 待处置；驳回 → 已关闭（终态）
         update.setStatus(Boolean.TRUE.equals(reqVO.getApproved())
                 ? UserAppealStatusEnum.WAITING_HANDLE.getLabel()
-                : UserAppealStatusEnum.COMPLETED.getLabel());
+                : UserAppealStatusEnum.CLOSED.getLabel());
         update.setAuditUserId(SecurityFrameworkUtils.getLoginUserId());
         update.setAuditTime(LocalDateTime.now());
         update.setAuditRemark(reqVO.getAuditRemark());
@@ -116,9 +116,12 @@ public class UserAppealServiceImpl implements UserAppealService {
             update.setRejectReason(reqVO.getRejectReason());
         }
         userAppealMapper.updateById(update);
-        // 审核通过后通知申诉人
+        // 审核结果通知申诉人
         if (Boolean.TRUE.equals(reqVO.getApproved())) {
             notifyHelper.sendToUser(appeal.getUserId(), "carservice_appeal_pass", null, null);
+        } else {
+            notifyHelper.sendToUser(appeal.getUserId(), "carservice_appeal_reject",
+                    "rejectReason", reqVO.getRejectReason());
         }
     }
 
@@ -133,7 +136,7 @@ public class UserAppealServiceImpl implements UserAppealService {
         Long auditorId = SecurityFrameworkUtils.getLoginUserId();
         String targetStatus = approved
                 ? UserAppealStatusEnum.WAITING_HANDLE.getLabel()
-                : UserAppealStatusEnum.COMPLETED.getLabel();
+                : UserAppealStatusEnum.CLOSED.getLabel();
         for (Long id : reqVO.getIds()) {
             UserAppealDO appeal = validateUserAppealExists(id);
             validateStatus(appeal, UserAppealStatusEnum.WAITING_AUDIT);
@@ -149,6 +152,9 @@ public class UserAppealServiceImpl implements UserAppealService {
             userAppealMapper.updateById(update);
             if (approved) {
                 notifyHelper.sendToUser(appeal.getUserId(), "carservice_appeal_pass", null, null);
+            } else {
+                notifyHelper.sendToUser(appeal.getUserId(), "carservice_appeal_reject",
+                        "rejectReason", reqVO.getRejectReason());
             }
         }
     }
@@ -157,9 +163,10 @@ public class UserAppealServiceImpl implements UserAppealService {
     public void executeUserAppeal(UserAppealExecuteReqVO reqVO) {
         UserAppealDO appeal = validateUserAppealExists(reqVO.getId());
         validateStatus(appeal, UserAppealStatusEnum.WAITING_HANDLE);
-        // execute 仅标记处置人为当前登录用户,状态保持"待处置",后续由 feedback 完成
+        // 认领申诉：状态推进到"处置中"，并记录处置人为当前登录用户
         UserAppealDO update = new UserAppealDO();
         update.setId(reqVO.getId());
+        update.setStatus(UserAppealStatusEnum.HANDLING.getLabel());
         update.setHandleUserId(SecurityFrameworkUtils.getLoginUserId());
         userAppealMapper.updateById(update);
     }
@@ -167,10 +174,10 @@ public class UserAppealServiceImpl implements UserAppealService {
     @Override
     public void feedbackUserAppeal(UserAppealFeedbackReqVO reqVO) {
         UserAppealDO appeal = validateUserAppealExists(reqVO.getId());
-        validateStatus(appeal, UserAppealStatusEnum.WAITING_HANDLE);
+        validateStatus(appeal, UserAppealStatusEnum.HANDLING);
         UserAppealDO update = new UserAppealDO();
         update.setId(reqVO.getId());
-        update.setStatus(UserAppealStatusEnum.COMPLETED.getLabel());
+        update.setStatus(UserAppealStatusEnum.CLOSED.getLabel());
         update.setFeedbackContent(reqVO.getFeedbackContent());
         update.setFeedbackTime(LocalDateTime.now());
         userAppealMapper.updateById(update);
