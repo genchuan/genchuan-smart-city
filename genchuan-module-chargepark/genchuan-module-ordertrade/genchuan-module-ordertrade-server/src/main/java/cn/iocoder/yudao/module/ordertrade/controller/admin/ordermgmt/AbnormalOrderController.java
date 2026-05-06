@@ -8,7 +8,6 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.ordermgmt.AbnormalOrderDO;
-import cn.iocoder.yudao.module.ordertrade.rpc.stationresource.StationNameHelper;
 import cn.iocoder.yudao.module.ordertrade.service.ordermgmt.AbnormalOrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -39,8 +38,6 @@ public class AbnormalOrderController {
 
     @Resource
     private AbnormalOrderService abnormalOrderService;
-    @Resource
-    private StationNameHelper stationNameHelper;
 
     // ==================== ① 标准CRUD ====================
 
@@ -80,18 +77,14 @@ public class AbnormalOrderController {
     @Parameter(name = "id", description = "主键", required = true, example = "1024")
     public CommonResult<AbnormalOrderRespVO> getAbnormalOrder(@RequestParam("id") Long id) {
         AbnormalOrderDO obj = abnormalOrderService.getAbnormalOrder(id);
-        AbnormalOrderRespVO vo = BeanUtils.toBean(obj, AbnormalOrderRespVO.class);
-        stationNameHelper.fillStationName(vo, AbnormalOrderRespVO::getStationId, AbnormalOrderRespVO::setStationName);
-        return success(vo);
+        return success(BeanUtils.toBean(obj, AbnormalOrderRespVO.class));
     }
 
     @GetMapping("/page")
     @Operation(summary = "获得异常订单分页列表")
     public CommonResult<PageResult<AbnormalOrderRespVO>> getAbnormalOrderPage(@Valid AbnormalOrderPageReqVO pageReqVO) {
         PageResult<AbnormalOrderDO> pageResult = abnormalOrderService.getAbnormalOrderPage(pageReqVO);
-        PageResult<AbnormalOrderRespVO> voPage = BeanUtils.toBean(pageResult, AbnormalOrderRespVO.class);
-        stationNameHelper.fillStationNames(voPage.getList(), AbnormalOrderRespVO::getStationId, AbnormalOrderRespVO::setStationName);
-        return success(voPage);
+        return success(BeanUtils.toBean(pageResult, AbnormalOrderRespVO.class));
     }
 
     @GetMapping("/export")
@@ -101,9 +94,7 @@ public class AbnormalOrderController {
                                  HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<AbnormalOrderDO> list = abnormalOrderService.getAbnormalOrderPage(pageReqVO).getList();
-        List<AbnormalOrderRespVO> voList = BeanUtils.toBean(list, AbnormalOrderRespVO.class);
-        stationNameHelper.fillStationNames(voList, AbnormalOrderRespVO::getStationId, AbnormalOrderRespVO::setStationName);
-        ExcelUtils.write(response, "异常订单.xls", "数据", AbnormalOrderRespVO.class, voList);
+        ExcelUtils.write(response, "异常订单.xls", "数据", AbnormalOrderRespVO.class, BeanUtils.toBean(list, AbnormalOrderRespVO.class));
     }
 
  /*   @GetMapping("/batch-export")

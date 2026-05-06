@@ -33,4 +33,70 @@
         WHERE c.deleted = 0
         GROUP BY c.station_id, s.name
     </select>
+    <select id="getPage" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.chargeparklink.vo.ChargeParkLinkRespVO">
+        SELECT t.*, s.name AS station_name, u.nickname AS audit_user_name
+        FROM charge_park_link t
+        LEFT JOIN station_info s ON t.station_id = s.id
+        LEFT JOIN station_user u ON t.audit_user_id = u.id
+        WHERE t.deleted = 0
+        <if test="pageReqVO.stationId != null">
+            AND t.station_id = #{pageReqVO.stationId}
+        </if>
+        <if test="pageReqVO.stationName != null and pageReqVO.stationName != ''">
+            AND s.name LIKE CONCAT('%', #{pageReqVO.stationName}, '%')
+        </if>
+        <if test="pageReqVO.discountType != null and pageReqVO.discountType != ''">
+            AND t.discount_type = #{pageReqVO.discountType}
+        </if>
+        <if test="pageReqVO.discount != null">
+            AND t.discount = #{pageReqVO.discount}
+        </if>
+        <if test="pageReqVO.carType != null and pageReqVO.carType != ''">
+            AND t.car_type = #{pageReqVO.carType}
+        </if>
+        <if test="pageReqVO.status != null and pageReqVO.status != ''">
+            AND t.status = #{pageReqVO.status}
+        </if>
+        <if test="pageReqVO.auditTime != null and pageReqVO.auditTime.size() == 2">
+            AND t.audit_time BETWEEN #{pageReqVO.auditTime[0]} AND #{pageReqVO.auditTime[1]}
+        </if>
+        <if test="pageReqVO.auditUserId != null">
+            AND t.audit_user_id = #{pageReqVO.auditUserId}
+        </if>
+        <if test="pageReqVO.auditUserName != null and pageReqVO.auditUserName != ''">
+            AND u.nickname LIKE CONCAT('%', #{pageReqVO.auditUserName}, '%')
+        </if>
+        <if test="pageReqVO.todayOrderCount != null">
+            AND t.today_order_count = #{pageReqVO.todayOrderCount}
+        </if>
+        <if test="pageReqVO.todayIncome != null">
+            AND t.today_income = #{pageReqVO.todayIncome}
+        </if>
+        <if test="pageReqVO.payRate != null">
+            AND t.pay_rate = #{pageReqVO.payRate}
+        </if>
+        <if test="pageReqVO.remark != null and pageReqVO.remark != ''">
+            AND t.remark = #{pageReqVO.remark}
+        </if>
+        <if test="pageReqVO.reserve1 != null and pageReqVO.reserve1 != ''">
+            AND t.reserve1 = #{pageReqVO.reserve1}
+        </if>
+        <if test="pageReqVO.reserve2 != null and pageReqVO.reserve2 != ''">
+            AND t.reserve2 = #{pageReqVO.reserve2}
+        </if>
+        <if test="pageReqVO.creator != null and pageReqVO.creator != ''">
+            AND t.creator = #{pageReqVO.creator}
+        </if>
+        <if test="pageReqVO.updater != null and pageReqVO.updater != ''">
+            AND t.updater = #{pageReqVO.updater}
+        </if>
+        <if test="pageReqVO.createTime != null and pageReqVO.createTime.size() == 2">
+            AND t.create_time BETWEEN #{pageReqVO.createTime[0]} AND #{pageReqVO.createTime[1]}
+        </if>
+        <if test="pageReqVO.updateTime != null and pageReqVO.updateTime.size() == 2">
+            AND t.update_time BETWEEN #{pageReqVO.updateTime[0]} AND #{pageReqVO.updateTime[1]}
+        </if>
+        ORDER BY t.id DESC
+    </select>
+
 </mapper>

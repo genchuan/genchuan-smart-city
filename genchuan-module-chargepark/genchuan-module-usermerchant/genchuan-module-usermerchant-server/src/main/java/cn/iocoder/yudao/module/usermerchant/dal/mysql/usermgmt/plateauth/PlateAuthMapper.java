@@ -4,6 +4,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.usermgmt.plateauth.PlateAuthDO;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.plateauth.vo.*;
 import org.apache.ibatis.annotations.Param;
@@ -18,6 +19,7 @@ import java.util.List;
  * @author 亘川智城
  */
 @Mapper
+@DS("master")
 public interface PlateAuthMapper extends BaseMapperX<PlateAuthDO> {
 
     default PageResult<PlateAuthDO> selectPage(PlateAuthPageReqVO reqVO) {

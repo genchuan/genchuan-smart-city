@@ -109,7 +109,7 @@ public class TreatMgmtController {
         return success(isSuccess);
     }
 
-    @PostMapping("/audit")
+    @PutMapping("/audit")
     @Operation(summary = "就诊管理审核")
     @PreAuthorize("@ss.hasPermission('studentmgmt:treat-mgmt:audit')")
     public CommonResult<Boolean> audit(@Valid @RequestBody TreatMgmtAuditReqVO reqVO) {
@@ -117,7 +117,7 @@ public class TreatMgmtController {
         return success(isSuccess);
     }
 
-    @PostMapping("/register")
+    @PutMapping("/register")
     @Operation(summary = "就诊管理登记")
     @PreAuthorize("@ss.hasPermission('studentmgmt:treat-mgmt:register')")
     public CommonResult<Boolean> register(@Valid @RequestBody TreatMgmtRegisterReqVO reqVO) {
@@ -125,7 +125,7 @@ public class TreatMgmtController {
         return success(isSuccess);
     }
 
-    @PostMapping("/feedback")
+    @PutMapping("/feedback")
     @Operation(summary = "就诊管理反馈")
     @PreAuthorize("@ss.hasPermission('studentmgmt:treat-mgmt:feedback')")
     public CommonResult<Boolean> feedback(@Valid @RequestBody TreatMgmtFeedbackReqVO reqVO) {

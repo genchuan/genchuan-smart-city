@@ -5,7 +5,9 @@ import java.util.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.dormassign.vo.DormAssignChartRespVO;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.promotemgmt.PromoteMgmtDO;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.promotemgmt.vo.*;
 
@@ -33,4 +35,9 @@ public interface PromoteMgmtMapper extends BaseMapperX<PromoteMgmtDO> {
                 .orderByDesc(PromoteMgmtDO::getId));
     }
 
+    PromoteMgmtChartRespVO selectTotalCount(Integer year);
+
+    List<JSONObject> selectDateCountList(Integer year);
+
+    List<JSONObject> selectPromoteCount(Integer year);
 }

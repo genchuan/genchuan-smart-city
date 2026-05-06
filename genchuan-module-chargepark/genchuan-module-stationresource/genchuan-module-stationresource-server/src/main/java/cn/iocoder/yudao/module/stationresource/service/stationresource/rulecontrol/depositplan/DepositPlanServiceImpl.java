@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.depositplan.vo.DepositPlanPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.depositplan.vo.DepositPlanRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.depositplan.vo.ops.DepositPlanChartRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.depositplan.vo.ops.DepositPlanCreateReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.depositplan.vo.ops.DepositPlanImportResp;
@@ -15,6 +16,7 @@ import cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.rulecon
 import cn.iocoder.yudao.module.stationresource.vrv.utils.common.excel.VrvExcelUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,8 +61,10 @@ public class DepositPlanServiceImpl implements DepositPlanService {
     }
 
     @Override
-    public PageResult<DepositPlanDO> getDepositPlanPage(DepositPlanPageReqVO pageReqVO) {
-        return depositPlanMapper.selectPage(pageReqVO);
+    public PageResult<DepositPlanRespVO> getDepositPlanPage(DepositPlanPageReqVO pageReqVO) {
+        Page<DepositPlanRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        Page<DepositPlanRespVO> resultPage = depositPlanMapper.getPage(page, pageReqVO);
+        return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
     }
 
     @Override

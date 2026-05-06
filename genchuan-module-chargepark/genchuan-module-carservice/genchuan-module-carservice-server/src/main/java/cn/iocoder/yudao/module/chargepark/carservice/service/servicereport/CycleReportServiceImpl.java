@@ -649,28 +649,14 @@ public class CycleReportServiceImpl implements CycleReportService {
         dst.setUpdateTime(src.getUpdateTime());
     }
 
-    /** statTime 字符串:周报 "2026-W17"、月报 "2026-04"、季报 "2026-Q2"、半年报 "2026-H1"、年报 "2026"、日报 "2026-04-23"、自定义 "2026-04-01~2026-04-20" */
+    /** statTime 字符串:统一展示起止日期区间,如 "2026-04-01 至 2026-06-30" */
     private String formatStatTime(CycleReportCycleEnum cycle, LocalDateTime start, LocalDateTime end) {
-        LocalDate d = start.toLocalDate();
-        switch (cycle) {
-            case DAILY: return d.toString();
-            case WEEKLY:
-                int weekYear = d.get(IsoFields.WEEK_BASED_YEAR);
-                int weekNum = d.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
-                return weekYear + "-W" + (weekNum < 10 ? "0" + weekNum : weekNum);
-            case MONTHLY:
-                return d.format(DateTimeFormatter.ofPattern("yyyy-MM"));
-            case QUARTERLY:
-                int q = (d.getMonthValue() - 1) / 3 + 1;
-                return d.getYear() + "-Q" + q;
-            case SEMI_ANNUAL:
-                return d.getYear() + (d.getMonthValue() <= 6 ? "-H1" : "-H2");
-            case ANNUAL:
-                return String.valueOf(d.getYear());
-            case CUSTOM:
-            default:
-                return start.toLocalDate().format(CUSTOM_RANGE_FMT) + "~" + end.toLocalDate().format(CUSTOM_RANGE_FMT);
+        LocalDate s = start.toLocalDate();
+        LocalDate e = end.toLocalDate();
+        if (cycle == CycleReportCycleEnum.DAILY) {
+            return s.toString();
         }
+        return s.format(CUSTOM_RANGE_FMT) + " 至 " + e.format(CUSTOM_RANGE_FMT);
     }
 
     // =========================================================================

@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.ordertrade.dal.mysql.invoicemgmt.InvoiceListMappe
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.ordermgmt.ShareChargeOrderMapper;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.refundmgmt.RefundApplyMapper;
 import cn.iocoder.yudao.module.ordertrade.framework.tool.OrderUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,8 +45,12 @@ public class ShareChargeOrderServiceImpl implements ShareChargeOrderService {
     }
     @Override public void deleteShareChargeOrder(Long id) { validateExists(id); shareChargeOrderMapper.deleteById(id); }
     @Override public void deleteShareChargeOrderListByIds(List<Long> ids) { shareChargeOrderMapper.deleteByIds(ids); }
-    @Override public ShareChargeOrderDO getShareChargeOrder(Long id) { return shareChargeOrderMapper.selectById(id); }
-    @Override public PageResult<ShareChargeOrderDO> getShareChargeOrderPage(ShareChargeOrderPageReqVO v) { return shareChargeOrderMapper.selectPage(v); }
+    @Override public ShareChargeOrderDO getShareChargeOrder(Long id) { return shareChargeOrderMapper.selectByIdJoinStation(id); }
+    @Override public PageResult<ShareChargeOrderDO> getShareChargeOrderPage(ShareChargeOrderPageReqVO v) {
+        Page<ShareChargeOrderDO> page = new Page<>(v.getPageNo(), v.getPageSize());
+        var result = shareChargeOrderMapper.selectPageJoinStation(page, v);
+        return new PageResult<>(result.getRecords(), result.getTotal());
+    }
         @Override
     public ShareChargeOrderChartRespVO getShareChargeOrderChart(ShareChargeOrderChartReqVO v) {
         ShareChargeOrderChartRespVO resp = new ShareChargeOrderChartRespVO();

@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.timepermission.vo;
 
+import cn.idev.excel.annotation.ExcelIgnore;
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,8 +18,12 @@ public class TimePermissionRespVO {
     private Long id;
 
     @Schema(description = "[所属场站] 关联场站信息表station_info的ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "30323")
-    @ExcelProperty("所属场站")
+    @ExcelIgnore
     private Long stationId;
+
+    @Schema(description = "场站名称")
+    @ExcelProperty("所属场站")
+    private String stationName;
 
     @Schema(description = "[生效时段] 时段权限生效的时间段描述", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("生效时段")
@@ -37,8 +42,12 @@ public class TimePermissionRespVO {
     private LocalDateTime auditTime;
 
     @Schema(description = "[审核人] 关联芋道用户表system_user的ID", example = "118")
-    @ExcelProperty("审核人")
+    @ExcelIgnore
     private Long auditUserId;
+
+    @Schema(description = "审核人名称")
+    @ExcelProperty("审核人")
+    private String auditUserName;
 
     @Schema(description = "[使用次数] 该权限被使用的累计次数", example = "12744")
     @ExcelProperty("使用次数")
@@ -69,11 +78,13 @@ public class TimePermissionRespVO {
     private String remark;
 
     @Schema(description = "[备用字段1] 预留扩展字段1")
-    @ExcelProperty("备用字段1")
+//    @ExcelProperty("备用字段1")
+    @ExcelIgnore
     private String reserve1;
 
     @Schema(description = "[备用字段2] 预留扩展字段2")
-    @ExcelProperty("备用字段2")
+//    @ExcelProperty("备用字段2")
+    @ExcelIgnore
     private String reserve2;
 
     @Schema(description = "[创建者] 创建人账号/姓名")

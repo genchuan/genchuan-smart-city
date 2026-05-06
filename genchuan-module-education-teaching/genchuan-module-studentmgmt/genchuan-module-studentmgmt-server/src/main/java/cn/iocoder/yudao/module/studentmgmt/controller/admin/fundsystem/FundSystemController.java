@@ -122,7 +122,7 @@ public class FundSystemController {
     @GetMapping("/fundCount")
     @Operation(summary = "各年级资助人数 / 类型分布统计")
     @PreAuthorize("@ss.hasPermission('studentmgmt:fund-system:query')")
-    public CommonResult<FundSystemFundCountRespVO> fundCount(@Valid @RequestBody FundSystemFundCountReqVO reqVO) {
+    public CommonResult<FundSystemFundCountRespVO> fundCount(@Valid FundSystemFundCountReqVO reqVO) {
         FundSystemFundCountRespVO dashboardVO = fundSystemService.fundCount(reqVO);
         return success(dashboardVO);
     }

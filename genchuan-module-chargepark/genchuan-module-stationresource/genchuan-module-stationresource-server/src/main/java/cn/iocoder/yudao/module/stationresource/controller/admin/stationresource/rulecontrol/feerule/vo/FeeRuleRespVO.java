@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.feerule.vo;
 
+import cn.idev.excel.annotation.ExcelIgnore;
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,8 +19,12 @@ public class FeeRuleRespVO {
     private Long id;
 
     @Schema(description = "[所属场站] 关联场站信息表 station_info.id，必填", requiredMode = Schema.RequiredMode.REQUIRED, example = "26061")
-    @ExcelProperty("所属场站")
+    @ExcelIgnore
     private Long stationId;
+
+    @Schema(description = "场站名称")
+    @ExcelProperty("所属场站")
+    private String stationName;
 
     @Schema(description = "[费率类型] 如：停车收费/充电收费/混合收费", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @ExcelProperty("费率类型")
@@ -42,8 +47,12 @@ public class FeeRuleRespVO {
     private LocalDateTime auditTime;
 
     @Schema(description = "[审核人] 关联芋道用户表 system_user.id", example = "19185")
-    @ExcelProperty("审核人")
+    @ExcelIgnore
     private Long auditUserId;
+
+    @Schema(description = "审核人名称")
+    @ExcelProperty("审核人")
+    private String auditUserName;
 
     @Schema(description = "[订单匹配率] 默认0")
     @ExcelProperty("订单匹配率")
@@ -74,11 +83,13 @@ public class FeeRuleRespVO {
     private String remark;
 
     @Schema(description = "[备用字段1]")
-    @ExcelProperty("备用字段1")
+//    @ExcelProperty("备用字段1")
+    @ExcelIgnore
     private String reserve1;
 
     @Schema(description = "[备用字段2]")
-    @ExcelProperty("备用字段2")
+//    @ExcelProperty("备用字段2")
+    @ExcelIgnore
     private String reserve2;
 
     @Schema(description = "[创建者] 创建人账号/姓名")

@@ -157,6 +157,10 @@
             <artifactId>html2pdf</artifactId>
             <version>3.0.5</version>
         </dependency>
+        <dependency>
+            <groupId>cn.iocoder.cloud</groupId>
+            <artifactId>yudao-spring-boot-starter-biz-ip</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

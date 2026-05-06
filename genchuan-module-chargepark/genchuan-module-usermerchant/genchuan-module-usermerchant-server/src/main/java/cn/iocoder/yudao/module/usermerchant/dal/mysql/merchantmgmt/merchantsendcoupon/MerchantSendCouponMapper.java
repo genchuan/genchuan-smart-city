@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.plateauth.vo.PlateAuthChartRespVO;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.merchantmgmt.merchantsendcoupon.MerchantSendCouponDO;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantsendcoupon.vo.*;
 import org.apache.ibatis.annotations.Param;
@@ -19,6 +20,7 @@ import java.util.List;
  * @author 亘川智城
  */
 @Mapper
+@DS("master")
 public interface MerchantSendCouponMapper extends BaseMapperX<MerchantSendCouponDO> {
 
     default PageResult<MerchantSendCouponDO> selectPage(MerchantSendCouponPageReqVO reqVO) {

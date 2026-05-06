@@ -212,7 +212,7 @@ public class AidWorkServiceImpl implements AidWorkService {
         statusMap.forEach((map) -> {
             String status = String.valueOf(map.get("status"));
             String dictDataLabel = "";
-            CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.VIOLATE_MGMT_STATUS.getType());
+            CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.AID_WORK_STATUS.getType());
             if (dictDataList.getData() != null) {
                 for (DictDataRespDTO dictData : dictDataList.getData()) {
                     if (dictData.getValue().equals(status)) {

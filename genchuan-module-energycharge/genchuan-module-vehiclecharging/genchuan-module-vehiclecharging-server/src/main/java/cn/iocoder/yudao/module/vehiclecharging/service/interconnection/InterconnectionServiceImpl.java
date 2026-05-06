@@ -96,6 +96,7 @@ public class InterconnectionServiceImpl implements InterconnectionService {
     public void closeInterconnection(InterconnectionCloseReqVO closeReqVO) {
         validateInterconnectionExists(Long.valueOf(closeReqVO.getId()));
         InterconnectionDO updateObj = BeanUtils.toBean(closeReqVO, InterconnectionDO.class);
+        updateObj.setConnectStatus("已关闭");
         interconnectionMapper.updateById(updateObj);
     }
 

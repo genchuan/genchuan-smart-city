@@ -1,13 +1,19 @@
 package cn.iocoder.yudao.module.studentmgmt.dal.mysql.studyup;
 
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.ChartCountVO;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.studyup.vo.StudyUpChartRespVO;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.studyup.vo.StudyUpPageReqVO;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.studyup.vo.StudyUpQueryRespVO;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studyup.StudyUpDO;
+import com.alibaba.fastjson.JSONObject;
+import jakarta.validation.constraints.NotNull;
 import org.apache.ibatis.annotations.Mapper;
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.studyup.vo.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 升学管理 Mapper
@@ -34,4 +40,13 @@ public interface StudyUpMapper extends BaseMapperX<StudyUpDO> {
                 .orderByDesc(StudyUpDO::getId));
     }
 
+    StudyUpQueryRespVO selectByStudentId(@NotNull(message = "学生 ID不能为空") Long studentId);
+
+    StudyUpChartRespVO selectTotalCount(LocalDateTime startTime, LocalDateTime endTime, String pending_plan, String planned);
+
+    List<JSONObject> selectSchoolTopCount(LocalDateTime startTime, LocalDateTime endTime);
+
+    List<ChartCountVO> selectIntentionDistributionList(LocalDateTime startTime, LocalDateTime endTime);
+
+    List<ChartCountVO> selectSchoolTypeDistributionList(LocalDateTime startTime, LocalDateTime endTime);
 }

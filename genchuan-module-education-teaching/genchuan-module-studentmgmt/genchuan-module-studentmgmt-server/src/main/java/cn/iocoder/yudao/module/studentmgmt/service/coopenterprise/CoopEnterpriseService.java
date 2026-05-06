@@ -1,11 +1,12 @@
 package cn.iocoder.yudao.module.studentmgmt.service.coopenterprise;
 
-import java.util.*;
-import jakarta.validation.*;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.BaseChartReqVO;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.coopenterprise.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.coopenterprise.CoopEnterpriseDO;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 校企合作 Service 接口
@@ -59,4 +60,9 @@ public interface CoopEnterpriseService {
      */
     PageResult<CoopEnterpriseDO> getCoopEnterprisePage(CoopEnterprisePageReqVO pageReqVO);
 
+    Boolean maintain(@Valid CoopEnterpriseMaintainReqVO updateReqVO);
+
+    CoopEnterpriseChartRespVO chart(@Valid CoopEnterpriseChartReqVO updateReqVO);
+
+    CoopEnterpriseDistributionRespVO enterpriseDistribution(@Valid BaseChartReqVO reqVO);
 }

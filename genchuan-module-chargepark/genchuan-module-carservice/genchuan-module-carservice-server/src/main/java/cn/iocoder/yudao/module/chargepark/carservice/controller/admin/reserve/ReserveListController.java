@@ -14,6 +14,7 @@ import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.reserve.vo
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.reserve.vo.ReserveListPageReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.reserve.vo.ReserveListRejectReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.reserve.vo.ReserveListRespVO;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.reserve.vo.ReserveListSaveReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.reserve.ReserveListDO;
 import cn.iocoder.yudao.module.chargepark.carservice.framework.pdf.PdfUtils;
 import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.StationNameInjector;
@@ -41,6 +42,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.CREATE;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.UPDATE;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
@@ -65,6 +67,14 @@ public class ReserveListController {
 
     @Resource
     private ParkingSpaceInfoApi parkingSpaceInfoApi;
+
+    @PostMapping("/create")
+    @Operation(summary = "新增 - 发起预约（默认状态：待审核）")
+    @PreAuthorize("@ss.hasPermission('carservice:reserve-list:create')")
+    @ApiAccessLog(operateType = CREATE)
+    public CommonResult<Long> createReserveList(@Valid @RequestBody ReserveListSaveReqVO reqVO) {
+        return success(reserveListService.createReserveList(reqVO));
+    }
 
     @GetMapping("/page")
     @Operation(summary = "筛选/刷新 预约列表")
@@ -199,6 +209,16 @@ public class ReserveListController {
     @ApiAccessLog(operateType = UPDATE)
     public CommonResult<Boolean> cancelReserveList(@RequestParam("id") Long id) {
         reserveListService.cancelReserveList(id);
+        return success(true);
+    }
+
+    @PutMapping("/complete")
+    @Operation(summary = "完成 - 已生效 → 已完成")
+    @Parameter(name = "id", description = "编号", required = true)
+    @PreAuthorize("@ss.hasPermission('carservice:reserve-list:complete')")
+    @ApiAccessLog(operateType = UPDATE)
+    public CommonResult<Boolean> completeReserveList(@RequestParam("id") Long id) {
+        reserveListService.completeReserveList(id);
         return success(true);
     }
 

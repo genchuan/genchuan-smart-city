@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.ordertrade.dal.mysql.invoicemgmt.InvoiceListMappe
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.ordermgmt.AllOrderMapper;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.refundmgmt.RefundApplyMapper;
 import cn.iocoder.yudao.module.ordertrade.framework.tool.OrderUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,11 +57,13 @@ public class AllOrderServiceImpl implements AllOrderService {
     public void deleteAllOrderListByIds(List<Long> ids) { allOrderMapper.deleteByIds(ids); }
 
     @Override
-    public AllOrderDO getAllOrder(Long id) { return allOrderMapper.selectById(id); }
+    public AllOrderDO getAllOrder(Long id) { return allOrderMapper.selectByIdJoinStation(id); }
 
     @Override
     public PageResult<AllOrderDO> getAllOrderPage(AllOrderPageReqVO pageReqVO) {
-        return allOrderMapper.selectPage(pageReqVO);
+        Page<AllOrderDO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        var result = allOrderMapper.selectPageJoinStation(page, pageReqVO);
+        return new PageResult<>(result.getRecords(), result.getTotal());
     }
 
         @Override

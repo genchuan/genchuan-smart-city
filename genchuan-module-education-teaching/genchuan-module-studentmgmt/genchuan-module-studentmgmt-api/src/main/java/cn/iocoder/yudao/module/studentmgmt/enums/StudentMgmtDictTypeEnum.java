@@ -180,6 +180,8 @@ public enum StudentMgmtDictTypeEnum {
     // 状态（待确认 / 待审核 / 已通过，关联芋道字典表：stay_mgmt_status）
     STAY_MGMT_STATUS("stay_mgmt_status", "留宿管理状态"),
 
+    // 企业类型（国企 / 民企 / 外企），关联芋道字典表：coop_enterprise_enterprise_type
+    COOP_ENTERPRISE_ENTERPRISE_TYPE("coop_enterprise_enterprise_type", "合作企业类型"),
     ;
     // ==================== 枚举属性 ====================
     /**

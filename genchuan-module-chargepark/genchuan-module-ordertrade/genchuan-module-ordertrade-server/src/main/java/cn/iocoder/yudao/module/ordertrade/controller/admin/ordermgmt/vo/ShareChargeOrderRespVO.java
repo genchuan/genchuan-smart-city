@@ -57,10 +57,10 @@ public class ShareChargeOrderRespVO {
     private LocalDateTime createOrderTime;
 
     @Schema(description = "所属场站ID")
-    @ExcelProperty("所属场站ID")
     private Long stationId;
 
     @Schema(description = "所属场站名称")
+    @ExcelProperty("所属场站名称")
     private String stationName;
 
     @Schema(description = "支付方式")

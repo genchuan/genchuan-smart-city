@@ -16,6 +16,9 @@ public class TimePermissionPageReqVO extends PageParam {
     @Schema(description = "[所属场站] 关联场站信息表station_info的ID", example = "30323")
     private Long stationId;
 
+    @Schema(description = "场站名称")
+    private String stationName;
+
     @Schema(description = "[生效时段] 时段权限生效的时间段描述")
     private String timeRange;
 
@@ -31,6 +34,9 @@ public class TimePermissionPageReqVO extends PageParam {
 
     @Schema(description = "[审核人] 关联芋道用户表system_user的ID", example = "118")
     private Long auditUserId;
+
+    @Schema(description = "审核人名称")
+    private String auditUserName;
 
     @Schema(description = "[使用次数] 该权限被使用的累计次数", example = "12744")
     private Integer useCount;

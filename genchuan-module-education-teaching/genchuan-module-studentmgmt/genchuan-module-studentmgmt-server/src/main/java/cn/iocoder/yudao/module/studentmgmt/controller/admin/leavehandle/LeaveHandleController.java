@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.leavehandle;
 
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.BaseChartReqVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -41,7 +42,7 @@ public class LeaveHandleController {
     @PostMapping("/create")
     @Operation(summary = "创建离校办理")
     @PreAuthorize("@ss.hasPermission('studentmgmt:leave-handle:create')")
-    public CommonResult<Long> createLeaveHandle(@Valid @RequestBody LeaveHandleSaveReqVO createReqVO) {
+    public CommonResult<Long> createLeaveHandle(@Valid @RequestBody LeaveHandleCreateReqVO createReqVO) {
         return success(leaveHandleService.createLeaveHandle(createReqVO));
     }
 
@@ -100,5 +101,34 @@ public class LeaveHandleController {
         ExcelUtils.write(response, "离校办理.xls", "数据", LeaveHandleRespVO.class,
                         BeanUtils.toBean(list, LeaveHandleRespVO.class));
     }
+
+    @PutMapping("/confirm")
+    @Operation(summary = "确认")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:leave-handle:confirm')")
+    public CommonResult<Boolean> confirm(@Valid @RequestBody LeaveHandleConfirmReqVO reqVO) {
+        return success(leaveHandleService.confirm(reqVO));
+    }
+
+    @PutMapping("/handle")
+    @Operation(summary = "办理")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:leave-handle:handle')")
+    public CommonResult<Boolean> handle(@Valid @RequestBody LeaveHandleHandleReqVO reqVO) {
+        return success(leaveHandleService.handle(reqVO));
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "毕业生离校进度看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:leave-handle:query')")
+    public CommonResult<LeaveHandleCharRespVO> chart(@Valid BaseChartReqVO reqVO) {
+        return success(leaveHandleService.chart(reqVO));
+    }
+
+    @GetMapping("/chart/leaveIndex")
+    @Operation(summary = "毕业生离校指标统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:leave-handle:query')")
+    public CommonResult<LeaveHandleIndexRespVO> leaveIndex(@Valid BaseChartReqVO reqVO) {
+        return success(leaveHandleService.leaveIndex(reqVO));
+    }
+
 
 }

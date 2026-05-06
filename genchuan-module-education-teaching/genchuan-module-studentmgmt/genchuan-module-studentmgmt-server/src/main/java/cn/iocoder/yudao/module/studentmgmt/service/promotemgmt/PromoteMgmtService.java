@@ -59,4 +59,9 @@ public interface PromoteMgmtService {
      */
     PageResult<PromoteMgmtDO> getPromoteMgmtPage(PromoteMgmtPageReqVO pageReqVO);
 
+    Boolean execute(@Valid PromoteMgmtExecuteReqVO reqVO);
+
+    PromoteMgmtChartRespVO chart(@Valid PromoteMgmtChartReqVO reqVO);
+
+    PromoteCountReqVO promoteCount(@Valid PromoteMgmtChartReqVO reqVO);
 }

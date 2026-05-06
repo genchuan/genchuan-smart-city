@@ -79,4 +79,12 @@ public interface IdentifyService {
      */
     PlateIdentifyChartRespVO getIdentifyChartData(PlateIdentifyChartReqVO reqVO);
 
+    /**
+     * 确认车牌识别记录
+     *
+     * @param reqVO 确认信息
+     * @return 是否成功
+     */
+    Boolean confirmIdentify(PlateIdentifyConfirmReqVO reqVO);
+
 }
