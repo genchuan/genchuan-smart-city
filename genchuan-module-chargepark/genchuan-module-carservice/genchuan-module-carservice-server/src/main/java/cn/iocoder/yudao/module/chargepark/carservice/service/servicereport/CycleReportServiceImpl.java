@@ -263,23 +263,13 @@ public class CycleReportServiceImpl implements CycleReportService {
         CycleReportRespVO base = toRespVO(d);
         CycleReportDetailRespVO detail = new CycleReportDetailRespVO();
         copyRespFields(base, detail);
-        // detail_data 为空 → 老 seed 数据,本期尚未聚合真实明细,直接给空 map(不再静默回退实时算避免数据漂移)
-        if (d.getDetailData() == null || d.getDetailData().isEmpty()) {
-            detail.setDetailData(new LinkedHashMap<>());
-            return detail;
-        }
-        // 快照存在时必须能解析成功,否则数据损坏,抛业务异常让运维看见
-        try {
-            Map<String, List<Map<String, Object>>> detailMap = MAPPER.readValue(d.getDetailData(),
-                    new com.fasterxml.jackson.core.type.TypeReference<Map<String, List<Map<String, Object>>>>() {});
-            // wordingDetail 用实时已生效话术覆盖快照,保持与卡片"生效话术数"对齐
-            detailMap.put("wordingDetail", toMapList(wordingMgmtMapper.selectList(
-                    new LambdaQueryWrapperX<WordingMgmtDO>().eq(WordingMgmtDO::getStatus, "已生效"))));
-            detail.setDetailData(detailMap);
-        } catch (Exception ex) {
-            log.error("[getCycleReport] detail_data 解析失败 id={}", id, ex);
-            throw exception(CYCLE_REPORT_DETAIL_DATA_INVALID);
-        }
+        // 不再依赖 detail_data 历史快照,所有维度按报表的统计窗口实时重查,
+        // 保证图表/卡片下钻看到的明细与卡片实时数据/最新业务数据对齐
+        Map<String, List<Map<String, Object>>> detailMap = buildDetailData(d.getStatStartTime(), d.getStatEndTime());
+        // 话术不属于业务数据按窗口截取,而是当前生效的话术全集
+        detailMap.put("wordingDetail", toMapList(wordingMgmtMapper.selectList(
+                new LambdaQueryWrapperX<WordingMgmtDO>().eq(WordingMgmtDO::getStatus, "已生效"))));
+        detail.setDetailData(detailMap);
         return detail;
     }
 
