@@ -32,7 +32,8 @@ import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
-import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.OPEN_NOT_EXISTS;
+import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.*;
+
 
 
 /**
@@ -59,11 +60,16 @@ public class GateOpenServiceImpl implements GateOpenService {
 
     @Override
     public Long createOpenApply(GateOpenCreateReqVO createReqVO) {
+        Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
+        if (currentUserId == null) {
+            throw exception(USER_NOT_LOGIN);
+        }
+
         GateOpenDO open = new GateOpenDO();
         open.setStationId(createReqVO.getStationId());
         open.setOpenReason(createReqVO.getOpenReason());
         open.setRemark(createReqVO.getRemark());
-        open.setApplyUserId(SecurityFrameworkUtils.getLoginUserId());
+        open.setApplyUserId(currentUserId);
         open.setApplyTime(LocalDateTime.now());
         open.setStatus("待审批");
         openMapper.insert(open);
@@ -123,10 +129,16 @@ public class GateOpenServiceImpl implements GateOpenService {
         if (open == null) {
             throw exception(OPEN_NOT_EXISTS);
         }
+
+        Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
+        if (currentUserId == null) {
+            throw exception(USER_NOT_LOGIN);
+        }
+
         GateOpenDO updateObj = new GateOpenDO();
         updateObj.setId(reqVO.getId());
         updateObj.setStatus("已通过");
-        updateObj.setAuditUserId(SecurityFrameworkUtils.getLoginUserId());
+        updateObj.setAuditUserId(currentUserId);
         updateObj.setAuditTime(LocalDateTime.now());
         openMapper.updateById(updateObj);
     }
@@ -137,10 +149,16 @@ public class GateOpenServiceImpl implements GateOpenService {
         if (open == null) {
             throw exception(OPEN_NOT_EXISTS);
         }
+
+        Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
+        if (currentUserId == null) {
+            throw exception(USER_NOT_LOGIN);
+        }
+
         GateOpenDO updateObj = new GateOpenDO();
         updateObj.setId(reqVO.getId());
         updateObj.setStatus("已驳回");
-        updateObj.setAuditUserId(SecurityFrameworkUtils.getLoginUserId());
+        updateObj.setAuditUserId(currentUserId);
         updateObj.setAuditTime(LocalDateTime.now());
         updateObj.setRejectReason(reqVO.getRejectReason());
         openMapper.updateById(updateObj);
@@ -165,11 +183,17 @@ public class GateOpenServiceImpl implements GateOpenService {
         if (open == null) {
             throw exception(OPEN_NOT_EXISTS);
         }
+
+        Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
+        if (currentUserId == null) {
+            throw exception(USER_NOT_LOGIN);
+        }
+
         GateOpenDO updateObj = new GateOpenDO();
         updateObj.setId(reqVO.getId());
         updateObj.setOpenReason(reqVO.getOpenReason());
         updateObj.setRemark(reqVO.getRemark());
-        updateObj.setApplyUserId(SecurityFrameworkUtils.getLoginUserId());
+        updateObj.setApplyUserId(currentUserId);
         updateObj.setApplyTime(LocalDateTime.now());
         updateObj.setStatus("待审批");
         updateObj.setAuditUserId(null);
