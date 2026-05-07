@@ -164,6 +164,9 @@ public class NewPushServiceImpl implements NewPushService {
         // 1. 卡片数据
         vo = newPushMapper.selectTotalCount(year, NewPushStatusEnum.PUSHED.getStatus());
         // 如果统计为空，则设置为0
+        if (vo == null) {
+            vo = new NewPushChartRespVO();
+        }
         if (vo.getWaitPushCount() == null) {
             vo.setWaitPushCount(0);
         }

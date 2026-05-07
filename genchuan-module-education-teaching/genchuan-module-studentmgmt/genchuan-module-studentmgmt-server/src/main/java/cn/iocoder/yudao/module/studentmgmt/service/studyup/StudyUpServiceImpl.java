@@ -153,6 +153,9 @@ public class StudyUpServiceImpl implements StudyUpService {
                 StudyUpStatusEnum.PLANNED.getStatus()
         );
         // 如果统计为空，则设置为0
+        if (vo == null) {
+            vo = new StudyUpChartRespVO();
+        }
         if (vo.getPlannedStudent() == null) {
             vo.setPlannedStudent(0);
         }

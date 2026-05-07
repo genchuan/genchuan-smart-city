@@ -177,6 +177,9 @@ public class StayMgmtServiceImpl implements StayMgmtService {
                 StayStatusEnum.PENDING_AUDIT.getStatus(),
                 StayStatusEnum.PASSED.getStatus()
         );
+        if (vo == null) {
+            vo = new StayMgmtChartRespVO();
+        }
         if (vo.getPassedCount() == null) {
             vo.setPassedCount(0);
         }
