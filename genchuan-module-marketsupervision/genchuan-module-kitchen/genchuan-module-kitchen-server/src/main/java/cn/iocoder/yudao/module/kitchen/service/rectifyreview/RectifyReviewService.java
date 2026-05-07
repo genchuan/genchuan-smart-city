@@ -5,6 +5,8 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.*;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.add.AddRectifyReviewReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.add.AddRectifyReviewReqVO2;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.cancel.CancelReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.chart.RectifyReviewBarResp;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.chart.RectifyReviewChartResp;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.issue.IssueReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileRespVO;
@@ -86,4 +88,8 @@ public interface RectifyReviewService {
     ResponseEntity<byte[]> downloadRectifyNoticePdfBatch(List<Long> rectifyNoticeIds) throws IOException;
 
     Long reviewIssue2(IssueReqVO reqVO);
+
+    RectifyReviewChartResp getRectifyReviewChartStatistics(RectifyReviewLedgerPageReqVO reqVO);
+
+    RectifyReviewBarResp getMonthReviewCount();
 }
