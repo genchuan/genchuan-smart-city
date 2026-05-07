@@ -30,7 +30,8 @@ import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
-import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.CAR_HANDLE_NOT_EXISTS;
+import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.*;
+
 
 /**
  * 油车占位处置 Service 实现类
@@ -105,6 +106,9 @@ public class OilCarHandleServiceImpl implements OilCarHandleService {
     @Transactional(rollbackFor = Exception.class)
     public void batchHandle(OilCarHandleBatchHandleReqVO reqVO) {
         Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
+        if (currentUserId == null) {
+            throw exception(USER_NOT_LOGIN);
+        }
 
         for (Long id : reqVO.getIds()) {
             OilCarHandleDO carHandle = carHandleMapper.selectById(id);
@@ -139,9 +143,14 @@ public class OilCarHandleServiceImpl implements OilCarHandleService {
             throw exception(CAR_HANDLE_NOT_EXISTS);
         }
 
+        Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
+        if (currentUserId == null) {
+            throw exception(USER_NOT_LOGIN);
+        }
+
         OilCarHandleDO updateObj = new OilCarHandleDO();
         updateObj.setId(reqVO.getId());
-        updateObj.setHandleUserId(SecurityFrameworkUtils.getLoginUserId());
+        updateObj.setHandleUserId(currentUserId);
         updateObj.setHandleTime(LocalDateTime.now());
         updateObj.setStatus("处理中");
         updateObj.setHandleMethod(reqVO.getHandleMethod());
@@ -156,9 +165,14 @@ public class OilCarHandleServiceImpl implements OilCarHandleService {
             throw exception(CAR_HANDLE_NOT_EXISTS);
         }
 
+        Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
+        if (currentUserId == null) {
+            throw exception(USER_NOT_LOGIN);
+        }
+
         OilCarHandleDO updateObj = new OilCarHandleDO();
         updateObj.setId(reqVO.getId());
-        updateObj.setHandleUserId(SecurityFrameworkUtils.getLoginUserId());
+        updateObj.setHandleUserId(currentUserId);
         updateObj.setHandleTime(LocalDateTime.now());
         updateObj.setStatus("已关闭");
         updateObj.setHandleType("忽略");
