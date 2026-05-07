@@ -199,6 +199,11 @@ public class CycleReportServiceImpl implements CycleReportService {
                         .orderByDesc(CycleReportDO::getId));
     }
 
+    @Override
+    public List<CycleReportDO> getListByIds(List<Long> ids) {
+        return cycleReportMapper.selectBatchIds(ids);
+    }
+
     private CycleReportDO validateExists(Long id) {
         CycleReportDO report = cycleReportMapper.selectById(id);
         if (report == null) {
@@ -227,11 +232,17 @@ public class CycleReportServiceImpl implements CycleReportService {
     private CycleReportChartRespVO.ChartBarData buildBarData(String name, List<Map<String, Object>> typeCountList) {
         CycleReportChartRespVO.ChartBarData barData = new CycleReportChartRespVO.ChartBarData();
         barData.setName(name);
-        List<CycleReportChartRespVO.ChartDataItem> items = new ArrayList<>();
+        List<Map<String, Object>> items = new ArrayList<>();
         for (Map<String, Object> m : typeCountList) {
-            CycleReportChartRespVO.ChartDataItem item = new CycleReportChartRespVO.ChartDataItem();
-            item.setType(m.get("type") != null ? m.get("type").toString() : "unknown");
-            item.setCount(((Number) m.get("count")).intValue());
+            Map<String, Object> item = new LinkedHashMap<>();
+            for (Map.Entry<String, Object> entry : m.entrySet()) {
+                Object value = entry.getValue();
+                if ("count".equals(entry.getKey()) && value instanceof Number) {
+                    item.put(entry.getKey(), ((Number) value).intValue());
+                } else {
+                    item.put(entry.getKey(), value != null ? value.toString() : null);
+                }
+            }
             items.add(item);
         }
         barData.setData(items);

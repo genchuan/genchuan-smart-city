@@ -183,6 +183,9 @@ public class DormAssignServiceImpl implements DormAssignService {
         // 1. 卡片数据
         vo = dormAssignMapper.selectTotalCount(year);
         // 如果统计为空，则设置为0
+        if (vo == null) {
+            vo = new DormAssignChartRespVO();
+        }
         if (vo.getProgress() == null) {
             vo.setProgress(BigDecimal.ZERO);
         }

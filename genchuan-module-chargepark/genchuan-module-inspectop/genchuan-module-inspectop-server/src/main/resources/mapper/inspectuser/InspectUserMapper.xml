@@ -26,4 +26,26 @@
         FROM inspect_user
     </select>
 
+    <!-- 查询指定人员关联的巡检任务数量 -->
+    <select id="selectTaskCountByUserId" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM inspect_task
+        WHERE user_id = #{userId}
+          AND deleted = 0
+    </select>
+
+    <!-- 批量查询人员关联的巡检任务数量 -->
+    <select id="selectTaskCountByUserIds" resultType="java.util.Map">
+        SELECT
+        user_id as userId,
+        COUNT(*) as taskCount
+        FROM inspect_task
+        WHERE user_id IN
+        <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+        AND deleted = 0
+        GROUP BY user_id
+    </select>
+
 </mapper>

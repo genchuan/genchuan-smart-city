@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.chargepark.carservice.service.complaint;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.DisputeMediateConfirmReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.DisputeMediateMediateReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.DisputeMediatePageReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.DisputeMediateSaveReqVO;
@@ -38,6 +39,6 @@ public interface DisputeMediateService {
     void updateDisputeMediateProgress(DisputeMediateUpdateProgressReqVO reqVO);
 
     /** 确认：调解中 → 已完成 */
-    void confirmDisputeMediate(Long id);
+    void confirmDisputeMediate(DisputeMediateConfirmReqVO reqVO);
 
 }

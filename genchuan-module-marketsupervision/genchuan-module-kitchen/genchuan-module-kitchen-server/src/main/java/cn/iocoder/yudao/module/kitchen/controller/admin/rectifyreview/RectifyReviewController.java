@@ -10,6 +10,8 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.*;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.add.AddRectifyReviewReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.add.AddRectifyReviewReqVO2;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.cancel.CancelReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.chart.RectifyReviewBarResp;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.chart.RectifyReviewChartResp;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.issue.IssueReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileRespVO;
@@ -45,7 +47,21 @@ public class RectifyReviewController {
     @Resource
     private RectifyReviewService rectifyReviewService;
 
-
+    @GetMapping("/chart-month-bar")
+    @Operation(summary = "整改复审 - 按月统计新增柱状图")
+    @SysOpeLog(operObject = "整改复审台账", operType = "图表统计")
+    public CommonResult<RectifyReviewBarResp> getMonthReviewCount() {
+        RectifyReviewBarResp resp = rectifyReviewService.getMonthReviewCount();
+        return success(resp);
+    }
+    @GetMapping("/chart-statistics")
+    @Operation(summary = "整改复审 - 状态统计（图表/卡片）")
+//    @SysOpeLog(operObject = "整改复审台账", operType = "统计查看")
+    public CommonResult<RectifyReviewChartResp> getRectifyReviewChartStatistics(
+            @Valid RectifyReviewLedgerPageReqVO reqVO) {
+        RectifyReviewChartResp chartResp = rectifyReviewService.getRectifyReviewChartStatistics(reqVO);
+        return success(chartResp);
+    }
 
     @GetMapping("/download-notice-pdf-batch")
     @Operation(summary = "批量下载整改通知书PDF")

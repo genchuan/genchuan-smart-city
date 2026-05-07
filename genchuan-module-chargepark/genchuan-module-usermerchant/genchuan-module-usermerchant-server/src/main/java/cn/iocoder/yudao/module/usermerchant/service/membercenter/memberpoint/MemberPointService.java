@@ -59,4 +59,10 @@ public interface MemberPointService {
      */
     PageResult<MemberPointDO> getMemberPointPage(MemberPointPageReqVO pageReqVO);
 
+    /**
+     * 核查用户积分
+     *
+     * @param reqVO 核查信息
+     */
+    void checkPointRecord(@Valid MemberPointCheckReqVO reqVO);
 }

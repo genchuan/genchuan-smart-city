@@ -168,6 +168,19 @@ public class TimeRangeParser {
     }
 
     /**
+     * 解析时间范围字符串，若输入为空或解析失败则返回默认值（全量查询，粒度为 day）
+     * @param timeRange 时间范围字符串
+     * @return 非 null 的 TimeRangeParsed 对象，若解析失败则返回默认值
+     */
+    public static TimeRangeParsed parseOrDefault(String timeRange) {
+        if (!StringUtils.hasText(timeRange)) {
+            return new TimeRangeParsed(null, null, "day");
+        }
+        TimeRangeParsed parsed = parse(timeRange);
+        return parsed != null ? parsed : new TimeRangeParsed(null, null, "day");
+    }
+
+    /**
      * 时间范围解析结果
      */
     @Getter

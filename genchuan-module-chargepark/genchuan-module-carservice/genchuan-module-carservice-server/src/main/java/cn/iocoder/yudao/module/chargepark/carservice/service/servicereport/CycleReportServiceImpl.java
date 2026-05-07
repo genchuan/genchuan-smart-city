@@ -256,6 +256,11 @@ public class CycleReportServiceImpl implements CycleReportService {
 
     @Override
     public CycleReportDetailRespVO getCycleReport(Long id) {
+        return getCycleReport(id, null, null);
+    }
+
+    @Override
+    public CycleReportDetailRespVO getCycleReport(Long id, LocalDateTime startTime, LocalDateTime endTime) {
         CycleReportDO d = cycleReportMapper.selectById(id);
         if (d == null) {
             throw exception(CYCLE_REPORT_NOT_EXISTS);
@@ -263,19 +268,14 @@ public class CycleReportServiceImpl implements CycleReportService {
         CycleReportRespVO base = toRespVO(d);
         CycleReportDetailRespVO detail = new CycleReportDetailRespVO();
         copyRespFields(base, detail);
-        // detail_data 为空 → 老 seed 数据,本期尚未聚合真实明细,直接给空 map(不再静默回退实时算避免数据漂移)
-        if (d.getDetailData() == null || d.getDetailData().isEmpty()) {
-            detail.setDetailData(new LinkedHashMap<>());
-            return detail;
-        }
-        // 快照存在时必须能解析成功,否则数据损坏,抛业务异常让运维看见
-        try {
-            detail.setDetailData(MAPPER.readValue(d.getDetailData(),
-                    new com.fasterxml.jackson.core.type.TypeReference<Map<String, List<Map<String, Object>>>>() {}));
-        } catch (Exception ex) {
-            log.error("[getCycleReport] detail_data 解析失败 id={}", id, ex);
-            throw exception(CYCLE_REPORT_DETAIL_DATA_INVALID);
-        }
+        // 实时按窗口拉明细;调用方未传窗口时回退到报表自身的统计窗口
+        LocalDateTime s = startTime != null ? startTime : d.getStatStartTime();
+        LocalDateTime e = endTime != null ? endTime : d.getStatEndTime();
+        Map<String, List<Map<String, Object>>> detailMap = buildDetailData(s, e);
+        // 话术不属于业务数据按窗口截取,而是当前生效的话术全集
+        detailMap.put("wordingDetail", toMapList(wordingMgmtMapper.selectList(
+                new LambdaQueryWrapperX<WordingMgmtDO>().eq(WordingMgmtDO::getStatus, "已生效"))));
+        detail.setDetailData(detailMap);
         return detail;
     }
 
@@ -317,7 +317,8 @@ public class CycleReportServiceImpl implements CycleReportService {
                 .geIfPresent(SpaceLocationDO::getCreateTime, s).leIfPresent(SpaceLocationDO::getCreateTime, e))));
         d.put("spacePushDetail", toMapList(spacePushMapper.selectList(new LambdaQueryWrapperX<SpacePushDO>()
                 .geIfPresent(SpacePushDO::getCreateTime, s).leIfPresent(SpacePushDO::getCreateTime, e))));
-        d.put("wordingDetail", toMapList(wordingMgmtMapper.selectList(new LambdaQueryWrapperX<WordingMgmtDO>())));
+        d.put("wordingDetail", toMapList(wordingMgmtMapper.selectList(new LambdaQueryWrapperX<WordingMgmtDO>()
+                .eq(WordingMgmtDO::getStatus, "已生效"))));
         return d;
     }
 
@@ -359,7 +360,8 @@ public class CycleReportServiceImpl implements CycleReportService {
                         .geIfPresent(SpacePushDO::getCreateTime, s).leIfPresent(SpacePushDO::getCreateTime, e));
                 break;
             case "wording":
-                fullList = wordingMgmtMapper.selectList(new LambdaQueryWrapperX<WordingMgmtDO>());
+                fullList = wordingMgmtMapper.selectList(new LambdaQueryWrapperX<WordingMgmtDO>()
+                        .eq(WordingMgmtDO::getStatus, "已生效"));
                 break;
             default:
                 throw new IllegalArgumentException("无效的 dimension: " + dimension +
@@ -975,7 +977,8 @@ public class CycleReportServiceImpl implements CycleReportService {
         d.put("spacePushDetail", toMapList(spacePushMapper.selectList(new LambdaQueryWrapperX<SpacePushDO>()
                 .geIfPresent(SpacePushDO::getCreateTime, s)
                 .leIfPresent(SpacePushDO::getCreateTime, e)).stream().limit(50).collect(Collectors.toList())));
-        d.put("wordingDetail", toMapList(wordingMgmtMapper.selectList(new LambdaQueryWrapperX<WordingMgmtDO>())
+        d.put("wordingDetail", toMapList(wordingMgmtMapper.selectList(new LambdaQueryWrapperX<WordingMgmtDO>()
+                .eq(WordingMgmtDO::getStatus, "已生效"))
                 .stream().limit(50).collect(Collectors.toList())));
         return d;
     }

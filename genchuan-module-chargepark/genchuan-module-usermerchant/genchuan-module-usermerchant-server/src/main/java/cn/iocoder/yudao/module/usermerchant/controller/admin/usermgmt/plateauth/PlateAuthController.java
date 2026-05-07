@@ -55,8 +55,8 @@ public class PlateAuthController {
         return success(true);
     }
 
-    @GetMapping("/export-excel")
-    @Operation(summary = "导出车牌认证 Excel")
+    @GetMapping("/export")
+    @Operation(summary = "导出车牌认证")
     @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportPlateAuthExcel(@Valid PlateAuthPageReqVO pageReqVO,

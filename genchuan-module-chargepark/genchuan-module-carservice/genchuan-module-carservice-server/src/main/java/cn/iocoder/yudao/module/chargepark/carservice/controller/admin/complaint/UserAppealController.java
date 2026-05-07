@@ -90,10 +90,18 @@ public class UserAppealController {
         List<UserAppealDO> list = userAppealService.getUserAppealPage(pageReqVO).getList();
         List<UserAppealRespVO> respList = BeanUtils.toBean(list, UserAppealRespVO.class);
         injectUserNames(respList);
+        // 服务器 JVM 时区可能不是 Asia/Shanghai，导出时把 LocalDateTime 转为北京时间
+        respList.forEach(vo -> {
+            vo.setSubmitTime(toBeijing(vo.getSubmitTime()));
+            vo.setAuditTime(toBeijing(vo.getAuditTime()));
+            vo.setHandleTime(toBeijing(vo.getHandleTime()));
+            vo.setFeedbackTime(toBeijing(vo.getFeedbackTime()));
+            vo.setCreateTime(toBeijing(vo.getCreateTime()));
+            vo.setUpdateTime(toBeijing(vo.getUpdateTime()));
+        });
         if ("pdf".equalsIgnoreCase(format)) {
             PdfUtils.write(response, "用户申诉.pdf", "用户申诉台账",
                     PdfUtils.headers(
-                            "id", "ID",
                             "userName", "用户",
                             "orderId", "订单",
                             "content", "申诉内容",
@@ -102,7 +110,6 @@ public class UserAppealController {
                             "auditUserName", "审核人",
                             "auditTime", "审核时间",
                             "handleUserName", "处置人",
-                            "progress", "处置进度",
                             "feedbackTime", "反馈时间"),
                     respList);
         } else {
@@ -195,6 +202,14 @@ public class UserAppealController {
                 UserNameInjector.field(UserAppealRespVO::getUserId, UserAppealRespVO::setUserName),
                 UserNameInjector.field(UserAppealRespVO::getAuditUserId, UserAppealRespVO::setAuditUserName),
                 UserNameInjector.field(UserAppealRespVO::getHandleUserId, UserAppealRespVO::setHandleUserName));
+    }
+
+    /** 把 JVM 本地时区的 LocalDateTime 转换为 Asia/Shanghai(北京)时间，导出场景使用。 */
+    private static java.time.LocalDateTime toBeijing(java.time.LocalDateTime ldt) {
+        if (ldt == null) return null;
+        return ldt.atZone(java.time.ZoneId.systemDefault())
+                .withZoneSameInstant(java.time.ZoneId.of("Asia/Shanghai"))
+                .toLocalDateTime();
     }
 
 }

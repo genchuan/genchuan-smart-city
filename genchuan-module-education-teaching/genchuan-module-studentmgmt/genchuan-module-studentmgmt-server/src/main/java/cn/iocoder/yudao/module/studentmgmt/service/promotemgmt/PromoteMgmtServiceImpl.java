@@ -117,6 +117,9 @@ public class PromoteMgmtServiceImpl implements PromoteMgmtService {
         }
         // 1. 卡片数据
         vo = promoteMgmtMapper.selectTotalCount(year);
+        if (vo == null) {
+            vo = new PromoteMgmtChartRespVO();
+        }
         // 如果统计为空，则设置为0
         if (vo.getWaitExecuteCount() == null) {
             vo.setWaitExecuteCount(0);

@@ -6,8 +6,11 @@ import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.iocoder.yudao.framework.common.enums.UserTypeEnum;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.member.api.user.MemberUserApi;
+import cn.iocoder.yudao.module.member.api.user.dto.MemberUserRespDTO;
 import cn.iocoder.yudao.module.pay.api.order.dto.PayOrderCreateReqDTO;
 import cn.iocoder.yudao.module.pay.api.refund.PayRefundApi;
 import cn.iocoder.yudao.module.pay.api.refund.dto.PayRefundCreateReqDTO;
@@ -24,6 +27,7 @@ import cn.iocoder.yudao.module.pay.enums.refund.PayRefundStatusEnum;
 import cn.iocoder.yudao.module.pay.enums.wallet.PayWalletBizTypeEnum;
 import cn.iocoder.yudao.module.pay.framework.pay.config.PayProperties;
 import cn.iocoder.yudao.module.pay.service.order.PayOrderService;
+import cn.iocoder.yudao.module.system.api.permission.PermissionApi;
 import cn.iocoder.yudao.module.system.api.social.SocialClientApi;
 import cn.iocoder.yudao.module.system.api.social.dto.SocialWxaOrderUploadShippingInfoReqDTO;
 import cn.iocoder.yudao.module.system.api.social.dto.SocialWxaSubscribeMessageSendReqDTO;
@@ -35,7 +39,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import static cn.hutool.core.util.ObjectUtil.notEqual;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -74,6 +80,12 @@ public class PayWalletRechargeServiceImpl implements PayWalletRechargeService {
 
     @Resource
     private PayProperties payProperties;
+
+    @Resource
+    private MemberUserApi memberUserApi;
+
+    @Resource
+    private PermissionApi permissionApi;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -153,7 +165,54 @@ public class PayWalletRechargeServiceImpl implements PayWalletRechargeService {
         payWalletService.addWalletBalance(recharge.getWalletId(), String.valueOf(id),
                 PayWalletBizTypeEnum.RECHARGE, recharge.getTotalPrice());
 
-        // 5. 发送订阅消息
+// 5. 【新增】支付成功，提升会员等级为5，并设置用户角色为169
+        PayWalletDO wallet = payWalletService.getWallet(recharge.getWalletId());
+        if (wallet != null) {
+            Long targetLevelId = 5L; // 固定提升到等级5
+
+            // 5.1 提升会员等级
+            try {
+                CommonResult<Boolean> updateResult = memberUserApi.updateUserLevel(wallet.getUserId(), targetLevelId);
+                if (updateResult.isSuccess()) {
+                    log.info("[updateWalletRechargerPaid][用户({})支付成功，会员等级已提升至({})]", wallet.getUserId(), targetLevelId);
+                } else {
+                    log.warn("[updateWalletRechargerPaid][用户({})支付成功，但提升会员等级至({})失败]", wallet.getUserId(), targetLevelId);
+                }
+            } catch (Exception e) {
+                log.error("[updateWalletRechargerPaid][调用会员服务更新用户({})等级时发生异常]", wallet.getUserId(), e);
+            }
+
+            // 5.2 【修改】先获取会员的手机号，然后根据手机号设置用户角色
+            try {
+                // 5.2.1 获取会员信息（包含手机号）
+                // 假设您有一个通过会员ID获取会员信息（含手机号）的RPC接口
+                CommonResult<MemberUserRespDTO> memberResult = memberUserApi.getUser(wallet.getUserId());
+                if (memberResult.isSuccess() && memberResult.getData() != null) {
+                    String mobile = memberResult.getData().getMobile();
+
+                    // 5.2.2 根据手机号设置用户角色为169
+                    Set<Long> roleIds = new HashSet<>();
+                    roleIds.add(169L);
+
+                    // 调用新的RPC接口
+                    CommonResult<Boolean> roleResult = permissionApi.assignUserRoleByMobile(mobile, roleIds);
+                    if (roleResult.isSuccess()) {
+                        log.info("[updateWalletRechargerPaid][用户({})支付成功，根据手机号({})设置用户角色成功]", wallet.getUserId(), mobile);
+                    } else {
+                        log.warn("[updateWalletRechargerPaid][用户({})支付成功，但设置用户角色失败，错误码：{}，错误信息：{}]",
+                                wallet.getUserId(), roleResult.getCode(), roleResult.getMsg());
+                    }
+                } else {
+                    log.warn("[updateWalletRechargerPaid][用户({})支付成功，但获取会员手机号失败]", wallet.getUserId());
+                }
+            } catch (Exception e) {
+                log.error("[updateWalletRechargerPaid][根据手机号设置用户({})角色时发生异常]", wallet.getUserId(), e);
+            }
+        } else {
+            log.error("[updateWalletRechargerPaid][支付成功，但未找到对应钱包，钱包ID({})]", recharge.getWalletId());
+        }
+
+        // 6. 发送订阅消息
         getSelf().sendWalletRechargerPaidMessage(payOrderId, recharge);
     }
 

@@ -13,6 +13,9 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.*;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.add.AddRectifyReviewReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.add.AddRectifyReviewReqVO2;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.cancel.CancelReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.chart.RectifyReviewBarItemResp;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.chart.RectifyReviewBarResp;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.chart.RectifyReviewChartResp;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.issue.IssueReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileRespVO;
@@ -38,6 +41,8 @@ import cn.iocoder.yudao.module.kitchen.service.enterpriseinfo.EnterpriseInfoServ
 import cn.iocoder.yudao.module.kitchen.service.entrectifyrecord.EntRectifyRecordService;
 import cn.iocoder.yudao.module.kitchen.service.rectifynotice.RectifyNoticeService;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
@@ -53,6 +58,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -112,6 +118,68 @@ public class RectifyReviewServiceImpl implements RectifyReviewService {
     // 在类里定义 ObjectMapper 实例
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
+    @Override
+    public RectifyReviewBarResp getMonthReviewCount() {
+        List<RectifyReviewBarItemResp> list = rectifyReviewMapper.selectMonthReviewCount();
+
+        RectifyReviewBarResp resp = new RectifyReviewBarResp();
+        resp.setList(list);
+        return resp;
+    }
+    @Override
+    public RectifyReviewChartResp getRectifyReviewChartStatistics(RectifyReviewLedgerPageReqVO reqVO) {
+        // 1. 调用 XML SQL 获取统计数据（状态统计 + 新增违规等级统计）
+        RectifyReviewChartResp resp = rectifyReviewMapper.getRectifyReviewChartResp(reqVO);
+
+        // 2. 空值防护：无数据时返回全0对象，避免前端 NPE 或显示异常
+        if (resp == null) {
+            resp = new RectifyReviewChartResp();
+            // 状态统计默认0
+            resp.setPendingReviewCount(0);
+            resp.setIssuedCount(0);
+            resp.setCanceledCount(0);
+            resp.setCompletedCount(0);
+            resp.setTotalCount(0);
+            // 状态占比默认0
+            resp.setPendingReviewRatio(BigDecimal.ZERO);
+            resp.setIssuedRatio(BigDecimal.ZERO);
+            resp.setCanceledRatio(BigDecimal.ZERO);
+            resp.setCompletedRatio(BigDecimal.ZERO);
+            // 违规等级默认0
+            resp.setLevelNormalCount(0);
+            resp.setLevelSeriousCount(0);
+            resp.setLevelVerySeriousCount(0);
+            // 违规等级占比默认0
+            resp.setLevelNormalRatio(BigDecimal.ZERO);
+            resp.setLevelSeriousRatio(BigDecimal.ZERO);
+            resp.setLevelVerySeriousRatio(BigDecimal.ZERO);
+            return resp;
+        }
+
+        // 3. 计算占比：总数>0时才计算，避免除0异常
+        int total = resp.getTotalCount();
+        if (total > 0) {
+            // 处理状态占比
+            resp.setPendingReviewRatio(calcRatio(resp.getPendingReviewCount(), total));
+            resp.setIssuedRatio(calcRatio(resp.getIssuedCount(), total));
+            resp.setCanceledRatio(calcRatio(resp.getCanceledCount(), total));
+            resp.setCompletedRatio(calcRatio(resp.getCompletedCount(), total));
+
+            // 新增：处理违规等级占比
+            resp.setLevelNormalRatio(calcRatio(resp.getLevelNormalCount(), total));
+            resp.setLevelSeriousRatio(calcRatio(resp.getLevelSeriousCount(), total));
+            resp.setLevelVerySeriousRatio(calcRatio(resp.getLevelVerySeriousCount(), total));
+        }
+
+        // 4. 返回包装好的统计结果
+        return resp;
+    }
+
+    // 工具方法：计算百分比
+    private BigDecimal calcRatio(Integer count, int total) {
+        if (count == null || count == 0) return BigDecimal.ZERO;
+        return BigDecimal.valueOf(count * 100.0 / total).setScale(2, BigDecimal.ROUND_HALF_UP);
+    }
     @Override
     public Long createRectifyReview(RectifyReviewSaveReqVO createReqVO) {
         // 插入

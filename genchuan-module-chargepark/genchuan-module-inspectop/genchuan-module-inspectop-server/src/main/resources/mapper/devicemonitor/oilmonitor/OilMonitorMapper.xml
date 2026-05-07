@@ -77,15 +77,18 @@
             <if test="reqVO.stationId != null">
                 AND om.station_id = #{reqVO.stationId}
             </if>
-
+            <!-- 【新增条件】场站名称模糊查询 -->
+            <if test="reqVO.stationName != null and reqVO.stationName != ''">
+                AND si.name LIKE CONCAT('%', #{reqVO.stationName}, '%')
+            </if>
             <!-- 识别时间范围 -->
             <if test="reqVO.identifyTime != null and reqVO.identifyTime.length == 2">
                 AND om.identify_time BETWEEN #{reqVO.identifyTime[0]} AND #{reqVO.identifyTime[1]}
             </if>
 
-            <!-- 处置状态 -->
+            <!-- 【修改条件】处置状态模糊查询 -->
             <if test="reqVO.processStatus != null and reqVO.processStatus != ''">
-                AND om.process_status = #{reqVO.processStatus}
+                AND om.process_status LIKE CONCAT('%', #{reqVO.processStatus}, '%')
             </if>
 
             <!-- 处置人ID -->
@@ -188,23 +191,65 @@
         ORDER BY count DESC
     </select>
 
-        <!-- 查询卡片数据 (计算待处置数量和总处置完成率) -->
+    <!-- 卡片数据查询 -->
     <select id="selectCardData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.devicemonitor.oilmonitor.vo.OilMonitorChartRespVO$CardData">
+        WITH status_summary AS (
         SELECT
-        SUM(CASE WHEN process_status IS NULL OR process_status = 'WAITING' THEN 1 ELSE 0 END) AS waitProcessCount,
-        CASE
-        WHEN COUNT(*) = 0 THEN 0
-        ELSE ROUND(SUM(CASE WHEN process_status = 'FINISHED' THEN 1 ELSE 0 END) * 1.0 / COUNT(*), 2)
-        END AS processFinishRate
+        -- 待处置：状态为空、WAITING、TODO、PENDING
+        SUM(CASE
+        WHEN process_status IS NULL
+        OR process_status = ''
+        OR process_status IN ('0', '1', '2')
+        THEN 1
+        ELSE 0
+        END) AS waitCount,
+
+        -- 处理中：状态为PROCESSING、IN_PROGRESS
+        SUM(CASE
+        WHEN process_status IN ('2')
+        THEN 1
+        ELSE 0
+        END) AS processingCount,
+
+        -- 已完成：状态为FINISHED、COMPLETED、DONE
+        SUM(CASE
+        WHEN process_status IN ('0')
+        THEN 1
+        ELSE 0
+        END) AS finishedCount,
+
+        -- 被忽略：有忽略理由的记录
+        SUM(CASE
+        WHEN ignore_reason IS NOT NULL AND ignore_reason != ''
+        THEN 1
+        ELSE 0
+        END) AS ignoredCount,
+
+        -- 总记录数
+        COUNT(*) AS totalCount
+
         FROM oil_monitor
         <where>
-        <if test="reqVO.stationId != null">
-        AND station_id = #{reqVO.stationId}
-        </if>
-        <if test="reqVO.timeRange != null and reqVO.timeRange.length == 2">
-        AND identify_time BETWEEN #{reqVO.timeRange[0]} AND #{reqVO.timeRange[1]}
-        </if>
+            <if test="reqVO.stationId != null">
+                AND station_id = #{reqVO.stationId}
+            </if>
+            <if test="reqVO.timeRange != null and reqVO.timeRange.length == 2">
+                AND identify_time BETWEEN #{reqVO.timeRange[0]} AND #{reqVO.timeRange[1]}
+            </if>
         </where>
+        )
+        SELECT
+        -- 待处置数量 = 待处置记录数
+        waitCount AS waitProcessCount,
+
+        -- 处置完成率 = 已完成数 / (总记录数 - 被忽略数)
+        CASE
+        WHEN (totalCount - ignoredCount) = 0
+        THEN CAST(0.00 AS DECIMAL(10,2))
+        ELSE CAST(finishedCount * 1.0 / (totalCount - ignoredCount) AS DECIMAL(10,2))
+        END AS processFinishRate
+
+        FROM status_summary
     </select>
 
 </mapper>

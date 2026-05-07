@@ -91,4 +91,20 @@ public interface InspectUserService {
      * @return 图表统计结果
      */
     InspectUserChartRespVO getInspectUserChart();
+
+    /**
+     * 获得巡检人员详情（包含关联任务数量文本）
+     *
+     * @param id 人员编号
+     * @return 巡检人员详情VO
+     */
+    InspectUserRespVO getInspectUserWithTaskCount(Long id);
+
+    /**
+     * 获得巡检人员分页（包含任务记录数量）
+     *
+     * @param pageReqVO 分页查询
+     * @return 巡检人员分页（包含任务记录文本）
+     */
+    PageResult<InspectUserRespVO> getInspectUserPageWithTaskCount(InspectUserPageReqVO pageReqVO);
 }

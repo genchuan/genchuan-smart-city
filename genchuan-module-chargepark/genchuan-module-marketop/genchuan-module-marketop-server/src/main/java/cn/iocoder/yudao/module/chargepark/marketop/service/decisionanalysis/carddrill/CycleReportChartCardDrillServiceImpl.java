@@ -20,6 +20,8 @@ import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.exchangemgmt.Exchan
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.PointActivityMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.PointLotteryMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.PrizeMgmtMapper;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.StockControlStatusEnum;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.StockControlWarnStatusEnum;
 import cn.iocoder.yudao.module.system.api.dept.DeptApi;
 import cn.iocoder.yudao.module.system.api.dept.dto.DeptRespDTO;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
@@ -383,7 +385,7 @@ public class CycleReportChartCardDrillServiceImpl implements CycleReportChartCar
     @Override
     public PageResult<CycleReportChartCardDrillWarnStockCountRespVO> drillWarnStockCount(CycleReportChartCardDrillWarnStockCountReqVO reqVO) {
         LambdaQueryWrapperX<StockControlDO> wrapper = new LambdaQueryWrapperX<StockControlDO>()
-                .eq(StockControlDO::getWarnStatus, "已告警")
+                .eq(StockControlDO::getWarnStatus, StockControlWarnStatusEnum.WARNED.getValue())
                 .orderByDesc(StockControlDO::getId);
         PageResult<StockControlDO> pageResult = stockControlMapper.selectPage(reqVO, wrapper);
         // 批量获取卡种信息
