@@ -38,37 +38,25 @@ public class MemberSignController {
     @Resource
     private MemberSignService memberSignService;
 
-    @PostMapping("/create")
-    @Operation(summary = "创建会员签到")
-    @PreAuthorize("@ss.hasPermission('usermerchant:member-sign:create')")
-    public CommonResult<Long> createMemberSign(@Valid @RequestBody MemberSignSaveReqVO createReqVO) {
-        return success(memberSignService.createMemberSign(createReqVO));
+    @GetMapping("/page")
+    @Operation(summary = "获得会员签到分页")
+    @PreAuthorize("@ss.hasPermission('usermerchant:member-sign:query')")
+    public CommonResult<PageResult<MemberSignRespVO>> getMemberSignPage(@Valid MemberSignPageReqVO pageReqVO) {
+        PageResult<MemberSignDO> pageResult = memberSignService.getMemberSignPage(pageReqVO);
+        return success(BeanUtils.toBean(pageResult, MemberSignRespVO.class));
     }
 
-    @PutMapping("/update")
-    @Operation(summary = "更新会员签到")
-    @PreAuthorize("@ss.hasPermission('usermerchant:member-sign:update')")
-    public CommonResult<Boolean> updateMemberSign(@Valid @RequestBody MemberSignSaveReqVO updateReqVO) {
-        memberSignService.updateMemberSign(updateReqVO);
-        return success(true);
-    }
-
-    @DeleteMapping("/delete")
-    @Operation(summary = "删除会员签到")
-    @Parameter(name = "id", description = "编号", required = true)
-    @PreAuthorize("@ss.hasPermission('usermerchant:member-sign:delete')")
-    public CommonResult<Boolean> deleteMemberSign(@RequestParam("id") Long id) {
-        memberSignService.deleteMemberSign(id);
-        return success(true);
-    }
-
-    @DeleteMapping("/delete-list")
-    @Parameter(name = "ids", description = "编号", required = true)
-    @Operation(summary = "批量删除会员签到")
-                @PreAuthorize("@ss.hasPermission('usermerchant:member-sign:delete')")
-    public CommonResult<Boolean> deleteMemberSignList(@RequestParam("ids") List<Long> ids) {
-        memberSignService.deleteMemberSignListByIds(ids);
-        return success(true);
+    @GetMapping("/export")
+    @Operation(summary = "导出会员签到")
+    @PreAuthorize("@ss.hasPermission('usermerchant:member-sign:export')")
+    @ApiAccessLog(operateType = EXPORT)
+    public void exportMemberSignExcel(@Valid MemberSignPageReqVO pageReqVO,
+                                      HttpServletResponse response) throws IOException {
+        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        List<MemberSignDO> list = memberSignService.getMemberSignPage(pageReqVO).getList();
+        // 导出 Excel
+        ExcelUtils.write(response, "会员签到.xls", "数据", MemberSignRespVO.class,
+                BeanUtils.toBean(list, MemberSignRespVO.class));
     }
 
     @GetMapping("/get")
@@ -80,25 +68,45 @@ public class MemberSignController {
         return success(BeanUtils.toBean(memberSign, MemberSignRespVO.class));
     }
 
-    @GetMapping("/page")
-    @Operation(summary = "获得会员签到分页")
+    @GetMapping("/chart")
+    @Operation(summary = "会员签到统计")
     @PreAuthorize("@ss.hasPermission('usermerchant:member-sign:query')")
-    public CommonResult<PageResult<MemberSignRespVO>> getMemberSignPage(@Valid MemberSignPageReqVO pageReqVO) {
-        PageResult<MemberSignDO> pageResult = memberSignService.getMemberSignPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, MemberSignRespVO.class));
+    public CommonResult<MemberSignChartRespVO> getChart(@RequestParam(required = false) String timeRange) {
+        MemberSignChartRespVO respVO = memberSignService.getChart(timeRange);
+        return CommonResult.success(respVO);
     }
 
-    @GetMapping("/export-excel")
-    @Operation(summary = "导出会员签到 Excel")
-    @PreAuthorize("@ss.hasPermission('usermerchant:member-sign:export')")
-    @ApiAccessLog(operateType = EXPORT)
-    public void exportMemberSignExcel(@Valid MemberSignPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
-        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<MemberSignDO> list = memberSignService.getMemberSignPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "会员签到.xls", "数据", MemberSignRespVO.class,
-                        BeanUtils.toBean(list, MemberSignRespVO.class));
-    }
+//    @PostMapping("/create")
+//    @Operation(summary = "创建会员签到")
+//    @PreAuthorize("@ss.hasPermission('usermerchant:member-sign:create')")
+//    public CommonResult<Long> createMemberSign(@Valid @RequestBody MemberSignSaveReqVO createReqVO) {
+//        return success(memberSignService.createMemberSign(createReqVO));
+//    }
+//
+//    @PutMapping("/update")
+//    @Operation(summary = "更新会员签到")
+//    @PreAuthorize("@ss.hasPermission('usermerchant:member-sign:update')")
+//    public CommonResult<Boolean> updateMemberSign(@Valid @RequestBody MemberSignSaveReqVO updateReqVO) {
+//        memberSignService.updateMemberSign(updateReqVO);
+//        return success(true);
+//    }
+//
+//    @DeleteMapping("/delete")
+//    @Operation(summary = "删除会员签到")
+//    @Parameter(name = "id", description = "编号", required = true)
+//    @PreAuthorize("@ss.hasPermission('usermerchant:member-sign:delete')")
+//    public CommonResult<Boolean> deleteMemberSign(@RequestParam("id") Long id) {
+//        memberSignService.deleteMemberSign(id);
+//        return success(true);
+//    }
+//
+//    @DeleteMapping("/delete-list")
+//    @Parameter(name = "ids", description = "编号", required = true)
+//    @Operation(summary = "批量删除会员签到")
+//                @PreAuthorize("@ss.hasPermission('usermerchant:member-sign:delete')")
+//    public CommonResult<Boolean> deleteMemberSignList(@RequestParam("ids") List<Long> ids) {
+//        memberSignService.deleteMemberSignListByIds(ids);
+//        return success(true);
+//    }
 
 }

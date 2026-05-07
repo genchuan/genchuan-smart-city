@@ -1,7 +1,5 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantsendcoupon;
 
-import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.plateauth.vo.PlateAuthChartReqVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.plateauth.vo.PlateAuthChartRespVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -47,7 +45,15 @@ public class MerchantSendCouponController {
         return success(BeanUtils.toBean(pageResult, MerchantSendCouponRespVO.class));
     }
 
-    @GetMapping("/export-excel")
+    @PostMapping("/send")
+    @Operation(summary = "发券")
+    @PreAuthorize("@ss.hasPermission('usermerchant:merchant-send-coupon:send')")
+    public CommonResult<Boolean> send(@Valid @RequestBody MerchantSendCouponSendReqVO sendReqVO) {
+        merchantSendCouponService.sendCoupon(sendReqVO);
+        return success(true);
+    }
+
+    @GetMapping("/export")
     @Operation(summary = "导出商户发券")
     @PreAuthorize("@ss.hasPermission('usermerchant:merchant-send-coupon:export')")
     @ApiAccessLog(operateType = EXPORT)
@@ -58,6 +64,22 @@ public class MerchantSendCouponController {
         // 导出 Excel
         ExcelUtils.write(response, "商户发券.xls", "数据", MerchantSendCouponRespVO.class,
                 BeanUtils.toBean(list, MerchantSendCouponRespVO.class));
+    }
+
+    @PutMapping("/execute")
+    @Operation(summary = "执行发券")
+    @PreAuthorize("@ss.hasPermission('usermerchant:merchant-send-coupon:execute')")
+    public CommonResult<Boolean> execute(@Valid @RequestBody MerchantSendCouponExecuteReqVO executeReqVO) {
+        merchantSendCouponService.executeCoupon(executeReqVO.getIds());
+        return success(true);
+    }
+
+    @PutMapping("/cancel")
+    @Operation(summary = "取消发券")
+    @PreAuthorize("@ss.hasPermission('usermerchant:merchant-send-coupon:cancel')")
+    public CommonResult<Boolean> cancel(@Valid @RequestBody MerchantSendCouponCancelReqVO cancelReqVO) {
+        merchantSendCouponService.cancelCoupon(cancelReqVO.getIds());
+        return success(true);
     }
 
     @GetMapping("/get")
