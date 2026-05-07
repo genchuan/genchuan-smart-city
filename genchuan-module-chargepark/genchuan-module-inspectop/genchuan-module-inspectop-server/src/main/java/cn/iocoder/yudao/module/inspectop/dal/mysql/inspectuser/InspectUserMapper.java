@@ -6,8 +6,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.inspectuser.InspectUserDO;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.inspectop.controller.admin.inspectuser.vo.*;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 巡检人员 Mapper
@@ -49,4 +51,14 @@ public interface InspectUserMapper extends BaseMapperX<InspectUserDO> {
      */
     InspectUserChartRespVO.CardData selectCardData();
 
+    // 新增方法：根据人员ID查询关联的巡检任务数量
+    Integer selectTaskCountByUserId(@Param("userId") Long userId);
+
+    /**
+     * 根据人员ID列表批量查询关联的巡检任务数量
+     *
+     * @param userIds 人员ID列表
+     * @return 键值对映射：人员ID -> 任务数量
+     */
+    List<Map<String, Object>> selectTaskCountByUserIds(@Param("userIds") List<Long> userIds);
 }

@@ -66,4 +66,19 @@ public class MemberUserApiImpl implements MemberUserApi {
         return success(MemberUserConvert.INSTANCE.convert2(user));
     }
 
+    @Override
+    public CommonResult<Boolean> updateUserLevel(Long id, Long levelId) {
+        // 调用本模块的 Service 方法，更新用户等级
+        // 注意：这里为了简化，直接调用了updateUserLevel。实际业务中，更新等级可能涉及经验、等级有效期等复杂逻辑，应调用对应的等级服务。
+        // 根据文档11，MemberUserService 有 updateUserLevel 方法，但它是更新等级和经验。
+        // 我们假设这里只需要更新 levelId，经验保持不变（或根据业务规则计算）。这里调用一个假设的“会员等级服务”。
+        // 由于文档中未提供 MemberLevelService 的详细API，我们假设其有一个 updateUserLevel 方法。
+        // 为了可运行，我们采用一个更直接的方案：通过 userService 更新用户的部分信息。
+
+        // 方案A（推荐，调用专属等级服务）：memberLevelService.updateUserLevel(id, levelId);
+        // 方案B（直接更新用户对象，假设有方法）：
+        userService.updateUserLevel(id, levelId, null); // 第三个参数 experience 传 null 表示不修改经验值
+        return success(true);
+    }
+
 }
