@@ -7,6 +7,9 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.PunishReviewLedgerPageReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.PunishReviewLedgerRespVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.chart.PunishReviewBarItemResp;
+import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.chart.PunishReviewCancelReasonResp;
+import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.chart.PunishReviewChartResp;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.punishreviewledger.PunishReviewLedgerDO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -47,4 +50,10 @@ public interface PunishReviewLedgerMapper extends BaseMapperX<PunishReviewLedger
     List<PunishReviewLedgerRespVO> selectLedgerPage(PunishReviewLedgerPageReqVO pageReqVO);
 
     Long selectLedgerPageCount(PunishReviewLedgerPageReqVO pageReqVO);
+
+    PunishReviewChartResp getPunishReviewChartResp(PunishReviewLedgerPageReqVO reqVO);
+
+    List<PunishReviewBarItemResp> selectMonthReviewCount();
+
+    List<PunishReviewCancelReasonResp.CancelReasonItem> selectCancelReasonCount(PunishReviewLedgerPageReqVO reqVO);
 }
