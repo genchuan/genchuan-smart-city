@@ -102,6 +102,7 @@ public class SuggestionServiceImpl implements SuggestionService {
         update.setId(reqVO.getId());
         update.setStatus(SuggestionStatusEnum.PROCESSING.getLabel());
         update.setHandleUserId(SecurityFrameworkUtils.getLoginUserId());
+        update.setHandleTime(LocalDateTime.now());
         suggestionMapper.updateById(update);
     }
 
