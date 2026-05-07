@@ -34,7 +34,8 @@ import java.math.BigDecimal;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
-import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.ENTER_NOT_EXISTS;
+import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.*;
+
 
 /**
  * 无牌入场 Service 实现类
@@ -139,16 +140,21 @@ public class UnplateEnterServiceImpl implements UnplateEnterService {
         }
         // 校验状态只能是"待审核"才能审核
         if (!"待审核".equals(enter.getStatus())) {
-            throw exception(ENTER_NOT_EXISTS); // TODO: 需要添加专门的错误码
+            throw exception(ENTER_AUDIT_FAILED);
         }
 
         // 更新审核信息
+        Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
+        if (currentUserId == null) {
+            throw exception(USER_NOT_LOGIN);
+        }
+
         UnplateEnterDO updateObj = new UnplateEnterDO();
         updateObj.setId(auditReqVO.getId());
         updateObj.setStatus(auditReqVO.getAuditResult());
         updateObj.setAuditComment(auditReqVO.getAuditComment());
         updateObj.setAuditTime(java.time.LocalDateTime.now());
-        updateObj.setAuditUserId(SecurityFrameworkUtils.getLoginUserId());
+        updateObj.setAuditUserId(currentUserId);
         enterMapper.updateById(updateObj);
     }
 
@@ -161,7 +167,7 @@ public class UnplateEnterServiceImpl implements UnplateEnterService {
         }
         // 校验状态只能是"已通过"才能确认
         if (!"已通过".equals(enter.getStatus())) {
-            throw exception(ENTER_NOT_EXISTS); // TODO: 需要添加专门的错误码
+            throw exception(ENTER_CONFIRM_FAILED);
         }
 
         // 更新状态为"已入场"
@@ -180,7 +186,7 @@ public class UnplateEnterServiceImpl implements UnplateEnterService {
         }
         // 校验状态只能是"待审核"或"已通过"才能修正
         if (!"待审核".equals(enter.getStatus()) && !"已通过".equals(enter.getStatus())) {
-            throw exception(ENTER_NOT_EXISTS); // TODO: 需要添加专门的错误码
+            throw exception(ENTER_CORRECT_FAILED);
         }
 
         // 更新修正信息
