@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -126,15 +127,11 @@ public class CycleReportServiceImpl implements CycleReportService {
 
     @Override
     public CycleReportRespVO getCycleReport(Long id) {
-        CycleReportDO report = cycleReportMapper.selectById(id);
+        CycleReportDO report = cycleReportMapper.selectByIdWithStation(id);
         if (report == null) {
             return null;
         }
-        CycleReportRespVO respVO = BeanUtils.toBean(report, CycleReportRespVO.class);
-        // 关联查询场站名称
-        String stationName = cycleReportMapper.selectStationName(report.getStationId());
-        respVO.setStationName(stationName);
-        return respVO;
+        return BeanUtils.toBean(report, CycleReportRespVO.class);
     }
 
     @Override
@@ -162,10 +159,10 @@ public class CycleReportServiceImpl implements CycleReportService {
         }
         if (!reports.isEmpty()) {
             int size = reports.size();
-            identifyRate = identifyRate.divide(BigDecimal.valueOf(size), 2, BigDecimal.ROUND_HALF_UP);
-            checkRate = checkRate.divide(BigDecimal.valueOf(size), 2, BigDecimal.ROUND_HALF_UP);
-            abnormalRate = abnormalRate.divide(BigDecimal.valueOf(size), 2, BigDecimal.ROUND_HALF_UP);
-            etcRate = etcRate.divide(BigDecimal.valueOf(size), 2, BigDecimal.ROUND_HALF_UP);
+            identifyRate = identifyRate.divide(BigDecimal.valueOf(size), 2, RoundingMode.HALF_UP);
+            checkRate = checkRate.divide(BigDecimal.valueOf(size), 2, RoundingMode.HALF_UP);
+            abnormalRate = abnormalRate.divide(BigDecimal.valueOf(size), 2, RoundingMode.HALF_UP);
+            etcRate = etcRate.divide(BigDecimal.valueOf(size), 2, RoundingMode.HALF_UP);
         }
         cardData.setEnterCount(enterCount);
         cardData.setLeaveCount(leaveCount);

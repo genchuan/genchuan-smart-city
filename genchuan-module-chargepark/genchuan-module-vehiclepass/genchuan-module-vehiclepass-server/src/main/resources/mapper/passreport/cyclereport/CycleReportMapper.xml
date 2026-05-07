@@ -29,6 +29,14 @@
         ORDER BY r.create_time DESC
     </select>
 
+    <!-- 根据ID关联查询场站名称 -->
+    <select id="selectByIdWithStation" resultType="cn.iocoder.yudao.module.vehiclepass.dal.dataobject.passreport.cyclereport.CycleReportDO">
+        SELECT r.*, s.name AS stationName
+        FROM vp_cycle_report r
+        LEFT JOIN station_info s ON r.station_id = s.id AND s.deleted = 0
+        WHERE r.id = #{id} AND r.deleted = 0
+    </select>
+
     <!-- 查询场站名称 -->
     <select id="selectStationName" resultType="string">
         SELECT name FROM station_info WHERE id = #{id} AND deleted = 0
