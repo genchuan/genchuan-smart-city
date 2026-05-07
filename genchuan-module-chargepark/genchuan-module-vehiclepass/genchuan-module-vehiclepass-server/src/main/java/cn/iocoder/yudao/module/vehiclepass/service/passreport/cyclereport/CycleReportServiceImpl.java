@@ -125,6 +125,19 @@ public class CycleReportServiceImpl implements CycleReportService {
     }
 
     @Override
+    public CycleReportRespVO getCycleReport(Long id) {
+        CycleReportDO report = cycleReportMapper.selectById(id);
+        if (report == null) {
+            return null;
+        }
+        CycleReportRespVO respVO = BeanUtils.toBean(report, CycleReportRespVO.class);
+        // 关联查询场站名称
+        String stationName = cycleReportMapper.selectStationName(report.getStationId());
+        respVO.setStationName(stationName);
+        return respVO;
+    }
+
+    @Override
     public CycleReportChartRespVO getChart(CycleReportChartReqVO reqVO) {
         Long tenantId = TenantContextHolder.getTenantId();
         LocalDate statTime = reqVO.getStatTime();
