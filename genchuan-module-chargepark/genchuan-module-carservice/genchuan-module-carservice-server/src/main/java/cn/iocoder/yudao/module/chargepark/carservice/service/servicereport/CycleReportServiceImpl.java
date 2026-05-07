@@ -256,6 +256,11 @@ public class CycleReportServiceImpl implements CycleReportService {
 
     @Override
     public CycleReportDetailRespVO getCycleReport(Long id) {
+        return getCycleReport(id, null, null);
+    }
+
+    @Override
+    public CycleReportDetailRespVO getCycleReport(Long id, LocalDateTime startTime, LocalDateTime endTime) {
         CycleReportDO d = cycleReportMapper.selectById(id);
         if (d == null) {
             throw exception(CYCLE_REPORT_NOT_EXISTS);
@@ -263,9 +268,10 @@ public class CycleReportServiceImpl implements CycleReportService {
         CycleReportRespVO base = toRespVO(d);
         CycleReportDetailRespVO detail = new CycleReportDetailRespVO();
         copyRespFields(base, detail);
-        // 不再依赖 detail_data 历史快照,所有维度按报表的统计窗口实时重查,
-        // 保证图表/卡片下钻看到的明细与卡片实时数据/最新业务数据对齐
-        Map<String, List<Map<String, Object>>> detailMap = buildDetailData(d.getStatStartTime(), d.getStatEndTime());
+        // 实时按窗口拉明细;调用方未传窗口时回退到报表自身的统计窗口
+        LocalDateTime s = startTime != null ? startTime : d.getStatStartTime();
+        LocalDateTime e = endTime != null ? endTime : d.getStatEndTime();
+        Map<String, List<Map<String, Object>>> detailMap = buildDetailData(s, e);
         // 话术不属于业务数据按窗口截取,而是当前生效的话术全集
         detailMap.put("wordingDetail", toMapList(wordingMgmtMapper.selectList(
                 new LambdaQueryWrapperX<WordingMgmtDO>().eq(WordingMgmtDO::getStatus, "已生效"))));
