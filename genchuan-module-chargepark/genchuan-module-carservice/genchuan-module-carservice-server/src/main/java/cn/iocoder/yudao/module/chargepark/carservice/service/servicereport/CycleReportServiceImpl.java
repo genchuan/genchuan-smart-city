@@ -270,8 +270,12 @@ public class CycleReportServiceImpl implements CycleReportService {
         }
         // 快照存在时必须能解析成功,否则数据损坏,抛业务异常让运维看见
         try {
-            detail.setDetailData(MAPPER.readValue(d.getDetailData(),
-                    new com.fasterxml.jackson.core.type.TypeReference<Map<String, List<Map<String, Object>>>>() {}));
+            Map<String, List<Map<String, Object>>> detailMap = MAPPER.readValue(d.getDetailData(),
+                    new com.fasterxml.jackson.core.type.TypeReference<Map<String, List<Map<String, Object>>>>() {});
+            // wordingDetail 用实时已生效话术覆盖快照,保持与卡片"生效话术数"对齐
+            detailMap.put("wordingDetail", toMapList(wordingMgmtMapper.selectList(
+                    new LambdaQueryWrapperX<WordingMgmtDO>().eq(WordingMgmtDO::getStatus, "已生效"))));
+            detail.setDetailData(detailMap);
         } catch (Exception ex) {
             log.error("[getCycleReport] detail_data 解析失败 id={}", id, ex);
             throw exception(CYCLE_REPORT_DETAIL_DATA_INVALID);
@@ -317,7 +321,8 @@ public class CycleReportServiceImpl implements CycleReportService {
                 .geIfPresent(SpaceLocationDO::getCreateTime, s).leIfPresent(SpaceLocationDO::getCreateTime, e))));
         d.put("spacePushDetail", toMapList(spacePushMapper.selectList(new LambdaQueryWrapperX<SpacePushDO>()
                 .geIfPresent(SpacePushDO::getCreateTime, s).leIfPresent(SpacePushDO::getCreateTime, e))));
-        d.put("wordingDetail", toMapList(wordingMgmtMapper.selectList(new LambdaQueryWrapperX<WordingMgmtDO>())));
+        d.put("wordingDetail", toMapList(wordingMgmtMapper.selectList(new LambdaQueryWrapperX<WordingMgmtDO>()
+                .eq(WordingMgmtDO::getStatus, "已生效"))));
         return d;
     }
 
@@ -359,7 +364,8 @@ public class CycleReportServiceImpl implements CycleReportService {
                         .geIfPresent(SpacePushDO::getCreateTime, s).leIfPresent(SpacePushDO::getCreateTime, e));
                 break;
             case "wording":
-                fullList = wordingMgmtMapper.selectList(new LambdaQueryWrapperX<WordingMgmtDO>());
+                fullList = wordingMgmtMapper.selectList(new LambdaQueryWrapperX<WordingMgmtDO>()
+                        .eq(WordingMgmtDO::getStatus, "已生效"));
                 break;
             default:
                 throw new IllegalArgumentException("无效的 dimension: " + dimension +
@@ -975,7 +981,8 @@ public class CycleReportServiceImpl implements CycleReportService {
         d.put("spacePushDetail", toMapList(spacePushMapper.selectList(new LambdaQueryWrapperX<SpacePushDO>()
                 .geIfPresent(SpacePushDO::getCreateTime, s)
                 .leIfPresent(SpacePushDO::getCreateTime, e)).stream().limit(50).collect(Collectors.toList())));
-        d.put("wordingDetail", toMapList(wordingMgmtMapper.selectList(new LambdaQueryWrapperX<WordingMgmtDO>())
+        d.put("wordingDetail", toMapList(wordingMgmtMapper.selectList(new LambdaQueryWrapperX<WordingMgmtDO>()
+                .eq(WordingMgmtDO::getStatus, "已生效"))
                 .stream().limit(50).collect(Collectors.toList())));
         return d;
     }
