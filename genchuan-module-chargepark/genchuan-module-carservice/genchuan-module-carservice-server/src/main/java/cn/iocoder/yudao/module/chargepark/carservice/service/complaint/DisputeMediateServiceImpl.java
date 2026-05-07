@@ -126,7 +126,7 @@ public class DisputeMediateServiceImpl implements DisputeMediateService {
         }
         DisputeMediateDO update = new DisputeMediateDO();
         update.setId(reqVO.getId());
-        update.setStatus(DisputeMediateStatusEnum.CLOSED.getLabel());
+        update.setStatus(DisputeMediateStatusEnum.COMPLETED.getLabel());
         update.setConfirmTime(LocalDateTime.now());
         update.setConfirmResult(reqVO.getConfirmResult());
         disputeMediateMapper.updateById(update);

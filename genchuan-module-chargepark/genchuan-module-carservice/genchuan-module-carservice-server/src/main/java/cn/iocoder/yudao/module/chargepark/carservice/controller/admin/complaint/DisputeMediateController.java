@@ -87,6 +87,13 @@ public class DisputeMediateController {
         List<DisputeMediateDO> list = disputeMediateService.getDisputeMediatePage(pageReqVO).getList();
         List<DisputeMediateRespVO> respList = BeanUtils.toBean(list, DisputeMediateRespVO.class);
         injectUserNames(respList);
+        // 服务器 JVM 时区可能不是 Asia/Shanghai，导出时把 LocalDateTime 转为北京时间，避免 Excel/PDF 显示偏差
+        respList.forEach(vo -> {
+            vo.setSubmitTime(toBeijing(vo.getSubmitTime()));
+            vo.setConfirmTime(toBeijing(vo.getConfirmTime()));
+            vo.setCreateTime(toBeijing(vo.getCreateTime()));
+            vo.setUpdateTime(toBeijing(vo.getUpdateTime()));
+        });
         if ("pdf".equalsIgnoreCase(format)) {
             PdfUtils.write(response, "纠纷调解.pdf", "纠纷调解台账",
                     PdfUtils.headers(
@@ -150,7 +157,7 @@ public class DisputeMediateController {
     }
 
     @PutMapping("/confirm")
-    @Operation(summary = "确认 - 调解中 → 已关闭")
+    @Operation(summary = "确认 - 调解中 → 已完成")
     @PreAuthorize("@ss.hasPermission('carservice:dispute-mediate:confirm')")
     @ApiAccessLog(operateType = UPDATE)
     public CommonResult<Boolean> confirmDisputeMediate(@Valid @RequestBody DisputeMediateConfirmReqVO reqVO) {
@@ -162,6 +169,14 @@ public class DisputeMediateController {
         UserNameInjector.inject(list, adminUserApi,
                 UserNameInjector.field(DisputeMediateRespVO::getUserId, DisputeMediateRespVO::setUserName),
                 UserNameInjector.field(DisputeMediateRespVO::getMediateUserId, DisputeMediateRespVO::setMediateUserName));
+    }
+
+    /** 把 JVM 本地时区的 LocalDateTime 转换为 Asia/Shanghai(北京)时间，导出场景使用。 */
+    private static java.time.LocalDateTime toBeijing(java.time.LocalDateTime ldt) {
+        if (ldt == null) return null;
+        return ldt.atZone(java.time.ZoneId.systemDefault())
+                .withZoneSameInstant(java.time.ZoneId.of("Asia/Shanghai"))
+                .toLocalDateTime();
     }
 
 }
