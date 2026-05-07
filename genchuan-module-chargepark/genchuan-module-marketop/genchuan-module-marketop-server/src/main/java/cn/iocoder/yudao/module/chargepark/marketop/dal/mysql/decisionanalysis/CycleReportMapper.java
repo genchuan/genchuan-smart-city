@@ -176,7 +176,9 @@ public interface CycleReportMapper extends BaseMapperX<CycleReportDO> {
     @Select("SELECT type, COUNT(*) AS count FROM card_config WHERE deleted = 0 GROUP BY type")
     List<java.util.Map<String, Object>> selectCardConfigTypeCount();
 
-    @Select("SELECT scope AS type, COUNT(*) AS count FROM exchange_category WHERE deleted = 0 GROUP BY scope")
+    @Select("SELECT eo.category_id AS categoryId, ec.name AS name, COUNT(*) AS count " +
+            "FROM exchange_order eo LEFT JOIN exchange_category ec ON eo.category_id = ec.id " +
+            "WHERE eo.deleted = 0 GROUP BY eo.category_id, ec.name")
     List<java.util.Map<String, Object>> selectExchangeCategoryTypeCount();
 
     // ========== pieData 按type统计占比 ==========

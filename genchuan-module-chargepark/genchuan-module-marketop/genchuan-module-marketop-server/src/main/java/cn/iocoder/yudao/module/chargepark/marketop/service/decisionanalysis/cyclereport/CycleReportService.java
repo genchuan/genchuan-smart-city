@@ -22,4 +22,6 @@ public interface CycleReportService {
 
     List<CycleReportDO> getList(CycleReportPageReqVO reqVO);
 
+    List<CycleReportDO> getListByIds(List<Long> ids);
+
 }
