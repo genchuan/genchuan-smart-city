@@ -27,4 +27,12 @@ public interface CycleReportService {
 
     // 新增图表查询方法
     CycleReportChartRespVO getCycleReportChart(CycleReportChartReqVO reqVO);
+
+    /**
+     * 根据ID获得单条巡检运维报表
+     *
+     * @param id 报表主键ID
+     * @return 巡检运维报表
+     */
+    CycleReportDO getCycleReport(Long id);
 }

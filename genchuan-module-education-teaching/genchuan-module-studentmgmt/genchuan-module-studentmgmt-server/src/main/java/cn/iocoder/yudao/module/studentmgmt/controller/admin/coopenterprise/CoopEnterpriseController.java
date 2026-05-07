@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.coopenterprise;
 
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.BaseChartReqVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -99,6 +100,28 @@ public class CoopEnterpriseController {
         // 导出 Excel
         ExcelUtils.write(response, "校企合作.xls", "数据", CoopEnterpriseRespVO.class,
                         BeanUtils.toBean(list, CoopEnterpriseRespVO.class));
+    }
+
+
+    @PutMapping("/maintain")
+    @Operation(summary = "维护")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:coop-enterprise:maintain')")
+    public CommonResult<Boolean> maintain(@Valid @RequestBody CoopEnterpriseMaintainReqVO updateReqVO) {
+        return success(coopEnterpriseService.maintain(updateReqVO));
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "校企合作资源看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:coop-enterprise:chart')")
+    public CommonResult<CoopEnterpriseChartRespVO> chart(@Valid CoopEnterpriseChartReqVO reqVO) {
+        return success(coopEnterpriseService.chart(reqVO));
+    }
+
+    @GetMapping("/chart/enterpriseDistribution")
+    @Operation(summary = "合作企业类型 / 系部分布统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:coop-enterprise:query')")
+    public CommonResult<CoopEnterpriseDistributionRespVO> enterpriseDistribution(@Valid BaseChartReqVO reqVO) {
+        return success(coopEnterpriseService.enterpriseDistribution(reqVO));
     }
 
 }

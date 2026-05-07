@@ -17,6 +17,10 @@ import cn.iocoder.yudao.module.chargepark.carservice.enums.rescue.RescueStatusEn
 import cn.iocoder.yudao.module.chargepark.carservice.framework.notify.CarServiceNotifyHelper;
 import cn.iocoder.yudao.module.chargepark.carservice.framework.statemachine.StatusTransition;
 import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.CrossModuleValidator;
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -26,6 +30,8 @@ import org.springframework.validation.annotation.Validated;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.carservice.enums.ErrorCodeConstants.RESCUE_INFO_ALREADY_ARCHIVED;
@@ -64,6 +70,9 @@ public class RescueInfoServiceImpl implements RescueInfoService {
 
     @Resource
     private CrossModuleValidator crossModuleValidator;
+
+    @Resource
+    private AdminUserApi adminUserApi;
 
     @Override
     public Long createRescueInfo(RescueInfoSaveReqVO createReqVO) {
@@ -127,6 +136,28 @@ public class RescueInfoServiceImpl implements RescueInfoService {
 
     @Override
     public PageResult<RescueInfoDO> getRescueInfoPage(RescueInfoPageReqVO pageReqVO) {
+        if (StrUtil.isNotBlank(pageReqVO.getUserName())) {
+            // 1. 先查 rescue_info 表里出现过的所有 user_id
+            List<Long> distinctUserIds = rescueInfoMapper.selectDistinctUserIds();
+            if (CollUtil.isEmpty(distinctUserIds)) {
+                return PageResult.empty();
+            }
+            // 2. 通过 RPC 拿到这批用户的 nickname
+            List<AdminUserRespDTO> users = adminUserApi.getUserList(distinctUserIds).getCheckedData();
+            if (CollUtil.isEmpty(users)) {
+                return PageResult.empty();
+            }
+            // 3. 内存里按 nickname 模糊匹配,过滤出符合条件的 user_id
+            String keyword = pageReqVO.getUserName().trim();
+            Set<Long> matchedIds = users.stream()
+                    .filter(u -> u.getNickname() != null && u.getNickname().contains(keyword))
+                    .map(AdminUserRespDTO::getId)
+                    .collect(Collectors.toSet());
+            if (matchedIds.isEmpty()) {
+                return PageResult.empty();
+            }
+            pageReqVO.setUserIds(matchedIds);
+        }
         return rescueInfoMapper.selectPage(pageReqVO);
     }
 

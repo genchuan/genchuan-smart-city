@@ -9,7 +9,10 @@ import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.v
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationPageReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationReserveReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationRespVO;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.NearStationResultRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.carguide.NearStationDO;
+import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.carguide.NearStationResultDO;
+import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.carguide.NearStationResultMapper;
 import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.UserNameInjector;
 import cn.iocoder.yudao.module.chargepark.carservice.service.carguide.NearStationService;
 import cn.iocoder.yudao.module.chargepark.carservice.service.decision.ServiceOpReportService;
@@ -54,6 +57,9 @@ public class NearStationController {
 
     @Resource
     private StationInfoApi stationInfoApi;
+
+    @Resource
+    private NearStationResultMapper nearStationResultMapper;
 
     @Value("${carservice.navigate.map-url-template}")
     private String mapUrlTemplate;
@@ -157,8 +163,25 @@ public class NearStationController {
             @RequestParam(value = "startTime", required = false)
             @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
             @RequestParam(value = "endTime", required = false)
-            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
-        return success(serviceOpReportService.chartNearStation(startTime, endTime));
+            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime,
+            @RequestParam(value = "lon", required = false) Double lon,
+            @RequestParam(value = "lat", required = false) Double lat) {
+        return success(serviceOpReportService.chartNearStation(startTime, endTime, lon, lat));
+    }
+
+    @GetMapping("/result")
+    @Operation(summary = "查询某次记录返回的场站明细列表(快照,关联 near_station_result)")
+    @Parameter(name = "nearStationId", description = "near_station.id", required = true, example = "47")
+    @Parameter(name = "onlyHasEmpty", description = "是否仅返回有空位的场站,默认 false")
+    @PreAuthorize("@ss.hasPermission('carservice:near-station:query')")
+    public CommonResult<List<NearStationResultRespVO>> getNearStationResult(
+            @RequestParam("nearStationId") Long nearStationId,
+            @RequestParam(value = "onlyHasEmpty", required = false, defaultValue = "false") Boolean onlyHasEmpty) {
+        List<NearStationResultDO> list = nearStationResultMapper.selectByNearStationId(nearStationId);
+        if (Boolean.TRUE.equals(onlyHasEmpty)) {
+            list = list.stream().filter(r -> Boolean.TRUE.equals(r.getHasEmpty())).collect(java.util.stream.Collectors.toList());
+        }
+        return success(BeanUtils.toBean(list, NearStationResultRespVO.class));
     }
 
     @GetMapping("/chart-drill-bar")

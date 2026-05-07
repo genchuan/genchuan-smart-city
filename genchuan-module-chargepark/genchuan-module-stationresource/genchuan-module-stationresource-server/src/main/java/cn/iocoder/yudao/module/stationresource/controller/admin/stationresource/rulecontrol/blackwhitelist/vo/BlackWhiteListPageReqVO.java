@@ -40,6 +40,9 @@ public class BlackWhiteListPageReqVO extends PageParam {
     @Schema(description = "[审核人] 关联芋道用户表 system_user", example = "7329")
     private Long auditUserId;
 
+    @Schema(description = "审核人名称")
+    private String auditUserName;
+
     @Schema(description = "[拦截次数] 黑名单车辆被拦截次数", example = "3994")
     private Integer interceptCount;
 

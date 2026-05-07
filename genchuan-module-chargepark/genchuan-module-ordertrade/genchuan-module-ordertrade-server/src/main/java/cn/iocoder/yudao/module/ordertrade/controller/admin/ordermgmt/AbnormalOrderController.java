@@ -94,8 +94,7 @@ public class AbnormalOrderController {
                                  HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<AbnormalOrderDO> list = abnormalOrderService.getAbnormalOrderPage(pageReqVO).getList();
-        ExcelUtils.write(response, "异常订单.xls", "数据", AbnormalOrderRespVO.class,
-                BeanUtils.toBean(list, AbnormalOrderRespVO.class));
+        ExcelUtils.write(response, "异常订单.xls", "数据", AbnormalOrderRespVO.class, BeanUtils.toBean(list, AbnormalOrderRespVO.class));
     }
 
  /*   @GetMapping("/batch-export")

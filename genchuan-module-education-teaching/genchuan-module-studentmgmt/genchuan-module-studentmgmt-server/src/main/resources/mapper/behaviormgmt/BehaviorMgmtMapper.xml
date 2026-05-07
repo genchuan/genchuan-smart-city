@@ -105,7 +105,7 @@
             resultType="cn.iocoder.yudao.module.studentmgmt.dal.dataobject.behaviormgmt.BehaviorMgmtDO">
         SELECT * FROM behavior_mgmt
         WHERE deleted=0
-        <if test="studentIds != null and studentIds.size() > 0">
+        <if test="studentIds != null">
             AND student_id IN
             <foreach item="item" collection="studentIds" separator="," open="(" close=")" index="">
                 #{item}

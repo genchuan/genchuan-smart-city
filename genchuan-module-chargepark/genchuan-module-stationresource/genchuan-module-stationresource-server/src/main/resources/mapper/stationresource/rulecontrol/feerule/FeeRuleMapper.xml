@@ -19,4 +19,79 @@
         WHERE f.deleted = 0
         GROUP BY f.station_id, s.name
     </select>
+    <select id="getPage" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.feerule.vo.FeeRuleRespVO">
+        SELECT t.*, s.name AS station_name, u.nickname AS audit_user_name
+        FROM fee_rule t
+        LEFT JOIN station_info s ON t.station_id = s.id
+        LEFT JOIN station_user u ON t.audit_user_id = u.id
+        WHERE t.deleted = 0
+        <if test="pageReqVO.stationId != null">
+            AND t.station_id = #{pageReqVO.stationId}
+        </if>
+        <if test="pageReqVO.stationName != null and pageReqVO.stationName != ''">
+            AND s.name LIKE CONCAT('%', #{pageReqVO.stationName}, '%')
+        </if>
+        <if test="pageReqVO.rateType != null and pageReqVO.rateType != ''">
+            AND t.rate_type = #{pageReqVO.rateType}
+        </if>
+        <if test="pageReqVO.freeTime != null and pageReqVO.freeTime.size() == 2">
+            AND t.free_time BETWEEN #{pageReqVO.freeTime[0]} AND #{pageReqVO.freeTime[1]}
+        </if>
+        <if test="pageReqVO.chargeUnit != null and pageReqVO.chargeUnit != ''">
+            AND t.charge_unit = #{pageReqVO.chargeUnit}
+        </if>
+        <if test="pageReqVO.status != null and pageReqVO.status != ''">
+            AND t.status = #{pageReqVO.status}
+        </if>
+        <if test="pageReqVO.auditTime != null and pageReqVO.auditTime.size() == 2">
+            AND t.audit_time BETWEEN #{pageReqVO.auditTime[0]} AND #{pageReqVO.auditTime[1]}
+        </if>
+        <if test="pageReqVO.auditUserId != null">
+            AND t.audit_user_id = #{pageReqVO.auditUserId}
+        </if>
+        <if test="pageReqVO.auditUserName != null and pageReqVO.auditUserName != ''">
+            AND u.nickname LIKE CONCAT('%', #{pageReqVO.auditUserName}, '%')
+        </if>
+        <if test="pageReqVO.matchRate != null">
+            AND t.match_rate = #{pageReqVO.matchRate}
+        </if>
+        <if test="pageReqVO.firstHourPrice != null">
+            AND t.first_hour_price = #{pageReqVO.firstHourPrice}
+        </if>
+        <if test="pageReqVO.stepPrice != null">
+            AND t.step_price = #{pageReqVO.stepPrice}
+        </if>
+        <if test="pageReqVO.maxPrice != null">
+            AND t.max_price = #{pageReqVO.maxPrice}
+        </if>
+        <if test="pageReqVO.peakValleyConfig != null and pageReqVO.peakValleyConfig != ''">
+            AND t.peak_valley_config = #{pageReqVO.peakValleyConfig}
+        </if>
+        <if test="pageReqVO.memberConfig != null and pageReqVO.memberConfig != ''">
+            AND t.member_config = #{pageReqVO.memberConfig}
+        </if>
+        <if test="pageReqVO.remark != null and pageReqVO.remark != ''">
+            AND t.remark = #{pageReqVO.remark}
+        </if>
+        <if test="pageReqVO.reserve1 != null and pageReqVO.reserve1 != ''">
+            AND t.reserve1 = #{pageReqVO.reserve1}
+        </if>
+        <if test="pageReqVO.reserve2 != null and pageReqVO.reserve2 != ''">
+            AND t.reserve2 = #{pageReqVO.reserve2}
+        </if>
+        <if test="pageReqVO.creator != null and pageReqVO.creator != ''">
+            AND t.creator = #{pageReqVO.creator}
+        </if>
+        <if test="pageReqVO.updater != null and pageReqVO.updater != ''">
+            AND t.updater = #{pageReqVO.updater}
+        </if>
+        <if test="pageReqVO.createTime != null and pageReqVO.createTime.size() == 2">
+            AND t.create_time BETWEEN #{pageReqVO.createTime[0]} AND #{pageReqVO.createTime[1]}
+        </if>
+        <if test="pageReqVO.updateTime != null and pageReqVO.updateTime.size() == 2">
+            AND t.update_time BETWEEN #{pageReqVO.updateTime[0]} AND #{pageReqVO.updateTime[1]}
+        </if>
+        ORDER BY t.id DESC
+    </select>
+
 </mapper>

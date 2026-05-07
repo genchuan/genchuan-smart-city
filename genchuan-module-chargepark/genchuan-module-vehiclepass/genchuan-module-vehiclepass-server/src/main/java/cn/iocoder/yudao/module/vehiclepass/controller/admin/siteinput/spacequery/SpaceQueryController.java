@@ -108,7 +108,7 @@ public class SpaceQueryController {
         return success(queryService.getChart(chartReqVO));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出泊位查询 Excel")
     @PreAuthorize("@ss.hasPermission('space:query:export')")
     @ApiAccessLog(operateType = EXPORT)

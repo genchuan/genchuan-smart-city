@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.stationresource.service.stationresource.rulecont
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.feerule.vo.FeeRulePageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.feerule.vo.FeeRuleRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.feerule.vo.FeeRuleSaveReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.feerule.vo.ops.AddFeeRuleReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.feerule.vo.ops.FeeRuleChartRespVO;
@@ -34,7 +35,7 @@ public interface FeeRuleService {
      * @param pageReqVO 分页查询
      * @return 收费规则分页
      */
-    PageResult<FeeRuleDO> getFeeRulePage(FeeRulePageReqVO pageReqVO);
+    PageResult<FeeRuleRespVO> getFeeRulePage(FeeRulePageReqVO pageReqVO);
 
     void addFeeRule(AddFeeRuleReqVO reqVO);
 

@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.vehiclecharging.controller.admin.pilealarm.vo;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -19,6 +20,9 @@ public class NewPileAlarmPageReqVO extends PageParam {
     @Schema(description = "场站ID", example = "1001")
     private String stationId;
 
+    @Schema(description = "场站名称", example = "场站")
+    private String stationName;
+
     @Schema(description = "故障类型", example = "硬件故障")
     private String faultType;
 
@@ -29,8 +33,10 @@ public class NewPileAlarmPageReqVO extends PageParam {
     private String alarmStatus;
 
     @Schema(description = "告警开始时间")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime alarmTimeStart;
 
     @Schema(description = "告警结束时间")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime alarmTimeEnd;
 }

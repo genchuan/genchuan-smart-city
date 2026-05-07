@@ -9,8 +9,8 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@TableName("cycle_report")
-@KeySequence("cycle_report_seq")
+@TableName("marketop_cycle_report")
+@KeySequence("marketop_cycle_report_seq")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)

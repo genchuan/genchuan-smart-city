@@ -6,6 +6,10 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.packageconfig.vo.PackageConfigPageReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.PackageConfigDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface PackageConfigMapper extends BaseMapperX<PackageConfigDO> {
@@ -18,5 +22,8 @@ public interface PackageConfigMapper extends BaseMapperX<PackageConfigDO> {
                 .eqIfPresent(PackageConfigDO::getScope, reqVO.getScope())
                 .orderByDesc(PackageConfigDO::getId));
     }
+
+    @Select("SELECT type, COUNT(*) AS count FROM package_config GROUP BY type")
+    List<Map<String, Object>> selectTypeCountList();
 
 }

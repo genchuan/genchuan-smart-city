@@ -82,6 +82,12 @@ public class NewAbnormalOrderRespVO {
     @Schema(description = "备注", example = "充电桩故障")
     private String remark;
 
+    @Schema(description = "创建人")
+    private String creator;
+
+    @Schema(description = "更新人")
+    private String updater;
+
     @Schema(description = "创建时间", example = "1775005986")
     private Long createTime;
 

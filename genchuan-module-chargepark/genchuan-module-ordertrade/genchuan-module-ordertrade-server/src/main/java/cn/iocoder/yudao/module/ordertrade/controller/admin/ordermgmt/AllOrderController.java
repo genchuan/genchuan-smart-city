@@ -93,8 +93,7 @@ public class AllOrderController {
                                  HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<AllOrderDO> list = allOrderService.getAllOrderPage(pageReqVO).getList();
-        ExcelUtils.write(response, "全部订单.xls", "数据", AllOrderRespVO.class,
-                BeanUtils.toBean(list, AllOrderRespVO.class));
+        ExcelUtils.write(response, "全部订单.xls", "数据", AllOrderRespVO.class, BeanUtils.toBean(list, AllOrderRespVO.class));
     }
 
     // ==================== ② 业务操作接口 ====================

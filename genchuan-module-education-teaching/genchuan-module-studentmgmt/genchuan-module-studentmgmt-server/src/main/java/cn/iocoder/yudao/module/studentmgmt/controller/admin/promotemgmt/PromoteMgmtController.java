@@ -101,4 +101,24 @@ public class PromoteMgmtController {
                         BeanUtils.toBean(list, PromoteMgmtRespVO.class));
     }
 
+    @PutMapping("/execute")
+    @Operation(summary = "执行")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:promote-mgmt:execute')")
+    public CommonResult<Boolean> execute(@Valid @RequestBody PromoteMgmtExecuteReqVO reqVO) {
+        return success(promoteMgmtService.execute(reqVO));
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "招生宣传统计看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:promote-mgmt:chart')")
+    public CommonResult<PromoteMgmtChartRespVO> chart(@Valid PromoteMgmtChartReqVO reqVO) {
+        return success(promoteMgmtService.chart(reqVO));
+    }
+    @GetMapping("/promoteCount")
+    @Operation(summary = "各站点宣传人数统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:promote-mgmt:query')")
+    public CommonResult<PromoteCountReqVO> promoteCount(@Valid PromoteMgmtChartReqVO reqVO) {
+        return success(promoteMgmtService.promoteCount(reqVO));
+    }
+
 }

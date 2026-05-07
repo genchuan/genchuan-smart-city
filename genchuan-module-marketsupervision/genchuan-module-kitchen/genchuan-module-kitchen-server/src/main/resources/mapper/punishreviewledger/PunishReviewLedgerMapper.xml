@@ -135,7 +135,13 @@
                 AND prl.cancel_time &lt;= #{cancelTimeEnd}
             </if>
             <if test="draftPunishAmt != null">
-                AND prl.draft_punish_amt = #{draftPunishAmt}
+                AND prl.draft_punish_amt >= #{draftPunishAmt}
+            </if>
+            <if test="draftPunishAmtMin != null">
+                AND prl.draft_punish_amt >= #{draftPunishAmtMin}
+            </if>
+            <if test="draftPunishAmtMax != null">
+                AND prl.draft_punish_amt &lt;= #{draftPunishAmtMax}
             </if>
             <!-- ====================== 【新增：逾期筛选】 ====================== -->
             <if test="overdueFlag != null">
@@ -216,6 +222,12 @@
 
             <if test="reviewStatus != null and reviewStatus != ''">
                 AND prl.review_status = #{reviewStatus}
+            </if>
+            <if test="draftPunishAmtMin != null">
+                AND prl.draft_punish_amt >= #{draftPunishAmtMin}
+            </if>
+            <if test="draftPunishAmtMax != null">
+                AND prl.draft_punish_amt &lt;= #{draftPunishAmtMax}
             </if>
             <!-- ====================== 【新增：逾期筛选】 ====================== -->
             <if test="overdueFlag != null">

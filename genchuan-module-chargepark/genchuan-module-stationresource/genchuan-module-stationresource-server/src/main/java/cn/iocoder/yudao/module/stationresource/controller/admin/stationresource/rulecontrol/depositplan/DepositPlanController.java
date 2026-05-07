@@ -29,6 +29,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
@@ -105,8 +107,7 @@ public class DepositPlanController {
     @Operation(summary = "获得押金方案分页")
     @PreAuthorize("@ss.hasPermission('stationresource:deposit-plan:query')")
     public CommonResult<PageResult<DepositPlanRespVO>> getDepositPlanPage(@Valid DepositPlanPageReqVO pageReqVO) {
-        PageResult<DepositPlanDO> pageResult = depositPlanService.getDepositPlanPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, DepositPlanRespVO.class));
+        return success(depositPlanService.getDepositPlanPage(pageReqVO));
     }
 
     @GetMapping("/get")
@@ -124,9 +125,23 @@ public class DepositPlanController {
     @ApiAccessLog(operateType = EXPORT)
     public void exportDepositPlanExcel(@Valid DepositPlanPageReqVO pageReqVO,
                                        HttpServletResponse response) throws IOException {
+        // 0. 配置
+        String inputFileName = "押金方案_";
+
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<DepositPlanDO> list = depositPlanService.getDepositPlanPage(pageReqVO).getList();
-        ExcelUtils.write(response, "押金方案.xls", "数据", DepositPlanRespVO.class,
-                BeanUtils.toBean(list, DepositPlanRespVO.class));
+        List<DepositPlanRespVO> list = depositPlanService.getDepositPlanPage(pageReqVO).getList();
+
+        // 1、强制设置响应头，确保浏览器触发下载
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setCharacterEncoding("utf-8");
+        // 2、动态生成文件名，带上当前日期
+        String dateStr = java.time.LocalDate.now().toString();
+        String fileOriginName = inputFileName + dateStr + ".xls";
+        String fileName = URLEncoder.encode(fileOriginName, StandardCharsets.UTF_8.toString())
+                .replaceAll("\\+", "%20").replace("UTF-8","");
+        response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
+
+        // 3、调用 ExcelUtils 导出
+        ExcelUtils.write(response, "押金方案.xls", "数据", DepositPlanRespVO.class, list);
     }
 }

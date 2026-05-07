@@ -12,10 +12,10 @@
     <select id="selectTotalCount"
             resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.staymgmt.vo.StayMgmtChartRespVO">
         SELECT
-        COUNT(1) AS totalStayCount
-        COUNT(CASE WHEN a.status = #{pendingConfirm} THEN 1 ELSE 0 END) AS pendingConfirmCount,
-        COUNT(CASE WHEN a.status = #{pendingAudit} THEN 1 ELSE 0 END) AS pendingAuditCount,
-        COUNT(CASE WHEN a.status = #{passed} THEN 1 ELSE 0 END) AS passedCount
+        COUNT(1) AS totalStayCount,
+        SUM(CASE WHEN a.status = #{pendingConfirm} THEN 1 ELSE 0 END) AS pendingConfirmCount,
+        SUM(CASE WHEN a.status = #{pendingAudit} THEN 1 ELSE 0 END) AS pendingAuditCount,
+        SUM(CASE WHEN a.status = #{passed} THEN 1 ELSE 0 END) AS passedCount
         FROM stay_mgmt AS a LEFT JOIN student_info AS s  ON a.student_id = s.id
         WHERE a.deleted= 0
         <if test="className != null">
@@ -37,6 +37,7 @@
         <if test="startTime != null">
             AND stay_date between #{startTime} AND #{endTime}
         </if>
+        GROUP BY DATE_FORMAT( a.stay_date, '%Y-%m-%d' )
     </select>
     <select id="getStatusDistribution" resultType="com.alibaba.fastjson.JSONObject">
         SELECT
@@ -56,9 +57,9 @@
         SELECT
         s.class_name AS className,
         COUNT(1) AS totalCount,
-        COUNT(CASE WHEN a.status = #{pendingConfirm} THEN 1 ELSE 0 END) AS pendingConfirmCount,
-        COUNT(CASE WHEN a.status = #{pendingAudit} THEN 1 ELSE 0 END) AS pendingAuditCount,
-        COUNT(CASE WHEN a.status = #{passed} THEN 1 ELSE 0 END) AS passedCount
+        SUM(CASE WHEN a.status = #{pendingConfirm} THEN 1 ELSE 0 END) AS pendingConfirmCount,
+        SUM(CASE WHEN a.status = #{pendingAudit} THEN 1 ELSE 0 END) AS pendingAuditCount,
+        SUM(CASE WHEN a.status = #{passed} THEN 1 ELSE 0 END) AS passedCount
         FROM stay_mgmt AS a LEFT JOIN student_info AS s  ON a.student_id = s.id
         WHERE a.deleted= 0
         <if test="startTime != null">

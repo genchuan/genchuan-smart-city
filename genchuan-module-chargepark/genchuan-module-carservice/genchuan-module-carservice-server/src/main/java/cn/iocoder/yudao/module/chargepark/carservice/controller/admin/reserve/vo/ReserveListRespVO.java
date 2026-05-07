@@ -17,7 +17,6 @@ public class ReserveListRespVO {
     private Long id;
 
     @Schema(description = "用户 ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("用户 ID")
     private Long userId;
 
     @Schema(description = "用户名（关联 system_user.nickname）")
@@ -25,7 +24,6 @@ public class ReserveListRespVO {
     private String userName;
 
     @Schema(description = "场站 ID")
-    @ExcelProperty("场站 ID")
     private Long stationId;
 
     @Schema(description = "场站名（关联 station_info.name）")
@@ -35,6 +33,10 @@ public class ReserveListRespVO {
     @Schema(description = "车位 ID")
     @ExcelProperty("车位 ID")
     private Long spaceId;
+
+    @Schema(description = "车位编号（关联 parking_space_info.space_no）")
+    @ExcelProperty("车位编号")
+    private String spaceNo;
 
     @Schema(description = "预约时间")
     @ExcelProperty("预约时间")
@@ -81,11 +83,9 @@ public class ReserveListRespVO {
     private String evaluateContent;
 
     @Schema(description = "备用字段 1")
-    @ExcelProperty("备用字段 1")
     private String reserve1;
 
     @Schema(description = "备用字段 2")
-    @ExcelProperty("备用字段 2")
     private String reserve2;
 
     @Schema(description = "创建者")

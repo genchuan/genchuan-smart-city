@@ -5,6 +5,8 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.CarChargeOrderPageReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.ordermgmt.CarChargeOrderDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -21,13 +23,19 @@ import java.util.Map;
 @Mapper
 public interface CarChargeOrderMapper extends BaseMapperX<CarChargeOrderDO> {
 
+    IPage<CarChargeOrderDO> selectPageJoinStation(IPage<CarChargeOrderDO> page, @Param("req") CarChargeOrderPageReqVO reqVO);
+
+    @Select("SELECT o.*, s.name AS station_name FROM car_charge_order o LEFT JOIN station_info s ON o.station_id = s.id AND s.deleted = 0 WHERE o.id = #{id} AND o.deleted = 0")
+    CarChargeOrderDO selectByIdJoinStation(@Param("id") Long id);
+
     default PageResult<CarChargeOrderDO> selectPage(CarChargeOrderPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<CarChargeOrderDO>()
                 .likeIfPresent(CarChargeOrderDO::getOrderNo, reqVO.getOrderNo())
                 .likeIfPresent(CarChargeOrderDO::getPlateNo, reqVO.getPlateNo())
                 .eqIfPresent(CarChargeOrderDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(CarChargeOrderDO::getStationId, reqVO.getStationId())
-                .betweenIfPresent(CarChargeOrderDO::getCreateOrderTime, reqVO.getCreateOrderTime())
+                .geIfPresent(CarChargeOrderDO::getCreateOrderTime, reqVO.getCreateOrderTimeStart())
+                .leIfPresent(CarChargeOrderDO::getCreateOrderTime, reqVO.getCreateOrderTimeEnd())
                 .orderByDesc(CarChargeOrderDO::getId));
     }
 

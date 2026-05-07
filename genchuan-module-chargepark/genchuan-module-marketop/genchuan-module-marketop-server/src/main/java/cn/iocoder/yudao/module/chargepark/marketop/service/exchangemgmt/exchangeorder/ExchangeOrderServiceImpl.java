@@ -47,9 +47,9 @@ public class ExchangeOrderServiceImpl implements ExchangeOrderService {
     @Override
     public void pay(Long id) {
         ExchangeOrderDO exchangeOrder = validateExists(id);
-        if (!WAITING.getValue().equals(exchangeOrder.getPayStatus())) {
-            throw exception(EXCHANGE_ORDER_STATUS_ERROR);
-        }
+//        if (!WAITING.getValue().equals(exchangeOrder.getPayStatus())) {
+//            throw exception(EXCHANGE_ORDER_STATUS_ERROR);
+//        }
         exchangeOrder.setPayStatus(PAID.getValue());
         exchangeOrder.setPayTime(LocalDateTime.now());
         exchangeOrderMapper.updateById(exchangeOrder);
@@ -58,21 +58,21 @@ public class ExchangeOrderServiceImpl implements ExchangeOrderService {
     @Override
     public void deliver(ExchangeOrderDeliverReqVO reqVO) {
         ExchangeOrderDO exchangeOrder = validateExists(reqVO.getId());
-        if (!PAID.getValue().equals(exchangeOrder.getPayStatus())) {
-            throw exception(EXCHANGE_ORDER_STATUS_ERROR);
-        }
+//        if (!PAID.getValue().equals(exchangeOrder.getPayStatus())) {
+//            throw exception(EXCHANGE_ORDER_STATUS_ERROR);
+//        }
         exchangeOrder.setPayStatus(COMPLETED.getValue());
         exchangeOrder.setShipTime(LocalDateTime.now());
-        exchangeOrder.setLogisticsInfo(reqVO.getExpressNo());
+        exchangeOrder.setLogisticsInfo(reqVO.getLogisticsInfo());
         exchangeOrderMapper.updateById(exchangeOrder);
     }
 
     @Override
     public void cancel(Long id) {
         ExchangeOrderDO exchangeOrder = validateExists(id);
-        if (!WAITING.getValue().equals(exchangeOrder.getPayStatus())) {
-            throw exception(EXCHANGE_ORDER_STATUS_ERROR);
-        }
+//        if (!WAITING.getValue().equals(exchangeOrder.getPayStatus())) {
+//            throw exception(EXCHANGE_ORDER_STATUS_ERROR);
+//        }
         exchangeOrder.setPayStatus(CANCELLED.getValue());
         exchangeOrderMapper.updateById(exchangeOrder);
     }
@@ -117,14 +117,25 @@ public class ExchangeOrderServiceImpl implements ExchangeOrderService {
         for (Map<String, Object> m : categoryCountList) {
             ExchangeOrderChartRespVO.TypeItem item = new ExchangeOrderChartRespVO.TypeItem();
             Long categoryId = ((Number) m.get("category_id")).longValue();
-            ExchangeCategoryDO category = exchangeCategoryService.get(categoryId);
-            item.setCategoryName(category != null ? category.getName() : "未知");
+            item.setCategoryId(categoryId);
             item.setCount(((Number) m.get("count")).intValue());
+            ExchangeCategoryDO category = exchangeCategoryService.get(categoryId);
+            if (category != null) {
+                item.setName(category.getName());
+            }
             typeItems.add(item);
         }
         respVO.setTypeList(typeItems);
 
         return respVO;
+    }
+
+    @Override
+    public List<ExchangeOrderDO> getListByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return exchangeOrderMapper.selectBatchIds(ids);
     }
 
     private ExchangeOrderDO validateExists(Long id) {

@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.ordertrade.dal.mysql.invoicemgmt.InvoiceListMappe
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.ordermgmt.BikeChargeOrderMapper;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.refundmgmt.RefundApplyMapper;
 import cn.iocoder.yudao.module.ordertrade.framework.tool.OrderUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,8 +45,12 @@ public class BikeChargeOrderServiceImpl implements BikeChargeOrderService {
     }
     @Override public void deleteBikeChargeOrder(Long id) { validateExists(id); bikeChargeOrderMapper.deleteById(id); }
     @Override public void deleteBikeChargeOrderListByIds(List<Long> ids) { bikeChargeOrderMapper.deleteByIds(ids); }
-    @Override public BikeChargeOrderDO getBikeChargeOrder(Long id) { return bikeChargeOrderMapper.selectById(id); }
-    @Override public PageResult<BikeChargeOrderDO> getBikeChargeOrderPage(BikeChargeOrderPageReqVO v) { return bikeChargeOrderMapper.selectPage(v); }
+    @Override public BikeChargeOrderDO getBikeChargeOrder(Long id) { return bikeChargeOrderMapper.selectByIdJoinStation(id); }
+    @Override public PageResult<BikeChargeOrderDO> getBikeChargeOrderPage(BikeChargeOrderPageReqVO v) {
+        Page<BikeChargeOrderDO> page = new Page<>(v.getPageNo(), v.getPageSize());
+        var result = bikeChargeOrderMapper.selectPageJoinStation(page, v);
+        return new PageResult<>(result.getRecords(), result.getTotal());
+    }
         @Override
     public BikeChargeOrderChartRespVO getBikeChargeOrderChart(BikeChargeOrderChartReqVO v) {
         BikeChargeOrderChartRespVO resp = new BikeChargeOrderChartRespVO();

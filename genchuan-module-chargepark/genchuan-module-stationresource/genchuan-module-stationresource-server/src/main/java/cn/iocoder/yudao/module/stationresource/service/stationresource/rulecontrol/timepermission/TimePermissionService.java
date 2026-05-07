@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.stationresource.service.stationresource.rulecont
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.timepermission.vo.TimePermissionPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.timepermission.vo.TimePermissionRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.timepermission.vo.TimePermissionSaveReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.timepermission.vo.ops.ImportRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.rulecontrol.timepermission.vo.ops.TimePermissionCreateReqVO;
@@ -63,7 +64,7 @@ public interface TimePermissionService {
      * @param pageReqVO 分页查询
      * @return 时段权限分页
      */
-    PageResult<TimePermissionDO> getTimePermissionPage(TimePermissionPageReqVO pageReqVO);
+    PageResult<TimePermissionRespVO> getTimePermissionPage(TimePermissionPageReqVO pageReqVO);
 
     void addTimePermission(TimePermissionCreateReqVO createReqVO);
 

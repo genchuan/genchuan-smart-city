@@ -5,6 +5,8 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.car
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.cardorder.vo.CardOrderPageReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.CardOrderDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.cardmgmt.CardOrderMapper;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.CardOrderInvoiceStatusEnum;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.CardOrderPayStatusEnum;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -40,10 +42,7 @@ public class CardOrderServiceImpl implements CardOrderService {
     @Override
     public void pay(Long id) {
         CardOrderDO cardOrder = validateExists(id);
-        if (!"待支付".equals(cardOrder.getPayStatus())) {
-            throw exception(CARD_ORDER_STATUS_ERROR);
-        }
-        cardOrder.setPayStatus("已支付");
+        cardOrder.setPayStatus(CardOrderPayStatusEnum.PAID.getValue());
         cardOrder.setPayTime(LocalDateTime.now());
         cardOrderMapper.updateById(cardOrder);
     }
@@ -51,10 +50,7 @@ public class CardOrderServiceImpl implements CardOrderService {
     @Override
     public void activate(Long id) {
         CardOrderDO cardOrder = validateExists(id);
-        if (!"已支付".equals(cardOrder.getPayStatus())) {
-            throw exception(CARD_ORDER_STATUS_ERROR);
-        }
-        cardOrder.setPayStatus("已完成");
+        cardOrder.setPayStatus(CardOrderPayStatusEnum.COMPLETED.getValue());
         cardOrder.setActiveTime(LocalDateTime.now());
         cardOrderMapper.updateById(cardOrder);
     }
@@ -62,20 +58,14 @@ public class CardOrderServiceImpl implements CardOrderService {
     @Override
     public void invoice(Long id) {
         CardOrderDO cardOrder = validateExists(id);
-        if (!"0".equals(cardOrder.getInvoiceStatus())) {
-            throw exception(CARD_ORDER_STATUS_ERROR);
-        }
-        cardOrder.setInvoiceStatus("1");
+        cardOrder.setInvoiceStatus(CardOrderInvoiceStatusEnum.INVOICED.getValue());
         cardOrderMapper.updateById(cardOrder);
     }
 
     @Override
     public void cancel(Long id) {
         CardOrderDO cardOrder = validateExists(id);
-        if (!"0".equals(cardOrder.getPayStatus())) {
-            throw exception(CARD_ORDER_STATUS_ERROR);
-        }
-        cardOrder.setPayStatus("-1");
+        cardOrder.setPayStatus(CardOrderPayStatusEnum.CANCELLED.getValue());
         cardOrderMapper.updateById(cardOrder);
     }
 
@@ -121,16 +111,24 @@ public class CardOrderServiceImpl implements CardOrderService {
         respVO.setTrendList(trendList);
 
         // 按卡种类型统计订单数
-        List<Map<String, Object>> typeCountList = cardOrderMapper.selectTypeCountList();
-        List<CardOrderChartRespVO.TypeCountItem> typeItems = typeCountList.stream().map(m -> {
-            CardOrderChartRespVO.TypeCountItem item = new CardOrderChartRespVO.TypeCountItem();
-            item.setType((String) m.get("type"));
+        List<Map<String, Object>> typeCountList = cardOrderMapper.selectPayStatusCountList();
+        List<CardOrderChartRespVO.PayStatusCountItem> typeItems = typeCountList.stream().map(m -> {
+            CardOrderChartRespVO.PayStatusCountItem item = new CardOrderChartRespVO.PayStatusCountItem();
+            item.setPayStatus((String) m.get("pay_status"));
             item.setCount(((Number) m.get("count")).intValue());
             return item;
         }).toList();
-        respVO.setTypeCountList(typeItems);
+        respVO.setPayStatusCountList(typeItems);
 
         return respVO;
+    }
+
+    @Override
+    public List<CardOrderDO> getListByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return cardOrderMapper.selectBatchIds(ids);
     }
 
     private CardOrderDO validateExists(Long id) {

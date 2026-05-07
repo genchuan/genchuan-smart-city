@@ -15,10 +15,14 @@ public class StockControlAllocateReqVO {
 
     @Schema(description = "目标场站", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotEmpty(message = "目标场站不能为空")
-    private String targetStation;
+    private String targetStationId;
+
+    @Schema(description = "目标场站", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotEmpty(message = "源场站不能为空")
+    private String sourceStationId;
 
     @Schema(description = "调配数量", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "调配数量不能为空")
-    private Integer quantity;
+    private Integer num;
 
 }

@@ -187,14 +187,12 @@ public class InspectPlanServiceImpl implements InspectPlanService {
         InspectPlanDO updateObj = new InspectPlanDO();
         updateObj.setId(id);
         updateObj.setStatus(status);
-        if (status == "0"){
+        if ("0".equals(status)) {  // 已生效
             updateObj.setProgress(50);
             updateObj.setEffectTime(LocalDateTime.now());
-        }
-        if (status == "2"){
+        } else if ("2".equals(status)) {  // 进行中
             updateObj.setProgress(80);
-        }
-        if (status == "3"){
+        } else if ("3".equals(status)) {  // 已完成
             updateObj.setProgress(100);
             updateObj.setFinishTime(LocalDateTime.now());
         }

@@ -127,7 +127,7 @@ public class MoralResourceServiceImpl implements MoralResourceService {
             MoralResourceDO moralResource = validateMoralResourceExists(id);
             // 将资源状态修改为 “已上架”，自动更新上架时间为当前时间，自动记录操作审计日志
             moralResource.setStatus(MoralResourceStatusEnum.OFFLINE.getStatus());
-            moralResource.setPublishTime(LocalDateTime.now());
+            moralResource.setOffTime(LocalDateTime.now());
 
             int i = moralResourceMapper.updateById(moralResource);
             total += i;
@@ -235,7 +235,8 @@ public class MoralResourceServiceImpl implements MoralResourceService {
                     }
                 }
             }
-            typeList.add(dictDataList);
+            // "typeList": ["课程", "图书", "专题包"],
+            typeList.add(dictDataLabel);
 //            "resourceCountList": [5,7,3],
             Long typeCount = moralResourceMapper.selectTypeCountByType(finalStartTime, finalEndTime, type);
             resourceCountList.add(typeCount);

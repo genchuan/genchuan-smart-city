@@ -29,7 +29,11 @@ public class RefundApplyPageReqVO extends PageParam {
     private String status;
     @Schema(description = "申请人ID")
     private Long applicantId;
-    @Schema(description = "申请时间范围")
+    @Schema(description = "申请时间-开始，格式 yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDateTime[] applyTime;
+    private LocalDateTime applyTimeStart;
+
+    @Schema(description = "申请时间-结束，格式 yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime applyTimeEnd;
 }

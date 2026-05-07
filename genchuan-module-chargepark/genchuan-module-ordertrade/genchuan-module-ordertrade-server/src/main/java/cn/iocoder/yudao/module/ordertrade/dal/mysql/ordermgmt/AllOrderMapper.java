@@ -5,6 +5,8 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.AllOrderPageReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.ordermgmt.AllOrderDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -21,6 +23,11 @@ import java.util.Map;
 @Mapper
 public interface AllOrderMapper extends BaseMapperX<AllOrderDO> {
 
+    IPage<AllOrderDO> selectPageJoinStation(IPage<AllOrderDO> page, @Param("req") AllOrderPageReqVO reqVO);
+
+    @Select("SELECT o.*, s.name AS station_name FROM all_order o LEFT JOIN station_info s ON o.station_id = s.id AND s.deleted = 0 WHERE o.id = #{id} AND o.deleted = 0")
+    AllOrderDO selectByIdJoinStation(@Param("id") Long id);
+
     default PageResult<AllOrderDO> selectPage(AllOrderPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<AllOrderDO>()
                 .likeIfPresent(AllOrderDO::getOrderNo, reqVO.getOrderNo())
@@ -28,7 +35,10 @@ public interface AllOrderMapper extends BaseMapperX<AllOrderDO> {
                 .likeIfPresent(AllOrderDO::getPlateNo, reqVO.getPlateNo())
                 .eqIfPresent(AllOrderDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(AllOrderDO::getStationId, reqVO.getStationId())
-                .betweenIfPresent(AllOrderDO::getCreateOrderTime, reqVO.getCreateOrderTime())
+                .geIfPresent(AllOrderDO::getCreateOrderTime, reqVO.getCreateOrderTimeStart())
+                .leIfPresent(AllOrderDO::getCreateOrderTime, reqVO.getCreateOrderTimeEnd())
+                .geIfPresent(AllOrderDO::getPayTime, reqVO.getPayTimeStart())
+                .leIfPresent(AllOrderDO::getPayTime, reqVO.getPayTimeEnd())
                 .orderByDesc(AllOrderDO::getId));
     }
 

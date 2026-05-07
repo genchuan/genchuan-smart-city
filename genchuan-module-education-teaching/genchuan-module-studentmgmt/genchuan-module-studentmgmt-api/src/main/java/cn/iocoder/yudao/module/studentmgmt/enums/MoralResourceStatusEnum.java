@@ -10,7 +10,7 @@ import lombok.Getter;
  */
 public enum MoralResourceStatusEnum {
 
-    OFFLINE("online","'未上架'"),
+    OFFLINE("offline","'未上架'"),
     ONLINE("online","'已上架'");
 
     public static final String DICT_TYPE = "moral_activity_activity_type";

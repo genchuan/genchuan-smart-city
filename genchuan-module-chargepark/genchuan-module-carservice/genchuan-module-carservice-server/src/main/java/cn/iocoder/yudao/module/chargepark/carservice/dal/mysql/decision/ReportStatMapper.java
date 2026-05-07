@@ -24,23 +24,23 @@ import java.util.Map;
 public interface ReportStatMapper {
 
     @Select("<script>SELECT DATE(create_time) AS day, COUNT(*) AS cnt FROM rescue_info " +
-            "WHERE create_time &gt;= #{since} " +
+            "WHERE deleted = 0 AND create_time &gt;= #{since} " +
             "<if test='end != null'>AND create_time &lt;= #{end}</if> " +
             "GROUP BY DATE(create_time) ORDER BY day</script>")
     List<Map<String, Object>> rescueInfoDailyCount(@Param("since") LocalDateTime since,
                                                    @Param("end") LocalDateTime end);
 
-    @Select("<script>SELECT DATE(create_time) AS day, COUNT(*) AS cnt FROM reserve_list " +
-            "WHERE create_time &gt;= #{since} " +
-            "<if test='end != null'>AND create_time &lt;= #{end}</if> " +
-            "GROUP BY DATE(create_time) ORDER BY day</script>")
+    @Select("<script>SELECT DATE(reserve_time) AS day, COUNT(*) AS cnt FROM reserve_list " +
+            "WHERE reserve_time &gt;= #{since} " +
+            "<if test='end != null'>AND reserve_time &lt;= #{end}</if> " +
+            "GROUP BY DATE(reserve_time) ORDER BY day</script>")
     List<Map<String, Object>> reserveListDailyCount(@Param("since") LocalDateTime since,
                                                     @Param("end") LocalDateTime end);
 
-    @Select("<script>SELECT DATE(create_time) AS day, COUNT(*) AS cnt FROM space_push " +
-            "WHERE create_time &gt;= #{since} " +
-            "<if test='end != null'>AND create_time &lt;= #{end}</if> " +
-            "GROUP BY DATE(create_time) ORDER BY day</script>")
+    @Select("<script>SELECT DATE(push_time) AS day, COUNT(*) AS cnt FROM space_push " +
+            "WHERE push_time IS NOT NULL AND push_time &gt;= #{since} " +
+            "<if test='end != null'>AND push_time &lt;= #{end}</if> " +
+            "GROUP BY DATE(push_time) ORDER BY day</script>")
     List<Map<String, Object>> spacePushDailyCount(@Param("since") LocalDateTime since,
                                                   @Param("end") LocalDateTime end);
 
@@ -70,8 +70,8 @@ public interface ReportStatMapper {
      */
     @Select("<script>SELECT reserve_type AS k, COUNT(*) AS cnt FROM reserve_list " +
             "WHERE reserve_type IS NOT NULL " +
-            "<if test='since != null'>AND create_time &gt;= #{since}</if> " +
-            "<if test='end != null'>AND create_time &lt;= #{end}</if> " +
+            "<if test='since != null'>AND reserve_time &gt;= #{since}</if> " +
+            "<if test='end != null'>AND reserve_time &lt;= #{end}</if> " +
             "GROUP BY reserve_type</script>")
     List<Map<String, Object>> reserveListTypeDistribution(@Param("since") LocalDateTime since,
                                                           @Param("end") LocalDateTime end);

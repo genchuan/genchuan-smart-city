@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.registermgmt;
 
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.BaseChartReqVO;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -8,9 +9,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 
-import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
+
 import java.util.*;
 import java.io.IOException;
 
@@ -18,11 +19,13 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
 
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.registermgmt.vo.*;
@@ -65,7 +68,7 @@ public class RegisterMgmtController {
     @DeleteMapping("/delete-list")
     @Parameter(name = "ids", description = "编号", required = true)
     @Operation(summary = "批量删除报名管理")
-                @PreAuthorize("@ss.hasPermission('studentmgmt:register-mgmt:delete')")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:register-mgmt:delete')")
     public CommonResult<Boolean> deleteRegisterMgmtList(@RequestParam("ids") List<Long> ids) {
         registerMgmtService.deleteRegisterMgmtListByIds(ids);
         return success(true);
@@ -93,12 +96,41 @@ public class RegisterMgmtController {
     @PreAuthorize("@ss.hasPermission('studentmgmt:register-mgmt:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportRegisterMgmtExcel(@Valid RegisterMgmtPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                        HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<RegisterMgmtDO> list = registerMgmtService.getRegisterMgmtPage(pageReqVO).getList();
         // 导出 Excel
         ExcelUtils.write(response, "报名管理.xls", "数据", RegisterMgmtRespVO.class,
-                        BeanUtils.toBean(list, RegisterMgmtRespVO.class));
+                BeanUtils.toBean(list, RegisterMgmtRespVO.class));
     }
+
+    @PutMapping("/audit")
+    @Operation(summary = "审核")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:register-mgmt:audit')")
+    public CommonResult<Boolean> audit(@Valid @RequestBody RegisterMgmtAuditReqVO reqVO) {
+        return success(registerMgmtService.audit(reqVO));
+    }
+
+    @PutMapping("/confirm")
+    @Operation(summary = "确认")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:register-mgmt:confirm')")
+    public CommonResult<Boolean> confirm(@Valid @RequestBody RegisterMgmtConfirmReqVO reqVO) {
+        return success(registerMgmtService.confirm(reqVO));
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "招生报名统计看板")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:register-mgmt:chart')")
+    public CommonResult<RegisterMgmtChartRespVO> chart(@Valid BaseChartReqVO reqVO) {
+        return success(registerMgmtService.chart(reqVO));
+    }
+
+    @GetMapping("/enrollCount")
+    @Operation(summary = "各专业报名 / 录取人数统计")
+    @PreAuthorize("@ss.hasPermission('studentmgmt:register-mgmt:chart')")
+    public CommonResult<RegisterMgmtEnrollCountRespVO> enrollCount(@Valid BaseChartReqVO reqVO) {
+        return success(registerMgmtService.enrollCount(reqVO));
+    }
+
 
 }

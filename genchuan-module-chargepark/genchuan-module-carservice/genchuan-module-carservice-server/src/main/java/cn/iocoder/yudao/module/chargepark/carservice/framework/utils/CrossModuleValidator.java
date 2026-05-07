@@ -6,6 +6,8 @@ import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.module.chargepark.carservice.enums.ErrorCodeConstants;
 import cn.iocoder.yudao.module.inspectop.api.space.SpaceMonitorApi;
 import cn.iocoder.yudao.module.inspectop.api.space.dto.SpaceMonitorRespDTO;
+import cn.iocoder.yudao.module.stationresource.api.parking.ParkingSpaceInfoApi;
+import cn.iocoder.yudao.module.stationresource.api.parking.dto.ParkingSpaceInfoRespDTO;
 import cn.iocoder.yudao.module.stationresource.api.station.StationInfoApi;
 import cn.iocoder.yudao.module.stationresource.api.station.dto.StationInfoRespDTO;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
@@ -29,6 +31,7 @@ public class CrossModuleValidator {
 
     @Resource private StationInfoApi stationInfoApi;
     @Resource private SpaceMonitorApi spaceMonitorApi;
+    @Resource private ParkingSpaceInfoApi parkingSpaceInfoApi;
     @Resource private AdminUserApi adminUserApi;
 
     /** 校验场站存在 */
@@ -73,19 +76,19 @@ public class CrossModuleValidator {
         }
     }
 
-    /** 校验车位存在 */
+    /** 校验车位存在（查 stationresource 模块的 parking_space_info 主表，而非 inspectop 模块的监测记录） */
     public void validateSpaceExists(Long spaceId) {
         if (spaceId == null) {
             return;
         }
-        SpaceMonitorRespDTO space;
+        ParkingSpaceInfoRespDTO space;
         try {
-            CommonResult<SpaceMonitorRespDTO> r = spaceMonitorApi.getLatestBySpaceId(spaceId);
+            CommonResult<ParkingSpaceInfoRespDTO> r = parkingSpaceInfoApi.getSpace(spaceId);
             space = r == null ? null : r.getData();
         } catch (ServiceException se) {
             throw se;
         } catch (Exception ex) {
-            log.warn("[validateSpaceExists] inspectop RPC 异常 spaceId={}", spaceId, ex);
+            log.warn("[validateSpaceExists] stationresource RPC 异常 spaceId={}", spaceId, ex);
             throw exception(ErrorCodeConstants.CROSS_MODULE_RPC_UNAVAILABLE);
         }
         if (space == null) {

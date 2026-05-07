@@ -5,6 +5,8 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.OfftimeParkOrderPageReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.ordermgmt.OfftimeParkOrderDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -21,13 +23,19 @@ import java.util.Map;
 @Mapper
 public interface OfftimeParkOrderMapper extends BaseMapperX<OfftimeParkOrderDO> {
 
+    IPage<OfftimeParkOrderDO> selectPageJoinStation(IPage<OfftimeParkOrderDO> page, @Param("req") OfftimeParkOrderPageReqVO reqVO);
+
+    @Select("SELECT o.*, s.name AS station_name FROM offtime_park_order o LEFT JOIN station_info s ON o.station_id = s.id AND s.deleted = 0 WHERE o.id = #{id} AND o.deleted = 0")
+    OfftimeParkOrderDO selectByIdJoinStation(@Param("id") Long id);
+
     default PageResult<OfftimeParkOrderDO> selectPage(OfftimeParkOrderPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<OfftimeParkOrderDO>()
                 .likeIfPresent(OfftimeParkOrderDO::getOrderNo, reqVO.getOrderNo())
                 .likeIfPresent(OfftimeParkOrderDO::getPlateNo, reqVO.getPlateNo())
                 .eqIfPresent(OfftimeParkOrderDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(OfftimeParkOrderDO::getStationId, reqVO.getStationId())
-                .betweenIfPresent(OfftimeParkOrderDO::getReserveStartTime, reqVO.getReserveStartTime())
+                .geIfPresent(OfftimeParkOrderDO::getCreateOrderTime, reqVO.getCreateOrderTimeStart())
+                .leIfPresent(OfftimeParkOrderDO::getCreateOrderTime, reqVO.getCreateOrderTimeEnd())
                 .orderByDesc(OfftimeParkOrderDO::getId));
     }
 

@@ -5,9 +5,7 @@
     <select id="selectAbnormalOrderPage" resultType="cn.iocoder.yudao.module.vehiclecharging.controller.admin.abnormalorder.vo.NewAbnormalOrderRespVO">
         SELECT
         ao.id,
-        -- 异常编号：使用ao.abnormal_code（业务字段），彻底区分orderCode
         ao.abnormal_code AS abnormalCode,
-
         ol.id AS orderId,
         ao.order_code AS orderCode,
         ol.plate_no AS plateNo,
@@ -18,27 +16,22 @@
         ao.refund_amount AS refundAmount,
         ao.refund_reason AS refundReason,
         UNIX_TIMESTAMP(ao.check_time) * 1000 AS checkTime,
-        -- 毫秒时间戳 = 秒 × 1000
         UNIX_TIMESTAMP(ao.abnormal_time) * 1000 AS abnormalTime,
         ao.abnormal_status AS abnormalStatus,
-
-        -- 核实人：直接返回nickname，匹配VO的verifyUser
         su1.nickname AS verifyUser,
         UNIX_TIMESTAMP(ao.verify_time) * 1000 AS verifyTime,
         ao.verify_result AS verifyResult,
         ao.verify_remark AS verifyRemark,
-
-        -- 处理人：直接返回nickname，匹配VO的handleUser
         su2.nickname AS handleUser,
         UNIX_TIMESTAMP(ao.handle_time) * 1000 AS handleTime,
-
         su3.nickname AS checkUser,
-
         UNIX_TIMESTAMP(ao.complete_time) * 1000 AS completeTime,
         ao.remark,
+        -- 修复：如果关联不到用户，回退显示原始字段值（可能是空字符串）
+        COALESCE(cr.nickname, ao.creator) AS creator,
+        COALESCE(cu.nickname, ao.updater) AS updater,
         UNIX_TIMESTAMP(ao.create_time) * 1000 AS createTime,
         UNIX_TIMESTAMP(ao.update_time) * 1000 AS updateTime
-
         FROM abnormal_order ao
         LEFT JOIN order_list ol
         ON ao.order_code = ol.order_code COLLATE utf8mb4_general_ci
@@ -49,17 +42,21 @@
         LEFT JOIN charging_station cs
         ON cp.station_id = cs.id
         AND cs.deleted = 0
-
-        -- 核实人关联：统一排序规则，解决字符集冲突
-        LEFT JOIN sys_user su1
-        ON ao.verify_user = su1.id
-        -- 处理人关联：统一排序规则，解决字符集冲突
-        LEFT JOIN sys_user su2
-        ON ao.handle_user = su2.id
-
-        LEFT JOIN sys_user su3
-        ON ao.check_user = su3.id
-
+        LEFT JOIN sys_user su1 ON ao.verify_user = su1.id
+        LEFT JOIN sys_user su2 ON ao.handle_user = su2.id
+        LEFT JOIN sys_user su3 ON ao.check_user = su3.id
+        -- 创建人关联（creator存的是用户ID）
+        LEFT JOIN sys_user cr
+        ON cr.id IS NOT NULL
+        AND ao.creator IS NOT NULL
+        AND ao.creator != ''
+        AND cr.id = CAST(ao.creator AS UNSIGNED)
+        -- 更新人关联
+        LEFT JOIN sys_user cu
+        ON cu.id IS NOT NULL
+        AND ao.updater IS NOT NULL
+        AND ao.updater != ''
+        AND cu.id = CAST(ao.updater AS UNSIGNED)
         WHERE ao.deleted = 0
 
         <if test="req.abnormalCode != null and req.abnormalCode != ''">

@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.stationresource.service.stationresource.stationm
 
 import java.util.*;
 
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.debtexpand.vo.DebtExpandRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.debtexpand.vo.chart.DebtExpandChartRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.debtexpand.vo.ops.ImportRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.debtexpand.vo.DebtExpandPageReqVO;
@@ -56,7 +57,7 @@ public interface DebtExpandService {
      * @param id 编号
      * @return 联合追缴拓场配置
      */
-    DebtExpandDO getDebtExpand(Long id);
+    DebtExpandRespVO getDebtExpand(Long id);
 
     /**
      * 获得联合追缴拓场配置分页
@@ -64,7 +65,7 @@ public interface DebtExpandService {
      * @param pageReqVO 分页查询
      * @return 联合追缴拓场配置分页
      */
-    PageResult<DebtExpandDO> getDebtExpandPage(DebtExpandPageReqVO pageReqVO);
+    PageResult<DebtExpandRespVO> getDebtExpandPage(DebtExpandPageReqVO pageReqVO);
 
     Long addDebtExpand(DebtExpandCreateReqVO createReqVO);
 

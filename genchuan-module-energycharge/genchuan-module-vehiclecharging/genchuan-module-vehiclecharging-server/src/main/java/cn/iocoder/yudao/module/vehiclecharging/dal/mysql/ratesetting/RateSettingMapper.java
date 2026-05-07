@@ -21,7 +21,7 @@ public interface RateSettingMapper extends BaseMapperX<RateSettingDO> {
     /**
      * 分页查询费率设置列表
      */
-    List<RateSettingRespVO> selectPage(RateSettingPageReqVO pageReqVO);
+    List<RateSettingRespVO> getPage(RateSettingPageReqVO pageReqVO);
 
     /**
      * 统计分页总数

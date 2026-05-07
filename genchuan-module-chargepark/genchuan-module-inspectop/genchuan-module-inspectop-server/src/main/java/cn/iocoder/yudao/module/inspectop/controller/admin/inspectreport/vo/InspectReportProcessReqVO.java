@@ -11,4 +11,9 @@ public class InspectReportProcessReqVO {
     @Schema(description = "上报ID", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "上报ID不能为空")
     private Long id;
+
+    @Schema(description = "处置人ID", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "处置人ID不能为空")
+    private Long processUserId;
+
 }

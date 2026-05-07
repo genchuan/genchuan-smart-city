@@ -55,4 +55,6 @@ public interface CardConfigMapper extends BaseMapperX<CardConfigDO> {
     @Select("SELECT type, COUNT(*) AS count FROM card_config GROUP BY type")
     List<Map<String, Object>> selectTypeCountList();
 
+    @Select("SELECT scope, COUNT(*) AS count FROM card_config GROUP BY scope")
+    List<Map<String, Object>> selectScopeCountList();
 }

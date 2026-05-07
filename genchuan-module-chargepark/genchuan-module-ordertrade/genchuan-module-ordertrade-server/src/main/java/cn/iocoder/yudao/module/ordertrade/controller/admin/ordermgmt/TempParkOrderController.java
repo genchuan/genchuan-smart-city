@@ -94,8 +94,7 @@ public class TempParkOrderController {
                                  HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<TempParkOrderDO> list = tempParkOrderService.getTempParkOrderPage(pageReqVO).getList();
-        ExcelUtils.write(response, "临时停车订单.xls", "数据", TempParkOrderRespVO.class,
-                BeanUtils.toBean(list, TempParkOrderRespVO.class));
+        ExcelUtils.write(response, "临时停车订单.xls", "数据", TempParkOrderRespVO.class, BeanUtils.toBean(list, TempParkOrderRespVO.class));
     }
 
     @GetMapping("/batch-export")
@@ -105,8 +104,7 @@ public class TempParkOrderController {
                                       HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<TempParkOrderDO> list = tempParkOrderService.getTempParkOrderPage(pageReqVO).getList();
-        ExcelUtils.write(response, "临时停车订单批量导出.xls", "数据", TempParkOrderRespVO.class,
-                BeanUtils.toBean(list, TempParkOrderRespVO.class));
+        ExcelUtils.write(response, "临时停车订单批量导出.xls", "数据", TempParkOrderRespVO.class, BeanUtils.toBean(list, TempParkOrderRespVO.class));
     }
 
     // ==================== ② 业务操作接口 ====================

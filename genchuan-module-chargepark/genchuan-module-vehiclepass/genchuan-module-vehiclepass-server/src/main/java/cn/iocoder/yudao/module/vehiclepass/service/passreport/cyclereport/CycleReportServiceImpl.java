@@ -4,6 +4,8 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.tenant.core.context.TenantContextHolder;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.passreport.cyclereport.vo.CycleReportChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.passreport.cyclereport.vo.CycleReportChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.passreport.cyclereport.vo.CycleReportCreateReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.passreport.cyclereport.vo.CycleReportCreateRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.passreport.cyclereport.vo.CycleReportPageReqVO;
@@ -21,8 +23,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -117,5 +122,99 @@ public class CycleReportServiceImpl implements CycleReportService {
         Page<CycleReportDO> page = new Page<>(1, pageReqVO.getPageSize());
         IPage<CycleReportDO> result = cycleReportMapper.selectPageJoin(page, pageReqVO);
         return BeanUtils.toBean(result.getRecords(), CycleReportRespVO.class);
+    }
+
+    @Override
+    public CycleReportChartRespVO getChart(CycleReportChartReqVO reqVO) {
+        Long tenantId = TenantContextHolder.getTenantId();
+        LocalDate statTime = reqVO.getStatTime();
+        LocalDateTime statDateTime = statTime.atStartOfDay();
+        String reportCycle = reqVO.getReportCycle();
+
+        CycleReportChartRespVO resp = new CycleReportChartRespVO();
+
+        // CardData: 从 vp_cycle_report 表汇总
+        CycleReportChartRespVO.CardData cardData = new CycleReportChartRespVO.CardData();
+        List<CycleReportDO> reports = cycleReportMapper.selectChartByConditions(reqVO.getStationId(), statDateTime, tenantId, reportCycle);
+        int enterCount = 0, leaveCount = 0, parkingCount = 0;
+        BigDecimal identifyRate = BigDecimal.ZERO, checkRate = BigDecimal.ZERO, abnormalRate = BigDecimal.ZERO, etcRate = BigDecimal.ZERO;
+        for (CycleReportDO report : reports) {
+            enterCount += report.getEnterCount() != null ? report.getEnterCount() : 0;
+            leaveCount += report.getLeaveCount() != null ? report.getLeaveCount() : 0;
+            parkingCount += report.getParkingCount() != null ? report.getParkingCount() : 0;
+            if (report.getIdentifySuccessRate() != null) identifyRate = identifyRate.add(report.getIdentifySuccessRate());
+            if (report.getCheckSuccessRate() != null) checkRate = checkRate.add(report.getCheckSuccessRate());
+            if (report.getAbnormalHandleRate() != null) abnormalRate = abnormalRate.add(report.getAbnormalHandleRate());
+            if (report.getEtcPassSuccessRate() != null) etcRate = etcRate.add(report.getEtcPassSuccessRate());
+        }
+        if (!reports.isEmpty()) {
+            int size = reports.size();
+            identifyRate = identifyRate.divide(BigDecimal.valueOf(size), 2, BigDecimal.ROUND_HALF_UP);
+            checkRate = checkRate.divide(BigDecimal.valueOf(size), 2, BigDecimal.ROUND_HALF_UP);
+            abnormalRate = abnormalRate.divide(BigDecimal.valueOf(size), 2, BigDecimal.ROUND_HALF_UP);
+            etcRate = etcRate.divide(BigDecimal.valueOf(size), 2, BigDecimal.ROUND_HALF_UP);
+        }
+        cardData.setEnterCount(enterCount);
+        cardData.setLeaveCount(leaveCount);
+        cardData.setParkingCount(parkingCount);
+        cardData.setIdentifySuccessRate(identifyRate);
+        cardData.setCheckSuccessRate(checkRate);
+        cardData.setAbnormalHandleRate(abnormalRate);
+        cardData.setEtcPassSuccessRate(etcRate);
+        resp.setCardData(cardData);
+
+        // MapData
+        List<Map<String, Object>> mapDataList = cycleReportMapper.selectMapData(reqVO.getStationId(), statDateTime, tenantId, reportCycle);
+        List<CycleReportChartRespVO.MapData> mapData = new ArrayList<>();
+        for (Map<String, Object> row : mapDataList) {
+            CycleReportChartRespVO.MapData md = new CycleReportChartRespVO.MapData();
+            md.setStationName((String) row.get("stationName"));
+            md.setParkingCount(row.get("parkingCount") != null ? ((Number) row.get("parkingCount")).intValue() : 0);
+            md.setPassCount(row.get("passCount") != null ? ((Number) row.get("passCount")).intValue() : 0);
+            md.setSpaceUseRate(row.get("spaceUseRate") != null ? new BigDecimal(row.get("spaceUseRate").toString()) : BigDecimal.ZERO);
+            mapData.add(md);
+        }
+        resp.setMapData(mapData);
+
+        // BarData
+        List<Map<String, Object>> barDataList = cycleReportMapper.selectBarData(reqVO.getStationId(), statDateTime, tenantId, reportCycle);
+        List<CycleReportChartRespVO.BarData> barData = new ArrayList<>();
+        for (Map<String, Object> row : barDataList) {
+            CycleReportChartRespVO.BarData bd = new CycleReportChartRespVO.BarData();
+            bd.setStationName((String) row.get("stationName"));
+            bd.setPassCount(row.get("passCount") != null ? ((Number) row.get("passCount")).intValue() : 0);
+            bd.setAbnormalCount(row.get("abnormalCount") != null ? ((Number) row.get("abnormalCount")).intValue() : 0);
+            bd.setEtcPassCount(row.get("etcPassCount") != null ? ((Number) row.get("etcPassCount")).intValue() : 0);
+            barData.add(bd);
+        }
+        resp.setBarData(barData);
+
+        // LineData
+        List<Map<String, Object>> lineDataList = cycleReportMapper.selectLineData(reqVO.getStationId(), statDateTime, tenantId, reportCycle);
+        List<CycleReportChartRespVO.LineData> lineData = new ArrayList<>();
+        for (Map<String, Object> row : lineDataList) {
+            CycleReportChartRespVO.LineData ld = new CycleReportChartRespVO.LineData();
+            Object statTimeObj = row.get("statTime");
+            ld.setStatTime(statTimeObj != null ? statTimeObj.toString() : "");
+            ld.setPassCount(row.get("passCount") != null ? ((Number) row.get("passCount")).intValue() : 0);
+            ld.setIdentifySuccessRate(row.get("identifySuccessRate") != null ? new BigDecimal(row.get("identifySuccessRate").toString()) : BigDecimal.ZERO);
+            ld.setAbnormalHandleRate(row.get("abnormalHandleRate") != null ? new BigDecimal(row.get("abnormalHandleRate").toString()) : BigDecimal.ZERO);
+            ld.setCheckSuccessRate(row.get("checkSuccessRate") != null ? new BigDecimal(row.get("checkSuccessRate").toString()) : BigDecimal.ZERO);
+            lineData.add(ld);
+        }
+        resp.setLineData(lineData);
+
+        // PieData
+        List<Map<String, Object>> pieDataList = cycleReportMapper.selectPieData(reqVO.getStationId(), statDateTime, tenantId, reportCycle);
+        List<CycleReportChartRespVO.PieData> pieData = new ArrayList<>();
+        for (Map<String, Object> row : pieDataList) {
+            CycleReportChartRespVO.PieData pd = new CycleReportChartRespVO.PieData();
+            pd.setType((String) row.get("type"));
+            pd.setCount(row.get("count") != null ? ((Number) row.get("count")).intValue() : 0);
+            pieData.add(pd);
+        }
+        resp.setPieData(pieData);
+
+        return resp;
     }
 }

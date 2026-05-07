@@ -8,7 +8,10 @@ import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.v
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.ChargeParkMapPageReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.ChargeParkMapReserveReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.ChargeParkMapRespVO;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.carguide.vo.ChargeParkMapResultRespVO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.carguide.ChargeParkMapDO;
+import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.carguide.ChargeParkMapResultDO;
+import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.carguide.ChargeParkMapResultMapper;
 import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.CrossModuleValidator;
 import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.UserNameInjector;
 import cn.iocoder.yudao.module.chargepark.carservice.service.carguide.ChargeParkMapService;
@@ -55,6 +58,9 @@ public class ChargeParkMapController {
 
     @Resource
     private CrossModuleValidator crossModuleValidator;
+
+    @Resource
+    private ChargeParkMapResultMapper chargeParkMapResultMapper;
 
     @Value("${carservice.navigate.map-url-template}")
     private String mapUrlTemplate;
@@ -150,6 +156,21 @@ public class ChargeParkMapController {
     public CommonResult<ChargeParkMapChartRespVO> getChargeParkMapChart(@RequestParam(value = "startTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startTime,
             @RequestParam(value = "endTime", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime) {
         return success(serviceOpReportService.chartChargeParkMap(startTime, endTime));
+    }
+
+    @GetMapping("/result")
+    @Operation(summary = "查询某次记录返回的场站明细列表(快照,关联 charge_park_map_result)")
+    @Parameter(name = "chargeParkMapId", description = "charge_park_map.id", required = true, example = "37")
+    @Parameter(name = "onlyHasEmpty", description = "是否仅返回有空位的场站,默认 false")
+    @PreAuthorize("@ss.hasPermission('carservice:charge-park-map:query')")
+    public CommonResult<List<ChargeParkMapResultRespVO>> getChargeParkMapResult(
+            @RequestParam("chargeParkMapId") Long chargeParkMapId,
+            @RequestParam(value = "onlyHasEmpty", required = false, defaultValue = "false") Boolean onlyHasEmpty) {
+        List<ChargeParkMapResultDO> list = chargeParkMapResultMapper.selectByChargeParkMapId(chargeParkMapId);
+        if (Boolean.TRUE.equals(onlyHasEmpty)) {
+            list = list.stream().filter(r -> Boolean.TRUE.equals(r.getHasEmpty())).collect(java.util.stream.Collectors.toList());
+        }
+        return success(BeanUtils.toBean(list, ChargeParkMapResultRespVO.class));
     }
 
     @GetMapping("/chart-drill-heat")

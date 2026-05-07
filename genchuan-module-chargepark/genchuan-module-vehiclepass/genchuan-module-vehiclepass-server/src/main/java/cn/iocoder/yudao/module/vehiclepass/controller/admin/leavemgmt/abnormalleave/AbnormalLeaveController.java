@@ -133,7 +133,7 @@ public class AbnormalLeaveController {
         return success(leaveService.getChart(reqVO));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出异常离场 Excel")
     @PreAuthorize("@ss.hasPermission('abnormal:leave:export')")
     @ApiAccessLog(operateType = EXPORT)

@@ -43,8 +43,11 @@ public class AbnormalOrderRespVO {
     private String status;
 
     @Schema(description = "所属场站ID")
-    @ExcelProperty("所属场站ID")
     private Long stationId;
+
+    @Schema(description = "所属场站名称")
+    @ExcelProperty("所属场站名称")
+    private String stationName;
 
     @Schema(description = "忽略理由")
     @ExcelProperty("忽略理由")

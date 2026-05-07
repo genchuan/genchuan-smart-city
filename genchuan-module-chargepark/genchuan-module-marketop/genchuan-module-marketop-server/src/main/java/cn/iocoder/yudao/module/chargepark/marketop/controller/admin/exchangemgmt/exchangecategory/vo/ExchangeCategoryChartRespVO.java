@@ -15,13 +15,24 @@ public class ExchangeCategoryChartRespVO {
     @Schema(description = "商品数")
     private Integer productCount;
 
-    @Schema(description = "类目商品分布数据")
-    private List<TypeItem> typeList;
+    @Schema(description = "类目状态分布数据")
+    private List<StatusItem> statusCountList;
+
+    @Schema(description = "类目范围分布数据")
+    private List<ScopeItem> scopeCountList;
 
     @Data
-    public static class TypeItem {
-        @Schema(description = "类目名称")
-        private String categoryName;
+    public static class StatusItem {
+        @Schema(description = "状态")
+        private String status;
+        @Schema(description = "数量")
+        private Integer count;
+    }
+
+    @Data
+    public static class ScopeItem {
+        @Schema(description = "范围")
+        private String scope;
         @Schema(description = "数量")
         private Integer count;
     }

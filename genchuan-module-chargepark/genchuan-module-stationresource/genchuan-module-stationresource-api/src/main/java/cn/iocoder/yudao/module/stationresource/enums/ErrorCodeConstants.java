@@ -33,4 +33,8 @@ public interface ErrorCodeConstants {
     // ========== 错时规则==========
     ErrorCode OFFTIME_RULE_NOT_EXISTS = new ErrorCode(500, "错时规则不存在");
 
+    // ========== 站点用户==========
+    ErrorCode STATION_USER_NOT_EXISTS = new ErrorCode(500, "站点用户不存在");
+
+
 }

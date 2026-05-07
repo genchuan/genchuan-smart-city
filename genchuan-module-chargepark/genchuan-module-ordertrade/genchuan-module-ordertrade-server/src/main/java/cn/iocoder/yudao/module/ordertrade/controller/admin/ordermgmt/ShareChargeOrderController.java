@@ -92,8 +92,7 @@ public class ShareChargeOrderController {
                                  HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<ShareChargeOrderDO> list = shareChargeOrderService.getShareChargeOrderPage(pageReqVO).getList();
-        ExcelUtils.write(response, "共享充电订单.xls", "数据", ShareChargeOrderRespVO.class,
-                BeanUtils.toBean(list, ShareChargeOrderRespVO.class));
+        ExcelUtils.write(response, "共享充电订单.xls", "数据", ShareChargeOrderRespVO.class, BeanUtils.toBean(list, ShareChargeOrderRespVO.class));
     }
 
     @GetMapping("/batch-export")
@@ -103,8 +102,7 @@ public class ShareChargeOrderController {
                                       HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<ShareChargeOrderDO> list = shareChargeOrderService.getShareChargeOrderPage(pageReqVO).getList();
-        ExcelUtils.write(response, "共享充电订单批量导出.xls", "数据", ShareChargeOrderRespVO.class,
-                BeanUtils.toBean(list, ShareChargeOrderRespVO.class));
+        ExcelUtils.write(response, "共享充电订单批量导出.xls", "数据", ShareChargeOrderRespVO.class, BeanUtils.toBean(list, ShareChargeOrderRespVO.class));
     }
 
     // ==================== ② 业务操作接口 ====================

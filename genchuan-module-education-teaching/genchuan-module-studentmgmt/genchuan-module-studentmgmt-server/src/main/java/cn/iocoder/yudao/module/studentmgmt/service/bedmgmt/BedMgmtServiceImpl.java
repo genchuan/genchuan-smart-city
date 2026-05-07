@@ -133,9 +133,9 @@ public class BedMgmtServiceImpl implements BedMgmtService {
     @LogRecord(type = BED_MGMT_TYPE, subType = BED_MGMT_ADJUST_SUB_TYPE, bizNo = "{{#reqVO.newBedId}}",
             success = BED_MGMT_ADJUST_SUB_TYPE_SUCCESS)
     public boolean adjust(BedMgmtAdjustReqVO reqVO) {
-        Long oldBedId = reqVO.getOldBedId();
-        Long newBedId = reqVO.getNewBedId();
-        Long studentId = reqVO.getStudentId();
+        Long oldBedId = Long.valueOf(reqVO.getOldBedId());
+        Long newBedId = Long.valueOf(reqVO.getNewBedId());
+        Long studentId = Long.valueOf(reqVO.getStudentId());
         LocalDateTime adjustTime = reqVO.getAdjustTime();
 
         BedMgmtDO bedMgmt = bedMgmtMapper.selectById(oldBedId);
@@ -145,9 +145,9 @@ public class BedMgmtServiceImpl implements BedMgmtService {
         }
         // 判断新床为是否已经被分配
         BedMgmtDO newBedMgmt = bedMgmtMapper.selectById(newBedId);
-        if (!BedStatusEnum.BED_STATUS_UNALLOCATED.getStatus().equals(newBedMgmt.getStatus())) {
-            throw exception(500, "目标床位不是未分配状态");
-        }
+//        if (!BedStatusEnum.BED_STATUS_UNALLOCATED.getStatus().equals(newBedMgmt.getStatus())) {
+//            throw exception(500, "目标床位不是未分配状态");
+//        }
 
         // 校验学生是否已分配其他床位
         BedMgmtDO bedMgmtByStudentId = bedMgmtMapper.selectOne(BedMgmtDO::getStudentId, studentId);

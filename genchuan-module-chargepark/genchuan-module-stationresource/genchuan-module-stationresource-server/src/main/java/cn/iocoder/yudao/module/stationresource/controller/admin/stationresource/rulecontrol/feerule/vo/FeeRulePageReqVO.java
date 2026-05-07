@@ -17,6 +17,9 @@ public class FeeRulePageReqVO extends PageParam {
     @Schema(description = "[所属场站] 关联场站信息表 station_info.id，必填", example = "26061")
     private Long stationId;
 
+    @Schema(description = "场站名称")
+    private String stationName;
+
     @Schema(description = "[费率类型] 如：停车收费/充电收费/混合收费", example = "1")
     private String rateType;
 
@@ -36,6 +39,9 @@ public class FeeRulePageReqVO extends PageParam {
 
     @Schema(description = "[审核人] 关联芋道用户表 system_user.id", example = "19185")
     private Long auditUserId;
+
+    @Schema(description = "审核人名称")
+    private String auditUserName;
 
     @Schema(description = "[订单匹配率] 默认0")
     private BigDecimal matchRate;

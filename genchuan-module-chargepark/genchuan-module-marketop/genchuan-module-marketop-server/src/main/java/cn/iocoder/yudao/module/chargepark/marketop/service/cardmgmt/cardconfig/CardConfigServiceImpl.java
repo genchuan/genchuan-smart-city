@@ -65,9 +65,6 @@ public class CardConfigServiceImpl implements CardConfigService {
     @Override
     public void enable(Long id) {
         CardConfigDO cardConfig = validateExists(id);
-        if (!Objects.equals(CardConfigStatusEnum.NOT_EFFECTIVE.getValue(), cardConfig.getStatus())) {
-            throw exception(CARD_CONFIG_NOT_EXISTS);
-        }
         cardConfig.setStatus(CardConfigStatusEnum.EFFECTIVE.getValue());
         cardConfig.setAuditTime(LocalDateTime.now());
         cardConfig.setEffectTime(LocalDateTime.now());
@@ -77,9 +74,6 @@ public class CardConfigServiceImpl implements CardConfigService {
     @Override
     public void disable(Long id) {
         CardConfigDO cardConfig = validateExists(id);
-        if (!Objects.equals(CardConfigStatusEnum.EFFECTIVE.getValue(), cardConfig.getStatus())) {
-            throw exception(CARD_CONFIG_NOT_EXISTS);
-        }
         cardConfig.setStatus(CardConfigStatusEnum.NOT_EFFECTIVE.getValue());
         cardConfigMapper.updateById(cardConfig);
     }
@@ -113,13 +107,14 @@ public class CardConfigServiceImpl implements CardConfigService {
         respVO.setTypeRatio(typeRatio);
 
         // typeCountList: 按type分组统计数量
-        List<CardConfigChartRespVO.TypeCountItem> typeCountItems = typeCountList.stream().map(m -> {
-            CardConfigChartRespVO.TypeCountItem item = new CardConfigChartRespVO.TypeCountItem();
-            item.setType((String) m.get("type"));
+        List<Map<String, Object>> scopeCountList = cardConfigMapper.selectScopeCountList();
+        List<CardConfigChartRespVO.ScopeCountItem> typeCountItems = scopeCountList.stream().map(m -> {
+            CardConfigChartRespVO.ScopeCountItem item = new CardConfigChartRespVO.ScopeCountItem();
+            item.setScope((String) m.get("scope"));
             item.setCount(((Number) m.get("count")).intValue());
             return item;
         }).collect(Collectors.toList());
-        respVO.setTypeCountList(typeCountItems);
+        respVO.setScopeCountList(typeCountItems);
 
         return respVO;
     }

@@ -92,8 +92,7 @@ public class BikeChargeOrderController {
                                  HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<BikeChargeOrderDO> list = bikeChargeOrderService.getBikeChargeOrderPage(pageReqVO).getList();
-        ExcelUtils.write(response, "两轮充电订单.xls", "数据", BikeChargeOrderRespVO.class,
-                BeanUtils.toBean(list, BikeChargeOrderRespVO.class));
+        ExcelUtils.write(response, "两轮充电订单.xls", "数据", BikeChargeOrderRespVO.class, BeanUtils.toBean(list, BikeChargeOrderRespVO.class));
     }
 
     @GetMapping("/batch-export")
@@ -103,8 +102,7 @@ public class BikeChargeOrderController {
                                       HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<BikeChargeOrderDO> list = bikeChargeOrderService.getBikeChargeOrderPage(pageReqVO).getList();
-        ExcelUtils.write(response, "两轮充电订单批量导出.xls", "数据", BikeChargeOrderRespVO.class,
-                BeanUtils.toBean(list, BikeChargeOrderRespVO.class));
+        ExcelUtils.write(response, "两轮充电订单批量导出.xls", "数据", BikeChargeOrderRespVO.class, BeanUtils.toBean(list, BikeChargeOrderRespVO.class));
     }
 
     // ==================== ② 业务操作接口 ====================
