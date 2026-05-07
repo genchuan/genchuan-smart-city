@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo;
 
+import cn.iocoder.yudao.module.inspectop.api.space.SpaceMonitorApi;
+import cn.iocoder.yudao.module.inspectop.api.space.dto.SpaceMonitorRespDTO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.AreaInfoPageReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.AreaInfoRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.ops.*;
@@ -50,6 +52,15 @@ public class AreaInfoController {
     @Resource
     private AreaInfoService areaInfoService;
 
+    @Resource
+    private SpaceMonitorApi spaceMonitorApi;
+    @GetMapping("/test-space-monitor")
+    @Operation(summary = "(次级)获取车位坐标数据")
+    @PreAuthorize("@ss.hasPermission('stationresource:area-info:test-space-monitor')")
+    public CommonResult<List<SpaceMonitorRespDTO>> testSpaceMonitor(){
+        CommonResult<List<SpaceMonitorRespDTO>> listCommonResult = spaceMonitorApi.listLatestSpaceMonitors();
+        return listCommonResult;
+    }
 
     @GetMapping("/export2")
     @Operation(summary = "(次级)导出 - 片区信息(format=excel|pdf,默认 excel)")
