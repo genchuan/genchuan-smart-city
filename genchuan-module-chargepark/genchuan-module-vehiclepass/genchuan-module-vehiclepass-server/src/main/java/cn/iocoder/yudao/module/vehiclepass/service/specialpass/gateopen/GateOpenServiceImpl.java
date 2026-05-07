@@ -13,6 +13,7 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.specialpass.gateopen.GateOpenDO;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.specialpass.gateopen.GateOpenMapper;
+import cn.iocoder.yudao.module.vehiclepass.framework.util.MapValueUtils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
@@ -186,7 +187,7 @@ public class GateOpenServiceImpl implements GateOpenService {
         for (Map<String, Object> trend : trendList) {
             GateOpenChartRespVO.OpenApplyTrend item = new GateOpenChartRespVO.OpenApplyTrend();
             item.setDate(trend.get("date") != null ? trend.get("date").toString() : null);
-            item.setCount(trend.get("count") != null ? Long.parseLong(trend.get("count").toString()) : 0L);
+            item.setCount(MapValueUtils.getLongValue(trend, "count"));
             openApplyTrends.add(item);
         }
 
@@ -197,7 +198,7 @@ public class GateOpenServiceImpl implements GateOpenService {
         for (Map<String, Object> station : stationList) {
             GateOpenChartRespVO.StationOpenCount item = new GateOpenChartRespVO.StationOpenCount();
             item.setStationName(station.get("stationName") != null ? station.get("stationName").toString() : null);
-            item.setCount(station.get("count") != null ? Long.parseLong(station.get("count").toString()) : 0L);
+            item.setCount(MapValueUtils.getLongValue(station, "count"));
             stationOpenCounts.add(item);
         }
 
@@ -206,8 +207,8 @@ public class GateOpenServiceImpl implements GateOpenService {
                 reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
         GateOpenChartRespVO.CardData cardData = new GateOpenChartRespVO.CardData();
         if (stats != null) {
-            cardData.setApplyCount(stats.get("applyCount") != null ? Long.parseLong(stats.get("applyCount").toString()) : 0L);
-            cardData.setAuditPassRate(stats.get("auditPassRate") != null ? Double.parseDouble(stats.get("auditPassRate").toString()) : 0.0);
+            cardData.setApplyCount(MapValueUtils.getLongValue(stats, "applyCount"));
+            cardData.setAuditPassRate(MapValueUtils.getDoubleValue(stats, "auditPassRate"));
         } else {
             cardData.setApplyCount(0L);
             cardData.setAuditPassRate(0.0);

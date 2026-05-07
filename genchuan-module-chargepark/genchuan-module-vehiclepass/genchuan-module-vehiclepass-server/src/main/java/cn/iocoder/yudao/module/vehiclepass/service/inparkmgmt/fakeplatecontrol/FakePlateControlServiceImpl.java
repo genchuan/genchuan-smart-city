@@ -18,6 +18,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.time.LocalDateTime;
@@ -99,6 +100,7 @@ public class FakePlateControlServiceImpl implements FakePlateControlService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void batchHandle(FakePlateControlBatchHandleReqVO reqVO) {
         // 获取当前登录用户ID（这里暂时使用固定值，实际应从 SecurityUtils 获取）
         Long currentUserId = SecurityFrameworkUtils.getLoginUserId();

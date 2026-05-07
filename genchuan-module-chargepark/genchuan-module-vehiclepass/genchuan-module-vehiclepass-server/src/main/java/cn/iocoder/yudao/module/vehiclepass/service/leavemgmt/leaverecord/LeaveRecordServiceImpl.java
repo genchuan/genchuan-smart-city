@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leaverecor
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leaverecord.vo.LeaveRecordSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.leavemgmt.leaverecord.LeaveRecordDO;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.leavemgmt.leaverecord.LeaveRecordMapper;
+import cn.iocoder.yudao.module.vehiclepass.framework.util.MapValueUtils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
@@ -167,7 +168,7 @@ public class LeaveRecordServiceImpl implements LeaveRecordService {
         for (Map<String, Object> trend : trendList) {
             LeaveRecordChartRespVO.LeaveCountTrend item = new LeaveRecordChartRespVO.LeaveCountTrend();
             item.setDate(trend.get("date") != null ? trend.get("date").toString() : null);
-            item.setCount(trend.get("count") != null ? Long.parseLong(trend.get("count").toString()) : 0L);
+            item.setCount(MapValueUtils.getLongValue(trend, "count"));
             leaveCountTrends.add(item);
         }
 
@@ -178,7 +179,7 @@ public class LeaveRecordServiceImpl implements LeaveRecordService {
         for (Map<String, Object> hour : hourList) {
             LeaveRecordChartRespVO.HourLeaveCount item = new LeaveRecordChartRespVO.HourLeaveCount();
             item.setHour(hour.get("hour") != null ? hour.get("hour").toString() : null);
-            item.setCount(hour.get("count") != null ? Long.parseLong(hour.get("count").toString()) : 0L);
+            item.setCount(MapValueUtils.getLongValue(hour, "count"));
             hourLeaveCounts.add(item);
         }
 
@@ -187,8 +188,8 @@ public class LeaveRecordServiceImpl implements LeaveRecordService {
                 reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
         LeaveRecordChartRespVO.CardData cardData = new LeaveRecordChartRespVO.CardData();
         if (stats != null) {
-            cardData.setTodayLeaveCount(stats.get("todayLeaveCount") != null ? Long.parseLong(stats.get("todayLeaveCount").toString()) : 0L);
-            cardData.setLeavePeak(stats.get("leavePeak") != null ? Long.parseLong(stats.get("leavePeak").toString()) : 0L);
+            cardData.setTodayLeaveCount(MapValueUtils.getLongValue(stats, "todayLeaveCount"));
+            cardData.setLeavePeak(MapValueUtils.getLongValue(stats, "leavePeak"));
         } else {
             cardData.setTodayLeaveCount(0L);
             cardData.setLeavePeak(0L);

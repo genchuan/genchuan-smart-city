@@ -102,6 +102,7 @@ public class ResultHandleServiceImpl implements ResultHandleService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void batchHandle(ResultHandleBatchHandleReqVO reqVO) {
         for (Long id : reqVO.getIds()) {
             ResultHandleDO updateObj = new ResultHandleDO();
