@@ -154,13 +154,16 @@
         WHERE sm.id = #{id}
     </select>
 
-    <!-- SpaceMonitorMapper.xml -->
     <!-- 查询地图数据 -->
     <select id="selectMapData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.devicemonitor.spacemonitor.vo.SpaceMonitorChartRespVO$MapData">
         SELECT
         sm.id,
         psi.space_no AS name,
-        sm.monitor_status AS status,
+        CASE sm.monitor_status
+        WHEN '1' THEN '正常'
+        WHEN '2' THEN '异常'
+        ELSE sm.monitor_status
+        END AS status,
         sm.longitude,
         sm.latitude
         FROM space_monitor sm
@@ -178,17 +181,24 @@
         GROUP BY space_id
         ) latest ON sm.space_id = latest.space_id AND sm.monitor_time = latest.max_time
         LEFT JOIN parking_space_info psi ON sm.space_id = psi.id
-        <if test="reqVO.stationId != null">
-            WHERE sm.station_id = #{reqVO.stationId}
-        </if>
+        <!-- 关键修复：外层查询也需要相同的筛选条件 -->
+        <where>
+            <if test="reqVO.stationId != null">
+                AND sm.station_id = #{reqVO.stationId}
+            </if>
+            <if test="reqVO.timeRange != null and reqVO.timeRange.length == 2">
+                AND sm.monitor_time BETWEEN #{reqVO.timeRange[0]} AND #{reqVO.timeRange[1]}
+            </if>
+        </where>
     </select>
 
     <!-- 查询趋势数据 -->
     <select id="selectTrendData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.devicemonitor.spacemonitor.vo.SpaceMonitorChartRespVO$TrendData">
         SELECT
         DATE_FORMAT(monitor_time, '%H') AS time,
-        SUM(CASE WHEN monitor_status = 'NORMAL' THEN 1 ELSE 0 END) AS normalCount,
-        SUM(CASE WHEN monitor_status = 'ABNORMAL' THEN 1 ELSE 0 END) AS abnormalCount
+        <!-- 修改这里：1表示正常，2表示异常 -->
+        SUM(CASE WHEN monitor_status = '1' THEN 1 ELSE 0 END) AS normalCount,
+        SUM(CASE WHEN monitor_status = '2' THEN 1 ELSE 0 END) AS abnormalCount
         FROM space_monitor
         <where>
             <if test="reqVO.stationId != null">
@@ -205,24 +215,31 @@
     <!-- 查询卡片数据 -->
     <select id="selectCardData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.devicemonitor.spacemonitor.vo.SpaceMonitorChartRespVO$CardData">
         SELECT
-        SUM(CASE WHEN monitor_status = 'NORMAL' THEN 1 ELSE 0 END) AS normalSpace,
-        SUM(CASE WHEN monitor_status = 'ABNORMAL' THEN 1 ELSE 0 END) AS abnormalSpace
-        FROM (
-        SELECT monitor_status
-        FROM space_monitor
-        INNER JOIN (
-        SELECT space_id, MAX(monitor_time) AS max_time
-        FROM space_monitor
-        <where>
-            <if test="reqVO.stationId != null">
-                AND station_id = #{reqVO.stationId}
-            </if>
-            <if test="reqVO.timeRange != null and reqVO.timeRange.length == 2">
-                AND monitor_time BETWEEN #{reqVO.timeRange[0]} AND #{reqVO.timeRange[1]}
-            </if>
-        </where>
-        GROUP BY space_id
-        ) latest ON space_monitor.space_id = latest.space_id AND space_monitor.monitor_time = latest.max_time
-        ) latest_status
+        <!-- 修改这里：1表示正常，2表示异常 -->
+        SUM(CASE WHEN sm.monitor_status = '1' THEN 1 ELSE 0 END) AS normalSpace,
+        SUM(CASE WHEN sm.monitor_status = '2' THEN 1 ELSE 0 END) AS abnormalSpace
+        FROM space_monitor sm
+<!--        INNER JOIN (-->
+<!--        SELECT space_id, MAX(monitor_time) AS max_time-->
+<!--        FROM space_monitor-->
+<!--        <where>-->
+<!--            <if test="reqVO.stationId != null">-->
+<!--                AND station_id = #{reqVO.stationId}-->
+<!--            </if>-->
+<!--            <if test="reqVO.timeRange != null and reqVO.timeRange.length == 2">-->
+<!--                AND monitor_time BETWEEN #{reqVO.timeRange[0]} AND #{reqVO.timeRange[1]}-->
+<!--            </if>-->
+<!--        </where>-->
+<!--        GROUP BY space_id-->
+<!--        ) latest ON sm.space_id = latest.space_id AND sm.monitor_time = latest.max_time-->
+<!--        &lt;!&ndash; 关键修复：外层查询也需要相同的筛选条件 &ndash;&gt;-->
+<!--        <where>-->
+<!--            <if test="reqVO.stationId != null">-->
+<!--                AND sm.station_id = #{reqVO.stationId}-->
+<!--            </if>-->
+<!--            <if test="reqVO.timeRange != null and reqVO.timeRange.length == 2">-->
+<!--                AND sm.monitor_time BETWEEN #{reqVO.timeRange[0]} AND #{reqVO.timeRange[1]}-->
+<!--            </if>-->
+<!--        </where>-->
     </select>
 </mapper>

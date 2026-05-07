@@ -33,7 +33,6 @@ public interface ShareChargeOrderMapper extends BaseMapperX<ShareChargeOrderDO> 
                 .likeIfPresent(ShareChargeOrderDO::getOrderNo, reqVO.getOrderNo())
                 .eqIfPresent(ShareChargeOrderDO::getUserId, reqVO.getUserId())
                 .eqIfPresent(ShareChargeOrderDO::getStatus, reqVO.getStatus())
-                .eqIfPresent(ShareChargeOrderDO::getStationId, reqVO.getStationId())
                 .geIfPresent(ShareChargeOrderDO::getLendTime, reqVO.getLendTimeStart())
                 .leIfPresent(ShareChargeOrderDO::getLendTime, reqVO.getLendTimeEnd())
                 .orderByDesc(ShareChargeOrderDO::getId));

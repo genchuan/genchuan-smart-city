@@ -43,6 +43,7 @@ public interface ErrorCodeConstants {
     ErrorCode MEMBER_GROUP_NOT_EXISTS = new ErrorCode(500, "会员分组不存在");
     // ========== 会员积分==========
     ErrorCode MEMBER_POINT_NOT_EXISTS = new ErrorCode(500, "会员积分不存在");
+    ErrorCode MEMBER_POINT_ALREADY_NORMAL = new ErrorCode(500, "会员积分已为正常");
     // ========== 用户信用==========
     ErrorCode USER_CREDIT_NOT_EXISTS = new ErrorCode(500, "用户信用不存在");
     // ========== 信用配置==========

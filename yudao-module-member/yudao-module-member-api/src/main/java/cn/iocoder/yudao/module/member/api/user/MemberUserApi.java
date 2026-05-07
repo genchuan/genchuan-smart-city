@@ -6,6 +6,7 @@ import cn.iocoder.yudao.module.member.enums.ApiConstants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -67,5 +68,18 @@ public interface MemberUserApi {
             @RequestParam("password") String password,
             @RequestParam("registerIp") String registerIp,
             @RequestParam("terminal") Integer terminal);
+
+    /**
+     * 更新会员用户等级
+     *
+     * @param id 用户编号
+     * @param levelId 目标等级编号
+     * @return 更新结果
+     */
+    @PostMapping(PREFIX + "/update-level")
+    @Operation(summary = "更新会员用户等级")
+    CommonResult<Boolean> updateUserLevel(@RequestParam("id") @NotNull Long id,
+                                          @RequestParam("levelId") @NotNull Long levelId);
+
 
 }

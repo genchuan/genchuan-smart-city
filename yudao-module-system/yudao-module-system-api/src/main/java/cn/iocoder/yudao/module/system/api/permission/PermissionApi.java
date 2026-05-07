@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collection;
@@ -24,4 +25,9 @@ public interface PermissionApi extends PermissionCommonApi {
     @Parameter(name = "roleIds", description = "角色编号集合", example = "1,2", required = true)
     CommonResult<Set<Long>> getUserRoleIdListByRoleIds(@RequestParam("roleIds") Collection<Long> roleIds);
 
+    // 设置用户角色接口
+    @PostMapping(PREFIX + "/assign-user-role-by-mobile")
+    @Operation(summary = "根据手机号设置用户角色")
+    CommonResult<Boolean> assignUserRoleByMobile(@RequestParam("mobile") String mobile,
+                                                 @RequestParam("roleIds") Set<Long> roleIds);
 }

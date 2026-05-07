@@ -18,6 +18,7 @@ public interface SuggestionMapper extends BaseMapperX<SuggestionDO> {
     default PageResult<SuggestionDO> selectPage(SuggestionPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<SuggestionDO>()
                 .eqIfPresent(SuggestionDO::getUserId, reqVO.getUserId())
+                .likeIfPresent(SuggestionDO::getContent, reqVO.getContent())
                 .eqIfPresent(SuggestionDO::getStatus, reqVO.getStatus())
                 .betweenIfPresent(SuggestionDO::getSubmitTime, reqVO.getSubmitTime())
                 .orderByDesc(SuggestionDO::getId));

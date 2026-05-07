@@ -270,4 +270,108 @@
         where deleted = b'0'
         and ledger_code = #{code}
     </select>
+    <select id="getRectifyReviewChartResp"
+            resultType="cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.chart.RectifyReviewChartResp">
+        SELECT
+        COUNT(IF(rr.review_status = '待复审', 1, NULL)) AS pendingReviewCount,
+        COUNT(IF(rr.review_status = '已下发', 1, NULL)) AS issuedCount,
+        COUNT(IF(rr.review_status = '已撤销', 1, NULL)) AS canceledCount,
+        COUNT(IF(rr.review_status = '已完成', 1, NULL)) AS completedCount,
+        COUNT(*) AS totalCount,
+        --  新增：违规等级统计
+        COUNT(IF(ild.level_name = '一般', 1, NULL)) AS levelNormalCount,
+        COUNT(IF(ild.level_name = '较重', 1, NULL)) AS levelSeriousCount,
+        COUNT(IF(ild.level_name = '严重', 1, NULL)) AS levelVerySeriousCount
+        FROM rectify_review rr
+
+        <!-- 和分页保持一致的关联表 -->
+        LEFT JOIN enterprise_info ei ON rr.ent_id = ei.id
+        LEFT JOIN illegal_type_dict itd ON rr.illegal_type_id = itd.id
+        LEFT JOIN illegal_level_dict ild ON rr.illegal_level_id = ild.id
+        LEFT JOIN sys_user su ON rr.review_by = su.id
+        LEFT JOIN rectify_notice rn ON rn.rectify_review_id = rr.id
+        LEFT JOIN ent_rectify_record err ON err.rectify_notice_id = rn.id
+        LEFT JOIN law_review_ledger lrl ON lrl.rectify_review_id = rr.id
+
+        <!-- 和分页一模一样的 WHERE 条件 -->
+        <where>
+            rr.deleted = b'0'
+
+            <if test="idList != null and idList.size() > 0">
+                AND rr.id IN
+                <foreach collection="idList" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
+            <if test="ledgerCode != null and ledgerCode != ''">
+                AND rr.ledger_code LIKE CONCAT('%', #{ledgerCode}, '%')
+            </if>
+
+            <if test="entId != null">
+                AND rr.ent_id = #{entId}
+            </if>
+
+            <if test="entName != null and entName != ''">
+                AND ei.ent_name LIKE CONCAT('%', #{entName}, '%')
+            </if>
+
+            <if test="illegalTypeId != null">
+                AND rr.illegal_type_id = #{illegalTypeId}
+            </if>
+
+            <if test="illegalTypeName != null and illegalTypeName != ''">
+                AND itd.type_name = #{illegalTypeName}
+            </if>
+
+            <if test="illegalLevelId != null">
+                AND rr.illegal_level_id = #{illegalLevelId}
+            </if>
+
+            <if test="illegalLevelName != null and illegalLevelName != ''">
+                AND ild.level_name = #{illegalLevelName}
+            </if>
+
+            <if test="reviewStatus != null and reviewStatus != ''">
+                AND rr.review_status = #{reviewStatus}
+            </if>
+
+            <if test="reviewBy != null">
+                AND rr.review_by = #{reviewBy}
+            </if>
+
+            <if test="draftTimeStart != null">
+                AND rr.draft_time &gt;= #{draftTimeStart}
+            </if>
+
+            <if test="draftTimeEnd != null">
+                AND rr.draft_time &lt;= #{draftTimeEnd}
+            </if>
+
+            <if test="issueTimeStart != null">
+                AND rn.issue_time &gt;= #{issueTimeStart}
+            </if>
+
+            <if test="issueTimeEnd != null">
+                AND rn.issue_time &lt;= #{issueTimeEnd}
+            </if>
+
+            <if test="cancelTimeStart != null">
+                AND rr.cancel_time &gt;= #{cancelTimeStart}
+            </if>
+
+            <if test="cancelTimeEnd != null">
+                AND rr.cancel_time &lt;= #{cancelTimeEnd}
+            </if>
+        </where>
+    </select>
+    <select id="selectMonthReviewCount" resultType="cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.chart.RectifyReviewBarItemResp">
+        SELECT
+            DATE_FORMAT(rr.draft_time, '%Y-%m') AS time, -- 这里改为 time
+            COUNT(*) AS count
+        FROM rectify_review rr
+        WHERE rr.deleted = b'0'
+        GROUP BY DATE_FORMAT(rr.draft_time, '%Y-%m')
+        ORDER BY time ASC
+    </select>
 </mapper>

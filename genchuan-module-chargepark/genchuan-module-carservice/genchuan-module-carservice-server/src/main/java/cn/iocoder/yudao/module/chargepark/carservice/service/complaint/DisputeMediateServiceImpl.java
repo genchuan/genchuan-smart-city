@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.chargepark.carservice.service.complaint;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
+import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.DisputeMediateConfirmReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.DisputeMediateMediateReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.DisputeMediatePageReqVO;
 import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.vo.DisputeMediateSaveReqVO;
@@ -10,6 +11,7 @@ import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.complaint.DisputeMediateDO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.complaint.DisputeMediateMapper;
 import cn.iocoder.yudao.module.chargepark.carservice.enums.complaint.DisputeMediateStatusEnum;
+import cn.iocoder.yudao.module.chargepark.carservice.framework.notify.CarServiceNotifyHelper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -32,6 +34,9 @@ public class DisputeMediateServiceImpl implements DisputeMediateService {
 
     @Resource
     private DisputeMediateMapper disputeMediateMapper;
+
+    @Resource
+    private CarServiceNotifyHelper notifyHelper;
 
     @Override
     public Long createDisputeMediate(DisputeMediateSaveReqVO createReqVO) {
@@ -114,16 +119,26 @@ public class DisputeMediateServiceImpl implements DisputeMediateService {
     }
 
     @Override
-    public void confirmDisputeMediate(Long id) {
-        DisputeMediateDO dispute = validateDisputeMediateExists(id);
+    public void confirmDisputeMediate(DisputeMediateConfirmReqVO reqVO) {
+        DisputeMediateDO dispute = validateDisputeMediateExists(reqVO.getId());
         if (!DisputeMediateStatusEnum.MEDIATING.getLabel().equals(dispute.getStatus())) {
             throw exception(DISPUTE_MEDIATE_STATUS_INVALID);
         }
         DisputeMediateDO update = new DisputeMediateDO();
-        update.setId(id);
+        update.setId(reqVO.getId());
         update.setStatus(DisputeMediateStatusEnum.COMPLETED.getLabel());
         update.setConfirmTime(LocalDateTime.now());
+        update.setConfirmResult(reqVO.getConfirmResult());
         disputeMediateMapper.updateById(update);
+        // 调解完成后通知申诉用户与商户
+        if (dispute.getUserId() != null) {
+            notifyHelper.sendToUser(dispute.getUserId(), "carservice_dispute_closed",
+                    "confirmResult", reqVO.getConfirmResult());
+        }
+        if (dispute.getMerchantId() != null) {
+            notifyHelper.sendToUser(dispute.getMerchantId(), "carservice_dispute_closed_merchant",
+                    "confirmResult", reqVO.getConfirmResult());
+        }
     }
 
 }

@@ -20,11 +20,16 @@ public class OilMonitorPageReqVO extends PageParam {
     @Schema(description = "场站ID")
     private Long stationId;
 
+    // 【新增字段】支持按场站名称模糊查询
+    @Schema(description = "场站名称")
+    private String stationName;
+
     @Schema(description = "识别时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] identifyTime;
 
-    @Schema(description = "处置状态")
+    // 【优化描述】明确过滤规则
+    @Schema(description = "处置状态，模糊匹配")
     private String processStatus;
 
     @Schema(description = "处置人ID")

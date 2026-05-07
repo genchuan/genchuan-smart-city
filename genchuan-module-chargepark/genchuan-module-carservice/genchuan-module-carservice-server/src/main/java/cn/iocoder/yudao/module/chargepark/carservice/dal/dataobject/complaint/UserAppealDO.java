@@ -61,6 +61,10 @@ public class UserAppealDO extends BaseDO {
      */
     private Long handleUserId;
     /**
+     * 处置时间，执行认领的时刻
+     */
+    private LocalDateTime handleTime;
+    /**
      * 处置进度
      */
     private String progress;

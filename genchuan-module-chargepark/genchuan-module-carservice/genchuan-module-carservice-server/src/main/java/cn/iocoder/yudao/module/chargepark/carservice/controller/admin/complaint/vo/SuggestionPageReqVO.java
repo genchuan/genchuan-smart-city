@@ -16,6 +16,9 @@ public class SuggestionPageReqVO extends PageParam {
     @Schema(description = "用户 ID", example = "1001")
     private Long userId;
 
+    @Schema(description = "意见内容(模糊匹配)", example = "充电桩")
+    private String content;
+
     @Schema(description = "处理状态,关联字典 suggestion_status", example = "待处理",
             allowableValues = {"待处理", "处理中", "已完成"})
     private String status;

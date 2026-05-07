@@ -33,7 +33,6 @@ public interface AbnormalOrderMapper extends BaseMapperX<AbnormalOrderDO> {
                 .eqIfPresent(AbnormalOrderDO::getOrderType, reqVO.getOrderType())
                 .eqIfPresent(AbnormalOrderDO::getAbnormalType, reqVO.getAbnormalType())
                 .eqIfPresent(AbnormalOrderDO::getStatus, reqVO.getStatus())
-                .eqIfPresent(AbnormalOrderDO::getStationId, reqVO.getStationId())
                 .geIfPresent(AbnormalOrderDO::getIdentifyTime, reqVO.getIdentifyTimeStart())
                 .leIfPresent(AbnormalOrderDO::getIdentifyTime, reqVO.getIdentifyTimeEnd())
                 .orderByDesc(AbnormalOrderDO::getId));

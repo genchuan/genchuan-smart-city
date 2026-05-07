@@ -98,4 +98,6 @@ public interface ErrorCodeConstants {
     ErrorCode CHECK_IN_NOT_EXISTS = new ErrorCode(500, "报到管理不存在");
     // ========== 迎新推送 ==========
     ErrorCode NEW_PUSH_NOT_EXISTS = new ErrorCode(500, "迎新推送不存在");
+    // ========== 家长回复 ==========
+    ErrorCode PARENT_REPLY_NOT_EXISTS = new ErrorCode(500, "家长回复不存在");
 }
