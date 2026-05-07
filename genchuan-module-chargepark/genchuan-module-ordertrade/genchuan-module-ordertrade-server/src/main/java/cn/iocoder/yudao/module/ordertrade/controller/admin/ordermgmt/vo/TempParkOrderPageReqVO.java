@@ -29,8 +29,8 @@ public class TempParkOrderPageReqVO extends PageParam {
     @ExcelProperty(value = "支付状态", converter = EnumExcelConverter.class)
     @EnumFormat(ParkOrderStatusEnum.class)   // ← 指向枚举类
     private String status;
-    @Schema(description = "场站ID")
-    private Long stationId;
+    @Schema(description = "场站名称，模糊查询")
+    private String stationName;
     @Schema(description = "订单生成时间-开始，格式 yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime createOrderTimeStart;

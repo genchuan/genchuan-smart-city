@@ -33,7 +33,6 @@ public interface TempParkOrderMapper extends BaseMapperX<TempParkOrderDO> {
                 .likeIfPresent(TempParkOrderDO::getOrderNo, reqVO.getOrderNo())
                 .likeIfPresent(TempParkOrderDO::getPlateNo, reqVO.getPlateNo())
                 .eqIfPresent(TempParkOrderDO::getStatus, reqVO.getStatus())
-                .eqIfPresent(TempParkOrderDO::getStationId, reqVO.getStationId())
                 .geIfPresent(TempParkOrderDO::getCreateOrderTime, reqVO.getCreateOrderTimeStart())
                 .leIfPresent(TempParkOrderDO::getCreateOrderTime, reqVO.getCreateOrderTimeEnd())
                 .orderByDesc(TempParkOrderDO::getId));
