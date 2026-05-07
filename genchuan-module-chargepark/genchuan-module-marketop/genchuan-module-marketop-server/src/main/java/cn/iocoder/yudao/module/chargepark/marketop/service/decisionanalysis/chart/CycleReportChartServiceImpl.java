@@ -10,21 +10,25 @@ import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.CardO
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.StockControlDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.ActivityConfigDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.CouponMgmtDO;
+import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.PackageConfigDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.ReceiveRecordDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.exchangemgmt.ExchangeOrderDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointActivityDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointLotteryDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PrizeMgmtDO;
+import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.RuleConfigDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.cardmgmt.CardConfigMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.cardmgmt.CardOrderMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.cardmgmt.StockControlMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.couponactivity.ActivityConfigMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.couponactivity.CouponMgmtMapper;
+import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.couponactivity.PackageConfigMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.couponactivity.ReceiveRecordMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.exchangemgmt.ExchangeOrderMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.PointActivityMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.PointLotteryMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.PrizeMgmtMapper;
+import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.RuleConfigMapper;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import jakarta.annotation.Resource;
@@ -62,6 +66,10 @@ public class CycleReportChartServiceImpl implements CycleReportChartService {
     private CardOrderMapper cardOrderMapper;
     @Resource
     private StockControlMapper stockControlMapper;
+    @Resource
+    private RuleConfigMapper ruleConfigMapper;
+    @Resource
+    private PackageConfigMapper packageConfigMapper;
     @Resource
     private AdminUserApi adminUserApi;
 
@@ -236,27 +244,27 @@ public class CycleReportChartServiceImpl implements CycleReportChartService {
     @Override
     public PageResult<Map<String, Object>> barDrill(CycleReportChartBarDrillReqVO reqVO) {
         String categoryType = reqVO.getCategoryType();
-        String categoryName = reqVO.getCategoryName();
+        String categoryValue = reqVO.getCategoryValue();
 
         switch (categoryType) {
             case "activityType":
-                return barDrillActivityType(reqVO, categoryName);
+                return barDrillActivityType(reqVO, categoryValue);
             case "prizeType":
-                return barDrillPrizeType(reqVO, categoryName);
+                return barDrillPrizeType(reqVO, categoryValue);
             case "couponType":
-                return barDrillCouponType(reqVO, categoryName);
+                return barDrillCouponType(reqVO, categoryValue);
             case "cardType":
-                return barDrillCardType(reqVO, categoryName);
+                return barDrillCardType(reqVO, categoryValue);
             case "exchangeCategoryType":
-                return barDrillExchangeCategory(reqVO, categoryName);
+                return barDrillExchangeCategory(reqVO, categoryValue);
             default:
                 return PageResult.empty();
         }
     }
 
-    private PageResult<Map<String, Object>> barDrillActivityType(CycleReportChartBarDrillReqVO reqVO, String categoryName) {
+    private PageResult<Map<String, Object>> barDrillActivityType(CycleReportChartBarDrillReqVO reqVO, String categoryValue) {
         LambdaQueryWrapperX<ActivityConfigDO> wrapper = new LambdaQueryWrapperX<ActivityConfigDO>()
-//                .eqIfPresent(ActivityConfigDO::getType, categoryName)
+                .eqIfPresent(ActivityConfigDO::getType, categoryValue)
                 .orderByDesc(ActivityConfigDO::getId);
         PageResult<ActivityConfigDO> pageResult = activityConfigMapper.selectPage(reqVO, wrapper);
         List<Map<String, Object>> list = new ArrayList<>();
@@ -284,9 +292,9 @@ public class CycleReportChartServiceImpl implements CycleReportChartService {
         return new PageResult<>(list, pageResult.getTotal());
     }
 
-    private PageResult<Map<String, Object>> barDrillPrizeType(CycleReportChartBarDrillReqVO reqVO, String categoryName) {
+    private PageResult<Map<String, Object>> barDrillPrizeType(CycleReportChartBarDrillReqVO reqVO, String categoryValue) {
         LambdaQueryWrapperX<PrizeMgmtDO> wrapper = new LambdaQueryWrapperX<PrizeMgmtDO>()
-//                .eqIfPresent(PrizeMgmtDO::getType, categoryName)
+                .eqIfPresent(PrizeMgmtDO::getType, categoryValue)
                 .orderByDesc(PrizeMgmtDO::getId);
         PageResult<PrizeMgmtDO> pageResult = prizeMgmtMapper.selectPage(reqVO, wrapper);
         List<Map<String, Object>> list = new ArrayList<>();
@@ -304,9 +312,9 @@ public class CycleReportChartServiceImpl implements CycleReportChartService {
         return new PageResult<>(list, pageResult.getTotal());
     }
 
-    private PageResult<Map<String, Object>> barDrillCouponType(CycleReportChartBarDrillReqVO reqVO, String categoryName) {
+    private PageResult<Map<String, Object>> barDrillCouponType(CycleReportChartBarDrillReqVO reqVO, String categoryValue) {
         LambdaQueryWrapperX<CouponMgmtDO> wrapper = new LambdaQueryWrapperX<CouponMgmtDO>()
-//                .eqIfPresent(CouponMgmtDO::getType, categoryName)
+                .eqIfPresent(CouponMgmtDO::getType, categoryValue)
                 .orderByDesc(CouponMgmtDO::getId);
         PageResult<CouponMgmtDO> pageResult = couponMgmtMapper.selectPage(reqVO, wrapper);
         List<Map<String, Object>> list = new ArrayList<>();
@@ -324,9 +332,9 @@ public class CycleReportChartServiceImpl implements CycleReportChartService {
         return new PageResult<>(list, pageResult.getTotal());
     }
 
-    private PageResult<Map<String, Object>> barDrillCardType(CycleReportChartBarDrillReqVO reqVO, String categoryName) {
+    private PageResult<Map<String, Object>> barDrillCardType(CycleReportChartBarDrillReqVO reqVO, String categoryValue) {
         LambdaQueryWrapperX<CardConfigDO> wrapper = new LambdaQueryWrapperX<CardConfigDO>()
-//                .eqIfPresent(CardConfigDO::getType, categoryName)
+                .eqIfPresent(CardConfigDO::getType, categoryValue)
                 .orderByDesc(CardConfigDO::getId);
         PageResult<CardConfigDO> pageResult = cardConfigMapper.selectPage(reqVO, wrapper);
         List<Map<String, Object>> list = new ArrayList<>();
@@ -344,7 +352,7 @@ public class CycleReportChartServiceImpl implements CycleReportChartService {
         return new PageResult<>(list, pageResult.getTotal());
     }
 
-    private PageResult<Map<String, Object>> barDrillExchangeCategory(CycleReportChartBarDrillReqVO reqVO, String categoryName) {
+    private PageResult<Map<String, Object>> barDrillExchangeCategory(CycleReportChartBarDrillReqVO reqVO, String categoryValue) {
         LambdaQueryWrapperX<ExchangeOrderDO> wrapper = new LambdaQueryWrapperX<ExchangeOrderDO>()
                 .eqIfPresent(ExchangeOrderDO::getCategoryId, reqVO.getCategoryId())
                 .orderByDesc(ExchangeOrderDO::getId);
@@ -369,32 +377,51 @@ public class CycleReportChartServiceImpl implements CycleReportChartService {
     @Override
     public PageResult<Map<String, Object>> pieDrill(CycleReportChartPieDrillReqVO reqVO) {
         String pieType = reqVO.getPieType();
-        String pieName = reqVO.getPieName();
+        String pieValue = reqVO.getPieValue();
 
         switch (pieType) {
             case "ruleType":
-                return pieDrillRuleType(reqVO, pieName);
+                return pieDrillRuleType(reqVO, pieValue);
             case "configType":
-                return pieDrillConfigType(reqVO, pieName);
+                return pieDrillConfigType(reqVO, pieValue);
             case "packageType":
-                return pieDrillPackageType(reqVO, pieName);
+                return pieDrillPackageType(reqVO, pieValue);
             default:
                 return PageResult.empty();
         }
     }
 
-    private PageResult<Map<String, Object>> pieDrillRuleType(CycleReportChartPieDrillReqVO reqVO, String pieName) {
-        // 规则类型 → 查询积分活动，按类型筛选（获取规则/消耗规则/赠送规则对应活动类型）
-        LambdaQueryWrapperX<PointActivityDO> wrapper = new LambdaQueryWrapperX<PointActivityDO>()
-//                .eqIfPresent(PointActivityDO::getType, pieName)
-                .orderByDesc(PointActivityDO::getId);
-        PageResult<PointActivityDO> pageResult = pointActivityMapper.selectPage(reqVO, wrapper);
+    /** 规则类型占比 → rule_config（对应getChart中selectRuleConfigTypeCount） */
+    private PageResult<Map<String, Object>> pieDrillRuleType(CycleReportChartPieDrillReqVO reqVO, String pieValue) {
+        LambdaQueryWrapperX<RuleConfigDO> wrapper = new LambdaQueryWrapperX<RuleConfigDO>()
+                .eqIfPresent(RuleConfigDO::getType, pieValue)
+                .orderByDesc(RuleConfigDO::getId);
+        PageResult<RuleConfigDO> pageResult = ruleConfigMapper.selectPage(reqVO, wrapper);
         List<Map<String, Object>> list = new ArrayList<>();
-        for (PointActivityDO a : pageResult.getList()) {
+        for (RuleConfigDO r : pageResult.getList()) {
+            Map<String, Object> item = new LinkedHashMap<>();
+            item.put("id", r.getId());
+            item.put("ruleName", r.getName());
+            item.put("ruleType", r.getType());
+            item.put("status", r.getStatus());
+            item.put("createTime", r.getCreateTime());
+            list.add(item);
+        }
+        return new PageResult<>(list, pageResult.getTotal());
+    }
+
+    /** 配置类型占比 → activity_config（对应getChart中selectActivityConfigTypeCountForPie） */
+    private PageResult<Map<String, Object>> pieDrillConfigType(CycleReportChartPieDrillReqVO reqVO, String pieValue) {
+        LambdaQueryWrapperX<ActivityConfigDO> wrapper = new LambdaQueryWrapperX<ActivityConfigDO>()
+                .eqIfPresent(ActivityConfigDO::getType, pieValue)
+                .orderByDesc(ActivityConfigDO::getId);
+        PageResult<ActivityConfigDO> pageResult = activityConfigMapper.selectPage(reqVO, wrapper);
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (ActivityConfigDO a : pageResult.getList()) {
             Map<String, Object> item = new LinkedHashMap<>();
             item.put("id", a.getId());
-            item.put("ruleName", a.getName());
-            item.put("ruleType", a.getType());
+            item.put("configName", a.getName());
+            item.put("configType", a.getType());
             item.put("status", a.getStatus());
             item.put("createTime", a.getCreateTime());
             list.add(item);
@@ -402,39 +429,20 @@ public class CycleReportChartServiceImpl implements CycleReportChartService {
         return new PageResult<>(list, pageResult.getTotal());
     }
 
-    private PageResult<Map<String, Object>> pieDrillConfigType(CycleReportChartPieDrillReqVO reqVO, String pieName) {
-        // 配置类型 → 查询卡种配置，按类型筛选
-        LambdaQueryWrapperX<CardConfigDO> wrapper = new LambdaQueryWrapperX<CardConfigDO>()
-//                .eqIfPresent(CardConfigDO::getType, pieName)
-                .orderByDesc(CardConfigDO::getId);
-        PageResult<CardConfigDO> pageResult = cardConfigMapper.selectPage(reqVO, wrapper);
+    /** 券包类型占比 → package_config（对应getChart中selectPackageConfigTypeCount） */
+    private PageResult<Map<String, Object>> pieDrillPackageType(CycleReportChartPieDrillReqVO reqVO, String pieValue) {
+        LambdaQueryWrapperX<PackageConfigDO> wrapper = new LambdaQueryWrapperX<PackageConfigDO>()
+                .eqIfPresent(PackageConfigDO::getType, pieValue)
+                .orderByDesc(PackageConfigDO::getId);
+        PageResult<PackageConfigDO> pageResult = packageConfigMapper.selectPage(reqVO, wrapper);
         List<Map<String, Object>> list = new ArrayList<>();
-        for (CardConfigDO c : pageResult.getList()) {
+        for (PackageConfigDO p : pageResult.getList()) {
             Map<String, Object> item = new LinkedHashMap<>();
-            item.put("id", c.getId());
-            item.put("configName", c.getName());
-            item.put("configType", c.getType());
-            item.put("status", c.getStatus());
-            item.put("createTime", c.getCreateTime());
-            list.add(item);
-        }
-        return new PageResult<>(list, pageResult.getTotal());
-    }
-
-    private PageResult<Map<String, Object>> pieDrillPackageType(CycleReportChartPieDrillReqVO reqVO, String pieName) {
-        // 券包类型 → 查询优惠券，按类型筛选
-        LambdaQueryWrapperX<CouponMgmtDO> wrapper = new LambdaQueryWrapperX<CouponMgmtDO>()
-//                .eqIfPresent(CouponMgmtDO::getType, pieName)
-                .orderByDesc(CouponMgmtDO::getId);
-        PageResult<CouponMgmtDO> pageResult = couponMgmtMapper.selectPage(reqVO, wrapper);
-        List<Map<String, Object>> list = new ArrayList<>();
-        for (CouponMgmtDO c : pageResult.getList()) {
-            Map<String, Object> item = new LinkedHashMap<>();
-            item.put("id", c.getId());
-            item.put("packageName", c.getName());
-            item.put("packageType", c.getType());
-            item.put("status", c.getStatus());
-            item.put("createTime", c.getCreateTime());
+            item.put("id", p.getId());
+            item.put("packageName", p.getName());
+            item.put("packageType", p.getType());
+            item.put("status", p.getStatus());
+            item.put("createTime", p.getCreateTime());
             list.add(item);
         }
         return new PageResult<>(list, pageResult.getTotal());

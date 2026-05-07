@@ -11,21 +11,20 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class CycleReportChartLineDrillReqVO extends PageParam {
 
-    @Schema(description = "折线图趋势类型", requiredMode = Schema.RequiredMode.REQUIRED,
+    @Schema(description = "折线图趋势类型"
+            + "activityTrend → 活动参与趋势；" +
+            "lotteryTrend → 抽奖趋势；" +
+            "couponTrend → 优惠券发放趋势；" +
+            "orderTrend → 订单量趋势；" +
+            "stockTrend → 库存趋势", requiredMode = Schema.RequiredMode.REQUIRED,
             example = "activityTrend",
             allowableValues = {"activityTrend", "lotteryTrend", "couponTrend", "orderTrend", "stockTrend"})
     @NotEmpty(message = "趋势类型不能为空")
     private String lineType;
 
-    @Schema(description = "趋势名称。" +
-            "activityTrend → 活动参与趋势；" +
-            "lotteryTrend → 抽奖趋势；" +
-            "couponTrend → 优惠券发放趋势；" +
-            "orderTrend → 订单量趋势；" +
-            "stockTrend → 库存趋势",
+    @Schema(description = "趋势名称类型字典值",
             requiredMode = Schema.RequiredMode.REQUIRED, example = "活动参与趋势")
-    @NotEmpty(message = "趋势名称不能为空")
-    private String lineName;
+    private String lineValue;
 
     @Schema(description = "对应时段(支持yyyy-MM或yyyy-MM-dd格式)", requiredMode = Schema.RequiredMode.REQUIRED, example = "2026-04")
     @NotEmpty(message = "时段不能为空")
