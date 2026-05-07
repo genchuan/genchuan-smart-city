@@ -163,21 +163,26 @@ public class UserAppealServiceImpl implements UserAppealService {
     public void executeUserAppeal(UserAppealExecuteReqVO reqVO) {
         UserAppealDO appeal = validateUserAppealExists(reqVO.getId());
         validateStatus(appeal, UserAppealStatusEnum.WAITING_HANDLE);
-        // 认领申诉：状态推进到"处置中"，并记录处置人为当前登录用户
+        // 认领并完成处置：状态推进到"已完成"，记录处置人和处置时间，等待反馈关闭
         UserAppealDO update = new UserAppealDO();
         update.setId(reqVO.getId());
-        update.setStatus(UserAppealStatusEnum.HANDLING.getLabel());
+        update.setStatus(UserAppealStatusEnum.COMPLETED.getLabel());
         update.setHandleUserId(SecurityFrameworkUtils.getLoginUserId());
+        update.setHandleTime(LocalDateTime.now());
         userAppealMapper.updateById(update);
     }
 
     @Override
     public void feedbackUserAppeal(UserAppealFeedbackReqVO reqVO) {
         UserAppealDO appeal = validateUserAppealExists(reqVO.getId());
-        validateStatus(appeal, UserAppealStatusEnum.HANDLING);
+        // 兼容历史"处置中"也可以反馈
+        if (!UserAppealStatusEnum.COMPLETED.getLabel().equals(appeal.getStatus())
+                && !UserAppealStatusEnum.HANDLING.getLabel().equals(appeal.getStatus())) {
+            throw exception(USER_APPEAL_STATUS_INVALID);
+        }
         UserAppealDO update = new UserAppealDO();
         update.setId(reqVO.getId());
-        update.setStatus(UserAppealStatusEnum.COMPLETED.getLabel());
+        update.setStatus(UserAppealStatusEnum.CLOSED.getLabel());
         update.setFeedbackContent(reqVO.getFeedbackContent());
         update.setFeedbackTime(LocalDateTime.now());
         userAppealMapper.updateById(update);

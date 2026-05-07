@@ -94,6 +94,7 @@ public class UserAppealController {
         respList.forEach(vo -> {
             vo.setSubmitTime(toBeijing(vo.getSubmitTime()));
             vo.setAuditTime(toBeijing(vo.getAuditTime()));
+            vo.setHandleTime(toBeijing(vo.getHandleTime()));
             vo.setFeedbackTime(toBeijing(vo.getFeedbackTime()));
             vo.setCreateTime(toBeijing(vo.getCreateTime()));
             vo.setUpdateTime(toBeijing(vo.getUpdateTime()));
@@ -109,7 +110,6 @@ public class UserAppealController {
                             "auditUserName", "审核人",
                             "auditTime", "审核时间",
                             "handleUserName", "处置人",
-                            "progress", "处置进度",
                             "feedbackTime", "反馈时间"),
                     respList);
         } else {
