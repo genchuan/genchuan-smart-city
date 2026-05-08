@@ -49,6 +49,10 @@ public class SuggestionDO extends BaseDO {
      */
     private Long handleUserId;
     /**
+     * 处理时间，认领的时刻
+     */
+    private LocalDateTime handleTime;
+    /**
      * 处理进度
      */
     private String progress;

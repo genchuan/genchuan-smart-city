@@ -90,6 +90,7 @@ public class SuggestionController {
         // 服务器 JVM 时区可能不是 Asia/Shanghai，导出时把 LocalDateTime 转为北京时间
         respList.forEach(vo -> {
             vo.setSubmitTime(toBeijing(vo.getSubmitTime()));
+            vo.setHandleTime(toBeijing(vo.getHandleTime()));
             vo.setFeedbackTime(toBeijing(vo.getFeedbackTime()));
             vo.setCreateTime(toBeijing(vo.getCreateTime()));
             vo.setUpdateTime(toBeijing(vo.getUpdateTime()));
