@@ -8,6 +8,10 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.Pu
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.PunishReviewLedgerSaveReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.add.AddPunishReviewLedgerReq;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.cancel.CancelReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.chart.PunishReviewBarItemResp;
+import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.chart.PunishReviewBarResp;
+import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.chart.PunishReviewCancelReasonResp;
+import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.chart.PunishReviewChartResp;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.issue.IssueReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.upload.UploadFileReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.upload.UploadFileRespVO;
@@ -42,6 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -480,6 +485,71 @@ public class PunishReviewLedgerServiceImpl implements PunishReviewLedgerService 
                         encodedFileName));
 
         return new ResponseEntity<>(baos.toByteArray(), headers, HttpStatus.OK);
+    }
+
+    @Override
+    public PunishReviewChartResp getPunishReviewChartStatistics(PunishReviewLedgerPageReqVO reqVO) {
+        PunishReviewChartResp resp = punishReviewLedgerMapper.getPunishReviewChartResp(reqVO);
+
+        if (resp == null) {
+            resp = new PunishReviewChartResp();
+            resp.setPendingReviewCount(0);
+            resp.setIssuedCount(0);
+            resp.setCanceledCount(0);
+            resp.setTotalCount(0);
+            resp.setPendingReviewRatio(BigDecimal.ZERO);
+            resp.setIssuedRatio(BigDecimal.ZERO);
+            resp.setCanceledRatio(BigDecimal.ZERO);
+            return resp;
+        }
+
+        int total = resp.getTotalCount();
+        if (total > 0) {
+            resp.setPendingReviewRatio(calcRatio(resp.getPendingReviewCount(), total));
+            resp.setIssuedRatio(calcRatio(resp.getIssuedCount(), total));
+            resp.setCanceledRatio(calcRatio(resp.getCanceledCount(), total));
+        }
+
+        return resp;
+    }
+
+    @Override
+    public PunishReviewBarResp getMonthReviewCount() {
+        List<PunishReviewBarItemResp> list = punishReviewLedgerMapper.selectMonthReviewCount();
+
+        PunishReviewBarResp resp = new PunishReviewBarResp();
+        resp.setList(list);
+        return resp;
+    }
+
+    @Override
+    public PunishReviewCancelReasonResp getCancelReasonStatistics(PunishReviewLedgerPageReqVO reqVO) {
+        List<PunishReviewCancelReasonResp.CancelReasonItem> list = punishReviewLedgerMapper.selectCancelReasonCount(reqVO);
+
+        int total = 0;
+        if (list != null) {
+            for (PunishReviewCancelReasonResp.CancelReasonItem item : list) {
+                if (item.getCount() != null) {
+                    total += item.getCount();
+                }
+            }
+        }
+
+        if (list != null && total > 0) {
+            for (PunishReviewCancelReasonResp.CancelReasonItem item : list) {
+                item.setRatio(calcRatio(item.getCount(), total));
+            }
+        }
+
+        PunishReviewCancelReasonResp resp = new PunishReviewCancelReasonResp();
+        resp.setList(list);
+        resp.setTotalCount(total);
+        return resp;
+    }
+
+    private BigDecimal calcRatio(Integer count, int total) {
+        if (count == null || count == 0) return BigDecimal.ZERO;
+        return BigDecimal.valueOf(count * 100.0 / total).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
 }

@@ -1,5 +1,10 @@
 package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo;
 
+import cn.iocoder.yudao.module.inspectop.api.space.SpaceMonitorApi;
+import cn.iocoder.yudao.module.inspectop.api.space.dto.SpaceMonitorRespDTO;
+import cn.iocoder.yudao.module.kitchen.api.aialertmessage.AiAlertMessageApi;
+import cn.iocoder.yudao.module.kitchen.api.aialertmessage.dto.AiAlertMessagePageReqDTO;
+import cn.iocoder.yudao.module.kitchen.api.aialertmessage.dto.AiAlertMessageRespDTO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.AreaInfoPageReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.AreaInfoRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.ops.*;
@@ -50,6 +55,49 @@ public class AreaInfoController {
     @Resource
     private AreaInfoService areaInfoService;
 
+    @Resource
+    private SpaceMonitorApi spaceMonitorApi;
+    @Resource
+    private AiAlertMessageApi aiAlertMessageApi;
+
+    @GetMapping("/test-ai-alert-get")
+    @Operation(summary = "测试：获取单个AI告警消息")
+    @PreAuthorize("@ss.hasPermission('stationresource:area-info:test')")
+    public CommonResult<AiAlertMessageRespDTO> testAiAlertGet(@RequestParam("id") Long id) {
+        // 1. 传入你要查询的 ID
+        Long testId = 1L;
+
+        // 2. RPC 调用（安全版，不会空指针）
+        CommonResult<AiAlertMessageRespDTO> result = aiAlertMessageApi.getAiAlertMessage(id);
+//        if (result == null || !result.isSuccess() || result.getData() == null) {
+//            return success(new AiAlertMessageRespDTO());
+//        }
+
+        // 3. 返回数据
+        return result;
+    }
+    // ===================== 【新增】AI告警消息调用示例（可直接用） =====================
+    @GetMapping("/test-ai-alert-message")
+    @Operation(summary = "(次级)获取AI告警消息列表")
+    @PreAuthorize("@ss.hasPermission('stationresource:area-info:test-ai-alert-message')")
+    public CommonResult<List<AiAlertMessageRespDTO>> testAiAlertMessage(AiAlertMessagePageReqDTO aiAlertMessagePageReqDTO) {
+        // 1. 构建分页参数
+        AiAlertMessagePageReqDTO pageReqDTO = new AiAlertMessagePageReqDTO();
+        pageReqDTO.setPageSize(100); // 查100条
+
+        // 2. RPC 调用
+        PageResult<AiAlertMessageRespDTO> pageResult = aiAlertMessageApi.getAiAlertMessagePage(aiAlertMessagePageReqDTO).getData();
+
+        // 3. 返回列表
+        return success(pageResult.getList());
+    }
+    @GetMapping("/test-space-monitor")
+    @Operation(summary = "(次级)获取车位坐标数据")
+    @PreAuthorize("@ss.hasPermission('stationresource:area-info:test-space-monitor')")
+    public CommonResult<List<SpaceMonitorRespDTO>> testSpaceMonitor(){
+        CommonResult<List<SpaceMonitorRespDTO>> listCommonResult = spaceMonitorApi.listLatestSpaceMonitors();
+        return listCommonResult;
+    }
 
     @GetMapping("/export2")
     @Operation(summary = "(次级)导出 - 片区信息(format=excel|pdf,默认 excel)")
