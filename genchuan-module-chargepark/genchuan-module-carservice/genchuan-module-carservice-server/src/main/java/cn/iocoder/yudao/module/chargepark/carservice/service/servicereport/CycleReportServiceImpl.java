@@ -963,10 +963,10 @@ public class CycleReportServiceImpl implements CycleReportService {
         Map<String, List<Map<String, Object>>> d = new LinkedHashMap<>();
         d.put("rescueDetail", toMapList(rescueInfoMapper.selectList(new LambdaQueryWrapperX<RescueInfoDO>()
                 .geIfPresent(RescueInfoDO::getCreateTime, s)
-                .leIfPresent(RescueInfoDO::getCreateTime, e)).stream().limit(50).collect(Collectors.toList())));
+                .leIfPresent(RescueInfoDO::getCreateTime, e))));
         d.put("reserveDetail", toMapList(reserveListMapper.selectList(new LambdaQueryWrapperX<ReserveListDO>()
                 .geIfPresent(ReserveListDO::getCreateTime, s)
-                .leIfPresent(ReserveListDO::getCreateTime, e)).stream().limit(50).collect(Collectors.toList())));
+                .leIfPresent(ReserveListDO::getCreateTime, e))));
         List<Object> complaints = new ArrayList<>();
         complaints.addAll(suggestionMapper.selectList(new LambdaQueryWrapperX<SuggestionDO>()
                 .geIfPresent(SuggestionDO::getCreateTime, s)
@@ -977,16 +977,15 @@ public class CycleReportServiceImpl implements CycleReportService {
         complaints.addAll(disputeMediateMapper.selectList(new LambdaQueryWrapperX<DisputeMediateDO>()
                 .geIfPresent(DisputeMediateDO::getCreateTime, s)
                 .leIfPresent(DisputeMediateDO::getCreateTime, e)));
-        d.put("complaintDetail", toMapList(complaints.stream().limit(50).collect(Collectors.toList())));
+        d.put("complaintDetail", toMapList(complaints));
         d.put("findCarDetail", toMapList(spaceLocationMapper.selectList(new LambdaQueryWrapperX<SpaceLocationDO>()
                 .geIfPresent(SpaceLocationDO::getCreateTime, s)
-                .leIfPresent(SpaceLocationDO::getCreateTime, e)).stream().limit(50).collect(Collectors.toList())));
+                .leIfPresent(SpaceLocationDO::getCreateTime, e))));
         d.put("spacePushDetail", toMapList(spacePushMapper.selectList(new LambdaQueryWrapperX<SpacePushDO>()
                 .geIfPresent(SpacePushDO::getCreateTime, s)
-                .leIfPresent(SpacePushDO::getCreateTime, e)).stream().limit(50).collect(Collectors.toList())));
+                .leIfPresent(SpacePushDO::getCreateTime, e))));
         d.put("wordingDetail", toMapList(wordingMgmtMapper.selectList(new LambdaQueryWrapperX<WordingMgmtDO>()
-                .eq(WordingMgmtDO::getStatus, "已生效"))
-                .stream().limit(50).collect(Collectors.toList())));
+                .eq(WordingMgmtDO::getStatus, "已生效"))));
         return d;
     }
 
