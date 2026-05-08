@@ -984,6 +984,15 @@ public class CycleReportServiceImpl implements CycleReportService {
         d.put("spacePushDetail", toMapList(spacePushMapper.selectList(new LambdaQueryWrapperX<SpacePushDO>()
                 .geIfPresent(SpacePushDO::getCreateTime, s)
                 .leIfPresent(SpacePushDO::getCreateTime, e))));
+        d.put("chargeParkMapDetail", toMapList(chargeParkMapMapper.selectList(new LambdaQueryWrapperX<ChargeParkMapDO>()
+                .geIfPresent(ChargeParkMapDO::getQueryTime, s)
+                .leIfPresent(ChargeParkMapDO::getQueryTime, e))));
+        d.put("nearStationDetail", toMapList(nearStationMapper.selectList(new LambdaQueryWrapperX<NearStationDO>()
+                .geIfPresent(NearStationDO::getQueryTime, s)
+                .leIfPresent(NearStationDO::getQueryTime, e))));
+        d.put("pathPlanDetail", toMapList(pathPlanMapper.selectList(new LambdaQueryWrapperX<PathPlanDO>()
+                .geIfPresent(PathPlanDO::getPlanTime, s)
+                .leIfPresent(PathPlanDO::getPlanTime, e))));
         d.put("wordingDetail", toMapList(wordingMgmtMapper.selectList(new LambdaQueryWrapperX<WordingMgmtDO>()
                 .eq(WordingMgmtDO::getStatus, "已生效"))));
         return d;
