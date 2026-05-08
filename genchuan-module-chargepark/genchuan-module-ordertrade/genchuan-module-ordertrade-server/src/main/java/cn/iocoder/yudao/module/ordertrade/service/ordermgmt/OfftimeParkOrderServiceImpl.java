@@ -110,11 +110,12 @@ public class OfftimeParkOrderServiceImpl implements OfftimeParkOrderService {
         if (order == null) throw exception(OFFTIME_PARK_ORDER_NOT_EXISTS);
         if (!"paid".equals(order.getStatus())) throw exception(ALL_ORDER_STATUS_CANNOT_REFUND);
         // 更新订单状态
-        OfftimeParkOrderDO update = new OfftimeParkOrderDO();
-        update.setId(reqVO.getId());
-        update.setStatus("refunding");
-        update.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
-        offtimeParkOrderMapper.updateById(update);
+        //OfftimeParkOrderDO update = new OfftimeParkOrderDO();
+        //update.setId(reqVO.getId());
+        order.setStatus("refunding");
+        order.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
+        order.setUpdater(SecurityFrameworkUtils.getLoginUserNickname());
+        offtimeParkOrderMapper.updateById(order);
         // 创建退款申请（触发退款流程）
         RefundApplyDO apply = new RefundApplyDO();
         apply.setApplicantId(SecurityFrameworkUtils.getLoginUserId());
@@ -124,6 +125,9 @@ public class OfftimeParkOrderServiceImpl implements OfftimeParkOrderService {
         apply.setRefundReason(reqVO.getRemark() != null ? reqVO.getRemark() : "申请退款");
         apply.setApplyTime(LocalDateTime.now());
         apply.setStatus("pending_audit");
+        apply.setCreator(SecurityFrameworkUtils.getLoginUserId()+"");
+        apply.setUpdater(SecurityFrameworkUtils.getLoginUserId()+"");
+        apply.setApplicantId(SecurityFrameworkUtils.getLoginUserId());
         refundApplyMapper.insert(apply);
     }
 

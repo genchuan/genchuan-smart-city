@@ -124,11 +124,12 @@ public class AllOrderServiceImpl implements AllOrderService {
         if (order == null) throw exception(ALL_ORDER_NOT_EXISTS);
         if (!"paid".equals(order.getStatus())) throw exception(ALL_ORDER_STATUS_CANNOT_REFUND);
         // 1. 更新订单状态为退款中
-        AllOrderDO update = new AllOrderDO();
-        update.setId(reqVO.getId());
-        update.setStatus("refunding");
-        update.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
-        allOrderMapper.updateById(update);
+        //AllOrderDO update = new AllOrderDO();
+        //update.setId(reqVO.getId());
+        order.setStatus("refunding");
+        order.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
+        order.setUpdater(SecurityFrameworkUtils.getLoginUserNickname());
+        allOrderMapper.updateById(order);
         // 2. 创建退款申请（触发退款流程）
         RefundApplyDO apply = new RefundApplyDO();
         apply.setOrderId(reqVO.getId());
@@ -138,6 +139,9 @@ public class AllOrderServiceImpl implements AllOrderService {
         apply.setRefundReason(reqVO.getRemark() != null ? reqVO.getRemark() : "申请退款");
         apply.setApplyTime(LocalDateTime.now());
         apply.setStatus("pending_audit");
+        apply.setCreator(SecurityFrameworkUtils.getLoginUserId()+"");
+        apply.setUpdater(SecurityFrameworkUtils.getLoginUserId()+"");
+        apply.setApplicantId(SecurityFrameworkUtils.getLoginUserId());
         refundApplyMapper.insert(apply);
     }
 
