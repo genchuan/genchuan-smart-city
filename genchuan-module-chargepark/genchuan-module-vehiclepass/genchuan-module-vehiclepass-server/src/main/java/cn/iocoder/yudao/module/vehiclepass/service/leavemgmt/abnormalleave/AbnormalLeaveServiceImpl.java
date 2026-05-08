@@ -102,6 +102,7 @@ public class AbnormalLeaveServiceImpl implements AbnormalLeaveService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void batchHandle(AbnormalLeaveBatchHandleReqVO reqVO) {
         // 批量更新处置状态
         for (Long id : reqVO.getIds()) {

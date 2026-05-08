@@ -18,6 +18,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.time.LocalDateTime;
@@ -27,7 +28,8 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
-import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.PLATE_CONTROL_NOT_EXISTS;
+import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.*;
+
 
 /**
  * 套牌管控 Service 实现类
@@ -99,9 +101,13 @@ public class FakePlateControlServiceImpl implements FakePlateControlService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void batchHandle(FakePlateControlBatchHandleReqVO reqVO) {
         // 获取当前登录用户ID（这里暂时使用固定值，实际应从 SecurityUtils 获取）
         Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
+        if (currentUserId == null) {
+            throw exception(USER_NOT_LOGIN);
+        }
 
         for (Long id : reqVO.getIds()) {
             // 校验记录存在
@@ -141,10 +147,15 @@ public class FakePlateControlServiceImpl implements FakePlateControlService {
             throw exception(PLATE_CONTROL_NOT_EXISTS);
         }
 
+        Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
+        if (currentUserId == null) {
+            throw exception(USER_NOT_LOGIN);
+        }
+
         // 更新记录
         FakePlateControlDO updateObj = new FakePlateControlDO();
         updateObj.setId(reqVO.getId());
-        updateObj.setHandleUserId(SecurityFrameworkUtils.getLoginUserId());
+        updateObj.setHandleUserId(currentUserId);
         updateObj.setHandleTime(LocalDateTime.now());
         updateObj.setStatus("处理中");
         updateObj.setHandleProgress("已核查");
@@ -160,10 +171,15 @@ public class FakePlateControlServiceImpl implements FakePlateControlService {
             throw exception(PLATE_CONTROL_NOT_EXISTS);
         }
 
+        Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
+        if (currentUserId == null) {
+            throw exception(USER_NOT_LOGIN);
+        }
+
         // 更新记录
         FakePlateControlDO updateObj = new FakePlateControlDO();
         updateObj.setId(reqVO.getId());
-        updateObj.setHandleUserId(SecurityFrameworkUtils.getLoginUserId());
+        updateObj.setHandleUserId(currentUserId);
         updateObj.setHandleTime(LocalDateTime.now());
         updateObj.setStatus("已关闭");
         updateObj.setHandleType("忽略");

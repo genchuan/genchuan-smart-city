@@ -14,6 +14,7 @@ import cn.iocoder.yudao.module.vehiclepass.dal.mysql.inspectmgmt.inspecttask.Che
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.time.LocalDateTime;
@@ -100,6 +101,7 @@ public class CheckTaskServiceImpl implements CheckTaskService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void batchDispatch(InspectTaskBatchDispatchReqVO reqVO) {
         // 批量更新派发状态
         for (Long id : reqVO.getIds()) {

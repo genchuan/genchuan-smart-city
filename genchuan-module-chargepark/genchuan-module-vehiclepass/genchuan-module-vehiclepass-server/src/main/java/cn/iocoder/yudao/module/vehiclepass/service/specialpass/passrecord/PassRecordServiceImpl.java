@@ -9,6 +9,7 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passreco
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.specialpass.passrecord.PassRecordDO;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.specialpass.passrecord.PassRecordMapper;
+import cn.iocoder.yudao.module.vehiclepass.framework.util.MapValueUtils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
@@ -123,7 +124,7 @@ public class PassRecordServiceImpl implements PassRecordService {
         for (Map<String, Object> trend : trendList) {
             PassRecordChartRespVO.PassCountTrend item = new PassRecordChartRespVO.PassCountTrend();
             item.setDate(trend.get("date") != null ? trend.get("date").toString() : null);
-            item.setCount(trend.get("count") != null ? Long.parseLong(trend.get("count").toString()) : 0L);
+            item.setCount(MapValueUtils.getLongValue(trend, "count"));
             passCountTrends.add(item);
         }
 
@@ -132,8 +133,8 @@ public class PassRecordServiceImpl implements PassRecordService {
                 reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
         PassRecordChartRespVO.CardData cardData = new PassRecordChartRespVO.CardData();
         if (stats != null) {
-            cardData.setTodayPassCount(stats.get("todayPassCount") != null ? Long.parseLong(stats.get("todayPassCount").toString()) : 0L);
-            cardData.setAbnormalPassRate(stats.get("abnormalPassRate") != null ? Double.parseDouble(stats.get("abnormalPassRate").toString()) : 0.0);
+            cardData.setTodayPassCount(MapValueUtils.getLongValue(stats, "todayPassCount"));
+            cardData.setAbnormalPassRate(MapValueUtils.getDoubleValue(stats, "abnormalPassRate"));
         } else {
             cardData.setTodayPassCount(0L);
             cardData.setAbnormalPassRate(0.0);
