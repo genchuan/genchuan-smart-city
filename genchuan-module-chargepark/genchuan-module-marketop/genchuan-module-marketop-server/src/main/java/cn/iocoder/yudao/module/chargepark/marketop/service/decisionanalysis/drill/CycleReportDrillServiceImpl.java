@@ -6,18 +6,23 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.decisionanalysis.drill.vo.*;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.CardConfigDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.CardOrderDO;
+import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.StockControlDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.CouponMgmtDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.decisionanalysis.CycleReportDO;
+import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.exchangemgmt.ExchangeOrderDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointActivityDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointLotteryDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PrizeMgmtDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.cardmgmt.CardConfigMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.cardmgmt.CardOrderMapper;
+import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.cardmgmt.StockControlMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.couponactivity.CouponMgmtMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.decisionanalysis.CycleReportMapper;
+import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.exchangemgmt.ExchangeOrderMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.PointActivityMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.PointLotteryMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.PrizeMgmtMapper;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.StockControlWarnStatusEnum;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import jakarta.annotation.Resource;
@@ -51,6 +56,10 @@ public class CycleReportDrillServiceImpl implements CycleReportDrillService {
     private PrizeMgmtMapper prizeMgmtMapper;
     @Resource
     private AdminUserApi adminUserApi;
+    @Resource
+    private ExchangeOrderMapper exchangeOrderMapper;
+    @Resource
+    private StockControlMapper stockControlMapper;
 
     @Override
     public PageResult<CycleReportDrillReportCycleRespVO> drillReportCycle(CycleReportDrillReportCycleReqVO reqVO) {
@@ -320,6 +329,142 @@ public class CycleReportDrillServiceImpl implements CycleReportDrillService {
                 resp.setCardName(card.getName());
                 resp.setCardType(card.getType());
             }
+        }
+        return new PageResult<>(list, pageResult.getTotal());
+    }
+
+    @Override
+    public PageResult<CycleReportDrillRevenueRespVO> drillRevenue(CycleReportDrillBaseReqVO reqVO) {
+        CycleReportDO report = validateReportExists(reqVO.getReportId());
+        LambdaQueryWrapperX<CardOrderDO> wrapper = new LambdaQueryWrapperX<>();
+        wrapper.isNotNull(CardOrderDO::getPayTime);
+        if (report.getStatStartTime() != null) {
+            wrapper.geIfPresent(CardOrderDO::getPayTime, report.getStatStartTime());
+        }
+        if (report.getStatEndTime() != null) {
+            wrapper.leIfPresent(CardOrderDO::getPayTime, report.getStatEndTime());
+        }
+        wrapper.orderByDesc(CardOrderDO::getId);
+        PageResult<CardOrderDO> pageResult = cardOrderMapper.selectPage(reqVO, wrapper);
+        // 批量获取用户信息
+        Set<Long> userIds = new HashSet<>();
+        for (CardOrderDO o : pageResult.getList()) {
+            userIds.add(o.getUserId());
+        }
+        Map<Long, AdminUserRespDTO> userMap = userIds.isEmpty() ? Map.of() : adminUserApi.getUserMap(userIds);
+        List<CycleReportDrillRevenueRespVO> list = new ArrayList<>();
+        for (CardOrderDO o : pageResult.getList()) {
+            CycleReportDrillRevenueRespVO resp = new CycleReportDrillRevenueRespVO();
+            resp.setOrderId(o.getId());
+            resp.setOrderNo(o.getNo());
+            resp.setOrderAmount(o.getAmount());
+            resp.setPayTime(o.getPayTime());
+            resp.setUserId(o.getUserId());
+            AdminUserRespDTO user = userMap.get(o.getUserId());
+            if (user != null) resp.setUserName(user.getNickname());
+            list.add(resp);
+        }
+        return new PageResult<>(list, pageResult.getTotal());
+    }
+
+    @Override
+    public PageResult<CycleReportDrillExchangeCountRespVO> drillExchangeCount(CycleReportDrillBaseReqVO reqVO) {
+        CycleReportDO report = validateReportExists(reqVO.getReportId());
+        LambdaQueryWrapperX<ExchangeOrderDO> wrapper = new LambdaQueryWrapperX<>();
+        if (report.getStatStartTime() != null) {
+            wrapper.geIfPresent(ExchangeOrderDO::getCreateTime, report.getStatStartTime());
+        }
+        if (report.getStatEndTime() != null) {
+            wrapper.leIfPresent(ExchangeOrderDO::getCreateTime, report.getStatEndTime());
+        }
+        wrapper.orderByDesc(ExchangeOrderDO::getId);
+        PageResult<ExchangeOrderDO> pageResult = exchangeOrderMapper.selectPage(reqVO, wrapper);
+        // 批量获取用户信息
+        Set<Long> userIds = new HashSet<>();
+        for (ExchangeOrderDO o : pageResult.getList()) {
+            if (o.getUserId() != null) userIds.add(o.getUserId());
+        }
+        Map<Long, AdminUserRespDTO> userMap = userIds.isEmpty() ? Map.of() : adminUserApi.getUserMap(userIds);
+        List<CycleReportDrillExchangeCountRespVO> list = new ArrayList<>();
+        for (ExchangeOrderDO o : pageResult.getList()) {
+            CycleReportDrillExchangeCountRespVO resp = new CycleReportDrillExchangeCountRespVO();
+            resp.setId(o.getId());
+            resp.setNo(o.getNo());
+            resp.setUserId(o.getUserId());
+            AdminUserRespDTO user = userMap.get(o.getUserId());
+            if (user != null) resp.setUserName(user.getNickname());
+            resp.setGoodsName(o.getGoodsName());
+            resp.setCostPoint(o.getCostPoint());
+            resp.setPayStatus(o.getPayStatus());
+            resp.setExchangeTime(o.getCreateTime());
+            list.add(resp);
+        }
+        return new PageResult<>(list, pageResult.getTotal());
+    }
+
+    @Override
+    public PageResult<CycleReportDrillTotalStockRespVO> drillTotalStock(CycleReportDrillBaseReqVO reqVO) {
+        validateReportExists(reqVO.getReportId());
+        LambdaQueryWrapperX<StockControlDO> wrapper = new LambdaQueryWrapperX<StockControlDO>()
+                .orderByDesc(StockControlDO::getId);
+        PageResult<StockControlDO> pageResult = stockControlMapper.selectPage(reqVO, wrapper);
+        // 批量获取卡种信息
+        Set<Long> cardIds = new HashSet<>();
+        for (StockControlDO s : pageResult.getList()) {
+            if (s.getCardId() != null) cardIds.add(s.getCardId());
+        }
+        Map<Long, CardConfigDO> cardMap = new HashMap<>();
+        for (Long cardId : cardIds) {
+            CardConfigDO card = cardConfigMapper.selectById(cardId);
+            if (card != null) cardMap.put(cardId, card);
+        }
+        List<CycleReportDrillTotalStockRespVO> list = new ArrayList<>();
+        for (StockControlDO s : pageResult.getList()) {
+            CycleReportDrillTotalStockRespVO resp = new CycleReportDrillTotalStockRespVO();
+            resp.setCardId(s.getCardId());
+            resp.setCurrentStock(s.getCurrentStock());
+            resp.setWarnThreshold(s.getWarnThreshold());
+            resp.setStatus(s.getStatus());
+            CardConfigDO card = cardMap.get(s.getCardId());
+            if (card != null) {
+                resp.setCardName(card.getName());
+                resp.setCardType(card.getType());
+            }
+            list.add(resp);
+        }
+        return new PageResult<>(list, pageResult.getTotal());
+    }
+
+    @Override
+    public PageResult<CycleReportDrillWarnStockCountRespVO> drillWarnStockCount(CycleReportDrillBaseReqVO reqVO) {
+        validateReportExists(reqVO.getReportId());
+        LambdaQueryWrapperX<StockControlDO> wrapper = new LambdaQueryWrapperX<StockControlDO>()
+                .eq(StockControlDO::getWarnStatus, StockControlWarnStatusEnum.WARNED.getValue())
+                .orderByDesc(StockControlDO::getId);
+        PageResult<StockControlDO> pageResult = stockControlMapper.selectPage(reqVO, wrapper);
+        // 批量获取卡种信息
+        Set<Long> cardIds = new HashSet<>();
+        for (StockControlDO s : pageResult.getList()) {
+            if (s.getCardId() != null) cardIds.add(s.getCardId());
+        }
+        Map<Long, CardConfigDO> cardMap = new HashMap<>();
+        for (Long cardId : cardIds) {
+            CardConfigDO card = cardConfigMapper.selectById(cardId);
+            if (card != null) cardMap.put(cardId, card);
+        }
+        List<CycleReportDrillWarnStockCountRespVO> list = new ArrayList<>();
+        for (StockControlDO s : pageResult.getList()) {
+            CycleReportDrillWarnStockCountRespVO resp = new CycleReportDrillWarnStockCountRespVO();
+            resp.setCardId(s.getCardId());
+            resp.setCurrentStock(s.getCurrentStock());
+            resp.setWarnThreshold(s.getWarnThreshold());
+            resp.setWarnStatus(s.getWarnStatus());
+            CardConfigDO card = cardMap.get(s.getCardId());
+            if (card != null) {
+                resp.setCardName(card.getName());
+                resp.setCardType(card.getType());
+            }
+            list.add(resp);
         }
         return new PageResult<>(list, pageResult.getTotal());
     }
