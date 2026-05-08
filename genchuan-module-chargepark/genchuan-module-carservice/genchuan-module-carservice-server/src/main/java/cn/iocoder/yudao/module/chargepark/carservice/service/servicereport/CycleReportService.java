@@ -34,6 +34,9 @@ public interface CycleReportService {
     /** 按 id 查询单条报表明细(含 detailData) */
     CycleReportDetailRespVO getCycleReport(Long id);
 
+    /** 同上,但可指定窗口覆盖报表本身的统计窗口(图表卡片/柱状下钻用,保证窗口与卡片对齐) */
+    CycleReportDetailRespVO getCycleReport(Long id, java.time.LocalDateTime startTime, java.time.LocalDateTime endTime);
+
     /** 可视化图表聚合(卡片+折线+柱状+地图+饼) */
     CycleReportChartRespVO chartCycleReport(@Valid CycleReportChartReqVO reqVO);
 

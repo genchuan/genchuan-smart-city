@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 public class SuggestionRespVO {
 
     @Schema(description = "主键 ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("主键 ID")
     private Long id;
 
     @Schema(description = "用户 ID", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -44,6 +43,10 @@ public class SuggestionRespVO {
     @ExcelProperty("处理人名")
     private String handleUserName;
 
+    @Schema(description = "处理时间")
+    @ExcelProperty("处理时间")
+    private LocalDateTime handleTime;
+
     @Schema(description = "处理进度")
     @ExcelProperty("处理进度")
     private String progress;
@@ -57,11 +60,9 @@ public class SuggestionRespVO {
     private LocalDateTime feedbackTime;
 
     @Schema(description = "备用字段 1")
-    @ExcelProperty("备用字段 1")
     private String reserve1;
 
     @Schema(description = "备用字段 2")
-    @ExcelProperty("备用字段 2")
     private String reserve2;
 
     @Schema(description = "创建者")

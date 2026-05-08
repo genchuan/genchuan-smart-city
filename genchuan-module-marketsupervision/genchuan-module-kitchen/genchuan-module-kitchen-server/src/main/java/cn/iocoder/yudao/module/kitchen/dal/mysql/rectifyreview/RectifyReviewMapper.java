@@ -6,6 +6,8 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.RectifyReviewLedgerPageReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.RectifyReviewLedgerRespVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.RectifyReviewPageReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.chart.RectifyReviewBarItemResp;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.chart.RectifyReviewChartResp;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.rectifyreview.RectifyReviewDO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -51,4 +53,8 @@ public interface RectifyReviewMapper extends BaseMapperX<RectifyReviewDO> {
 
 
     RectifyReviewDO selectByLedgerCode(String code);
+
+    RectifyReviewChartResp getRectifyReviewChartResp(RectifyReviewLedgerPageReqVO reqVO);
+
+    List<RectifyReviewBarItemResp> selectMonthReviewCount();
 }

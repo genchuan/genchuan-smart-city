@@ -13,7 +13,8 @@ public enum SuggestionStatusEnum {
 
     PENDING("待处理"),
     PROCESSING("处理中"),
-    COMPLETED("已完成");
+    COMPLETED("已完成"),
+    CLOSED("已关闭");
 
     private final String label;
 

@@ -29,6 +29,11 @@ public interface CycleReportService {
     List<CycleReportRespVO> getCycleReportList(CycleReportPageReqVO pageReqVO);
 
     /**
+     * 获取周期报表详情
+     */
+    CycleReportRespVO getCycleReport(Long id);
+
+    /**
      * 获取周期报表图表数据
      */
     CycleReportChartRespVO getChart(CycleReportChartReqVO reqVO);

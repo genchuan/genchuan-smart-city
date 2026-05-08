@@ -145,6 +145,9 @@ public class LeaveHandleServiceImpl implements LeaveHandleService {
                 LeaveHandleStatusEnum.LEFT.getStatus()
         );
         // 如果统计为空，则设置为0
+        if (vo == null) {
+            vo = new LeaveHandleCharRespVO();
+        }
         if (vo.getFinishRate() == null) {
             vo.setFinishRate(BigDecimal.ZERO);
         }

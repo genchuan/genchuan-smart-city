@@ -13,7 +13,9 @@ public enum UserAppealStatusEnum {
 
     WAITING_AUDIT("待审核"),
     WAITING_HANDLE("待处置"),
-    COMPLETED("已完成");
+    HANDLING("处置中"),
+    COMPLETED("已完成"),
+    CLOSED("已关闭");
 
     private final String label;
 

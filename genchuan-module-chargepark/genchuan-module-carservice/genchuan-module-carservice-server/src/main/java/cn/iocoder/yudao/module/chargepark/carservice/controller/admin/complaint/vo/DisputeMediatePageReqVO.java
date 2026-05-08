@@ -19,9 +19,18 @@ public class DisputeMediatePageReqVO extends PageParam {
     @Schema(description = "商户 ID", example = "5001")
     private Long merchantId;
 
+    @Schema(description = "纠纷内容(模糊匹配)", example = "充电桩")
+    private String content;
+
     @Schema(description = "调解状态,关联字典 dispute_mediate_status", example = "待调解",
             allowableValues = {"待调解", "调解中", "已完成"})
     private String status;
+
+    @Schema(description = "调解进度(模糊匹配)")
+    private String progress;
+
+    @Schema(description = "确认结果(模糊匹配)")
+    private String confirmResult;
 
     @Schema(description = "发起时间范围(长度 2 的数组:[起始时间, 结束时间])。" +
             "前端示例:axios.get(url,{params:{submitTime:[start,end]}}) — 不要 JSON.stringify,最终 HTTP 是两次同名 query:?submitTime=start&submitTime=end",

@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.complaint.
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.complaint.SuggestionDO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.complaint.SuggestionMapper;
 import cn.iocoder.yudao.module.chargepark.carservice.enums.complaint.SuggestionStatusEnum;
+import cn.iocoder.yudao.module.chargepark.carservice.framework.notify.CarServiceNotifyHelper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -33,6 +34,9 @@ public class SuggestionServiceImpl implements SuggestionService {
 
     @Resource
     private SuggestionMapper suggestionMapper;
+
+    @Resource
+    private CarServiceNotifyHelper notifyHelper;
 
     @Override
     public Long createSuggestion(SuggestionSaveReqVO createReqVO) {
@@ -98,6 +102,7 @@ public class SuggestionServiceImpl implements SuggestionService {
         update.setId(reqVO.getId());
         update.setStatus(SuggestionStatusEnum.PROCESSING.getLabel());
         update.setHandleUserId(SecurityFrameworkUtils.getLoginUserId());
+        update.setHandleTime(LocalDateTime.now());
         suggestionMapper.updateById(update);
     }
 
@@ -122,10 +127,13 @@ public class SuggestionServiceImpl implements SuggestionService {
         }
         SuggestionDO update = new SuggestionDO();
         update.setId(reqVO.getId());
-        update.setStatus(SuggestionStatusEnum.COMPLETED.getLabel());
+        update.setStatus(SuggestionStatusEnum.CLOSED.getLabel());
         update.setFeedbackContent(reqVO.getFeedbackContent());
         update.setFeedbackTime(LocalDateTime.now());
         suggestionMapper.updateById(update);
+        // 反馈完成后通知意见提交人
+        notifyHelper.sendToUser(suggestion.getUserId(), "carservice_suggestion_closed",
+                "feedbackContent", reqVO.getFeedbackContent());
     }
 
 }

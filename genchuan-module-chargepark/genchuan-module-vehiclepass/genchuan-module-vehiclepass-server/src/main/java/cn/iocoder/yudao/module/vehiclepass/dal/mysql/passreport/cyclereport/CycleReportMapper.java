@@ -20,6 +20,8 @@ public interface CycleReportMapper extends BaseMapperX<CycleReportDO> {
 
     IPage<CycleReportDO> selectPageJoin(Page<?> page, @Param("reqVO") CycleReportPageReqVO reqVO);
 
+    CycleReportDO selectByIdWithStation(@Param("id") Long id);
+
     String selectStationName(@Param("id") Long id);
 
     Integer selectEnterCount(@Param("stationId") Long stationId,

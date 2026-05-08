@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leaverecor
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leaverecord.vo.LeaveRecordSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.leavemgmt.leaverecord.LeaveRecordDO;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.leavemgmt.leaverecord.LeaveRecordMapper;
+import cn.iocoder.yudao.module.vehiclepass.framework.util.MapValueUtils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,8 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
-import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.RECORD_NOT_EXISTS;
+import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.*;
+
 
 /**
  * 离场记录 Service 实现类
@@ -103,8 +105,14 @@ public class LeaveRecordServiceImpl implements LeaveRecordService {
     public Long createRecordSupplement(LeaveRecordCreateReqVO reqVO) {
         LeaveRecordDO record = new LeaveRecordDO();
         record.setPlateNo(reqVO.getPlateNo());
-        record.setEnterTime(LocalDateTime.ofEpochSecond(Long.parseLong(reqVO.getEnterTime()), 0, java.time.ZoneOffset.ofHours(8)));
-        record.setLeaveTime(LocalDateTime.ofEpochSecond(Long.parseLong(reqVO.getLeaveTime()), 0, java.time.ZoneOffset.ofHours(8)));
+        try {
+            long enterTimestamp = Long.parseLong(reqVO.getEnterTime());
+            long leaveTimestamp = Long.parseLong(reqVO.getLeaveTime());
+            record.setEnterTime(LocalDateTime.ofEpochSecond(enterTimestamp, 0, java.time.ZoneOffset.ofHours(8)));
+            record.setLeaveTime(LocalDateTime.ofEpochSecond(leaveTimestamp, 0, java.time.ZoneOffset.ofHours(8)));
+        } catch (NumberFormatException e) {
+            throw exception(TIMESTAMP_PARSE_ERROR);
+        }
         // 计算停车时长（分钟）
         long duration = java.time.Duration.between(record.getEnterTime(), record.getLeaveTime()).toMinutes();
         record.setParkDuration((int) duration);
@@ -126,8 +134,14 @@ public class LeaveRecordServiceImpl implements LeaveRecordService {
         LeaveRecordDO updateObj = new LeaveRecordDO();
         updateObj.setId(reqVO.getId());
         updateObj.setPlateNo(reqVO.getPlateNo());
-        updateObj.setEnterTime(LocalDateTime.ofEpochSecond(Long.parseLong(reqVO.getEnterTime()), 0, java.time.ZoneOffset.ofHours(8)));
-        updateObj.setLeaveTime(LocalDateTime.ofEpochSecond(Long.parseLong(reqVO.getLeaveTime()), 0, java.time.ZoneOffset.ofHours(8)));
+        try {
+            long enterTimestamp = Long.parseLong(reqVO.getEnterTime());
+            long leaveTimestamp = Long.parseLong(reqVO.getLeaveTime());
+            updateObj.setEnterTime(LocalDateTime.ofEpochSecond(enterTimestamp, 0, java.time.ZoneOffset.ofHours(8)));
+            updateObj.setLeaveTime(LocalDateTime.ofEpochSecond(leaveTimestamp, 0, java.time.ZoneOffset.ofHours(8)));
+        } catch (NumberFormatException e) {
+            throw exception(TIMESTAMP_PARSE_ERROR);
+        }
         long duration = java.time.Duration.between(updateObj.getEnterTime(), updateObj.getLeaveTime()).toMinutes();
         updateObj.setParkDuration((int) duration);
         updateObj.setStatus(reqVO.getStatus());
@@ -146,8 +160,14 @@ public class LeaveRecordServiceImpl implements LeaveRecordService {
         LeaveRecordDO updateObj = new LeaveRecordDO();
         updateObj.setId(reqVO.getId());
         updateObj.setPlateNo(reqVO.getPlateNo());
-        updateObj.setEnterTime(LocalDateTime.ofEpochSecond(Long.parseLong(reqVO.getEnterTime()), 0, java.time.ZoneOffset.ofHours(8)));
-        updateObj.setLeaveTime(LocalDateTime.ofEpochSecond(Long.parseLong(reqVO.getLeaveTime()), 0, java.time.ZoneOffset.ofHours(8)));
+        try {
+            long enterTimestamp = Long.parseLong(reqVO.getEnterTime());
+            long leaveTimestamp = Long.parseLong(reqVO.getLeaveTime());
+            updateObj.setEnterTime(LocalDateTime.ofEpochSecond(enterTimestamp, 0, java.time.ZoneOffset.ofHours(8)));
+            updateObj.setLeaveTime(LocalDateTime.ofEpochSecond(leaveTimestamp, 0, java.time.ZoneOffset.ofHours(8)));
+        } catch (NumberFormatException e) {
+            throw exception(TIMESTAMP_PARSE_ERROR);
+        }
         long duration = java.time.Duration.between(updateObj.getEnterTime(), updateObj.getLeaveTime()).toMinutes();
         updateObj.setParkDuration((int) duration);
         updateObj.setStatus(reqVO.getStatus());
@@ -167,7 +187,7 @@ public class LeaveRecordServiceImpl implements LeaveRecordService {
         for (Map<String, Object> trend : trendList) {
             LeaveRecordChartRespVO.LeaveCountTrend item = new LeaveRecordChartRespVO.LeaveCountTrend();
             item.setDate(trend.get("date") != null ? trend.get("date").toString() : null);
-            item.setCount(trend.get("count") != null ? Long.parseLong(trend.get("count").toString()) : 0L);
+            item.setCount(MapValueUtils.getLongValue(trend, "count"));
             leaveCountTrends.add(item);
         }
 
@@ -178,7 +198,7 @@ public class LeaveRecordServiceImpl implements LeaveRecordService {
         for (Map<String, Object> hour : hourList) {
             LeaveRecordChartRespVO.HourLeaveCount item = new LeaveRecordChartRespVO.HourLeaveCount();
             item.setHour(hour.get("hour") != null ? hour.get("hour").toString() : null);
-            item.setCount(hour.get("count") != null ? Long.parseLong(hour.get("count").toString()) : 0L);
+            item.setCount(MapValueUtils.getLongValue(hour, "count"));
             hourLeaveCounts.add(item);
         }
 
@@ -187,8 +207,8 @@ public class LeaveRecordServiceImpl implements LeaveRecordService {
                 reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
         LeaveRecordChartRespVO.CardData cardData = new LeaveRecordChartRespVO.CardData();
         if (stats != null) {
-            cardData.setTodayLeaveCount(stats.get("todayLeaveCount") != null ? Long.parseLong(stats.get("todayLeaveCount").toString()) : 0L);
-            cardData.setLeavePeak(stats.get("leavePeak") != null ? Long.parseLong(stats.get("leavePeak").toString()) : 0L);
+            cardData.setTodayLeaveCount(MapValueUtils.getLongValue(stats, "todayLeaveCount"));
+            cardData.setLeavePeak(MapValueUtils.getLongValue(stats, "leavePeak"));
         } else {
             cardData.setTodayLeaveCount(0L);
             cardData.setLeavePeak(0L);

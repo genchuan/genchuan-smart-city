@@ -256,6 +256,11 @@ public class CycleReportServiceImpl implements CycleReportService {
 
     @Override
     public CycleReportDetailRespVO getCycleReport(Long id) {
+        return getCycleReport(id, null, null);
+    }
+
+    @Override
+    public CycleReportDetailRespVO getCycleReport(Long id, LocalDateTime startTime, LocalDateTime endTime) {
         CycleReportDO d = cycleReportMapper.selectById(id);
         if (d == null) {
             throw exception(CYCLE_REPORT_NOT_EXISTS);
@@ -263,19 +268,14 @@ public class CycleReportServiceImpl implements CycleReportService {
         CycleReportRespVO base = toRespVO(d);
         CycleReportDetailRespVO detail = new CycleReportDetailRespVO();
         copyRespFields(base, detail);
-        // detail_data 为空 → 老 seed 数据,本期尚未聚合真实明细,直接给空 map(不再静默回退实时算避免数据漂移)
-        if (d.getDetailData() == null || d.getDetailData().isEmpty()) {
-            detail.setDetailData(new LinkedHashMap<>());
-            return detail;
-        }
-        // 快照存在时必须能解析成功,否则数据损坏,抛业务异常让运维看见
-        try {
-            detail.setDetailData(MAPPER.readValue(d.getDetailData(),
-                    new com.fasterxml.jackson.core.type.TypeReference<Map<String, List<Map<String, Object>>>>() {}));
-        } catch (Exception ex) {
-            log.error("[getCycleReport] detail_data 解析失败 id={}", id, ex);
-            throw exception(CYCLE_REPORT_DETAIL_DATA_INVALID);
-        }
+        // 实时按窗口拉明细;调用方未传窗口时回退到报表自身的统计窗口
+        LocalDateTime s = startTime != null ? startTime : d.getStatStartTime();
+        LocalDateTime e = endTime != null ? endTime : d.getStatEndTime();
+        Map<String, List<Map<String, Object>>> detailMap = buildDetailData(s, e);
+        // 话术不属于业务数据按窗口截取,而是当前生效的话术全集
+        detailMap.put("wordingDetail", toMapList(wordingMgmtMapper.selectList(
+                new LambdaQueryWrapperX<WordingMgmtDO>().eq(WordingMgmtDO::getStatus, "已生效"))));
+        detail.setDetailData(detailMap);
         return detail;
     }
 
@@ -302,22 +302,30 @@ public class CycleReportServiceImpl implements CycleReportService {
         LocalDateTime s = w.start, e = w.end;
         Map<String, List<Map<String, Object>>> d = new LinkedHashMap<>();
         d.put("rescueDetail", toMapList(rescueInfoMapper.selectList(new LambdaQueryWrapperX<RescueInfoDO>()
-                .geIfPresent(RescueInfoDO::getCreateTime, s).leIfPresent(RescueInfoDO::getCreateTime, e))));
+                .geIfPresent(RescueInfoDO::getCreateTime, s).leIfPresent(RescueInfoDO::getCreateTime, e)
+                .eq(RescueInfoDO::getStatus, "已完成"))));
         d.put("reserveDetail", toMapList(reserveListMapper.selectList(new LambdaQueryWrapperX<ReserveListDO>()
-                .geIfPresent(ReserveListDO::getCreateTime, s).leIfPresent(ReserveListDO::getCreateTime, e))));
+                .geIfPresent(ReserveListDO::getCreateTime, s).leIfPresent(ReserveListDO::getCreateTime, e)
+                .in(ReserveListDO::getStatus, java.util.Arrays.asList("已生效", "已完成")))));
         List<Object> complaints = new ArrayList<>();
         complaints.addAll(suggestionMapper.selectList(new LambdaQueryWrapperX<SuggestionDO>()
-                .geIfPresent(SuggestionDO::getCreateTime, s).leIfPresent(SuggestionDO::getCreateTime, e)));
+                .geIfPresent(SuggestionDO::getCreateTime, s).leIfPresent(SuggestionDO::getCreateTime, e)
+                .eq(SuggestionDO::getStatus, "已完成")));
         complaints.addAll(userAppealMapper.selectList(new LambdaQueryWrapperX<UserAppealDO>()
-                .geIfPresent(UserAppealDO::getCreateTime, s).leIfPresent(UserAppealDO::getCreateTime, e)));
+                .geIfPresent(UserAppealDO::getCreateTime, s).leIfPresent(UserAppealDO::getCreateTime, e)
+                .eq(UserAppealDO::getStatus, "已完成")));
         complaints.addAll(disputeMediateMapper.selectList(new LambdaQueryWrapperX<DisputeMediateDO>()
-                .geIfPresent(DisputeMediateDO::getCreateTime, s).leIfPresent(DisputeMediateDO::getCreateTime, e)));
+                .geIfPresent(DisputeMediateDO::getCreateTime, s).leIfPresent(DisputeMediateDO::getCreateTime, e)
+                .eq(DisputeMediateDO::getStatus, "已完成")));
         d.put("complaintDetail", toMapList(complaints));
         d.put("findCarDetail", toMapList(spaceLocationMapper.selectList(new LambdaQueryWrapperX<SpaceLocationDO>()
-                .geIfPresent(SpaceLocationDO::getCreateTime, s).leIfPresent(SpaceLocationDO::getCreateTime, e))));
+                .geIfPresent(SpaceLocationDO::getCreateTime, s).leIfPresent(SpaceLocationDO::getCreateTime, e)
+                .eq(SpaceLocationDO::getLocationResult, "成功"))));
         d.put("spacePushDetail", toMapList(spacePushMapper.selectList(new LambdaQueryWrapperX<SpacePushDO>()
-                .geIfPresent(SpacePushDO::getCreateTime, s).leIfPresent(SpacePushDO::getCreateTime, e))));
-        d.put("wordingDetail", toMapList(wordingMgmtMapper.selectList(new LambdaQueryWrapperX<WordingMgmtDO>())));
+                .geIfPresent(SpacePushDO::getCreateTime, s).leIfPresent(SpacePushDO::getCreateTime, e)
+                .eq(SpacePushDO::getStatus, "已推送"))));
+        d.put("wordingDetail", toMapList(wordingMgmtMapper.selectList(new LambdaQueryWrapperX<WordingMgmtDO>()
+                .eq(WordingMgmtDO::getStatus, "已生效"))));
         return d;
     }
 
@@ -359,7 +367,8 @@ public class CycleReportServiceImpl implements CycleReportService {
                         .geIfPresent(SpacePushDO::getCreateTime, s).leIfPresent(SpacePushDO::getCreateTime, e));
                 break;
             case "wording":
-                fullList = wordingMgmtMapper.selectList(new LambdaQueryWrapperX<WordingMgmtDO>());
+                fullList = wordingMgmtMapper.selectList(new LambdaQueryWrapperX<WordingMgmtDO>()
+                        .eq(WordingMgmtDO::getStatus, "已生效"));
                 break;
             default:
                 throw new IllegalArgumentException("无效的 dimension: " + dimension +
@@ -975,7 +984,8 @@ public class CycleReportServiceImpl implements CycleReportService {
         d.put("spacePushDetail", toMapList(spacePushMapper.selectList(new LambdaQueryWrapperX<SpacePushDO>()
                 .geIfPresent(SpacePushDO::getCreateTime, s)
                 .leIfPresent(SpacePushDO::getCreateTime, e)).stream().limit(50).collect(Collectors.toList())));
-        d.put("wordingDetail", toMapList(wordingMgmtMapper.selectList(new LambdaQueryWrapperX<WordingMgmtDO>())
+        d.put("wordingDetail", toMapList(wordingMgmtMapper.selectList(new LambdaQueryWrapperX<WordingMgmtDO>()
+                .eq(WordingMgmtDO::getStatus, "已生效"))
                 .stream().limit(50).collect(Collectors.toList())));
         return d;
     }

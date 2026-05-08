@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparksta
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.inparkmgmt.inparkstatus.InParkStatusDO;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.inparkmgmt.inparkstatus.InParkStatusMapper;
+import cn.iocoder.yudao.module.vehiclepass.framework.util.MapValueUtils;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -169,7 +170,7 @@ public class InParkStatusServiceImpl implements InParkStatusService {
         for (Map<String, Object> map : trendList) {
             InParkStatusChartRespVO.InParkCountTrend item = new InParkStatusChartRespVO.InParkCountTrend();
             item.setTime((String) map.get("time"));
-            item.setCount(((Number) map.get("count")).longValue());
+            item.setCount(MapValueUtils.getLongValue(map, "count"));
             trends.add(item);
         }
         respVO.setInParkCountTrend(trends);
@@ -177,8 +178,8 @@ public class InParkStatusServiceImpl implements InParkStatusService {
         // 3. 卡片数据
         Map<String, Object> stats = parkStatusMapper.selectInParkStats(chartReqVO.getStationId());
         InParkStatusChartRespVO.CardData cardData = new InParkStatusChartRespVO.CardData();
-        cardData.setInParkCarCount(((Number) stats.get("inParkCarCount")).longValue());
-        cardData.setOverTimeCarCount(((Number) stats.get("overTimeCarCount")).longValue());
+        cardData.setInParkCarCount(MapValueUtils.getLongValue(stats, "inParkCarCount"));
+        cardData.setOverTimeCarCount(MapValueUtils.getLongValue(stats, "overTimeCarCount"));
         respVO.setCardData(cardData);
 
         return respVO;

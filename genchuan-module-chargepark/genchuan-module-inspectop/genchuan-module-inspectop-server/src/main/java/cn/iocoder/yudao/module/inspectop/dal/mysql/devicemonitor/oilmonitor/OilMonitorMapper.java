@@ -26,9 +26,9 @@ public interface OilMonitorMapper extends BaseMapperX<OilMonitorDO> {
         return selectPage(reqVO, new LambdaQueryWrapperX<OilMonitorDO>()
                 .eqIfPresent(OilMonitorDO::getSpaceId, reqVO.getSpaceId())
                 .eqIfPresent(OilMonitorDO::getStationId, reqVO.getStationId())
-                .betweenIfPresent(OilMonitorDO::getIdentifyTime, reqVO.getIdentifyTime())
-                .eqIfPresent(OilMonitorDO::getProcessStatus, reqVO.getProcessStatus())
+                .likeIfPresent(OilMonitorDO::getProcessStatus, reqVO.getProcessStatus()) // 修改：eq -> like
                 .eqIfPresent(OilMonitorDO::getProcessUserId, reqVO.getProcessUserId())
+                .betweenIfPresent(OilMonitorDO::getIdentifyTime, reqVO.getIdentifyTime())
                 .betweenIfPresent(OilMonitorDO::getProcessTime, reqVO.getProcessTime())
                 .eqIfPresent(OilMonitorDO::getIgnoreReason, reqVO.getIgnoreReason())
                 .eqIfPresent(OilMonitorDO::getProcessProgress, reqVO.getProcessProgress())

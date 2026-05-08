@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @Schema(description = "管理后台 - 周期报表图表 Response VO")
 @Data
@@ -87,7 +88,7 @@ public class CycleReportChartRespVO {
         private String name;
 
         @Schema(description = "分布数据")
-        private List<ChartDataItem> data;
+        private List<Map<String, Object>> data;
 
     }
 
@@ -99,17 +100,6 @@ public class CycleReportChartRespVO {
 
         @Schema(description = "占比数据")
         private List<ChartRatioItem> data;
-
-    }
-
-    @Data
-    public static class ChartDataItem {
-
-        @Schema(description = "类型")
-        private String type;
-
-        @Schema(description = "数量")
-        private Integer count;
 
     }
 

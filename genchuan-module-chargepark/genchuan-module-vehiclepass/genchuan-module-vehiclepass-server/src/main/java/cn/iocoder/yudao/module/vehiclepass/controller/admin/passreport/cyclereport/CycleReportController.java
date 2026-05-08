@@ -50,6 +50,13 @@ public class CycleReportController {
         return success(cycleReportService.getCycleReportPage(pageReqVO));
     }
 
+    @GetMapping("/get")
+    @Operation(summary = "获取周期报表详情")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:cycle-report:query')")
+    public CommonResult<CycleReportRespVO> getCycleReport(@RequestParam("id") Long id) {
+        return success(cycleReportService.getCycleReport(id));
+    }
+
     @GetMapping("/export")
     @Operation(summary = "导出周期报表 Excel")
     @PreAuthorize("@ss.hasPermission('vehiclepass:cycle-report:export')")

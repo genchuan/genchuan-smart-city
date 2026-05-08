@@ -241,6 +241,9 @@ public class DormCheckServiceImpl implements DormCheckService {
         // 1. 卡片数据
         //totalCount (integer): 本期考评总记录数。
         vo = dormCheckMapper.selectTotalCheckCount(checkTime, DormCheckStatusEnum.DORM_CHECK_STATUS_0.getStatus());
+        if (vo == null) {
+            vo = new DormCheckChartRespVO();
+        }
         if (vo.getNormalCount() == null) {
             vo.setNormalCount(0);
         }

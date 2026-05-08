@@ -153,6 +153,9 @@ public class ClassAssignServiceImpl implements ClassAssignService {
                 ClassAssignStatusEnum.ASSIGNED.getStatus(),
                 ClassAssignStatusEnum.UNASSIGNED.getStatus()
         );
+        if (vo == null) {
+            vo = new ClassAssignChartRespVO();
+        }
         // 如果统计为空，则设置为0
         if (vo.getTotalAssignTaskCount() == null) {
             vo.setTotalAssignTaskCount(0);

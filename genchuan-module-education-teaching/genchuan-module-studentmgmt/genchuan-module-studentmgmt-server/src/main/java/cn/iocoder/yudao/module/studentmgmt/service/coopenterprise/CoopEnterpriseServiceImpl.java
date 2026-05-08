@@ -132,6 +132,9 @@ public class CoopEnterpriseServiceImpl implements CoopEnterpriseService {
                 CoopEnterpriseStatusEnum.PENDING.getStatus(),
                 CoopEnterpriseStatusEnum.ENDED.getStatus(), deptId);
         // 如果统计为空，则设置为0
+        if (vo == null) {
+            vo = new CoopEnterpriseChartRespVO();
+        }
         if (vo.getCooperatingEnterprise() == null) {
             vo.setCooperatingEnterprise(0);
         }
