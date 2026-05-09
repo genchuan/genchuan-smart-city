@@ -140,6 +140,31 @@ public class VrvExcelUtils {
         return "";
     }
 
+    /**
+     * Java 类型 → 中文描述（用于导入错误提示，让普通人能看懂）
+     *
+     * <pre>
+     * 版本历史：
+     *   V1 2026-05-09 10:07 —— 初始版本：Long/Integer→整数，BigDecimal→数字，LocalDateTime→日期时间，LocalDate/Date→日期，Boolean→true或false
+     * </pre>
+     */
+    private static String typeToChinese(Class<?> type) {
+        if (type == String.class) {
+            return "文本";
+        } else if (type == Integer.class || type == int.class || type == Long.class || type == long.class) {
+            return "整数";
+        } else if (type == Double.class || type == double.class || type == BigDecimal.class) {
+            return "数字";
+        } else if (type == LocalDateTime.class) {
+            return "日期时间";
+        } else if (type == LocalDate.class || type == Date.class) {
+            return "日期";
+        } else if (type == Boolean.class || type == boolean.class) {
+            return "true或false";
+        }
+        return type.getSimpleName();
+    }
+
 
 
     /**
@@ -315,7 +340,16 @@ public class VrvExcelUtils {
 
                     // 安全转换类型
                     try {
-                        if (fieldType == String.class) {
+                        if (fieldType == Boolean.class || fieldType == boolean.class) {
+                            String boolStr = value.toString().trim();
+                            if ("是".equals(boolStr) || "true".equalsIgnoreCase(boolStr)) {
+                                field.set(obj, true);
+                            } else if ("否".equals(boolStr) || "false".equalsIgnoreCase(boolStr)) {
+                                field.set(obj, false);
+                            } else {
+                                field.set(obj, Boolean.parseBoolean(boolStr));
+                            }
+                        } else if (fieldType == String.class) {
                             field.set(obj, value.toString());
                         } else if (fieldType == Integer.class || fieldType == int.class) {
                             field.set(obj, Integer.parseInt(value.toString()));
@@ -355,15 +389,28 @@ public class VrvExcelUtils {
                     } catch (Exception e) {
                         System.err.println("字段转换失败: " + fieldName + ", 值: " + value + ", 类型: " + fieldType);
                         e.printStackTrace();
+                        // 取中文名 + 中文类型 + 示例值，让普通人能看懂错误提示
+                        String cnFieldName = field.getName();
+                        String example = getDefaultExample(field.getType());
+                        if (field.isAnnotationPresent(Schema.class)) {
+                            Schema schema = field.getAnnotation(Schema.class);
+                            if (schema.description() != null && !schema.description().isEmpty()) {
+                                cnFieldName = schema.description();
+                            }
+                            if (schema.example() != null && !schema.example().isEmpty()) {
+                                example = schema.example();
+                            }
+                        }
                         throw exception(
                                 new ErrorCode(
                                         500,
-                                        "Excel 第 {} 行，字段【{}】值【{}】无法转换为 {}"
+                                        "Excel 第{}行，【{}】填写错误：您填的是【{}】，这里需要填{}，例如：{}"
                                 ),
                                 rowIndex,
-                                field.getName(),
+                                cnFieldName,
                                 value,
-                                field.getType().getSimpleName()
+                                typeToChinese(field.getType()),
+                                example
                         );
                     }
 
