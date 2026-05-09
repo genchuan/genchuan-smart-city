@@ -60,4 +60,12 @@ public interface CycleReportService {
      */
     PageResult<CycleReportDO> getCycleReportPage(CycleReportPageReqVO pageReqVO);
 
+    /**
+     * 生成周期报表（实时统计并存储）
+     *
+     * @param generateReqVO 生成请求
+     * @return 报表详情
+     */
+    CycleReportGenerateRespVO generateCycleReport(CycleReportGenerateReqVO generateReqVO);
+
 }

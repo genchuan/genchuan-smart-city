@@ -100,4 +100,12 @@ public class CycleReportController {
                         BeanUtils.toBean(list, CycleReportRespVO.class));
     }
 
+    @PostMapping("/generate")
+    @Operation(summary = "生成周期报表（实时统计并存储）")
+    @PreAuthorize("@ss.hasPermission('usermerchant:cycle-report:create')")
+    public CommonResult<CycleReportGenerateRespVO> generateCycleReport(@Valid @RequestBody CycleReportGenerateReqVO generateReqVO) {
+        CycleReportGenerateRespVO respVO = cycleReportService.generateCycleReport(generateReqVO);
+        return success(respVO);
+    }
+
 }
