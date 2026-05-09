@@ -11,6 +11,8 @@ import cn.iocoder.yudao.module.chargepark.carservice.enums.carguide.SpacePushSta
 import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.CrossModuleValidator;
 import cn.iocoder.yudao.module.system.api.notify.NotifyMessageSendApi;
 import cn.iocoder.yudao.module.system.api.notify.dto.NotifySendSingleToUserReqDTO;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,7 @@ import java.util.Map;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.carservice.enums.ErrorCodeConstants.SPACE_PUSH_NOT_EXISTS;
 import static cn.iocoder.yudao.module.chargepark.carservice.enums.ErrorCodeConstants.SPACE_PUSH_STATUS_INVALID;
+import static cn.iocoder.yudao.module.chargepark.carservice.enums.LogRecordConstants.*;
 
 /**
  * 空位推送 Service 实现类
@@ -96,6 +99,8 @@ public class SpacePushServiceImpl implements SpacePushService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = SPACE_PUSH_TYPE, subType = SPACE_PUSH_PUSH_SUB,
+            bizNo = "{{#id}}", success = SPACE_PUSH_PUSH_SUCCESS)
     public void pushSpacePush(Long id) {
         SpacePushDO push = spacePushMapper.selectById(id);
         if (push == null) {
@@ -112,10 +117,16 @@ public class SpacePushServiceImpl implements SpacePushService {
         update.setPushTime(LocalDateTime.now());
         update.setPushResult(result);
         spacePushMapper.updateById(update);
+        // 操作日志上下文：业务字段
+        LogRecordContext.putVariable("user", push.getUserId());
+        LogRecordContext.putVariable("station", push.getStationId());
+        LogRecordContext.putVariable("info", push.getSpaceInfo());
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = SPACE_PUSH_TYPE, subType = SPACE_PUSH_BATCH_SUB,
+            bizNo = "{{#reqVO.ids[0]}}", success = SPACE_PUSH_BATCH_SUCCESS)
     public void batchPushSpacePush(SpacePushBatchPushReqVO reqVO) {
         if (reqVO.getIds() == null || reqVO.getIds().isEmpty()) {
             return;
@@ -143,6 +154,9 @@ public class SpacePushServiceImpl implements SpacePushService {
             update.setPushResult(result);
             spacePushMapper.updateById(update);
         }
+        // 操作日志上下文
+        LogRecordContext.putVariable("count", pushes.size());
+        LogRecordContext.putVariable("ids", reqVO.getIds());
     }
 
     /**
