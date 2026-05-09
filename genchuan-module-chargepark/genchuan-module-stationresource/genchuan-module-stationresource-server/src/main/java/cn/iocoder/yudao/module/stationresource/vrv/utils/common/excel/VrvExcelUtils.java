@@ -26,10 +26,29 @@ import java.util.*;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 
-//导入工具类
+/**
+ * Excel导入导出工具类（通用）
+ * <p>统一处理 Excel 导入模板下载、列表导出、数据导入解析等功能。
+ *
+ * @author vrvliang
+ * @version V2.0 2026-05-09 10:07
+ */
 public class VrvExcelUtils {
 
-    // ==================== 【通用】下载 Excel 导入模板（完美适配 importExcelAndReturnEntity） ====================
+    /**
+     * 下载 Excel 导入模板（通用，适配 importExcelAndReturnEntity 解析）
+     * <p>自动从实体类读取字段信息生成模板，跳过 @ExcelIgnore 字段，
+     * 表头和示例值优先取 @Schema 注解的中文描述和示例值。
+     *
+     * <pre>
+     * 版本历史：
+     *   V1 2026-04-08  —— 初始版本：英文字段名作表头，"请输入XXX" 作示例行
+     *   V2 2026-05-09 10:07 —— 表头改为读取 @Schema.description（中文名）
+     *                           示例行改为读取 @Schema.example（真实示例值）
+     *                           支持跳过 @ExcelIgnore 标记的字段
+     *                           无注解字段回退到字段名 + 类型默认值
+     * </pre>
+     */
     public static <T> void downloadImportTemplate(HttpServletResponse response, Class<T> clazz) throws Exception {
         // 1. 收集字段信息：跳过@ExcelIgnore字段，从@Schema提取中文名和示例值
         List<Field> validFields = new ArrayList<>();
@@ -92,6 +111,11 @@ public class VrvExcelUtils {
 
     /**
      * 根据字段类型返回默认示例值
+     *
+     * <pre>
+     * 版本历史：
+     *   V1 2026-05-09 10:07 —— 初始版本：String→"示例文本"，数字→1，日期→2026-01-01
+     * </pre>
      */
     private static String getDefaultExample(Class<?> type) {
         if (type == String.class) {
@@ -119,13 +143,19 @@ public class VrvExcelUtils {
 
 
     /**
-     * 列表导出Excel（自动处理文件名、响应头、下载）
-     * 作用：统一处理所有列表导出 Excel，自动处理响应头、文件名乱码、对象转换、文件下载
-     * 评价：4.5; 2026/4/8
-     * @param response     HttpServletResponse
-     * @param dataList     数据列表
-     * @param <T>          泛型
-     * @throws Exception   异常直接抛出
+     * 列表导出 Excel（简化版，自动生成时间戳文件名）
+     * <p>只需传入数据列表，自动获取实体类并生成带时间戳的文件名。
+     * <p>评价：4.5
+     *
+     * @param response  HttpServletResponse
+     * @param dataList  数据列表
+     * @param <T>       泛型
+     * @throws Exception 异常直接抛出
+     *
+     * <pre>
+     * 版本历史：
+     *   V1 2026-04-08 —— 初始版本：自动生成文件名 + 列表导出
+     * </pre>
      */
     public static <T> void listExportExcelSimple(HttpServletResponse response,
                                   List<?> dataList) throws Exception {
@@ -144,15 +174,21 @@ public class VrvExcelUtils {
         listExportExcel(response, fileName, excelTemplateClass, dataList);
     }
     /**
-     * 列表导出Excel（自动处理文件名、响应头、下载）
-     * 作用：统一处理所有列表导出 Excel，自动处理响应头、文件名乱码、对象转换、文件下载
-     * 评价：4; 2026/4/8
-     * @param response     HttpServletResponse
-     * @param fileName   文件前缀（如：企业风险评估报告）
-     * @param excelTemplateClass 【重要！】Excel 导出模板类（就是你加了 @ExcelProperty 注解的实体类，决定表头、顺序、列宽）
-     * @param dataList     数据列表
-     * @param <T>          泛型
-     * @throws Exception   异常直接抛出
+     * 列表导出 Excel（完整版，指定文件名 + 模板类）
+     * <p>支持自定义文件名前缀和 Excel 模板类（通常为带 @ExcelProperty 的 RespVO）。
+     * <p>评价：4
+     *
+     * @param response           HttpServletResponse
+     * @param fileName           文件前缀（如：企业风险评估报告）
+     * @param excelTemplateClass 【重要！】Excel 导出模板类（加 @ExcelProperty 注解的实体类，决定表头、顺序、列宽）
+     * @param dataList           数据列表
+     * @param <T>                泛型
+     * @throws Exception         异常直接抛出
+     *
+     * <pre>
+     * 版本历史：
+     *   V1 2026-04-08 —— 初始版本：文件名编码 + 响应头配置 + BeanUtil 转换 + Excel 写出
+     * </pre>
      */
     public static <T> void listExportExcel(HttpServletResponse response,
                                   String fileName,
@@ -181,11 +217,19 @@ public class VrvExcelUtils {
 
 
     /**
-     * Excel 数据转实体列表(方便批量插入)，并返回调试信息
-     * 评价：3.5; 2026/4/7
-     * 缺点：Excel的字段顺序必须和参数targetClass全类名的字段顺序一样
-     * 参数targetClass是指类名（全类名），通常用.getClass.getName()得到,
-     * 比如cn.iocoder.yudao.module.industry.controller.admin.importer.ImportVO
+     * Excel 文件导入解析为实体列表
+     * <p>读取 Excel 文件，按字段声明顺序映射到目标实体类，支持多种日期格式自动解析。
+     * <p>注意：Excel 列顺序必须与 targetClass 字段声明顺序一致（跳过 @ExcelIgnore 字段）。
+     * <p>缺点：Excel 的字段顺序必须和参数 targetClass 全类名的字段顺序一样
+     * <p>参数 targetClass 是指类名（全类名），通常用 .getClass().getName() 得到，
+     * 如 cn.iocoder.yudao.module.industry.controller.admin.importer.ImportVO
+     * <p>评价：3.5
+     *
+     * <pre>
+     * 版本历史：
+     *   V1 2026-04-07 —— 初始版本：Excel 读取 → 类型转换 → 实体列表输出，支持调试模式
+     *   V2 2026-05-09 10:07 —— 导入时跳过 @ExcelIgnore 字段，与下载模板列序保持一致
+     * </pre>
      */
     public static <T> Map<String, Object> importExcelAndReturnEntity(
             MultipartFile file,
@@ -381,7 +425,13 @@ public class VrvExcelUtils {
 
 
     /**
-     * 解析 Object 为 LocalDateTime（兼容 String/Date）
+     * 多格式日期时间字符串 → LocalDateTime 解析
+     * <p>兼容 String 和 Date 类型，依次尝试 yyyy-MM-dd HH:mm:ss / yyyy/M/d 等多种格式。
+     *
+     * <pre>
+     * 版本历史：
+     *   V1 2026-04-07 —— 初始版本：多格式 DateTimeFormatter 数组依次匹配
+     * </pre>
      */
     private static LocalDateTime parseLocalDateTime(Object value) {
         if (value == null) return null;
