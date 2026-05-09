@@ -171,7 +171,27 @@ public class PlateAuthServiceImpl implements PlateAuthService {
 
     @Override
     public PlateAuthDO getPlateAuth(Long id) {
-        return plateAuthMapper.selectById(id);
+        PlateAuthDO plateAuthDO = plateAuthMapper.selectById(id);
+        if (plateAuthDO == null) {
+            return null;
+        }
+
+        // 将单个对象放入列表，方便批量工具处理
+        List<PlateAuthDO> list = Collections.singletonList(plateAuthDO);
+
+        // 填充用户昵称（userId -> nickname）
+        NameQueryHelper.fillNamesByIds(list,
+                PlateAuthDO::getUserId,
+                PlateAuthDO::setNickname,
+                "user_info", "id", "nickname");
+
+        // 填充审核人姓名（auditorId -> auditorName），通过 Feign 调用 system-server
+        NameQueryHelper.fillUserNames(list,
+                PlateAuthDO::getAuditorId,
+                PlateAuthDO::setAuditorName,
+                adminUserApi);
+
+        return plateAuthDO;
     }
 
     @Override
