@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
@@ -32,6 +33,8 @@ import static cn.iocoder.yudao.module.vehiclepass.constants.common.CalculationCo
 @Service
 @Validated
 public class IdentifyServiceImpl implements IdentifyService {
+
+    private static final int PARALLEL_THRESHOLD = 100;
 
     @Resource
     private IdentifyMapper identifyMapper;
@@ -154,37 +157,43 @@ public class IdentifyServiceImpl implements IdentifyService {
         resp.setCardData(card);
 
         // ========== 2. 折线图 ==========
-        List<PlateIdentifyChartRespVO.SuccessRateTrendVO> trendList = new ArrayList<>();
         List<Map<String, Object>> dayList = identifyMapper.selectDayTrend(startTime, endTime, stationId);
         if (dayList == null) dayList = new ArrayList<>();
 
-        for (Map<String, Object> map : dayList) {
-            PlateIdentifyChartRespVO.SuccessRateTrendVO vo = new PlateIdentifyChartRespVO.SuccessRateTrendVO();
-            vo.setDate(Optional.ofNullable(map.get("date")).map(Object::toString).orElse(""));
+        List<PlateIdentifyChartRespVO.SuccessRateTrendVO> trendList = (dayList.size() > PARALLEL_THRESHOLD
+                ? dayList.parallelStream()
+                : dayList.stream())
+            .map(map -> {
+                PlateIdentifyChartRespVO.SuccessRateTrendVO vo = new PlateIdentifyChartRespVO.SuccessRateTrendVO();
+                vo.setDate(Optional.ofNullable(map.get("date")).map(Object::toString).orElse(""));
 
-            long t = Optional.ofNullable(map.get("total")).map(Object::toString).map(Long::parseLong).orElse(0L);
-            long s = Optional.ofNullable(map.get("successNum")).map(Object::toString).map(Long::parseLong).orElse(0L);
+                long t = Optional.ofNullable(map.get("total")).map(Object::toString).map(Long::parseLong).orElse(0L);
+                long s = Optional.ofNullable(map.get("successNum")).map(Object::toString).map(Long::parseLong).orElse(0L);
 
-            if (t > 0) {
-                vo.setRate(new BigDecimal(s * PERCENTAGE_FACTOR).divide(new BigDecimal(t), 1, DEFAULT_ROUNDING_MODE));
-            } else {
-                vo.setRate(BigDecimal.ZERO);
-            }
-            trendList.add(vo);
-        }
+                if (t > 0) {
+                    vo.setRate(new BigDecimal(s * PERCENTAGE_FACTOR).divide(new BigDecimal(t), 1, DEFAULT_ROUNDING_MODE));
+                } else {
+                    vo.setRate(BigDecimal.ZERO);
+                }
+                return vo;
+            })
+            .collect(Collectors.toList());
         resp.setSuccessRateTrend(trendList);
 
         // ========== 3. 柱状图 ==========
-        List<PlateIdentifyChartRespVO.StationIdentifyCountVO> stationList = new ArrayList<>();
         List<Map<String, Object>> stationMapList = identifyMapper.selectStationCount(startTime, endTime, stationId);
         if (stationMapList == null) stationMapList = new ArrayList<>();
 
-        for (Map<String, Object> map : stationMapList) {
-            PlateIdentifyChartRespVO.StationIdentifyCountVO vo = new PlateIdentifyChartRespVO.StationIdentifyCountVO();
-            vo.setStationName(Optional.ofNullable(map.get("stationName")).map(Object::toString).orElse("未知场地"));
-            vo.setCount(Optional.ofNullable(map.get("count")).map(Object::toString).map(Long::parseLong).orElse(0L));
-            stationList.add(vo);
-        }
+        List<PlateIdentifyChartRespVO.StationIdentifyCountVO> stationList = (stationMapList.size() > PARALLEL_THRESHOLD
+                ? stationMapList.parallelStream()
+                : stationMapList.stream())
+            .map(map -> {
+                PlateIdentifyChartRespVO.StationIdentifyCountVO vo = new PlateIdentifyChartRespVO.StationIdentifyCountVO();
+                vo.setStationName(Optional.ofNullable(map.get("stationName")).map(Object::toString).orElse("未知场地"));
+                vo.setCount(Optional.ofNullable(map.get("count")).map(Object::toString).map(Long::parseLong).orElse(0L));
+                return vo;
+            })
+            .collect(Collectors.toList());
         resp.setStationIdentifyCount(stationList);
 
         return resp;

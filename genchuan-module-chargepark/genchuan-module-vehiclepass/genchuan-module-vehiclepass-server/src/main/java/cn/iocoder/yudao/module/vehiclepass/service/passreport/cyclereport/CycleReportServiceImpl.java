@@ -29,12 +29,16 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.module.vehiclepass.constants.common.CalculationConstants.*;
 
 @Slf4j
 @Service
 public class CycleReportServiceImpl implements CycleReportService {
+
+    private static final int PARALLEL_THRESHOLD = 100;
 
     @Resource
     private CycleReportMapper cycleReportMapper;
@@ -148,17 +152,33 @@ public class CycleReportServiceImpl implements CycleReportService {
         // CardData: 从 vp_cycle_report 表汇总
         CycleReportChartRespVO.CardData cardData = new CycleReportChartRespVO.CardData();
         List<CycleReportDO> reports = cycleReportMapper.selectChartByConditions(reqVO.getStationId(), statDateTime, tenantId, reportCycle);
-        int enterCount = 0, leaveCount = 0, parkingCount = 0;
-        BigDecimal identifyRate = BigDecimal.ZERO, checkRate = BigDecimal.ZERO, abnormalRate = BigDecimal.ZERO, etcRate = BigDecimal.ZERO;
-        for (CycleReportDO report : reports) {
-            enterCount += report.getEnterCount() != null ? report.getEnterCount() : 0;
-            leaveCount += report.getLeaveCount() != null ? report.getLeaveCount() : 0;
-            parkingCount += report.getParkingCount() != null ? report.getParkingCount() : 0;
-            if (report.getIdentifySuccessRate() != null) identifyRate = identifyRate.add(report.getIdentifySuccessRate());
-            if (report.getCheckSuccessRate() != null) checkRate = checkRate.add(report.getCheckSuccessRate());
-            if (report.getAbnormalHandleRate() != null) abnormalRate = abnormalRate.add(report.getAbnormalHandleRate());
-            if (report.getEtcPassSuccessRate() != null) etcRate = etcRate.add(report.getEtcPassSuccessRate());
-        }
+
+        // 使用并行流进行独立的聚合计算
+        int enterCount = reports.parallelStream()
+            .mapToInt(report -> report.getEnterCount() != null ? report.getEnterCount() : 0)
+            .sum();
+        int leaveCount = reports.parallelStream()
+            .mapToInt(report -> report.getLeaveCount() != null ? report.getLeaveCount() : 0)
+            .sum();
+        int parkingCount = reports.parallelStream()
+            .mapToInt(report -> report.getParkingCount() != null ? report.getParkingCount() : 0)
+            .sum();
+        BigDecimal identifyRate = reports.parallelStream()
+            .map(CycleReportDO::getIdentifySuccessRate)
+            .filter(Objects::nonNull)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal checkRate = reports.parallelStream()
+            .map(CycleReportDO::getCheckSuccessRate)
+            .filter(Objects::nonNull)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal abnormalRate = reports.parallelStream()
+            .map(CycleReportDO::getAbnormalHandleRate)
+            .filter(Objects::nonNull)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal etcRate = reports.parallelStream()
+            .map(CycleReportDO::getEtcPassSuccessRate)
+            .filter(Objects::nonNull)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
         if (!reports.isEmpty()) {
             int size = reports.size();
             identifyRate = identifyRate.divide(BigDecimal.valueOf(size), DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
@@ -177,54 +197,66 @@ public class CycleReportServiceImpl implements CycleReportService {
 
         // MapData
         List<Map<String, Object>> mapDataList = cycleReportMapper.selectMapData(reqVO.getStationId(), statDateTime, tenantId, reportCycle);
-        List<CycleReportChartRespVO.MapData> mapData = new ArrayList<>();
-        for (Map<String, Object> row : mapDataList) {
-            CycleReportChartRespVO.MapData md = new CycleReportChartRespVO.MapData();
-            md.setStationName((String) row.get("stationName"));
-            md.setParkingCount(row.get("parkingCount") != null ? ((Number) row.get("parkingCount")).intValue() : 0);
-            md.setPassCount(row.get("passCount") != null ? ((Number) row.get("passCount")).intValue() : 0);
-            md.setSpaceUseRate(row.get("spaceUseRate") != null ? new BigDecimal(row.get("spaceUseRate").toString()) : BigDecimal.ZERO);
-            mapData.add(md);
-        }
+        List<CycleReportChartRespVO.MapData> mapData = (mapDataList.size() > PARALLEL_THRESHOLD
+                ? mapDataList.parallelStream()
+                : mapDataList.stream())
+            .map(row -> {
+                CycleReportChartRespVO.MapData md = new CycleReportChartRespVO.MapData();
+                md.setStationName((String) row.get("stationName"));
+                md.setParkingCount(row.get("parkingCount") != null ? ((Number) row.get("parkingCount")).intValue() : 0);
+                md.setPassCount(row.get("passCount") != null ? ((Number) row.get("passCount")).intValue() : 0);
+                md.setSpaceUseRate(row.get("spaceUseRate") != null ? new BigDecimal(row.get("spaceUseRate").toString()) : BigDecimal.ZERO);
+                return md;
+            })
+            .collect(Collectors.toList());
         resp.setMapData(mapData);
 
         // BarData
         List<Map<String, Object>> barDataList = cycleReportMapper.selectBarData(reqVO.getStationId(), statDateTime, tenantId, reportCycle);
-        List<CycleReportChartRespVO.BarData> barData = new ArrayList<>();
-        for (Map<String, Object> row : barDataList) {
-            CycleReportChartRespVO.BarData bd = new CycleReportChartRespVO.BarData();
-            bd.setStationName((String) row.get("stationName"));
-            bd.setPassCount(row.get("passCount") != null ? ((Number) row.get("passCount")).intValue() : 0);
-            bd.setAbnormalCount(row.get("abnormalCount") != null ? ((Number) row.get("abnormalCount")).intValue() : 0);
-            bd.setEtcPassCount(row.get("etcPassCount") != null ? ((Number) row.get("etcPassCount")).intValue() : 0);
-            barData.add(bd);
-        }
+        List<CycleReportChartRespVO.BarData> barData = (barDataList.size() > PARALLEL_THRESHOLD
+                ? barDataList.parallelStream()
+                : barDataList.stream())
+            .map(row -> {
+                CycleReportChartRespVO.BarData bd = new CycleReportChartRespVO.BarData();
+                bd.setStationName((String) row.get("stationName"));
+                bd.setPassCount(row.get("passCount") != null ? ((Number) row.get("passCount")).intValue() : 0);
+                bd.setAbnormalCount(row.get("abnormalCount") != null ? ((Number) row.get("abnormalCount")).intValue() : 0);
+                bd.setEtcPassCount(row.get("etcPassCount") != null ? ((Number) row.get("etcPassCount")).intValue() : 0);
+                return bd;
+            })
+            .collect(Collectors.toList());
         resp.setBarData(barData);
 
         // LineData
         List<Map<String, Object>> lineDataList = cycleReportMapper.selectLineData(reqVO.getStationId(), statDateTime, tenantId, reportCycle);
-        List<CycleReportChartRespVO.LineData> lineData = new ArrayList<>();
-        for (Map<String, Object> row : lineDataList) {
-            CycleReportChartRespVO.LineData ld = new CycleReportChartRespVO.LineData();
-            Object statTimeObj = row.get("statTime");
-            ld.setStatTime(statTimeObj != null ? statTimeObj.toString() : "");
-            ld.setPassCount(row.get("passCount") != null ? ((Number) row.get("passCount")).intValue() : 0);
-            ld.setIdentifySuccessRate(row.get("identifySuccessRate") != null ? new BigDecimal(row.get("identifySuccessRate").toString()) : BigDecimal.ZERO);
-            ld.setAbnormalHandleRate(row.get("abnormalHandleRate") != null ? new BigDecimal(row.get("abnormalHandleRate").toString()) : BigDecimal.ZERO);
-            ld.setCheckSuccessRate(row.get("checkSuccessRate") != null ? new BigDecimal(row.get("checkSuccessRate").toString()) : BigDecimal.ZERO);
-            lineData.add(ld);
-        }
+        List<CycleReportChartRespVO.LineData> lineData = (lineDataList.size() > PARALLEL_THRESHOLD
+                ? lineDataList.parallelStream()
+                : lineDataList.stream())
+            .map(row -> {
+                CycleReportChartRespVO.LineData ld = new CycleReportChartRespVO.LineData();
+                Object statTimeObj = row.get("statTime");
+                ld.setStatTime(statTimeObj != null ? statTimeObj.toString() : "");
+                ld.setPassCount(row.get("passCount") != null ? ((Number) row.get("passCount")).intValue() : 0);
+                ld.setIdentifySuccessRate(row.get("identifySuccessRate") != null ? new BigDecimal(row.get("identifySuccessRate").toString()) : BigDecimal.ZERO);
+                ld.setAbnormalHandleRate(row.get("abnormalHandleRate") != null ? new BigDecimal(row.get("abnormalHandleRate").toString()) : BigDecimal.ZERO);
+                ld.setCheckSuccessRate(row.get("checkSuccessRate") != null ? new BigDecimal(row.get("checkSuccessRate").toString()) : BigDecimal.ZERO);
+                return ld;
+            })
+            .collect(Collectors.toList());
         resp.setLineData(lineData);
 
         // PieData
         List<Map<String, Object>> pieDataList = cycleReportMapper.selectPieData(reqVO.getStationId(), statDateTime, tenantId, reportCycle);
-        List<CycleReportChartRespVO.PieData> pieData = new ArrayList<>();
-        for (Map<String, Object> row : pieDataList) {
-            CycleReportChartRespVO.PieData pd = new CycleReportChartRespVO.PieData();
-            pd.setType((String) row.get("type"));
-            pd.setCount(row.get("count") != null ? ((Number) row.get("count")).intValue() : 0);
-            pieData.add(pd);
-        }
+        List<CycleReportChartRespVO.PieData> pieData = (pieDataList.size() > PARALLEL_THRESHOLD
+                ? pieDataList.parallelStream()
+                : pieDataList.stream())
+            .map(row -> {
+                CycleReportChartRespVO.PieData pd = new CycleReportChartRespVO.PieData();
+                pd.setType((String) row.get("type"));
+                pd.setCount(row.get("count") != null ? ((Number) row.get("count")).intValue() : 0);
+                return pd;
+            })
+            .collect(Collectors.toList());
         resp.setPieData(pieData);
 
         return resp;

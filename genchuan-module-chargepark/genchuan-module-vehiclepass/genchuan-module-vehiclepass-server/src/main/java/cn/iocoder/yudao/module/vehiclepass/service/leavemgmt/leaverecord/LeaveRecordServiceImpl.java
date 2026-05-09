@@ -20,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
@@ -41,6 +42,8 @@ import static cn.iocoder.yudao.module.vehiclepass.constants.common.TimeConstants
 @Service
 @Validated
 public class LeaveRecordServiceImpl implements LeaveRecordService {
+
+    private static final int PARALLEL_THRESHOLD = 100;
 
     @Resource
     private LeaveRecordMapper recordMapper;
@@ -184,24 +187,30 @@ public class LeaveRecordServiceImpl implements LeaveRecordService {
         // 查询离场量趋势
         List<Map<String, Object>> trendList = recordMapper.selectLeaveCountTrend(
                 reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
-        List<LeaveRecordChartRespVO.LeaveCountTrend> leaveCountTrends = new ArrayList<>();
-        for (Map<String, Object> trend : trendList) {
-            LeaveRecordChartRespVO.LeaveCountTrend item = new LeaveRecordChartRespVO.LeaveCountTrend();
-            item.setDate(trend.get("date") != null ? trend.get("date").toString() : null);
-            item.setCount(MapValueUtils.getLongValue(trend, "count"));
-            leaveCountTrends.add(item);
-        }
+        List<LeaveRecordChartRespVO.LeaveCountTrend> leaveCountTrends = (trendList.size() > PARALLEL_THRESHOLD
+                ? trendList.parallelStream()
+                : trendList.stream())
+            .map(trend -> {
+                LeaveRecordChartRespVO.LeaveCountTrend item = new LeaveRecordChartRespVO.LeaveCountTrend();
+                item.setDate(trend.get("date") != null ? trend.get("date").toString() : null);
+                item.setCount(MapValueUtils.getLongValue(trend, "count"));
+                return item;
+            })
+            .collect(Collectors.toList());
 
         // 查询各时段离场量
         List<Map<String, Object>> hourList = recordMapper.selectHourLeaveCount(
                 reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
-        List<LeaveRecordChartRespVO.HourLeaveCount> hourLeaveCounts = new ArrayList<>();
-        for (Map<String, Object> hour : hourList) {
-            LeaveRecordChartRespVO.HourLeaveCount item = new LeaveRecordChartRespVO.HourLeaveCount();
-            item.setHour(hour.get("hour") != null ? hour.get("hour").toString() : null);
-            item.setCount(MapValueUtils.getLongValue(hour, "count"));
-            hourLeaveCounts.add(item);
-        }
+        List<LeaveRecordChartRespVO.HourLeaveCount> hourLeaveCounts = (hourList.size() > PARALLEL_THRESHOLD
+                ? hourList.parallelStream()
+                : hourList.stream())
+            .map(hour -> {
+                LeaveRecordChartRespVO.HourLeaveCount item = new LeaveRecordChartRespVO.HourLeaveCount();
+                item.setHour(hour.get("hour") != null ? hour.get("hour").toString() : null);
+                item.setCount(MapValueUtils.getLongValue(hour, "count"));
+                return item;
+            })
+            .collect(Collectors.toList());
 
         // 查询今日离场量和离场峰值
         Map<String, Object> stats = recordMapper.selectLeaveStats(

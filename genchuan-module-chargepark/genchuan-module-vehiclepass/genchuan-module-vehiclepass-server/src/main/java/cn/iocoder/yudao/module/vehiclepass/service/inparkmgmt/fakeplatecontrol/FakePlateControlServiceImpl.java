@@ -21,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
@@ -213,18 +214,20 @@ public class FakePlateControlServiceImpl implements FakePlateControlService {
                 reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
         List<FakePlateControlChartRespVO.FakeIdentifyTrend> fakeIdentifyTrend = new ArrayList<>();
         if (trendList != null) {
-            for (Map<String, Object> map : trendList) {
-            FakePlateControlChartRespVO.FakeIdentifyTrend item = new FakePlateControlChartRespVO.FakeIdentifyTrend();
-            Object dateObj = map.get("date");
-            if (dateObj != null) {
-                item.setDate(dateObj.toString());
-            }
-            Object countObj = map.get("count");
-            if (countObj != null) {
-                item.setCount(((Number) countObj).longValue());
-            }
-            fakeIdentifyTrend.add(item);
-        }
+            fakeIdentifyTrend = trendList.stream()
+                .map(map -> {
+                    FakePlateControlChartRespVO.FakeIdentifyTrend item = new FakePlateControlChartRespVO.FakeIdentifyTrend();
+                    Object dateObj = map.get("date");
+                    if (dateObj != null) {
+                        item.setDate(dateObj.toString());
+                    }
+                    Object countObj = map.get("count");
+                    if (countObj != null) {
+                        item.setCount(((Number) countObj).longValue());
+                    }
+                    return item;
+                })
+                .collect(Collectors.toList());
         }
         respVO.setFakeIdentifyTrend(fakeIdentifyTrend);
 
@@ -233,15 +236,17 @@ public class FakePlateControlServiceImpl implements FakePlateControlService {
                 reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
         List<FakePlateControlChartRespVO.StationFakeCount> stationFakeCount = new ArrayList<>();
         if (stationList != null) {
-            for (Map<String, Object> map : stationList) {
-            FakePlateControlChartRespVO.StationFakeCount item = new FakePlateControlChartRespVO.StationFakeCount();
-            item.setStationName((String) map.get("stationName"));
-            Object countObj = map.get("count");
-            if (countObj != null) {
-                item.setCount(((Number) countObj).longValue());
-            }
-            stationFakeCount.add(item);
-        }
+            stationFakeCount = stationList.stream()
+                .map(map -> {
+                    FakePlateControlChartRespVO.StationFakeCount item = new FakePlateControlChartRespVO.StationFakeCount();
+                    item.setStationName((String) map.get("stationName"));
+                    Object countObj = map.get("count");
+                    if (countObj != null) {
+                        item.setCount(((Number) countObj).longValue());
+                    }
+                    return item;
+                })
+                .collect(Collectors.toList());
         }
         respVO.setStationFakeCount(stationFakeCount);
 

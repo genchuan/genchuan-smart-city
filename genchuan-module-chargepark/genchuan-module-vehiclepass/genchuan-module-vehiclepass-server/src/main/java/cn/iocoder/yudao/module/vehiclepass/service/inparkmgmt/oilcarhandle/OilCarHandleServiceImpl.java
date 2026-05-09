@@ -21,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
@@ -199,24 +200,26 @@ public class OilCarHandleServiceImpl implements OilCarHandleService {
         // 查询处置进度趋势
         List<Map<String, Object>> trendList = carHandleMapper.selectHandleProgressTrend(
                 reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
-        List<OilCarHandleChartRespVO.HandleProgressTrend> handleProgressTrends = new ArrayList<>();
-        for (Map<String, Object> trend : trendList) {
-            OilCarHandleChartRespVO.HandleProgressTrend item = new OilCarHandleChartRespVO.HandleProgressTrend();
-            item.setDate(trend.get("date") != null ? trend.get("date").toString() : null);
-            item.setCount(MapValueUtils.getLongValue(trend, "count"));
-            handleProgressTrends.add(item);
-        }
+        List<OilCarHandleChartRespVO.HandleProgressTrend> handleProgressTrends = trendList.stream()
+            .map(trend -> {
+                OilCarHandleChartRespVO.HandleProgressTrend item = new OilCarHandleChartRespVO.HandleProgressTrend();
+                item.setDate(trend.get("date") != null ? trend.get("date").toString() : null);
+                item.setCount(MapValueUtils.getLongValue(trend, "count"));
+                return item;
+            })
+            .collect(Collectors.toList());
 
         // 查询各场站处置量
         List<Map<String, Object>> stationList = carHandleMapper.selectStationHandleCount(
                 reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
-        List<OilCarHandleChartRespVO.StationHandleCount> stationHandleCounts = new ArrayList<>();
-        for (Map<String, Object> station : stationList) {
-            OilCarHandleChartRespVO.StationHandleCount item = new OilCarHandleChartRespVO.StationHandleCount();
-            item.setStationName(station.get("stationName") != null ? station.get("stationName").toString() : null);
-            item.setCount(MapValueUtils.getLongValue(station, "count"));
-            stationHandleCounts.add(item);
-        }
+        List<OilCarHandleChartRespVO.StationHandleCount> stationHandleCounts = stationList.stream()
+            .map(station -> {
+                OilCarHandleChartRespVO.StationHandleCount item = new OilCarHandleChartRespVO.StationHandleCount();
+                item.setStationName(station.get("stationName") != null ? station.get("stationName").toString() : null);
+                item.setCount(MapValueUtils.getLongValue(station, "count"));
+                return item;
+            })
+            .collect(Collectors.toList());
 
         // 查询待处置数和处置完成率
         Map<String, Object> stats = carHandleMapper.selectHandleStats(

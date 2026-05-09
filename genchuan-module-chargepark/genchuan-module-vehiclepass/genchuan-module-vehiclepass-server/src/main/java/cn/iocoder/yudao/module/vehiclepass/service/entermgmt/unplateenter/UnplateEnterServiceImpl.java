@@ -208,14 +208,15 @@ public class UnplateEnterServiceImpl implements UnplateEnterService {
         UnplateEnterChartRespVO respVO = new UnplateEnterChartRespVO();
 
         List<Map<String, Object>> stationCountList = enterMapper.selectStationUnplateCount(chartReqVO);
-        List<UnplateEnterChartRespVO.StationUnplateCount> stationList = new ArrayList<>();
-        for (Map<String, Object> map : stationCountList) {
-            UnplateEnterChartRespVO.StationUnplateCount item = new UnplateEnterChartRespVO.StationUnplateCount();
-            item.setStationName((String) map.get("stationName"));
-            Object countObj = map.get("count");
-            item.setCount(countObj != null ? ((Number) countObj).longValue() : 0L);
-            stationList.add(item);
-        }
+        List<UnplateEnterChartRespVO.StationUnplateCount> stationList = stationCountList.stream()
+            .map(map -> {
+                UnplateEnterChartRespVO.StationUnplateCount item = new UnplateEnterChartRespVO.StationUnplateCount();
+                item.setStationName((String) map.get("stationName"));
+                Object countObj = map.get("count");
+                item.setCount(countObj != null ? ((Number) countObj).longValue() : 0L);
+                return item;
+            })
+            .collect(Collectors.toList());
         respVO.setStationUnplateCount(stationList);
 
         Map<String, Object> stats = enterMapper.selectUnplateEnterStats(chartReqVO);
