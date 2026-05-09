@@ -40,7 +40,7 @@ public class InspectTrackPageReqVO extends PageParam {
     private String reserve1;
 
     @Schema(description = "核查状态：0-未核查 1-已核查 2-核查中")
-    private Integer checkStatus;
+    private String checkStatus;
 
     @Schema(description = "备用字段2")
     private String reserve2;

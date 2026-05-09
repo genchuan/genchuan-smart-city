@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.inspectop.controller.admin.devicemonitor.oilmonitor.vo;
 
+import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,6 +18,10 @@ public class OilMonitorBatchProcessReqVO {
     @NotEmpty(message = "监测记录ID数组不能为空")
     private List<Long> ids;
 
+    @Schema(description = "处置状态", requiredMode = Schema.RequiredMode.REQUIRED, example = "0-已处理,1-未处理,2-处理中")
+    private String processStatus;
+
     @Schema(description = "处置进度，百分比", example = "100")
     private Integer processProgress;
+
 }

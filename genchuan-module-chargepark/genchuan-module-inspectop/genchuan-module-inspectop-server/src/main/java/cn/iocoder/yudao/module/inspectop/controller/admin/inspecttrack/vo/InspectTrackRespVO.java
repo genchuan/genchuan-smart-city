@@ -20,7 +20,7 @@ public class InspectTrackRespVO {
     private Long id;
 
     @Schema(description = "巡检人员ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("巡检人员ID")
+//    @ExcelProperty("巡检人员ID")
     private Long userId;
 
     @Schema(description = "巡检人员姓名")
@@ -52,19 +52,19 @@ public class InspectTrackRespVO {
     private String points;
 
     @Schema(description = "核查状态：0-未核查 1-已核查 2-核查中")
-    @ExcelProperty("核查状态")
-    private Integer checkStatus;
+//    @ExcelProperty("核查状态")
+    private String checkStatus;
 
     @Schema(description = "核查备注")
-    @ExcelProperty("核查备注")
+//    @ExcelProperty("核查备注")
     private String checkRemark;
 
     @Schema(description = "备用字段1")
-    @ExcelProperty("备用字段1")
+//    @ExcelProperty("备用字段1")
     private String reserve1;
 
     @Schema(description = "备用字段2")
-    @ExcelProperty("备用字段2")
+//    @ExcelProperty("备用字段2")
     private String reserve2;
 
     @Schema(description = "创建者")

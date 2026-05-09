@@ -259,7 +259,8 @@ public class InspectUserServiceImpl implements InspectUserService {
         // 创建更新对象，只更新状态字段为1（启用）
         InspectUserDO updateObj = new InspectUserDO();
         updateObj.setId(id);
-        updateObj.setStatus("1"); // 假设"1"表示启用状态
+        updateObj.setStatus("1"); // "1"表示启用状态
+        updateObj.setOnlineStatus("1"); // "1"表示在线状态
 
         // 执行更新
         inspectUserMapper.updateById(updateObj);
@@ -274,7 +275,8 @@ public class InspectUserServiceImpl implements InspectUserService {
         // 创建更新对象，只更新状态字段为2（禁用）
         InspectUserDO updateObj = new InspectUserDO();
         updateObj.setId(id);
-        updateObj.setStatus("2"); // 假设"2"表示禁用状态
+        updateObj.setStatus("2"); // "2"表示禁用状态
+        updateObj.setOnlineStatus("2"); // "1"表示离线状态
 
         // 执行更新
         inspectUserMapper.updateById(updateObj);

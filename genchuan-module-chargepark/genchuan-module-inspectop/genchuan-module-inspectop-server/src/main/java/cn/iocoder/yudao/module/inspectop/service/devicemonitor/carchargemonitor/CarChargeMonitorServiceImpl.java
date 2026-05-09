@@ -71,8 +71,32 @@ public class CarChargeMonitorServiceImpl implements CarChargeMonitorService {
     }
 
     @Override
-    public CarChargeMonitorDO getCarChargeMonitor(Long id) {
-        return carChargeMonitorMapper.selectById(id);
+    public CarChargeMonitorRespVO getCarChargeMonitor(Long id) {
+        // 1. 先查询基础记录是否存在
+        CarChargeMonitorDO carChargeMonitor = carChargeMonitorMapper.selectById(id);
+        if (carChargeMonitor == null) {
+            throw exception(CAR_CHARGE_MONITOR_NOT_EXISTS);
+        }
+
+        // 2. 创建分页对象（虽然是单条查询，但使用Mapper现有的关联查询方法需要Page对象）
+        Page<CarChargeMonitorRespVO> page = new Page<>(1, 1);
+
+        // 3. 创建查询条件对象
+        CarChargeMonitorPageReqVO reqVO = new CarChargeMonitorPageReqVO();
+        reqVO.setPageNo(1);
+        reqVO.setPageSize(1);
+        // 不设置其他条件，只需要根据id查询
+
+        // 4. 调用Mapper的关联查询方法
+        Page<CarChargeMonitorRespVO> resultPage = carChargeMonitorMapper.selectPageWithJoin(page, reqVO);
+
+        // 5. 从结果中获取第一条记录
+        if (resultPage.getRecords() != null && !resultPage.getRecords().isEmpty()) {
+            return resultPage.getRecords().get(0);
+        }
+
+        // 6. 如果查询失败，返回DO转换的VO（此时stationName为null，但其他字段有值）
+        return BeanUtils.toBean(carChargeMonitor, CarChargeMonitorRespVO.class);
     }
 
     @Override
