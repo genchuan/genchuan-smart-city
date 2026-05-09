@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.creditmgmt.usercredit.vo;
 
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -15,6 +16,10 @@ public class UserCreditPageReqVO extends PageParam {
 
     @Schema(description = "用户ID", example = "31349")
     private Long userId;
+
+    @TableField(exist = false)
+    @Schema(description = "用户姓名", example = "张三")
+    private String nickname;
 
     @Schema(description = "信用分，默认100")
     private Integer creditScore;

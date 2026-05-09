@@ -83,6 +83,7 @@ public class UserCreditServiceImpl implements UserCreditService {
 
     @Override
     public PageResult<UserCreditDO> getUserCreditPage(UserCreditPageReqVO pageReqVO) {
+        pageReqVO.setUserId(userCreditMapper.getIdByNickname(pageReqVO.getNickname()));
         PageResult<UserCreditDO> pageResult = userCreditMapper.selectPage(pageReqVO);
         if (CollUtil.isEmpty(pageResult.getList())) {
             return pageResult;

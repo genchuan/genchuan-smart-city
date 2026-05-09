@@ -125,7 +125,7 @@ public class MerchantInfoController {
     @PutMapping("/update")
     @Operation(summary = "更新商户信息")
     @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:update')")
-    public CommonResult<Boolean> updateMerchantInfo(@Valid @RequestBody MerchantInfoSaveReqVO updateReqVO) {
+    public CommonResult<Boolean> updateMerchantInfo(@Valid @RequestBody MerchantInfoUpdateReqVO updateReqVO) {
         merchantInfoService.updateMerchantInfo(updateReqVO);
         return success(true);
     }
