@@ -7,6 +7,9 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.kitchen.controller.admin.riskreport.vo.page.EntReportPageReq;
 import cn.iocoder.yudao.module.kitchen.controller.admin.riskreport.vo.page.EntReportPageResp;
+import cn.iocoder.yudao.module.kitchen.controller.admin.riskreport.vo.statistics.EntViolationDistRespVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.riskreport.vo.statistics.EntViolationRankRespVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.riskreport.vo.statistics.RiskOverviewRespVO;
 
 import cn.iocoder.yudao.module.kitchen.vrv.utils.common.pdf.VrvPdfGenerator;
 import cn.iocoder.yudao.module.kitchen.vrv.utils.procom.aop.sysope.SysOpeLog;
@@ -107,6 +110,24 @@ public class RiskReportController {
         // 3、调用 ExcelUtils.write（保持原方法不改）
         ExcelUtils.write(response, "归档.xls", "数据", EntReportPageResp.class,
                 BeanUtils.toBean(list, EntReportPageResp.class));
+    }
+
+    @GetMapping("/statistics/overview")
+    @Operation(summary = "风险概览（卡片 + 饼图1：风险等级分布）")
+    public CommonResult<RiskOverviewRespVO> getOverview(@Valid EntReportPageReq req) {
+        return success(riskReportService.getOverview(req));
+    }
+
+    @GetMapping("/statistics/violation-distribution")
+    @Operation(summary = "企业违规分布（饼图2：企业名称-违规总次数-占比）")
+    public CommonResult<EntViolationDistRespVO> getViolationDistribution(@Valid EntReportPageReq req) {
+        return success(riskReportService.getViolationDistribution(req));
+    }
+
+    @GetMapping("/statistics/violation-ranking")
+    @Operation(summary = "企业违规排名（柱状图：违规次数从高到低）")
+    public CommonResult<EntViolationRankRespVO> getViolationRanking(@Valid EntReportPageReq req) {
+        return success(riskReportService.getViolationRanking(req));
     }
 
     @GetMapping("/page")
