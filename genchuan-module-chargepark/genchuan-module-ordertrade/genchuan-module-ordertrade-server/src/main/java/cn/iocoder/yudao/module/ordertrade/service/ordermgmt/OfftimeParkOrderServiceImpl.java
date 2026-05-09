@@ -60,7 +60,7 @@ public class OfftimeParkOrderServiceImpl implements OfftimeParkOrderService {
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(offtimeParkOrderMapper.selectTrend(start, end));
-        resp.setStationData(offtimeParkOrderMapper.selectGroupByStatus());
+        resp.setStationData(offtimeParkOrderMapper.selectGroupByStation(start, end));
         Long total = offtimeParkOrderMapper.selectTodayCount(todayStart, now);
         Long paid  = offtimeParkOrderMapper.selectTodayPaidCount(todayStart, now);
         OfftimeParkOrderChartRespVO.CardData card = new OfftimeParkOrderChartRespVO.CardData();

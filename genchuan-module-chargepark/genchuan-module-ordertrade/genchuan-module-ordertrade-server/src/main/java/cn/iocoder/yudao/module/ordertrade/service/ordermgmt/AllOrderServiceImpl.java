@@ -74,7 +74,7 @@ public class AllOrderServiceImpl implements AllOrderService {
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(allOrderMapper.selectTrend(start, end));
-        resp.setTypeData(allOrderMapper.selectGroupByStatus());
+        resp.setTypeData(allOrderMapper.selectGroupByType(start, end));
         Long total = allOrderMapper.selectTodayCount(todayStart, now);
         Long paid  = allOrderMapper.selectTodayPaidCount(todayStart, now);
         AllOrderChartRespVO.CardData card = new AllOrderChartRespVO.CardData();
