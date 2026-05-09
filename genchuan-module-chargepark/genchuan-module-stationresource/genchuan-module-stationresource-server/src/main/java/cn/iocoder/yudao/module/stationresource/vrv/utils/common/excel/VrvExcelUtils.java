@@ -29,9 +29,10 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 /**
  * Excel导入导出工具类（通用）
  * <p>统一处理 Excel 导入模板下载、列表导出、数据导入解析等功能。
+ * <p>V2.1 新增：导入错误提示中文化（字段名+类型+示例），Boolean 支持"是/否"输入
  *
  * @author vrvliang
- * @version V2.0 2026-05-09 10:07
+ * @version V2.1 2026-05-09 10:07
  */
 public class VrvExcelUtils {
 
@@ -248,12 +249,14 @@ public class VrvExcelUtils {
      * <p>缺点：Excel 的字段顺序必须和参数 targetClass 全类名的字段顺序一样
      * <p>参数 targetClass 是指类名（全类名），通常用 .getClass().getName() 得到，
      * 如 cn.iocoder.yudao.module.industry.controller.admin.importer.ImportVO
-     * <p>评价：3.5
+     * <p>评价：4
      *
      * <pre>
      * 版本历史：
      *   V1 2026-04-07 —— 初始版本：Excel 读取 → 类型转换 → 实体列表输出，支持调试模式
      *   V2 2026-05-09 10:07 —— 导入时跳过 @ExcelIgnore 字段，与下载模板列序保持一致
+     *   V3 2026-05-09 10:07 —— 错误提示中文化：字段名→@Schema中文名，类型→中文描述，附带示例值
+     *                          Boolean 支持填"是/否"（兼容 true/false）
      * </pre>
      */
     public static <T> Map<String, Object> importExcelAndReturnEntity(
