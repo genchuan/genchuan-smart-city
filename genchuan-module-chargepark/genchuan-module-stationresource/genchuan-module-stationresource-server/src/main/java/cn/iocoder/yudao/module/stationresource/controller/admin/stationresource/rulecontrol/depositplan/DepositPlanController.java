@@ -78,7 +78,7 @@ public class DepositPlanController {
         return success(true);
     }
 
-    @GetMapping("/import-template")
+    @GetMapping("/get-import-template")
     @Operation(summary = "下载押金方案导入模板")
     @PreAuthorize("@ss.hasPermission('stationresource:deposit-plan:import')")
     public void importDepositPlanTemplate(HttpServletResponse response) throws Exception {

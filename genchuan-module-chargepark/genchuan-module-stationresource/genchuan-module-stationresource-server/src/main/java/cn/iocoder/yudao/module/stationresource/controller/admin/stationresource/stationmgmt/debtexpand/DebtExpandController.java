@@ -113,7 +113,7 @@ public class DebtExpandController {
                 BeanUtils.toBean(list, DebtExpandRespVO.class));
     }
     // ========== 1. 下载导入模板 ==========
-    @GetMapping("/import-template")
+    @GetMapping("/get-import-template")
     @Operation(summary = "下载导入模板")
     @PreAuthorize("@ss.hasPermission('stationresource:debt-expand:import')")
     public void importTemplate(HttpServletResponse response) throws Exception {
