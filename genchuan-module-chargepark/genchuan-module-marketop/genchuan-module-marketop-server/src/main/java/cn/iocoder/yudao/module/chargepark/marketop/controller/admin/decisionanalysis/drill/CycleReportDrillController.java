@@ -77,4 +77,32 @@ public class CycleReportDrillController {
         return CommonResult.success(cycleReportDrillService.drillCardOrderCount(reqVO));
     }
 
+    @GetMapping("/revenue")
+    @Operation(summary = "营收钻取")
+    @PreAuthorize("@ss.hasPermission('marketop:cycle-report:query')")
+    public CommonResult<PageResult<CycleReportDrillRevenueRespVO>> drillRevenue(@Valid CycleReportDrillBaseReqVO reqVO) {
+        return CommonResult.success(cycleReportDrillService.drillRevenue(reqVO));
+    }
+
+    @GetMapping("/exchange-count")
+    @Operation(summary = "兑换量钻取")
+    @PreAuthorize("@ss.hasPermission('marketop:cycle-report:query')")
+    public CommonResult<PageResult<CycleReportDrillExchangeCountRespVO>> drillExchangeCount(@Valid CycleReportDrillBaseReqVO reqVO) {
+        return CommonResult.success(cycleReportDrillService.drillExchangeCount(reqVO));
+    }
+
+    @GetMapping("/total-stock")
+    @Operation(summary = "总库存钻取")
+    @PreAuthorize("@ss.hasPermission('marketop:cycle-report:query')")
+    public CommonResult<PageResult<CycleReportDrillTotalStockRespVO>> drillTotalStock(@Valid CycleReportDrillBaseReqVO reqVO) {
+        return CommonResult.success(cycleReportDrillService.drillTotalStock(reqVO));
+    }
+
+    @GetMapping("/warn-stock-count")
+    @Operation(summary = "预警库存数钻取")
+    @PreAuthorize("@ss.hasPermission('marketop:cycle-report:query')")
+    public CommonResult<PageResult<CycleReportDrillWarnStockCountRespVO>> drillWarnStockCount(@Valid CycleReportDrillBaseReqVO reqVO) {
+        return CommonResult.success(cycleReportDrillService.drillWarnStockCount(reqVO));
+    }
+
 }

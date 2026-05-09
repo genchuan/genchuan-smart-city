@@ -15,8 +15,8 @@ public class CycleReportChartPieDrillReqVO extends PageParam {
     @NotEmpty(message = "饼图类型不能为空")
     private String pieType;
 
-    @Schema(description = "点击扇区名称（获取规则/消耗规则/赠送规则等）", requiredMode = Schema.RequiredMode.REQUIRED, example = "获取规则")
+    @Schema(description = "点击扇区名类型字典值", requiredMode = Schema.RequiredMode.REQUIRED, example = "获取规则")
     @NotEmpty(message = "扇区名称不能为空")
-    private String pieName;
+    private String pieValue;
 
 }

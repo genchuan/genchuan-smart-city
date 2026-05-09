@@ -42,9 +42,6 @@ public class AbnormalOrderRespVO {
     @EnumFormat(AbnormalStatusEnum.class)
     private String status;
 
-    @Schema(description = "所属场站ID")
-    private Long stationId;
-
     @Schema(description = "所属场站名称")
     @ExcelProperty("所属场站名称")
     private String stationName;

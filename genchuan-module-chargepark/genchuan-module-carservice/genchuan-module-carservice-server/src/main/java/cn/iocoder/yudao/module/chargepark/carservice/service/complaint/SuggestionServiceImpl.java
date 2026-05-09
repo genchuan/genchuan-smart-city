@@ -12,6 +12,7 @@ import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.complaint.Su
 import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.complaint.SuggestionMapper;
 import cn.iocoder.yudao.module.chargepark.carservice.enums.complaint.SuggestionStatusEnum;
 import cn.iocoder.yudao.module.chargepark.carservice.framework.notify.CarServiceNotifyHelper;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -22,6 +23,7 @@ import java.util.List;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.carservice.enums.ErrorCodeConstants.SUGGESTION_NOT_EXISTS;
 import static cn.iocoder.yudao.module.chargepark.carservice.enums.ErrorCodeConstants.SUGGESTION_STATUS_INVALID;
+import static cn.iocoder.yudao.module.chargepark.carservice.enums.LogRecordConstants.*;
 
 /**
  * 意见建议 Service 实现类
@@ -92,6 +94,8 @@ public class SuggestionServiceImpl implements SuggestionService {
     // ========== 业务操作 ==========
 
     @Override
+    @LogRecord(type = SUGGESTION_TYPE, subType = SUGGESTION_HANDLE_SUB,
+            bizNo = "{{#reqVO.id}}", success = SUGGESTION_HANDLE_SUCCESS)
     public void handleSuggestion(SuggestionHandleReqVO reqVO) {
         SuggestionDO suggestion = validateSuggestionExists(reqVO.getId());
         // handle 仅支持「待处理 → 处理中」,设处理人为当前用户,不更新 progress
@@ -102,10 +106,13 @@ public class SuggestionServiceImpl implements SuggestionService {
         update.setId(reqVO.getId());
         update.setStatus(SuggestionStatusEnum.PROCESSING.getLabel());
         update.setHandleUserId(SecurityFrameworkUtils.getLoginUserId());
+        update.setHandleTime(LocalDateTime.now());
         suggestionMapper.updateById(update);
     }
 
     @Override
+    @LogRecord(type = SUGGESTION_TYPE, subType = SUGGESTION_PROGRESS_SUB,
+            bizNo = "{{#reqVO.id}}", success = SUGGESTION_PROGRESS_SUCCESS)
     public void updateSuggestionProgress(SuggestionUpdateProgressReqVO reqVO) {
         SuggestionDO suggestion = validateSuggestionExists(reqVO.getId());
         // update-progress 仅支持「处理中 → 处理中」,仅更新 progress
@@ -119,6 +126,8 @@ public class SuggestionServiceImpl implements SuggestionService {
     }
 
     @Override
+    @LogRecord(type = SUGGESTION_TYPE, subType = SUGGESTION_FEEDBACK_SUB,
+            bizNo = "{{#reqVO.id}}", success = SUGGESTION_FEEDBACK_SUCCESS)
     public void feedbackSuggestion(SuggestionFeedbackReqVO reqVO) {
         SuggestionDO suggestion = validateSuggestionExists(reqVO.getId());
         if (!SuggestionStatusEnum.PROCESSING.getLabel().equals(suggestion.getStatus())) {

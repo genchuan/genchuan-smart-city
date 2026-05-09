@@ -135,10 +135,57 @@ public class OilMonitorController {
     public void exportOilMonitorExcel(@Valid OilMonitorPageReqVO pageReqVO,
                                       HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+
         // Service返回的就是List<OilMonitorRespVO>
-        List<OilMonitorRespVO> list = oilMonitorService.getOilMonitorPage(pageReqVO).getList();
-        // 导出 Excel，list现在直接就是VO对象
-        ExcelUtils.write(response, "油车占位监测.xls", "数据", OilMonitorRespVO.class, list); // 移除了 BeanUtils.toBean 转换
+        List<OilMonitorRespVO> voList = oilMonitorService.getOilMonitorPage(pageReqVO).getList();
+
+        // 【新增】对VO列表中的字典值进行转换（数字 -> 中文）
+        convertOilMonitorDictValues(voList);
+
+        // 导出 Excel
+        ExcelUtils.write(response, "油车占位监测.xls", "数据", OilMonitorRespVO.class, voList);
+    }
+
+    /**
+     * 【新增】转换油车占位监测字典值为中文显示
+     * 此方法会修改传入的 voList 中每个对象的 processStatus 字段。
+     * @param voList 油车占位监测响应VO列表
+     */
+    private void convertOilMonitorDictValues(List<OilMonitorRespVO> voList) {
+        if (voList == null || voList.isEmpty()) {
+            return;
+        }
+        for (OilMonitorRespVO vo : voList) {
+            // 转换处置状态
+            vo.setProcessStatus(convertProcessStatus(vo.getProcessStatus()));
+        }
+    }
+
+    /**
+     * 【新增】转换油车占位监测处置状态字典值
+     * 根据您提供的映射：0-已处理, 1-未处理, 2-处理中
+     * @param statusCode 状态编码（例如 "0", "1", "2"）
+     * @return 对应的中文状态描述
+     */
+    private String convertProcessStatus(String statusCode) {
+        if (statusCode == null) {
+            return "";
+        }
+
+        // 使用trim()去除可能的空格
+        String code = statusCode.trim();
+
+        switch (code) {
+            case "0":
+                return "已处理";
+            case "1":
+                return "未处理";
+            case "2":
+                return "处理中";
+            default:
+                // 如果遇到未知编码，返回原编码以便排查问题
+                return statusCode;
+        }
     }
 
 }

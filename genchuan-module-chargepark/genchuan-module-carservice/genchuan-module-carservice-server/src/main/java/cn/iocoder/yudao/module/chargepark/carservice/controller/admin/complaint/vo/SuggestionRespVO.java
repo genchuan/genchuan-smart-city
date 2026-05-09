@@ -43,6 +43,10 @@ public class SuggestionRespVO {
     @ExcelProperty("处理人名")
     private String handleUserName;
 
+    @Schema(description = "处理时间")
+    @ExcelProperty("处理时间")
+    private LocalDateTime handleTime;
+
     @Schema(description = "处理进度")
     @ExcelProperty("处理进度")
     private String progress;

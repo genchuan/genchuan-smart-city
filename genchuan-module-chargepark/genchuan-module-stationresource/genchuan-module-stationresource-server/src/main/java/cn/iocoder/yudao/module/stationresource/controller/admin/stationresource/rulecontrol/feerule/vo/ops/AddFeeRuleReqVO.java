@@ -36,19 +36,19 @@ public class AddFeeRuleReqVO {
     @Schema(description = "封顶价格", example = "30.00")
     private BigDecimal maxPrice;
 
-    @Schema(description = "峰谷电价配置")
+    @Schema(description = "峰谷电价配置", example = "峰0.8元/谷0.4元")
     private String peakValleyConfig;
 
-    @Schema(description = "会员优惠配置")
+    @Schema(description = "会员优惠配置", example = "会员8折")
     private String memberConfig;
 
-    @Schema(description = "备注")
+    @Schema(description = "备注", example = "商业区标准收费")
     private String remark;
 
-    @Schema(description = "备用字段1")
+    @Schema(description = "备用字段1", example = "备用信息1")
     private String reserve1;
 
-    @Schema(description = "备用字段2")
+    @Schema(description = "备用字段2", example = "备用信息2")
     private String reserve2;
 
 }

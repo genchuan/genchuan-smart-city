@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.devicemonitor.sharechargemonitor.ShareChargeMonitorDO;
@@ -113,6 +114,7 @@ public class ShareChargeMonitorServiceImpl implements ShareChargeMonitorService 
         ShareChargeMonitorDO updateObj = new ShareChargeMonitorDO();
         updateObj.setId(alarmReqVO.getId());
         updateObj.setAlarmRemark(alarmReqVO.getAlarmRemark());
+        updateObj.setAlarmTime(LocalDateTime.now());
 
         // 3. 执行更新操作
         shareChargeMonitorMapper.updateById(updateObj);

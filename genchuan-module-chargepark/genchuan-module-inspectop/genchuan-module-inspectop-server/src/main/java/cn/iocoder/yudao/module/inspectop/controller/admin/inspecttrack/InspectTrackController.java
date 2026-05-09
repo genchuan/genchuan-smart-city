@@ -118,12 +118,77 @@ public class InspectTrackController {
     @PreAuthorize("@ss.hasPermission('inspectop:inspect-track:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportInspectTrackExcel(@Valid InspectTrackPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                        HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        // 1. 获取数据列表
         List<InspectTrackRespVO> list = inspectTrackService.getInspectTrackPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "巡检轨迹.xls", "数据", InspectTrackRespVO.class,
-                        BeanUtils.toBean(list, InspectTrackRespVO.class));
+
+        // 【修改】2. 对VO列表中的字典值进行转换（数字 -> 中文）
+        // 现在需要转换两个字段：status 和 checkStatus
+        convertDictValues(list);
+
+        // 3. 导出 Excel
+        ExcelUtils.write(response, "巡检轨迹.xls", "数据", InspectTrackRespVO.class, list);
+    }
+
+    /**
+     * 【修改】转换字典值为中文显示
+     * 此方法会修改传入的 voList 中每个对象的 status 和 checkStatusStr 字段。
+     * @param voList 巡检轨迹响应VO列表
+     */
+    private void convertDictValues(List<InspectTrackRespVO> voList) {
+        if (voList == null || voList.isEmpty()) {
+            return;
+        }
+        for (InspectTrackRespVO vo : voList) {
+            // 转换轨迹状态（String -> String）
+            vo.setStatus(convertTrackStatus(vo.getStatus()));
+            // 【新增】转换核查状态（Integer -> String）
+            vo.setCheckStatus(convertCheckStatus(vo.getCheckStatus()));
+        }
+    }
+
+    /**
+     * 【新增】转换核查状态字典值
+     * 根据映射：0-未核查 1-已核查 2-核查中
+     * @param statusCode 状态编码（例如 0, 1, 2）
+     * @return 对应的中文状态描述
+     */
+    private String convertCheckStatus(String statusCode) {
+        if (statusCode == null) {
+            return "";
+        }
+        switch (statusCode) {
+            case "0":
+                return "未核查";
+            case "1":
+                return "已核查";
+            case "2":
+                return "核查中";
+            default:
+                // 如果遇到未知编码，返回原编码的字符串形式以便排查
+                return statusCode;
+        }
+    }
+
+    /**
+     * 转换巡检轨迹状态字典值
+     * 根据映射：1-正常，2-异常
+     * @param statusCode 状态编码（例如 "1", "2"）
+     * @return 对应的中文状态描述
+     */
+    private String convertTrackStatus(String statusCode) {
+        if (statusCode == null) {
+            return "";
+        }
+        switch (statusCode.trim()) {
+            case "1":
+                return "正常";
+            case "2":
+                return "异常";
+            default:
+                return statusCode;
+        }
     }
 
 }

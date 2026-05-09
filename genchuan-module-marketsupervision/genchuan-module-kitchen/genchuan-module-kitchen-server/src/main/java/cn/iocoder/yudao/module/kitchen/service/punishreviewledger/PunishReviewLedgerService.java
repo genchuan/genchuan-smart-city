@@ -8,6 +8,9 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.Pu
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.PunishReviewLedgerSaveReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.add.AddPunishReviewLedgerReq;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.cancel.CancelReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.chart.PunishReviewBarResp;
+import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.chart.PunishReviewCancelReasonResp;
+import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.chart.PunishReviewChartResp;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.issue.IssueReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.upload.UploadFileReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.upload.UploadFileRespVO;
@@ -72,4 +75,10 @@ public interface PunishReviewLedgerService {
     UploadFileRespVO uploadEvidenceFile(UploadFileReqVO reqVO, MultipartFile file);
 
     ResponseEntity<byte[]> downloadRectifyNoticePdfBatch(List<Long> punishNoticeIds) throws IOException;
+
+    PunishReviewChartResp getPunishReviewChartStatistics(PunishReviewLedgerPageReqVO reqVO);
+
+    PunishReviewBarResp getMonthReviewCount();
+
+    PunishReviewCancelReasonResp getCancelReasonStatistics(PunishReviewLedgerPageReqVO reqVO);
 }

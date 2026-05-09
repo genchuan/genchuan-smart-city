@@ -62,14 +62,25 @@
 
             <!-- 资产状态 -->
             <if test="reqVO.status != null and reqVO.status != ''">
-                AND ai.status = #{reqVO.status}
+                AND ai.status IN
+                <choose>
+                    <when test="reqVO.status == '正常' or reqVO.status == '1'">
+                        ('1', '正常')
+                    </when>
+                    <otherwise>
+                        (#{reqVO.status})
+                    </otherwise>
+                </choose>
             </if>
 
             <!-- 所属场站ID -->
             <if test="reqVO.stationId != null">
                 AND ai.station_id = #{reqVO.stationId}
             </if>
-
+            <!-- 【新增条件】场站名称模糊查询 -->
+            <if test="reqVO.stationName != null and reqVO.stationName != ''">
+                AND si.name LIKE CONCAT('%', #{reqVO.stationName}, '%')
+            </if>
             <!-- 备用字段1 -->
             <if test="reqVO.reserve1 != null and reqVO.reserve1 != ''">
                 AND ai.reserve1 = #{reqVO.reserve1}
@@ -118,7 +129,7 @@
     <select id="selectCardData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.assetinfo.vo.AssetInfoChartRespVO$CardData">
         SELECT
             COUNT(*) AS totalAsset,
-            SUM(CASE WHEN status = '1' THEN 1 ELSE 0 END) AS normalAsset
+            SUM(CASE WHEN status = '1' or status = '正常' THEN 1 ELSE 0 END) AS normalAsset
         FROM asset_info
     </select>
 

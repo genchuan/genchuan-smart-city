@@ -60,7 +60,7 @@ public class InspectTrackDO extends BaseDO {
     /**
      * 核查状态
      */
-    private Integer checkStatus;
+    private String checkStatus;
     /**
      * 核查备注
      */

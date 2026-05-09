@@ -19,4 +19,9 @@ public interface RiskReportMapper {
     List<EntReportPageResp> getEntReportPage(EntReportPageReq pageReqVO);
 
     long getEntReportPageCount(EntReportPageReq pageReqVO);
+
+    /**
+     * 按企业维度汇总违规次数（去重，不按月份分组）
+     */
+    List<EntViolationStatDO> getEntViolationStatList(EntReportPageReq req);
 }

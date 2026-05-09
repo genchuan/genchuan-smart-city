@@ -134,12 +134,98 @@ public class ShareChargeMonitorController {
     @PreAuthorize("@ss.hasPermission('inspectop:share-charge-monitor:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportShareChargeMonitorExcel(@Valid ShareChargeMonitorPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                              HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        // 1. 获取VO数据列表（注意：Service层已返回RespVO，无需再次转换）
         List<ShareChargeMonitorRespVO> list = shareChargeMonitorService.getShareChargeMonitorPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "共享充电监测.xls", "数据", ShareChargeMonitorRespVO.class,
-                        BeanUtils.toBean(list, ShareChargeMonitorRespVO.class));
+        // 【新增】2. 对VO列表中的字典值进行转换（数字 -> 中文）
+        convertDictValues(list);
+        // 3. 导出 Excel
+        ExcelUtils.write(response, "共享充电监测.xls", "数据", ShareChargeMonitorRespVO.class, list);
+    }
+
+    /**
+     * 【新增】转换字典值为中文显示
+     * 此方法会修改传入的 voList 中每个对象的 monitorStatus, alarmStatus, processStatus 字段。
+     * @param voList 共享充电监测响应VO列表
+     */
+    private void convertDictValues(List<ShareChargeMonitorRespVO> voList) {
+        if (voList == null || voList.isEmpty()) {
+            return;
+        }
+        for (ShareChargeMonitorRespVO vo : voList) {
+            // 转换监测状态
+            vo.setMonitorStatus(convertMonitorStatus(vo.getMonitorStatus()));
+            // 转换告警状态
+            vo.setAlarmStatus(convertAlarmStatus(vo.getAlarmStatus()));
+            // 转换处理状态
+            vo.setProcessStatus(convertProcessStatus(vo.getProcessStatus()));
+        }
+    }
+
+    /**
+     * 【新增】转换监测状态字典值
+     * 0-正常，1-异常
+     * @param statusCode 状态编码
+     * @return 对应的中文状态描述
+     */
+    private String convertMonitorStatus(String statusCode) {
+        if (statusCode == null) {
+            return "";
+        }
+        switch (statusCode.trim()) {
+            case "0":
+                return "正常";
+            case "1":
+                return "异常";
+            default:
+                // 如果遇到未知编码，返回原编码以便排查。
+                return statusCode;
+        }
+    }
+
+    /**
+     * 【新增】转换告警状态字典值
+     * 1-已告警，0-未告警
+     * @param statusCode 状态编码
+     * @return 对应的中文状态描述
+     */
+    private String convertAlarmStatus(String statusCode) {
+        if (statusCode == null) {
+            return "";
+        }
+        switch (statusCode.trim()) {
+            case "1":
+                return "已告警";
+            case "0":
+                return "未告警";
+            default:
+                // 如果遇到未知编码，返回原编码以便排查。
+                return statusCode;
+        }
+    }
+
+    /**
+     * 【新增】转换处理状态字典值
+     * 0-已处理，1-未处理，2-处理中
+     * @param statusCode 状态编码
+     * @return 对应的中文状态描述
+     */
+    private String convertProcessStatus(String statusCode) {
+        if (statusCode == null) {
+            return "";
+        }
+        switch (statusCode.trim()) {
+            case "0":
+                return "已处理";
+            case "1":
+                return "未处理";
+            case "2":
+                return "处理中";
+            default:
+                // 如果遇到未知编码，返回原编码以便排查。
+                return statusCode;
+        }
     }
 
 }

@@ -26,7 +26,7 @@ public class OilMonitorRespVO {
     private String spaceNo;
 
     @Schema(description = "场站ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("场站ID")
+//    @ExcelProperty("场站ID")
     private Long stationId;
 
     @Schema(description = "场站名称")
@@ -42,7 +42,7 @@ public class OilMonitorRespVO {
     private String processStatus;
 
     @Schema(description = "处置人ID")
-    @ExcelProperty("处置人ID")
+//    @ExcelProperty("处置人ID")
     private Long processUserId;
 
     @Schema(description = "处置人姓名")
@@ -70,11 +70,11 @@ public class OilMonitorRespVO {
     private BigDecimal latitude;
 
     @Schema(description = "备用字段1")
-    @ExcelProperty("备用字段1")
+//    @ExcelProperty("备用字段1")
     private String reserve1;
 
     @Schema(description = "备用字段2")
-    @ExcelProperty("备用字段2")
+//    @ExcelProperty("备用字段2")
     private String reserve2;
 
     @Schema(description = "创建者")

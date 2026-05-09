@@ -170,8 +170,8 @@
     <!-- 查询任务卡片统计数据 -->
     <select id="selectTaskCardData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.inspecttask.vo.InspectTaskChartRespVO$CardData">
         SELECT
-            SUM(CASE WHEN it.status = '1' THEN 1 ELSE 0 END) AS waitTaskCount,
-            SUM(CASE WHEN it.status = '3' THEN 1 ELSE 0 END) AS finishTaskCount
+            SUM(CASE WHEN it.status != '4' THEN 1 ELSE 0 END) AS waitTaskCount,
+            SUM(CASE WHEN it.status = '4' THEN 1 ELSE 0 END) AS finishTaskCount
         FROM inspect_task it
         WHERE it.deleted = 0
     </select>

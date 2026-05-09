@@ -11,10 +11,9 @@ import java.time.LocalDateTime;
 import java.util.*;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberpoint.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberpoint.MemberPointDO;
+import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.memberpoint.MemberPointMapper;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
-import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.memberpoint.MemberPointMapper;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
