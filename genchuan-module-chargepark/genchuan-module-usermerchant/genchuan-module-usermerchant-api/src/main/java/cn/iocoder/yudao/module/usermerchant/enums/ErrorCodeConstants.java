@@ -48,5 +48,7 @@ public interface ErrorCodeConstants {
     ErrorCode USER_CREDIT_NOT_EXISTS = new ErrorCode(500, "用户信用不存在");
     // ========== 信用配置==========
     ErrorCode CREDIT_CONFIG_NOT_EXISTS = new ErrorCode(500, "信用配置不存在");
+    // ========== 周期报表存储==========
+    ErrorCode CYCLE_REPORT_NOT_EXISTS = new ErrorCode(500, "周期报表存储不存在");
 
 }

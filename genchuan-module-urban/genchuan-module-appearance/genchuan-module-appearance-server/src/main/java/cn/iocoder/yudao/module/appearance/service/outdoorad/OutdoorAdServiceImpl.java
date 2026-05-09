@@ -37,12 +37,9 @@ public class OutdoorAdServiceImpl implements OutdoorAdService {
 
     @Override
     public PageResult<OutdoorAdPageRespVO> getOutdoorAdPage(OutdoorAdPageReqVO pageReqVO) {
-        // 分页对象
         Page<OutdoorAdPageRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
-        // 查询（Mapper中执行联表分页）
         IPage<OutdoorAdPageRespVO> result = outdoorAdMapper.selectPageWithJoin(page, pageReqVO);
-        List<OutdoorAdPageRespVO> list = result.getRecords();
-        return new PageResult<>(list, result.getTotal());
+        return new PageResult<>(result.getRecords(), result.getTotal());
     }
 
     @Override
