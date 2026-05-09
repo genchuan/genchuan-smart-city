@@ -2,9 +2,11 @@ package cn.iocoder.yudao.module.stationresource.vrv.utils.common.excel;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.idev.excel.EasyExcel;
+import cn.idev.excel.annotation.ExcelIgnore;
 import cn.idev.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import cn.iocoder.yudao.framework.common.exception.ErrorCode;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,40 +31,89 @@ public class VrvExcelUtils {
 
     // ==================== 【通用】下载 Excel 导入模板（完美适配 importExcelAndReturnEntity） ====================
     public static <T> void downloadImportTemplate(HttpServletResponse response, Class<T> clazz) throws Exception {
-        // 1. 获取字段顺序（和导入解析顺序完全一致）- 作为横向表头列
+        // 1. 收集字段信息：跳过@ExcelIgnore字段，从@Schema提取中文名和示例值
+        List<Field> validFields = new ArrayList<>();
         List<String> headerList = new ArrayList<>();
+        List<String> exampleList = new ArrayList<>();
+
         for (Field field : clazz.getDeclaredFields()) {
-            headerList.add(field.getName());
+            // 跳过 @ExcelIgnore 标记的字段
+            if (field.isAnnotationPresent(ExcelIgnore.class)) {
+                continue;
+            }
+
+            validFields.add(field);
+
+            // 表头中文名：优先取 @Schema.description，无则取字段名
+            String headerName = field.getName();
+            String example = getDefaultExample(field.getType());
+            if (field.isAnnotationPresent(Schema.class)) {
+                Schema schema = field.getAnnotation(Schema.class);
+                if (schema.description() != null && !schema.description().isEmpty()) {
+                    headerName = schema.description();
+                }
+                if (schema.example() != null && !schema.example().isEmpty()) {
+                    example = schema.example();
+                }
+            }
+            headerList.add(headerName);
+            exampleList.add(example);
         }
 
-        // 2. 构造 EasyExcel 要求的表头格式：List<List<String>>，每个内层List代表一列的表头（单层表头直接放字段名）
+        // 2. 构造 EasyExcel 要求的表头格式
         List<List<String>> head = new ArrayList<>();
         for (String header : headerList) {
             List<String> columnHead = new ArrayList<>();
-            columnHead.add(header); // 单层表头，直接添加字段名
+            columnHead.add(header);
             head.add(columnHead);
         }
 
-        // 3. 构造示例数据行：List<List<String>>，每个内层List代表一行的所有列数据
+        // 3. 构造示例数据行
         List<List<String>> data = new ArrayList<>();
         List<String> exampleRow = new ArrayList<>();
-        for (String header : headerList) {
-            exampleRow.add("请输入" + header); // 每列对应一个示例值
+        for (String example : exampleList) {
+            exampleRow.add(example);
         }
-        data.add(exampleRow); // 将示例行加入数据集合（仅1行示例）
+        data.add(exampleRow);
 
-        // 4. 响应头配置（保持原有逻辑，解决中文乱码和下载标识）
+        // 4. 响应头配置
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         String fileName = URLEncoder.encode(clazz.getSimpleName() + "_导入模板.xlsx", StandardCharsets.UTF_8);
         response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
 
-        // 5. EasyExcel 写出：head传入表头，doWrite传入数据（修复核心错误点）
+        // 5. EasyExcel 写出
         EasyExcel.write(response.getOutputStream())
-                .head(head) // 表头：每列的标题
-                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()) // 自动适配列宽
-                .sheet("导入模板") // 工作表名称
-                .doWrite(data); // 数据：每行的内容（横向排列）
+                .head(head)
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                .sheet("导入模板")
+                .doWrite(data);
+    }
+
+    /**
+     * 根据字段类型返回默认示例值
+     */
+    private static String getDefaultExample(Class<?> type) {
+        if (type == String.class) {
+            return "示例文本";
+        } else if (type == Integer.class || type == int.class) {
+            return "1";
+        } else if (type == Long.class || type == long.class) {
+            return "1";
+        } else if (type == Double.class || type == double.class) {
+            return "1.0";
+        } else if (type == BigDecimal.class) {
+            return "1.00";
+        } else if (type == LocalDateTime.class) {
+            return "2026-01-01 00:00:00";
+        } else if (type == LocalDate.class) {
+            return "2026-01-01";
+        } else if (type == Date.class) {
+            return "2026-01-01";
+        } else if (type == Boolean.class || type == boolean.class) {
+            return "true";
+        }
+        return "";
     }
 
 
@@ -173,10 +224,13 @@ public class VrvExcelUtils {
             excelFieldInfoList.add(rowFieldInfo);
         }
 
-        // 3. 获取目标实体类字段信息
+        // 3. 获取目标实体类字段信息（跳过@ExcelIgnore字段，与模板保持一致）
         Class<?> targetClass = Class.forName(targetClassName);
         Map<String, String> entityFieldInfo = new LinkedHashMap<>();
         for (Field field : targetClass.getDeclaredFields()) {
+            if (field.isAnnotationPresent(ExcelIgnore.class)) {
+                continue;
+            }
             entityFieldInfo.put(field.getName(), field.getType().getSimpleName());
         }
 
@@ -201,6 +255,9 @@ public class VrvExcelUtils {
             rowIndex++;   // 从第 2 行（数据第一行）开始
             colIndex=0;
             for (Field field : targetClass.getDeclaredFields()) {
+                if (field.isAnnotationPresent(ExcelIgnore.class)) {
+                    continue;
+                }
                 field.setAccessible(true);
                 String fieldName = field.getName();
                 Class<?> fieldType = field.getType();
