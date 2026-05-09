@@ -113,7 +113,7 @@ public class InspectTrackServiceImpl implements InspectTrackService {
         // 3. 更新核查信息
         InspectTrackDO updateDO = new InspectTrackDO();
         updateDO.setId(id);
-        updateDO.setCheckStatus(1); // 1-已核查
+        updateDO.setCheckStatus("1"); // 1-已核查
         updateDO.setCheckRemark(checkReqVO.getCheckRemark());
 
         // 4. 执行更新
