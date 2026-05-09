@@ -33,6 +33,7 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.vehiclepass.constants.specialpass.GateOpenConstants.*;
 
 
 
@@ -71,7 +72,7 @@ public class GateOpenServiceImpl implements GateOpenService {
         open.setRemark(createReqVO.getRemark());
         open.setApplyUserId(currentUserId);
         open.setApplyTime(LocalDateTime.now());
-        open.setStatus("待审批");
+        open.setStatus(STATUS_PENDING_APPROVAL);
         openMapper.insert(open);
         return open.getId();
     }
@@ -137,7 +138,7 @@ public class GateOpenServiceImpl implements GateOpenService {
 
         GateOpenDO updateObj = new GateOpenDO();
         updateObj.setId(reqVO.getId());
-        updateObj.setStatus("已通过");
+        updateObj.setStatus(STATUS_APPROVED);
         updateObj.setAuditUserId(currentUserId);
         updateObj.setAuditTime(LocalDateTime.now());
         openMapper.updateById(updateObj);
@@ -157,7 +158,7 @@ public class GateOpenServiceImpl implements GateOpenService {
 
         GateOpenDO updateObj = new GateOpenDO();
         updateObj.setId(reqVO.getId());
-        updateObj.setStatus("已驳回");
+        updateObj.setStatus(STATUS_REJECTED);
         updateObj.setAuditUserId(currentUserId);
         updateObj.setAuditTime(LocalDateTime.now());
         updateObj.setRejectReason(reqVO.getRejectReason());
@@ -172,7 +173,7 @@ public class GateOpenServiceImpl implements GateOpenService {
         }
         GateOpenDO updateObj = new GateOpenDO();
         updateObj.setId(reqVO.getId());
-        updateObj.setStatus("已执行");
+        updateObj.setStatus(STATUS_EXECUTED);
         updateObj.setExecuteTime(LocalDateTime.now());
         openMapper.updateById(updateObj);
     }
@@ -195,7 +196,7 @@ public class GateOpenServiceImpl implements GateOpenService {
         updateObj.setRemark(reqVO.getRemark());
         updateObj.setApplyUserId(currentUserId);
         updateObj.setApplyTime(LocalDateTime.now());
-        updateObj.setStatus("待审批");
+        updateObj.setStatus(STATUS_PENDING_APPROVAL);
         updateObj.setAuditUserId(null);
         updateObj.setAuditTime(null);
         updateObj.setRejectReason(null);

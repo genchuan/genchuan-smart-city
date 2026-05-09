@@ -23,6 +23,7 @@ import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 
 import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.vehiclepass.constants.common.CalculationConstants.*;
 /**
  * 车牌识别 Service 实现类
  *
@@ -93,7 +94,7 @@ public class IdentifyServiceImpl implements IdentifyService {
 
         // 2. 默认值
         if (identify.getConfidence() == null) {
-            identify.setConfidence(new BigDecimal("0.00"));
+            identify.setConfidence(new BigDecimal(DEFAULT_CONFIDENCE));
         }
         identify.setIsCorrected(false); // 未修正
 
@@ -142,7 +143,7 @@ public class IdentifyServiceImpl implements IdentifyService {
 
         // 成功率
         if (total > 0) {
-            BigDecimal rate = new BigDecimal(successNum * 100).divide(new BigDecimal(total), 1, BigDecimal.ROUND_HALF_UP);
+            BigDecimal rate = new BigDecimal(successNum * PERCENTAGE_FACTOR).divide(new BigDecimal(total), 1, DEFAULT_ROUNDING_MODE);
             card.setSuccessRate(rate);
         } else {
             card.setSuccessRate(BigDecimal.ZERO);
@@ -165,7 +166,7 @@ public class IdentifyServiceImpl implements IdentifyService {
             long s = Optional.ofNullable(map.get("successNum")).map(Object::toString).map(Long::parseLong).orElse(0L);
 
             if (t > 0) {
-                vo.setRate(new BigDecimal(s * 100).divide(new BigDecimal(t), 1, BigDecimal.ROUND_HALF_UP));
+                vo.setRate(new BigDecimal(s * PERCENTAGE_FACTOR).divide(new BigDecimal(t), 1, DEFAULT_ROUNDING_MODE));
             } else {
                 vo.setRate(BigDecimal.ZERO);
             }

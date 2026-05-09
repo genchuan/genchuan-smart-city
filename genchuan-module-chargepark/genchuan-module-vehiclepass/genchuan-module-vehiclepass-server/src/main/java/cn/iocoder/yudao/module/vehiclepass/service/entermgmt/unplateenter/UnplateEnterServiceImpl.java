@@ -35,6 +35,9 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.vehiclepass.constants.entermgmt.UnplateEnterConstants.*;
+import static cn.iocoder.yudao.module.vehiclepass.constants.common.PhoneConstants.*;
+import static cn.iocoder.yudao.module.vehiclepass.constants.common.CalculationConstants.*;
 
 
 /**
@@ -110,8 +113,8 @@ public class UnplateEnterServiceImpl implements UnplateEnterService {
         List<UnplateEnterRespVO> list = pageResult.getRecords().stream()
                 .peek(vo -> {
                     String phone = vo.getPhone();
-                    if (phone != null && phone.length() == 11) {
-                        vo.setPhone(phone.substring(0, 3) + "****" + phone.substring(7));
+                    if (phone != null && phone.length() == PHONE_LENGTH) {
+                        vo.setPhone(phone.substring(0, MASK_START) + "****" + phone.substring(MASK_END));
                     }
                 })
                 .collect(Collectors.toList());
@@ -125,7 +128,7 @@ public class UnplateEnterServiceImpl implements UnplateEnterService {
         // 插入
         UnplateEnterDO enter = BeanUtils.toBean(createReqVO, UnplateEnterDO.class);
         // 设置默认状态为"待审核"
-        enter.setStatus("待审核");
+        enter.setStatus(STATUS_PENDING_REVIEW);
         // 设置登记时间为当前时间
         enter.setRegisterTime(java.time.LocalDateTime.now());
         enterMapper.insert(enter);
@@ -139,7 +142,7 @@ public class UnplateEnterServiceImpl implements UnplateEnterService {
             throw exception(ENTER_NOT_EXISTS);
         }
         // 校验状态只能是"待审核"才能审核
-        if (!"待审核".equals(enter.getStatus())) {
+        if (!STATUS_PENDING_REVIEW.equals(enter.getStatus())) {
             throw exception(ENTER_AUDIT_FAILED);
         }
 
@@ -166,14 +169,14 @@ public class UnplateEnterServiceImpl implements UnplateEnterService {
             throw exception(ENTER_NOT_EXISTS);
         }
         // 校验状态只能是"已通过"才能确认
-        if (!"已通过".equals(enter.getStatus())) {
+        if (!STATUS_APPROVED.equals(enter.getStatus())) {
             throw exception(ENTER_CONFIRM_FAILED);
         }
 
         // 更新状态为"已入场"
         UnplateEnterDO updateObj = new UnplateEnterDO();
         updateObj.setId(confirmReqVO.getId());
-        updateObj.setStatus("已入场");
+        updateObj.setStatus(STATUS_ENTERED);
         enterMapper.updateById(updateObj);
     }
 
@@ -185,7 +188,7 @@ public class UnplateEnterServiceImpl implements UnplateEnterService {
             throw exception(ENTER_NOT_EXISTS);
         }
         // 校验状态只能是"待审核"或"已通过"才能修正
-        if (!"待审核".equals(enter.getStatus()) && !"已通过".equals(enter.getStatus())) {
+        if (!STATUS_PENDING_REVIEW.equals(enter.getStatus()) && !STATUS_APPROVED.equals(enter.getStatus())) {
             throw exception(ENTER_CORRECT_FAILED);
         }
 
@@ -226,7 +229,7 @@ public class UnplateEnterServiceImpl implements UnplateEnterService {
 
         cardData.setUnplateEnterCount(unplateEnterCount);
         if (unplateEnterCount > 0) {
-            cardData.setAuditPassRate(Math.round(auditPassCount * 10000.0 / unplateEnterCount) / 100.0);
+            cardData.setAuditPassRate(Math.round(auditPassCount * PERCENTAGE_PRECISE_FACTOR / unplateEnterCount) / PERCENTAGE_PRECISE_DIVISOR);
         } else {
             cardData.setAuditPassRate(0.0);
         }

@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static cn.iocoder.yudao.module.vehiclepass.constants.common.CalculationConstants.*;
+
 @Slf4j
 @Service
 public class CycleReportServiceImpl implements CycleReportService {
@@ -82,7 +84,7 @@ public class CycleReportServiceImpl implements CycleReportService {
 
         // 4. 计算耗时
         long cost = System.currentTimeMillis() - startMs;
-        report.setCreateCost((int) (cost / 1000));
+        report.setCreateCost((int) (cost / MILLIS_TO_SECONDS));
 
         // 5. 更新报表（只更新统计字段，避免覆盖自动填充字段）
         LambdaUpdateWrapper<CycleReportDO> updateWrapper = Wrappers.<CycleReportDO>lambdaUpdate()
@@ -159,10 +161,10 @@ public class CycleReportServiceImpl implements CycleReportService {
         }
         if (!reports.isEmpty()) {
             int size = reports.size();
-            identifyRate = identifyRate.divide(BigDecimal.valueOf(size), 2, RoundingMode.HALF_UP);
-            checkRate = checkRate.divide(BigDecimal.valueOf(size), 2, RoundingMode.HALF_UP);
-            abnormalRate = abnormalRate.divide(BigDecimal.valueOf(size), 2, RoundingMode.HALF_UP);
-            etcRate = etcRate.divide(BigDecimal.valueOf(size), 2, RoundingMode.HALF_UP);
+            identifyRate = identifyRate.divide(BigDecimal.valueOf(size), DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+            checkRate = checkRate.divide(BigDecimal.valueOf(size), DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+            abnormalRate = abnormalRate.divide(BigDecimal.valueOf(size), DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+            etcRate = etcRate.divide(BigDecimal.valueOf(size), DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
         }
         cardData.setEnterCount(enterCount);
         cardData.setLeaveCount(leaveCount);

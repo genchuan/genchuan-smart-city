@@ -30,6 +30,7 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.vehiclepass.constants.common.TimeConstants.*;
 
 
 /**
@@ -108,8 +109,8 @@ public class LeaveRecordServiceImpl implements LeaveRecordService {
         try {
             long enterTimestamp = Long.parseLong(reqVO.getEnterTime());
             long leaveTimestamp = Long.parseLong(reqVO.getLeaveTime());
-            record.setEnterTime(LocalDateTime.ofEpochSecond(enterTimestamp, 0, java.time.ZoneOffset.ofHours(8)));
-            record.setLeaveTime(LocalDateTime.ofEpochSecond(leaveTimestamp, 0, java.time.ZoneOffset.ofHours(8)));
+            record.setEnterTime(LocalDateTime.ofEpochSecond(enterTimestamp, 0, java.time.ZoneOffset.ofHours(DEFAULT_TIMEZONE_OFFSET_HOURS)));
+            record.setLeaveTime(LocalDateTime.ofEpochSecond(leaveTimestamp, 0, java.time.ZoneOffset.ofHours(DEFAULT_TIMEZONE_OFFSET_HOURS)));
         } catch (NumberFormatException e) {
             throw exception(TIMESTAMP_PARSE_ERROR);
         }
@@ -137,8 +138,8 @@ public class LeaveRecordServiceImpl implements LeaveRecordService {
         try {
             long enterTimestamp = Long.parseLong(reqVO.getEnterTime());
             long leaveTimestamp = Long.parseLong(reqVO.getLeaveTime());
-            updateObj.setEnterTime(LocalDateTime.ofEpochSecond(enterTimestamp, 0, java.time.ZoneOffset.ofHours(8)));
-            updateObj.setLeaveTime(LocalDateTime.ofEpochSecond(leaveTimestamp, 0, java.time.ZoneOffset.ofHours(8)));
+            updateObj.setEnterTime(LocalDateTime.ofEpochSecond(enterTimestamp, 0, java.time.ZoneOffset.ofHours(DEFAULT_TIMEZONE_OFFSET_HOURS)));
+            updateObj.setLeaveTime(LocalDateTime.ofEpochSecond(leaveTimestamp, 0, java.time.ZoneOffset.ofHours(DEFAULT_TIMEZONE_OFFSET_HOURS)));
         } catch (NumberFormatException e) {
             throw exception(TIMESTAMP_PARSE_ERROR);
         }
@@ -163,8 +164,8 @@ public class LeaveRecordServiceImpl implements LeaveRecordService {
         try {
             long enterTimestamp = Long.parseLong(reqVO.getEnterTime());
             long leaveTimestamp = Long.parseLong(reqVO.getLeaveTime());
-            updateObj.setEnterTime(LocalDateTime.ofEpochSecond(enterTimestamp, 0, java.time.ZoneOffset.ofHours(8)));
-            updateObj.setLeaveTime(LocalDateTime.ofEpochSecond(leaveTimestamp, 0, java.time.ZoneOffset.ofHours(8)));
+            updateObj.setEnterTime(LocalDateTime.ofEpochSecond(enterTimestamp, 0, java.time.ZoneOffset.ofHours(DEFAULT_TIMEZONE_OFFSET_HOURS)));
+            updateObj.setLeaveTime(LocalDateTime.ofEpochSecond(leaveTimestamp, 0, java.time.ZoneOffset.ofHours(DEFAULT_TIMEZONE_OFFSET_HOURS)));
         } catch (NumberFormatException e) {
             throw exception(TIMESTAMP_PARSE_ERROR);
         }

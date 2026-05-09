@@ -31,6 +31,7 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.vehiclepass.constants.inparkmgmt.OilCarHandleConstants.*;
 
 
 /**
@@ -122,14 +123,14 @@ public class OilCarHandleServiceImpl implements OilCarHandleService {
             updateObj.setHandleTime(LocalDateTime.now());
 
             String handleType = reqVO.getHandleType();
-            if ("处置".equals(handleType)) {
-                updateObj.setStatus("处理中");
-                updateObj.setHandleMethod("已处置");
-                updateObj.setHandleType("处置");
-            } else if ("忽略".equals(handleType)) {
-                updateObj.setStatus("已关闭");
-                updateObj.setIgnoreReason("批量忽略");
-                updateObj.setHandleType("忽略");
+            if (HANDLE_TYPE_DISPOSE.equals(handleType)) {
+                updateObj.setStatus(STATUS_PROCESSING);
+                updateObj.setHandleMethod(HANDLE_METHOD_DISPOSED);
+                updateObj.setHandleType(HANDLE_TYPE_DISPOSE);
+            } else if (HANDLE_TYPE_IGNORE.equals(handleType)) {
+                updateObj.setStatus(STATUS_CLOSED);
+                updateObj.setIgnoreReason(IGNORE_REASON_BATCH);
+                updateObj.setHandleType(HANDLE_TYPE_IGNORE);
             }
 
             carHandleMapper.updateById(updateObj);
@@ -152,9 +153,9 @@ public class OilCarHandleServiceImpl implements OilCarHandleService {
         updateObj.setId(reqVO.getId());
         updateObj.setHandleUserId(currentUserId);
         updateObj.setHandleTime(LocalDateTime.now());
-        updateObj.setStatus("处理中");
+        updateObj.setStatus(STATUS_PROCESSING);
         updateObj.setHandleMethod(reqVO.getHandleMethod());
-        updateObj.setHandleType("处置");
+        updateObj.setHandleType(HANDLE_TYPE_DISPOSE);
         carHandleMapper.updateById(updateObj);
     }
 
@@ -174,8 +175,8 @@ public class OilCarHandleServiceImpl implements OilCarHandleService {
         updateObj.setId(reqVO.getId());
         updateObj.setHandleUserId(currentUserId);
         updateObj.setHandleTime(LocalDateTime.now());
-        updateObj.setStatus("已关闭");
-        updateObj.setHandleType("忽略");
+        updateObj.setStatus(STATUS_CLOSED);
+        updateObj.setHandleType(HANDLE_TYPE_IGNORE);
         updateObj.setIgnoreReason(reqVO.getIgnoreReason());
         carHandleMapper.updateById(updateObj);
     }

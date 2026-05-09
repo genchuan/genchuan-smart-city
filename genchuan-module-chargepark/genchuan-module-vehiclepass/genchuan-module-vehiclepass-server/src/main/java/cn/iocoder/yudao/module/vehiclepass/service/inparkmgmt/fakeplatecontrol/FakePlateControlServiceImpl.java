@@ -29,6 +29,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.vehiclepass.constants.inparkmgmt.FakePlateControlConstants.*;
 
 
 /**
@@ -123,16 +124,16 @@ public class FakePlateControlServiceImpl implements FakePlateControlService {
             updateObj.setHandleTime(LocalDateTime.now());
 
             String handleType = reqVO.getHandleType();
-            if ("核查".equals(handleType)) {
+            if (HANDLE_TYPE_CHECK.equals(handleType)) {
                 // 核查：更新处置状态为处理中，处置进度为"已核查"
-                updateObj.setStatus("处理中");
-                updateObj.setHandleProgress("已核查");
-                updateObj.setHandleType("核查");
-            } else if ("忽略".equals(handleType)) {
+                updateObj.setStatus(STATUS_PROCESSING);
+                updateObj.setHandleProgress(HANDLE_PROGRESS_CHECKED);
+                updateObj.setHandleType(HANDLE_TYPE_CHECK);
+            } else if (HANDLE_TYPE_IGNORE.equals(handleType)) {
                 // 忽略：更新处置状态为已关闭，忽略理由为"批量忽略"
-                updateObj.setStatus("已关闭");
-                updateObj.setIgnoreReason("批量忽略");
-                updateObj.setHandleType("忽略");
+                updateObj.setStatus(STATUS_CLOSED);
+                updateObj.setIgnoreReason(IGNORE_REASON_BATCH);
+                updateObj.setHandleType(HANDLE_TYPE_IGNORE);
             }
 
             plateControlMapper.updateById(updateObj);
@@ -157,9 +158,9 @@ public class FakePlateControlServiceImpl implements FakePlateControlService {
         updateObj.setId(reqVO.getId());
         updateObj.setHandleUserId(currentUserId);
         updateObj.setHandleTime(LocalDateTime.now());
-        updateObj.setStatus("处理中");
-        updateObj.setHandleProgress("已核查");
-        updateObj.setHandleType("核查");
+        updateObj.setStatus(STATUS_PROCESSING);
+        updateObj.setHandleProgress(HANDLE_PROGRESS_CHECKED);
+        updateObj.setHandleType(HANDLE_TYPE_CHECK);
         plateControlMapper.updateById(updateObj);
     }
 
@@ -181,9 +182,9 @@ public class FakePlateControlServiceImpl implements FakePlateControlService {
         updateObj.setId(reqVO.getId());
         updateObj.setHandleUserId(currentUserId);
         updateObj.setHandleTime(LocalDateTime.now());
-        updateObj.setStatus("已关闭");
-        updateObj.setHandleType("忽略");
-        updateObj.setHandleProgress("已忽略");
+        updateObj.setStatus(STATUS_CLOSED);
+        updateObj.setHandleType(HANDLE_TYPE_IGNORE);
+        updateObj.setHandleProgress(HANDLE_PROGRESS_IGNORED);
         updateObj.setIgnoreReason(reqVO.getIgnoreReason());
         plateControlMapper.updateById(updateObj);
     }
