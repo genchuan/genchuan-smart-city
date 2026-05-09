@@ -21,4 +21,12 @@ public interface CycleReportDrillService {
 
     PageResult<CycleReportDrillCardOrderCountRespVO> drillCardOrderCount(CycleReportDrillBaseReqVO reqVO);
 
+    PageResult<CycleReportDrillRevenueRespVO> drillRevenue(CycleReportDrillBaseReqVO reqVO);
+
+    PageResult<CycleReportDrillExchangeCountRespVO> drillExchangeCount(CycleReportDrillBaseReqVO reqVO);
+
+    PageResult<CycleReportDrillTotalStockRespVO> drillTotalStock(CycleReportDrillBaseReqVO reqVO);
+
+    PageResult<CycleReportDrillWarnStockCountRespVO> drillWarnStockCount(CycleReportDrillBaseReqVO reqVO);
+
 }
