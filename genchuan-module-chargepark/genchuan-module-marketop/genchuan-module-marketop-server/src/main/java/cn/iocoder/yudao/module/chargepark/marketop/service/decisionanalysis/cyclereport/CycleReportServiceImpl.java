@@ -9,6 +9,8 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.decisionanal
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.decisionanalysis.cyclereport.vo.CycleReportPageReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.decisionanalysis.CycleReportDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.decisionanalysis.CycleReportMapper;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -21,6 +23,7 @@ import java.util.*;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.CYCLE_REPORT_NOT_EXISTS;
+import static cn.iocoder.yudao.module.chargepark.marketop.enums.LogRecordConstants.*;
 
 @Service
 @Validated
@@ -40,6 +43,8 @@ public class CycleReportServiceImpl implements CycleReportService {
     }
 
     @Override
+    @LogRecord(type = CYCLE_REPORT_TYPE, subType = CYCLE_REPORT_CREATE_SUB_TYPE, bizNo = "{{#cycleReport.id}}",
+            success = CYCLE_REPORT_CREATE_SUCCESS)
     public Long create(CycleReportCreateReqVO reqVO) {
         long startTime = System.currentTimeMillis();
 
@@ -91,6 +96,8 @@ public class CycleReportServiceImpl implements CycleReportService {
         report.setExportCount(0);
         cycleReportMapper.updateById(report);
 
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("cycleReport", report);
         return report.getId();
     }
 

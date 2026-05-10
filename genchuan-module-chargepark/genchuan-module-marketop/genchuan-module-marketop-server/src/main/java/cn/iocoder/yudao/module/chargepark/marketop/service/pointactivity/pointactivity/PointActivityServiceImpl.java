@@ -11,6 +11,9 @@ import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.PointActivityMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.PointLotteryMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.PointActivityStatusEnum;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -28,6 +31,7 @@ import java.util.Objects;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.chargepark.marketop.enums.LogRecordConstants.*;
 
 @Service
 @Validated
@@ -50,6 +54,8 @@ public class PointActivityServiceImpl implements PointActivityService {
     }
 
     @Override
+    @LogRecord(type = POINT_ACTIVITY_TYPE, subType = POINT_ACTIVITY_CREATE_SUB_TYPE, bizNo = "{{#pointActivity.id}}",
+            success = POINT_ACTIVITY_CREATE_SUCCESS)
     public Long create(PointActivityCreateReqVO reqVO) {
         // 校验名称唯一
         validateNameUnique(null, reqVO.getName());
@@ -67,17 +73,26 @@ public class PointActivityServiceImpl implements PointActivityService {
         pointActivity.setJoinCount(0);
         pointActivity.setRemainPoint(reqVO.getRemainPoint());
         pointActivityMapper.insert(pointActivity);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("pointActivity", pointActivity);
         return pointActivity.getId();
     }
 
     @Override
+    @LogRecord(type = POINT_ACTIVITY_TYPE, subType = POINT_ACTIVITY_UPDATE_SUB_TYPE, bizNo = "{{#reqVO.id}}",
+            success = POINT_ACTIVITY_UPDATE_SUCCESS)
     public void update(PointActivityUpdateReqVO reqVO) {
-        validateExists(reqVO.getId());
+        PointActivityDO pointActivityDO = validateExists(reqVO.getId());
         PointActivityDO updateObj = BeanUtils.toBean(reqVO, PointActivityDO.class);
         pointActivityMapper.updateById(updateObj);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, BeanUtils.toBean(pointActivityDO, PointActivityUpdateReqVO.class));
+        LogRecordContext.putVariable("pointActivity", updateObj);
     }
 
     @Override
+    @LogRecord(type = POINT_ACTIVITY_TYPE, subType = POINT_ACTIVITY_ENABLE_SUB_TYPE, bizNo = "{{#id}}",
+            success = POINT_ACTIVITY_ENABLE_SUCCESS)
     public void enable(Long id) {
         PointActivityDO pointActivity = validateExists(id);
 //        if (!PointActivityStatusEnum.PAUSED.getValue().equals(pointActivity.getStatus())) { // 暂停中
@@ -87,9 +102,13 @@ public class PointActivityServiceImpl implements PointActivityService {
         pointActivity.setAuditTime(LocalDateTime.now());
         // auditorId 由 Controller 层通过 SecurityFrameworkUtils 获取后设置
         pointActivityMapper.updateById(pointActivity);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("pointActivityName", pointActivity.getName());
     }
 
     @Override
+    @LogRecord(type = POINT_ACTIVITY_TYPE, subType = POINT_ACTIVITY_PAUSE_SUB_TYPE, bizNo = "{{#id}}",
+            success = POINT_ACTIVITY_PAUSE_SUCCESS)
     public void pause(Long id) {
         PointActivityDO pointActivity = validateExists(id);
 //        if (Objects.equals(PointActivityStatusEnum.IN_PROGRESS.getValue(), pointActivity.getStatus())) { // 进行中
@@ -97,6 +116,8 @@ public class PointActivityServiceImpl implements PointActivityService {
 //        }
         pointActivity.setStatus(PointActivityStatusEnum.PAUSED.getValue()); // 已暂停
         pointActivityMapper.updateById(pointActivity);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("pointActivityName", pointActivity.getName());
     }
 
     @Override
@@ -194,6 +215,8 @@ public class PointActivityServiceImpl implements PointActivityService {
     }
 
     @Override
+    @LogRecord(type = POINT_ACTIVITY_TYPE, subType = POINT_ACTIVITY_ACTIVATE_SUB_TYPE, bizNo = "{{#id}}",
+            success = POINT_ACTIVITY_ACTIVATE_SUCCESS)
     public void activate(Long id) {
         PointActivityDO pointActivity = validateExists(id);
 //        if (Objects.equals(PointActivityStatusEnum.PENDING.getValue(), pointActivity.getStatus())) { // 待生效
@@ -203,5 +226,7 @@ public class PointActivityServiceImpl implements PointActivityService {
         pointActivity.setAuditTime(LocalDateTime.now());
         // auditorId 由 Controller 层通过 SecurityFrameworkUtils 获取后设置
         pointActivityMapper.updateById(pointActivity);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("pointActivityName", pointActivity.getName());
     }
 }
