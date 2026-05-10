@@ -13,6 +13,8 @@ import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.complaint.Us
 import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.complaint.UserAppealMapper;
 import cn.iocoder.yudao.module.chargepark.carservice.enums.complaint.UserAppealStatusEnum;
 import cn.iocoder.yudao.module.chargepark.carservice.framework.notify.CarServiceNotifyHelper;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,7 @@ import java.util.List;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.carservice.enums.ErrorCodeConstants.USER_APPEAL_NOT_EXISTS;
 import static cn.iocoder.yudao.module.chargepark.carservice.enums.ErrorCodeConstants.USER_APPEAL_STATUS_INVALID;
+import static cn.iocoder.yudao.module.chargepark.carservice.enums.LogRecordConstants.*;
 
 /**
  * 用户申诉 Service 实现类
@@ -100,6 +103,8 @@ public class UserAppealServiceImpl implements UserAppealService {
     // ========== 业务操作 ==========
 
     @Override
+    @LogRecord(type = USER_APPEAL_TYPE, subType = USER_APPEAL_AUDIT_SUB,
+            bizNo = "{{#reqVO.id}}", success = USER_APPEAL_AUDIT_SUCCESS)
     public void auditUserAppeal(UserAppealAuditReqVO reqVO) {
         UserAppealDO appeal = validateUserAppealExists(reqVO.getId());
         validateStatus(appeal, UserAppealStatusEnum.WAITING_AUDIT);
@@ -119,14 +124,20 @@ public class UserAppealServiceImpl implements UserAppealService {
         // 审核结果通知申诉人
         if (Boolean.TRUE.equals(reqVO.getApproved())) {
             notifyHelper.sendToUser(appeal.getUserId(), "carservice_appeal_pass", null, null);
+            LogRecordContext.putVariable("verb", "审核通过");
+            LogRecordContext.putVariable("reason", "");
         } else {
             notifyHelper.sendToUser(appeal.getUserId(), "carservice_appeal_reject",
                     "rejectReason", reqVO.getRejectReason());
+            LogRecordContext.putVariable("verb", "审核驳回");
+            LogRecordContext.putVariable("reason", ",原因:" + reqVO.getRejectReason());
         }
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = USER_APPEAL_TYPE, subType = USER_APPEAL_BATCH_AUDIT_SUB,
+            bizNo = "{{#reqVO.ids[0]}}", success = USER_APPEAL_BATCH_AUDIT_SUCCESS)
     public void batchAuditUserAppeal(UserAppealBatchAuditReqVO reqVO) {
         if (reqVO.getIds() == null || reqVO.getIds().isEmpty()) {
             return;
@@ -157,9 +168,13 @@ public class UserAppealServiceImpl implements UserAppealService {
                         "rejectReason", reqVO.getRejectReason());
             }
         }
+        LogRecordContext.putVariable("verb", approved ? "审核通过" : "审核驳回");
+        LogRecordContext.putVariable("reason", approved ? "" : ",原因:" + reqVO.getRejectReason());
     }
 
     @Override
+    @LogRecord(type = USER_APPEAL_TYPE, subType = USER_APPEAL_EXECUTE_SUB,
+            bizNo = "{{#reqVO.id}}", success = USER_APPEAL_EXECUTE_SUCCESS)
     public void executeUserAppeal(UserAppealExecuteReqVO reqVO) {
         UserAppealDO appeal = validateUserAppealExists(reqVO.getId());
         validateStatus(appeal, UserAppealStatusEnum.WAITING_HANDLE);
@@ -173,6 +188,8 @@ public class UserAppealServiceImpl implements UserAppealService {
     }
 
     @Override
+    @LogRecord(type = USER_APPEAL_TYPE, subType = USER_APPEAL_FEEDBACK_SUB,
+            bizNo = "{{#reqVO.id}}", success = USER_APPEAL_FEEDBACK_SUCCESS)
     public void feedbackUserAppeal(UserAppealFeedbackReqVO reqVO) {
         UserAppealDO appeal = validateUserAppealExists(reqVO.getId());
         // 兼容历史"处置中"也可以反馈

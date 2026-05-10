@@ -9,10 +9,14 @@ import cn.iocoder.yudao.module.chargepark.carservice.controller.admin.servicecon
 import cn.iocoder.yudao.module.chargepark.carservice.dal.dataobject.serviceconfig.WordingMgmtDO;
 import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.serviceconfig.WordingMgmtMapper;
 import cn.iocoder.yudao.module.chargepark.carservice.enums.serviceconfig.WordingMgmtStatusEnum;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+
+import static cn.iocoder.yudao.module.chargepark.carservice.enums.LogRecordConstants.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -101,6 +105,8 @@ public class WordingMgmtServiceImpl implements WordingMgmtService {
     }
 
     @Override
+    @LogRecord(type = WORDING_TYPE, subType = WORDING_ENABLE_SUB,
+            bizNo = "{{#id}}", success = WORDING_ENABLE_SUCCESS)
     public void enableWordingMgmt(Long id) {
         validateWordingMgmtExists(id);
         WordingMgmtDO update = new WordingMgmtDO();
@@ -110,6 +116,8 @@ public class WordingMgmtServiceImpl implements WordingMgmtService {
     }
 
     @Override
+    @LogRecord(type = WORDING_TYPE, subType = WORDING_DISABLE_SUB,
+            bizNo = "{{#id}}", success = WORDING_DISABLE_SUCCESS)
     public void disableWordingMgmt(Long id) {
         validateWordingMgmtExists(id);
         WordingMgmtDO update = new WordingMgmtDO();
@@ -143,8 +151,11 @@ public class WordingMgmtServiceImpl implements WordingMgmtService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = WORDING_TYPE, subType = WORDING_SAVE_SUB,
+            bizNo = "0", success = WORDING_SAVE_SUCCESS)
     public void batchSaveWordingMgmt(WordingMgmtBatchSaveReqVO reqVO) {
         List<WordingMgmtBatchSaveReqVO.Item> items = reqVO.getItems();
+        LogRecordContext.putVariable("count", items == null ? 0 : items.size());
         // Pass 1: 全量预校验(字段 + 存在性 + 名称唯一性,含"同批次内重名"防护)
         Set<String> nameInBatch = new HashSet<>();
         for (WordingMgmtBatchSaveReqVO.Item it : items) {

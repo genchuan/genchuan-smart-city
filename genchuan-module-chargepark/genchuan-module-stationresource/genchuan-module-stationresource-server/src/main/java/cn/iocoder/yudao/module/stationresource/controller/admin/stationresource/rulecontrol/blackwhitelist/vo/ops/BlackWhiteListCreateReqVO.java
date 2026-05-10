@@ -24,21 +24,21 @@ public class BlackWhiteListCreateReqVO {
     @NotEmpty(message = "细分类型不能为空")
     private String subType;
 
-    @Schema(description = "生效时间", example = "1775011986000")
+    @Schema(description = "生效时间", example = "2025-01-01 01:00:00")
     private LocalDateTime startTime;
 
-    @Schema(description = "失效时间", example = "1806547986000")
+    @Schema(description = "失效时间", example = "2025-02-01 01:00:00")
     private LocalDateTime endTime;
 
-    @Schema(description = "证件信息")
+    @Schema(description = "证件信息", example = "身份证350500199001011234")
     private String certInfo;
 
-    @Schema(description = "备注")
+    @Schema(description = "备注", example = "业主长期车辆")
     private String remark;
 
-    @Schema(description = "备用字段1")
+    @Schema(description = "备用字段1", example = "备用信息1")
     private String reserve1;
 
-    @Schema(description = "备用字段2")
+    @Schema(description = "备用字段2", example = "备用信息2")
     private String reserve2;
 }

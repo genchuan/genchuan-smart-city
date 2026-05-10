@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.inspectop.controller.admin.assetinfo.vo;
 
+import cn.idev.excel.annotation.ExcelProperty;
 import lombok.*;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,7 +30,10 @@ public class AssetInfoPageReqVO extends PageParam {
     @Schema(description = "所属场站ID")
     private Long stationId;
 
-    @Schema(description = "备用字段1")
+    @Schema(description = "场站名称")
+    private String stationName;
+
+    @Schema(description = "报废理由")
     private String reserve1;
 
     @Schema(description = "备用字段2")

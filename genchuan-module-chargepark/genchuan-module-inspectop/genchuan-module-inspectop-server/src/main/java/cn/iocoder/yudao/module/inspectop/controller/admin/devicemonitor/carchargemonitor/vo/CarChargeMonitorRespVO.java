@@ -22,7 +22,7 @@ public class CarChargeMonitorRespVO {
     private Long deviceId;
 
     @Schema(description = "场站ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("场站ID")
+//    @ExcelProperty("场站ID")
     private Long stationId;
 
     @Schema(description = "场站名称")
@@ -62,11 +62,11 @@ public class CarChargeMonitorRespVO {
     private BigDecimal latitude;
 
     @Schema(description = "备用字段1")
-    @ExcelProperty("备用字段1")
+//    @ExcelProperty("备用字段1")
     private String reserve1;
 
     @Schema(description = "备用字段2")
-    @ExcelProperty("备用字段2")
+//    @ExcelProperty("备用字段2")
     private String reserve2;
 
     @Schema(description = "创建者")

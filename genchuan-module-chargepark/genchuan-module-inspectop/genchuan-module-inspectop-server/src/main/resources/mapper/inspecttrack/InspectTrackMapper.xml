@@ -53,7 +53,7 @@
                 AND it.track_time = #{reqVO.trackTime}
             </if>
             <if test="reqVO.area != null and reqVO.area != ''">
-                AND it.area = #{reqVO.area}
+                AND it.area LIKE CONCAT('%', #{reqVO.area}, '%')
             </if>
             <if test="reqVO.status != null and reqVO.status != ''">
                 AND it.status = #{reqVO.status}

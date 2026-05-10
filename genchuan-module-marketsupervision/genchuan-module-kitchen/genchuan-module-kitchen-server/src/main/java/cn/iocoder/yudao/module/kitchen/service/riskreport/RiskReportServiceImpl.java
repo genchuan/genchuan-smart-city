@@ -3,12 +3,17 @@ package cn.iocoder.yudao.module.kitchen.service.riskreport;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.kitchen.controller.admin.riskreport.vo.page.EntReportPageReq;
 import cn.iocoder.yudao.module.kitchen.controller.admin.riskreport.vo.page.EntReportPageResp;
+import cn.iocoder.yudao.module.kitchen.controller.admin.riskreport.vo.statistics.EntViolationDistRespVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.riskreport.vo.statistics.EntViolationRankRespVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.riskreport.vo.statistics.RiskOverviewRespVO;
+import cn.iocoder.yudao.module.kitchen.dal.mysql.riskreport.EntViolationStatDO;
 import cn.iocoder.yudao.module.kitchen.dal.mysql.riskreport.RiskReportMapper;
 import cn.iocoder.yudao.module.kitchen.vrv.utils.common.pdf.VrvPdfGenerator;
 import jakarta.annotation.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -73,6 +78,82 @@ public class RiskReportServiceImpl implements RiskReportService{
         // 3. 生成PDF并返回
         VrvPdfGenerator pdfGenerator = new VrvPdfGenerator();
         return pdfGenerator.generatePdfResponse(html);
+    }
+
+    @Override
+    public RiskOverviewRespVO getOverview(EntReportPageReq req) {
+        List<EntViolationStatDO> list = riskReportMapper.getEntViolationStatList(req);
+
+        int total = list.size();
+        int high = 0, medium = 0, low = 0;
+        for (EntViolationStatDO item : list) {
+            int c = item.getViolationCount();
+            if (c > 3) high++;
+            else if (c > 1) medium++;
+            else low++;
+        }
+
+        RiskOverviewRespVO resp = new RiskOverviewRespVO();
+        resp.setTotalEnterprises(total);
+        resp.setHighRiskCount(high);
+        resp.setMediumRiskCount(medium);
+        resp.setLowRiskCount(low);
+
+        List<RiskOverviewRespVO.RiskLevelDist> dist = new ArrayList<>();
+        dist.add(buildDist("高风险", high, total));
+        dist.add(buildDist("中风险", medium, total));
+        dist.add(buildDist("低风险", low, total));
+        resp.setRiskLevelDistribution(dist);
+
+        return resp;
+    }
+
+    @Override
+    public EntViolationDistRespVO getViolationDistribution(EntReportPageReq req) {
+        List<EntViolationStatDO> list = riskReportMapper.getEntViolationStatList(req);
+
+        int totalViolationCount = list.stream().mapToInt(EntViolationStatDO::getViolationCount).sum();
+
+        EntViolationDistRespVO resp = new EntViolationDistRespVO();
+        resp.setTotalViolationCount(totalViolationCount);
+
+        List<EntViolationDistRespVO.Item> items = new ArrayList<>();
+        for (EntViolationStatDO item : list) {
+            EntViolationDistRespVO.Item vo = new EntViolationDistRespVO.Item();
+            vo.setEntName(item.getEntName());
+            vo.setViolationCount(item.getViolationCount());
+            vo.setPercentage(totalViolationCount > 0
+                    ? Math.round(item.getViolationCount() * 10000.0 / totalViolationCount) / 100.0
+                    : 0.0);
+            items.add(vo);
+        }
+        resp.setItems(items);
+        return resp;
+    }
+
+    @Override
+    public EntViolationRankRespVO getViolationRanking(EntReportPageReq req) {
+        List<EntViolationStatDO> list = riskReportMapper.getEntViolationStatList(req);
+
+        List<EntViolationRankRespVO.Item> items = new ArrayList<>();
+        for (EntViolationStatDO item : list) {
+            EntViolationRankRespVO.Item vo = new EntViolationRankRespVO.Item();
+            vo.setEntName(item.getEntName());
+            vo.setViolationCount(item.getViolationCount());
+            items.add(vo);
+        }
+
+        EntViolationRankRespVO resp = new EntViolationRankRespVO();
+        resp.setItems(items);
+        return resp;
+    }
+
+    private RiskOverviewRespVO.RiskLevelDist buildDist(String level, int count, int total) {
+        RiskOverviewRespVO.RiskLevelDist vo = new RiskOverviewRespVO.RiskLevelDist();
+        vo.setRiskLevel(level);
+        vo.setCount(count);
+        vo.setPercentage(total > 0 ? Math.round(count * 10000.0 / total) / 100.0 : 0.0);
+        return vo;
     }
 
     // ===================== 【拼接HTML表格】 =====================

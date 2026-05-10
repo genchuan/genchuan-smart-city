@@ -26,9 +26,9 @@ public class DepositPlanCreateReqVO {
     @Schema(description = "备注", example = "预约停车押金方案")
     private String remark;
 
-    @Schema(description = "备用字段1")
+    @Schema(description = "备用字段1", example = "备用信息1")
     private String reserve1;
 
-    @Schema(description = "备用字段2")
+    @Schema(description = "备用字段2", example = "备用信息2")
     private String reserve2;
 }

@@ -72,6 +72,47 @@
 
     </select>
 
+    <!-- ====================== 统计：按企业维度汇总违规次数（不分月） ====================== -->
+    <select id="getEntViolationStatList"
+            resultType="cn.iocoder.yudao.module.kitchen.dal.mysql.riskreport.EntViolationStatDO">
+        SELECT
+            e.ent_name AS entName,
+            COUNT(r.id) AS violationCount
+        FROM rectify_review r
+        LEFT JOIN enterprise_info e ON r.ent_id = e.id
+        WHERE r.deleted = 0
+          AND e.deleted = 0
+        <if test="statisticPeriod != null and statisticPeriod != ''">
+            AND DATE_FORMAT(r.create_time, '%Y-%m') = #{statisticPeriod}
+        </if>
+        <if test="area != null and area != ''">
+            AND e.area_name = #{area}
+        </if>
+        <if test="entType != null and entType != ''">
+            AND e.ent_type_name = #{entType}
+        </if>
+        <if test="beginTime != null">
+            AND r.create_time >= #{beginTime}
+        </if>
+        <if test="endTime != null">
+            AND r.create_time &lt;= #{endTime}
+        </if>
+        <if test="entName != null and entName != ''">
+            AND e.ent_name LIKE CONCAT('%', #{entName}, '%')
+        </if>
+        <if test="reportNo != null and reportNo != ''">
+            AND CONCAT('REPORT', DATE_FORMAT(r.create_time, '%Y-%m'), r.ent_id) LIKE CONCAT('%', #{reportNo}, '%')
+        </if>
+        <if test="reportNoList != null and !reportNoList.isEmpty()">
+            AND CONCAT('REPORT', DATE_FORMAT(r.create_time, '%Y-%m'), r.ent_id) IN
+            <foreach collection="reportNoList" item="reportNo" open="(" separator="," close=")">
+                #{reportNo}
+            </foreach>
+        </if>
+        GROUP BY r.ent_id
+        ORDER BY violationCount DESC
+    </select>
+
     <!-- 分页统计总数（修复版） -->
     <select id="getEntReportPageCount" resultType="java.lang.Long">
         SELECT COUNT(*) FROM (

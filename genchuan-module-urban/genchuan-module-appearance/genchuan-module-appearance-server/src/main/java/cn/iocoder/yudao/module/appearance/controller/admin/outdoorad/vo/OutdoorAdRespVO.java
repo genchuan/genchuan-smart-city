@@ -40,11 +40,9 @@ public class OutdoorAdRespVO {
     @ExcelProperty("广告位置")
     private String location;
 
-
     @Schema(description = "点位经度")
     @ExcelProperty("点位经度")
     private String lng;
-
 
     @Schema(description = "点位纬度")
     @ExcelProperty("点位纬度")

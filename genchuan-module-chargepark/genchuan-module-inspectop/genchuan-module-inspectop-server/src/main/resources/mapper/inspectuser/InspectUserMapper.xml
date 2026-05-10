@@ -22,8 +22,15 @@
     <select id="selectCardData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.inspectuser.vo.InspectUserChartRespVO$CardData">
         SELECT
             COUNT(*) AS userCount,
-            SUM(CASE WHEN online_status = '1' THEN 1 ELSE 0 END) AS onlineUserCount
+            SUM(
+                    CASE
+                        WHEN online_status = '1' OR online_status = '在线'
+                            THEN 1
+                        ELSE 0
+                        END
+            ) AS onlineUserCount
         FROM inspect_user
+        WHERE deleted = 0
     </select>
 
     <!-- 查询指定人员关联的巡检任务数量 -->

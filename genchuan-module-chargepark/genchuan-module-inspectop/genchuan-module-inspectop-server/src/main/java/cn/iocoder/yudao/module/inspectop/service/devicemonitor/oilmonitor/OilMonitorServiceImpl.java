@@ -92,24 +92,29 @@ public class OilMonitorServiceImpl implements OilMonitorService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void batchProcessOilMonitor(OilMonitorBatchProcessReqVO batchProcessReqVO) {
-        // 校验ids不能为空
+        // 1. 校验ids不能为空
         if (CollUtil.isEmpty(batchProcessReqVO.getIds())) {
             throw exception(OIL_MONITOR_NOT_EXISTS);
         }
 
-        // 校验所有记录是否存在
+        // 2. 校验所有记录是否存在
         batchProcessReqVO.getIds().forEach(this::validateOilMonitorExists);
 
-        // 批量更新处置进度
+        // 3. 构建更新条件
         LambdaUpdateWrapper<OilMonitorDO> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.in(OilMonitorDO::getId, batchProcessReqVO.getIds());
 
-        // 只有当processProgress不为null时才更新
+        // 4. 动态设置更新字段 - 更新处置状态
+        if (batchProcessReqVO.getProcessStatus() != null) {
+            updateWrapper.set(OilMonitorDO::getProcessStatus, batchProcessReqVO.getProcessStatus());
+        }
+
+        // 5. 动态设置更新字段 - 更新处置进度
         if (batchProcessReqVO.getProcessProgress() != null) {
             updateWrapper.set(OilMonitorDO::getProcessProgress, batchProcessReqVO.getProcessProgress());
         }
 
-        // 执行更新
+        // 6. 执行更新
         oilMonitorMapper.update(null, updateWrapper);
     }
 
