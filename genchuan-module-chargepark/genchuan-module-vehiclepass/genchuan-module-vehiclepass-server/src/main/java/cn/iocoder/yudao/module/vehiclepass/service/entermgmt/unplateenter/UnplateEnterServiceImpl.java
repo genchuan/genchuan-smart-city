@@ -56,6 +56,10 @@ public class UnplateEnterServiceImpl implements UnplateEnterService {
     public Long createEnter(UnplateEnterSaveReqVO createReqVO) {
         // 插入
         UnplateEnterDO enter = BeanUtils.toBean(createReqVO, UnplateEnterDO.class);
+        // 如果状态为空，设置默认状态为"待审核"
+        if (enter.getStatus() == null || enter.getStatus().isEmpty()) {
+            enter.setStatus(STATUS_PENDING_REVIEW);
+        }
         enterMapper.insert(enter);
 
         // 返回

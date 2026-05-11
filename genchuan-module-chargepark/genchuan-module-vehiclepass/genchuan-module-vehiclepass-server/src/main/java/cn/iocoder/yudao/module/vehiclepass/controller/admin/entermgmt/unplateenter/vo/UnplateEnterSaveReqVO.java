@@ -29,8 +29,7 @@ public class UnplateEnterSaveReqVO {
     @NotNull(message = "登记时间不能为空")
     private LocalDateTime registerTime;
 
-    @Schema(description = "审核状态：待审核/已通过/已驳回，关联字典unplate_enter_status", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @NotEmpty(message = "审核状态：待审核/已通过/已驳回，关联字典unplate_enter_status不能为空")
+    @Schema(description = "审核状态：待审核/已通过/已驳回，关联字典unplate_enter_status", requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "2")
     private String status;
 
     @Schema(description = "场站ID，关联场站表", requiredMode = Schema.RequiredMode.REQUIRED, example = "28427")
