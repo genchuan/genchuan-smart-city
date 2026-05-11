@@ -55,8 +55,8 @@ public class CycleReportServiceImpl implements CycleReportService {
         // 2. 创建初始记录
         CycleReportDO report = new CycleReportDO();
         report.setReportCycle(req.getReportCycle());
-        LocalDateTime startDate = req.getStatStartTimeDate();
-        LocalDateTime endDate = req.getStatEndTimeDate();
+        LocalDateTime startDate = req.getStatStartTime();
+        LocalDateTime endDate = req.getStatEndTime();
         report.setStatStartTime(startDate);
         report.setStatEndTime(endDate);
         report.setStationId(req.getStationId());
