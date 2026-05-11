@@ -31,11 +31,11 @@ public interface RefundApplyMapper extends BaseMapperX<RefundApplyDO> {
     }
 
     @Select("<script>" +
-            "SELECT DATE_FORMAT(create_time,'%Y-%m-%d') AS date, COUNT(*) AS count " +
+            "SELECT DATE_FORMAT(apply_time,'%Y-%m-%d') AS date, COUNT(*) AS count " +
             "FROM refund_apply WHERE deleted = 0 " +
-            "<if test='startTime != null'> AND create_time &gt;= #{startTime} </if>" +
-            "<if test='endTime != null'>   AND create_time &lt;= #{endTime}   </if>" +
-            "GROUP BY DATE_FORMAT(create_time,'%Y-%m-%d') ORDER BY date" +
+            "<if test='startTime != null'> AND apply_time &gt;= #{startTime} </if>" +
+            "<if test='endTime != null'>   AND apply_time &lt;= #{endTime}   </if>" +
+            "GROUP BY DATE_FORMAT(apply_time,'%Y-%m-%d') ORDER BY date" +
             "</script>")
     List<Map<String, Object>> selectTrend(@Param("startTime") LocalDateTime startTime,
                                           @Param("endTime") LocalDateTime endTime);
@@ -43,7 +43,7 @@ public interface RefundApplyMapper extends BaseMapperX<RefundApplyDO> {
     @Select("SELECT status, COUNT(*) AS count FROM refund_apply WHERE deleted = 0 GROUP BY status")
     List<Map<String, Object>> selectGroupByStatus();
 
-    @Select("SELECT COUNT(*) FROM refund_apply WHERE deleted = 0 AND create_time BETWEEN #{startTime} AND #{endTime}")
+    @Select("SELECT COUNT(*) FROM refund_apply WHERE deleted = 0 AND apply_time BETWEEN #{startTime} AND #{endTime}")
     Long selectTodayCount(@Param("startTime") LocalDateTime startTime,
                           @Param("endTime") LocalDateTime endTime);
 

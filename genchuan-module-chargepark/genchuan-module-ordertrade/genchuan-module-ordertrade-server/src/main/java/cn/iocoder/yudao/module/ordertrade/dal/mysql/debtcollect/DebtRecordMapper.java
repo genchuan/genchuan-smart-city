@@ -30,6 +30,8 @@ public interface DebtRecordMapper extends BaseMapperX<DebtRecordDO> {
                 .likeIfPresent(DebtRecordDO::getPlateNo, reqVO.getPlateNo())
                 .eqIfPresent(DebtRecordDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(DebtRecordDO::getStationId, reqVO.getStationId())
+                .geIfPresent(DebtRecordDO::getCreateTime, reqVO.getCreateTimeStart())
+                .leIfPresent(DebtRecordDO::getCreateTime, reqVO.getCreateTimeEnd())
                 .orderByDesc(DebtRecordDO::getId));
     }
 

@@ -30,6 +30,8 @@ public interface ArrearRecordMapper extends BaseMapperX<ArrearRecordDO> {
                 .likeIfPresent(ArrearRecordDO::getPlateNo, reqVO.getPlateNo())
                 .eqIfPresent(ArrearRecordDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(ArrearRecordDO::getStationId, reqVO.getStationId())
+                .geIfPresent(ArrearRecordDO::getCreateTime, reqVO.getCreateTimeStart())
+                .leIfPresent(ArrearRecordDO::getCreateTime, reqVO.getCreateTimeEnd())
                 .orderByDesc(ArrearRecordDO::getId));
     }
 

@@ -49,8 +49,8 @@ public class RefundApplyServiceImpl implements RefundApplyService {
         @Override
     public RefundApplyChartRespVO getRefundApplyChart(RefundApplyChartReqVO v) {
         RefundApplyChartRespVO resp = new RefundApplyChartRespVO();
-        LocalDateTime start = v.getStartTime() != null ? v.getStartTime() : LocalDateTime.now().minusDays(30);
-        LocalDateTime end   = v.getEndTime()   != null ? v.getEndTime()   : LocalDateTime.now();
+        LocalDateTime start = v.getApplyTimeStart() != null ? v.getApplyTimeStart() : LocalDateTime.now().minusDays(30);
+        LocalDateTime end   = v.getApplyTimeEnd()   != null ? v.getApplyTimeEnd()   : LocalDateTime.now();
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(refundApplyMapper.selectTrend(start, end));
