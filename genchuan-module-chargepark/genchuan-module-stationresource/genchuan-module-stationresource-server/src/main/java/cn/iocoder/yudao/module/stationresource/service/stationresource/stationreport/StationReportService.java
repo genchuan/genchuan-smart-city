@@ -38,4 +38,32 @@ public interface StationReportService {
     Long addHistoryReport(StationOpHistoryReportCreateReqVO reqVO);
 
     List<Long> addBatchBackReport(StationOpReportBatchBackReqVO reqVO);
+
+    // ====================== 钻取方法（卡片指标 → 明细数据） ======================
+    /** 总片区数 → 钻取片区列表 */
+    DrillDownRespVO drillDownArea(DrillDownReqVO reqVO);
+
+    /** 总站场数 → 钻取场站列表 */
+    DrillDownRespVO drillDownStation(DrillDownReqVO reqVO);
+
+    /** 正常运营数 → 钻取运营中场站列表 */
+    DrillDownRespVO drillDownNormalStation(DrillDownReqVO reqVO);
+
+    /** 总车位数 → 钻取车位列表 */
+    DrillDownRespVO drillDownSpace(DrillDownReqVO reqVO);
+
+    /** 可用车位数 → 钻取空闲车位列表 */
+    DrillDownRespVO drillDownAvailableSpace(DrillDownReqVO reqVO);
+
+    /** 生效规则数 → 钻取规则列表 */
+    DrillDownRespVO drillDownEffectiveRule(DrillDownReqVO reqVO);
+
+    /** 订单量/营收 → 钻取充停联动订单列表 */
+    DrillDownRespVO drillDownOrder(DrillDownReqVO reqVO);
+
+    /** 追缴完成率 → 钻取追缴记录列表 */
+    DrillDownRespVO drillDownDebtExpand(DrillDownReqVO reqVO);
+
+    /** 押金订单量 → 钻取押金计划列表 */
+    DrillDownRespVO drillDownDepositPlan(DrillDownReqVO reqVO);
 }

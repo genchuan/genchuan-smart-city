@@ -110,6 +110,46 @@ public class StationReportController {
                 BeanUtils.toBean(list, StationReportRespVO.class));
     }
 
+    @GetMapping("/drill-down")
+    @Operation(summary = "场站资源报表钻取", description = "点击卡片统计数字，钻取底层明细数据。metric 对应卡片指标：totalAreaCount/totalStationCount/normalOperateCount/totalSpaceCount/availableSpaceCount/effectiveRuleCount/orderCount/revenue/recoveryRate/depositOrderCount")
+    @PreAuthorize("@ss.hasPermission('stationresource:station-op-report:chart')")
+    public CommonResult<DrillDownRespVO> drillDown(@Validated DrillDownReqVO reqVO) {
+        DrillDownRespVO respVO;
+        switch (reqVO.getMetric()) {
+            case "totalAreaCount":
+                respVO = stationReportService.drillDownArea(reqVO);
+                break;
+            case "totalStationCount":
+                respVO = stationReportService.drillDownStation(reqVO);
+                break;
+            case "normalOperateCount":
+                respVO = stationReportService.drillDownNormalStation(reqVO);
+                break;
+            case "totalSpaceCount":
+                respVO = stationReportService.drillDownSpace(reqVO);
+                break;
+            case "availableSpaceCount":
+                respVO = stationReportService.drillDownAvailableSpace(reqVO);
+                break;
+            case "effectiveRuleCount":
+                respVO = stationReportService.drillDownEffectiveRule(reqVO);
+                break;
+            case "orderCount":
+            case "revenue":
+                respVO = stationReportService.drillDownOrder(reqVO);
+                break;
+            case "recoveryRate":
+                respVO = stationReportService.drillDownDebtExpand(reqVO);
+                break;
+            case "depositOrderCount":
+                respVO = stationReportService.drillDownDepositPlan(reqVO);
+                break;
+            default:
+                throw new IllegalArgumentException("不支持的卡片指标：" + reqVO.getMetric());
+        }
+        return success(respVO);
+    }
+
     @GetMapping("/get")
     @Operation(summary = "获得场站资源报表详情")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")

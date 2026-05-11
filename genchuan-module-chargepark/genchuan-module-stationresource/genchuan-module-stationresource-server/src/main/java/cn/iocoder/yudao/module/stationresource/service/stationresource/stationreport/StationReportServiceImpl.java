@@ -476,6 +476,87 @@ public class StationReportServiceImpl implements StationReportService {
 
 
 
+    // ====================== 钻取方法（卡片指标 → 明细数据） ======================
+
+    @Override
+    public DrillDownRespVO drillDownArea(DrillDownReqVO reqVO) {
+        List<Map<String, Object>> list = stationReportMapper.drillDownAreaList(
+                reqVO.getReportStartTime(), reqVO.getReportEndTime());
+        return buildResp(reqVO, list);
+    }
+
+    @Override
+    public DrillDownRespVO drillDownStation(DrillDownReqVO reqVO) {
+        List<Map<String, Object>> list = stationReportMapper.drillDownStationList(
+                reqVO.getReportStartTime(), reqVO.getReportEndTime());
+        return buildResp(reqVO, list);
+    }
+
+    @Override
+    public DrillDownRespVO drillDownNormalStation(DrillDownReqVO reqVO) {
+        List<Map<String, Object>> list = stationReportMapper.drillDownNormalStationList(
+                reqVO.getReportStartTime(), reqVO.getReportEndTime());
+        return buildResp(reqVO, list);
+    }
+
+    @Override
+    public DrillDownRespVO drillDownSpace(DrillDownReqVO reqVO) {
+        List<Map<String, Object>> list = stationReportMapper.drillDownSpaceList(
+                reqVO.getReportStartTime(), reqVO.getReportEndTime());
+        return buildResp(reqVO, list);
+    }
+
+    @Override
+    public DrillDownRespVO drillDownAvailableSpace(DrillDownReqVO reqVO) {
+        List<Map<String, Object>> list = stationReportMapper.drillDownAvailableSpaceList(
+                reqVO.getReportStartTime(), reqVO.getReportEndTime());
+        return buildResp(reqVO, list);
+    }
+
+    @Override
+    public DrillDownRespVO drillDownEffectiveRule(DrillDownReqVO reqVO) {
+        List<Map<String, Object>> list = stationReportMapper.drillDownEffectiveRuleList(
+                reqVO.getReportStartTime(), reqVO.getReportEndTime());
+        return buildResp(reqVO, list);
+    }
+
+    @Override
+    public DrillDownRespVO drillDownOrder(DrillDownReqVO reqVO) {
+        List<Map<String, Object>> list = stationReportMapper.drillDownOrderList(
+                reqVO.getReportStartTime(), reqVO.getReportEndTime());
+        return buildResp(reqVO, list);
+    }
+
+    @Override
+    public DrillDownRespVO drillDownDebtExpand(DrillDownReqVO reqVO) {
+        List<Map<String, Object>> list = stationReportMapper.drillDownDebtExpandList(
+                reqVO.getReportStartTime(), reqVO.getReportEndTime());
+        return buildResp(reqVO, list);
+    }
+
+    @Override
+    public DrillDownRespVO drillDownDepositPlan(DrillDownReqVO reqVO) {
+        List<Map<String, Object>> list = stationReportMapper.drillDownDepositPlanList(
+                reqVO.getReportStartTime(), reqVO.getReportEndTime());
+        return buildResp(reqVO, list);
+    }
+
+    /** 组装钻取响应，手动分页 */
+    private DrillDownRespVO buildResp(DrillDownReqVO reqVO, List<Map<String, Object>> fullList) {
+        System.out.println("cs2026-05-11 17:33:04:"+reqVO);
+        int pageNo = reqVO.getPageNo() != null ? reqVO.getPageNo() : 1;
+        int pageSize = reqVO.getPageSize() != null ? reqVO.getPageSize() : 1000;
+        int total = fullList.size();
+        int from = Math.min((pageNo - 1) * pageSize, total);
+        int to = Math.min(from + pageSize, total);
+
+        DrillDownRespVO respVO = new DrillDownRespVO();
+        respVO.setMetric(reqVO.getMetric());
+        respVO.setList(fullList.subList(from, to));
+        respVO.setTotal((long) total);
+        return respVO;
+    }
+
     /**
      * 根据报表类型，自动计算 开始时间、结束时间
      * @param reportType 报表类型
