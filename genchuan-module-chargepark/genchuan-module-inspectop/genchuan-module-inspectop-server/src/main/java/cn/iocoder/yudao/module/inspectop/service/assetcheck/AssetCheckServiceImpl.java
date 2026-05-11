@@ -98,7 +98,7 @@ public class AssetCheckServiceImpl implements AssetCheckService {
 
         // 3. 设置默认值
         assetCheck.setStatus("1");  // 默认状态：待盘点
-        assetCheck.setProgress(0);  // 初始进度：0%
+        assetCheck.setProgress(createReqVO.getProgress());  // 初始进度：0%
 
         // 5. 插入数据库
         assetCheckMapper.insert(assetCheck);

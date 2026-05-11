@@ -74,8 +74,13 @@ public class AssetStockServiceImpl implements AssetStockService {
     }
 
     @Override
-    public AssetStockDO getAssetStock(Long id) {
-        return assetStockMapper.selectById(id);
+    public AssetStockRespVO getAssetStock(Long id) {
+        // 调用 Mapper 的关联查询方法获取包含资产名称的数据
+        AssetStockRespVO assetStock = assetStockMapper.selectOneWithJoin(id);
+        if (assetStock == null) {
+            throw exception(ASSET_STOCK_NOT_EXISTS);
+        }
+        return assetStock;
     }
 
     @Override
@@ -93,7 +98,6 @@ public class AssetStockServiceImpl implements AssetStockService {
         return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
     }
 
-    // 在getAssetStockPage方法后添加
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void allocateAssetStock(AssetStockAllocateReqVO allocateReqVO) {
@@ -114,25 +118,54 @@ public class AssetStockServiceImpl implements AssetStockService {
                 .eq(AssetStockDO::getStationId, allocateReqVO.getTargetStationId());
         AssetStockDO targetStock = assetStockMapper.selectOne(queryWrapper);
 
-        // 4. 扣减源库存
+        // 4. 扣减源库存，并记录调出信息
         sourceStock.setCurrentStock(sourceStock.getCurrentStock() - allocateReqVO.getAllocateCount());
+        // 【修改点】构建并追加调出记录到 reserve2
+        String sourceRecord = String.format("[调出至场站%d,数量:%d]",
+                allocateReqVO.getTargetStationId(), allocateReqVO.getAllocateCount());
+        sourceStock.setReserve2(appendRecord(sourceStock.getReserve2(), sourceRecord));
         assetStockMapper.updateById(sourceStock);
 
         // 5. 处理目标库存
         if (targetStock != null) {
             // 目标场站已存在该资产库存，增加库存数量
             targetStock.setCurrentStock(targetStock.getCurrentStock() + allocateReqVO.getAllocateCount());
+            // 【修改点】构建并追加调入记录到 reserve2
+            String targetRecord = String.format("[从库存%d调入,数量:%d]",
+                    sourceStock.getId(), allocateReqVO.getAllocateCount());
+            targetStock.setReserve2(appendRecord(targetStock.getReserve2(), targetRecord));
             assetStockMapper.updateById(targetStock);
         } else {
             // 目标场站不存在该资产库存，创建新记录
+            // 【修改点】为新库存设置调入记录
+            String newStockRecord = String.format("[从库存%d调入,数量:%d]",
+                    sourceStock.getId(), allocateReqVO.getAllocateCount());
             AssetStockDO newStock = AssetStockDO.builder()
                     .assetId(sourceStock.getAssetId())
                     .currentStock(allocateReqVO.getAllocateCount())
                     .warnThreshold(sourceStock.getWarnThreshold())
                     .status("1") // 假设状态1为正常
                     .stationId(allocateReqVO.getTargetStationId())
+                    .reserve2(newStockRecord) // 直接设置调入记录
                     .build();
             assetStockMapper.insert(newStock);
+        }
+    }
+
+    /**
+     * 向原有记录字符串中追加新记录。
+     * 如果原记录为空，则直接返回新记录；否则在原记录后添加分号和换行符，再追加新记录。
+     *
+     * @param originalRecord 原始记录字符串
+     * @param newRecord 要追加的新记录
+     * @return 追加后的完整记录字符串
+     */
+    private String appendRecord(String originalRecord, String newRecord) {
+        if (originalRecord == null || originalRecord.isEmpty()) {
+            return newRecord;
+        } else {
+            // 使用“; ”作为分隔符，使记录更清晰。您可以根据喜好调整。
+            return originalRecord + "; " + newRecord;
         }
     }
 

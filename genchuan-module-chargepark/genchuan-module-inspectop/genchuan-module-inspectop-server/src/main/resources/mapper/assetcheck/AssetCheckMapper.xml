@@ -15,6 +15,7 @@
         DATE_FORMAT(check_time, '%m') AS time,
         ROUND(AVG(progress), 0) AS progress
         FROM asset_check
+        WHERE deleted = 0
         <where>
             <!-- 参考 AssetInfoMapper.xml 的写法，使用 reqVO.属性名 -->
             <if test="reqVO.timeRange != null and reqVO.timeRange.length == 2">
@@ -30,6 +31,7 @@
         COUNT(*) AS checkCount,
         ROUND(SUM(CASE WHEN status = '3' THEN 1 ELSE 0 END) * 1.0 / COUNT(*), 2) AS checkFinishRate
         FROM asset_check
+        WHERE deleted = 0
         <where>
             <!-- 同样使用 reqVO.属性名 -->
             <if test="reqVO.timeRange != null and reqVO.timeRange.length == 2">

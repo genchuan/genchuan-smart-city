@@ -66,4 +66,11 @@ public interface SpareStockMapper extends BaseMapperX<SpareStockDO> {
      */
     SpareStockChartRespVO.CardData selectCardData(@Param("timeRange") LocalDateTime[] timeRange);
 
+    /**
+     * 获取不重复的备件列表（用于下拉选择）
+     * 按照备件ID和名称分组，返回去重后的列表
+     *
+     * @return 备件简略信息列表
+     */
+    List<SpareStockSimpleRespVO> selectDistinctSpareList();
 }
