@@ -147,6 +147,34 @@ public class PointActivityController {
         reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<PointActivityDO> pageResult = pointActivityService.getPage(reqVO);
         List<PointActivityExportExcelVO> list = BeanUtils.toBean(pageResult.getList(), PointActivityExportExcelVO.class);
+
+        // 场站名称翻译
+        Set<Long> stationIdSet = new HashSet<>();
+        for (var bean : list) {
+            if (StrUtil.isNotBlank(bean.getStationIds())) {
+                Arrays.stream(bean.getStationIds().split(","))
+                        .filter(StrUtil::isNotBlank).map(String::trim)
+                        .map(PointActivityController.this::safeParseLong)
+                        .filter(Objects::nonNull)
+                        .forEach(stationIdSet::add);
+            }
+        }
+        Map<Long, StationInfoRespDTO> stationMap = stationIdSet.isEmpty()
+                ? Collections.emptyMap() : stationInfoApi.getStationMap(stationIdSet);
+        for (var bean : list) {
+            if (StrUtil.isNotBlank(bean.getStationIds())) {
+                String names = Arrays.stream(bean.getStationIds().split(","))
+                        .filter(StrUtil::isNotBlank).map(String::trim)
+                        .map(s -> {
+                            Long id = safeParseLong(s);
+                            if (id == null) return s;
+                            StationInfoRespDTO station = stationMap.get(id);
+                            return station != null ? station.getName() : s;
+                        })
+                        .collect(Collectors.joining(","));
+                bean.setStationIds(names);
+            }
+        }
         ExcelUtils.write(response, "积分活动.xlsx", "数据", PointActivityExportExcelVO.class, list);
     }
 
