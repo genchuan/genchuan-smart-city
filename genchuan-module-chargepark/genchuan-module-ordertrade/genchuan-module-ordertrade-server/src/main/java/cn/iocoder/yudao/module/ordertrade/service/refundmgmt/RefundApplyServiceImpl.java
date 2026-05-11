@@ -54,7 +54,7 @@ public class RefundApplyServiceImpl implements RefundApplyService {
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(refundApplyMapper.selectTrend(start, end));
-        resp.setTypeData(refundApplyMapper.selectGroupByStatus());
+        resp.setTypeData(refundApplyMapper.selectGroupByStatus(start, end));
         RefundApplyChartRespVO.CardData card = new RefundApplyChartRespVO.CardData();
         card.setWaitAuditCount(refundApplyMapper.selectCountByStatus("pending_audit").intValue());
         Long all      = refundApplyMapper.selectCountByStatus(null);

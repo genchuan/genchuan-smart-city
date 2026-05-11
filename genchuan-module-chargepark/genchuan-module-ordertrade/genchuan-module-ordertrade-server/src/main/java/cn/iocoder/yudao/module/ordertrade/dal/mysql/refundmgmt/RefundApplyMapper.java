@@ -40,8 +40,14 @@ public interface RefundApplyMapper extends BaseMapperX<RefundApplyDO> {
     List<Map<String, Object>> selectTrend(@Param("startTime") LocalDateTime startTime,
                                           @Param("endTime") LocalDateTime endTime);
 
-    @Select("SELECT status, COUNT(*) AS count FROM refund_apply WHERE deleted = 0 GROUP BY status")
-    List<Map<String, Object>> selectGroupByStatus();
+    @Select("<script>" +
+            "SELECT status, COUNT(*) AS count FROM refund_apply WHERE deleted = 0 " +
+            "<if test='startTime != null'> AND apply_time &gt;= #{startTime} </if>" +
+            "<if test='endTime != null'>   AND apply_time &lt;= #{endTime}   </if>" +
+            "GROUP BY status" +
+            "</script>")
+    List<Map<String, Object>> selectGroupByStatus(@Param("startTime") LocalDateTime startTime,
+                                                  @Param("endTime") LocalDateTime endTime);
 
     @Select("SELECT COUNT(*) FROM refund_apply WHERE deleted = 0 AND apply_time BETWEEN #{startTime} AND #{endTime}")
     Long selectTodayCount(@Param("startTime") LocalDateTime startTime,
