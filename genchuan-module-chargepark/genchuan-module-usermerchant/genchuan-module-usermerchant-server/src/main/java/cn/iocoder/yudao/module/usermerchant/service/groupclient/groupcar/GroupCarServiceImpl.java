@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.usermerchant.service.groupclient.groupcar;
 
 import cn.hutool.core.util.StrUtil;
+import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
@@ -10,11 +11,13 @@ import cn.iocoder.yudao.module.usermerchant.dal.dataobject.merchantmgmt.merchant
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.usermgmt.usercar.UserCarDO;
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.groupclient.groupinfo.GroupInfoMapper;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.NameQueryHelper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
@@ -110,6 +113,41 @@ public class GroupCarServiceImpl implements GroupCarService {
         return pageResult;
     }
 
+//    @Override
+//    @Transactional(rollbackFor = Exception.class)
+//    public Boolean importGroups(List<GroupCarImportExcelVO> list, Boolean updateSupport) {
+//        if (CollectionUtils.isEmpty(list)) {
+//            return true;
+//        }
+//        for (GroupCarImportExcelVO vo : list) {
+//            if (vo.getId() != null) {
+//                GroupCarDO existDO = groupCarMapper.selectById(vo.getId());
+//                if (existDO != null) {
+//                    if (Boolean.TRUE.equals(updateSupport)) {
+//                        // 更新：复制属性，但保护创建信息
+//                        GroupCarDO updateDO = BeanUtils.toBean(vo, GroupCarDO.class);
+//                        updateDO.setCreator(null);
+//                        updateDO.setCreateTime(null);
+//                        groupCarMapper.updateById(updateDO);
+//                    } else {
+//                        // updateSupport = false，跳过该条记录
+//                        continue;
+//                    }
+//                } else {
+//                    // ID 不存在，按新增处理（忽略用户提供的 ID，由数据库自增）
+//                    GroupCarDO insertDO = BeanUtils.toBean(vo, GroupCarDO.class);
+//                    insertDO.setId(null);
+//                    groupCarMapper.insert(insertDO);
+//                }
+//            } else {
+//                // 无 ID，直接新增
+//                GroupCarDO insertDO = BeanUtils.toBean(vo, GroupCarDO.class);
+//                groupCarMapper.insert(insertDO);
+//            }
+//        }
+//        return true;
+//    }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean importGroups(List<GroupCarImportExcelVO> list, Boolean updateSupport) {
@@ -117,32 +155,62 @@ public class GroupCarServiceImpl implements GroupCarService {
             return true;
         }
         for (GroupCarImportExcelVO vo : list) {
+            // 1. 绑定时间为空时自动填充当前时间
+            if (vo.getBindTime() == null) {
+                vo.setBindTime(LocalDateTime.now());
+            }
+
+            // 2. 确定最终 groupId
+            Long finalGroupId = resolveGroupId(vo);
+            vo.setGroupId(finalGroupId);
+
+            // 3. 后续新增/更新逻辑（保持不变）
             if (vo.getId() != null) {
                 GroupCarDO existDO = groupCarMapper.selectById(vo.getId());
                 if (existDO != null) {
                     if (Boolean.TRUE.equals(updateSupport)) {
-                        // 更新：复制属性，但保护创建信息
                         GroupCarDO updateDO = BeanUtils.toBean(vo, GroupCarDO.class);
                         updateDO.setCreator(null);
                         updateDO.setCreateTime(null);
                         groupCarMapper.updateById(updateDO);
                     } else {
-                        // updateSupport = false，跳过该条记录
                         continue;
                     }
                 } else {
-                    // ID 不存在，按新增处理（忽略用户提供的 ID，由数据库自增）
                     GroupCarDO insertDO = BeanUtils.toBean(vo, GroupCarDO.class);
                     insertDO.setId(null);
                     groupCarMapper.insert(insertDO);
                 }
             } else {
-                // 无 ID，直接新增
                 GroupCarDO insertDO = BeanUtils.toBean(vo, GroupCarDO.class);
                 groupCarMapper.insert(insertDO);
             }
         }
         return true;
+    }
+
+    // 辅助方法：解析 groupId
+    private Long resolveGroupId(GroupCarImportExcelVO vo) {
+        if (vo.getGroupId() != null) {
+            // 如果有提供 groupId，校验是否存在（查询 group_info 表）
+            GroupInfoDO group = groupInfoMapper.selectById(vo.getGroupId());
+            if (group == null) {
+                throw new ServiceException(GROUP_INFO_NOT_EXISTS);
+            }
+            return vo.getGroupId();
+        }
+        if (StringUtils.hasText(vo.getName())) {
+            // 通过名称查询集团ID（假设 group_info 表有 name 字段且唯一）
+            // 集团名称应该是唯一的，这里可以直接用 mapper 的方法
+            GroupInfoDO group = groupInfoMapper.selectOne(new LambdaQueryWrapper<GroupInfoDO>()
+                    .eq(GroupInfoDO::getName, vo.getName())
+                    .eq(GroupInfoDO::getDeleted, 0));
+            if (group == null) {
+                throw new ServiceException(GROUP_INFO_NOT_EXISTS);
+            }
+            return group.getId();
+        }
+        throw new ServiceException(GROUP_INFO_NOT_EXISTS);
     }
 
     @Override

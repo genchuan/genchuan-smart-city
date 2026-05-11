@@ -68,6 +68,14 @@ public class MerchantInfoController {
         return success(merchantInfoService.importInfos(list, updateSupport));
     }
 
+    @GetMapping("/template")
+    @Operation(summary = "下载商户信息导入模板")
+    @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:import')")
+    public void downloadImportTemplate(HttpServletResponse response) throws IOException {
+        List<MerchantInfoImportExcelVO> emptyList = Collections.emptyList();
+        ExcelUtils.write(response, "商户信息导入模板.xlsx", "商户信息", MerchantInfoImportExcelVO.class, emptyList);
+    }
+
     @GetMapping("/export")
     @Operation(summary = "导出商户信息")
     @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:export')")

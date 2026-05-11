@@ -80,6 +80,14 @@ public class GroupCarController {
         return success(groupCarService.importGroups(list, updateSupport));
     }
 
+    @GetMapping("/template")
+    @Operation(summary = "下载集团车辆导入模板")
+    @PreAuthorize("@ss.hasPermission('usermerchant:group-car:import')")
+    public void downloadImportTemplate(HttpServletResponse response) throws IOException {
+        List<GroupCarImportExcelVO> emptyList = Collections.emptyList();
+        ExcelUtils.write(response, "集团车辆导入模板.xlsx", "集团车辆", GroupCarImportExcelVO.class, emptyList);
+    }
+
     @GetMapping("/export")
     @Operation(summary = "导出集团车辆")
     @PreAuthorize("@ss.hasPermission('usermerchant:group-car:export')")

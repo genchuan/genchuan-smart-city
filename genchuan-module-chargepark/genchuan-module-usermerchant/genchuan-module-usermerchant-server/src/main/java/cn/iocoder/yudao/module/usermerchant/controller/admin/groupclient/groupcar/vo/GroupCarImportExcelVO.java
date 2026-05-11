@@ -20,8 +20,11 @@ public class GroupCarImportExcelVO {
     @ExcelProperty("主键ID")
     private Long id;
 
-    @ExcelProperty("所属集团ID，关联group_info.id")
+    @ExcelProperty("所属集团ID")
     private Long groupId;
+
+    @ExcelProperty("集团名称")
+    private String name;
 
     @ExcelProperty("车牌号码，唯一")
     private String plateNo;
@@ -38,7 +41,7 @@ public class GroupCarImportExcelVO {
     @ExcelProperty("绑定状态：待审核/已绑定/已解绑")
     private String status;
 
-    @ExcelProperty("审核人ID，关联system_user.id")
+    @ExcelProperty("审核人ID")
     private Long auditorId;
 
     @ExcelProperty("审核时间")

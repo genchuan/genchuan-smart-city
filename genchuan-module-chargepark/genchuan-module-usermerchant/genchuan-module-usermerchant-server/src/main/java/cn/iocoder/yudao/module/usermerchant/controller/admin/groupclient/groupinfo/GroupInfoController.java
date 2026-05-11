@@ -68,6 +68,14 @@ public class GroupInfoController {
         return success(groupInfoService.importGroups(list, updateSupport));
     }
 
+    @GetMapping("/template")
+    @Operation(summary = "下载集团信息导入模板")
+    @PreAuthorize("@ss.hasPermission('usermerchant:group-info:import')")
+    public void downloadImportTemplate(HttpServletResponse response) throws IOException {
+        List<GroupInfoImportExcelVO> emptyList = Collections.emptyList();
+        ExcelUtils.write(response, "集团信息导入模板.xlsx", "集团信息", GroupInfoImportExcelVO.class, emptyList);
+    }
+
     @GetMapping("/export")
     @Operation(summary = "导出集团信息")
     @PreAuthorize("@ss.hasPermission('usermerchant:group-info:export')")
