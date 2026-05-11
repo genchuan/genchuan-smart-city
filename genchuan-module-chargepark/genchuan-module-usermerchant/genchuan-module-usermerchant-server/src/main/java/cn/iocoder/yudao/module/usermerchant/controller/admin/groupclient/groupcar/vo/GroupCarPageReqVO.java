@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.groupclient.groupcar.vo;
 
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.FlexibleTimestampDeserializer;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,6 +17,10 @@ public class GroupCarPageReqVO extends PageParam {
 
     @Schema(description = "所属集团ID，关联group_info.id", example = "14580")
     private Long groupId;
+
+    @TableField(exist = false)
+    @Schema(description = "集团名称")
+    private String groupName;
 
     @Schema(description = "车牌号码，唯一")
     private String plateNo;

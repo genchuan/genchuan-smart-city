@@ -1,11 +1,15 @@
 package cn.iocoder.yudao.module.usermerchant.service.groupclient.groupcar;
 
+import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.groupclient.groupinfo.vo.GroupInfoImportExcelVO;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.groupclient.groupinfo.GroupInfoDO;
+import cn.iocoder.yudao.module.usermerchant.dal.dataobject.merchantmgmt.merchantrecharge.MerchantRechargeDO;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.usermgmt.usercar.UserCarDO;
+import cn.iocoder.yudao.module.usermerchant.dal.mysql.groupclient.groupinfo.GroupInfoMapper;
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.NameQueryHelper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -34,6 +38,9 @@ import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
 @Service
 @Validated
 public class GroupCarServiceImpl implements GroupCarService {
+
+    @Resource
+    private GroupInfoMapper groupInfoMapper;
 
     @Resource
     private GroupCarMapper groupCarMapper;
@@ -86,7 +93,21 @@ public class GroupCarServiceImpl implements GroupCarService {
 
     @Override
     public PageResult<GroupCarDO> getGroupCarPage(GroupCarPageReqVO pageReqVO) {
-        return groupCarMapper.selectPage(pageReqVO);
+        if (StrUtil.isNotBlank(pageReqVO.getGroupName())) {
+            Long groupId = groupInfoMapper.getIdByNickname(pageReqVO.getGroupName());
+            if (groupId == null) {
+                return new PageResult<>(Collections.emptyList(), 0L);
+            }
+            pageReqVO.setGroupId(groupId);
+        }
+        PageResult<GroupCarDO> pageResult = groupCarMapper.selectPage(pageReqVO);
+        NameQueryHelper.fillNamesByIds(
+                pageResult.getList(),
+                GroupCarDO::getGroupId,
+                GroupCarDO::setGroupName,
+                "group_info", "id", "name"
+        );
+        return pageResult;
     }
 
     @Override

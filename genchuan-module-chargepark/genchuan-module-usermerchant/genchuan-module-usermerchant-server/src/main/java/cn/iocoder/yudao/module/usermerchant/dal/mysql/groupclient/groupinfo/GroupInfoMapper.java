@@ -42,4 +42,6 @@ public interface GroupInfoMapper extends BaseMapperX<GroupInfoDO> {
     Long selectTotalGroupCount(LocalDateTime start, LocalDateTime end);
 
     Long selectNewGroupCount(LocalDateTime start, LocalDateTime end);
+
+    Long getIdByNickname(String merchantName);
 }

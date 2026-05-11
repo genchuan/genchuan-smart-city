@@ -3,6 +3,8 @@ package cn.iocoder.yudao.module.usermerchant.service.merchantmgmt.merchantsendco
 import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.plateauth.vo.PlateAuthChartRespVO;
+import cn.iocoder.yudao.module.usermerchant.dal.dataobject.merchantmgmt.merchantrecharge.MerchantRechargeDO;
+import cn.iocoder.yudao.module.usermerchant.dal.mysql.merchantmgmt.merchantinfo.MerchantInfoMapper;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.NameQueryHelper;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import com.alibaba.nacos.client.naming.utils.CollectionUtils;
@@ -35,6 +37,9 @@ import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
 @Service
 @Validated
 public class MerchantSendCouponServiceImpl implements MerchantSendCouponService {
+
+    @Resource
+    private MerchantInfoMapper merchantInfoMapper;
 
     @Resource
     private MerchantSendCouponMapper merchantSendCouponMapper;
@@ -86,7 +91,21 @@ public class MerchantSendCouponServiceImpl implements MerchantSendCouponService 
 
     @Override
     public PageResult<MerchantSendCouponDO> getMerchantSendCouponPage(MerchantSendCouponPageReqVO pageReqVO) {
-        return merchantSendCouponMapper.selectPage(pageReqVO);
+        if (StrUtil.isNotBlank(pageReqVO.getMerchantName())) {
+            Long merchantId = merchantInfoMapper.getIdByNickname(pageReqVO.getMerchantName());
+            if (merchantId == null) {
+                return new PageResult<>(Collections.emptyList(), 0L);
+            }
+            pageReqVO.setMerchantId(merchantId);
+        }
+        PageResult<MerchantSendCouponDO> pageResult = merchantSendCouponMapper.selectPage(pageReqVO);
+        NameQueryHelper.fillNamesByIds(
+                pageResult.getList(),
+                MerchantSendCouponDO::getMerchantId,
+                MerchantSendCouponDO::setMerchantName,
+                "merchant_info", "id", "name"
+        );
+        return pageResult;
     }
 
     @Override
