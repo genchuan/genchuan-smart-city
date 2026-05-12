@@ -555,6 +555,19 @@ public class StationReportServiceImpl implements StationReportService {
         return buildResp(reqVO, list);
     }
 
+    @Override
+    public void incrementExportCount(List<Long> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            return;
+        }
+        List<StationReportDO> list = stationReportMapper.selectList(
+                new LambdaQueryWrapper<StationReportDO>().in(StationReportDO::getId, ids));
+        for (StationReportDO report : list) {
+            report.setExportCount(report.getExportCount() == null ? 1L : report.getExportCount() + 1);
+        }
+        stationReportMapper.updateBatch(list);
+    }
+
     /** 根据报表周期自动计算时间范围 */
     private void resolveReportTime(DrillDownReqVO reqVO) {
         if (reqVO.getReportStartTime() != null || reqVO.getReportEndTime() != null) {

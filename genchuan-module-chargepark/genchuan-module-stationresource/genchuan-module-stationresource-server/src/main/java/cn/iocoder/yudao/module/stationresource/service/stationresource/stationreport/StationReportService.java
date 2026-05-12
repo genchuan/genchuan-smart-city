@@ -69,4 +69,7 @@ public interface StationReportService {
 
     /** 押金订单量 → 钻取押金计划列表 */
     DrillDownRespVO drillDownDepositPlan(DrillDownReqVO reqVO);
+
+    /** 批量增加导出次数 */
+    void incrementExportCount(List<Long> ids);
 }
