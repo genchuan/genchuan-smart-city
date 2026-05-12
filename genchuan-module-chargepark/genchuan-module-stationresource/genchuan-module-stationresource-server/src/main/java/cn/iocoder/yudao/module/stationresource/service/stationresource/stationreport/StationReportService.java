@@ -46,6 +46,9 @@ public interface StationReportService {
     /** 总站场数 → 钻取场站列表 */
     DrillDownRespVO drillDownStation(DrillDownReqVO reqVO);
 
+    /** 覆盖场站数 → 钻取有归属片区的场站列表 */
+    DrillDownRespVO drillDownCoverStation(DrillDownReqVO reqVO);
+
     /** 正常运营数 → 钻取运营中场站列表 */
     DrillDownRespVO drillDownNormalStation(DrillDownReqVO reqVO);
 

@@ -53,11 +53,11 @@
     </select>
 
     <!-- 以下都是根据各个表搜索 -->
-    <!-- 1. area_info 片区统计：总片区数、覆盖场站数 -->
+    <!-- 1. area_info 片区统计：总片区数、覆盖场站数（从场站表统计有归属片区的场站） -->
     <select id="selectAreaReport" resultType="java.util.Map">
         SELECT
             COUNT(id) AS totalAreaCount,
-            IFNULL(SUM(station_count), 0) AS coverStationCount
+            (SELECT COUNT(id) FROM station_info WHERE deleted = 0 AND area_id IS NOT NULL) AS coverStationCount
         FROM area_info
         WHERE deleted = 0
     </select>
@@ -206,6 +206,23 @@
         FROM station_info s
         LEFT JOIN area_info a ON s.area_id = a.id AND a.deleted = 0
         WHERE s.deleted = 0
+        <if test="startTime != null">
+            AND s.create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND s.create_time &lt;= #{endTime}
+        </if>
+        ORDER BY s.id DESC
+    </select>
+
+    <!-- 2.5 覆盖场站数 → 钻取有归属片区的场站列表 -->
+    <select id="drillDownCoverStationList" resultType="java.util.Map">
+        SELECT s.id, s.station_no AS stationNo, s.name, s.type, s.address, s.status,
+               s.operate_type AS operateType, s.space_total AS spaceTotal,
+               a.name AS areaName, s.remark
+        FROM station_info s
+        LEFT JOIN area_info a ON s.area_id = a.id AND a.deleted = 0
+        WHERE s.deleted = 0 AND s.area_id IS NOT NULL
         <if test="startTime != null">
             AND s.create_time &gt;= #{startTime}
         </if>

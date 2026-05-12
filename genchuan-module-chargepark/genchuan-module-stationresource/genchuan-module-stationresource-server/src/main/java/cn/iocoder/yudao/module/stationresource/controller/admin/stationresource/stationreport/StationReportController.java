@@ -119,6 +119,9 @@ public class StationReportController {
             case "totalAreaCount":
                 respVO = stationReportService.drillDownArea(reqVO);
                 break;
+            case "coverStationCount":
+                respVO = stationReportService.drillDownCoverStation(reqVO);
+                break;
             case "totalStationCount":
                 respVO = stationReportService.drillDownStation(reqVO);
                 break;

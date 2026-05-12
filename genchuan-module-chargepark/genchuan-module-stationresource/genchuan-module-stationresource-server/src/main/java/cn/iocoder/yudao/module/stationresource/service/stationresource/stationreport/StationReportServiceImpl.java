@@ -493,6 +493,13 @@ public class StationReportServiceImpl implements StationReportService {
     }
 
     @Override
+    public DrillDownRespVO drillDownCoverStation(DrillDownReqVO reqVO) {
+        List<Map<String, Object>> list = stationReportMapper.drillDownCoverStationList(
+                reqVO.getReportStartTime(), reqVO.getReportEndTime());
+        return buildResp(reqVO, list);
+    }
+
+    @Override
     public DrillDownRespVO drillDownNormalStation(DrillDownReqVO reqVO) {
         List<Map<String, Object>> list = stationReportMapper.drillDownNormalStationList(
                 reqVO.getReportStartTime(), reqVO.getReportEndTime());
@@ -552,9 +559,27 @@ public class StationReportServiceImpl implements StationReportService {
 
         DrillDownRespVO respVO = new DrillDownRespVO();
         respVO.setMetric(reqVO.getMetric());
+        respVO.setMetricName(metricName(reqVO.getMetric()));
         respVO.setList(fullList.subList(from, to));
         respVO.setTotal((long) total);
         return respVO;
+    }
+
+    private String metricName(String metric) {
+        switch (metric) {
+            case "totalAreaCount":      return "总片区数";
+            case "coverStationCount":   return "覆盖场站数";
+            case "totalStationCount":   return "总站场数";
+            case "normalOperateCount":  return "正常运营数";
+            case "totalSpaceCount":     return "总车位数";
+            case "availableSpaceCount": return "可用车位数";
+            case "effectiveRuleCount":  return "生效规则数";
+            case "orderCount":          return "订单量";
+            case "revenue":             return "营收";
+            case "recoveryRate":        return "追缴完成率";
+            case "depositOrderCount":   return "押金订单量";
+            default:                    return metric;
+        }
     }
 
     /**

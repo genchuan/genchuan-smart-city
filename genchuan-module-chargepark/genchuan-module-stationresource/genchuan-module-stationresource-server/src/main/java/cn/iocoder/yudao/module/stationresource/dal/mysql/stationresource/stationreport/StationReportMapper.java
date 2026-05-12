@@ -68,6 +68,10 @@ public interface StationReportMapper extends BaseMapperX<StationReportDO> {
     List<Map<String, Object>> drillDownStationList(@Param("startTime") LocalDateTime startTime,
                                                    @Param("endTime") LocalDateTime endTime);
 
+    /** 覆盖场站数 → 钻取有归属片区的场站列表 */
+    List<Map<String, Object>> drillDownCoverStationList(@Param("startTime") LocalDateTime startTime,
+                                                        @Param("endTime") LocalDateTime endTime);
+
     /** 正常运营数 → 钻取运营中场站列表 */
     List<Map<String, Object>> drillDownNormalStationList(@Param("startTime") LocalDateTime startTime,
                                                          @Param("endTime") LocalDateTime endTime);
