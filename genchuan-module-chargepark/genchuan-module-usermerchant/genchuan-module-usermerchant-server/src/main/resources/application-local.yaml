@@ -8,12 +8,12 @@ spring:
       username: # Nacos 账号
       password: # Nacos 密码
       discovery: # 【配置中心】配置项
-        namespace: Euria-dev # 命名空间
+        namespace: # 命名空间
         group: DEFAULT_GROUP # 使用的 Nacos 配置分组，默认为 DEFAULT_GROUP
         metadata:
           version: 1.0.0 # 服务实例的版本号，可用于灰度发布
       config: # 【注册中心】配置项
-        namespace: Euria-dev # 命名空间
+        namespace: # 命名空间
         group: DEFAULT_GROUP # 使用的 Nacos 配置分组，默认为 DEFAULT_GROUP
 --- #################### 数据库相关配置 ####################
 spring:
@@ -58,11 +58,7 @@ spring:
       primary: master
       datasource:
         master:
-          url: jdbc:mysql://192.168.8.138:3306/genchuan-module-chargepark?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true # MySQL Connector/J 8.X 连接的示例
-          username: genchuan
-          password: Gyh@181612
-        member:
-          url: jdbc:mysql://192.168.8.68:3306/yudao-module?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true # MySQL Connector/J 8.X 连接的示例
+          url: jdbc:mysql://192.168.8.67:3306/genchuan-module-chargepark?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true # MySQL Connector/J 8.X 连接的示例
           username: root
           password: Cql@335533
         #          username: sa # SQL Server 连接的示例
@@ -71,9 +67,9 @@ spring:
         #          password: SYSDBA # DM 连接的示例
         slave: # 模拟从库，可根据自己需要修改
           lazy: true # 开启懒加载，保证启动速度
-          url: jdbc:mysql://192.168.8.138:3306/genchuan-module-chargepark?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true # MySQL Connector/J 8.X 连接的示例
-          username: genchuan
-          password: Gyh@181612
+          url: jdbc:mysql://192.168.8.67:3306/genchuan-module-chargepark?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true # MySQL Connector/J 8.X 连接的示例
+          username: root
+          password: Cql@335533
 
   # Redis 配置。Redisson 默认的配置足够使用，一般不需要进行调优
   data:
