@@ -30,8 +30,8 @@ public interface PointActivityMapper extends BaseMapperX<PointActivityDO> {
                 .likeIfPresent(PointActivityDO::getRule, reqVO.getRule())
                 .likeIfPresent(PointActivityDO::getDescription, reqVO.getDescription())
                 .eqIfPresent(PointActivityDO::getAuditorId, reqVO.getAuditorId())
-                .betweenIfPresent(PointActivityDO::getCreateTime, reqVO.getStartTime())
-                .betweenIfPresent(PointActivityDO::getUpdateTime, reqVO.getEndTime())
+                .betweenIfPresent(PointActivityDO::getStartTime, reqVO.getStartTime())
+                .betweenIfPresent(PointActivityDO::getEndTime, reqVO.getEndTime())
                 .orderByDesc(PointActivityDO::getId);
         if (reqVO.getStationId() != null) {
             queryWrapperX.apply("FIND_IN_SET({0}, station_ids)", reqVO.getStationId());
