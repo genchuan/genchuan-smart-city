@@ -214,7 +214,10 @@ public class StationReportServiceImpl implements StationReportService {
             }
         }
 
-        System.out.println("cs2026-04-22 11:24:10:"+reqVO);
+        if (reqVO.getReportStartTime() != null && reqVO.getReportEndTime() != null
+                && reqVO.getReportStartTime().isAfter(reqVO.getReportEndTime())) {
+            throw exception("开始时间不能大于结束时间");
+        }
 
         // 1. 构建返回对象
         StationOpReportChartRespVO resp = new StationOpReportChartRespVO();
@@ -363,6 +366,9 @@ public class StationReportServiceImpl implements StationReportService {
                 reqVO.setReportStartTime(LocalDateTime.ofInstant(dates[0].toInstant(), ZoneId.systemDefault()));
                 reqVO.setReportEndTime(LocalDateTime.ofInstant(dates[1].toInstant(), ZoneId.systemDefault()));
             }
+        }
+        if (reqVO.getReportStartTime().isAfter(reqVO.getReportEndTime())) {
+            throw exception("开始时间不能晚于结束时间");
         }
         System.out.println("cs2026-04-23 16:35:07:"+reqVO);
         //去掉毫秒，方便后续的报表唯一性校验：
@@ -565,7 +571,10 @@ public class StationReportServiceImpl implements StationReportService {
 
     /** 组装钻取响应，手动分页 */
     private DrillDownRespVO buildResp(DrillDownReqVO reqVO, List<Map<String, Object>> fullList) {
-        System.out.println("cs2026-05-11 17:33:04:"+reqVO);
+        if (reqVO.getReportStartTime() != null && reqVO.getReportEndTime() != null
+                && reqVO.getReportStartTime().isAfter(reqVO.getReportEndTime())) {
+            throw exception("开始时间不能大于结束时间");
+        }
         int pageNo = reqVO.getPageNo() != null ? reqVO.getPageNo() : 1;
         int pageSize = reqVO.getPageSize() != null ? reqVO.getPageSize() : 1000;
         int total = fullList.size();
