@@ -18,12 +18,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.PointActivityMapper;
+import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointActivityDO;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import cn.hutool.core.util.StrUtil;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Tag(name = "管理后台 - 奖品管理")
 @RestController
@@ -36,6 +39,9 @@ public class PrizeMgmtController {
     @Resource
     private AdminUserApi adminUserApi;
 
+    @Resource
+    private PointActivityMapper pointActivityMapper;
+
     @GetMapping("/page")
     @Operation(summary = "获得奖品管理分页")
     @PreAuthorize("@ss.hasPermission('marketop:prize-mgmt:query')")
@@ -43,6 +49,7 @@ public class PrizeMgmtController {
         PageResult<PrizeMgmtDO> pageResult = prizeMgmtService.getPage(reqVO);
         PageResult<PrizeMgmtRespVO> bean = BeanUtils.toBean(pageResult, PrizeMgmtRespVO.class);
         injectUserNames(bean.getList());
+        injectActivityNames(bean.getList(), pageResult.getList());
         return CommonResult.success(bean);
     }
 
@@ -122,6 +129,24 @@ public class PrizeMgmtController {
     @PreAuthorize("@ss.hasPermission('marketop:prize-mgmt:query')")
     public CommonResult<PrizeMgmtChartRespVO> getChart() {
         return CommonResult.success(prizeMgmtService.getChart());
+    }
+
+    private void injectActivityNames(List<PrizeMgmtRespVO> respList, List<PrizeMgmtDO> doList) {
+        Set<Long> activityIds = doList.stream()
+                .map(PrizeMgmtDO::getActivityId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        if (activityIds.isEmpty()) return;
+        List<PointActivityDO> activities = pointActivityMapper.selectBatchIds(activityIds);
+        Map<Long, String> activityNameMap = activities.stream()
+                .collect(Collectors.toMap(PointActivityDO::getId, PointActivityDO::getName));
+        for (var item : respList) {
+            if (item.getActivityId() != null) {
+                item.setActivityName(activityNameMap.getOrDefault(item.getActivityId(), "-"));
+            } else {
+                item.setActivityName("-");
+            }
+        }
     }
 
     private void injectUserNames(List<PrizeMgmtRespVO> list) {

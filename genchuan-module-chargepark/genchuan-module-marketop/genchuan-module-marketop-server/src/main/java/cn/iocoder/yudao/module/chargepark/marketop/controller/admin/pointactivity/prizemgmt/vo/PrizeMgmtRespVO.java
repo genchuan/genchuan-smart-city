@@ -27,6 +27,9 @@ public class PrizeMgmtRespVO {
     @Schema(description = "绑定活动ID")
     private Long activityId;
 
+    @Schema(description = "绑定活动名称")
+    private String activityName;
+
     @Schema(description = "发放量")
     private Integer sendCount;
 

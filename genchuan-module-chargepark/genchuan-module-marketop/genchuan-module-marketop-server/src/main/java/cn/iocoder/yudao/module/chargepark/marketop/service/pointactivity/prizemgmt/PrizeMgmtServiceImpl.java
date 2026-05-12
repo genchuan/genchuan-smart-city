@@ -124,7 +124,11 @@ public class PrizeMgmtServiceImpl implements PrizeMgmtService {
         }
         for (PrizeMgmtImportExcelVO excelVO : list) {
             validateNameUnique(null, excelVO.getName());
+            if (excelVO.getActivityId() == null) {
+                throw exception(PRIZE_MGMT_ACTIVITY_ID_IS_NULL);
+            }
             PrizeMgmtDO prizeMgmt = BeanUtils.toBean(excelVO, PrizeMgmtDO.class);
+            prizeMgmt.setActivityId(excelVO.getActivityId());
             prizeMgmt.setStatus(PrizeMgmtStatusEnum.NORMAL.getValue());
             prizeMgmt.setSendCount(0);
             prizeMgmtMapper.insert(prizeMgmt);
@@ -144,6 +148,7 @@ public class PrizeMgmtServiceImpl implements PrizeMgmtService {
         if (existing != null && !existing.getId().equals(id)) {
             throw exception(PRIZE_MGMT_NAME_EXISTS);
         }
+
     }
 
 }
