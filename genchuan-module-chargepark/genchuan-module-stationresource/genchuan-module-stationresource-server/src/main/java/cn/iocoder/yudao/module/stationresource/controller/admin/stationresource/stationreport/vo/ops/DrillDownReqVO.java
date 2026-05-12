@@ -24,6 +24,9 @@ public class DrillDownReqVO {
     @NotBlank(message = "卡片指标不能为空")
     private String metric;
 
+    @Schema(description = "报表周期：日报/周报/月报/季报/半年报/年报/自定义报表", example = "日报")
+    private String reportCycle;
+
     @Schema(description = "报表开始时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime reportStartTime;

@@ -91,14 +91,14 @@
         FROM DUAL
     </select>
 
-    <!-- 5. charge_park_link 订单量 + 营收（按时间范围） -->
+    <!-- 5. all_order 订单量 + 营收（按时间范围） -->
     <select id="selectChargeParkOrderReport" resultType="java.util.Map">
         SELECT
-            IFNULL(SUM(today_order_count), 0) AS orderCount,
-            IFNULL(SUM(today_income), 0) AS revenue
-        FROM charge_park_link
+            COUNT(id) AS orderCount,
+            IFNULL(SUM(amount), 0) AS revenue
+        FROM all_order
         WHERE deleted = 0
-          AND create_time BETWEEN #{reportStartTime} AND #{reportEndTime}
+          AND create_order_time BETWEEN #{reportStartTime} AND #{reportEndTime}
     </select>
 
     <!-- 6. debt_expand 追缴完成率 -->
@@ -336,21 +336,23 @@
         ORDER BY createTime DESC
     </select>
 
-    <!-- 7. 订单量/营收 → 钻取充停联动订单列表 -->
+    <!-- 7. 订单量/营收 → 钻取订单列表 -->
     <select id="drillDownOrderList" resultType="java.util.Map">
-        SELECT cpl.id, s.name AS stationName, cpl.station_id AS stationId,
-               cpl.today_order_count AS orderCount, cpl.today_income AS revenue,
-               cpl.status, cpl.create_time AS createTime
-        FROM charge_park_link cpl
-        LEFT JOIN station_info s ON cpl.station_id = s.id AND s.deleted = 0
-        WHERE cpl.deleted = 0
+        SELECT o.id, o.order_no AS orderNo, o.order_type AS orderType,
+               o.plate_no AS plateNo, o.amount, o.status,
+               s.name AS stationName, o.station_id AS stationId,
+               o.create_order_time AS createTime, o.pay_time AS payTime,
+               o.pay_method AS payMethod, o.discount_amount AS discountAmount
+        FROM all_order o
+        LEFT JOIN station_info s ON o.station_id = s.id AND s.deleted = 0
+        WHERE o.deleted = 0
         <if test="startTime != null">
-            AND cpl.create_time &gt;= #{startTime}
+            AND o.create_order_time &gt;= #{startTime}
         </if>
         <if test="endTime != null">
-            AND cpl.create_time &lt;= #{endTime}
+            AND o.create_order_time &lt;= #{endTime}
         </if>
-        ORDER BY cpl.id DESC
+        ORDER BY o.id DESC
     </select>
 
     <!-- 8. 追缴完成率 → 钻取追缴记录列表 -->

@@ -529,6 +529,7 @@ public class StationReportServiceImpl implements StationReportService {
 
     @Override
     public DrillDownRespVO drillDownOrder(DrillDownReqVO reqVO) {
+        resolveReportTime(reqVO);
         List<Map<String, Object>> list = stationReportMapper.drillDownOrderList(
                 reqVO.getReportStartTime(), reqVO.getReportEndTime());
         return buildResp(reqVO, list);
@@ -546,6 +547,20 @@ public class StationReportServiceImpl implements StationReportService {
         List<Map<String, Object>> list = stationReportMapper.drillDownDepositPlanList(
                 reqVO.getReportStartTime(), reqVO.getReportEndTime());
         return buildResp(reqVO, list);
+    }
+
+    /** 根据报表周期自动计算时间范围 */
+    private void resolveReportTime(DrillDownReqVO reqVO) {
+        if (reqVO.getReportStartTime() != null || reqVO.getReportEndTime() != null) {
+            return;
+        }
+        String cycle = reqVO.getReportCycle();
+        if (StrUtil.isBlank(cycle) || "自定义报表".equals(cycle)) {
+            return;
+        }
+        Date[] dates = autoCalcReportTime(cycle);
+        reqVO.setReportStartTime(LocalDateTime.ofInstant(dates[0].toInstant(), ZoneId.systemDefault()));
+        reqVO.setReportEndTime(LocalDateTime.ofInstant(dates[1].toInstant(), ZoneId.systemDefault()));
     }
 
     /** 组装钻取响应，手动分页 */
