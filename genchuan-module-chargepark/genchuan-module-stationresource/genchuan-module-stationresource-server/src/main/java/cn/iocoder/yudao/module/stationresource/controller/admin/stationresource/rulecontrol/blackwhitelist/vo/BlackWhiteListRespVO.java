@@ -57,8 +57,8 @@ public class BlackWhiteListRespVO {
     @ExcelProperty("拦截次数")
     private Integer interceptCount;
 
-    @Schema(description = "[证件信息] 相关证件信息描述")
-    @ExcelProperty("证件信息")
+    @Schema(description = "[证明材料]")
+    @ExcelProperty("证明材料")
     private String certInfo;
 
     @Schema(description = "[备注] 扩展说明", example = "你说的对")
