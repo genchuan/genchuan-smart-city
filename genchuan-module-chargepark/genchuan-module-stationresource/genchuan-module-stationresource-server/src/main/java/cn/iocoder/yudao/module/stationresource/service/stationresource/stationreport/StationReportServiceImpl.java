@@ -324,6 +324,9 @@ public class StationReportServiceImpl implements StationReportService {
         // 查询条件：生成状态
         wrapper.eqIfPresent(StationReportDO::getGenerateStatus, pageReqVO.getGenerateStatus());
 
+        //id
+        wrapper.eqIfPresent(StationReportDO::getId,pageReqVO.getId());
+
         // 排序
         wrapper.orderByDesc(StationReportDO::getCreateTime);
 
