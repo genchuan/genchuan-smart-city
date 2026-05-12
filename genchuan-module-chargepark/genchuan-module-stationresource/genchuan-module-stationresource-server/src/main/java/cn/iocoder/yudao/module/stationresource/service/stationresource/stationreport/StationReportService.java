@@ -18,8 +18,6 @@ import java.util.Map;
  */
 public interface StationReportService {
 
-
-
     /**
      * 获得场站资源报表
      *
@@ -27,7 +25,6 @@ public interface StationReportService {
      * @return 报表
      */
     StationReportDO getReport(Long id);
-
 
     PageResult<StationReportDO> getPage(StationOpReportPageReqVO pageReqVO);
 
@@ -39,37 +36,11 @@ public interface StationReportService {
 
     List<Long> addBatchBackReport(StationOpReportBatchBackReqVO reqVO);
 
-    // ====================== 钻取方法（卡片指标 → 明细数据） ======================
-    /** 总片区数 → 钻取片区列表 */
-    DrillDownRespVO drillDownArea(DrillDownReqVO reqVO);
-
-    /** 总站场数 → 钻取场站列表 */
-    DrillDownRespVO drillDownStation(DrillDownReqVO reqVO);
-
-    /** 覆盖场站数 → 钻取有归属片区的场站列表 */
-    DrillDownRespVO drillDownCoverStation(DrillDownReqVO reqVO);
-
-    /** 正常运营数 → 钻取运营中场站列表 */
-    DrillDownRespVO drillDownNormalStation(DrillDownReqVO reqVO);
-
-    /** 总车位数 → 钻取车位列表 */
-    DrillDownRespVO drillDownSpace(DrillDownReqVO reqVO);
-
-    /** 可用车位数 → 钻取空闲车位列表 */
-    DrillDownRespVO drillDownAvailableSpace(DrillDownReqVO reqVO);
-
-    /** 生效规则数 → 钻取规则列表 */
-    DrillDownRespVO drillDownEffectiveRule(DrillDownReqVO reqVO);
-
-    /** 订单量/营收 → 钻取充停联动订单列表 */
-    DrillDownRespVO drillDownOrder(DrillDownReqVO reqVO);
-
-    /** 追缴完成率 → 钻取追缴记录列表 */
-    DrillDownRespVO drillDownDebtExpand(DrillDownReqVO reqVO);
-
-    /** 押金订单量 → 钻取押金计划列表 */
-    DrillDownRespVO drillDownDepositPlan(DrillDownReqVO reqVO);
+    /** 按卡片指标钻取明细数据 */
+    DrillDownRespVO drillDown(DrillDownReqVO reqVO);
 
     /** 批量增加导出次数 */
     void incrementExportCount(List<Long> ids);
+
+
 }

@@ -485,76 +485,29 @@ public class StationReportServiceImpl implements StationReportService {
 
 
 
-    // ====================== 钻取方法（卡片指标 → 明细数据） ======================
+    // ====================== 钻取 ======================
 
     @Override
-    public DrillDownRespVO drillDownArea(DrillDownReqVO reqVO) {
-        List<Map<String, Object>> list = stationReportMapper.drillDownAreaList(
-                reqVO.getReportStartTime(), reqVO.getReportEndTime());
-        return buildResp(reqVO, list);
-    }
+    public DrillDownRespVO drillDown(DrillDownReqVO reqVO) {
+        LocalDateTime start = reqVO.getReportStartTime();
+        LocalDateTime end = reqVO.getReportEndTime();
 
-    @Override
-    public DrillDownRespVO drillDownStation(DrillDownReqVO reqVO) {
-        List<Map<String, Object>> list = stationReportMapper.drillDownStationList(
-                reqVO.getReportStartTime(), reqVO.getReportEndTime());
-        return buildResp(reqVO, list);
-    }
-
-    @Override
-    public DrillDownRespVO drillDownCoverStation(DrillDownReqVO reqVO) {
-        List<Map<String, Object>> list = stationReportMapper.drillDownCoverStationList(
-                reqVO.getReportStartTime(), reqVO.getReportEndTime());
-        return buildResp(reqVO, list);
-    }
-
-    @Override
-    public DrillDownRespVO drillDownNormalStation(DrillDownReqVO reqVO) {
-        List<Map<String, Object>> list = stationReportMapper.drillDownNormalStationList(
-                reqVO.getReportStartTime(), reqVO.getReportEndTime());
-        return buildResp(reqVO, list);
-    }
-
-    @Override
-    public DrillDownRespVO drillDownSpace(DrillDownReqVO reqVO) {
-        List<Map<String, Object>> list = stationReportMapper.drillDownSpaceList(
-                reqVO.getReportStartTime(), reqVO.getReportEndTime());
-        return buildResp(reqVO, list);
-    }
-
-    @Override
-    public DrillDownRespVO drillDownAvailableSpace(DrillDownReqVO reqVO) {
-        List<Map<String, Object>> list = stationReportMapper.drillDownAvailableSpaceList(
-                reqVO.getReportStartTime(), reqVO.getReportEndTime());
-        return buildResp(reqVO, list);
-    }
-
-    @Override
-    public DrillDownRespVO drillDownEffectiveRule(DrillDownReqVO reqVO) {
-        List<Map<String, Object>> list = stationReportMapper.drillDownEffectiveRuleList(
-                reqVO.getReportStartTime(), reqVO.getReportEndTime());
-        return buildResp(reqVO, list);
-    }
-
-    @Override
-    public DrillDownRespVO drillDownOrder(DrillDownReqVO reqVO) {
-        resolveReportTime(reqVO);
-        List<Map<String, Object>> list = stationReportMapper.drillDownOrderList(
-                reqVO.getReportStartTime(), reqVO.getReportEndTime());
-        return buildResp(reqVO, list);
-    }
-
-    @Override
-    public DrillDownRespVO drillDownDebtExpand(DrillDownReqVO reqVO) {
-        List<Map<String, Object>> list = stationReportMapper.drillDownDebtExpandList(
-                reqVO.getReportStartTime(), reqVO.getReportEndTime());
-        return buildResp(reqVO, list);
-    }
-
-    @Override
-    public DrillDownRespVO drillDownDepositPlan(DrillDownReqVO reqVO) {
-        List<Map<String, Object>> list = stationReportMapper.drillDownDepositPlanList(
-                reqVO.getReportStartTime(), reqVO.getReportEndTime());
+        List<Map<String, Object>> list = switch (reqVO.getMetric()) {
+            case "totalAreaCount"      -> stationReportMapper.drillDownAreaList(start, end);
+            case "coverStationCount"   -> stationReportMapper.drillDownCoverStationList(start, end);
+            case "totalStationCount"   -> stationReportMapper.drillDownStationList(start, end);
+            case "normalOperateCount"  -> stationReportMapper.drillDownNormalStationList(start, end);
+            case "totalSpaceCount"     -> stationReportMapper.drillDownSpaceList(start, end);
+            case "availableSpaceCount" -> stationReportMapper.drillDownAvailableSpaceList(start, end);
+            case "effectiveRuleCount"  -> stationReportMapper.drillDownEffectiveRuleList(start, end);
+            case "orderCount", "revenue" -> {
+                resolveReportTime(reqVO);
+                yield stationReportMapper.drillDownOrderList(reqVO.getReportStartTime(), reqVO.getReportEndTime());
+            }
+            case "recoveryRate"        -> stationReportMapper.drillDownDebtExpandList(start, end);
+            case "depositOrderCount"   -> stationReportMapper.drillDownDepositPlanList(start, end);
+            default -> throw new IllegalArgumentException("不支持的卡片指标：" + reqVO.getMetric());
+        };
         return buildResp(reqVO, list);
     }
 
