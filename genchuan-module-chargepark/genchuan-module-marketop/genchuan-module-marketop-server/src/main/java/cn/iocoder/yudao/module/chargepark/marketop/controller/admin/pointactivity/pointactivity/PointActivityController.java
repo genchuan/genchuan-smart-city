@@ -56,15 +56,6 @@ public class PointActivityController {
     @Operation(summary = "获得积分活动分页")
     @PreAuthorize("@ss.hasPermission('marketop:point-activity:query')")
     public CommonResult<PageResult<PointActivityRespVO>> getPage(PointActivityPageReqVO reqVO) {
-        // 如果没有传startTime和endTime，但传了date，则用date转换
-        if (reqVO.getStartTime() == null && reqVO.getEndTime() == null && StrUtil.isNotBlank(reqVO.getDate())) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate localDate = LocalDate.parse(reqVO.getDate(), formatter);
-            LocalDateTime startDateTime = localDate.atStartOfDay();
-            LocalDateTime endDateTime = localDate.atTime(LocalTime.MAX);
-            reqVO.setStartTime(startDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
-            reqVO.setEndTime(endDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
-        }
         PageResult<PointActivityDO> pageResult = pointActivityService.getPage(reqVO);
         PageResult<PointActivityRespVO> bean = BeanUtils.toBean(pageResult, PointActivityRespVO.class);
         injectUserNames(bean.getList());
