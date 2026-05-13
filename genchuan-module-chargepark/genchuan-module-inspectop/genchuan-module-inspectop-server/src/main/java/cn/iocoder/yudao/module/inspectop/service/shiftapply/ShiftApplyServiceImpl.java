@@ -24,6 +24,13 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.inspectop.dal.mysql.shiftapply.ShiftApplyMapper;
 
+// 新增导入
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
+// 导入上面定义的常量
+import static cn.iocoder.yudao.module.inspectop.enums.LogRecordConstants.*;
+
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
@@ -47,25 +54,40 @@ public class ShiftApplyServiceImpl implements ShiftApplyService {
     private static final Logger log = LoggerFactory.getLogger(ShiftApplyServiceImpl.class);
 
     @Override
+    @LogRecord(type = SHIFT_APPLY_TYPE, subType = SHIFT_APPLY_CREATE_SUB_TYPE,
+            bizNo = "{{#createReqVO.id}}", success = SHIFT_APPLY_CREATE_SUCCESS)
     public Long createShiftApply(ShiftApplySaveReqVO createReqVO) {
         // 插入
         ShiftApplyDO shiftApply = BeanUtils.toBean(createReqVO, ShiftApplyDO.class);
         shiftApplyMapper.insert(shiftApply);
+
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("createReqVO", createReqVO);
 
         // 返回
         return shiftApply.getId();
     }
 
     @Override
+    @LogRecord(type = SHIFT_APPLY_TYPE, subType = SHIFT_APPLY_UPDATE_SUB_TYPE,
+            bizNo = "{{#updateReqVO.id}}", success = SHIFT_APPLY_UPDATE_SUCCESS)
     public void updateShiftApply(ShiftApplySaveReqVO updateReqVO) {
-        // 校验存在
-        validateShiftApplyExists(updateReqVO.getId());
-        // 更新
+        // 1. 校验存在，并获取旧数据用于日志对比
+        ShiftApplyDO oldShiftApply = validateShiftApplyExists(updateReqVO.getId());
+
+        // 2. 更新
         ShiftApplyDO updateObj = BeanUtils.toBean(updateReqVO, ShiftApplyDO.class);
         shiftApplyMapper.updateById(updateObj);
+
+        // 3. 记录操作日志上下文（用于DIFF比较）
+        // 将旧数据转换为VO对象，存入日志上下文
+        ShiftApplySaveReqVO oldVO = BeanUtils.toBean(oldShiftApply, ShiftApplySaveReqVO.class);
+        LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, oldVO);
     }
 
     @Override
+    @LogRecord(type = SHIFT_APPLY_TYPE, subType = SHIFT_APPLY_DELETE_SUB_TYPE,
+            bizNo = "{{#id}}", success = SHIFT_APPLY_DELETE_SUCCESS)
     public void deleteShiftApply(Long id) {
         // 校验存在
         validateShiftApplyExists(id);
@@ -74,18 +96,26 @@ public class ShiftApplyServiceImpl implements ShiftApplyService {
     }
 
     @Override
-        public void deleteShiftApplyListByIds(List<Long> ids) {
+    @LogRecord(type = SHIFT_APPLY_TYPE, subType = SHIFT_APPLY_DELETE_LIST_SUB_TYPE,
+            success = SHIFT_APPLY_DELETE_LIST_SUCCESS, bizNo = "")
+    public void deleteShiftApplyListByIds(List<Long> ids) {
         // 删除
         shiftApplyMapper.deleteByIds(ids);
-        }
 
-
-    private void validateShiftApplyExists(Long id) {
-        if (shiftApplyMapper.selectById(id) == null) {
-            throw exception(SHIFT_APPLY_NOT_EXISTS);
-        }
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("ids", ids);
     }
 
+    // 修改验证方法，使其返回ShiftApplyDO对象，用于update方法的日志对比
+    private ShiftApplyDO validateShiftApplyExists(Long id) {
+        ShiftApplyDO shiftApply = shiftApplyMapper.selectById(id);
+        if (shiftApply == null) {
+            throw exception(SHIFT_APPLY_NOT_EXISTS);
+        }
+        return shiftApply; // 返回查询到的对象
+    }
+
+    // 以下方法不需要操作日志（查询方法）
     @Override
     public ShiftApplyDO getShiftApply(Long id) {
         return shiftApplyMapper.selectById(id);
@@ -106,6 +136,8 @@ public class ShiftApplyServiceImpl implements ShiftApplyService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = SHIFT_APPLY_TYPE, subType = SHIFT_APPLY_BATCH_AUDIT_SUB_TYPE,
+            success = SHIFT_APPLY_BATCH_AUDIT_SUCCESS, bizNo = "")
     public Boolean batchAuditShiftApply(ShiftApplyBatchAuditReqVO reqVO) {
         // 1. 校验审核结果参数
         String auditResult = reqVO.getAuditResult();
@@ -150,6 +182,15 @@ public class ShiftApplyServiceImpl implements ShiftApplyService {
                 updateOriginalSchedule(shiftApply);
             }
         }
+
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("ids", ids);
+        LogRecordContext.putVariable("reqVO", reqVO);
+        LogRecordContext.putVariable("auditResult", auditResult);
+
+        // 将审核结果映射为中文名称
+        String auditResultName = "2".equals(auditResult) ? "通过" : "驳回";
+        LogRecordContext.putVariable("auditResultName", auditResultName);
 
         return true;
     }
@@ -276,6 +317,8 @@ public class ShiftApplyServiceImpl implements ShiftApplyService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = SHIFT_APPLY_TYPE, subType = SHIFT_APPLY_APPROVE_SUB_TYPE,
+            bizNo = "{{#reqVO.id}}", success = SHIFT_APPLY_APPROVE_SUCCESS)
     public Boolean approveShiftApply(ShiftApplyApproveReqVO reqVO) {
         // 1. 获取申请ID和审核备注
         Long id = reqVO.getId();
@@ -317,11 +360,17 @@ public class ShiftApplyServiceImpl implements ShiftApplyService {
         log.info("换班申请已通过，申请ID：{}，审核人：{}，备注：{}",
                 id, currentUserId, auditRemark);
 
+        // 10. 设置日志上下文变量
+        LogRecordContext.putVariable("reqVO", reqVO);
+        LogRecordContext.putVariable("currentUserId", currentUserId);
+
         return updateCount > 0;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = SHIFT_APPLY_TYPE, subType = SHIFT_APPLY_REJECT_SUB_TYPE,
+            bizNo = "{{#reqVO.id}}", success = SHIFT_APPLY_REJECT_SUCCESS)
     public Boolean rejectShiftApply(ShiftApplyRejectReqVO reqVO) {
         // 1. 获取申请ID和驳回理由
         Long id = reqVO.getId();
@@ -363,11 +412,17 @@ public class ShiftApplyServiceImpl implements ShiftApplyService {
         log.info("换班申请已驳回，申请ID：{}，审核人：{}，驳回理由：{}",
                 id, currentUserId, auditRemark);
 
+        // 10. 设置日志上下文变量
+        LogRecordContext.putVariable("reqVO", reqVO);
+        LogRecordContext.putVariable("currentUserId", currentUserId);
+
         return updateCount > 0;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = SHIFT_APPLY_TYPE, subType = SHIFT_APPLY_CONFIRM_SUB_TYPE,
+            bizNo = "{{#reqVO.id}}", success = SHIFT_APPLY_CONFIRM_SUCCESS)
     public Boolean confirmShiftApply(ShiftApplyConfirmReqVO reqVO) {
         // 1. 获取申请ID
         Long id = reqVO.getId();
@@ -407,11 +462,17 @@ public class ShiftApplyServiceImpl implements ShiftApplyService {
         log.info("换班申请已确认生效，申请ID：{}，确认人：{}，生效时间：{}",
                 id, currentUserId, LocalDateTime.now());
 
+        // 11. 设置日志上下文变量
+        LogRecordContext.putVariable("reqVO", reqVO);
+        LogRecordContext.putVariable("currentUserId", currentUserId);
+
         return updateCount > 0;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = SHIFT_APPLY_TYPE, subType = SHIFT_APPLY_REAPPLY_SUB_TYPE,
+            bizNo = "{{#reqVO.id}}", success = SHIFT_APPLY_REAPPLY_SUCCESS)
     public Boolean reapplyShiftApply(ShiftApplyReapplyReqVO reqVO) {
         // 1. 获取原申请ID和新申请备注
         Long originalId = reqVO.getId();
@@ -466,6 +527,11 @@ public class ShiftApplyServiceImpl implements ShiftApplyService {
         log.info("换班申请重新申请，原申请ID：{}，新申请ID：{}，申请人：{}，备注：{}",
                 originalId, newApply.getId(), currentUserId, newRemark);
 
+        // 9. 设置日志上下文变量
+        LogRecordContext.putVariable("reqVO", reqVO);
+        LogRecordContext.putVariable("currentUserId", currentUserId);
+        LogRecordContext.putVariable("newApplyId", newApply.getId());
+
         return true;
     }
 
@@ -509,5 +575,4 @@ public class ShiftApplyServiceImpl implements ShiftApplyService {
 
         return respVO;
     }
-
 }

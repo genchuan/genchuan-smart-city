@@ -2,6 +2,10 @@ package cn.iocoder.yudao.module.inspectop.service.inspecttrack;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -9,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import cn.iocoder.yudao.module.inspectop.controller.admin.inspecttrack.vo.*;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.inspecttrack.InspectTrackDO;
@@ -22,6 +27,7 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.inspectop.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.inspectop.enums.LogRecordConstants.*;
 
 /**
  * 巡检轨迹 Service 实现类
@@ -36,25 +42,40 @@ public class InspectTrackServiceImpl implements InspectTrackService {
     private InspectTrackMapper inspectTrackMapper;
 
     @Override
+    @LogRecord(type = INSPECT_TRACK_TYPE, subType = INSPECT_TRACK_CREATE_SUB_TYPE,
+            bizNo = "{{#createReqVO.id}}", success = INSPECT_TRACK_CREATE_SUCCESS)
     public Long createInspectTrack(InspectTrackSaveReqVO createReqVO) {
         // 插入
         InspectTrackDO inspectTrack = BeanUtils.toBean(createReqVO, InspectTrackDO.class);
         inspectTrackMapper.insert(inspectTrack);
+
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("createReqVO", createReqVO);
 
         // 返回
         return inspectTrack.getId();
     }
 
     @Override
+    @LogRecord(type = INSPECT_TRACK_TYPE, subType = INSPECT_TRACK_UPDATE_SUB_TYPE,
+            bizNo = "{{#updateReqVO.id}}", success = INSPECT_TRACK_UPDATE_SUCCESS)
     public void updateInspectTrack(InspectTrackSaveReqVO updateReqVO) {
-        // 校验存在
-        validateInspectTrackExists(updateReqVO.getId());
-        // 更新
+        // 1. 校验存在，并获取旧数据用于日志对比
+        InspectTrackDO oldInspectTrack = validateInspectTrackExists(updateReqVO.getId());
+
+        // 2. 更新
         InspectTrackDO updateObj = BeanUtils.toBean(updateReqVO, InspectTrackDO.class);
         inspectTrackMapper.updateById(updateObj);
+
+        // 3. 记录操作日志上下文（用于DIFF比较）
+        // 将旧数据转换为VO对象，存入日志上下文
+        InspectTrackSaveReqVO oldVO = BeanUtils.toBean(oldInspectTrack, InspectTrackSaveReqVO.class);
+        LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, oldVO);
     }
 
     @Override
+    @LogRecord(type = INSPECT_TRACK_TYPE, subType = INSPECT_TRACK_DELETE_SUB_TYPE,
+            bizNo = "{{#id}}", success = INSPECT_TRACK_DELETE_SUCCESS)
     public void deleteInspectTrack(Long id) {
         // 校验存在
         validateInspectTrackExists(id);
@@ -63,16 +84,23 @@ public class InspectTrackServiceImpl implements InspectTrackService {
     }
 
     @Override
-        public void deleteInspectTrackListByIds(List<Long> ids) {
+    @LogRecord(type = INSPECT_TRACK_TYPE, subType = INSPECT_TRACK_DELETE_LIST_SUB_TYPE,
+            success = INSPECT_TRACK_DELETE_LIST_SUCCESS, bizNo = "")
+    public void deleteInspectTrackListByIds(List<Long> ids) {
         // 删除
         inspectTrackMapper.deleteByIds(ids);
-        }
 
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("ids", ids);
+    }
 
-    private void validateInspectTrackExists(Long id) {
-        if (inspectTrackMapper.selectById(id) == null) {
+    // 修改验证方法，使其返回InspectTrackDO对象，用于update方法的日志对比
+    private InspectTrackDO validateInspectTrackExists(Long id) {
+        InspectTrackDO inspectTrack = inspectTrackMapper.selectById(id);
+        if (inspectTrack == null) {
             throw exception(INSPECT_TRACK_NOT_EXISTS);
         }
+        return inspectTrack; // 返回查询到的对象
     }
 
     @Override
@@ -83,20 +111,21 @@ public class InspectTrackServiceImpl implements InspectTrackService {
     @Override
     public PageResult<InspectTrackRespVO> getInspectTrackPage(InspectTrackPageReqVO pageReqVO) {
         // 创建 MyBatis-Plus 分页对象
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<InspectTrackRespVO> mpPage
-                = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        Page<InspectTrackRespVO> mpPage
+                = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
 
         // 调用 Mapper 的关联查询方法
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<InspectTrackRespVO> resultPage =
+        Page<InspectTrackRespVO> resultPage =
                 inspectTrackMapper.selectPageWithJoin(mpPage, pageReqVO);
 
         // 构造返回结果
         return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
     }
 
-    // 在 InspectTrackServiceImpl.java 中新增方法
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = INSPECT_TRACK_TYPE, subType = INSPECT_TRACK_CHECK_SUB_TYPE,
+            bizNo = "{{#checkReqVO.id}}", success = INSPECT_TRACK_CHECK_SUCCESS)
     public Boolean checkInspectTrack(InspectTrackCheckReqVO checkReqVO) {
         // 1. 校验轨迹是否存在
         Long id = checkReqVO.getId();
@@ -119,7 +148,10 @@ public class InspectTrackServiceImpl implements InspectTrackService {
         // 4. 执行更新
         int result = inspectTrackMapper.updateById(updateDO);
 
-        // 5. 返回结果
+        // 5. 设置日志上下文变量
+        LogRecordContext.putVariable("checkReqVO", checkReqVO);
+
+        // 6. 返回结果
         return result > 0;
     }
 
@@ -178,7 +210,7 @@ public class InspectTrackServiceImpl implements InspectTrackService {
         String timeStr = "0";
         if (trackTime != null) {
             // 获取秒级时间戳
-            timeStr = String.valueOf(trackTime.toEpochSecond(java.time.ZoneOffset.UTC));
+            timeStr = String.valueOf(trackTime.toEpochSecond(ZoneOffset.UTC));
         }
 
         // 遍历所有轨迹点
@@ -224,7 +256,7 @@ public class InspectTrackServiceImpl implements InspectTrackService {
         }
 
         // 基础时间戳（秒）
-        long baseTimestamp = trackTime.toEpochSecond(java.time.ZoneOffset.UTC);
+        long baseTimestamp = trackTime.toEpochSecond(ZoneOffset.UTC);
 
         // 如果只有一个点，使用基础时间
         if (totalPoints <= 1) {
@@ -238,7 +270,6 @@ public class InspectTrackServiceImpl implements InspectTrackService {
         return String.valueOf(pointTimestamp);
     }
 
-    // 在 InspectTrackServiceImpl.java 中新增方法
     @Override
     public InspectTrackChartRespVO getInspectTrackChart(InspectTrackChartReqVO reqVO) {
         InspectTrackChartRespVO respVO = new InspectTrackChartRespVO();
