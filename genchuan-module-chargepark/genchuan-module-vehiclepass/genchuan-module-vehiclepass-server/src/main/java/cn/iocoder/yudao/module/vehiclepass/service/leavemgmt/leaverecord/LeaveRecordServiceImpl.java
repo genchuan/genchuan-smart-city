@@ -213,16 +213,13 @@ public class LeaveRecordServiceImpl implements LeaveRecordService {
             .collect(Collectors.toList());
 
         // 查询今日离场量和离场峰值
-        Map<String, Object> stats = recordMapper.selectLeaveStats(
-                reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
         LeaveRecordChartRespVO.CardData cardData = new LeaveRecordChartRespVO.CardData();
-        if (stats != null) {
-            cardData.setTodayLeaveCount(MapValueUtils.getLongValue(stats, "todayLeaveCount"));
-            cardData.setLeavePeak(MapValueUtils.getLongValue(stats, "leavePeak"));
-        } else {
-            cardData.setTodayLeaveCount(0L);
-            cardData.setLeavePeak(0L);
-        }
+        Long todayLeaveCount = recordMapper.selectTodayLeaveCount(
+                reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
+        Long leavePeak = recordMapper.selectTodayLeavePeak(
+                reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
+        cardData.setTodayLeaveCount(todayLeaveCount != null ? todayLeaveCount : 0L);
+        cardData.setLeavePeak(leavePeak != null ? leavePeak : 0L);
 
         // 组装返回
         LeaveRecordChartRespVO respVO = new LeaveRecordChartRespVO();
