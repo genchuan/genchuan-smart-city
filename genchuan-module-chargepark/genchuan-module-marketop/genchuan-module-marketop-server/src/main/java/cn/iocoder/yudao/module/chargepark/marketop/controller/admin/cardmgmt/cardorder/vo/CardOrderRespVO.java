@@ -19,6 +19,9 @@ public class CardOrderRespVO {
     @Schema(description = "用户ID")
     private Long userId;
 
+    @Schema(description = "用户名称")
+    private String userName;
+
     @Schema(description = "卡种ID")
     private Long cardId;
 

@@ -8,6 +8,8 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointlottery.vo.*;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointLotteryDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PrizeMgmtDO;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.PointLotteryStatusEnum;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.PointLotterySyncStatusEnum;
 import cn.iocoder.yudao.module.chargepark.marketop.service.pointactivity.prizemgmt.PrizeMgmtService;
 import cn.iocoder.yudao.module.chargepark.marketop.service.pointactivity.pointlottery.PointLotteryService;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
@@ -81,6 +83,11 @@ public class PointLotteryController {
         reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<PointLotteryDO> pageResult = pointLotteryService.getPage(reqVO);
         List<PointLotteryRespVO> list = BeanUtils.toBean(pageResult.getList(), PointLotteryRespVO.class);
+        injectNames(list);
+        list.forEach(item -> {
+            item.setStatus(PointLotteryStatusEnum.labelOf(item.getStatus()));
+            item.setSyncStatus(PointLotterySyncStatusEnum.labelOf(item.getSyncStatus()));
+        });
         ExcelUtils.write(response, "积分抽奖.xlsx", "数据", PointLotteryRespVO.class, list);
     }
 

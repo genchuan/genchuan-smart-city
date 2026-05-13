@@ -8,6 +8,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.exchangemgmt.exchangeorder.vo.*;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.exchangemgmt.ExchangeCategoryDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.exchangemgmt.ExchangeOrderDO;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.ExchangeOrderPayStatusEnum;
 import cn.iocoder.yudao.module.chargepark.marketop.service.exchangemgmt.exchangecategory.ExchangeCategoryService;
 import cn.iocoder.yudao.module.chargepark.marketop.service.exchangemgmt.exchangeorder.ExchangeOrderService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -92,6 +93,10 @@ public class ExchangeOrderController {
         reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<ExchangeOrderDO> pageResult = exchangeOrderService.getPage(reqVO);
         List<ExchangeOrderRespVO> list = BeanUtils.toBean(pageResult.getList(), ExchangeOrderRespVO.class);
+        injectUserNames(list);
+        list.forEach(item -> {
+            item.setPayStatus(ExchangeOrderPayStatusEnum.labelOf(item.getPayStatus()));
+        });
         ExcelUtils.write(response, "兑换订单.xlsx", "数据", ExchangeOrderRespVO.class, list);
     }
 

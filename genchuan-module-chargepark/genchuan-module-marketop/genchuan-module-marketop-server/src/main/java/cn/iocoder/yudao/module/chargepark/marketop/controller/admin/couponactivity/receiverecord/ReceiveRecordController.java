@@ -8,6 +8,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.receiverecord.vo.*;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.CouponMgmtDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.ReceiveRecordDO;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.ReceiveRecordStatusEnum;
 import cn.iocoder.yudao.module.chargepark.marketop.service.couponactivity.couponmgmt.CouponMgmtService;
 import cn.iocoder.yudao.module.chargepark.marketop.service.couponactivity.receiverecord.ReceiveRecordService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -83,6 +84,10 @@ public class ReceiveRecordController {
         reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<ReceiveRecordDO> pageResult = receiveRecordService.getPage(reqVO);
         List<ReceiveRecordRespVO> list = BeanUtils.toBean(pageResult.getList(), ReceiveRecordRespVO.class);
+        injectUserNames(list);
+        list.forEach(item -> {
+            item.setStatus(ReceiveRecordStatusEnum.labelOf(item.getStatus()));
+        });
         ExcelUtils.write(response, "领用记录.xlsx", "数据", ReceiveRecordRespVO.class, list);
     }
 
