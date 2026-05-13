@@ -18,6 +18,9 @@ public class ExchangeOrderPageReqVO extends PageParam {
     @Schema(description = "类目ID")
     private Long categoryId;
 
+    @Schema(description = "商品ID")
+    private Long goodsId;
+
     @Schema(description = "用户ID")
     private Long userId;
 

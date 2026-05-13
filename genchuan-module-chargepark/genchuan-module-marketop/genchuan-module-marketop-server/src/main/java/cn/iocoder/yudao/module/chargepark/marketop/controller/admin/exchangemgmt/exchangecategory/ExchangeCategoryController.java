@@ -120,6 +120,13 @@ public class ExchangeCategoryController {
         return CommonResult.success(true);
     }
 
+    @GetMapping("/simple-list")
+    @Operation(summary = "获取兑换类目精简列表")
+    public CommonResult<List<ExchangeCategorySimpleRespVO>> getSimpleList() {
+        List<ExchangeCategoryDO> list = exchangeCategoryService.getSimpleList();
+        return CommonResult.success(BeanUtils.toBean(list, ExchangeCategorySimpleRespVO.class));
+    }
+
     @GetMapping("/chart")
     @Operation(summary = "兑换类目统计图表")
     @PreAuthorize("@ss.hasPermission('marketop:exchange-category:query')")

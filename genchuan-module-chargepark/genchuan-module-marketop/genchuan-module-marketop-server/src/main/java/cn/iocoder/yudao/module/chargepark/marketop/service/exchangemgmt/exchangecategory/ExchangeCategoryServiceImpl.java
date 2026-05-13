@@ -167,6 +167,11 @@ public class ExchangeCategoryServiceImpl implements ExchangeCategoryService {
     }
 
     @Override
+    public List<ExchangeCategoryDO> getSimpleList() {
+        return exchangeCategoryMapper.selectList();
+    }
+
+    @Override
     public void importData(List<ExchangeCategoryImportExcelVO> list) {
         if (list == null || list.isEmpty()) {
             return;
