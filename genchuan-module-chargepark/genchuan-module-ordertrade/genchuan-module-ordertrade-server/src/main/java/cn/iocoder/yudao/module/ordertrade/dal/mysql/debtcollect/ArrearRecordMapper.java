@@ -29,7 +29,7 @@ public interface ArrearRecordMapper extends BaseMapperX<ArrearRecordDO> {
         return selectPage(reqVO, new LambdaQueryWrapperX<ArrearRecordDO>()
                 .likeIfPresent(ArrearRecordDO::getPlateNo, reqVO.getPlateNo())
                 .eqIfPresent(ArrearRecordDO::getStatus, reqVO.getStatus())
-                .eqIfPresent(ArrearRecordDO::getStationId, reqVO.getStationId())
+                .likeIfPresent(ArrearRecordDO::getStationName, reqVO.getStationName())
                 .geIfPresent(ArrearRecordDO::getCreateTime, reqVO.getCreateTimeStart())
                 .leIfPresent(ArrearRecordDO::getCreateTime, reqVO.getCreateTimeEnd())
                 .orderByDesc(ArrearRecordDO::getId));

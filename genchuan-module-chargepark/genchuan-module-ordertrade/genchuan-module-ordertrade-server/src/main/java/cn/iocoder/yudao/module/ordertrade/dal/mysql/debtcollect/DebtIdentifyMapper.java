@@ -28,7 +28,7 @@ public interface DebtIdentifyMapper extends BaseMapperX<DebtIdentifyDO> {
         return selectPage(reqVO, new LambdaQueryWrapperX<DebtIdentifyDO>()
                 .likeIfPresent(DebtIdentifyDO::getPlateNo, reqVO.getPlateNo())
                 .eqIfPresent(DebtIdentifyDO::getStatus, reqVO.getStatus())
-                .eqIfPresent(DebtIdentifyDO::getStationId, reqVO.getStationId())
+                .likeIfPresent(DebtIdentifyDO::getStationName, reqVO.getStationName())
                 .geIfPresent(DebtIdentifyDO::getIdentifyTime, reqVO.getIdentifyTimeStart())
                 .leIfPresent(DebtIdentifyDO::getIdentifyTime, reqVO.getIdentifyTimeEnd())
                 .orderByDesc(DebtIdentifyDO::getId));
