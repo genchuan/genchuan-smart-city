@@ -9,4 +9,124 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <!-- 用户增长趋势 -->
+    <select id="selectUserGrowthTrend" resultType="java.util.HashMap">
+        SELECT
+        <choose>
+            <when test="granularity == 'year'">DATE_FORMAT(create_time, '%Y')</when>
+            <when test="granularity == 'month'">DATE_FORMAT(create_time, '%Y-%m')</when>
+            <otherwise>DATE_FORMAT(create_time, '%Y-%m-%d')</otherwise>
+        </choose> AS date,
+        COUNT(*) AS count
+        FROM user_info
+        WHERE deleted = 0
+        AND create_time BETWEEN #{start} AND #{end}
+        GROUP BY date
+        ORDER BY date ASC
+    </select>
+
+    <!-- 车牌认证趋势 -->
+    <select id="selectPlateAuthTrend" resultType="java.util.HashMap">
+        SELECT
+        <choose>
+            <when test="granularity == 'year'">DATE_FORMAT(create_time, '%Y')</when>
+            <when test="granularity == 'month'">DATE_FORMAT(create_time, '%Y-%m')</when>
+            <otherwise>DATE_FORMAT(create_time, '%Y-%m-%d')</otherwise>
+        </choose> AS date,
+        COUNT(*) AS count
+        FROM plate_auth
+        WHERE deleted = 0
+        AND create_time BETWEEN #{start} AND #{end}
+        GROUP BY date
+        ORDER BY date ASC
+    </select>
+
+    <!-- 充值金额趋势（仅已支付） -->
+    <select id="selectRechargeAmountTrend" resultType="java.util.HashMap">
+        SELECT
+        <choose>
+            <when test="granularity == 'year'">DATE_FORMAT(create_time, '%Y')</when>
+            <when test="granularity == 'month'">DATE_FORMAT(create_time, '%Y-%m')</when>
+            <otherwise>DATE_FORMAT(create_time, '%Y-%m-%d')</otherwise>
+        </choose> AS date,
+        COALESCE(SUM(amount), 0) AS amount
+        FROM merchant_recharge
+        WHERE deleted = 0
+        AND status = '已支付'
+        AND create_time BETWEEN #{start} AND #{end}
+        GROUP BY date
+        ORDER BY date ASC
+    </select>
+
+    <!-- 发券量趋势（按 create_time） -->
+    <select id="selectSendCouponTrend" resultType="java.util.HashMap">
+        SELECT
+        <choose>
+            <when test="granularity == 'year'">DATE_FORMAT(create_time, '%Y')</when>
+            <when test="granularity == 'month'">DATE_FORMAT(create_time, '%Y-%m')</when>
+            <otherwise>DATE_FORMAT(create_time, '%Y-%m-%d')</otherwise>
+        </choose> AS date,
+        COUNT(*) AS count
+        FROM merchant_send_coupon
+        WHERE deleted = 0
+        AND create_time BETWEEN #{start} AND #{end}
+        GROUP BY date
+        ORDER BY date ASC
+    </select>
+
+    <!-- 用户类型分布 -->
+    <select id="selectUserTypeDistribution" resultType="java.util.HashMap">
+        SELECT user_type AS name, COUNT(*) AS value
+        FROM user_info
+        WHERE deleted = 0
+          AND create_time BETWEEN #{start} AND #{end}
+        GROUP BY user_type
+    </select>
+
+    <!-- 车辆类型分布（按 create_time） -->
+    <select id="selectCarTypeDistribution" resultType="java.util.HashMap">
+        SELECT car_type AS name, COUNT(*) AS value
+        FROM user_car
+        WHERE deleted = 0
+          AND create_time BETWEEN #{start} AND #{end}
+        GROUP BY car_type
+    </select>
+
+    <!-- 商户类型分布 -->
+    <select id="selectMerchantTypeDistribution" resultType="java.util.HashMap">
+        SELECT merchant_type AS name, COUNT(*) AS value
+        FROM merchant_info
+        WHERE deleted = 0
+          AND create_time BETWEEN #{start} AND #{end}
+        GROUP BY merchant_type
+    </select>
+
+    <!-- 集团类型分布 -->
+    <select id="selectGroupTypeDistribution" resultType="java.util.HashMap">
+        SELECT group_type AS name, COUNT(*) AS value
+        FROM group_info
+        WHERE deleted = 0
+          AND create_time BETWEEN #{start} AND #{end}
+        GROUP BY group_type
+    </select>
+
+    <!-- 信用等级分布（按 create_time） -->
+    <select id="selectCreditLevelDistribution" resultType="java.util.HashMap">
+        SELECT credit_level AS name, COUNT(*) AS value
+        FROM user_credit
+        WHERE deleted = 0
+          AND create_time BETWEEN #{start} AND #{end}
+        GROUP BY credit_level
+    </select>
+
+    <!-- 会员等级分布（按 member_user.create_time） -->
+    <select id="selectMemberLevelDistribution" resultType="java.util.HashMap">
+        SELECT ml.name AS name, COUNT(*) AS value
+        FROM member_user mu
+                 LEFT JOIN member_level ml ON mu.level_id = ml.id AND ml.deleted = 0
+        WHERE mu.deleted = 0
+          AND mu.create_time BETWEEN #{start} AND #{end}
+        GROUP BY ml.name
+    </select>
+
 </mapper>

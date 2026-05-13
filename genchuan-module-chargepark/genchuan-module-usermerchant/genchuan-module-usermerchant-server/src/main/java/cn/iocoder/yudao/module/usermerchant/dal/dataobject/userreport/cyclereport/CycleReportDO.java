@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.usermerchant.dal.dataobject.userreport.cyclereport;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import java.util.*;
 import java.time.LocalDateTime;
@@ -34,6 +36,10 @@ public class CycleReportDO extends BaseDO {
      * 报表周期（日报/周报/月报/季报/半年报/年报/自定义报表）
      */
     private String reportCycle;
+    /**
+     * 统计时间
+     */
+    private String statTime;
     /**
      * 统计开始时间
      */
@@ -102,6 +108,10 @@ public class CycleReportDO extends BaseDO {
      * 导出次数
      */
     private Integer exportCount;
+    /**
+     * 租户ID
+     */
+    private Long tenantId;
 
 
 }

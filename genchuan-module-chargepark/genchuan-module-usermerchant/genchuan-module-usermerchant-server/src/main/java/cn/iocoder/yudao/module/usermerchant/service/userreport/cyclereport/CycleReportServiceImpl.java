@@ -38,6 +38,8 @@ import cn.iocoder.yudao.module.usermerchant.dal.mysql.usermgmt.usercar.UserCarMa
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.usermgmt.userinfo.UserInfoMapper;
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.userreport.cyclereport.CycleReportMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -47,6 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -103,38 +106,53 @@ public class CycleReportServiceImpl implements CycleReportService {
     private UserCreditMapper userCreditMapper;
 
     @Override
-    public Long createCycleReport(CycleReportSaveReqVO createReqVO) {
+    public CycleReportCreateRespVO createCycleReport(CycleReportCreateReqVO createReqVO) {
+        // 转换为 VO
+        CycleReportDO report = new CycleReportDO();
+        report.setReportCycle(createReqVO.getReportCycle());
+        report.setStatStartTime(createReqVO.getStatStartTime());
+        report.setStatEndTime(createReqVO.getStatEndTime());
+        report.setReportName(createReqVO.getReportName());
+        report.setRemark(createReqVO.getRemark());
+        report.setTenantId(createReqVO.getTenantId());
+        report.setReportStatus("已生成");
+        report.setCreateTime(LocalDateTime.now());
+        report.setCreator("SYSTEM");
+        report.setUpdateTime(LocalDateTime.now());
+        report.setUpdater("SYSTEM");
+
+        // 实时统计图表数据
+        LocalDateTime start = report.getStatStartTime();
+        LocalDateTime end = report.getStatEndTime();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String statTime = start.format(formatter) + "-" + end.format(formatter);
+        report.setStatTime(statTime);
+
+        // 统计卡片数据
+        CycleReportChartRespVO.CardData cardData = computeCardData(start, end);
+
+        // 设置卡片数据到 report
+        report.setNewUserCount(cardData.getNewUserCount());
+        report.setBindCarCount(cardData.getBindCarCount());
+        report.setPlateAuthCount(cardData.getPlateAuthCount());
+        report.setNewMerchantCount(cardData.getNewMerchantCount());
+        report.setLinkMerchantCount(cardData.getLinkMerchantCount());
+        report.setRechargeAmount(cardData.getRechargeAmount());
+        report.setSendCouponCount(cardData.getSendCouponCount());
+        report.setNewGroupCount(cardData.getNewGroupCount());
+        report.setNewMemberCount(cardData.getNewMemberCount());
+        report.setAvgCreditScore(cardData.getAvgCreditScore());
+
+
         // 插入
-        CycleReportDO cycleReport = BeanUtils.toBean(createReqVO, CycleReportDO.class);
-        cycleReportMapper.insert(cycleReport);
+        cycleReportMapper.insert(report);
+        CycleReportCreateRespVO createRespVO = new CycleReportCreateRespVO();
+        createRespVO.setId(report.getId());
+        createRespVO.setSuccess(Boolean.TRUE);
 
         // 返回
-        return cycleReport.getId();
+        return createRespVO;
     }
-
-    @Override
-    public void updateCycleReport(CycleReportSaveReqVO updateReqVO) {
-        // 校验存在
-        validateCycleReportExists(updateReqVO.getId());
-        // 更新
-        CycleReportDO updateObj = BeanUtils.toBean(updateReqVO, CycleReportDO.class);
-        cycleReportMapper.updateById(updateObj);
-    }
-
-    @Override
-    public void deleteCycleReport(Long id) {
-        // 校验存在
-        validateCycleReportExists(id);
-        // 删除
-        cycleReportMapper.deleteById(id);
-    }
-
-    @Override
-        public void deleteCycleReportListByIds(List<Long> ids) {
-        // 删除
-        cycleReportMapper.deleteByIds(ids);
-        }
-
 
     private void validateCycleReportExists(Long id) {
         if (cycleReportMapper.selectById(id) == null) {
@@ -143,8 +161,43 @@ public class CycleReportServiceImpl implements CycleReportService {
     }
 
     @Override
-    public CycleReportDO getCycleReport(Long id) {
-        return cycleReportMapper.selectById(id);
+    @Transactional(rollbackFor = Exception.class)
+    public CycleReportGetRespVO getCycleReport(Long id) {
+        CycleReportDO report = cycleReportMapper.selectById(id);
+        if (report == null) {
+            throw exception(CYCLE_REPORT_NOT_EXISTS);
+        }
+        // 2. 转换为 VO
+        CycleReportGetRespVO respVO = BeanUtils.toBean(report, CycleReportGetRespVO.class);
+
+        // 3. 实时统计图表数据
+        LocalDateTime start = report.getStatStartTime();
+        LocalDateTime end = report.getStatEndTime();
+        String granularity = inferGranularity(report.getReportCycle());
+        // 折线图
+        Map<String, List<Map<String, Object>>> lineData = new HashMap<>();
+        lineData.put("userGrowth", cycleReportMapper.selectUserGrowthTrend(start, end, granularity));
+        lineData.put("plateAuth", cycleReportMapper.selectPlateAuthTrend(start, end, granularity));
+        lineData.put("rechargeAmount", cycleReportMapper.selectRechargeAmountTrend(start, end, granularity));
+        lineData.put("sendCoupon", cycleReportMapper.selectSendCouponTrend(start, end, granularity));
+
+        // 柱状图
+        Map<String, List<Map<String, Object>>> barData = new HashMap<>();
+        barData.put("userType", cycleReportMapper.selectUserTypeDistribution(start, end));
+        barData.put("carType", cycleReportMapper.selectCarTypeDistribution(start, end));
+        barData.put("merchantType", cycleReportMapper.selectMerchantTypeDistribution(start, end));
+        barData.put("groupType", cycleReportMapper.selectGroupTypeDistribution(start, end));
+
+        // 饼图
+        Map<String, List<Map<String, Object>>> pieData = new HashMap<>();
+        pieData.put("creditLevel", cycleReportMapper.selectCreditLevelDistribution(start, end));
+        pieData.put("memberLevel", cycleReportMapper.selectMemberLevelDistribution(start, end));
+
+        respVO.setLineData(lineData);
+        respVO.setBarData(barData);
+        respVO.setPieData(pieData);
+
+        return respVO;
     }
 
     @Override
@@ -153,289 +206,124 @@ public class CycleReportServiceImpl implements CycleReportService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public CycleReportGenerateRespVO generateCycleReport(CycleReportGenerateReqVO generateReqVO) {
-        // ========== 1. 自动计算时间（若非自定义报表） ==========
-        String reportCycle = generateReqVO.getReportCycle();
-        if (StrUtil.isNotBlank(reportCycle) && !"自定义报表".equals(reportCycle)) {
-            Date[] dates = autoCalcReportTime(reportCycle);
-            generateReqVO.setStatStartTime(LocalDateTime.ofInstant(dates[0].toInstant(), ZoneId.systemDefault()));
-            generateReqVO.setStatEndTime(LocalDateTime.ofInstant(dates[1].toInstant(), ZoneId.systemDefault()));
-        }
+    public CycleReportChartRespVO getChartData(CycleReportChartReqVO reqVO) {
+        LocalDateTime start = reqVO.getStatStartTime();
+        LocalDateTime end = reqVO.getStatEndTime();
+        String granularity = inferGranularity(reqVO.getReportCycle());
 
-        LocalDateTime start = generateReqVO.getStatStartTime();
-        LocalDateTime end = generateReqVO.getStatEndTime();
-        Long tenantId = generateReqVO.getTenantId();
+        // 卡片数据
+        CycleReportChartRespVO.CardData cardData = computeCardData(start, end);
 
-        // ========== 2. 统计卡片数据 ==========
-        CycleReportDO report = new CycleReportDO();
-        report.setReportCycle(reportCycle);
-        report.setStatStartTime(start);
-        report.setStatEndTime(end);
-        report.setReportName(generateReqVO.getReportName());
-        report.setRemark(generateReqVO.getRemark());
-        report.setReportStatus("已生成");
-        report.setExportCount(0);
-        report.setCreator(SecurityFrameworkUtils.getLoginUserNickname()); // 获取当前登录用户昵称
-        report.setCreateTime(LocalDateTime.now());
+        // 2. 折线图数据
+        Map<String, List<Map<String, Object>>> lineData = new HashMap<>();
+        lineData.put("userGrowth", cycleReportMapper.selectUserGrowthTrend(start, end, granularity));
+        lineData.put("plateAuth", cycleReportMapper.selectPlateAuthTrend(start, end, granularity));
+        lineData.put("rechargeAmount", cycleReportMapper.selectRechargeAmountTrend(start, end, granularity));
+        lineData.put("sendCoupon", cycleReportMapper.selectSendCouponTrend(start, end, granularity));
 
-        // 2.1 新增用户数
-        Long newUserCount = userInfoMapper.selectCount(new LambdaQueryWrapper<UserInfoDO>()
-                .between(UserInfoDO::getCreateTime, start, end)
-                .eq(UserInfoDO::getDeleted, 0));
-        report.setNewUserCount(newUserCount.intValue());
+        // 3. 柱状图数据
+        Map<String, List<Map<String, Object>>> barData = new HashMap<>();
+        barData.put("userType", cycleReportMapper.selectUserTypeDistribution(start, end));
+        barData.put("carType", cycleReportMapper.selectCarTypeDistribution(start, end));
+        barData.put("merchantType", cycleReportMapper.selectMerchantTypeDistribution(start, end));
+        barData.put("groupType", cycleReportMapper.selectGroupTypeDistribution(start, end));
 
-        // 2.2 绑定车辆数
-        Long bindCarCount = userCarMapper.selectCount(new LambdaQueryWrapper<UserCarDO>()
-                .between(UserCarDO::getCreateTime, start, end)
-                .eq(UserCarDO::getDeleted, 0));
-        report.setBindCarCount(bindCarCount.intValue());
+        // 4. 饼图数据
+        Map<String, List<Map<String, Object>>> pieData = new HashMap<>();
+        pieData.put("creditLevel", cycleReportMapper.selectCreditLevelDistribution(start, end));
+        pieData.put("memberLevel", cycleReportMapper.selectMemberLevelDistribution(start, end));
 
-        // 2.3 车牌认证量
-        Long plateAuthCount = plateAuthMapper.selectCount(new LambdaQueryWrapper<PlateAuthDO>()
-                .between(PlateAuthDO::getCreateTime, start, end)
-                .eq(PlateAuthDO::getDeleted, 0));
-        report.setPlateAuthCount(plateAuthCount.intValue());
-
-        // 2.4 新增商户数
-        Long newMerchantCount = merchantInfoMapper.selectCount(new LambdaQueryWrapper<MerchantInfoDO>()
-                .between(MerchantInfoDO::getCreateTime, start, end)
-                .eq(MerchantInfoDO::getDeleted, 0));
-        report.setNewMerchantCount(newMerchantCount.intValue());
-
-        // 2.5 对接商户数
-        Long linkMerchantCount = merchantLinkMapper.selectCount(new LambdaQueryWrapper<MerchantLinkDO>()
-                .between(MerchantLinkDO::getCreateTime, start, end)
-                .eq(MerchantLinkDO::getDeleted, 0));
-        report.setLinkMerchantCount(linkMerchantCount.intValue());
-
-        // 2.6 充值金额
-        BigDecimal rechargeAmount = merchantRechargeMapper.selectTotalRechargeAmount(start, end);
-        report.setRechargeAmount(rechargeAmount != null ? rechargeAmount : BigDecimal.ZERO);
-
-        // 2.7 发券量
-        Long sendCouponCount = merchantSendCouponMapper.selectCount(new LambdaQueryWrapper<MerchantSendCouponDO>()
-                .between(MerchantSendCouponDO::getCreateTime, start, end)
-                .eq(MerchantSendCouponDO::getDeleted, 0));
-        report.setSendCouponCount(sendCouponCount.intValue());
-
-        // 2.8 新增集团数
-        Long newGroupCount = groupInfoMapper.selectCount(new LambdaQueryWrapper<GroupInfoDO>()
-                .between(GroupInfoDO::getCreateTime, start, end)
-                .eq(GroupInfoDO::getDeleted, 0));
-        report.setNewGroupCount(newGroupCount.intValue());
-
-        // 2.9 会员新增数
-        Long newMemberCount = memberUserMapper.selectCount(new LambdaQueryWrapper<MemberUserDO>()
-                .between(MemberUserDO::getCreateTime, start, end)
-                .eq(MemberUserDO::getDeleted, 0));
-        report.setNewMemberCount(newMemberCount.intValue());
-
-        // 2.10 平均信用分
-        BigDecimal avgCreditScore = BigDecimal.valueOf(userCreditMapper.selectAvgCreditScore(start, end));
-        report.setAvgCreditScore(avgCreditScore != null ? avgCreditScore.intValue() : 0);
-
-        // ========== 3. 图表数据（折线图/柱状图/饼图） ==========
-        Map<String, Object> distribution = new HashMap<>();
-        distribution.put("lineData", buildLineData(start, end, tenantId));
-        distribution.put("barData", buildBarData(start, end, tenantId));
-        distribution.put("pieData", buildPieData(start, end, tenantId));
-        report.setDistributionData(JSONUtil.toJsonStr(distribution));
-
-        // ========== 4. 保存报表 ==========
-        cycleReportMapper.insert(report);
-
-        // ========== 5. 返回响应 ==========
-        CycleReportGenerateRespVO respVO = new CycleReportGenerateRespVO();
-        respVO.setId(report.getId());
-        respVO.setGenerateStatus("已生成");
+        CycleReportChartRespVO respVO = new CycleReportChartRespVO();
+        respVO.setCardData(cardData);
+        respVO.setLineData(lineData);
+        respVO.setBarData(barData);
+        respVO.setPieData(pieData);
         return respVO;
     }
 
-    /**
-     * 根据报表类型，自动计算 开始时间、结束时间
-     * @param reportType 报表类型
-     * @return Date[0] = 开始时间，Date[1] = 结束时间
-     */
-    private Date[] autoCalcReportTime(String reportType) {
-        Date now = new Date();
-        Date startTime = null;
-        Date endTime = null;
-
-        switch (reportType) {
-            case "日报":
-                // 今天 00:00:00 ~ 23:59:59
-                startTime = DateUtil.beginOfDay(now);
-                endTime = DateUtil.endOfDay(now);
-                break;
-            case "周报":
-                // 本周一 00:00:00 ~ 本周日 23:59:59
-                startTime = DateUtil.beginOfWeek(now);
-                endTime = DateUtil.endOfWeek(now);
-                break;
-            case "月报":
-                // 本月1号 ~ 本月最后一天
-                startTime = DateUtil.beginOfMonth(now);
-                endTime = DateUtil.endOfMonth(now);
-                break;
-            case "季报":
-                // 本季度第一天 ~ 本季度最后一天
-                startTime = DateUtil.beginOfQuarter(now);
-                endTime = DateUtil.endOfQuarter(now);
-                break;
-            case "半年报":
-                // 上半年/下半年 自动计算
-                int month = DateUtil.month(now) + 1;
-                if (month <= 6) {
-                    startTime = DateUtil.parse(DateUtil.year(now) + "-01-01");
-                    endTime = DateUtil.parse(DateUtil.year(now) + "-06-30");
-                } else {
-                    startTime = DateUtil.parse(DateUtil.year(now) + "-07-01");
-                    endTime = DateUtil.parse(DateUtil.year(now) + "-12-31");
-                }
-                break;
-            case "年报":
-                // 本年1月1日 ~ 12月31日
-                startTime = DateUtil.beginOfYear(now);
-                endTime = DateUtil.endOfYear(now);
-                break;
-            default:
-                // 默认：今天
-                startTime = DateUtil.beginOfDay(now);
-                endTime = DateUtil.endOfDay(now);
-        }
-        return new Date[]{startTime, endTime};
-    }
-
-    private Map<String, List<Map<String, Object>>> buildLineData(LocalDateTime start, LocalDateTime end, Long tenantId) {
-        Map<String, List<Map<String, Object>>> lineData = new HashMap<>();
-        // 用户增长趋势
-        List<UserInfoChartRespVO.UserGrowthTrendVO> userGrowthList = userInfoMapper.selectUserGrowthTrend(start, end, "day");
-        lineData.put("userGrowth", toLineMap(userGrowthList, UserInfoChartRespVO.UserGrowthTrendVO::getDate, UserInfoChartRespVO.UserGrowthTrendVO::getCount));
-
-        // 车牌认证趋势（假设返回 List<PlateAuthTrendVO>，字段 date, count）
-        List<PlateAuthChartRespVO.AuthTrendVO> plateAuthList = plateAuthMapper.selectAuthTrend(start, end, "day");
-        lineData.put("plateAuth", toLineMap(plateAuthList,
-                PlateAuthChartRespVO.AuthTrendVO::getDate,
-                PlateAuthChartRespVO.AuthTrendVO::getCount));
-
-        // 充值金额趋势（字段 date, amount）
-        List<MerchantRechargeChartRespVO.RechargeAmountTrendVO> rechargeList = merchantRechargeMapper.selectRechargeAmountTrend(start, end, "day");
-        lineData.put("rechargeAmount", rechargeList.stream().map(vo -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("date", vo.getDate());
-            map.put("amount", vo.getAmount());
-            return map;
-        }).collect(Collectors.toList()));
-
-        // 发券量趋势（假设返回 List<SendCouponTrendVO>，字段 date, count）
-        List<MerchantSendCouponChartRespVO.SendCountTrendVO> sendCouponList = merchantSendCouponMapper.selectSendCountTrend(start, end, "day");
-        lineData.put("sendCoupon", toLineMap(sendCouponList,
-                MerchantSendCouponChartRespVO.SendCountTrendVO::getDate,
-                MerchantSendCouponChartRespVO.SendCountTrendVO::getCount));
-
-        return lineData;
-
-    }
-
-    private Map<String, List<Map<String, Object>>> buildBarData(LocalDateTime start, LocalDateTime end, Long tenantId) {
-        Map<String, List<Map<String, Object>>> barData = new HashMap<>();
-
-//        // 用户类型分布
-//        List<UserInfoChartRespVO.UserTypeDistributionVO> userTypeList = userInfoMapper.selectUserTypeDistribution(start, end);
-//        barData.put("userType", toChartMap(userTypeList,
-//                UserInfoChartRespVO.UserTypeDistributionVO::getType,
-//                UserInfoChartRespVO.UserTypeDistributionVO::getCount));
-//
-//        // 车辆类型分布
-//        List<UserCarChartRespVO.CarTypeDistributionVO> carTypeList = userCarMapper.selectCarTypeDistribution(start, end);
-//        barData.put("carType", toChartMap(carTypeList,
-//                UserCarChartRespVO.CarTypeDistributionVO::getType,
-//                UserCarChartRespVO.CarTypeDistributionVO::getCount));
-//
-//        // 商户类型分布（假设类似结构）
-//        List<MerchantInfoChartRespVO.MerchantTypeDistributionVO> merchantTypeList = merchantInfoMapper.selectMerchantTypeDistribution(start, end);
-//        barData.put("merchantType", toChartMap(merchantTypeList,
-//                MerchantInfoChartRespVO.MerchantTypeDistributionVO::getType,
-//                MerchantInfoChartRespVO.MerchantTypeDistributionVO::getCount));
-//
-//        // 集团类型分布
-//        List<GroupInfoChartRespVO.GroupTypeDistributionVO> groupTypeList = groupInfoMapper.selectGroupTypeDistribution(start, end);
-//        barData.put("groupType", toChartMap(groupTypeList,
-//                GroupInfoChartRespVO.GroupTypeDistributionVO::getType,
-//                GroupInfoChartRespVO.GroupTypeDistributionVO::getCount));
-
-        return barData;
-    }
-
-    private Map<String, List<Map<String, Object>>> buildPieData(LocalDateTime start, LocalDateTime end, Long tenantId) {
-        Map<String, List<Map<String, Object>>> pieData = new HashMap<>();
-
-//        // 信用等级分布
-//        List<UserCreditChartRespVO.CreditLevelDistributionVO> creditList = userCreditMapper.selectCreditLevelDistribution(start, end);
-//        pieData.put("creditLevel", toChartMap(creditList,
-//                UserCreditChartRespVO.CreditLevelDistributionVO::getType,
-//                UserCreditChartRespVO.CreditLevelDistributionVO::getCount));
-//
-//        // 会员等级分布
-//        List<MemberUserChartRespVO.MemberLevelDistributionVO> memberList = memberUserMapper.selectMemberLevelDistribution(start, end);
-//        pieData.put("memberLevel", toChartMap(memberList,
-//                MemberUserChartRespVO.MemberLevelDistributionVO::getLevel,
-//                MemberUserChartRespVO.MemberLevelDistributionVO::getCount));
-
-        return pieData;
+    private String inferGranularity(String reportCycle) {
+        if (reportCycle.contains("日") || reportCycle.contains("周")) return "day";
+        if (reportCycle.contains("月") || reportCycle.contains("季") || reportCycle.contains("半年")) return "month";
+        if (reportCycle.contains("年")) return "year";
+        return "day";
     }
 
     /**
-     * 将强类型 VO 列表转换为 Map 列表
-     * @param list VO 列表
-     * @param keyExtractor 提取键的函数（例如 UserGrowthTrendVO::getDate）
-     * @param valueExtractor 提取值的函数（例如 UserGrowthTrendVO::getCount）
-     * @param <T> VO 类型
-     * @return List<Map<String, Object>>
+     * 统计卡片数据（实时计算）
+     *
+     * @param start 开始时间
+     * @param end   结束时间
+     * @return 卡片数据
      */
-    private <T> List<Map<String, Object>> toMapList(List<T> list,
-                                                    Function<T, Object> keyExtractor,
-                                                    Function<T, Object> valueExtractor) {
-        if (CollUtil.isEmpty(list)) {
-            return Collections.emptyList();
-        }
-        return list.stream().map(item -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("date", keyExtractor.apply(item));
-            map.put("count", valueExtractor.apply(item));
-            return map;
-        }).collect(Collectors.toList());
-    }
+    private CycleReportChartRespVO.CardData computeCardData(LocalDateTime start, LocalDateTime end) {
+        CycleReportChartRespVO.CardData cardData = new CycleReportChartRespVO.CardData();
 
-    /**
-     * 转换折线图数据（通用字段：date, count）
-     */
-    private <T> List<Map<String, Object>> toLineMap(List<T> list,
-                                                    Function<T, Object> dateGetter,
-                                                    Function<T, Object> countGetter) {
-        if (CollUtil.isEmpty(list)) return Collections.emptyList();
-        return list.stream().map(item -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("date", dateGetter.apply(item));
-            map.put("count", countGetter.apply(item));
-            return map;
-        }).collect(Collectors.toList());
-    }
+        // 新增用户数
+        Long newUserCount = userInfoMapper.selectCount(new LambdaQueryWrapper<UserInfoDO>()
+                .between(UserInfoDO::getCreateTime, start, end)
+                .eq(UserInfoDO::getDeleted, 0));
+        cardData.setNewUserCount(newUserCount.intValue());
 
-    /**
-     * 转换柱状图/饼图数据（通用字段：name, value）
-     */
-    private <T> List<Map<String, Object>> toChartMap(List<T> list,
-                                                     Function<T, Object> nameGetter,
-                                                     Function<T, Object> valueGetter) {
-        if (CollUtil.isEmpty(list)) return Collections.emptyList();
-        return list.stream().map(item -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("name", nameGetter.apply(item));
-            map.put("value", valueGetter.apply(item));
-            return map;
-        }).collect(Collectors.toList());
+        // 绑定车辆数
+        Long bindCarCount = userCarMapper.selectCount(new LambdaQueryWrapper<UserCarDO>()
+                .between(UserCarDO::getCreateTime, start, end)
+                .eq(UserCarDO::getDeleted, 0));
+        cardData.setBindCarCount(bindCarCount.intValue());
+
+        // 车牌认证量
+        Long plateAuthCount = plateAuthMapper.selectCount(new LambdaQueryWrapper<PlateAuthDO>()
+                .between(PlateAuthDO::getCreateTime, start, end)
+                .eq(PlateAuthDO::getDeleted, 0));
+        cardData.setPlateAuthCount(plateAuthCount.intValue());
+
+        // 新增商户数
+        Long newMerchantCount = merchantInfoMapper.selectCount(new LambdaQueryWrapper<MerchantInfoDO>()
+                .between(MerchantInfoDO::getCreateTime, start, end)
+                .eq(MerchantInfoDO::getDeleted, 0));
+        cardData.setNewMerchantCount(newMerchantCount.intValue());
+
+        // 对接商户数
+        Long linkMerchantCount = merchantLinkMapper.selectCount(new LambdaQueryWrapper<MerchantLinkDO>()
+                .between(MerchantLinkDO::getCreateTime, start, end)
+                .eq(MerchantLinkDO::getDeleted, 0));
+        cardData.setLinkMerchantCount(linkMerchantCount.intValue());
+
+        // 充值金额（只统计 status = '已支付'）
+        QueryWrapper<MerchantRechargeDO> rechargeWrapper = new QueryWrapper<>();
+        rechargeWrapper.select("COALESCE(SUM(amount), 0)")
+                .between("create_time", start, end)
+                .eq("status", "已支付")
+                .eq("deleted", 0);
+        BigDecimal rechargeAmount = (BigDecimal) merchantRechargeMapper.selectObjs(rechargeWrapper).get(0);
+        cardData.setRechargeAmount(rechargeAmount != null ? rechargeAmount : BigDecimal.ZERO);
+
+        // 发券量
+        Long sendCouponCount = merchantSendCouponMapper.selectCount(new LambdaQueryWrapper<MerchantSendCouponDO>()
+                .between(MerchantSendCouponDO::getCreateTime, start, end)
+                .eq(MerchantSendCouponDO::getDeleted, 0));
+        cardData.setSendCouponCount(sendCouponCount.intValue());
+
+        // 新增集团数
+        Long newGroupCount = groupInfoMapper.selectCount(new LambdaQueryWrapper<GroupInfoDO>()
+                .between(GroupInfoDO::getCreateTime, start, end)
+                .eq(GroupInfoDO::getDeleted, 0));
+        cardData.setNewGroupCount(newGroupCount.intValue());
+
+        // 会员新增数
+        Long newMemberCount = memberUserMapper.selectCount(new LambdaQueryWrapper<MemberUserDO>()
+                .between(MemberUserDO::getCreateTime, start, end)
+                .eq(MemberUserDO::getDeleted, 0));
+        cardData.setNewMemberCount(newMemberCount.intValue());
+
+        // 平均信用分
+        QueryWrapper<UserCreditDO> creditWrapper = new QueryWrapper<>();
+        creditWrapper.select("COALESCE(AVG(credit_score), 0)")
+                .between("create_time", start, end)
+                .eq("deleted", 0);
+        BigDecimal avgCredit = (BigDecimal) userCreditMapper.selectObjs(creditWrapper).get(0);
+        cardData.setAvgCreditScore(avgCredit != null ? avgCredit.intValue() : 0);
+
+        return cardData;
     }
 
 }

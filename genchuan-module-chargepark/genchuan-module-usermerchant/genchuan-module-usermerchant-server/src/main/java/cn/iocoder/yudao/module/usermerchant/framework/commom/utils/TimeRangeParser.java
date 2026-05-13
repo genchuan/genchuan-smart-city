@@ -151,7 +151,7 @@ public class TimeRangeParser {
     /**
      * 根据开始和结束时间推断粒度
      */
-    private static String inferGranularity(LocalDateTime start, LocalDateTime end) {
+    public static String inferGranularity(LocalDateTime start, LocalDateTime end) {
         // 年粒度：开始是年初，结束是年末，且同年
         if (start.getMonth() == Month.JANUARY && start.getDayOfMonth() == 1 && start.getHour() == 0 && start.getMinute() == 0 && start.getSecond() == 0 &&
                 end.getMonth() == Month.DECEMBER && end.getDayOfMonth() == 31 && end.getHour() == 23 && end.getMinute() == 59 && end.getSecond() == 59 &&
