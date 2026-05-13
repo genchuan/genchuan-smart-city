@@ -295,4 +295,9 @@ public class ClubMgmtServiceImpl implements ClubMgmtService {
 
     }
 
+    @Override
+    public PageResult<ClubMgmtRespVO> getClubMgmtJoinPage(ClubMgmtPageReqVO pageReqVO) {
+        return clubMgmtMapper.selectJoinPage(pageReqVO);
+    }
+
 }

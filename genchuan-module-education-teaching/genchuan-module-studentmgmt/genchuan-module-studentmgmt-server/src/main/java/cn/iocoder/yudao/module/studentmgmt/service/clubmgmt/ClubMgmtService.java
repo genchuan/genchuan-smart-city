@@ -68,4 +68,6 @@ public interface ClubMgmtService {
     ClubMgmtClubDistributionRespVO clubDistribution(@Valid ClubMgmtChartReqVO reqVO);
 
     boolean venueApply(@Valid ClubMgmtVenueApplyReqVO reqVO);
+
+    PageResult<ClubMgmtRespVO> getClubMgmtJoinPage(@Valid ClubMgmtPageReqVO pageReqVO);
 }
