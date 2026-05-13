@@ -29,7 +29,7 @@ public interface DebtRecordMapper extends BaseMapperX<DebtRecordDO> {
         return selectPage(reqVO, new LambdaQueryWrapperX<DebtRecordDO>()
                 .likeIfPresent(DebtRecordDO::getPlateNo, reqVO.getPlateNo())
                 .eqIfPresent(DebtRecordDO::getStatus, reqVO.getStatus())
-                .eqIfPresent(DebtRecordDO::getStationId, reqVO.getStationId())
+                .likeIfPresent(DebtRecordDO::getStationName, reqVO.getStationName())
                 .geIfPresent(DebtRecordDO::getCreateTime, reqVO.getCreateTimeStart())
                 .leIfPresent(DebtRecordDO::getCreateTime, reqVO.getCreateTimeEnd())
                 .orderByDesc(DebtRecordDO::getId));
