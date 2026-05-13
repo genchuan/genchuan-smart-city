@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.debtcollect.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.debtcollect.ArrearRecordDO;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.debtcollect.ArrearRecordMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +39,11 @@ public class ArrearRecordServiceImpl implements ArrearRecordService {
     @Override public void deleteArrearRecord(Long id) { validateExists(id); arrearRecordMapper.deleteById(id); }
     @Override public void deleteArrearRecordListByIds(List<Long> ids) { arrearRecordMapper.deleteByIds(ids); }
     @Override public ArrearRecordDO getArrearRecord(Long id) { return arrearRecordMapper.selectById(id); }
-    @Override public PageResult<ArrearRecordDO> getArrearRecordPage(ArrearRecordPageReqVO v) { return arrearRecordMapper.selectPage(v); }
+    @Override public PageResult<ArrearRecordDO> getArrearRecordPage(ArrearRecordPageReqVO v) {
+        Page<ArrearRecordDO> page = new Page<>(v.getPageNo(), v.getPageSize());
+        var result = arrearRecordMapper.selectPageJoinStation(page, v);
+        return new PageResult<>(result.getRecords(), result.getTotal());
+    }
     @Override public ArrearRecordChartRespVO getArrearRecordChart(ArrearRecordChartReqVO v)  {
         ArrearRecordChartRespVO resp = new ArrearRecordChartRespVO();
         LocalDateTime start = v.getStartTime() != null ? v.getStartTime() : LocalDateTime.now().minusDays(30);

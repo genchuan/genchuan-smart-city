@@ -58,4 +58,12 @@ public interface AssetInfoMapper extends BaseMapperX<AssetInfoDO> {
      * @return 卡片统计数据
      */
     AssetInfoChartRespVO.CardData selectCardData();
+
+    /**
+     * 查询已生效的场站信息（仅返回id和name）
+     * 用于资产信息选择场站时的下拉框
+     *
+     * @return 场站简略信息列表
+     */
+    List<StationSimpleRespVO> selectSimpleStationList();
 }

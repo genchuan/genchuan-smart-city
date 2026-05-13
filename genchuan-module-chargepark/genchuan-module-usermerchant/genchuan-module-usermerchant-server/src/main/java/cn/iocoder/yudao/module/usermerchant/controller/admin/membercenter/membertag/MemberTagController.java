@@ -75,6 +75,14 @@ public class MemberTagController {
         return success(memberTagService.importUsers(list, updateSupport));
     }
 
+    @GetMapping("/template")
+    @Operation(summary = "下载会员标签导入模板")
+    @PreAuthorize("@ss.hasPermission('usermerchant:member-tag:import')")
+    public void downloadImportTemplate(HttpServletResponse response) throws IOException {
+        List<MemberTagImportExcelVO> emptyList = Collections.emptyList();
+        ExcelUtils.write(response, "会员标签导入模板.xlsx", "会员标签", MemberTagImportExcelVO.class, emptyList);
+    }
+
     @GetMapping("/export")
     @Operation(summary = "导出会员标签")
     @PreAuthorize("@ss.hasPermission('usermerchant:member-tag:export')")

@@ -75,7 +75,7 @@ public class ParkingSpaceInfoController {
         parkingSpaceInfoService.bindParkingSpace(reqVO);
         return success(true);
     }
-    @GetMapping("/import-template")
+    @GetMapping("/get-import-template")
     @Operation(summary = "下载导入模板")
     @PreAuthorize("@ss.hasPermission('stationresource:area-info:import')")
     public void importTemplate(HttpServletResponse response) throws Exception {

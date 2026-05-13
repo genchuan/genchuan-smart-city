@@ -88,4 +88,10 @@ public interface SpareStockService {
      */
     SpareStockChartRespVO getSpareStockChart(SpareStockChartReqVO reqVO);
 
+    /**
+     * 获取不重复的备件列表（用于下拉选择）
+     *
+     * @return 备件简略信息列表
+     */
+    List<SpareStockSimpleRespVO> getSimpleSpareList();
 }

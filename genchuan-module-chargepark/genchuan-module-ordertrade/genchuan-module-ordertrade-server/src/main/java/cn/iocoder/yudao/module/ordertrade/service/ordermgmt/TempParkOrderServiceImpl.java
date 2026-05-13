@@ -60,7 +60,7 @@ public class TempParkOrderServiceImpl implements TempParkOrderService {
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(tempParkOrderMapper.selectTrend(start, end));
-        resp.setStationData(tempParkOrderMapper.selectGroupByStatus());
+        resp.setStationData(tempParkOrderMapper.selectGroupByStation(start, end));
         Long total = tempParkOrderMapper.selectTodayCount(todayStart, now);
         Long paid  = tempParkOrderMapper.selectTodayPaidCount(todayStart, now);
         TempParkOrderChartRespVO.CardData card = new TempParkOrderChartRespVO.CardData();

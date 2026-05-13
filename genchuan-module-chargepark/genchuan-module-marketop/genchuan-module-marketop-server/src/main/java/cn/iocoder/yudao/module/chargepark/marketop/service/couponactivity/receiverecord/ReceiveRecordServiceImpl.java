@@ -7,6 +7,8 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivi
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.ReceiveRecordDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.couponactivity.ReceiveRecordMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.ReceiveRecordStatusEnum;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.chargepark.marketop.enums.LogRecordConstants.*;
 
 @Service
 @Validated
@@ -42,6 +45,8 @@ public class ReceiveRecordServiceImpl implements ReceiveRecordService {
     }
 
     @Override
+    @LogRecord(type = RECEIVE_RECORD_TYPE, subType = RECEIVE_RECORD_CHECK_SUB_TYPE, bizNo = "{{#id}}",
+            success = RECEIVE_RECORD_CHECK_SUCCESS)
     public void check(Long id, String checkResult) {
         ReceiveRecordDO receiveRecord = validateExists(id);
 //        if (!"0".equals(receiveRecord.getStatus()) && !"-1".equals(receiveRecord.getStatus())) {
@@ -50,6 +55,8 @@ public class ReceiveRecordServiceImpl implements ReceiveRecordService {
         receiveRecord.setStatus(ReceiveRecordStatusEnum.CHECKED.getValue());
         receiveRecord.setCheckResult(checkResult);
         receiveRecordMapper.updateById(receiveRecord);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("receiveRecord", receiveRecord);
     }
 
     @Override

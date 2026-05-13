@@ -31,6 +31,8 @@ public class AssetStockChartRespVO {
     // 资产库存分布柱状图数据
     @Data
     public static class StockData {
+        @Schema(description = "资产ID", example = "1")
+        private Long assetId;
 
         @Schema(description = "资产名称", example = "监测摄像头")
         private String assetName;

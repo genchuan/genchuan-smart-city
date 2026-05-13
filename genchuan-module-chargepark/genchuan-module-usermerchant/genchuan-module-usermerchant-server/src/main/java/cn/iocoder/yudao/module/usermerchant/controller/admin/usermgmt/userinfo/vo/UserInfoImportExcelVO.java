@@ -19,6 +19,9 @@ public class UserInfoImportExcelVO {
     @ExcelProperty("主键ID")
     private Long id;
 
+    @ExcelProperty("用户编号")
+    private String userNo;
+
     @ExcelProperty("用户姓名")
     private String nickname;
 

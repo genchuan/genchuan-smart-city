@@ -93,7 +93,7 @@ public class ChargeParkLinkController {
     }
 
     // ==================== 导入模板 ====================
-    @GetMapping("/import-template")
+    @GetMapping("/get-import-template")
     @Operation(summary = "下载导入模板")
     @PreAuthorize("@ss.hasPermission('stationresource:charge-park-link:import')")
     public void importTemplate(HttpServletResponse response) throws Exception {

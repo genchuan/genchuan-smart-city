@@ -76,7 +76,7 @@ public class TimePermissionController {
         return CommonResult.success(true);
     }
     // ==================== 【导入接口】 ====================
-    @GetMapping("/import-template")
+    @GetMapping("/get-import-template")
     @Operation(summary = "下载导入模板")
     @PreAuthorize("@ss.hasPermission('stationresource:time-permission:import')")
     public void importTemplate(HttpServletResponse response) throws Exception {

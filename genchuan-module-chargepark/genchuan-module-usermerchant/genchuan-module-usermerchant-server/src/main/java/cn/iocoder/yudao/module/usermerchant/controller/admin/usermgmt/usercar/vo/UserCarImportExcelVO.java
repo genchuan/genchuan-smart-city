@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.usercar.vo;
 
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.FlexibleTimestampDeserializer;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -18,6 +19,10 @@ public class UserCarImportExcelVO {
 
     @ExcelProperty("用户信息ID")
     private Long userId;
+
+    @ExcelProperty("用户姓名")
+    @TableField(exist = false)
+    private String userName;
 
     @ExcelProperty("车牌号码")
     private String plateNo;
@@ -37,6 +42,10 @@ public class UserCarImportExcelVO {
 
     @ExcelProperty("审核人ID")
     private Long auditorId;
+
+    @ExcelProperty("审核人名称")
+    @TableField(exist = false)
+    private String auditorName;
 
     @ExcelProperty("审核时间")
     @JsonDeserialize(using = FlexibleTimestampDeserializer.class)

@@ -30,6 +30,7 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.INPUT_NOT_EXISTS;
+import static cn.iocoder.yudao.module.vehiclepass.constants.entermgmt.CarInputConstants.*;
 
 
 /**
@@ -107,7 +108,7 @@ public class CarInputServiceImpl implements CarInputService {
     @Override
     public void createInputByReq(CarInputCreateReqVO createReqVO) {
         CarInputDO input = BeanUtils.toBean(createReqVO, CarInputDO.class);
-        input.setStatus("待审核");
+        input.setStatus(STATUS_PENDING_REVIEW);
         input.setInputTime(LocalDateTime.now());
         inputMapper.insert(input);
     }
@@ -117,10 +118,10 @@ public class CarInputServiceImpl implements CarInputService {
         validateInputExists(reqVO.getId());
         CarInputDO updateObj = new CarInputDO();
         updateObj.setId(reqVO.getId());
-        if ("通过".equals(reqVO.getAuditResult())) {
-            updateObj.setStatus("已通过");
-        } else if ("驳回".equals(reqVO.getAuditResult())) {
-            updateObj.setStatus("已驳回");
+        if (AUDIT_RESULT_PASS.equals(reqVO.getAuditResult())) {
+            updateObj.setStatus(STATUS_APPROVED);
+        } else if (AUDIT_RESULT_REJECT.equals(reqVO.getAuditResult())) {
+            updateObj.setStatus(STATUS_REJECTED);
         }
         updateObj.setAuditTime(LocalDateTime.now());
         updateObj.setAuditComment(reqVO.getAuditComment());
@@ -132,7 +133,7 @@ public class CarInputServiceImpl implements CarInputService {
         validateInputExists(id);
         CarInputDO updateObj = new CarInputDO();
         updateObj.setId(id);
-        updateObj.setStatus("已通过");
+        updateObj.setStatus(STATUS_APPROVED);
         inputMapper.updateById(updateObj);
     }
 

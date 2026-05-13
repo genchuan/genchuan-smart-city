@@ -94,17 +94,10 @@ public class BikeChargeMonitorController {
     @Parameter(name = "id", description = "监测记录ID", required = true, example = "1")
     @PreAuthorize("@ss.hasPermission('inspectop:bike-charge-monitor:location')")
     public CommonResult<BikeChargeMonitorLocationRespVO> getBikeChargeMonitorLocation(@RequestParam("id") Long id) {
-        // 1. 从Service层获取基础定位信息（包含longitude、latitude、stationName）
+        // 1. 从Service层获取定位信息（已包含longitude、latitude、stationName 以及从 device_id 转换来的 deviceCode）
         BikeChargeMonitorLocationRespVO locationRespVO = bikeChargeMonitorService.getBikeChargeMonitorLocation(id);
 
-        // 2. 模拟生成设备编号：BC-01 到 BC-50
-        int deviceNum = ThreadLocalRandom.current().nextInt(1, 51); // 生成1-50的随机数
-        String deviceCode = String.format("BC-%02d", deviceNum); // 格式化为两位数字，如BC-01
-
-        // 3. 设置设备编号到响应对象
-        locationRespVO.setDeviceCode(deviceCode);
-
-        // 4. 返回成功响应
+        // 2. 直接返回结果
         return success(locationRespVO);
     }
 

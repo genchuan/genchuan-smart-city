@@ -65,7 +65,7 @@ public class NameQueryHelper {
      * @param idField    ID 字段名
      * @return 对应的 ID，未找到返回 null
      */
-    private static Long getIdByName(String tableName, String nameField, String nameValue, String idField) {
+    public static Long getIdByName(String tableName, String nameField, String nameValue, String idField) {
         if (isBlank(tableName) || isBlank(nameField) || isBlank(nameValue) || isBlank(idField)) {
             return null;
         }

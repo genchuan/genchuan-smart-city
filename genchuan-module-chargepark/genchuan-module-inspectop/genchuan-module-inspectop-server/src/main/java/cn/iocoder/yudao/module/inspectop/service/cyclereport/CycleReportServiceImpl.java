@@ -91,7 +91,7 @@ public class CycleReportServiceImpl implements CycleReportService {
         }
 
         // 4.2 巡检任务统计
-        Map<String, Object> taskMap = cycleReportMapper.selectInspectTaskReport(stationId, statTimeStart, statTimeEnd);
+        Map<String, Object> taskMap = cycleReportMapper.selectInspectTaskReport(statTimeStart, statTimeEnd);
         respVO.setInspectTaskNum(((Number) taskMap.getOrDefault("inspectTaskNum", 0)).intValue());
         Object taskCompleteRate = taskMap.get("taskCompleteRate");
         respVO.setTaskCompleteRate(taskCompleteRate != null ?
@@ -132,28 +132,102 @@ public class CycleReportServiceImpl implements CycleReportService {
 
     @Override
     public CycleReportChartRespVO getCycleReportChart(CycleReportChartReqVO reqVO) {
-        // 构建返回对象
+        // 1. 处理默认参数
+        if (reqVO == null) {
+            reqVO = new CycleReportChartReqVO();
+        }
+
+        // 设置默认时间范围（最近30天）
+        if (reqVO.getStatTimeStart() == null || reqVO.getStatTimeEnd() == null) {
+            LocalDateTime endTime = LocalDateTime.now();
+            LocalDateTime startTime = endTime.minusDays(30);
+            reqVO.setStatTimeStart(startTime);
+            reqVO.setStatTimeEnd(endTime);
+        }
+
+        // 2. 构建响应对象
         CycleReportChartRespVO respVO = new CycleReportChartRespVO();
 
-        // 1. 获取卡片数据
-        CycleReportChartRespVO.CardData cardData = getCardData(reqVO);
-        respVO.setCardData(cardData);
+        // 3. 计算卡片数据
+        respVO.setCardData(buildCardData(reqVO));
 
-        // 2. 获取地图数据
-        List<CycleReportChartRespVO.MapData> mapData = cycleReportMapper.selectMapData(reqVO);
-        // 为每个地图数据设置模拟的经纬度
-        mapData = generateRandomCoordinates(mapData);
-        respVO.setMapData(mapData);
-
-        // 3. 获取柱状图数据
-        List<CycleReportChartRespVO.BarData> barData = cycleReportMapper.selectBarData(reqVO);
-        respVO.setBarData(barData);
-
-        // 4. 获取折线图数据
-        List<CycleReportChartRespVO.LineData> lineData = cycleReportMapper.selectLineData(reqVO);
-        respVO.setLineData(lineData);
+        // 4. 查询图表数据
+        respVO.setMapData(cycleReportMapper.selectMapData(reqVO));
+        respVO.setBarData(cycleReportMapper.selectBarData(reqVO));
+        respVO.setLineData(cycleReportMapper.selectLineData(reqVO));
 
         return respVO;
+    }
+
+    /**
+     * 构建卡片数据
+     */
+    private CycleReportChartRespVO.CardData buildCardData(CycleReportChartReqVO reqVO) {
+        CycleReportChartRespVO.CardData cardData = new CycleReportChartRespVO.CardData();
+
+        // 如果没有指定场站ID，则统计所有场站
+        Long stationId = reqVO.getStationId();
+
+        // 1. 设备监测统计
+        Map<String, Object> deviceData = cycleReportMapper.selectDeviceMonitorReport(
+                stationId,
+                reqVO.getStatTimeStart(),
+                reqVO.getStatTimeEnd()
+        );
+        if (deviceData != null) {
+            cardData.setNormalDeviceNum(deviceData.get("normalDeviceNum") != null ?
+                    Integer.parseInt(deviceData.get("normalDeviceNum").toString()) : 0);
+            cardData.setAbnormalDeviceNum(deviceData.get("abnormalDeviceNum") != null ?
+                    Integer.parseInt(deviceData.get("abnormalDeviceNum").toString()) : 0);
+        }
+
+        // 2. 巡检任务统计
+        Map<String, Object> taskData = cycleReportMapper.selectInspectTaskReport(
+                reqVO.getStatTimeStart(),
+                reqVO.getStatTimeEnd()
+        );
+        if (taskData != null) {
+            cardData.setInspectTaskNum(taskData.get("inspectTaskNum") != null ?
+                    Integer.parseInt(taskData.get("inspectTaskNum").toString()) : 0);
+            cardData.setTaskCompleteRate(taskData.get("taskCompleteRate") != null ?
+                    new BigDecimal(taskData.get("taskCompleteRate").toString()) : BigDecimal.ZERO);
+        }
+
+        // 3. 油车占位统计
+        Map<String, Object> oilData = cycleReportMapper.selectOilMonitorReport(
+                stationId,
+                reqVO.getStatTimeStart(),
+                reqVO.getStatTimeEnd()
+        );
+        if (oilData != null) {
+            cardData.setOilWaitHandleNum(oilData.get("oilWaitHandleNum") != null ?
+                    Integer.parseInt(oilData.get("oilWaitHandleNum").toString()) : 0);
+            cardData.setOilHandleCompleteRate(oilData.get("oilHandleCompleteRate") != null ?
+                    new BigDecimal(oilData.get("oilHandleCompleteRate").toString()) : BigDecimal.ZERO);
+        }
+
+        // 4. 巡检人员在岗统计
+        Map<String, Object> userData = cycleReportMapper.selectInspectUserReport(stationId);
+        if (userData != null) {
+            cardData.setInspectUserOnlineNum(userData.get("inspectUserOnlineNum") != null ?
+                    Integer.parseInt(userData.get("inspectUserOnlineNum").toString()) : 0);
+        }
+
+        // 5. 资产信息统计
+        Map<String, Object> assetData = cycleReportMapper.selectAssetInfoReport(stationId);
+        if (assetData != null) {
+            cardData.setAssetNormalNum(assetData.get("assetNormalNum") != null ?
+                    Integer.parseInt(assetData.get("assetNormalNum").toString()) : 0);
+        }
+
+        // 6. 库存预警统计
+        Map<String, Object> stockData = cycleReportMapper.selectAssetStockReport(stationId);
+        if (stockData != null) {
+            cardData.setStockWarnNum(stockData.get("stockWarnNum") != null ?
+                    Integer.parseInt(stockData.get("stockWarnNum").toString()) : 0);
+        }
+
+        return cardData;
     }
 
     /**
@@ -204,7 +278,7 @@ public class CycleReportServiceImpl implements CycleReportService {
         }
 
         // 2. 巡检任务统计（统计全部场站）
-        Map<String, Object> taskMap = cycleReportMapper.selectInspectTaskReport(null, statTimeStart, statTimeEnd);
+        Map<String, Object> taskMap = cycleReportMapper.selectInspectTaskReport(statTimeStart, statTimeEnd);
         cardData.setInspectTaskNum(((Number) taskMap.getOrDefault("inspectTaskNum", 0)).intValue());
         Object taskCompleteRate = taskMap.get("taskCompleteRate");
         cardData.setTaskCompleteRate(taskCompleteRate != null ?
@@ -491,7 +565,7 @@ public class CycleReportServiceImpl implements CycleReportService {
             }
 
             // 2. 获取巡检任务统计
-            Map<String, Object> taskMap = cycleReportMapper.selectInspectTaskReport(stationId, startTime, endTime);
+            Map<String, Object> taskMap = cycleReportMapper.selectInspectTaskReport(startTime, endTime);
             int taskNum = ((Number) taskMap.getOrDefault("inspectTaskNum", 0)).intValue();
             double completeRate = taskMap.get("taskCompleteRate") != null ?
                     new BigDecimal(taskMap.get("taskCompleteRate").toString()).doubleValue() : 0.0;

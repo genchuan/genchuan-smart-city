@@ -37,7 +37,7 @@ public interface DebtExpandMapper extends BaseMapperX<DebtExpandDO> {
                 .eqIfPresent(DebtExpandDO::getReserve2, reqVO.getReserve2())
                 .eqIfPresent(DebtExpandDO::getCreator, reqVO.getCreator())
                 .eqIfPresent(DebtExpandDO::getUpdater, reqVO.getUpdater())
-                .betweenIfPresent(DebtExpandDO::getCreateTime, reqVO.getCreateTime())
+                .betweenIfPresent(DebtExpandDO::getCreateTime, reqVO.getCreateTimeStart(), reqVO.getCreateTimeEnd())
                 .betweenIfPresent(DebtExpandDO::getUpdateTime, reqVO.getUpdateTime())
                 .orderByDesc(DebtExpandDO::getId));
     }

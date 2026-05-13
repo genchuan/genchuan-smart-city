@@ -17,7 +17,7 @@ public class AssetStockRespVO {
     private Long id;
 
     @Schema(description = "资产ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("资产ID")
+//    @ExcelProperty("资产ID")
     private Long assetId;
 
     @Schema(description = "资产名称")
@@ -37,19 +37,19 @@ public class AssetStockRespVO {
     private String status;
 
     @Schema(description = "所属场站ID")
-    @ExcelProperty("所属场站ID")
+//    @ExcelProperty("所属场站ID")
     private Long stationId;
 
     @Schema(description = "场站名称")
     @ExcelProperty("场站名称")
     private String stationName;
 
-    @Schema(description = "备用字段1")
-    @ExcelProperty("备用字段1")
+    @Schema(description = "补货记录")
+    @ExcelProperty("补货记录")
     private String reserve1;
 
-    @Schema(description = "备用字段2")
-    @ExcelProperty("备用字段2")
+    @Schema(description = "调配记录")
+    @ExcelProperty("调配记录")
     private String reserve2;
 
     @Schema(description = "创建者")

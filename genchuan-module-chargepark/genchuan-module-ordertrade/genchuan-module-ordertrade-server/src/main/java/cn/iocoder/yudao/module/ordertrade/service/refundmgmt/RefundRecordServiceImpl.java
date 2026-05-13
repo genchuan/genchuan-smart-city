@@ -41,8 +41,8 @@ public class RefundRecordServiceImpl implements RefundRecordService {
     @Override public PageResult<RefundRecordDO> getRefundRecordPage(RefundRecordPageReqVO v) { return refundRecordMapper.selectPage(v); }
     @Override public RefundRecordChartRespVO getRefundRecordChart(RefundRecordChartReqVO v)  {
         RefundRecordChartRespVO resp = new RefundRecordChartRespVO();
-        LocalDateTime start = v.getStartTime() != null ? v.getStartTime() : LocalDateTime.now().minusDays(30);
-        LocalDateTime end   = v.getEndTime()   != null ? v.getEndTime()   : LocalDateTime.now();
+        LocalDateTime start = v.getRefundTimeStart() != null ? v.getRefundTimeStart() : LocalDateTime.now().minusDays(30);
+        LocalDateTime end   = v.getRefundTimeEnd()   != null ? v.getRefundTimeEnd()   : LocalDateTime.now();
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(refundRecordMapper.selectTrend(start, end));
