@@ -39,22 +39,30 @@ public interface TempParkOrderMapper extends BaseMapperX<TempParkOrderDO> {
     }
 
     @Select("<script>" +
-            "SELECT DATE_FORMAT(create_time,'%Y-%m-%d') AS date, COUNT(*) AS count " +
+            "SELECT DATE_FORMAT(create_order_time,'%Y-%m-%d') AS date, COUNT(*) AS count " +
             "FROM temp_park_order WHERE deleted = 0 " +
-            "<if test='startTime != null'> AND create_time &gt;= #{startTime} </if>" +
-            "<if test='endTime != null'>   AND create_time &lt;= #{endTime}   </if>" +
-            "GROUP BY DATE_FORMAT(create_time,'%Y-%m-%d') ORDER BY date" +
+            "<if test='startTime != null'> AND create_order_time &gt;= #{startTime} </if>" +
+            "<if test='endTime != null'>   AND create_order_time &lt;= #{endTime}   </if>" +
+            "GROUP BY DATE_FORMAT(create_order_time,'%Y-%m-%d') ORDER BY date" +
             "</script>")
     List<Map<String, Object>> selectTrend(@Param("startTime") LocalDateTime startTime,
                                           @Param("endTime") LocalDateTime endTime);
 
-    @Select("SELECT status, COUNT(*) AS count FROM temp_park_order WHERE deleted = 0 GROUP BY status")
-    List<Map<String, Object>> selectGroupByStatus();
+    @Select("<script>" +
+            "SELECT IFNULL(s.name, CONCAT('场站', o.station_id)) AS station, COUNT(*) AS count " +
+            "FROM temp_park_order o " +
+            "LEFT JOIN station_info s ON o.station_id = s.id AND s.deleted = 0 " +
+            "WHERE o.deleted = 0 " +
+            "<if test='startTime != null'> AND o.create_order_time &gt;= #{startTime} </if>" +
+            "<if test='endTime != null'>   AND o.create_order_time &lt;= #{endTime}   </if>" +
+            "GROUP BY o.station_id ORDER BY count DESC" +
+            "</script>")
+    List<Map<String, Object>> selectGroupByStation(@Param("startTime") LocalDateTime startTime,
+                                                   @Param("endTime") LocalDateTime endTime);
 
-    @Select("SELECT COUNT(*) FROM temp_park_order WHERE deleted = 0 AND create_time BETWEEN #{startTime} AND #{endTime}")
+    @Select("SELECT COUNT(*) FROM temp_park_order WHERE deleted = 0 AND create_order_time BETWEEN #{startTime} AND #{endTime}")
     Long selectTodayCount(@Param("startTime") LocalDateTime startTime,
                           @Param("endTime") LocalDateTime endTime);
-
 
     @Select("<script>" +
             "SELECT IFNULL(SUM(amount), 0) FROM temp_park_order WHERE deleted = 0 " +
@@ -66,7 +74,7 @@ public interface TempParkOrderMapper extends BaseMapperX<TempParkOrderDO> {
                                   @Param("endTime") LocalDateTime endTime);
 
     @Select("SELECT COUNT(*) FROM temp_park_order WHERE deleted = 0 " +
-            "AND status IN ('paid','completed') AND create_time BETWEEN #{startTime} AND #{endTime}")
+            "AND status IN ('paid','completed') AND create_order_time BETWEEN #{startTime} AND #{endTime}")
     Long selectTodayPaidCount(@Param("startTime") LocalDateTime startTime,
                               @Param("endTime") LocalDateTime endTime);
 

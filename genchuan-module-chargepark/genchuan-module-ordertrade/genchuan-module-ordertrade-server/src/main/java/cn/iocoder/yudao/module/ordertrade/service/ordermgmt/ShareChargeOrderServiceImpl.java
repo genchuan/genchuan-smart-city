@@ -59,7 +59,7 @@ public class ShareChargeOrderServiceImpl implements ShareChargeOrderService {
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(shareChargeOrderMapper.selectTrend(start, end));
-        resp.setStationData(shareChargeOrderMapper.selectGroupByStatus());
+        resp.setStationData(shareChargeOrderMapper.selectGroupByStation(start, end));
         ShareChargeOrderChartRespVO.CardData card = new ShareChargeOrderChartRespVO.CardData();
         card.setTodayOrderCount(shareChargeOrderMapper.selectTodayCount(todayStart, now).intValue());
         card.setTodayLendCount(shareChargeOrderMapper.selectTodayLendCount(todayStart, now).intValue());
