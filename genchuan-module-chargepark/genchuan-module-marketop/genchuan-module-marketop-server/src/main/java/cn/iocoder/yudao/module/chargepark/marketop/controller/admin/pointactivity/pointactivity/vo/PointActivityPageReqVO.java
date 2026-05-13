@@ -39,10 +39,12 @@ public class PointActivityPageReqVO extends PageParam {
     private Long stationId;
 
     @Schema(description = "开始时间")
-    private Long startTime;
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime[] startTime;
 
     @Schema(description = "结束时间")
-    private Long endTime;
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime[] endTime;
 
     @Schema(description = "日期筛选，格式如：2026-04-24")
     private String date;

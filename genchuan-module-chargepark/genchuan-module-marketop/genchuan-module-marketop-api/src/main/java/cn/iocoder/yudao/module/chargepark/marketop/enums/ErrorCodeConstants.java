@@ -22,6 +22,7 @@ public interface ErrorCodeConstants {
 
     ErrorCode PRIZE_MGMT_NOT_EXISTS = new ErrorCode(1_100_031, "奖品不存在");
     ErrorCode PRIZE_MGMT_NAME_EXISTS = new ErrorCode(1_100_032, "奖品名称已存在");
+    ErrorCode PRIZE_MGMT_ACTIVITY_ID_IS_NULL = new ErrorCode(1_100_033, "活动ID不能为空");
 
     // ========== 优惠活动 1-100-051 ~ 1-100-100 ==========
     ErrorCode COUPON_MGMT_NOT_EXISTS = new ErrorCode(1_100_051, "优惠券不存在");
