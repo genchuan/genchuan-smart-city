@@ -6,6 +6,8 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivit
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointLotteryDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.PointLotteryMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.PointLotteryStatusEnum;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -22,6 +24,7 @@ import java.util.Objects;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.chargepark.marketop.enums.LogRecordConstants.*;
 
 @Service
 @Validated
@@ -41,6 +44,8 @@ public class PointLotteryServiceImpl implements PointLotteryService {
     }
 
     @Override
+    @LogRecord(type = POINT_LOTTERY_TYPE, subType = POINT_LOTTERY_CHECK_SUB_TYPE, bizNo = "{{#id}}",
+            success = POINT_LOTTERY_CHECK_SUCCESS)
     public void check(Long id, String checkResult) {
         PointLotteryDO lottery = validateExists(id);
         if (Objects.equals(lottery.getStatus(), PointLotteryStatusEnum.NORMAL.getValue())) {
@@ -49,6 +54,8 @@ public class PointLotteryServiceImpl implements PointLotteryService {
         lottery.setStatus(PointLotteryStatusEnum.CHECKED.getValue());
         lottery.setCheckResult(checkResult);
         pointLotteryMapper.updateById(lottery);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("lottery", lottery);
     }
 
     @Override

@@ -26,6 +26,7 @@ public class PrizeMgmtCreateReqVO {
     private Integer warnThreshold;
 
     @Schema(description = "绑定活动ID")
+    @NotNull(message = "预警阈值不能为空")
     private Long activityId;
 
     @Schema(description = "奖品描述")

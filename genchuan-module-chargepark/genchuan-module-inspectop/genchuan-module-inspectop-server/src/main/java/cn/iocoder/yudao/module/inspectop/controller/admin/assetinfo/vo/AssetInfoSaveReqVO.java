@@ -32,7 +32,7 @@ public class AssetInfoSaveReqVO {
     @Schema(description = "所属场站ID")
     private Long stationId;
 
-    @Schema(description = "备用字段1")
+    @Schema(description = "报废理由")
     private String reserve1;
 
     @Schema(description = "备用字段2")

@@ -59,7 +59,7 @@ public class ShareChargeOrderServiceImpl implements ShareChargeOrderService {
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(shareChargeOrderMapper.selectTrend(start, end));
-        resp.setStationData(shareChargeOrderMapper.selectGroupByStatus());
+        resp.setStationData(shareChargeOrderMapper.selectGroupByStation(start, end));
         ShareChargeOrderChartRespVO.CardData card = new ShareChargeOrderChartRespVO.CardData();
         card.setTodayOrderCount(shareChargeOrderMapper.selectTodayCount(todayStart, now).intValue());
         card.setTodayLendCount(shareChargeOrderMapper.selectTodayLendCount(todayStart, now).intValue());
@@ -123,11 +123,12 @@ public class ShareChargeOrderServiceImpl implements ShareChargeOrderService {
         if (order == null) throw exception(SHARE_CHARGE_ORDER_NOT_EXISTS);
         if (!"paid".equals(order.getStatus())) throw exception(ALL_ORDER_STATUS_CANNOT_REFUND);
         // 更新订单状态
-        ShareChargeOrderDO update = new ShareChargeOrderDO();
-        update.setId(reqVO.getId());
-        update.setStatus("refunding");
-        update.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
-        shareChargeOrderMapper.updateById(update);
+        //ShareChargeOrderDO update = new ShareChargeOrderDO();
+        //update.setId(reqVO.getId());
+        order.setStatus("refunding");
+        order.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
+        order.setUpdater(SecurityFrameworkUtils.getLoginUserNickname());
+        shareChargeOrderMapper.updateById(order);
         // 创建退款申请（触发退款流程）
         RefundApplyDO apply = new RefundApplyDO();
         apply.setApplicantId(SecurityFrameworkUtils.getLoginUserId());
@@ -137,6 +138,9 @@ public class ShareChargeOrderServiceImpl implements ShareChargeOrderService {
         apply.setRefundReason(reqVO.getRemark() != null ? reqVO.getRemark() : "申请退款");
         apply.setApplyTime(LocalDateTime.now());
         apply.setStatus("pending_audit");
+        apply.setCreator(SecurityFrameworkUtils.getLoginUserId()+"");
+        apply.setUpdater(SecurityFrameworkUtils.getLoginUserId()+"");
+        apply.setApplicantId(SecurityFrameworkUtils.getLoginUserId());
         refundApplyMapper.insert(apply);
     }
 

@@ -136,17 +136,67 @@ public class AssetInfoController {
         return success(chartData);
     }
 
+    @GetMapping("/station-simple-list")
+    @Operation(summary = "获取已生效的场站列表（用于下拉选择）")
+    @PreAuthorize("@ss.hasPermission('inspectop:asset-info:query')")
+    public CommonResult<List<StationSimpleRespVO>> getSimpleStationList() {
+        List<StationSimpleRespVO> stationList = assetInfoService.getSimpleStationList();
+        return success(stationList);
+    }
+
     @GetMapping("/export-excel")
     @Operation(summary = "导出资产信息 Excel")
     @PreAuthorize("@ss.hasPermission('inspectop:asset-info:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportAssetInfoExcel(@Valid AssetInfoPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                     HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        // 1. 获取数据列表
         List<AssetInfoRespVO> list = assetInfoService.getAssetInfoPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "资产信息.xls", "数据", AssetInfoRespVO.class,
-                        BeanUtils.toBean(list, AssetInfoRespVO.class));
+
+        // 【新增】2. 对VO列表中的字典值进行转换（数字 -> 中文）
+        convertDictValues(list);
+
+        // 3. 导出 Excel
+        ExcelUtils.write(response, "资产信息.xls", "数据", AssetInfoRespVO.class, list);
+    }
+
+    /**
+     * 【新增】转换字典值为中文显示
+     * 此方法会修改传入的 voList 中每个对象的 status 字段。
+     * @param voList 资产信息响应VO列表
+     */
+    private void convertDictValues(List<AssetInfoRespVO> voList) {
+        if (voList == null || voList.isEmpty()) {
+            return;
+        }
+        for (AssetInfoRespVO vo : voList) {
+            // 转换资产状态
+            vo.setStatus(convertAssetStatus(vo.getStatus()));
+        }
+    }
+
+    /**
+     * 【新增】转换资产信息状态字典值
+     * 根据映射：1-正常，2-禁用，3-报废
+     * @param statusCode 状态编码（例如 "1", "2", "3"）
+     * @return 对应的中文状态描述
+     */
+    private String convertAssetStatus(String statusCode) {
+        if (statusCode == null) {
+            return "";
+        }
+        switch (statusCode.trim()) {
+            case "1":
+                return "正常";
+            case "2":
+                return "禁用";
+            case "3":
+                return "报废";
+            default:
+                // 如果遇到未知编码，可以选择返回原编码或空字符串，这里返回原编码以便排查。
+                return statusCode;
+        }
     }
 
 }

@@ -26,24 +26,24 @@ public class TimePermissionCreateReqVO {
     @Schema(description = "最长停留时长，单位：分钟", example = "720")
     private Integer maxStay;
 
-    @Schema(description = "工作日配置")
+    @Schema(description = "工作日配置", example = "周一至周五")
     private String workdayConfig;
 
-    @Schema(description = "节假日配置")
+    @Schema(description = "节假日配置", example = "法定节假日")
     private String holidayConfig;
 
-    @Schema(description = "高峰配置")
+    @Schema(description = "高峰配置", example = "07:00-09:00")
     private String peakConfig;
 
-    @Schema(description = "平峰配置")
+    @Schema(description = "平峰配置", example = "09:00-17:00")
     private String offpeakConfig;
 
     @Schema(description = "备注", example = "夜间时段全部车辆准入")
     private String remark;
 
-    @Schema(description = "备用字段1")
+    @Schema(description = "备用字段1", example = "备用信息1")
     private String reserve1;
 
-    @Schema(description = "备用字段2")
+    @Schema(description = "备用字段2", example = "备用信息2")
     private String reserve2;
 }

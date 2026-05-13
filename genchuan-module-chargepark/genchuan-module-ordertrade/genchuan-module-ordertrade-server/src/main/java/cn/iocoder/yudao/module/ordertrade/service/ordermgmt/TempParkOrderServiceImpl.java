@@ -60,7 +60,7 @@ public class TempParkOrderServiceImpl implements TempParkOrderService {
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(tempParkOrderMapper.selectTrend(start, end));
-        resp.setStationData(tempParkOrderMapper.selectGroupByStatus());
+        resp.setStationData(tempParkOrderMapper.selectGroupByStation(start, end));
         Long total = tempParkOrderMapper.selectTodayCount(todayStart, now);
         Long paid  = tempParkOrderMapper.selectTodayPaidCount(todayStart, now);
         TempParkOrderChartRespVO.CardData card = new TempParkOrderChartRespVO.CardData();
@@ -110,11 +110,12 @@ public class TempParkOrderServiceImpl implements TempParkOrderService {
         if (order == null) throw exception(TEMP_PARK_ORDER_NOT_EXISTS);
         if (!"paid".equals(order.getStatus())) throw exception(ALL_ORDER_STATUS_CANNOT_REFUND);
         // 更新订单状态
-        TempParkOrderDO update = new TempParkOrderDO();
-        update.setId(reqVO.getId());
-        update.setStatus("refunding");
-        update.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
-        tempParkOrderMapper.updateById(update);
+        //TempParkOrderDO update = new TempParkOrderDO();
+        //update.setId(reqVO.getId());
+        order.setStatus("refunding");
+        order.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
+        order.setUpdater(SecurityFrameworkUtils.getLoginUserNickname());
+        tempParkOrderMapper.updateById(order);
         // 创建退款申请（触发退款流程）
         RefundApplyDO apply = new RefundApplyDO();
         apply.setApplyNo(OrderUtils.generateRefundNo());
@@ -125,6 +126,9 @@ public class TempParkOrderServiceImpl implements TempParkOrderService {
         apply.setRefundReason(reqVO.getRemark() != null ? reqVO.getRemark() : "申请退款");
         apply.setApplyTime(LocalDateTime.now());
         apply.setStatus("pending_audit");
+        apply.setCreator(SecurityFrameworkUtils.getLoginUserId()+"");
+        apply.setUpdater(SecurityFrameworkUtils.getLoginUserId()+"");
+        apply.setApplicantId(SecurityFrameworkUtils.getLoginUserId());
         refundApplyMapper.insert(apply);
     }
 

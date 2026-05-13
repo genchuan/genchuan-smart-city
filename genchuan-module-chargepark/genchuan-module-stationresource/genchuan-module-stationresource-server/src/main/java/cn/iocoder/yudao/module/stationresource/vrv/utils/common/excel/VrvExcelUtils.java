@@ -2,9 +2,11 @@ package cn.iocoder.yudao.module.stationresource.vrv.utils.common.excel;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.idev.excel.EasyExcel;
+import cn.idev.excel.annotation.ExcelIgnore;
 import cn.idev.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import cn.iocoder.yudao.framework.common.exception.ErrorCode;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,57 +26,162 @@ import java.util.*;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 
-//导入工具类
+/**
+ * Excel导入导出工具类（通用）
+ * <p>统一处理 Excel 导入模板下载、列表导出、数据导入解析等功能。
+ * <p>V2.1 新增：导入错误提示中文化（字段名+类型+示例），Boolean 支持"是/否"输入
+ *
+ * @author vrvliang
+ * @version V2.1 2026-05-09 10:07
+ */
 public class VrvExcelUtils {
 
-    // ==================== 【通用】下载 Excel 导入模板（完美适配 importExcelAndReturnEntity） ====================
+    /**
+     * 下载 Excel 导入模板（通用，适配 importExcelAndReturnEntity 解析）
+     * <p>自动从实体类读取字段信息生成模板，跳过 @ExcelIgnore 字段，
+     * 表头和示例值优先取 @Schema 注解的中文描述和示例值。
+     *
+     * <pre>
+     * 版本历史：
+     *   V1 2026-04-08  —— 初始版本：英文字段名作表头，"请输入XXX" 作示例行
+     *   V2 2026-05-09 10:07 —— 表头改为读取 @Schema.description（中文名）
+     *                           示例行改为读取 @Schema.example（真实示例值）
+     *                           支持跳过 @ExcelIgnore 标记的字段
+     *                           无注解字段回退到字段名 + 类型默认值
+     * </pre>
+     */
     public static <T> void downloadImportTemplate(HttpServletResponse response, Class<T> clazz) throws Exception {
-        // 1. 获取字段顺序（和导入解析顺序完全一致）- 作为横向表头列
+        // 1. 收集字段信息：跳过@ExcelIgnore字段，从@Schema提取中文名和示例值
+        List<Field> validFields = new ArrayList<>();
         List<String> headerList = new ArrayList<>();
+        List<String> exampleList = new ArrayList<>();
+
         for (Field field : clazz.getDeclaredFields()) {
-            headerList.add(field.getName());
+            // 跳过 @ExcelIgnore 标记的字段
+            if (field.isAnnotationPresent(ExcelIgnore.class)) {
+                continue;
+            }
+
+            validFields.add(field);
+
+            // 表头中文名：优先取 @Schema.description，无则取字段名
+            String headerName = field.getName();
+            String example = getDefaultExample(field.getType());
+            if (field.isAnnotationPresent(Schema.class)) {
+                Schema schema = field.getAnnotation(Schema.class);
+                if (schema.description() != null && !schema.description().isEmpty()) {
+                    headerName = schema.description();
+                }
+                if (schema.example() != null && !schema.example().isEmpty()) {
+                    example = schema.example();
+                }
+            }
+            headerList.add(headerName);
+            exampleList.add(example);
         }
 
-        // 2. 构造 EasyExcel 要求的表头格式：List<List<String>>，每个内层List代表一列的表头（单层表头直接放字段名）
+        // 2. 构造 EasyExcel 要求的表头格式
         List<List<String>> head = new ArrayList<>();
         for (String header : headerList) {
             List<String> columnHead = new ArrayList<>();
-            columnHead.add(header); // 单层表头，直接添加字段名
+            columnHead.add(header);
             head.add(columnHead);
         }
 
-        // 3. 构造示例数据行：List<List<String>>，每个内层List代表一行的所有列数据
+        // 3. 构造示例数据行
         List<List<String>> data = new ArrayList<>();
         List<String> exampleRow = new ArrayList<>();
-        for (String header : headerList) {
-            exampleRow.add("请输入" + header); // 每列对应一个示例值
+        for (String example : exampleList) {
+            exampleRow.add(example);
         }
-        data.add(exampleRow); // 将示例行加入数据集合（仅1行示例）
+        data.add(exampleRow);
 
-        // 4. 响应头配置（保持原有逻辑，解决中文乱码和下载标识）
+        // 4. 响应头配置
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         String fileName = URLEncoder.encode(clazz.getSimpleName() + "_导入模板.xlsx", StandardCharsets.UTF_8);
         response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
 
-        // 5. EasyExcel 写出：head传入表头，doWrite传入数据（修复核心错误点）
+        // 5. EasyExcel 写出
         EasyExcel.write(response.getOutputStream())
-                .head(head) // 表头：每列的标题
-                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()) // 自动适配列宽
-                .sheet("导入模板") // 工作表名称
-                .doWrite(data); // 数据：每行的内容（横向排列）
+                .head(head)
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+                .sheet("导入模板")
+                .doWrite(data);
+    }
+
+    /**
+     * 根据字段类型返回默认示例值
+     *
+     * <pre>
+     * 版本历史：
+     *   V1 2026-05-09 10:07 —— 初始版本：String→"示例文本"，数字→1，日期→2026-01-01
+     * </pre>
+     */
+    private static String getDefaultExample(Class<?> type) {
+        if (type == String.class) {
+            return "示例文本";
+        } else if (type == Integer.class || type == int.class) {
+            return "1";
+        } else if (type == Long.class || type == long.class) {
+            return "1";
+        } else if (type == Double.class || type == double.class) {
+            return "1.0";
+        } else if (type == BigDecimal.class) {
+            return "1.00";
+        } else if (type == LocalDateTime.class) {
+            return "2026-01-01 00:00:00";
+        } else if (type == LocalDate.class) {
+            return "2026-01-01";
+        } else if (type == Date.class) {
+            return "2026-01-01";
+        } else if (type == Boolean.class || type == boolean.class) {
+            return "true";
+        }
+        return "";
+    }
+
+    /**
+     * Java 类型 → 中文描述（用于导入错误提示，让普通人能看懂）
+     *
+     * <pre>
+     * 版本历史：
+     *   V1 2026-05-09 10:07 —— 初始版本：Long/Integer→整数，BigDecimal→数字，LocalDateTime→日期时间，LocalDate/Date→日期，Boolean→true或false
+     * </pre>
+     */
+    private static String typeToChinese(Class<?> type) {
+        if (type == String.class) {
+            return "文本";
+        } else if (type == Integer.class || type == int.class || type == Long.class || type == long.class) {
+            return "整数";
+        } else if (type == Double.class || type == double.class || type == BigDecimal.class) {
+            return "数字";
+        } else if (type == LocalDateTime.class) {
+            return "日期时间";
+        } else if (type == LocalDate.class || type == Date.class) {
+            return "日期";
+        } else if (type == Boolean.class || type == boolean.class) {
+            return "true或false";
+        }
+        return type.getSimpleName();
     }
 
 
 
     /**
-     * 列表导出Excel（自动处理文件名、响应头、下载）
-     * 作用：统一处理所有列表导出 Excel，自动处理响应头、文件名乱码、对象转换、文件下载
-     * 评价：4.5; 2026/4/8
-     * @param response     HttpServletResponse
-     * @param dataList     数据列表
-     * @param <T>          泛型
-     * @throws Exception   异常直接抛出
+     * 列表导出 Excel（简化版，自动生成时间戳文件名）
+     * <p>只需传入数据列表，自动获取实体类并生成带时间戳的文件名。
+     * <p>评价：4.5
+     *
+     * @param response  HttpServletResponse
+     * @param dataList  数据列表
+     * @param <T>       泛型
+     * @throws Exception 异常直接抛出
+     *
+     * <pre>
+     * 版本历史：
+     *   V1 2026-04-08 —— 初始版本：自动生成文件名 + 列表导出
+     * </pre>
      */
     public static <T> void listExportExcelSimple(HttpServletResponse response,
                                   List<?> dataList) throws Exception {
@@ -93,15 +200,21 @@ public class VrvExcelUtils {
         listExportExcel(response, fileName, excelTemplateClass, dataList);
     }
     /**
-     * 列表导出Excel（自动处理文件名、响应头、下载）
-     * 作用：统一处理所有列表导出 Excel，自动处理响应头、文件名乱码、对象转换、文件下载
-     * 评价：4; 2026/4/8
-     * @param response     HttpServletResponse
-     * @param fileName   文件前缀（如：企业风险评估报告）
-     * @param excelTemplateClass 【重要！】Excel 导出模板类（就是你加了 @ExcelProperty 注解的实体类，决定表头、顺序、列宽）
-     * @param dataList     数据列表
-     * @param <T>          泛型
-     * @throws Exception   异常直接抛出
+     * 列表导出 Excel（完整版，指定文件名 + 模板类）
+     * <p>支持自定义文件名前缀和 Excel 模板类（通常为带 @ExcelProperty 的 RespVO）。
+     * <p>评价：4
+     *
+     * @param response           HttpServletResponse
+     * @param fileName           文件前缀（如：企业风险评估报告）
+     * @param excelTemplateClass 【重要！】Excel 导出模板类（加 @ExcelProperty 注解的实体类，决定表头、顺序、列宽）
+     * @param dataList           数据列表
+     * @param <T>                泛型
+     * @throws Exception         异常直接抛出
+     *
+     * <pre>
+     * 版本历史：
+     *   V1 2026-04-08 —— 初始版本：文件名编码 + 响应头配置 + BeanUtil 转换 + Excel 写出
+     * </pre>
      */
     public static <T> void listExportExcel(HttpServletResponse response,
                                   String fileName,
@@ -130,11 +243,21 @@ public class VrvExcelUtils {
 
 
     /**
-     * Excel 数据转实体列表(方便批量插入)，并返回调试信息
-     * 评价：3.5; 2026/4/7
-     * 缺点：Excel的字段顺序必须和参数targetClass全类名的字段顺序一样
-     * 参数targetClass是指类名（全类名），通常用.getClass.getName()得到,
-     * 比如cn.iocoder.yudao.module.industry.controller.admin.importer.ImportVO
+     * Excel 文件导入解析为实体列表
+     * <p>读取 Excel 文件，按字段声明顺序映射到目标实体类，支持多种日期格式自动解析。
+     * <p>注意：Excel 列顺序必须与 targetClass 字段声明顺序一致（跳过 @ExcelIgnore 字段）。
+     * <p>缺点：Excel 的字段顺序必须和参数 targetClass 全类名的字段顺序一样
+     * <p>参数 targetClass 是指类名（全类名），通常用 .getClass().getName() 得到，
+     * 如 cn.iocoder.yudao.module.industry.controller.admin.importer.ImportVO
+     * <p>评价：4
+     *
+     * <pre>
+     * 版本历史：
+     *   V1 2026-04-07 —— 初始版本：Excel 读取 → 类型转换 → 实体列表输出，支持调试模式
+     *   V2 2026-05-09 10:07 —— 导入时跳过 @ExcelIgnore 字段，与下载模板列序保持一致
+     *   V3 2026-05-09 10:07 —— 错误提示中文化：字段名→@Schema中文名，类型→中文描述，附带示例值
+     *                          Boolean 支持填"是/否"（兼容 true/false）
+     * </pre>
      */
     public static <T> Map<String, Object> importExcelAndReturnEntity(
             MultipartFile file,
@@ -173,10 +296,13 @@ public class VrvExcelUtils {
             excelFieldInfoList.add(rowFieldInfo);
         }
 
-        // 3. 获取目标实体类字段信息
+        // 3. 获取目标实体类字段信息（跳过@ExcelIgnore字段，与模板保持一致）
         Class<?> targetClass = Class.forName(targetClassName);
         Map<String, String> entityFieldInfo = new LinkedHashMap<>();
         for (Field field : targetClass.getDeclaredFields()) {
+            if (field.isAnnotationPresent(ExcelIgnore.class)) {
+                continue;
+            }
             entityFieldInfo.put(field.getName(), field.getType().getSimpleName());
         }
 
@@ -201,6 +327,9 @@ public class VrvExcelUtils {
             rowIndex++;   // 从第 2 行（数据第一行）开始
             colIndex=0;
             for (Field field : targetClass.getDeclaredFields()) {
+                if (field.isAnnotationPresent(ExcelIgnore.class)) {
+                    continue;
+                }
                 field.setAccessible(true);
                 String fieldName = field.getName();
                 Class<?> fieldType = field.getType();
@@ -214,7 +343,16 @@ public class VrvExcelUtils {
 
                     // 安全转换类型
                     try {
-                        if (fieldType == String.class) {
+                        if (fieldType == Boolean.class || fieldType == boolean.class) {
+                            String boolStr = value.toString().trim();
+                            if ("是".equals(boolStr) || "true".equalsIgnoreCase(boolStr)) {
+                                field.set(obj, true);
+                            } else if ("否".equals(boolStr) || "false".equalsIgnoreCase(boolStr)) {
+                                field.set(obj, false);
+                            } else {
+                                field.set(obj, Boolean.parseBoolean(boolStr));
+                            }
+                        } else if (fieldType == String.class) {
                             field.set(obj, value.toString());
                         } else if (fieldType == Integer.class || fieldType == int.class) {
                             field.set(obj, Integer.parseInt(value.toString()));
@@ -254,15 +392,28 @@ public class VrvExcelUtils {
                     } catch (Exception e) {
                         System.err.println("字段转换失败: " + fieldName + ", 值: " + value + ", 类型: " + fieldType);
                         e.printStackTrace();
+                        // 取中文名 + 中文类型 + 示例值，让普通人能看懂错误提示
+                        String cnFieldName = field.getName();
+                        String example = getDefaultExample(field.getType());
+                        if (field.isAnnotationPresent(Schema.class)) {
+                            Schema schema = field.getAnnotation(Schema.class);
+                            if (schema.description() != null && !schema.description().isEmpty()) {
+                                cnFieldName = schema.description();
+                            }
+                            if (schema.example() != null && !schema.example().isEmpty()) {
+                                example = schema.example();
+                            }
+                        }
                         throw exception(
                                 new ErrorCode(
                                         500,
-                                        "Excel 第 {} 行，字段【{}】值【{}】无法转换为 {}"
+                                        "Excel 第{}行，【{}】填写错误：您填的是【{}】，这里需要填{}，例如：{}"
                                 ),
                                 rowIndex,
-                                field.getName(),
+                                cnFieldName,
                                 value,
-                                field.getType().getSimpleName()
+                                typeToChinese(field.getType()),
+                                example
                         );
                     }
 
@@ -324,7 +475,13 @@ public class VrvExcelUtils {
 
 
     /**
-     * 解析 Object 为 LocalDateTime（兼容 String/Date）
+     * 多格式日期时间字符串 → LocalDateTime 解析
+     * <p>兼容 String 和 Date 类型，依次尝试 yyyy-MM-dd HH:mm:ss / yyyy/M/d 等多种格式。
+     *
+     * <pre>
+     * 版本历史：
+     *   V1 2026-04-07 —— 初始版本：多格式 DateTimeFormatter 数组依次匹配
+     * </pre>
      */
     private static LocalDateTime parseLocalDateTime(Object value) {
         if (value == null) return null;

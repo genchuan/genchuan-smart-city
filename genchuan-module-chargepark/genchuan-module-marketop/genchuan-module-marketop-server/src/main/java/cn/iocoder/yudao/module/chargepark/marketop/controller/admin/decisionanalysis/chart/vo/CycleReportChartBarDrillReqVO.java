@@ -23,7 +23,7 @@ public class CycleReportChartBarDrillReqVO extends PageParam {
     private String categoryType;
 
     @Schema(description = "点击的分类名称字典值",
-            requiredMode = Schema.RequiredMode.REQUIRED, example = "新用户")
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "新用户")
     private String categoryValue;
 
     @Schema(description = "兑换订单类目ID，categoryType=exchangeCategoryType时必传，用于按类目过滤兑换订单",

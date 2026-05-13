@@ -161,9 +161,9 @@ public class AssetInfoServiceImpl implements AssetInfoService {
                     if (StrUtil.isBlank(importReqVO.getStatus())) {
                         throw exception(ASSET_INFO_STATUS_NOT_NULL);
                     }
-                    if (importReqVO.getStationId() == null) {
-                        throw exception(ASSET_INFO_STATION_ID_NOT_NULL);
-                    }
+//                    if (importReqVO.getStationId() == null) {
+//                        throw exception(ASSET_INFO_STATION_ID_NOT_NULL);
+//                    }
 
                     // 2.2 根据唯一标识（资产名称）查找是否已存在
                     AssetInfoDO existAsset = assetInfoMapper.selectOne(
@@ -226,6 +226,12 @@ public class AssetInfoServiceImpl implements AssetInfoService {
         respVO.setCardData(cardData);
 
         return respVO;
+    }
+
+    @Override
+    public List<StationSimpleRespVO> getSimpleStationList() {
+        // 直接调用Mapper查询已生效的场站信息
+        return assetInfoMapper.selectSimpleStationList();
     }
 
 }

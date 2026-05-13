@@ -47,9 +47,9 @@ public interface CarChargeMonitorService {
      * 获得汽车充电监测
      *
      * @param id 编号
-     * @return 汽车充电监测
+     * @return 汽车充电监测（包含关联的场站名称）
      */
-    CarChargeMonitorDO getCarChargeMonitor(Long id);
+    CarChargeMonitorRespVO getCarChargeMonitor(Long id);
 
     /**
      * 获得汽车充电监测分页

@@ -13,6 +13,8 @@ import cn.iocoder.yudao.module.chargepark.carservice.dal.mysql.reserve.ReserveLi
 import cn.iocoder.yudao.module.chargepark.carservice.enums.reserve.ReserveStatusEnum;
 import cn.iocoder.yudao.module.chargepark.carservice.framework.notify.CarServiceNotifyHelper;
 import cn.iocoder.yudao.module.chargepark.carservice.framework.utils.CrossModuleValidator;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,7 @@ import java.util.Map;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.carservice.enums.ErrorCodeConstants.RESERVE_LIST_NOT_EXISTS;
 import static cn.iocoder.yudao.module.chargepark.carservice.enums.ErrorCodeConstants.RESERVE_LIST_STATUS_INVALID;
+import static cn.iocoder.yudao.module.chargepark.carservice.enums.LogRecordConstants.*;
 
 /**
  * 预约列表 Service 实现类
@@ -126,26 +129,33 @@ public class ReserveListServiceImpl implements ReserveListService {
     // ========== 业务操作 ==========
 
     @Override
+    @LogRecord(type = RESERVE_TYPE, subType = RESERVE_AUDIT_SUB,
+            bizNo = "{{#reqVO.id}}", success = RESERVE_AUDIT_SUCCESS)
     public void auditReserveList(ReserveListAuditReqVO reqVO) {
         ReserveListDO reserve = validateReserveListExists(reqVO.getId());
         validateStatus(reserve, ReserveStatusEnum.WAITING_AUDIT);
         ReserveListDO update = new ReserveListDO();
         update.setId(reqVO.getId());
-        update.setStatus(Boolean.TRUE.equals(reqVO.getApproved())
+        boolean approved = Boolean.TRUE.equals(reqVO.getApproved());
+        update.setStatus(approved
                 ? ReserveStatusEnum.EFFECTIVE.getLabel()
                 : ReserveStatusEnum.CANCELLED.getLabel());
         update.setAuditUserId(SecurityFrameworkUtils.getLoginUserId());
         update.setAuditTime(LocalDateTime.now());
         update.setAuditRemark(reqVO.getAuditRemark());
-        if (Boolean.FALSE.equals(reqVO.getApproved())) {
+        if (!approved) {
             update.setRejectReason(reqVO.getRejectReason());
         }
         reserveListMapper.updateById(update);
-        notifyAuditResult(reserve, Boolean.TRUE.equals(reqVO.getApproved()), reqVO.getRejectReason());
+        notifyAuditResult(reserve, approved, reqVO.getRejectReason());
+        LogRecordContext.putVariable("verb", approved ? "审核通过" : "审核驳回");
+        LogRecordContext.putVariable("reason", approved ? "" : ",原因:" + reqVO.getRejectReason());
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = RESERVE_TYPE, subType = RESERVE_BATCH_AUDIT_SUB,
+            bizNo = "{{#reqVO.ids[0]}}", success = RESERVE_BATCH_AUDIT_SUCCESS)
     public void batchAuditReserveList(ReserveListBatchAuditReqVO reqVO) {
         if (reqVO.getIds() == null || reqVO.getIds().isEmpty()) {
             return;
@@ -171,9 +181,13 @@ public class ReserveListServiceImpl implements ReserveListService {
             reserveListMapper.updateById(update);
             notifyAuditResult(reserve, approved, reqVO.getRejectReason());
         }
+        LogRecordContext.putVariable("verb", approved ? "审核通过" : "审核驳回");
+        LogRecordContext.putVariable("reason", approved ? "" : ",原因:" + reqVO.getRejectReason());
     }
 
     @Override
+    @LogRecord(type = RESERVE_TYPE, subType = RESERVE_CANCEL_SUB,
+            bizNo = "{{#id}}", success = RESERVE_CANCEL_SUCCESS)
     public void cancelReserveList(Long id) {
         ReserveListDO reserve = validateReserveListExists(id);
         validateStatus(reserve, ReserveStatusEnum.EFFECTIVE);
@@ -184,6 +198,8 @@ public class ReserveListServiceImpl implements ReserveListService {
     }
 
     @Override
+    @LogRecord(type = RESERVE_TYPE, subType = RESERVE_COMPLETE_SUB,
+            bizNo = "{{#id}}", success = RESERVE_COMPLETE_SUCCESS)
     public void completeReserveList(Long id) {
         ReserveListDO reserve = validateReserveListExists(id);
         validateStatus(reserve, ReserveStatusEnum.EFFECTIVE);
@@ -195,6 +211,8 @@ public class ReserveListServiceImpl implements ReserveListService {
     }
 
     @Override
+    @LogRecord(type = RESERVE_TYPE, subType = RESERVE_EVALUATE_SUB,
+            bizNo = "{{#reqVO.id}}", success = RESERVE_EVALUATE_SUCCESS)
     public void evaluateReserveList(ReserveListEvaluateReqVO reqVO) {
         ReserveListDO reserve = validateReserveListExists(reqVO.getId());
         validateStatus(reserve, ReserveStatusEnum.COMPLETED);

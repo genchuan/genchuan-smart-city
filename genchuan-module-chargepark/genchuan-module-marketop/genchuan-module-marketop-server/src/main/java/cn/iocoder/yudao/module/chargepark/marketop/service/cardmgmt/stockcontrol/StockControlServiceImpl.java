@@ -9,6 +9,8 @@ import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.Stock
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.cardmgmt.StockControlMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.StockControlStatusEnum;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.StockControlWarnStatusEnum;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.chargepark.marketop.enums.LogRecordConstants.*;
 
 @Service
 @Validated
@@ -40,6 +43,8 @@ public class StockControlServiceImpl implements StockControlService {
     }
 
     @Override
+    @LogRecord(type = STOCK_CONTROL_TYPE, subType = STOCK_CONTROL_RESTOCK_SUB_TYPE, bizNo = "{{#reqVO.id}}",
+            success = STOCK_CONTROL_RESTOCK_SUCCESS)
     public void restock(StockControlRestockReqVO reqVO) {
         StockControlDO stockControl = validateExists(reqVO.getId());
         // 补货: 增加当前库存
@@ -48,17 +53,26 @@ public class StockControlServiceImpl implements StockControlService {
         updateStockStatus(stockControl);
         stockControl.setSyncTime(LocalDateTime.now());
         stockControlMapper.updateById(stockControl);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("stockControl", stockControl);
+        LogRecordContext.putVariable("num", reqVO.getNum());
     }
 
     @Override
+    @LogRecord(type = STOCK_CONTROL_TYPE, subType = STOCK_CONTROL_WARN_SUB_TYPE, bizNo = "{{#id}}",
+            success = STOCK_CONTROL_WARN_SUCCESS)
     public void warn(Long id) {
         StockControlDO stockControl = validateExists(id);
         stockControl.setWarnStatus(StockControlWarnStatusEnum.WARNED.getValue());
         stockControlMapper.updateById(stockControl);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("stockControl", stockControl);
         // TODO: 推送库存预警通知
     }
 
     @Override
+    @LogRecord(type = STOCK_CONTROL_TYPE, subType = STOCK_CONTROL_ALLOCATE_SUB_TYPE, bizNo = "{{#reqVO.cardId}}",
+            success = STOCK_CONTROL_ALLOCATE_SUCCESS)
     public void allocate(StockControlAllocateReqVO reqVO) {
         // 查询源场站库存记录
         StockControlDO source = stockControlMapper.selectByCardIdAndStationId(reqVO.getCardId(), reqVO.getSourceStationId());
@@ -68,6 +82,8 @@ public class StockControlServiceImpl implements StockControlService {
         if (source.getCurrentStock() < reqVO.getNum()) {
             throw exception(STOCK_INSUFFICIENT);
         }
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("stockControl", source);
 //        // 查询目标场站库存记录
 //        StockControlDO target = stockControlMapper.selectByCardIdAndStationId(reqVO.getCardId(), reqVO.getTargetStationId());
 //        if (target == null) {

@@ -64,14 +64,17 @@
         <where>
             <!-- 设备ID -->
             <if test="reqVO.deviceId != null">
-                AND ccm.device_id = #{reqVO.deviceId}
+                AND ccm.device_id LIKE CONCAT('%', #{reqVO.deviceId}, '%')
             </if>
 
             <!-- 场站ID -->
             <if test="reqVO.stationId != null">
                 AND ccm.station_id = #{reqVO.stationId}
             </if>
-
+            <!-- 【新增条件】场站名称模糊查询 -->
+            <if test="reqVO.stationName != null and reqVO.stationName != ''">
+                AND si.name LIKE CONCAT('%', #{reqVO.stationName}, '%')
+            </if>
             <!-- 监测时间范围 -->
             <if test="reqVO.monitorTime != null and reqVO.monitorTime.length == 2">
                 AND ccm.monitor_time BETWEEN #{reqVO.monitorTime[0]} AND #{reqVO.monitorTime[1]}
@@ -147,6 +150,7 @@
 
     <!-- 定义定位查询结果映射器 -->
     <resultMap id="CarChargeMonitorLocationRespVOResultMap" type="cn.iocoder.yudao.module.inspectop.controller.admin.devicemonitor.carchargemonitor.vo.CarChargeMonitorLocationRespVO">
+        <result column="device_id" property="deviceCode" jdbcType="DECIMAL"/>
         <result column="longitude" property="longitude" jdbcType="DECIMAL"/>
         <result column="latitude" property="latitude" jdbcType="DECIMAL"/>
         <result column="station_name" property="stationName" jdbcType="VARCHAR"/>
@@ -155,6 +159,7 @@
     <!-- 定位查询方法 -->
     <select id="selectLocationById" resultMap="CarChargeMonitorLocationRespVOResultMap">
         SELECT
+            ccm.device_id,
             ccm.longitude,
             ccm.latitude,
             si.name AS station_name
@@ -230,8 +235,8 @@
     <!-- 查询卡片数据（正常设备和异常设备数量） -->
     <select id="selectCardData" resultMap="CarChargeMonitorCardDataResultMap">
         SELECT
-        SUM(CASE WHEN monitor_status = 'NORMAL' THEN 1 ELSE 0 END) AS normalDevice,
-        SUM(CASE WHEN monitor_status != 'NORMAL' THEN 1 ELSE 0 END) AS abnormalDevice
+        SUM(CASE WHEN monitor_status = '0' THEN 1 ELSE 0 END) AS normalDevice,
+        SUM(CASE WHEN monitor_status != '0' THEN 1 ELSE 0 END) AS abnormalDevice
         FROM car_charge_monitor
         <where>
             <if test="reqVO.stationId != null">

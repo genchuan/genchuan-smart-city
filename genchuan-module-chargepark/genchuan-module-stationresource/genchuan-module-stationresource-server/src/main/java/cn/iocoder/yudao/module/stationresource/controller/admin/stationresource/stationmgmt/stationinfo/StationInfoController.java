@@ -89,7 +89,7 @@ public class StationInfoController {
         stationInfoService.updateStationStatus(reqVO.getIds(), "已禁用");
         return success(true);
     }
-    @GetMapping("/import-template")
+    @GetMapping("/get-import-template")
     @Operation(summary = "下载场站信息导入模板")
     @PreAuthorize("@ss.hasPermission('stationresource:station-info:import')")
     public void importTemplate(HttpServletResponse response) throws Exception {

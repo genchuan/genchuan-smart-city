@@ -87,20 +87,19 @@ public class BikeChargeMonitorServiceImpl implements BikeChargeMonitorService {
         return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
     }
 
-    // 在BikeChargeMonitorServiceImpl类中添加以下方法
     @Override
     public BikeChargeMonitorLocationRespVO getBikeChargeMonitorLocation(Long id) {
         // 校验记录是否存在
         validateBikeChargeMonitorExists(id);
 
-        // 从数据库查询定位信息（包含经度、纬度、场站名称）
+        // 从数据库查询定位信息（包含经度、纬度、场站名称、设备ID）
         BikeChargeMonitorLocationRespVO locationRespVO = bikeChargeMonitorMapper.selectLocationById(id);
 
         if (locationRespVO == null) {
             throw exception(BIKE_CHARGE_MONITOR_NOT_EXISTS);
         }
 
-        // 注意：这里不设置deviceCode，留给Controller层处理模拟数据
+        // 注意：deviceCode 字段已由 Mapper 查询结果中的 device_id 填充
         return locationRespVO;
     }
 

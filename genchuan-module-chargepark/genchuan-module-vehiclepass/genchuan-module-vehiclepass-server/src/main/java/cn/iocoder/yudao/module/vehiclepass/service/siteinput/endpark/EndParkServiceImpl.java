@@ -27,6 +27,7 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.PARK_NOT_EXISTS;
+import static cn.iocoder.yudao.module.vehiclepass.constants.leavemgmt.EndParkConstants.*;
 
 
 /**
@@ -94,21 +95,21 @@ public class EndParkServiceImpl implements EndParkService {
     @Override
     public void pay(EndParkPayReqVO payReqVO) {
         EndParkDO park = validateParkExists(payReqVO.getId());
-        park.setStatus("已支付");
+        park.setStatus(STATUS_PAID);
         parkMapper.updateById(park);
     }
 
     @Override
     public void confirm(EndParkConfirmReqVO confirmReqVO) {
         EndParkDO park = validateParkExists(confirmReqVO.getId());
-        park.setStatus("已确认");
+        park.setStatus(STATUS_CONFIRMED);
         parkMapper.updateById(park);
     }
 
     @Override
     public void cancel(EndParkCancelReqVO cancelReqVO) {
         EndParkDO park = validateParkExists(cancelReqVO.getId());
-        park.setStatus("已取消");
+        park.setStatus(STATUS_CANCELLED);
         park.setRemark(cancelReqVO.getCancelReason());
         parkMapper.updateById(park);
     }

@@ -76,7 +76,7 @@ public class CarChargeMonitorController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('inspectop:car-charge-monitor:query')")
     public CommonResult<CarChargeMonitorRespVO> getCarChargeMonitor(@RequestParam("id") Long id) {
-        CarChargeMonitorDO carChargeMonitor = carChargeMonitorService.getCarChargeMonitor(id);
+        CarChargeMonitorRespVO  carChargeMonitor = carChargeMonitorService.getCarChargeMonitor(id);
         return success(BeanUtils.toBean(carChargeMonitor, CarChargeMonitorRespVO.class));
     }
 
@@ -96,14 +96,7 @@ public class CarChargeMonitorController {
         // 1. 从Service层获取基础定位信息
         CarChargeMonitorLocationRespVO locationRespVO = carChargeMonitorService.getCarChargeMonitorLocation(id);
 
-        // 2. 生成随机设备编号：CC-01 到 CC-50
-        int deviceNum = ThreadLocalRandom.current().nextInt(1, 51); // 生成1-50的随机数
-        String deviceCode = String.format("CC-%02d", deviceNum); // 格式化为两位数字
-
-        // 3. 设置设备编号到响应对象
-        locationRespVO.setDeviceCode(deviceCode);
-
-        // 4. 返回成功响应
+        // 2. 返回成功响应
         return success(locationRespVO);
     }
 
@@ -128,12 +121,100 @@ public class CarChargeMonitorController {
     @PreAuthorize("@ss.hasPermission('inspectop:car-charge-monitor:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportCarChargeMonitorExcel(@Valid CarChargeMonitorPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                            HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        // 1. 获取数据列表
         List<CarChargeMonitorRespVO> list = carChargeMonitorService.getCarChargeMonitorPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "汽车充电监测.xls", "数据", CarChargeMonitorRespVO.class,
-                        BeanUtils.toBean(list, CarChargeMonitorRespVO.class));
+
+        // 【新增】2. 对VO列表中的字典值进行转换（数字 -> 中文）
+        convertDictValues(list);
+
+        // 3. 导出 Excel
+        ExcelUtils.write(response, "汽车充电监测.xls", "数据", CarChargeMonitorRespVO.class, list);
+    }
+
+    /**
+     * 【新增】转换字典值为中文显示
+     * 此方法会修改传入的 voList 中每个对象的字典值字段
+     * @param voList 汽车充电监测响应VO列表
+     */
+    private void convertDictValues(List<CarChargeMonitorRespVO> voList) {
+        if (voList == null || voList.isEmpty()) {
+            return;
+        }
+        for (CarChargeMonitorRespVO vo : voList) {
+            // 转换监测状态
+            vo.setMonitorStatus(convertMonitorStatus(vo.getMonitorStatus()));
+            // 转换处理状态
+            vo.setProcessStatus(convertProcessStatus(vo.getProcessStatus()));
+            // 转换告警状态
+            vo.setAlarmStatus(convertAlarmStatus(vo.getAlarmStatus()));
+        }
+    }
+
+    /**
+     * 【新增】转换汽车充电监测状态字典值
+     * 根据您提供的映射：0-正常，1-异常
+     * @param statusCode 状态编码（例如 "0", "1"）
+     * @return 对应的中文状态描述
+     */
+    private String convertMonitorStatus(String statusCode) {
+        if (statusCode == null) {
+            return "";
+        }
+        switch (statusCode.trim()) {
+            case "0":
+                return "正常";
+            case "1":
+                return "异常";
+            default:
+                // 如果遇到未知编码，返回原编码以便排查
+                return statusCode;
+        }
+    }
+
+    /**
+     * 【新增】转换汽车充电监测处置状态字典值
+     * 根据您提供的映射：0-已处理，1-未处理，2-处理中
+     * @param statusCode 状态编码（例如 "0", "1", "2"）
+     * @return 对应的中文状态描述
+     */
+    private String convertProcessStatus(String statusCode) {
+        if (statusCode == null) {
+            return "";
+        }
+        switch (statusCode.trim()) {
+            case "0":
+                return "已处理";
+            case "1":
+                return "未处理";
+            case "2":
+                return "处理中";
+            default:
+                // 如果遇到未知编码，返回原编码以便排查
+                return statusCode;
+        }
+    }
+
+    /**
+     * 【新增】转换汽车充电监测告警状态字典值
+     * 根据您提供的映射：1-已告警，2-未告警
+     * @param statusCode 状态编码（例如 "1", "2"）
+     * @return 对应的中文状态描述
+     */
+    private String convertAlarmStatus(String statusCode) {
+        if (statusCode == null) {
+            return "";
+        }
+        switch (statusCode.trim()) {
+            case "1":
+                return "已告警";
+            case "2":
+                return "未告警";
+            default:
+                // 如果遇到未知编码，返回原编码以便排查
+                return statusCode;
+        }
     }
 
 }

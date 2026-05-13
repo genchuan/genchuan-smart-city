@@ -78,7 +78,7 @@ public class FeeRuleController {
         feeRuleService.updateFeeRuleBiz(updateReqVO);
         return success(true);
     }
-    @GetMapping("/import-template")
+    @GetMapping("/get-import-template")
     @Operation(summary = "下载收费规则导入模板")
     @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:import')")
     public void importFeeRuleTemplate(HttpServletResponse response) throws Exception {

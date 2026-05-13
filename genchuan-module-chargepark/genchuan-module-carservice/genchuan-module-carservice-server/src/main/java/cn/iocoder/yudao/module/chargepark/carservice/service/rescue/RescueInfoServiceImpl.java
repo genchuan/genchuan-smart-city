@@ -21,6 +21,7 @@ import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -38,6 +39,7 @@ import static cn.iocoder.yudao.module.chargepark.carservice.enums.ErrorCodeConst
 import static cn.iocoder.yudao.module.chargepark.carservice.enums.ErrorCodeConstants.RESCUE_INFO_ALREADY_ARCHIVED_EVALUATE;
 import static cn.iocoder.yudao.module.chargepark.carservice.enums.ErrorCodeConstants.RESCUE_INFO_NOT_EXISTS;
 import static cn.iocoder.yudao.module.chargepark.carservice.enums.ErrorCodeConstants.RESCUE_INFO_STATUS_INVALID;
+import static cn.iocoder.yudao.module.chargepark.carservice.enums.LogRecordConstants.*;
 
 /**
  * 救援信息 Service 实现类
@@ -164,6 +166,8 @@ public class RescueInfoServiceImpl implements RescueInfoService {
     // ========== 业务操作 ==========
 
     @Override
+    @LogRecord(type = RESCUE_TYPE, subType = RESCUE_DISPATCH_SUB,
+            bizNo = "{{#reqVO.id}}", success = RESCUE_DISPATCH_SUCCESS)
     public void dispatchRescueInfo(RescueInfoDispatchReqVO reqVO) {
         RescueInfoDO rescue = validateRescueInfoExists(reqVO.getId());
         validateStatus(rescue, RescueStatusEnum.WAITING_DISPATCH);
@@ -180,6 +184,8 @@ public class RescueInfoServiceImpl implements RescueInfoService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = RESCUE_TYPE, subType = RESCUE_BATCH_DISPATCH_SUB,
+            bizNo = "{{#reqVO.ids[0]}}", success = RESCUE_BATCH_DISPATCH_SUCCESS)
     public void batchDispatchRescueInfo(RescueInfoBatchDispatchReqVO reqVO) {
         if (reqVO.getIds() == null || reqVO.getIds().isEmpty()) {
             return;
@@ -201,6 +207,8 @@ public class RescueInfoServiceImpl implements RescueInfoService {
     }
 
     @Override
+    @LogRecord(type = RESCUE_TYPE, subType = RESCUE_CLAIM_SUB,
+            bizNo = "{{#id}}", success = RESCUE_CLAIM_SUCCESS)
     public void claimRescueInfo(Long id) {
         RescueInfoDO rescue = validateRescueInfoExists(id);
         validateStatus(rescue, RescueStatusEnum.WAITING_CLAIM);
@@ -216,6 +224,8 @@ public class RescueInfoServiceImpl implements RescueInfoService {
     }
 
     @Override
+    @LogRecord(type = RESCUE_TYPE, subType = RESCUE_PROGRESS_SUB,
+            bizNo = "{{#reqVO.id}}", success = RESCUE_PROGRESS_SUCCESS)
     public void updateRescueInfoProgress(RescueInfoUpdateProgressReqVO reqVO) {
         RescueInfoDO rescue = validateRescueInfoExists(reqVO.getId());
         validateStatus(rescue, RescueStatusEnum.PROCESSING);
@@ -241,6 +251,8 @@ public class RescueInfoServiceImpl implements RescueInfoService {
     }
 
     @Override
+    @LogRecord(type = RESCUE_TYPE, subType = RESCUE_TRANSFER_SUB,
+            bizNo = "{{#reqVO.id}}", success = RESCUE_TRANSFER_SUCCESS)
     public void transferRescueInfo(RescueInfoTransferReqVO reqVO) {
         RescueInfoDO rescue = validateRescueInfoExists(reqVO.getId());
         validateStatus(rescue, RescueStatusEnum.PROCESSING);
@@ -254,6 +266,8 @@ public class RescueInfoServiceImpl implements RescueInfoService {
     }
 
     @Override
+    @LogRecord(type = RESCUE_TYPE, subType = RESCUE_COMPLETE_SUB,
+            bizNo = "{{#id}}", success = RESCUE_COMPLETE_SUCCESS)
     public void completeRescueInfo(Long id) {
         RescueInfoDO rescue = validateRescueInfoExists(id);
         validateStatus(rescue, RescueStatusEnum.PROCESSING);
@@ -271,6 +285,8 @@ public class RescueInfoServiceImpl implements RescueInfoService {
     }
 
     @Override
+    @LogRecord(type = RESCUE_TYPE, subType = RESCUE_EVALUATE_SUB,
+            bizNo = "{{#reqVO.id}}", success = RESCUE_EVALUATE_SUCCESS)
     public void evaluateRescueInfo(RescueInfoEvaluateReqVO reqVO) {
         RescueInfoDO rescue = validateRescueInfoExists(reqVO.getId());
         validateStatus(rescue, RescueStatusEnum.COMPLETED);
@@ -285,6 +301,8 @@ public class RescueInfoServiceImpl implements RescueInfoService {
     }
 
     @Override
+    @LogRecord(type = RESCUE_TYPE, subType = RESCUE_ARCHIVE_SUB,
+            bizNo = "{{#id}}", success = RESCUE_ARCHIVE_SUCCESS)
     public void archiveRescueInfo(Long id) {
         RescueInfoDO rescue = validateRescueInfoExists(id);
         validateStatus(rescue, RescueStatusEnum.COMPLETED);

@@ -10,6 +10,9 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.exchangemgmt
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.exchangemgmt.ExchangeCategoryDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.exchangemgmt.ExchangeCategoryMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.ExchangeCategoryStatusEnum;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -20,6 +23,7 @@ import java.util.Map;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.chargepark.marketop.enums.LogRecordConstants.*;
 
 @Service
 @Validated
@@ -39,6 +43,8 @@ public class ExchangeCategoryServiceImpl implements ExchangeCategoryService {
     }
 
     @Override
+    @LogRecord(type = EXCHANGE_CATEGORY_TYPE, subType = EXCHANGE_CATEGORY_CREATE_SUB_TYPE, bizNo = "{{#exchangeCategory.id}}",
+            success = EXCHANGE_CATEGORY_CREATE_SUCCESS)
     public Long create(ExchangeCategoryCreateReqVO reqVO) {
         // 校验名称唯一
         validateNameUnique(null, reqVO.getName());
@@ -46,19 +52,28 @@ public class ExchangeCategoryServiceImpl implements ExchangeCategoryService {
         ExchangeCategoryDO exchangeCategory = BeanUtils.toBean(reqVO, ExchangeCategoryDO.class);
         exchangeCategory.setStatus(ExchangeCategoryStatusEnum.NOT_EFFECTIVE.getValue());
         exchangeCategoryMapper.insert(exchangeCategory);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("exchangeCategory", exchangeCategory);
         return exchangeCategory.getId();
     }
 
     @Override
+    @LogRecord(type = EXCHANGE_CATEGORY_TYPE, subType = EXCHANGE_CATEGORY_UPDATE_SUB_TYPE, bizNo = "{{#reqVO.id}}",
+            success = EXCHANGE_CATEGORY_UPDATE_SUCCESS)
     public void update(ExchangeCategoryUpdateReqVO reqVO) {
-        validateExists(reqVO.getId());
+        ExchangeCategoryDO exchangeCategoryDO = validateExists(reqVO.getId());
         // 校验名称唯一
         validateNameUnique(reqVO.getId(), reqVO.getName());
         ExchangeCategoryDO updateObj = BeanUtils.toBean(reqVO, ExchangeCategoryDO.class);
         exchangeCategoryMapper.updateById(updateObj);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, BeanUtils.toBean(exchangeCategoryDO, ExchangeCategoryUpdateReqVO.class));
+        LogRecordContext.putVariable("exchangeCategory", updateObj);
     }
 
     @Override
+    @LogRecord(type = EXCHANGE_CATEGORY_TYPE, subType = EXCHANGE_CATEGORY_ENABLE_SUB_TYPE, bizNo = "{{#id}}",
+            success = EXCHANGE_CATEGORY_ENABLE_SUCCESS)
     public void enable(Long id) {
         ExchangeCategoryDO exchangeCategory = validateExists(id);
         // 未生效→已生效，或 已禁用→已生效
@@ -68,9 +83,13 @@ public class ExchangeCategoryServiceImpl implements ExchangeCategoryService {
 //        }
         exchangeCategory.setStatus(ExchangeCategoryStatusEnum.EFFECTIVE.getValue());
         exchangeCategoryMapper.updateById(exchangeCategory);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("exchangeCategoryName", exchangeCategory.getName());
     }
 
     @Override
+    @LogRecord(type = EXCHANGE_CATEGORY_TYPE, subType = EXCHANGE_CATEGORY_DISABLE_SUB_TYPE, bizNo = "{{#id}}",
+            success = EXCHANGE_CATEGORY_DISABLE_SUCCESS)
     public void disable(Long id) {
         ExchangeCategoryDO exchangeCategory = validateExists(id);
         // 已生效→已禁用
@@ -79,6 +98,8 @@ public class ExchangeCategoryServiceImpl implements ExchangeCategoryService {
 //        }
         exchangeCategory.setStatus(ExchangeCategoryStatusEnum.DISABLED.getValue());
         exchangeCategoryMapper.updateById(exchangeCategory);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("exchangeCategoryName", exchangeCategory.getName());
     }
 
     @Override

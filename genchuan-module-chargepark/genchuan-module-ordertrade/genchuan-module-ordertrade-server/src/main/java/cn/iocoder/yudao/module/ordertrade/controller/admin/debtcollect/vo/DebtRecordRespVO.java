@@ -39,9 +39,9 @@ public class DebtRecordRespVO {
     @EnumFormat(DebtRecordStatusEnum.class)
     private String status;
 
-    @Schema(description = "所属场站ID")
-    @ExcelProperty("所属场站ID")
-    private Long stationId;
+    @Schema(description = "所属场站名称")
+    @ExcelProperty("所属场站")
+    private String stationName;
 
     @Schema(description = "追缴进度")
     @ExcelProperty("追缴进度")
