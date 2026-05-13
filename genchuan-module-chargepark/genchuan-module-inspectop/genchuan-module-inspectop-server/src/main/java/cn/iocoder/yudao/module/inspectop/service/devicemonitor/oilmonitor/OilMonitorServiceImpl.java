@@ -80,7 +80,7 @@ public class OilMonitorServiceImpl implements OilMonitorService {
 
     @Override
     @LogRecord(type = OIL_MONITOR_TYPE, subType = OIL_MONITOR_DELETE_LIST_SUB_TYPE,
-            success = OIL_MONITOR_DELETE_LIST_SUCCESS)
+            success = OIL_MONITOR_DELETE_LIST_SUCCESS, bizNo = "")
     public void deleteOilMonitorListByIds(List<Long> ids) {
         // 删除
         oilMonitorMapper.deleteByIds(ids);
