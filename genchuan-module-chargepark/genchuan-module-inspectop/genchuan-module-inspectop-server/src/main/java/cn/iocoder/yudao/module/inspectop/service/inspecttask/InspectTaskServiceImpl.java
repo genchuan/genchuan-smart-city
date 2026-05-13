@@ -82,7 +82,7 @@ public class InspectTaskServiceImpl implements InspectTaskService {
 
     @Override
     @LogRecord(type = INSPECT_TASK_TYPE, subType = INSPECT_TASK_DELETE_LIST_SUB_TYPE,
-            success = INSPECT_TASK_DELETE_LIST_SUCCESS)
+            success = INSPECT_TASK_DELETE_LIST_SUCCESS, bizNo = "")
     public void deleteInspectTaskListByIds(List<Long> ids) {
         // 删除
         inspectTaskMapper.deleteByIds(ids);

@@ -80,7 +80,7 @@ public class SpaceMonitorServiceImpl implements SpaceMonitorService {
 
     @Override
     @LogRecord(type = SPACE_MONITOR_TYPE, subType = SPACE_MONITOR_DELETE_LIST_SUB_TYPE,
-            success = SPACE_MONITOR_DELETE_LIST_SUCCESS)
+            success = SPACE_MONITOR_DELETE_LIST_SUCCESS, bizNo = "")
     public void deleteSpaceMonitorListByIds(List<Long> ids) {
         // 删除
         spaceMonitorMapper.deleteByIds(ids);
