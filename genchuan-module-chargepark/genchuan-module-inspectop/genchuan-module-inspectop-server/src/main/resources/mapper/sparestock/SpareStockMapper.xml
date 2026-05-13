@@ -38,7 +38,7 @@
     <select id="selectCardData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.sparestock.vo.SpareStockChartRespVO$CardData">
         SELECT
         SUM(current_stock) AS spareStock,
-        SUM(CASE WHEN current_stock &lt; 10 THEN 1 ELSE 0 END) AS replenishCount
+        SUM(CASE WHEN status IN ('3') THEN 1 ELSE 0 END) AS replenishCount
         FROM spare_stock
         <where>
             deleted = 0
@@ -48,4 +48,15 @@
         </where>
     </select>
 
+    <!-- 获取不重复的备件列表（用于下拉选择） -->
+    <select id="selectDistinctSpareList" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.sparestock.vo.SpareStockSimpleRespVO">
+        SELECT DISTINCT
+            spare_id AS spareId,
+            spare_name AS spareName
+        FROM spare_stock
+        WHERE deleted = 0
+          AND spare_id IS NOT NULL
+          AND spare_name IS NOT NULL
+        ORDER BY spare_name ASC
+    </select>
 </mapper>

@@ -228,4 +228,10 @@ public class AssetInfoServiceImpl implements AssetInfoService {
         return respVO;
     }
 
+    @Override
+    public List<StationSimpleRespVO> getSimpleStationList() {
+        // 直接调用Mapper查询已生效的场站信息
+        return assetInfoMapper.selectSimpleStationList();
+    }
+
 }

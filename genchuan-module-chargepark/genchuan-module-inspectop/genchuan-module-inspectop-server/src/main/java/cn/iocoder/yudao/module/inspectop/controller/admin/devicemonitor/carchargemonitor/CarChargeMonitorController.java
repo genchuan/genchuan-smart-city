@@ -96,14 +96,7 @@ public class CarChargeMonitorController {
         // 1. 从Service层获取基础定位信息
         CarChargeMonitorLocationRespVO locationRespVO = carChargeMonitorService.getCarChargeMonitorLocation(id);
 
-        // 2. 生成随机设备编号：CC-01 到 CC-50
-        int deviceNum = ThreadLocalRandom.current().nextInt(1, 51); // 生成1-50的随机数
-        String deviceCode = String.format("CC-%02d", deviceNum); // 格式化为两位数字
-
-        // 3. 设置设备编号到响应对象
-        locationRespVO.setDeviceCode(deviceCode);
-
-        // 4. 返回成功响应
+        // 2. 返回成功响应
         return success(locationRespVO);
     }
 

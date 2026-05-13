@@ -120,17 +120,69 @@ public class SpareStockController {
         return success(chartData);
     }
 
+    @GetMapping("/simple-list")
+    @Operation(summary = "获取备件列表（用于下拉选择）")
+    @PreAuthorize("@ss.hasPermission('inspectop:spare-stock:query')")
+    public CommonResult<List<SpareStockSimpleRespVO>> getSimpleSpareList() {
+        List<SpareStockSimpleRespVO> spareList = spareStockService.getSimpleSpareList();
+        return success(spareList);
+    }
+
     @GetMapping("/export-excel")
     @Operation(summary = "导出备件仓储 Excel")
     @PreAuthorize("@ss.hasPermission('inspectop:spare-stock:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportSpareStockExcel(@Valid SpareStockPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                      HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        // 1. 获取数据列表
         List<SpareStockDO> list = spareStockService.getSpareStockPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "备件仓储.xls", "数据", SpareStockRespVO.class,
-                        BeanUtils.toBean(list, SpareStockRespVO.class));
+        // 2. 将DO列表转换为RespVO列表
+        List<SpareStockRespVO> voList = BeanUtils.toBean(list, SpareStockRespVO.class);
+
+        // 3. 对VO列表中的字典值进行转换（数字 -> 中文）
+        convertDictValues(voList);
+
+        // 4. 导出 Excel
+        ExcelUtils.write(response, "备件仓储.xls", "数据", SpareStockRespVO.class, voList);
+    }
+
+    /**
+     * 转换字典值为中文显示
+     * 此方法会修改传入的 voList 中每个对象的 status 字段。
+     * @param voList 备件仓储响应VO列表
+     */
+    private void convertDictValues(List<SpareStockRespVO> voList) {
+        if (voList == null || voList.isEmpty()) {
+            return;
+        }
+        for (SpareStockRespVO vo : voList) {
+            // 转换库存状态
+            vo.setStatus(convertStockStatus(vo.getStatus()));
+        }
+    }
+
+    /**
+     * 转换库存状态字典值
+     * 根据映射：1-正常、2-低库存、3-预警库存
+     * @param statusCode 状态编码（例如 "1", "2", "3"）
+     * @return 对应的中文状态描述
+     */
+    private String convertStockStatus(String statusCode) {
+        if (statusCode == null) {
+            return "";
+        }
+        switch (statusCode.trim()) {
+            case "1":
+                return "正常";
+            case "2":
+                return "低库存";
+            case "3":
+                return "预警库存";
+            default:
+                // 如果遇到未知编码，返回原编码以便排查
+                return statusCode;
+        }
     }
 
 }

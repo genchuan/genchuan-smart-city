@@ -16,6 +16,9 @@ public class AdminUserRespDTO implements VO {
     @Schema(description = "用户昵称", requiredMode = Schema.RequiredMode.REQUIRED, example = "小王")
     private String nickname;
 
+    @Schema(description = "用户账号", requiredMode = Schema.RequiredMode.REQUIRED, example = "yudao")
+    private String username;
+
     @Schema(description = "帐号状态", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     private Integer status; // 参见 CommonStatusEnum 枚举
 
