@@ -2,6 +2,10 @@ package cn.iocoder.yudao.module.inspectop.service.assetstock;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -20,6 +24,7 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.inspectop.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.inspectop.enums.LogRecordConstants.*;
 
 /**
  * 库存管理 Service 实现类
@@ -34,25 +39,40 @@ public class AssetStockServiceImpl implements AssetStockService {
     private AssetStockMapper assetStockMapper;
 
     @Override
+    @LogRecord(type = ASSET_STOCK_TYPE, subType = ASSET_STOCK_CREATE_SUB_TYPE,
+            bizNo = "{{#createReqVO.id}}", success = ASSET_STOCK_CREATE_SUCCESS)
     public Long createAssetStock(AssetStockSaveReqVO createReqVO) {
         // 插入
         AssetStockDO assetStock = BeanUtils.toBean(createReqVO, AssetStockDO.class);
         assetStockMapper.insert(assetStock);
 
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("createReqVO", createReqVO);
+
         // 返回
         return assetStock.getId();
     }
 
+
     @Override
+    @LogRecord(type = ASSET_STOCK_TYPE, subType = ASSET_STOCK_UPDATE_SUB_TYPE,
+            bizNo = "{{#updateReqVO.id}}", success = ASSET_STOCK_UPDATE_SUCCESS)
     public void updateAssetStock(AssetStockSaveReqVO updateReqVO) {
-        // 校验存在
-        validateAssetStockExists(updateReqVO.getId());
-        // 更新
+        // 1. 校验存在，并获取旧数据用于日志对比
+        AssetStockDO oldAssetStock = validateAssetStockExists(updateReqVO.getId());
+
+        // 2. 更新
         AssetStockDO updateObj = BeanUtils.toBean(updateReqVO, AssetStockDO.class);
         assetStockMapper.updateById(updateObj);
+
+        // 3. 记录操作日志上下文（用于DIFF比较）
+        AssetStockSaveReqVO oldVO = BeanUtils.toBean(oldAssetStock, AssetStockSaveReqVO.class);
+        LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, oldVO);
     }
 
     @Override
+    @LogRecord(type = ASSET_STOCK_TYPE, subType = ASSET_STOCK_DELETE_SUB_TYPE,
+            bizNo = "{{#id}}", success = ASSET_STOCK_DELETE_SUCCESS)
     public void deleteAssetStock(Long id) {
         // 校验存在
         validateAssetStockExists(id);
@@ -61,16 +81,23 @@ public class AssetStockServiceImpl implements AssetStockService {
     }
 
     @Override
-        public void deleteAssetStockListByIds(List<Long> ids) {
+    @LogRecord(type = ASSET_STOCK_TYPE, subType = ASSET_STOCK_DELETE_LIST_SUB_TYPE,
+            success = ASSET_STOCK_DELETE_LIST_SUCCESS, bizNo = "")
+    public void deleteAssetStockListByIds(List<Long> ids) {
         // 删除
         assetStockMapper.deleteByIds(ids);
-        }
+
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("ids", ids);
+    }
 
 
-    private void validateAssetStockExists(Long id) {
-        if (assetStockMapper.selectById(id) == null) {
+    private AssetStockDO validateAssetStockExists(Long id) {
+        AssetStockDO assetStock = assetStockMapper.selectById(id);
+        if (assetStock == null) {
             throw exception(ASSET_STOCK_NOT_EXISTS);
         }
+        return assetStock; // 返回查询到的对象
     }
 
     @Override
@@ -86,12 +113,12 @@ public class AssetStockServiceImpl implements AssetStockService {
     @Override
     public PageResult<AssetStockRespVO> getAssetStockPage(AssetStockPageReqVO pageReqVO) {
         // 创建 MyBatis-Plus 分页对象
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<AssetStockRespVO> mpPage =
-                new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(
+        Page<AssetStockRespVO> mpPage =
+                new Page<>(
                         pageReqVO.getPageNo(), pageReqVO.getPageSize());
 
         // 调用 Mapper 的关联查询方法
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<AssetStockRespVO> resultPage =
+        Page<AssetStockRespVO> resultPage =
                 assetStockMapper.selectPageWithJoin(mpPage, pageReqVO);
 
         // 构造并返回 PageResult
@@ -100,6 +127,8 @@ public class AssetStockServiceImpl implements AssetStockService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = ASSET_STOCK_TYPE, subType = ASSET_STOCK_ALLOCATE_SUB_TYPE,
+            bizNo = "{{#allocateReqVO.id}}", success = ASSET_STOCK_ALLOCATE_SUCCESS)
     public void allocateAssetStock(AssetStockAllocateReqVO allocateReqVO) {
         // 1. 获取源库存记录
         AssetStockDO sourceStock = assetStockMapper.selectById(allocateReqVO.getId());
@@ -150,6 +179,9 @@ public class AssetStockServiceImpl implements AssetStockService {
                     .build();
             assetStockMapper.insert(newStock);
         }
+
+        // 6. 设置日志上下文变量
+        LogRecordContext.putVariable("allocateReqVO", allocateReqVO);
     }
 
     /**
@@ -171,6 +203,8 @@ public class AssetStockServiceImpl implements AssetStockService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = ASSET_STOCK_TYPE, subType = ASSET_STOCK_ALARM_SUB_TYPE,
+            bizNo = "{{#alarmReqVO.id}}", success = ASSET_STOCK_ALARM_SUCCESS)
     public void alarmAssetStock(AssetStockAlarmReqVO alarmReqVO) {
         // 1. 获取库存记录
         AssetStockDO assetStock = assetStockMapper.selectById(alarmReqVO.getId());
@@ -204,6 +238,11 @@ public class AssetStockServiceImpl implements AssetStockService {
 
         // 4. 更新数据库
         assetStockMapper.updateById(updateObj);
+
+        // 5. 设置日志上下文变量
+        LogRecordContext.putVariable("alarmReqVO", alarmReqVO);
+        LogRecordContext.putVariable("status", status);
+
     }
 
     @Override

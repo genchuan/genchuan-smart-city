@@ -21,6 +21,12 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.inspectop.dal.mysql.scheduleview.ScheduleViewMapper;
 
+// 新增导入
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
+// 导入上面定义的常量
+import static cn.iocoder.yudao.module.inspectop.enums.LogRecordConstants.*;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
@@ -45,25 +51,40 @@ public class ScheduleViewServiceImpl implements ScheduleViewService {
     private HandoverLogMapper handoverLogMapper;
 
     @Override
+    @LogRecord(type = SCHEDULE_VIEW_TYPE, subType = SCHEDULE_VIEW_CREATE_SUB_TYPE,
+            bizNo = "{{#createReqVO.id}}", success = SCHEDULE_VIEW_CREATE_SUCCESS)
     public Long createScheduleView(ScheduleViewSaveReqVO createReqVO) {
         // 插入
         ScheduleViewDO scheduleView = BeanUtils.toBean(createReqVO, ScheduleViewDO.class);
         scheduleViewMapper.insert(scheduleView);
+
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("createReqVO", createReqVO);
 
         // 返回
         return scheduleView.getId();
     }
 
     @Override
+    @LogRecord(type = SCHEDULE_VIEW_TYPE, subType = SCHEDULE_VIEW_UPDATE_SUB_TYPE,
+            bizNo = "{{#updateReqVO.id}}", success = SCHEDULE_VIEW_UPDATE_SUCCESS)
     public void updateScheduleView(ScheduleViewSaveReqVO updateReqVO) {
-        // 校验存在
-        validateScheduleViewExists(updateReqVO.getId());
-        // 更新
+        // 1. 校验存在，并获取旧数据用于日志对比
+        ScheduleViewDO oldScheduleView = validateScheduleViewExists(updateReqVO.getId());
+
+        // 2. 更新
         ScheduleViewDO updateObj = BeanUtils.toBean(updateReqVO, ScheduleViewDO.class);
         scheduleViewMapper.updateById(updateObj);
+
+        // 3. 记录操作日志上下文（用于DIFF比较）
+        // 将旧数据转换为VO对象，存入日志上下文
+        ScheduleViewSaveReqVO oldVO = BeanUtils.toBean(oldScheduleView, ScheduleViewSaveReqVO.class);
+        LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, oldVO);
     }
 
     @Override
+    @LogRecord(type = SCHEDULE_VIEW_TYPE, subType = SCHEDULE_VIEW_DELETE_SUB_TYPE,
+            bizNo = "{{#id}}", success = SCHEDULE_VIEW_DELETE_SUCCESS)
     public void deleteScheduleView(Long id) {
         // 校验存在
         validateScheduleViewExists(id);
@@ -72,18 +93,26 @@ public class ScheduleViewServiceImpl implements ScheduleViewService {
     }
 
     @Override
-        public void deleteScheduleViewListByIds(List<Long> ids) {
+    @LogRecord(type = SCHEDULE_VIEW_TYPE, subType = SCHEDULE_VIEW_DELETE_LIST_SUB_TYPE,
+            success = SCHEDULE_VIEW_DELETE_LIST_SUCCESS, bizNo = "")
+    public void deleteScheduleViewListByIds(List<Long> ids) {
         // 删除
         scheduleViewMapper.deleteByIds(ids);
-        }
 
-
-    private void validateScheduleViewExists(Long id) {
-        if (scheduleViewMapper.selectById(id) == null) {
-            throw exception(SCHEDULE_VIEW_NOT_EXISTS);
-        }
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("ids", ids);
     }
 
+    // 修改验证方法，使其返回ScheduleViewDO对象，用于update方法的日志对比
+    private ScheduleViewDO validateScheduleViewExists(Long id) {
+        ScheduleViewDO scheduleView = scheduleViewMapper.selectById(id);
+        if (scheduleView == null) {
+            throw exception(SCHEDULE_VIEW_NOT_EXISTS);
+        }
+        return scheduleView; // 返回查询到的对象
+    }
+
+    // 以下方法不需要操作日志（查询方法）
     @Override
     public ScheduleViewDO getScheduleView(Long id) {
         return scheduleViewMapper.selectById(id);
@@ -103,6 +132,8 @@ public class ScheduleViewServiceImpl implements ScheduleViewService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = SCHEDULE_VIEW_TYPE, subType = SCHEDULE_VIEW_APPLY_SHIFT_SUB_TYPE,
+            bizNo = "{{#reqVO.id}}", success = SCHEDULE_VIEW_APPLY_SHIFT_SUCCESS)
     public Boolean applyShift(ShiftApplyReqVO reqVO) {
         // 1. 校验原排班是否存在
         Long scheduleId = reqVO.getId();
@@ -164,6 +195,9 @@ public class ScheduleViewServiceImpl implements ScheduleViewService {
         updateSchedule.setUpdater(originalSchedule.getUpdater());
 
         scheduleViewMapper.updateById(updateSchedule);
+
+        // 5. 设置日志上下文变量
+        LogRecordContext.putVariable("reqVO", reqVO);
 
         return true;
     }

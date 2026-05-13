@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.inspectop.service.fencemgmt;
 
 import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -14,11 +15,14 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.inspectop.dal.mysql.fencemgmt.FenceMgmtMapper;
-
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.inspectop.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.inspectop.enums.LogRecordConstants.*;
 
 /**
  * 电子围栏 Service 实现类
@@ -33,25 +37,40 @@ public class FenceMgmtServiceImpl implements FenceMgmtService {
     private FenceMgmtMapper fenceMgmtMapper;
 
     @Override
+    @LogRecord(type = FENCE_MGMT_TYPE, subType = FENCE_MGMT_CREATE_SUB_TYPE,
+            bizNo = "{{#createReqVO.id}}", success = FENCE_MGMT_CREATE_SUCCESS)
     public Long createFenceMgmt(FenceMgmtSaveReqVO createReqVO) {
         // 插入
         FenceMgmtDO fenceMgmt = BeanUtils.toBean(createReqVO, FenceMgmtDO.class);
         fenceMgmtMapper.insert(fenceMgmt);
+
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("createReqVO", createReqVO);
 
         // 返回
         return fenceMgmt.getId();
     }
 
     @Override
+    @LogRecord(type = FENCE_MGMT_TYPE, subType = FENCE_MGMT_UPDATE_SUB_TYPE,
+            bizNo = "{{#updateReqVO.id}}", success = FENCE_MGMT_UPDATE_SUCCESS)
     public void updateFenceMgmt(FenceMgmtSaveReqVO updateReqVO) {
-        // 校验存在
-        validateFenceMgmtExists(updateReqVO.getId());
-        // 更新
+        // 1. 校验存在，并获取旧数据用于日志对比
+        FenceMgmtDO oldFenceMgmt = validateFenceMgmtExists(updateReqVO.getId());
+
+        // 2. 更新
         FenceMgmtDO updateObj = BeanUtils.toBean(updateReqVO, FenceMgmtDO.class);
         fenceMgmtMapper.updateById(updateObj);
+
+        // 3. 记录操作日志上下文（用于DIFF比较）
+        // 将旧数据转换为VO对象，存入日志上下文
+        FenceMgmtSaveReqVO oldVO = BeanUtils.toBean(oldFenceMgmt, FenceMgmtSaveReqVO.class);
+        LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, oldVO);
     }
 
     @Override
+    @LogRecord(type = FENCE_MGMT_TYPE, subType = FENCE_MGMT_DELETE_SUB_TYPE,
+            bizNo = "{{#id}}", success = FENCE_MGMT_DELETE_SUCCESS)
     public void deleteFenceMgmt(Long id) {
         // 校验存在
         validateFenceMgmtExists(id);
@@ -60,16 +79,23 @@ public class FenceMgmtServiceImpl implements FenceMgmtService {
     }
 
     @Override
-        public void deleteFenceMgmtListByIds(List<Long> ids) {
+    @LogRecord(type = FENCE_MGMT_TYPE, subType = FENCE_MGMT_DELETE_LIST_SUB_TYPE,
+            success = FENCE_MGMT_DELETE_LIST_SUCCESS, bizNo = "")
+    public void deleteFenceMgmtListByIds(List<Long> ids) {
         // 删除
         fenceMgmtMapper.deleteByIds(ids);
-        }
 
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("ids", ids);
+    }
 
-    private void validateFenceMgmtExists(Long id) {
-        if (fenceMgmtMapper.selectById(id) == null) {
+    // 修改验证方法，使其返回FenceMgmtDO对象，用于update方法的日志对比
+    private FenceMgmtDO validateFenceMgmtExists(Long id) {
+        FenceMgmtDO fenceMgmt = fenceMgmtMapper.selectById(id);
+        if (fenceMgmt == null) {
             throw exception(FENCE_MGMT_NOT_EXISTS);
         }
+        return fenceMgmt; // 返回查询到的对象
     }
 
     @Override
@@ -80,11 +106,11 @@ public class FenceMgmtServiceImpl implements FenceMgmtService {
     @Override
     public PageResult<FenceMgmtRespVO> getFenceMgmtPage(FenceMgmtPageReqVO pageReqVO) {
         // 创建 MyBatis-Plus 分页对象
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<FenceMgmtRespVO> mpPage
-                = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        Page<FenceMgmtRespVO> mpPage
+                = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
 
         // 调用 Mapper 的关联查询方法
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<FenceMgmtRespVO> resultPage =
+        Page<FenceMgmtRespVO> resultPage =
                 fenceMgmtMapper.selectPageWithJoin(mpPage, pageReqVO);
 
         // 构造返回结果
@@ -93,6 +119,8 @@ public class FenceMgmtServiceImpl implements FenceMgmtService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = FENCE_MGMT_TYPE, subType = FENCE_MGMT_ENABLE_SUB_TYPE,
+            bizNo = "{{#id}}", success = FENCE_MGMT_ENABLE_SUCCESS)
     public void enableFenceMgmt(Long id) {
         // 校验存在
         validateFenceMgmtExists(id);
@@ -108,6 +136,8 @@ public class FenceMgmtServiceImpl implements FenceMgmtService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = FENCE_MGMT_TYPE, subType = FENCE_MGMT_DISABLE_SUB_TYPE,
+            bizNo = "{{#id}}", success = FENCE_MGMT_DISABLE_SUCCESS)
     public void disableFenceMgmt(Long id) {
         // 校验存在
         validateFenceMgmtExists(id);

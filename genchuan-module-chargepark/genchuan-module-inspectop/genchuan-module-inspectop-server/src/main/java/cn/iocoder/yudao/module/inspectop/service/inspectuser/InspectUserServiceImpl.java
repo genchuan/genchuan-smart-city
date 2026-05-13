@@ -21,10 +21,16 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.inspectop.dal.mysql.inspectuser.InspectUserMapper;
 
+// 新增导入
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
+
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.inspectop.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.inspectop.enums.LogRecordConstants.*;
 
 /**
  * 巡检人员 Service 实现类
@@ -39,25 +45,40 @@ public class InspectUserServiceImpl implements InspectUserService {
     private InspectUserMapper inspectUserMapper;
 
     @Override
+    @LogRecord(type = INSPECT_USER_TYPE, subType = INSPECT_USER_CREATE_SUB_TYPE,
+            bizNo = "{{#createReqVO.id}}", success = INSPECT_USER_CREATE_SUCCESS)
     public Long createInspectUser(InspectUserSaveReqVO createReqVO) {
         // 插入
         InspectUserDO inspectUser = BeanUtils.toBean(createReqVO, InspectUserDO.class);
         inspectUserMapper.insert(inspectUser);
+
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("createReqVO", createReqVO);
 
         // 返回
         return inspectUser.getId();
     }
 
     @Override
+    @LogRecord(type = INSPECT_USER_TYPE, subType = INSPECT_USER_UPDATE_SUB_TYPE,
+            bizNo = "{{#updateReqVO.id}}", success = INSPECT_USER_UPDATE_SUCCESS)
     public void updateInspectUser(InspectUserSaveReqVO updateReqVO) {
-        // 校验存在
-        validateInspectUserExists(updateReqVO.getId());
-        // 更新
+        // 1. 校验存在，并获取旧数据用于日志对比
+        InspectUserDO oldInspectUser = validateInspectUserExists(updateReqVO.getId());
+
+        // 2. 更新
         InspectUserDO updateObj = BeanUtils.toBean(updateReqVO, InspectUserDO.class);
         inspectUserMapper.updateById(updateObj);
+
+        // 3. 记录操作日志上下文（用于DIFF比较）
+        // 将旧数据转换为VO对象，存入日志上下文
+        InspectUserSaveReqVO oldVO = BeanUtils.toBean(oldInspectUser, InspectUserSaveReqVO.class);
+        LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, oldVO);
     }
 
     @Override
+    @LogRecord(type = INSPECT_USER_TYPE, subType = INSPECT_USER_DELETE_SUB_TYPE,
+            bizNo = "{{#id}}", success = INSPECT_USER_DELETE_SUCCESS)
     public void deleteInspectUser(Long id) {
         // 校验存在
         validateInspectUserExists(id);
@@ -66,18 +87,26 @@ public class InspectUserServiceImpl implements InspectUserService {
     }
 
     @Override
-        public void deleteInspectUserListByIds(List<Long> ids) {
+    @LogRecord(type = INSPECT_USER_TYPE, subType = INSPECT_USER_DELETE_LIST_SUB_TYPE,
+            success = INSPECT_USER_DELETE_LIST_SUCCESS, bizNo = "")
+    public void deleteInspectUserListByIds(List<Long> ids) {
         // 删除
         inspectUserMapper.deleteByIds(ids);
-        }
 
-
-    private void validateInspectUserExists(Long id) {
-        if (inspectUserMapper.selectById(id) == null) {
-            throw exception(INSPECT_USER_NOT_EXISTS);
-        }
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("ids", ids);
     }
 
+    // 修改验证方法，使其返回InspectUserDO对象，用于update方法的日志对比
+    private InspectUserDO validateInspectUserExists(Long id) {
+        InspectUserDO inspectUser = inspectUserMapper.selectById(id);
+        if (inspectUser == null) {
+            throw exception(INSPECT_USER_NOT_EXISTS);
+        }
+        return inspectUser; // 返回查询到的对象
+    }
+
+    // 以下方法不需要操作日志（查询方法）
     @Override
     public InspectUserDO getInspectUser(Long id) {
         return inspectUserMapper.selectById(id);
@@ -166,8 +195,10 @@ public class InspectUserServiceImpl implements InspectUserService {
         return respVO;
     }
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = INSPECT_USER_TYPE, subType = INSPECT_USER_IMPORT_SUB_TYPE,
+            success = INSPECT_USER_IMPORT_SUCCESS, bizNo = "")
     public ImportRespVO importInspectUser(MultipartFile file, boolean updateSupport) {
         ImportRespVO resp = new ImportRespVO();
         resp.setSuccessCount(0);
@@ -237,6 +268,11 @@ public class InspectUserServiceImpl implements InspectUserService {
             resp.setSuccessCount(successCount);
             resp.setFailureCount(failures.size());
             resp.setFailureList(failures);
+
+            // 设置日志上下文变量
+            LogRecordContext.putVariable("successCount", successCount);
+            LogRecordContext.putVariable("failureCount", failures.size());
+
             return resp;
 
         } catch (Exception e) {
@@ -246,12 +282,19 @@ public class InspectUserServiceImpl implements InspectUserService {
             failure.setMessage("导入失败：" + e.getMessage());
             resp.getFailureList().add(failure);
             resp.setFailureCount(1);
+
+            // 设置日志上下文变量
+            LogRecordContext.putVariable("successCount", 0);
+            LogRecordContext.putVariable("failureCount", 1);
+
             return resp;
         }
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = INSPECT_USER_TYPE, subType = INSPECT_USER_ENABLE_SUB_TYPE,
+            bizNo = "{{#id}}", success = INSPECT_USER_ENABLE_SUCCESS)
     public void enableInspectUser(Long id) {
         // 校验人员是否存在
         validateInspectUserExists(id);
@@ -268,6 +311,8 @@ public class InspectUserServiceImpl implements InspectUserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = INSPECT_USER_TYPE, subType = INSPECT_USER_DISABLE_SUB_TYPE,
+            bizNo = "{{#id}}", success = INSPECT_USER_DISABLE_SUCCESS)
     public void disableInspectUser(Long id) {
         // 校验人员是否存在
         validateInspectUserExists(id);
@@ -296,5 +341,4 @@ public class InspectUserServiceImpl implements InspectUserService {
 
         return respVO;
     }
-
 }

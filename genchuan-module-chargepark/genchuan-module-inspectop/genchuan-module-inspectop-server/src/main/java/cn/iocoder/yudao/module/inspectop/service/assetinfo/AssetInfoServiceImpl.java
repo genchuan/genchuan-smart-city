@@ -5,6 +5,10 @@ import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.inspectop.framework.ImportRespVO;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -24,6 +28,7 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.inspectop.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.inspectop.enums.LogRecordConstants.*;
 
 /**
  * 资产信息 Service 实现类
@@ -38,25 +43,40 @@ public class AssetInfoServiceImpl implements AssetInfoService {
     private AssetInfoMapper assetInfoMapper;
 
     @Override
+    @LogRecord(type = ASSET_INFO_TYPE, subType = ASSET_INFO_CREATE_SUB_TYPE, bizNo = "{{#createReqVO.id}}",
+            success = ASSET_INFO_CREATE_SUCCESS)
     public Long createAssetInfo(AssetInfoSaveReqVO createReqVO) {
         // 插入
         AssetInfoDO assetInfo = BeanUtils.toBean(createReqVO, AssetInfoDO.class);
         assetInfoMapper.insert(assetInfo);
+
+        // 设置日志上下文变量（用于bizNo）
+        LogRecordContext.putVariable("createReqVO", createReqVO);
 
         // 返回
         return assetInfo.getId();
     }
 
     @Override
+    @LogRecord(type = ASSET_INFO_TYPE, subType = ASSET_INFO_UPDATE_SUB_TYPE, bizNo = "{{#updateReqVO.id}}",
+            success = ASSET_INFO_UPDATE_SUCCESS)
     public void updateAssetInfo(AssetInfoSaveReqVO updateReqVO) {
-        // 校验存在
-        validateAssetInfoExists(updateReqVO.getId());
-        // 更新
+        // 1. 校验存在，并获取旧数据用于日志对比
+        AssetInfoDO oldAssetInfo = validateAssetInfoExists(updateReqVO.getId());
+
+        // 2. 更新
         AssetInfoDO updateObj = BeanUtils.toBean(updateReqVO, AssetInfoDO.class);
         assetInfoMapper.updateById(updateObj);
+
+        // 3. 记录操作日志上下文（用于DIFF比较）
+        // 将旧数据转换为VO对象，存入日志上下文
+        AssetInfoSaveReqVO oldVO = BeanUtils.toBean(oldAssetInfo, AssetInfoSaveReqVO.class);
+        LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, oldVO);
     }
 
     @Override
+    @LogRecord(type = ASSET_INFO_TYPE, subType = ASSET_INFO_DELETE_SUB_TYPE, bizNo = "{{#id}}",
+            success = ASSET_INFO_DELETE_SUCCESS)
     public void deleteAssetInfo(Long id) {
         // 校验存在
         validateAssetInfoExists(id);
@@ -65,16 +85,23 @@ public class AssetInfoServiceImpl implements AssetInfoService {
     }
 
     @Override
-        public void deleteAssetInfoListByIds(List<Long> ids) {
+    @LogRecord(type = ASSET_INFO_TYPE, subType = ASSET_INFO_DELETE_LIST_SUB_TYPE,
+            success = ASSET_INFO_DELETE_LIST_SUCCESS, bizNo = "")
+    public void deleteAssetInfoListByIds(List<Long> ids) {
         // 删除
         assetInfoMapper.deleteByIds(ids);
-        }
+
+        // 设置日志上下文变量，供成功消息模板使用
+        LogRecordContext.putVariable("ids", ids);
+    }
 
 
-    private void validateAssetInfoExists(Long id) {
-        if (assetInfoMapper.selectById(id) == null) {
+    private AssetInfoDO validateAssetInfoExists(Long id) {
+        AssetInfoDO assetInfo = assetInfoMapper.selectById(id);
+        if (assetInfo == null) {
             throw exception(ASSET_INFO_NOT_EXISTS);
         }
+        return assetInfo; // 返回查询到的对象
     }
 
     @Override
@@ -85,12 +112,12 @@ public class AssetInfoServiceImpl implements AssetInfoService {
     @Override
     public PageResult<AssetInfoRespVO> getAssetInfoPage(AssetInfoPageReqVO pageReqVO) {
         // 创建 MyBatis-Plus 分页对象
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<AssetInfoRespVO> mpPage =
-                new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(
+        Page<AssetInfoRespVO> mpPage =
+                new Page<>(
                         pageReqVO.getPageNo(), pageReqVO.getPageSize());
 
         // 调用 Mapper 的关联查询方法
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<AssetInfoRespVO> resultPage =
+        Page<AssetInfoRespVO> resultPage =
                 assetInfoMapper.selectPageWithJoin(mpPage, pageReqVO);
 
         // 构造并返回 PageResult
@@ -98,6 +125,8 @@ public class AssetInfoServiceImpl implements AssetInfoService {
     }
 
     @Override
+    @LogRecord(type = ASSET_INFO_TYPE, subType = ASSET_INFO_DISABLE_SUB_TYPE, bizNo = "{{#id}}",
+            success = ASSET_INFO_DISABLE_SUCCESS)
     public void disableAssetInfo(Long id) {
         // 1. 校验存在
         validateAssetInfoExists(id);
@@ -112,6 +141,8 @@ public class AssetInfoServiceImpl implements AssetInfoService {
     }
 
     @Override
+    @LogRecord(type = ASSET_INFO_TYPE, subType = ASSET_INFO_SCRAP_SUB_TYPE, bizNo = "{{#scrapReqVO.id}}",
+            success = ASSET_INFO_SCRAP_SUCCESS)
     public void scrapAssetInfo(AssetInfoScrapReqVO scrapReqVO) {
         // 1. 校验存在
         validateAssetInfoExists(scrapReqVO.getId());
@@ -128,6 +159,8 @@ public class AssetInfoServiceImpl implements AssetInfoService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = ASSET_INFO_TYPE, subType = ASSET_INFO_IMPORT_SUB_TYPE,
+            success = ASSET_INFO_IMPORT_SUCCESS, bizNo = "")
     public ImportRespVO importAssetInfo(MultipartFile file, boolean updateSupport) {
         ImportRespVO resp = new ImportRespVO();
         resp.setSuccessCount(0);
@@ -200,6 +233,11 @@ public class AssetInfoServiceImpl implements AssetInfoService {
             resp.setSuccessCount(successCount);
             resp.setFailureCount(failures.size());
             resp.setFailureList(failures);
+
+            // 4. 设置日志上下文变量，供成功消息模板使用
+            LogRecordContext.putVariable("successCount", successCount);
+            LogRecordContext.putVariable("failureCount", failures.size());
+
             return resp;
 
         } catch (Exception e) {
@@ -209,6 +247,11 @@ public class AssetInfoServiceImpl implements AssetInfoService {
             failure.setMessage("导入失败：" + e.getMessage());
             resp.getFailureList().add(failure);
             resp.setFailureCount(1);
+
+            // 设置日志上下文变量
+            LogRecordContext.putVariable("successCount", 0);
+            LogRecordContext.putVariable("failureCount", 1);
+
             return resp;
         }
     }

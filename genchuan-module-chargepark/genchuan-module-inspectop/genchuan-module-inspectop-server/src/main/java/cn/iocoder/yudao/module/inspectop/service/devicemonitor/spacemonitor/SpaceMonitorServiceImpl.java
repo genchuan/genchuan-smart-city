@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -20,6 +22,7 @@ import cn.iocoder.yudao.module.inspectop.dal.mysql.devicemonitor.spacemonitor.Sp
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.module.inspectop.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.inspectop.enums.LogRecordConstants.*;
 
 /**
  * 车位状态监测 Service 实现类
@@ -34,25 +37,40 @@ public class SpaceMonitorServiceImpl implements SpaceMonitorService {
     private SpaceMonitorMapper spaceMonitorMapper;
 
     @Override
+    @LogRecord(type = SPACE_MONITOR_TYPE, subType = SPACE_MONITOR_CREATE_SUB_TYPE,
+            bizNo = "{{#createReqVO.id}}", success = SPACE_MONITOR_CREATE_SUCCESS)
     public Long createSpaceMonitor(SpaceMonitorSaveReqVO createReqVO) {
         // 插入
         SpaceMonitorDO spaceMonitor = BeanUtils.toBean(createReqVO, SpaceMonitorDO.class);
         spaceMonitorMapper.insert(spaceMonitor);
+
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("createReqVO", createReqVO);
 
         // 返回
         return spaceMonitor.getId();
     }
 
     @Override
+    @LogRecord(type = SPACE_MONITOR_TYPE, subType = SPACE_MONITOR_UPDATE_SUB_TYPE,
+            bizNo = "{{#updateReqVO.id}}", success = SPACE_MONITOR_UPDATE_SUCCESS)
     public void updateSpaceMonitor(SpaceMonitorSaveReqVO updateReqVO) {
-        // 校验存在
-        validateSpaceMonitorExists(updateReqVO.getId());
-        // 更新
+        // 1. 校验存在，并获取旧数据用于日志对比
+        SpaceMonitorDO oldSpaceMonitor = validateSpaceMonitorExists(updateReqVO.getId());
+
+        // 2. 更新
         SpaceMonitorDO updateObj = BeanUtils.toBean(updateReqVO, SpaceMonitorDO.class);
         spaceMonitorMapper.updateById(updateObj);
+
+        // 3. 记录操作日志上下文（用于DIFF比较）
+        // 将旧数据转换为VO对象，存入日志上下文
+        SpaceMonitorSaveReqVO oldVO = BeanUtils.toBean(oldSpaceMonitor, SpaceMonitorSaveReqVO.class);
+        LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, oldVO);
     }
 
     @Override
+    @LogRecord(type = SPACE_MONITOR_TYPE, subType = SPACE_MONITOR_DELETE_SUB_TYPE,
+            bizNo = "{{#id}}", success = SPACE_MONITOR_DELETE_SUCCESS)
     public void deleteSpaceMonitor(Long id) {
         // 校验存在
         validateSpaceMonitorExists(id);
@@ -61,16 +79,23 @@ public class SpaceMonitorServiceImpl implements SpaceMonitorService {
     }
 
     @Override
-        public void deleteSpaceMonitorListByIds(List<Long> ids) {
+    @LogRecord(type = SPACE_MONITOR_TYPE, subType = SPACE_MONITOR_DELETE_LIST_SUB_TYPE,
+            success = SPACE_MONITOR_DELETE_LIST_SUCCESS)
+    public void deleteSpaceMonitorListByIds(List<Long> ids) {
         // 删除
         spaceMonitorMapper.deleteByIds(ids);
-        }
 
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("ids", ids);
+    }
 
-    private void validateSpaceMonitorExists(Long id) {
-        if (spaceMonitorMapper.selectById(id) == null) {
+    // 修改验证方法，使其返回SpaceMonitorDO对象，用于update方法的日志对比
+    private SpaceMonitorDO validateSpaceMonitorExists(Long id) {
+        SpaceMonitorDO spaceMonitor = spaceMonitorMapper.selectById(id);
+        if (spaceMonitor == null) {
             throw exception(SPACE_MONITOR_NOT_EXISTS);
         }
+        return spaceMonitor; // 返回查询到的对象
     }
 
     @Override
@@ -90,7 +115,6 @@ public class SpaceMonitorServiceImpl implements SpaceMonitorService {
         return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
     }
 
-    // 在 SpaceMonitorServiceImpl.java 中添加以下方法
     @Override
     public SpaceMonitorLocationRespVO getSpaceMonitorLocation(Long id) {
         // 校验记录是否存在
@@ -109,6 +133,8 @@ public class SpaceMonitorServiceImpl implements SpaceMonitorService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = SPACE_MONITOR_TYPE, subType = SPACE_MONITOR_UPDATE_ALARM_SUB_TYPE,
+            bizNo = "{{#alarmReqVO.id}}", success = SPACE_MONITOR_UPDATE_ALARM_SUCCESS)
     public void updateSpaceMonitorAlarm(SpaceMonitorAlarmReqVO alarmReqVO) {
         // 1. 校验记录是否存在
         validateSpaceMonitorExists(alarmReqVO.getId());
@@ -122,6 +148,9 @@ public class SpaceMonitorServiceImpl implements SpaceMonitorService {
 
         // 3. 更新数据库
         spaceMonitorMapper.updateById(updateObj);
+
+        // 4. 设置日志上下文变量
+        LogRecordContext.putVariable("alarmReqVO", alarmReqVO);
     }
 
     // SpaceMonitorServiceImpl.java

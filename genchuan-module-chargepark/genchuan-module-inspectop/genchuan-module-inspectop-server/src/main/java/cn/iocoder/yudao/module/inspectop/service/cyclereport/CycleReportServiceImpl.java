@@ -16,13 +16,17 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+
+import static cn.iocoder.yudao.module.inspectop.enums.LogRecordConstants.*;
 
 @Service
 @Validated
@@ -43,6 +47,8 @@ public class CycleReportServiceImpl implements CycleReportService {
     }
 
     @Override
+    @LogRecord(type = CYCLE_REPORT_TYPE, subType = CYCLE_REPORT_GENERATE_SUB_TYPE,
+            success = CYCLE_REPORT_GENERATE_SUCCESS, bizNo = "")
     public CycleReportRespVO generateCycleReport(CycleReportGenerateReqVO generateReqVO) {
 
         // ========== 核心：自动根据报表类型计算时间(自定义报表：保留前端传入的 startTime、endTime 不变) ==========
@@ -126,11 +132,14 @@ public class CycleReportServiceImpl implements CycleReportService {
 
         // ========== 将报表数据存储到数据库 ==========
         this.saveOrUpdateReport(respVO, generateReqVO);
-
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("reportCycle", reportType);
         return respVO;
     }
 
     @Override
+    @LogRecord(type = CYCLE_REPORT_TYPE, subType = CYCLE_REPORT_CHART_SUB_TYPE,
+            success = CYCLE_REPORT_CHART_SUCCESS, bizNo = "")
     public CycleReportChartRespVO getCycleReportChart(CycleReportChartReqVO reqVO) {
         // 1. 处理默认参数
         if (reqVO == null) {
@@ -155,7 +164,12 @@ public class CycleReportServiceImpl implements CycleReportService {
         respVO.setMapData(cycleReportMapper.selectMapData(reqVO));
         respVO.setBarData(cycleReportMapper.selectBarData(reqVO));
         respVO.setLineData(cycleReportMapper.selectLineData(reqVO));
+        // 设置日志上下文变量
+        Long stationId = reqVO.getStationId();
+        String stationName = stationId != null ?
+                cycleReportMapper.selectStationNameById(stationId) : "全部场站";
 
+        LogRecordContext.putVariable("stationName", stationName);
         return respVO;
     }
 
@@ -517,7 +531,7 @@ public class CycleReportServiceImpl implements CycleReportService {
                 };
             case "自定义报表":
                 // 自定义报表：按照相同天数间隔计算上一个周期
-                long daysBetween = java.time.Duration.between(currentStart, currentEnd).toDays();
+                long daysBetween = Duration.between(currentStart, currentEnd).toDays();
                 return new LocalDateTime[] {
                         currentStart.minusDays(daysBetween + 1),
                         currentEnd.minusDays(daysBetween + 1)

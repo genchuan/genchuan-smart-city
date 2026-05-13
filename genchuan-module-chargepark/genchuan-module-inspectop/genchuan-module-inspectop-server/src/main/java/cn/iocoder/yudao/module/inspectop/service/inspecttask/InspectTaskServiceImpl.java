@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import java.time.LocalDateTime;
 import java.util.*;
 import cn.iocoder.yudao.module.inspectop.controller.admin.inspecttask.vo.*;
@@ -22,6 +24,7 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.inspectop.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.inspectop.enums.LogRecordConstants.*;
 
 /**
  * 巡检任务 Service 实现类
@@ -36,25 +39,40 @@ public class InspectTaskServiceImpl implements InspectTaskService {
     private InspectTaskMapper inspectTaskMapper;
 
     @Override
+    @LogRecord(type = INSPECT_TASK_TYPE, subType = INSPECT_TASK_CREATE_SUB_TYPE,
+            bizNo = "{{#createReqVO.id}}", success = INSPECT_TASK_CREATE_SUCCESS)
     public Long createInspectTask(InspectTaskSaveReqVO createReqVO) {
         // 插入
         InspectTaskDO inspectTask = BeanUtils.toBean(createReqVO, InspectTaskDO.class);
         inspectTaskMapper.insert(inspectTask);
+
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("createReqVO", createReqVO);
 
         // 返回
         return inspectTask.getId();
     }
 
     @Override
+    @LogRecord(type = INSPECT_TASK_TYPE, subType = INSPECT_TASK_UPDATE_SUB_TYPE,
+            bizNo = "{{#updateReqVO.id}}", success = INSPECT_TASK_UPDATE_SUCCESS)
     public void updateInspectTask(InspectTaskSaveReqVO updateReqVO) {
-        // 校验存在
-        validateInspectTaskExists(updateReqVO.getId());
-        // 更新
+        // 1. 校验存在，并获取旧数据用于日志对比
+        InspectTaskDO oldInspectTask = validateInspectTaskExists(updateReqVO.getId());
+
+        // 2. 更新
         InspectTaskDO updateObj = BeanUtils.toBean(updateReqVO, InspectTaskDO.class);
         inspectTaskMapper.updateById(updateObj);
+
+        // 3. 记录操作日志上下文（用于DIFF比较）
+        // 将旧数据转换为VO对象，存入日志上下文
+        InspectTaskSaveReqVO oldVO = BeanUtils.toBean(oldInspectTask, InspectTaskSaveReqVO.class);
+        LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, oldVO);
     }
 
     @Override
+    @LogRecord(type = INSPECT_TASK_TYPE, subType = INSPECT_TASK_DELETE_SUB_TYPE,
+            bizNo = "{{#id}}", success = INSPECT_TASK_DELETE_SUCCESS)
     public void deleteInspectTask(Long id) {
         // 校验存在
         validateInspectTaskExists(id);
@@ -63,16 +81,23 @@ public class InspectTaskServiceImpl implements InspectTaskService {
     }
 
     @Override
-        public void deleteInspectTaskListByIds(List<Long> ids) {
+    @LogRecord(type = INSPECT_TASK_TYPE, subType = INSPECT_TASK_DELETE_LIST_SUB_TYPE,
+            success = INSPECT_TASK_DELETE_LIST_SUCCESS)
+    public void deleteInspectTaskListByIds(List<Long> ids) {
         // 删除
         inspectTaskMapper.deleteByIds(ids);
-        }
 
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("ids", ids);
+    }
 
-    private void validateInspectTaskExists(Long id) {
-        if (inspectTaskMapper.selectById(id) == null) {
+    // 修改验证方法，使其返回InspectTaskDO对象，用于update方法的日志对比
+    private InspectTaskDO validateInspectTaskExists(Long id) {
+        InspectTaskDO inspectTask = inspectTaskMapper.selectById(id);
+        if (inspectTask == null) {
             throw exception(INSPECT_TASK_NOT_EXISTS);
         }
+        return inspectTask; // 返回查询到的对象
     }
 
     @Override
@@ -102,6 +127,8 @@ public class InspectTaskServiceImpl implements InspectTaskService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = INSPECT_TASK_TYPE, subType = INSPECT_TASK_BATCH_DISPATCH_SUB_TYPE,
+            success = INSPECT_TASK_BATCH_DISPATCH_SUCCESS, bizNo = "")
     public void batchDispatchInspectTask(InspectTaskBatchDispatchReqVO batchDispatchReqVO) {
         // 1. 校验参数
         List<Long> ids = batchDispatchReqVO.getIds();
@@ -129,10 +156,16 @@ public class InspectTaskServiceImpl implements InspectTaskService {
                 .in(InspectTaskDO::getId, ids);
 
         inspectTaskMapper.update(null, updateWrapper);
+
+        // 5. 设置日志上下文变量
+        LogRecordContext.putVariable("ids", ids);
+        LogRecordContext.putVariable("userId", userId);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = INSPECT_TASK_TYPE, subType = INSPECT_TASK_CLAIM_SUB_TYPE,
+            bizNo = "{{#claimReqVO.id}}", success = INSPECT_TASK_CLAIM_SUCCESS)
     public void claimInspectTask(InspectTaskClaimReqVO claimReqVO) {
         // 1. 校验任务是否存在
         Long id = claimReqVO.getId();
@@ -149,10 +182,15 @@ public class InspectTaskServiceImpl implements InspectTaskService {
                 .eq(InspectTaskDO::getId, id);
 
         inspectTaskMapper.update(null, updateWrapper);
+
+        // 4. 设置日志上下文变量
+        LogRecordContext.putVariable("claimReqVO", claimReqVO);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = INSPECT_TASK_TYPE, subType = INSPECT_TASK_UPDATE_PROGRESS_SUB_TYPE,
+            bizNo = "{{#updateProgressReqVO.id}}", success = INSPECT_TASK_UPDATE_PROGRESS_SUCCESS)
     public void updateInspectTaskProgress(InspectTaskUpdateProgressReqVO updateProgressReqVO) {
         // 1. 校验任务是否存在
         Long id = updateProgressReqVO.getId();
@@ -173,10 +211,15 @@ public class InspectTaskServiceImpl implements InspectTaskService {
                 .eq(InspectTaskDO::getId, id);
 
         inspectTaskMapper.update(null, updateWrapper);
+
+        // 5. 设置日志上下文变量
+        LogRecordContext.putVariable("updateProgressReqVO", updateProgressReqVO);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = INSPECT_TASK_TYPE, subType = INSPECT_TASK_TRANSFER_SUB_TYPE,
+            bizNo = "{{#transferReqVO.id}}", success = INSPECT_TASK_TRANSFER_SUCCESS)
     public void transferInspectTask(InspectTaskTransferReqVO transferReqVO) {
         // 1. 校验参数
         Long id = transferReqVO.getId();
@@ -210,10 +253,15 @@ public class InspectTaskServiceImpl implements InspectTaskService {
             // 理论上不会发生，因为已经校验了任务存在
             throw exception(INSPECT_TASK_NOT_EXISTS);
         }
+
+        // 7. 设置日志上下文变量
+        LogRecordContext.putVariable("transferReqVO", transferReqVO);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = INSPECT_TASK_TYPE, subType = INSPECT_TASK_ARCHIVE_SUB_TYPE,
+            bizNo = "{{#archiveReqVO.id}}", success = INSPECT_TASK_ARCHIVE_SUCCESS)
     public void archiveInspectTask(InspectTaskArchiveReqVO archiveReqVO) {
         // 1. 校验任务是否存在
         Long id = archiveReqVO.getId();
@@ -233,6 +281,9 @@ public class InspectTaskServiceImpl implements InspectTaskService {
                 .eq(InspectTaskDO::getId, id);
 
         inspectTaskMapper.update(null, updateWrapper);
+
+        // 4. 设置日志上下文变量
+        LogRecordContext.putVariable("archiveReqVO", archiveReqVO);
     }
 
     @Override
