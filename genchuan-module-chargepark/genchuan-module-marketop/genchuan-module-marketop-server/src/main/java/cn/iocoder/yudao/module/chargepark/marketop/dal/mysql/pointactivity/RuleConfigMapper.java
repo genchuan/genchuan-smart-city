@@ -34,17 +34,20 @@ public interface RuleConfigMapper extends BaseMapperX<RuleConfigDO> {
             wrapper.le(RuleConfigDO::getAuditTime,
                     java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getAuditEndTime()), java.time.ZoneId.systemDefault()));
         }
-        if (reqVO.getEffectStartTime() != null && reqVO.getEffectEndTime() != null) {
-            wrapper.between(RuleConfigDO::getEffectTime,
-                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getEffectStartTime()), java.time.ZoneId.systemDefault()),
-                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getEffectEndTime()), java.time.ZoneId.systemDefault()));
-        } else if (reqVO.getEffectStartTime() != null) {
-            wrapper.ge(RuleConfigDO::getEffectTime,
-                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getEffectStartTime()), java.time.ZoneId.systemDefault()));
-        } else if (reqVO.getEffectEndTime() != null) {
-            wrapper.le(RuleConfigDO::getEffectTime,
-                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getEffectEndTime()), java.time.ZoneId.systemDefault()));
-        }
+        wrapper.betweenIfPresent(RuleConfigDO::getCreateTime, reqVO.getCreateTime());
+        wrapper.betweenIfPresent(RuleConfigDO::getEffectTime, reqVO.getEffectTime());
+
+//        if (reqVO.getEffectStartTime() != null && reqVO.getEffectEndTime() != null) {
+//            wrapper.between(RuleConfigDO::getEffectTime,
+//                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getEffectStartTime()), java.time.ZoneId.systemDefault()),
+//                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getEffectEndTime()), java.time.ZoneId.systemDefault()));
+//        } else if (reqVO.getEffectStartTime() != null) {
+//            wrapper.ge(RuleConfigDO::getEffectTime,
+//                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getEffectStartTime()), java.time.ZoneId.systemDefault()));
+//        } else if (reqVO.getEffectEndTime() != null) {
+//            wrapper.le(RuleConfigDO::getEffectTime,
+//                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getEffectEndTime()), java.time.ZoneId.systemDefault()));
+//        }
         return selectPage(reqVO, wrapper);
     }
 

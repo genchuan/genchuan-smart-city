@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.userreport.cyclereport.vo;
 
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.FlexibleTimestampDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,11 +20,11 @@ public class CycleReportPageReqVO extends PageParam {
     private String reportCycle;
 
     @Schema(description = "统计开始时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
     private LocalDateTime[] statStartTime;
 
     @Schema(description = "统计结束时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
     private LocalDateTime[] statEndTime;
 
     @Schema(description = "报表生成状态（待生成/已生成/生成失败）", example = "1")

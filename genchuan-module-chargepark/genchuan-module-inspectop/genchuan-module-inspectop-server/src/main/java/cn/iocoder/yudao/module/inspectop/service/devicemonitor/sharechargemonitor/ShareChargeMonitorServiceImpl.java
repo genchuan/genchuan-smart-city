@@ -1,6 +1,10 @@
 package cn.iocoder.yudao.module.inspectop.service.devicemonitor.sharechargemonitor;
 
 import cn.iocoder.yudao.module.inspectop.controller.admin.devicemonitor.sharechargemonitor.vo.*;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -17,6 +21,7 @@ import cn.iocoder.yudao.module.inspectop.dal.mysql.devicemonitor.sharechargemoni
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.module.inspectop.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.inspectop.enums.LogRecordConstants.*;
 
 /**
  * 共享充电监测 Service 实现类
@@ -31,25 +36,40 @@ public class ShareChargeMonitorServiceImpl implements ShareChargeMonitorService 
     private ShareChargeMonitorMapper shareChargeMonitorMapper;
 
     @Override
+    @LogRecord(type = SHARE_CHARGE_MONITOR_TYPE, subType = SHARE_CHARGE_MONITOR_CREATE_SUB_TYPE,
+            bizNo = "{{#createReqVO.id}}", success = SHARE_CHARGE_MONITOR_CREATE_SUCCESS)
     public Long createShareChargeMonitor(ShareChargeMonitorSaveReqVO createReqVO) {
         // 插入
         ShareChargeMonitorDO shareChargeMonitor = BeanUtils.toBean(createReqVO, ShareChargeMonitorDO.class);
         shareChargeMonitorMapper.insert(shareChargeMonitor);
+
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("createReqVO", createReqVO);
 
         // 返回
         return shareChargeMonitor.getId();
     }
 
     @Override
+    @LogRecord(type = SHARE_CHARGE_MONITOR_TYPE, subType = SHARE_CHARGE_MONITOR_UPDATE_SUB_TYPE,
+            bizNo = "{{#updateReqVO.id}}", success = SHARE_CHARGE_MONITOR_UPDATE_SUCCESS)
     public void updateShareChargeMonitor(ShareChargeMonitorSaveReqVO updateReqVO) {
-        // 校验存在
-        validateShareChargeMonitorExists(updateReqVO.getId());
-        // 更新
+        // 1. 校验存在，并获取旧数据用于日志对比
+        ShareChargeMonitorDO oldShareChargeMonitor = validateShareChargeMonitorExists(updateReqVO.getId());
+
+        // 2. 更新
         ShareChargeMonitorDO updateObj = BeanUtils.toBean(updateReqVO, ShareChargeMonitorDO.class);
         shareChargeMonitorMapper.updateById(updateObj);
+
+        // 3. 记录操作日志上下文（用于DIFF比较）
+        // 将旧数据转换为VO对象，存入日志上下文
+        ShareChargeMonitorSaveReqVO oldVO = BeanUtils.toBean(oldShareChargeMonitor, ShareChargeMonitorSaveReqVO.class);
+        LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, oldVO);
     }
 
     @Override
+    @LogRecord(type = SHARE_CHARGE_MONITOR_TYPE, subType = SHARE_CHARGE_MONITOR_DELETE_SUB_TYPE,
+            bizNo = "{{#id}}", success = SHARE_CHARGE_MONITOR_DELETE_SUCCESS)
     public void deleteShareChargeMonitor(Long id) {
         // 校验存在
         validateShareChargeMonitorExists(id);
@@ -58,16 +78,22 @@ public class ShareChargeMonitorServiceImpl implements ShareChargeMonitorService 
     }
 
     @Override
-        public void deleteShareChargeMonitorListByIds(List<Long> ids) {
+    @LogRecord(type = SHARE_CHARGE_MONITOR_TYPE, subType = SHARE_CHARGE_MONITOR_DELETE_LIST_SUB_TYPE,
+            success = SHARE_CHARGE_MONITOR_DELETE_LIST_SUCCESS, bizNo = "")
+    public void deleteShareChargeMonitorListByIds(List<Long> ids) {
         // 删除
         shareChargeMonitorMapper.deleteByIds(ids);
-        }
 
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("ids", ids);
+    }
 
-    private void validateShareChargeMonitorExists(Long id) {
-        if (shareChargeMonitorMapper.selectById(id) == null) {
+    private ShareChargeMonitorDO validateShareChargeMonitorExists(Long id) {
+        ShareChargeMonitorDO shareChargeMonitor = shareChargeMonitorMapper.selectById(id);
+        if (shareChargeMonitor == null) {
             throw exception(SHARE_CHARGE_MONITOR_NOT_EXISTS);
         }
+        return shareChargeMonitor; // 返回查询到的对象
     }
 
     @Override
@@ -78,11 +104,11 @@ public class ShareChargeMonitorServiceImpl implements ShareChargeMonitorService 
     @Override
     public PageResult<ShareChargeMonitorRespVO> getShareChargeMonitorPage(ShareChargeMonitorPageReqVO pageReqVO) {
         // 1. 创建 MyBatis-Plus 分页对象
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<ShareChargeMonitorRespVO> mpPage =
-                new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        Page<ShareChargeMonitorRespVO> mpPage =
+                new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
 
         // 2. 调用Mapper的关联查询方法
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<ShareChargeMonitorRespVO> resultPage =
+        Page<ShareChargeMonitorRespVO> resultPage =
                 shareChargeMonitorMapper.selectPageWithJoin(mpPage, pageReqVO);
 
         // 3. 直接构造 PageResult 并返回
@@ -106,6 +132,8 @@ public class ShareChargeMonitorServiceImpl implements ShareChargeMonitorService 
     }
 
     @Override
+    @LogRecord(type = SHARE_CHARGE_MONITOR_TYPE, subType = SHARE_CHARGE_MONITOR_ALARM_SUB_TYPE,
+            bizNo = "{{#alarmReqVO.id}}", success = SHARE_CHARGE_MONITOR_ALARM_SUCCESS)
     public void alarmShareChargeMonitor(ShareChargeMonitorAlarmReqVO alarmReqVO) {
         // 1. 校验记录是否存在
         validateShareChargeMonitorExists(alarmReqVO.getId());
@@ -118,6 +146,9 @@ public class ShareChargeMonitorServiceImpl implements ShareChargeMonitorService 
 
         // 3. 执行更新操作
         shareChargeMonitorMapper.updateById(updateObj);
+
+        // 4. 设置日志上下文变量
+        LogRecordContext.putVariable("alarmReqVO", alarmReqVO);
     }
 
     @Override

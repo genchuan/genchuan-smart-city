@@ -215,6 +215,16 @@ public class PointActivityServiceImpl implements PointActivityService {
     }
 
     @Override
+    public List<PointActivityDO> getSimpleList() {
+        return pointActivityMapper.selectList();
+    }
+
+    @Override
+    public List<Map<String, Object>> getStationSimpleList() {
+        return pointActivityMapper.selectStationSimpleList();
+    }
+
+    @Override
     @LogRecord(type = POINT_ACTIVITY_TYPE, subType = POINT_ACTIVITY_ACTIVATE_SUB_TYPE, bizNo = "{{#id}}",
             success = POINT_ACTIVITY_ACTIVATE_SUCCESS)
     public void activate(Long id) {

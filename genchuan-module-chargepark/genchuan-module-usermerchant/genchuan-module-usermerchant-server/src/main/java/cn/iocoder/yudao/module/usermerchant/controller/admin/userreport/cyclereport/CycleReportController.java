@@ -37,48 +37,6 @@ public class CycleReportController {
     @Resource
     private CycleReportService cycleReportService;
 
-    @PostMapping("/create")
-    @Operation(summary = "创建周期报表存储")
-    @PreAuthorize("@ss.hasPermission('usermerchant:cycle-report:create')")
-    public CommonResult<Long> createCycleReport(@Valid @RequestBody CycleReportSaveReqVO createReqVO) {
-        return success(cycleReportService.createCycleReport(createReqVO));
-    }
-
-//    @PutMapping("/update")
-//    @Operation(summary = "更新周期报表存储")
-//    @PreAuthorize("@ss.hasPermission('usermerchant:cycle-report:update')")
-//    public CommonResult<Boolean> updateCycleReport(@Valid @RequestBody CycleReportSaveReqVO updateReqVO) {
-//        cycleReportService.updateCycleReport(updateReqVO);
-//        return success(true);
-//    }
-//
-//    @DeleteMapping("/delete")
-//    @Operation(summary = "删除周期报表存储")
-//    @Parameter(name = "id", description = "编号", required = true)
-//    @PreAuthorize("@ss.hasPermission('usermerchant:cycle-report:delete')")
-//    public CommonResult<Boolean> deleteCycleReport(@RequestParam("id") Long id) {
-//        cycleReportService.deleteCycleReport(id);
-//        return success(true);
-//    }
-//
-//    @DeleteMapping("/delete-list")
-//    @Parameter(name = "ids", description = "编号", required = true)
-//    @Operation(summary = "批量删除周期报表存储")
-//                @PreAuthorize("@ss.hasPermission('usermerchant:cycle-report:delete')")
-//    public CommonResult<Boolean> deleteCycleReportList(@RequestParam("ids") List<Long> ids) {
-//        cycleReportService.deleteCycleReportListByIds(ids);
-//        return success(true);
-//    }
-
-    @GetMapping("/get")
-    @Operation(summary = "获得周期报表存储")
-    @Parameter(name = "id", description = "编号", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('usermerchant:cycle-report:query')")
-    public CommonResult<CycleReportRespVO> getCycleReport(@RequestParam("id") Long id) {
-        CycleReportDO cycleReport = cycleReportService.getCycleReport(id);
-        return success(BeanUtils.toBean(cycleReport, CycleReportRespVO.class));
-    }
-
     @GetMapping("/page")
     @Operation(summary = "获得周期报表存储分页")
     @PreAuthorize("@ss.hasPermission('usermerchant:cycle-report:query')")
@@ -87,24 +45,40 @@ public class CycleReportController {
         return success(BeanUtils.toBean(pageResult, CycleReportPageRespVO.class));
     }
 
+    @PostMapping("/create")
+    @Operation(summary = "生成周期报表（实时统计并存储）")
+    @PreAuthorize("@ss.hasPermission('usermerchant:cycle-report:create')")
+    public CommonResult<CycleReportCreateRespVO> generateCycleReport(@Valid @RequestBody CycleReportCreateReqVO createReqVO) {
+        return success(cycleReportService.createCycleReport(createReqVO));
+    }
+
     @GetMapping("/export")
     @Operation(summary = "导出周期报表存储")
     @PreAuthorize("@ss.hasPermission('usermerchant:cycle-report:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportCycleReportExcel(@Valid CycleReportPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                       HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<CycleReportDO> list = cycleReportService.getCycleReportPage(pageReqVO).getList();
         // 导出 Excel
-        ExcelUtils.write(response, "周期报表存储.xls", "数据", CycleReportRespVO.class,
-                        BeanUtils.toBean(list, CycleReportRespVO.class));
+        ExcelUtils.write(response, "周期报表存储.xls", "数据", CycleReportPageRespVO.class,
+                BeanUtils.toBean(list, CycleReportPageRespVO.class));
     }
 
-    @PostMapping("/generate")
-    @Operation(summary = "生成周期报表（实时统计并存储）")
-    @PreAuthorize("@ss.hasPermission('usermerchant:cycle-report:create')")
-    public CommonResult<CycleReportGenerateRespVO> generateCycleReport(@Valid @RequestBody CycleReportGenerateReqVO generateReqVO) {
-        CycleReportGenerateRespVO respVO = cycleReportService.generateCycleReport(generateReqVO);
+    @GetMapping("/get")
+    @Operation(summary = "获得周期报表存储")
+    @Parameter(name = "id", description = "编号", required = true, example = "1")
+    @PreAuthorize("@ss.hasPermission('usermerchant:cycle-report:query')")
+    public CommonResult<CycleReportGetRespVO> getCycleReport(@RequestParam("id") Long id) {
+        CycleReportGetRespVO cycleReport = cycleReportService.getCycleReport(id);
+        return success(BeanUtils.toBean(cycleReport, CycleReportGetRespVO.class));
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "实时获取周期报表图表数据（不存储）")
+    @PreAuthorize("@ss.hasPermission('usermerchant:cycle-report:query')")
+    public CommonResult<CycleReportChartRespVO> getChartData(@Valid CycleReportChartReqVO reqVO) {
+        CycleReportChartRespVO respVO = cycleReportService.getChartData(reqVO);
         return success(respVO);
     }
 

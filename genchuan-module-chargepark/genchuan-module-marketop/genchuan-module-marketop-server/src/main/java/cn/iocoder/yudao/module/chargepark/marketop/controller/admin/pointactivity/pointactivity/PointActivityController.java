@@ -13,7 +13,9 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivit
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityUpdateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityImportExcelVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityChartRespVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivitySimpleRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointActivityDO;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.PointActivityStatusEnum;
 import cn.iocoder.yudao.module.chargepark.marketop.service.pointactivity.pointactivity.PointActivityService;
 import cn.iocoder.yudao.module.stationresource.api.station.StationInfoApi;
 import cn.iocoder.yudao.module.stationresource.api.station.dto.StationInfoRespDTO;
@@ -167,6 +169,22 @@ public class PointActivityController {
             }
         }
         ExcelUtils.write(response, "积分活动.xlsx", "数据", PointActivityExportExcelVO.class, list);
+    }
+
+    @GetMapping("/simple-list")
+    @Operation(summary = "获取积分活动精简列表")
+    public CommonResult<List<PointActivitySimpleRespVO>> getSimpleList() {
+        List<PointActivityDO> list = pointActivityService.getSimpleList();
+        list = list.stream()
+                .filter(item -> !PointActivityStatusEnum.ENDED.getValue().equals(item.getStatus()))
+                .toList();
+        return CommonResult.success(BeanUtils.toBean(list, PointActivitySimpleRespVO.class));
+    }
+
+    @GetMapping("/station-simple-list")
+    @Operation(summary = "获取场站精简列表")
+    public CommonResult<List<Map<String, Object>>> getStationSimpleList() {
+        return CommonResult.success(pointActivityService.getStationSimpleList());
     }
 
     @GetMapping("/chart")

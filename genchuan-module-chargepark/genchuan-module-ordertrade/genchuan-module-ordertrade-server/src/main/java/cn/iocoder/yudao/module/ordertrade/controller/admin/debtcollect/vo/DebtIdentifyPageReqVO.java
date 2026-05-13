@@ -28,8 +28,8 @@ public class DebtIdentifyPageReqVO extends PageParam {
     @ExcelProperty(value = "状态", converter = EnumExcelConverter.class)
     @EnumFormat(DebtIdentifyStatusEnum.class)
     private String status;
-    @Schema(description = "场站ID")
-    private Long stationId;
+    @Schema(description = "场站名称，模糊查询")
+    private String stationName;
     @Schema(description = "识别时间-开始，格式 yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime identifyTimeStart;
