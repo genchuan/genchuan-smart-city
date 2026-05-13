@@ -4,6 +4,8 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.tenant.core.context.TenantContextHolder;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.passreport.cyclereport.vo.CycleReportChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.passreport.cyclereport.vo.CycleReportChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.passreport.cyclereport.vo.CycleReportCreateReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.passreport.cyclereport.vo.CycleReportCreateRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.passreport.cyclereport.vo.CycleReportPageReqVO;
@@ -21,12 +23,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static cn.iocoder.yudao.module.vehiclepass.constants.common.CalculationConstants.*;
 
 @Slf4j
 @Service
 public class CycleReportServiceImpl implements CycleReportService {
+
+    private static final int PARALLEL_THRESHOLD = 100;
 
     @Resource
     private CycleReportMapper cycleReportMapper;
@@ -43,8 +55,8 @@ public class CycleReportServiceImpl implements CycleReportService {
         // 2. 创建初始记录
         CycleReportDO report = new CycleReportDO();
         report.setReportCycle(req.getReportCycle());
-        LocalDateTime startDate = req.getStatStartTimeDate();
-        LocalDateTime endDate = req.getStatEndTimeDate();
+        LocalDateTime startDate = req.getStatStartTime();
+        LocalDateTime endDate = req.getStatEndTime();
         report.setStatStartTime(startDate);
         report.setStatEndTime(endDate);
         report.setStationId(req.getStationId());
@@ -76,7 +88,7 @@ public class CycleReportServiceImpl implements CycleReportService {
 
         // 4. 计算耗时
         long cost = System.currentTimeMillis() - startMs;
-        report.setCreateCost((int) (cost / 1000));
+        report.setCreateCost((int) (cost / MILLIS_TO_SECONDS));
 
         // 5. 更新报表（只更新统计字段，避免覆盖自动填充字段）
         LambdaUpdateWrapper<CycleReportDO> updateWrapper = Wrappers.<CycleReportDO>lambdaUpdate()
@@ -117,5 +129,136 @@ public class CycleReportServiceImpl implements CycleReportService {
         Page<CycleReportDO> page = new Page<>(1, pageReqVO.getPageSize());
         IPage<CycleReportDO> result = cycleReportMapper.selectPageJoin(page, pageReqVO);
         return BeanUtils.toBean(result.getRecords(), CycleReportRespVO.class);
+    }
+
+    @Override
+    public CycleReportRespVO getCycleReport(Long id) {
+        CycleReportDO report = cycleReportMapper.selectByIdWithStation(id);
+        if (report == null) {
+            return null;
+        }
+        return BeanUtils.toBean(report, CycleReportRespVO.class);
+    }
+
+    @Override
+    public CycleReportChartRespVO getChart(CycleReportChartReqVO reqVO) {
+        Long tenantId = TenantContextHolder.getTenantId();
+        LocalDate statTime = reqVO.getStatTime();
+        LocalDateTime statDateTime = statTime.atStartOfDay();
+        String reportCycle = reqVO.getReportCycle();
+
+        CycleReportChartRespVO resp = new CycleReportChartRespVO();
+
+        // CardData: 从 vp_cycle_report 表汇总
+        CycleReportChartRespVO.CardData cardData = new CycleReportChartRespVO.CardData();
+        List<CycleReportDO> reports = cycleReportMapper.selectChartByConditions(reqVO.getStationId(), statDateTime, tenantId, reportCycle);
+
+        // 使用并行流进行独立的聚合计算
+        int enterCount = reports.parallelStream()
+            .mapToInt(report -> report.getEnterCount() != null ? report.getEnterCount() : 0)
+            .sum();
+        int leaveCount = reports.parallelStream()
+            .mapToInt(report -> report.getLeaveCount() != null ? report.getLeaveCount() : 0)
+            .sum();
+        int parkingCount = reports.parallelStream()
+            .mapToInt(report -> report.getParkingCount() != null ? report.getParkingCount() : 0)
+            .sum();
+        BigDecimal identifyRate = reports.parallelStream()
+            .map(CycleReportDO::getIdentifySuccessRate)
+            .filter(Objects::nonNull)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal checkRate = reports.parallelStream()
+            .map(CycleReportDO::getCheckSuccessRate)
+            .filter(Objects::nonNull)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal abnormalRate = reports.parallelStream()
+            .map(CycleReportDO::getAbnormalHandleRate)
+            .filter(Objects::nonNull)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal etcRate = reports.parallelStream()
+            .map(CycleReportDO::getEtcPassSuccessRate)
+            .filter(Objects::nonNull)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (!reports.isEmpty()) {
+            int size = reports.size();
+            identifyRate = identifyRate.divide(BigDecimal.valueOf(size), DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+            checkRate = checkRate.divide(BigDecimal.valueOf(size), DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+            abnormalRate = abnormalRate.divide(BigDecimal.valueOf(size), DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+            etcRate = etcRate.divide(BigDecimal.valueOf(size), DEFAULT_SCALE, DEFAULT_ROUNDING_MODE);
+        }
+        cardData.setEnterCount(enterCount);
+        cardData.setLeaveCount(leaveCount);
+        cardData.setParkingCount(parkingCount);
+        cardData.setIdentifySuccessRate(identifyRate);
+        cardData.setCheckSuccessRate(checkRate);
+        cardData.setAbnormalHandleRate(abnormalRate);
+        cardData.setEtcPassSuccessRate(etcRate);
+        resp.setCardData(cardData);
+
+        // MapData
+        List<Map<String, Object>> mapDataList = cycleReportMapper.selectMapData(reqVO.getStationId(), statDateTime, tenantId, reportCycle);
+        List<CycleReportChartRespVO.MapData> mapData = (mapDataList.size() > PARALLEL_THRESHOLD
+                ? mapDataList.parallelStream()
+                : mapDataList.stream())
+            .map(row -> {
+                CycleReportChartRespVO.MapData md = new CycleReportChartRespVO.MapData();
+                md.setStationName((String) row.get("stationName"));
+                md.setParkingCount(row.get("parkingCount") != null ? ((Number) row.get("parkingCount")).intValue() : 0);
+                md.setPassCount(row.get("passCount") != null ? ((Number) row.get("passCount")).intValue() : 0);
+                md.setSpaceUseRate(row.get("spaceUseRate") != null ? new BigDecimal(row.get("spaceUseRate").toString()) : BigDecimal.ZERO);
+                return md;
+            })
+            .collect(Collectors.toList());
+        resp.setMapData(mapData);
+
+        // BarData
+        List<Map<String, Object>> barDataList = cycleReportMapper.selectBarData(reqVO.getStationId(), statDateTime, tenantId, reportCycle);
+        List<CycleReportChartRespVO.BarData> barData = (barDataList.size() > PARALLEL_THRESHOLD
+                ? barDataList.parallelStream()
+                : barDataList.stream())
+            .map(row -> {
+                CycleReportChartRespVO.BarData bd = new CycleReportChartRespVO.BarData();
+                bd.setStationName((String) row.get("stationName"));
+                bd.setPassCount(row.get("passCount") != null ? ((Number) row.get("passCount")).intValue() : 0);
+                bd.setAbnormalCount(row.get("abnormalCount") != null ? ((Number) row.get("abnormalCount")).intValue() : 0);
+                bd.setEtcPassCount(row.get("etcPassCount") != null ? ((Number) row.get("etcPassCount")).intValue() : 0);
+                return bd;
+            })
+            .collect(Collectors.toList());
+        resp.setBarData(barData);
+
+        // LineData
+        List<Map<String, Object>> lineDataList = cycleReportMapper.selectLineData(reqVO.getStationId(), statDateTime, tenantId, reportCycle);
+        List<CycleReportChartRespVO.LineData> lineData = (lineDataList.size() > PARALLEL_THRESHOLD
+                ? lineDataList.parallelStream()
+                : lineDataList.stream())
+            .map(row -> {
+                CycleReportChartRespVO.LineData ld = new CycleReportChartRespVO.LineData();
+                Object statTimeObj = row.get("statTime");
+                ld.setStatTime(statTimeObj != null ? statTimeObj.toString() : "");
+                ld.setPassCount(row.get("passCount") != null ? ((Number) row.get("passCount")).intValue() : 0);
+                ld.setIdentifySuccessRate(row.get("identifySuccessRate") != null ? new BigDecimal(row.get("identifySuccessRate").toString()) : BigDecimal.ZERO);
+                ld.setAbnormalHandleRate(row.get("abnormalHandleRate") != null ? new BigDecimal(row.get("abnormalHandleRate").toString()) : BigDecimal.ZERO);
+                ld.setCheckSuccessRate(row.get("checkSuccessRate") != null ? new BigDecimal(row.get("checkSuccessRate").toString()) : BigDecimal.ZERO);
+                return ld;
+            })
+            .collect(Collectors.toList());
+        resp.setLineData(lineData);
+
+        // PieData
+        List<Map<String, Object>> pieDataList = cycleReportMapper.selectPieData(reqVO.getStationId(), statDateTime, tenantId, reportCycle);
+        List<CycleReportChartRespVO.PieData> pieData = (pieDataList.size() > PARALLEL_THRESHOLD
+                ? pieDataList.parallelStream()
+                : pieDataList.stream())
+            .map(row -> {
+                CycleReportChartRespVO.PieData pd = new CycleReportChartRespVO.PieData();
+                pd.setType((String) row.get("type"));
+                pd.setCount(row.get("count") != null ? ((Number) row.get("count")).intValue() : 0);
+                return pd;
+            })
+            .collect(Collectors.toList());
+        resp.setPieData(pieData);
+
+        return resp;
     }
 }

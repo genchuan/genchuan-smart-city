@@ -5,6 +5,8 @@ import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.passreport.cyclereport.vo.CycleReportChartReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.passreport.cyclereport.vo.CycleReportChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.passreport.cyclereport.vo.CycleReportCreateReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.passreport.cyclereport.vo.CycleReportCreateRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.passreport.cyclereport.vo.CycleReportPageReqVO;
@@ -48,6 +50,13 @@ public class CycleReportController {
         return success(cycleReportService.getCycleReportPage(pageReqVO));
     }
 
+    @GetMapping("/get")
+    @Operation(summary = "获取周期报表详情")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:cycle-report:query')")
+    public CommonResult<CycleReportRespVO> getCycleReport(@RequestParam("id") Long id) {
+        return success(cycleReportService.getCycleReport(id));
+    }
+
     @GetMapping("/export")
     @Operation(summary = "导出周期报表 Excel")
     @PreAuthorize("@ss.hasPermission('vehiclepass:cycle-report:export')")
@@ -56,6 +65,13 @@ public class CycleReportController {
                                       HttpServletResponse response) throws IOException {
         List<CycleReportRespVO> list = cycleReportService.getCycleReportList(pageReqVO);
         ExcelUtils.write(response, "周期报表.xls", "数据", CycleReportRespVO.class, list);
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "车辆通行周期报表")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:cycle-report:query')")
+    public CommonResult<CycleReportChartRespVO> getChart(@Valid CycleReportChartReqVO reqVO) {
+        return success(cycleReportService.getChart(reqVO));
     }
 
 }

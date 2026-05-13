@@ -23,9 +23,13 @@ public class CycleReportPageReqVO extends PageParam {
     @Schema(description = "报表生成状态")
     private String generateStatus;
 
-    @Schema(description = "生成时间范围")
+    @Schema(description = "生成时间-开始，格式 yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDateTime[] createTime;
+    private LocalDateTime createTimeStart;
+
+    @Schema(description = "生成时间-结束，格式 yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime createTimeEnd;
 
     @Schema(description = "操作人，支持模糊查询")
     private String operator;

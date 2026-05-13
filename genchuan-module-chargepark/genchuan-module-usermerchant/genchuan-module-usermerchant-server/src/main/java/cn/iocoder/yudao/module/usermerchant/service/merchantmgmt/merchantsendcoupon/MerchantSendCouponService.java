@@ -65,4 +65,26 @@ public interface MerchantSendCouponService {
      * @return 统计信息
      */
     MerchantSendCouponChartRespVO getMerchantSendCouponChart(@Valid MerchantSendCouponChartReqVO chartReqVO);
+
+    /**
+     * 发券（创建发券记录）
+     *
+     * @param sendReqVO 发券请求，包含商户ID、优惠券ID、发放数量、执行时间、备注等
+     */
+    void sendCoupon(MerchantSendCouponSendReqVO sendReqVO);
+
+    /**
+     * 执行发券（批量）
+     *
+     * @param ids 发券记录ID列表
+     */
+    void executeCoupon(List<Long> ids);
+
+    /**
+     * 取消发券（批量）
+     *
+     * @param ids 发券记录ID列表
+     */
+    void cancelCoupon(List<Long> ids);
+
 }

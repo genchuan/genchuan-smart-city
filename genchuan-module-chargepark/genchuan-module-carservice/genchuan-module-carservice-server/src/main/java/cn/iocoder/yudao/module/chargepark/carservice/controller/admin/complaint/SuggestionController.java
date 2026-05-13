@@ -87,6 +87,14 @@ public class SuggestionController {
         List<SuggestionDO> list = suggestionService.getSuggestionPage(pageReqVO).getList();
         List<SuggestionRespVO> respList = BeanUtils.toBean(list, SuggestionRespVO.class);
         injectUserNames(respList);
+        // 服务器 JVM 时区可能不是 Asia/Shanghai，导出时把 LocalDateTime 转为北京时间
+        respList.forEach(vo -> {
+            vo.setSubmitTime(toBeijing(vo.getSubmitTime()));
+            vo.setHandleTime(toBeijing(vo.getHandleTime()));
+            vo.setFeedbackTime(toBeijing(vo.getFeedbackTime()));
+            vo.setCreateTime(toBeijing(vo.getCreateTime()));
+            vo.setUpdateTime(toBeijing(vo.getUpdateTime()));
+        });
         if ("pdf".equalsIgnoreCase(format)) {
             PdfUtils.write(response, "意见建议.pdf", "意见建议台账",
                     PdfUtils.headers(
@@ -163,6 +171,14 @@ public class SuggestionController {
         UserNameInjector.inject(list, adminUserApi,
                 UserNameInjector.field(SuggestionRespVO::getUserId, SuggestionRespVO::setUserName),
                 UserNameInjector.field(SuggestionRespVO::getHandleUserId, SuggestionRespVO::setHandleUserName));
+    }
+
+    /** 把 JVM 本地时区的 LocalDateTime 转换为 Asia/Shanghai(北京)时间，导出场景使用。 */
+    private static java.time.LocalDateTime toBeijing(java.time.LocalDateTime ldt) {
+        if (ldt == null) return null;
+        return ldt.atZone(java.time.ZoneId.systemDefault())
+                .withZoneSameInstant(java.time.ZoneId.of("Asia/Shanghai"))
+                .toLocalDateTime();
     }
 
 }

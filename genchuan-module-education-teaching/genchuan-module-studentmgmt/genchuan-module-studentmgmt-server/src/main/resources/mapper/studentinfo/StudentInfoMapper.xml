@@ -83,7 +83,7 @@
             WHERE deleted = 0
             AND update_time &gt;= #{startTime}
             AND update_time <![CDATA[ <= ]]> #{endTime}
-            AND status='异动'
+            AND status=#{status}
             GROUP BY DATE_FORMAT(update_time, '%Y-%m-%d')
             ) all_dates
         GROUP BY all_dates.date
@@ -113,6 +113,46 @@
         SELECT COUNT(*) FROM student_info WHERE deleted = 0
         <if test="className != null and className != '' ">
             AND class_name = #{className}
+        </if>
+    </select>
+    <select id="selectClassStudentCount"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.ChartCountVO">
+        SELECT
+            class_name AS name,
+            COUNT(*) AS value
+        FROM student_info
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND create_time between #{startTime} AND #{endTime}
+        </if>
+        GROUP BY class_name
+    </select>
+    <select id="selectMajorAssignRate"
+            resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+            major AS name,
+        ROUND(COUNT(1) / #{totalStudentCount},2) AS value
+        FROM student_info
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND create_time between #{startTime} AND #{endTime}
+        </if>
+        GROUP BY major
+    </select>
+    <select id="selectTotalStudentCountByTime" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM student_info WHERE deleted = 0
+        <if test="startTime != null">
+            AND create_time between #{startTime} AND #{endTime}
+        </if>
+    </select>
+    <select id="selectStudentInfoByYear"
+            resultType="cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO">
+        SELECT
+            *
+        FROM student_info
+        WHERE deleted = 0
+        <if test="year != null">
+            AND YEAR(create_time) = #{year}
         </if>
     </select>
 </mapper>

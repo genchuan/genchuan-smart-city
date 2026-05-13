@@ -1,22 +1,23 @@
 package cn.iocoder.yudao.module.studentmgmt.service.dormcheck;
 
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.AssessMgmtChartRespVO;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.dormcheck.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.behaviormgmt.BehaviorMgmtDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.dormcheck.DormCheckDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.behaviormgmt.BehaviorMgmtMapper;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.dormcheck.DormCheckMapper;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
-import cn.iocoder.yudao.module.studentmgmt.enums.AssessStatusEnum;
 import cn.iocoder.yudao.module.studentmgmt.enums.DormCheckAbnormalTypeEnum;
+import cn.iocoder.yudao.module.studentmgmt.enums.DormCheckCheckStatusEnum;
 import cn.iocoder.yudao.module.studentmgmt.enums.DormCheckStatusEnum;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import com.alibaba.fastjson.JSONObject;
+import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
-import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -48,12 +49,19 @@ public class DormCheckServiceImpl implements DormCheckService {
     @Resource
     StudentInfoMapper studentInfoMapper;
 
+    @Resource
+    private DictDataApi dictDataApi;
+
     @Override
     @LogRecord(type = DORM_CHECK_TYPE, subType = DORM_CHECK_CREATE_SUB_TYPE, bizNo = "{{#assessMgmt.id}}",
             success = DORM_CHECK_CREATE_SUB_TYPE_SUCCESS)
     public boolean createDormCheck(DormCheckCreateReqVO checkReqVO) {
         int total = 0;
-        Long[] studentIds = checkReqVO.getStudentId();
+        Long[] studentIds = checkReqVO.getStudentIds();
+        LocalDateTime checkTime = checkReqVO.getCheckTime();
+        if (checkTime == null) {
+            checkTime = LocalDateTime.now();
+        }
         // 查询这些学生的所有考勤记录
 //        List<DormCheckDO> dormCheckList = dormCheckMapper.selectList(
 //                new LambdaQueryChainWrapper<>(DormCheckDO.class)
@@ -71,13 +79,16 @@ public class DormCheckServiceImpl implements DormCheckService {
             if (leaveRecordList != null && leaveRecordList.contains(studentId)) {
                 // 有请假记录，请假学生自动标记为正常状态
                 dormCheck.setCheckStatus(DormCheckStatusEnum.DORM_CHECK_STATUS_0.getStatus());
+                dormCheck.setCheckTime(checkTime);
+                dormCheck.setStatus(DormCheckStatusEnum.DORM_CHECK_STATUS_0.getStatus());
 
             } else {
                 // 没有请假记录
-                dormCheck.setCheckTime(checkReqVO.getCheckTime());
+                dormCheck.setStatus(DormCheckStatusEnum.DORM_CHECK_STATUS_1.getStatus());
+                dormCheck.setCheckTime(checkTime);
                 // TODO 根据打卡时间自动判定考勤状态与异常类型
-//                dormCheck.setCheckStatus(checkReqVO.getCheckStatus());
-//                dormCheck.setAbnormalType(checkReqVO.getAbnormalType());
+                dormCheck.setCheckStatus(DormCheckCheckStatusEnum.DORM_CHECK_CHECK_STATUS_2.getStatus());
+                dormCheck.setAbnormalType(DormCheckAbnormalTypeEnum.DORM_CHECK_ABNORMAL_TYPE_2.getStatus());
                 // 自动计算本次考勤的整体在寝率
             }
             int insert = dormCheckMapper.insert(dormCheck);
@@ -134,7 +145,7 @@ public class DormCheckServiceImpl implements DormCheckService {
     }
 
     @Override
-    @LogRecord(type = DORM_CHECK_TYPE, subType = DORM_CHECK_RECHECK_SUB_TYPE, bizNo = "{{#assessMgmt.id}}",
+    @LogRecord(type = DORM_CHECK_TYPE, subType = DORM_CHECK_RECHECK_SUB_TYPE, bizNo = "{{#id}}",
             success = DORM_CHECK_RECHECK_SUB_TYPE_SUCCESS)
     public Boolean recheck(DormCheckRecheckReqVO reqVO) {
         int total = 0;
@@ -152,22 +163,22 @@ public class DormCheckServiceImpl implements DormCheckService {
             String repairUser = reqVO.getRepairUser();
             if (StringUtils.isNotBlank(repairUser)) {
                 dormCheck.setRepairUser(repairUser);
-            }
-            else{
+            } else {
                 // 获取当前登录用户
                 dormCheck.setRepairUser(SecurityFrameworkUtils.getLoginUserNickname());
             }
             LocalDateTime repairTime = reqVO.getRepairTime();
             if (repairTime != null) {
                 dormCheck.setRepairTime(repairTime);
-            }
-            else {
+            } else {
                 dormCheck.setRepairTime(LocalDateTime.now());
             }
-            dormCheck.setStatus(DormCheckStatusEnum.DORM_CHECK_STATUS_1.getStatus());
+            dormCheck.setStatus(DormCheckStatusEnum.DORM_CHECK_STATUS_0.getStatus());
             // 更新
             int i = dormCheckMapper.updateById(dormCheck);
             total += i;
+            // 记录操作日志上下文
+            LogRecordContext.putVariable("id", id);
         }
         if (total > 0) {
             return true;
@@ -176,24 +187,31 @@ public class DormCheckServiceImpl implements DormCheckService {
     }
 
     @Override
-    @LogRecord(type = DORM_CHECK_TYPE, subType = DORM_CHECK_PUSH_SUB_TYPE, bizNo = "{{#assessMgmt.id}}",
+    @LogRecord(type = DORM_CHECK_TYPE, subType = DORM_CHECK_PUSH_SUB_TYPE, bizNo = "{{#id}}",
             success = DORM_CHECK_PUSH_SUB_TYPE_SUCCESS)
     public Boolean push(DormCheckPushReqVO reqVO) {
         int total = 0;
+        LocalDateTime pushTime = reqVO.getPushTime();
+        if (pushTime == null) {
+            pushTime = LocalDateTime.now();
+        }
         for (Long id : reqVO.getIds()) {
             // 校验存在
             DormCheckDO dormCheck = validateDormCheckExists(id);
-            String status = dormCheck.getStatus();
+//            String status = dormCheck.getStatus();
             // 自动校验记录是否为异常状态，正常记录不允许推送
-            if (status.equals(DormCheckStatusEnum.DORM_CHECK_STATUS_0.getStatus())) {
-                // 状态为正常，则无需补卡
-                continue;
-            }
-            dormCheck.setPushTime(reqVO.getPushTime());
+//            if (status.equals(DormCheckStatusEnum.DORM_CHECK_STATUS_0.getStatus())) {
+//                // 状态为正常，则无需推送
+//                throw exception(id + "，状态为正常，无需推送");
+////                continue;
+//            }
+            dormCheck.setPushTime(pushTime);
             // TODO 同步考勤异常信息与预警提醒；
 
             int i = dormCheckMapper.updateById(dormCheck);
             total += i;
+            // 记录操作日志上下文
+            LogRecordContext.putVariable("id", id);
         }
         if (total > 0) {
             return true;
@@ -207,20 +225,76 @@ public class DormCheckServiceImpl implements DormCheckService {
     public DormCheckChartRespVO chart(DormCheckChartReqVO reqVO) {
         DormCheckChartRespVO vo = new DormCheckChartRespVO();
 
-        LocalDate checkTime  = reqVO.getCheckTime();
+//        LocalDateTime checkTime  = reqVO.getCheckTime();
+        LocalDate checkTime = reqVO.getCheckTime();
+//        Date checkTime = reqVO.getCheckTime();
 
         if (checkTime == null) {
+//            checkTime = LocalDateTime.now();
             checkTime = LocalDate.now();
+//            checkTime = new Date();
         }
+        // 转换为 LocalDate（只保留年月日）
+//        LocalDate localDate = checkTime.toLocalDate();
+//        LocalDate localDate = LocalDate.parse(checkTime);
 
         // 1. 卡片数据
         //totalCount (integer): 本期考评总记录数。
         vo = dormCheckMapper.selectTotalCheckCount(checkTime, DormCheckStatusEnum.DORM_CHECK_STATUS_0.getStatus());
+        if (vo == null) {
+            vo = new DormCheckChartRespVO();
+        }
+        if (vo.getNormalCount() == null) {
+            vo.setNormalCount(0);
+        }
+        if (vo.getAbnormalCount() == null) {
+            vo.setAbnormalCount(0);
+        }
+        if (vo.getWarningCount() == null) {
+            vo.setWarningCount(0);
+        }
+        if (vo.getInRate() == null) {
+            vo.setInRate(BigDecimal.ONE);
+        }
         // TODO 预警人数
         // abnormalStats 异常类型统计列表
+        List<DictDataRespDTO> dictDataList = dictDataApi.getDictDataList(DormCheckAbnormalTypeEnum.DICT_TYPE).getData();
         List<JSONObject> abnormalStatsList = dormCheckMapper.getAbnormalStatsList(checkTime);
+        List<JSONObject> abnormalStats = new ArrayList<>();
+        if (abnormalStatsList != null & abnormalStatsList.size() > 0) {
 
-        vo.setAbnormalStats(abnormalStatsList);
+            // 获取字典数据
+            abnormalStatsList.forEach(item -> {
+                String dictDataLabel = "";
+                String type = item.getString("abnormal_type");
+                if (dictDataList != null) {
+                    for (DictDataRespDTO dictData : dictDataList) {
+                        if (dictData.getValue().equals(type)) {
+                            dictDataLabel = dictData.getLabel();
+                            break;
+                        }
+                    }
+                }
+                item.put("name", dictDataLabel);
+                item.put("count", item.getInteger("count"));
+                abnormalStats.add(item);
+            });
+        }
+        else {
+            // 获取字典数据
+            String dictDataLabel = "";
+            if (dictDataList != null) {
+                for (DictDataRespDTO dictData : dictDataList) {
+                    JSONObject item = new JSONObject();
+                    dictDataLabel = dictData.getLabel();
+                    item.put("name", dictDataLabel);
+                    item.put("count", 0);
+                    abnormalStats.add(item);
+                }
+            }
+        }
+
+        vo.setAbnormalStats(abnormalStats);
 
         return vo;
     }

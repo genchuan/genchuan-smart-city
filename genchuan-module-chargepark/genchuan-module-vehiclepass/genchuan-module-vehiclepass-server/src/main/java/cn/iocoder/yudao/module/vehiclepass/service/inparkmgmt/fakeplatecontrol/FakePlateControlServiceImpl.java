@@ -18,8 +18,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
@@ -27,7 +29,9 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
-import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.PLATE_CONTROL_NOT_EXISTS;
+import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.vehiclepass.constants.inparkmgmt.FakePlateControlConstants.*;
+
 
 /**
  * 套牌管控 Service 实现类
@@ -99,9 +103,13 @@ public class FakePlateControlServiceImpl implements FakePlateControlService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void batchHandle(FakePlateControlBatchHandleReqVO reqVO) {
         // 获取当前登录用户ID（这里暂时使用固定值，实际应从 SecurityUtils 获取）
         Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
+        if (currentUserId == null) {
+            throw exception(USER_NOT_LOGIN);
+        }
 
         for (Long id : reqVO.getIds()) {
             // 校验记录存在
@@ -117,16 +125,16 @@ public class FakePlateControlServiceImpl implements FakePlateControlService {
             updateObj.setHandleTime(LocalDateTime.now());
 
             String handleType = reqVO.getHandleType();
-            if ("核查".equals(handleType)) {
+            if (HANDLE_TYPE_CHECK.equals(handleType)) {
                 // 核查：更新处置状态为处理中，处置进度为"已核查"
-                updateObj.setStatus("处理中");
-                updateObj.setHandleProgress("已核查");
-                updateObj.setHandleType("核查");
-            } else if ("忽略".equals(handleType)) {
+                updateObj.setStatus(STATUS_PROCESSING);
+                updateObj.setHandleProgress(HANDLE_PROGRESS_CHECKED);
+                updateObj.setHandleType(HANDLE_TYPE_CHECK);
+            } else if (HANDLE_TYPE_IGNORE.equals(handleType)) {
                 // 忽略：更新处置状态为已关闭，忽略理由为"批量忽略"
-                updateObj.setStatus("已关闭");
-                updateObj.setIgnoreReason("批量忽略");
-                updateObj.setHandleType("忽略");
+                updateObj.setStatus(STATUS_CLOSED);
+                updateObj.setIgnoreReason(IGNORE_REASON_BATCH);
+                updateObj.setHandleType(HANDLE_TYPE_IGNORE);
             }
 
             plateControlMapper.updateById(updateObj);
@@ -141,14 +149,19 @@ public class FakePlateControlServiceImpl implements FakePlateControlService {
             throw exception(PLATE_CONTROL_NOT_EXISTS);
         }
 
+        Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
+        if (currentUserId == null) {
+            throw exception(USER_NOT_LOGIN);
+        }
+
         // 更新记录
         FakePlateControlDO updateObj = new FakePlateControlDO();
         updateObj.setId(reqVO.getId());
-        updateObj.setHandleUserId(SecurityFrameworkUtils.getLoginUserId());
+        updateObj.setHandleUserId(currentUserId);
         updateObj.setHandleTime(LocalDateTime.now());
-        updateObj.setStatus("处理中");
-        updateObj.setHandleProgress("已核查");
-        updateObj.setHandleType("核查");
+        updateObj.setStatus(STATUS_PROCESSING);
+        updateObj.setHandleProgress(HANDLE_PROGRESS_CHECKED);
+        updateObj.setHandleType(HANDLE_TYPE_CHECK);
         plateControlMapper.updateById(updateObj);
     }
 
@@ -160,14 +173,19 @@ public class FakePlateControlServiceImpl implements FakePlateControlService {
             throw exception(PLATE_CONTROL_NOT_EXISTS);
         }
 
+        Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
+        if (currentUserId == null) {
+            throw exception(USER_NOT_LOGIN);
+        }
+
         // 更新记录
         FakePlateControlDO updateObj = new FakePlateControlDO();
         updateObj.setId(reqVO.getId());
-        updateObj.setHandleUserId(SecurityFrameworkUtils.getLoginUserId());
+        updateObj.setHandleUserId(currentUserId);
         updateObj.setHandleTime(LocalDateTime.now());
-        updateObj.setStatus("已关闭");
-        updateObj.setHandleType("忽略");
-        updateObj.setHandleProgress("已忽略");
+        updateObj.setStatus(STATUS_CLOSED);
+        updateObj.setHandleType(HANDLE_TYPE_IGNORE);
+        updateObj.setHandleProgress(HANDLE_PROGRESS_IGNORED);
         updateObj.setIgnoreReason(reqVO.getIgnoreReason());
         plateControlMapper.updateById(updateObj);
     }
@@ -196,18 +214,20 @@ public class FakePlateControlServiceImpl implements FakePlateControlService {
                 reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
         List<FakePlateControlChartRespVO.FakeIdentifyTrend> fakeIdentifyTrend = new ArrayList<>();
         if (trendList != null) {
-            for (Map<String, Object> map : trendList) {
-            FakePlateControlChartRespVO.FakeIdentifyTrend item = new FakePlateControlChartRespVO.FakeIdentifyTrend();
-            Object dateObj = map.get("date");
-            if (dateObj != null) {
-                item.setDate(dateObj.toString());
-            }
-            Object countObj = map.get("count");
-            if (countObj != null) {
-                item.setCount(((Number) countObj).longValue());
-            }
-            fakeIdentifyTrend.add(item);
-        }
+            fakeIdentifyTrend = trendList.stream()
+                .map(map -> {
+                    FakePlateControlChartRespVO.FakeIdentifyTrend item = new FakePlateControlChartRespVO.FakeIdentifyTrend();
+                    Object dateObj = map.get("date");
+                    if (dateObj != null) {
+                        item.setDate(dateObj.toString());
+                    }
+                    Object countObj = map.get("count");
+                    if (countObj != null) {
+                        item.setCount(((Number) countObj).longValue());
+                    }
+                    return item;
+                })
+                .collect(Collectors.toList());
         }
         respVO.setFakeIdentifyTrend(fakeIdentifyTrend);
 
@@ -216,15 +236,17 @@ public class FakePlateControlServiceImpl implements FakePlateControlService {
                 reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
         List<FakePlateControlChartRespVO.StationFakeCount> stationFakeCount = new ArrayList<>();
         if (stationList != null) {
-            for (Map<String, Object> map : stationList) {
-            FakePlateControlChartRespVO.StationFakeCount item = new FakePlateControlChartRespVO.StationFakeCount();
-            item.setStationName((String) map.get("stationName"));
-            Object countObj = map.get("count");
-            if (countObj != null) {
-                item.setCount(((Number) countObj).longValue());
-            }
-            stationFakeCount.add(item);
-        }
+            stationFakeCount = stationList.stream()
+                .map(map -> {
+                    FakePlateControlChartRespVO.StationFakeCount item = new FakePlateControlChartRespVO.StationFakeCount();
+                    item.setStationName((String) map.get("stationName"));
+                    Object countObj = map.get("count");
+                    if (countObj != null) {
+                        item.setCount(((Number) countObj).longValue());
+                    }
+                    return item;
+                })
+                .collect(Collectors.toList());
         }
         respVO.setStationFakeCount(stationFakeCount);
 

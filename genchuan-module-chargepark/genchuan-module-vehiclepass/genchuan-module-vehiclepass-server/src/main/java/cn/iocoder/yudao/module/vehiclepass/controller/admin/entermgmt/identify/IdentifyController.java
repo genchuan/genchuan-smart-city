@@ -95,7 +95,7 @@ public class IdentifyController {
         return success(pageResult);
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出车牌识别 Excel")
     @PreAuthorize("@ss.hasPermission('plate:identify:export')")
     @ApiAccessLog(operateType = EXPORT)
@@ -111,6 +111,13 @@ public class IdentifyController {
     @PreAuthorize("@ss.hasPermission('vehiclepass:plate-identify:correct')")
     public CommonResult<Boolean> correctIdentify(@Validated @RequestBody IdentifyCorrectReqVO reqVO) {
         return CommonResult.success(identifyService.correctIdentify(reqVO));
+    }
+
+    @PutMapping("/confirm")
+    @Operation(summary = "确认车牌识别记录")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:plate-identify:confirm')")
+    public CommonResult<Boolean> confirmIdentify(@Valid @RequestBody PlateIdentifyConfirmReqVO reqVO) {
+        return CommonResult.success(identifyService.confirmIdentify(reqVO));
     }
 
 

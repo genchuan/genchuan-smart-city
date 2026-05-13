@@ -28,6 +28,7 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.HANDLE_NOT_EXISTS;
+import static cn.iocoder.yudao.module.vehiclepass.constants.inspectmgmt.ResultHandleConstants.*;
 
 /**
  * 结果处置 Service 实现类
@@ -102,12 +103,13 @@ public class ResultHandleServiceImpl implements ResultHandleService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void batchHandle(ResultHandleBatchHandleReqVO reqVO) {
         for (Long id : reqVO.getIds()) {
             ResultHandleDO updateObj = new ResultHandleDO();
             updateObj.setId(id);
             updateObj.setHandleType(reqVO.getHandleType());
-            updateObj.setStatus("待处置");
+            updateObj.setStatus(STATUS_PENDING_HANDLE);
             handleMapper.updateById(updateObj);
         }
     }
@@ -119,7 +121,7 @@ public class ResultHandleServiceImpl implements ResultHandleService {
         // 更新为已通过
         ResultHandleDO updateObj = new ResultHandleDO();
         updateObj.setId(id);
-        updateObj.setStatus("已完成");
+        updateObj.setStatus(STATUS_COMPLETED);
         handleMapper.updateById(updateObj);
     }
 
@@ -130,7 +132,7 @@ public class ResultHandleServiceImpl implements ResultHandleService {
         // 更新为已驳回
         ResultHandleDO updateObj = new ResultHandleDO();
         updateObj.setId(reqVO.getId());
-        updateObj.setStatus("已驳回");
+        updateObj.setStatus(STATUS_REJECTED);
         updateObj.setRejectReason(reqVO.getRejectReason());
         handleMapper.updateById(updateObj);
     }

@@ -19,7 +19,10 @@ public interface DisputeMediateMapper extends BaseMapperX<DisputeMediateDO> {
         return selectPage(reqVO, new LambdaQueryWrapperX<DisputeMediateDO>()
                 .eqIfPresent(DisputeMediateDO::getUserId, reqVO.getUserId())
                 .eqIfPresent(DisputeMediateDO::getMerchantId, reqVO.getMerchantId())
+                .likeIfPresent(DisputeMediateDO::getContent, reqVO.getContent())
                 .eqIfPresent(DisputeMediateDO::getStatus, reqVO.getStatus())
+                .likeIfPresent(DisputeMediateDO::getProgress, reqVO.getProgress())
+                .likeIfPresent(DisputeMediateDO::getConfirmResult, reqVO.getConfirmResult())
                 .betweenIfPresent(DisputeMediateDO::getSubmitTime, reqVO.getSubmitTime())
                 .orderByDesc(DisputeMediateDO::getId));
     }

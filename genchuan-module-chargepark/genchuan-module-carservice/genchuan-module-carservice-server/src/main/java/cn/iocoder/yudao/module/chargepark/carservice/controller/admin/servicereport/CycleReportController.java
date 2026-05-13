@@ -92,11 +92,14 @@ public class CycleReportController {
     }
 
     @GetMapping("/get")
-    @Operation(summary = "查看 - 单条周期报表详情(含 detailData 明细,仅取前 50 条预览)")
+    @Operation(summary = "查看 - 单条周期报表详情(含 detailData 明细);可选 startTime/endTime 覆盖统计窗口供卡片下钻使用")
     @Parameter(name = "id", description = "报表 ID", required = true)
     @PreAuthorize("@ss.hasPermission('carservice:cycle-report:query')")
-    public CommonResult<CycleReportDetailRespVO> getCycleReport(@RequestParam("id") Long id) {
-        return success(cycleReportService.getCycleReport(id));
+    public CommonResult<CycleReportDetailRespVO> getCycleReport(
+            @RequestParam("id") Long id,
+            @RequestParam(value = "startTime", required = false) @org.springframework.format.annotation.DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") java.time.LocalDateTime startTime,
+            @RequestParam(value = "endTime", required = false) @org.springframework.format.annotation.DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") java.time.LocalDateTime endTime) {
+        return success(cycleReportService.getCycleReport(id, startTime, endTime));
     }
 
     @GetMapping("/compare-yoy")

@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 public class DisputeMediateRespVO {
 
     @Schema(description = "主键 ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("主键 ID")
     private Long id;
 
     @Schema(description = "用户 ID", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -56,12 +55,14 @@ public class DisputeMediateRespVO {
     @ExcelProperty("确认时间")
     private LocalDateTime confirmTime;
 
+    @Schema(description = "调解确认结果")
+    @ExcelProperty("确认结果")
+    private String confirmResult;
+
     @Schema(description = "备用字段 1")
-    @ExcelProperty("备用字段 1")
     private String reserve1;
 
     @Schema(description = "备用字段 2")
-    @ExcelProperty("备用字段 2")
     private String reserve2;
 
     @Schema(description = "创建者")

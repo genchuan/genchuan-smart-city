@@ -41,7 +41,7 @@ public interface SocialUserApi {
                                                           @RequestParam("socialType") Integer socialType);
 
     @GetMapping(PREFIX + "/get-by-code")
-    @Operation(summary = "获得社交用") // 在认证信息不正确的情况下，也会抛出 {@link ServiceException} 业务异常
+    @Operation(summary = "获得社交用户，基于 code") // 在认证信息不正确的情况下，也会抛出 {@link ServiceException} 业务异常
     @Parameters({
             @Parameter(name = "userType", description = "用户类型", example = "2", required = true),
             @Parameter(name = "socialType", description = "社交平台的类型", example = "1", required = true),

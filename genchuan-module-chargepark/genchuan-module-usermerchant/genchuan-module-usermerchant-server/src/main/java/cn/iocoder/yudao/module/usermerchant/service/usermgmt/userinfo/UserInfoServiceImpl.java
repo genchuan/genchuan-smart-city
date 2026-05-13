@@ -82,6 +82,41 @@ public class UserInfoServiceImpl implements UserInfoService {
         return pageResult;
     }
 
+//    @Override
+//    @Transactional(rollbackFor = Exception.class)
+//    public Boolean importUsers(List<UserInfoImportExcelVO> list, Boolean updateSupport) {
+//        if (CollectionUtils.isEmpty(list)) {
+//            return true;
+//        }
+//        for (UserInfoImportExcelVO vo : list) {
+//            if (vo.getId() != null) {
+//                UserInfoDO existDO = userInfoMapper.selectById(vo.getId());
+//                if (existDO != null) {
+//                    if (Boolean.TRUE.equals(updateSupport)) {
+//                        // 更新：复制属性，但保护创建信息
+//                        UserInfoDO updateDO = BeanUtils.toBean(vo, UserInfoDO.class);
+//                        updateDO.setCreator(null);
+//                        updateDO.setCreateTime(null);
+//                        userInfoMapper.updateById(updateDO);
+//                    } else {
+//                        // updateSupport = false，跳过该条记录
+//                        continue;
+//                    }
+//                } else {
+//                    // ID 不存在，按新增处理（忽略用户提供的 ID，由数据库自增）
+//                    UserInfoDO insertDO = BeanUtils.toBean(vo, UserInfoDO.class);
+//                    insertDO.setId(null);
+//                    userInfoMapper.insert(insertDO);
+//                }
+//            } else {
+//                // 无 ID，直接新增
+//                UserInfoDO insertDO = BeanUtils.toBean(vo, UserInfoDO.class);
+//                userInfoMapper.insert(insertDO);
+//            }
+//        }
+//        return true;
+//    }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean importUsers(List<UserInfoImportExcelVO> list, Boolean updateSupport) {
@@ -93,24 +128,27 @@ public class UserInfoServiceImpl implements UserInfoService {
                 UserInfoDO existDO = userInfoMapper.selectById(vo.getId());
                 if (existDO != null) {
                     if (Boolean.TRUE.equals(updateSupport)) {
-                        // 更新：复制属性，但保护创建信息
+                        // 更新：复制属性，但保护创建信息，且忽略 carCount
                         UserInfoDO updateDO = BeanUtils.toBean(vo, UserInfoDO.class);
                         updateDO.setCreator(null);
                         updateDO.setCreateTime(null);
+                        updateDO.setCarCount(null); // 关键：设为 null，MyBatis-Plus 不会更新该字段
                         userInfoMapper.updateById(updateDO);
                     } else {
                         // updateSupport = false，跳过该条记录
                         continue;
                     }
                 } else {
-                    // ID 不存在，按新增处理（忽略用户提供的 ID，由数据库自增）
+                    // ID 不存在，按新增处理
                     UserInfoDO insertDO = BeanUtils.toBean(vo, UserInfoDO.class);
                     insertDO.setId(null);
+                    insertDO.setCarCount(0); // 新增时绑定车辆数为 0
                     userInfoMapper.insert(insertDO);
                 }
             } else {
                 // 无 ID，直接新增
                 UserInfoDO insertDO = BeanUtils.toBean(vo, UserInfoDO.class);
+                insertDO.setCarCount(0);
                 userInfoMapper.insert(insertDO);
             }
         }
@@ -148,7 +186,6 @@ public class UserInfoServiceImpl implements UserInfoService {
             }
         }
         //折线图渲染
-        // 折线图数据
         List<UserInfoChartRespVO.UserGrowthTrendVO> growthTrend = userInfoMapper.selectUserGrowthTrend(
                 parsed.getStart(), parsed.getEnd(), parsed.getGranularity());
         chartRespVO.setUserGrowthTrend(growthTrend);

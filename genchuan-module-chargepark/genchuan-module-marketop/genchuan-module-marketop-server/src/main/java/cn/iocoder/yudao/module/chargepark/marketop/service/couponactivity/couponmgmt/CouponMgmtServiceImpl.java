@@ -12,6 +12,9 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivi
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.CouponMgmtDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.couponactivity.CouponMgmtMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.CouponMgmtStatusEnum;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -29,6 +32,7 @@ import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.chargepark.marketop.enums.LogRecordConstants.*;
 
 @Service
 @Validated
@@ -48,23 +52,34 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
     }
 
     @Override
+    @LogRecord(type = COUPON_MGMT_TYPE, subType = COUPON_MGMT_CREATE_SUB_TYPE, bizNo = "{{#couponMgmt.id}}",
+            success = COUPON_MGMT_CREATE_SUCCESS)
     public Long create(CouponMgmtCreateReqVO reqVO) {
         // 校验名称唯一
         validateNameUnique(null, reqVO.getName());
         CouponMgmtDO couponMgmt = BeanUtils.toBean(reqVO, CouponMgmtDO.class);
-        couponMgmt.setStatus("0");
+        couponMgmt.setStatus(CouponMgmtStatusEnum.NOT_RECEIVED.getValue());
         couponMgmtMapper.insert(couponMgmt);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("couponMgmt", couponMgmt);
         return couponMgmt.getId();
     }
 
     @Override
+    @LogRecord(type = COUPON_MGMT_TYPE, subType = COUPON_MGMT_UPDATE_SUB_TYPE, bizNo = "{{#reqVO.id}}",
+            success = COUPON_MGMT_UPDATE_SUCCESS)
     public void update(CouponMgmtUpdateReqVO reqVO) {
-        validateExists(reqVO.getId());
+        CouponMgmtDO couponMgmtDO = validateExists(reqVO.getId());
         CouponMgmtDO updateObj = BeanUtils.toBean(reqVO, CouponMgmtDO.class);
         couponMgmtMapper.updateById(updateObj);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, BeanUtils.toBean(couponMgmtDO, CouponMgmtUpdateReqVO.class));
+        LogRecordContext.putVariable("couponMgmt", updateObj);
     }
 
     @Override
+    @LogRecord(type = COUPON_MGMT_TYPE, subType = COUPON_MGMT_SEND_SUB_TYPE, bizNo = "{{#id}}",
+            success = COUPON_MGMT_SEND_SUCCESS)
     public void send(Long id, Long userId) {
         CouponMgmtDO couponMgmt = validateExists(id);
 //        if (!"0".equals(couponMgmt.getStatus())) {
@@ -76,9 +91,13 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
         couponMgmt.setSendTime(LocalDateTime.now());
         couponMgmt.setReceiverId(userId);
         couponMgmtMapper.updateById(couponMgmt);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("couponMgmtName", couponMgmt.getName());
     }
 
     @Override
+    @LogRecord(type = COUPON_MGMT_TYPE, subType = COUPON_MGMT_VERIFY_SUB_TYPE, bizNo = "{{#id}}",
+            success = COUPON_MGMT_VERIFY_SUCCESS)
     public void verify(Long id) {
         CouponMgmtDO couponMgmt = validateExists(id);
 //        if (!"1".equals(couponMgmt.getStatus())) {
@@ -87,9 +106,13 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
         couponMgmt.setStatus(CouponMgmtStatusEnum.USED.getValue());
         couponMgmt.setVerifyTime(LocalDateTime.now());
         couponMgmtMapper.updateById(couponMgmt);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("couponMgmtName", couponMgmt.getName());
     }
 
     @Override
+    @LogRecord(type = COUPON_MGMT_TYPE, subType = COUPON_MGMT_RESEND_SUB_TYPE, bizNo = "{{#id}}",
+            success = COUPON_MGMT_RESEND_SUCCESS)
     public void resend(Long id, Long receiverId, Long newValidTime) {
         CouponMgmtDO couponMgmt = validateExists(id);
 //        if (!"2".equals(couponMgmt.getStatus())) {
@@ -102,6 +125,8 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
         couponMgmt.setReceiverId(receiverId);
         couponMgmt.setValidTime(LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(newValidTime), java.time.ZoneId.systemDefault()));
         couponMgmtMapper.updateById(couponMgmt);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("couponMgmtName", couponMgmt.getName());
     }
 
     @Override

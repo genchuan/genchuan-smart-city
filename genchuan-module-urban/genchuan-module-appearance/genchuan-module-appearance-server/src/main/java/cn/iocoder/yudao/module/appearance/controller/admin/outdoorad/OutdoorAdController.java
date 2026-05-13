@@ -80,6 +80,4 @@ public class OutdoorAdController {
         return success(respVO);
     }
 
-
-
 }

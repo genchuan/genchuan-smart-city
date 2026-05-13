@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.ops.ImportRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationinfo.vo.StationInfoPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationinfo.vo.StationInfoRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationinfo.vo.StationInfoSaveReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationinfo.vo.ops.StationInfoCreateReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationinfo.vo.ops.StationInfoUpdateReqVO;
@@ -19,6 +20,7 @@ import cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.station
 import cn.iocoder.yudao.module.stationresource.vrv.utils.common.excel.VrvExcelUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -174,8 +176,11 @@ public class StationInfoServiceImpl implements StationInfoService {
     }
 
     @Override
-    public PageResult<StationInfoDO> getStationInfoPage(StationInfoPageReqVO pageReqVO) {
-        return stationInfoMapper.selectPage(pageReqVO);
+    public PageResult<StationInfoRespVO> getStationInfoPage(StationInfoPageReqVO pageReqVO) {
+        Page<StationInfoRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        Page<StationInfoRespVO> resultPage = stationInfoMapper.getPage(page, pageReqVO);
+//        List<StationInfoRespVO> respList = BeanUtils.toBean(resultPage.getRecords(), StationInfoRespVO.class);
+        return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
     }
 
     @Override

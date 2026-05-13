@@ -1,5 +1,10 @@
 package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo;
 
+import cn.iocoder.yudao.module.inspectop.api.space.SpaceMonitorApi;
+import cn.iocoder.yudao.module.inspectop.api.space.dto.SpaceMonitorRespDTO;
+import cn.iocoder.yudao.module.kitchen.api.aialertmessage.AiAlertMessageApi;
+import cn.iocoder.yudao.module.kitchen.api.aialertmessage.dto.AiAlertMessagePageReqDTO;
+import cn.iocoder.yudao.module.kitchen.api.aialertmessage.dto.AiAlertMessageRespDTO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.AreaInfoPageReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.AreaInfoRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.ops.*;
@@ -8,6 +13,7 @@ import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.areamgmt.areainfo.AreaInfoDO;
 import cn.iocoder.yudao.module.stationresource.service.stationresource.areamgmt.areainfo.AreaInfoService;
 import cn.iocoder.yudao.module.stationresource.vrv.utils.common.excel.VrvExcelUtils;
+import cn.iocoder.yudao.module.stationresource.vrv.utils.common.pdf.pdf2.PdfUtils2;
 import cn.iocoder.yudao.module.stationresource.vrv.utils.common.userfill.FillUserInfo;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
@@ -19,6 +25,9 @@ import io.swagger.v3.oas.annotations.Operation;
 
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.io.IOException;
 
@@ -46,8 +55,88 @@ public class AreaInfoController {
     @Resource
     private AreaInfoService areaInfoService;
 
+    @Resource
+    private SpaceMonitorApi spaceMonitorApi;
+    @Resource
+    private AiAlertMessageApi aiAlertMessageApi;
+
+    @GetMapping("/test-ai-alert-get")
+    @Operation(summary = "测试：获取单个AI告警消息")
+    @PreAuthorize("@ss.hasPermission('stationresource:area-info:test')")
+    public CommonResult<AiAlertMessageRespDTO> testAiAlertGet(@RequestParam("id") Long id) {
+        // 1. 传入你要查询的 ID
+        Long testId = 1L;
+
+        // 2. RPC 调用（安全版，不会空指针）
+        CommonResult<AiAlertMessageRespDTO> result = aiAlertMessageApi.getAiAlertMessage(id);
+//        if (result == null || !result.isSuccess() || result.getData() == null) {
+//            return success(new AiAlertMessageRespDTO());
+//        }
+
+        // 3. 返回数据
+        return result;
+    }
+    // ===================== 【新增】AI告警消息调用示例（可直接用） =====================
+    @GetMapping("/test-ai-alert-message")
+    @Operation(summary = "(次级)获取AI告警消息列表")
+    @PreAuthorize("@ss.hasPermission('stationresource:area-info:test-ai-alert-message')")
+    public CommonResult<List<AiAlertMessageRespDTO>> testAiAlertMessage(AiAlertMessagePageReqDTO aiAlertMessagePageReqDTO) {
+        // 1. 构建分页参数
+        AiAlertMessagePageReqDTO pageReqDTO = new AiAlertMessagePageReqDTO();
+        pageReqDTO.setPageSize(100); // 查100条
+
+        // 2. RPC 调用
+        PageResult<AiAlertMessageRespDTO> pageResult = aiAlertMessageApi.getAiAlertMessagePage(aiAlertMessagePageReqDTO).getData();
+
+        // 3. 返回列表
+        return success(pageResult.getList());
+    }
+    @GetMapping("/test-space-monitor")
+    @Operation(summary = "(次级)获取车位坐标数据")
+    @PreAuthorize("@ss.hasPermission('stationresource:area-info:test-space-monitor')")
+    public CommonResult<List<SpaceMonitorRespDTO>> testSpaceMonitor(){
+        CommonResult<List<SpaceMonitorRespDTO>> listCommonResult = spaceMonitorApi.listLatestSpaceMonitors();
+        return listCommonResult;
+    }
+
+    @GetMapping("/export2")
+    @Operation(summary = "(次级)导出 - 片区信息(format=excel|pdf,默认 excel)")
+    @PreAuthorize("@ss.hasPermission('stationresource:area-info:export')")
+    @ApiAccessLog(operateType = EXPORT)
+    public void exportAreaInfo(
+            @Valid AreaInfoPageReqVO pageReqVO,
+            @RequestParam(value = "format", required = false, defaultValue = "excel") String format,
+            HttpServletResponse response) throws IOException {
+
+        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        List<AreaInfoDO> list = areaInfoService.getAreaInfoPage(pageReqVO).getList();
+        List<AreaInfoRespVO> respList = BeanUtils.toBean(list, AreaInfoRespVO.class);
+
+        // ===================== PDF 导出 =====================
+        if ("pdf".equalsIgnoreCase(format)) {
+            PdfUtils2.write(response, "片区信息.pdf", "片区信息台账",
+                    PdfUtils2.headers(
+                            "id", "ID",
+                            "areaNo", "片区编号",
+                            "name", "片区名称",
+                            "district", "所属行政区划",
+                            "leaderName", "负责人",
+                            "phone", "联系电话",
+                            "stationCount", "关联场站数",
+                            "bindTime", "绑定时间",
+                            "status", "状态",
+                            "remark", "备注",
+                            "createTime", "创建时间"
+                    ),
+                    respList);
+        }
+        // ===================== EXCEL 导出 =====================
+        else {
+            ExcelUtils.write(response, "片区信息.xls", "数据", AreaInfoRespVO.class, respList);
+        }
+    }
     @GetMapping("/chart")
-    @Operation(summary = "片区数据可视化图表（地图+柱状图+卡片）")
+    @Operation(summary = "片区数据可视化图表（地图+柱状图+卡片数据）")
     @PreAuthorize("@ss.hasPermission('stationresource:area-info:query')")
     public CommonResult<AreaInfoChartRespVO> getAreaInfoChart() {
         AreaInfoChartRespVO resp = areaInfoService.getAreaInfoChart();
@@ -76,7 +165,7 @@ public class AreaInfoController {
         return success(true);
     }
 
-    @GetMapping("/import-template")
+    @GetMapping("/get-import-template")
     @Operation(summary = "下载导入模板")
     @PreAuthorize("@ss.hasPermission('stationresource:area-info:import')")
     public void importTemplate(HttpServletResponse response) throws Exception {
@@ -151,12 +240,26 @@ public class AreaInfoController {
     @PreAuthorize("@ss.hasPermission('stationresource:area-info:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportAreaInfoExcel(@Valid AreaInfoPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                    HttpServletResponse response) throws IOException {
+        // 0. 配置
+        String inputFileName = "片区信息_";
+
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<AreaInfoDO> list = areaInfoService.getAreaInfoPage(pageReqVO).getList();
-        // 导出 Excel
+
+        // 1、强制设置响应头，确保浏览器触发下载
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setCharacterEncoding("utf-8");
+        // 2、动态生成文件名，带上当前日期
+        String dateStr = java.time.LocalDate.now().toString(); // 例如 "2026-03-10"
+        String fileOriginName = inputFileName + dateStr + ".xls";
+        String fileName = URLEncoder.encode(fileOriginName, StandardCharsets.UTF_8.toString())
+                .replaceAll("\\+", "%20").replace("UTF-8","");
+        response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
+
+        // 3、调用 ExcelUtils 导出
         ExcelUtils.write(response, "片区信息.xls", "数据", AreaInfoRespVO.class,
-                        BeanUtils.toBean(list, AreaInfoRespVO.class));
+                BeanUtils.toBean(list, AreaInfoRespVO.class));
     }
 
 }

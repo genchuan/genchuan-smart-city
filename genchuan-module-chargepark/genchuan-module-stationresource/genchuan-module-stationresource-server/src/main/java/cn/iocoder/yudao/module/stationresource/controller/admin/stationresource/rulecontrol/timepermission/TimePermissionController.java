@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
@@ -74,7 +76,7 @@ public class TimePermissionController {
         return CommonResult.success(true);
     }
     // ==================== 【导入接口】 ====================
-    @GetMapping("/import-template")
+    @GetMapping("/get-import-template")
     @Operation(summary = "下载导入模板")
     @PreAuthorize("@ss.hasPermission('stationresource:time-permission:import')")
     public void importTemplate(HttpServletResponse response) throws Exception {
@@ -111,8 +113,7 @@ public class TimePermissionController {
     @Operation(summary = "获得时段权限分页")
     @PreAuthorize("@ss.hasPermission('stationresource:time-permission:query')")
     public CommonResult<PageResult<TimePermissionRespVO>> getTimePermissionPage(@Valid TimePermissionPageReqVO pageReqVO) {
-        PageResult<TimePermissionDO> pageResult = timePermissionService.getTimePermissionPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, TimePermissionRespVO.class));
+        return success(timePermissionService.getTimePermissionPage(pageReqVO));
     }
 
     @GetMapping("/export")
@@ -120,12 +121,25 @@ public class TimePermissionController {
     @PreAuthorize("@ss.hasPermission('stationresource:time-permission:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportTimePermissionExcel(@Valid TimePermissionPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                          HttpServletResponse response) throws IOException {
+        // 0. 配置
+        String inputFileName = "时段权限_";
+
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<TimePermissionDO> list = timePermissionService.getTimePermissionPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "时段权限.xls", "数据", TimePermissionRespVO.class,
-                        BeanUtils.toBean(list, TimePermissionRespVO.class));
+        List<TimePermissionRespVO> list = timePermissionService.getTimePermissionPage(pageReqVO).getList();
+
+        // 1、强制设置响应头，确保浏览器触发下载
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setCharacterEncoding("utf-8");
+        // 2、动态生成文件名，带上当前日期
+        String dateStr = java.time.LocalDate.now().toString();
+        String fileOriginName = inputFileName + dateStr + ".xls";
+        String fileName = URLEncoder.encode(fileOriginName, StandardCharsets.UTF_8.toString())
+                .replaceAll("\\+", "%20").replace("UTF-8","");
+        response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
+
+        // 3、调用 ExcelUtils 导出
+        ExcelUtils.write(response, "时段权限.xls", "数据", TimePermissionRespVO.class, list);
     }
 
     //====================================================================================================

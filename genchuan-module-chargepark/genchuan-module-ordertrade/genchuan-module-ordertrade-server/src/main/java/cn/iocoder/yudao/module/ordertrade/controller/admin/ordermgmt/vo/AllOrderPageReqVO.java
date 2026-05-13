@@ -36,12 +36,21 @@ public class AllOrderPageReqVO extends PageParam {
     @EnumFormat(AllOrderStatusEnum.class)
     private String status;
 
-    @Schema(description = "场站ID")
-    private Long stationId;
-    @Schema(description = "订单生成时间范围")
+    @Schema(description = "场站名称，模糊查询")
+    private String stationName;
+    @Schema(description = "订单生成时间-开始，格式 yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDateTime[] createOrderTime;
-    @Schema(description = "支付时间范围")
+    private LocalDateTime createOrderTimeStart;
+
+    @Schema(description = "订单生成时间-结束，格式 yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDateTime[] payTime;
+    private LocalDateTime createOrderTimeEnd;
+
+    @Schema(description = "支付时间-开始，格式 yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime payTimeStart;
+
+    @Schema(description = "支付时间-结束，格式 yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime payTimeEnd;
 }

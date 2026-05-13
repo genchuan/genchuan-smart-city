@@ -135,7 +135,13 @@
                 AND prl.cancel_time &lt;= #{cancelTimeEnd}
             </if>
             <if test="draftPunishAmt != null">
-                AND prl.draft_punish_amt = #{draftPunishAmt}
+                AND prl.draft_punish_amt >= #{draftPunishAmt}
+            </if>
+            <if test="draftPunishAmtMin != null">
+                AND prl.draft_punish_amt >= #{draftPunishAmtMin}
+            </if>
+            <if test="draftPunishAmtMax != null">
+                AND prl.draft_punish_amt &lt;= #{draftPunishAmtMax}
             </if>
             <!-- ====================== 【新增：逾期筛选】 ====================== -->
             <if test="overdueFlag != null">
@@ -217,6 +223,12 @@
             <if test="reviewStatus != null and reviewStatus != ''">
                 AND prl.review_status = #{reviewStatus}
             </if>
+            <if test="draftPunishAmtMin != null">
+                AND prl.draft_punish_amt >= #{draftPunishAmtMin}
+            </if>
+            <if test="draftPunishAmtMax != null">
+                AND prl.draft_punish_amt &lt;= #{draftPunishAmtMax}
+            </if>
             <!-- ====================== 【新增：逾期筛选】 ====================== -->
             <if test="overdueFlag != null">
                 AND (
@@ -235,5 +247,191 @@
             </if>
         </where>
 
+    </select>
+
+    <select id="getPunishReviewChartResp"
+            resultType="cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.chart.PunishReviewChartResp">
+        SELECT
+            COUNT(IF(prl.review_status = '待复审', 1, NULL)) AS pendingReviewCount,
+            COUNT(IF(prl.review_status = '已下发', 1, NULL)) AS issuedCount,
+            COUNT(IF(prl.review_status = '已撤销', 1, NULL)) AS canceledCount,
+            COUNT(*) AS totalCount
+        FROM punish_review_ledger prl
+
+        LEFT JOIN enterprise_info ei ON prl.ent_id = ei.id
+        LEFT JOIN illegal_type_dict itd ON prl.illegal_type_id = itd.id
+        LEFT JOIN illegal_level_dict ild ON prl.illegal_level_id = ild.id
+        LEFT JOIN ent_rectify_record err ON prl.ent_rectify_record_id = err.id
+        LEFT JOIN punish_notice pn ON prl.punish_notice_id = pn.id
+        LEFT JOIN sys_user su ON prl.review_by = su.id
+
+        <where>
+            prl.deleted = b'0'
+
+            <if test="idList != null and idList.size() > 0">
+                AND prl.id IN
+                <foreach collection="idList" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
+            <if test="ledgerCode != null and ledgerCode != ''">
+                AND prl.ledger_code LIKE CONCAT('%', #{ledgerCode}, '%')
+            </if>
+
+            <if test="entId != null">
+                AND prl.ent_id = #{entId}
+            </if>
+
+            <if test="entName != null and entName != ''">
+                AND ei.ent_name LIKE CONCAT('%', #{entName}, '%')
+            </if>
+
+            <if test="illegalTypeId != null">
+                AND prl.illegal_type_id = #{illegalTypeId}
+            </if>
+
+            <if test="illegalLevelId != null">
+                AND prl.illegal_level_id = #{illegalLevelId}
+            </if>
+
+            <if test="reviewStatus != null and reviewStatus != ''">
+                AND prl.review_status = #{reviewStatus}
+            </if>
+
+            <if test="draftTimeStart != null">
+                AND prl.draft_time &gt;= #{draftTimeStart}
+            </if>
+
+            <if test="draftTimeEnd != null">
+                AND prl.draft_time &lt;= #{draftTimeEnd}
+            </if>
+
+            <if test="reviewTimeStart != null">
+                AND prl.review_time &gt;= #{reviewTimeStart}
+            </if>
+
+            <if test="reviewTimeEnd != null">
+                AND prl.review_time &lt;= #{reviewTimeEnd}
+            </if>
+
+            <if test="cancelTimeStart != null">
+                AND prl.cancel_time &gt;= #{cancelTimeStart}
+            </if>
+
+            <if test="cancelTimeEnd != null">
+                AND prl.cancel_time &lt;= #{cancelTimeEnd}
+            </if>
+
+            <if test="draftPunishAmtMin != null">
+                AND prl.draft_punish_amt >= #{draftPunishAmtMin}
+            </if>
+
+            <if test="draftPunishAmtMax != null">
+                AND prl.draft_punish_amt &lt;= #{draftPunishAmtMax}
+            </if>
+
+            <if test="overdueFlag != null">
+                AND (
+                <choose>
+                    <when test="overdueFlag == 1">
+                        prl.review_status = '已下发'
+                        AND prl.payment_deadline_time &lt; NOW()
+                    </when>
+                    <otherwise>
+                        prl.review_status != '已下发'
+                        OR prl.payment_deadline_time &gt;= NOW()
+                        OR prl.payment_deadline_time IS NULL
+                    </otherwise>
+                </choose>
+                )
+            </if>
+        </where>
+    </select>
+
+    <select id="selectMonthReviewCount" resultType="cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.chart.PunishReviewBarItemResp">
+        SELECT
+            DATE_FORMAT(prl.draft_time, '%Y-%m') AS time,
+            COUNT(*) AS count
+        FROM punish_review_ledger prl
+        WHERE prl.deleted = b'0'
+        GROUP BY DATE_FORMAT(prl.draft_time, '%Y-%m')
+        ORDER BY time ASC
+    </select>
+
+    <select id="selectCancelReasonCount" resultType="cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.chart.PunishReviewCancelReasonResp$CancelReasonItem">
+        SELECT
+            crd.reason_name AS reasonName,
+            COUNT(*) AS count
+        FROM punish_review_ledger prl
+        LEFT JOIN cancel_reason_dict crd ON prl.cancel_reason_id = crd.id
+        LEFT JOIN enterprise_info ei ON prl.ent_id = ei.id
+
+        <where>
+            prl.deleted = b'0'
+            AND prl.review_status = '已撤销'
+
+            <if test="idList != null and idList.size() > 0">
+                AND prl.id IN
+                <foreach collection="idList" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
+            <if test="ledgerCode != null and ledgerCode != ''">
+                AND prl.ledger_code LIKE CONCAT('%', #{ledgerCode}, '%')
+            </if>
+
+            <if test="entId != null">
+                AND prl.ent_id = #{entId}
+            </if>
+
+            <if test="entName != null and entName != ''">
+                AND ei.ent_name LIKE CONCAT('%', #{entName}, '%')
+            </if>
+
+            <if test="illegalTypeId != null">
+                AND prl.illegal_type_id = #{illegalTypeId}
+            </if>
+
+            <if test="illegalLevelId != null">
+                AND prl.illegal_level_id = #{illegalLevelId}
+            </if>
+
+            <if test="draftTimeStart != null">
+                AND prl.draft_time &gt;= #{draftTimeStart}
+            </if>
+
+            <if test="draftTimeEnd != null">
+                AND prl.draft_time &lt;= #{draftTimeEnd}
+            </if>
+
+            <if test="reviewTimeStart != null">
+                AND prl.review_time &gt;= #{reviewTimeStart}
+            </if>
+
+            <if test="reviewTimeEnd != null">
+                AND prl.review_time &lt;= #{reviewTimeEnd}
+            </if>
+
+            <if test="cancelTimeStart != null">
+                AND prl.cancel_time &gt;= #{cancelTimeStart}
+            </if>
+
+            <if test="cancelTimeEnd != null">
+                AND prl.cancel_time &lt;= #{cancelTimeEnd}
+            </if>
+
+            <if test="draftPunishAmtMin != null">
+                AND prl.draft_punish_amt >= #{draftPunishAmtMin}
+            </if>
+
+            <if test="draftPunishAmtMax != null">
+                AND prl.draft_punish_amt &lt;= #{draftPunishAmtMax}
+            </if>
+        </where>
+
+        GROUP BY crd.id, crd.reason_name
+        ORDER BY count DESC
     </select>
 </mapper>

@@ -1,11 +1,12 @@
 package cn.iocoder.yudao.module.studentmgmt.service.leavehandle;
 
-import java.util.*;
-import jakarta.validation.*;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.BaseChartReqVO;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.leavehandle.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.leavehandle.LeaveHandleDO;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import jakarta.validation.Valid;
+
+import java.util.List;
 
 /**
  * 离校办理 Service 接口
@@ -20,7 +21,7 @@ public interface LeaveHandleService {
      * @param createReqVO 创建信息
      * @return 编号
      */
-    Long createLeaveHandle(@Valid LeaveHandleSaveReqVO createReqVO);
+    Long createLeaveHandle(@Valid LeaveHandleCreateReqVO createReqVO);
 
     /**
      * 更新离校办理
@@ -37,10 +38,10 @@ public interface LeaveHandleService {
     void deleteLeaveHandle(Long id);
 
     /**
-    * 批量删除离校办理
-    *
-    * @param ids 编号
-    */
+     * 批量删除离校办理
+     *
+     * @param ids 编号
+     */
     void deleteLeaveHandleListByIds(List<Long> ids);
 
     /**
@@ -59,4 +60,11 @@ public interface LeaveHandleService {
      */
     PageResult<LeaveHandleDO> getLeaveHandlePage(LeaveHandlePageReqVO pageReqVO);
 
+    Boolean confirm(@Valid LeaveHandleConfirmReqVO updateReqVO);
+
+    Boolean handle(@Valid LeaveHandleHandleReqVO reqVO);
+
+    LeaveHandleCharRespVO chart(@Valid BaseChartReqVO reqVO);
+
+    LeaveHandleIndexRespVO leaveIndex(@Valid BaseChartReqVO reqVO);
 }

@@ -23,6 +23,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.io.IOException;
 
@@ -86,7 +89,7 @@ public class StationInfoController {
         stationInfoService.updateStationStatus(reqVO.getIds(), "已禁用");
         return success(true);
     }
-    @GetMapping("/import-template")
+    @GetMapping("/get-import-template")
     @Operation(summary = "下载场站信息导入模板")
     @PreAuthorize("@ss.hasPermission('stationresource:station-info:import')")
     public void importTemplate(HttpServletResponse response) throws Exception {
@@ -117,9 +120,23 @@ public class StationInfoController {
     @ApiAccessLog(operateType = EXPORT)
     public void exportStationInfoExcel(@Valid StationInfoPageReqVO pageReqVO,
                                        HttpServletResponse response) throws IOException {
+        // 0. 配置
+        String inputFileName = "场站信息_";
+
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<StationInfoDO> list = stationInfoService.getStationInfoPage(pageReqVO).getList();
-        // 导出 Excel
+        List<StationInfoRespVO> list = stationInfoService.getStationInfoPage(pageReqVO).getList();
+
+        // 1、强制设置响应头，确保浏览器触发下载
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setCharacterEncoding("utf-8");
+        // 2、动态生成文件名，带上当前日期
+        String dateStr = java.time.LocalDate.now().toString();
+        String fileOriginName = inputFileName + dateStr + ".xls";
+        String fileName = URLEncoder.encode(fileOriginName, StandardCharsets.UTF_8.toString())
+                .replaceAll("\\+", "%20").replace("UTF-8","");
+        response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
+
+        // 3、调用 ExcelUtils 导出
         ExcelUtils.write(response, "场站信息.xls", "数据", StationInfoRespVO.class,
                 BeanUtils.toBean(list, StationInfoRespVO.class));
     }
@@ -128,7 +145,7 @@ public class StationInfoController {
     @Operation(summary = "获得场站信息分页")
     @PreAuthorize("@ss.hasPermission('stationresource:station-info:query')")
     public CommonResult<PageResult<StationInfoRespVO>> getStationInfoPage(@Valid StationInfoPageReqVO pageReqVO) {
-        PageResult<StationInfoDO> pageResult = stationInfoService.getStationInfoPage(pageReqVO);
+        PageResult<StationInfoRespVO> pageResult = stationInfoService.getStationInfoPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, StationInfoRespVO.class));
     }
     //=============================================

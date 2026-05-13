@@ -14,6 +14,6 @@ public class StockControlRestockReqVO {
 
     @Schema(description = "补货数量", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "补货数量不能为空")
-    private Integer quantity;
+    private Integer num;
 
 }

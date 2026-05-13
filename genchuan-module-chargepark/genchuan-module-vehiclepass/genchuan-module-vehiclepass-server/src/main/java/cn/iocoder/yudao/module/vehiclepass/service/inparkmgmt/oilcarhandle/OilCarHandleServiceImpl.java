@@ -12,6 +12,7 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhan
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandleSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.inparkmgmt.oilcarhandle.OilCarHandleDO;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.inparkmgmt.oilcarhandle.OilCarHandleMapper;
+import cn.iocoder.yudao.module.vehiclepass.framework.util.MapValueUtils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
@@ -29,7 +31,9 @@ import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
-import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.CAR_HANDLE_NOT_EXISTS;
+import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.vehiclepass.constants.inparkmgmt.OilCarHandleConstants.*;
+
 
 /**
  * 油车占位处置 Service 实现类
@@ -101,8 +105,12 @@ public class OilCarHandleServiceImpl implements OilCarHandleService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void batchHandle(OilCarHandleBatchHandleReqVO reqVO) {
         Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
+        if (currentUserId == null) {
+            throw exception(USER_NOT_LOGIN);
+        }
 
         for (Long id : reqVO.getIds()) {
             OilCarHandleDO carHandle = carHandleMapper.selectById(id);
@@ -116,14 +124,14 @@ public class OilCarHandleServiceImpl implements OilCarHandleService {
             updateObj.setHandleTime(LocalDateTime.now());
 
             String handleType = reqVO.getHandleType();
-            if ("处置".equals(handleType)) {
-                updateObj.setStatus("处理中");
-                updateObj.setHandleMethod("已处置");
-                updateObj.setHandleType("处置");
-            } else if ("忽略".equals(handleType)) {
-                updateObj.setStatus("已关闭");
-                updateObj.setIgnoreReason("批量忽略");
-                updateObj.setHandleType("忽略");
+            if (HANDLE_TYPE_DISPOSE.equals(handleType)) {
+                updateObj.setStatus(STATUS_PROCESSING);
+                updateObj.setHandleMethod(HANDLE_METHOD_DISPOSED);
+                updateObj.setHandleType(HANDLE_TYPE_DISPOSE);
+            } else if (HANDLE_TYPE_IGNORE.equals(handleType)) {
+                updateObj.setStatus(STATUS_CLOSED);
+                updateObj.setIgnoreReason(IGNORE_REASON_BATCH);
+                updateObj.setHandleType(HANDLE_TYPE_IGNORE);
             }
 
             carHandleMapper.updateById(updateObj);
@@ -137,13 +145,18 @@ public class OilCarHandleServiceImpl implements OilCarHandleService {
             throw exception(CAR_HANDLE_NOT_EXISTS);
         }
 
+        Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
+        if (currentUserId == null) {
+            throw exception(USER_NOT_LOGIN);
+        }
+
         OilCarHandleDO updateObj = new OilCarHandleDO();
         updateObj.setId(reqVO.getId());
-        updateObj.setHandleUserId(SecurityFrameworkUtils.getLoginUserId());
+        updateObj.setHandleUserId(currentUserId);
         updateObj.setHandleTime(LocalDateTime.now());
-        updateObj.setStatus("处理中");
+        updateObj.setStatus(STATUS_PROCESSING);
         updateObj.setHandleMethod(reqVO.getHandleMethod());
-        updateObj.setHandleType("处置");
+        updateObj.setHandleType(HANDLE_TYPE_DISPOSE);
         carHandleMapper.updateById(updateObj);
     }
 
@@ -154,12 +167,17 @@ public class OilCarHandleServiceImpl implements OilCarHandleService {
             throw exception(CAR_HANDLE_NOT_EXISTS);
         }
 
+        Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
+        if (currentUserId == null) {
+            throw exception(USER_NOT_LOGIN);
+        }
+
         OilCarHandleDO updateObj = new OilCarHandleDO();
         updateObj.setId(reqVO.getId());
-        updateObj.setHandleUserId(SecurityFrameworkUtils.getLoginUserId());
+        updateObj.setHandleUserId(currentUserId);
         updateObj.setHandleTime(LocalDateTime.now());
-        updateObj.setStatus("已关闭");
-        updateObj.setHandleType("忽略");
+        updateObj.setStatus(STATUS_CLOSED);
+        updateObj.setHandleType(HANDLE_TYPE_IGNORE);
         updateObj.setIgnoreReason(reqVO.getIgnoreReason());
         carHandleMapper.updateById(updateObj);
     }
@@ -182,32 +200,34 @@ public class OilCarHandleServiceImpl implements OilCarHandleService {
         // 查询处置进度趋势
         List<Map<String, Object>> trendList = carHandleMapper.selectHandleProgressTrend(
                 reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
-        List<OilCarHandleChartRespVO.HandleProgressTrend> handleProgressTrends = new ArrayList<>();
-        for (Map<String, Object> trend : trendList) {
-            OilCarHandleChartRespVO.HandleProgressTrend item = new OilCarHandleChartRespVO.HandleProgressTrend();
-            item.setDate(trend.get("date") != null ? trend.get("date").toString() : null);
-            item.setCount(trend.get("count") != null ? Long.parseLong(trend.get("count").toString()) : 0L);
-            handleProgressTrends.add(item);
-        }
+        List<OilCarHandleChartRespVO.HandleProgressTrend> handleProgressTrends = trendList.stream()
+            .map(trend -> {
+                OilCarHandleChartRespVO.HandleProgressTrend item = new OilCarHandleChartRespVO.HandleProgressTrend();
+                item.setDate(trend.get("date") != null ? trend.get("date").toString() : null);
+                item.setCount(MapValueUtils.getLongValue(trend, "count"));
+                return item;
+            })
+            .collect(Collectors.toList());
 
         // 查询各场站处置量
         List<Map<String, Object>> stationList = carHandleMapper.selectStationHandleCount(
                 reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
-        List<OilCarHandleChartRespVO.StationHandleCount> stationHandleCounts = new ArrayList<>();
-        for (Map<String, Object> station : stationList) {
-            OilCarHandleChartRespVO.StationHandleCount item = new OilCarHandleChartRespVO.StationHandleCount();
-            item.setStationName(station.get("stationName") != null ? station.get("stationName").toString() : null);
-            item.setCount(station.get("count") != null ? Long.parseLong(station.get("count").toString()) : 0L);
-            stationHandleCounts.add(item);
-        }
+        List<OilCarHandleChartRespVO.StationHandleCount> stationHandleCounts = stationList.stream()
+            .map(station -> {
+                OilCarHandleChartRespVO.StationHandleCount item = new OilCarHandleChartRespVO.StationHandleCount();
+                item.setStationName(station.get("stationName") != null ? station.get("stationName").toString() : null);
+                item.setCount(MapValueUtils.getLongValue(station, "count"));
+                return item;
+            })
+            .collect(Collectors.toList());
 
         // 查询待处置数和处置完成率
         Map<String, Object> stats = carHandleMapper.selectHandleStats(
                 reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
         OilCarHandleChartRespVO.CardData cardData = new OilCarHandleChartRespVO.CardData();
         if (stats != null) {
-            cardData.setWaitHandleCount(stats.get("waitHandleCount") != null ? Long.parseLong(stats.get("waitHandleCount").toString()) : 0L);
-            cardData.setHandleCompleteRate(stats.get("handleCompleteRate") != null ? Double.parseDouble(stats.get("handleCompleteRate").toString()) : 0.0);
+            cardData.setWaitHandleCount(MapValueUtils.getLongValue(stats, "waitHandleCount"));
+            cardData.setHandleCompleteRate(MapValueUtils.getDoubleValue(stats, "handleCompleteRate"));
         } else {
             cardData.setWaitHandleCount(0L);
             cardData.setHandleCompleteRate(0.0);

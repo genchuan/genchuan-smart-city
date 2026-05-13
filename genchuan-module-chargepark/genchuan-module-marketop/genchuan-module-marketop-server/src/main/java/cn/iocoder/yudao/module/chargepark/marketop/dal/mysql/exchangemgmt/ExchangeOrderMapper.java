@@ -9,7 +9,9 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
@@ -24,8 +26,19 @@ public interface ExchangeOrderMapper extends BaseMapperX<ExchangeOrderDO> {
                 .eqIfPresent(ExchangeOrderDO::getPayStatus, reqVO.getPayStatus())
                 .orderByDesc(ExchangeOrderDO::getId);
 
-        if (reqVO.getStartTime() != null && reqVO.getEndTime() != null) {
-            wrapper.between(ExchangeOrderDO::getCreateTime, reqVO.getStartTime(), reqVO.getEndTime());
+        // date不为空时，转为当天起止时间查询create_time
+        if (reqVO.getDate() != null && !reqVO.getDate().isEmpty()) {
+            LocalDate localDate = LocalDate.parse(reqVO.getDate());
+            LocalDateTime dayStart = localDate.atStartOfDay();
+            LocalDateTime dayEnd = localDate.atTime(LocalTime.MAX);
+            wrapper.between(ExchangeOrderDO::getCreateTime, dayStart, dayEnd);
+        } else if (reqVO.getStartTime() != null && reqVO.getEndTime() != null) {
+            // 兼容旧的Long类型时间戳
+            LocalDateTime startDateTime = LocalDateTime.ofInstant(
+                    java.time.Instant.ofEpochMilli(reqVO.getStartTime()), java.time.ZoneId.systemDefault());
+            LocalDateTime endDateTime = LocalDateTime.ofInstant(
+                    java.time.Instant.ofEpochMilli(reqVO.getEndTime()), java.time.ZoneId.systemDefault());
+            wrapper.between(ExchangeOrderDO::getCreateTime, startDateTime, endDateTime);
         }
         return selectPage(reqVO, wrapper);
     }

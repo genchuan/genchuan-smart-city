@@ -13,7 +13,8 @@ public enum DisputeMediateStatusEnum {
 
     WAITING_MEDIATE("待调解"),
     MEDIATING("调解中"),
-    COMPLETED("已完成");
+    COMPLETED("已完成"),
+    CLOSED("已关闭");
 
     private final String label;
 

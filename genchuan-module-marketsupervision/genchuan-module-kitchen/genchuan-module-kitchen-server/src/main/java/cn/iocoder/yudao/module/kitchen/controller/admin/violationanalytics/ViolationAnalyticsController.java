@@ -42,7 +42,7 @@ public class ViolationAnalyticsController {
     private ViolationAnalyticsService violationAnalyticsService;
 
     @GetMapping("/export-excel2")
-    @Operation(summary = "(勿用）导出 Excel2",hidden = true)
+    @Operation(summary = "(次级）导出 Excel2")
     //@PreAuthorize("@ss.hasPermission('kitchen:violation-analytics:export')")
     @ApiAccessLog(operateType = EXPORT)
 //    @SysOpeLog(operObject = "企业违规数据分析",operType = "批量导出")

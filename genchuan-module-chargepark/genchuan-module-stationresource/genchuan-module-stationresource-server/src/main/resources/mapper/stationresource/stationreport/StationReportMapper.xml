@@ -53,11 +53,11 @@
     </select>
 
     <!-- 以下都是根据各个表搜索 -->
-    <!-- 1. area_info 片区统计：总片区数、覆盖场站数 -->
+    <!-- 1. area_info 片区统计：总片区数、覆盖场站数（从场站表统计有归属片区的场站） -->
     <select id="selectAreaReport" resultType="java.util.Map">
         SELECT
             COUNT(id) AS totalAreaCount,
-            IFNULL(SUM(station_count), 0) AS coverStationCount
+            (SELECT COUNT(id) FROM station_info WHERE deleted = 0 AND area_id IS NOT NULL) AS coverStationCount
         FROM area_info
         WHERE deleted = 0
     </select>
@@ -91,14 +91,14 @@
         FROM DUAL
     </select>
 
-    <!-- 5. charge_park_link 订单量 + 营收（按时间范围） -->
+    <!-- 5. all_order 订单量 + 营收（按时间范围） -->
     <select id="selectChargeParkOrderReport" resultType="java.util.Map">
         SELECT
-            IFNULL(SUM(today_order_count), 0) AS orderCount,
-            IFNULL(SUM(today_income), 0) AS revenue
-        FROM charge_park_link
+            COUNT(id) AS orderCount,
+            IFNULL(SUM(amount), 0) AS revenue
+        FROM all_order
         WHERE deleted = 0
-          AND create_time BETWEEN #{reportStartTime} AND #{reportEndTime}
+          AND create_order_time BETWEEN #{reportStartTime} AND #{reportEndTime}
     </select>
 
     <!-- 6. debt_expand 追缴完成率 -->
@@ -173,5 +173,219 @@
             debt_expand d
         left join station_info s on d.station_id=s.id
         group by s.name
+    </select>
+
+    <!-- ====================== 钻取查询（卡片指标 → 明细数据） ====================== -->
+
+    <!-- 1. 总片区数 → 钻取片区列表 -->
+    <select id="drillDownAreaList" resultType="java.util.Map">
+        SELECT id, area_no AS areaNo, name, district, address, station_count AS stationCount,
+               status, phone, remark
+        FROM area_info
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND create_time &lt;= #{endTime}
+        </if>
+        ORDER BY id DESC
+    </select>
+
+    <!-- 2. 总站场数 → 钻取场站列表 -->
+    <select id="drillDownStationList" resultType="java.util.Map">
+        SELECT s.id,
+               s.station_no AS stationNo,
+               s.name,
+               s.type,
+               s.address,
+               s.status,
+               s.operate_type AS operateType,
+               s.space_total AS spaceTotal,
+               a.name AS areaName, s.remark
+        FROM station_info s
+        LEFT JOIN area_info a ON s.area_id = a.id AND a.deleted = 0
+        WHERE s.deleted = 0
+        <if test="startTime != null">
+            AND s.create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND s.create_time &lt;= #{endTime}
+        </if>
+        ORDER BY s.id DESC
+    </select>
+
+    <!-- 2.5 覆盖场站数 → 钻取有归属片区的场站列表 -->
+    <select id="drillDownCoverStationList" resultType="java.util.Map">
+        SELECT s.id, s.station_no AS stationNo, s.name, s.type, s.address, s.status,
+               s.operate_type AS operateType, s.space_total AS spaceTotal,
+               a.name AS areaName, s.remark
+        FROM station_info s
+        LEFT JOIN area_info a ON s.area_id = a.id AND a.deleted = 0
+        WHERE s.deleted = 0 AND s.area_id IS NOT NULL
+        <if test="startTime != null">
+            AND s.create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND s.create_time &lt;= #{endTime}
+        </if>
+        ORDER BY s.id DESC
+    </select>
+
+    <!-- 3. 正常运营数 → 钻取运营中场站列表 -->
+    <select id="drillDownNormalStationList" resultType="java.util.Map">
+        SELECT s.id, s.station_no AS stationNo, s.name, s.type, s.address, s.status,
+               s.operate_type AS operateType, s.space_total AS spaceTotal,
+               a.name AS areaName, s.remark
+        FROM station_info s
+        LEFT JOIN area_info a ON s.area_id = a.id AND a.deleted = 0
+        WHERE s.deleted = 0 AND s.status = '已生效'
+        <if test="startTime != null">
+            AND s.create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND s.create_time &lt;= #{endTime}
+        </if>
+        ORDER BY s.id DESC
+    </select>
+
+    <!-- 4. 总车位数 → 钻取车位列表 -->
+    <select id="drillDownSpaceList" resultType="java.util.Map">
+        SELECT p.id, p.space_no AS spaceNo, p.location, p.type, p.device_type AS deviceType,
+               p.real_status AS realStatus, s.name AS stationName, p.remark
+        FROM parking_space_info p
+        LEFT JOIN station_info s ON p.station_id = s.id AND s.deleted = 0
+        WHERE p.deleted = 0
+        <if test="startTime != null">
+            AND p.create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND p.create_time &lt;= #{endTime}
+        </if>
+        ORDER BY p.id DESC
+    </select>
+
+    <!-- 5. 可用车位数 → 钻取空闲车位列表 -->
+    <select id="drillDownAvailableSpaceList" resultType="java.util.Map">
+        SELECT p.id, p.space_no AS spaceNo, p.location, p.type, p.device_type AS deviceType,
+               p.real_status AS realStatus, s.name AS stationName, p.remark
+        FROM parking_space_info p
+        LEFT JOIN station_info s ON p.station_id = s.id AND s.deleted = 0
+        WHERE p.deleted = 0 AND p.real_status = '空闲'
+        <if test="startTime != null">
+            AND p.create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND p.create_time &lt;= #{endTime}
+        </if>
+        ORDER BY p.id DESC
+    </select>
+
+    <!-- 6. 生效规则数 → 钻取规则列表（时段权限 + 收费规则 + 充停联动） -->
+    <select id="drillDownEffectiveRuleList" resultType="java.util.Map">
+        SELECT * FROM (
+        SELECT
+        id,
+        station_id AS stationId,
+        CONVERT(time_range USING utf8mb4) COLLATE utf8mb4_general_ci AS ruleName,
+        CONVERT('时段权限' USING utf8mb4) COLLATE utf8mb4_general_ci AS ruleType,
+        CONVERT(status USING utf8mb4) COLLATE utf8mb4_general_ci AS status,
+        create_time AS createTime
+        FROM time_permission WHERE deleted = 0 AND status = '已生效'
+        <if test="startTime != null">
+            AND create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND create_time &lt;= #{endTime}
+        </if>
+
+        UNION ALL
+
+        SELECT
+        id,
+        station_id AS stationId,
+        CONVERT(rate_type USING utf8mb4) COLLATE utf8mb4_general_ci AS ruleName,
+        CONVERT('收费规则' USING utf8mb4) COLLATE utf8mb4_general_ci AS ruleType,
+        CONVERT(status USING utf8mb4) COLLATE utf8mb4_general_ci AS status,
+        create_time AS createTime
+        FROM fee_rule WHERE deleted = 0 AND status = '已生效'
+        <if test="startTime != null">
+            AND create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND create_time &lt;= #{endTime}
+        </if>
+
+        UNION ALL
+
+        SELECT
+        id,
+        station_id AS stationId,
+        CONVERT(discount_type USING utf8mb4) COLLATE utf8mb4_general_ci AS ruleName,
+        CONVERT('充停联动' USING utf8mb4) COLLATE utf8mb4_general_ci AS ruleType,
+        CONVERT(status USING utf8mb4) COLLATE utf8mb4_general_ci AS status,
+        create_time AS createTime
+        FROM charge_park_link WHERE deleted = 0 AND status = '已生效'
+        <if test="startTime != null">
+            AND create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND create_time &lt;= #{endTime}
+        </if>
+        ) t
+        ORDER BY createTime DESC
+    </select>
+
+    <!-- 7. 订单量/营收 → 钻取订单列表 -->
+    <select id="drillDownOrderList" resultType="java.util.Map">
+        SELECT o.id, o.order_no AS orderNo, o.order_type AS orderType,
+               o.plate_no AS plateNo, o.amount, o.status,
+               s.name AS stationName, o.station_id AS stationId,
+               o.create_order_time AS createTime, o.pay_time AS payTime,
+               o.pay_method AS payMethod, o.discount_amount AS discountAmount
+        FROM all_order o
+        LEFT JOIN station_info s ON o.station_id = s.id AND s.deleted = 0
+        WHERE o.deleted = 0
+        <if test="startTime != null">
+            AND o.create_order_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND o.create_order_time &lt;= #{endTime}
+        </if>
+        ORDER BY o.id DESC
+    </select>
+
+    <!-- 8. 追缴完成率 → 钻取追缴记录列表 -->
+    <select id="drillDownDebtExpandList" resultType="java.util.Map">
+        SELECT d.id, s.name AS stationName, d.station_id AS stationId,
+               d.type, d.range, d.progress, d.recovery_rate AS recoveryRate,
+               d.status, d.remark, d.create_time AS createTime
+        FROM debt_expand d
+        LEFT JOIN station_info s ON d.station_id = s.id AND s.deleted = 0
+        WHERE d.deleted = 0
+        <if test="startTime != null">
+            AND d.create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND d.create_time &lt;= #{endTime}
+        </if>
+        ORDER BY d.id DESC
+    </select>
+
+    <!-- 9. 押金订单量 → 钻取押金计划列表 -->
+    <select id="drillDownDepositPlanList" resultType="java.util.Map">
+        SELECT dp.id, s.name AS stationName, dp.station_id AS stationId,
+               dp.deposit_order_count AS depositOrderCount, dp.status,
+               dp.remark, dp.create_time AS createTime
+        FROM deposit_plan dp
+        LEFT JOIN station_info s ON dp.station_id = s.id AND s.deleted = 0
+        WHERE dp.deleted = 0
+        <if test="startTime != null">
+            AND dp.create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND dp.create_time &lt;= #{endTime}
+        </if>
+        ORDER BY dp.id DESC
     </select>
 </mapper>

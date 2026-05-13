@@ -32,6 +32,11 @@ public class GroupCarDO extends BaseDO {
      */
     private Long groupId;
     /**
+     * 集团名称
+     */
+    @TableField(exist = false)
+    private String groupName;
+    /**
      * 车牌号码，唯一
      */
     private String plateNo;

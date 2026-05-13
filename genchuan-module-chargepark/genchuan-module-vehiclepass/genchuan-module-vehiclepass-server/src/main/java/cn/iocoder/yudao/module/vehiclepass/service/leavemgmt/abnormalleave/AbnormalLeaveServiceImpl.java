@@ -28,6 +28,7 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.LEAVE_NOT_EXISTS;
+import static cn.iocoder.yudao.module.vehiclepass.constants.leavemgmt.AbnormalLeaveConstants.*;
 
 /**
  * 异常离场 Service 实现类
@@ -102,18 +103,19 @@ public class AbnormalLeaveServiceImpl implements AbnormalLeaveService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void batchHandle(AbnormalLeaveBatchHandleReqVO reqVO) {
         // 批量更新处置状态
         for (Long id : reqVO.getIds()) {
             AbnormalLeaveDO updateObj = new AbnormalLeaveDO();
             updateObj.setId(id);
-            if ("核查".equals(reqVO.getHandleType())) {
-                updateObj.setStatus("处理中");
-                updateObj.setHandleProgress("已核查");
-                updateObj.setHandleType("核查");
-            } else if ("忽略".equals(reqVO.getHandleType())) {
-                updateObj.setStatus("已关闭");
-                updateObj.setHandleType("忽略");
+            if (HANDLE_TYPE_CHECK.equals(reqVO.getHandleType())) {
+                updateObj.setStatus(STATUS_PROCESSING);
+                updateObj.setHandleProgress(HANDLE_PROGRESS_CHECKED);
+                updateObj.setHandleType(HANDLE_TYPE_CHECK);
+            } else if (HANDLE_TYPE_IGNORE.equals(reqVO.getHandleType())) {
+                updateObj.setStatus(STATUS_CLOSED);
+                updateObj.setHandleType(HANDLE_TYPE_IGNORE);
             }
             updateObj.setHandleTime(LocalDateTime.now());
             leaveMapper.updateById(updateObj);
@@ -127,9 +129,9 @@ public class AbnormalLeaveServiceImpl implements AbnormalLeaveService {
         // 更新为处理中状态，已核查
         AbnormalLeaveDO updateObj = new AbnormalLeaveDO();
         updateObj.setId(reqVO.getId());
-        updateObj.setStatus("处理中");
-        updateObj.setHandleProgress("已核查");
-        updateObj.setHandleType("核查");
+        updateObj.setStatus(STATUS_PROCESSING);
+        updateObj.setHandleProgress(HANDLE_PROGRESS_CHECKED);
+        updateObj.setHandleType(HANDLE_TYPE_CHECK);
         updateObj.setHandleTime(LocalDateTime.now());
         leaveMapper.updateById(updateObj);
     }
@@ -141,9 +143,9 @@ public class AbnormalLeaveServiceImpl implements AbnormalLeaveService {
         // 更新为已关闭状态，设置忽略理由
         AbnormalLeaveDO updateObj = new AbnormalLeaveDO();
         updateObj.setId(reqVO.getId());
-        updateObj.setStatus("已关闭");
+        updateObj.setStatus(STATUS_CLOSED);
         updateObj.setIgnoreReason(reqVO.getIgnoreReason());
-        updateObj.setHandleType("忽略");
+        updateObj.setHandleType(HANDLE_TYPE_IGNORE);
         updateObj.setHandleTime(LocalDateTime.now());
         leaveMapper.updateById(updateObj);
     }

@@ -743,7 +743,7 @@ CREATE TABLE `check_in` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键 ID',
     `student_id` BIGINT NOT NULL COMMENT '学生 ID',
     `exam_score` DECIMAL(5,1) DEFAULT NULL COMMENT '中考成绩',
-    `补充信息` TEXT DEFAULT NULL COMMENT '补充信息',
+    `supplyInfo` TEXT DEFAULT NULL COMMENT '补充信息',
     `confirm_time` DATETIME DEFAULT NULL COMMENT '报到确认时间',
     `audit_user` VARCHAR(64) DEFAULT NULL COMMENT '审核人',
     `audit_time` DATETIME DEFAULT NULL COMMENT '审核时间',
@@ -949,3 +949,30 @@ CREATE TABLE `leave_handle` (
     INDEX `idx_status` (`status`),
     INDEX `idx_tenant_id` (`tenant_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='离校办理表';
+
+
+DROP TABLE IF EXISTS `parent_reply`;
+CREATE TABLE `parent_reply` (
+                                `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+                                `communicate_id` BIGINT NOT NULL COMMENT '关联沟通消息ID',
+                                `student_id` BIGINT NOT NULL COMMENT '学生ID',
+                                `student_name` VARCHAR(50) NOT NULL COMMENT '学生姓名',
+                                `parent_reply_content` TEXT NOT NULL COMMENT '家长回复内容',
+                                `parent_reply_time` DATETIME NOT NULL COMMENT '家长回复时间',
+                                `teacher_reply_content` TEXT COMMENT '老师回复内容',
+                                `teacher_reply_time` DATETIME COMMENT '老师回复时间',
+                                `read_status` VARCHAR(20) NOT NULL DEFAULT '未读' COMMENT '阅读状态：未读/已读',
+                                `reply_status` VARCHAR(20) NOT NULL DEFAULT '未回复' COMMENT '回复状态：未回复/已回复',
+                                `remark` TEXT COMMENT '备注',
+                                `reserve1` VARCHAR(100) COMMENT '备用字段1',
+                                `reserve2` VARCHAR(100) COMMENT '备用字段2',
+                                `creator` VARCHAR(64) DEFAULT '' COMMENT '创建者',
+                                `updater` VARCHAR(64) DEFAULT '' COMMENT '更新者',
+                                `deleted` BIT(1) DEFAULT 0 COMMENT '删除标识：0-未删除 1-已删除',
+                                `tenant_id` BIGINT DEFAULT 1 NOT NULL COMMENT '租户ID',
+                                `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '创建时间',
+                                `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL COMMENT '更新时间',
+                                PRIMARY KEY (`id`),
+                                KEY `idx_communicate_id` (`communicate_id`),
+                                KEY `idx_student_id` (`student_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='家长回复表';

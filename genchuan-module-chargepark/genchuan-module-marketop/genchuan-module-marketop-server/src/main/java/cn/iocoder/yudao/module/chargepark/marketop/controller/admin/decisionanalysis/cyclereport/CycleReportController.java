@@ -81,6 +81,16 @@ public class CycleReportController {
                 BeanUtils.toBean(list, CycleReportRespVO.class));
     }
 
+    @GetMapping("/batch-export")
+    @Operation(summary = "批量导出周期报表")
+    @PreAuthorize("@ss.hasPermission('marketop:cycle-report:export')")
+    public void batchExport(@RequestParam("ids") List<Long> ids, HttpServletResponse response) throws IOException {
+        List<CycleReportDO> list = cycleReportService.getListByIds(ids);
+        List<CycleReportRespVO> voList = BeanUtils.toBean(list, CycleReportRespVO.class);
+        injectUserNames(voList);
+        ExcelUtils.write(response, "周期报表(批量).xlsx", "报表数据", CycleReportRespVO.class, voList);
+    }
+
     @GetMapping("/chart")
     @Operation(summary = "获得周期报表图表数据")
     @PreAuthorize("@ss.hasPermission('marketop:cycle-report:query')")

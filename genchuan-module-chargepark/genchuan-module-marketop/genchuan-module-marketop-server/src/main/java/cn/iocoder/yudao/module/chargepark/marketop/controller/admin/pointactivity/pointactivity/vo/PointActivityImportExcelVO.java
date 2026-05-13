@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import cn.idev.excel.annotation.ExcelProperty;
+import cn.idev.excel.annotation.write.style.ContentStyle;
 
 /**
  * 积分活动 Excel 导入 VO
@@ -26,9 +27,11 @@ public class PointActivityImportExcelVO {
     private String type;
 
     @ExcelProperty("开始时间")
+    @ContentStyle(dataFormat = 49)
     private String startTime;
 
     @ExcelProperty("结束时间")
+    @ContentStyle(dataFormat = 49)
     private String endTime;
 
     @ExcelProperty("积分规则")

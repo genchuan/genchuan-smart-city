@@ -81,11 +81,13 @@ public class RateSettingServiceImpl implements RateSettingService {
 
     @Override
     public PageResult<RateSettingRespVO> getRateSettingPage(RateSettingPageReqVO pageReqVO) {
+        System.out.println("cs2026-04-28 16:00:29:req"+pageReqVO);
         PageResult result = new PageResult<>();
 
-        List<RateSettingRespVO> list = rateSettingMapper.selectPage(pageReqVO);
+        List<RateSettingRespVO> list = rateSettingMapper.getPage(pageReqVO);
 
         long count = rateSettingMapper.selectPageCount(pageReqVO);
+//        long count = 0;
 
         result.setTotal(count);
         result.setList(list);

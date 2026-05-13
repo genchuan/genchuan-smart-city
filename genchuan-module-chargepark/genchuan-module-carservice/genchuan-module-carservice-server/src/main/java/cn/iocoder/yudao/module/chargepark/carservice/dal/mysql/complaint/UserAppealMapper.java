@@ -19,7 +19,9 @@ public interface UserAppealMapper extends BaseMapperX<UserAppealDO> {
         return selectPage(reqVO, new LambdaQueryWrapperX<UserAppealDO>()
                 .eqIfPresent(UserAppealDO::getUserId, reqVO.getUserId())
                 .eqIfPresent(UserAppealDO::getOrderId, reqVO.getOrderId())
+                .likeIfPresent(UserAppealDO::getContent, reqVO.getContent())
                 .eqIfPresent(UserAppealDO::getStatus, reqVO.getStatus())
+                .inIfPresent(UserAppealDO::getStatus, reqVO.getStatusList())
                 .betweenIfPresent(UserAppealDO::getSubmitTime, reqVO.getSubmitTime())
                 .orderByDesc(UserAppealDO::getId));
     }

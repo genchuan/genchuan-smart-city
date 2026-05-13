@@ -10,6 +10,8 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.*;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.add.AddRectifyReviewReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.add.AddRectifyReviewReqVO2;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.cancel.CancelReqVO;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.chart.RectifyReviewBarResp;
+import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.chart.RectifyReviewChartResp;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.issue.IssueReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.rectifyreview.vo.upload.UploadEvidenceFileRespVO;
@@ -45,7 +47,21 @@ public class RectifyReviewController {
     @Resource
     private RectifyReviewService rectifyReviewService;
 
-
+    @GetMapping("/chart-month-bar")
+    @Operation(summary = "整改复审 - 按月统计新增柱状图")
+    @SysOpeLog(operObject = "整改复审台账", operType = "图表统计")
+    public CommonResult<RectifyReviewBarResp> getMonthReviewCount() {
+        RectifyReviewBarResp resp = rectifyReviewService.getMonthReviewCount();
+        return success(resp);
+    }
+    @GetMapping("/chart-statistics")
+    @Operation(summary = "整改复审 - 状态统计（图表/卡片）")
+//    @SysOpeLog(operObject = "整改复审台账", operType = "统计查看")
+    public CommonResult<RectifyReviewChartResp> getRectifyReviewChartStatistics(
+            @Valid RectifyReviewLedgerPageReqVO reqVO) {
+        RectifyReviewChartResp chartResp = rectifyReviewService.getRectifyReviewChartStatistics(reqVO);
+        return success(chartResp);
+    }
 
     @GetMapping("/download-notice-pdf-batch")
     @Operation(summary = "批量下载整改通知书PDF")
@@ -77,7 +93,7 @@ public class RectifyReviewController {
     //新增.即预警页面的“生成复审台账”
     @PostMapping("/review-add")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-add')")
-    @Operation(summary = "（勿用）新增-整改通知复审记录操作",hidden = true)
+    @Operation(summary = "（次级）新增-整改通知复审记录操作")
     @SysOpeLog(operObject = "整改复审台账",operType = "新增")
     public CommonResult<Long> reviewAdd(@Valid @RequestBody AddRectifyReviewReqVO reqVO) {
         Long id = rectifyReviewService.reviewAdd(reqVO);
@@ -106,7 +122,7 @@ public class RectifyReviewController {
     //下发整改通知书，返回增改通知书表的记录
     @PostMapping("/review-issue")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:review-issue')")
-    @Operation(summary = "（勿用）下发整改通知书操作",hidden = true)
+    @Operation(summary = "（次级）下发整改通知书操作")
     @SysOpeLog(operObject = "整改复审台账",operType = "下发")
     public CommonResult<Long> reviewIssue(@Valid @RequestBody IssueReqVO reqVO) {
         Long rectifyNoticeId = rectifyReviewService.reviewIssue(reqVO);
@@ -183,7 +199,7 @@ public class RectifyReviewController {
         return success(pageResult);
     }
     @PostMapping("/create")
-    @Operation(summary = "（勿用）创建整改通知书复审台账")
+    @Operation(summary = "（次级）创建整改通知书复审台账")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:create')")
     @SysOpeLog
     public CommonResult<Long> createRectifyReview(@Valid @RequestBody RectifyReviewSaveReqVO createReqVO) {
@@ -220,7 +236,7 @@ public class RectifyReviewController {
     }
 
     @GetMapping("/page")
-    @Operation(summary = "(勿用）获得整改通知书复审台账分页")
+    @Operation(summary = "(次级）获得整改通知书复审台账分页")
     //@PreAuthorize("@ss.hasPermission('kitchen:rectify-review:query')")
     @SysOpeLog
     public CommonResult<PageResult<RectifyReviewRespVO>> getRectifyReviewPage(@Valid RectifyReviewPageReqVO pageReqVO) {

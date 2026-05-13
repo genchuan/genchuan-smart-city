@@ -7,6 +7,8 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.exchangemgmt
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.exchangemgmt.ExchangeOrderDO;
 import jakarta.validation.Valid;
 
+import java.util.List;
+
 public interface ExchangeOrderService {
 
     PageResult<ExchangeOrderDO> getPage(ExchangeOrderPageReqVO reqVO);
@@ -20,5 +22,7 @@ public interface ExchangeOrderService {
     void cancel(Long id);
 
     ExchangeOrderChartRespVO getChart();
+
+    List<ExchangeOrderDO> getListByIds(List<Long> ids);
 
 }

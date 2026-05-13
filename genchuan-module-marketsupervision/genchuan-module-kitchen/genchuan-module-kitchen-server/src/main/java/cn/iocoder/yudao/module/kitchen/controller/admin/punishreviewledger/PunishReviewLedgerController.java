@@ -8,6 +8,9 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.ad
 
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.cancel.CancelReqVO;
 
+import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.chart.PunishReviewBarResp;
+import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.chart.PunishReviewCancelReasonResp;
+import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.chart.PunishReviewChartResp;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.issue.IssueReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.upload.UploadFileReqVO;
 import cn.iocoder.yudao.module.kitchen.controller.admin.punishreviewledger.vo.upload.UploadFileRespVO;
@@ -52,6 +55,30 @@ public class PunishReviewLedgerController {
 
     @Resource
     private PunishReviewLedgerService punishReviewLedgerService;
+
+    @GetMapping("/chart-month-bar")
+    @Operation(summary = "处罚复审 - 按月统计新增柱状图")
+    @SysOpeLog(operObject = "处罚复审台账", operType = "图表统计")
+    public CommonResult<PunishReviewBarResp> getMonthReviewCount() {
+        PunishReviewBarResp resp = punishReviewLedgerService.getMonthReviewCount();
+        return success(resp);
+    }
+
+    @GetMapping("/chart-statistics")
+    @Operation(summary = "处罚复审 - 状态统计（图表/卡片）")
+    public CommonResult<PunishReviewChartResp> getPunishReviewChartStatistics(
+            @Valid PunishReviewLedgerPageReqVO reqVO) {
+        PunishReviewChartResp chartResp = punishReviewLedgerService.getPunishReviewChartStatistics(reqVO);
+        return success(chartResp);
+    }
+
+    @GetMapping("/chart-cancel-reason")
+    @Operation(summary = "处罚复审 - 撤销原因饼图统计")
+    public CommonResult<PunishReviewCancelReasonResp> getCancelReasonStatistics(
+            @Valid PunishReviewLedgerPageReqVO reqVO) {
+        PunishReviewCancelReasonResp resp = punishReviewLedgerService.getCancelReasonStatistics(reqVO);
+        return success(resp);
+    }
 
     @GetMapping("/export-excel")
     @Operation(summary = "导出 Excel")
@@ -128,7 +155,7 @@ public class PunishReviewLedgerController {
         return success(id);
     }
     @PostMapping("/create")
-    @Operation(summary = "（勿用）创建处罚通知书复审台账")
+    @Operation(summary = "（次级）创建处罚通知书复审台账")
     //@PreAuthorize("@ss.hasPermission('kitchen:punish-review-ledger:create')")
     @SysOpeLog
     public CommonResult<Long> createPunishReviewLedger(@Valid @RequestBody PunishReviewLedgerSaveReqVO createReqVO) {

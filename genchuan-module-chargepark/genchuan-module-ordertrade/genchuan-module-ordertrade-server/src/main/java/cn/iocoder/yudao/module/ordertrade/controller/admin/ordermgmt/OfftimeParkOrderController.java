@@ -92,8 +92,7 @@ public class OfftimeParkOrderController {
                                  HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<OfftimeParkOrderDO> list = offtimeParkOrderService.getOfftimeParkOrderPage(pageReqVO).getList();
-        ExcelUtils.write(response, "错时停车订单.xls", "数据", OfftimeParkOrderRespVO.class,
-                BeanUtils.toBean(list, OfftimeParkOrderRespVO.class));
+        ExcelUtils.write(response, "错时停车订单.xls", "数据", OfftimeParkOrderRespVO.class, BeanUtils.toBean(list, OfftimeParkOrderRespVO.class));
     }
 
     @GetMapping("/batch-export")
@@ -103,8 +102,7 @@ public class OfftimeParkOrderController {
                                       HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<OfftimeParkOrderDO> list = offtimeParkOrderService.getOfftimeParkOrderPage(pageReqVO).getList();
-        ExcelUtils.write(response, "错时停车订单批量导出.xls", "数据", OfftimeParkOrderRespVO.class,
-                BeanUtils.toBean(list, OfftimeParkOrderRespVO.class));
+        ExcelUtils.write(response, "错时停车订单批量导出.xls", "数据", OfftimeParkOrderRespVO.class, BeanUtils.toBean(list, OfftimeParkOrderRespVO.class));
     }
 
     // ==================== ② 业务操作接口 ====================

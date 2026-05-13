@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface StockControlMapper extends BaseMapperX<StockControlDO> {
@@ -42,5 +43,12 @@ public interface StockControlMapper extends BaseMapperX<StockControlDO> {
     List<StockControlChartRespVO.DistributionItem> selectDistributionByType(@Param("startTime") LocalDateTime startTime,
                                                                              @Param("endTime") LocalDateTime endTime,
                                                                              @Param("stationId") Long stationId);
+
+    List<Map<String, Object>> selectStockTrend(@Param("startTime") LocalDateTime startTime,
+                                                @Param("endTime") LocalDateTime endTime,
+                                                @Param("stationId") Long stationId);
+
+    StockControlDO selectByCardIdAndStationId(@Param("cardId") Long cardId,
+                                               @Param("stationId") String stationId);
 
 }

@@ -124,7 +124,7 @@ public class EndParkController {
         return success(parkService.getChart(chartReqVO));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出结束停车 Excel")
     @PreAuthorize("@ss.hasPermission('end:park:export')")
     @ApiAccessLog(operateType = EXPORT)

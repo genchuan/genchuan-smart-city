@@ -59,4 +59,13 @@ public interface CommunicateMgmtService {
      */
     PageResult<CommunicateMgmtDO> getCommunicateMgmtPage(CommunicateMgmtPageReqVO pageReqVO);
 
+    Boolean publish(@Valid CommunicateMgmtPublishReqVO reqVO);
+
+    Boolean feedback(@Valid CommunicateMgmtFeedbackReqVO reqVO);
+
+    Boolean reply(@Valid CommunicateMgmtReplyReqVO reqVO);
+
+    CommunicateMgmtChartRespVO chart(@Valid CommunicateMgmtChartReqVO reqVO);
+
+    CommunicateInteractIndexRespVO interactIndex(@Valid CommunicateMgmtChartReqVO reqVO);
 }

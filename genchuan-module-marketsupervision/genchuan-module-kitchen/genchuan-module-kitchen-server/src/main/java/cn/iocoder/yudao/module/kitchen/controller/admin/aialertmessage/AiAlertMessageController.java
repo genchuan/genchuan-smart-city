@@ -47,7 +47,7 @@ public class AiAlertMessageController {
         return success(id);
     }
     @PostMapping("/create")
-    @Operation(summary = "(勿用)创建AI告警消息")
+    @Operation(summary = "(次级)创建AI告警消息")
     //@PreAuthorize("@ss.hasPermission('kitchen:ai-alert-message:create')")
     public CommonResult<Long> createAiAlertMessage(@Valid @RequestBody AiAlertMessageSaveReqVO createReqVO) {
         return success(aiAlertMessageService.createAiAlertMessage(createReqVO));

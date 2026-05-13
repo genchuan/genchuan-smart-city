@@ -62,4 +62,10 @@
         </if>
     </select>
 
+    <select id="getIdByNickname" resultType="java.lang.Long">
+        SELECT id
+        FROM group_info
+        WHERE deleted = 0 AND name = #{nickname}
+    </select>
+
 </mapper>

@@ -117,7 +117,7 @@ public class LeaveRecordController {
         return success(leaveRecordService.getRecordPageWithJoin(pageReqVO));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出离场记录 Excel")
     @PreAuthorize("@ss.hasPermission('leave:record:export')")
     @ApiAccessLog(operateType = EXPORT)

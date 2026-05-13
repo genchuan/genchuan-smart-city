@@ -25,6 +25,7 @@ public class DebtExpandChartRespVO {
 
     @Data
     public static class RecoveryBarItem {
+        private Long stationId;
         private String name;   // 场站名
         private Double value;  // 追缴成功率
     }

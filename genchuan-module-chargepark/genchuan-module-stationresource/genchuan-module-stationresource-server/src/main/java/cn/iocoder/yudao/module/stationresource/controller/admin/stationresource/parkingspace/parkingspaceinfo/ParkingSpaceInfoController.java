@@ -23,6 +23,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.io.IOException;
 
@@ -72,7 +75,7 @@ public class ParkingSpaceInfoController {
         parkingSpaceInfoService.bindParkingSpace(reqVO);
         return success(true);
     }
-    @GetMapping("/import-template")
+    @GetMapping("/get-import-template")
     @Operation(summary = "下载导入模板")
     @PreAuthorize("@ss.hasPermission('stationresource:area-info:import')")
     public void importTemplate(HttpServletResponse response) throws Exception {
@@ -100,7 +103,7 @@ public class ParkingSpaceInfoController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('stationresource:parking-space-info:query')")
     public CommonResult<ParkingSpaceInfoRespVO> getParkingSpaceInfo(@RequestParam("id") Long id) {
-        ParkingSpaceInfoDO parkingSpaceInfo = parkingSpaceInfoService.getParkingSpaceInfo(id);
+        ParkingSpaceInfoRespVO parkingSpaceInfo = parkingSpaceInfoService.getParkingSpaceInfo(id);
         return success(BeanUtils.toBean(parkingSpaceInfo, ParkingSpaceInfoRespVO.class));
     }
 
@@ -108,7 +111,7 @@ public class ParkingSpaceInfoController {
     @Operation(summary = "获得车位信息分页")
     @PreAuthorize("@ss.hasPermission('stationresource:parking-space-info:query')")
     public CommonResult<PageResult<ParkingSpaceInfoRespVO>> getParkingSpaceInfoPage(@Valid ParkingSpaceInfoPageReqVO pageReqVO) {
-        PageResult<ParkingSpaceInfoDO> pageResult = parkingSpaceInfoService.getParkingSpaceInfoPage(pageReqVO);
+        PageResult<ParkingSpaceInfoRespVO> pageResult = parkingSpaceInfoService.getParkingSpaceInfoPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, ParkingSpaceInfoRespVO.class));
     }
 
@@ -117,12 +120,26 @@ public class ParkingSpaceInfoController {
     @PreAuthorize("@ss.hasPermission('stationresource:parking-space-info:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportParkingSpaceInfoExcel(@Valid ParkingSpaceInfoPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                            HttpServletResponse response) throws IOException {
+        // 0. 配置
+        String inputFileName = "车位信息_";
+
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<ParkingSpaceInfoDO> list = parkingSpaceInfoService.getParkingSpaceInfoPage(pageReqVO).getList();
-        // 导出 Excel
+        List<ParkingSpaceInfoRespVO> list = parkingSpaceInfoService.getParkingSpaceInfoPage(pageReqVO).getList();
+
+        // 1、强制设置响应头，确保浏览器触发下载
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setCharacterEncoding("utf-8");
+        // 2、动态生成文件名，带上当前日期
+        String dateStr = java.time.LocalDate.now().toString();
+        String fileOriginName = inputFileName + dateStr + ".xls";
+        String fileName = URLEncoder.encode(fileOriginName, StandardCharsets.UTF_8.toString())
+                .replaceAll("\\+", "%20").replace("UTF-8","");
+        response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
+
+        // 3、调用 ExcelUtils 导出
         ExcelUtils.write(response, "车位信息.xls", "数据", ParkingSpaceInfoRespVO.class,
-                        BeanUtils.toBean(list, ParkingSpaceInfoRespVO.class));
+                BeanUtils.toBean(list, ParkingSpaceInfoRespVO.class));
     }
     //==================================================================================================
 //    @PostMapping("/create")

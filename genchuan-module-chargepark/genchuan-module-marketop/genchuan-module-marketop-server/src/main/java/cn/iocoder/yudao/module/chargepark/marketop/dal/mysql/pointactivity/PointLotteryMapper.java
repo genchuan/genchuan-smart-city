@@ -25,6 +25,7 @@ public interface PointLotteryMapper extends BaseMapperX<PointLotteryDO> {
                 .eqIfPresent(PointLotteryDO::getSyncStatus, reqVO.getSyncStatus())
                 .eqIfPresent(PointLotteryDO::getSenderId, reqVO.getSenderId())
                 .likeIfPresent(PointLotteryDO::getCheckResult, reqVO.getCheckResult())
+                .betweenIfPresent(PointLotteryDO::getSendTime, reqVO.getSendTime())
                 .orderByDesc(PointLotteryDO::getId);
 
         if (reqVO.getStartTime() != null) {

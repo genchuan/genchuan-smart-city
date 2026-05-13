@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -108,6 +109,20 @@ public class StationReportController {
         // 3、调用 ExcelUtils 导出
         ExcelUtils.write(response, "场站资源报表.xls", "数据", StationReportRespVO.class,
                 BeanUtils.toBean(list, StationReportRespVO.class));
+
+        // 4、导出次数+1
+        List<Long> ids = new ArrayList<>();
+        for (StationReportDO report : list) {
+            ids.add(report.getId());
+        }
+        stationReportService.incrementExportCount(ids);
+    }
+
+    @GetMapping("/drill-down")
+    @Operation(summary = "场站资源报表钻取", description = "点击卡片统计数字，钻取底层明细数据。metric 对应卡片指标：totalAreaCount/totalStationCount/normalOperateCount/totalSpaceCount/availableSpaceCount/effectiveRuleCount/orderCount/revenue/recoveryRate/depositOrderCount")
+    @PreAuthorize("@ss.hasPermission('stationresource:station-op-report:chart')")
+    public CommonResult<DrillDownRespVO> drillDown(@Validated DrillDownReqVO reqVO) {
+        return success(stationReportService.drillDown(reqVO));
     }
 
     @GetMapping("/get")

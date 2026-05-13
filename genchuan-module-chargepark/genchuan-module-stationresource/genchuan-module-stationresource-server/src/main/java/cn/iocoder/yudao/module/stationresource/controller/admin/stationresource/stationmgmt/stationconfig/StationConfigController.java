@@ -56,7 +56,7 @@ public class StationConfigController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('stationresource:station-config:query')")
     public CommonResult<StationConfigRespVO> getStationConfig(@RequestParam("id") Long id) {
-        StationConfigDO stationConfig = stationConfigService.getStationConfig(id);
+        StationConfigRespVO stationConfig = stationConfigService.getStationConfig(id);
         return success(BeanUtils.toBean(stationConfig, StationConfigRespVO.class));
     }
     // ==================== 1. 批量生效 ====================
@@ -94,7 +94,7 @@ public class StationConfigController {
     @Operation(summary = "获得场站配置分页")
     @PreAuthorize("@ss.hasPermission('stationresource:station-config:query')")
     public CommonResult<PageResult<StationConfigRespVO>> getStationConfigPage(@Valid StationConfigPageReqVO pageReqVO) {
-        PageResult<StationConfigDO> pageResult = stationConfigService.getStationConfigPage(pageReqVO);
+        PageResult<StationConfigRespVO> pageResult = stationConfigService.getStationConfigPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, StationConfigRespVO.class));
     }
 

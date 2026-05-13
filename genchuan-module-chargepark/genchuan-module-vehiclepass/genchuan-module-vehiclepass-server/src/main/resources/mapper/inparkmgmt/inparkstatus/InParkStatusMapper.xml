@@ -28,7 +28,7 @@
         <if test="reqVO.spaceId != null">
             AND p.space_id = #{reqVO.spaceId}
         </if>
-        <if test="reqVO.inTime != null and reqVO.inTime.size() == 2">
+        <if test="reqVO.inTime != null and reqVO.inTime.length == 2">
             AND p.in_time BETWEEN #{reqVO.inTime[0]} AND #{reqVO.inTime[1]}
         </if>
         <if test="reqVO.status != null and reqVO.status != ''">

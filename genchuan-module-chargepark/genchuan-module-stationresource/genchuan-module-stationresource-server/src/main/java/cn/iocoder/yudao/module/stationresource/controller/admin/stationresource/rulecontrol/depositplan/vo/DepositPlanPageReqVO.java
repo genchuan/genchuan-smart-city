@@ -17,6 +17,9 @@ public class DepositPlanPageReqVO extends PageParam {
     @Schema(description = "[所属场站] 关联场站信息表 station_info", example = "652")
     private Long stationId;
 
+    @Schema(description = "场站名称")
+    private String stationName;
+
     @Schema(description = "[押金金额] 单位：元")
     private BigDecimal depositAmount;
 
@@ -32,6 +35,9 @@ public class DepositPlanPageReqVO extends PageParam {
 
     @Schema(description = "[审核人] 关联芋道用户表 system_user", example = "31342")
     private Long auditUserId;
+
+    @Schema(description = "审核人名称")
+    private String auditUserName;
 
     @Schema(description = "[押金订单量] 产生押金的订单总数", example = "29840")
     private Integer depositOrderCount;

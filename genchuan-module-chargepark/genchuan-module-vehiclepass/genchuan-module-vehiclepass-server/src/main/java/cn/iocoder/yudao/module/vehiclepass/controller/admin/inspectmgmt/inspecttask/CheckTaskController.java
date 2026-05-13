@@ -151,7 +151,7 @@ public class CheckTaskController {
         return success(taskService.getChart(reqVO));
     }
 
-    @GetMapping("/export-excel")
+    @GetMapping("/export")
     @Operation(summary = "导出稽查任务 Excel")
     @PreAuthorize("@ss.hasPermission('check:task:export')")
     @ApiAccessLog(operateType = EXPORT)

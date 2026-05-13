@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.ordertrade.dal.mysql.invoicemgmt.InvoiceListMappe
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.ordermgmt.OfftimeParkOrderMapper;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.refundmgmt.RefundApplyMapper;
 import cn.iocoder.yudao.module.ordertrade.framework.tool.OrderUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,8 +46,12 @@ public class OfftimeParkOrderServiceImpl implements OfftimeParkOrderService {
     }
     @Override public void deleteOfftimeParkOrder(Long id) { validateExists(id); offtimeParkOrderMapper.deleteById(id); }
     @Override public void deleteOfftimeParkOrderListByIds(List<Long> ids) { offtimeParkOrderMapper.deleteByIds(ids); }
-    @Override public OfftimeParkOrderDO getOfftimeParkOrder(Long id) { return offtimeParkOrderMapper.selectById(id); }
-    @Override public PageResult<OfftimeParkOrderDO> getOfftimeParkOrderPage(OfftimeParkOrderPageReqVO v) { return offtimeParkOrderMapper.selectPage(v); }
+    @Override public OfftimeParkOrderDO getOfftimeParkOrder(Long id) { return offtimeParkOrderMapper.selectByIdJoinStation(id); }
+    @Override public PageResult<OfftimeParkOrderDO> getOfftimeParkOrderPage(OfftimeParkOrderPageReqVO v) {
+        Page<OfftimeParkOrderDO> page = new Page<>(v.getPageNo(), v.getPageSize());
+        var result = offtimeParkOrderMapper.selectPageJoinStation(page, v);
+        return new PageResult<>(result.getRecords(), result.getTotal());
+    }
         @Override
     public OfftimeParkOrderChartRespVO getOfftimeParkOrderChart(OfftimeParkOrderChartReqVO v) {
         OfftimeParkOrderChartRespVO resp = new OfftimeParkOrderChartRespVO();
@@ -55,7 +60,7 @@ public class OfftimeParkOrderServiceImpl implements OfftimeParkOrderService {
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(offtimeParkOrderMapper.selectTrend(start, end));
-        resp.setStationData(offtimeParkOrderMapper.selectGroupByStatus());
+        resp.setStationData(offtimeParkOrderMapper.selectGroupByStation(start, end));
         Long total = offtimeParkOrderMapper.selectTodayCount(todayStart, now);
         Long paid  = offtimeParkOrderMapper.selectTodayPaidCount(todayStart, now);
         OfftimeParkOrderChartRespVO.CardData card = new OfftimeParkOrderChartRespVO.CardData();
@@ -105,11 +110,12 @@ public class OfftimeParkOrderServiceImpl implements OfftimeParkOrderService {
         if (order == null) throw exception(OFFTIME_PARK_ORDER_NOT_EXISTS);
         if (!"paid".equals(order.getStatus())) throw exception(ALL_ORDER_STATUS_CANNOT_REFUND);
         // 更新订单状态
-        OfftimeParkOrderDO update = new OfftimeParkOrderDO();
-        update.setId(reqVO.getId());
-        update.setStatus("refunding");
-        update.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
-        offtimeParkOrderMapper.updateById(update);
+        //OfftimeParkOrderDO update = new OfftimeParkOrderDO();
+        //update.setId(reqVO.getId());
+        order.setStatus("refunding");
+        order.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
+        order.setUpdater(SecurityFrameworkUtils.getLoginUserNickname());
+        offtimeParkOrderMapper.updateById(order);
         // 创建退款申请（触发退款流程）
         RefundApplyDO apply = new RefundApplyDO();
         apply.setApplicantId(SecurityFrameworkUtils.getLoginUserId());
@@ -119,6 +125,9 @@ public class OfftimeParkOrderServiceImpl implements OfftimeParkOrderService {
         apply.setRefundReason(reqVO.getRemark() != null ? reqVO.getRemark() : "申请退款");
         apply.setApplyTime(LocalDateTime.now());
         apply.setStatus("pending_audit");
+        apply.setCreator(SecurityFrameworkUtils.getLoginUserId()+"");
+        apply.setUpdater(SecurityFrameworkUtils.getLoginUserId()+"");
+        apply.setApplicantId(SecurityFrameworkUtils.getLoginUserId());
         refundApplyMapper.insert(apply);
     }
 

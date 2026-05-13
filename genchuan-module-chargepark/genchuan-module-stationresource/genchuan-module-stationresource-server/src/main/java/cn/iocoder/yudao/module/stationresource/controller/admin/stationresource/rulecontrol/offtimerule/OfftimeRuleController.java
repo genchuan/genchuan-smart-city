@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
@@ -83,7 +85,7 @@ public class OfftimeRuleController {
         return success(true);
     }
 
-    @GetMapping("/import-template")
+    @GetMapping("/get-import-template")
     @Operation(summary = "下载错时规则导入模板")
     @PreAuthorize("@ss.hasPermission('stationresource:offtime-rule:import')")
     public void importOfftimeRuleTemplate(HttpServletResponse response) throws Exception {
@@ -104,8 +106,7 @@ public class OfftimeRuleController {
     @Operation(summary = "获得错时规则分页")
     @PreAuthorize("@ss.hasPermission('stationresource:offtime-rule:query')")
     public CommonResult<PageResult<OfftimeRuleRespVO>> getOfftimeRulePage(@Valid OfftimeRulePageReqVO pageReqVO) {
-        PageResult<OfftimeRuleDO> pageResult = offtimeRuleService.getOfftimeRulePage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, OfftimeRuleRespVO.class));
+        return success(offtimeRuleService.getOfftimeRulePage(pageReqVO));
     }
 
     @GetMapping("/get")
@@ -123,10 +124,24 @@ public class OfftimeRuleController {
     @ApiAccessLog(operateType = EXPORT)
     public void exportOfftimeRuleExcel(@Valid OfftimeRulePageReqVO pageReqVO,
                                        HttpServletResponse response) throws IOException {
+        // 0. 配置
+        String inputFileName = "错时规则_";
+
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<OfftimeRuleDO> list = offtimeRuleService.getOfftimeRulePage(pageReqVO).getList();
-        ExcelUtils.write(response, "错时规则.xls", "数据", OfftimeRuleRespVO.class,
-                BeanUtils.toBean(list, OfftimeRuleRespVO.class));
+        List<OfftimeRuleRespVO> list = offtimeRuleService.getOfftimeRulePage(pageReqVO).getList();
+
+        // 1、强制设置响应头，确保浏览器触发下载
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setCharacterEncoding("utf-8");
+        // 2、动态生成文件名，带上当前日期
+        String dateStr = java.time.LocalDate.now().toString();
+        String fileOriginName = inputFileName + dateStr + ".xls";
+        String fileName = URLEncoder.encode(fileOriginName, StandardCharsets.UTF_8.toString())
+                .replaceAll("\\+", "%20").replace("UTF-8","");
+        response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
+
+        // 3、调用 ExcelUtils 导出
+        ExcelUtils.write(response, "错时规则.xls", "数据", OfftimeRuleRespVO.class, list);
     }
 
 }

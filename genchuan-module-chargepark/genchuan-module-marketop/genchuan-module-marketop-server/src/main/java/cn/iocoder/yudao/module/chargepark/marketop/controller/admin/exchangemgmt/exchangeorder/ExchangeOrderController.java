@@ -69,7 +69,7 @@ public class ExchangeOrderController {
         return CommonResult.success(true);
     }
 
-    @PutMapping("/deliver")
+    @PutMapping("/ship")
     @Operation(summary = "发货兑换订单")
     @PreAuthorize("@ss.hasPermission('marketop:exchange-order:deliver')")
     public CommonResult<Boolean> deliver(@Valid @RequestBody ExchangeOrderDeliverReqVO reqVO) {
@@ -98,18 +98,17 @@ public class ExchangeOrderController {
     @GetMapping("/batch-export")
     @Operation(summary = "批量导出兑换订单")
     @PreAuthorize("@ss.hasPermission('marketop:exchange-order:query')")
-    public void batchExport(@RequestParam(value = "ids", required = false) List<Long> ids,
-                            ExchangeOrderPageReqVO reqVO, HttpServletResponse response) throws IOException {
-        List<ExchangeOrderDO> list;
+    public void batchExport(@RequestParam(value = "ids", required = false) List<Long> ids, HttpServletResponse response) throws IOException {
+        List<ExchangeOrderDO> list = new ArrayList<>();
         if (ids != null && !ids.isEmpty()) {
-            // TODO: 实现批量按ID查询
-            list = Collections.emptyList();
-        } else {
-            reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-            list = exchangeOrderService.getPage(reqVO).getList();
-        }
-        ExcelUtils.write(response, "兑换订单.xlsx", "数据", ExchangeOrderRespVO.class,
-                BeanUtils.toBean(list, ExchangeOrderRespVO.class));
+            list = exchangeOrderService.getListByIds(ids);}
+//        } else {
+//            reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+//            list = exchangeOrderService.getPage(reqVO).getList();
+//        }
+        List<ExchangeOrderRespVO> voList = BeanUtils.toBean(list, ExchangeOrderRespVO.class);
+        injectUserNames(voList);
+        ExcelUtils.write(response, "兑换订单.xlsx", "数据", ExchangeOrderRespVO.class, voList);
     }
 
     @GetMapping("/chart")

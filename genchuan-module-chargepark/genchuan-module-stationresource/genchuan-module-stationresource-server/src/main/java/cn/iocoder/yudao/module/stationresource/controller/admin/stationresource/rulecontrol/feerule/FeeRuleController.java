@@ -31,6 +31,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
@@ -76,7 +78,7 @@ public class FeeRuleController {
         feeRuleService.updateFeeRuleBiz(updateReqVO);
         return success(true);
     }
-    @GetMapping("/import-template")
+    @GetMapping("/get-import-template")
     @Operation(summary = "下载收费规则导入模板")
     @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:import')")
     public void importFeeRuleTemplate(HttpServletResponse response) throws Exception {
@@ -103,8 +105,7 @@ public class FeeRuleController {
     @Operation(summary = "获得收费规则分页")
     @PreAuthorize("@ss.hasPermission('stationresource:fee-rule:query')")
     public CommonResult<PageResult<FeeRuleRespVO>> getFeeRulePage(@Valid FeeRulePageReqVO pageReqVO) {
-        PageResult<FeeRuleDO> pageResult = feeRuleService.getFeeRulePage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, FeeRuleRespVO.class));
+        return success(feeRuleService.getFeeRulePage(pageReqVO));
     }
 
     @GetMapping("/get")
@@ -122,11 +123,24 @@ public class FeeRuleController {
     @ApiAccessLog(operateType = EXPORT)
     public void exportFeeRuleExcel(@Valid FeeRulePageReqVO pageReqVO,
                                    HttpServletResponse response) throws IOException {
+        // 0. 配置
+        String inputFileName = "收费规则_";
+
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<FeeRuleDO> list = feeRuleService.getFeeRulePage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "收费规则.xls", "数据", FeeRuleRespVO.class,
-                BeanUtils.toBean(list, FeeRuleRespVO.class));
+        List<FeeRuleRespVO> list = feeRuleService.getFeeRulePage(pageReqVO).getList();
+
+        // 1、强制设置响应头，确保浏览器触发下载
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setCharacterEncoding("utf-8");
+        // 2、动态生成文件名，带上当前日期
+        String dateStr = java.time.LocalDate.now().toString();
+        String fileOriginName = inputFileName + dateStr + ".xls";
+        String fileName = URLEncoder.encode(fileOriginName, StandardCharsets.UTF_8.toString())
+                .replaceAll("\\+", "%20").replace("UTF-8","");
+        response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
+
+        // 3、调用 ExcelUtils 导出
+        ExcelUtils.write(response, "收费规则.xls", "数据", FeeRuleRespVO.class, list);
     }
     //==================================================================================
 

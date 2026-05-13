@@ -4,6 +4,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.groupclient.groupinfo.GroupInfoDO;
+import com.baomidou.dynamic.datasource.annotation.DS;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.groupclient.groupinfo.vo.*;
 
@@ -16,6 +17,7 @@ import java.util.List;
  * @author 亘川智城
  */
 @Mapper
+@DS("master")
 public interface GroupInfoMapper extends BaseMapperX<GroupInfoDO> {
 
     default PageResult<GroupInfoDO> selectPage(GroupInfoPageReqVO reqVO) {
@@ -40,4 +42,6 @@ public interface GroupInfoMapper extends BaseMapperX<GroupInfoDO> {
     Long selectTotalGroupCount(LocalDateTime start, LocalDateTime end);
 
     Long selectNewGroupCount(LocalDateTime start, LocalDateTime end);
+
+    Long getIdByNickname(String merchantName);
 }

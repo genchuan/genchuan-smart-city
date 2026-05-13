@@ -55,8 +55,8 @@ public class PlateAuthController {
         return success(true);
     }
 
-    @GetMapping("/export-excel")
-    @Operation(summary = "导出车牌认证 Excel")
+    @GetMapping("/export")
+    @Operation(summary = "导出车牌认证")
     @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportPlateAuthExcel(@Valid PlateAuthPageReqVO pageReqVO,
@@ -102,6 +102,15 @@ public class PlateAuthController {
     public CommonResult<PlateAuthChartRespVO> getPlateAuthChart(@Valid PlateAuthChartReqVO chartReqVO) {
         return success(plateAuthService.getPlateAuthChart(chartReqVO));
     }
+
+    @GetMapping("/get")
+    @Operation(summary = "获得车牌认证")
+    @Parameter(name = "id", description = "编号", required = true, example = "1")
+    @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:query')")
+    public CommonResult<PlateAuthPageRespVO> getPlateAuth(@RequestParam("id") Long id) {
+        PlateAuthDO plateAuth = plateAuthService.getPlateAuth(id);
+        return success(BeanUtils.toBean(plateAuth, PlateAuthPageRespVO.class));
+    }
 //——————————————————————————————————————————————————————//
 //    @PostMapping("/create")
 //    @Operation(summary = "创建车牌认证")
@@ -134,15 +143,6 @@ public class PlateAuthController {
 //    public CommonResult<Boolean> deletePlateAuthList(@RequestParam("ids") List<Long> ids) {
 //        plateAuthService.deletePlateAuthListByIds(ids);
 //        return success(true);
-//    }
-//
-//    @GetMapping("/get")
-//    @Operation(summary = "获得车牌认证")
-//    @Parameter(name = "id", description = "编号", required = true, example = "1024")
-//    @PreAuthorize("@ss.hasPermission('usermerchant:plate-auth:query')")
-//    public CommonResult<PlateAuthPageRespVO> getPlateAuth(@RequestParam("id") Long id) {
-//        PlateAuthDO plateAuth = plateAuthService.getPlateAuth(id);
-//        return success(BeanUtils.toBean(plateAuth, PlateAuthPageRespVO.class));
 //    }
 
 }

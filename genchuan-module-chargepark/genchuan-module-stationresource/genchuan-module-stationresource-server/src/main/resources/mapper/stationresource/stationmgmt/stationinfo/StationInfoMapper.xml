@@ -9,4 +9,74 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <select id="getPage" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.stationinfo.vo.StationInfoRespVO">
+        SELECT
+        s.*,
+        su.nickname AS leaderName,    <!-- 负责人名称 -->
+        a.name AS areaName            <!-- 片区名称 -->
+        FROM station_info s
+        LEFT JOIN station_user su ON s.user_id = su.id AND su.deleted = 0
+        LEFT JOIN area_info a ON s.area_id = a.id AND a.deleted = 0
+        WHERE s.deleted = 0
+
+        <if test="pageReqVO.id != null">
+            AND s.id = #{pageReqVO.id}
+        </if>
+        <if test="pageReqVO.stationNo != null and pageReqVO.stationNo != ''">
+            AND s.station_no LIKE CONCAT('%', #{pageReqVO.stationNo}, '%')
+        </if>
+        <if test="pageReqVO.name != null and pageReqVO.name != ''">
+            AND s.name LIKE CONCAT('%', #{pageReqVO.name}, '%')
+        </if>
+        <if test="pageReqVO.type != null and pageReqVO.type != ''">
+            AND s.type = #{pageReqVO.type}
+        </if>
+        <if test="pageReqVO.address != null and pageReqVO.address != ''">
+            AND s.address LIKE CONCAT('%', #{pageReqVO.address}, '%')
+        </if>
+        <if test="pageReqVO.spaceTotal != null">
+            AND s.space_total = #{pageReqVO.spaceTotal}
+        </if>
+        <if test="pageReqVO.userId != null">
+            AND s.user_id = #{pageReqVO.userId}
+        </if>
+        <if test="pageReqVO.feeStandard != null and pageReqVO.feeStandard != ''">
+            AND s.fee_standard = #{pageReqVO.feeStandard}
+        </if>
+        <if test="pageReqVO.areaId != null">
+            AND s.area_id = #{pageReqVO.areaId}
+        </if>
+        <if test="pageReqVO.operateType != null and pageReqVO.operateType != ''">
+            AND s.operate_type = #{pageReqVO.operateType}
+        </if>
+        <if test="pageReqVO.status != null and pageReqVO.status != ''">
+            AND s.status = #{pageReqVO.status}
+        </if>
+        <if test="pageReqVO.bindTime != null and pageReqVO.bindTime.size() == 2">
+            AND s.bind_time BETWEEN #{pageReqVO.bindTime[0]} AND #{pageReqVO.bindTime[1]}
+        </if>
+        <if test="pageReqVO.bindUserId != null">
+            AND s.bind_user_id = #{pageReqVO.bindUserId}
+        </if>
+        <if test="pageReqVO.deviceCount != null">
+            AND s.device_count = #{pageReqVO.deviceCount}
+        </if>
+        <if test="pageReqVO.spaceCount != null">
+            AND s.space_count = #{pageReqVO.spaceCount}
+        </if>
+        <if test="pageReqVO.remark != null and pageReqVO.remark != ''">
+            AND s.remark = #{pageReqVO.remark}
+        </if>
+        <if test="pageReqVO.reserve1 != null and pageReqVO.reserve1 != ''">
+            AND s.reserve1 = #{pageReqVO.reserve1}
+        </if>
+        <if test="pageReqVO.reserve2 != null and pageReqVO.reserve2 != ''">
+            AND s.reserve2 = #{pageReqVO.reserve2}
+        </if>
+        <if test="pageReqVO.createTime != null and pageReqVO.createTime.size() == 2">
+            AND s.create_time BETWEEN #{pageReqVO.createTime[0]} AND #{pageReqVO.createTime[1]}
+        </if>
+
+        ORDER BY s.id DESC
+    </select>
 </mapper>

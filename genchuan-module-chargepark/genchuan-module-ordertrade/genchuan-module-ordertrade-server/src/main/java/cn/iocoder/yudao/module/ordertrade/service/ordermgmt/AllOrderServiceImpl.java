@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.ordertrade.dal.mysql.invoicemgmt.InvoiceListMappe
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.ordermgmt.AllOrderMapper;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.refundmgmt.RefundApplyMapper;
 import cn.iocoder.yudao.module.ordertrade.framework.tool.OrderUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,11 +57,13 @@ public class AllOrderServiceImpl implements AllOrderService {
     public void deleteAllOrderListByIds(List<Long> ids) { allOrderMapper.deleteByIds(ids); }
 
     @Override
-    public AllOrderDO getAllOrder(Long id) { return allOrderMapper.selectById(id); }
+    public AllOrderDO getAllOrder(Long id) { return allOrderMapper.selectByIdJoinStation(id); }
 
     @Override
     public PageResult<AllOrderDO> getAllOrderPage(AllOrderPageReqVO pageReqVO) {
-        return allOrderMapper.selectPage(pageReqVO);
+        Page<AllOrderDO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        var result = allOrderMapper.selectPageJoinStation(page, pageReqVO);
+        return new PageResult<>(result.getRecords(), result.getTotal());
     }
 
         @Override
@@ -71,7 +74,7 @@ public class AllOrderServiceImpl implements AllOrderService {
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(allOrderMapper.selectTrend(start, end));
-        resp.setTypeData(allOrderMapper.selectGroupByStatus());
+        resp.setTypeData(allOrderMapper.selectGroupByType(start, end));
         Long total = allOrderMapper.selectTodayCount(todayStart, now);
         Long paid  = allOrderMapper.selectTodayPaidCount(todayStart, now);
         AllOrderChartRespVO.CardData card = new AllOrderChartRespVO.CardData();
@@ -121,11 +124,12 @@ public class AllOrderServiceImpl implements AllOrderService {
         if (order == null) throw exception(ALL_ORDER_NOT_EXISTS);
         if (!"paid".equals(order.getStatus())) throw exception(ALL_ORDER_STATUS_CANNOT_REFUND);
         // 1. 更新订单状态为退款中
-        AllOrderDO update = new AllOrderDO();
-        update.setId(reqVO.getId());
-        update.setStatus("refunding");
-        update.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
-        allOrderMapper.updateById(update);
+        //AllOrderDO update = new AllOrderDO();
+        //update.setId(reqVO.getId());
+        order.setStatus("refunding");
+        order.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
+        order.setUpdater(SecurityFrameworkUtils.getLoginUserNickname());
+        allOrderMapper.updateById(order);
         // 2. 创建退款申请（触发退款流程）
         RefundApplyDO apply = new RefundApplyDO();
         apply.setOrderId(reqVO.getId());
@@ -135,6 +139,9 @@ public class AllOrderServiceImpl implements AllOrderService {
         apply.setRefundReason(reqVO.getRemark() != null ? reqVO.getRemark() : "申请退款");
         apply.setApplyTime(LocalDateTime.now());
         apply.setStatus("pending_audit");
+        apply.setCreator(SecurityFrameworkUtils.getLoginUserId()+"");
+        apply.setUpdater(SecurityFrameworkUtils.getLoginUserId()+"");
+        apply.setApplicantId(SecurityFrameworkUtils.getLoginUserId());
         refundApplyMapper.insert(apply);
     }
 

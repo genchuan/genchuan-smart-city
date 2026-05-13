@@ -70,7 +70,7 @@ public class PunishNoticeController {
         return success(id);
     }
     @PostMapping("/create")
-    @Operation(summary = "（勿用）创建处罚通知书")
+    @Operation(summary = "（次级）创建处罚通知书")
     //@PreAuthorize("@ss.hasPermission('kitchen:punish-notice:create')")
 
     public CommonResult<Long> createPunishNotice(@Valid @RequestBody PunishNoticeSaveReqVO createReqVO) {

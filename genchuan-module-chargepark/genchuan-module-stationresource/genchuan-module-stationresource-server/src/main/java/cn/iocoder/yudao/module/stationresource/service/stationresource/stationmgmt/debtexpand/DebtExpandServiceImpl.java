@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.debtexpand.vo.DebtExpandPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.debtexpand.vo.DebtExpandRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.debtexpand.vo.DebtExpandSaveReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.debtexpand.vo.chart.DebtExpandChartRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.stationmgmt.debtexpand.vo.ops.DebtExpandCreateReqVO;
@@ -14,6 +15,7 @@ import cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.station
 import cn.iocoder.yudao.module.stationresource.vrv.utils.common.excel.VrvExcelUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -203,13 +205,19 @@ public class DebtExpandServiceImpl implements DebtExpandService {
     }
 
     @Override
-    public DebtExpandDO getDebtExpand(Long id) {
-        return debtExpandMapper.selectById(id);
+    public DebtExpandRespVO getDebtExpand(Long id) {
+        DebtExpandPageReqVO reqVO =new DebtExpandPageReqVO();
+        reqVO.setId(id);
+        reqVO.setPageSize(1);
+        DebtExpandRespVO debtExpandRespVO = getDebtExpandPage(reqVO).getList().stream().findFirst().orElse(null);
+        return debtExpandRespVO;
     }
 
     @Override
-    public PageResult<DebtExpandDO> getDebtExpandPage(DebtExpandPageReqVO pageReqVO) {
-        return debtExpandMapper.selectPage(pageReqVO);
+    public PageResult<DebtExpandRespVO> getDebtExpandPage(DebtExpandPageReqVO pageReqVO) {
+        Page<DebtExpandRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        Page<DebtExpandRespVO> resultPage = debtExpandMapper.getPage(page, pageReqVO);
+        return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
     }
 
     @Override

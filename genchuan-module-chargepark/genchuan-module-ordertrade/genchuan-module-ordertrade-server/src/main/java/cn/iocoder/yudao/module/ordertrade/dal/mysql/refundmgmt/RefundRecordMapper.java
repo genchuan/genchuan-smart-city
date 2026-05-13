@@ -26,16 +26,17 @@ public interface RefundRecordMapper extends BaseMapperX<RefundRecordDO> {
                 .eqIfPresent(RefundRecordDO::getApplyId, reqVO.getApplyId())
                 .eqIfPresent(RefundRecordDO::getOrderId, reqVO.getOrderId())
                 .eqIfPresent(RefundRecordDO::getStatus, reqVO.getStatus())
-                .betweenIfPresent(RefundRecordDO::getRefundTime, reqVO.getRefundTime())
+                .geIfPresent(RefundRecordDO::getRefundTime, reqVO.getRefundTimeStart())
+                .leIfPresent(RefundRecordDO::getRefundTime, reqVO.getRefundTimeEnd())
                 .orderByDesc(RefundRecordDO::getId));
     }
 
     @Select("<script>" +
-            "SELECT DATE_FORMAT(create_time,'%Y-%m-%d') AS date, COUNT(*) AS count " +
+            "SELECT DATE_FORMAT(refund_time,'%Y-%m-%d') AS date, COUNT(*) AS count " +
             "FROM refund_record WHERE deleted = 0 " +
-            "<if test='startTime != null'> AND create_time &gt;= #{startTime} </if>" +
-            "<if test='endTime != null'>   AND create_time &lt;= #{endTime}   </if>" +
-            "GROUP BY DATE_FORMAT(create_time,'%Y-%m-%d') ORDER BY date" +
+            "<if test='startTime != null'> AND refund_time &gt;= #{startTime} </if>" +
+            "<if test='endTime != null'>   AND refund_time &lt;= #{endTime}   </if>" +
+            "GROUP BY DATE_FORMAT(refund_time,'%Y-%m-%d') ORDER BY date" +
             "</script>")
     List<Map<String, Object>> selectTrend(@Param("startTime") LocalDateTime startTime,
                                           @Param("endTime") LocalDateTime endTime);
@@ -43,7 +44,7 @@ public interface RefundRecordMapper extends BaseMapperX<RefundRecordDO> {
     @Select("SELECT status, COUNT(*) AS count FROM refund_record WHERE deleted = 0 GROUP BY status")
     List<Map<String, Object>> selectGroupByStatus();
 
-    @Select("SELECT COUNT(*) FROM refund_record WHERE deleted = 0 AND create_time BETWEEN #{startTime} AND #{endTime}")
+    @Select("SELECT COUNT(*) FROM refund_record WHERE deleted = 0 AND refund_time BETWEEN #{startTime} AND #{endTime}")
     Long selectTodayCount(@Param("startTime") LocalDateTime startTime,
                           @Param("endTime") LocalDateTime endTime);
 

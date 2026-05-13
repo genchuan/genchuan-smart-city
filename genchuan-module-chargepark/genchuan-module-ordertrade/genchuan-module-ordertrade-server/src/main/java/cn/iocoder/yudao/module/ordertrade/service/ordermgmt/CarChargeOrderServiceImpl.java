@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.ordertrade.dal.mysql.invoicemgmt.InvoiceListMappe
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.ordermgmt.CarChargeOrderMapper;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.refundmgmt.RefundApplyMapper;
 import cn.iocoder.yudao.module.ordertrade.framework.tool.OrderUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,8 +45,12 @@ public class CarChargeOrderServiceImpl implements CarChargeOrderService {
     }
     @Override public void deleteCarChargeOrder(Long id) { validateExists(id); carChargeOrderMapper.deleteById(id); }
     @Override public void deleteCarChargeOrderListByIds(List<Long> ids) { carChargeOrderMapper.deleteByIds(ids); }
-    @Override public CarChargeOrderDO getCarChargeOrder(Long id) { return carChargeOrderMapper.selectById(id); }
-    @Override public PageResult<CarChargeOrderDO> getCarChargeOrderPage(CarChargeOrderPageReqVO v) { return carChargeOrderMapper.selectPage(v); }
+    @Override public CarChargeOrderDO getCarChargeOrder(Long id) { return carChargeOrderMapper.selectByIdJoinStation(id); }
+    @Override public PageResult<CarChargeOrderDO> getCarChargeOrderPage(CarChargeOrderPageReqVO v) {
+        Page<CarChargeOrderDO> page = new Page<>(v.getPageNo(), v.getPageSize());
+        var result = carChargeOrderMapper.selectPageJoinStation(page, v);
+        return new PageResult<>(result.getRecords(), result.getTotal());
+    }
         @Override
     public CarChargeOrderChartRespVO getCarChargeOrderChart(CarChargeOrderChartReqVO v) {
         CarChargeOrderChartRespVO resp = new CarChargeOrderChartRespVO();
@@ -54,7 +59,7 @@ public class CarChargeOrderServiceImpl implements CarChargeOrderService {
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(carChargeOrderMapper.selectTrend(start, end));
-        resp.setStationData(carChargeOrderMapper.selectGroupByStatus());
+        resp.setStationData(carChargeOrderMapper.selectGroupByStation(start, end));
         CarChargeOrderChartRespVO.CardData card = new CarChargeOrderChartRespVO.CardData();
         card.setTodayOrderCount(carChargeOrderMapper.selectTodayCount(todayStart, now).intValue());
         card.setTodayChargeQuantity(carChargeOrderMapper.selectTodayChargeQuantity(todayStart, now));
@@ -114,11 +119,12 @@ public class CarChargeOrderServiceImpl implements CarChargeOrderService {
         if (order == null) throw exception(CAR_CHARGE_ORDER_NOT_EXISTS);
         if (!"paid".equals(order.getStatus())) throw exception(ALL_ORDER_STATUS_CANNOT_REFUND);
         // 更新订单状态
-        CarChargeOrderDO update = new CarChargeOrderDO();
-        update.setId(reqVO.getId());
-        update.setStatus("refunding");
-        update.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
-        carChargeOrderMapper.updateById(update);
+        //CarChargeOrderDO update = new CarChargeOrderDO();
+        //update.setId(reqVO.getId());
+        order.setStatus("refunding");
+        order.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
+        order.setUpdater(SecurityFrameworkUtils.getLoginUserNickname());
+        carChargeOrderMapper.updateById(order);
         // 创建退款申请（触发退款流程）
         RefundApplyDO apply = new RefundApplyDO();
         apply.setApplicantId(SecurityFrameworkUtils.getLoginUserId());
@@ -128,6 +134,9 @@ public class CarChargeOrderServiceImpl implements CarChargeOrderService {
         apply.setRefundReason(reqVO.getRemark() != null ? reqVO.getRemark() : "申请退款");
         apply.setApplyTime(LocalDateTime.now());
         apply.setStatus("pending_audit");
+        apply.setCreator(SecurityFrameworkUtils.getLoginUserId()+"");
+        apply.setUpdater(SecurityFrameworkUtils.getLoginUserId()+"");
+        apply.setApplicantId(SecurityFrameworkUtils.getLoginUserId());
         refundApplyMapper.insert(apply);
     }
 

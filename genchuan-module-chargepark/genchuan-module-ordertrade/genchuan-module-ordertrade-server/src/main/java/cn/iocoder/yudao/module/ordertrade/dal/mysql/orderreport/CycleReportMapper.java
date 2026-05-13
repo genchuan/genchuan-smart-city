@@ -15,7 +15,8 @@ public interface CycleReportMapper extends BaseMapperX<CycleReportDO> {
                 .eqIfPresent(CycleReportDO::getReportCycle, reqVO.getReportCycle())
                 .eqIfPresent(CycleReportDO::getGenerateStatus, reqVO.getGenerateStatus())
                 .likeIfPresent(CycleReportDO::getOperator, reqVO.getOperator())
-                .betweenIfPresent(CycleReportDO::getCreateTime, reqVO.getCreateTime())
+                .geIfPresent(CycleReportDO::getCreateTime, reqVO.getCreateTimeStart())
+                .leIfPresent(CycleReportDO::getCreateTime, reqVO.getCreateTimeEnd())
                 .orderByDesc(CycleReportDO::getId));
     }
 }

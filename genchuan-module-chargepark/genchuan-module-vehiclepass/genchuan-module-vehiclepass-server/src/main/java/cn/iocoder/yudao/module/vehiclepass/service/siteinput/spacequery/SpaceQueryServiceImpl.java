@@ -15,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
@@ -104,16 +105,14 @@ public class SpaceQueryServiceImpl implements SpaceQueryService {
     public SpaceQueryChartRespVO getChart(SpaceQueryChartReqVO chartReqVO) {
         // 获取泊位位置分布
         List<Map<String, Object>> spaceLocationList = queryMapper.selectSpaceLocationList(chartReqVO);
-        List<SpaceQueryChartRespVO.SpaceLocation> spaceLocations = new ArrayList<>();
-        for (Map<String, Object> map : spaceLocationList) {
-            SpaceQueryChartRespVO.SpaceLocation location = SpaceQueryChartRespVO.SpaceLocation.builder()
+        List<SpaceQueryChartRespVO.SpaceLocation> spaceLocations = spaceLocationList.stream()
+            .map(map -> SpaceQueryChartRespVO.SpaceLocation.builder()
                     .spaceNo((String) map.get("spaceNo"))
                     .lon((java.math.BigDecimal) map.get("lon"))
                     .lat((java.math.BigDecimal) map.get("lat"))
                     .spaceStatus((String) map.get("spaceStatus"))
-                    .build();
-            spaceLocations.add(location);
-        }
+                    .build())
+            .collect(Collectors.toList());
 
         // 获取统计数据
         Map<String, Object> chartData = queryMapper.selectChartData(chartReqVO);

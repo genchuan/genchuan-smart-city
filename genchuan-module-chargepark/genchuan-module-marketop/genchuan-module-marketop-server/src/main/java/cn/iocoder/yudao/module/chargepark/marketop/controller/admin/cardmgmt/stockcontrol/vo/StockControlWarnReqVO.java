@@ -12,4 +12,7 @@ public class StockControlWarnReqVO {
     @NotNull(message = "id不能为空")
     private Long id;
 
+    @Schema(description = "告警信息", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull
+    private String warnContent;
 }

@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.ordertrade.dal.mysql.invoicemgmt.InvoiceListMappe
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.ordermgmt.BikeChargeOrderMapper;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.refundmgmt.RefundApplyMapper;
 import cn.iocoder.yudao.module.ordertrade.framework.tool.OrderUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,8 +45,12 @@ public class BikeChargeOrderServiceImpl implements BikeChargeOrderService {
     }
     @Override public void deleteBikeChargeOrder(Long id) { validateExists(id); bikeChargeOrderMapper.deleteById(id); }
     @Override public void deleteBikeChargeOrderListByIds(List<Long> ids) { bikeChargeOrderMapper.deleteByIds(ids); }
-    @Override public BikeChargeOrderDO getBikeChargeOrder(Long id) { return bikeChargeOrderMapper.selectById(id); }
-    @Override public PageResult<BikeChargeOrderDO> getBikeChargeOrderPage(BikeChargeOrderPageReqVO v) { return bikeChargeOrderMapper.selectPage(v); }
+    @Override public BikeChargeOrderDO getBikeChargeOrder(Long id) { return bikeChargeOrderMapper.selectByIdJoinStation(id); }
+    @Override public PageResult<BikeChargeOrderDO> getBikeChargeOrderPage(BikeChargeOrderPageReqVO v) {
+        Page<BikeChargeOrderDO> page = new Page<>(v.getPageNo(), v.getPageSize());
+        var result = bikeChargeOrderMapper.selectPageJoinStation(page, v);
+        return new PageResult<>(result.getRecords(), result.getTotal());
+    }
         @Override
     public BikeChargeOrderChartRespVO getBikeChargeOrderChart(BikeChargeOrderChartReqVO v) {
         BikeChargeOrderChartRespVO resp = new BikeChargeOrderChartRespVO();
@@ -54,7 +59,7 @@ public class BikeChargeOrderServiceImpl implements BikeChargeOrderService {
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(bikeChargeOrderMapper.selectTrend(start, end));
-        resp.setStationData(bikeChargeOrderMapper.selectGroupByStatus());
+        resp.setStationData(bikeChargeOrderMapper.selectGroupByStation(start, end));
         BikeChargeOrderChartRespVO.CardData card = new BikeChargeOrderChartRespVO.CardData();
         card.setTodayOrderCount(bikeChargeOrderMapper.selectTodayCount(todayStart, now).intValue());
         card.setTodayChargeQuantity(bikeChargeOrderMapper.selectTodayChargeQuantity(todayStart, now));
@@ -114,11 +119,12 @@ public class BikeChargeOrderServiceImpl implements BikeChargeOrderService {
         if (order == null) throw exception(BIKE_CHARGE_ORDER_NOT_EXISTS);
         if (!"paid".equals(order.getStatus())) throw exception(ALL_ORDER_STATUS_CANNOT_REFUND);
         // 更新订单状态
-        BikeChargeOrderDO update = new BikeChargeOrderDO();
-        update.setId(reqVO.getId());
-        update.setStatus("refunding");
-        update.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
-        bikeChargeOrderMapper.updateById(update);
+       // BikeChargeOrderDO update = new BikeChargeOrderDO();
+       // update.setId(reqVO.getId());
+        order.setStatus("refunding");
+        order.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
+        order.setUpdater(SecurityFrameworkUtils.getLoginUserNickname());
+        bikeChargeOrderMapper.updateById(order);
         // 创建退款申请（触发退款流程）
         RefundApplyDO apply = new RefundApplyDO();
         apply.setApplicantId(SecurityFrameworkUtils.getLoginUserId());
@@ -128,6 +134,9 @@ public class BikeChargeOrderServiceImpl implements BikeChargeOrderService {
         apply.setRefundReason(reqVO.getRemark() != null ? reqVO.getRemark() : "申请退款");
         apply.setApplyTime(LocalDateTime.now());
         apply.setStatus("pending_audit");
+        apply.setCreator(SecurityFrameworkUtils.getLoginUserId()+"");
+        apply.setUpdater(SecurityFrameworkUtils.getLoginUserId()+"");
+        apply.setApplicantId(SecurityFrameworkUtils.getLoginUserId());
         refundApplyMapper.insert(apply);
     }
 

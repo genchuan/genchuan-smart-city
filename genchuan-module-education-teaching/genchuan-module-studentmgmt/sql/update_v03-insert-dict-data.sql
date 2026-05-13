@@ -77,7 +77,10 @@ DELETE FROM `system_dict_data` WHERE `dict_type` IN (
                                                      'moral_resource_resource_type',
                                                      'compare_mgmt_status',
                                                      'dorm_compare_cycle',
-                                                     'dorm_compare_status'
+                                                     'dorm_compare_status',
+                                                     'communicate_mgmt_status',
+                                                     'parent_reply_status',
+                                                     'parent_reply_read_status'
 
     );
 
@@ -152,7 +155,10 @@ DELETE FROM `system_dict_type` WHERE `type` IN (
                                                 'moral_resource_resource_type',
                                                 'compare_mgmt_status',
                                                 'dorm_compare_cycle',
-                                                'dorm_compare_status'
+                                                'dorm_compare_status',
+                                                'communicate_mgmt_status',
+                                                'parent_reply_status',
+                                                'parent_reply_read_status'
     );
 -- ==================== 一、字典类型 (system_dict_type) ====================
 
@@ -483,16 +489,6 @@ VALUES
 (2, '晚归', '1', 'dorm_check_abnormal_type', 0, 'warning', '', '异常', 'admin', NOW(), 'admin', NOW(), b'0'),
 (3, '未归', '2', 'dorm_check_abnormal_type', 0, 'warning', '', '异常', 'admin', NOW(), 'admin', NOW(), b'0');
 
--- 31. 宿舍考勤-异常类型
-INSERT INTO `system_dict_type` (`name`, `type`, `status`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`)
-VALUES ('宿舍考勤异常类型', 'dorm_check_abnormal_type', 0, '宿舍考勤异常类型', 'admin', NOW(), 'admin', NOW(), b'0');
-
-INSERT INTO `system_dict_data` (`sort`, `label`, `value`, `dict_type`, `status`, `color_type`, `css_class`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`)
-VALUES
-    (1, '无', '0', 'dorm_check_abnormal_type', 0, 'success', '', '正常', 'admin', NOW(), 'admin', NOW(), b'0'),
-    (2, '晚归', '1', 'dorm_check_abnormal_type', 0, 'warning', '', '异常', 'admin', NOW(), 'admin', NOW(), b'0'),
-    (3, '未归', '2', 'dorm_check_abnormal_type', 0, 'warning', '', '异常', 'admin', NOW(), 'admin', NOW(), b'0');
-
 
 -- 32. 出入申请-申请类型
 INSERT INTO `system_dict_type` (`name`, `type`, `status`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`)
@@ -502,26 +498,6 @@ INSERT INTO `system_dict_data` (`sort`, `label`, `value`, `dict_type`, `status`,
 VALUES
 (1, '应急出入', 'emergency', 'access_apply_apply_type', 0, 'danger', '', '突发紧急情况需要外出', 'admin', NOW(), 'admin', NOW(), b'0'),
 (2, '其他', 'other', 'access_apply_apply_type', 0, 'info', '', '其他原因申请出入', 'admin', NOW(), 'admin', NOW(), b'0');
-
-
--- 32. 出入申请-申请类型
-INSERT INTO `system_dict_type` (`name`, `type`, `status`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`)
-VALUES ('出入申请类型', 'access_apply_apply_type', 0, '学生出入申请的类型分类', 'admin', NOW(), 'admin', NOW(), b'0');
-
-INSERT INTO `system_dict_data` (`sort`, `label`, `value`, `dict_type`, `status`, `color_type`, `css_class`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`)
-VALUES
-    (1, '应急出入', 'emergency', 'access_apply_apply_type', 0, 'danger', '', '突发紧急情况需要外出', 'admin', NOW(), 'admin', NOW(), b'0'),
-    (2, '其他', 'other', 'access_apply_apply_type', 0, 'info', '', '其他原因申请出入', 'admin', NOW(), 'admin', NOW(), b'0');
-
-
--- 33. 出入申请-状态
-INSERT INTO `system_dict_type` (`name`, `type`, `status`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`)
-VALUES ('出入申请状态', 'access_apply_status', 0, '学生出入申请的审核状态', 'admin', NOW(), 'admin', NOW(), b'0');
-
-INSERT INTO `system_dict_data` (`sort`, `label`, `value`, `dict_type`, `status`, `color_type`, `css_class`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`)
-VALUES
-    (1, '待审核', 'pending', 'access_apply_status', 0, 'warning', '', '等待管理员审核', 'admin', NOW(), 'admin', NOW(), b'0'),
-    (2, '已通过', 'approved', 'access_apply_status', 0, 'success', '', '申请已审核通过', 'admin', NOW(), 'admin', NOW(), b'0');
 
 
 -- 33. 出入申请-状态
@@ -774,6 +750,15 @@ VALUES
     (1, '待审核', 'pending', 'treat_mgmt_status', 0, 'warning', '', '等待管理员审核', 'admin', NOW(), 'admin', NOW(), b'0'),
     (2, '已就诊', 'visited', 'treat_mgmt_status', 0, 'success', '', '已完成就诊', 'admin', NOW(), 'admin', NOW(), b'0');
 
+INSERT INTO `system_dict_type` (`name`, `type`, `status`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`)
+VALUES ('值班管理状态', 'duty_mgmt_status', 0, '值班管理的流程状态', 'admin', NOW(), 'admin', NOW(), b'0');
+
+INSERT INTO `system_dict_data` (`sort`, `label`, `value`, `dict_type`, `status`, `color_type`, `css_class`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`)
+VALUES
+    (1, '待打卡', 'pending_checkin', 'duty_mgmt_status', 0, 'warning', '', '等待值班打卡', 'admin', NOW(), 'admin', NOW(), b'0'),
+    (2, '待调班审批', 'pending_transfer', 'duty_mgmt_status', 0, 'primary', '', '等待调班审批', 'admin', NOW(), 'admin', NOW(), b'0'),
+    (3, '待出车审批', 'pending_car', 'duty_mgmt_status', 0, 'primary', '', '等待出车审批', 'admin', NOW(), 'admin', NOW(), b'0'),
+    (4, '已完成', 'completed', 'duty_mgmt_status', 0, 'success', '', '值班任务已完成', 'admin', NOW(), 'admin', NOW(), b'0');
 
 
 INSERT INTO `system_dict_type` (`name`, `type`, `status`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`)
@@ -792,16 +777,6 @@ VALUES
  (1, '未打卡', 'not_checked_in', 'duty_mgmt_check_in_status', 0, 'warning', '', '尚未进行打卡', 'admin', NOW(), 'admin', NOW(), b'0'),
  (2, '已打卡', 'checked_in', 'duty_mgmt_check_in_status', 0, 'success', '', '已完成打卡', 'admin', NOW(), 'admin', NOW(), b'0');
 
-
-INSERT INTO `system_dict_type` (`name`, `type`, `status`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`)
- VALUES ('值班管理状态', 'duty_mgmt_status', 0, '值班管理的流程状态', 'admin', NOW(), 'admin', NOW(), b'0');
-
- INSERT INTO `system_dict_data` (`sort`, `label`, `value`, `dict_type`, `status`, `color_type`, `css_class`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`)
- VALUES
- (1, '待打卡', 'pending_checkin', 'duty_mgmt_status', 0, 'warning', '', '等待值班打卡', 'admin', NOW(), 'admin', NOW(), b'0'),
- (2, '待调班审批', 'pending_transfer', 'duty_mgmt_status', 0, 'primary', '', '等待调班审批', 'admin', NOW(), 'admin', NOW(), b'0'),
- (3, '待出车审批', 'pending_car', 'duty_mgmt_status', 0, 'primary', '', '等待出车审批', 'admin', NOW(), 'admin', NOW(), b'0'),
- (4, '已完成', 'completed', 'duty_mgmt_status', 0, 'success', '', '值班任务已完成', 'admin', NOW(), 'admin', NOW(), b'0');
 
 INSERT INTO `system_dict_type` (`name`, `type`, `status`, `remark`, `creator`, `create_time`, `updater`, `update_time`, `deleted`)
 VALUES ('德育活动类型', 'moral_activity_type', 0, '德育活动的类型分类', 'admin', NOW(), 'admin', NOW(), b'0');
@@ -831,28 +806,28 @@ VALUES
 
 
 -- 插入字典类型
-INSERT INTO system_dict_type (name, type, status, remark, creator, create_time, updater, update_time, deleted, tenant_id)
-VALUES ('调班状态', 'duty_mgmt_transfer_status', 0, '值班管理调班申请状态', 'admin', NOW(), 'admin', NOW(), 0, 1);
+INSERT INTO system_dict_type (name, type, status, remark, creator, create_time, updater, update_time, deleted)
+VALUES ('调班状态', 'duty_mgmt_transfer_status', 0, '值班管理调班申请状态', 'admin', NOW(), 'admin', NOW(), 0);
 
 
 -- 插入字典数据
-INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted, tenant_id)
+INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted)
 VALUES
-    (1, '无', 'none', 'duty_mgmt_transfer_status', 0, 'info', '', '未申请调班', 'admin', NOW(), 'admin', NOW(), 0, 1),
-    (2, '待审批', 'pending', 'duty_mgmt_transfer_status', 0, 'warning', '', '调班申请待审批', 'admin', NOW(), 'admin', NOW(), 0, 1),
-    (3, '已通过', 'approved', 'duty_mgmt_transfer_status', 0, 'success', '', '调班申请已通过', 'admin', NOW(), 'admin', NOW(), 0, 1),
-    (4, '已驳回', 'rejected', 'duty_mgmt_transfer_status', 0, 'danger', '', '调班申请已驳回', 'admin', NOW(), 'admin', NOW(), 0, 1);
+    (1, '无', 'none', 'duty_mgmt_transfer_status', 0, 'info', '', '未申请调班', 'admin', NOW(), 'admin', NOW(), 0),
+    (2, '待审批', 'pending', 'duty_mgmt_transfer_status', 0, 'warning', '', '调班申请待审批', 'admin', NOW(), 'admin', NOW(), 0),
+    (3, '已通过', 'approved', 'duty_mgmt_transfer_status', 0, 'success', '', '调班申请已通过', 'admin', NOW(), 'admin', NOW(), 0),
+    (4, '已驳回', 'rejected', 'duty_mgmt_transfer_status', 0, 'danger', '', '调班申请已驳回', 'admin', NOW(), 'admin', NOW(), 0);
 
 -- 插入字典类型
-INSERT INTO system_dict_type (name, type, status, remark, creator, create_time, updater, update_time, deleted, tenant_id)
-VALUES ('出车状态', 'duty_mgmt_car_status', 0, '值班管理出车申请状态', 'admin', NOW(), 'admin', NOW(), 0, 1);
+INSERT INTO system_dict_type (name, type, status, remark, creator, create_time, updater, update_time, deleted)
+VALUES ('出车状态', 'duty_mgmt_car_status', 0, '值班管理出车申请状态', 'admin', NOW(), 'admin', NOW(), 0);
 
 -- 插入字典数据
-INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted, tenant_id)
+INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted)
 VALUES
-    (1, '无', 'none', 'duty_mgmt_car_status', 0, 'info', '', '未申请出车', 'admin', NOW(), 'admin', NOW(), 0, 1),
-    (2, '待审批', 'pending', 'duty_mgmt_car_status', 0, 'warning', '', '出车申请待审批', 'admin', NOW(), 'admin', NOW(), 0, 1),
-    (3, '已通过', 'approved', 'duty_mgmt_car_status', 0, 'success', '', '出车申请已通过', 'admin', NOW(), 'admin', NOW(), 0, 1);
+    (1, '无', 'none', 'duty_mgmt_car_status', 0, 'info', '', '未申请出车', 'admin', NOW(), 'admin', NOW(), 0),
+    (2, '待审批', 'pending', 'duty_mgmt_car_status', 0, 'warning', '', '出车申请待审批', 'admin', NOW(), 'admin', NOW(), 0),
+    (3, '已通过', 'approved', 'duty_mgmt_car_status', 0, 'success', '', '出车申请已通过', 'admin', NOW(), 'admin', NOW(), 0);
 
 -- ----------------------------
 -- 德育资源状态 - 字典类型
@@ -886,41 +861,67 @@ VALUES
 
 
 -- 插入字典类型
-INSERT INTO system_dict_type (name, type, status, remark, creator, create_time, updater, update_time, deleted, tenant_id)
-VALUES ('评比状态', 'compare_mgmt_status', 0, '评比管理状态', 'admin', NOW(), 'admin', NOW(), 0, 1);
+INSERT INTO system_dict_type (name, type, status, remark, creator, create_time, updater, update_time, deleted)
+VALUES ('评比状态', 'compare_mgmt_status', 0, '评比管理状态', 'admin', NOW(), 'admin', NOW(), 0);
 
 -- 插入字典数据
-INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted, tenant_id)
+INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted)
 VALUES
-    (1, '打分中', 'scoring', 'compare_mgmt_status', 0, 'warning', '', '评比正在打分中', 'admin', NOW(), 'admin', NOW(), 0, 1),
-    (2, '已汇总', 'summarized', 'compare_mgmt_status', 0, 'success', '', '评比分数已汇总', 'admin', NOW(), 'admin', NOW(), 0, 1);
+    (1, '打分中', 'scoring', 'compare_mgmt_status', 0, 'warning', '', '评比正在打分中', 'admin', NOW(), 'admin', NOW(), 0),
+    (2, '已汇总', 'summarized', 'compare_mgmt_status', 0, 'success', '', '评比分数已汇总', 'admin', NOW(), 'admin', NOW(), 0);
 
 -- 床位分配状态 状态 (未分配 / 已分配)，关联芋道字典表：bed_mgmt_status
-INSERT INTO system_dict_type (name, type, status, remark, creator, create_time, updater, update_time, deleted, tenant_id)
-VALUES ('床位分配状态', 'bed_mgmt_status', 0, '床位分配状态', 'admin', NOW(), 'admin', NOW(), 0, 1);
+INSERT INTO system_dict_type (name, type, status, remark, creator, create_time, updater, update_time, deleted)
+VALUES ('床位分配状态', 'bed_mgmt_status', 0, '床位分配状态', 'admin', NOW(), 'admin', NOW(), 0);
 
-INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted, tenant_id)
+INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted)
 VALUES
-    (1, '未分配', 'unallocated', 'bed_mgmt_status', 0, 'info', '', '未分配的床位', 'admin', NOW(), 'admin', NOW(), 0, 1),
-    (2, '已分配', 'allocated', 'bed_mgmt_status', 0, 'success', '', '已分配的床位', 'admin', NOW(), 'admin', NOW(), 0, 1);
+    (1, '未分配', 'unallocated', 'bed_mgmt_status', 0, 'info', '', '未分配的床位', 'admin', NOW(), 'admin', NOW(), 0),
+    (2, '已分配', 'allocated', 'bed_mgmt_status', 0, 'success', '', '已分配的床位', 'admin', NOW(), 'admin', NOW(), 0);
 
 -- 状态（打分中 / 已汇总），关联芋道字典表：dorm_compare_status。
-INSERT INTO system_dict_type (name, type, status, remark, creator, create_time, updater, update_time, deleted, tenant_id)
-VALUES ('宿舍评比状态', 'dorm_compare_status', 0, '宿舍评比状态', 'admin', NOW(), 'admin', NOW(), 0, 1);
+INSERT INTO system_dict_type (name, type, status, remark, creator, create_time, updater, update_time, deleted)
+VALUES ('宿舍评比状态', 'dorm_compare_status', 0, '宿舍评比状态', 'admin', NOW(), 'admin', NOW(), 0);
 
-INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted, tenant_id)
+INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted)
 VALUES
-    (1, '未打分', 'unscored', 'dorm_compare_status', 0, 'warning', '', '评比未打分中', 'admin', NOW(), 'admin', NOW(), 0, 1),
-    (2, '打分中', 'scoring', 'dorm_compare_status', 0, 'warning', '', '评比正在打分中', 'admin', NOW(), 'admin', NOW(), 0, 1),
-    (3, '已汇总', 'summarized', 'dorm_compare_status', 0, 'success', '', '评比分数已汇总', 'admin', NOW(), 'admin', NOW(), 0, 1);
+    (1, '未打分', 'unscored', 'dorm_compare_status', 0, 'warning', '', '评比未打分中', 'admin', NOW(), 'admin', NOW(), 0),
+    (2, '打分中', 'scoring', 'dorm_compare_status', 0, 'warning', '', '评比正在打分中', 'admin', NOW(), 'admin', NOW(), 0),
+    (3, '已汇总', 'summarized', 'dorm_compare_status', 0, 'success', '', '评比分数已汇总', 'admin', NOW(), 'admin', NOW(), 0);
 
 -- 评比周期（周 / 月 / 学期），关联芋道字典表：dorm_compare_cycle
-INSERT INTO system_dict_type (name, type, status, remark, creator, create_time, updater, update_time, deleted, tenant_id)
-VALUES ('评比周期', 'dorm_compare_cycle', 0, '评比周期', 'admin', NOW(), 'admin', NOW(), 0, 1);
+INSERT INTO system_dict_type (name, type, status, remark, creator, create_time, updater, update_time, deleted)
+VALUES ('评比周期', 'dorm_compare_cycle', 0, '评比周期', 'admin', NOW(), 'admin', NOW(), 0);
 
-INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted, tenant_id)
+INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted)
 VALUES
-    (1, '周', 'week', 'dorm_compare_cycle', 0, 'info', '', '评比周期为周', 'admin', NOW(), 'admin', NOW(), 0, 1),
-    (2, '月', 'month', 'dorm_compare_cycle', 0, 'success', '', '评比周期为月', 'admin', NOW(), 'admin', NOW(), 0, 1),
-    (3, '学期', 'term', 'dorm_compare_cycle', 0, 'warning', '', '评比周期为学期', 'admin', NOW(), 'admin', NOW(), 0, 1);
+    (1, '周', 'week', 'dorm_compare_cycle', 0, 'info', '', '评比周期为周', 'admin', NOW(), 'admin', NOW(), 0),
+    (2, '月', 'month', 'dorm_compare_cycle', 0, 'success', '', '评比周期为月', 'admin', NOW(), 'admin', NOW(), 0),
+    (3, '学期', 'term', 'dorm_compare_cycle', 0, 'warning', '', '评比周期为学期', 'admin', NOW(), 'admin', NOW(), 0);
+
+-- 状态（未发布 / 已发布），关联芋道字典表：communicate_mgmt_status
+INSERT INTO system_dict_type (name, type, status, remark, creator, create_time, updater, update_time, deleted)
+VALUES ('沟通状态', 'communicate_mgmt_status', 0, '沟通状态', 'admin', NOW(), 'admin', NOW(), 0);
+
+INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted)
+VALUES
+    (1, '未发布', 'unpublished', 'communicate_mgmt_status', 0, 'info', '', '沟通未发布', 'admin', NOW(), 'admin', NOW(), 0),
+    (2, '已发布', 'published', 'communicate_mgmt_status', 0, 'success', '', '沟通已发布', 'admin', NOW(), 'admin', NOW(), 0);
+
+
+-- 阅读状态：未读/已读，VARCHAR(20)，必填，默认未读，关联芋道字典表：parent_reply_read_status
+INSERT INTO system_dict_type (name, type, status, remark, creator, create_time, updater, update_time, deleted)
+    VALUES ('阅读状态', 'parent_reply_read_status', 0, '阅读状态', 'admin', NOW(), 'admin', NOW(), 0);
+INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted)
+    VALUES
+        (1, '未读', 'unread', 'parent_reply_read_status', 0, 'info', '', '未读', 'admin', NOW(), 'admin', NOW(), 0),
+        (2, '已读', 'read', 'parent_reply_read_status', 0, 'success', '', '已读', 'admin', NOW(), 'admin', NOW(), 0);
+
+-- reply_status（回复状态：未回复/已回复，VARCHAR(20)，必填，默认未回复，关联芋道字典表：parent_reply_status
+INSERT INTO system_dict_type (name, type, status, remark, creator, create_time, updater, update_time, deleted)
+VALUES ('回复状态', 'parent_reply_status', 0, '回复状态', 'admin', NOW(), 'admin', NOW(), 0);
+INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type, css_class, remark, creator, create_time, updater, update_time, deleted)
+VALUES
+    (1, '未回复', 'unreplied', 'parent_reply_status', 0, 'info', '', '未回复', 'admin', NOW(), 'admin', NOW(), 0),
+    (2, '已回复', 'replied', 'parent_reply_status', 0, 'success', '', '已回复', 'admin', NOW(), 'admin', NOW(), 0);
 
