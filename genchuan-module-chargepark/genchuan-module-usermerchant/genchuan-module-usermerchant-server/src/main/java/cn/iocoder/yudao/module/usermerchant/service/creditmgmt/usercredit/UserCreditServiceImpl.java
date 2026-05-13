@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.Collections;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -83,6 +84,14 @@ public class UserCreditServiceImpl implements UserCreditService {
 
     @Override
     public PageResult<UserCreditDO> getUserCreditPage(UserCreditPageReqVO pageReqVO) {
+        // 如果前端传了nickname，则转换为userId并设置到查询条件
+        if (StrUtil.isNotBlank(pageReqVO.getNickname())) {
+            Long userId = userCreditMapper.getIdByNickname(pageReqVO.getNickname());
+            if (userId == null) {
+                return new PageResult<>(Collections.emptyList(), 0L);
+            }
+            pageReqVO.setUserId(userId);
+        }
         PageResult<UserCreditDO> pageResult = userCreditMapper.selectPage(pageReqVO);
         if (CollUtil.isEmpty(pageResult.getList())) {
             return pageResult;

@@ -32,6 +32,11 @@ public class MerchantSendCouponDO extends BaseDO {
      */
     private Long merchantId;
     /**
+     * 商户名称
+     */
+    @TableField(exist = false)
+    private String merchantName;
+    /**
      * 优惠券ID，关联营销模块优惠券表
      */
     private Long couponId;

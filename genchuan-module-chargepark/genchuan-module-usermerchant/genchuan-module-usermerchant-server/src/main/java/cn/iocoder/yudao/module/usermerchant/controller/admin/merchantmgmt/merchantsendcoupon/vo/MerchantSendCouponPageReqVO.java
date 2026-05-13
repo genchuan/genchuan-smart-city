@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantsendcoupon.vo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
@@ -14,6 +15,10 @@ public class MerchantSendCouponPageReqVO extends PageParam {
 
     @Schema(description = "商户ID，关联merchant_info.id", example = "14294")
     private Long merchantId;
+
+    @TableField(exist = false)
+    @Schema(description = "商户名称")
+    private String merchantName;
 
     @Schema(description = "优惠券ID，关联营销模块优惠券表", example = "1926")
     private Long couponId;
