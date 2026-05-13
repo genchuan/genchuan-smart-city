@@ -85,7 +85,7 @@ public class OfftimeRuleController {
         return success(true);
     }
 
-    @GetMapping("/import-template")
+    @GetMapping("/get-import-template")
     @Operation(summary = "下载错时规则导入模板")
     @PreAuthorize("@ss.hasPermission('stationresource:offtime-rule:import')")
     public void importOfftimeRuleTemplate(HttpServletResponse response) throws Exception {

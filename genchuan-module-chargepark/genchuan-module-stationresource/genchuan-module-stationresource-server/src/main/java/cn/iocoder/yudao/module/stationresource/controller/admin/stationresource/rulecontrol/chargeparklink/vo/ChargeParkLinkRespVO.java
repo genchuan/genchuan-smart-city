@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class ChargeParkLinkRespVO {
 
     @Schema(description = "[主键ID] 主键，自增", requiredMode = Schema.RequiredMode.REQUIRED, example = "7436")
-    @ExcelProperty("主键ID")
+    @ExcelProperty("规则编号")
     private Long id;
 
     @Schema(description = "[所属场站] 关联场站信息表 station_info", requiredMode = Schema.RequiredMode.REQUIRED, example = "6922")
@@ -31,11 +31,11 @@ public class ChargeParkLinkRespVO {
     private String discountType;
 
     @Schema(description = "[优惠幅度] 单位 %", requiredMode = Schema.RequiredMode.REQUIRED, example = "26204")
-    @ExcelProperty("优惠幅度")
+    @ExcelProperty("优惠力度")
     private BigDecimal discount;
 
     @Schema(description = "[适用车型] 如：小型车/中型车/大型车/新能源车", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("适用车型")
+    @ExcelProperty("车辆类型")
     private String carType;
 
     @Schema(description = "[状态] 如：待生效/已生效/已禁用", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")

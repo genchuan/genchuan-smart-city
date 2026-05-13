@@ -46,6 +46,9 @@
         <if test="pageReqVO.stationId != null">
             AND d.station_id = #{pageReqVO.stationId}
         </if>
+        <if test="pageReqVO.stationName != null and pageReqVO.stationName != ''">
+            AND si.name LIKE CONCAT('%', #{pageReqVO.stationName}, '%')
+        </if>
         <if test="pageReqVO.type != null and pageReqVO.type != ''">
             AND d.type = #{pageReqVO.type}
         </if>
@@ -85,8 +88,11 @@
         <if test="pageReqVO.updater != null and pageReqVO.updater != ''">
             AND d.updater = #{pageReqVO.updater}
         </if>
-        <if test="pageReqVO.createTime != null and pageReqVO.createTime.size() == 2">
-            AND d.create_time BETWEEN #{pageReqVO.createTime[0]} AND #{pageReqVO.createTime[1]}
+        <if test="pageReqVO.createTimeStart != null">
+            AND d.create_time &gt;= #{pageReqVO.createTimeStart}
+        </if>
+        <if test="pageReqVO.createTimeEnd != null">
+            AND d.create_time &lt;= #{pageReqVO.createTimeEnd}
         </if>
         <if test="pageReqVO.updateTime != null and pageReqVO.updateTime.size() == 2">
             AND d.update_time BETWEEN #{pageReqVO.updateTime[0]} AND #{pageReqVO.updateTime[1]}

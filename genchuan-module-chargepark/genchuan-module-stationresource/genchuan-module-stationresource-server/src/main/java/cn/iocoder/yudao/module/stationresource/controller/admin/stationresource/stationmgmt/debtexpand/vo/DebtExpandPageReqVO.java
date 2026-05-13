@@ -19,6 +19,9 @@ public class DebtExpandPageReqVO extends PageParam {
     @Schema(description = "[合作场站] 关联场站信息表 station_info", example = "27111")
     private Long stationId;
 
+    @Schema(description = "[场站名称] 模糊搜索", example = "泉州泰禾充电站")
+    private String stationName;
+
     @Schema(description = "[合作类型] 如：社会停车场拓场/联合追缴", example = "2")
     private String type;
 
@@ -60,9 +63,13 @@ public class DebtExpandPageReqVO extends PageParam {
     @Schema(description = "[更新者] 更新人账号/姓名")
     private String updater;
 
-    @Schema(description = "[创建时间] 记录创建时间")
+    @Schema(description = "[创建时间-开始]", example = "2026-01-01 00:00:00")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDateTime[] createTime;
+    private LocalDateTime createTimeStart;
+
+    @Schema(description = "[创建时间-结束]", example = "2026-12-31 23:59:59")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime createTimeEnd;
 
     @Schema(description = "[更新时间] 记录最后更新时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)

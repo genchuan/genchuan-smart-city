@@ -214,7 +214,10 @@ public class StationReportServiceImpl implements StationReportService {
             }
         }
 
-        System.out.println("cs2026-04-22 11:24:10:"+reqVO);
+        if (reqVO.getReportStartTime() != null && reqVO.getReportEndTime() != null
+                && reqVO.getReportStartTime().isAfter(reqVO.getReportEndTime())) {
+            throw exception("开始时间不能大于结束时间");
+        }
 
         // 1. 构建返回对象
         StationOpReportChartRespVO resp = new StationOpReportChartRespVO();
@@ -321,6 +324,9 @@ public class StationReportServiceImpl implements StationReportService {
         // 查询条件：生成状态
         wrapper.eqIfPresent(StationReportDO::getGenerateStatus, pageReqVO.getGenerateStatus());
 
+        //id
+        wrapper.eqIfPresent(StationReportDO::getId,pageReqVO.getId());
+
         // 排序
         wrapper.orderByDesc(StationReportDO::getCreateTime);
 
@@ -363,6 +369,9 @@ public class StationReportServiceImpl implements StationReportService {
                 reqVO.setReportStartTime(LocalDateTime.ofInstant(dates[0].toInstant(), ZoneId.systemDefault()));
                 reqVO.setReportEndTime(LocalDateTime.ofInstant(dates[1].toInstant(), ZoneId.systemDefault()));
             }
+        }
+        if (reqVO.getReportStartTime().isAfter(reqVO.getReportEndTime())) {
+            throw exception("开始时间不能晚于结束时间");
         }
         System.out.println("cs2026-04-23 16:35:07:"+reqVO);
         //去掉毫秒，方便后续的报表唯一性校验：
@@ -475,6 +484,96 @@ public class StationReportServiceImpl implements StationReportService {
     }
 
 
+
+    // ====================== 钻取 ======================
+
+    @Override
+    public DrillDownRespVO drillDown(DrillDownReqVO reqVO) {
+        LocalDateTime start = reqVO.getReportStartTime();
+        LocalDateTime end = reqVO.getReportEndTime();
+
+        List<Map<String, Object>> list = switch (reqVO.getMetric()) {
+            case "totalAreaCount"      -> stationReportMapper.drillDownAreaList(start, end);
+            case "coverStationCount"   -> stationReportMapper.drillDownCoverStationList(start, end);
+            case "totalStationCount"   -> stationReportMapper.drillDownStationList(start, end);
+            case "normalOperateCount"  -> stationReportMapper.drillDownNormalStationList(start, end);
+            case "totalSpaceCount"     -> stationReportMapper.drillDownSpaceList(start, end);
+            case "availableSpaceCount" -> stationReportMapper.drillDownAvailableSpaceList(start, end);
+            case "effectiveRuleCount"  -> stationReportMapper.drillDownEffectiveRuleList(start, end);
+            case "orderCount", "revenue" -> {
+                resolveReportTime(reqVO);
+                yield stationReportMapper.drillDownOrderList(reqVO.getReportStartTime(), reqVO.getReportEndTime());
+            }
+            case "recoveryRate"        -> stationReportMapper.drillDownDebtExpandList(start, end);
+            case "depositOrderCount"   -> stationReportMapper.drillDownDepositPlanList(start, end);
+            default -> throw new IllegalArgumentException("不支持的卡片指标：" + reqVO.getMetric());
+        };
+        return buildResp(reqVO, list);
+    }
+
+    @Override
+    public void incrementExportCount(List<Long> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            return;
+        }
+        List<StationReportDO> list = stationReportMapper.selectList(
+                new LambdaQueryWrapper<StationReportDO>().in(StationReportDO::getId, ids));
+        for (StationReportDO report : list) {
+            report.setExportCount(report.getExportCount() == null ? 1L : report.getExportCount() + 1);
+        }
+        stationReportMapper.updateBatch(list);
+    }
+
+    /** 根据报表周期自动计算时间范围 */
+    private void resolveReportTime(DrillDownReqVO reqVO) {
+        if (reqVO.getReportStartTime() != null || reqVO.getReportEndTime() != null) {
+            return;
+        }
+        String cycle = reqVO.getReportCycle();
+        if (StrUtil.isBlank(cycle) || "自定义报表".equals(cycle)) {
+            return;
+        }
+        Date[] dates = autoCalcReportTime(cycle);
+        reqVO.setReportStartTime(LocalDateTime.ofInstant(dates[0].toInstant(), ZoneId.systemDefault()));
+        reqVO.setReportEndTime(LocalDateTime.ofInstant(dates[1].toInstant(), ZoneId.systemDefault()));
+    }
+
+    /** 组装钻取响应，手动分页 */
+    private DrillDownRespVO buildResp(DrillDownReqVO reqVO, List<Map<String, Object>> fullList) {
+        if (reqVO.getReportStartTime() != null && reqVO.getReportEndTime() != null
+                && reqVO.getReportStartTime().isAfter(reqVO.getReportEndTime())) {
+            throw exception("开始时间不能大于结束时间");
+        }
+        int pageNo = reqVO.getPageNo() != null ? reqVO.getPageNo() : 1;
+        int pageSize = reqVO.getPageSize() != null ? reqVO.getPageSize() : 1000;
+        int total = fullList.size();
+        int from = Math.min((pageNo - 1) * pageSize, total);
+        int to = Math.min(from + pageSize, total);
+
+        DrillDownRespVO respVO = new DrillDownRespVO();
+        respVO.setMetric(reqVO.getMetric());
+        respVO.setMetricName(metricName(reqVO.getMetric()));
+        respVO.setList(fullList.subList(from, to));
+        respVO.setTotal((long) total);
+        return respVO;
+    }
+
+    private String metricName(String metric) {
+        switch (metric) {
+            case "totalAreaCount":      return "总片区数";
+            case "coverStationCount":   return "覆盖场站数";
+            case "totalStationCount":   return "总站场数";
+            case "normalOperateCount":  return "正常运营数";
+            case "totalSpaceCount":     return "总车位数";
+            case "availableSpaceCount": return "可用车位数";
+            case "effectiveRuleCount":  return "生效规则数";
+            case "orderCount":          return "订单量";
+            case "revenue":             return "营收";
+            case "recoveryRate":        return "追缴完成率";
+            case "depositOrderCount":   return "押金订单量";
+            default:                    return metric;
+        }
+    }
 
     /**
      * 根据报表类型，自动计算 开始时间、结束时间
