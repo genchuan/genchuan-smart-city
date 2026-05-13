@@ -105,40 +105,37 @@ public class FakePlateControlServiceImpl implements FakePlateControlService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void batchHandle(FakePlateControlBatchHandleReqVO reqVO) {
-        // 获取当前登录用户ID（这里暂时使用固定值，实际应从 SecurityUtils 获取）
         Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
         if (currentUserId == null) {
             throw exception(USER_NOT_LOGIN);
         }
 
-        for (Long id : reqVO.getIds()) {
-            // 校验记录存在
-            FakePlateControlDO plateControl = plateControlMapper.selectById(id);
-            if (plateControl == null) {
-                continue;
-            }
+        List<FakePlateControlDO> existList = plateControlMapper.selectBatchIds(reqVO.getIds());
+        if (existList.isEmpty()) {
+            return;
+        }
 
-            // 更新记录
+        LocalDateTime now = LocalDateTime.now();
+        String handleType = reqVO.getHandleType();
+        List<FakePlateControlDO> updateList = new ArrayList<>();
+        for (FakePlateControlDO plateControl : existList) {
             FakePlateControlDO updateObj = new FakePlateControlDO();
-            updateObj.setId(id);
+            updateObj.setId(plateControl.getId());
             updateObj.setHandleUserId(currentUserId);
-            updateObj.setHandleTime(LocalDateTime.now());
+            updateObj.setHandleTime(now);
 
-            String handleType = reqVO.getHandleType();
             if (HANDLE_TYPE_CHECK.equals(handleType)) {
-                // 核查：更新处置状态为处理中，处置进度为"已核查"
                 updateObj.setStatus(STATUS_PROCESSING);
                 updateObj.setHandleProgress(HANDLE_PROGRESS_CHECKED);
                 updateObj.setHandleType(HANDLE_TYPE_CHECK);
             } else if (HANDLE_TYPE_IGNORE.equals(handleType)) {
-                // 忽略：更新处置状态为已关闭，忽略理由为"批量忽略"
                 updateObj.setStatus(STATUS_CLOSED);
                 updateObj.setIgnoreReason(IGNORE_REASON_BATCH);
                 updateObj.setHandleType(HANDLE_TYPE_IGNORE);
             }
-
-            plateControlMapper.updateById(updateObj);
+            updateList.add(updateObj);
         }
+        plateControlMapper.updateBatch(updateList);
     }
 
     @Override

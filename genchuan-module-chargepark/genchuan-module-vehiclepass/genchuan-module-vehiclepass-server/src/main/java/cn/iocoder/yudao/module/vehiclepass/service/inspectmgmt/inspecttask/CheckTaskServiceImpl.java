@@ -104,15 +104,17 @@ public class CheckTaskServiceImpl implements CheckTaskService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void batchDispatch(InspectTaskBatchDispatchReqVO reqVO) {
-        // 批量更新派发状态
+        LocalDateTime now = LocalDateTime.now();
+        List<CheckTaskDO> updateList = new ArrayList<>();
         for (Long id : reqVO.getIds()) {
             CheckTaskDO updateObj = new CheckTaskDO();
             updateObj.setId(id);
             updateObj.setExecuteUserId(reqVO.getExecuteUserId());
             updateObj.setStatus(STATUS_PENDING_CLAIM);
-            updateObj.setDispatchTime(LocalDateTime.now());
-            taskMapper.updateById(updateObj);
+            updateObj.setDispatchTime(now);
+            updateList.add(updateObj);
         }
+        taskMapper.updateBatch(updateList);
     }
 
     @Override
