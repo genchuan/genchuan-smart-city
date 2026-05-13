@@ -27,6 +27,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.TASK_NOT_EXISTS;
+import static cn.iocoder.yudao.module.vehiclepass.constants.inspectmgmt.CheckTaskConstants.*;
 
 /**
  * 稽查任务 Service 实现类
@@ -108,7 +109,7 @@ public class CheckTaskServiceImpl implements CheckTaskService {
             CheckTaskDO updateObj = new CheckTaskDO();
             updateObj.setId(id);
             updateObj.setExecuteUserId(reqVO.getExecuteUserId());
-            updateObj.setStatus("待认领");
+            updateObj.setStatus(STATUS_PENDING_CLAIM);
             updateObj.setDispatchTime(LocalDateTime.now());
             taskMapper.updateById(updateObj);
         }
@@ -122,7 +123,7 @@ public class CheckTaskServiceImpl implements CheckTaskService {
         CheckTaskDO updateObj = new CheckTaskDO();
         updateObj.setId(reqVO.getId());
         updateObj.setExecuteUserId(reqVO.getExecuteUserId());
-        updateObj.setStatus("待认领");
+        updateObj.setStatus(STATUS_PENDING_CLAIM);
         updateObj.setDispatchTime(LocalDateTime.now());
         taskMapper.updateById(updateObj);
     }
@@ -134,7 +135,7 @@ public class CheckTaskServiceImpl implements CheckTaskService {
         // 更新认领状态
         CheckTaskDO updateObj = new CheckTaskDO();
         updateObj.setId(id);
-        updateObj.setStatus("处理中");
+        updateObj.setStatus(STATUS_PROCESSING);
         taskMapper.updateById(updateObj);
     }
 
@@ -168,7 +169,7 @@ public class CheckTaskServiceImpl implements CheckTaskService {
         // 更新归档状态
         CheckTaskDO updateObj = new CheckTaskDO();
         updateObj.setId(id);
-        updateObj.setStatus("已完成");
+        updateObj.setStatus(STATUS_COMPLETED);
         updateObj.setFinishTime(LocalDateTime.now());
         taskMapper.updateById(updateObj);
     }
