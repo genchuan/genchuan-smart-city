@@ -21,28 +21,7 @@ public interface CycleReportService {
      * @param createReqVO 创建信息
      * @return 编号
      */
-    Long createCycleReport(@Valid CycleReportSaveReqVO createReqVO);
-
-    /**
-     * 更新周期报表存储
-     *
-     * @param updateReqVO 更新信息
-     */
-    void updateCycleReport(@Valid CycleReportSaveReqVO updateReqVO);
-
-    /**
-     * 删除周期报表存储
-     *
-     * @param id 编号
-     */
-    void deleteCycleReport(Long id);
-
-    /**
-    * 批量删除周期报表存储
-    *
-    * @param ids 编号
-    */
-    void deleteCycleReportListByIds(List<Long> ids);
+    CycleReportCreateRespVO createCycleReport(@Valid CycleReportCreateReqVO createReqVO);
 
     /**
      * 获得周期报表存储
@@ -50,7 +29,7 @@ public interface CycleReportService {
      * @param id 编号
      * @return 周期报表存储
      */
-    CycleReportDO getCycleReport(Long id);
+    CycleReportGetRespVO getCycleReport(Long id);
 
     /**
      * 获得周期报表存储分页
@@ -61,11 +40,11 @@ public interface CycleReportService {
     PageResult<CycleReportDO> getCycleReportPage(CycleReportPageReqVO pageReqVO);
 
     /**
-     * 生成周期报表（实时统计并存储）
+     * 实时获取周期报表图表数据（不存储）
      *
-     * @param generateReqVO 生成请求
-     * @return 报表详情
+     * @param reqVO 请求参数
+     * @return 图表数据
      */
-    CycleReportGenerateRespVO generateCycleReport(CycleReportGenerateReqVO generateReqVO);
+    CycleReportChartRespVO getChartData(CycleReportChartReqVO reqVO);
 
 }
