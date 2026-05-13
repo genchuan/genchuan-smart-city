@@ -293,4 +293,9 @@ public class BedMgmtServiceImpl implements BedMgmtService {
         vo.setTrendList(trendList);
         return vo;
     }
+
+    @Override
+    public PageResult<BedMgmtRespVO> getBedMgmtJoinPage(BedMgmtPageReqVO pageReqVO) {
+        return bedMgmtMapper.selectJoinPage(pageReqVO);
+    }
 }
