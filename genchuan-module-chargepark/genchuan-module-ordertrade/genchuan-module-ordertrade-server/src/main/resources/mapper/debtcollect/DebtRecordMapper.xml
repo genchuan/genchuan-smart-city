@@ -15,6 +15,31 @@
         @author genchuan
     -->
 
+    <!-- 分页查询（LEFT JOIN station_info 获取场站名称） -->
+    <select id="selectPageJoinStation" resultType="cn.iocoder.yudao.module.ordertrade.dal.dataobject.debtcollect.DebtRecordDO">
+        SELECT o.*,
+               s.name AS station_name
+        FROM debt_record o
+        LEFT JOIN station_info s ON o.station_id = s.id AND s.deleted = 0
+        WHERE o.deleted = 0
+        <if test="req.plateNo != null and req.plateNo != ''">
+            AND o.plate_no LIKE CONCAT('%', #{req.plateNo}, '%')
+        </if>
+        <if test="req.status != null and req.status != ''">
+            AND o.status = #{req.status}
+        </if>
+        <if test="req.stationId != null">
+            AND o.station_id = #{req.stationId}
+        </if>
+        <if test="req.createTimeStart != null">
+            AND o.create_time &gt;= #{req.createTimeStart}
+        </if>
+        <if test="req.createTimeEnd != null">
+            AND o.create_time &lt;= #{req.createTimeEnd}
+        </if>
+        ORDER BY o.id DESC
+    </select>
+
     <!-- 趋势统计（折线图）：按日期分组统计数量
     <select id="selectTrend" resultType="java.util.Map">
         SELECT DATE_FORMAT(create_time, '%Y-%m-%d') AS `date`, COUNT(*) AS `count`

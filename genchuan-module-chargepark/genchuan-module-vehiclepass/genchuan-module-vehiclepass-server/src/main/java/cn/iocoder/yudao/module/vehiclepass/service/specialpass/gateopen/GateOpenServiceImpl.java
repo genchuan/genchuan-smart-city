@@ -22,6 +22,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
@@ -33,6 +34,7 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.vehiclepass.constants.specialpass.GateOpenConstants.*;
 
 
 
@@ -44,6 +46,8 @@ import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.*;
 @Service
 @Validated
 public class GateOpenServiceImpl implements GateOpenService {
+
+    private static final int PARALLEL_THRESHOLD = 100;
 
     @Resource
     private GateOpenMapper openMapper;
@@ -71,7 +75,7 @@ public class GateOpenServiceImpl implements GateOpenService {
         open.setRemark(createReqVO.getRemark());
         open.setApplyUserId(currentUserId);
         open.setApplyTime(LocalDateTime.now());
-        open.setStatus("待审批");
+        open.setStatus(STATUS_PENDING_APPROVAL);
         openMapper.insert(open);
         return open.getId();
     }
@@ -137,7 +141,7 @@ public class GateOpenServiceImpl implements GateOpenService {
 
         GateOpenDO updateObj = new GateOpenDO();
         updateObj.setId(reqVO.getId());
-        updateObj.setStatus("已通过");
+        updateObj.setStatus(STATUS_APPROVED);
         updateObj.setAuditUserId(currentUserId);
         updateObj.setAuditTime(LocalDateTime.now());
         openMapper.updateById(updateObj);
@@ -157,7 +161,7 @@ public class GateOpenServiceImpl implements GateOpenService {
 
         GateOpenDO updateObj = new GateOpenDO();
         updateObj.setId(reqVO.getId());
-        updateObj.setStatus("已驳回");
+        updateObj.setStatus(STATUS_REJECTED);
         updateObj.setAuditUserId(currentUserId);
         updateObj.setAuditTime(LocalDateTime.now());
         updateObj.setRejectReason(reqVO.getRejectReason());
@@ -172,7 +176,7 @@ public class GateOpenServiceImpl implements GateOpenService {
         }
         GateOpenDO updateObj = new GateOpenDO();
         updateObj.setId(reqVO.getId());
-        updateObj.setStatus("已执行");
+        updateObj.setStatus(STATUS_EXECUTED);
         updateObj.setExecuteTime(LocalDateTime.now());
         openMapper.updateById(updateObj);
     }
@@ -195,7 +199,7 @@ public class GateOpenServiceImpl implements GateOpenService {
         updateObj.setRemark(reqVO.getRemark());
         updateObj.setApplyUserId(currentUserId);
         updateObj.setApplyTime(LocalDateTime.now());
-        updateObj.setStatus("待审批");
+        updateObj.setStatus(STATUS_PENDING_APPROVAL);
         updateObj.setAuditUserId(null);
         updateObj.setAuditTime(null);
         updateObj.setRejectReason(null);
@@ -207,24 +211,30 @@ public class GateOpenServiceImpl implements GateOpenService {
         // 查询开闸申请趋势
         List<Map<String, Object>> trendList = openMapper.selectOpenApplyTrend(
                 reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
-        List<GateOpenChartRespVO.OpenApplyTrend> openApplyTrends = new ArrayList<>();
-        for (Map<String, Object> trend : trendList) {
-            GateOpenChartRespVO.OpenApplyTrend item = new GateOpenChartRespVO.OpenApplyTrend();
-            item.setDate(trend.get("date") != null ? trend.get("date").toString() : null);
-            item.setCount(MapValueUtils.getLongValue(trend, "count"));
-            openApplyTrends.add(item);
-        }
+        List<GateOpenChartRespVO.OpenApplyTrend> openApplyTrends = (trendList.size() > PARALLEL_THRESHOLD
+                ? trendList.parallelStream()
+                : trendList.stream())
+            .map(trend -> {
+                GateOpenChartRespVO.OpenApplyTrend item = new GateOpenChartRespVO.OpenApplyTrend();
+                item.setDate(trend.get("date") != null ? trend.get("date").toString() : null);
+                item.setCount(MapValueUtils.getLongValue(trend, "count"));
+                return item;
+            })
+            .collect(Collectors.toList());
 
         // 查询各场站开闸量
         List<Map<String, Object>> stationList = openMapper.selectStationOpenCount(
                 reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
-        List<GateOpenChartRespVO.StationOpenCount> stationOpenCounts = new ArrayList<>();
-        for (Map<String, Object> station : stationList) {
-            GateOpenChartRespVO.StationOpenCount item = new GateOpenChartRespVO.StationOpenCount();
-            item.setStationName(station.get("stationName") != null ? station.get("stationName").toString() : null);
-            item.setCount(MapValueUtils.getLongValue(station, "count"));
-            stationOpenCounts.add(item);
-        }
+        List<GateOpenChartRespVO.StationOpenCount> stationOpenCounts = (stationList.size() > PARALLEL_THRESHOLD
+                ? stationList.parallelStream()
+                : stationList.stream())
+            .map(station -> {
+                GateOpenChartRespVO.StationOpenCount item = new GateOpenChartRespVO.StationOpenCount();
+                item.setStationName(station.get("stationName") != null ? station.get("stationName").toString() : null);
+                item.setCount(MapValueUtils.getLongValue(station, "count"));
+                return item;
+            })
+            .collect(Collectors.toList());
 
         // 查询申请量和审批通过率
         Map<String, Object> stats = openMapper.selectOpenStats(

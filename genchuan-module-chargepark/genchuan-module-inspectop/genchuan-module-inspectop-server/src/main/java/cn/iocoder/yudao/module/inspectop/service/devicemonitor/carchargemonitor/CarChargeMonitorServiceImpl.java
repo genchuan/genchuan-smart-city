@@ -124,7 +124,6 @@ public class CarChargeMonitorServiceImpl implements CarChargeMonitorService {
         }
 
         // 在Controller层模拟deviceCode字段
-        // 这里不设置deviceCode，留给Controller层处理
         return locationRespVO;
     }
 

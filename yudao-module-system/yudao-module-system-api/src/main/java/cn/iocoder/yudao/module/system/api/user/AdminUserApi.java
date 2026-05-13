@@ -4,15 +4,18 @@ import cn.hutool.core.convert.Convert;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.collection.CollectionUtils;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
+import cn.iocoder.yudao.module.system.api.user.dto.UserRegisterReqDTO;
 import cn.iocoder.yudao.module.system.enums.ApiConstants;
 import com.fhs.core.trans.anno.AutoTrans;
 import com.fhs.trans.service.AutoTransable;
 import feign.FeignIgnore;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collection;
@@ -93,4 +96,8 @@ public interface AdminUserApi extends AutoTransable<AdminUserRespDTO> {
         return getUser(Convert.toLong(id)).getCheckedData();
     }
 
+    @PostMapping(PREFIX + "/register")
+    @Operation(summary = "注册用户")
+    @Parameter(name = "reqDTO", description = "用户注册信息", required = true)
+    CommonResult<Long> registerUser(@RequestBody UserRegisterReqDTO reqDTO);
 }

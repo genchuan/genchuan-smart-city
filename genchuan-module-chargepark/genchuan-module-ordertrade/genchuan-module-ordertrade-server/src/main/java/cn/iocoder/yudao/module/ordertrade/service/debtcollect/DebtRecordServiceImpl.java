@@ -8,6 +8,7 @@ import cn.iocoder.yudao.module.ordertrade.dal.dataobject.debtcollect.CollectTrac
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.debtcollect.DebtRecordDO;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.debtcollect.CollectTrackMapper;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.debtcollect.DebtRecordMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +42,11 @@ public class DebtRecordServiceImpl implements DebtRecordService {
     @Override public void deleteDebtRecord(Long id) { validateExists(id); debtRecordMapper.deleteById(id); }
     @Override public void deleteDebtRecordListByIds(List<Long> ids) { debtRecordMapper.deleteByIds(ids); }
     @Override public DebtRecordDO getDebtRecord(Long id) { return debtRecordMapper.selectById(id); }
-    @Override public PageResult<DebtRecordDO> getDebtRecordPage(DebtRecordPageReqVO v) { return debtRecordMapper.selectPage(v); }
+    @Override public PageResult<DebtRecordDO> getDebtRecordPage(DebtRecordPageReqVO v) {
+        Page<DebtRecordDO> page = new Page<>(v.getPageNo(), v.getPageSize());
+        var result = debtRecordMapper.selectPageJoinStation(page, v);
+        return new PageResult<>(result.getRecords(), result.getTotal());
+    }
     @Override public DebtRecordChartRespVO getDebtRecordChart(DebtRecordChartReqVO v)  {
         DebtRecordChartRespVO resp = new DebtRecordChartRespVO();
         LocalDateTime start = v.getStartTime() != null ? v.getStartTime() : LocalDateTime.now().minusDays(30);

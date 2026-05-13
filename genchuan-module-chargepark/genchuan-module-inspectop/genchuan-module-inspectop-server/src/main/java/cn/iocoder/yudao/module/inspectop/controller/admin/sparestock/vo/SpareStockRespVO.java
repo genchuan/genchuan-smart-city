@@ -17,7 +17,7 @@ public class SpareStockRespVO {
     private Long id;
 
     @Schema(description = "备件ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("备件ID")
+//    @ExcelProperty("备件ID")
     private Long spareId;
 
     @Schema(description = "备件名称", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -40,12 +40,12 @@ public class SpareStockRespVO {
     @ExcelProperty("出库时间")
     private LocalDateTime outTime;
 
-    @Schema(description = "备用字段1")
-    @ExcelProperty("备用字段1")
+    @Schema(description = "供应商")
+    @ExcelProperty("供应商")
     private String reserve1;
 
-    @Schema(description = "备用字段2")
-    @ExcelProperty("备用字段2")
+    @Schema(description = "领用人")
+    @ExcelProperty("领用人")
     private String reserve2;
 
     @Schema(description = "创建者")

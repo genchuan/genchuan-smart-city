@@ -72,4 +72,11 @@ public interface AssetStockMapper extends BaseMapperX<AssetStockDO> {
      */
     AssetStockChartRespVO.CardData selectCardData(@Param("timeRange") LocalDateTime[] timeRange);
 
+    /**
+     * 根据ID查询库存（包含关联信息）
+     *
+     * @param id 库存ID
+     * @return 包含关联信息的库存数据
+     */
+    AssetStockRespVO selectOneWithJoin(@Param("id") Long id);
 }

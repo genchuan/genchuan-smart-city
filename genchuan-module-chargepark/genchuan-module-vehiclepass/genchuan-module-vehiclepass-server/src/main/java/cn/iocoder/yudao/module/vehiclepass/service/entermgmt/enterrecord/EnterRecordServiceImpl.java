@@ -30,6 +30,7 @@ import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.RECORD_NOT_EXISTS;
 import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.RECORD_TYPE_NOT_MANUAL;
+import static cn.iocoder.yudao.module.vehiclepass.constants.entermgmt.EnterRecordConstants.*;
 
 /**
  * 入场记录 Service 实现类
@@ -121,7 +122,7 @@ public class EnterRecordServiceImpl implements EnterRecordService {
     @Override
     public Boolean createEnterRecord(EnterRecordCreateReqVO req) {
         // 校验：必须是人工补录
-        if (!"人工补录".equals(req.getRecordType())) {
+        if (!RECORD_TYPE_MANUAL.equals(req.getRecordType())) {
             throw exception(RECORD_TYPE_NOT_MANUAL);
         }
 

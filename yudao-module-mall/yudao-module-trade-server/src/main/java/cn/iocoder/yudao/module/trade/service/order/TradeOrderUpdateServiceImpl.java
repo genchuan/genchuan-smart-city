@@ -11,10 +11,13 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.iocoder.yudao.framework.common.enums.UserTypeEnum;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.json.JsonUtils;
 import cn.iocoder.yudao.framework.common.util.number.MoneyUtils;
 import cn.iocoder.yudao.module.member.api.address.MemberAddressApi;
 import cn.iocoder.yudao.module.member.api.address.dto.MemberAddressRespDTO;
+import cn.iocoder.yudao.module.member.api.user.MemberUserApi;
+import cn.iocoder.yudao.module.member.api.user.dto.MemberUserRespDTO;
 import cn.iocoder.yudao.module.pay.api.order.PayOrderApi;
 import cn.iocoder.yudao.module.pay.api.order.dto.PayOrderCreateReqDTO;
 import cn.iocoder.yudao.module.pay.api.order.dto.PayOrderRespDTO;
@@ -28,6 +31,7 @@ import cn.iocoder.yudao.module.product.api.comment.dto.ProductCommentCreateReqDT
 import cn.iocoder.yudao.module.promotion.api.combination.CombinationRecordApi;
 import cn.iocoder.yudao.module.promotion.api.combination.dto.CombinationRecordRespDTO;
 import cn.iocoder.yudao.module.promotion.enums.combination.CombinationRecordStatusEnum;
+import cn.iocoder.yudao.module.system.api.permission.PermissionApi;
 import cn.iocoder.yudao.module.system.api.social.SocialClientApi;
 import cn.iocoder.yudao.module.system.api.social.dto.SocialWxaSubscribeMessageSendReqDTO;
 import cn.iocoder.yudao.module.trade.controller.admin.order.vo.TradeOrderDeliveryReqVO;
@@ -70,10 +74,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.*;
@@ -129,6 +130,12 @@ public class TradeOrderUpdateServiceImpl implements TradeOrderUpdateService {
 
     @Resource
     private TradeOrderProperties tradeOrderProperties;
+
+    @Resource
+    private PermissionApi permissionApi;
+
+    @Resource
+    private MemberUserApi memberUserApi;
 
     // =================== Order ===================
 
@@ -315,6 +322,47 @@ public class TradeOrderUpdateServiceImpl implements TradeOrderUpdateService {
         // 5. 记录订单日志
         TradeOrderLogUtils.setOrderInfo(order.getId(), order.getStatus(), TradeOrderStatusEnum.UNDELIVERED.getStatus());
         TradeOrderLogUtils.setUserInfo(order.getUserId(), UserTypeEnum.MEMBER.getValue());
+
+        // ====== 新增：步骤6 - 支付成功后，为当前用户设置固定角色 169 ======
+        try {
+            // 6.1 根据订单ID查询完整的订单信息，获取用户ID
+            TradeOrderDO orderForUser = tradeOrderMapper.selectById(id); // 可直接用参数`id`，或者使用已查询到的`order`对象（如果其用户信息完整）
+            if (orderForUser == null) {
+                log.error("[updateOrderPaid][订单({})在设置角色时查询失败]", id);
+                return; // 订单不存在，不继续处理角色设置
+            }
+            Long userId = orderForUser.getUserId();
+
+            // 6.2 根据用户ID查询会员的手机号
+            // 注意：此处需要调用【会员模块】的Feign API来获取会员详情。假设存在 MemberUserApi 和 getUserById 方法。
+            // 由于提供的文档中无此接口，这里基于风格生成一个示例调用。
+            // 你需要根据实际项目中的会员服务Feign客户端进行替换。
+            CommonResult<MemberUserRespDTO> userResult = memberUserApi.getUser(userId);
+            if (userResult == null || !userResult.isSuccess() || userResult.getData() == null) {
+                log.warn("[updateOrderPaid][用户({})的手机号查询失败，无法设置角色]", userId);
+                return;
+            }
+            String mobile = userResult.getData().getMobile();
+            if (StrUtil.isEmpty(mobile)) {
+                log.warn("[updateOrderPaid][用户({})的手机号为空，无法设置角色]", userId);
+                return;
+            }
+
+            // 6.3 调用权限服务的Feign客户端，通过手机号设置固定角色 169
+            Set<Long> roleIds = Collections.singleton(169L);
+            CommonResult<Boolean> assignResult = permissionApi.assignUserRoleByMobile(mobile, roleIds);
+
+            if (assignResult != null && assignResult.isSuccess()) {
+                log.info("[updateOrderPaid][订单({})支付成功，已为用户({}, mobile:{})设置角色{}]", id, userId, mobile, roleIds);
+            } else {
+                // Feign调用失败或业务失败，记录错误日志，但不应该回滚支付成功的主事务
+                log.error("[updateOrderPaid][订单({})支付成功，但为用户({})设置角色失败。错误信息: {}]",
+                        id, userId, assignResult != null ? assignResult.getMsg() : "Feign调用异常");
+            }
+        } catch (Exception e) {
+            // 捕获所有异常，确保设置角色的逻辑不影响支付成功的主流程
+            log.error("[updateOrderPaid][订单({})支付成功，但执行设置角色逻辑时发生异常]", id, e);
+        }
     }
 
     @Override

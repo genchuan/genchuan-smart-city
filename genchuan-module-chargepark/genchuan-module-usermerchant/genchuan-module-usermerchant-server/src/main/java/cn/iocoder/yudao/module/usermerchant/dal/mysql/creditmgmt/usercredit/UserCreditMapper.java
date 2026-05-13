@@ -43,4 +43,7 @@ public interface UserCreditMapper extends BaseMapperX<UserCreditDO> {
 
     Integer selectLowCreditUserCount(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
+    Long getIdByNickname(String nickname);
+
+
 }

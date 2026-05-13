@@ -18,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
@@ -38,6 +39,8 @@ import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.PARK_
 @Service
 @Validated
 public class InParkStatusServiceImpl implements InParkStatusService {
+
+    private static final int PARALLEL_THRESHOLD = 100;
 
     @Resource
     private InParkStatusMapper parkStatusMapper;
@@ -151,28 +154,34 @@ public class InParkStatusServiceImpl implements InParkStatusService {
 
         // 1. 车辆分布
         List<Map<String, Object>> carLocationList = parkStatusMapper.selectCarLocationList(chartReqVO.getStationId());
-        List<InParkStatusChartRespVO.CarLocation> carLocations = new ArrayList<>();
-        for (Map<String, Object> map : carLocationList) {
-            InParkStatusChartRespVO.CarLocation item = new InParkStatusChartRespVO.CarLocation();
-            item.setPlateNo((String) map.get("plateNo"));
-            Object lonObj = map.get("lon");
-            Object latObj = map.get("lat");
-            if (lonObj != null) item.setLon(new java.math.BigDecimal(lonObj.toString()));
-            if (latObj != null) item.setLat(new java.math.BigDecimal(latObj.toString()));
-            item.setSpaceName((String) map.get("spaceName"));
-            carLocations.add(item);
-        }
+        List<InParkStatusChartRespVO.CarLocation> carLocations = (carLocationList.size() > PARALLEL_THRESHOLD
+                ? carLocationList.parallelStream()
+                : carLocationList.stream())
+            .map(map -> {
+                InParkStatusChartRespVO.CarLocation item = new InParkStatusChartRespVO.CarLocation();
+                item.setPlateNo((String) map.get("plateNo"));
+                Object lonObj = map.get("lon");
+                Object latObj = map.get("lat");
+                if (lonObj != null) item.setLon(new java.math.BigDecimal(lonObj.toString()));
+                if (latObj != null) item.setLat(new java.math.BigDecimal(latObj.toString()));
+                item.setSpaceName((String) map.get("spaceName"));
+                return item;
+            })
+            .collect(Collectors.toList());
         respVO.setCarLocationList(carLocations);
 
         // 2. 在停量趋势
         List<Map<String, Object>> trendList = parkStatusMapper.selectInParkCountTrend(chartReqVO.getStationId());
-        List<InParkStatusChartRespVO.InParkCountTrend> trends = new ArrayList<>();
-        for (Map<String, Object> map : trendList) {
-            InParkStatusChartRespVO.InParkCountTrend item = new InParkStatusChartRespVO.InParkCountTrend();
-            item.setTime((String) map.get("time"));
-            item.setCount(MapValueUtils.getLongValue(map, "count"));
-            trends.add(item);
-        }
+        List<InParkStatusChartRespVO.InParkCountTrend> trends = (trendList.size() > PARALLEL_THRESHOLD
+                ? trendList.parallelStream()
+                : trendList.stream())
+            .map(map -> {
+                InParkStatusChartRespVO.InParkCountTrend item = new InParkStatusChartRespVO.InParkCountTrend();
+                item.setTime((String) map.get("time"));
+                item.setCount(MapValueUtils.getLongValue(map, "count"));
+                return item;
+            })
+            .collect(Collectors.toList());
         respVO.setInParkCountTrend(trends);
 
         // 3. 卡片数据

@@ -25,6 +25,7 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.CHECK_NOT_EXISTS;
+import static cn.iocoder.yudao.module.vehiclepass.constants.leavemgmt.PayCheckConstants.*;
 
 /**
  * 缴费核验 Service 实现类
@@ -105,7 +106,7 @@ public class PayCheckServiceImpl implements PayCheckService {
         // 更新为已缴清状态
         PayCheckDO updateObj = new PayCheckDO();
         updateObj.setId(id);
-        updateObj.setStatus("已缴清");
+        updateObj.setStatus(STATUS_PAID);
         updateObj.setCheckTime(LocalDateTime.now());
         checkMapper.updateById(updateObj);
     }
@@ -117,7 +118,7 @@ public class PayCheckServiceImpl implements PayCheckService {
         // 更新为欠费状态，发送催缴通知
         PayCheckDO updateObj = new PayCheckDO();
         updateObj.setId(id);
-        updateObj.setStatus("欠费");
+        updateObj.setStatus(STATUS_ARREARS);
         checkMapper.updateById(updateObj);
         // TODO: 发送催缴通知逻辑（如短信、推送等）
     }

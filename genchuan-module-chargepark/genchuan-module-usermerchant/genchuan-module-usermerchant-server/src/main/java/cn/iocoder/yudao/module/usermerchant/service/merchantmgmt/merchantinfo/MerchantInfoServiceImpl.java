@@ -6,9 +6,6 @@ import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.vo.UserInfoChartReqVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.vo.UserInfoChartRespVO;
-import cn.iocoder.yudao.module.usermerchant.dal.dataobject.usermgmt.userinfo.UserInfoDO;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.NameQueryHelper;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -48,7 +45,7 @@ public class MerchantInfoServiceImpl implements MerchantInfoService {
     private MerchantInfoMapper merchantInfoMapper;
 
     @Override
-    public Boolean createMerchantInfo(MerchantInfoSaveReqVO createReqVO) {
+    public Boolean createMerchantInfo(MerchantInfoUpdateReqVO createReqVO) {
         // 插入
         MerchantInfoDO merchantInfo = BeanUtils.toBean(createReqVO, MerchantInfoDO.class);
         int rows = merchantInfoMapper.insert(merchantInfo);
@@ -58,7 +55,7 @@ public class MerchantInfoServiceImpl implements MerchantInfoService {
     }
 
     @Override
-    public void updateMerchantInfo(MerchantInfoSaveReqVO updateReqVO) {
+    public void updateMerchantInfo(MerchantInfoUpdateReqVO updateReqVO) {
         // 校验存在
         validateMerchantInfoExists(updateReqVO.getId());
         // 更新
@@ -153,7 +150,7 @@ public class MerchantInfoServiceImpl implements MerchantInfoService {
     }
 
     @Override
-    public void batchUpdatePlateAuth(MerchantInfoSaveReqVO reqVO,int index) {
+    public void batchUpdatePlateAuth(MerchantInfoSaveReqVO reqVO, int index) {
         List<Long> ids = reqVO.getIds();
         if (CollectionUtils.isEmpty(ids)) {
             return;

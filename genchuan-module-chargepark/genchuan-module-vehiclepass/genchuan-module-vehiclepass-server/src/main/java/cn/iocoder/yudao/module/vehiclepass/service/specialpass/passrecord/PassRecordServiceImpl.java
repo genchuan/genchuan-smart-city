@@ -18,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
@@ -40,6 +41,8 @@ import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.RECOR
 @Service
 @Validated
 public class PassRecordServiceImpl implements PassRecordService {
+
+    private static final int PARALLEL_THRESHOLD = 100;
 
     @Resource
     private PassRecordMapper recordMapper;
@@ -120,13 +123,16 @@ public class PassRecordServiceImpl implements PassRecordService {
         // 查询放行量趋势
         List<Map<String, Object>> trendList = recordMapper.selectPassCountTrend(
                 reqVO.getStartTime(), reqVO.getEndTime(), reqVO.getStationId());
-        List<PassRecordChartRespVO.PassCountTrend> passCountTrends = new ArrayList<>();
-        for (Map<String, Object> trend : trendList) {
-            PassRecordChartRespVO.PassCountTrend item = new PassRecordChartRespVO.PassCountTrend();
-            item.setDate(trend.get("date") != null ? trend.get("date").toString() : null);
-            item.setCount(MapValueUtils.getLongValue(trend, "count"));
-            passCountTrends.add(item);
-        }
+        List<PassRecordChartRespVO.PassCountTrend> passCountTrends = (trendList.size() > PARALLEL_THRESHOLD
+                ? trendList.parallelStream()
+                : trendList.stream())
+            .map(trend -> {
+                PassRecordChartRespVO.PassCountTrend item = new PassRecordChartRespVO.PassCountTrend();
+                item.setDate(trend.get("date") != null ? trend.get("date").toString() : null);
+                item.setCount(MapValueUtils.getLongValue(trend, "count"));
+                return item;
+            })
+            .collect(Collectors.toList());
 
         // 查询今日放行量和异常放行占比
         Map<String, Object> stats = recordMapper.selectPassStats(

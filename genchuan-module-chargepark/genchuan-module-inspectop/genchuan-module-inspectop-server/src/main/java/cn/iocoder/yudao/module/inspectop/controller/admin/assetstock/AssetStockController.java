@@ -76,8 +76,8 @@ public class AssetStockController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('inspectop:asset-stock:query')")
     public CommonResult<AssetStockRespVO> getAssetStock(@RequestParam("id") Long id) {
-        AssetStockDO assetStock = assetStockService.getAssetStock(id);
-        return success(BeanUtils.toBean(assetStock, AssetStockRespVO.class));
+        AssetStockRespVO assetStock = assetStockService.getAssetStock(id);
+        return success(assetStock);
     }
 
     @GetMapping("/page")
@@ -121,7 +121,51 @@ public class AssetStockController {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         // 这里不再需要BeanUtils转换，因为Service已经返回了VO
         List<AssetStockRespVO> list = assetStockService.getAssetStockPage(pageReqVO).getList();
+
+        // ========== 【新增】对VO列表中的库存状态字典值进行转换（数字 -> 中文） ==========
+        convertStockStatusDictValues(list);
+        // ====================================================================
+
         // 导出 Excel
         ExcelUtils.write(response, "库存管理.xls", "数据", AssetStockRespVO.class, list);
+    }
+
+    /**
+     * 【新增】转换库存管理状态字典值为中文显示
+     * 此方法会修改传入的 voList 中每个对象的 status 字段。
+     * 转换规则：1-正常，2-低库存，3-预警库存
+     * @param voList 库存管理响应VO列表
+     */
+    private void convertStockStatusDictValues(List<AssetStockRespVO> voList) {
+        if (voList == null || voList.isEmpty()) {
+            return;
+        }
+        for (AssetStockRespVO vo : voList) {
+            // 转换库存状态字段
+            vo.setStatus(convertStockStatus(vo.getStatus()));
+        }
+    }
+
+    /**
+     * 【新增】转换库存管理状态字典值
+     * 根据您提供的映射：1-正常，2-低库存，3-预警库存
+     * @param statusCode 状态编码（例如 "1", "2", "3"）
+     * @return 对应的中文状态描述
+     */
+    private String convertStockStatus(String statusCode) {
+        if (statusCode == null) {
+            return "";
+        }
+        switch (statusCode.trim()) {
+            case "1":
+                return "正常";
+            case "2":
+                return "低库存";
+            case "3":
+                return "预警库存";
+            default:
+                // 如果遇到未知编码，返回原编码以便排查。
+                return statusCode;
+        }
     }
 }

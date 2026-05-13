@@ -136,6 +136,14 @@ public class AssetInfoController {
         return success(chartData);
     }
 
+    @GetMapping("/station-simple-list")
+    @Operation(summary = "获取已生效的场站列表（用于下拉选择）")
+    @PreAuthorize("@ss.hasPermission('inspectop:asset-info:query')")
+    public CommonResult<List<StationSimpleRespVO>> getSimpleStationList() {
+        List<StationSimpleRespVO> stationList = assetInfoService.getSimpleStationList();
+        return success(stationList);
+    }
+
     @GetMapping("/export-excel")
     @Operation(summary = "导出资产信息 Excel")
     @PreAuthorize("@ss.hasPermission('inspectop:asset-info:export')")

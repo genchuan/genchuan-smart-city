@@ -150,6 +150,7 @@
 
     <!-- 定义定位查询结果映射器 -->
     <resultMap id="CarChargeMonitorLocationRespVOResultMap" type="cn.iocoder.yudao.module.inspectop.controller.admin.devicemonitor.carchargemonitor.vo.CarChargeMonitorLocationRespVO">
+        <result column="device_id" property="deviceCode" jdbcType="DECIMAL"/>
         <result column="longitude" property="longitude" jdbcType="DECIMAL"/>
         <result column="latitude" property="latitude" jdbcType="DECIMAL"/>
         <result column="station_name" property="stationName" jdbcType="VARCHAR"/>
@@ -158,6 +159,7 @@
     <!-- 定位查询方法 -->
     <select id="selectLocationById" resultMap="CarChargeMonitorLocationRespVOResultMap">
         SELECT
+            ccm.device_id,
             ccm.longitude,
             ccm.latitude,
             si.name AS station_name

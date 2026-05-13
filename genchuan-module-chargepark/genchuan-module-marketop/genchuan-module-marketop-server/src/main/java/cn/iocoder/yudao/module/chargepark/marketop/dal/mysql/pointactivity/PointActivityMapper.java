@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity;
 
+import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
@@ -10,7 +11,11 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -25,18 +30,25 @@ public interface PointActivityMapper extends BaseMapperX<PointActivityDO> {
                 .likeIfPresent(PointActivityDO::getRule, reqVO.getRule())
                 .likeIfPresent(PointActivityDO::getDescription, reqVO.getDescription())
                 .eqIfPresent(PointActivityDO::getAuditorId, reqVO.getAuditorId())
+                .betweenIfPresent(PointActivityDO::getStartTime, reqVO.getStartTime())
+                .betweenIfPresent(PointActivityDO::getEndTime, reqVO.getEndTime())
                 .orderByDesc(PointActivityDO::getId);
         if (reqVO.getStationId() != null) {
             queryWrapperX.apply("FIND_IN_SET({0}, station_ids)", reqVO.getStationId());
         }
-        if (reqVO.getStartTime() != null) {
-            String startTime = DateUtils.longToDateTime(reqVO.getStartTime());
+
+        // 如果没有传startTime和endTime，但传了date，则用date转换
+        if (reqVO.getStartTime() == null && reqVO.getEndTime() == null && StrUtil.isNotBlank(reqVO.getDate())) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate localDate = LocalDate.parse(reqVO.getDate(), formatter);
+            LocalDateTime startDateTime = localDate.atStartOfDay();
+            LocalDateTime endDateTime = localDate.atTime(LocalTime.MAX);
+            String startTime = DateUtils.longToDateTime(startDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
             queryWrapperX.le(PointActivityDO::getStartTime, startTime);
-        }
-        if (reqVO.getEndTime() != null) {
-            String endTime = DateUtils.longToDateTime(reqVO.getEndTime());
+            String endTime = DateUtils.longToDateTime(endDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
             queryWrapperX.ge(PointActivityDO::getEndTime, endTime);
         }
+
         return selectPage(reqVO, queryWrapperX);
     }
 

@@ -12,13 +12,13 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @Data
 public class RefundApplyChartReqVO {
 
-    @Schema(description = "统计开始时间")
+    @Schema(description = "申请时间-开始，格式 yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDateTime startTime;
+    private LocalDateTime applyTimeStart;
 
-    @Schema(description = "统计结束时间")
+    @Schema(description = "申请时间-结束，格式 yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private LocalDateTime endTime;
+    private LocalDateTime applyTimeEnd;
 
     @Schema(description = "场站ID")
     private Long stationId;

@@ -8,6 +8,7 @@ import cn.iocoder.yudao.module.ordertrade.dal.dataobject.debtcollect.DebtIdentif
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.debtcollect.DebtRecordDO;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.debtcollect.DebtIdentifyMapper;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.debtcollect.DebtRecordMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +42,11 @@ public class DebtIdentifyServiceImpl implements DebtIdentifyService {
     @Override public void deleteDebtIdentify(Long id) { validateExists(id); debtIdentifyMapper.deleteById(id); }
     @Override public void deleteDebtIdentifyListByIds(List<Long> ids) { debtIdentifyMapper.deleteByIds(ids); }
     @Override public DebtIdentifyDO getDebtIdentify(Long id) { return debtIdentifyMapper.selectById(id); }
-    @Override public PageResult<DebtIdentifyDO> getDebtIdentifyPage(DebtIdentifyPageReqVO v) { return debtIdentifyMapper.selectPage(v); }
+    @Override public PageResult<DebtIdentifyDO> getDebtIdentifyPage(DebtIdentifyPageReqVO v) {
+        Page<DebtIdentifyDO> page = new Page<>(v.getPageNo(), v.getPageSize());
+        var result = debtIdentifyMapper.selectPageJoinStation(page, v);
+        return new PageResult<>(result.getRecords(), result.getTotal());
+    }
     @Override public DebtIdentifyChartRespVO getDebtIdentifyChart(DebtIdentifyChartReqVO v)  {
         DebtIdentifyChartRespVO resp = new DebtIdentifyChartRespVO();
         LocalDateTime start = v.getStartTime() != null ? v.getStartTime() : LocalDateTime.now().minusDays(30);
@@ -49,7 +54,7 @@ public class DebtIdentifyServiceImpl implements DebtIdentifyService {
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(debtIdentifyMapper.selectTrend(start, end));
-        resp.setStationData(debtIdentifyMapper.selectGroupByStatus());
+        resp.setStationData(debtIdentifyMapper.selectGroupByStatus(start, end));
         DebtIdentifyChartRespVO.CardData card = new DebtIdentifyChartRespVO.CardData();
         card.setWaitIdentifyCount(debtIdentifyMapper.selectCountByStatus("pending").intValue());
         Long total = debtIdentifyMapper.selectTodayCount(todayStart, now);

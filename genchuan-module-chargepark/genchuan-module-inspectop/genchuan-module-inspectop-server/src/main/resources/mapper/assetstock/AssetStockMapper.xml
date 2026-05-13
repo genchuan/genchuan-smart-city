@@ -125,6 +125,7 @@
     <!-- 查询资产库存分布数据 -->
     <select id="selectStockData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.assetstock.vo.AssetStockChartRespVO$StockData">
         SELECT
+        ai.id AS assetId,
         ai.name AS assetName,
         SUM(ast.current_stock) AS currentStock
         FROM asset_stock ast
@@ -142,13 +143,36 @@
     <select id="selectCardData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.assetstock.vo.AssetStockChartRespVO$CardData">
         SELECT
         SUM(current_stock) AS totalStock,
-        SUM(CASE WHEN status IN ('2', '3') THEN 1 ELSE 0 END) AS warnStockCount
+        SUM(CASE WHEN status IN ('3') THEN 1 ELSE 0 END) AS warnStockCount
         FROM asset_stock
         <where>
             <if test="timeRange != null and timeRange.length == 2">
                 AND create_time BETWEEN #{timeRange[0]} AND #{timeRange[1]}
             </if>
         </where>
+    </select>
+
+    <!-- 根据ID查询库存（关联查询 station_info 和 asset_info 表获取关联名称） -->
+    <select id="selectOneWithJoin" resultMap="AssetStockRespVOResultMap">
+        SELECT
+            ast.id,
+            ast.asset_id,
+            ast.current_stock,
+            ast.warn_threshold,
+            ast.status,
+            ast.station_id,
+            ast.reserve1,
+            ast.reserve2,
+            ast.creator,
+            ast.updater,
+            ast.create_time,
+            ast.update_time,
+            si.name AS station_name,
+            ai.name AS asset_name
+        FROM asset_stock ast
+                 LEFT JOIN station_info si ON ast.station_id = si.id
+                 LEFT JOIN asset_info ai ON ast.asset_id = ai.id
+        WHERE ast.id = #{id}
     </select>
 
 </mapper>

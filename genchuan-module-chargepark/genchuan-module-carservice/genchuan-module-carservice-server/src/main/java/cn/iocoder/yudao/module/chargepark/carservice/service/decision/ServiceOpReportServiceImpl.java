@@ -54,7 +54,6 @@ import cn.iocoder.yudao.module.stationresource.api.station.StationInfoApi;
 import cn.iocoder.yudao.module.stationresource.api.station.dto.StationInfoRespDTO;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -78,7 +77,6 @@ import java.util.stream.Collectors;
  * 数据源:复用 ReportStatMapper 的 GROUP BY DATE 聚合 SQL(P8.8 性能优化)
  *        + 各业务表的 selectCount(轻量级条件计数)。
  *
- * 所有 chart 方法都加 @Cacheable 30s,与 P8.8 阶段的缓存策略保持一致。
  */
 @Slf4j
 @Service
@@ -109,7 +107,6 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     // ===================================================================
 
     @Override
-    @Cacheable(cacheNames = "carservice:report:chart-rescue#30s")
     public RescueInfoChartRespVO chartRescue(LocalDateTime startTime, LocalDateTime endTime) {
         RescueInfoChartRespVO resp = new RescueInfoChartRespVO();
         long total = rescueInfoMapper.selectCount(new LambdaQueryWrapperX<RescueInfoDO>()
@@ -179,8 +176,6 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = "carservice:report:chart-charge-park-map#30s",
-            unless = "#result == null || #result.stationSpaceList == null || #result.stationSpaceList.isEmpty()")
     public ChargeParkMapChartRespVO chartChargeParkMap(LocalDateTime startTime, LocalDateTime endTime) {
         ChargeParkMapChartRespVO resp = new ChargeParkMapChartRespVO();
 
@@ -228,8 +223,6 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = "carservice:report:chart-near-station#30s",
-            unless = "#result == null || #result.stationLocationList == null || #result.stationLocationList.isEmpty()")
     public NearStationChartRespVO chartNearStation(LocalDateTime startTime, LocalDateTime endTime,
                                                     Double lon, Double lat) {
         NearStationChartRespVO resp = new NearStationChartRespVO();
@@ -361,7 +354,6 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = "carservice:report:chart-space-push#30s")
     public SpacePushChartRespVO chartSpacePush(LocalDateTime startTime, LocalDateTime endTime) {
         SpacePushChartRespVO resp = new SpacePushChartRespVO();
         // 卡片统计与折线图聚合维度一致：以 push_time 为准、限定近 30 天，剔除尚未推送（push_time 为 null）
@@ -385,7 +377,6 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = "carservice:report:chart-reserve#30s")
     public ReserveListChartRespVO chartReserve(LocalDateTime startTime, LocalDateTime endTime) {
         ReserveListChartRespVO resp = new ReserveListChartRespVO();
         long total = reserveListMapper.selectCount(new LambdaQueryWrapperX<ReserveListDO>()
@@ -412,8 +403,6 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = "carservice:report:chart-space-location#30s",
-            unless = "#result == null || #result.spaceLocationList == null || #result.spaceLocationList.isEmpty()")
     public SpaceLocationChartRespVO chartSpaceLocation(LocalDateTime startTime, LocalDateTime endTime) {
         SpaceLocationChartRespVO resp = new SpaceLocationChartRespVO();
         long total = spaceLocationMapper.selectCount(new LambdaQueryWrapperX<SpaceLocationDO>()
@@ -472,7 +461,6 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = "carservice:report:chart-path-plan#30s")
     public PathPlanChartRespVO chartPathPlan(LocalDateTime startTime, LocalDateTime endTime) {
         PathPlanChartRespVO resp = new PathPlanChartRespVO();
         Map<String, Object> agg = reportStatMapper.pathPlanAggregate(startTime, endTime);
@@ -501,7 +489,6 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = "carservice:report:chart-suggestion#30s")
     public SuggestionChartRespVO chartSuggestion(LocalDateTime startTime, LocalDateTime endTime) {
         SuggestionChartRespVO resp = new SuggestionChartRespVO();
         long total = suggestionMapper.selectCount(new LambdaQueryWrapperX<SuggestionDO>()
@@ -524,7 +511,6 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = "carservice:report:chart-user-appeal#30s")
     public UserAppealChartRespVO chartUserAppeal(LocalDateTime startTime, LocalDateTime endTime) {
         UserAppealChartRespVO resp = new UserAppealChartRespVO();
         long total = userAppealMapper.selectCount(new LambdaQueryWrapperX<UserAppealDO>()
@@ -547,7 +533,6 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = "carservice:report:chart-dispute-mediate#30s")
     public DisputeMediateChartRespVO chartDisputeMediate(LocalDateTime startTime, LocalDateTime endTime) {
         DisputeMediateChartRespVO resp = new DisputeMediateChartRespVO();
         long total = disputeMediateMapper.selectCount(new LambdaQueryWrapperX<DisputeMediateDO>()
@@ -570,7 +555,6 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = "carservice:report:chart-wording-mgmt#30s")
     public WordingMgmtChartRespVO chartWordingMgmt() {
         WordingMgmtChartRespVO resp = new WordingMgmtChartRespVO();
         // chart-wording-mgmt 接口无时间参数,传 null 不过滤(全量统计当前生效/类型分布)
@@ -592,7 +576,6 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     }
 
     @Override
-    @Cacheable(cacheNames = "carservice:report:chart-service-op-report#30s")
     public ServiceOpReportChartRespVO chartServiceOpReport(LocalDateTime startTime, LocalDateTime endTime) {
         ServiceOpReportChartRespVO resp = new ServiceOpReportChartRespVO();
         // 默认近半年,给月度趋势图留足月份
@@ -891,8 +874,6 @@ public class ServiceOpReportServiceImpl implements ServiceOpReportService {
     // ===================================================================
 
     @Override
-    @Cacheable(cacheNames = "carservice:report:serviceopreport-page#30s",
-            unless = "#result == null || #result.list == null || #result.list.isEmpty()")
     public PageResult<ServiceOpReportRespVO> pageServiceOpReport(ServiceOpReportPageReqVO reqVO) {
         // 1. 参数默认处理
         ReportPeriodEnum period = ReportPeriodEnum.fromTimeScale(reqVO.getTimeScale());

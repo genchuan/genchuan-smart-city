@@ -7,6 +7,8 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.datapermission.core.annotation.DataPermission;
 import cn.iocoder.yudao.framework.datapermission.core.util.DataPermissionUtils;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
+import cn.iocoder.yudao.module.system.api.user.dto.UserRegisterReqDTO;
+import cn.iocoder.yudao.module.system.controller.admin.auth.vo.AuthRegisterReqVO;
 import cn.iocoder.yudao.module.system.dal.dataobject.dept.DeptDO;
 import cn.iocoder.yudao.module.system.dal.dataobject.user.AdminUserDO;
 import cn.iocoder.yudao.module.system.service.dept.DeptService;
@@ -92,5 +94,21 @@ public class AdminUserApiImpl implements AdminUserApi {
         userService.validateUserList(ids);
         return success(true);
     }
+
+    @Override
+    @DataPermission(enable = false)
+    public CommonResult<Long> registerUser(UserRegisterReqDTO reqDTO) {
+        // 将 UserRegisterReqDTO 转换为 AuthRegisterReqVO
+        AuthRegisterReqVO authRegisterReqVO = new AuthRegisterReqVO();
+        authRegisterReqVO.setUsername(reqDTO.getUsername());
+        authRegisterReqVO.setNickname(reqDTO.getNickname());
+        authRegisterReqVO.setPassword(reqDTO.getPassword());
+        authRegisterReqVO.setMobile(reqDTO.getMobile());
+
+        // 调用服务层注册方法
+        Long userId = userService.registerUser(authRegisterReqVO);
+        return success(userId);
+    }
+
 
 }
