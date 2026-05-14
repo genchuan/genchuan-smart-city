@@ -194,8 +194,7 @@ public class DutyMgmtServiceImpl implements DutyMgmtService {
                 }
             }
 
-            String loginUserNickname = SecurityFrameworkUtils.getLoginUserNickname();
-            dutyMgmt.setTransferUser(loginUserNickname);
+            dutyMgmt.setTransferUser(reqVo.getTransferUser());
             dutyMgmt.setTransferReason(reqVo.getTransferReason());
             dutyMgmt.setTransferStatus(DutyTransferStatusEnum.TRANSFER_STATUS_PENDING_PENDING.getStatus());
             dutyMgmt.setStatus(DutyStatusEnum.DUTY_STATUS_PENDING_TRANSFER.getStatus());
