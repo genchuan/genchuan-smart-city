@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.ordertrade.dal.dataobject.debtcollect;
 
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -51,4 +52,8 @@ public class ArrearRecordDO extends BaseDO {
 
     /** 备用字段2 */
     private String reserve2;
+
+    /** 场站名称（JOIN station_info，非数据库字段） */
+    @TableField(exist = false)
+    private String stationName;
 }

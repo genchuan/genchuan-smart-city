@@ -52,7 +52,7 @@ public class AbnormalOrderServiceImpl implements AbnormalOrderService {
         LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
         LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(abnormalOrderMapper.selectTrend(start, end));
-        resp.setTypeData(abnormalOrderMapper.selectGroupByStatus());
+        resp.setTypeData(abnormalOrderMapper.selectGroupByType(start, end));
         AbnormalOrderChartRespVO.CardData card = new AbnormalOrderChartRespVO.CardData();
         card.setWaitProcessCount(abnormalOrderMapper.selectCountByStatus("unhandled").intValue());
         Long all    = abnormalOrderMapper.selectCountByStatus(null);

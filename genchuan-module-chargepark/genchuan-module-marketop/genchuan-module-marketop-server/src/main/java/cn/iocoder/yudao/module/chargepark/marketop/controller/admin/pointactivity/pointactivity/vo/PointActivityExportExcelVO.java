@@ -1,5 +1,8 @@
 package cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo;
 
+import cn.iocoder.yudao.framework.excel.core.annotations.DictFormat;
+import cn.iocoder.yudao.framework.excel.core.convert.DictConvert;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.DictTypeConstants;
 import cn.idev.excel.annotation.ExcelProperty;
 import cn.idev.excel.annotation.format.DateTimeFormat;
 import lombok.Data;
@@ -18,7 +21,8 @@ public class PointActivityExportExcelVO {
     @ExcelProperty("活动名称")
     private String name;
 
-    @ExcelProperty("活动类型")
+    @ExcelProperty(value = "活动类型", converter = DictConvert.class)
+    @DictFormat(DictTypeConstants.POINT_ACTIVITY_TYPE)
     private String type;
 
     @ExcelProperty("开始时间")
@@ -51,7 +55,8 @@ public class PointActivityExportExcelVO {
     @ExcelProperty("剩余积分额度")
     private Integer remainPoint;
 
-    @ExcelProperty("状态")
+    @ExcelProperty(value = "状态", converter = DictConvert.class)
+    @DictFormat(DictTypeConstants.POINT_ACTIVITY_STATUS)
     private String status;
 
     @ExcelProperty("创建者")

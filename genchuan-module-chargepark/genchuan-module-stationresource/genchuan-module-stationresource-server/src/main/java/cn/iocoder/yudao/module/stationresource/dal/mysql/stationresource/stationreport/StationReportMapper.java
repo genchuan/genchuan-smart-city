@@ -9,6 +9,7 @@ import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.st
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -56,4 +57,46 @@ public interface StationReportMapper extends BaseMapperX<StationReportDO> {
     List<StationOpReportChartRespVO.StationOrderCountBarData> selectStationOrderCountBarData(StationOpReportChartReqVO reqVO);
 
     List<StationOpReportChartRespVO.StationRecoverFinishBarData> selectStationRecoverFinishBarData(StationOpReportChartReqVO reqVO);
+
+    // ====================== 钻取查询（按卡片指标下钻到明细数据） ======================
+
+    /** 总片区数 → 钻取片区列表 */
+    List<Map<String, Object>> drillDownAreaList(@Param("startTime") LocalDateTime startTime,
+                                                @Param("endTime") LocalDateTime endTime);
+
+    /** 总站场数 → 钻取场站列表 */
+    List<Map<String, Object>> drillDownStationList(@Param("startTime") LocalDateTime startTime,
+                                                   @Param("endTime") LocalDateTime endTime);
+
+    /** 覆盖场站数 → 钻取有归属片区的场站列表 */
+    List<Map<String, Object>> drillDownCoverStationList(@Param("startTime") LocalDateTime startTime,
+                                                        @Param("endTime") LocalDateTime endTime);
+
+    /** 正常运营数 → 钻取运营中场站列表 */
+    List<Map<String, Object>> drillDownNormalStationList(@Param("startTime") LocalDateTime startTime,
+                                                         @Param("endTime") LocalDateTime endTime);
+
+    /** 总车位数 → 钻取车位列表 */
+    List<Map<String, Object>> drillDownSpaceList(@Param("startTime") LocalDateTime startTime,
+                                                 @Param("endTime") LocalDateTime endTime);
+
+    /** 可用车位数 → 钻取空闲车位列表 */
+    List<Map<String, Object>> drillDownAvailableSpaceList(@Param("startTime") LocalDateTime startTime,
+                                                          @Param("endTime") LocalDateTime endTime);
+
+    /** 生效规则数 → 钻取规则列表 */
+    List<Map<String, Object>> drillDownEffectiveRuleList(@Param("startTime") LocalDateTime startTime,
+                                                         @Param("endTime") LocalDateTime endTime);
+
+    /** 订单量/营收 → 钻取充停联动订单列表 */
+    List<Map<String, Object>> drillDownOrderList(@Param("startTime") LocalDateTime startTime,
+                                                 @Param("endTime") LocalDateTime endTime);
+
+    /** 追缴完成率 → 钻取追缴记录列表 */
+    List<Map<String, Object>> drillDownDebtExpandList(@Param("startTime") LocalDateTime startTime,
+                                                      @Param("endTime") LocalDateTime endTime);
+
+    /** 押金订单量 → 钻取押金计划列表 */
+    List<Map<String, Object>> drillDownDepositPlanList(@Param("startTime") LocalDateTime startTime,
+                                                       @Param("endTime") LocalDateTime endTime);
 }

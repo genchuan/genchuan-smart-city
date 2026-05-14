@@ -20,7 +20,7 @@ public class UserCarPageRespVO {
     private Long userId;
 
     @Schema(description = "用户名称")
-    @ExcelProperty("用户信息ID")
+    @ExcelProperty("用户名称")
     private String nickname;
 
     @Schema(description = "车牌号码", example = "闽 C12345")

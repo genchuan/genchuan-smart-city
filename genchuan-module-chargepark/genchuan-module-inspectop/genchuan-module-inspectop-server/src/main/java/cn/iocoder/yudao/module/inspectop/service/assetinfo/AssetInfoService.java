@@ -94,4 +94,12 @@ public interface AssetInfoService {
      */
     AssetInfoChartRespVO getAssetInfoChart();
 
+    /**
+     * 获取已生效的场站列表（仅包含id和name）
+     * 用于资产信息关联场站时的下拉选择
+     *
+     * @return 场站简略信息列表
+     */
+    List<StationSimpleRespVO> getSimpleStationList();
+
 }

@@ -39,9 +39,9 @@ public class ArrearRecordRespVO {
     @EnumFormat(ArrearRecordStatusEnum.class)
     private String status;
 
-    @Schema(description = "所属场站ID")
-    @ExcelProperty("所属场站ID")
-    private Long stationId;
+    @Schema(description = "所属场站名称")
+    @ExcelProperty("所属场站")
+    private String stationName;
 
     @Schema(description = "操作人ID")
     @ExcelProperty("操作人ID")

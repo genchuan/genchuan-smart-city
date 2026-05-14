@@ -47,9 +47,9 @@ public interface AssetStockService {
      * 获得库存管理
      *
      * @param id 编号
-     * @return 库存管理
+     * @return 库存管理（包含关联信息）
      */
-    AssetStockDO getAssetStock(Long id);
+    AssetStockRespVO getAssetStock(Long id);
 
     /**
      * 获得库存管理分页

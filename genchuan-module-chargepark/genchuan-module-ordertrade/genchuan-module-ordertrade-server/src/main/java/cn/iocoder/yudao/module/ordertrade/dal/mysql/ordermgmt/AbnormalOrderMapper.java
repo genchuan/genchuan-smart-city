@@ -39,19 +39,25 @@ public interface AbnormalOrderMapper extends BaseMapperX<AbnormalOrderDO> {
     }
 
     @Select("<script>" +
-            "SELECT DATE_FORMAT(create_time,'%Y-%m-%d') AS date, COUNT(*) AS count " +
+            "SELECT DATE_FORMAT(identify_time,'%Y-%m-%d') AS date, COUNT(*) AS count " +
             "FROM abnormal_order WHERE deleted = 0 " +
-            "<if test='startTime != null'> AND create_time &gt;= #{startTime} </if>" +
-            "<if test='endTime != null'>   AND create_time &lt;= #{endTime}   </if>" +
-            "GROUP BY DATE_FORMAT(create_time,'%Y-%m-%d') ORDER BY date" +
+            "<if test='startTime != null'> AND identify_time &gt;= #{startTime} </if>" +
+            "<if test='endTime != null'>   AND identify_time &lt;= #{endTime}   </if>" +
+            "GROUP BY DATE_FORMAT(identify_time,'%Y-%m-%d') ORDER BY date" +
             "</script>")
     List<Map<String, Object>> selectTrend(@Param("startTime") LocalDateTime startTime,
                                           @Param("endTime") LocalDateTime endTime);
 
-    @Select("SELECT status, COUNT(*) AS count FROM abnormal_order WHERE deleted = 0 GROUP BY status")
-    List<Map<String, Object>> selectGroupByStatus();
+    @Select("<script>" +
+            "SELECT abnormal_type AS type, COUNT(*) AS count FROM abnormal_order WHERE deleted = 0 " +
+            "<if test='startTime != null'> AND identify_time &gt;= #{startTime} </if>" +
+            "<if test='endTime != null'>   AND identify_time &lt;= #{endTime}   </if>" +
+            "GROUP BY abnormal_type" +
+            "</script>")
+    List<Map<String, Object>> selectGroupByType(@Param("startTime") LocalDateTime startTime,
+                                                @Param("endTime") LocalDateTime endTime);
 
-    @Select("SELECT COUNT(*) FROM abnormal_order WHERE deleted = 0 AND create_time BETWEEN #{startTime} AND #{endTime}")
+    @Select("SELECT COUNT(*) FROM abnormal_order WHERE deleted = 0 AND identify_time BETWEEN #{startTime} AND #{endTime}")
     Long selectTodayCount(@Param("startTime") LocalDateTime startTime,
                           @Param("endTime") LocalDateTime endTime);
 

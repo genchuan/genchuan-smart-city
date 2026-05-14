@@ -25,7 +25,10 @@ public interface CycleReportService {
      */
     CycleReportRespVO generateCycleReport(CycleReportGenerateReqVO generateReqVO);
 
-    // 新增图表查询方法
+    /**
+     * 获取巡检运维报表图表数据
+     * 修改：支持无参查询，统计全部数据
+     */
     CycleReportChartRespVO getCycleReportChart(CycleReportChartReqVO reqVO);
 
     /**

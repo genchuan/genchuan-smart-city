@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.iocoder.yudao.module.usermerchant.dal.mysql.creditmgmt.usercreditUserCreditMapper">
+<mapper namespace="cn.iocoder.yudao.module.usermerchant.dal.mysql.creditmgmt.usercredit.UserCreditMapper">
 
     <!--
         一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
@@ -14,8 +14,8 @@
         SELECT credit_level AS level, COUNT(*) AS count
         FROM user_credit
         WHERE deleted = 0
-        <if test="start != null">AND update_time >= #{start}</if>
-        <if test="end != null">AND update_time &lt;= #{end}</if>
+        <if test="start != null">AND create_time >= #{start}</if>
+        <if test="end != null">AND create_time &lt;= #{end}</if>
         GROUP BY credit_level
         ORDER BY FIELD(credit_level, '优秀', '良好', '中等', '较差', '极差')
     </select>
@@ -25,8 +25,8 @@
         SELECT ROUND(AVG(credit_score), 0)
         FROM user_credit
         WHERE deleted = 0
-        <if test="start != null">AND update_time >= #{start}</if>
-        <if test="end != null">AND update_time &lt;= #{end}</if>
+        <if test="start != null">AND create_time >= #{start}</if>
+        <if test="end != null">AND create_time &lt;= #{end}</if>
     </select>
 
     <!-- 低信用用户数（信用等级为较差或极差） -->
@@ -35,8 +35,14 @@
         FROM user_credit
         WHERE deleted = 0
         AND credit_level IN ('较差', '极差')
-        <if test="start != null">AND update_time &gt;= #{start}</if>
-        <if test="end != null">AND update_time &lt;= #{end}</if>
+        <if test="start != null">AND create_time &gt;= #{start}</if>
+        <if test="end != null">AND create_time &lt;= #{end}</if>
+    </select>
+
+    <select id="getIdByNickname" resultType="java.lang.Long">
+        SELECT id
+        FROM user_info
+        WHERE deleted = 0 AND nickname = #{nickname}
     </select>
 
 </mapper>

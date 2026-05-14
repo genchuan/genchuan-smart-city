@@ -2,6 +2,10 @@ package cn.iocoder.yudao.module.inspectop.service.assetstock;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -20,6 +24,7 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.inspectop.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.inspectop.enums.LogRecordConstants.*;
 
 /**
  * 库存管理 Service 实现类
@@ -34,25 +39,40 @@ public class AssetStockServiceImpl implements AssetStockService {
     private AssetStockMapper assetStockMapper;
 
     @Override
+    @LogRecord(type = ASSET_STOCK_TYPE, subType = ASSET_STOCK_CREATE_SUB_TYPE,
+            bizNo = "{{#createReqVO.id}}", success = ASSET_STOCK_CREATE_SUCCESS)
     public Long createAssetStock(AssetStockSaveReqVO createReqVO) {
         // 插入
         AssetStockDO assetStock = BeanUtils.toBean(createReqVO, AssetStockDO.class);
         assetStockMapper.insert(assetStock);
 
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("createReqVO", createReqVO);
+
         // 返回
         return assetStock.getId();
     }
 
+
     @Override
+    @LogRecord(type = ASSET_STOCK_TYPE, subType = ASSET_STOCK_UPDATE_SUB_TYPE,
+            bizNo = "{{#updateReqVO.id}}", success = ASSET_STOCK_UPDATE_SUCCESS)
     public void updateAssetStock(AssetStockSaveReqVO updateReqVO) {
-        // 校验存在
-        validateAssetStockExists(updateReqVO.getId());
-        // 更新
+        // 1. 校验存在，并获取旧数据用于日志对比
+        AssetStockDO oldAssetStock = validateAssetStockExists(updateReqVO.getId());
+
+        // 2. 更新
         AssetStockDO updateObj = BeanUtils.toBean(updateReqVO, AssetStockDO.class);
         assetStockMapper.updateById(updateObj);
+
+        // 3. 记录操作日志上下文（用于DIFF比较）
+        AssetStockSaveReqVO oldVO = BeanUtils.toBean(oldAssetStock, AssetStockSaveReqVO.class);
+        LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, oldVO);
     }
 
     @Override
+    @LogRecord(type = ASSET_STOCK_TYPE, subType = ASSET_STOCK_DELETE_SUB_TYPE,
+            bizNo = "{{#id}}", success = ASSET_STOCK_DELETE_SUCCESS)
     public void deleteAssetStock(Long id) {
         // 校验存在
         validateAssetStockExists(id);
@@ -61,41 +81,54 @@ public class AssetStockServiceImpl implements AssetStockService {
     }
 
     @Override
-        public void deleteAssetStockListByIds(List<Long> ids) {
+    @LogRecord(type = ASSET_STOCK_TYPE, subType = ASSET_STOCK_DELETE_LIST_SUB_TYPE,
+            success = ASSET_STOCK_DELETE_LIST_SUCCESS, bizNo = "")
+    public void deleteAssetStockListByIds(List<Long> ids) {
         // 删除
         assetStockMapper.deleteByIds(ids);
-        }
+
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("ids", ids);
+    }
 
 
-    private void validateAssetStockExists(Long id) {
-        if (assetStockMapper.selectById(id) == null) {
+    private AssetStockDO validateAssetStockExists(Long id) {
+        AssetStockDO assetStock = assetStockMapper.selectById(id);
+        if (assetStock == null) {
             throw exception(ASSET_STOCK_NOT_EXISTS);
         }
+        return assetStock; // 返回查询到的对象
     }
 
     @Override
-    public AssetStockDO getAssetStock(Long id) {
-        return assetStockMapper.selectById(id);
+    public AssetStockRespVO getAssetStock(Long id) {
+        // 调用 Mapper 的关联查询方法获取包含资产名称的数据
+        AssetStockRespVO assetStock = assetStockMapper.selectOneWithJoin(id);
+        if (assetStock == null) {
+            throw exception(ASSET_STOCK_NOT_EXISTS);
+        }
+        return assetStock;
     }
 
     @Override
     public PageResult<AssetStockRespVO> getAssetStockPage(AssetStockPageReqVO pageReqVO) {
         // 创建 MyBatis-Plus 分页对象
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<AssetStockRespVO> mpPage =
-                new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(
+        Page<AssetStockRespVO> mpPage =
+                new Page<>(
                         pageReqVO.getPageNo(), pageReqVO.getPageSize());
 
         // 调用 Mapper 的关联查询方法
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<AssetStockRespVO> resultPage =
+        Page<AssetStockRespVO> resultPage =
                 assetStockMapper.selectPageWithJoin(mpPage, pageReqVO);
 
         // 构造并返回 PageResult
         return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
     }
 
-    // 在getAssetStockPage方法后添加
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = ASSET_STOCK_TYPE, subType = ASSET_STOCK_ALLOCATE_SUB_TYPE,
+            bizNo = "{{#allocateReqVO.id}}", success = ASSET_STOCK_ALLOCATE_SUCCESS)
     public void allocateAssetStock(AssetStockAllocateReqVO allocateReqVO) {
         // 1. 获取源库存记录
         AssetStockDO sourceStock = assetStockMapper.selectById(allocateReqVO.getId());
@@ -114,30 +147,64 @@ public class AssetStockServiceImpl implements AssetStockService {
                 .eq(AssetStockDO::getStationId, allocateReqVO.getTargetStationId());
         AssetStockDO targetStock = assetStockMapper.selectOne(queryWrapper);
 
-        // 4. 扣减源库存
+        // 4. 扣减源库存，并记录调出信息
         sourceStock.setCurrentStock(sourceStock.getCurrentStock() - allocateReqVO.getAllocateCount());
+        // 【修改点】构建并追加调出记录到 reserve2
+        String sourceRecord = String.format("[调出至场站%d,数量:%d]",
+                allocateReqVO.getTargetStationId(), allocateReqVO.getAllocateCount());
+        sourceStock.setReserve2(appendRecord(sourceStock.getReserve2(), sourceRecord));
         assetStockMapper.updateById(sourceStock);
 
         // 5. 处理目标库存
         if (targetStock != null) {
             // 目标场站已存在该资产库存，增加库存数量
             targetStock.setCurrentStock(targetStock.getCurrentStock() + allocateReqVO.getAllocateCount());
+            // 【修改点】构建并追加调入记录到 reserve2
+            String targetRecord = String.format("[从库存%d调入,数量:%d]",
+                    sourceStock.getId(), allocateReqVO.getAllocateCount());
+            targetStock.setReserve2(appendRecord(targetStock.getReserve2(), targetRecord));
             assetStockMapper.updateById(targetStock);
         } else {
             // 目标场站不存在该资产库存，创建新记录
+            // 【修改点】为新库存设置调入记录
+            String newStockRecord = String.format("[从库存%d调入,数量:%d]",
+                    sourceStock.getId(), allocateReqVO.getAllocateCount());
             AssetStockDO newStock = AssetStockDO.builder()
                     .assetId(sourceStock.getAssetId())
                     .currentStock(allocateReqVO.getAllocateCount())
                     .warnThreshold(sourceStock.getWarnThreshold())
                     .status("1") // 假设状态1为正常
                     .stationId(allocateReqVO.getTargetStationId())
+                    .reserve2(newStockRecord) // 直接设置调入记录
                     .build();
             assetStockMapper.insert(newStock);
+        }
+
+        // 6. 设置日志上下文变量
+        LogRecordContext.putVariable("allocateReqVO", allocateReqVO);
+    }
+
+    /**
+     * 向原有记录字符串中追加新记录。
+     * 如果原记录为空，则直接返回新记录；否则在原记录后添加分号和换行符，再追加新记录。
+     *
+     * @param originalRecord 原始记录字符串
+     * @param newRecord 要追加的新记录
+     * @return 追加后的完整记录字符串
+     */
+    private String appendRecord(String originalRecord, String newRecord) {
+        if (originalRecord == null || originalRecord.isEmpty()) {
+            return newRecord;
+        } else {
+            // 使用“; ”作为分隔符，使记录更清晰。您可以根据喜好调整。
+            return originalRecord + "; " + newRecord;
         }
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = ASSET_STOCK_TYPE, subType = ASSET_STOCK_ALARM_SUB_TYPE,
+            bizNo = "{{#alarmReqVO.id}}", success = ASSET_STOCK_ALARM_SUCCESS)
     public void alarmAssetStock(AssetStockAlarmReqVO alarmReqVO) {
         // 1. 获取库存记录
         AssetStockDO assetStock = assetStockMapper.selectById(alarmReqVO.getId());
@@ -171,6 +238,11 @@ public class AssetStockServiceImpl implements AssetStockService {
 
         // 4. 更新数据库
         assetStockMapper.updateById(updateObj);
+
+        // 5. 设置日志上下文变量
+        LogRecordContext.putVariable("alarmReqVO", alarmReqVO);
+        LogRecordContext.putVariable("status", status);
+
     }
 
     @Override

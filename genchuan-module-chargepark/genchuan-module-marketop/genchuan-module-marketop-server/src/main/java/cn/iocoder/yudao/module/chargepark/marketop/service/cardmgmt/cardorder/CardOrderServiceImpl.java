@@ -7,6 +7,8 @@ import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.CardO
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.cardmgmt.CardOrderMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.CardOrderInvoiceStatusEnum;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.CardOrderPayStatusEnum;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -21,6 +23,7 @@ import java.util.Map;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.chargepark.marketop.enums.LogRecordConstants.*;
 
 @Service
 @Validated
@@ -40,33 +43,49 @@ public class CardOrderServiceImpl implements CardOrderService {
     }
 
     @Override
+    @LogRecord(type = CARD_ORDER_TYPE, subType = CARD_ORDER_PAY_SUB_TYPE, bizNo = "{{#id}}",
+            success = CARD_ORDER_PAY_SUCCESS)
     public void pay(Long id) {
         CardOrderDO cardOrder = validateExists(id);
         cardOrder.setPayStatus(CardOrderPayStatusEnum.PAID.getValue());
         cardOrder.setPayTime(LocalDateTime.now());
         cardOrderMapper.updateById(cardOrder);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("cardOrder", cardOrder);
     }
 
     @Override
+    @LogRecord(type = CARD_ORDER_TYPE, subType = CARD_ORDER_ACTIVATE_SUB_TYPE, bizNo = "{{#id}}",
+            success = CARD_ORDER_ACTIVATE_SUCCESS)
     public void activate(Long id) {
         CardOrderDO cardOrder = validateExists(id);
         cardOrder.setPayStatus(CardOrderPayStatusEnum.COMPLETED.getValue());
         cardOrder.setActiveTime(LocalDateTime.now());
         cardOrderMapper.updateById(cardOrder);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("cardOrder", cardOrder);
     }
 
     @Override
+    @LogRecord(type = CARD_ORDER_TYPE, subType = CARD_ORDER_INVOICE_SUB_TYPE, bizNo = "{{#id}}",
+            success = CARD_ORDER_INVOICE_SUCCESS)
     public void invoice(Long id) {
         CardOrderDO cardOrder = validateExists(id);
         cardOrder.setInvoiceStatus(CardOrderInvoiceStatusEnum.INVOICED.getValue());
         cardOrderMapper.updateById(cardOrder);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("cardOrder", cardOrder);
     }
 
     @Override
+    @LogRecord(type = CARD_ORDER_TYPE, subType = CARD_ORDER_CANCEL_SUB_TYPE, bizNo = "{{#id}}",
+            success = CARD_ORDER_CANCEL_SUCCESS)
     public void cancel(Long id) {
         CardOrderDO cardOrder = validateExists(id);
         cardOrder.setPayStatus(CardOrderPayStatusEnum.CANCELLED.getValue());
         cardOrderMapper.updateById(cardOrder);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("cardOrder", cardOrder);
     }
 
     @Override

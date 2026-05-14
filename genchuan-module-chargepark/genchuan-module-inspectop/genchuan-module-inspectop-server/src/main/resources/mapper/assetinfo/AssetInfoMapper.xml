@@ -133,4 +133,14 @@
         FROM asset_info
     </select>
 
+    <!-- 查询已生效的场站信息（仅返回id和name） -->
+    <select id="selectSimpleStationList" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.assetinfo.vo.StationSimpleRespVO">
+        SELECT
+            id,
+            name
+        FROM station_info
+        WHERE status = '已生效'  -- 根据您的表结构，状态为'已生效'的记录
+          AND deleted = 0       -- 只查询未删除的记录
+        ORDER BY id ASC
+    </select>
 </mapper>

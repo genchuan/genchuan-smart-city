@@ -48,12 +48,6 @@ public class MerchantRechargeServiceImpl implements MerchantRechargeService {
 
     @Override
     public Boolean payMerchantRecharge(MerchantRechargePayReqVO payReqVO) {
-//        // 插入
-//        MerchantRechargeDO merchantRecharge = BeanUtils.toBean(payReqVO, MerchantRechargeDO.class);
-//        int rows = merchantRechargeMapper.insert(merchantRecharge);
-//
-//        // 返回
-//        return rows > 0;
         if (CollectionUtils.isEmpty(payReqVO.getIds())) {
             return false;
         }

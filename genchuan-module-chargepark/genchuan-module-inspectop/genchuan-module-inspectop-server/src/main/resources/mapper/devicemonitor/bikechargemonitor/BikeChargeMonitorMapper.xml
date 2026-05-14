@@ -143,6 +143,7 @@
 
     <!-- 定义定位查询结果映射器 -->
     <resultMap id="BikeChargeMonitorLocationRespVOResultMap" type="cn.iocoder.yudao.module.inspectop.controller.admin.devicemonitor.bikechargemonitor.vo.BikeChargeMonitorLocationRespVO">
+        <result column="device_id" property="deviceCode" jdbcType="BIGINT"/> <!-- 修改：将 device_id 映射到 deviceCode -->
         <result column="longitude" property="longitude" jdbcType="DECIMAL"/>
         <result column="latitude" property="latitude" jdbcType="DECIMAL"/>
         <result column="station_name" property="stationName" jdbcType="VARCHAR"/>
@@ -151,11 +152,12 @@
     <!-- 定位查询方法 -->
     <select id="selectLocationById" resultMap="BikeChargeMonitorLocationRespVOResultMap">
         SELECT
-            bcm.longitude,
-            bcm.latitude,
-            si.name AS station_name
+        bcm.device_id,
+        bcm.longitude,
+        bcm.latitude,
+        si.name AS station_name
         FROM bike_charge_monitor bcm
-                 LEFT JOIN station_info si ON bcm.station_id = si.id
+        LEFT JOIN station_info si ON bcm.station_id = si.id
         WHERE bcm.id = #{id}
     </select>
 

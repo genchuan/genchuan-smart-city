@@ -13,7 +13,9 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivit
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityUpdateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityImportExcelVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityChartRespVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivitySimpleRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointActivityDO;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.PointActivityStatusEnum;
 import cn.iocoder.yudao.module.chargepark.marketop.service.pointactivity.pointactivity.PointActivityService;
 import cn.iocoder.yudao.module.stationresource.api.station.StationInfoApi;
 import cn.iocoder.yudao.module.stationresource.api.station.dto.StationInfoRespDTO;
@@ -56,15 +58,6 @@ public class PointActivityController {
     @Operation(summary = "获得积分活动分页")
     @PreAuthorize("@ss.hasPermission('marketop:point-activity:query')")
     public CommonResult<PageResult<PointActivityRespVO>> getPage(PointActivityPageReqVO reqVO) {
-        // 如果没有传startTime和endTime，但传了date，则用date转换
-        if (reqVO.getStartTime() == null && reqVO.getEndTime() == null && StrUtil.isNotBlank(reqVO.getDate())) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate localDate = LocalDate.parse(reqVO.getDate(), formatter);
-            LocalDateTime startDateTime = localDate.atStartOfDay();
-            LocalDateTime endDateTime = localDate.atTime(LocalTime.MAX);
-            reqVO.setStartTime(startDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
-            reqVO.setEndTime(endDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
-        }
         PageResult<PointActivityDO> pageResult = pointActivityService.getPage(reqVO);
         PageResult<PointActivityRespVO> bean = BeanUtils.toBean(pageResult, PointActivityRespVO.class);
         injectUserNames(bean.getList());
@@ -147,7 +140,51 @@ public class PointActivityController {
         reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<PointActivityDO> pageResult = pointActivityService.getPage(reqVO);
         List<PointActivityExportExcelVO> list = BeanUtils.toBean(pageResult.getList(), PointActivityExportExcelVO.class);
+
+        // 场站名称翻译
+        Set<Long> stationIdSet = new HashSet<>();
+        for (var bean : list) {
+            if (StrUtil.isNotBlank(bean.getStationIds())) {
+                Arrays.stream(bean.getStationIds().split(","))
+                        .filter(StrUtil::isNotBlank).map(String::trim)
+                        .map(PointActivityController.this::safeParseLong)
+                        .filter(Objects::nonNull)
+                        .forEach(stationIdSet::add);
+            }
+        }
+        Map<Long, StationInfoRespDTO> stationMap = stationIdSet.isEmpty()
+                ? Collections.emptyMap() : stationInfoApi.getStationMap(stationIdSet);
+        for (var bean : list) {
+            if (StrUtil.isNotBlank(bean.getStationIds())) {
+                String names = Arrays.stream(bean.getStationIds().split(","))
+                        .filter(StrUtil::isNotBlank).map(String::trim)
+                        .map(s -> {
+                            Long id = safeParseLong(s);
+                            if (id == null) return s;
+                            StationInfoRespDTO station = stationMap.get(id);
+                            return station != null ? station.getName() : s;
+                        })
+                        .collect(Collectors.joining(","));
+                bean.setStationIds(names);
+            }
+        }
         ExcelUtils.write(response, "积分活动.xlsx", "数据", PointActivityExportExcelVO.class, list);
+    }
+
+    @GetMapping("/simple-list")
+    @Operation(summary = "获取积分活动精简列表")
+    public CommonResult<List<PointActivitySimpleRespVO>> getSimpleList() {
+        List<PointActivityDO> list = pointActivityService.getSimpleList();
+        list = list.stream()
+                .filter(item -> !PointActivityStatusEnum.ENDED.getValue().equals(item.getStatus()))
+                .toList();
+        return CommonResult.success(BeanUtils.toBean(list, PointActivitySimpleRespVO.class));
+    }
+
+    @GetMapping("/station-simple-list")
+    @Operation(summary = "获取场站精简列表")
+    public CommonResult<List<Map<String, Object>>> getStationSimpleList() {
+        return CommonResult.success(pointActivityService.getStationSimpleList());
     }
 
     @GetMapping("/chart")

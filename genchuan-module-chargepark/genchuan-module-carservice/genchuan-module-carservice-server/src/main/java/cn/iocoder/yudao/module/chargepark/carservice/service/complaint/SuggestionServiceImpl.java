@@ -135,7 +135,7 @@ public class SuggestionServiceImpl implements SuggestionService {
         }
         SuggestionDO update = new SuggestionDO();
         update.setId(reqVO.getId());
-        update.setStatus(SuggestionStatusEnum.CLOSED.getLabel());
+        update.setStatus(SuggestionStatusEnum.COMPLETED.getLabel());
         update.setFeedbackContent(reqVO.getFeedbackContent());
         update.setFeedbackTime(LocalDateTime.now());
         suggestionMapper.updateById(update);

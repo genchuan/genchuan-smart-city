@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import java.time.LocalDateTime;
 import java.util.*;
 import cn.iocoder.yudao.module.inspectop.controller.admin.inspectplan.vo.*;
@@ -29,6 +31,7 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.inspectop.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.inspectop.enums.LogRecordConstants.*;
 
 /**
  * 巡检计划 Service 实现类
@@ -43,25 +46,40 @@ public class InspectPlanServiceImpl implements InspectPlanService {
     private InspectPlanMapper inspectPlanMapper;
 
     @Override
+    @LogRecord(type = INSPECT_PLAN_TYPE, subType = INSPECT_PLAN_CREATE_SUB_TYPE,
+            bizNo = "{{#createReqVO.id}}", success = INSPECT_PLAN_CREATE_SUCCESS)
     public Long createInspectPlan(InspectPlanSaveReqVO createReqVO) {
         // 插入
         InspectPlanDO inspectPlan = BeanUtils.toBean(createReqVO, InspectPlanDO.class);
         inspectPlanMapper.insert(inspectPlan);
+
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("createReqVO", createReqVO);
 
         // 返回
         return inspectPlan.getId();
     }
 
     @Override
+    @LogRecord(type = INSPECT_PLAN_TYPE, subType = INSPECT_PLAN_UPDATE_SUB_TYPE,
+            bizNo = "{{#updateReqVO.id}}", success = INSPECT_PLAN_UPDATE_SUCCESS)
     public void updateInspectPlan(InspectPlanSaveReqVO updateReqVO) {
-        // 校验存在
-        validateInspectPlanExists(updateReqVO.getId());
-        // 更新
+        // 1. 校验存在，并获取旧数据用于日志对比
+        InspectPlanDO oldInspectPlan = validateInspectPlanExists(updateReqVO.getId());
+
+        // 2. 更新
         InspectPlanDO updateObj = BeanUtils.toBean(updateReqVO, InspectPlanDO.class);
         inspectPlanMapper.updateById(updateObj);
+
+        // 3. 记录操作日志上下文（用于DIFF比较）
+        // 将旧数据转换为VO对象，存入日志上下文
+        InspectPlanSaveReqVO oldVO = BeanUtils.toBean(oldInspectPlan, InspectPlanSaveReqVO.class);
+        LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, oldVO);
     }
 
     @Override
+    @LogRecord(type = INSPECT_PLAN_TYPE, subType = INSPECT_PLAN_DELETE_SUB_TYPE,
+            bizNo = "{{#id}}", success = INSPECT_PLAN_DELETE_SUCCESS)
     public void deleteInspectPlan(Long id) {
         // 校验存在
         validateInspectPlanExists(id);
@@ -70,16 +88,23 @@ public class InspectPlanServiceImpl implements InspectPlanService {
     }
 
     @Override
-        public void deleteInspectPlanListByIds(List<Long> ids) {
+    @LogRecord(type = INSPECT_PLAN_TYPE, subType = INSPECT_PLAN_DELETE_LIST_SUB_TYPE,
+            success = INSPECT_PLAN_DELETE_LIST_SUCCESS, bizNo = "")
+    public void deleteInspectPlanListByIds(List<Long> ids) {
         // 删除
         inspectPlanMapper.deleteByIds(ids);
-        }
 
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("ids", ids);
+    }
 
-    private void validateInspectPlanExists(Long id) {
-        if (inspectPlanMapper.selectById(id) == null) {
+    // 修改验证方法，使其返回InspectPlanDO对象，用于update方法的日志对比
+    private InspectPlanDO validateInspectPlanExists(Long id) {
+        InspectPlanDO inspectPlan = inspectPlanMapper.selectById(id);
+        if (inspectPlan == null) {
             throw exception(INSPECT_PLAN_NOT_EXISTS);
         }
+        return inspectPlan; // 返回查询到的对象
     }
 
     @Override
@@ -94,6 +119,8 @@ public class InspectPlanServiceImpl implements InspectPlanService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
+    @LogRecord(type = INSPECT_PLAN_TYPE, subType = INSPECT_PLAN_IMPORT_SUB_TYPE,
+            success = INSPECT_PLAN_IMPORT_SUCCESS, bizNo = "")
     public ImportRespVO importInspectPlan(MultipartFile file, boolean updateSupport) {
         ImportRespVO resp = new ImportRespVO();
         resp.setSuccessCount(0);
@@ -164,6 +191,10 @@ public class InspectPlanServiceImpl implements InspectPlanService {
             resp.setSuccessCount(successCount);
             resp.setFailureCount(failures.size());
             resp.setFailureList(failures);
+
+            // 设置日志上下文变量
+            LogRecordContext.putVariable("successCount", successCount);
+            LogRecordContext.putVariable("failureCount", failures.size());
             return resp;
 
         } catch (Exception e) {
@@ -173,12 +204,18 @@ public class InspectPlanServiceImpl implements InspectPlanService {
             failure.setMessage("导入失败：" + e.getMessage());
             resp.getFailureList().add(failure);
             resp.setFailureCount(1);
+
+            // 设置日志上下文变量
+            LogRecordContext.putVariable("successCount", 0);
+            LogRecordContext.putVariable("failureCount", 1);
             return resp;
         }
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = INSPECT_PLAN_TYPE, subType = INSPECT_PLAN_UPDATE_STATUS_SUB_TYPE,
+            bizNo = "{{#id}}", success = INSPECT_PLAN_UPDATE_STATUS_SUCCESS)
     public void updateInspectPlanStatus(Long id, String status) {
         // 校验计划是否存在
         validateInspectPlanExists(id);
@@ -187,19 +224,33 @@ public class InspectPlanServiceImpl implements InspectPlanService {
         InspectPlanDO updateObj = new InspectPlanDO();
         updateObj.setId(id);
         updateObj.setStatus(status);
+
+        // 根据状态设置相应的进度和时间
+        String statusName = "";
         if ("0".equals(status)) {  // 已生效
+            statusName = "已生效";
             updateObj.setProgress(50);
             updateObj.setEffectTime(LocalDateTime.now());
         } else if ("2".equals(status)) {  // 进行中
+            statusName = "进行中";
             updateObj.setProgress(80);
         } else if ("3".equals(status)) {  // 已完成
+            statusName = "已完成";
             updateObj.setProgress(100);
             updateObj.setFinishTime(LocalDateTime.now());
+        } else {
+            statusName = "未知状态";
         }
 
         // 执行更新
         inspectPlanMapper.updateById(updateObj);
+
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("id", id);
+        LogRecordContext.putVariable("status", status);
+        LogRecordContext.putVariable("statusName", statusName);
     }
+
 
     @Override
     public InspectPlanChartRespVO getInspectPlanChart(InspectPlanChartReqVO reqVO) {

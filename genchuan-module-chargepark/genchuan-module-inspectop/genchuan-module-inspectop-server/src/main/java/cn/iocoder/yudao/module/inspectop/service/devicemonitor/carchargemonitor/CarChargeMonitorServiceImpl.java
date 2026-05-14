@@ -7,7 +7,9 @@ import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.*;
-
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.devicemonitor.carchargemonitor.CarChargeMonitorDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
@@ -17,6 +19,7 @@ import cn.iocoder.yudao.module.inspectop.dal.mysql.devicemonitor.carchargemonito
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.module.inspectop.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.inspectop.enums.LogRecordConstants.*;
 
 /**
  * 汽车充电监测 Service 实现类
@@ -31,25 +34,40 @@ public class CarChargeMonitorServiceImpl implements CarChargeMonitorService {
     private CarChargeMonitorMapper carChargeMonitorMapper;
 
     @Override
+    @LogRecord(type = CAR_CHARGE_MONITOR_TYPE, subType = CAR_CHARGE_MONITOR_CREATE_SUB_TYPE,
+            bizNo = "{{#createReqVO.id}}", success = CAR_CHARGE_MONITOR_CREATE_SUCCESS)
     public Long createCarChargeMonitor(CarChargeMonitorSaveReqVO createReqVO) {
         // 插入
         CarChargeMonitorDO carChargeMonitor = BeanUtils.toBean(createReqVO, CarChargeMonitorDO.class);
         carChargeMonitorMapper.insert(carChargeMonitor);
+
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("createReqVO", createReqVO);
 
         // 返回
         return carChargeMonitor.getId();
     }
 
     @Override
+    @LogRecord(type = CAR_CHARGE_MONITOR_TYPE, subType = CAR_CHARGE_MONITOR_UPDATE_SUB_TYPE,
+            bizNo = "{{#updateReqVO.id}}", success = CAR_CHARGE_MONITOR_UPDATE_SUCCESS)
     public void updateCarChargeMonitor(CarChargeMonitorSaveReqVO updateReqVO) {
-        // 校验存在
-        validateCarChargeMonitorExists(updateReqVO.getId());
-        // 更新
+        // 1. 校验存在，并获取旧数据用于日志对比
+        CarChargeMonitorDO oldCarChargeMonitor = validateCarChargeMonitorExists(updateReqVO.getId());
+
+        // 2. 更新
         CarChargeMonitorDO updateObj = BeanUtils.toBean(updateReqVO, CarChargeMonitorDO.class);
         carChargeMonitorMapper.updateById(updateObj);
+
+        // 3. 记录操作日志上下文（用于DIFF比较）
+        // 将旧数据转换为VO对象，存入日志上下文
+        CarChargeMonitorSaveReqVO oldVO = BeanUtils.toBean(oldCarChargeMonitor, CarChargeMonitorSaveReqVO.class);
+        LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, oldVO);
     }
 
     @Override
+    @LogRecord(type = CAR_CHARGE_MONITOR_TYPE, subType = CAR_CHARGE_MONITOR_DELETE_SUB_TYPE,
+            bizNo = "{{#id}}", success = CAR_CHARGE_MONITOR_DELETE_SUCCESS)
     public void deleteCarChargeMonitor(Long id) {
         // 校验存在
         validateCarChargeMonitorExists(id);
@@ -58,16 +76,23 @@ public class CarChargeMonitorServiceImpl implements CarChargeMonitorService {
     }
 
     @Override
-        public void deleteCarChargeMonitorListByIds(List<Long> ids) {
+    @LogRecord(type = CAR_CHARGE_MONITOR_TYPE, subType = CAR_CHARGE_MONITOR_DELETE_LIST_SUB_TYPE,
+            success = CAR_CHARGE_MONITOR_DELETE_LIST_SUCCESS, bizNo = "")
+    public void deleteCarChargeMonitorListByIds(List<Long> ids) {
         // 删除
         carChargeMonitorMapper.deleteByIds(ids);
-        }
+
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("ids", ids);
+    }
 
 
-    private void validateCarChargeMonitorExists(Long id) {
-        if (carChargeMonitorMapper.selectById(id) == null) {
+    private CarChargeMonitorDO validateCarChargeMonitorExists(Long id) {
+        CarChargeMonitorDO carChargeMonitor = carChargeMonitorMapper.selectById(id);
+        if (carChargeMonitor == null) {
             throw exception(CAR_CHARGE_MONITOR_NOT_EXISTS);
         }
+        return carChargeMonitor; // 返回查询到的对象
     }
 
     @Override
@@ -124,11 +149,12 @@ public class CarChargeMonitorServiceImpl implements CarChargeMonitorService {
         }
 
         // 在Controller层模拟deviceCode字段
-        // 这里不设置deviceCode，留给Controller层处理
         return locationRespVO;
     }
 
     @Override
+    @LogRecord(type = CAR_CHARGE_MONITOR_TYPE, subType = CAR_CHARGE_MONITOR_ALARM_SUB_TYPE,
+            bizNo = "{{#alarmReqVO.id}}", success = CAR_CHARGE_MONITOR_ALARM_SUCCESS)
     public void alarmCarChargeMonitor(CarChargeMonitorAlarmReqVO alarmReqVO) {
         // 1. 校验记录是否存在
         validateCarChargeMonitorExists(alarmReqVO.getId());
@@ -137,7 +163,12 @@ public class CarChargeMonitorServiceImpl implements CarChargeMonitorService {
         CarChargeMonitorDO updateObj = new CarChargeMonitorDO();
         updateObj.setId(alarmReqVO.getId());
         updateObj.setAlarmRemark(alarmReqVO.getAlarmRemark());
+
+        // 3. 执行更新操作
         carChargeMonitorMapper.updateById(updateObj);
+
+        // 4. 设置日志上下文变量
+        LogRecordContext.putVariable("alarmReqVO", alarmReqVO);
     }
 
     @Override

@@ -64,6 +64,14 @@ public class UserInfoController {
         return success(userInfoService.importUsers(list, updateSupport));
     }
 
+    @GetMapping("/template")
+    @Operation(summary = "下载用户信息导入模板")
+    @PreAuthorize("@ss.hasPermission('usermerchant:user-info:import')")
+    public void downloadImportTemplate(HttpServletResponse response) throws IOException {
+        List<UserInfoImportExcelVO> emptyList = Collections.emptyList();
+        ExcelUtils.write(response, "用户信息导入模板.xlsx", "用户信息", UserInfoImportExcelVO.class, emptyList);
+    }
+
     @GetMapping("/export")
     @Operation(summary = "导出用户信息")
     @PreAuthorize("@ss.hasPermission('usermerchant:user-info:export')")

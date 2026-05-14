@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.usermerchant.dal.mysql.userreport.cyclereport;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -25,4 +26,23 @@ public interface CycleReportMapper extends BaseMapperX<CycleReportDO> {
                 .orderByDesc(CycleReportDO::getId));
     }
 
+    List<Map<String, Object>> selectUserGrowthTrend(LocalDateTime start, LocalDateTime end, String granularity);
+
+    List<Map<String, Object>> selectPlateAuthTrend(LocalDateTime start, LocalDateTime end, String granularity);
+
+    List<Map<String, Object>> selectRechargeAmountTrend(LocalDateTime start, LocalDateTime end, String granularity);
+
+    List<Map<String, Object>> selectSendCouponTrend(LocalDateTime start, LocalDateTime end, String granularity);
+
+    List<Map<String, Object>> selectUserTypeDistribution(LocalDateTime start, LocalDateTime end);
+
+    List<Map<String, Object>> selectCarTypeDistribution(LocalDateTime start, LocalDateTime end);
+
+    List<Map<String, Object>> selectMerchantTypeDistribution(LocalDateTime start, LocalDateTime end);
+
+    List<Map<String, Object>> selectGroupTypeDistribution(LocalDateTime start, LocalDateTime end);
+
+    List<Map<String, Object>> selectCreditLevelDistribution(LocalDateTime start, LocalDateTime end);
+
+    List<Map<String, Object>> selectMemberLevelDistribution(LocalDateTime start, LocalDateTime end);
 }

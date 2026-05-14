@@ -77,6 +77,14 @@ public class MemberUserController {
         return success(memberUserService.importUsers(list, updateSupport));
     }
 
+    @GetMapping("/template")
+    @Operation(summary = "下载会员用户导入模板")
+    @PreAuthorize("@ss.hasPermission('usermerchant:member-user:import')")
+    public void downloadImportTemplate(HttpServletResponse response) throws IOException {
+        List<MemberUserImportExcelVO> emptyList = Collections.emptyList();
+        ExcelUtils.write(response, "会员用户导入模板.xlsx", "会员用户", MemberUserImportExcelVO.class, emptyList);
+    }
+
     @GetMapping("/export")
     @Operation(summary = "导出会员用户")
     @PreAuthorize("@ss.hasPermission('usermerchant:member-user:export')")

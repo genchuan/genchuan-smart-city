@@ -91,7 +91,7 @@ public class BlackWhiteListController {
     }
 
     // ============================ 导入 ============================
-    @GetMapping("/import-template")
+    @GetMapping("/get-import-template")
     @Operation(summary = "下载黑白名单导入模板")
     @PreAuthorize("@ss.hasPermission('stationresource:black-white-list:import')")
     public void importTemplate(HttpServletResponse response) throws Exception {

@@ -3,6 +3,9 @@ package cn.iocoder.yudao.module.inspectop.service.assetcheck;
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -24,6 +27,7 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.inspectop.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.inspectop.enums.LogRecordConstants.*;
 
 /**
  * 资产盘点 Service 实现类
@@ -38,6 +42,8 @@ public class AssetCheckServiceImpl implements AssetCheckService {
     private AssetCheckMapper assetCheckMapper;
 
     @Override
+    @LogRecord(type = ASSET_CHECK_TYPE, subType = ASSET_CHECK_CREATE_SUB_TYPE, bizNo = "{{#createReqVO.id}}",
+            success = ASSET_CHECK_CREATE_SUCCESS)
     public Long createAssetCheck(AssetCheckSaveReqVO createReqVO) {
         // 插入
         AssetCheckDO assetCheck = BeanUtils.toBean(createReqVO, AssetCheckDO.class);
@@ -48,33 +54,48 @@ public class AssetCheckServiceImpl implements AssetCheckService {
     }
 
     @Override
+    @LogRecord(type = ASSET_CHECK_TYPE, subType = ASSET_CHECK_UPDATE_SUB_TYPE, bizNo = "{{#updateReqVO.id}}",
+            success = ASSET_CHECK_UPDATE_SUCCESS)
     public void updateAssetCheck(AssetCheckSaveReqVO updateReqVO) {
-        // 校验存在
-        validateAssetCheckExists(updateReqVO.getId());
-        // 更新
+        // 1. 校验存在，并获取旧数据用于日志对比
+        AssetCheckDO oldAssetCheck = validateAssetCheckExists(updateReqVO.getId());
+        // 2. 更新
         AssetCheckDO updateObj = BeanUtils.toBean(updateReqVO, AssetCheckDO.class);
         assetCheckMapper.updateById(updateObj);
+        // 3. 记录操作日志上下文（用于DIFF比较）
+        LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, BeanUtils.toBean(oldAssetCheck, AssetCheckSaveReqVO.class));
     }
 
     @Override
+    @LogRecord(type = ASSET_CHECK_TYPE, subType = ASSET_CHECK_DELETE_SUB_TYPE, bizNo = "{{#id}}",
+            success = ASSET_CHECK_DELETE_SUCCESS)
     public void deleteAssetCheck(Long id) {
         // 校验存在
-        validateAssetCheckExists(id);
+        AssetCheckDO assetCheckDO = validateAssetCheckExists(id);
         // 删除
         assetCheckMapper.deleteById(id);
+
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("id", assetCheckDO.getId());
     }
 
     @Override
-        public void deleteAssetCheckListByIds(List<Long> ids) {
+    @LogRecord(type = ASSET_CHECK_TYPE, subType = ASSET_CHECK_DELETE_LIST_SUB_TYPE,
+            success = ASSET_CHECK_DELETE_LIST_SUCCESS, bizNo = "{{#id}}")
+    public void deleteAssetCheckListByIds(List<Long> ids) {
         // 删除
-        assetCheckMapper.deleteByIds(ids);
-        }
+        int i = assetCheckMapper.deleteByIds(ids);
+        // 设置日志上下文变量，供成功消息模板使用
+        LogRecordContext.putVariable("ids", ids);
+    }
 
 
-    private void validateAssetCheckExists(Long id) {
-        if (assetCheckMapper.selectById(id) == null) {
+    private AssetCheckDO validateAssetCheckExists(Long id) {
+        AssetCheckDO assetCheck = assetCheckMapper.selectById(id);
+        if (assetCheck == null) {
             throw exception(ASSET_CHECK_NOT_EXISTS);
         }
+        return assetCheck; // 返回查询到的对象
     }
 
     @Override
@@ -88,6 +109,8 @@ public class AssetCheckServiceImpl implements AssetCheckService {
     }
 
     @Override
+    @LogRecord(type = ASSET_CHECK_TYPE, subType = ASSET_CHECK_CREATE_SIMPLE_SUB_TYPE, bizNo = "{{#createReqVO.id}}",
+            success = ASSET_CHECK_CREATE_SIMPLE_SUCCESS)
     public Long createAssetCheck(AssetCheckCreateReqVO createReqVO) {
         // 1. 创建AssetCheckDO对象
         AssetCheckDO assetCheck = new AssetCheckDO();
@@ -98,7 +121,7 @@ public class AssetCheckServiceImpl implements AssetCheckService {
 
         // 3. 设置默认值
         assetCheck.setStatus("1");  // 默认状态：待盘点
-        assetCheck.setProgress(0);  // 初始进度：0%
+        assetCheck.setProgress(createReqVO.getProgress());  // 初始进度：0%
 
         // 5. 插入数据库
         assetCheckMapper.insert(assetCheck);
@@ -108,6 +131,8 @@ public class AssetCheckServiceImpl implements AssetCheckService {
     }
 
     @Override
+    @LogRecord(type = ASSET_CHECK_TYPE, subType = ASSET_CHECK_EXECUTE_SUB_TYPE, bizNo = "{{#executeReqVO.id}}",
+            success = ASSET_CHECK_EXECUTE_SUCCESS)
     public void executeAssetCheck(AssetCheckExecuteReqVO executeReqVO) {
         // 1. 校验资产盘点是否存在
         Long id = executeReqVO.getId();
@@ -127,6 +152,8 @@ public class AssetCheckServiceImpl implements AssetCheckService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = ASSET_CHECK_TYPE, subType = ASSET_CHECK_UPDATE_PROGRESS_SUB_TYPE, bizNo = "{{#updateProgressReqVO.id}}",
+            success = ASSET_CHECK_UPDATE_PROGRESS_SUCCESS)
     public void updateAssetCheckProgress(AssetCheckUpdateProgressReqVO updateProgressReqVO) {
         // 1. 校验资产盘点是否存在
         Long id = updateProgressReqVO.getId();
@@ -151,9 +178,10 @@ public class AssetCheckServiceImpl implements AssetCheckService {
         assetCheckMapper.updateById(updateObj);
     }
 
-    // 在 AssetCheckServiceImpl.java 类中添加以下方法
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = ASSET_CHECK_TYPE, subType = ASSET_CHECK_CONFIRM_SUB_TYPE, bizNo = "{{#confirmReqVO.id}}",
+            success = ASSET_CHECK_CONFIRM_SUCCESS)
     public void confirmAssetCheck(AssetCheckConfirmReqVO confirmReqVO) {
         // 1. 校验资产盘点是否存在
         Long id = confirmReqVO.getId();
@@ -193,14 +221,14 @@ public class AssetCheckServiceImpl implements AssetCheckService {
     @Override
     public AssetCheckChartRespVO getAssetCheckChart(AssetCheckChartReqVO chartReqVO) {
         // 1. 获取折线图趋势数据
-        List<cn.iocoder.yudao.module.inspectop.dal.mysql.assetcheck.AssetCheckMapper.TrendData> mapperTrendData =
+        List<AssetCheckMapper.TrendData> mapperTrendData =
                 assetCheckMapper.selectTrendData(chartReqVO);
 
         // 2. 转换为响应VO的TrendData列表
         List<AssetCheckChartRespVO.TrendData> trendDataList = convertToTrendDataList(mapperTrendData);
 
         // 3. 获取卡片统计数据
-        cn.iocoder.yudao.module.inspectop.dal.mysql.assetcheck.AssetCheckMapper.CardData mapperCardData =
+        AssetCheckMapper.CardData mapperCardData =
                 assetCheckMapper.selectCardData(chartReqVO);
 
         // 4. 转换为响应VO的CardData
@@ -217,7 +245,7 @@ public class AssetCheckServiceImpl implements AssetCheckService {
      * 转换Mapper的TrendData为响应VO的TrendData
      */
     private List<AssetCheckChartRespVO.TrendData> convertToTrendDataList(
-            List<cn.iocoder.yudao.module.inspectop.dal.mysql.assetcheck.AssetCheckMapper.TrendData> mapperData) {
+            List<AssetCheckMapper.TrendData> mapperData) {
         if (mapperData == null || mapperData.isEmpty()) {
             return Collections.emptyList();
         }
@@ -234,7 +262,7 @@ public class AssetCheckServiceImpl implements AssetCheckService {
      * 转换Mapper的CardData为响应VO的CardData
      */
     private AssetCheckChartRespVO.CardData convertToCardData(
-            cn.iocoder.yudao.module.inspectop.dal.mysql.assetcheck.AssetCheckMapper.CardData mapperData) {
+            AssetCheckMapper.CardData mapperData) {
         if (mapperData == null) {
             return AssetCheckChartRespVO.CardData.builder()
                     .checkCount(0)

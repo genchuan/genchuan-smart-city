@@ -68,6 +68,14 @@ public class UserCarController {
         return success(userCarService.importUserCar(list, updateSupport));
     }
 
+    @GetMapping("/template")
+    @Operation(summary = "下载用户车辆导入模板")
+    @PreAuthorize("@ss.hasPermission('usermerchant:user-car:import')")
+    public void downloadImportTemplate(HttpServletResponse response) throws IOException {
+        List<UserCarImportExcelVO> emptyList = Collections.emptyList();
+        ExcelUtils.write(response, "用户车辆导入模板.xlsx", "用户车辆", UserCarImportExcelVO.class, emptyList);
+    }
+
     @GetMapping("/export")
     @Operation(summary = "导出用户车辆")
     @PreAuthorize("@ss.hasPermission('usermerchant:user-car:export')")

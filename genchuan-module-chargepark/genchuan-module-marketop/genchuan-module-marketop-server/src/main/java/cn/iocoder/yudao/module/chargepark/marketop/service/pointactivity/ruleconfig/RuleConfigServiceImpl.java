@@ -9,6 +9,9 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivit
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.RuleConfigDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.RuleConfigMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.RuleConfigStatusEnum;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -22,6 +25,7 @@ import java.util.Objects;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.chargepark.marketop.enums.LogRecordConstants.*;
 
 @Service
 @Validated
@@ -41,26 +45,37 @@ public class RuleConfigServiceImpl implements RuleConfigService {
     }
 
     @Override
+    @LogRecord(type = RULE_CONFIG_TYPE, subType = RULE_CONFIG_CREATE_SUB_TYPE, bizNo = "{{#ruleConfig.id}}",
+            success = RULE_CONFIG_CREATE_SUCCESS)
     public Long create(RuleConfigCreateReqVO reqVO) {
         validateNameUnique(null, reqVO.getName());
         RuleConfigDO ruleConfig = BeanUtils.toBean(reqVO, RuleConfigDO.class);
         ruleConfig.setStatus(RuleConfigStatusEnum.NOT_EFFECTIVE.getValue());
         ruleConfig.setMatchCount(0);
         ruleConfigMapper.insert(ruleConfig);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("ruleConfig", ruleConfig);
         return ruleConfig.getId();
     }
 
     @Override
+    @LogRecord(type = RULE_CONFIG_TYPE, subType = RULE_CONFIG_UPDATE_SUB_TYPE, bizNo = "{{#reqVO.id}}",
+            success = RULE_CONFIG_UPDATE_SUCCESS)
     public void update(RuleConfigUpdateReqVO reqVO) {
-        validateExists(reqVO.getId());
+        RuleConfigDO ruleConfigDO = validateExists(reqVO.getId());
         if (reqVO.getName() != null) {
             validateNameUnique(reqVO.getId(), reqVO.getName());
         }
         RuleConfigDO updateObj = BeanUtils.toBean(reqVO, RuleConfigDO.class);
         ruleConfigMapper.updateById(updateObj);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, BeanUtils.toBean(ruleConfigDO, RuleConfigUpdateReqVO.class));
+        LogRecordContext.putVariable("ruleConfig", updateObj);
     }
 
     @Override
+    @LogRecord(type = RULE_CONFIG_TYPE, subType = RULE_CONFIG_ENABLE_SUB_TYPE, bizNo = "{{#id}}",
+            success = RULE_CONFIG_ENABLE_SUCCESS)
     public void enable(Long id) {
         RuleConfigDO ruleConfig = validateExists(id);
         if (!Objects.equals(RuleConfigStatusEnum.NOT_EFFECTIVE.getValue(), ruleConfig.getStatus())) {
@@ -70,9 +85,13 @@ public class RuleConfigServiceImpl implements RuleConfigService {
         ruleConfig.setAuditTime(LocalDateTime.now());
         ruleConfig.setEffectTime(LocalDateTime.now());
         ruleConfigMapper.updateById(ruleConfig);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("ruleConfigName", ruleConfig.getName());
     }
 
     @Override
+    @LogRecord(type = RULE_CONFIG_TYPE, subType = RULE_CONFIG_DISABLE_SUB_TYPE, bizNo = "{{#id}}",
+            success = RULE_CONFIG_DISABLE_SUCCESS)
     public void disable(Long id) {
         RuleConfigDO ruleConfig = validateExists(id);
         if (!Objects.equals(RuleConfigStatusEnum.EFFECTIVE.getValue(), ruleConfig.getStatus())) {
@@ -80,6 +99,8 @@ public class RuleConfigServiceImpl implements RuleConfigService {
         }
         ruleConfig.setStatus(RuleConfigStatusEnum.NOT_EFFECTIVE.getValue());
         ruleConfigMapper.updateById(ruleConfig);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("ruleConfigName", ruleConfig.getName());
     }
 
     @Override

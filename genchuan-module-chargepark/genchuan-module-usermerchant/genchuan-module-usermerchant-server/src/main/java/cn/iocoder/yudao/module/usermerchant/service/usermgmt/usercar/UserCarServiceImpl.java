@@ -2,19 +2,24 @@ package cn.iocoder.yudao.module.usermerchant.service.usermgmt.usercar;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.iocoder.yudao.framework.common.exception.ServiceException;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.usermgmt.userinfo.UserInfoDO;
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.usermgmt.userinfo.UserInfoMapper;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.NameQueryHelper;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
@@ -45,6 +50,9 @@ public class UserCarServiceImpl implements UserCarService {
 
     @Resource
     private AdminUserApi adminUserApi;
+
+    @Resource
+    private JdbcTemplate jdbcTemplate;
 
     @Resource
     private UserCarMapper userCarMapper;
@@ -115,6 +123,41 @@ public class UserCarServiceImpl implements UserCarService {
         return pageResult;
     }
 
+//    @Override
+//    @Transactional(rollbackFor = Exception.class)
+//    public Boolean importUserCar(List<UserCarImportExcelVO> list, Boolean updateSupport) {
+//        if (CollectionUtils.isEmpty(list)) {
+//            return true;
+//        }
+//        for (UserCarImportExcelVO vo : list) {
+//            if (vo.getId() != null) {
+//                UserCarDO existDO = userCarMapper.selectById(vo.getId());
+//                if (existDO != null) {
+//                    if (Boolean.TRUE.equals(updateSupport)) {
+//                        // 更新：复制属性，但保护创建信息
+//                        UserCarDO updateDO = BeanUtils.toBean(vo, UserCarDO.class);
+//                        updateDO.setCreator(null);
+//                        updateDO.setCreateTime(null);
+//                        userCarMapper.updateById(updateDO);
+//                    } else {
+//                        // updateSupport = false，跳过该条记录
+//                        continue;
+//                    }
+//                } else {
+//                    // ID 不存在，按新增处理（忽略用户提供的 ID，由数据库自增）
+//                    UserCarDO insertDO = BeanUtils.toBean(vo, UserCarDO.class);
+//                    insertDO.setId(null);
+//                    userCarMapper.insert(insertDO);
+//                }
+//            } else {
+//                // 无 ID，直接新增
+//                UserCarDO insertDO = BeanUtils.toBean(vo, UserCarDO.class);
+//                userCarMapper.insert(insertDO);
+//            }
+//        }
+//        return true;
+//    }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Boolean importUserCar(List<UserCarImportExcelVO> list, Boolean updateSupport) {
@@ -122,30 +165,51 @@ public class UserCarServiceImpl implements UserCarService {
             return true;
         }
         for (UserCarImportExcelVO vo : list) {
-            if (vo.getId() != null) {
-                UserCarDO existDO = userCarMapper.selectById(vo.getId());
-                if (existDO != null) {
-                    if (Boolean.TRUE.equals(updateSupport)) {
-                        // 更新：复制属性，但保护创建信息
-                        UserCarDO updateDO = BeanUtils.toBean(vo, UserCarDO.class);
-                        updateDO.setCreator(null);
-                        updateDO.setCreateTime(null);
-                        userCarMapper.updateById(updateDO);
-                    } else {
-                        // updateSupport = false，跳过该条记录
-                        continue;
-                    }
-                } else {
-                    // ID 不存在，按新增处理（忽略用户提供的 ID，由数据库自增）
-                    UserCarDO insertDO = BeanUtils.toBean(vo, UserCarDO.class);
-                    insertDO.setId(null);
-                    userCarMapper.insert(insertDO);
-                }
-            } else {
-                // 无 ID，直接新增
-                UserCarDO insertDO = BeanUtils.toBean(vo, UserCarDO.class);
-                userCarMapper.insert(insertDO);
+            // 自动填充绑定时间（如果为空）
+            if (vo.getBindTime() == null) {
+                vo.setBindTime(LocalDateTime.now());
             }
+            // 1. 确定最终 userId
+            Long finalUserId = resolveUserId(vo); // 内部处理 userId 或 userName 查询
+            vo.setUserId(finalUserId);
+
+            // 2. 新增
+            if (vo.getId() == null) {
+                UserCarDO insertDO = BeanUtils.toBean(vo, UserCarDO.class);
+                insertDO.setStatus(STATUS_REBIND);
+                insertDO.setId(null);
+                userCarMapper.insert(insertDO);
+                // 新增时状态不是已绑定，不调整 car_count
+                continue;
+            }
+
+            // 3. 更新
+            if (!Boolean.TRUE.equals(updateSupport)) {
+                continue; // 不支持更新，跳过
+            }
+            UserCarDO oldDO = userCarMapper.selectById(vo.getId());
+            if (oldDO == null) {
+                // ID 不存在，按新增处理
+                UserCarDO insertDO = BeanUtils.toBean(vo, UserCarDO.class);
+                insertDO.setStatus(STATUS_REBIND);
+                insertDO.setId(null);
+                userCarMapper.insert(insertDO);
+                continue;
+            }
+
+            // 如果旧状态是“已绑定”，先解绑
+            if (STATUS_BIND.equals(oldDO.getStatus())) {
+                auditUserCar(Collections.singletonList(vo.getId()), null, STATUS_UNBIND);
+            }
+
+            // 执行更新（状态强制待审核，其他字段按 VO 设置）
+            UserCarDO updateDO = BeanUtils.toBean(vo, UserCarDO.class);
+            updateDO.setId(vo.getId());
+            updateDO.setStatus(STATUS_REBIND);
+            // 保护创建信息
+            updateDO.setCreator(null);
+            updateDO.setCreateTime(null);
+            userCarMapper.updateById(updateDO);
         }
         return true;
     }
@@ -244,5 +308,43 @@ public class UserCarServiceImpl implements UserCarService {
         LoginUser loginUser = SecurityFrameworkUtils.getLoginUser();
         return loginUser != null ? loginUser.getId() : null;
     }
+
+    // 辅助方法：解析 userId
+    private Long resolveUserId(UserCarImportExcelVO vo) {
+        if (vo.getUserId() != null) {
+            UserInfoDO user = userInfoMapper.selectById(vo.getUserId());
+            if (user == null) throw new ServiceException(USER_INFO_NOT_EXISTS);
+            return vo.getUserId();
+        }
+        if (StringUtils.hasText(vo.getUserName())) {
+            Long userId = userInfoMapper.getIdByNickname(vo.getUserName());
+            if (userId == null) throw new ServiceException(USER_INFO_NOT_EXISTS);
+            return userId;
+        }
+        throw new ServiceException(USER_INFO_NOT_EXISTS);
+    }
+
+//    // 新增辅助方法：解析审核人ID
+//    private Long resolveAuditorId(UserCarImportExcelVO vo) {
+//        if (vo.getAuditorId() != null) {
+//            // 校验审核人ID是否存在
+//            CommonResult<AdminUserRespDTO> userResult = adminUserApi.getUser(vo.getAuditorId());
+//            if (userResult.isSuccess() && userResult.getData() != null) {
+//                return vo.getAuditorId();
+//            } else {
+//                throw new ServiceException(USER_INFO_NOT_EXISTS);
+//            }
+//        }
+//        if (StringUtils.hasText(vo.getAuditorName())) {
+//            // 通过姓名查询ID
+//            Long id = NameQueryHelper.getIdByName("system_users", "nickname", vo.getAuditorName(), "id");
+//            if (id == null) {
+//                throw new ServiceException(USER_INFO_NOT_EXISTS);
+//            }
+//            return id;
+//        }
+//        // 两者都为空，返回null（允许未指定审核人）
+//        return null;
+//    }
 
 }

@@ -18,8 +18,6 @@ import java.util.Map;
  */
 public interface StationReportService {
 
-
-
     /**
      * 获得场站资源报表
      *
@@ -27,7 +25,6 @@ public interface StationReportService {
      * @return 报表
      */
     StationReportDO getReport(Long id);
-
 
     PageResult<StationReportDO> getPage(StationOpReportPageReqVO pageReqVO);
 
@@ -38,4 +35,12 @@ public interface StationReportService {
     Long addHistoryReport(StationOpHistoryReportCreateReqVO reqVO);
 
     List<Long> addBatchBackReport(StationOpReportBatchBackReqVO reqVO);
+
+    /** 按卡片指标钻取明细数据 */
+    DrillDownRespVO drillDown(DrillDownReqVO reqVO);
+
+    /** 批量增加导出次数 */
+    void incrementExportCount(List<Long> ids);
+
+
 }

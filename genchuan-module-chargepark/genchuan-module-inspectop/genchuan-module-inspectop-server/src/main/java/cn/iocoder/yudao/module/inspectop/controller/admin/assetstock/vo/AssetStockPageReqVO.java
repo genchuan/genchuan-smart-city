@@ -28,10 +28,10 @@ public class AssetStockPageReqVO extends PageParam {
     @Schema(description = "所属场站ID")
     private Long stationId;
 
-    @Schema(description = "备用字段1")
+    @Schema(description = "补货记录")
     private String reserve1;
 
-    @Schema(description = "备用字段2")
+    @Schema(description = "调配记录")
     private String reserve2;
 
     @Schema(description = "创建者")

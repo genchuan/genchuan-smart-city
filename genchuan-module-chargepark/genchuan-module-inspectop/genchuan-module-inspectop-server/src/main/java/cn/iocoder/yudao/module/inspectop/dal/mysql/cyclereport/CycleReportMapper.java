@@ -49,28 +49,30 @@ public interface CycleReportMapper extends BaseMapperX<CycleReportDO> {
     }
 
 
-    // 1. 设备监测统计
+// 文档10：CycleReportMapper.java
+// 修改原有的统计方法，添加@Param注解并支持null值查询
+
+    // 1. 设备监测统计 - 修改为支持全站统计
     Map<String, Object> selectDeviceMonitorReport(@Param("stationId") Long stationId,
                                                   @Param("statTimeStart") LocalDateTime statTimeStart,
                                                   @Param("statTimeEnd") LocalDateTime statTimeEnd);
 
-    // 2. 巡检任务统计
-    Map<String, Object> selectInspectTaskReport(@Param("stationId") Long stationId,
-                                                @Param("statTimeStart") LocalDateTime statTimeStart,
+    // 2. 巡检任务统计 - 修改为支持全时间统计
+    Map<String, Object> selectInspectTaskReport(@Param("statTimeStart") LocalDateTime statTimeStart,
                                                 @Param("statTimeEnd") LocalDateTime statTimeEnd);
 
-    // 3. 油车占位统计
+    // 3. 油车占位统计 - 修改为支持全站统计
     Map<String, Object> selectOilMonitorReport(@Param("stationId") Long stationId,
                                                @Param("statTimeStart") LocalDateTime statTimeStart,
                                                @Param("statTimeEnd") LocalDateTime statTimeEnd);
 
-    // 4. 巡检人员统计
+    // 4. 巡检人员统计 - 修改为支持全站统计
     Map<String, Object> selectInspectUserReport(@Param("stationId") Long stationId);
 
-    // 5. 资产信息统计
+    // 5. 资产信息统计 - 修改为支持全站统计
     Map<String, Object> selectAssetInfoReport(@Param("stationId") Long stationId);
 
-    // 6. 库存预警统计
+    // 6. 库存预警统计 - 修改为支持全站统计
     Map<String, Object> selectAssetStockReport(@Param("stationId") Long stationId);
 
     // 7. 查询场站名称
