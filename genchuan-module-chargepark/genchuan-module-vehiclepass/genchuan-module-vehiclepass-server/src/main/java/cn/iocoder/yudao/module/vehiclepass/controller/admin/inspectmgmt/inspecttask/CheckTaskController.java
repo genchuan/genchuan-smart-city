@@ -155,8 +155,9 @@ public class CheckTaskController {
     @Operation(summary = "导出稽查任务 Excel")
     @PreAuthorize("@ss.hasPermission('check:task:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportTaskExcel(@Valid CheckTaskPageReqVO pageReqVO,
+    public void exportTaskExcel(CheckTaskPageReqVO pageReqVO,
                                 HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<CheckTaskRespVO> pageResult = taskService.getTaskPageWithJoin(pageReqVO);
         ExcelUtils.write(response, "稽查任务.xls", "数据", CheckTaskRespVO.class, pageResult.getList());

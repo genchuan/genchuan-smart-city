@@ -74,7 +74,7 @@ public interface UnplateEnterService {
      * @param reqVO 分页查询
      * @return 无牌入场分页
      */
-    PageResult<UnplateEnterRespVO> getUnplateEnterPage(@Valid UnplateEnterPageReqVO reqVO);
+    PageResult<UnplateEnterRespVO> getUnplateEnterPage(UnplateEnterPageReqVO reqVO);
 
     /**
      * 创建无牌入场车辆

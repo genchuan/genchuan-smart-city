@@ -107,8 +107,9 @@ public class GateOpenController {
     @Operation(summary = "导出开闸管理 Excel")
     @PreAuthorize("@ss.hasPermission('gate:open:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportOpenExcel(@Valid GateOpenPageReqVO pageReqVO,
+    public void exportOpenExcel(GateOpenPageReqVO pageReqVO,
                                 HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<GateOpenRespVO> pageResult = openService.getOpenPageWithJoin(pageReqVO);
         // 导出 Excel

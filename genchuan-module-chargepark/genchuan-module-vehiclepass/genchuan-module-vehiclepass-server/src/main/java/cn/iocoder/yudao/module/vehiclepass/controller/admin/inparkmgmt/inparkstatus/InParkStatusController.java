@@ -128,8 +128,9 @@ public class InParkStatusController {
     @Operation(summary = "导出在停状态 Excel")
     @PreAuthorize("@ss.hasPermission('in:park-status:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportParkStatusExcel(@Valid InParkStatusPageReqVO pageReqVO,
+    public void exportParkStatusExcel(InParkStatusPageReqVO pageReqVO,
                                       HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<InParkStatusRespVO> pageResult = parkStatusService.getInParkStatusPage(pageReqVO);
         ExcelUtils.write(response, "在停状态.xls", "数据", InParkStatusRespVO.class, pageResult.getList());

@@ -120,8 +120,9 @@ public class PayCheckController {
     @Operation(summary = "导出缴费核验 Excel")
     @PreAuthorize("@ss.hasPermission('pay:check:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportCheckExcel(@Valid PayCheckPageReqVO pageReqVO,
+    public void exportCheckExcel(PayCheckPageReqVO pageReqVO,
                                  HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<PayCheckRespVO> pageResult = checkService.getCheckPageWithJoin(pageReqVO);
         ExcelUtils.write(response, "缴费核验.xls", "数据", PayCheckRespVO.class, pageResult.getList());

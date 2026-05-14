@@ -121,8 +121,9 @@ public class LeaveRecordController {
     @Operation(summary = "导出离场记录 Excel")
     @PreAuthorize("@ss.hasPermission('leave:record:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportRecordExcel(@Valid LeaveRecordPageReqVO pageReqVO,
+    public void exportRecordExcel(LeaveRecordPageReqVO pageReqVO,
                                   HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<LeaveRecordRespVO> pageResult = leaveRecordService.getRecordPageWithJoin(pageReqVO);
         // 导出 Excel

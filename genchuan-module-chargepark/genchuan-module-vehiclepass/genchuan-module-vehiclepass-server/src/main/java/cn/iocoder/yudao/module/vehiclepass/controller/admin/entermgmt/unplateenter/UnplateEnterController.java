@@ -139,8 +139,9 @@ public class UnplateEnterController {
     @Operation(summary = "导出无牌入场 Excel")
     @PreAuthorize("@ss.hasPermission('unplate:enter:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportEnterExcel(@Valid UnplateEnterPageReqVO pageReqVO,
+    public void exportEnterExcel(UnplateEnterPageReqVO pageReqVO,
                                  HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<UnplateEnterRespVO> pageResult = enterService.getUnplateEnterPage(pageReqVO);
         ExcelUtils.write(response, "无牌入场.xls", "数据", UnplateEnterRespVO.class, pageResult.getList());

@@ -100,8 +100,9 @@ public class CarInputController {
     @Operation(summary = "导出车辆录入 Excel")
     @PreAuthorize("@ss.hasPermission('car:input:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportInputExcel(@Valid CarInputPageReqVO pageReqVO,
+    public void exportInputExcel(CarInputPageReqVO pageReqVO,
                                  HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<CarInputDO> list = inputService.getInputPage(pageReqVO).getList();
         // 导出 Excel

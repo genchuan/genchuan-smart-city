@@ -96,8 +96,9 @@ public class PassRecordController {
     @Operation(summary = "导出放行记录 Excel")
     @PreAuthorize("@ss.hasPermission('pass:record:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportRecordExcel(@Valid PassRecordPageReqVO pageReqVO,
+    public void exportRecordExcel(PassRecordPageReqVO pageReqVO,
                                   HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<PassRecordRespVO> pageResult = passRecordService.getRecordPageWithJoin(pageReqVO);
         // 导出 Excel

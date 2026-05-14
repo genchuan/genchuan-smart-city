@@ -112,8 +112,9 @@ public class SpaceQueryController {
     @Operation(summary = "导出泊位查询 Excel")
     @PreAuthorize("@ss.hasPermission('space:query:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportQueryExcel(@Valid SpaceQueryPageReqVO pageReqVO,
+    public void exportQueryExcel(SpaceQueryPageReqVO pageReqVO,
                                  HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<SpaceQueryDO> list = queryService.getQueryPage(pageReqVO).getList();
         // 导出 Excel

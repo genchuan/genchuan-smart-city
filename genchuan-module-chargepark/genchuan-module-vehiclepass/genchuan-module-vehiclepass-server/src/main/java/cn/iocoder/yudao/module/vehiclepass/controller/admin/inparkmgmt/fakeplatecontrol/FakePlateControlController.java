@@ -138,8 +138,9 @@ public class FakePlateControlController {
     @Operation(summary = "导出套牌管控 Excel")
     @PreAuthorize("@ss.hasPermission('fake:plate-control:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportPlateControlExcel(@Valid FakePlateControlPageReqVO pageReqVO,
+    public void exportPlateControlExcel(FakePlateControlPageReqVO pageReqVO,
                                         HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<MyFakePlateControlRespVO> pageResult = plateControlService.getFakePlateControlPage(pageReqVO);
         ExcelUtils.write(response, "套牌管控.xls", "数据", MyFakePlateControlRespVO.class, pageResult.getList());
