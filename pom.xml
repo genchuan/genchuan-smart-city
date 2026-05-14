@@ -35,6 +35,7 @@
         <module>genchuan-module-energycharge</module>
         <module>genchuan-module-education-teaching</module>
         <module>genchuan-module-chargepark</module>
+        <module>genchuan-module-industrialpark</module>
     </modules>
 
     <name>${project.artifactId}</name>
