@@ -16,7 +16,7 @@ public interface AgentRuleService {
 
     AgentRuleDO getAgentRule(Long id);
 
-    PageResult<AgentRuleDO> getAgentRulePage(AgentRulePageReqVO pageReqVO);
+    PageResult<AgentRuleRespVO> getAgentRulePage(AgentRulePageReqVO pageReqVO);
 
     void importAgentRule(List<AgentRuleImportExcelVO> importList, boolean updateSupport);
 

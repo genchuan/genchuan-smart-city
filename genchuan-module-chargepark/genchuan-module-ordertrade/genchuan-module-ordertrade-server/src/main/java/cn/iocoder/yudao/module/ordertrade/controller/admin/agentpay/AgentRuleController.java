@@ -69,8 +69,7 @@ public class AgentRuleController {
     @GetMapping("/page")
     @Operation(summary = "获得代付规则分页列表")
     public CommonResult<PageResult<AgentRuleRespVO>> getAgentRulePage(@Valid AgentRulePageReqVO pageReqVO) {
-        PageResult<AgentRuleDO> pageResult = agentRuleService.getAgentRulePage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, AgentRuleRespVO.class));
+        return success(agentRuleService.getAgentRulePage(pageReqVO));
     }
 
     @GetMapping("/export")
@@ -79,9 +78,8 @@ public class AgentRuleController {
     public void exportAgentRuleExcel(@Valid AgentRulePageReqVO pageReqVO,
                                      HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<AgentRuleDO> list = agentRuleService.getAgentRulePage(pageReqVO).getList();
-        ExcelUtils.write(response, "代付规则.xls", "数据", AgentRuleRespVO.class,
-                BeanUtils.toBean(list, AgentRuleRespVO.class));
+        List<AgentRuleRespVO> list = agentRuleService.getAgentRulePage(pageReqVO).getList();
+        ExcelUtils.write(response, "代付规则.xls", "数据", AgentRuleRespVO.class, list);
     }
 
     @PostMapping("/import")

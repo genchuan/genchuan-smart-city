@@ -15,7 +15,7 @@ public interface AgentRecordService {
 
     AgentRecordDO getAgentRecord(Long id);
 
-    PageResult<AgentRecordDO> getAgentRecordPage(AgentRecordPageReqVO pageReqVO);
+    PageResult<AgentRecordRespVO> getAgentRecordPage(AgentRecordPageReqVO pageReqVO);
 
     void checkAgentRecord(IdReqVO reqVO);
 

@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.refundmgmt.vo.AmountCheckPageReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.refundmgmt.AmountCheckDO;
+import cn.iocoder.yudao.module.ordertrade.dal.dataobject.refundmgmt.RefundApplyDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -25,6 +26,8 @@ public interface AmountCheckMapper extends BaseMapperX<AmountCheckDO> {
                 .eqIfPresent(AmountCheckDO::getOrderId, reqVO.getOrderId())
                 .eqIfPresent(AmountCheckDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(AmountCheckDO::getCheckResult, reqVO.getCheckResult())
+                .geIfPresent(AmountCheckDO::getCreateTime, reqVO.getCreateTimeStart())
+                .leIfPresent(AmountCheckDO::getCreateTime, reqVO.getCreateTimeEnd())
                 .orderByDesc(AmountCheckDO::getId));
     }
 
