@@ -25,6 +25,9 @@ import cn.iocoder.yudao.module.usermerchant.dal.mysql.usermgmt.userinfo.UserInfo
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.userreport.cyclereport.CycleReportMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
+import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -85,6 +88,9 @@ public class CycleReportServiceImpl implements CycleReportService {
     private UserCreditMapper userCreditMapper;
 
     @Override
+    @LogRecord(type = TYPE_CYCLE_REPORT, subType = SUB_TYPE_CREATE_CYCLE_REPORT,
+            bizNo = "{{#report.id}}",
+            success = SUCCESS_CREATE_CYCLE_REPORT)
     public CycleReportCreateRespVO createCycleReport(CycleReportCreateReqVO createReqVO) {
         // 转换为 VO
         CycleReportDO report = new CycleReportDO();
@@ -128,7 +134,8 @@ public class CycleReportServiceImpl implements CycleReportService {
         CycleReportCreateRespVO createRespVO = new CycleReportCreateRespVO();
         createRespVO.setId(report.getId());
         createRespVO.setSuccess(Boolean.TRUE);
-
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("report", report);
         // 返回
         return createRespVO;
     }
