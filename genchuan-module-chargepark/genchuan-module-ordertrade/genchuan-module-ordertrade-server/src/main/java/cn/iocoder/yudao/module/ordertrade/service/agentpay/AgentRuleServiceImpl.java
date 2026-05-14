@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.ordertrade.service.agentpay;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.util.CollectionUtils;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.agentpay.vo.*;
@@ -64,8 +65,10 @@ public class AgentRuleServiceImpl implements AgentRuleService {
     }
 
     @Override
-    public PageResult<AgentRuleDO> getAgentRulePage(AgentRulePageReqVO pageReqVO) {
-        return agentRuleMapper.selectPage(pageReqVO);
+    public PageResult<AgentRuleRespVO> getAgentRulePage(AgentRulePageReqVO pageReqVO) {
+        Page<AgentRuleRespVO> mpPage = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        var result = agentRuleMapper.selectPageWithMerchant(mpPage, pageReqVO);
+        return new PageResult<>(result.getRecords(), result.getTotal());
     }
 
     @Override

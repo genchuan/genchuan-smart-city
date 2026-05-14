@@ -14,7 +14,7 @@ public interface AgentCodeService {
 
     AgentCodeDO getAgentCode(Long id);
 
-    PageResult<AgentCodeDO> getAgentCodePage(AgentCodePageReqVO pageReqVO);
+    PageResult<AgentCodeRespVO> getAgentCodePage(AgentCodePageReqVO pageReqVO);
 
     void generateAgentCode(AgentCodeGenerateReqVO reqVO);
 
