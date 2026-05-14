@@ -3,11 +3,14 @@ package cn.iocoder.yudao.module.inspectop.service.inspectreport;
 import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import java.time.LocalDateTime;
 import java.util.*;
 import cn.iocoder.yudao.module.inspectop.controller.admin.inspectreport.vo.*;
@@ -20,6 +23,7 @@ import cn.iocoder.yudao.module.inspectop.dal.mysql.inspectreport.InspectReportMa
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.module.inspectop.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.inspectop.enums.LogRecordConstants.*;
 
 /**
  * 巡检上报 Service 实现类
@@ -34,25 +38,40 @@ public class InspectReportServiceImpl implements InspectReportService {
     private InspectReportMapper inspectReportMapper;
 
     @Override
+    @LogRecord(type = INSPECT_REPORT_TYPE, subType = INSPECT_REPORT_CREATE_SUB_TYPE,
+            bizNo = "{{#createReqVO.id}}", success = INSPECT_REPORT_CREATE_SUCCESS)
     public Long createInspectReport(InspectReportSaveReqVO createReqVO) {
         // 插入
         InspectReportDO inspectReport = BeanUtils.toBean(createReqVO, InspectReportDO.class);
         inspectReportMapper.insert(inspectReport);
+
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("createReqVO", createReqVO);
 
         // 返回
         return inspectReport.getId();
     }
 
     @Override
+    @LogRecord(type = INSPECT_REPORT_TYPE, subType = INSPECT_REPORT_UPDATE_SUB_TYPE,
+            bizNo = "{{#updateReqVO.id}}", success = INSPECT_REPORT_UPDATE_SUCCESS)
     public void updateInspectReport(InspectReportSaveReqVO updateReqVO) {
-        // 校验存在
-        validateInspectReportExists(updateReqVO.getId());
-        // 更新
+        // 1. 校验存在，并获取旧数据用于日志对比
+        InspectReportDO oldInspectReport = validateInspectReportExists(updateReqVO.getId());
+
+        // 2. 更新
         InspectReportDO updateObj = BeanUtils.toBean(updateReqVO, InspectReportDO.class);
         inspectReportMapper.updateById(updateObj);
+
+        // 3. 记录操作日志上下文（用于DIFF比较）
+        // 将旧数据转换为VO对象，存入日志上下文
+        InspectReportSaveReqVO oldVO = BeanUtils.toBean(oldInspectReport, InspectReportSaveReqVO.class);
+        LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, oldVO);
     }
 
     @Override
+    @LogRecord(type = INSPECT_REPORT_TYPE, subType = INSPECT_REPORT_DELETE_SUB_TYPE,
+            bizNo = "{{#id}}", success = INSPECT_REPORT_DELETE_SUCCESS)
     public void deleteInspectReport(Long id) {
         // 校验存在
         validateInspectReportExists(id);
@@ -61,16 +80,23 @@ public class InspectReportServiceImpl implements InspectReportService {
     }
 
     @Override
-        public void deleteInspectReportListByIds(List<Long> ids) {
+    @LogRecord(type = INSPECT_REPORT_TYPE, subType = INSPECT_REPORT_DELETE_LIST_SUB_TYPE,
+            success = INSPECT_REPORT_DELETE_LIST_SUCCESS, bizNo = "")
+    public void deleteInspectReportListByIds(List<Long> ids) {
         // 删除
         inspectReportMapper.deleteByIds(ids);
-        }
 
+        // 设置日志上下文变量
+        LogRecordContext.putVariable("ids", ids);
+    }
 
-    private void validateInspectReportExists(Long id) {
-        if (inspectReportMapper.selectById(id) == null) {
+    // 修改验证方法，使其返回InspectReportDO对象，用于update方法的日志对比
+    private InspectReportDO validateInspectReportExists(Long id) {
+        InspectReportDO inspectReport = inspectReportMapper.selectById(id);
+        if (inspectReport == null) {
             throw exception(INSPECT_REPORT_NOT_EXISTS);
         }
+        return inspectReport; // 返回查询到的对象
     }
 
     @Override
@@ -81,11 +107,11 @@ public class InspectReportServiceImpl implements InspectReportService {
     @Override
     public PageResult<InspectReportRespVO> getInspectReportPage(InspectReportPageReqVO pageReqVO) {
         // 创建 MyBatis-Plus 分页对象
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<InspectReportRespVO> mpPage
-                = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        Page<InspectReportRespVO> mpPage
+                = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
 
         // 调用 Mapper 的关联查询方法
-        com.baomidou.mybatisplus.extension.plugins.pagination.Page<InspectReportRespVO> resultPage =
+        Page<InspectReportRespVO> resultPage =
                 inspectReportMapper.selectPageWithJoin(mpPage, pageReqVO);
 
         // 构造返回结果
@@ -94,6 +120,8 @@ public class InspectReportServiceImpl implements InspectReportService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = INSPECT_REPORT_TYPE, subType = INSPECT_REPORT_BATCH_AUDIT_SUB_TYPE,
+            success = INSPECT_REPORT_BATCH_AUDIT_SUCCESS, bizNo = "")
     public void batchAuditInspectReport(InspectReportBatchAuditReqVO batchAuditReqVO) {
         // 1. 获取参数
         List<Long> ids = batchAuditReqVO.getIds();
@@ -127,10 +155,27 @@ public class InspectReportServiceImpl implements InspectReportService {
                 .in(InspectReportDO::getId, ids);
 
         inspectReportMapper.update(null, updateWrapper);
+
+        // 6. 设置日志上下文变量
+        LogRecordContext.putVariable("ids", ids);
+        LogRecordContext.putVariable("auditResult", auditResult);
+
+        // 将审核结果映射为中文名称
+        String auditResultName = "";
+        if ("2".equals(auditResult)) {
+            auditResultName = "待处置";
+        } else if ("5".equals(auditResult)) {
+            auditResultName = "已驳回";
+        } else {
+            auditResultName = auditResult;
+        }
+        LogRecordContext.putVariable("auditResultName", auditResultName);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = INSPECT_REPORT_TYPE, subType = INSPECT_REPORT_APPROVE_SUB_TYPE,
+            bizNo = "{{#approveReqVO.id}}", success = INSPECT_REPORT_APPROVE_SUCCESS)
     public void approveInspectReport(InspectReportApproveReqVO approveReqVO) {
         // 1. 获取参数
         Long id = approveReqVO.getId();
@@ -155,10 +200,15 @@ public class InspectReportServiceImpl implements InspectReportService {
                 .eq(InspectReportDO::getId, id);
 
         inspectReportMapper.update(null, updateWrapper);
+
+        // 6. 设置日志上下文变量
+        LogRecordContext.putVariable("approveReqVO", approveReqVO);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = INSPECT_REPORT_TYPE, subType = INSPECT_REPORT_REJECT_SUB_TYPE,
+            bizNo = "{{#rejectReqVO.id}}", success = INSPECT_REPORT_REJECT_SUCCESS)
     public void rejectInspectReport(InspectReportRejectReqVO rejectReqVO) {
         // 1. 获取参数
         Long id = rejectReqVO.getId();
@@ -183,10 +233,15 @@ public class InspectReportServiceImpl implements InspectReportService {
                 .eq(InspectReportDO::getId, id);
 
         inspectReportMapper.update(null, updateWrapper);
+
+        // 6. 设置日志上下文变量
+        LogRecordContext.putVariable("rejectReqVO", rejectReqVO);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = INSPECT_REPORT_TYPE, subType = INSPECT_REPORT_PROCESS_SUB_TYPE,
+            bizNo = "{{#processReqVO.id}}", success = INSPECT_REPORT_PROCESS_SUCCESS)
     public void processInspectReport(InspectReportProcessReqVO processReqVO) {
         // 1. 获取参数
         Long id = processReqVO.getId();
@@ -209,6 +264,9 @@ public class InspectReportServiceImpl implements InspectReportService {
                 .eq(InspectReportDO::getId, id);
 
         inspectReportMapper.update(null, updateWrapper);
+
+        // 6. 设置日志上下文变量
+        LogRecordContext.putVariable("processReqVO", processReqVO);
     }
 
     @Override

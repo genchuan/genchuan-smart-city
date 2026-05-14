@@ -140,9 +140,9 @@ public class BedMgmtServiceImpl implements BedMgmtService {
 
         BedMgmtDO bedMgmt = bedMgmtMapper.selectById(oldBedId);
         // 判断原床位是否为该学生
-        if (!studentId.equals(bedMgmt.getStudentId())) {
-            throw exception(500, "原床位不是该学生的");
-        }
+//        if (!studentId.equals(bedMgmt.getStudentId())) {
+//            throw exception(500, "原床位不是该学生的");
+//        }
         // 判断新床为是否已经被分配
         BedMgmtDO newBedMgmt = bedMgmtMapper.selectById(newBedId);
 //        if (!BedStatusEnum.BED_STATUS_UNALLOCATED.getStatus().equals(newBedMgmt.getStatus())) {

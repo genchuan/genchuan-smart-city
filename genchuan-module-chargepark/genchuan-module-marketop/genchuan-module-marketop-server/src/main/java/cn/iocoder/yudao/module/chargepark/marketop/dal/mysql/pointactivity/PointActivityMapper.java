@@ -62,6 +62,8 @@ public interface PointActivityMapper extends BaseMapperX<PointActivityDO> {
     @Select("SELECT IFNULL(SUM(join_count), 0) FROM point_activity")
     Long selectSumJoinCount();
 
+    List<Map<String, Object>> selectStationSimpleList();
+
     @Select("SELECT DATE(create_time) AS date, COUNT(*) AS count " +
             "FROM point_activity " +
             "WHERE deleted = 0 AND create_time >= #{startTime} " +

@@ -5,11 +5,15 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.checkin.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.checkin.CheckInDO;
+import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.checkin.CheckInMapper;
+import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
 import cn.iocoder.yudao.module.studentmgmt.enums.CheckInAccountStatusEnum;
 import cn.iocoder.yudao.module.studentmgmt.enums.CheckInStatusEnum;
 import cn.iocoder.yudao.module.studentmgmt.enums.TreatStatusEnum;
 import cn.iocoder.yudao.module.studentmgmt.enums.TreatTypeEnum;
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.system.api.user.dto.UserRegisterReqDTO;
 import com.alibaba.fastjson.JSONObject;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -34,6 +38,12 @@ public class CheckInServiceImpl implements CheckInService {
 
     @Resource
     private CheckInMapper checkInMapper;
+
+    @Resource
+    private StudentInfoMapper studentInfoMapper;
+
+    @Resource
+    private AdminUserApi adminUserApi;
 
     @Override
     public Long createCheckIn(CheckInSaveReqVO createReqVO) {
@@ -124,7 +134,18 @@ public class CheckInServiceImpl implements CheckInService {
         for (Long id : reqVO.getIds()) {
             // 校验存在
             CheckInDO checkInDO = validateCheckInExists(id);
-            // TODO 调用创建用户RPC接口
+            // 调用创建用户RPC接口
+            Long studentId = checkInDO.getStudentId();
+            StudentInfoDO studentInfoDO = studentInfoMapper.selectById(studentId);
+            // 学号
+            String studentNo = studentInfoDO.getStudentNo();
+
+            UserRegisterReqDTO registerReqDTO = new UserRegisterReqDTO();
+            registerReqDTO.setUsername(studentNo);
+            registerReqDTO.setNickname(studentInfoDO.getName());
+            registerReqDTO.setPassword(studentInfoDO.getPhone());
+            registerReqDTO.setMobile(studentInfoDO.getPhone());
+            adminUserApi.registerUser(registerReqDTO);
 
             checkInDO.setConfirmTime(LocalDateTime.now());
             checkInDO.setStatus(CheckInStatusEnum.CHECKED_IN.getStatus());

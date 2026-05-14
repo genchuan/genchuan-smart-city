@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.
 import jakarta.validation.Valid;
 
 import java.util.List;
+import java.util.Map;
 
 public interface PointActivityService {
 
@@ -34,4 +35,8 @@ public interface PointActivityService {
     void importPointActivityList(List<PointActivityImportExcelVO> list);
 
     void activate(Long id);
+
+    List<PointActivityDO> getSimpleList();
+
+    List<Map<String, Object>> getStationSimpleList();
 }
