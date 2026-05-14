@@ -46,11 +46,11 @@ public class EnterRecordServiceImpl implements EnterRecordService {
 
     @Override
     public Long createRecord(EnterRecordSaveReqVO createReqVO) {
-        // 插入
         EnterRecordDO record = BeanUtils.toBean(createReqVO, EnterRecordDO.class);
+        if (record.getIsCorrected() == null) {
+            record.setIsCorrected(false);
+        }
         enterRecordMapper.insert(record);
-
-        // 返回
         return record.getId();
     }
 
