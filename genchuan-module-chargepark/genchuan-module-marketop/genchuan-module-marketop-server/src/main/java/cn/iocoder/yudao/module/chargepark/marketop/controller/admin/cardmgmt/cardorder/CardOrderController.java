@@ -106,6 +106,7 @@ public class CardOrderController {
         reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<CardOrderDO> pageResult = cardOrderService.getPage(reqVO);
         List<CardOrderRespVO> list = BeanUtils.toBean(pageResult.getList(), CardOrderRespVO.class);
+        injectUserNames(list);
         ExcelUtils.write(response, "卡种订单.xlsx", "数据", CardOrderRespVO.class, list);
     }
 
@@ -138,14 +139,21 @@ public class CardOrderController {
             if (item.getCardId() != null) {
                 cardIds.add(item.getCardId());
             }
+            if (item.getUserId() != null) {
+                userIds.add(item.getUserId());
+            }
         }
-        // 翻译创建者名称
+        // 翻译创建者名称和用户名称
         if (!userIds.isEmpty()) {
             Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
             for (var item : list) {
                 if (StrUtil.isNotBlank(item.getCreator())) {
                     AdminUserRespDTO user = userMap.get(safeParseLong(item.getCreator()));
                     if (user != null) item.setCreatorName(user.getNickname());
+                }
+                if (item.getUserId() != null) {
+                    AdminUserRespDTO user = userMap.get(item.getUserId());
+                    if (user != null) item.setUserName(user.getNickname());
                 }
             }
         }

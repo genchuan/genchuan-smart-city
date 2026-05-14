@@ -30,6 +30,9 @@ public class ExchangeOrderDO extends BaseDO {
     /** 类目ID(关联exchange_category) */
     private Long categoryId;
 
+    /** 商品ID */
+    private Long goodsId;
+
     /** 商品名称 */
     private String goodsName;
 

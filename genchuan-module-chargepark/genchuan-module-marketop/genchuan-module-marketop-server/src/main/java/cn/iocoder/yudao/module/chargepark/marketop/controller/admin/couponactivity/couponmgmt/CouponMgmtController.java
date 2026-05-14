@@ -8,6 +8,8 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.*;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.CouponMgmtDO;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.CouponMgmtStatusEnum;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.CouponMgmtTypeEnum;
 import cn.iocoder.yudao.module.chargepark.marketop.service.couponactivity.couponmgmt.CouponMgmtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -144,7 +146,18 @@ public class CouponMgmtController {
         reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<CouponMgmtDO> pageResult = couponMgmtService.getPage(reqVO);
         List<CouponMgmtRespVO> list = BeanUtils.toBean(pageResult.getList(), CouponMgmtRespVO.class);
+        injectUserNames(list);
+        list.forEach(item -> {
+            item.setType(CouponMgmtTypeEnum.labelOf(item.getType()));
+        });
         ExcelUtils.write(response, "优惠券.xlsx", "数据", CouponMgmtRespVO.class, list);
+    }
+
+    @GetMapping("/simple-list")
+    @Operation(summary = "获取优惠券精简列表")
+    public CommonResult<List<CouponMgmtSimpleRespVO>> getSimpleList() {
+        List<CouponMgmtDO> list = couponMgmtService.getSimpleList();
+        return CommonResult.success(BeanUtils.toBean(list, CouponMgmtSimpleRespVO.class));
     }
 
     @GetMapping("/chart")

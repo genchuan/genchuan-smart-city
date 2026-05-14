@@ -110,6 +110,11 @@ public class CardConfigServiceImpl implements CardConfigService {
     }
 
     @Override
+    public List<CardConfigDO> getSimpleList() {
+        return cardConfigMapper.selectList();
+    }
+
+    @Override
     public CardConfigChartRespVO getChart() {
         CardConfigChartRespVO respVO = new CardConfigChartRespVO();
 

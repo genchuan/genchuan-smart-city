@@ -196,6 +196,11 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
     }
 
     @Override
+    public List<CouponMgmtDO> getSimpleList() {
+        return couponMgmtMapper.selectList();
+    }
+
+    @Override
     public void importCouponMgmtList(List<CouponMgmtImportExcelVO> list) {
         if (list == null || list.isEmpty()) {
             return;

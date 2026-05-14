@@ -29,4 +29,6 @@ public interface ExchangeCategoryService {
 
     void importData(List<ExchangeCategoryImportExcelVO> list);
 
+    List<ExchangeCategoryDO> getSimpleList();
+
 }

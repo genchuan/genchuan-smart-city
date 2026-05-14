@@ -5,10 +5,12 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.receiverecord.vo.ReceiveRecordPageReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.ReceiveRecordDO;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -22,19 +24,28 @@ public interface ReceiveRecordMapper extends BaseMapperX<ReceiveRecordDO> {
                 .eqIfPresent(ReceiveRecordDO::getCouponId, reqVO.getCouponId())
                 .eqIfPresent(ReceiveRecordDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(ReceiveRecordDO::getSyncStatus, reqVO.getSyncStatus())
+                .betweenIfPresent(ReceiveRecordDO::getReceiveTime, reqVO.getReceiveTime())
                 .orderByDesc(ReceiveRecordDO::getId);
         // receiveTime 范围
-        if (reqVO.getReceiveStartTime() != null && reqVO.getReceiveEndTime() != null) {
-            wrapper.between(ReceiveRecordDO::getReceiveTime,
-                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getReceiveStartTime()), java.time.ZoneId.systemDefault()),
-                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getReceiveEndTime()), java.time.ZoneId.systemDefault()));
-        } else if (reqVO.getReceiveStartTime() != null) {
-            wrapper.ge(ReceiveRecordDO::getReceiveTime,
-                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getReceiveStartTime()), java.time.ZoneId.systemDefault()));
-        } else if (reqVO.getReceiveEndTime() != null) {
-            wrapper.le(ReceiveRecordDO::getReceiveTime,
-                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getReceiveEndTime()), java.time.ZoneId.systemDefault()));
+//        if (reqVO.getReceiveStartTime() != null && reqVO.getReceiveEndTime() != null) {
+//            wrapper.between(ReceiveRecordDO::getReceiveTime,
+//                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getReceiveStartTime()), java.time.ZoneId.systemDefault()),
+//                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getReceiveEndTime()), java.time.ZoneId.systemDefault()));
+//        } else if (reqVO.getReceiveStartTime() != null) {
+//            wrapper.ge(ReceiveRecordDO::getReceiveTime,
+//                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getReceiveStartTime()), java.time.ZoneId.systemDefault()));
+//        } else if (reqVO.getReceiveEndTime() != null) {
+//            wrapper.le(ReceiveRecordDO::getReceiveTime,
+//                    java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(reqVO.getReceiveEndTime()), java.time.ZoneId.systemDefault()));
+//        }
+
+        if (StringUtils.isNotBlank(reqVO.getDate())) {
+            LocalDate localDate = LocalDate.parse(reqVO.getDate());
+            LocalDateTime start = localDate.atStartOfDay();
+            LocalDateTime end = start.plusDays(1);
+            wrapper.betweenIfPresent(ReceiveRecordDO::getReceiveTime, start, end);
         }
+
         // createTime 范围
         if (reqVO.getStartTime() != null && reqVO.getEndTime() != null) {
             wrapper.between(ReceiveRecordDO::getCreateTime,
@@ -50,11 +61,11 @@ public interface ReceiveRecordMapper extends BaseMapperX<ReceiveRecordDO> {
         return selectPage(reqVO, wrapper);
     }
 
-    @Select("SELECT DATE(create_time) AS date, COUNT(*) AS count " +
+    @Select("SELECT DATE(receive_time) AS date, COUNT(*) AS count " +
             "FROM receive_record " +
-            "WHERE deleted = 0 AND create_time >= #{startTime} " +
-            "GROUP BY DATE(create_time) " +
-            "ORDER BY DATE(create_time) ASC")
+            "WHERE deleted = 0 AND receive_time >= #{startTime} " +
+            "GROUP BY DATE(receive_time) " +
+            "ORDER BY DATE(receive_time) ASC")
     List<Map<String, Object>> selectCountByDay(@Param("startTime") LocalDateTime startTime);
 
 }

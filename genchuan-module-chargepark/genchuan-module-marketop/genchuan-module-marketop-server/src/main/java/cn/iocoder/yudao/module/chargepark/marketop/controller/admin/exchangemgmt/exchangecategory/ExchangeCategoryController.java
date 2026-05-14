@@ -8,6 +8,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.exchangemgmt.exchangecategory.vo.*;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.exchangemgmt.ExchangeCategoryDO;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.ExchangeCategoryStatusEnum;
 import cn.iocoder.yudao.module.chargepark.marketop.service.exchangemgmt.exchangecategory.ExchangeCategoryService;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
@@ -96,6 +97,10 @@ public class ExchangeCategoryController {
         reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<ExchangeCategoryDO> pageResult = exchangeCategoryService.getPage(reqVO);
         List<ExchangeCategoryRespVO> list = BeanUtils.toBean(pageResult.getList(), ExchangeCategoryRespVO.class);
+        injectUserNames(list);
+        list.forEach(item -> {
+            item.setStatus(ExchangeCategoryStatusEnum.labelOf(item.getStatus()));
+        });
         ExcelUtils.write(response, "兑换类目.xlsx", "数据", ExchangeCategoryRespVO.class, list);
     }
 
@@ -118,6 +123,13 @@ public class ExchangeCategoryController {
         List<ExchangeCategoryImportExcelVO> list = ExcelUtils.read(file, ExchangeCategoryImportExcelVO.class);
         exchangeCategoryService.importData(list);
         return CommonResult.success(true);
+    }
+
+    @GetMapping("/simple-list")
+    @Operation(summary = "获取兑换类目精简列表")
+    public CommonResult<List<ExchangeCategorySimpleRespVO>> getSimpleList() {
+        List<ExchangeCategoryDO> list = exchangeCategoryService.getSimpleList();
+        return CommonResult.success(BeanUtils.toBean(list, ExchangeCategorySimpleRespVO.class));
     }
 
     @GetMapping("/chart")

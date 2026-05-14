@@ -31,4 +31,6 @@ public interface CouponMgmtService {
 
     void importCouponMgmtList(List<CouponMgmtImportExcelVO> list);
 
+    List<CouponMgmtDO> getSimpleList();
+
 }

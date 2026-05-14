@@ -22,6 +22,7 @@ public interface ExchangeOrderMapper extends BaseMapperX<ExchangeOrderDO> {
         LambdaQueryWrapperX<ExchangeOrderDO> wrapper = new LambdaQueryWrapperX<ExchangeOrderDO>()
                 .likeIfPresent(ExchangeOrderDO::getNo, reqVO.getNo())
                 .eqIfPresent(ExchangeOrderDO::getCategoryId, reqVO.getCategoryId())
+                .eqIfPresent(ExchangeOrderDO::getGoodsId, reqVO.getGoodsId())
                 .eqIfPresent(ExchangeOrderDO::getUserId, reqVO.getUserId())
                 .eqIfPresent(ExchangeOrderDO::getPayStatus, reqVO.getPayStatus())
                 .orderByDesc(ExchangeOrderDO::getId);
