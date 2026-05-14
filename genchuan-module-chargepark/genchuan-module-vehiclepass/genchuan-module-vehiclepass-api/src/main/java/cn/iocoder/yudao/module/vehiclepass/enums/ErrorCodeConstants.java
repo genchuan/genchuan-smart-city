@@ -46,4 +46,10 @@ public interface ErrorCodeConstants {
     // 通用业务错误码
     ErrorCode TIMESTAMP_PARSE_ERROR = new ErrorCode(500, "时间戳格式错误");
     ErrorCode USER_NOT_LOGIN = new ErrorCode(401, "用户未登录");
+
+    // 开闸管理业务错误码
+    ErrorCode GATE_OPEN_STATUS_INVALID = new ErrorCode(500, "开闸记录当前状态不允许执行该操作");
+
+    // 稽查任务业务错误码
+    ErrorCode TASK_STATUS_INVALID = new ErrorCode(500, "稽查任务当前状态不允许执行该操作");
 }
