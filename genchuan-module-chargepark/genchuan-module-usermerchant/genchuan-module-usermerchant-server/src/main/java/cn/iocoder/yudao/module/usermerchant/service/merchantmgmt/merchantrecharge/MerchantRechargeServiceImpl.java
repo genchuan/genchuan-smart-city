@@ -9,6 +9,8 @@ import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.NameQueryHelp
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,7 @@ import cn.iocoder.yudao.module.usermerchant.dal.mysql.merchantmgmt.merchantrecha
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
 
 /**
  * 商户充值 Service 实现类
@@ -47,6 +50,9 @@ public class MerchantRechargeServiceImpl implements MerchantRechargeService {
     private MerchantInfoMapper merchantInfoMapper;
 
     @Override
+    @LogRecord(type = TYPE_MERCHANT_RECHARGE, subType = SUB_TYPE_PAY_MERCHANT_RECHARGE,
+            bizNo = "{{{#payReqVO.ids}}}",
+            success = SUCCESS_PAY_MERCHANT_RECHARGE)
     public Boolean payMerchantRecharge(MerchantRechargePayReqVO payReqVO) {
         if (CollectionUtils.isEmpty(payReqVO.getIds())) {
             return false;
@@ -59,10 +65,15 @@ public class MerchantRechargeServiceImpl implements MerchantRechargeService {
                 .set("status","已支付")
                 .set("pay_time", now);
         int rows = merchantRechargeMapper.update(null, updateWrapper);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("payReqVO", payReqVO);
         return rows > 0;
     }
 
     @Override
+    @LogRecord(type = TYPE_MERCHANT_RECHARGE, subType = SUB_TYPE_CREATE_MERCHANT_RECHARGE,
+            bizNo = "{{#merchantRecharge.id}}",
+            success = SUCCESS_CREATE_MERCHANT_RECHARGE)
     public Boolean createMerchantRecharge(MerchantRechargeCreateReqVO createReqVO) {
         // 插入
         MerchantRechargeDO merchantRecharge = BeanUtils.toBean(createReqVO, MerchantRechargeDO.class);
@@ -71,11 +82,16 @@ public class MerchantRechargeServiceImpl implements MerchantRechargeService {
         merchantRecharge.setCreator("admin");
         merchantRecharge.setUpdater("admin");
         int rows = merchantRechargeMapper.insert(merchantRecharge);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("recharge", merchantRecharge);
         // 返回
         return rows > 0;
     }
 
     @Override
+    @LogRecord(type = TYPE_MERCHANT_RECHARGE, subType = SUB_TYPE_UPDATE_MERCHANT_RECHARGE,
+            bizNo = "{{#updateReqVO.id}}",
+            success = SUCCESS_UPDATE_MERCHANT_RECHARGE)
     public void updateMerchantRecharge(MerchantRechargeSaveReqVO updateReqVO) {
         // 校验存在
         validateMerchantRechargeExists(updateReqVO.getId());
@@ -85,6 +101,9 @@ public class MerchantRechargeServiceImpl implements MerchantRechargeService {
     }
 
     @Override
+    @LogRecord(type = TYPE_MERCHANT_RECHARGE, subType = SUB_TYPE_DELETE_MERCHANT_RECHARGE,
+            bizNo = "{{#id}}",
+            success = SUCCESS_DELETE_MERCHANT_RECHARGE)
     public void deleteMerchantRecharge(Long id) {
         // 校验存在
         validateMerchantRechargeExists(id);
@@ -93,6 +112,9 @@ public class MerchantRechargeServiceImpl implements MerchantRechargeService {
     }
 
     @Override
+    @LogRecord(type = TYPE_MERCHANT_RECHARGE, subType = SUB_TYPE_DELETE_MERCHANT_RECHARGE_LIST,
+            bizNo = "{{{#ids}}}",
+            success = SUCCESS_DELETE_MERCHANT_RECHARGE_LIST)
         public void deleteMerchantRechargeListByIds(List<Long> ids) {
         // 删除
         merchantRechargeMapper.deleteByIds(ids);
@@ -130,6 +152,9 @@ public class MerchantRechargeServiceImpl implements MerchantRechargeService {
     }
 
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = TYPE_MERCHANT_RECHARGE, subType = SUB_TYPE_CASH_MERCHANT_RECHARGE,
+            bizNo = "{{{#payReqVO.ids}}}",
+            success = SUCCESS_CASH_MERCHANT_RECHARGE)
     public Boolean cashMerchantRecharge(MerchantRechargePayReqVO payReqVO, String code) {
         List<Long> ids = payReqVO.getIds();
         if (CollectionUtils.isEmpty(ids)) {
@@ -183,7 +208,9 @@ public class MerchantRechargeServiceImpl implements MerchantRechargeService {
         } else {
             throw new ServiceException(ILLEGAL_STATUS);
         }
-
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("payReqVO", payReqVO);
+        LogRecordContext.putVariable("code", code);
         return true;
     }
 

@@ -9,6 +9,8 @@ import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.NameQueryHelp
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import com.alibaba.nacos.client.naming.utils.CollectionUtils;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,7 @@ import cn.iocoder.yudao.module.usermerchant.dal.mysql.merchantmgmt.merchantsendc
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
 
 /**
  * 商户发券 Service 实现类
@@ -137,6 +140,9 @@ public class MerchantSendCouponServiceImpl implements MerchantSendCouponService 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = TYPE_MERCHANT_SEND_COUPON, subType = SUB_TYPE_SEND_COUPON,
+            bizNo = "{{#sendReqVO.merchantId}}",
+            success = SUCCESS_SEND_COUPON)
     public void sendCoupon(MerchantSendCouponSendReqVO sendReqVO) {
         // 1. 校验商户存在,忽略
 
@@ -165,12 +171,16 @@ public class MerchantSendCouponServiceImpl implements MerchantSendCouponService 
         } else {
             entity.setStatus("待执行");
         }
-
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("sendReqVO", sendReqVO);
         merchantSendCouponMapper.insert(entity);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = TYPE_MERCHANT_SEND_COUPON, subType = SUB_TYPE_EXECUTE_COUPON,
+            bizNo = "{{{#ids}}}",
+            success = SUCCESS_EXECUTE_COUPON)
     public void executeCoupon(List<Long> ids) {
         if (CollectionUtils.isEmpty(ids)) {
             return;
@@ -199,10 +209,15 @@ public class MerchantSendCouponServiceImpl implements MerchantSendCouponService 
                 .eq(MerchantSendCouponDO::getStatus, "待执行");
         merchantSendCouponMapper.update(updateEntity, wrapper);
         // 但根据需求，仅需记录执行状态，暂不处理具体发放。可后续扩展。
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("ids", ids);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = TYPE_MERCHANT_SEND_COUPON, subType = SUB_TYPE_CANCEL_COUPON,
+            bizNo = "{{{#ids}}}",
+            success = SUCCESS_CANCEL_COUPON)
     public void cancelCoupon(List<Long> ids) {
         if (CollectionUtils.isEmpty(ids)) {
             return;
@@ -228,6 +243,8 @@ public class MerchantSendCouponServiceImpl implements MerchantSendCouponService 
         wrapper.in(MerchantSendCouponDO::getId, validIds)
                 .eq(MerchantSendCouponDO::getStatus, "待执行");
         merchantSendCouponMapper.update(updateEntity, wrapper);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("ids", ids);
     }
 
 }
