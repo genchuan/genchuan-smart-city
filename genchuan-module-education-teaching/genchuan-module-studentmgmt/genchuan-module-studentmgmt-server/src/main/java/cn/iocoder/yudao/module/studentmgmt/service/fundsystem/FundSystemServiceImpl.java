@@ -141,7 +141,7 @@ public class FundSystemServiceImpl implements FundSystemService {
 //        fundTypeDistribution (array): 资助类型分布统计，包含类型名称、对应数量。
 //        gradeApplyTrend (array): 各年级申请趋势，包含年级名称、对应申请人数。
 
-        vo.setTotalApplyCount(fundSystemMapper.selectTotalCount(startTime, endTime, ""));
+        vo.setTotalApplyCount(fundSystemMapper.selectTotalCount(startTime, endTime, null));
         vo.setPendingAuditCount(fundSystemMapper.selectTotalCount(startTime, endTime, FundSystemStatusEnum.FUND_SYSTEM_STATUS_0.getStatus()));
         vo.setApprovedCount(fundSystemMapper.selectTotalCount(startTime, endTime, FundSystemStatusEnum.FUND_SYSTEM_STATUS_1.getStatus()));
 
@@ -175,7 +175,7 @@ public class FundSystemServiceImpl implements FundSystemService {
         LocalDateTime[] timeRange = reqVO.getTimeRange();
         LocalDateTime startTime = null;
         LocalDateTime endTime = null;
-        if (null == timeRange) {
+        if (null != timeRange) {
             startTime = timeRange[0];
             endTime = timeRange[1];
         }

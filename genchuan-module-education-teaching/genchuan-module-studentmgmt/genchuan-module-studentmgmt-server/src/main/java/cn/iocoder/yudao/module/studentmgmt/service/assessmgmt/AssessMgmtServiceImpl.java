@@ -2,10 +2,12 @@ package cn.iocoder.yudao.module.studentmgmt.service.assessmgmt;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.dict.core.DictFrameworkUtils;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.assessmgmt.AssessMgmtDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.assessmgmt.AssessMgmtMapper;
 import cn.iocoder.yudao.module.studentmgmt.enums.AssessStatusEnum;
+import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
 import com.alibaba.fastjson.JSONObject;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.service.impl.DiffParseFunction;
@@ -132,7 +134,7 @@ public class AssessMgmtServiceImpl implements AssessMgmtService {
 
         // 1. 卡片数据
         //totalCount (integer): 本期考评总记录数。
-        vo.setTotalCount(assessMgmtMapper.selectTotalAssessCount(cycle,  "", ""));
+        vo.setTotalCount(assessMgmtMapper.selectTotalAssessCount(cycle,  null, null));
         // avgScore (decimal): 本期班级平均得分。
         vo.setAvgScore(assessMgmtMapper.selectAvgScore(cycle, AssessStatusEnum.PUBLISHED.getStatus()));
         // topRankClass (string): 本期排名第一的班级。
@@ -187,13 +189,17 @@ public class AssessMgmtServiceImpl implements AssessMgmtService {
 //        assessMgmtCycleTrendRespVOS.sort(Comparator.comparing(AssessMgmtCycleTrendRespVO::getCreateTime));
         int i = 1;
         String tempName = assessMgmtCycleTrendRespVOS.get(0).getCycleName();
+        String cycleName = "";
         List<AssessMgmtCycleTrendRespVO> list = new ArrayList<>();
         for (AssessMgmtCycleTrendRespVO assessMgmtCycleTrendRespVO :assessMgmtCycleTrendRespVOS) {
             if (!tempName.equals(assessMgmtCycleTrendRespVO.getCycleName())) {
                 i = 1;
                 tempName = assessMgmtCycleTrendRespVO.getCycleName();
+                cycleName =  DictFrameworkUtils.parseDictDataLabel(StudentMgmtDictTypeEnum.ASSESS_MGMT_CYCLE.getType(), tempName);
+                // 数量
+
             }
-            assessMgmtCycleTrendRespVO.setCycleName("第" + (i) + assessMgmtCycleTrendRespVO.getCycleName());
+            assessMgmtCycleTrendRespVO.setCycleName("第" + (i) + cycleName);
             list.add(assessMgmtCycleTrendRespVO);
             i++;
         }

@@ -24,6 +24,10 @@ public class ClubMgmtRespVO {
     @ExcelProperty("社团类型：文体/学术/志愿/其他")
     private String clubType;
 
+    @Schema(description = "学生姓名", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("学生姓名")
+    private String studentName;
+
     @Schema(description = "学生 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "15619")
     @ExcelProperty("学生 ID")
     private Long studentId;
@@ -68,4 +72,4 @@ public class ClubMgmtRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}
