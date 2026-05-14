@@ -22,7 +22,7 @@ public interface PromoteMgmtMapper extends BaseMapperX<PromoteMgmtDO> {
     default PageResult<PromoteMgmtDO> selectPage(PromoteMgmtPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<PromoteMgmtDO>()
                 .likeIfPresent(PromoteMgmtDO::getTaskName, reqVO.getTaskName())
-                .eqIfPresent(PromoteMgmtDO::getSite, reqVO.getSite())
+                .likeIfPresent(PromoteMgmtDO::getSite, reqVO.getSite())
                 .eqIfPresent(PromoteMgmtDO::getPromoteNum, reqVO.getPromoteNum())
                 .eqIfPresent(PromoteMgmtDO::getIntentNum, reqVO.getIntentNum())
                 .eqIfPresent(PromoteMgmtDO::getExecuteUser, reqVO.getExecuteUser())

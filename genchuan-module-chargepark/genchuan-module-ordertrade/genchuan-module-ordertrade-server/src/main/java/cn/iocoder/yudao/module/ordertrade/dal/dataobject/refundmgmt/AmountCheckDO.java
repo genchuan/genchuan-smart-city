@@ -51,4 +51,6 @@ public class AmountCheckDO extends BaseDO {
 
     /** 备用字段2 */
     private String reserve2;
+
+
 }

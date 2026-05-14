@@ -8,6 +8,7 @@ import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.honormgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.honormgmt.HonorMgmtDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.honormgmt.HonorMgmtMapper;
+import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
 import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
 import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import com.mzt.logapi.context.LogRecordContext;
@@ -38,6 +39,9 @@ public class HonorMgmtServiceImpl implements HonorMgmtService {
     @Resource
     private DictDataApi dictDataApi;
 
+    @Resource
+    private StudentInfoMapper studentInfoMapper;
+
     @Override
     @LogRecord(type = STUDENT_HONOR_TYPE, subType = STUDENT_HONOR_CREATE_SUB_TYPE, bizNo = "{{#honorMgmt.id}}",
             success = STUDENT_HONOR_CREATE_SUCCESS)
@@ -59,6 +63,12 @@ public class HonorMgmtServiceImpl implements HonorMgmtService {
     public void updateHonorMgmt(HonorMgmtSaveReqVO updateReqVO) {
         // 校验存在
         HonorMgmtDO honorMgmtDO = validateHonorMgmtExists(updateReqVO.getId());
+        // 判断学号是否存在该学生
+        Long studentId = updateReqVO.getStudentId();
+        if ( null == (studentInfoMapper.selectById(studentId))) {
+            throw exception(500, "原学生信息不存在");
+        }
+
         // 更新
         HonorMgmtDO updateObj = BeanUtils.toBean(updateReqVO, HonorMgmtDO.class);
         honorMgmtMapper.updateById(updateObj);

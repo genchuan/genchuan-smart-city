@@ -9,6 +9,8 @@ import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.NameQueryHelper;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,7 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.ILLEGAL_STATUS;
 import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.MERCHANT_INFO_NOT_EXISTS;
+import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
 
 /**
  * 商户信息 Service 实现类
@@ -38,6 +41,9 @@ import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.MERC
 @Validated
 public class MerchantInfoServiceImpl implements MerchantInfoService {
 
+    private static final int APPROVE_INDEX = 1;
+    private static final int REJECT_INDEX = 0;
+
     @Resource
     private AdminUserApi adminUserApi;
 
@@ -45,16 +51,23 @@ public class MerchantInfoServiceImpl implements MerchantInfoService {
     private MerchantInfoMapper merchantInfoMapper;
 
     @Override
+    @LogRecord(type = TYPE_MERCHANT_INFO, subType = SUB_TYPE_CREATE_MERCHANT_INFO,
+            bizNo = "{{#merchantInfo.id}}",
+            success = SUCCESS_CREATE_MERCHANT_INFO)
     public Boolean createMerchantInfo(MerchantInfoUpdateReqVO createReqVO) {
         // 插入
         MerchantInfoDO merchantInfo = BeanUtils.toBean(createReqVO, MerchantInfoDO.class);
         int rows = merchantInfoMapper.insert(merchantInfo);
-
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("merchantInfo", merchantInfo);
         // 返回
         return rows > 0;
     }
 
     @Override
+    @LogRecord(type = TYPE_MERCHANT_INFO, subType = SUB_TYPE_UPDATE_MERCHANT_INFO,
+            bizNo = "{{#updateReqVO.id}}",
+            success = SUCCESS_UPDATE_MERCHANT_INFO)
     public void updateMerchantInfo(MerchantInfoUpdateReqVO updateReqVO) {
         // 校验存在
         validateMerchantInfoExists(updateReqVO.getId());
@@ -64,6 +77,9 @@ public class MerchantInfoServiceImpl implements MerchantInfoService {
     }
 
     @Override
+    @LogRecord(type = TYPE_MERCHANT_INFO, subType = SUB_TYPE_DELETE_MERCHANT_INFO,
+            bizNo = "{{#id}}",
+            success = SUCCESS_DELETE_MERCHANT_INFO)
     public void deleteMerchantInfo(Long id) {
         // 校验存在
         validateMerchantInfoExists(id);
@@ -72,9 +88,14 @@ public class MerchantInfoServiceImpl implements MerchantInfoService {
     }
 
     @Override
+    @LogRecord(type = TYPE_MERCHANT_INFO, subType = SUB_TYPE_DELETE_MERCHANT_INFO_LIST,
+            bizNo = "{{{#ids}}}",
+            success = SUCCESS_DELETE_MERCHANT_INFO_LIST)
         public void deleteMerchantInfoListByIds(List<Long> ids) {
         // 删除
         merchantInfoMapper.deleteByIds(ids);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("ids", ids);
         }
 
 
@@ -116,6 +137,9 @@ public class MerchantInfoServiceImpl implements MerchantInfoService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = TYPE_MERCHANT_INFO, subType = SUB_TYPE_IMPORT_MERCHANT_INFO,
+            bizNo = "{{#list.stream().map(MerchantInfoImportExcelVO::getId).collect(T(java.util.stream.Collectors).toList())}}",
+            success = SUCCESS_IMPORT_MERCHANT_INFO)
     public Boolean importInfos(List<MerchantInfoImportExcelVO> list, Boolean updateSupport) {
         if (CollectionUtils.isEmpty(list)) {
             return true;
@@ -150,6 +174,9 @@ public class MerchantInfoServiceImpl implements MerchantInfoService {
     }
 
     @Override
+    @LogRecord(type = TYPE_MERCHANT_INFO, subType = SUB_TYPE_BATCH_AUDIT_MERCHANT,
+            bizNo = "{{{#reqVO.ids}}}",
+            success = SUCCESS_BATCH_AUDIT_MERCHANT)
     public void batchUpdatePlateAuth(MerchantInfoSaveReqVO reqVO, int index) {
         List<Long> ids = reqVO.getIds();
         if (CollectionUtils.isEmpty(ids)) {
@@ -164,9 +191,9 @@ public class MerchantInfoServiceImpl implements MerchantInfoService {
         UpdateWrapper<MerchantInfoDO> updateWrapper = new UpdateWrapper<>();
         updateWrapper.in("id", ids);
 
-        if (index == 1) {
+        if (index == APPROVE_INDEX) {
             updateWrapper.set("status", "正常");
-        } else if (index == 0) {
+        } else if (index == REJECT_INDEX) {
             updateWrapper.set("status", "已驳回");
         } else {
             throw new ServiceException(ILLEGAL_STATUS);
@@ -177,6 +204,9 @@ public class MerchantInfoServiceImpl implements MerchantInfoService {
 
         // 3. 执行更新
         merchantInfoMapper.update(null, updateWrapper);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("reqVO", reqVO);
+        LogRecordContext.putVariable("index", index);
     }
 
     /**
@@ -189,6 +219,9 @@ public class MerchantInfoServiceImpl implements MerchantInfoService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = TYPE_MERCHANT_INFO, subType = SUB_TYPE_UPDATE_MERCHANT_STATUS,
+            bizNo = "{{{#ids}}}",
+            success = SUCCESS_UPDATE_MERCHANT_STATUS)
     public void updateMerchantStatus(List<Long> ids, String status) {
         if (CollectionUtils.isEmpty(ids)) {
             return;
@@ -198,6 +231,9 @@ public class MerchantInfoServiceImpl implements MerchantInfoService {
         updateWrapper.in("id", ids)
                 .set("status", status);
         merchantInfoMapper.update(null, updateWrapper);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("ids", ids);
+        LogRecordContext.putVariable("status", status);
     }
 
     @Override

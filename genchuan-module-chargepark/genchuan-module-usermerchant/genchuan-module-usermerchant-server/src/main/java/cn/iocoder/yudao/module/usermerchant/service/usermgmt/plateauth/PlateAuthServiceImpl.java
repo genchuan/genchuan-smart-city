@@ -11,6 +11,8 @@ import cn.iocoder.yudao.module.usermerchant.dal.mysql.usermgmt.userinfo.UserInfo
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.NameQueryHelper;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.util.CollectionUtils;
@@ -28,6 +30,7 @@ import cn.iocoder.yudao.module.usermerchant.dal.mysql.usermgmt.plateauth.PlateAu
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
 
 /**
  * 车牌认证 Service 实现类
@@ -87,6 +90,9 @@ public class PlateAuthServiceImpl implements PlateAuthService {
     }
 
     @Override
+    @LogRecord(type = TYPE_PLATE_AUTH, subType = SUB_TYPE_BATCH_AUDIT_PLATE_AUTH,
+            bizNo = "{{{#updateReqVO.ids}}}",
+            success = SUCCESS_BATCH_AUDIT_PLATE_AUTH)
     public void batchUpdatePlateAuth(PlateAuthSaveReqVO updateReqVO) {
         List<Long> ids = updateReqVO.getIds();
         if (CollectionUtils.isEmpty(ids)) {
@@ -128,19 +134,28 @@ public class PlateAuthServiceImpl implements PlateAuthService {
 
         // 3. 执行更新
         plateAuthMapper.update(null, updateWrapper);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("updateReqVO", updateReqVO);
     }
 
     @Override
+    @LogRecord(type = TYPE_PLATE_AUTH, subType = SUB_TYPE_CREATE_PLATE_AUTH,
+            bizNo = "{{#plateAuth.id}}",
+            success = SUCCESS_CREATE_PLATE_AUTH)
     public Long createPlateAuth(PlateAuthSaveReqVO createReqVO) {
         // 插入
         PlateAuthDO plateAuth = BeanUtils.toBean(createReqVO, PlateAuthDO.class);
         plateAuthMapper.insert(plateAuth);
-
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("plateAuth", plateAuth);
         // 返回
         return plateAuth.getId();
     }
 
     @Override
+    @LogRecord(type = TYPE_PLATE_AUTH, subType = SUB_TYPE_UPDATE_PLATE_AUTH,
+            bizNo = "{{#updateReqVO.id}}",
+            success = SUCCESS_UPDATE_PLATE_AUTH)
     public void updatePlateAuth(PlateAuthSaveReqVO updateReqVO) {
         // 校验存在
         validatePlateAuthExists(updateReqVO.getId());
@@ -150,6 +165,9 @@ public class PlateAuthServiceImpl implements PlateAuthService {
     }
 
     @Override
+    @LogRecord(type = TYPE_PLATE_AUTH, subType = SUB_TYPE_DELETE_PLATE_AUTH,
+            bizNo = "{{#id}}",
+            success = SUCCESS_DELETE_PLATE_AUTH)
     public void deletePlateAuth(Long id) {
         // 校验存在
         validatePlateAuthExists(id);
@@ -158,9 +176,14 @@ public class PlateAuthServiceImpl implements PlateAuthService {
     }
 
     @Override
+    @LogRecord(type = TYPE_PLATE_AUTH, subType = SUB_TYPE_DELETE_PLATE_AUTH_LIST,
+            bizNo = "{{{#ids}}}",
+            success = SUCCESS_DELETE_PLATE_AUTH_LIST)
         public void deletePlateAuthListByIds(List<Long> ids) {
         // 删除
         plateAuthMapper.deleteByIds(ids);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("ids", ids);
         }
 
     private void validatePlateAuthExists(Long id) {

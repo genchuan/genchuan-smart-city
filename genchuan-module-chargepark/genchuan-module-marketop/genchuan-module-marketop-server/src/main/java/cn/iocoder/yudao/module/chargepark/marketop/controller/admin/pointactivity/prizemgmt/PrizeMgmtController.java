@@ -7,6 +7,8 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.prizemgmt.vo.*;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PrizeMgmtDO;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.PrizeMgmtStatusEnum;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.PrizeMgmtTypeEnum;
 import cn.iocoder.yudao.module.chargepark.marketop.service.pointactivity.prizemgmt.PrizeMgmtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -121,6 +123,12 @@ public class PrizeMgmtController {
         reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<PrizeMgmtDO> pageResult = prizeMgmtService.getPage(reqVO);
         List<PrizeMgmtRespVO> list = BeanUtils.toBean(pageResult.getList(), PrizeMgmtRespVO.class);
+        injectUserNames(list);
+        injectActivityNames(list, pageResult.getList());
+        list.forEach(item -> {
+            item.setStatus(PrizeMgmtStatusEnum.labelOf(item.getStatus()));
+            item.setType(PrizeMgmtTypeEnum.labelOf(item.getType()));
+        });
         ExcelUtils.write(response, "奖品管理.xlsx", "数据", PrizeMgmtRespVO.class, list);
     }
 

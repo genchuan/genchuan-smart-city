@@ -24,6 +24,7 @@ public interface CardOrderMapper extends BaseMapperX<CardOrderDO> {
                 .likeIfPresent(CardOrderDO::getNo, reqVO.getNo())
                 .eqIfPresent(CardOrderDO::getPayStatus, reqVO.getPayStatus())
                 .eqIfPresent(CardOrderDO::getInvoiceStatus, reqVO.getInvoiceStatus())
+                .betweenIfPresent(CardOrderDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(CardOrderDO::getId);
         // createTime 范围
         if (reqVO.getStartTime() != null && reqVO.getEndTime() != null) {

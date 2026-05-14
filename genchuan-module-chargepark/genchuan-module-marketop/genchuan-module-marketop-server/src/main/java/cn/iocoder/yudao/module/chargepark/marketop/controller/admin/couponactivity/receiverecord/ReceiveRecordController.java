@@ -8,6 +8,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.receiverecord.vo.*;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.CouponMgmtDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.ReceiveRecordDO;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.ReceiveRecordStatusEnum;
 import cn.iocoder.yudao.module.chargepark.marketop.service.couponactivity.couponmgmt.CouponMgmtService;
 import cn.iocoder.yudao.module.chargepark.marketop.service.couponactivity.receiverecord.ReceiveRecordService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,13 +45,13 @@ public class ReceiveRecordController {
     @Operation(summary = "获得领用记录分页")
     @PreAuthorize("@ss.hasPermission('marketop:receive-record:query')")
     public CommonResult<PageResult<ReceiveRecordRespVO>> getPage(ReceiveRecordPageReqVO reqVO) {
-        // 如果startTime和endTime都为空，且date不为空，将date转为当天开始和结束时间
-        if (reqVO.getStartTime() == null && reqVO.getEndTime() == null
-                && reqVO.getDate() != null && !reqVO.getDate().isEmpty()) {
-            java.time.LocalDate localDate = java.time.LocalDate.parse(reqVO.getDate());
-            reqVO.setStartTime(localDate.atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
-            reqVO.setEndTime(localDate.plusDays(1).atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
-        }
+//        // 如果startTime和endTime都为空，且date不为空，将date转为当天开始和结束时间
+//        if (reqVO.getStartTime() == null && reqVO.getEndTime() == null
+//                && reqVO.getDate() != null && !reqVO.getDate().isEmpty()) {
+//            java.time.LocalDate localDate = java.time.LocalDate.parse(reqVO.getDate());
+//            reqVO.setStartTime(localDate.atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
+//            reqVO.setEndTime(localDate.plusDays(1).atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
+//        }
         PageResult<ReceiveRecordDO> pageResult = receiveRecordService.getPage(reqVO);
         PageResult<ReceiveRecordRespVO> bean = BeanUtils.toBean(pageResult, ReceiveRecordRespVO.class);
         injectUserNames(bean.getList());
@@ -83,6 +84,10 @@ public class ReceiveRecordController {
         reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<ReceiveRecordDO> pageResult = receiveRecordService.getPage(reqVO);
         List<ReceiveRecordRespVO> list = BeanUtils.toBean(pageResult.getList(), ReceiveRecordRespVO.class);
+        injectUserNames(list);
+        list.forEach(item -> {
+            item.setStatus(ReceiveRecordStatusEnum.labelOf(item.getStatus()));
+        });
         ExcelUtils.write(response, "领用记录.xlsx", "数据", ReceiveRecordRespVO.class, list);
     }
 

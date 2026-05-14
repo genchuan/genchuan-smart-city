@@ -101,7 +101,7 @@ public class NewPushController {
                         BeanUtils.toBean(list, NewPushRespVO.class));
     }
 
-    @PutMapping("/config")
+    @PostMapping("/config")
     @Operation(summary = "配置")
     @PreAuthorize("@ss.hasPermission('studentmgmt:new-push:config')")
     public CommonResult<Boolean> config(@Valid @RequestBody NewPushConfigReqVO reqVO) {

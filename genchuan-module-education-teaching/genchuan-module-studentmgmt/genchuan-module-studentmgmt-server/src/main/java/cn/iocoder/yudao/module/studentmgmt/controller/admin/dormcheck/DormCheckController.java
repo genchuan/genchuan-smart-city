@@ -98,8 +98,8 @@ public class DormCheckController {
     @Operation(summary = "获得宿舍考勤分页")
     @PreAuthorize("@ss.hasPermission('studentmgmt:dorm-check:query')")
     public CommonResult<PageResult<DormCheckRespVO>> getDormCheckPage(@Valid DormCheckPageReqVO pageReqVO) {
-        PageResult<DormCheckDO> pageResult = dormCheckService.getDormCheckPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, DormCheckRespVO.class));
+//        PageResult<DormCheckDO> pageResult = dormCheckService.getDormCheckPage(pageReqVO);
+        return success(dormCheckService.getDormCheckJoinPage(pageReqVO));
     }
 
     @GetMapping("/export-excel")

@@ -1,6 +1,9 @@
 package cn.iocoder.yudao.module.usermerchant.service.membercenter.memberpoint;
 
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
+import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -82,6 +85,9 @@ public class MemberPointServiceImpl implements MemberPointService {
 
     @Override
     @Transactional
+    @LogRecord(type = TYPE_MEMBER_POINT, subType = SUB_TYPE_CHECK_MEMBER_POINT,
+            bizNo = "{{#reqVO.id}}",
+            success = SUCCESS_CHECK_MEMBER_POINT)
     public void checkPointRecord(MemberPointCheckReqVO reqVO) {
         // 1. 查询积分记录
         MemberPointDO record = memberPointMapper.selectById(reqVO.getId());
@@ -98,7 +104,8 @@ public class MemberPointServiceImpl implements MemberPointService {
         record.setCheckTime(LocalDateTime.now());
         record.setCheckBy(SecurityFrameworkUtils.getLoginUserNickname()); // 芋道框架获取当前用户
         memberPointMapper.updateById(record);
-        // 4. 可选：记录操作日志
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("reqVO", reqVO);
     }
 
 }

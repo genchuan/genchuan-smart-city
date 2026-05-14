@@ -100,4 +100,10 @@ public interface ErrorCodeConstants {
     ErrorCode NEW_PUSH_NOT_EXISTS = new ErrorCode(500, "迎新推送不存在");
     // ========== 家长回复 ==========
     ErrorCode PARENT_REPLY_NOT_EXISTS = new ErrorCode(500, "家长回复不存在");
+
+    // ========== 考评统计报表 ==========
+    ErrorCode ASSESS_REPORT_NOT_EXISTS = new ErrorCode(500, "考评统计报表不存在");
+    ErrorCode WORK_REPORT_NOT_EXISTS = new ErrorCode(500, "学工统计报表不存在");
+
+
 }

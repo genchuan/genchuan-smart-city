@@ -7,6 +7,7 @@ import cn.iocoder.yudao.module.ordertrade.controller.admin.agentpay.vo.*;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.IdReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.agentpay.AgentRecordDO;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.agentpay.AgentRecordMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,8 +60,11 @@ public class AgentRecordServiceImpl implements AgentRecordService {
     }
 
     @Override
-    public PageResult<AgentRecordDO> getAgentRecordPage(AgentRecordPageReqVO pageReqVO) {
-        return agentRecordMapper.selectPage(pageReqVO);
+    public PageResult<AgentRecordRespVO> getAgentRecordPage(AgentRecordPageReqVO pageReqVO) {
+        Page<AgentRecordRespVO> mpPage = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        var result = agentRecordMapper.selectPageWithMerchant(mpPage, pageReqVO);
+        return new PageResult<>(result.getRecords(), result.getTotal());
+
     }
 
     @Override

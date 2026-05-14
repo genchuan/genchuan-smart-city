@@ -68,8 +68,10 @@ public class AgentCodeController {
     @GetMapping("/page")
     @Operation(summary = "获得代付码分页列表")
     public CommonResult<PageResult<AgentCodeRespVO>> getAgentCodePage(@Valid AgentCodePageReqVO pageReqVO) {
-        PageResult<AgentCodeDO> pageResult = agentCodeService.getAgentCodePage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, AgentCodeRespVO.class));
+       /* PageResult<AgentCodeDO> pageResult = agentCodeService.getAgentCodePage(pageReqVO);
+        return success(BeanUtils.toBean(pageResult, AgentCodeRespVO.class));*/
+
+        return success(agentCodeService.getAgentCodePage(pageReqVO));
     }
 
     @GetMapping("/export")
@@ -78,9 +80,10 @@ public class AgentCodeController {
     public void exportAgentCodeExcel(@Valid AgentCodePageReqVO pageReqVO,
                                      HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<AgentCodeDO> list = agentCodeService.getAgentCodePage(pageReqVO).getList();
+        List<AgentCodeRespVO> list = agentCodeService.getAgentCodePage(pageReqVO).getList();
         ExcelUtils.write(response, "代付码.xls", "数据", AgentCodeRespVO.class,
                 BeanUtils.toBean(list, AgentCodeRespVO.class));
+
     }
 
     @PostMapping("/generate")

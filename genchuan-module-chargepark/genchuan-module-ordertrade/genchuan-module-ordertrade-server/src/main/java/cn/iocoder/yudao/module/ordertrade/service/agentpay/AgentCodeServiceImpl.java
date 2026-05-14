@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.agentpay.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.agentpay.AgentCodeDO;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.agentpay.AgentCodeMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,8 +55,10 @@ public class AgentCodeServiceImpl implements AgentCodeService {
     }
 
     @Override
-    public PageResult<AgentCodeDO> getAgentCodePage(AgentCodePageReqVO pageReqVO) {
-        return agentCodeMapper.selectPage(pageReqVO);
+    public PageResult<AgentCodeRespVO> getAgentCodePage(AgentCodePageReqVO pageReqVO) {
+        Page<AgentCodeRespVO> mpPage = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        var result = agentCodeMapper.selectPageWithMerchant(mpPage, pageReqVO);
+        return new PageResult<>(result.getRecords(), result.getTotal());
     }
 
     @Override

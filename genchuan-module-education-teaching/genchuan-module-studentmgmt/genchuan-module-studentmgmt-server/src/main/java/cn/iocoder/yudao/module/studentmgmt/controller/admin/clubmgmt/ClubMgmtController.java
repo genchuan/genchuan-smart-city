@@ -84,8 +84,8 @@ public class ClubMgmtController {
     @Operation(summary = "获得社团管理分页")
     @PreAuthorize("@ss.hasPermission('studentmgmt:club-mgmt:query')")
     public CommonResult<PageResult<ClubMgmtRespVO>> getClubMgmtPage(@Valid ClubMgmtPageReqVO pageReqVO) {
-        PageResult<ClubMgmtDO> pageResult = clubMgmtService.getClubMgmtPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, ClubMgmtRespVO.class));
+//        PageResult<ClubMgmtDO> pageResult = clubMgmtService.getClubMgmtPage(pageReqVO);
+        return success(clubMgmtService.getClubMgmtJoinPage(pageReqVO));
     }
 
     @GetMapping("/export-excel")
@@ -109,7 +109,7 @@ public class ClubMgmtController {
         return success(isSuccess);
     }
     @PutMapping("/archive")
-    @Operation(summary = "审核社团")
+    @Operation(summary = "建档")
     @PreAuthorize("@ss.hasPermission('studentmgmt:club-mgmt:archive')")
     public CommonResult<Boolean> archive(@Valid @RequestBody ClubMgmtArchiveReqVO reqVO) {
         boolean isSuccess = clubMgmtService.archive(reqVO);

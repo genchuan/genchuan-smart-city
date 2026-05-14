@@ -827,7 +827,8 @@ INSERT INTO system_dict_data (sort, label, value, dict_type, status, color_type,
 VALUES
     (1, '无', 'none', 'duty_mgmt_car_status', 0, 'info', '', '未申请出车', 'admin', NOW(), 'admin', NOW(), 0),
     (2, '待审批', 'pending', 'duty_mgmt_car_status', 0, 'warning', '', '出车申请待审批', 'admin', NOW(), 'admin', NOW(), 0),
-    (3, '已通过', 'approved', 'duty_mgmt_car_status', 0, 'success', '', '出车申请已通过', 'admin', NOW(), 'admin', NOW(), 0);
+    (3, '已通过', 'approved', 'duty_mgmt_car_status', 0, 'success', '', '出车申请已通过', 'admin', NOW(), 'admin', NOW(), 0),
+    (4, '已驳回', 'rejected', 'duty_mgmt_car_status', 0, 'warning', '', '出车申请已驳回', 'admin', NOW(), 'admin', NOW(), 0);
 
 -- ----------------------------
 -- 德育资源状态 - 字典类型

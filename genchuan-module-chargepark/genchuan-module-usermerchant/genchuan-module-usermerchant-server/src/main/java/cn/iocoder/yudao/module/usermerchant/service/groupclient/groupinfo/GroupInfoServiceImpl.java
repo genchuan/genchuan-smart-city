@@ -8,6 +8,8 @@ import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ import cn.iocoder.yudao.module.usermerchant.dal.mysql.groupclient.groupinfo.Grou
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
 
 /**
  * 集团信息 Service 实现类
@@ -42,16 +45,23 @@ public class GroupInfoServiceImpl implements GroupInfoService {
     private GroupInfoMapper groupInfoMapper;
 
     @Override
+    @LogRecord(type = TYPE_GROUP_INFO, subType = SUB_TYPE_CREATE_GROUP_INFO,
+            bizNo = "{{#groupInfo.id}}",
+            success = SUCCESS_CREATE_GROUP_INFO)
     public Boolean createGroupInfo(GroupInfoCreateReqVO createReqVO) {
         // 插入
         GroupInfoDO groupInfo = BeanUtils.toBean(createReqVO, GroupInfoDO.class);
         int rows = groupInfoMapper.insert(groupInfo);
-
+        //记录操作日志上下文
+        LogRecordContext.putVariable("groupInfo", groupInfo);
         // 返回
         return rows > 0;
     }
 
     @Override
+    @LogRecord(type = TYPE_GROUP_INFO, subType = SUB_TYPE_UPDATE_GROUP_INFO,
+            bizNo = "{{#updateReqVO.id}}",
+            success = SUCCESS_UPDATE_GROUP_INFO)
     public void updateGroupInfo(GroupInfoUpdateReqVO updateReqVO) {
         // 校验存在
         validateGroupInfoExists(updateReqVO.getId());
@@ -105,6 +115,9 @@ public class GroupInfoServiceImpl implements GroupInfoService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = TYPE_GROUP_INFO, subType = SUB_TYPE_IMPORT_GROUP_INFO,
+            bizNo = "{{#list.stream().map(GroupInfoImportExcelVO::getId).collect(T(java.util.stream.Collectors).toList())}}",
+            success = SUCCESS_IMPORT_GROUP_INFO)
     public Boolean importGroups(List<GroupInfoImportExcelVO> list, Boolean updateSupport) {
         if (CollectionUtils.isEmpty(list)) {
             return true;
@@ -135,11 +148,17 @@ public class GroupInfoServiceImpl implements GroupInfoService {
                 groupInfoMapper.insert(insertDO);
             }
         }
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("list", list);
+        LogRecordContext.putVariable("updateSupport", updateSupport);
         return true;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = TYPE_GROUP_INFO, subType = SUB_TYPE_AUDIT_GROUP_INFO,
+            bizNo = "{{{#reqVO.ids}}}",
+            success = SUCCESS_AUDIT_GROUP_INFO)
     public void batchUpdateGroupInfo(GroupInfoAuditReqVO reqVO) {
         List<Long> ids = reqVO.getIds();
         if (CollectionUtils.isEmpty(ids)) {
@@ -164,10 +183,15 @@ public class GroupInfoServiceImpl implements GroupInfoService {
                 .set("audit_time", LocalDateTime.now())
                 .set("auditor_id", getCurrentUserId());
         groupInfoMapper.update(null, updateWrapper);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("reqVO", reqVO);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = TYPE_GROUP_INFO, subType = SUB_TYPE_UPDATE_GROUP_STATUS,
+            bizNo = "{{{#ids}}}",
+            success = SUCCESS_UPDATE_GROUP_STATUS)
     public void updateGroupStatus(List<Long> ids, String status) {
         if (CollectionUtils.isEmpty(ids)) {
             return;
@@ -177,6 +201,9 @@ public class GroupInfoServiceImpl implements GroupInfoService {
         updateWrapper.in("id", ids)
                 .set("status", status);
         groupInfoMapper.update(null, updateWrapper);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("ids", ids);
+        LogRecordContext.putVariable("status", status);
     }
 
     @Override

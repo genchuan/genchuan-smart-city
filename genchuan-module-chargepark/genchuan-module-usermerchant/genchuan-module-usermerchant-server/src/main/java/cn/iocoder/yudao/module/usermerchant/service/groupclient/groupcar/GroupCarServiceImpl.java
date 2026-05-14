@@ -13,6 +13,8 @@ import cn.iocoder.yudao.module.usermerchant.dal.mysql.groupclient.groupinfo.Grou
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.NameQueryHelper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +34,7 @@ import cn.iocoder.yudao.module.usermerchant.dal.mysql.groupclient.groupcar.Group
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
 
 /**
  * 集团车辆 Service 实现类
@@ -49,16 +52,23 @@ public class GroupCarServiceImpl implements GroupCarService {
     private GroupCarMapper groupCarMapper;
 
     @Override
+    @LogRecord(type = TYPE_GROUP_CAR, subType = SUB_TYPE_CREATE_GROUP_CAR,
+            bizNo = "{{#groupCar.id}}",
+            success = SUCCESS_CREATE_GROUP_CAR)
     public Boolean createGroupCar(GroupCarSaveReqVO createReqVO) {
         // 插入
         GroupCarDO groupCar = BeanUtils.toBean(createReqVO, GroupCarDO.class);
         int rows = groupCarMapper.insert(groupCar);
-
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("groupCar", groupCar);
         // 返回
         return rows > 0;
     }
 
     @Override
+    @LogRecord(type = TYPE_GROUP_CAR, subType = SUB_TYPE_UPDATE_GROUP_CAR,
+            bizNo = "{{#updateReqVO.id}}",
+            success = SUCCESS_UPDATE_GROUP_CAR)
     public Boolean updateGroupCar(GroupCarUpdateReqVO updateReqVO) {
         // 校验存在
         validateGroupCarExists(updateReqVO.getId());
@@ -150,6 +160,9 @@ public class GroupCarServiceImpl implements GroupCarService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = TYPE_GROUP_CAR, subType = SUB_TYPE_IMPORT_GROUP_CAR,
+            bizNo = "{{#list.stream().map(GroupCarImportExcelVO::getId).collect(T(java.util.stream.Collectors).toList())}}",
+            success = SUCCESS_IMPORT_GROUP_CAR)
     public Boolean importGroups(List<GroupCarImportExcelVO> list, Boolean updateSupport) {
         if (CollectionUtils.isEmpty(list)) {
             return true;
@@ -186,6 +199,9 @@ public class GroupCarServiceImpl implements GroupCarService {
                 groupCarMapper.insert(insertDO);
             }
         }
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("list", list);
+        LogRecordContext.putVariable("updateSupport", updateSupport);
         return true;
     }
 
@@ -214,6 +230,9 @@ public class GroupCarServiceImpl implements GroupCarService {
     }
 
     @Override
+    @LogRecord(type = TYPE_GROUP_CAR, subType = SUB_TYPE_AUDIT_GROUP_CAR,
+            bizNo = "{{{#reqVO.ids}}}",
+            success = SUCCESS_AUDIT_GROUP_CAR)
     public void auditGroupCar(GroupCarAuditReqVO reqVO) {
         if (CollectionUtils.isEmpty(reqVO.getIds())) {
             return;
@@ -238,6 +257,8 @@ public class GroupCarServiceImpl implements GroupCarService {
             }
         }
         groupCarMapper.update(null, updateCarWrapper);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("reqVO", reqVO);
     }
 
     private Long getCurrentUserId() {

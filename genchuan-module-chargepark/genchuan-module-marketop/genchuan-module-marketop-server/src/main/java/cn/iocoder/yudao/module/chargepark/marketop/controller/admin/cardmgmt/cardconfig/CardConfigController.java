@@ -84,6 +84,13 @@ public class CardConfigController {
         return CommonResult.success(true);
     }
 
+    @GetMapping("/simple-list")
+    @Operation(summary = "获取卡种配置精简列表")
+    public CommonResult<List<CardConfigSimpleRespVO>> getSimpleList() {
+        List<CardConfigDO> list = cardConfigService.getSimpleList();
+        return CommonResult.success(BeanUtils.toBean(list, CardConfigSimpleRespVO.class));
+    }
+
     @GetMapping("/chart")
     @Operation(summary = "卡种配置图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:card-config:query')")

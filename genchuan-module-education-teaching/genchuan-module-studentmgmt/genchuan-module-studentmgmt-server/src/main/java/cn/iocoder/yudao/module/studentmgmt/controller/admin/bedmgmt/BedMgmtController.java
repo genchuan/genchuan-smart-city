@@ -80,8 +80,8 @@ public class BedMgmtController {
     @Operation(summary = "获得床位管理分页")
     @PreAuthorize("@ss.hasPermission('studentmgmt:bed-mgmt:query')")
     public CommonResult<PageResult<BedMgmtRespVO>> getBedMgmtPage(@Valid BedMgmtPageReqVO pageReqVO) {
-        PageResult<BedMgmtDO> pageResult = bedMgmtService.getBedMgmtPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, BedMgmtRespVO.class));
+//        PageResult<BedMgmtDO> pageResult = bedMgmtService.getBedMgmtPage(pageReqVO);
+        return success(bedMgmtService.getBedMgmtJoinPage(pageReqVO));
     }
 
     @GetMapping("/export-excel")

@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantsendcoupon.vo;
 
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.FlexibleTimestampDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -22,7 +24,8 @@ public class MerchantSendCouponSendReqVO {
     @NotNull(message = "发放数量不能为空")
     private Integer sendCount;
 
-    @Schema(description = "执行时间", example = "2025-12-31T23:59:59")
+    @Schema(description = "执行时间", example = "2025-12-31 23:59:59")
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
     private LocalDateTime execTime;
 
     @Schema(description = "备注", example = "新用户营销发券")
