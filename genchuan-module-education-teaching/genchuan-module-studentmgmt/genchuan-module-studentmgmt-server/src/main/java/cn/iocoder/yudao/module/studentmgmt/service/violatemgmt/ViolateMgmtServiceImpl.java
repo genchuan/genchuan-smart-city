@@ -199,9 +199,9 @@ public class ViolateMgmtServiceImpl implements ViolateMgmtService {
         LocalDateTime endTime = reqVO.getEndTime();
 
         // 1. 卡片数据
-        vo.setTotalCount(violateMgmtMapper.selectTotalCount(startTime, endTime, "", ""));
-        vo.setPendingCount(violateMgmtMapper.selectTotalCount(startTime, endTime, ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_PENDING.getStatus(), ""));
-        vo.setWarnCount(violateMgmtMapper.selectTotalCount(startTime, endTime, ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_WARN.getStatus(), ""));
+        vo.setTotalCount(violateMgmtMapper.selectTotalCount(startTime, endTime, null, null));
+        vo.setPendingCount(violateMgmtMapper.selectTotalCount(startTime, endTime, ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_PENDING.getStatus(), null));
+        vo.setWarnCount(violateMgmtMapper.selectTotalCount(startTime, endTime, ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_WARN.getStatus(), null));
         Long highRiskStudentCount = violateMgmtMapper.selectHighRiskStudentCount(startTime, endTime);
         if (highRiskStudentCount != null) {
             vo.setHighRiskStudentCount(highRiskStudentCount);
