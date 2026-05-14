@@ -142,7 +142,7 @@ public class SpaceMonitorServiceImpl implements SpaceMonitorService {
         // 2. 构建更新对象
         SpaceMonitorDO updateObj = new SpaceMonitorDO();
         updateObj.setId(alarmReqVO.getId());
-        updateObj.setAlarmStatus("ALARM"); // 设置为告警状态
+        updateObj.setAlarmStatus("1"); // 设置为告警状态
         updateObj.setAlarmRemark(alarmReqVO.getAlarmRemark());
         updateObj.setAlarmTime(LocalDateTime.now()); // 设置告警时间为当前时间
 

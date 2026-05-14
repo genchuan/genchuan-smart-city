@@ -1,0 +1,33 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>genchuan-module-enterprisesvc</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>genchuan-module-enterprisesvc-server</module>
+    </modules>
+    <parent>
+        <groupId>cn.iocoder.cloud</groupId>
+        <artifactId>genchuan-module-industrialpark</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <name>genchuan-module-enterprisesvc</name>
+    <url>http://maven.apache.org</url>
+
+    <description>
+        智慧园区 - 企业服务模块。
+    </description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
