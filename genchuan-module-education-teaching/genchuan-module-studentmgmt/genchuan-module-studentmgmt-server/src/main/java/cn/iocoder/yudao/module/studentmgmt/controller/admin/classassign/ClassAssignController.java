@@ -102,7 +102,7 @@ public class ClassAssignController {
                         BeanUtils.toBean(list, ClassAssignRespVO.class));
     }
 
-    @PutMapping("/config")
+    @PostMapping("/config")
     @Operation(summary = "配置")
     @PreAuthorize("@ss.hasPermission('studentmgmt:class-assign:config')")
     public CommonResult<Boolean> config(@Valid @RequestBody ClassAssignConfigReqVO reqVO) {
