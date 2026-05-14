@@ -1,19 +1,5 @@
 package cn.iocoder.yudao.module.usermerchant.service.userreport.cyclereport;
 
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
-import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.creditmgmt.usercredit.vo.UserCreditChartRespVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.groupclient.groupinfo.vo.GroupInfoChartRespVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberuser.vo.MemberUserChartRespVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantinfo.vo.MerchantInfoChartRespVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantrecharge.vo.MerchantRechargeChartRespVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantsendcoupon.vo.MerchantSendCouponChartRespVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.plateauth.vo.PlateAuthChartRespVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.usercar.vo.UserCarChartRespVO;
-import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.vo.UserInfoChartRespVO;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.userreport.cyclereport.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.creditmgmt.usercredit.UserCreditDO;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.groupclient.groupinfo.GroupInfoDO;
@@ -39,7 +25,9 @@ import cn.iocoder.yudao.module.usermerchant.dal.mysql.usermgmt.userinfo.UserInfo
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.userreport.cyclereport.CycleReportMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import lombok.ToString;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
+import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -48,18 +36,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
 
 /**
@@ -106,6 +88,9 @@ public class CycleReportServiceImpl implements CycleReportService {
     private UserCreditMapper userCreditMapper;
 
     @Override
+    @LogRecord(type = TYPE_CYCLE_REPORT, subType = SUB_TYPE_CREATE_CYCLE_REPORT,
+            bizNo = "{{#report.id}}",
+            success = SUCCESS_CREATE_CYCLE_REPORT)
     public CycleReportCreateRespVO createCycleReport(CycleReportCreateReqVO createReqVO) {
         // 转换为 VO
         CycleReportDO report = new CycleReportDO();
@@ -149,7 +134,8 @@ public class CycleReportServiceImpl implements CycleReportService {
         CycleReportCreateRespVO createRespVO = new CycleReportCreateRespVO();
         createRespVO.setId(report.getId());
         createRespVO.setSuccess(Boolean.TRUE);
-
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("report", report);
         // 返回
         return createRespVO;
     }

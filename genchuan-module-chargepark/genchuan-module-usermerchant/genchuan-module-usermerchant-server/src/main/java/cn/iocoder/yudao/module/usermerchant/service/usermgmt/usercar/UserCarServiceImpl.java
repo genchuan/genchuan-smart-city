@@ -14,6 +14,8 @@ import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.NameQueryHelp
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -34,6 +36,7 @@ import cn.iocoder.yudao.module.usermerchant.dal.mysql.usermgmt.usercar.UserCarMa
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
 
 /**
  * 用户车辆 Service 实现类
@@ -61,16 +64,23 @@ public class UserCarServiceImpl implements UserCarService {
     private UserInfoMapper userInfoMapper;
 
     @Override
+    @LogRecord(type = TYPE_USER_CAR, subType = SUB_TYPE_CREATE_USER_CAR,
+            bizNo = "{{#userCar.id}}",
+            success = SUCCESS_CREATE_USER_CAR)
     public Boolean createUserCar(UserCarCreateReqVO createReqVO) {
         // 插入
         UserCarDO userCar = BeanUtils.toBean(createReqVO, UserCarDO.class);
         int rows = userCarMapper.insert(userCar);
-
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("userCar", userCar);
         // 返回
         return rows > 0;
     }
 
     @Override
+    @LogRecord(type = TYPE_USER_CAR, subType = SUB_TYPE_UPDATE_USER_CAR,
+            bizNo = "{{#updateReqVO.id}}",
+            success = SUCCESS_UPDATE_USER_CAR)
     public void updateUserCar(UserCarUpdateReqVO updateReqVO) {
         // 校验存在
         validateUserCarExists(updateReqVO.getId());
@@ -160,6 +170,9 @@ public class UserCarServiceImpl implements UserCarService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = TYPE_USER_CAR, subType = SUB_TYPE_IMPORT_USER_CAR,
+            bizNo = "{{#list.stream().map(vo -> vo.getId()).collect(T(java.util.stream.Collectors).toList())}}",
+            success = SUCCESS_IMPORT_USER_CAR)
     public Boolean importUserCar(List<UserCarImportExcelVO> list, Boolean updateSupport) {
         if (CollectionUtils.isEmpty(list)) {
             return true;
@@ -211,11 +224,16 @@ public class UserCarServiceImpl implements UserCarService {
             updateDO.setCreateTime(null);
             userCarMapper.updateById(updateDO);
         }
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("list", list);
+        LogRecordContext.putVariable("updateSupport", updateSupport);
         return true;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = TYPE_USER_CAR, subType = SUB_TYPE_AUDIT_USER_CAR_BIND,
+            bizNo = "{{#ids}}", success = "用户车辆审核操作，ID：{{#ids}}，操作类型：{{#status}}，备注：{{#remark}}")
     public void auditUserCar(List<Long> ids, String remark, String status) {
         if (CollectionUtils.isEmpty(ids)) {
             return;

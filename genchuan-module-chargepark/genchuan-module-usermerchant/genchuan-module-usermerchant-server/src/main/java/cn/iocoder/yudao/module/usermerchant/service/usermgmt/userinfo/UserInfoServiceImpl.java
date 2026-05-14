@@ -4,6 +4,9 @@ import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.service.impl.DiffParseFunction;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -23,6 +26,7 @@ import cn.iocoder.yudao.module.usermerchant.dal.mysql.usermgmt.userinfo.UserInfo
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
 
 /**
  * 用户信息 Service 实现类
@@ -37,22 +41,32 @@ public class UserInfoServiceImpl implements UserInfoService {
     private UserInfoMapper userInfoMapper;
 
     @Override
+    @LogRecord(type = TYPE_USER_INFO, subType = SUB_TYPE_CREATE_USER_INFO, bizNo = "{{#userInfo.id}}", success = SUCCESS_CREATE_USER_INFO)
     public Boolean createUserInfo(@Valid UserInfoCreateReqVO createReqVO) {
         // 插入
         UserInfoDO userInfo = BeanUtils.toBean(createReqVO, UserInfoDO.class);
         userInfo.setUserNo(generateUserNo());
         int rows = userInfoMapper.insert(userInfo);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("userInfo", userInfo);
         // 返回是否插入成功
         return rows > 0;
     }
 
     @Override
+    @LogRecord(type = TYPE_USER_INFO, subType = SUB_TYPE_UPDATE_USER_INFO,
+            bizNo = "{{#updateReqVO.id}}",
+            success = SUCCESS_UPDATE_USER_INFO)
     public void updateUserInfo(UserInfoUpdateReqVO updateReqVO) {
         // 校验存在
         validateUserInfoExists(updateReqVO.getId());
+        UserInfoDO oldUser = userInfoMapper.selectById(updateReqVO.getId());
         // 更新
         UserInfoDO updateObj = BeanUtils.toBean(updateReqVO, UserInfoDO.class);
         userInfoMapper.updateById(updateObj);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("oldUserInfo", oldUser);
+        LogRecordContext.putVariable("newUserInfo", updateObj);
     }
 
     private void validateUserInfoExists(Long id) {
@@ -119,6 +133,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = TYPE_USER_INFO, subType = SUB_TYPE_IMPORT_USERS,
+            bizNo = "{{{#list.stream().map(UserInfoImportExcelVO::getId).collect(Collectors.toList())}}}",
+            success = SUCCESS_IMPORT_USERS)
     public Boolean importUsers(List<UserInfoImportExcelVO> list, Boolean updateSupport) {
         if (CollectionUtils.isEmpty(list)) {
             return true;
@@ -152,11 +169,17 @@ public class UserInfoServiceImpl implements UserInfoService {
                 userInfoMapper.insert(insertDO);
             }
         }
+        // 记录上下文
+        LogRecordContext.putVariable("list", list);
+        LogRecordContext.putVariable("updateSupport", updateSupport);
         return true;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = TYPE_USER_INFO, subType = SUB_TYPE_UPDATE_USER_STATUS,
+            bizNo = "{{{#ids}}}",  // 多个ID拼接
+            success = SUCCESS_UPDATE_USER_STATUS)
     public void updateUserStatus(List<Long> ids, String status) {
         if (CollectionUtils.isEmpty(ids)) {
             return;
@@ -166,6 +189,9 @@ public class UserInfoServiceImpl implements UserInfoService {
         updateWrapper.in("id", ids)
                 .set("status", status);
         userInfoMapper.update(null, updateWrapper);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("ids", ids);
+        LogRecordContext.putVariable("status", status);
     }
 
     @Override

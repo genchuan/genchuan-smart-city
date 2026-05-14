@@ -11,6 +11,9 @@ import cn.iocoder.yudao.module.usermerchant.dal.mysql.creditmgmt.usercredit.User
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.NameQueryHelper;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import cn.iocoder.yudao.module.usermerchant.service.creditmgmt.usercredit.UserCreditService;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
+import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
 import com.alibaba.nacos.client.naming.utils.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import jakarta.annotation.Resource;
@@ -125,6 +128,9 @@ public class UserCreditServiceImpl implements UserCreditService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = TYPE_USER_CREDIT, subType = SUB_TYPE_REMIND_USER_CREDIT,
+            bizNo = "{{{#ids}}}",
+            success = SUCCESS_REMIND_USER_CREDIT)
     public void remindUserCredit(List<Long> ids) {
         if (CollectionUtils.isEmpty(ids)) {
             return;
@@ -132,6 +138,8 @@ public class UserCreditServiceImpl implements UserCreditService {
         // 业务说明：仅做提醒操作，例如发送站内信、短信等。目前需求未明确具体内容，直接返回成功。
         // TODO 根据实际业务补充提醒逻辑（如调用消息服务、记录提醒日志等）
         log.info("用户信用提醒，信用ID列表：{}", ids);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("ids", ids);
     }
 
     @Override
