@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +40,8 @@ public class CompareMgmtServiceImpl implements CompareMgmtService {
     public Long createCompareMgmt(CompareMgmtSaveReqVO createReqVO) {
         // 插入
         CompareMgmtDO compareMgmt = BeanUtils.toBean(createReqVO, CompareMgmtDO.class);
+        compareMgmt.setTotalScore(BigDecimal.ZERO);
+        compareMgmt.setStatus(DormCompareStatusEnum.DORM_COMPARE_STATUS_SCORING.getStatus());
         compareMgmtMapper.insert(compareMgmt);
 
         // 记录操作日志上下文
