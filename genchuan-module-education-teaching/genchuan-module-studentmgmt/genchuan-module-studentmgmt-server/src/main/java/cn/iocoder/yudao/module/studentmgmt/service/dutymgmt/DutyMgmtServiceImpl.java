@@ -228,7 +228,7 @@ public class DutyMgmtServiceImpl implements DutyMgmtService {
             throw exception("当前不是待审批状态，不可审批");
         }
 
-        dutyMgmt.setTransferStatus(DutyTransferStatusEnum.TRANSFER_STATUS_PENDING_APPROVED.getStatus());
+        dutyMgmt.setTransferStatus(reqVo.getAuditResult());
         dutyMgmt.setStatus(DutyStatusEnum.DUTY_STATUS_PENDING_CHECKIN.getStatus());
         dutyMgmt.setRemark(reqVo.getRemark());
 
