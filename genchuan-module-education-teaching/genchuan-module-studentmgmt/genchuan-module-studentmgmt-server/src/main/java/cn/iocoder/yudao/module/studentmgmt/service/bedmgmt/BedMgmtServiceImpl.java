@@ -139,6 +139,11 @@ public class BedMgmtServiceImpl implements BedMgmtService {
         LocalDateTime adjustTime = reqVO.getAdjustTime();
 
         BedMgmtDO bedMgmt = bedMgmtMapper.selectById(oldBedId);
+        // 将旧床位设置为未分配
+        bedMgmt.setStudentId(null);
+        bedMgmt.setAdjustTime(adjustTime);
+        bedMgmt.setStatus(BedStatusEnum.BED_STATUS_UNALLOCATED.getStatus());
+        bedMgmtMapper.updateById(bedMgmt);
         // 判断原床位是否为该学生
 //        if (!studentId.equals(bedMgmt.getStudentId())) {
 //            throw exception(500, "原床位不是该学生的");
@@ -161,9 +166,9 @@ public class BedMgmtServiceImpl implements BedMgmtService {
         if (adjustTime == null) {
             adjustTime = LocalDateTime.now();
         }
-        bedMgmt.setStudentId(studentId);
+        newBedMgmt.setStudentId(studentId);
         newBedMgmt.setAdjustTime(adjustTime);
-        bedMgmt.setStatus(BedStatusEnum.BED_STATUS_ALLOCATED.getStatus());
+        newBedMgmt.setStatus(BedStatusEnum.BED_STATUS_ALLOCATED.getStatus());
         int update = bedMgmtMapper.updateById(newBedMgmt);
         if (update > 0) {
             // 记录操作日志上下文
