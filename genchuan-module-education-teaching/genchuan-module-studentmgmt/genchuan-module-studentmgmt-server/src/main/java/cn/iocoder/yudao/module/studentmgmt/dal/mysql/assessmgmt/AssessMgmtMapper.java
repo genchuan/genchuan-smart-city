@@ -1,17 +1,19 @@
 package cn.iocoder.yudao.module.studentmgmt.dal.mysql.assessmgmt;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.AssessMgmtCycleTrendRespVO;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.AssessMgmtDimensionScoreRespVO;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.AssessMgmtPageReqVO;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.assessmgmt.AssessMgmtDO;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.annotations.Mapper;
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.*;
 import org.apache.ibatis.annotations.Param;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 考评管理 Mapper
@@ -36,10 +38,6 @@ public interface AssessMgmtMapper extends BaseMapperX<AssessMgmtDO> {
                 .eqIfPresent(AssessMgmtDO::getReserve2, reqVO.getReserve2())
                 .betweenIfPresent(AssessMgmtDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(AssessMgmtDO::getId));
-    }
-     default PageResult<AssessReportRespVO> selectReportPage(AssessReportPageReqVO reqVO){
-        return null;
-
     }
 
     Integer selectTotalAssessCount(@Param("cycle") String cycle,
