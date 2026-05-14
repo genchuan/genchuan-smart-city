@@ -93,25 +93,13 @@
         ORDER BY hour
     </select>
 
-    <!-- 查询今日离场量和离场峰值 -->
-    <select id="selectLeaveStats" resultType="map">
-        SELECT
-            SUM(CASE WHEN DATE(l.leave_time) = CURDATE() THEN 1 ELSE 0 END) AS todayLeaveCount,
-            (SELECT COUNT(*) FROM leave_record l2 WHERE l2.deleted = 0
-                AND DATE(l2.leave_time) = CURDATE()
-                <if test="startTime != null and startTime != ''">
-                    AND l2.leave_time >= FROM_UNIXTIME(#{startTime})
-                </if>
-                <if test="endTime != null and endTime != ''">
-                    AND l2.leave_time &lt;= FROM_UNIXTIME(#{endTime})
-                </if>
-                <if test="stationId != null">
-                    AND l2.station_id = #{stationId}
-                </if>
-                GROUP BY DATE_FORMAT(l2.leave_time, '%H:00')
-                ORDER BY COUNT(*) DESC LIMIT 1) AS leavePeak
+    <!-- 查询今日离场量 -->
+    <select id="selectTodayLeaveCount" resultType="long">
+        SELECT COUNT(*)
         FROM leave_record l
         WHERE l.deleted = 0
+        AND l.leave_time >= CURDATE()
+        AND l.leave_time &lt; CURDATE() + INTERVAL 1 DAY
         <if test="startTime != null and startTime != ''">
             AND l.leave_time >= FROM_UNIXTIME(#{startTime})
         </if>
@@ -121,6 +109,28 @@
         <if test="stationId != null">
             AND l.station_id = #{stationId}
         </if>
+    </select>
+
+    <!-- 查询今日离场峰值（某小时最大离场量） -->
+    <select id="selectTodayLeavePeak" resultType="long">
+        SELECT COALESCE(MAX(cnt), 0)
+        FROM (
+            SELECT COUNT(*) AS cnt
+            FROM leave_record l
+            WHERE l.deleted = 0
+            AND l.leave_time >= CURDATE()
+            AND l.leave_time &lt; CURDATE() + INTERVAL 1 DAY
+            <if test="startTime != null and startTime != ''">
+                AND l.leave_time >= FROM_UNIXTIME(#{startTime})
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND l.leave_time &lt;= FROM_UNIXTIME(#{endTime})
+            </if>
+            <if test="stationId != null">
+                AND l.station_id = #{stationId}
+            </if>
+            GROUP BY HOUR(l.leave_time)
+        ) t
     </select>
 
 </mapper>

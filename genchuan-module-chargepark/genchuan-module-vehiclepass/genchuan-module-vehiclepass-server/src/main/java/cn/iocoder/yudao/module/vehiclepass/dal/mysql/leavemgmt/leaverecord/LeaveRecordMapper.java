@@ -50,8 +50,13 @@ public interface LeaveRecordMapper extends BaseMapperX<LeaveRecordDO> {
     List<Map<String, Object>> selectHourLeaveCount(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("stationId") Long stationId);
 
     /**
-     * 查询今日离场量和离场峰值
+     * 查询今日离场量
      */
-    Map<String, Object> selectLeaveStats(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("stationId") Long stationId);
+    Long selectTodayLeaveCount(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("stationId") Long stationId);
+
+    /**
+     * 查询今日离场峰值（某小时最大离场量）
+     */
+    Long selectTodayLeavePeak(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("stationId") Long stationId);
 
 }
