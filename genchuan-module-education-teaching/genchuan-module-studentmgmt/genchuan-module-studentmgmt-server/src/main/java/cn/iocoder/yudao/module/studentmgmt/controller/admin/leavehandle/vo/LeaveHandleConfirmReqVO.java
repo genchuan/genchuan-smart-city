@@ -12,10 +12,9 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @Schema(description = "管理后台 - 离校办理确认 Request VO")
 @Data
 public class LeaveHandleConfirmReqVO {
-
-    @Schema(description = "学生 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "25257")
-    @NotNull(message = "学生 ID不能为空")
-    private Long studentId;
+    @Schema(description = "ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "25257")
+    @NotNull(message = "ID不能为空")
+    private Long id;
 
     @Schema(description = "家长确认时间", requiredMode = Schema.RequiredMode.REQUIRED, example = "2022-02-07 01:01:01")
     @NotNull(message = "家长确认时间不能为空")
