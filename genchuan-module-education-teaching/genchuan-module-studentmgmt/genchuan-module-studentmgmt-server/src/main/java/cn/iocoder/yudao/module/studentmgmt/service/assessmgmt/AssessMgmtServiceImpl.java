@@ -134,7 +134,7 @@ public class AssessMgmtServiceImpl implements AssessMgmtService {
 
         // 1. 卡片数据
         //totalCount (integer): 本期考评总记录数。
-        vo.setTotalCount(assessMgmtMapper.selectTotalAssessCount(cycle,  "", ""));
+        vo.setTotalCount(assessMgmtMapper.selectTotalAssessCount(cycle,  null, null));
         // avgScore (decimal): 本期班级平均得分。
         vo.setAvgScore(assessMgmtMapper.selectAvgScore(cycle, AssessStatusEnum.PUBLISHED.getStatus()));
         // topRankClass (string): 本期排名第一的班级。

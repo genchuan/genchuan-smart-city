@@ -127,5 +127,23 @@
         </if>
         GROUP BY status
     </select>
+    <select id="selectAvgScoreByTime"
+            resultType="cn.iocoder.yudao.module.studentmgmt.dal.dataobject.assessmgmt.AssessMgmtDO">
+        SELECT
+        cycle,
+        ROUND(AVG(score),2) AS score
+        FROM assess_mgmt
+        WHERE deleted = 0
+        <if test="cycle != null and cycle != ''">
+            AND cycle = #{cycle}
+        </if>
+        <if test="startTime != null">
+            AND create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND create_time &lt;= #{endTime}
+        </if>
+        GROUP BY cycle
+    </select>
 
 </mapper>

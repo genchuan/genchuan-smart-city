@@ -37,6 +37,10 @@ public interface AssessMgmtMapper extends BaseMapperX<AssessMgmtDO> {
                 .betweenIfPresent(AssessMgmtDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(AssessMgmtDO::getId));
     }
+     default PageResult<AssessReportRespVO> selectReportPage(AssessReportPageReqVO reqVO){
+        return null;
+
+    }
 
     Integer selectTotalAssessCount(@Param("cycle") String cycle,
                                    @Param("status") String status, @Param("assessType") String assessType);
@@ -57,4 +61,6 @@ public interface AssessMgmtMapper extends BaseMapperX<AssessMgmtDO> {
     List<JSONObject> selectAssessTypeCount(@Param("cycle") String cycle,@Param("status") String status);
 
     List<JSONObject> selectStatusCount(String cycle, String status);
+
+    AssessMgmtDO selectAvgScoreByTime(String timeScale, LocalDateTime lastStartTime, LocalDateTime lastEndTime);
 }
