@@ -109,7 +109,7 @@ public class ClubMgmtController {
         return success(isSuccess);
     }
     @PutMapping("/archive")
-    @Operation(summary = "审核社团")
+    @Operation(summary = "建档")
     @PreAuthorize("@ss.hasPermission('studentmgmt:club-mgmt:archive')")
     public CommonResult<Boolean> archive(@Valid @RequestBody ClubMgmtArchiveReqVO reqVO) {
         boolean isSuccess = clubMgmtService.archive(reqVO);

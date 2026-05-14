@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -133,6 +134,7 @@ public class CompareMgmtServiceImpl implements CompareMgmtService {
             // 校验存在
             CompareMgmtDO compareMgmtDO = validateCompareMgmtExists(id);
             compareMgmtDO.setAwardName(reqVO.getAwardName());
+            compareMgmtDO.setAwardTime(LocalDateTime.now());
             // 更新
 //            CompareMgmtDO updateObj = BeanUtils.toBean(reqVO, CompareMgmtDO.class);
             // 打分完成后自动将状态修改为 “已汇总”
