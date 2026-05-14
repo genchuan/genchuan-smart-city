@@ -6,6 +6,7 @@ import cn.iocoder.yudao.module.studentmgmt.controller.admin.studentinfo.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
 import cn.iocoder.yudao.module.studentmgmt.enums.StudentInfoStatusEnum;
+import cn.iocoder.yudao.module.studentmgmt.enums.StudentInfoTypeEnum;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.service.impl.DiffParseFunction;
 import com.mzt.logapi.starter.annotation.LogRecord;
@@ -130,13 +131,13 @@ public class StudentInfoServiceImpl implements StudentInfoService {
 
         // 1. 卡片数据
         vo.setTotalStudentCount(studentInfoMapper.selectTotalStudentCount(grade, major, "", ""));
-        vo.setInSchoolCount(studentInfoMapper.selectTotalStudentCount(grade, major, "在籍", ""));
-        vo.setSuspendCount(studentInfoMapper.selectTotalStudentCount(grade, major, "休学", ""));
-        vo.setDropOutCount(studentInfoMapper.selectTotalStudentCount(grade, major, "退学", ""));
-        vo.setTransferCount(studentInfoMapper.selectTotalStudentCount(grade, major, "异动", ""));
-        vo.setNormalStudentCount(studentInfoMapper.selectTotalStudentCount(grade, major, "","普通生"));
-        vo.setSpecialStudentCount(studentInfoMapper.selectTotalStudentCount(grade, major, "","特长生"));
-        vo.setTransferStudentCount(studentInfoMapper.selectTotalStudentCount(grade, major,"" ,"转学生"));
+        vo.setInSchoolCount(studentInfoMapper.selectTotalStudentCount(grade, major, StudentInfoStatusEnum.STUDENT_INFO_STATUS_1.getStatus(), ""));
+        vo.setSuspendCount(studentInfoMapper.selectTotalStudentCount(grade, major, StudentInfoStatusEnum.STUDENT_INFO_STATUS_2.getStatus(), ""));
+        vo.setDropOutCount(studentInfoMapper.selectTotalStudentCount(grade, major, StudentInfoStatusEnum.STUDENT_INFO_STATUS_3.getStatus(), ""));
+        vo.setTransferCount(studentInfoMapper.selectTotalStudentCount(grade, major, StudentInfoStatusEnum.STUDENT_INFO_STATUS_4.getStatus(), ""));
+        vo.setNormalStudentCount(studentInfoMapper.selectTotalStudentCount(grade, major, "", StudentInfoTypeEnum.STATUS_1.getStatus()));
+        vo.setSpecialStudentCount(studentInfoMapper.selectTotalStudentCount(grade, major, "",StudentInfoTypeEnum.STATUS_2.getStatus()));
+        vo.setTransferStudentCount(studentInfoMapper.selectTotalStudentCount(grade, major,"" ,StudentInfoTypeEnum.STATUS_3.getStatus()));
 
         // 2. 圆环图数据
 //        vo.setOperationStatusDistribution(studentInfoMapper.selectOperationStatusDistribution());
