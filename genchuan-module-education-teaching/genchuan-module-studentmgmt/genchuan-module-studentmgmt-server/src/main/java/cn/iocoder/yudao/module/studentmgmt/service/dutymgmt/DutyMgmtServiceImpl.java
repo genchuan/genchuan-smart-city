@@ -300,8 +300,9 @@ public class DutyMgmtServiceImpl implements DutyMgmtService {
             throw exception("不是待审批，不可审批");
         }
 
-        dutyMgmt.setCarStatus(DutyCarStatusEnum.CAR_STATUS_PENDING.getStatus());
+        dutyMgmt.setCarStatus(reqVo.getAuditResult());
         dutyMgmt.setRemark(reqVo.getRemark());
+        // 状态设置为待打卡
         dutyMgmt.setStatus(DutyStatusEnum.DUTY_STATUS_PENDING_CHECKIN.getStatus());
 
         int insert = dutyMgmtMapper.updateById(dutyMgmt);
