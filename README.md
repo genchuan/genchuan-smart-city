@@ -11,7 +11,8 @@
 
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
 ## 🚀体验版更新：会员升级、限时免费会员福利创建账号即可领取，（2026年5月15日）
-> 品牌自定义、多级角色管理权限、后台支撑、数据库批量接入、硬件设备自动接入支撑等功能可联系客服
+> 品牌自定义、多级角色管理权限、后台支撑、数据库批量接入、硬件设备自动接入支撑等功能可联系客服。
+
 *演示版地址*：http://cloud.genchuan.cn/#/analytics
 ![输入图片说明](images/VIP%E4%BC%9A%E5%91%98%E6%B4%BB%E5%8A%A8.png)
 
