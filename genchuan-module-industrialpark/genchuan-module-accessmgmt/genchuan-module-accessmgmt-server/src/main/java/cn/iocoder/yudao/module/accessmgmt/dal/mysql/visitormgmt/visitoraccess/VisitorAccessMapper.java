@@ -28,8 +28,8 @@ public interface VisitorAccessMapper extends BaseMapperX<VisitorAccessDO> {
                 .eqIfPresent(VisitorAccessDO::getTicketStatus, reqVO.getTicketStatus())
                 .eqIfPresent(VisitorAccessDO::getAccessStatus, reqVO.getAccessStatus())
                 .betweenIfPresent(VisitorAccessDO::getAccessTime,
-                        reqVO.getStartTime() != null ? Instant.ofEpochSecond(reqVO.getStartTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null,
-                        reqVO.getEndTime() != null ? Instant.ofEpochSecond(reqVO.getEndTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null)
+                        reqVO.getStartTime() != null ? Instant.ofEpochMilli(reqVO.getStartTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null,
+                        reqVO.getEndTime() != null ? Instant.ofEpochMilli(reqVO.getEndTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null)
                 .orderByDesc(VisitorAccessDO::getId));
     }
 

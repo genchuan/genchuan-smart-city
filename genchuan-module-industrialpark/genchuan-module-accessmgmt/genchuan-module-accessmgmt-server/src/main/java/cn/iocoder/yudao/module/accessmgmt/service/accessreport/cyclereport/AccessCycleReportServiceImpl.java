@@ -62,9 +62,9 @@ public class AccessCycleReportServiceImpl implements AccessCycleReportService {
         if ("自定义".equals(reqVO.getCycleType())) {
             // 自定义周期使用传入的时间
             start = reqVO.getStartTime() != null ?
-                    Instant.ofEpochSecond(reqVO.getStartTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : now;
+                    Instant.ofEpochMilli(reqVO.getStartTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : now;
             end = reqVO.getEndTime() != null ?
-                    Instant.ofEpochSecond(reqVO.getEndTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : now;
+                    Instant.ofEpochMilli(reqVO.getEndTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : now;
         } else {
             // 非自定义周期自动计算
             switch (reqVO.getCycleType()) {

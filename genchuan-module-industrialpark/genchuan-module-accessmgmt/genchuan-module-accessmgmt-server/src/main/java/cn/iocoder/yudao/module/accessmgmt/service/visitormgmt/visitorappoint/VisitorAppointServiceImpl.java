@@ -46,7 +46,7 @@ public class VisitorAppointServiceImpl implements VisitorAppointService {
     @Transactional(rollbackFor = Exception.class)
     public Boolean createVisitorAppoint(VisitorAppointCreateReqVO createReqVO) {
         VisitorAppointDO entity = BeanUtils.toBean(createReqVO, VisitorAppointDO.class);
-        entity.setVisitTime(Instant.ofEpochSecond(createReqVO.getVisitTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime());
+        entity.setVisitTime(Instant.ofEpochMilli(createReqVO.getVisitTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime());
         entity.setAppointStatus("待审核");
         visitorAppointMapper.insert(entity);
         return true;

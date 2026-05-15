@@ -29,8 +29,8 @@ public interface ParkingPaymentMapper extends BaseMapperX<ParkingPaymentDO> {
                 .eqIfPresent(ParkingPaymentDO::getPayType, reqVO.getPayType())
                 .eqIfPresent(ParkingPaymentDO::getInvoiceStatus, reqVO.getInvoiceStatus())
                 .betweenIfPresent(ParkingPaymentDO::getPayTime,
-                        reqVO.getStartTime() != null ? Instant.ofEpochSecond(reqVO.getStartTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null,
-                        reqVO.getEndTime() != null ? Instant.ofEpochSecond(reqVO.getEndTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null)
+                        reqVO.getStartTime() != null ? Instant.ofEpochMilli(reqVO.getStartTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null,
+                        reqVO.getEndTime() != null ? Instant.ofEpochMilli(reqVO.getEndTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null)
                 .orderByDesc(ParkingPaymentDO::getId));
     }
 

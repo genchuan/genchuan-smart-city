@@ -136,7 +136,7 @@ public class FaceMgmtServiceImpl implements FaceMgmtService {
         updateObj.setId(reqVO.getId());
         updateObj.setAccessArea(reqVO.getAccessArea());
         updateObj.setAuthValidity(reqVO.getAuthValidity() != null ?
-                Instant.ofEpochSecond(reqVO.getAuthValidity()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null);
+                Instant.ofEpochMilli(reqVO.getAuthValidity()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null);
         faceMgmtMapper.updateById(updateObj);
         return true;
     }
@@ -204,7 +204,7 @@ public class FaceMgmtServiceImpl implements FaceMgmtService {
         updateObj.setId(reqVO.getId());
         updateObj.setAuthStatus("已授权");
         updateObj.setAuthValidity(reqVO.getAuthValidity() != null ?
-                Instant.ofEpochSecond(reqVO.getAuthValidity()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null);
+                Instant.ofEpochMilli(reqVO.getAuthValidity()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null);
         faceMgmtMapper.updateById(updateObj);
         return true;
     }
@@ -220,7 +220,7 @@ public class FaceMgmtServiceImpl implements FaceMgmtService {
         updateObj.setId(reqVO.getId());
         updateObj.setAuthStatus("已授权");
         updateObj.setAuthValidity(reqVO.getAuthValidity() != null ?
-                Instant.ofEpochSecond(reqVO.getAuthValidity()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null);
+                Instant.ofEpochMilli(reqVO.getAuthValidity()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null);
         faceMgmtMapper.updateById(updateObj);
         return true;
     }

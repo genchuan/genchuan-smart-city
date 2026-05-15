@@ -28,8 +28,8 @@ public interface AccessRecordMapper extends BaseMapperX<AccessRecordDO> {
                 .eqIfPresent(AccessRecordDO::getVerifyType, reqVO.getVerifyType())
                 .eqIfPresent(AccessRecordDO::getAccessStatus, reqVO.getAccessStatus())
                 .betweenIfPresent(AccessRecordDO::getAccessTime,
-                        reqVO.getStartTime() != null ? Instant.ofEpochSecond(reqVO.getStartTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null,
-                        reqVO.getEndTime() != null ? Instant.ofEpochSecond(reqVO.getEndTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null)
+                        reqVO.getStartTime() != null ? Instant.ofEpochMilli(reqVO.getStartTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null,
+                        reqVO.getEndTime() != null ? Instant.ofEpochMilli(reqVO.getEndTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null)
                 .orderByDesc(AccessRecordDO::getId));
     }
 

@@ -23,8 +23,8 @@ public interface VisitorAppointMapper extends BaseMapperX<VisitorAppointDO> {
                 .likeIfPresent(VisitorAppointDO::getVisitCompany, reqVO.getVisitCompany())
                 .eqIfPresent(VisitorAppointDO::getAppointStatus, reqVO.getAppointStatus())
                 .betweenIfPresent(VisitorAppointDO::getVisitTime,
-                        reqVO.getStartTime() != null ? Instant.ofEpochSecond(reqVO.getStartTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null,
-                        reqVO.getEndTime() != null ? Instant.ofEpochSecond(reqVO.getEndTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null)
+                        reqVO.getStartTime() != null ? Instant.ofEpochMilli(reqVO.getStartTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null,
+                        reqVO.getEndTime() != null ? Instant.ofEpochMilli(reqVO.getEndTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null)
                 .orderByDesc(VisitorAppointDO::getId));
     }
 

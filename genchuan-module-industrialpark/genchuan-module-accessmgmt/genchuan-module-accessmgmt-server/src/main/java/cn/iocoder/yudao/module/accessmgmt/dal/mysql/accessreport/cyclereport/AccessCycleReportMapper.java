@@ -26,8 +26,8 @@ public interface AccessCycleReportMapper extends BaseMapperX<AccessCycleReportDO
                 .likeIfPresent(AccessCycleReportDO::getReportName, reqVO.getReportName())
                 .eqIfPresent(AccessCycleReportDO::getCycleType, reqVO.getCycleType())
                 .betweenIfPresent(AccessCycleReportDO::getCreateTime,
-                        reqVO.getStartTime() != null ? Instant.ofEpochSecond(reqVO.getStartTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null,
-                        reqVO.getEndTime() != null ? Instant.ofEpochSecond(reqVO.getEndTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null)
+                        reqVO.getStartTime() != null ? Instant.ofEpochMilli(reqVO.getStartTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null,
+                        reqVO.getEndTime() != null ? Instant.ofEpochMilli(reqVO.getEndTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null)
                 .orderByDesc(AccessCycleReportDO::getId));
     }
 
