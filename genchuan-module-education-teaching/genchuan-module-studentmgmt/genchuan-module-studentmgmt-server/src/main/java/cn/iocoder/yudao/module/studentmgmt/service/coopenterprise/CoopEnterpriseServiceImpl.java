@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.studentmgmt.service.coopenterprise;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
@@ -23,6 +25,7 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.beans.BeanProperty;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,15 +78,15 @@ public class CoopEnterpriseServiceImpl implements CoopEnterpriseService {
     }
 
     @Override
-        public void deleteCoopEnterpriseListByIds(List<Long> ids) {
+    public void deleteCoopEnterpriseListByIds(List<Long> ids) {
         // 删除
         coopEnterpriseMapper.deleteByIds(ids);
-        }
+    }
 
 
     private CoopEnterpriseDO validateCoopEnterpriseExists(Long id) {
         CoopEnterpriseDO coopEnterpriseDO = coopEnterpriseMapper.selectById(id);
-        if ( coopEnterpriseDO == null) {
+        if (coopEnterpriseDO == null) {
             throw exception(COOP_ENTERPRISE_NOT_EXISTS);
         }
         return coopEnterpriseDO;
@@ -104,12 +107,13 @@ public class CoopEnterpriseServiceImpl implements CoopEnterpriseService {
         // 校验存在
         CoopEnterpriseDO coopEnterprise = validateCoopEnterpriseExists(updateReqVO.getId());
         // 更新
-        CoopEnterpriseDO updateObj = BeanUtils.toBean(updateReqVO, CoopEnterpriseDO.class);
+        CopyOptions copyOptions = CopyOptions.create().setIgnoreNullValue(true);
+        BeanUtil.copyProperties(updateReqVO, coopEnterprise, copyOptions);
         String loginUserNickname = SecurityFrameworkUtils.getLoginUserNickname();
-        updateObj.setUpdater(loginUserNickname);
-        updateObj.setUpdateTime(LocalDateTime.now());
+        coopEnterprise.setUpdater(loginUserNickname);
+        coopEnterprise.setUpdateTime(LocalDateTime.now());
 
-        int i = coopEnterpriseMapper.updateById(updateObj);
+        int i = coopEnterpriseMapper.updateById(coopEnterprise);
         return i > 0;
     }
 
@@ -125,7 +129,7 @@ public class CoopEnterpriseServiceImpl implements CoopEnterpriseService {
         if (null != timeRange) {
             startTime = timeRange[0];
             endTime = timeRange[1];
-        };
+        }
 
         // 1. 卡片数据
         vo = coopEnterpriseMapper.selectTotalCount(startTime, endTime,
