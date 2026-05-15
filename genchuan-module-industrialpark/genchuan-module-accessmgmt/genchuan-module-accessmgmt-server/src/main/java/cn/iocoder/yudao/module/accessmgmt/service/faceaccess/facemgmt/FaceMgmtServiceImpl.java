@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.accessmgmt.service.faceaccess.facemgmt;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.accessmgmt.controller.admin.faceaccess.facemgmt.vo.*;
 import cn.iocoder.yudao.module.accessmgmt.dal.dataobject.faceaccess.facemgmt.FaceMgmtDO;
 import cn.iocoder.yudao.module.accessmgmt.dal.mysql.faceaccess.facemgmt.FaceMgmtMapper;
@@ -106,15 +107,21 @@ public class FaceMgmtServiceImpl implements FaceMgmtService {
         if (exist == null) {
             throw exception(FACE_MGMT_NOT_EXISTS);
         }
+
+        // 模拟人脸采集：实际应调用人脸识别算法评估图片质量，此处随机生成准确率
+        BigDecimal verifyAccuracy = BigDecimal.valueOf(95.00 + Math.random() * 4.00)
+                .setScale(2, RoundingMode.HALF_UP);
+
+        // 更新数据库：保存采集结果及操作人
         FaceMgmtDO updateObj = new FaceMgmtDO();
         updateObj.setId(reqVO.getId());
+        updateObj.setVerifyAccuracy(verifyAccuracy);
+        updateObj.setHandleUser(SecurityFrameworkUtils.getLoginUserNickname());
         faceMgmtMapper.updateById(updateObj);
 
         FaceMgmtCollectRespVO respVO = new FaceMgmtCollectRespVO();
         respVO.setSuccess(true);
-        // 模拟验证准确率
-        respVO.setVerifyAccuracy(BigDecimal.valueOf(95.00 + Math.random() * 4.00)
-                .setScale(2, RoundingMode.HALF_UP));
+        respVO.setVerifyAccuracy(verifyAccuracy);
         return respVO;
     }
 

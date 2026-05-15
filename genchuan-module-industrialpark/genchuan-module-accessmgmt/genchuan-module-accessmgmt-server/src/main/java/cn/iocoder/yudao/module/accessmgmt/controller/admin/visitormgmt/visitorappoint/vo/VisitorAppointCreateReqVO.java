@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.accessmgmt.controller.admin.visitormgmt.visitora
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Schema(description = "管理后台 - 访客预约新增 Request VO")
