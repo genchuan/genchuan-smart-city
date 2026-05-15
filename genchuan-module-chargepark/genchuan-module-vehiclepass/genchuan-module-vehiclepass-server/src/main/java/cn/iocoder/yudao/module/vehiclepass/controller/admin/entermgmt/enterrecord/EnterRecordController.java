@@ -48,9 +48,8 @@ public class EnterRecordController {
     @PutMapping("/update")
     @Operation(summary = "更新入场记录")
     @PreAuthorize("@ss.hasPermission('enter:record:update')")
-    public CommonResult<Boolean> updateRecord(@Valid @RequestBody EnterRecordSaveReqVO updateReqVO) {
-        enterRecordService.updateRecord(updateReqVO);
-        return success(true);
+    public CommonResult<Boolean> updateRecord(@Valid @RequestBody EnterRecordUpdateReqVO updateReqVO) {
+        return success(enterRecordService.updateEnterRecord(updateReqVO));
     }
 
     @DeleteMapping("/delete")

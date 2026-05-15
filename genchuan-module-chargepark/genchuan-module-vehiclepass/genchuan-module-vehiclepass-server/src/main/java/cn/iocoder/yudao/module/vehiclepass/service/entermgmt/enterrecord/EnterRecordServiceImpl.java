@@ -131,8 +131,7 @@ public class EnterRecordServiceImpl implements EnterRecordService {
         entity.setPlateNo(req.getPlateNo());
         entity.setPlateColor(req.getPlateColor());
         entity.setSpaceNo(req.getSpaceNo());
-        // 时间戳转 LocalDateTime
-        entity.setEnterTime(LocalDateTime.ofInstant(Instant.ofEpochSecond(req.getEnterTime()), ZoneId.systemDefault()));
+        entity.setEnterTime(req.getEnterTime());
         entity.setRecordType(req.getRecordType());
         entity.setStatus(req.getStatus());
         entity.setStationId(req.getStationId());
@@ -160,7 +159,7 @@ public class EnterRecordServiceImpl implements EnterRecordService {
         entity.setPlateNo(req.getPlateNo());
         entity.setPlateColor(req.getPlateColor());
         entity.setSpaceNo(req.getSpaceNo());
-        entity.setEnterTime(LocalDateTime.ofInstant(Instant.ofEpochSecond(req.getEnterTime()), ZoneId.systemDefault()));
+        entity.setEnterTime(req.getEnterTime());
         entity.setRecordType(req.getRecordType());
         entity.setStatus(req.getStatus());
         entity.setStationId(req.getStationId());
