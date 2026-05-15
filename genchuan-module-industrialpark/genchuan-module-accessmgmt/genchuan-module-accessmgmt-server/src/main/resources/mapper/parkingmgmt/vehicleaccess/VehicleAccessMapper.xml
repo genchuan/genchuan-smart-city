@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.accessmgmt.dal.mysql.parkingmgmt.vehicleaccess.VehicleAccessMapper">
+
+    <select id="selectTimeTrendList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.parkingmgmt.vehicleaccess.vo.VehicleAccessChartRespVO$TimeTrendItem">
+        SELECT
+            DATE_FORMAT(access_time, '%H:00') AS time,
+            COUNT(*) AS count
+        FROM vehicle_access
+        WHERE deleted = FALSE
+        <if test="startTime != null and startTime != ''">
+            AND access_time >= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND access_time &lt;= #{endTime}
+        </if>
+        GROUP BY DATE_FORMAT(access_time, '%H:00')
+        ORDER BY time
+    </select>
+
+    <select id="selectDayTrendList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.parkingmgmt.vehicleaccess.vo.VehicleAccessChartRespVO$DayTrendItem">
+        SELECT
+            DATE_FORMAT(access_time, '%Y-%m-%d') AS date,
+            SUM(CASE WHEN access_status = '进场中' THEN 1 ELSE 0 END) AS inCount,
+            SUM(CASE WHEN access_status IN ('出场中', '已离场') THEN 1 ELSE 0 END) AS outCount
+        FROM vehicle_access
+        WHERE deleted = FALSE
+        <if test="startTime != null and startTime != ''">
+            AND access_time >= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND access_time &lt;= #{endTime}
+        </if>
+        GROUP BY DATE_FORMAT(access_time, '%Y-%m-%d')
+        ORDER BY date
+    </select>
+
+    <select id="selectParkCountList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.parkingmgmt.vehicleaccess.vo.VehicleAccessChartRespVO$ParkCountItem">
+        SELECT
+            park_name AS parkName,
+            COUNT(*) AS count
+        FROM vehicle_access
+        WHERE deleted = FALSE
+        <if test="startTime != null and startTime != ''">
+            AND access_time >= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND access_time &lt;= #{endTime}
+        </if>
+        GROUP BY park_name
+        ORDER BY count DESC
+    </select>
+
+    <select id="selectVehicleTypeList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.parkingmgmt.vehicleaccess.vo.VehicleAccessChartRespVO$VehicleTypeItem">
+        SELECT
+            vehicle_type AS name,
+            COUNT(*) AS value
+        FROM vehicle_access
+        WHERE deleted = FALSE
+        <if test="startTime != null and startTime != ''">
+            AND access_time >= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND access_time &lt;= #{endTime}
+        </if>
+        GROUP BY vehicle_type
+        ORDER BY value DESC
+    </select>
+
+</mapper>

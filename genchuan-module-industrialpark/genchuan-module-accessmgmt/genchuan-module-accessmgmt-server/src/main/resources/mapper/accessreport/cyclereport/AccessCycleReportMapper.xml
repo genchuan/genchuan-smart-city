@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.accessmgmt.dal.mysql.accessreport.cyclereport.AccessCycleReportMapper">
+
+    <select id="selectCardData"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.accessreport.cyclereport.vo.AccessCycleReportChartRespVO$CardData">
+        SELECT
+            total_person_access AS totalPersonAccess,
+            total_visitor_arrive AS totalVisitorArrive,
+            total_vehicle_access AS totalVehicleAccess,
+            space_use_rate AS spaceUseRate,
+            pay_income AS payIncome
+        FROM access_cycle_report
+        WHERE id = #{id} AND deleted = FALSE
+    </select>
+
+    <select id="selectAccessTrendList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.accessreport.cyclereport.vo.AccessCycleReportChartRespVO$AccessTrendItem">
+        SELECT
+            DATE_FORMAT(access_time, '%Y-%m-%d') AS date,
+            SUM(CASE WHEN verify_type = '人脸' THEN 1 ELSE 0 END) AS personCount,
+            SUM(CASE WHEN verify_type = '访客' THEN 1 ELSE 0 END) AS visitorCount
+        FROM access_record
+        WHERE deleted = FALSE
+          AND access_time >= (SELECT start_time FROM access_cycle_report WHERE id = #{id})
+          AND access_time &lt;= (SELECT end_time FROM access_cycle_report WHERE id = #{id})
+        GROUP BY DATE_FORMAT(access_time, '%Y-%m-%d')
+        ORDER BY date
+    </select>
+
+    <select id="selectVehicleTrendList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.accessreport.cyclereport.vo.AccessCycleReportChartRespVO$VehicleTrendItem">
+        SELECT
+            DATE_FORMAT(access_time, '%Y-%m-%d') AS date,
+            SUM(CASE WHEN access_status = '进场' THEN 1 ELSE 0 END) AS inCount,
+            SUM(CASE WHEN access_status = '出场' THEN 1 ELSE 0 END) AS outCount
+        FROM access_record
+        WHERE deleted = FALSE
+          AND access_time >= (SELECT start_time FROM access_cycle_report WHERE id = #{id})
+          AND access_time &lt;= (SELECT end_time FROM access_cycle_report WHERE id = #{id})
+        GROUP BY DATE_FORMAT(access_time, '%Y-%m-%d')
+        ORDER BY date
+    </select>
+
+    <select id="selectSpaceTrendList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.accessreport.cyclereport.vo.AccessCycleReportChartRespVO$SpaceTrendItem">
+        SELECT
+            DATE_FORMAT(create_time, '%Y-%m-%d') AS date,
+            space_use_rate AS useRate
+        FROM access_cycle_report
+        WHERE id = #{id} AND deleted = FALSE
+    </select>
+
+    <select id="selectAreaCountList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.accessreport.cyclereport.vo.AccessCycleReportChartRespVO$AreaCountItem">
+        SELECT
+            access_area AS area,
+            COUNT(*) AS count
+        FROM access_record
+        WHERE deleted = FALSE
+          AND access_time >= (SELECT start_time FROM access_cycle_report WHERE id = #{id})
+          AND access_time &lt;= (SELECT end_time FROM access_cycle_report WHERE id = #{id})
+        GROUP BY access_area
+        ORDER BY count DESC
+    </select>
+
+    <select id="selectParkCountList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.accessreport.cyclereport.vo.AccessCycleReportChartRespVO$ParkCountItem">
+        SELECT
+            access_area AS parkName,
+            COUNT(*) AS count
+        FROM access_record
+        WHERE deleted = FALSE
+          AND access_area LIKE '%停车场%'
+          AND access_time >= (SELECT start_time FROM access_cycle_report WHERE id = #{id})
+          AND access_time &lt;= (SELECT end_time FROM access_cycle_report WHERE id = #{id})
+        GROUP BY access_area
+        ORDER BY count DESC
+    </select>
+
+    <select id="selectPersonTypeList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.accessreport.cyclereport.vo.AccessCycleReportChartRespVO$NameValueItem">
+        SELECT
+            verify_type AS name,
+            COUNT(*) AS value
+        FROM access_record
+        WHERE deleted = FALSE
+          AND access_time >= (SELECT start_time FROM access_cycle_report WHERE id = #{id})
+          AND access_time &lt;= (SELECT end_time FROM access_cycle_report WHERE id = #{id})
+        GROUP BY verify_type
+        ORDER BY value DESC
+    </select>
+
+    <select id="selectVehicleTypeList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.accessreport.cyclereport.vo.AccessCycleReportChartRespVO$NameValueItem">
+        SELECT
+            '小客车' AS name,
+            COUNT(*) AS value
+        FROM access_record
+        WHERE deleted = FALSE
+          AND access_time >= (SELECT start_time FROM access_cycle_report WHERE id = #{id})
+          AND access_time &lt;= (SELECT end_time FROM access_cycle_report WHERE id = #{id})
+    </select>
+
+    <select id="selectPayTypeList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.accessreport.cyclereport.vo.AccessCycleReportChartRespVO$NameValueItem">
+        SELECT
+            pay_type AS name,
+            COUNT(*) AS value
+        FROM parking_payment
+        WHERE deleted = FALSE
+          AND pay_time >= (SELECT start_time FROM access_cycle_report WHERE id = #{id})
+          AND pay_time &lt;= (SELECT end_time FROM access_cycle_report WHERE id = #{id})
+        GROUP BY pay_type
+        ORDER BY value DESC
+    </select>
+
+    <select id="selectPointMapList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.accessreport.cyclereport.vo.AccessCycleReportChartRespVO$PointMapItem">
+        SELECT
+            120.0 + RAND() * 2.0 AS lon,
+            30.0 + RAND() * 1.0 AS lat,
+            FLOOR(1 + RAND() * 100) AS count
+        FROM access_record
+        WHERE deleted = FALSE
+          AND access_time >= (SELECT start_time FROM access_cycle_report WHERE id = #{id})
+          AND access_time &lt;= (SELECT end_time FROM access_cycle_report WHERE id = #{id})
+        LIMIT 20
+    </select>
+
+    <select id="selectTrackMapList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.accessreport.cyclereport.vo.AccessCycleReportChartRespVO$TrackMapItem">
+        SELECT
+            120.0 + RAND() * 2.0 AS lon,
+            30.0 + RAND() * 1.0 AS lat,
+            CONCAT('浙A', LPAD(FLOOR(RAND() * 100000), 5, '0')) AS plateNo
+        FROM access_record
+        WHERE deleted = FALSE
+          AND access_time >= (SELECT start_time FROM access_cycle_report WHERE id = #{id})
+          AND access_time &lt;= (SELECT end_time FROM access_cycle_report WHERE id = #{id})
+        LIMIT 30
+    </select>
+
+</mapper>
