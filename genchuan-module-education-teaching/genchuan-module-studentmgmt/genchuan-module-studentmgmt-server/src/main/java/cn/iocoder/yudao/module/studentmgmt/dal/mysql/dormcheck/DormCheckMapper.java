@@ -97,4 +97,6 @@ public interface DormCheckMapper extends BaseMapperX<DormCheckDO> {
     List<JSONObject> getAbnormalStatsList(LocalDate checkTime);
 
     JSONObject getCoreIndex(String className, LocalDate checkTime);
+
+    DormCheckDO selectByStudentIdAndCheckTime(Long studentId, LocalDateTime checkTime);
 }

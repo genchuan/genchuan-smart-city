@@ -17,8 +17,7 @@ public class MentalMgmtConsultReqVO {
     @ExcelProperty("主键 ID")
     private Long id;
 
-    @Schema(description = "咨询预约时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    @Schema(description = "咨询预约时间，时间戳格式", example = "1745678900000")
     private LocalDateTime consultTime;
 
 }
