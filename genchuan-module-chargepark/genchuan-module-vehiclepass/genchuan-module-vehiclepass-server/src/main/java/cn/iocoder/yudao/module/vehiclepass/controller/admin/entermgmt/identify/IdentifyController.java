@@ -83,8 +83,7 @@ public class IdentifyController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('plate:identify:query')")
     public CommonResult<IdentifyRespVO> getIdentify(@RequestParam("id") Long id) {
-        IdentifyDO identify = identifyService.getIdentify(id);
-        return success(BeanUtils.toBean(identify, IdentifyRespVO.class));
+        return success(identifyService.getIdentifyWithStation(id));
     }
 
     @GetMapping("/page")

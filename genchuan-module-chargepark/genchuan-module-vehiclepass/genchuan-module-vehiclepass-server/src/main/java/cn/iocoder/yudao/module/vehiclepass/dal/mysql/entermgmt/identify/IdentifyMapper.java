@@ -43,6 +43,7 @@ public interface IdentifyMapper extends BaseMapperX<IdentifyDO> {
 
     IPage<IdentifyRespVO> selectIdentifyPage(Page<IdentifyRespVO> page, @Param("query") IdentifyPageReqVO reqVO);
 
+    IdentifyRespVO selectByIdJoinStation(@Param("id") Long id);
 
     Map<String, Object> selectCardData(
             @Param("startTime") String startTime,

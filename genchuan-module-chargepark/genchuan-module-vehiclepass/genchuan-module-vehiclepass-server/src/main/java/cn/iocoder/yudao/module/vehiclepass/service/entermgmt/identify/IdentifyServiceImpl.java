@@ -213,4 +213,9 @@ public class IdentifyServiceImpl implements IdentifyService {
         return identifyMapper.updateById(updateObj) > 0;
     }
 
+    @Override
+    public IdentifyRespVO getIdentifyWithStation(Long id) {
+        return identifyMapper.selectByIdJoinStation(id);
+    }
+
 }
