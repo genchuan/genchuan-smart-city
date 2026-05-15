@@ -32,6 +32,10 @@ public class FakePlateControlRespVO {
     @ExcelProperty("处置状态：未处理 / 处理中 / 已关闭，关联字典fake_plate_control_status")
     private String status;
 
+    @Schema(description = "场站名称", example = "XX停车场")
+    @ExcelProperty("场站名称")
+    private String stationName;
+
     @Schema(description = "场站ID，关联场站表", requiredMode = Schema.RequiredMode.REQUIRED, example = "16619")
     @ExcelProperty("场站ID，关联场站表")
     private Long stationId;

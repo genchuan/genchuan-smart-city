@@ -74,9 +74,9 @@ public class EnterRecordController {
     @Operation(summary = "获得入场记录")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('enter:record:query')")
-    public CommonResult<EnterRecordRespVO> getRecord(@RequestParam("id") Long id) {
-        EnterRecordDO record = enterRecordService.getRecord(id);
-        return success(BeanUtils.toBean(record, EnterRecordRespVO.class));
+    public CommonResult<MyEnterRecordRespVO> getRecord(@RequestParam("id") Long id) {
+        MyEnterRecordRespVO record = enterRecordService.getEnterRecordWithStation(id);
+        return success(record);
     }
 
 //    @GetMapping("/page")

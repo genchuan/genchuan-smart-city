@@ -40,6 +40,8 @@ public interface InParkStatusMapper extends BaseMapperX<InParkStatusDO> {
                 .orderByDesc(InParkStatusDO::getId));
     }
 
+    InParkStatusRespVO selectByIdJoinStation(@Param("id") Long id);
+
     IPage<InParkStatusRespVO> selectPageJoinSpaceStation(Page<?> page, @Param("reqVO") InParkStatusPageReqVO reqVO);
 
     /**

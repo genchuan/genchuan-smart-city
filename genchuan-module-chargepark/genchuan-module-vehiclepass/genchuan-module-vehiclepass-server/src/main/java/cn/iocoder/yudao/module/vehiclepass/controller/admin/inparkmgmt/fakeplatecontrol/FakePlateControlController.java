@@ -84,8 +84,7 @@ public class FakePlateControlController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('fake:plate-control:query')")
     public CommonResult<FakePlateControlRespVO> getPlateControl(@RequestParam("id") Long id) {
-        FakePlateControlDO plateControl = plateControlService.getPlateControl(id);
-        return success(BeanUtils.toBean(plateControl, FakePlateControlRespVO.class));
+        return success(plateControlService.getPlateControlWithStation(id));
     }
 
     @GetMapping("/page")

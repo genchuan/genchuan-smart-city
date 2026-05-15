@@ -41,6 +41,8 @@ public interface PayCheckMapper extends BaseMapperX<PayCheckDO> {
 
     IPage<PayCheckRespVO> selectPageJoin(Page<?> page, @Param("reqVO") PayCheckPageReqVO reqVO);
 
+    PayCheckRespVO selectByIdJoinStation(@Param("id") Long id);
+
     /**
      * 统计核验成功率趋势
      *

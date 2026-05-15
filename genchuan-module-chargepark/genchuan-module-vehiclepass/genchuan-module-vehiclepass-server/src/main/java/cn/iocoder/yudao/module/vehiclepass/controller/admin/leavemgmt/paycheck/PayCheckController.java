@@ -82,8 +82,7 @@ public class PayCheckController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('pay:check:query')")
     public CommonResult<PayCheckRespVO> getCheck(@RequestParam("id") Long id) {
-        PayCheckDO check = checkService.getCheck(id);
-        return success(BeanUtils.toBean(check, PayCheckRespVO.class));
+        return success(checkService.getCheckWithStation(id));
     }
 
     @GetMapping("/page")

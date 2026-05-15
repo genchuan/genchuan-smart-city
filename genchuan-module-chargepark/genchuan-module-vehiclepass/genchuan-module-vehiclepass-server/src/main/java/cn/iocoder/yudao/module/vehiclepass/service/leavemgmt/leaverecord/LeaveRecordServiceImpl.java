@@ -106,6 +106,11 @@ public class LeaveRecordServiceImpl implements LeaveRecordService {
     }
 
     @Override
+    public LeaveRecordRespVO getRecordWithStation(Long id) {
+        return recordMapper.selectByIdJoinStation(id);
+    }
+
+    @Override
     public Long createRecordSupplement(LeaveRecordCreateReqVO reqVO) {
         LeaveRecordDO record = new LeaveRecordDO();
         record.setPlateNo(reqVO.getPlateNo());

@@ -81,8 +81,8 @@ public class PassRecordController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('pass:record:query')")
     public CommonResult<PassRecordRespVO> getRecord(@RequestParam("id") Long id) {
-        PassRecordDO record = passRecordService.getRecord(id);
-        return success(BeanUtils.toBean(record, PassRecordRespVO.class));
+        PassRecordRespVO record = passRecordService.getPassRecordWithStation(id);
+        return success(record);
     }
 
     @GetMapping("/page")

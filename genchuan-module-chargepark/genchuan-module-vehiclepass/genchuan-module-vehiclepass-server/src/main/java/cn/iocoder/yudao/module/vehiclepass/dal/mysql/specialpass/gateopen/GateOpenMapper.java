@@ -44,6 +44,8 @@ public interface GateOpenMapper extends BaseMapperX<GateOpenDO> {
 
     IPage<GateOpenRespVO> selectPageJoin(Page<?> page, @Param("reqVO") GateOpenPageReqVO reqVO);
 
+    GateOpenRespVO selectByIdJoinStation(@Param("id") Long id);
+
     /**
      * 查询开闸申请趋势（按天统计）
      */

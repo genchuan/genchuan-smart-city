@@ -49,6 +49,32 @@
         ORDER BY f.id DESC
     </select>
 
+    <select id="selectByIdJoinStation" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.fakeplatecontrol.vo.FakePlateControlRespVO">
+        SELECT
+            f.id,
+            f.plate_no AS plateNo,
+            f.identify_time AS identifyTime,
+            f.match_scene AS matchScene,
+            f.status,
+            s.name AS stationName,
+            f.station_id AS stationId,
+            f.handle_user_id AS handleUserId,
+            f.handle_time AS handleTime,
+            f.handle_progress AS handleProgress,
+            f.handle_type AS handleType,
+            f.ignore_reason AS ignoreReason,
+            f.remark,
+            f.reserve1,
+            f.reserve2,
+            f.creator,
+            f.updater,
+            f.create_time AS createTime,
+            f.update_time AS updateTime
+        FROM fake_plate_control f
+        LEFT JOIN station_info s ON f.station_id = s.id
+        WHERE f.id = #{id} AND f.deleted = 0
+    </select>
+
     <!-- 查询套牌识别趋势（按天统计） -->
     <select id="selectIdentifyTrend" resultType="map">
         SELECT

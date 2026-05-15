@@ -83,8 +83,7 @@ public class InParkStatusController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('in:park-status:query')")
     public CommonResult<InParkStatusRespVO> getParkStatus(@RequestParam("id") Long id) {
-        InParkStatusDO parkStatus = parkStatusService.getParkStatus(id);
-        return success(BeanUtils.toBean(parkStatus, InParkStatusRespVO.class));
+        return success(parkStatusService.getInParkStatusWithStation(id));
     }
 
     @GetMapping("/page")

@@ -116,6 +116,11 @@ public class GateOpenServiceImpl implements GateOpenService {
     }
 
     @Override
+    public GateOpenRespVO getGateOpenWithStation(Long id) {
+        return openMapper.selectByIdJoinStation(id);
+    }
+
+    @Override
     public PageResult<GateOpenDO> getOpenPage(GateOpenPageReqVO pageReqVO) {
         return openMapper.selectPage(pageReqVO);
     }

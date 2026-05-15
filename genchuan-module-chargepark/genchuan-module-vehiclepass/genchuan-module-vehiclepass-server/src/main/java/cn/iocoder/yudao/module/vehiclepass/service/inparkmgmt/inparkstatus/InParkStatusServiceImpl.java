@@ -96,6 +96,15 @@ public class InParkStatusServiceImpl implements InParkStatusService {
     }
 
     @Override
+    public InParkStatusRespVO getInParkStatusWithStation(Long id) {
+        InParkStatusRespVO respVO = parkStatusMapper.selectByIdJoinStation(id);
+        if (respVO == null) {
+            throw exception(PARK_STATUS_NOT_EXISTS);
+        }
+        return respVO;
+    }
+
+    @Override
     public PageResult<InParkStatusRespVO> getInParkStatusPage(InParkStatusPageReqVO pageReqVO) {
         Page<InParkStatusRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
         IPage<InParkStatusRespVO> pageResult = parkStatusMapper.selectPageJoinSpaceStation(page, pageReqVO);

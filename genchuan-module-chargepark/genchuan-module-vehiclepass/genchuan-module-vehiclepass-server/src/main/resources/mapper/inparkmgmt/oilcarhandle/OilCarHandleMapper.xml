@@ -54,6 +54,33 @@
         ORDER BY o.id DESC
     </select>
 
+    <select id="selectByIdJoinStation" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.oilcarhandle.vo.OilCarHandleRespVO">
+        SELECT
+            o.id,
+            o.plate_no AS plateNo,
+            p.location AS spaceName,
+            o.identify_time AS identifyTime,
+            o.occupy_type AS occupyType,
+            o.status,
+            s.name AS stationName,
+            IFNULL(u.nickname, '') AS handleUserName,
+            o.handle_time AS handleTime,
+            o.handle_method AS handleMethod,
+            o.ignore_reason AS ignoreReason,
+            o.remark,
+            o.reserve1,
+            o.reserve2,
+            o.creator,
+            o.updater,
+            o.create_time AS createTime,
+            o.update_time AS updateTime
+        FROM oil_car_handle o
+        LEFT JOIN station_info s ON o.station_id = s.id
+        LEFT JOIN user_info u ON o.handle_user_id = u.id AND u.deleted = 0
+        LEFT JOIN parking_space_info p ON o.space_id = p.id AND p.deleted = 0
+        WHERE o.id = #{id} AND o.deleted = 0
+    </select>
+
     <!-- 查询处置进度趋势（按天统计） -->
     <select id="selectHandleProgressTrend" resultType="map">
         SELECT

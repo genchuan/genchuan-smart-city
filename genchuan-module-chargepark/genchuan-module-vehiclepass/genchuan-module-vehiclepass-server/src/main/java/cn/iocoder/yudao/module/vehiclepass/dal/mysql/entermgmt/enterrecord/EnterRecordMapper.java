@@ -67,5 +67,6 @@ public interface EnterRecordMapper extends BaseMapperX<EnterRecordDO> {
             @Param("end") LocalDateTime end,
             @Param("stationId") Long stationId);
 
+    MyEnterRecordRespVO selectByIdJoinStation(@Param("id") Long id);
 
 }

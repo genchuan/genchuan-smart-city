@@ -106,8 +106,7 @@ public class LeaveRecordController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('leave:record:query')")
     public CommonResult<LeaveRecordRespVO> getRecord(@RequestParam("id") Long id) {
-        LeaveRecordDO record = leaveRecordService.getRecord(id);
-        return success(BeanUtils.toBean(record, LeaveRecordRespVO.class));
+        return success(leaveRecordService.getRecordWithStation(id));
     }
 
     @GetMapping("/page")

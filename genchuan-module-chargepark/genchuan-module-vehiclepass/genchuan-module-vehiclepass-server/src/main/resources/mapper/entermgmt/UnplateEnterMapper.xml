@@ -52,6 +52,31 @@
         ORDER BY u.id DESC
     </select>
 
+    <select id="selectByIdJoinStation" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.unplateenter.vo.UnplateEnterRespVO">
+        SELECT
+            u.id,
+            u.car_type AS carType,
+            u.car_color AS carColor,
+            u.phone,
+            u.register_time AS registerTime,
+            u.status,
+            IFNULL(ui.nickname, '') AS auditUserName,
+            s.name AS stationName,
+            u.audit_time AS auditTime,
+            u.audit_comment AS auditComment,
+            u.remark,
+            u.reserve1,
+            u.reserve2,
+            u.creator,
+            u.updater,
+            u.create_time AS createTime,
+            u.update_time AS updateTime
+        FROM unplate_enter u
+        LEFT JOIN station_info s ON u.station_id = s.id AND s.deleted = 0
+        LEFT JOIN user_info ui ON u.audit_user_id = ui.id AND ui.deleted = 0
+        WHERE u.id = #{id} AND u.deleted = 0
+    </select>
+
     <!-- 统计各场站无牌入场数量 -->
     <select id="selectStationUnplateCount" resultType="map">
         SELECT

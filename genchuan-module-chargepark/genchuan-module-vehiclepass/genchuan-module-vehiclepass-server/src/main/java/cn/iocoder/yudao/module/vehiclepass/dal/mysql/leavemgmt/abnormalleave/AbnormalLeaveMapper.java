@@ -38,6 +38,8 @@ public interface AbnormalLeaveMapper extends BaseMapperX<AbnormalLeaveDO> {
 
     IPage<AbnormalLeaveRespVO> selectPageJoin(Page<?> page, @Param("reqVO") AbnormalLeavePageReqVO reqVO);
 
+    AbnormalLeaveRespVO selectByIdJoinStation(@Param("id") Long id);
+
     /**
      * 统计异常离场趋势
      */

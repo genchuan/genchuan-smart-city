@@ -75,8 +75,7 @@ public class OilCarHandleController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('oil:car-handle:query')")
     public CommonResult<OilCarHandleRespVO> getCarHandle(@RequestParam("id") Long id) {
-        OilCarHandleDO carHandle = carHandleService.getCarHandle(id);
-        return success(BeanUtils.toBean(carHandle, OilCarHandleRespVO.class));
+        return success(carHandleService.getCarHandleWithStation(id));
     }
 
     @GetMapping("/page")

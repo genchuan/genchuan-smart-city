@@ -39,6 +39,8 @@ public interface LeaveRecordMapper extends BaseMapperX<LeaveRecordDO> {
 
     IPage<LeaveRecordRespVO> selectPageJoin(Page<?> page, @Param("reqVO") LeaveRecordPageReqVO reqVO);
 
+    LeaveRecordRespVO selectByIdJoinStation(@Param("id") Long id);
+
     /**
      * 查询离场量趋势（按天统计）
      */

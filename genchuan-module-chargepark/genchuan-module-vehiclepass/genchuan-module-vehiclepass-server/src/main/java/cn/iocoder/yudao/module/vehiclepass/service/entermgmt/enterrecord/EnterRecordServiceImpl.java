@@ -90,6 +90,11 @@ public class EnterRecordServiceImpl implements EnterRecordService {
     }
 
     @Override
+    public MyEnterRecordRespVO getEnterRecordWithStation(Long id) {
+        return enterRecordMapper.selectByIdJoinStation(id);
+    }
+
+    @Override
     public PageResult<EnterRecordDO> getRecordPage(EnterRecordPageReqVO pageReqVO) {
         return enterRecordMapper.selectPage(pageReqVO);
     }

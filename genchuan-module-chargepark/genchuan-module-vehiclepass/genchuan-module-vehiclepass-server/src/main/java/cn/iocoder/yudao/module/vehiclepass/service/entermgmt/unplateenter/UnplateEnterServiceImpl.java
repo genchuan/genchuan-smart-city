@@ -102,6 +102,11 @@ public class UnplateEnterServiceImpl implements UnplateEnterService {
     }
 
     @Override
+    public UnplateEnterRespVO getUnplateEnterWithStation(Long id) {
+        return enterMapper.selectByIdJoinStation(id);
+    }
+
+    @Override
     public PageResult<UnplateEnterDO> getEnterPage(UnplateEnterPageReqVO pageReqVO) {
         return enterMapper.selectPage(pageReqVO);
     }

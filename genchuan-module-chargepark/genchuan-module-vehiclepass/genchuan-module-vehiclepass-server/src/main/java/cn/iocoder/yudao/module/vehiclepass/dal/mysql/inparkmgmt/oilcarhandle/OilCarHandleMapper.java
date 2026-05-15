@@ -46,6 +46,8 @@ public interface OilCarHandleMapper extends BaseMapperX<OilCarHandleDO> {
 
     IPage<OilCarHandleRespVO> selectPageJoin(Page<?> page, @Param("reqVO") OilCarHandlePageReqVO reqVO);
 
+    OilCarHandleRespVO selectByIdJoinStation(@Param("id") Long id);
+
     /**
      * 查询处置进度趋势
      */

@@ -52,6 +52,31 @@
         ORDER BY p.id DESC
     </select>
 
+    <select id="selectByIdJoinStation" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.passrecord.vo.PassRecordRespVO">
+        SELECT
+            p.id,
+            p.plate_no AS plateNo,
+            p.pass_reason AS passReason,
+            p.pass_time AS passTime,
+            p.image_url AS imageUrl,
+            p.status,
+            s.name AS stationName,
+            u.nickname AS operatorName,
+            p.operator_time AS operatorTime,
+            p.check_result AS checkResult,
+            p.remark,
+            p.reserve1,
+            p.reserve2,
+            p.creator,
+            p.updater,
+            p.create_time AS createTime,
+            p.update_time AS updateTime
+        FROM pass_record p
+        LEFT JOIN station_info s ON p.station_id = s.id AND s.deleted = 0
+        LEFT JOIN user_info u ON p.operator_id = u.id AND u.deleted = 0
+        WHERE p.id = #{id} AND p.deleted = 0
+    </select>
+
     <!-- 查询放行量趋势（按天统计） -->
     <select id="selectPassCountTrend" resultType="map">
         SELECT

@@ -83,8 +83,7 @@ public class AbnormalLeaveController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('abnormal:leave:query')")
     public CommonResult<AbnormalLeaveRespVO> getLeave(@RequestParam("id") Long id) {
-        AbnormalLeaveDO leave = leaveService.getLeave(id);
-        return success(BeanUtils.toBean(leave, AbnormalLeaveRespVO.class));
+        return success(leaveService.getLeaveWithStation(id));
     }
 
     @GetMapping("/page")

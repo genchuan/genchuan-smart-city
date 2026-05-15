@@ -93,8 +93,8 @@ public class UnplateEnterController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('unplate:enter:query')")
     public CommonResult<UnplateEnterRespVO> getEnter(@RequestParam("id") Long id) {
-        UnplateEnterDO enter = enterService.getEnter(id);
-        return success(BeanUtils.toBean(enter, UnplateEnterRespVO.class));
+        UnplateEnterRespVO enter = enterService.getUnplateEnterWithStation(id);
+        return success(enter);
     }
 
     @GetMapping("/page")

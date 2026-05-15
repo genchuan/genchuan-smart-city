@@ -62,6 +62,14 @@ public interface UnplateEnterService {
     UnplateEnterDO getEnter(Long id);
 
     /**
+     * 获得无牌入场（含场站名称）
+     *
+     * @param id 编号
+     * @return 无牌入场
+     */
+    UnplateEnterRespVO getUnplateEnterWithStation(Long id);
+
+    /**
      * 获得无牌入场分页
      *
      * @param pageReqVO 分页查询

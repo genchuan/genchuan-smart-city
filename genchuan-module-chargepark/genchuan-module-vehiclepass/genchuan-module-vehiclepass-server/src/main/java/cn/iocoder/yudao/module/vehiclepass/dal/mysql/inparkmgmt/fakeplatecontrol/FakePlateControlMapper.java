@@ -43,6 +43,8 @@ public interface FakePlateControlMapper extends BaseMapperX<FakePlateControlDO> 
                 .orderByDesc(FakePlateControlDO::getId));
     }
 
+    FakePlateControlRespVO selectByIdJoinStation(@Param("id") Long id);
+
     IPage<MyFakePlateControlRespVO> selectPageJoinStationUser(Page<?> page, @Param("reqVO") FakePlateControlPageReqVO reqVO);
 
     /**

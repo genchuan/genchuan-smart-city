@@ -41,6 +41,8 @@ public interface PassRecordMapper extends BaseMapperX<PassRecordDO> {
 
     IPage<PassRecordRespVO> selectPageJoin(Page<?> page, @Param("reqVO") PassRecordPageReqVO reqVO);
 
+    PassRecordRespVO selectByIdJoinStation(@Param("id") Long id);
+
     /**
      * 查询放行量趋势（按天统计）
      */

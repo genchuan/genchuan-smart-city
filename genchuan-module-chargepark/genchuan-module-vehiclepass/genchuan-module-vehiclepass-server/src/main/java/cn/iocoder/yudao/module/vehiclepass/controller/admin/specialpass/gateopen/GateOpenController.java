@@ -92,8 +92,8 @@ public class GateOpenController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('gate:open:query')")
     public CommonResult<GateOpenRespVO> getOpen(@RequestParam("id") Long id) {
-        GateOpenDO open = openService.getOpen(id);
-        return success(BeanUtils.toBean(open, GateOpenRespVO.class));
+        GateOpenRespVO open = openService.getGateOpenWithStation(id);
+        return success(open);
     }
 
     @GetMapping("/page")

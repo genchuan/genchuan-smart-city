@@ -50,6 +50,29 @@
         ORDER BY p.id DESC
     </select>
 
+    <select id="selectByIdJoinStation" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckRespVO">
+        SELECT
+            p.id,
+            p.plate_no AS plateNo,
+            p.park_fee AS parkFee,
+            p.status,
+            p.check_time AS checkTime,
+            s.name AS stationName,
+            u.nickname AS checkUserName,
+            p.check_result AS checkResult,
+            p.remark,
+            p.reserve1,
+            p.reserve2,
+            p.creator,
+            p.updater,
+            p.create_time AS createTime,
+            p.update_time AS updateTime
+        FROM pay_check p
+        LEFT JOIN station_info s ON p.station_id = s.id AND s.deleted = 0
+        LEFT JOIN user_info u ON p.check_user_id = u.id AND u.deleted = 0
+        WHERE p.id = #{id} AND p.deleted = 0
+    </select>
+
     <!-- 统计核验成功率趋势 -->
     <select id="selectChartTrend" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.paycheck.vo.PayCheckChartRespVO$CheckSuccessTrend">
         SELECT
