@@ -48,7 +48,7 @@ public class EnterRecordServiceImpl implements EnterRecordService {
     public Long createRecord(EnterRecordSaveReqVO createReqVO) {
         EnterRecordDO record = BeanUtils.toBean(createReqVO, EnterRecordDO.class);
         if (record.getIsCorrected() == null) {
-            record.setIsCorrected(false);
+            record.setIsCorrected(0);
         }
         enterRecordMapper.insert(record);
         return record.getId();
@@ -138,7 +138,7 @@ public class EnterRecordServiceImpl implements EnterRecordService {
         entity.setStationId(req.getStationId());
         entity.setRemark(req.getRemark());
         entity.setProofImage(req.getProofImage());
-        entity.setIsCorrected(false);
+        entity.setIsCorrected(0);
 
         // 数据库插入（数据操作都在服务层）
         enterRecordMapper.insert(entity);

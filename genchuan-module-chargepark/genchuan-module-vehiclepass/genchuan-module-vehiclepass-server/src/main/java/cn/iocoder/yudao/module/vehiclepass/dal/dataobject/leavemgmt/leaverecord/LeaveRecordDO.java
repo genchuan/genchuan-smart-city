@@ -62,9 +62,9 @@ public class LeaveRecordDO extends BaseDO {
      */
     private String proofImage;
     /**
-     * 修正日志标记：0-未修正 1-已修正
+     * 修正日志标记：0-未修正 1-已修正 2-已确认
      */
-    private Boolean isCorrected;
+    private Integer isCorrected;
     /**
      * 备用字段1
      */

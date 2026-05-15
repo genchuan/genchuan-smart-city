@@ -32,7 +32,7 @@ public class IdentifyPageReqVO extends PageParam {
     @Schema(description = "备注，支持模糊查询", example = "")
     private String remark;
 
-    @Schema(description = "修正记录标记（0-未修正 / 1-已修正）", example = "false")
-    private Boolean isCorrected;
+    @Schema(description = "修正记录标记（0-未修正 / 1-已修正 / 2-已确认）", example = "0")
+    private Integer isCorrected;
 
 }

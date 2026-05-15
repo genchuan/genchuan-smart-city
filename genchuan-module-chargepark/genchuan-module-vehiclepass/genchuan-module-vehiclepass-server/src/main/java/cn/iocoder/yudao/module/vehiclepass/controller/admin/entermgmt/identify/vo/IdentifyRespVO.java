@@ -43,9 +43,9 @@ public class IdentifyRespVO {
     @ExcelProperty("备注")
     private String remark;
 
-    @Schema(description = "修正记录标记", example = "false")
+    @Schema(description = "修正记录标记", example = "0")
     @ExcelProperty("修正记录标记")
-    private Boolean isCorrected;
+    private Integer isCorrected;
 
     @Schema(description = "备用字段1", example = "")
     @ExcelProperty("备用字段1")

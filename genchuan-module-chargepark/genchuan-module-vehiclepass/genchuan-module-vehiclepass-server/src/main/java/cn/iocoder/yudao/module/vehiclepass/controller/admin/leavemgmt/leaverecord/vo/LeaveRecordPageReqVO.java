@@ -33,8 +33,8 @@ public class LeaveRecordPageReqVO extends PageParam {
     @Schema(description = "佐证图片地址")
     private String proofImage;
 
-    @Schema(description = "修正日志标记：0-未修正 1-已修正")
-    private Boolean isCorrected;
+    @Schema(description = "修正日志标记：0-未修正 1-已修正 2-已确认")
+    private Integer isCorrected;
 
     @Schema(description = "备用字段1")
     private String reserve1;

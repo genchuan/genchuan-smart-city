@@ -124,7 +124,7 @@ public class LeaveRecordServiceImpl implements LeaveRecordService {
         record.setStationId(reqVO.getStationId());
         record.setRemark(reqVO.getRemark());
         record.setProofImage(reqVO.getProofImage());
-        record.setIsCorrected(false);
+        record.setIsCorrected(0);
         recordMapper.insert(record);
         return record.getId();
     }

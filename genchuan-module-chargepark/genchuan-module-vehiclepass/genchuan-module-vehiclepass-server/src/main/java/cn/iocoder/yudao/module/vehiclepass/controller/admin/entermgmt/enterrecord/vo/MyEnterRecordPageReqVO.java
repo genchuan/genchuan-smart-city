@@ -41,7 +41,7 @@ public class MyEnterRecordPageReqVO extends PageParam {
     @Schema(description = "备注，模糊匹配", example = "测试备注")
     private String remark;
 
-    @Schema(description = "修正日志标记 0-未修正 1-已修正", example = "false")
-    private Boolean isCorrected;
+    @Schema(description = "修正日志标记 0-未修正 1-已修正 2-已确认", example = "0")
+    private Integer isCorrected;
 
 }

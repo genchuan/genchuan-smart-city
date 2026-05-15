@@ -99,7 +99,7 @@ public class IdentifyServiceImpl implements IdentifyService {
         if (identify.getConfidence() == null) {
             identify.setConfidence(new BigDecimal(DEFAULT_CONFIDENCE));
         }
-        identify.setIsCorrected(false); // 未修正
+        identify.setIsCorrected(0); // 未修正
 
         // 3. 插入
         return identifyMapper.insert(identify) > 0;
@@ -112,7 +112,7 @@ public class IdentifyServiceImpl implements IdentifyService {
         BeanUtil.copyProperties(reqVO, identify);
 
         // 2. 强制设置为已修正（前端传 true，这里再次保证）
-        identify.setIsCorrected(Boolean.TRUE);
+        identify.setIsCorrected(1);
 
         // 3. 根据ID更新
         return identifyMapper.updateById(identify) > 0;
@@ -206,10 +206,10 @@ public class IdentifyServiceImpl implements IdentifyService {
         if (identify == null) {
             throw exception(IDENTIFY_NOT_EXISTS);
         }
-        // 设置为已修正
+        // 设置为已确认
         IdentifyDO updateObj = new IdentifyDO();
         updateObj.setId(reqVO.getId());
-        updateObj.setIsCorrected(true);
+        updateObj.setIsCorrected(2);
         return identifyMapper.updateById(updateObj) > 0;
     }
 
