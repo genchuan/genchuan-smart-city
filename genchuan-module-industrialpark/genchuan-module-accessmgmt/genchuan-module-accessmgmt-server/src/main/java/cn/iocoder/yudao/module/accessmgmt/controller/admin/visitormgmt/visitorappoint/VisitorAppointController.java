@@ -118,8 +118,8 @@ public class VisitorAppointController {
     @Operation(summary = "访客预约态势")
     @PreAuthorize("@ss.hasPermission('accessmgmt:visitor-appoint:query')")
     public CommonResult<VisitorAppointChartRespVO> chart(
-            @Parameter(name = "startTime", description = "统计开始时间") @RequestParam(value = "startTime", required = false) String startTime,
-            @Parameter(name = "endTime", description = "统计结束时间") @RequestParam(value = "endTime", required = false) String endTime) {
+            @Parameter(name = "startTime", description = "统计开始时间") @RequestParam(value = "startTime", required = false) Long startTime,
+            @Parameter(name = "endTime", description = "统计结束时间") @RequestParam(value = "endTime", required = false) Long endTime) {
         return success(visitorAppointService.getVisitorAppointChart(startTime, endTime));
     }
 

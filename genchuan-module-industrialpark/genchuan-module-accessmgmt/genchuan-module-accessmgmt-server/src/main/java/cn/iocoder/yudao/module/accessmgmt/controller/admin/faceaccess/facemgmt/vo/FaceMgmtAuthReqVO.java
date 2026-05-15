@@ -14,7 +14,7 @@ public class FaceMgmtAuthReqVO {
     private Long id;
 
     @Schema(description = "权限有效期，格式时间戳", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "权限有效期不能为空")
-    private String authValidity;
+    @NotNull(message = "权限有效期不能为空")
+    private Long authValidity;
 
 }

@@ -21,7 +21,7 @@ public class VisitorAppointCreateReqVO {
     private String visitCompany;
 
     @Schema(description = "拜访时间，格式时间戳", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "拜访时间不能为空")
-    private String visitTime;
+    @NotNull(message = "拜访时间不能为空")
+    private Long visitTime;
 
 }

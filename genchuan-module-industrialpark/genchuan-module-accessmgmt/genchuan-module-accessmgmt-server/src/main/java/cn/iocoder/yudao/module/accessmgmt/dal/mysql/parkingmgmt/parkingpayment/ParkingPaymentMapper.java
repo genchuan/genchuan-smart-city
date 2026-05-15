@@ -9,6 +9,8 @@ import cn.iocoder.yudao.module.accessmgmt.dal.dataobject.parkingmgmt.parkingpaym
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 
 /**
@@ -26,26 +28,28 @@ public interface ParkingPaymentMapper extends BaseMapperX<ParkingPaymentDO> {
                 .eqIfPresent(ParkingPaymentDO::getBillStatus, reqVO.getBillStatus())
                 .eqIfPresent(ParkingPaymentDO::getPayType, reqVO.getPayType())
                 .eqIfPresent(ParkingPaymentDO::getInvoiceStatus, reqVO.getInvoiceStatus())
-                .betweenIfPresent(ParkingPaymentDO::getPayTime, reqVO.getStartTime(), reqVO.getEndTime())
+                .betweenIfPresent(ParkingPaymentDO::getPayTime,
+                        reqVO.getStartTime() != null ? Instant.ofEpochSecond(reqVO.getStartTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null,
+                        reqVO.getEndTime() != null ? Instant.ofEpochSecond(reqVO.getEndTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null)
                 .orderByDesc(ParkingPaymentDO::getId));
     }
 
     /**
      * 统计卡片数据：总支付笔数、欠费笔数、总收入、缴费率
      */
-    ParkingPaymentChartRespVO selectCardStats(@Param("startTime") String startTime,
-                                              @Param("endTime") String endTime);
+    ParkingPaymentChartRespVO selectCardStats(@Param("startTime") Long startTime,
+                                              @Param("endTime") Long endTime);
 
     /**
      * 统计每日收入趋势
      */
-    List<ParkingPaymentChartRespVO.DayIncomeItem> selectDayIncomeList(@Param("startTime") String startTime,
-                                                                       @Param("endTime") String endTime);
+    List<ParkingPaymentChartRespVO.DayIncomeItem> selectDayIncomeList(@Param("startTime") Long startTime,
+                                                                       @Param("endTime") Long endTime);
 
     /**
      * 统计每日支付笔数趋势
      */
-    List<ParkingPaymentChartRespVO.DayPayItem> selectDayPayList(@Param("startTime") String startTime,
-                                                                  @Param("endTime") String endTime);
+    List<ParkingPaymentChartRespVO.DayPayItem> selectDayPayList(@Param("startTime") Long startTime,
+                                                                  @Param("endTime") Long endTime);
 
 }

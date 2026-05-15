@@ -178,7 +178,7 @@ public class ParkingPaymentServiceImpl implements ParkingPaymentService {
     }
 
     @Override
-    public ParkingPaymentChartRespVO getParkingPaymentChart(String startTime, String endTime) {
+    public ParkingPaymentChartRespVO getParkingPaymentChart(Long startTime, Long endTime) {
         ParkingPaymentChartRespVO chartVO = parkingPaymentMapper.selectCardStats(startTime, endTime);
         if (chartVO == null) {
             chartVO = new ParkingPaymentChartRespVO();

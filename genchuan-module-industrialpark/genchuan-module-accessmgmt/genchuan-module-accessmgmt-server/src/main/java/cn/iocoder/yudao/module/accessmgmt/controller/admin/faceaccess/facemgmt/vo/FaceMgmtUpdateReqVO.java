@@ -28,7 +28,7 @@ public class FaceMgmtUpdateReqVO {
     private String accessArea;
 
     @Schema(description = "权限有效期，格式时间戳")
-    private String authValidity;
+    private Long authValidity;
 
     @Schema(description = "权限状态（已授权/未授权/已过期）", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "权限状态不能为空")

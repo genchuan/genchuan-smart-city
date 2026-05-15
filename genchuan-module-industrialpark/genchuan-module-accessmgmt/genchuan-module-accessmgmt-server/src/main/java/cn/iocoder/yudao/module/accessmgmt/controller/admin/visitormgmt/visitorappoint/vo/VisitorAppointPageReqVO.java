@@ -23,9 +23,9 @@ public class VisitorAppointPageReqVO extends PageParam {
     private String appointStatus;
 
     @Schema(description = "拜访开始时间，格式时间戳")
-    private String startTime;
+    private Long startTime;
 
     @Schema(description = "拜访结束时间，格式时间戳")
-    private String endTime;
+    private Long endTime;
 
 }

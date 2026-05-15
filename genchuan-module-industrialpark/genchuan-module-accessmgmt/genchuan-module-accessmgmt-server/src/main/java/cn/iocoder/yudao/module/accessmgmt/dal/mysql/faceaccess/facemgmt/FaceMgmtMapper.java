@@ -9,6 +9,8 @@ import cn.iocoder.yudao.module.accessmgmt.dal.dataobject.faceaccess.facemgmt.Fac
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 
 /**
@@ -32,19 +34,19 @@ public interface FaceMgmtMapper extends BaseMapperX<FaceMgmtDO> {
     /**
      * 统计各状态数量：总数、授权数、过期数、未授权数
      */
-    FaceMgmtChartRespVO selectChartStats(@Param("startTime") String startTime,
-                                         @Param("endTime") String endTime);
+    FaceMgmtChartRespVO selectChartStats(@Param("startTime") Long startTime,
+                                         @Param("endTime") Long endTime);
 
     /**
      * 统计各区域授权人数
      */
-    List<FaceMgmtChartRespVO.AreaAuthItem> selectAreaAuthList(@Param("startTime") String startTime,
-                                                               @Param("endTime") String endTime);
+    List<FaceMgmtChartRespVO.AreaAuthItem> selectAreaAuthList(@Param("startTime") Long startTime,
+                                                               @Param("endTime") Long endTime);
 
     /**
      * 统计各时段通行人数（基于最后通行时间）
      */
-    List<FaceMgmtChartRespVO.TimeAccessItem> selectTimeAccessList(@Param("startTime") String startTime,
-                                                                   @Param("endTime") String endTime);
+    List<FaceMgmtChartRespVO.TimeAccessItem> selectTimeAccessList(@Param("startTime") Long startTime,
+                                                                   @Param("endTime") Long endTime);
 
 }

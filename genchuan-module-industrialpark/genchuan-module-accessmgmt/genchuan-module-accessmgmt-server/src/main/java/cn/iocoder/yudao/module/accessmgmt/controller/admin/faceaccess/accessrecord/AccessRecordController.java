@@ -99,8 +99,8 @@ public class AccessRecordController {
     @Operation(summary = "人员通行统计态势")
     @PreAuthorize("@ss.hasPermission('accessmgmt:access-record:query')")
     public CommonResult<AccessRecordChartRespVO> getAccessRecordChart(
-            @Parameter(name = "startTime", description = "统计开始时间，格式时间戳") @RequestParam(value = "startTime", required = false) String startTime,
-            @Parameter(name = "endTime", description = "统计结束时间，格式时间戳") @RequestParam(value = "endTime", required = false) String endTime) {
+            @Parameter(name = "startTime", description = "统计开始时间，格式时间戳") @RequestParam(value = "startTime", required = false) Long startTime,
+            @Parameter(name = "endTime", description = "统计结束时间，格式时间戳") @RequestParam(value = "endTime", required = false) Long endTime) {
         AccessRecordChartRespVO chartVO = accessRecordService.getAccessRecordChart(startTime, endTime);
         return success(chartVO);
     }

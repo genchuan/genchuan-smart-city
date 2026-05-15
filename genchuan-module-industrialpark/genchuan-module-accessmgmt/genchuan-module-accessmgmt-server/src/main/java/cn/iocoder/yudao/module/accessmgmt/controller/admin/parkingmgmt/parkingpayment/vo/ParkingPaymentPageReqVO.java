@@ -26,9 +26,9 @@ public class ParkingPaymentPageReqVO extends PageParam {
     private String invoiceStatus;
 
     @Schema(description = "支付开始时间，格式时间戳")
-    private String startTime;
+    private Long startTime;
 
     @Schema(description = "支付结束时间，格式时间戳")
-    private String endTime;
+    private Long endTime;
 
 }

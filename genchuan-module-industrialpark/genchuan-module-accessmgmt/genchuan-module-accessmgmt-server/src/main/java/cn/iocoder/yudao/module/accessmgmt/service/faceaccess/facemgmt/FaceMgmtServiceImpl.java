@@ -14,7 +14,9 @@ import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -59,6 +61,7 @@ public class FaceMgmtServiceImpl implements FaceMgmtService {
         }
 
         FaceMgmtDO entity = BeanUtils.toBean(createReqVO, FaceMgmtDO.class);
+        entity.setAuthStatus("未授权");
         faceMgmtMapper.insert(entity);
         return true;
     }
@@ -126,7 +129,7 @@ public class FaceMgmtServiceImpl implements FaceMgmtService {
         updateObj.setId(reqVO.getId());
         updateObj.setAccessArea(reqVO.getAccessArea());
         updateObj.setAuthValidity(reqVO.getAuthValidity() != null ?
-                LocalDateTime.parse(reqVO.getAuthValidity()) : null);
+                Instant.ofEpochSecond(reqVO.getAuthValidity()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null);
         faceMgmtMapper.updateById(updateObj);
         return true;
     }
@@ -194,7 +197,7 @@ public class FaceMgmtServiceImpl implements FaceMgmtService {
         updateObj.setId(reqVO.getId());
         updateObj.setAuthStatus("已授权");
         updateObj.setAuthValidity(reqVO.getAuthValidity() != null ?
-                LocalDateTime.parse(reqVO.getAuthValidity()) : null);
+                Instant.ofEpochSecond(reqVO.getAuthValidity()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null);
         faceMgmtMapper.updateById(updateObj);
         return true;
     }
@@ -210,13 +213,13 @@ public class FaceMgmtServiceImpl implements FaceMgmtService {
         updateObj.setId(reqVO.getId());
         updateObj.setAuthStatus("已授权");
         updateObj.setAuthValidity(reqVO.getAuthValidity() != null ?
-                LocalDateTime.parse(reqVO.getAuthValidity()) : null);
+                Instant.ofEpochSecond(reqVO.getAuthValidity()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null);
         faceMgmtMapper.updateById(updateObj);
         return true;
     }
 
     @Override
-    public FaceMgmtChartRespVO getFaceMgmtChart(String startTime, String endTime) {
+    public FaceMgmtChartRespVO getFaceMgmtChart(Long startTime, Long endTime) {
         FaceMgmtChartRespVO chartVO = faceMgmtMapper.selectChartStats(startTime, endTime);
         if (chartVO == null) {
             chartVO = new FaceMgmtChartRespVO();

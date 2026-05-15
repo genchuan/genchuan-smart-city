@@ -23,9 +23,9 @@ public class AccessRecordPageReqVO extends PageParam {
     private String accessStatus;
 
     @Schema(description = "通行开始时间，格式时间戳")
-    private String startTime;
+    private Long startTime;
 
     @Schema(description = "通行结束时间，格式时间戳")
-    private String endTime;
+    private Long endTime;
 
 }

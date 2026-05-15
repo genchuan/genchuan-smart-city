@@ -9,6 +9,8 @@ import cn.iocoder.yudao.module.accessmgmt.dal.dataobject.faceaccess.accessrecord
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 
 /**
@@ -25,20 +27,22 @@ public interface AccessRecordMapper extends BaseMapperX<AccessRecordDO> {
                 .eqIfPresent(AccessRecordDO::getAccessArea, reqVO.getAccessArea())
                 .eqIfPresent(AccessRecordDO::getVerifyType, reqVO.getVerifyType())
                 .eqIfPresent(AccessRecordDO::getAccessStatus, reqVO.getAccessStatus())
-                .betweenIfPresent(AccessRecordDO::getAccessTime, reqVO.getStartTime(), reqVO.getEndTime())
+                .betweenIfPresent(AccessRecordDO::getAccessTime,
+                        reqVO.getStartTime() != null ? Instant.ofEpochSecond(reqVO.getStartTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null,
+                        reqVO.getEndTime() != null ? Instant.ofEpochSecond(reqVO.getEndTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null)
                 .orderByDesc(AccessRecordDO::getId));
     }
 
-    List<AccessRecordChartRespVO.TimeTrendItem> selectTimeTrendList(@Param("startTime") String startTime,
-                                                                     @Param("endTime") String endTime);
+    List<AccessRecordChartRespVO.TimeTrendItem> selectTimeTrendList(@Param("startTime") Long startTime,
+                                                                     @Param("endTime") Long endTime);
 
-    List<AccessRecordChartRespVO.DayTrendItem> selectDayTrendList(@Param("startTime") String startTime,
-                                                                   @Param("endTime") String endTime);
+    List<AccessRecordChartRespVO.DayTrendItem> selectDayTrendList(@Param("startTime") Long startTime,
+                                                                   @Param("endTime") Long endTime);
 
-    List<AccessRecordChartRespVO.AreaCountItem> selectAreaCountList(@Param("startTime") String startTime,
-                                                                     @Param("endTime") String endTime);
+    List<AccessRecordChartRespVO.AreaCountItem> selectAreaCountList(@Param("startTime") Long startTime,
+                                                                     @Param("endTime") Long endTime);
 
-    List<AccessRecordChartRespVO.UserCountItem> selectUserCountList(@Param("startTime") String startTime,
-                                                                     @Param("endTime") String endTime);
+    List<AccessRecordChartRespVO.UserCountItem> selectUserCountList(@Param("startTime") Long startTime,
+                                                                     @Param("endTime") Long endTime);
 
 }

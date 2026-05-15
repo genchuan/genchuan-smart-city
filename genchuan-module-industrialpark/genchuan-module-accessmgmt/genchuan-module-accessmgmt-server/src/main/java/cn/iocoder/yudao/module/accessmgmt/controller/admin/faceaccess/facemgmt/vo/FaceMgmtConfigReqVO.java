@@ -16,6 +16,6 @@ public class FaceMgmtConfigReqVO {
     private String accessArea;
 
     @Schema(description = "权限有效期，格式时间戳")
-    private String authValidity;
+    private Long authValidity;
 
 }

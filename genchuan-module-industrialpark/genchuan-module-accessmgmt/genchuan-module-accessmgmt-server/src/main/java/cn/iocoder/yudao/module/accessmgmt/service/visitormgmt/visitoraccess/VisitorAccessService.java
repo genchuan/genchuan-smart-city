@@ -26,6 +26,6 @@ public interface VisitorAccessService {
 
     List<VisitorAccessRespVO> getVisitorAccessList(VisitorAccessPageReqVO pageReqVO);
 
-    VisitorAccessChartRespVO getVisitorAccessChart(String startTime, String endTime);
+    VisitorAccessChartRespVO getVisitorAccessChart(Long startTime, Long endTime);
 
 }

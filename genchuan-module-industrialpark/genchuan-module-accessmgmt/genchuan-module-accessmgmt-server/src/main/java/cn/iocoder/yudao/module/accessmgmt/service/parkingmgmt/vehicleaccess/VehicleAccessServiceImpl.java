@@ -130,7 +130,7 @@ public class VehicleAccessServiceImpl implements VehicleAccessService {
     }
 
     @Override
-    public VehicleAccessChartRespVO getVehicleAccessChart(String startTime, String endTime) {
+    public VehicleAccessChartRespVO getVehicleAccessChart(Long startTime, Long endTime) {
         VehicleAccessChartRespVO chartVO = new VehicleAccessChartRespVO();
         chartVO.setTimeTrendList(vehicleAccessMapper.selectTimeTrendList(startTime, endTime));
         chartVO.setDayTrendList(vehicleAccessMapper.selectDayTrendList(startTime, endTime));

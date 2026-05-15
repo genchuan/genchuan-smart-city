@@ -26,9 +26,9 @@ public class VehicleAccessPageReqVO extends PageParam {
     private String payStatus;
 
     @Schema(description = "通行开始时间，格式时间戳")
-    private String startTime;
+    private Long startTime;
 
     @Schema(description = "通行结束时间，格式时间戳")
-    private String endTime;
+    private Long endTime;
 
 }

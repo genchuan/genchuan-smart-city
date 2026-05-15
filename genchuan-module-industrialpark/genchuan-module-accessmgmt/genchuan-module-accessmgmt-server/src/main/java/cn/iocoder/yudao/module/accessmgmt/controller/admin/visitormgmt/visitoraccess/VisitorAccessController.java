@@ -97,8 +97,8 @@ public class VisitorAccessController {
     @Operation(summary = "访客通行区域分布")
     @PreAuthorize("@ss.hasPermission('accessmgmt:visitor-access:query')")
     public CommonResult<VisitorAccessChartRespVO> chart(
-            @Parameter(name = "startTime", description = "统计开始时间") @RequestParam(value = "startTime", required = false) String startTime,
-            @Parameter(name = "endTime", description = "统计结束时间") @RequestParam(value = "endTime", required = false) String endTime) {
+            @Parameter(name = "startTime", description = "统计开始时间") @RequestParam(value = "startTime", required = false) Long startTime,
+            @Parameter(name = "endTime", description = "统计结束时间") @RequestParam(value = "endTime", required = false) Long endTime) {
         return success(visitorAccessService.getVisitorAccessChart(startTime, endTime));
     }
 

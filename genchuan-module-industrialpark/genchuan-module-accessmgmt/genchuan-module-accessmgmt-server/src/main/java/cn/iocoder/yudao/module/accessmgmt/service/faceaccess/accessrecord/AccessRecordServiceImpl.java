@@ -93,7 +93,7 @@ public class AccessRecordServiceImpl implements AccessRecordService {
     }
 
     @Override
-    public AccessRecordChartRespVO getAccessRecordChart(String startTime, String endTime) {
+    public AccessRecordChartRespVO getAccessRecordChart(Long startTime, Long endTime) {
         AccessRecordChartRespVO chartVO = new AccessRecordChartRespVO();
         chartVO.setTimeTrendList(accessRecordMapper.selectTimeTrendList(startTime, endTime));
         chartVO.setDayTrendList(accessRecordMapper.selectDayTrendList(startTime, endTime));

@@ -27,6 +27,6 @@ public interface VisitorAppointService {
 
     List<VisitorAppointRespVO> getVisitorAppointList(VisitorAppointPageReqVO pageReqVO);
 
-    VisitorAppointChartRespVO getVisitorAppointChart(String startTime, String endTime);
+    VisitorAppointChartRespVO getVisitorAppointChart(Long startTime, Long endTime);
 
 }

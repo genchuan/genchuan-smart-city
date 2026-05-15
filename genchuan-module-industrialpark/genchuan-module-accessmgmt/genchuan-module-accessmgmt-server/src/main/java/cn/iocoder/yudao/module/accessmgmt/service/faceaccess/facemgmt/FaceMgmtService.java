@@ -80,6 +80,6 @@ public interface FaceMgmtService {
     /**
      * 人脸通行授权态势
      */
-    FaceMgmtChartRespVO getFaceMgmtChart(String startTime, String endTime);
+    FaceMgmtChartRespVO getFaceMgmtChart(Long startTime, Long endTime);
 
 }

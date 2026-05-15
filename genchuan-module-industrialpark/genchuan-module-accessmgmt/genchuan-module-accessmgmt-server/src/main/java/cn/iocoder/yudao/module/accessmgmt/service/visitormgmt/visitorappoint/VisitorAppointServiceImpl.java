@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,7 +46,7 @@ public class VisitorAppointServiceImpl implements VisitorAppointService {
     @Transactional(rollbackFor = Exception.class)
     public Boolean createVisitorAppoint(VisitorAppointCreateReqVO createReqVO) {
         VisitorAppointDO entity = BeanUtils.toBean(createReqVO, VisitorAppointDO.class);
-        entity.setVisitTime(LocalDateTime.parse(createReqVO.getVisitTime()));
+        entity.setVisitTime(Instant.ofEpochSecond(createReqVO.getVisitTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime());
         entity.setAppointStatus("待审核");
         visitorAppointMapper.insert(entity);
         return true;
@@ -153,7 +155,7 @@ public class VisitorAppointServiceImpl implements VisitorAppointService {
     }
 
     @Override
-    public VisitorAppointChartRespVO getVisitorAppointChart(String startTime, String endTime) {
+    public VisitorAppointChartRespVO getVisitorAppointChart(Long startTime, Long endTime) {
         VisitorAppointChartRespVO chartVO = new VisitorAppointChartRespVO();
         chartVO.setDayTrendList(visitorAppointMapper.selectDayTrendList(startTime, endTime));
         chartVO.setCompanyCountList(visitorAppointMapper.selectCompanyCountList(startTime, endTime));

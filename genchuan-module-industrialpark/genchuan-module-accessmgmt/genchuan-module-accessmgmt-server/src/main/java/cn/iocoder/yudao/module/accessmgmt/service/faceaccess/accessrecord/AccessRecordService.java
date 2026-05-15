@@ -24,6 +24,6 @@ public interface AccessRecordService {
 
     List<AccessRecordRespVO> getAccessRecordList(AccessRecordPageReqVO pageReqVO);
 
-    AccessRecordChartRespVO getAccessRecordChart(String startTime, String endTime);
+    AccessRecordChartRespVO getAccessRecordChart(Long startTime, Long endTime);
 
 }

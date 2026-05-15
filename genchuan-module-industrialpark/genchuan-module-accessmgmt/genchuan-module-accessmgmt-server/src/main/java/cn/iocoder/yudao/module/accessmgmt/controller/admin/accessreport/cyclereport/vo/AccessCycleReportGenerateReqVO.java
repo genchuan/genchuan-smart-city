@@ -13,9 +13,9 @@ public class AccessCycleReportGenerateReqVO {
     private String cycleType;
 
     @Schema(description = "开始时间，格式时间戳（自定义时必填）")
-    private String startTime;
+    private Long startTime;
 
     @Schema(description = "结束时间，格式时间戳（自定义时必填）")
-    private String endTime;
+    private Long endTime;
 
 }

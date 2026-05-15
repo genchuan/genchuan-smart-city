@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -60,9 +62,9 @@ public class AccessCycleReportServiceImpl implements AccessCycleReportService {
         if ("自定义".equals(reqVO.getCycleType())) {
             // 自定义周期使用传入的时间
             start = reqVO.getStartTime() != null ?
-                    LocalDateTime.parse(reqVO.getStartTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) : now;
+                    Instant.ofEpochSecond(reqVO.getStartTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : now;
             end = reqVO.getEndTime() != null ?
-                    LocalDateTime.parse(reqVO.getEndTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) : now;
+                    Instant.ofEpochSecond(reqVO.getEndTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : now;
         } else {
             // 非自定义周期自动计算
             switch (reqVO.getCycleType()) {

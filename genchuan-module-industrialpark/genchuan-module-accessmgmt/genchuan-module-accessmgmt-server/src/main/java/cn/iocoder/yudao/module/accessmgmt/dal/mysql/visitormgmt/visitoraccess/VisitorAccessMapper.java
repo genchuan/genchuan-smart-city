@@ -9,6 +9,8 @@ import cn.iocoder.yudao.module.accessmgmt.dal.dataobject.visitormgmt.visitoracce
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 
 /**
@@ -25,17 +27,19 @@ public interface VisitorAccessMapper extends BaseMapperX<VisitorAccessDO> {
                 .eqIfPresent(VisitorAccessDO::getAccessArea, reqVO.getAccessArea())
                 .eqIfPresent(VisitorAccessDO::getTicketStatus, reqVO.getTicketStatus())
                 .eqIfPresent(VisitorAccessDO::getAccessStatus, reqVO.getAccessStatus())
-                .betweenIfPresent(VisitorAccessDO::getAccessTime, reqVO.getStartTime(), reqVO.getEndTime())
+                .betweenIfPresent(VisitorAccessDO::getAccessTime,
+                        reqVO.getStartTime() != null ? Instant.ofEpochSecond(reqVO.getStartTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null,
+                        reqVO.getEndTime() != null ? Instant.ofEpochSecond(reqVO.getEndTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null)
                 .orderByDesc(VisitorAccessDO::getId));
     }
 
-    List<VisitorAccessChartRespVO.AreaCountItem> selectAreaCountList(@Param("startTime") String startTime,
-                                                                      @Param("endTime") String endTime);
+    List<VisitorAccessChartRespVO.AreaCountItem> selectAreaCountList(@Param("startTime") Long startTime,
+                                                                      @Param("endTime") Long endTime);
 
-    List<VisitorAccessChartRespVO.TimeTrendItem> selectTimeTrendList(@Param("startTime") String startTime,
-                                                                      @Param("endTime") String endTime);
+    List<VisitorAccessChartRespVO.TimeTrendItem> selectTimeTrendList(@Param("startTime") Long startTime,
+                                                                      @Param("endTime") Long endTime);
 
-    List<VisitorAccessChartRespVO.TicketStatusItem> selectTicketStatusList(@Param("startTime") String startTime,
-                                                                            @Param("endTime") String endTime);
+    List<VisitorAccessChartRespVO.TicketStatusItem> selectTicketStatusList(@Param("startTime") Long startTime,
+                                                                            @Param("endTime") Long endTime);
 
 }

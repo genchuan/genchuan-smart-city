@@ -55,6 +55,6 @@ public interface VehicleAccessService {
     /**
      * 车辆通行态势
      */
-    VehicleAccessChartRespVO getVehicleAccessChart(String startTime, String endTime);
+    VehicleAccessChartRespVO getVehicleAccessChart(Long startTime, Long endTime);
 
 }

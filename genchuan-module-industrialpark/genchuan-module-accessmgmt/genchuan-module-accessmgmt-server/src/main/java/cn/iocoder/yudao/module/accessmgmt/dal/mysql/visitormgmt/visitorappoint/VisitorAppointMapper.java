@@ -9,6 +9,8 @@ import cn.iocoder.yudao.module.accessmgmt.dal.dataobject.visitormgmt.visitorappo
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 
 @Mapper
@@ -20,16 +22,18 @@ public interface VisitorAppointMapper extends BaseMapperX<VisitorAppointDO> {
                 .likeIfPresent(VisitorAppointDO::getIdCard, reqVO.getIdCard())
                 .likeIfPresent(VisitorAppointDO::getVisitCompany, reqVO.getVisitCompany())
                 .eqIfPresent(VisitorAppointDO::getAppointStatus, reqVO.getAppointStatus())
-                .betweenIfPresent(VisitorAppointDO::getVisitTime, reqVO.getStartTime(), reqVO.getEndTime())
+                .betweenIfPresent(VisitorAppointDO::getVisitTime,
+                        reqVO.getStartTime() != null ? Instant.ofEpochSecond(reqVO.getStartTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null,
+                        reqVO.getEndTime() != null ? Instant.ofEpochSecond(reqVO.getEndTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null)
                 .orderByDesc(VisitorAppointDO::getId));
     }
 
     VisitorAppointDO selectByTicket(@Param("ticket") String ticket);
 
-    List<VisitorAppointChartRespVO.DayTrendItem> selectDayTrendList(@Param("startTime") String startTime,
-                                                                      @Param("endTime") String endTime);
+    List<VisitorAppointChartRespVO.DayTrendItem> selectDayTrendList(@Param("startTime") Long startTime,
+                                                                      @Param("endTime") Long endTime);
 
-    List<VisitorAppointChartRespVO.CompanyCountItem> selectCompanyCountList(@Param("startTime") String startTime,
-                                                                              @Param("endTime") String endTime);
+    List<VisitorAppointChartRespVO.CompanyCountItem> selectCompanyCountList(@Param("startTime") Long startTime,
+                                                                              @Param("endTime") Long endTime);
 
 }

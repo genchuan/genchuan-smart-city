@@ -110,7 +110,7 @@ public class VisitorAccessServiceImpl implements VisitorAccessService {
     }
 
     @Override
-    public VisitorAccessChartRespVO getVisitorAccessChart(String startTime, String endTime) {
+    public VisitorAccessChartRespVO getVisitorAccessChart(Long startTime, Long endTime) {
         VisitorAccessChartRespVO chartVO = new VisitorAccessChartRespVO();
         chartVO.setAreaCountList(visitorAccessMapper.selectAreaCountList(startTime, endTime));
         chartVO.setTimeTrendList(visitorAccessMapper.selectTimeTrendList(startTime, endTime));

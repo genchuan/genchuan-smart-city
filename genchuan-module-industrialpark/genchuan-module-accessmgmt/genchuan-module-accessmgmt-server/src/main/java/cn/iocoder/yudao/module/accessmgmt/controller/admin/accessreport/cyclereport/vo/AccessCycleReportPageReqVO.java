@@ -17,9 +17,9 @@ public class AccessCycleReportPageReqVO extends PageParam {
     private String cycleType;
 
     @Schema(description = "创建开始时间，格式时间戳")
-    private String startTime;
+    private Long startTime;
 
     @Schema(description = "创建结束时间，格式时间戳")
-    private String endTime;
+    private Long endTime;
 
 }

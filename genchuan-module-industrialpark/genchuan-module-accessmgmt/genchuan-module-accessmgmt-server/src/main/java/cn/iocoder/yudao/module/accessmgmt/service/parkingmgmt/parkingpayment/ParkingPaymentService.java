@@ -65,6 +65,6 @@ public interface ParkingPaymentService {
     /**
      * 停车缴费态势
      */
-    ParkingPaymentChartRespVO getParkingPaymentChart(String startTime, String endTime);
+    ParkingPaymentChartRespVO getParkingPaymentChart(Long startTime, Long endTime);
 
 }

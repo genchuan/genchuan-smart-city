@@ -22,10 +22,10 @@ public class VisitorAccessPageReqVO extends PageParam {
     @Schema(description = "通行状态")
     private String accessStatus;
 
-    @Schema(description = "通行开始时间")
-    private String startTime;
+    @Schema(description = "通行开始时间，格式时间戳")
+    private Long startTime;
 
-    @Schema(description = "通行结束时间")
-    private String endTime;
+    @Schema(description = "通行结束时间，格式时间戳")
+    private Long endTime;
 
 }

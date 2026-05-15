@@ -9,6 +9,8 @@ import cn.iocoder.yudao.module.accessmgmt.dal.dataobject.parkingmgmt.vehicleacce
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 
 /**
@@ -26,32 +28,34 @@ public interface VehicleAccessMapper extends BaseMapperX<VehicleAccessDO> {
                 .eqIfPresent(VehicleAccessDO::getParkName, reqVO.getParkName())
                 .eqIfPresent(VehicleAccessDO::getAccessStatus, reqVO.getAccessStatus())
                 .eqIfPresent(VehicleAccessDO::getPayStatus, reqVO.getPayStatus())
-                .betweenIfPresent(VehicleAccessDO::getAccessTime, reqVO.getStartTime(), reqVO.getEndTime())
+                .betweenIfPresent(VehicleAccessDO::getAccessTime,
+                        reqVO.getStartTime() != null ? Instant.ofEpochSecond(reqVO.getStartTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null,
+                        reqVO.getEndTime() != null ? Instant.ofEpochSecond(reqVO.getEndTime()).atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime() : null)
                 .orderByDesc(VehicleAccessDO::getId));
     }
 
     /**
      * 统计各时段通行量趋势
      */
-    List<VehicleAccessChartRespVO.TimeTrendItem> selectTimeTrendList(@Param("startTime") String startTime,
-                                                                      @Param("endTime") String endTime);
+    List<VehicleAccessChartRespVO.TimeTrendItem> selectTimeTrendList(@Param("startTime") Long startTime,
+                                                                      @Param("endTime") Long endTime);
 
     /**
      * 统计每日进出数量趋势
      */
-    List<VehicleAccessChartRespVO.DayTrendItem> selectDayTrendList(@Param("startTime") String startTime,
-                                                                    @Param("endTime") String endTime);
+    List<VehicleAccessChartRespVO.DayTrendItem> selectDayTrendList(@Param("startTime") Long startTime,
+                                                                    @Param("endTime") Long endTime);
 
     /**
      * 统计各停车场通行数量
      */
-    List<VehicleAccessChartRespVO.ParkCountItem> selectParkCountList(@Param("startTime") String startTime,
-                                                                      @Param("endTime") String endTime);
+    List<VehicleAccessChartRespVO.ParkCountItem> selectParkCountList(@Param("startTime") Long startTime,
+                                                                      @Param("endTime") Long endTime);
 
     /**
      * 统计各车辆类型数量
      */
-    List<VehicleAccessChartRespVO.VehicleTypeItem> selectVehicleTypeList(@Param("startTime") String startTime,
-                                                                           @Param("endTime") String endTime);
+    List<VehicleAccessChartRespVO.VehicleTypeItem> selectVehicleTypeList(@Param("startTime") Long startTime,
+                                                                           @Param("endTime") Long endTime);
 
 }
