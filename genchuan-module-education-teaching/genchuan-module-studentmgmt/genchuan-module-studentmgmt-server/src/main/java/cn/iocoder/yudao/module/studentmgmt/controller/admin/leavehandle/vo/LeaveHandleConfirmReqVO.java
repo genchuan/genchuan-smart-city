@@ -16,9 +16,8 @@ public class LeaveHandleConfirmReqVO {
     @NotNull(message = "ID不能为空")
     private Long id;
 
-    @Schema(description = "家长确认时间", requiredMode = Schema.RequiredMode.REQUIRED, example = "2022-02-07 01:01:01")
+    @Schema(description = "家长确认时间，时间戳格式", requiredMode = Schema.RequiredMode.REQUIRED, example = "1745678900000")
     @NotNull(message = "家长确认时间不能为空")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime parentConfirmTime;
 
 }
