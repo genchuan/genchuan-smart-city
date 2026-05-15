@@ -47,14 +47,14 @@ public class UnplateEnterController {
     @Resource
     private UnplateEnterService enterService;
 
-    @PostMapping("/create")
+    @PostMapping("/vehiclepass-unplate-enter-create")
     @Operation(summary = "创建无牌入场")
     @PreAuthorize("@ss.hasPermission('unplate:enter:create')")
     public CommonResult<Long> createEnter(@Valid @RequestBody UnplateEnterSaveReqVO createReqVO) {
         return success(enterService.createEnter(createReqVO));
     }
 
-    @PostMapping("/vehiclepass-unplate-enter-create")
+    @PostMapping("/create")
     @Operation(summary = "创建无牌入场车辆")
     @PreAuthorize("@ss.hasPermission('vehiclepass:unplate-enter:create')")
     public CommonResult<Boolean> createEnterVehiclePass(@Valid @RequestBody UnplateEnterCreateReqVO createReqVO) {
