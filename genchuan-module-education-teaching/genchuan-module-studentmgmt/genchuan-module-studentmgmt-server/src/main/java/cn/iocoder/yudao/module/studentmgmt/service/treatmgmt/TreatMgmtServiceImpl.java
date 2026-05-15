@@ -126,6 +126,7 @@ public class TreatMgmtServiceImpl implements TreatMgmtService {
             //获取当前用户
             String username = SecurityFrameworkUtils.getLoginUserNickname();
             treatMgmtDO.setAuditUser(username);
+            treatMgmtDO.setAuditTime(LocalDateTime.now());
             // 更新
             int i = treatMgmtMapper.updateById(treatMgmtDO);
             total += i;
