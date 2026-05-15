@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.accessmgmt.controller.admin;
 
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.validation.annotation.Validated;
@@ -14,6 +15,7 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 @RestController
 @RequestMapping("/accessmgmt/test")
 @Validated
+@Hidden
 public class DemoTestController {
 
     // 这个构造方法，只是方便大家，验证 Controller 有生效
