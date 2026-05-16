@@ -21,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -68,10 +69,26 @@ public class CycleReportController {
     public void exportCycleReportExcel(@Valid CycleReportPageReqVO pageReqVO,
                                        HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<CycleReportDO> list = cycleReportService.getCycleReportPage(pageReqVO).getList();
+        PageResult<CycleReportDO> pageResult = cycleReportService.getCycleReportPage(pageReqVO);
+        List<CycleReportDO> list = pageResult.getList();
+
+        // 转换为 Excel VO 列表
+        List<CycleReportExcelVO> excelList = new ArrayList<>();
+        for (CycleReportDO reportDO : list) {
+            excelList.add(convertToExcelVO(reportDO));
+        }
+
         // 导出 Excel
-        ExcelUtils.write(response, "巡检运维报表存储.xls", "数据", CycleReportRespVO.class,
-                BeanUtils.toBean(list, CycleReportRespVO.class));
+        ExcelUtils.write(response, "巡检运维报表.xls", "数据", CycleReportExcelVO.class, excelList);
+
+        // 批量增加导出次数
+        for (CycleReportDO reportDO : list) {
+            try {
+                cycleReportService.incrementExportCount(reportDO.getId());
+            } catch (Exception e) {
+                // 某个报表增加次数失败，不影响其他报表
+            }
+        }
     }
 
     @GetMapping("/export-excel/{id}")
@@ -87,15 +104,65 @@ public class CycleReportController {
             response.sendError(HttpStatus.NOT_FOUND.value(), "报表不存在");
             return;
         }
-        // 2. 转换为 VO (用于Excel导出模板)
-        CycleReportRespVO respVO = BeanUtils.toBean(reportDO, CycleReportRespVO.class);
+
+        // 2. 转换为 Excel VO
+        CycleReportExcelVO excelVO = convertToExcelVO(reportDO);
+
         // 3. 导出 Excel
-        // 文件名示例：巡检运维报表_泉州丰泽充电场站_2026-01月报.xls
         String fileName = String.format("巡检运维报表_%s_%s.xls",
-                respVO.getStationName(),
-                respVO.getReportCycle());
-        ExcelUtils.write(response, fileName, "报表详情", CycleReportRespVO.class,
-                Collections.singletonList(respVO));
+                excelVO.getStationName(),
+                excelVO.getReportCycle());
+
+        try {
+            // 导出Excel
+            ExcelUtils.write(response, fileName, "报表详情", CycleReportExcelVO.class,
+                    Collections.singletonList(excelVO));
+
+            // 4. 导出成功后，增加导出次数
+            cycleReportService.incrementExportCount(id);
+
+        } catch (IOException e) {
+            // 如果导出失败，不增加导出次数
+            throw e;
+        }
+    }
+
+    /**
+     * 将 DO 转换为 Excel VO
+     * 注意：此方法隐藏了 stationId 字段
+     */
+    private CycleReportExcelVO convertToExcelVO(CycleReportDO reportDO) {
+        if (reportDO == null) {
+            return null;
+        }
+
+        CycleReportExcelVO excelVO = new CycleReportExcelVO();
+
+        // 使用 BeanUtils 复制相同字段名的属性
+        excelVO.setId(reportDO.getId());
+        excelVO.setReportCycle(reportDO.getReportCycle());
+        excelVO.setStationName(reportDO.getStationName());
+        excelVO.setStatTimeStart(reportDO.getStatTimeStart());
+        excelVO.setStatTimeEnd(reportDO.getStatTimeEnd());
+        excelVO.setNormalDeviceNum(reportDO.getNormalDeviceNum());
+        excelVO.setAbnormalDeviceNum(reportDO.getAbnormalDeviceNum());
+        excelVO.setInspectTaskNum(reportDO.getInspectTaskNum());
+        excelVO.setTaskCompleteRate(reportDO.getTaskCompleteRate());
+        excelVO.setOilWaitHandleNum(reportDO.getOilWaitHandleNum());
+        excelVO.setOilHandleCompleteRate(reportDO.getOilHandleCompleteRate());
+        excelVO.setInspectUserOnlineNum(reportDO.getInspectUserOnlineNum());
+        excelVO.setAssetNormalNum(reportDO.getAssetNormalNum());
+        excelVO.setStockWarnNum(reportDO.getStockWarnNum());
+        excelVO.setGenerateStatus(reportDO.getGenerateStatus());
+        excelVO.setGenerateTime(reportDO.getGenerateTime());
+        excelVO.setOperator(reportDO.getOperator());
+        excelVO.setExportCount(reportDO.getExportCount());
+        excelVO.setYearOnYearData(reportDO.getYearOnYearData());
+        excelVO.setChainRatioData(reportDO.getChainRatioData());
+        excelVO.setCreateTime(reportDO.getCreateTime());
+        excelVO.setUpdateTime(reportDO.getUpdateTime());
+
+        return excelVO;
     }
 
 

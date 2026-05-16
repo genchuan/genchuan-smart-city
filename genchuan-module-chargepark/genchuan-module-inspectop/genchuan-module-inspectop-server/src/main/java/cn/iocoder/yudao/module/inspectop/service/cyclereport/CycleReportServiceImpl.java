@@ -9,6 +9,7 @@ import cn.iocoder.yudao.module.inspectop.controller.admin.cyclereport.vo.*;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.cyclereport.CycleReportDO;
 import cn.iocoder.yudao.module.inspectop.dal.mysql.cyclereport.CycleReportMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -689,6 +690,34 @@ public class CycleReportServiceImpl implements CycleReportService {
         }
 
         return detail.toString();
+    }
+
+
+    @Override
+    @LogRecord(type = CYCLE_REPORT_TYPE, subType = CYCLE_REPORT_EXPORT_SUB_TYPE,
+            success = CYCLE_REPORT_EXPORT_SUCCESS, bizNo = "{{#id}}")
+    public void incrementExportCount(Long id) {
+        if (id == null) {
+            log.warn("[incrementExportCount][报表ID为空]");
+            return;
+        }
+
+        try {
+            // 使用 MyBatis-Plus 的 update 方法，原子操作增加导出次数
+            int updateCount = cycleReportMapper.update(null,
+                    new LambdaUpdateWrapper<CycleReportDO>()
+                            .setSql("export_count = export_count + 1")
+                            .eq(CycleReportDO::getId, id));
+
+            if (updateCount > 0) {
+                log.info("[incrementExportCount][更新报表导出次数成功]，报表ID: {}", id);
+            } else {
+                log.warn("[incrementExportCount][更新报表导出次数失败，报表不存在]，报表ID: {}", id);
+            }
+        } catch (Exception e) {
+            log.error("[incrementExportCount][更新报表导出次数异常]，报表ID: {}，异常: {}", id, e.getMessage(), e);
+            throw new RuntimeException("更新导出次数失败", e);
+        }
     }
 
 

@@ -38,4 +38,11 @@ public interface CycleReportService {
      * @return 巡检运维报表
      */
     CycleReportDO getCycleReport(Long id);
+
+    /**
+     * 增加报表导出次数
+     *
+     * @param id 报表主键ID
+     */
+    void incrementExportCount(Long id);
 }

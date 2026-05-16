@@ -132,7 +132,7 @@
         COUNT(*) AS stockWarnNum
         FROM asset_stock
         WHERE deleted = 0
-        AND warn_threshold > 1
+        AND warn_threshold = 3
         <if test="stationId != null">
             AND station_id = #{stationId}
         </if>
@@ -408,5 +408,13 @@
             ORDER BY date_series.report_date
         </if>
     </select>
+
+    <update id="incrementExportCount">
+        UPDATE cycle_report
+        SET export_count = export_count + 1,
+            update_time = NOW(),
+            updater = #{updater, jdbcType=VARCHAR}
+        WHERE id = #{id, jdbcType=BIGINT}
+    </update>
 
 </mapper>

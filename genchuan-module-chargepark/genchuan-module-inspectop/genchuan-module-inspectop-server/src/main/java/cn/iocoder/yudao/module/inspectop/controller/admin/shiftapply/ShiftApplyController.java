@@ -77,8 +77,8 @@ public class ShiftApplyController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('inspectop:shift-apply:query')")
     public CommonResult<ShiftApplyRespVO> getShiftApply(@RequestParam("id") Long id) {
-        ShiftApplyDO shiftApply = shiftApplyService.getShiftApply(id);
-        return success(BeanUtils.toBean(shiftApply, ShiftApplyRespVO.class));
+        ShiftApplyRespVO shiftApply = shiftApplyService.getShiftApply(id);
+        return success(shiftApply);
     }
 
     @GetMapping("/page")
