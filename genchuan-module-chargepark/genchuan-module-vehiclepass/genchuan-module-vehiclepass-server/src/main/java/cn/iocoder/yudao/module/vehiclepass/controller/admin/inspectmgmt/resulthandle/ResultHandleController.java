@@ -85,8 +85,7 @@ public class ResultHandleController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('result:handle:query')")
     public CommonResult<ResultHandleRespVO> getHandle(@RequestParam("id") Long id) {
-        ResultHandleDO handle = handleService.getHandle(id);
-        return success(BeanUtils.toBean(handle, ResultHandleRespVO.class));
+        return success(handleService.getHandleWithJoin(id));
     }
 
     @GetMapping("/page")

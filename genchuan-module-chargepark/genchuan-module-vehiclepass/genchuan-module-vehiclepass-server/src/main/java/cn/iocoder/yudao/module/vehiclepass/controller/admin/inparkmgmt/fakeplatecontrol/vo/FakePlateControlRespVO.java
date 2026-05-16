@@ -44,6 +44,9 @@ public class FakePlateControlRespVO {
     @ExcelProperty("处置人ID，关联system_user用户表")
     private Long handleUserId;
 
+    @Schema(description = "处置人名称")
+    private String handleUserName;
+
     @Schema(description = "处置时间")
     @ExcelProperty("处置时间")
     private LocalDateTime handleTime;

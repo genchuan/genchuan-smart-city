@@ -85,8 +85,7 @@ public class CheckTaskController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('check:task:query')")
     public CommonResult<CheckTaskRespVO> getTask(@RequestParam("id") Long id) {
-        CheckTaskDO task = taskService.getTask(id);
-        return success(BeanUtils.toBean(task, CheckTaskRespVO.class));
+        return success(taskService.getTaskWithJoin(id));
     }
 
     @GetMapping("/page")

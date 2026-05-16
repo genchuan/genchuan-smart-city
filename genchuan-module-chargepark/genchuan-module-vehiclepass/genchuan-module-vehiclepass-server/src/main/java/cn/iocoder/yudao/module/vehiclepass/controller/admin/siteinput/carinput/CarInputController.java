@@ -85,8 +85,7 @@ public class CarInputController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('car:input:query')")
     public CommonResult<CarInputRespVO> getInput(@RequestParam("id") Long id) {
-        CarInputDO input = inputService.getInput(id);
-        return success(BeanUtils.toBean(input, CarInputRespVO.class));
+        return success(inputService.getInputWithJoin(id));
     }
 
     @GetMapping("/page")

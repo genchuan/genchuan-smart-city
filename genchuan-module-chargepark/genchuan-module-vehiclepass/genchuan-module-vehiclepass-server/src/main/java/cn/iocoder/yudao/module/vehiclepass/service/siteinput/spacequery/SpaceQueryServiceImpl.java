@@ -85,6 +85,11 @@ public class SpaceQueryServiceImpl implements SpaceQueryService {
     }
 
     @Override
+    public SpaceQueryRespVO getQueryWithJoin(Long id) {
+        return queryMapper.selectByIdJoin(id);
+    }
+
+    @Override
     public PageResult<SpaceQueryDO> getQueryPage(SpaceQueryPageReqVO pageReqVO) {
         return queryMapper.selectPage(pageReqVO);
     }

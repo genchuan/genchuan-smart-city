@@ -91,6 +91,11 @@ public class CarInputServiceImpl implements CarInputService {
     }
 
     @Override
+    public CarInputRespVO getInputWithJoin(Long id) {
+        return inputMapper.selectByIdJoin(id);
+    }
+
+    @Override
     public PageResult<CarInputDO> getInputPage(CarInputPageReqVO pageReqVO) {
         return inputMapper.selectPage(pageReqVO);
     }

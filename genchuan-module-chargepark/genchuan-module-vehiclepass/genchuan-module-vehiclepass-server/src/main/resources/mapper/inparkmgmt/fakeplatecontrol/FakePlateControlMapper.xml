@@ -60,6 +60,7 @@
             s.name AS stationName,
             f.station_id AS stationId,
             f.handle_user_id AS handleUserId,
+            IFNULL(u.nickname, '') AS handleUserName,
             f.handle_time AS handleTime,
             f.handle_progress AS handleProgress,
             f.handle_type AS handleType,
@@ -73,6 +74,7 @@
             f.update_time AS updateTime
         FROM fake_plate_control f
         LEFT JOIN station_info s ON f.station_id = s.id
+        LEFT JOIN user_info u ON f.handle_user_id = u.id AND u.deleted = 0
         WHERE f.id = #{id} AND f.deleted = 0
     </select>
 

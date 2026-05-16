@@ -82,8 +82,7 @@ public class SpaceQueryController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('space:query:query')")
     public CommonResult<SpaceQueryRespVO> getQuery(@RequestParam("id") Long id) {
-        SpaceQueryDO query = queryService.getQuery(id);
-        return success(BeanUtils.toBean(query, SpaceQueryRespVO.class));
+        return success(queryService.getQueryWithJoin(id));
     }
 
     @GetMapping("/page")
