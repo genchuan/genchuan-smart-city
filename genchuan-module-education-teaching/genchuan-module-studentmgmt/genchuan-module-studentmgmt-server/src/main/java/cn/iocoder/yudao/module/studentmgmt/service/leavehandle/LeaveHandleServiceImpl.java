@@ -103,8 +103,7 @@ public class LeaveHandleServiceImpl implements LeaveHandleService {
         leaveHandleDO.setUpdateTime(LocalDateTime.now());
         leaveHandleDO.setUpdater(SecurityFrameworkUtils.getLoginUserNickname());
         // 更新
-        LeaveHandleDO updateObj = BeanUtils.toBean(updateReqVO, LeaveHandleDO.class);
-        int i = leaveHandleMapper.updateById(updateObj);
+        int i = leaveHandleMapper.updateById(leaveHandleDO);
         return i > 0;
     }
 
