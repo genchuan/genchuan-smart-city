@@ -6,7 +6,6 @@
     <modules>
         <module>genchuan-module-integratedsecurity-server</module>
         <module>genchuan-module-integratedsecurity-api</module>
-        <module>genchuan-module-integratedsecurity-server</module>
     </modules>
     <parent>
         <groupId>cn.iocoder.cloud</groupId>
