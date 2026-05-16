@@ -10,8 +10,10 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Mapper
 public interface InvoiceListMapper extends BaseMapperX<InvoiceListDO> {
@@ -47,4 +49,16 @@ public interface InvoiceListMapper extends BaseMapperX<InvoiceListDO> {
 
     @Select("SELECT * FROM invoice_list WHERE deleted = 0 AND order_id = #{orderId} LIMIT 1")
     InvoiceListDO selectByOrderId(@Param("orderId") Long orderId);
+
+    @Select("<script>" +
+            "SELECT order_id, status FROM invoice_list WHERE deleted = 0 AND order_id IN " +
+            "<foreach item='id' collection='ids' open='(' separator=',' close=')'>#{id}</foreach>" +
+            "</script>")
+    List<InvoiceListDO> selectByOrderIds(@Param("ids") List<Long> ids);
+
+    default Map<Long, String> selectStatusMapByOrderIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) return Collections.emptyMap();
+        return selectByOrderIds(ids).stream()
+                .collect(Collectors.toMap(InvoiceListDO::getOrderId, InvoiceListDO::getStatus));
+    }
 }

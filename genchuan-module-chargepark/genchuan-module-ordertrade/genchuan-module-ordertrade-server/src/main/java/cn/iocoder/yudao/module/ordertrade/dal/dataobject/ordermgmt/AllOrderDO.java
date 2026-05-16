@@ -52,6 +52,10 @@ public class AllOrderDO extends BaseDO {
     @TableField(exist = false)
     private String stationName;
 
+    /** 开票状态（关联 invoice_list.status，非数据库字段） */
+    @TableField(exist = false)
+    private String invoiceStatus;
+
     /** 支付时间 */
     private LocalDateTime payTime;
 
