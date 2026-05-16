@@ -11,6 +11,7 @@
         e.enter_time AS enterTime,
         e.record_type AS recordType,
         e.status AS status,
+        e.station_id AS stationId,
         s.name AS stationName,
         e.remark,
         e.proof_image AS proofImage,

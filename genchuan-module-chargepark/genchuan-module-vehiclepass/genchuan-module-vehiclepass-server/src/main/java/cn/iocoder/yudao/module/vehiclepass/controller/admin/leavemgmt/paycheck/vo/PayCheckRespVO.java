@@ -33,6 +33,9 @@ public class PayCheckRespVO {
     @ExcelProperty("核验时间")
     private LocalDateTime checkTime;
 
+    @Schema(description = "场站ID")
+    private Long stationId;
+
     @Schema(description = "场站名称")
     @ExcelProperty("场站名称")
     private String stationName;

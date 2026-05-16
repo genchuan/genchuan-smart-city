@@ -5,6 +5,7 @@
     <select id="selectPageJoin" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenRespVO">
         SELECT
             g.id,
+            g.station_id AS stationId,
             s.name AS stationName,
             g.open_reason AS openReason,
             u.nickname AS applyUserName,
@@ -53,6 +54,7 @@
     <select id="selectByIdJoinStation" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenRespVO">
         SELECT
             g.id,
+            g.station_id AS stationId,
             s.name AS stationName,
             g.open_reason AS openReason,
             u.nickname AS applyUserName,

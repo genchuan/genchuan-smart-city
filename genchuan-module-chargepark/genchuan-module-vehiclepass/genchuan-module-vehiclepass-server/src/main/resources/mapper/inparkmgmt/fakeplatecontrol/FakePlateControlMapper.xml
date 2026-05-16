@@ -9,6 +9,7 @@
         f.identify_time AS identifyTime,
         f.match_scene AS matchScene,
         f.status,
+        f.station_id AS stationId,
         s.name AS stationName,
         IFNULL(u.nickname, '') AS handleUserName,
         f.handle_time AS handleTime,

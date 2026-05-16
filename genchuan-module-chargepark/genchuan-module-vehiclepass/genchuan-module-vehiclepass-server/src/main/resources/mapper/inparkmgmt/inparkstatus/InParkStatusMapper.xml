@@ -5,6 +5,7 @@
     <select id="selectPageJoinSpaceStation" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusRespVO">
         SELECT
             p.id,
+            p.station_id AS stationId,
             s.name AS stationName,
             ps.location AS spaceName,
             p.car_no AS carNo,
@@ -43,6 +44,7 @@
     <select id="selectByIdJoinStation" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusRespVO">
         SELECT
             p.id,
+            p.station_id AS stationId,
             s.name AS stationName,
             ps.location AS spaceName,
             p.car_no AS carNo,

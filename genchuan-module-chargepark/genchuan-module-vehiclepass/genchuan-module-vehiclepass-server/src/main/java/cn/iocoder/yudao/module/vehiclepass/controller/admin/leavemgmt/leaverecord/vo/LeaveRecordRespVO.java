@@ -36,6 +36,9 @@ public class LeaveRecordRespVO {
     @ExcelProperty("记录状态：正常记录/异常记录，关联字典：leave_record_status")
     private String status;
 
+    @Schema(description = "场站ID")
+    private Long stationId;
+
     @Schema(description = "场站名称")
     @ExcelProperty("场站名称")
     private String stationName;

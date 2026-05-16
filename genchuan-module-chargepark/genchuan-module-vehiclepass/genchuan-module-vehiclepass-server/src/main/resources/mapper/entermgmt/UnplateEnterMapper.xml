@@ -20,6 +20,7 @@
         u.updater,
         u.create_time AS createTime,
         u.update_time AS updateTime,
+        u.station_id AS stationId,
         s.name AS stationName
         FROM unplate_enter u
         LEFT JOIN station_info s ON u.station_id = s.id AND s.deleted = 0
@@ -61,6 +62,7 @@
             u.register_time AS registerTime,
             u.status,
             IFNULL(ui.nickname, '') AS auditUserName,
+            u.station_id AS stationId,
             s.name AS stationName,
             u.audit_time AS auditTime,
             u.audit_comment AS auditComment,

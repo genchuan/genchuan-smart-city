@@ -15,6 +15,9 @@ public class GateOpenRespVO {
     @ExcelProperty("主键ID")
     private Long id;
 
+    @Schema(description = "场站ID")
+    private Long stationId;
+
     @Schema(description = "场站名称")
     @ExcelProperty("场站名称")
     private String stationName;
