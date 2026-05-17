@@ -72,4 +72,59 @@
         WHERE v.deleted = 0
         GROUP BY class_name
     </select>
+    <select id="selectTotalViolate" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM violate_mgmt AS v LEFT JOIN student_info AS s ON s.id = v.student_id
+        WHERE v.deleted = 0
+        <if test="grade != null and grade != ''">
+            AND grade = #{grade}
+        </if>
+        <if test="className != null and className != ''">
+            AND class_name = #{className}
+        </if>
+        <if test="startTime != null">
+            AND violate_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND violate_time &lt;= #{endTime}
+        </if>
+    </select>
+    <select id="selectUnhandledViolate" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM violate_mgmt AS v LEFT JOIN student_info AS s ON s.id = v.student_id
+        WHERE v.deleted = 0
+        <if test="grade != null and grade != ''">
+            AND grade = #{grade}
+        </if>
+        <if test="className != null and className != ''">
+            AND class_name = #{className}
+        </if>
+        <if test="startTime != null">
+            AND violate_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND violate_time &lt;= #{endTime}
+        </if>
+        <if test="status != null and status != ''">
+            AND v.status = #{status}
+        </if>
+    </select>
+    <select id="selectTotalCountByDate"
+            resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        DATE_FORMAT(v.violate_time, '%Y-%m-%d') AS date,
+        COUNT(*) AS count
+        FROM violate_mgmt AS v
+        WHERE v.deleted = 0
+        <if test="startTime != null">
+            AND v.violate_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND v.violate_time &lt;= #{endTime}
+        </if>
+        <if test="cycle != null and cycle != ''">
+            v.cycle = #{cycle}
+        </if>
+        GROUP BY DATE_FORMAT(v.violate_time, '%Y-%m-%d')
+    </select>
 </mapper>
