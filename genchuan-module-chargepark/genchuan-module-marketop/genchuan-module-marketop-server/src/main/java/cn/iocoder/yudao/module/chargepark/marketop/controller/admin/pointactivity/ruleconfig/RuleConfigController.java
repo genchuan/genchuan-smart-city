@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.ruleconfig.vo.RuleConfigChartReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.ruleconfig.vo.RuleConfigChartRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.ruleconfig.vo.RuleConfigCreateReqVO;
@@ -78,7 +79,8 @@ public class RuleConfigController {
     @PreAuthorize("@ss.hasPermission('marketop:rule-config:update')")
     public CommonResult<Boolean> activate(@Valid @RequestBody RuleConfigIdReqVO  reqVO) {
         Long id = reqVO.getId();
-        ruleConfigService.enable(id);
+        Long userId = SecurityFrameworkUtils.getLoginUserId();
+        ruleConfigService.enable(id, userId);
         return CommonResult.success(true);
     }
 
@@ -87,7 +89,8 @@ public class RuleConfigController {
     @PreAuthorize("@ss.hasPermission('marketop:rule-config:update')")
     public CommonResult<Boolean> disable(@Valid @RequestBody RuleConfigIdReqVO  reqVO) {
         Long id = reqVO.getId();
-        ruleConfigService.disable(id);
+        Long userId = SecurityFrameworkUtils.getLoginUserId();
+        ruleConfigService.disable(id, userId);
         return CommonResult.success(true);
     }
 

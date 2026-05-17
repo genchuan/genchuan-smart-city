@@ -25,4 +25,10 @@ public interface PrizeMgmtMapper extends BaseMapperX<PrizeMgmtDO> {
     @Select("SELECT type, COUNT(*) as count FROM prize_mgmt GROUP BY type")
     List<java.util.Map<String, Object>> selectTypeCountList();
 
+    @Select("SELECT COUNT(*) FROM prize_mgmt")
+    int selectPrizeCount();
+
+    @Select("SELECT IFNULL(SUM(send_count), 0) FROM prize_mgmt")
+    int selectTotalSendCount();
+
 }
