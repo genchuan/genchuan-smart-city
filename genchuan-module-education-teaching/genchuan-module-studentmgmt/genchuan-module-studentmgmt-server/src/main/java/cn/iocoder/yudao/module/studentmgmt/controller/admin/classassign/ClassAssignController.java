@@ -102,7 +102,7 @@ public class ClassAssignController {
                         BeanUtils.toBean(list, ClassAssignRespVO.class));
     }
 
-    @PutMapping("/config")
+    @PostMapping("/config")
     @Operation(summary = "配置")
     @PreAuthorize("@ss.hasPermission('studentmgmt:class-assign:config')")
     public CommonResult<Boolean> config(@Valid @RequestBody ClassAssignConfigReqVO reqVO) {
@@ -114,10 +114,10 @@ public class ClassAssignController {
     public CommonResult<Boolean> assign(@Valid @RequestBody ClassAssignAssignReqVO reqVO) {
         return success(classAssignService.assign(reqVO));
     }
-    @PutMapping("/confirm")
+    @PostMapping("/confirm")
     @Operation(summary = "确认")
     @PreAuthorize("@ss.hasPermission('studentmgmt:class-assign:confirm')")
-    public CommonResult<Boolean> confirm(@Valid @RequestBody ClassAssignConfigReqVO reqVO) {
+    public CommonResult<Boolean> confirm(@Valid @RequestBody ClassAssignConfirmReqVO reqVO) {
         return success(classAssignService.confirm(reqVO));
     }
     @GetMapping("/chart")

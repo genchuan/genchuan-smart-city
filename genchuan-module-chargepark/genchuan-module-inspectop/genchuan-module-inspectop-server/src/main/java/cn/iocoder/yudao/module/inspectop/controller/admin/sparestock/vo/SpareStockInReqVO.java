@@ -12,8 +12,8 @@ public class SpareStockInReqVO {
     @NotNull(message = "备件ID不能为空")
     private Long spareId;
 
-    @Schema(description = "备件名称", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "备件名称不能为空")
+    @Schema(description = "备件名称")
+//    @NotBlank(message = "备件名称不能为空")
     private String spareName;
 
     @Schema(description = "入库数量", requiredMode = Schema.RequiredMode.REQUIRED)

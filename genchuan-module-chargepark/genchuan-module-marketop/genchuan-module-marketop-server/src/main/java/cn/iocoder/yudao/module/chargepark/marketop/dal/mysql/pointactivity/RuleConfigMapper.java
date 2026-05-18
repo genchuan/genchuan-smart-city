@@ -21,7 +21,9 @@ public interface RuleConfigMapper extends BaseMapperX<RuleConfigDO> {
                 .eqIfPresent(RuleConfigDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(RuleConfigDO::getScene, reqVO.getScene())
                 .eqIfPresent(RuleConfigDO::getAuditorId, reqVO.getAuditorId())
+                .eqIfPresent(RuleConfigDO::getMatchCount, reqVO.getMatchCount())
                 .likeIfPresent(RuleConfigDO::getDescription, reqVO.getDescription())
+                .eqIfPresent(RuleConfigDO::getGiftRatio, reqVO.getGiftRatio())
                 .orderByDesc(RuleConfigDO::getId);
         if (reqVO.getAuditStartTime() != null && reqVO.getAuditEndTime() != null) {
             wrapper.between(RuleConfigDO::getAuditTime,

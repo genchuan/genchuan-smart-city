@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -242,7 +243,7 @@ public class MoralResourceServiceImpl implements MoralResourceService {
             resourceCountList.add(typeCount);
 
 //            "learnRateList": [200, 280, 50]
-            Long learnCount = moralResourceMapper.selectLearnCountByType(finalStartTime, finalEndTime, type);
+            BigDecimal learnCount = moralResourceMapper.selectLearnCountByType(finalStartTime, finalEndTime, type);
             learnRateList.add(learnCount);
 
         });

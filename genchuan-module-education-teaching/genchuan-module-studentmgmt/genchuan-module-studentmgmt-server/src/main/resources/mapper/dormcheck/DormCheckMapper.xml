@@ -93,4 +93,13 @@
         </if>
 
     </select>
+    <select id="selectByStudentIdAndCheckTime"
+            resultType="cn.iocoder.yudao.module.studentmgmt.dal.dataobject.dormcheck.DormCheckDO">
+        SELECT * FROM `dorm_check`
+        WHERE student_id = #{studentId}
+        <if test="checkTime != null">
+            AND DATE_FORMAT(check_time,'%Y-%m-%d') = #{checkTime}
+        </if>
+        LIMIT 1
+    </select>
 </mapper>

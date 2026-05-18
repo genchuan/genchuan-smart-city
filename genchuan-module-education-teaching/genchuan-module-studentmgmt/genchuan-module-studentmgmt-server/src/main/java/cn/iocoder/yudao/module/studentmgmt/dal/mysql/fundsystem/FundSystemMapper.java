@@ -45,4 +45,6 @@ public interface FundSystemMapper extends BaseMapperX<FundSystemDO> {
     List<JSONObject> selectFundTypeGradeDistribution(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime, @Param("status") String status, @Param("grade") String grade);
 
     List<JSONObject> selectGradeApplyTrend(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime, @Param("status") String status);
+
+    Integer selectTotalFund(LocalDateTime startTime, LocalDateTime endTime, String className, String grade);
 }

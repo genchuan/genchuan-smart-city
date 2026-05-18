@@ -97,6 +97,7 @@ public class ClassAssignServiceImpl implements ClassAssignService {
         ClassAssignDO classAssign = BeanUtils.toBean(reqVO, ClassAssignDO.class);
         String loginUserNickname = SecurityFrameworkUtils.getLoginUserNickname();
         classAssign.setCreator(loginUserNickname);
+        classAssign.setRemark(reqVO.getRemark());
         classAssign.setStatus(ClassAssignStatusEnum.UNASSIGNED.getStatus());
         int i = classAssignMapper.insert(classAssign);
 
@@ -121,7 +122,7 @@ public class ClassAssignServiceImpl implements ClassAssignService {
     }
 
     @Override
-    public Boolean confirm(ClassAssignConfigReqVO reqVO) {
+    public Boolean confirm(ClassAssignConfirmReqVO reqVO) {
         int total = 0;
         Long[] ids = reqVO.getIds();
         for (Long id : ids) {

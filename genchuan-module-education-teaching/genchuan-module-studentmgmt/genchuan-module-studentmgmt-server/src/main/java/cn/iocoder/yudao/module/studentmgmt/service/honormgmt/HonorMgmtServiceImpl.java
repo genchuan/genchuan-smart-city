@@ -7,6 +7,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.honormgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.honormgmt.HonorMgmtDO;
+import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.honormgmt.HonorMgmtMapper;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
 import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
@@ -46,6 +47,11 @@ public class HonorMgmtServiceImpl implements HonorMgmtService {
     @LogRecord(type = STUDENT_HONOR_TYPE, subType = STUDENT_HONOR_CREATE_SUB_TYPE, bizNo = "{{#honorMgmt.id}}",
             success = STUDENT_HONOR_CREATE_SUCCESS)
     public Long createHonorMgmt(HonorMgmtSaveReqVO createReqVO) {
+        Long studentId = createReqVO.getStudentId();
+        StudentInfoDO studentInfoDO = studentInfoMapper.selectById(studentId);
+        if (null == studentInfoDO) {
+            throw exception(500, "学生信息不存在");
+        }
         // 插入
         HonorMgmtDO honorMgmt = BeanUtils.toBean(createReqVO, HonorMgmtDO.class);
         honorMgmtMapper.insert(honorMgmt);

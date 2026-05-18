@@ -54,4 +54,6 @@ public interface BehaviorMgmtMapper extends BaseMapperX<BehaviorMgmtDO> {
     List<JSONObject> selectDailyLeaveTrendByClassName(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime, @Param("className") String className);
 
     List<BehaviorMgmtDO> selectLeaveRecordByStudentIds(Long[] studentIds);
+
+    Integer selectTotalBehavior(LocalDateTime startTime, LocalDateTime endTime, String className, String grade);
 }

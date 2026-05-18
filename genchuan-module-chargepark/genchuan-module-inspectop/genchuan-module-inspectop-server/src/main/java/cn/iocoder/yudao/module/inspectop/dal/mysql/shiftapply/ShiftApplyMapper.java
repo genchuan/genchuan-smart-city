@@ -40,6 +40,13 @@ public interface ShiftApplyMapper extends BaseMapperX<ShiftApplyDO> {
     }
 
     /**
+     * 根据ID关联查询换班申请详情（包含申请人、换班对象姓名）
+     * @param id 申请ID
+     * @return 包含用户姓名的响应对象
+     */
+    ShiftApplyRespVO selectByIdWithJoin(Long id);
+
+    /**
      * 关联查询分页方法
      * 通过关联 inspect_user 表查询申请人姓名和换班对象姓名
      *

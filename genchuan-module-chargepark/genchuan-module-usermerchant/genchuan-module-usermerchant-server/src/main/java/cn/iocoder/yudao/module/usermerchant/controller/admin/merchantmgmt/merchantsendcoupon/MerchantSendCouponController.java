@@ -62,8 +62,8 @@ public class MerchantSendCouponController {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<MerchantSendCouponDO> list = merchantSendCouponService.getMerchantSendCouponPage(pageReqVO).getList();
         // 导出 Excel
-        ExcelUtils.write(response, "商户发券.xls", "数据", MerchantSendCouponRespVO.class,
-                BeanUtils.toBean(list, MerchantSendCouponRespVO.class));
+        ExcelUtils.write(response, "商户发券.xls", "数据", MerchantSendCouponExportRespVO.class,
+                BeanUtils.toBean(list, MerchantSendCouponExportRespVO.class));
     }
 
     @PutMapping("/execute")

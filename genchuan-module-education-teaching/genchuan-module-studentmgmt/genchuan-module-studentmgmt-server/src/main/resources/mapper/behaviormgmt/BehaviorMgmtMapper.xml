@@ -115,4 +115,18 @@
         AND start_time  <![CDATA[ <= ]]> now() AND end_time >= now()
 
     </select>
+    <select id="selectTotalBehavior" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM behavior_mgmt AS b LEFT JOIN student_info AS s ON b.student_id = s.id
+        WHERE b.deleted=0
+
+        <if test="grade != null and grade != ''">
+            AND grade = #{grade}
+        </if>
+        <if test="className != null and className != ''">
+            AND class_name = #{className}
+        </if>
+        <if test="startTime != null">
+            AND b.create_time >= #{startTime} and b.create_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+    </select>
 </mapper>

@@ -105,4 +105,8 @@ public interface HonorMgmtMapper extends BaseMapperX<HonorMgmtDO> {
     List<HonorCountRespVO> selectCountByType(LocalDateTime startTime, LocalDateTime endTime);
 
     List<HonorCountRespVO> selectCountByClass(LocalDateTime startTime, LocalDateTime endTime);
+
+    Integer selectTotalHonor(LocalDateTime startTime, LocalDateTime endTime, String className, String grade);
+
+    List<JSONObject> selectTotalCountByDate(LocalDateTime startTime, LocalDateTime endTime, String cycle);
 }

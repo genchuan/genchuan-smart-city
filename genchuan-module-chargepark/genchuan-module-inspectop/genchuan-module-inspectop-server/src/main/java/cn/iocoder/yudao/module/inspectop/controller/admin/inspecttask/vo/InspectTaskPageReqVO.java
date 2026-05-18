@@ -65,4 +65,7 @@ public class InspectTaskPageReqVO extends PageParam {
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] updateTime;
 
+    @Schema(description = "更新时间（按月份筛选，格式：MM，例如 04 代表4月）")
+    private String updateMonth; // 新增字段
+
 }

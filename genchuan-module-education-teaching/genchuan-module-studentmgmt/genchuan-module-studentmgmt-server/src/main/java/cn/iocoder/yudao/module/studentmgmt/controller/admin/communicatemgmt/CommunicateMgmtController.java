@@ -129,7 +129,7 @@ public class CommunicateMgmtController {
         return success(communicateMgmtService.chart(reqVO));
     }
 
-    @PutMapping("/interactIndex")
+    @GetMapping("/interactIndex")
     @Operation(summary = "互动核心指标统计")
     @PreAuthorize("@ss.hasPermission('studentmgmt:communicate-mgmt:chart')")
     public CommonResult<CommunicateInteractIndexRespVO> interactIndex(@Valid CommunicateMgmtChartReqVO reqVO) {

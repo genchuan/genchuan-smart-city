@@ -15,7 +15,7 @@ import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_
 @Data
 public class DutyMgmtPageReqVO extends PageParam {
 
-    @Schema(description = "值班日期")
+    @Schema(description = "值班日期", example = "2022-07-01,2022-07-05")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDate[] dutyDate;
 

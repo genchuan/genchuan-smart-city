@@ -1,10 +1,11 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.coopenterprise.vo;
 
+import cn.iocoder.yudao.framework.common.validation.Mobile;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import java.util.*;
-import jakarta.validation.constraints.*;
-import org.springframework.format.annotation.DateTimeFormat;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
 import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 校企合作新增/修改 Request VO")
@@ -30,6 +31,7 @@ public class CoopEnterpriseSaveReqVO {
     private String contactUser;
 
     @Schema(description = "联系电话")
+    @Mobile
     private String contactPhone;
 
     @Schema(description = "合作开始时间")

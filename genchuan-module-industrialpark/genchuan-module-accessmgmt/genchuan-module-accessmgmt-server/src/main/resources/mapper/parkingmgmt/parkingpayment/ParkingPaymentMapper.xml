@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.accessmgmt.dal.mysql.parkingmgmt.parkingpayment.ParkingPaymentMapper">
+
+    <select id="selectCardStats"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.parkingmgmt.parkingpayment.vo.ParkingPaymentChartRespVO">
+        SELECT
+            COUNT(*) AS totalPay,
+            SUM(CASE WHEN bill_status = '已欠费' THEN 1 ELSE 0 END) AS arrearsCount,
+            SUM(COALESCE(fee_amount, 0)) AS totalIncome,
+            CASE WHEN COUNT(*) > 0
+                 THEN ROUND(SUM(CASE WHEN bill_status = '已缴费' THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2)
+                 ELSE 0 END AS payRate
+        FROM parking_payment
+        WHERE deleted = FALSE
+        <if test="startTime != null and startTime != ''">
+            AND pay_time >= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND pay_time &lt;= #{endTime}
+        </if>
+    </select>
+
+    <select id="selectDayIncomeList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.parkingmgmt.parkingpayment.vo.ParkingPaymentChartRespVO$DayIncomeItem">
+        SELECT
+            DATE_FORMAT(pay_time, '%Y-%m-%d') AS date,
+            SUM(COALESCE(fee_amount, 0)) AS income
+        FROM parking_payment
+        WHERE deleted = FALSE
+        <if test="startTime != null and startTime != ''">
+            AND pay_time >= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND pay_time &lt;= #{endTime}
+        </if>
+        GROUP BY DATE_FORMAT(pay_time, '%Y-%m-%d')
+        ORDER BY date
+    </select>
+
+    <select id="selectDayPayList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.parkingmgmt.parkingpayment.vo.ParkingPaymentChartRespVO$DayPayItem">
+        SELECT
+            DATE_FORMAT(pay_time, '%Y-%m-%d') AS date,
+            COUNT(*) AS count
+        FROM parking_payment
+        WHERE deleted = FALSE
+        <if test="startTime != null and startTime != ''">
+            AND pay_time >= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND pay_time &lt;= #{endTime}
+        </if>
+        GROUP BY DATE_FORMAT(pay_time, '%Y-%m-%d')
+        ORDER BY date
+    </select>
+
+</mapper>

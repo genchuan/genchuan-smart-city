@@ -130,15 +130,23 @@ public class OilMonitorServiceImpl implements OilMonitorService {
         LambdaUpdateWrapper<OilMonitorDO> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.in(OilMonitorDO::getId, batchProcessReqVO.getIds());
 
-        // 4. 动态设置更新字段 - 更新处置状态
-        if (batchProcessReqVO.getProcessStatus() != null) {
-            updateWrapper.set(OilMonitorDO::getProcessStatus, batchProcessReqVO.getProcessStatus());
+        // 4. 动态设置更新字段：优先根据进度自动推导状态
+        Integer progress = batchProcessReqVO.getProcessProgress();
+        if (progress != null) {
+            // 更新处置进度
+            updateWrapper.set(OilMonitorDO::getProcessProgress, progress);
+
+            // 根据进度自动设置处置状态：100→已处理（"0"），否则→处理中（"2"）
+            String autoStatus = (progress == 100) ? "0" : "2";
+            updateWrapper.set(OilMonitorDO::getProcessStatus, autoStatus);
         }
 
         // 5. 动态设置更新字段 - 更新处置进度
         if (batchProcessReqVO.getProcessProgress() != null) {
             updateWrapper.set(OilMonitorDO::getProcessProgress, batchProcessReqVO.getProcessProgress());
         }
+
+
 
         // 6. 执行更新
         oilMonitorMapper.update(null, updateWrapper);
