@@ -27,4 +27,6 @@ public class PrizeMgmtUpdateReqVO {
     @Schema(description = "奖品描述")
     private String description;
 
+    @Schema(description = "类型")
+    private String type;
 }

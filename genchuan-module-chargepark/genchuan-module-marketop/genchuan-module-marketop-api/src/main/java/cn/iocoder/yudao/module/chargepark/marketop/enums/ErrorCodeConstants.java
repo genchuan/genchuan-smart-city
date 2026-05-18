@@ -13,6 +13,10 @@ public interface ErrorCodeConstants {
     ErrorCode POINT_ACTIVITY_NOT_EXISTS = new ErrorCode(1_100_001, "积分活动不存在");
     ErrorCode POINT_ACTIVITY_NAME_EXISTS = new ErrorCode(1_100_002, "积分活动名称已存在");
     ErrorCode POINT_ACTIVITY_STATUS_ERROR = new ErrorCode(1_100_003, "积分活动状态流转异常");
+    ErrorCode POINT_ACTIVITY_START_TIME_INVALID = new ErrorCode(1_100_004, "开始时间范围最多传2个值");
+    ErrorCode POINT_ACTIVITY_START_TIME_ORDER = new ErrorCode(1_100_005, "开始时间范围的起始时间不能晚于结束时间");
+    ErrorCode POINT_ACTIVITY_END_TIME_INVALID = new ErrorCode(1_100_006, "结束时间范围最多传2个值");
+    ErrorCode POINT_ACTIVITY_END_TIME_ORDER = new ErrorCode(1_100_007, "结束时间范围的起始时间不能晚于结束时间");
 
     ErrorCode POINT_LOTTERY_NOT_EXISTS = new ErrorCode(1_100_011, "积分抽奖记录不存在");
     ErrorCode POINT_LOTTERY_STATUS_ERROR = new ErrorCode(1_100_012, "积分抽奖记录状态异常");

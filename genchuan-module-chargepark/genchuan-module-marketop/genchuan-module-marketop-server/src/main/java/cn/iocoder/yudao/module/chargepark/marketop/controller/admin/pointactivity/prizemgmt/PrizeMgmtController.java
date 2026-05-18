@@ -62,7 +62,10 @@ public class PrizeMgmtController {
     public CommonResult<PrizeMgmtRespVO> get(@RequestParam("id") Long id) {
         PrizeMgmtDO prizeMgmt = prizeMgmtService.get(id);
         PrizeMgmtRespVO respVO = BeanUtils.toBean(prizeMgmt, PrizeMgmtRespVO.class);
-        if (respVO != null) injectUserNames(Collections.singletonList(respVO));
+        if (respVO != null) {
+            injectUserNames(Collections.singletonList(respVO));
+            injectActivityNames(Collections.singletonList(respVO), Collections.singletonList(prizeMgmt));
+        }
         return CommonResult.success(respVO);
     }
 
