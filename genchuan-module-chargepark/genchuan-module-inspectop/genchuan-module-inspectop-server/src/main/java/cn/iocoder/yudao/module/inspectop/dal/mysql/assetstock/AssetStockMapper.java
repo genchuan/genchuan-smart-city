@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.inspectop.controller.admin.assetstock.vo.*;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * 库存管理 Mapper
@@ -79,4 +80,12 @@ public interface AssetStockMapper extends BaseMapperX<AssetStockDO> {
      * @return 包含关联信息的库存数据
      */
     AssetStockRespVO selectOneWithJoin(@Param("id") Long id);
+
+    /**
+     * 通过场站ID查询场站名称
+     * @param stationId 场站ID
+     * @return 场站名称
+     */
+    @Select("SELECT name FROM station_info WHERE id = #{stationId}")
+    String selectStationNameById(@Param("stationId") Long stationId);
 }

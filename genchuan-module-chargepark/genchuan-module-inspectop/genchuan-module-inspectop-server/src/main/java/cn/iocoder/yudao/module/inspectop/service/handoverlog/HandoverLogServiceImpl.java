@@ -150,28 +150,27 @@ public class HandoverLogServiceImpl implements HandoverLogService {
         return updateCount > 0;
     }
 
+    // 在 HandoverLogServiceImpl 类中添加以下方法
     @Override
     public HandoverLogChartRespVO getHandoverLogChart(HandoverLogChartReqVO reqVO) {
         HandoverLogChartRespVO respVO = new HandoverLogChartRespVO();
 
-        // 获取时间范围
-        LocalDateTime startTime = reqVO.getStartTime();
-        LocalDateTime endTime = reqVO.getEndTime();
-
         // 1. 查询趋势统计数据
-        List<Map<String, Object>> trendDataList = handoverLogMapper.selectTrendStatistics(startTime, endTime);
+        List<Map<String, Object>> trendDataList = handoverLogMapper.selectTrendStatistics(
+                reqVO.getStartTime(), reqVO.getEndTime());
         List<HandoverLogChartRespVO.TrendData> trendData = new ArrayList<>();
 
         for (Map<String, Object> item : trendDataList) {
             HandoverLogChartRespVO.TrendData trendItem = new HandoverLogChartRespVO.TrendData();
-            trendItem.setTime(item.get("time").toString());  // 格式：yyyy-MM-dd
+            trendItem.setTime(item.get("time").toString());
             trendItem.setLogCount(((Number) item.get("logCount")).intValue());
             trendData.add(trendItem);
         }
         respVO.setTrendData(trendData);
 
         // 2. 查询卡片统计数据
-        Map<String, Object> cardStats = handoverLogMapper.selectCardStatistics(startTime, endTime);
+        Map<String, Object> cardStats = handoverLogMapper.selectCardStatistics(
+                reqVO.getStartTime(), reqVO.getEndTime());
         HandoverLogChartRespVO.CardData cardData = new HandoverLogChartRespVO.CardData();
 
         if (cardStats != null && !cardStats.isEmpty()) {
@@ -179,12 +178,12 @@ public class HandoverLogServiceImpl implements HandoverLogService {
             Integer confirmedCount = cardStats.get("confirmedCount") != null ?
                     ((Number) cardStats.get("confirmedCount")).intValue() : 0;
 
-            cardData.setLogCount(totalCount);
-            cardData.setConfirmRate(confirmedCount, totalCount);
+            cardData.setTotalCount(totalCount);
+            cardData.setConfirmedCount(confirmedCount);
         } else {
             // 如果没有数据，设置默认值
-            cardData.setLogCount(0);
-            cardData.setConfirmRate(0, 0);
+            cardData.setTotalCount(0);
+            cardData.setConfirmedCount(0);
         }
         respVO.setCardData(cardData);
 

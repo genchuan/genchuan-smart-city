@@ -9,6 +9,7 @@ import cn.iocoder.yudao.module.inspectop.controller.admin.cyclereport.vo.*;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.cyclereport.CycleReportDO;
 import cn.iocoder.yudao.module.inspectop.dal.mysql.cyclereport.CycleReportMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,9 +20,11 @@ import org.springframework.validation.annotation.Validated;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -36,9 +39,66 @@ public class CycleReportServiceImpl implements CycleReportService {
     @Resource
     private CycleReportMapper cycleReportMapper;
 
+//    @Override
+//    public PageResult<CycleReportDO> getCycleReportPage(CycleReportPageReqVO pageReqVO) {
+//        return cycleReportMapper.selectPage(pageReqVO);
+//    }
+
     @Override
     public PageResult<CycleReportDO> getCycleReportPage(CycleReportPageReqVO pageReqVO) {
-        return cycleReportMapper.selectPage(pageReqVO);
+        // 创建查询条件
+        LambdaQueryWrapper<CycleReportDO> queryWrapper = new LambdaQueryWrapper<>();
+
+        // 添加基本条件
+        queryWrapper.eq(pageReqVO.getReportCycle() != null, CycleReportDO::getReportCycle, pageReqVO.getReportCycle())
+                .eq(pageReqVO.getStationId() != null, CycleReportDO::getStationId, pageReqVO.getStationId())
+                .like(pageReqVO.getStationName() != null, CycleReportDO::getStationName, pageReqVO.getStationName());
+
+        // 修复：时间范围查询逻辑
+        // 记录：报表的统计时段 = [record_start, record_end]
+        // 搜索：用户的搜索时段 = [search_start, search_end]
+        // 条件：record_start <= search_end AND record_end >= search_start
+
+        if (pageReqVO.getStatTimeStart() != null) {
+            queryWrapper.ge(CycleReportDO::getStatTimeEnd, pageReqVO.getStatTimeStart());
+        }
+        if (pageReqVO.getStatTimeEnd() != null) {
+            queryWrapper.le(CycleReportDO::getStatTimeStart, pageReqVO.getStatTimeEnd());
+        }
+
+        // 添加其他条件
+        queryWrapper.eq(pageReqVO.getNormalDeviceNum() != null, CycleReportDO::getNormalDeviceNum, pageReqVO.getNormalDeviceNum())
+                .eq(pageReqVO.getAbnormalDeviceNum() != null, CycleReportDO::getAbnormalDeviceNum, pageReqVO.getAbnormalDeviceNum())
+                .eq(pageReqVO.getInspectTaskNum() != null, CycleReportDO::getInspectTaskNum, pageReqVO.getInspectTaskNum())
+                .eq(pageReqVO.getTaskCompleteRate() != null, CycleReportDO::getTaskCompleteRate, pageReqVO.getTaskCompleteRate())
+                .eq(pageReqVO.getOilWaitHandleNum() != null, CycleReportDO::getOilWaitHandleNum, pageReqVO.getOilWaitHandleNum())
+                .eq(pageReqVO.getOilHandleCompleteRate() != null, CycleReportDO::getOilHandleCompleteRate, pageReqVO.getOilHandleCompleteRate())
+                .eq(pageReqVO.getInspectUserOnlineNum() != null, CycleReportDO::getInspectUserOnlineNum, pageReqVO.getInspectUserOnlineNum())
+                .eq(pageReqVO.getAssetNormalNum() != null, CycleReportDO::getAssetNormalNum, pageReqVO.getAssetNormalNum())
+                .eq(pageReqVO.getStockWarnNum() != null, CycleReportDO::getStockWarnNum, pageReqVO.getStockWarnNum())
+                .eq(pageReqVO.getGenerateStatus() != null, CycleReportDO::getGenerateStatus, pageReqVO.getGenerateStatus())
+                .between(pageReqVO.getGenerateTime() != null && pageReqVO.getGenerateTime().length == 2,
+                        CycleReportDO::getGenerateTime,
+                        pageReqVO.getGenerateTime() != null ? pageReqVO.getGenerateTime()[0] : null,
+                        pageReqVO.getGenerateTime() != null ? pageReqVO.getGenerateTime()[1] : null)
+                .eq(pageReqVO.getOperator() != null, CycleReportDO::getOperator, pageReqVO.getOperator())
+                .eq(pageReqVO.getExportCount() != null, CycleReportDO::getExportCount, pageReqVO.getExportCount())
+                .eq(pageReqVO.getYearOnYearData() != null, CycleReportDO::getYearOnYearData, pageReqVO.getYearOnYearData())
+                .eq(pageReqVO.getChainRatioData() != null, CycleReportDO::getChainRatioData, pageReqVO.getChainRatioData())
+                .eq(pageReqVO.getCreator() != null, CycleReportDO::getCreator, pageReqVO.getCreator())
+                .eq(pageReqVO.getUpdater() != null, CycleReportDO::getUpdater, pageReqVO.getUpdater())
+                .between(pageReqVO.getCreateTime() != null && pageReqVO.getCreateTime().length == 2,
+                        CycleReportDO::getCreateTime,
+                        pageReqVO.getCreateTime() != null ? pageReqVO.getCreateTime()[0] : null,
+                        pageReqVO.getCreateTime() != null ? pageReqVO.getCreateTime()[1] : null)
+                .between(pageReqVO.getUpdateTime() != null && pageReqVO.getUpdateTime().length == 2,
+                        CycleReportDO::getUpdateTime,
+                        pageReqVO.getUpdateTime() != null ? pageReqVO.getUpdateTime()[0] : null,
+                        pageReqVO.getUpdateTime() != null ? pageReqVO.getUpdateTime()[1] : null)
+                .orderByDesc(CycleReportDO::getId);
+
+        // 执行分页查询
+        return cycleReportMapper.selectPage(pageReqVO, queryWrapper);
     }
 
     @Override
@@ -47,8 +107,8 @@ public class CycleReportServiceImpl implements CycleReportService {
     }
 
     @Override
-    @LogRecord(type = CYCLE_REPORT_TYPE, subType = CYCLE_REPORT_GENERATE_SUB_TYPE,
-            success = CYCLE_REPORT_GENERATE_SUCCESS, bizNo = "")
+//    @LogRecord(type = CYCLE_REPORT_TYPE, subType = CYCLE_REPORT_GENERATE_SUB_TYPE,
+//            success = CYCLE_REPORT_GENERATE_SUCCESS, bizNo = "{{#respVO.id}}")
     public CycleReportRespVO generateCycleReport(CycleReportGenerateReqVO generateReqVO) {
 
         // ========== 核心：自动根据报表类型计算时间(自定义报表：保留前端传入的 startTime、endTime 不变) ==========
@@ -58,17 +118,47 @@ public class CycleReportServiceImpl implements CycleReportService {
             if (StrUtil.isNotBlank(reportType) && !"自定义报表".equals(reportType)) {
                 // 非自定义：自动计算 开始/结束 时间
                 Date[] dates = autoCalcReportTime(reportType);
-                // 覆盖前端传入的时间（自动生成）
+                // 覆盖前端传入的时间（自动生成）33
                 // 方式1：使用 Date -> LocalDateTime 直接转换（推荐，无格式问题）
-                generateReqVO.setStatTimeStart(LocalDateTime.ofInstant(dates[0].toInstant(), ZoneId.systemDefault()));
-                generateReqVO.setStatTimeEnd(LocalDateTime.ofInstant(dates[1].toInstant(), ZoneId.systemDefault()));
+//                generateReqVO.setStatTimeStart(LocalDateTime.ofInstant(dates[0].toInstant(), ZoneId.of("Asia/Shanghai")));
+//                generateReqVO.setStatTimeEnd(LocalDateTime.ofInstant(dates[1].toInstant(), ZoneId.of("Asia/Shanghai")));
+
+                // 使用与原始代码相同的逻辑转换为 LocalDateTime
+                LocalDateTime startDateTime = LocalDateTime.ofInstant(dates[0].toInstant(), ZoneId.systemDefault());
+                LocalDateTime endDateTime = LocalDateTime.ofInstant(dates[1].toInstant(), ZoneId.systemDefault());
+
+                // 创建 DateTimeFormatter
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+                // 将 LocalDateTime 格式化为字符串
+                String startTimeStr = startDateTime.format(formatter);
+                String endTimeStr = endDateTime.format(formatter);
+
+                // 设置到 VO 对象
+                generateReqVO.setStatTimeStart(startTimeStr);
+                generateReqVO.setStatTimeEnd(endTimeStr);
             }
         }
 
+        // 新增调试日志
+        log.info("[generateCycleReport][收到请求参数] reportCycle: {}, stationId: {}, statTimeStart: {}, statTimeEnd: {}, reportType: {}",
+                generateReqVO.getReportCycle(),
+                generateReqVO.getStationId(),
+                generateReqVO.getStatTimeStart(), // 打印这里，看是不是已经是1970年
+                generateReqVO.getStatTimeEnd(),
+                generateReqVO.getReportType());
+
         // 1. 获取统计参数
         Long stationId = generateReqVO.getStationId();
-        LocalDateTime statTimeStart = generateReqVO.getStatTimeStart();
-        LocalDateTime statTimeEnd = generateReqVO.getStatTimeEnd();
+        LocalDateTime statTimeStart = generateReqVO.getStatTimeStartAsLocalDateTime();
+        LocalDateTime statTimeEnd = generateReqVO.getStatTimeEndAsLocalDateTime();
+
+        // 验证时间是否解析成功
+        if (statTimeStart == null || statTimeEnd == null) {
+            log.error("[generateCycleReport][时间解析失败] statTimeStart: {}, statTimeEnd: {}",
+                    generateReqVO.getStatTimeStart(), generateReqVO.getStatTimeEnd());
+            throw new RuntimeException("时间格式错误，应为 yyyy-MM-dd HH:mm:ss");
+        }
 
         // 2. 构建返回对象
         CycleReportRespVO respVO = new CycleReportRespVO();
@@ -133,7 +223,7 @@ public class CycleReportServiceImpl implements CycleReportService {
         // ========== 将报表数据存储到数据库 ==========
         this.saveOrUpdateReport(respVO, generateReqVO);
         // 设置日志上下文变量
-        LogRecordContext.putVariable("reportCycle", reportType);
+//        LogRecordContext.putVariable("reportCycle", reportType);
         return respVO;
     }
 
@@ -689,6 +779,34 @@ public class CycleReportServiceImpl implements CycleReportService {
         }
 
         return detail.toString();
+    }
+
+
+    @Override
+    @LogRecord(type = CYCLE_REPORT_TYPE, subType = CYCLE_REPORT_EXPORT_SUB_TYPE,
+            success = CYCLE_REPORT_EXPORT_SUCCESS, bizNo = "{{#id}}")
+    public void incrementExportCount(Long id) {
+        if (id == null) {
+            log.warn("[incrementExportCount][报表ID为空]");
+            return;
+        }
+
+        try {
+            // 使用 MyBatis-Plus 的 update 方法，原子操作增加导出次数
+            int updateCount = cycleReportMapper.update(null,
+                    new LambdaUpdateWrapper<CycleReportDO>()
+                            .setSql("export_count = export_count + 1")
+                            .eq(CycleReportDO::getId, id));
+
+            if (updateCount > 0) {
+                log.info("[incrementExportCount][更新报表导出次数成功]，报表ID: {}", id);
+            } else {
+                log.warn("[incrementExportCount][更新报表导出次数失败，报表不存在]，报表ID: {}", id);
+            }
+        } catch (Exception e) {
+            log.error("[incrementExportCount][更新报表导出次数异常]，报表ID: {}，异常: {}", id, e.getMessage(), e);
+            throw new RuntimeException("更新导出次数失败", e);
+        }
     }
 
 

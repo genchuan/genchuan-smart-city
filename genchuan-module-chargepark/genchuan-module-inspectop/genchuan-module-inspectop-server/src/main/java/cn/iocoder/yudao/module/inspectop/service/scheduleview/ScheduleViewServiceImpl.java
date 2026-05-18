@@ -11,6 +11,7 @@ import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import cn.iocoder.yudao.module.inspectop.controller.admin.scheduleview.vo.*;
@@ -150,7 +151,16 @@ public class ScheduleViewServiceImpl implements ScheduleViewService {
 
         // 解析新日期字符串为 LocalDateTime
         String newDateStr = reqVO.getNewDate();
-        LocalDateTime newDate = LocalDateTime.parse(newDateStr);
+        LocalDateTime newDate;
+        try {
+            // 先解析为LocalDate（仅日期），再转换为当天的开始时间（00:00:00）
+            LocalDate localDate = LocalDate.parse(newDateStr);
+            newDate = localDate.atStartOfDay();
+        } catch (Exception e) {
+            // 如果解析失败，可以尝试其他格式，或直接抛出业务异常
+            // 这里根据您的需求，可以记录日志并抛出明确的业务异常
+            throw new IllegalArgumentException("日期格式错误，请使用 yyyy-MM-dd 格式", e);
+        }
         shiftApply.setNewDate(newDate);
 
         shiftApply.setStatus("1");  // 待审核状态（字典值1）
@@ -206,7 +216,7 @@ public class ScheduleViewServiceImpl implements ScheduleViewService {
     public ScheduleViewChartRespVO getScheduleViewChart(ScheduleViewChartReqVO reqVO) {
         ScheduleViewChartRespVO respVO = new ScheduleViewChartRespVO();
 
-        // 1. 使用XML中的高性能SQL查询图表数据
+        // 1. 使用XML中的SQL查询图表数据
         Map<Long, ScheduleViewChartData> chartDataMap = scheduleViewMapper.selectScheduleViewChartData(reqVO);
 
         // 2. 构建日历数据
@@ -228,6 +238,7 @@ public class ScheduleViewServiceImpl implements ScheduleViewService {
         for (ScheduleViewChartData data : chartDataMap.values()) {
             String userName = data.getUserName();
             if (!userScheduleCountMap.containsKey(userName)) {
+                // 统计每个用户的排班总数
                 userScheduleCountMap.put(userName, data.getScheduleCount());
             }
         }
@@ -243,7 +254,7 @@ public class ScheduleViewServiceImpl implements ScheduleViewService {
         userData.sort((a, b) -> b.getCount() - a.getCount());
         respVO.setUserData(userData);
 
-        // 4. 使用XML中的高性能SQL查询卡片数据
+        // 4. 使用XML中的SQL查询卡片数据
         ScheduleViewChartCardData cardData = scheduleViewMapper.selectScheduleViewCardData(reqVO);
         if (cardData != null) {
             ScheduleViewChartRespVO.CardData respCardData = new ScheduleViewChartRespVO.CardData();

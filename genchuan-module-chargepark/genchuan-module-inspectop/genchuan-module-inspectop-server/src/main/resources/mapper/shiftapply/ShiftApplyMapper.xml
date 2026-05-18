@@ -129,6 +129,33 @@
         ORDER BY sa.id DESC
     </select>
 
+    <!-- 根据ID查询单个换班申请详情（关联查询申请人姓名和换班对象姓名） -->
+    <select id="selectByIdWithJoin" resultMap="ShiftApplyRespVOResultMap">
+        SELECT
+            sa.id,
+            sa.apply_user_id,
+            sa.target_user_id,
+            sa.old_date,
+            sa.new_date,
+            sa.status,
+            sa.audit_user_id,
+            sa.audit_time,
+            sa.effect_time,
+            sa.reserve1,
+            sa.reserve2,
+            sa.creator,
+            sa.updater,
+            sa.create_time,
+            sa.update_time,
+            apply_user.name AS apply_user_name,    -- 申请人姓名
+            target_user.name AS target_user_name   -- 换班对象姓名
+        FROM shift_apply sa
+                 LEFT JOIN inspect_user apply_user ON sa.apply_user_id = apply_user.id
+                 LEFT JOIN inspect_user target_user ON sa.target_user_id = target_user.id
+        WHERE sa.id = #{id}
+          AND sa.deleted = 0
+    </select>
+
     <!-- 查询换班申请趋势统计数据 -->
     <select id="selectTrendStatistics" resultType="java.util.Map">
         SELECT
