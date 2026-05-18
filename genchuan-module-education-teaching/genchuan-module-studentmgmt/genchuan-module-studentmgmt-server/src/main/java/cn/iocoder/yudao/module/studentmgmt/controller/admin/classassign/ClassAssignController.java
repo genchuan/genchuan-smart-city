@@ -114,7 +114,7 @@ public class ClassAssignController {
     public CommonResult<Boolean> assign(@Valid @RequestBody ClassAssignAssignReqVO reqVO) {
         return success(classAssignService.assign(reqVO));
     }
-    @PutMapping("/confirm")
+    @PostMapping("/confirm")
     @Operation(summary = "确认")
     @PreAuthorize("@ss.hasPermission('studentmgmt:class-assign:confirm')")
     public CommonResult<Boolean> confirm(@Valid @RequestBody ClassAssignConfirmReqVO reqVO) {
