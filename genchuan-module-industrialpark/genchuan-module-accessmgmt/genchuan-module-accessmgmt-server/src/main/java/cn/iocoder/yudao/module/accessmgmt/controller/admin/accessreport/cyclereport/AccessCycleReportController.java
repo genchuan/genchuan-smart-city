@@ -26,6 +26,13 @@ import java.util.List;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
+/**
+ * 通行周期报表 Controller
+ * <p>
+ * 提供通行周期报表 REST API：分页查询、详情查询、报表生成（支持日报/周报/月报/季报/半年报/年报/自定义共7种周期）、Excel 导出及多维度态势分析。
+ *
+ * @author 亘川智城
+ */
 @Tag(name = "管理后台 - 通行周期报表")
 @RestController
 @RequestMapping("/accessmgmt/access-cycle-report")

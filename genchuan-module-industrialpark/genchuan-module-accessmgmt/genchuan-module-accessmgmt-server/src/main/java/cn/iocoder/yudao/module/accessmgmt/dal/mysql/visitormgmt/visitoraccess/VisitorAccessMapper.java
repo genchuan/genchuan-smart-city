@@ -21,6 +21,9 @@ import java.util.List;
 @Mapper
 public interface VisitorAccessMapper extends BaseMapperX<VisitorAccessDO> {
 
+    /**
+     * 分页查询访客通行，支持按访客姓名(模糊)/通行区域(精确)/凭证状态(精确)/通行状态(精确)/通行时间范围筛选，按主键倒序
+     */
     default PageResult<VisitorAccessDO> selectPage(VisitorAccessPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<VisitorAccessDO>()
                 .likeIfPresent(VisitorAccessDO::getVisitorName, reqVO.getVisitorName())
@@ -33,12 +36,21 @@ public interface VisitorAccessMapper extends BaseMapperX<VisitorAccessDO> {
                 .orderByDesc(VisitorAccessDO::getId));
     }
 
+    /**
+     * 按通行区域统计通行次数分布
+     */
     List<VisitorAccessChartRespVO.AreaCountItem> selectAreaCountList(@Param("startTime") Long startTime,
                                                                       @Param("endTime") Long endTime);
 
+    /**
+     * 按时间维度统计通行数量趋势
+     */
     List<VisitorAccessChartRespVO.TimeTrendItem> selectTimeTrendList(@Param("startTime") Long startTime,
                                                                       @Param("endTime") Long endTime);
 
+    /**
+     * 按凭证状态统计数量分布
+     */
     List<VisitorAccessChartRespVO.TicketStatusItem> selectTicketStatusList(@Param("startTime") Long startTime,
                                                                             @Param("endTime") Long endTime);
 

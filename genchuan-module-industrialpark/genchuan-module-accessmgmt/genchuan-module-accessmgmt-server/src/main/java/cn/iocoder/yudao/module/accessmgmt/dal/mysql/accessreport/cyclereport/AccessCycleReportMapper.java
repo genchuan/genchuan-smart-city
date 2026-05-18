@@ -21,6 +21,9 @@ import java.util.List;
 @Mapper
 public interface AccessCycleReportMapper extends BaseMapperX<AccessCycleReportDO> {
 
+    /**
+     * 分页查询通行周期报表，支持按报表名称(模糊)/周期类型(精确)/创建时间范围筛选，按主键倒序
+     */
     default PageResult<AccessCycleReportDO> selectPage(AccessCycleReportPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<AccessCycleReportDO>()
                 .likeIfPresent(AccessCycleReportDO::getReportName, reqVO.getReportName())

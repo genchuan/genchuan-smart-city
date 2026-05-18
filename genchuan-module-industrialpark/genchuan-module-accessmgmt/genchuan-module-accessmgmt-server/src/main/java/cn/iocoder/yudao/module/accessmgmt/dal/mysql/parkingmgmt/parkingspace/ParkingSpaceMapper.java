@@ -19,6 +19,9 @@ import java.util.List;
 @Mapper
 public interface ParkingSpaceMapper extends BaseMapperX<ParkingSpaceDO> {
 
+    /**
+     * 分页查询车位信息，支持按车位编号(模糊)/停车场名称(模糊)/车位类型(精确)/车位状态(精确)筛选，按主键倒序
+     */
     default PageResult<ParkingSpaceDO> selectPage(ParkingSpacePageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<ParkingSpaceDO>()
                 .likeIfPresent(ParkingSpaceDO::getSpaceCode, reqVO.getSpaceCode())
@@ -29,27 +32,27 @@ public interface ParkingSpaceMapper extends BaseMapperX<ParkingSpaceDO> {
     }
 
     /**
-     * 查询停车场经纬度分布
+     * 各停车场经纬度分布（用于地图打点）
      */
     List<ParkingSpaceChartRespVO.ParkMapItem> selectParkMapList(@Param("parkName") String parkName);
 
     /**
-     * 查询车位经纬度分布
+     * 各车位经纬度分布（用于地图打点）
      */
     List<ParkingSpaceChartRespVO.SpaceMapItem> selectSpaceMapList(@Param("parkName") String parkName);
 
     /**
-     * 统计各状态车位数量
+     * 统计总车位/空闲/占用/预约数量（聚合查询）
      */
     ParkingSpaceChartRespVO selectChartStats(@Param("parkName") String parkName);
 
     /**
-     * 统计各时段使用率
+     * 按时间段统计车位使用率趋势
      */
     List<ParkingSpaceChartRespVO.UseRateItem> selectUseRateList(@Param("parkName") String parkName);
 
     /**
-     * 统计各类型占比
+     * 按车位类型统计占比分布
      */
     List<ParkingSpaceChartRespVO.TypeRateItem> selectTypeRateList(@Param("parkName") String parkName);
 

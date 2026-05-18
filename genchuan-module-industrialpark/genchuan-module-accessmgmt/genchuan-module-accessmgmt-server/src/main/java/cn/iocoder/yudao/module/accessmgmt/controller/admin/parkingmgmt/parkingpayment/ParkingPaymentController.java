@@ -26,6 +26,13 @@ import java.util.List;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
+/**
+ * 停车缴费 Controller
+ * <p>
+ * 提供停车缴费全流程 REST API：分页查询、详情查询、账单生成、费用计算、缴费支付、发票开具、催缴、优惠减免、补缴、Excel 导出及缴费态势统计。
+ *
+ * @author 亘川智城
+ */
 @Tag(name = "管理后台 - 停车缴费")
 @RestController
 @RequestMapping("/accessmgmt/parking-payment")

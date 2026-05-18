@@ -23,47 +23,47 @@ public interface ParkingSpaceService {
     ParkingSpaceRespVO getParkingSpace(Long id);
 
     /**
-     * 创建车位信息
+     * 创建车位 —— 校验车位编号唯一性，初始状态"空闲"
      */
     Boolean createParkingSpace(ParkingSpaceCreateReqVO createReqVO);
 
     /**
-     * 分配车位
+     * 分配车位 —— 状态变更为"占用"，写入预约用户
      */
     Boolean allocateParkingSpace(ParkingSpaceAllocateReqVO reqVO);
 
     /**
-     * 预约车位
+     * 预约车位 —— 状态变更为"预约中"，写入预约用户
      */
     Boolean reserveParkingSpace(ParkingSpaceReserveReqVO reqVO);
 
     /**
-     * 释放车位
+     * 释放车位 —— 状态变更为"空闲"，清空预约用户和使用时长
      */
     Boolean releaseParkingSpace(ParkingSpaceReleaseReqVO reqVO);
 
     /**
-     * 禁用车位
+     * 禁用车位 —— 状态变更为"占用"，写入停用原因
      */
     Boolean disableParkingSpace(ParkingSpaceDisableReqVO reqVO);
 
     /**
-     * 取消车位
+     * 取消车位 —— 状态变更为"空闲"，清空预约用户
      */
     Boolean cancelParkingSpace(ParkingSpaceCancelReqVO reqVO);
 
     /**
-     * 确认车位
+     * 确认车位 —— 状态变更为"占用"
      */
     Boolean confirmParkingSpace(ParkingSpaceConfirmReqVO reqVO);
 
     /**
-     * 获得车位信息列表（导出用）
+     * 获得车位信息列表（导出用，全量不分页）
      */
     List<ParkingSpaceRespVO> getParkingSpaceList(ParkingSpacePageReqVO pageReqVO);
 
     /**
-     * 车位管理态势
+     * 车位管理态势 —— 总数统计 + 地图分布 + 使用率趋势 + 类型占比
      */
     ParkingSpaceChartRespVO getParkingSpaceChart(String parkName);
 

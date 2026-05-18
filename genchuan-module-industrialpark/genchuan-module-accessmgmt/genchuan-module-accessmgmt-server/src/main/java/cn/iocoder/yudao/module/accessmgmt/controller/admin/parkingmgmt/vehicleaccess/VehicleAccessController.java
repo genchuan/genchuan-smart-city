@@ -26,6 +26,13 @@ import java.util.List;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
+/**
+ * 车辆通行 Controller
+ * <p>
+ * 提供车辆通行全流程 REST API：分页查询、详情查询、车牌识别、车辆放行、车辆拦截、费用计算、停车缴费、Excel 导出及通行态势统计。
+ *
+ * @author 亘川智城
+ */
 @Tag(name = "管理后台 - 车辆通行")
 @RestController
 @RequestMapping("/accessmgmt/vehicle-access")

@@ -13,9 +13,17 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
 
+/**
+ * 访客预约 Mapper
+ *
+ * @author 亘川智城
+ */
 @Mapper
 public interface VisitorAppointMapper extends BaseMapperX<VisitorAppointDO> {
 
+    /**
+     * 分页查询访客预约，支持按访客姓名(模糊)/身份证号(模糊)/被访企业(模糊)/预约状态/到访时间范围筛选
+     */
     default PageResult<VisitorAppointDO> selectPage(VisitorAppointPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<VisitorAppointDO>()
                 .likeIfPresent(VisitorAppointDO::getVisitorName, reqVO.getVisitorName())
@@ -28,11 +36,20 @@ public interface VisitorAppointMapper extends BaseMapperX<VisitorAppointDO> {
                 .orderByDesc(VisitorAppointDO::getId));
     }
 
+    /**
+     * 根据凭证号 ticket 查询访客预约记录（到访验证用）
+     */
     VisitorAppointDO selectByTicket(@Param("ticket") String ticket);
 
+    /**
+     * 按天统计每日预约数量趋势
+     */
     List<VisitorAppointChartRespVO.DayTrendItem> selectDayTrendList(@Param("startTime") Long startTime,
                                                                       @Param("endTime") Long endTime);
 
+    /**
+     * 按被访企业统计预约数量
+     */
     List<VisitorAppointChartRespVO.CompanyCountItem> selectCompanyCountList(@Param("startTime") Long startTime,
                                                                               @Param("endTime") Long endTime);
 

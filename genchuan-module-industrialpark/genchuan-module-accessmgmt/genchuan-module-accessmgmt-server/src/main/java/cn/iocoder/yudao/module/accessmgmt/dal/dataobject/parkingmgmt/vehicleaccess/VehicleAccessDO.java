@@ -63,11 +63,11 @@ public class VehicleAccessDO extends BaseDO {
      */
     private String handleUser;
     /**
-     * [备用字段1]
+     * [备用字段1] 拦截原因
      */
     private String reserve1;
     /**
-     * [备用字段2]
+     * [备用字段2] 备用字段2
      */
     private String reserve2;
 
