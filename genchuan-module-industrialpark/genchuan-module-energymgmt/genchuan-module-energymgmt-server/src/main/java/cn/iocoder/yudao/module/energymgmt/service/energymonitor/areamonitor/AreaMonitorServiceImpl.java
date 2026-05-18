@@ -29,6 +29,25 @@ public class AreaMonitorServiceImpl implements AreaMonitorService {
     private AreaMonitorMapper areaMonitorMapper;
 
     @Override
+    public PageResult<AreaMonitorDO> getAreaMonitorPage(AreaMonitorPageReqVO pageReqVO) {
+        return areaMonitorMapper.selectPage(pageReqVO);
+    }
+
+    @Override
+    public AreaMonitorDO getAreaMonitor(Long id) {
+        return areaMonitorMapper.selectById(id);
+    }
+
+
+    private void validateAreaMonitorExists(Long id) {
+        if (areaMonitorMapper.selectById(id) == null) {
+            throw exception(AREA_MONITOR_NOT_EXISTS);
+        }
+    }
+
+    //    ———————————————————— 以上是所需实现层 ————————————————————
+
+    @Override
     public Long createAreaMonitor(AreaMonitorSaveReqVO createReqVO) {
         // 插入
         AreaMonitorDO areaMonitor = BeanUtils.toBean(createReqVO, AreaMonitorDO.class);
@@ -60,22 +79,5 @@ public class AreaMonitorServiceImpl implements AreaMonitorService {
         // 删除
         areaMonitorMapper.deleteByIds(ids);
         }
-
-
-    private void validateAreaMonitorExists(Long id) {
-        if (areaMonitorMapper.selectById(id) == null) {
-            throw exception(AREA_MONITOR_NOT_EXISTS);
-        }
-    }
-
-    @Override
-    public AreaMonitorDO getAreaMonitor(Long id) {
-        return areaMonitorMapper.selectById(id);
-    }
-
-    @Override
-    public PageResult<AreaMonitorDO> getAreaMonitorPage(AreaMonitorPageReqVO pageReqVO) {
-        return areaMonitorMapper.selectPage(pageReqVO);
-    }
 
 }

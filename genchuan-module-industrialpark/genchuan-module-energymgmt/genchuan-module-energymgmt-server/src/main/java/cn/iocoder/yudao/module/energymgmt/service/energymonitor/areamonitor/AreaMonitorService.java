@@ -14,6 +14,24 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 public interface AreaMonitorService {
 
     /**
+     * 获得分区能耗分页
+     *
+     * @param pageReqVO 分页查询
+     * @return 分区能耗分页
+     */
+    PageResult<AreaMonitorDO> getAreaMonitorPage(AreaMonitorPageReqVO pageReqVO);
+
+    /**
+     * 获得分区能耗
+     *
+     * @param id 编号
+     * @return 分区能耗
+     */
+    AreaMonitorDO getAreaMonitor(Long id);
+
+    //    ———————————————————— 以上是所需接口 ————————————————————
+
+    /**
      * 创建分区能耗
      *
      * @param createReqVO 创建信息
@@ -41,21 +59,5 @@ public interface AreaMonitorService {
     * @param ids 编号
     */
     void deleteAreaMonitorListByIds(List<Long> ids);
-
-    /**
-     * 获得分区能耗
-     *
-     * @param id 编号
-     * @return 分区能耗
-     */
-    AreaMonitorDO getAreaMonitor(Long id);
-
-    /**
-     * 获得分区能耗分页
-     *
-     * @param pageReqVO 分页查询
-     * @return 分区能耗分页
-     */
-    PageResult<AreaMonitorDO> getAreaMonitorPage(AreaMonitorPageReqVO pageReqVO);
 
 }
