@@ -120,4 +120,29 @@
         </if>
     </select>
 
+    <select id="selectByIdJoin" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.CheckTaskRespVO">
+        SELECT
+            t.id AS id,
+            t.task_type AS taskType,
+            t.dispatch_time AS dispatchTime,
+            t.deadline_time AS deadlineTime,
+            t.status AS status,
+            a.name AS areaName,
+            u.nickname AS executeUserName,
+            t.finish_time AS finishTime,
+            t.task_progress AS taskProgress,
+            t.transfer_reason AS transferReason,
+            t.remark AS remark,
+            t.reserve1 AS reserve1,
+            t.reserve2 AS reserve2,
+            t.creator AS creator,
+            t.updater AS updater,
+            t.create_time AS createTime,
+            t.update_time AS updateTime
+        FROM check_task t
+        LEFT JOIN area_info a ON t.area_id = a.id AND a.deleted = 0
+        LEFT JOIN user_info u ON t.execute_user_id = u.id AND u.deleted = 0
+        WHERE t.id = #{id} AND t.deleted = 0
+    </select>
+
 </mapper>

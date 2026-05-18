@@ -63,4 +63,9 @@ public interface SpaceQueryMapper extends BaseMapperX<SpaceQueryDO> {
      */
     Map<String, Object> selectChartData(@Param("reqVO") SpaceQueryChartReqVO reqVO);
 
+    /**
+     * 根据ID查询（JOIN关联表）
+     */
+    SpaceQueryRespVO selectByIdJoin(@Param("id") Long id);
+
 }

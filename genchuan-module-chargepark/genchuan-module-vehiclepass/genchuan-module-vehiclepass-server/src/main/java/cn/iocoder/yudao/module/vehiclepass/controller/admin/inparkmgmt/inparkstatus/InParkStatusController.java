@@ -83,8 +83,7 @@ public class InParkStatusController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('in:park-status:query')")
     public CommonResult<InParkStatusRespVO> getParkStatus(@RequestParam("id") Long id) {
-        InParkStatusDO parkStatus = parkStatusService.getParkStatus(id);
-        return success(BeanUtils.toBean(parkStatus, InParkStatusRespVO.class));
+        return success(parkStatusService.getInParkStatusWithStation(id));
     }
 
     @GetMapping("/page")
@@ -128,8 +127,9 @@ public class InParkStatusController {
     @Operation(summary = "导出在停状态 Excel")
     @PreAuthorize("@ss.hasPermission('in:park-status:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportParkStatusExcel(@Valid InParkStatusPageReqVO pageReqVO,
+    public void exportParkStatusExcel(InParkStatusPageReqVO pageReqVO,
                                       HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<InParkStatusRespVO> pageResult = parkStatusService.getInParkStatusPage(pageReqVO);
         ExcelUtils.write(response, "在停状态.xls", "数据", InParkStatusRespVO.class, pageResult.getList());

@@ -60,6 +60,14 @@ public interface ResultHandleService {
     ResultHandleDO getHandle(Long id);
 
     /**
+     * 获得结果处置（含关联表字段）
+     *
+     * @param id 编号
+     * @return 结果处置（含片区名称、处置人名称）
+     */
+    ResultHandleRespVO getHandleWithJoin(Long id);
+
+    /**
      * 获得结果处置分页
      *
      * @param pageReqVO 分页查询

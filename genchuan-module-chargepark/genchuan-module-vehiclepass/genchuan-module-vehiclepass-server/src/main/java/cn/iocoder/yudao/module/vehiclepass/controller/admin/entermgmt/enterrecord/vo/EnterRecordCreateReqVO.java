@@ -1,10 +1,13 @@
 package cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.enterrecord.vo;
 
+import cn.iocoder.yudao.module.vehiclepass.framework.jackson.StringLocalDateTimeDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 入场记录补录创建 Request VO")
 @Data
@@ -21,9 +24,10 @@ public class EnterRecordCreateReqVO {
     @Schema(description = "车位编号", example = "A002")
     private String spaceNo;
 
-    @Schema(description = "入场时间，时间戳", requiredMode = Schema.RequiredMode.REQUIRED, example = "1775011986")
+    @Schema(description = "入场时间，支持时间戳或 yyyy-MM-dd HH:mm:ss", requiredMode = Schema.RequiredMode.REQUIRED, example = "2026-05-15 00:00:00")
     @NotNull(message = "入场时间不能为空")
-    private Long enterTime;
+    @JsonDeserialize(using = StringLocalDateTimeDeserializer.class)
+    private LocalDateTime enterTime;
 
     @Schema(description = "记录类型：固定人工补录", requiredMode = Schema.RequiredMode.REQUIRED, example = "人工补录")
     @NotEmpty(message = "记录类型不能为空")

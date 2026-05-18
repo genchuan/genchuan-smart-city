@@ -36,6 +36,9 @@ public class OilCarHandleRespVO {
     @ExcelProperty("处置状态：未处理 / 处理中 / 已关闭，关联字典oil_car_handle_status")
     private String status;
 
+    @Schema(description = "场站ID")
+    private Long stationId;
+
     @Schema(description = "场站名称", example = "XX停车场")
     @ExcelProperty("场站名称")
     private String stationName;

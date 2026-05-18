@@ -82,8 +82,7 @@ public class PayCheckController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('pay:check:query')")
     public CommonResult<PayCheckRespVO> getCheck(@RequestParam("id") Long id) {
-        PayCheckDO check = checkService.getCheck(id);
-        return success(BeanUtils.toBean(check, PayCheckRespVO.class));
+        return success(checkService.getCheckWithStation(id));
     }
 
     @GetMapping("/page")
@@ -120,8 +119,9 @@ public class PayCheckController {
     @Operation(summary = "导出缴费核验 Excel")
     @PreAuthorize("@ss.hasPermission('pay:check:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportCheckExcel(@Valid PayCheckPageReqVO pageReqVO,
+    public void exportCheckExcel(PayCheckPageReqVO pageReqVO,
                                  HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<PayCheckRespVO> pageResult = checkService.getCheckPageWithJoin(pageReqVO);
         ExcelUtils.write(response, "缴费核验.xls", "数据", PayCheckRespVO.class, pageResult.getList());

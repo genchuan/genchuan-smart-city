@@ -62,6 +62,14 @@ public interface FakePlateControlService {
     FakePlateControlDO getPlateControl(Long id);
 
     /**
+     * 获得套牌管控（含场站名称）
+     *
+     * @param id 编号
+     * @return 套牌管控
+     */
+    FakePlateControlRespVO getPlateControlWithStation(Long id);
+
+    /**
      * 获得套牌管控分页
      *
      * @param pageReqVO 分页查询

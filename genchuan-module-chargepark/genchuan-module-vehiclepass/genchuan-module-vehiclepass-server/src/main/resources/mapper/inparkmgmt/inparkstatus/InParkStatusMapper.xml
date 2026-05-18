@@ -5,6 +5,7 @@
     <select id="selectPageJoinSpaceStation" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusRespVO">
         SELECT
             p.id,
+            p.station_id AS stationId,
             s.name AS stationName,
             ps.location AS spaceName,
             p.car_no AS carNo,
@@ -38,6 +39,29 @@
             AND p.station_id = #{reqVO.stationId}
         </if>
         ORDER BY p.id DESC
+    </select>
+
+    <select id="selectByIdJoinStation" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusRespVO">
+        SELECT
+            p.id,
+            p.station_id AS stationId,
+            s.name AS stationName,
+            ps.location AS spaceName,
+            p.car_no AS carNo,
+            p.in_time AS inTime,
+            p.over_time AS overTime,
+            p.status,
+            p.remark,
+            p.reserve1,
+            p.reserve2,
+            p.creator,
+            p.updater,
+            p.create_time AS createTime,
+            p.update_time AS updateTime
+        FROM in_park_status p
+        LEFT JOIN station_info s ON p.station_id = s.id
+        LEFT JOIN parking_space_info ps ON p.space_id = ps.id AND ps.deleted = 0
+        WHERE p.id = #{id} AND p.deleted = 0
     </select>
 
     <select id="selectLocationById" resultType="map">

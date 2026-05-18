@@ -81,8 +81,8 @@ public class PassRecordController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('pass:record:query')")
     public CommonResult<PassRecordRespVO> getRecord(@RequestParam("id") Long id) {
-        PassRecordDO record = passRecordService.getRecord(id);
-        return success(BeanUtils.toBean(record, PassRecordRespVO.class));
+        PassRecordRespVO record = passRecordService.getPassRecordWithStation(id);
+        return success(record);
     }
 
     @GetMapping("/page")
@@ -96,8 +96,9 @@ public class PassRecordController {
     @Operation(summary = "导出放行记录 Excel")
     @PreAuthorize("@ss.hasPermission('pass:record:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportRecordExcel(@Valid PassRecordPageReqVO pageReqVO,
+    public void exportRecordExcel(PassRecordPageReqVO pageReqVO,
                                   HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<PassRecordRespVO> pageResult = passRecordService.getRecordPageWithJoin(pageReqVO);
         // 导出 Excel

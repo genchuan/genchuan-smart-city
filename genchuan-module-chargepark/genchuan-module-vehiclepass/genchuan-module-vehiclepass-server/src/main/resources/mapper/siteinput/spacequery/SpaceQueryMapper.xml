@@ -81,4 +81,27 @@
         </if>
     </select>
 
+    <select id="selectByIdJoin" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.spacequery.vo.SpaceQueryRespVO">
+        SELECT
+            q.id AS id,
+            q.space_no AS spaceNo,
+            q.query_time AS queryTime,
+            q.query_user_id AS queryUserId,
+            u.nickname AS queryUserName,
+            q.area_id AS areaId,
+            a.name AS areaName,
+            q.space_status AS spaceStatus,
+            q.remark AS remark,
+            q.reserve1 AS reserve1,
+            q.reserve2 AS reserve2,
+            q.creator AS creator,
+            q.updater AS updater,
+            q.create_time AS createTime,
+            q.update_time AS updateTime
+        FROM space_query q
+        LEFT JOIN area_info a ON q.area_id = a.id AND a.deleted = 0
+        LEFT JOIN user_info u ON q.query_user_id = u.id AND u.deleted = 0
+        WHERE q.id = #{id} AND q.deleted = 0
+    </select>
+
 </mapper>

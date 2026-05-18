@@ -61,6 +61,11 @@ public interface CarInputService {
     CarInputDO getInput(Long id);
 
     /**
+     * 获得车辆录入（含关联表字段）
+     */
+    CarInputRespVO getInputWithJoin(Long id);
+
+    /**
      * 获得车辆录入分页
      *
      * @param pageReqVO 分页查询

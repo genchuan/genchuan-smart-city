@@ -41,6 +41,6 @@ public class IdentifyCorrectReqVO {
 
     @NotNull(message = "修正标记不能为空")
     @Schema(description = "修正记录标记（固定为1）", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Boolean isCorrected;
+    private Integer isCorrected;
 
 }

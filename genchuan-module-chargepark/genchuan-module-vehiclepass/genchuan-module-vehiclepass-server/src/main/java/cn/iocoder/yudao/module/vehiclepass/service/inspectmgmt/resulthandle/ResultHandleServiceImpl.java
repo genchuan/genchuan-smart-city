@@ -88,6 +88,11 @@ public class ResultHandleServiceImpl implements ResultHandleService {
     }
 
     @Override
+    public ResultHandleRespVO getHandleWithJoin(Long id) {
+        return handleMapper.selectByIdJoin(id);
+    }
+
+    @Override
     public PageResult<ResultHandleDO> getHandlePage(ResultHandlePageReqVO pageReqVO) {
         return handleMapper.selectPage(pageReqVO);
     }

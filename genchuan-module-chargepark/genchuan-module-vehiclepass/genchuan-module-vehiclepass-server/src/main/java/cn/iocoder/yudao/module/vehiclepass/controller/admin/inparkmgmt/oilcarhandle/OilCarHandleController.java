@@ -75,8 +75,7 @@ public class OilCarHandleController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('oil:car-handle:query')")
     public CommonResult<OilCarHandleRespVO> getCarHandle(@RequestParam("id") Long id) {
-        OilCarHandleDO carHandle = carHandleService.getCarHandle(id);
-        return success(BeanUtils.toBean(carHandle, OilCarHandleRespVO.class));
+        return success(carHandleService.getCarHandleWithStation(id));
     }
 
     @GetMapping("/page")
@@ -129,8 +128,9 @@ public class OilCarHandleController {
     @Operation(summary = "导出油车占位处置 Excel")
     @PreAuthorize("@ss.hasPermission('oil:car-handle:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportCarHandleExcel(@Valid OilCarHandlePageReqVO pageReqVO,
+    public void exportCarHandleExcel(OilCarHandlePageReqVO pageReqVO,
                                      HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<OilCarHandleRespVO> pageResult = carHandleService.getCarHandlePageWithJoin(pageReqVO);
         ExcelUtils.write(response, "油车占位处置.xls", "数据", OilCarHandleRespVO.class, pageResult.getList());

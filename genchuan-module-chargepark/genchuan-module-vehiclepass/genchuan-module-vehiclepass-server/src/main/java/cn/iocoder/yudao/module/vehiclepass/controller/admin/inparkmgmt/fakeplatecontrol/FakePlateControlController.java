@@ -84,8 +84,7 @@ public class FakePlateControlController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('fake:plate-control:query')")
     public CommonResult<FakePlateControlRespVO> getPlateControl(@RequestParam("id") Long id) {
-        FakePlateControlDO plateControl = plateControlService.getPlateControl(id);
-        return success(BeanUtils.toBean(plateControl, FakePlateControlRespVO.class));
+        return success(plateControlService.getPlateControlWithStation(id));
     }
 
     @GetMapping("/page")
@@ -138,8 +137,9 @@ public class FakePlateControlController {
     @Operation(summary = "导出套牌管控 Excel")
     @PreAuthorize("@ss.hasPermission('fake:plate-control:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportPlateControlExcel(@Valid FakePlateControlPageReqVO pageReqVO,
+    public void exportPlateControlExcel(FakePlateControlPageReqVO pageReqVO,
                                         HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<MyFakePlateControlRespVO> pageResult = plateControlService.getFakePlateControlPage(pageReqVO);
         ExcelUtils.write(response, "套牌管控.xls", "数据", MyFakePlateControlRespVO.class, pageResult.getList());
