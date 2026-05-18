@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.accessmgmt.controller.admin.faceaccess.accessrec
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
@@ -26,11 +27,18 @@ import java.util.List;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
+/**
+ * 通行记录 Controller
+ * <p>
+ * 提供通行记录的分页查询、详情查询、异常核查、告警、处置及统计态势等 REST API。
+ * 通行记录为只读数据，不提供新增/修改/删除接口。
+ *
+ * @author 亘川智城
+ */
 @Tag(name = "管理后台 - 通行记录")
 @RestController
 @RequestMapping("/accessmgmt/access-record")
 @Validated
-@Hidden
 public class AccessRecordController {
 
     @Resource
@@ -83,7 +91,8 @@ public class AccessRecordController {
     @ApiAccessLog(operateType = EXPORT)
     public void exportAccessRecordExcel(@Valid AccessRecordPageReqVO pageReqVO,
                                          HttpServletResponse response) throws IOException {
-        List<AccessRecordRespVO> list = accessRecordService.getAccessRecordList(pageReqVO);
+        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        List<AccessRecordRespVO> list = accessRecordService.getAccessRecordPage(pageReqVO).getList();
 
         response.setContentType("application/vnd.ms-excel;charset=UTF-8");
         response.setCharacterEncoding("utf-8");

@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.accessmgmt.controller.admin.faceaccess.facemgmt;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
@@ -25,6 +26,14 @@ import java.util.List;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
+/**
+ * 人脸管理 Controller
+ * <p>
+ * 提供人脸信息全生命周期管理的 REST API，包括：增删改查、人脸采集、权限配置、
+ * 通行验证、通行放行、禁用、授权、续期及授权态势统计等功能。
+ *
+ * @author 亘川智城
+ */
 @Tag(name = "管理后台 - 人脸管理")
 @RestController
 @RequestMapping("/accessmgmt/face-mgmt")
@@ -83,7 +92,8 @@ public class FaceMgmtController {
                                      HttpServletResponse response) throws IOException {
         String inputFileName = "人脸信息_";
 
-        List<FaceMgmtRespVO> list = faceMgmtService.getFaceMgmtList(pageReqVO);
+        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        List<FaceMgmtRespVO> list = faceMgmtService.getFaceMgmtPage(pageReqVO).getList();
 
         response.setContentType("application/vnd.ms-excel;charset=UTF-8");
         response.setCharacterEncoding("utf-8");
