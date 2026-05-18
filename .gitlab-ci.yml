@@ -36,6 +36,7 @@ Build:
           ["genchuan-module-marketop-server"]="genchuan-module-chargepark/genchuan-module-marketop/genchuan-module-marketop-server"
           ["genchuan-module-carservice-server"]="genchuan-module-chargepark/genchuan-module-carservice/genchuan-module-carservice-server"
           ["genchuan-module-vehiclepass-server"]="genchuan-module-chargepark/genchuan-module-vehiclepass/genchuan-module-vehiclepass-server"
+          ["genchuan-module-accessmgmt-server"]="genchuan-module-industrialpark/genchuan-module-accessmgmt/genchuan-module-accessmgmt-server"
       
       )
 
