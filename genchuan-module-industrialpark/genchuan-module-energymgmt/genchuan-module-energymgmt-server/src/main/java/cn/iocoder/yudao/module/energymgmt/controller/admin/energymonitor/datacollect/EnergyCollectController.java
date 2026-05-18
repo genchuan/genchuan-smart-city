@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.Operation;
 
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
+
+import java.time.LocalDateTime;
 import java.util.*;
 import java.io.IOException;
 
@@ -75,8 +77,8 @@ public class EnergyCollectController {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<EnergyCollectDO> list = energyCollectService.getEnergyCollectPage(pageReqVO).getList();
         // 导出 Excel
-        ExcelUtils.write(response, "能耗采集.xls", "数据", EnergyCollectPageRespVO.class,
-                BeanUtils.toBean(list, EnergyCollectPageRespVO.class));
+        ExcelUtils.write(response, "能耗采集.xls", "数据", EnergyCollectExportRespVO.class,
+                BeanUtils.toBean(list, EnergyCollectExportRespVO.class));
     }
 
     @GetMapping("/get")
@@ -100,6 +102,20 @@ public class EnergyCollectController {
     @PreAuthorize("@ss.hasPermission('energymgmt:energy-collect:restart')")
     public CommonResult<Boolean> restartEnergyCollect(@Valid @RequestBody EnergyCollectRestartReqVO restartReqVO) {
         return success(energyCollectService.restartEnergyCollect(restartReqVO));
+    }
+
+    @PutMapping("/calibrate")
+    @Operation(summary = "校准能耗采集")
+    @PreAuthorize("@ss.hasPermission('energymgmt:energy-collect:calibrate')")
+    public CommonResult<Boolean> calibrateEnergyCollect(@Valid @RequestBody EnergyCollectCalibrateReqVO calibrateReqVO) {
+        return success(energyCollectService.calibrateEnergyCollect(calibrateReqVO));
+    }
+
+    @GetMapping("/chart")
+    @Operation(summary = "能耗采集图表数据")
+    @PreAuthorize("@ss.hasPermission('energymgmt:energy-collect:query')")
+    public CommonResult<EnergyCollectChartRespVO> getEnergyCollectChart(@Valid EnergyCollectChartReqVO chartReqVO) {
+        return success(energyCollectService.getEnergyCollectChart(chartReqVO));
     }
 
 //    ———————————————————— 以上是所需接口 ————————————————————

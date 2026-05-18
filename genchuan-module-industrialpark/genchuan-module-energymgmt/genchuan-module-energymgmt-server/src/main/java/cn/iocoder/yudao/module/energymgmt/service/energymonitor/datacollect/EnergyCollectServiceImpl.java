@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.energymgmt.service.energymonitor.datacollect;
 
+import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
+import cn.iocoder.yudao.module.energymgmt.framework.utils.TimeRangeParser;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.mzt.logapi.context.LogRecordContext;
 import org.springframework.stereotype.Service;
@@ -130,6 +132,73 @@ public class EnergyCollectServiceImpl implements EnergyCollectService {
         return rows > 0;
     }
 
+    @Override
+    public Boolean calibrateEnergyCollect(EnergyCollectCalibrateReqVO calibrateReqVO) {
+        // 校验存在
+        validateEnergyCollectExists(calibrateReqVO.getId());
+
+        EnergyCollectDO updateObj = BeanUtils.toBean(calibrateReqVO, EnergyCollectDO.class);
+        // 调取对象,检验状态
+        if(getEnergyCollect(calibrateReqVO.getId()).getCollectStatus().equals("采集异常")) {
+            updateObj.setCollectStatus("采集正常");
+            updateObj.setEnergyValue(calibrateReqVO.getCalibrateValue());
+            updateObj.setUpdater(SecurityFrameworkUtils.getLoginUserNickname());
+            updateObj.setUpdateTime(LocalDateTime.now());
+        } else {
+            throw exception(ILLEGAL_STATUS);
+        }
+
+        // 更新
+        int rows = energyCollectMapper.updateById(updateObj);
+
+        // 返回
+        return rows > 0;
+    }
+
+    @Override
+    public EnergyCollectChartRespVO getEnergyCollectChart(EnergyCollectChartReqVO chartReqVO) {
+        EnergyCollectChartRespVO chartRespVO = new EnergyCollectChartRespVO();
+        String timeRange = chartReqVO.getTimeRange();
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime start;
+        LocalDateTime end;
+        String granularity;
+        if (StrUtil.isBlank(timeRange)) {
+            // 默认最近24小时
+            start = now.minusHours(24);
+            end = now;
+            granularity = "hour"; // 或者 "day"，根据图表需要
+        } else {
+            String converted = TimeRangeParser.convertTimeRange(chartReqVO.getTimeRange());
+            TimeRangeParser.TimeRangeParsed parsed = TimeRangeParser.parse(converted);
+            if (parsed == null) {
+                // 解析失败，返回空数据
+                return chartRespVO;
+            }
+            start = parsed.getStart();
+            end = parsed.getEnd();
+            granularity = parsed.getGranularity();
+        }
+
+        // 总数统计
+        chartRespVO.setDeviceCount(energyCollectMapper.selectDeviceCount(start, end));
+        chartRespVO.setNormalCount(energyCollectMapper.selectNormalCount(start, end));
+        chartRespVO.setExceptionCount(energyCollectMapper.selectExceptionCount(start, end));
+        chartRespVO.setTotalEnergy(energyCollectMapper.selectTotalEnergy(start, end));
+
+        // 折线图渲染 todo：这折线图统计肯定是有问题的，等之后连上设备再说
+        List<EnergyCollectChartRespVO.RealTimeTrendVO> realTimeTrend = energyCollectMapper.selectRealTimeTrend(
+                start, end, granularity);
+        chartRespVO.setRealTimeTrend(realTimeTrend);
+        List<EnergyCollectChartRespVO.PeriodTrendVO> periodTrend = energyCollectMapper.selectPeriodTrend(
+                start, end, granularity);
+        chartRespVO.setPeriodTrend(periodTrend);
+
+        // 返回
+        return chartRespVO;
+    }
+
     private void validateEnergyCollectExists(Long id) {
         if (energyCollectMapper.selectById(id) == null) {
             throw exception(ENERGY_COLLECT_NOT_EXISTS);
@@ -168,6 +237,6 @@ public class EnergyCollectServiceImpl implements EnergyCollectService {
         public void deleteEnergyCollectListByIds(List<Long> ids) {
         // 删除
         energyCollectMapper.deleteByIds(ids);
-        }
+    }
 
 }

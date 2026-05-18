@@ -9,4 +9,76 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <!-- 采集设备数（去重设备名称） -->
+    <select id="selectDeviceCount" resultType="java.lang.Long">
+        SELECT COUNT(DISTINCT device_name)
+        FROM energy_collect
+        WHERE deleted = 0
+        <if test="start != null"> AND collect_time >= #{start} </if>
+        <if test="end != null"> AND collect_time &lt;= #{end} </if>
+    </select>
+
+    <!-- 正常采集数 -->
+    <select id="selectNormalCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM energy_collect
+        WHERE deleted = 0
+        AND collect_status = '采集正常'
+        <if test="start != null"> AND collect_time >= #{start} </if>
+        <if test="end != null"> AND collect_time &lt;= #{end} </if>
+    </select>
+
+    <!-- 异常采集数 -->
+    <select id="selectExceptionCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM energy_collect
+        WHERE deleted = 0
+        AND collect_status = '采集异常'
+        <if test="start != null"> AND collect_time >= #{start} </if>
+        <if test="end != null"> AND collect_time &lt;= #{end} </if>
+    </select>
+
+    <!-- 总能耗值 -->
+    <select id="selectTotalEnergy" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(energy_value), 0)
+        FROM energy_collect
+        WHERE deleted = 0
+        <if test="start != null"> AND collect_time >= #{start} </if>
+        <if test="end != null"> AND collect_time &lt;= #{end} </if>
+    </select>
+
+    <!-- 实时趋势（按小时聚合，time格式 'HH:00'） -->
+    <select id="selectRealTimeTrend" resultType="cn.iocoder.yudao.module.energymgmt.controller.admin.energymonitor.datacollect.vo.EnergyCollectChartRespVO$RealTimeTrendVO">
+        SELECT
+        DATE_FORMAT(collect_time, '%H:00') AS time,
+        COALESCE(SUM(energy_value), 0) AS value
+        FROM energy_collect
+        WHERE deleted = 0
+        <if test="start != null"> AND collect_time >= #{start} </if>
+        <if test="end != null"> AND collect_time &lt;= #{end} </if>
+        GROUP BY DATE_FORMAT(collect_time, '%H:00')
+        ORDER BY time ASC
+    </select>
+
+    <!-- 分时段趋势（早高峰8-10点，午间12-14点） -->
+    <select id="selectPeriodTrend" resultType="cn.iocoder.yudao.module.energymgmt.controller.admin.energymonitor.datacollect.vo.EnergyCollectChartRespVO$PeriodTrendVO">
+        SELECT
+        CASE
+        WHEN HOUR(collect_time) BETWEEN 8 AND 10 THEN '早高峰'
+        WHEN HOUR(collect_time) BETWEEN 12 AND 14 THEN '午间'
+        END AS time,
+        COALESCE(SUM(energy_value), 0) AS value
+        FROM energy_collect
+        WHERE deleted = 0
+        AND HOUR(collect_time) IN (8,9,10,12,13,14)
+        <if test="start != null"> AND collect_time >= #{start} </if>
+        <if test="end != null"> AND collect_time &lt;= #{end} </if>
+        GROUP BY
+        CASE
+        WHEN HOUR(collect_time) BETWEEN 8 AND 10 THEN '早高峰'
+        WHEN HOUR(collect_time) BETWEEN 12 AND 14 THEN '午间'
+        END
+        ORDER BY FIELD(time, '早高峰', '午间')
+    </select>
+
 </mapper>

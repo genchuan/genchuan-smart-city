@@ -69,6 +69,22 @@ public interface EnergyCollectService {
      */
     Boolean restartEnergyCollect(@Valid EnergyCollectRestartReqVO restartReqVO);
 
+    /**
+     * 能源采集校准
+     *
+     * @param calibrateReqVO 校准后信息
+     * @return 布尔值
+     */
+    Boolean calibrateEnergyCollect(@Valid EnergyCollectCalibrateReqVO calibrateReqVO);
+
+    /**
+     * 能耗采集图表数据
+     *
+     * @param chartReqVO 时间范围
+     * @return 图表数据
+     */
+    EnergyCollectChartRespVO getEnergyCollectChart(@Valid EnergyCollectChartReqVO chartReqVO);
+
 //    ———————————————————— 以上是所需接口 ————————————————————
 
     /**
