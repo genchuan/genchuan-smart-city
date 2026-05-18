@@ -17,7 +17,6 @@
         <module>genchuan-module-enterprisesvc</module>
         <module>genchuan-module-enterprisesvc/genchuan-module-enterprisesvc-api</module>
         <module>genchuan-module-energymgmt</module>
-        <module>genchuan-module-energymgmt/genchuan-module-energymgmt-api</module>
     </modules>
 
     <description>
