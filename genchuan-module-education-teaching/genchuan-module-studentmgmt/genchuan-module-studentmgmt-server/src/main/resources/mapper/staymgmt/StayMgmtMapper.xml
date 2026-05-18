@@ -57,9 +57,9 @@
         SELECT
         s.class_name AS className,
         COUNT(1) AS totalCount,
-        SUM(CASE WHEN a.status = #{pendingConfirm} THEN 1 ELSE 0 END) AS pendingConfirmCount,
-        SUM(CASE WHEN a.status = #{pendingAudit} THEN 1 ELSE 0 END) AS pendingAuditCount,
-        SUM(CASE WHEN a.status = #{passed} THEN 1 ELSE 0 END) AS passedCount
+        SUM(CASE WHEN a.status = 'pending_confirm' THEN 1 ELSE 0 END) AS pendingConfirmCount,
+        SUM(CASE WHEN a.status = 'pending_audit' THEN 1 ELSE 0 END) AS pendingAuditCount,
+        SUM(CASE WHEN a.status = 'passed' THEN 1 ELSE 0 END) AS passedCount
         FROM stay_mgmt AS a LEFT JOIN student_info AS s  ON a.student_id = s.id
         WHERE a.deleted= 0
         <if test="startTime != null">

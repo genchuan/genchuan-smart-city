@@ -110,4 +110,10 @@ public interface ViolateMgmtMapper extends BaseMapperX<ViolateMgmtDO> {
     List<JSONObject> selectViolateTypeCount(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 
     List<JSONObject> selectViolateClassCount(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
+
+    Integer selectTotalViolate(LocalDateTime startTime, LocalDateTime endTime, String className, String grade);
+
+    Integer selectUnhandledViolate(LocalDateTime startTime, LocalDateTime endTime, String className, String grade, String status);
+
+    List<JSONObject> selectTotalCountByDate(LocalDateTime startTime, LocalDateTime endTime, String cycle);
 }

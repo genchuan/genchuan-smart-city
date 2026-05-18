@@ -64,7 +64,7 @@ public interface ClassAssignService {
 
     Boolean assign(@Valid ClassAssignAssignReqVO reqVO);
 
-    Boolean confirm(@Valid ClassAssignConfigReqVO reqVO);
+    Boolean confirm(@Valid ClassAssignConfirmReqVO reqVO);
 
     ClassAssignChartRespVO chart(@Valid BaseChartReqVO reqVO);
 
