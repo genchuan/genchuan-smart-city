@@ -48,8 +48,12 @@
             </if>
 
             <!-- 排班日期范围 -->
-            <if test="reqVO.scheduleDate != null and reqVO.scheduleDate.length == 2">
-                AND sv.schedule_date BETWEEN #{reqVO.scheduleDate[0]} AND #{reqVO.scheduleDate[1]}
+<!--            <if test="reqVO.scheduleDate != null and reqVO.scheduleDate.length == 2">-->
+<!--                AND sv.schedule_date BETWEEN #{reqVO.scheduleDate[0]} AND #{reqVO.scheduleDate[1]}-->
+<!--            </if>-->
+            <if test="reqVO.scheduleDate != null and reqVO.scheduleDate != ''">
+                AND sv.schedule_date >= #{reqVO.handoverDateBegin, jdbcType=TIMESTAMP}
+                AND sv.schedule_date &lt;= #{reqVO.handoverDateEnd, jdbcType=TIMESTAMP}
             </if>
 
             <!-- 班次类型 -->

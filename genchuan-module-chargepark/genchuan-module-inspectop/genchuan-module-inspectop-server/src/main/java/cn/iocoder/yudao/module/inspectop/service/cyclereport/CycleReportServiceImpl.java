@@ -37,9 +37,66 @@ public class CycleReportServiceImpl implements CycleReportService {
     @Resource
     private CycleReportMapper cycleReportMapper;
 
+//    @Override
+//    public PageResult<CycleReportDO> getCycleReportPage(CycleReportPageReqVO pageReqVO) {
+//        return cycleReportMapper.selectPage(pageReqVO);
+//    }
+
     @Override
     public PageResult<CycleReportDO> getCycleReportPage(CycleReportPageReqVO pageReqVO) {
-        return cycleReportMapper.selectPage(pageReqVO);
+        // 创建查询条件
+        LambdaQueryWrapper<CycleReportDO> queryWrapper = new LambdaQueryWrapper<>();
+
+        // 添加基本条件
+        queryWrapper.eq(pageReqVO.getReportCycle() != null, CycleReportDO::getReportCycle, pageReqVO.getReportCycle())
+                .eq(pageReqVO.getStationId() != null, CycleReportDO::getStationId, pageReqVO.getStationId())
+                .like(pageReqVO.getStationName() != null, CycleReportDO::getStationName, pageReqVO.getStationName());
+
+        // 修复：时间范围查询逻辑
+        // 记录：报表的统计时段 = [record_start, record_end]
+        // 搜索：用户的搜索时段 = [search_start, search_end]
+        // 条件：record_start <= search_end AND record_end >= search_start
+
+        if (pageReqVO.getStatTimeStart() != null) {
+            queryWrapper.ge(CycleReportDO::getStatTimeEnd, pageReqVO.getStatTimeStart());
+        }
+        if (pageReqVO.getStatTimeEnd() != null) {
+            queryWrapper.le(CycleReportDO::getStatTimeStart, pageReqVO.getStatTimeEnd());
+        }
+
+        // 添加其他条件
+        queryWrapper.eq(pageReqVO.getNormalDeviceNum() != null, CycleReportDO::getNormalDeviceNum, pageReqVO.getNormalDeviceNum())
+                .eq(pageReqVO.getAbnormalDeviceNum() != null, CycleReportDO::getAbnormalDeviceNum, pageReqVO.getAbnormalDeviceNum())
+                .eq(pageReqVO.getInspectTaskNum() != null, CycleReportDO::getInspectTaskNum, pageReqVO.getInspectTaskNum())
+                .eq(pageReqVO.getTaskCompleteRate() != null, CycleReportDO::getTaskCompleteRate, pageReqVO.getTaskCompleteRate())
+                .eq(pageReqVO.getOilWaitHandleNum() != null, CycleReportDO::getOilWaitHandleNum, pageReqVO.getOilWaitHandleNum())
+                .eq(pageReqVO.getOilHandleCompleteRate() != null, CycleReportDO::getOilHandleCompleteRate, pageReqVO.getOilHandleCompleteRate())
+                .eq(pageReqVO.getInspectUserOnlineNum() != null, CycleReportDO::getInspectUserOnlineNum, pageReqVO.getInspectUserOnlineNum())
+                .eq(pageReqVO.getAssetNormalNum() != null, CycleReportDO::getAssetNormalNum, pageReqVO.getAssetNormalNum())
+                .eq(pageReqVO.getStockWarnNum() != null, CycleReportDO::getStockWarnNum, pageReqVO.getStockWarnNum())
+                .eq(pageReqVO.getGenerateStatus() != null, CycleReportDO::getGenerateStatus, pageReqVO.getGenerateStatus())
+                .between(pageReqVO.getGenerateTime() != null && pageReqVO.getGenerateTime().length == 2,
+                        CycleReportDO::getGenerateTime,
+                        pageReqVO.getGenerateTime() != null ? pageReqVO.getGenerateTime()[0] : null,
+                        pageReqVO.getGenerateTime() != null ? pageReqVO.getGenerateTime()[1] : null)
+                .eq(pageReqVO.getOperator() != null, CycleReportDO::getOperator, pageReqVO.getOperator())
+                .eq(pageReqVO.getExportCount() != null, CycleReportDO::getExportCount, pageReqVO.getExportCount())
+                .eq(pageReqVO.getYearOnYearData() != null, CycleReportDO::getYearOnYearData, pageReqVO.getYearOnYearData())
+                .eq(pageReqVO.getChainRatioData() != null, CycleReportDO::getChainRatioData, pageReqVO.getChainRatioData())
+                .eq(pageReqVO.getCreator() != null, CycleReportDO::getCreator, pageReqVO.getCreator())
+                .eq(pageReqVO.getUpdater() != null, CycleReportDO::getUpdater, pageReqVO.getUpdater())
+                .between(pageReqVO.getCreateTime() != null && pageReqVO.getCreateTime().length == 2,
+                        CycleReportDO::getCreateTime,
+                        pageReqVO.getCreateTime() != null ? pageReqVO.getCreateTime()[0] : null,
+                        pageReqVO.getCreateTime() != null ? pageReqVO.getCreateTime()[1] : null)
+                .between(pageReqVO.getUpdateTime() != null && pageReqVO.getUpdateTime().length == 2,
+                        CycleReportDO::getUpdateTime,
+                        pageReqVO.getUpdateTime() != null ? pageReqVO.getUpdateTime()[0] : null,
+                        pageReqVO.getUpdateTime() != null ? pageReqVO.getUpdateTime()[1] : null)
+                .orderByDesc(CycleReportDO::getId);
+
+        // 执行分页查询
+        return cycleReportMapper.selectPage(pageReqVO, queryWrapper);
     }
 
     @Override

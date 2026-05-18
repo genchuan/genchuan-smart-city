@@ -51,8 +51,9 @@
             </if>
 
             <!-- 交接日期范围 -->
-            <if test="reqVO.handoverDate != null and reqVO.handoverDate.length == 2">
-                AND hl.handover_date BETWEEN #{reqVO.handoverDate[0]} AND #{reqVO.handoverDate[1]}
+            <if test="reqVO.handoverDate != null and reqVO.handoverDate != ''">
+                AND hl.handover_date >= #{reqVO.handoverDateBegin, jdbcType=TIMESTAMP}
+                AND hl.handover_date &lt;= #{reqVO.handoverDateEnd, jdbcType=TIMESTAMP}
             </if>
 
             <!-- 交接内容 -->

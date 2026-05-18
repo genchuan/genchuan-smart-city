@@ -142,11 +142,56 @@ public class ShiftApplyController {
     @PreAuthorize("@ss.hasPermission('inspectop:shift-apply:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportShiftApplyExcel(@Valid ShiftApplyPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                      HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        // 1. 获取数据列表
         List<ShiftApplyRespVO> list = shiftApplyService.getShiftApplyPage(pageReqVO).getList();
-        // 导出 Excel
+
+        // 【新增】2. 对VO列表中的字典值进行转换（数字 -> 中文）
+        convertShiftApplyDictValues(list);
+
+        // 3. 导出 Excel
         ExcelUtils.write(response, "换班申请.xls", "数据", ShiftApplyRespVO.class, list);
+    }
+
+    /**
+     * 【新增】转换换班申请状态字典值为中文显示
+     * 此方法会修改传入的 voList 中每个对象的 status 字段
+     * @param voList 换班申请响应VO列表
+     */
+    private void convertShiftApplyDictValues(List<ShiftApplyRespVO> voList) {
+        if (voList == null || voList.isEmpty()) {
+            return;
+        }
+        for (ShiftApplyRespVO vo : voList) {
+            // 转换申请状态
+            vo.setStatus(convertShiftApplyStatus(vo.getStatus()));
+        }
+    }
+
+    /**
+     * 【新增】转换换班申请状态字典值
+     * 根据您提供的映射：1-已重新申请，2-已驳回，3-已通过，4-待审核
+     * @param statusCode 状态编码（例如 "1", "2"）
+     * @return 对应的中文状态描述
+     */
+    private String convertShiftApplyStatus(String statusCode) {
+        if (statusCode == null) {
+            return "";
+        }
+        switch (statusCode.trim()) {
+            case "1":
+                return "已重新申请";
+            case "2":
+                return "已驳回";
+            case "3":
+                return "已通过";
+            case "4":
+                return "待审核";
+            default:
+                // 如果遇到未知编码，可以选择返回原编码或空字符串，这里返回原编码以便排查
+                return statusCode;
+        }
     }
 
 }
