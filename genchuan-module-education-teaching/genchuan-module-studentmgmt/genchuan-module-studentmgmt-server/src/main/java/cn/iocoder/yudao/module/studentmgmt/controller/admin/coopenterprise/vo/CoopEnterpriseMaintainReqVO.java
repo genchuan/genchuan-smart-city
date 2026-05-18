@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class CoopEnterpriseMaintainReqVO {
 
     @Schema(description = "主键 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "17018")
-    private Long id;
+    private Long[] ids;
 
     @Schema(description = "合作开始时间，时间戳格式", requiredMode = Schema.RequiredMode.REQUIRED, example = "1744088400000")
     private LocalDateTime coopStartTime;

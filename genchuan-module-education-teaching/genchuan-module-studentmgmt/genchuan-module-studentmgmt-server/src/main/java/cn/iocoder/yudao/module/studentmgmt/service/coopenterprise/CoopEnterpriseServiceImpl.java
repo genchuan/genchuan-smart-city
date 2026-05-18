@@ -104,17 +104,22 @@ public class CoopEnterpriseServiceImpl implements CoopEnterpriseService {
 
     @Override
     public Boolean maintain(CoopEnterpriseMaintainReqVO updateReqVO) {
-        // 校验存在
-        CoopEnterpriseDO coopEnterprise = validateCoopEnterpriseExists(updateReqVO.getId());
-        // 更新
-        CopyOptions copyOptions = CopyOptions.create().setIgnoreNullValue(true);
-        BeanUtil.copyProperties(updateReqVO, coopEnterprise, copyOptions);
-        String loginUserNickname = SecurityFrameworkUtils.getLoginUserNickname();
-        coopEnterprise.setUpdater(loginUserNickname);
-        coopEnterprise.setUpdateTime(LocalDateTime.now());
+        Long[] ids = updateReqVO.getIds();
+        int total =0;
+        for (Long id : ids) {
 
-        int i = coopEnterpriseMapper.updateById(coopEnterprise);
-        return i > 0;
+            CoopEnterpriseDO coopEnterprise = validateCoopEnterpriseExists(id);
+            CopyOptions copyOptions = CopyOptions.create().setIgnoreNullValue(true);
+            BeanUtil.copyProperties(updateReqVO, coopEnterprise, copyOptions);
+            String loginUserNickname = SecurityFrameworkUtils.getLoginUserNickname();
+            coopEnterprise.setUpdater(loginUserNickname);
+            coopEnterprise.setUpdateTime(LocalDateTime.now());
+            int i = coopEnterpriseMapper.updateById(coopEnterprise);
+            total += i;
+        }
+        // 更新
+
+        return total > 0;
     }
 
     @Override
