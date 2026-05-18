@@ -54,8 +54,8 @@ public class MerchantRechargeController {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<MerchantRechargeDO> list = merchantRechargeService.getMerchantRechargePage(pageReqVO).getList();
         // 导出 Excel
-        ExcelUtils.write(response, "商户充值.xls", "数据", MerchantRechargePageRespVO.class,
-                BeanUtils.toBean(list, MerchantRechargePageRespVO.class));
+        ExcelUtils.write(response, "商户充值.xls", "数据", MerchantRechargeExportRespVO.class,
+                BeanUtils.toBean(list, MerchantRechargeExportRespVO.class));
     }
 
     @PutMapping("/pay")
