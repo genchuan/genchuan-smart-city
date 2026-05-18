@@ -29,6 +29,9 @@ public class IdentifyPageReqVO extends PageParam {
     @Schema(description = "场站ID", example = "1")
     private Long stationId;
 
+    @Schema(description = "场站名称，支持模糊查询")
+    private String stationName;
+
     @Schema(description = "备注，支持模糊查询", example = "")
     private String remark;
 

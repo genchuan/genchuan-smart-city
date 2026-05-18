@@ -29,6 +29,7 @@ public interface PayCheckMapper extends BaseMapperX<PayCheckDO> {
                 .eqIfPresent(PayCheckDO::getParkFee, reqVO.getParkFee())
                 .eqIfPresent(PayCheckDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(PayCheckDO::getStationId, reqVO.getStationId())
+                .likeIfPresent(PayCheckDO::getStationName, reqVO.getStationName())
                 .eqIfPresent(PayCheckDO::getCheckUserId, reqVO.getCheckUserId())
                 .eqIfPresent(PayCheckDO::getCheckResult, reqVO.getCheckResult())
                 .eqIfPresent(PayCheckDO::getRemark, reqVO.getRemark())

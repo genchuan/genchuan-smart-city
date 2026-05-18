@@ -54,6 +54,10 @@ public class LeaveRecordDO extends BaseDO {
      */
     private Long stationId;
     /**
+     * 场站名称
+     */
+    private String stationName;
+    /**
      * 备注
      */
     private String remark;

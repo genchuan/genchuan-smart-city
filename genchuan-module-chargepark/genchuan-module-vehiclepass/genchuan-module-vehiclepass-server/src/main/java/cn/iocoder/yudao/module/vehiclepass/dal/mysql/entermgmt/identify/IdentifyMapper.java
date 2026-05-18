@@ -29,6 +29,7 @@ public interface IdentifyMapper extends BaseMapperX<IdentifyDO> {
                 .eqIfPresent(IdentifyDO::getConfidence, reqVO.getConfidence())
                 .eqIfPresent(IdentifyDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(IdentifyDO::getStationId, reqVO.getStationId())
+                .likeIfPresent(IdentifyDO::getStationName, reqVO.getStationName())
                 .likeIfPresent(IdentifyDO::getRemark, reqVO.getRemark())
                 .eqIfPresent(IdentifyDO::getIsCorrected, reqVO.getIsCorrected())
                 .orderByDesc(IdentifyDO::getId));

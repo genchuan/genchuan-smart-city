@@ -29,6 +29,7 @@ public interface FakePlateControlMapper extends BaseMapperX<FakePlateControlDO> 
                 .eqIfPresent(FakePlateControlDO::getMatchScene, reqVO.getMatchScene())
                 .eqIfPresent(FakePlateControlDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(FakePlateControlDO::getStationId, reqVO.getStationId())
+                .likeIfPresent(FakePlateControlDO::getStationName, reqVO.getStationName())
                 .eqIfPresent(FakePlateControlDO::getHandleUserId, reqVO.getHandleUserId())
                 .betweenIfPresent(FakePlateControlDO::getHandleTime, reqVO.getHandleTime())
                 .eqIfPresent(FakePlateControlDO::getHandleProgress, reqVO.getHandleProgress())

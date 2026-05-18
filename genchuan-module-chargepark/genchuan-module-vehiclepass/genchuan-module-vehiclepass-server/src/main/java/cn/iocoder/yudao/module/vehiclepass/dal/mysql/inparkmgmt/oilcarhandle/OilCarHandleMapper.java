@@ -30,6 +30,7 @@ public interface OilCarHandleMapper extends BaseMapperX<OilCarHandleDO> {
                 .eqIfPresent(OilCarHandleDO::getOccupyType, reqVO.getOccupyType())
                 .eqIfPresent(OilCarHandleDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(OilCarHandleDO::getStationId, reqVO.getStationId())
+                .likeIfPresent(OilCarHandleDO::getStationName, reqVO.getStationName())
                 .eqIfPresent(OilCarHandleDO::getHandleUserId, reqVO.getHandleUserId())
                 .betweenIfPresent(OilCarHandleDO::getHandleTime, reqVO.getHandleTime())
                 .eqIfPresent(OilCarHandleDO::getHandleMethod, reqVO.getHandleMethod())

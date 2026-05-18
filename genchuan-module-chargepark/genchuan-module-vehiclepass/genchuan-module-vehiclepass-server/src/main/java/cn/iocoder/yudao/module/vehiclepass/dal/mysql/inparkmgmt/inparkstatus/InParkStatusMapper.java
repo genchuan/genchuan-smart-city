@@ -25,6 +25,7 @@ public interface InParkStatusMapper extends BaseMapperX<InParkStatusDO> {
     default PageResult<InParkStatusDO> selectPage(InParkStatusPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<InParkStatusDO>()
                 .eqIfPresent(InParkStatusDO::getStationId, reqVO.getStationId())
+                .likeIfPresent(InParkStatusDO::getStationName, reqVO.getStationName())
                 .eqIfPresent(InParkStatusDO::getSpaceId, reqVO.getSpaceId())
                 .eqIfPresent(InParkStatusDO::getCarNo, reqVO.getCarNo())
                 .betweenIfPresent(InParkStatusDO::getInTime, reqVO.getInTime())

@@ -34,6 +34,8 @@ public class AbnormalLeaveDO extends BaseDO {
 
     private Long stationId;
 
+    private String stationName;
+
     private Long handleUserId;
 
     private String handleType;

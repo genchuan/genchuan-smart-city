@@ -38,6 +38,9 @@ public class MyEnterRecordPageReqVO extends PageParam {
     @Schema(description = "场站编号", example = "1")
     private Long stationId;
 
+    @Schema(description = "场站名称，支持模糊查询")
+    private String stationName;
+
     @Schema(description = "备注，模糊匹配", example = "测试备注")
     private String remark;
 

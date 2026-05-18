@@ -29,6 +29,7 @@ public interface AbnormalLeaveMapper extends BaseMapperX<AbnormalLeaveDO> {
                 .eqIfPresent(AbnormalLeaveDO::getAbnormalType, reqVO.getAbnormalType())
                 .eqIfPresent(AbnormalLeaveDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(AbnormalLeaveDO::getStationId, reqVO.getStationId())
+                .likeIfPresent(AbnormalLeaveDO::getStationName, reqVO.getStationName())
                 .eqIfPresent(AbnormalLeaveDO::getHandleUserId, reqVO.getHandleUserId())
                 .likeIfPresent(AbnormalLeaveDO::getRemark, reqVO.getRemark())
                 .eqIfPresent(AbnormalLeaveDO::getReserve1, reqVO.getReserve1())

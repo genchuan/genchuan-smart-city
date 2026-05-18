@@ -35,6 +35,9 @@ public class EnterRecordPageReqVO extends PageParam {
     @Schema(description = "场站ID，关联场站表", example = "20633")
     private Long stationId;
 
+    @Schema(description = "场站名称，支持模糊查询")
+    private String stationName;
+
     @Schema(description = "备注", example = "你猜")
     private String remark;
 

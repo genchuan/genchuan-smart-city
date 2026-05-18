@@ -27,6 +27,7 @@ public interface LeaveRecordMapper extends BaseMapperX<LeaveRecordDO> {
                 .eqIfPresent(LeaveRecordDO::getParkDuration, reqVO.getParkDuration())
                 .eqIfPresent(LeaveRecordDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(LeaveRecordDO::getStationId, reqVO.getStationId())
+                .likeIfPresent(LeaveRecordDO::getStationName, reqVO.getStationName())
                 .eqIfPresent(LeaveRecordDO::getRemark, reqVO.getRemark())
                 .eqIfPresent(LeaveRecordDO::getProofImage, reqVO.getProofImage())
                 .eqIfPresent(LeaveRecordDO::getIsCorrected, reqVO.getIsCorrected())

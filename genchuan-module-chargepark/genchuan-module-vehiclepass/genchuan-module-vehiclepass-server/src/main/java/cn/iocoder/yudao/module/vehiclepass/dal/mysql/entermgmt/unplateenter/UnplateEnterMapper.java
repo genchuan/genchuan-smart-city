@@ -33,6 +33,7 @@ public interface UnplateEnterMapper extends BaseMapperX<UnplateEnterDO> {
                 .betweenIfPresent(UnplateEnterDO::getRegisterTime, reqVO.getRegisterTime())
                 .eqIfPresent(UnplateEnterDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(UnplateEnterDO::getStationId, reqVO.getStationId())
+                .likeIfPresent(UnplateEnterDO::getStationName, reqVO.getStationName())
                 .eqIfPresent(UnplateEnterDO::getAuditUserId, reqVO.getAuditUserId())
                 .betweenIfPresent(UnplateEnterDO::getAuditTime, reqVO.getAuditTime())
                 .eqIfPresent(UnplateEnterDO::getAuditComment, reqVO.getAuditComment())

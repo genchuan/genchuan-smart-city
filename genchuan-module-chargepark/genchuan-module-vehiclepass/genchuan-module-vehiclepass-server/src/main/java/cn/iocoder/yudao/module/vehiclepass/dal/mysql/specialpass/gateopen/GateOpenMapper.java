@@ -24,6 +24,7 @@ public interface GateOpenMapper extends BaseMapperX<GateOpenDO> {
     default PageResult<GateOpenDO> selectPage(GateOpenPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<GateOpenDO>()
                 .eqIfPresent(GateOpenDO::getStationId, reqVO.getStationId())
+                .likeIfPresent(GateOpenDO::getStationName, reqVO.getStationName())
                 .eqIfPresent(GateOpenDO::getOpenReason, reqVO.getOpenReason())
                 .eqIfPresent(GateOpenDO::getApplyUserId, reqVO.getApplyUserId())
                 .betweenIfPresent(GateOpenDO::getApplyTime, reqVO.getApplyTime())
