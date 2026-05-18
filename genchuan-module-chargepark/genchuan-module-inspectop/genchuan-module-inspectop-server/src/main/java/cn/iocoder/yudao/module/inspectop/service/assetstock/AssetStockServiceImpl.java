@@ -130,8 +130,8 @@ public class AssetStockServiceImpl implements AssetStockService {
     @LogRecord(type = ASSET_STOCK_TYPE, subType = ASSET_STOCK_ALLOCATE_SUB_TYPE,
             bizNo = "{{#allocateReqVO.id}}", success = ASSET_STOCK_ALLOCATE_SUCCESS)
     public void allocateAssetStock(AssetStockAllocateReqVO allocateReqVO) {
-        // 1. 获取源库存记录
-        AssetStockDO sourceStock = assetStockMapper.selectById(allocateReqVO.getId());
+        // 1. 获取源库存记录（包含关联信息）
+        AssetStockRespVO sourceStock = assetStockMapper.selectOneWithJoin(allocateReqVO.getId());
         if (sourceStock == null) {
             throw exception(ASSET_STOCK_NOT_EXISTS);
         }
@@ -141,34 +141,45 @@ public class AssetStockServiceImpl implements AssetStockService {
             throw exception("库存数量不足");
         }
 
-        // 3. 查询目标场站是否已有该资产的库存记录
-        LambdaQueryWrapperX<AssetStockDO> queryWrapper = new LambdaQueryWrapperX<AssetStockDO>()
-                .eq(AssetStockDO::getAssetId, sourceStock.getAssetId())
-                .eq(AssetStockDO::getStationId, allocateReqVO.getTargetStationId());
-        AssetStockDO targetStock = assetStockMapper.selectOne(queryWrapper);
+        // 3. 通过 SQL 查询目标场站名称
+        String targetStationName = getStationNameById(allocateReqVO.getTargetStationId());
+        String sourceStationName = sourceStock.getStationName(); // 从关联查询中获取
+        String assetName = sourceStock.getAssetName(); // 从关联查询中获取
 
-        // 4. 扣减源库存，并记录调出信息
-        sourceStock.setCurrentStock(sourceStock.getCurrentStock() - allocateReqVO.getAllocateCount());
+        // 4. 查询目标场站是否已有该资产的库存记录
+        AssetStockDO targetStock = findStockByAssetAndStation(sourceStock.getAssetId(), allocateReqVO.getTargetStationId());
+
+        // 5. 创建更新对象
+        AssetStockDO sourceStockDO = new AssetStockDO();
+        sourceStockDO.setId(sourceStock.getId());
+        sourceStockDO.setCurrentStock(sourceStock.getCurrentStock() - allocateReqVO.getAllocateCount());
+
         // 【修改点】构建并追加调出记录到 reserve2
-        String sourceRecord = String.format("[调出至场站%d,数量:%d]",
-                allocateReqVO.getTargetStationId(), allocateReqVO.getAllocateCount());
-        sourceStock.setReserve2(appendRecord(sourceStock.getReserve2(), sourceRecord));
-        assetStockMapper.updateById(sourceStock);
+        String sourceRecord = String.format("[从%s调出至%s,数量:%d]",
+                sourceStationName != null ? sourceStationName : "场站" + sourceStock.getStationId(),
+                targetStationName != null ? targetStationName : "场站" + allocateReqVO.getTargetStationId(),
+                allocateReqVO.getAllocateCount());
+        sourceStockDO.setReserve2(appendRecord(sourceStock.getReserve2(), sourceRecord));
+        assetStockMapper.updateById(sourceStockDO);
 
-        // 5. 处理目标库存
+        // 6. 处理目标库存
         if (targetStock != null) {
             // 目标场站已存在该资产库存，增加库存数量
             targetStock.setCurrentStock(targetStock.getCurrentStock() + allocateReqVO.getAllocateCount());
             // 【修改点】构建并追加调入记录到 reserve2
-            String targetRecord = String.format("[从库存%d调入,数量:%d]",
-                    sourceStock.getId(), allocateReqVO.getAllocateCount());
+            String targetRecord = String.format("[从%s(%s)调入,数量:%d]",
+                    sourceStationName != null ? sourceStationName : "场站" + sourceStock.getStationId(),
+                    assetName != null ? assetName : "资产" + sourceStock.getAssetId(),
+                    allocateReqVO.getAllocateCount());
             targetStock.setReserve2(appendRecord(targetStock.getReserve2(), targetRecord));
             assetStockMapper.updateById(targetStock);
         } else {
             // 目标场站不存在该资产库存，创建新记录
-            // 【修改点】为新库存设置调入记录
-            String newStockRecord = String.format("[从库存%d调入,数量:%d]",
-                    sourceStock.getId(), allocateReqVO.getAllocateCount());
+            String newStockRecord = String.format("[从%s(%s)调入,数量:%d]",
+                    sourceStationName != null ? sourceStationName : "场站" + sourceStock.getStationId(),
+                    assetName != null ? assetName : "资产" + sourceStock.getAssetId(),
+                    allocateReqVO.getAllocateCount());
+
             AssetStockDO newStock = AssetStockDO.builder()
                     .assetId(sourceStock.getAssetId())
                     .currentStock(allocateReqVO.getAllocateCount())
@@ -180,8 +191,31 @@ public class AssetStockServiceImpl implements AssetStockService {
             assetStockMapper.insert(newStock);
         }
 
-        // 6. 设置日志上下文变量
+        // 7. 设置日志上下文变量
         LogRecordContext.putVariable("allocateReqVO", allocateReqVO);
+    }
+
+    /**
+     * 通过 SQL 查询场站名称
+     */
+    private String getStationNameById(Long stationId) {
+        if (stationId == null) {
+            return null;
+        }
+
+        // 通过原生SQL查询场站名称
+        // 注意：这里假设 station_info 表在当前微服务的数据库中
+        return assetStockMapper.selectStationNameById(stationId);
+    }
+
+    /**
+     * 查询目标场站是否已有该资产的库存记录
+     */
+    private AssetStockDO findStockByAssetAndStation(Long assetId, Long stationId) {
+        LambdaQueryWrapperX<AssetStockDO> queryWrapper = new LambdaQueryWrapperX<AssetStockDO>()
+                .eq(AssetStockDO::getAssetId, assetId)
+                .eq(AssetStockDO::getStationId, stationId);
+        return assetStockMapper.selectOne(queryWrapper);
     }
 
     /**

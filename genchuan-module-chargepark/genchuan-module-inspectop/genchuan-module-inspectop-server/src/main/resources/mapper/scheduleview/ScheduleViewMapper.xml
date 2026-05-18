@@ -102,7 +102,6 @@
         ORDER BY sv.id DESC
     </select>
 
-    <!-- 在 ScheduleViewMapper.xml 中添加以下SQL -->
     <!-- 查询排班统计图表数据 -->
     <select id="selectScheduleViewChartData" resultMap="ScheduleViewChartDataResultMap">
         SELECT
@@ -117,9 +116,7 @@
         <if test="reqVO.month != null and reqVO.month != ''">
             AND DATE_FORMAT(sv.schedule_date, '%Y-%m') = #{reqVO.month}
         </if>
-        <if test="reqVO.month == null or reqVO.month == ''">
-            AND DATE_FORMAT(sv.schedule_date, '%Y-%m') = DATE_FORMAT(CURRENT_DATE, '%Y-%m')
-        </if>
+        <!-- 删除原来的条件，不传参数时查询所有数据 -->
         ORDER BY sv.schedule_date, sv.user_id
     </select>
 
@@ -134,9 +131,7 @@
         <if test="reqVO.month != null and reqVO.month != ''">
             AND DATE_FORMAT(sv.schedule_date, '%Y-%m') = #{reqVO.month}
         </if>
-        <if test="reqVO.month == null or reqVO.month == ''">
-            AND DATE_FORMAT(sv.schedule_date, '%Y-%m') = DATE_FORMAT(CURRENT_DATE, '%Y-%m')
-        </if>
+        <!-- 删除原来的条件，不传参数时查询所有数据 -->
         GROUP BY sv.user_id
         )
         SELECT

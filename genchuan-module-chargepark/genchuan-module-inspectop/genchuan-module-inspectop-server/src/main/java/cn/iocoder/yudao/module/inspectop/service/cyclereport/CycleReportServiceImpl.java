@@ -20,9 +20,11 @@ import org.springframework.validation.annotation.Validated;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -105,8 +107,8 @@ public class CycleReportServiceImpl implements CycleReportService {
     }
 
     @Override
-    @LogRecord(type = CYCLE_REPORT_TYPE, subType = CYCLE_REPORT_GENERATE_SUB_TYPE,
-            success = CYCLE_REPORT_GENERATE_SUCCESS, bizNo = "")
+//    @LogRecord(type = CYCLE_REPORT_TYPE, subType = CYCLE_REPORT_GENERATE_SUB_TYPE,
+//            success = CYCLE_REPORT_GENERATE_SUCCESS, bizNo = "{{#respVO.id}}")
     public CycleReportRespVO generateCycleReport(CycleReportGenerateReqVO generateReqVO) {
 
         // ========== 核心：自动根据报表类型计算时间(自定义报表：保留前端传入的 startTime、endTime 不变) ==========
@@ -116,17 +118,47 @@ public class CycleReportServiceImpl implements CycleReportService {
             if (StrUtil.isNotBlank(reportType) && !"自定义报表".equals(reportType)) {
                 // 非自定义：自动计算 开始/结束 时间
                 Date[] dates = autoCalcReportTime(reportType);
-                // 覆盖前端传入的时间（自动生成）
+                // 覆盖前端传入的时间（自动生成）33
                 // 方式1：使用 Date -> LocalDateTime 直接转换（推荐，无格式问题）
-                generateReqVO.setStatTimeStart(LocalDateTime.ofInstant(dates[0].toInstant(), ZoneId.systemDefault()));
-                generateReqVO.setStatTimeEnd(LocalDateTime.ofInstant(dates[1].toInstant(), ZoneId.systemDefault()));
+//                generateReqVO.setStatTimeStart(LocalDateTime.ofInstant(dates[0].toInstant(), ZoneId.of("Asia/Shanghai")));
+//                generateReqVO.setStatTimeEnd(LocalDateTime.ofInstant(dates[1].toInstant(), ZoneId.of("Asia/Shanghai")));
+
+                // 使用与原始代码相同的逻辑转换为 LocalDateTime
+                LocalDateTime startDateTime = LocalDateTime.ofInstant(dates[0].toInstant(), ZoneId.systemDefault());
+                LocalDateTime endDateTime = LocalDateTime.ofInstant(dates[1].toInstant(), ZoneId.systemDefault());
+
+                // 创建 DateTimeFormatter
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+                // 将 LocalDateTime 格式化为字符串
+                String startTimeStr = startDateTime.format(formatter);
+                String endTimeStr = endDateTime.format(formatter);
+
+                // 设置到 VO 对象
+                generateReqVO.setStatTimeStart(startTimeStr);
+                generateReqVO.setStatTimeEnd(endTimeStr);
             }
         }
 
+        // 新增调试日志
+        log.info("[generateCycleReport][收到请求参数] reportCycle: {}, stationId: {}, statTimeStart: {}, statTimeEnd: {}, reportType: {}",
+                generateReqVO.getReportCycle(),
+                generateReqVO.getStationId(),
+                generateReqVO.getStatTimeStart(), // 打印这里，看是不是已经是1970年
+                generateReqVO.getStatTimeEnd(),
+                generateReqVO.getReportType());
+
         // 1. 获取统计参数
         Long stationId = generateReqVO.getStationId();
-        LocalDateTime statTimeStart = generateReqVO.getStatTimeStart();
-        LocalDateTime statTimeEnd = generateReqVO.getStatTimeEnd();
+        LocalDateTime statTimeStart = generateReqVO.getStatTimeStartAsLocalDateTime();
+        LocalDateTime statTimeEnd = generateReqVO.getStatTimeEndAsLocalDateTime();
+
+        // 验证时间是否解析成功
+        if (statTimeStart == null || statTimeEnd == null) {
+            log.error("[generateCycleReport][时间解析失败] statTimeStart: {}, statTimeEnd: {}",
+                    generateReqVO.getStatTimeStart(), generateReqVO.getStatTimeEnd());
+            throw new RuntimeException("时间格式错误，应为 yyyy-MM-dd HH:mm:ss");
+        }
 
         // 2. 构建返回对象
         CycleReportRespVO respVO = new CycleReportRespVO();
@@ -191,7 +223,7 @@ public class CycleReportServiceImpl implements CycleReportService {
         // ========== 将报表数据存储到数据库 ==========
         this.saveOrUpdateReport(respVO, generateReqVO);
         // 设置日志上下文变量
-        LogRecordContext.putVariable("reportCycle", reportType);
+//        LogRecordContext.putVariable("reportCycle", reportType);
         return respVO;
     }
 

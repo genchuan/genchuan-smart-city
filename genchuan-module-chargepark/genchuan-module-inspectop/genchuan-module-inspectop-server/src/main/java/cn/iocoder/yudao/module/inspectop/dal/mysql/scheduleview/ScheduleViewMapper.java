@@ -49,6 +49,7 @@ public interface ScheduleViewMapper extends BaseMapperX<ScheduleViewDO> {
 
     /**
      * 查询排班统计图表数据
+     * 如果reqVO.month为空，则统计所有数据
      *
      * @param reqVO 查询参数
      * @return 排班统计图表数据
@@ -58,6 +59,7 @@ public interface ScheduleViewMapper extends BaseMapperX<ScheduleViewDO> {
 
     /**
      * 查询排班统计卡片数据
+     * 如果reqVO.month为空，则统计所有数据
      *
      * @param reqVO 查询参数
      * @return 排班统计卡片数据
