@@ -1,5 +1,9 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.studentinfo;
 
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
+import cn.iocoder.yudao.module.studentmgmt.enums.MoralActivityTypeEnum;
+import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -36,6 +40,8 @@ public class StudentInfoController {
 
     @Resource
     private StudentInfoService studentInfoService;
+    @Resource
+    private DictDataApi dictDataApi;
 
     @PostMapping("/create")
     @Operation(summary = "创建学生信息")
@@ -103,6 +109,55 @@ public class StudentInfoController {
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<StudentInfoDO> list = studentInfoService.getStudentInfoPage(pageReqVO).getList();
+        CommonResult<List<DictDataRespDTO>> educationLevelDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.STUDENT_INFO_EDUCATION_LEVEL.getType());
+        CommonResult<List<DictDataRespDTO>> studyFormDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.STUDENT_INFO_STUDY_FORM.getType());
+        CommonResult<List<DictDataRespDTO>> studentTypeDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.STUDENT_INFO_STUDENT_TYPE.getType());
+        CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.STUDENT_INFO_STATUS.getType());
+        list = list.stream().map(item -> {
+            String educationLevel = item.getEducationLevel();
+            if (educationLevelDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : educationLevelDictDataList.getData()) {
+                    if (dictData.getValue().equals(educationLevel)) {
+                        educationLevel = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setEducationLevel(educationLevel);
+            String studyForm = item.getStudyForm();
+            if (studyFormDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : studyFormDictDataList.getData()) {
+                    if (dictData.getValue().equals(studyForm)) {
+                        studyForm = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setStudyForm(studyForm);
+            String studentType = item.getStudentType();
+            if (studentTypeDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : studentTypeDictDataList.getData()) {
+                    if (dictData.getValue().equals(studentType)) {
+                        studentType = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setStudentType(studentType);
+            String status = item.getStatus();
+            if (statusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : statusDictDataList.getData()) {
+                    if (dictData.getValue().equals(status)) {
+                        status = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setStatus(status);
+
+            return item;
+
+        }).toList();
         // 导出 Excel
         ExcelUtils.write(response, "学生信息.xls", "数据", StudentInfoRespVO.class,
                         BeanUtils.toBean(list, StudentInfoRespVO.class));
