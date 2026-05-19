@@ -76,8 +76,16 @@ public class InspectTaskController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('inspectop:inspect-task:query')")
     public CommonResult<InspectTaskRespVO> getInspectTask(@RequestParam("id") Long id) {
+        // 1. 获取DO对象
         InspectTaskDO inspectTask = inspectTaskService.getInspectTask(id);
-        return success(BeanUtils.toBean(inspectTask, InspectTaskRespVO.class));
+
+        // 2. 转换为VO对象
+        InspectTaskRespVO vo = BeanUtils.toBean(inspectTask, InspectTaskRespVO.class);
+
+        // 3. 【新增】转换状态字典值为中文
+        vo.setStatus(convertTaskStatus(vo.getStatus()));
+
+        return success(vo);
     }
 
     @GetMapping("/page")

@@ -216,38 +216,46 @@ public class ScheduleViewServiceImpl implements ScheduleViewService {
     public ScheduleViewChartRespVO getScheduleViewChart(ScheduleViewChartReqVO reqVO) {
         ScheduleViewChartRespVO respVO = new ScheduleViewChartRespVO();
 
-        // 1. 使用XML中的SQL查询图表数据
-        Map<Long, ScheduleViewChartData> chartDataMap = scheduleViewMapper.selectScheduleViewChartData(reqVO);
+        // 1. 使用XML中的SQL查询图表数据 - 修改为List
+        List<ScheduleViewChartData> chartDataList = scheduleViewMapper.selectScheduleViewChartData(reqVO);
 
         // 2. 构建日历数据
         List<ScheduleViewChartRespVO.CalendarData> calendarData = new ArrayList<>();
-        for (ScheduleViewChartData data : chartDataMap.values()) {
+
+        // 用于统计用户排班次数
+        Map<Long, Integer> userScheduleCountMap = new HashMap<>();
+
+        for (ScheduleViewChartData data : chartDataList) {
             ScheduleViewChartRespVO.CalendarData calendarItem = new ScheduleViewChartRespVO.CalendarData();
             calendarItem.setDate(data.getScheduleDate().toLocalDate().toString());
             calendarItem.setUserId(data.getUserId());
             calendarItem.setShiftType(data.getShiftType());
             calendarItem.setUserName(data.getUserName());
             calendarData.add(calendarItem);
+
+            // 统计每个用户的排班总数
+            userScheduleCountMap.merge(data.getUserId(), 1, Integer::sum);
         }
         respVO.setCalendarData(calendarData);
 
         // 3. 构建人员分布数据
         List<ScheduleViewChartRespVO.UserData> userData = new ArrayList<>();
-        Map<String, Integer> userScheduleCountMap = new HashMap<>();
 
-        for (ScheduleViewChartData data : chartDataMap.values()) {
+        for (ScheduleViewChartData data : chartDataList) {
             String userName = data.getUserName();
-            if (!userScheduleCountMap.containsKey(userName)) {
-                // 统计每个用户的排班总数
-                userScheduleCountMap.put(userName, data.getScheduleCount());
-            }
-        }
+            Long userId = data.getUserId();
 
-        for (Map.Entry<String, Integer> entry : userScheduleCountMap.entrySet()) {
-            ScheduleViewChartRespVO.UserData userDataItem = new ScheduleViewChartRespVO.UserData();
-            userDataItem.setUserName(entry.getKey());
-            userDataItem.setCount(entry.getValue());
-            userData.add(userDataItem);
+            // 检查是否已经添加过这个用户
+            boolean userExists = userData.stream()
+                    .anyMatch(u -> u.getUserName().equals(userName));
+
+            if (!userExists) {
+                ScheduleViewChartRespVO.UserData userDataItem = new ScheduleViewChartRespVO.UserData();
+                userDataItem.setUserName(userName);
+                // 从统计Map中获取该用户的总排班次数
+                userDataItem.setCount(userScheduleCountMap.getOrDefault(userId, 0));
+                userData.add(userDataItem);
+            }
         }
 
         // 按排班次数降序排序
@@ -271,5 +279,4 @@ public class ScheduleViewServiceImpl implements ScheduleViewService {
 
         return respVO;
     }
-
 }
