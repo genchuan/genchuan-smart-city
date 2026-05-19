@@ -26,6 +26,13 @@ import java.util.List;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
+/**
+ * 访客通行 Controller
+ * <p>
+ * 提供访客通行全流程 REST API：分页查询、详情查询、凭证核验、放行、禁行、提醒、Excel 导出及区域分布态势统计。
+ *
+ * @author 亘川智城
+ */
 @Tag(name = "管理后台 - 访客通行")
 @RestController
 @RequestMapping("/accessmgmt/visitor-access")

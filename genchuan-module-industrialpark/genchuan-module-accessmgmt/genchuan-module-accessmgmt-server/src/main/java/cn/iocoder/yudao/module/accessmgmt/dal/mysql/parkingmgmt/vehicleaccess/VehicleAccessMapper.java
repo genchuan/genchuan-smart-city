@@ -21,6 +21,9 @@ import java.util.List;
 @Mapper
 public interface VehicleAccessMapper extends BaseMapperX<VehicleAccessDO> {
 
+    /**
+     * 分页查询车辆通行，支持按车牌号(模糊)/车辆类型(精确)/停车场名称(精确)/通行状态(精确)/缴费状态(精确)/通行时间范围筛选，按主键倒序
+     */
     default PageResult<VehicleAccessDO> selectPage(VehicleAccessPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<VehicleAccessDO>()
                 .likeIfPresent(VehicleAccessDO::getPlateNo, reqVO.getPlateNo())

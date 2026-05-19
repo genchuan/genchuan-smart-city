@@ -56,11 +56,11 @@ public class ParkingSpaceDO extends BaseDO {
      */
     private String handleUser;
     /**
-     * [备用字段1]
+     * [备用字段1] 禁行原因 / 停用原因
      */
     private String reserve1;
     /**
-     * [备用字段2]
+     * [备用字段2] 备用字段2
      */
     private String reserve2;
 

@@ -21,6 +21,9 @@ import java.util.List;
 @Mapper
 public interface ParkingPaymentMapper extends BaseMapperX<ParkingPaymentDO> {
 
+    /**
+     * 分页查询停车缴费，支持按账单编号(模糊)/车牌号(模糊)/账单状态(精确)/支付方式(精确)/发票状态(精确)/支付时间范围筛选，按主键倒序
+     */
     default PageResult<ParkingPaymentDO> selectPage(ParkingPaymentPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<ParkingPaymentDO>()
                 .likeIfPresent(ParkingPaymentDO::getBillCode, reqVO.getBillCode())

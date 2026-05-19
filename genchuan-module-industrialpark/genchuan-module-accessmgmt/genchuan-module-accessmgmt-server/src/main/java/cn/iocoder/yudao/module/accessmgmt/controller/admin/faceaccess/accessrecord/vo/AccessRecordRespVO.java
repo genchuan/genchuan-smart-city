@@ -13,10 +13,12 @@ public class AccessRecordRespVO {
 
     @Schema(description = "主键ID")
     @ExcelProperty("主键ID")
+//    @ExcelIgnore
     private Long id;
 
     @Schema(description = "人脸信息ID")
-    @ExcelProperty("人脸信息ID")
+    @ExcelIgnore
+//    @ExcelProperty("人脸信息ID")
     private Long faceId;
 
     @Schema(description = "人员姓名")
@@ -56,11 +58,13 @@ public class AccessRecordRespVO {
     private String handleResult;
 
     @Schema(description = "备用字段1")
-    @ExcelProperty("备用字段1")
+//    @ExcelProperty("备用字段1")
+    @ExcelIgnore
     private String reserve1;
 
     @Schema(description = "备用字段2")
-    @ExcelProperty("备用字段2")
+//    @ExcelProperty("备用字段2")
+    @ExcelIgnore
     private String reserve2;
 
     @Schema(description = "创建者")

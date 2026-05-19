@@ -26,6 +26,13 @@ import java.util.List;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
+/**
+ * 车位管理 Controller
+ * <p>
+ * 提供车位管理全流程 REST API：分页查询、详情查询、创建、分配、预约、释放、禁用、取消、确认、Excel 导出及态势统计。
+ *
+ * @author 亘川智城
+ */
 @Tag(name = "管理后台 - 车位管理")
 @RestController
 @RequestMapping("/accessmgmt/parking-space")

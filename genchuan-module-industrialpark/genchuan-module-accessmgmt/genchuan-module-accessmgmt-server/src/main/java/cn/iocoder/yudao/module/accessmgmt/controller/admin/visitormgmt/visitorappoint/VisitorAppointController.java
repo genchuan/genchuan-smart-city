@@ -26,6 +26,13 @@ import java.util.List;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
+/**
+ * 访客预约 Controller
+ * <p>
+ * 提供访客预约全流程 REST API：预约申请、审核（通过/驳回）、凭证生成、到访验证、取消预约、确认离园及态势统计。
+ *
+ * @author 亘川智城
+ */
 @Tag(name = "管理后台 - 访客预约")
 @RestController
 @RequestMapping("/accessmgmt/visitor-appoint")

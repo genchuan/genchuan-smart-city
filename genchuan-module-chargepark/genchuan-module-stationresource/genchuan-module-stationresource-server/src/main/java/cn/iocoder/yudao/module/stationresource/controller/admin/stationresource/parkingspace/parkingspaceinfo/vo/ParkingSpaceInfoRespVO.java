@@ -78,11 +78,13 @@ public class ParkingSpaceInfoRespVO {
     private String remark;
 
     @Schema(description = "[备用字段1] VARCHAR(100)")
-    @ExcelProperty("备用字段1")
+//    @ExcelProperty("备用字段1")
+    @ExcelIgnore
     private String reserve1;
 
     @Schema(description = "[备用字段2] VARCHAR(100)")
-    @ExcelProperty("备用字段2")
+//    @ExcelProperty("备用字段2")
+    @ExcelIgnore
     private String reserve2;
 
     @Schema(description = "[创建者] 创建人账号/姓名")

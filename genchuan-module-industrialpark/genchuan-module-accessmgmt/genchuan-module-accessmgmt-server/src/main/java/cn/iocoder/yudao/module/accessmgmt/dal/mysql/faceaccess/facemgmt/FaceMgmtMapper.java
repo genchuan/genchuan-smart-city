@@ -21,6 +21,9 @@ import java.util.List;
 @Mapper
 public interface FaceMgmtMapper extends BaseMapperX<FaceMgmtDO> {
 
+    /**
+     * 分页查询人脸信息，支持按姓名/手机号/企业/区域/权限状态筛选
+     */
     default PageResult<FaceMgmtDO> selectPage(FaceMgmtPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<FaceMgmtDO>()
                 .likeIfPresent(FaceMgmtDO::getUserName, reqVO.getUserName())
