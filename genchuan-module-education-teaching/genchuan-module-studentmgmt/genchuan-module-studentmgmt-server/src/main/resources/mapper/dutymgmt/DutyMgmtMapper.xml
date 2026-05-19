@@ -81,7 +81,6 @@
         <if test="month != null">
             AND DATE_FORMAT(duty_date, '%Y-%m') = #{month}
         </if>
-        AND transfer_status = 'APPROVED'
     </select>
     <select id="selectTotalVehicleCountByMonth" resultType="com.alibaba.fastjson.JSONObject">
         SELECT
@@ -95,6 +94,5 @@
         <if test="month != null">
             AND DATE_FORMAT(duty_date, '%Y-%m') = #{month}
         </if>
-        AND car_status = 'APPROVED'
     </select>
 </mapper>

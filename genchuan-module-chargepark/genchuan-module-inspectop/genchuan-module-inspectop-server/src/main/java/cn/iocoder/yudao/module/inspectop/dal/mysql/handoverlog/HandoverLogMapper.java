@@ -23,7 +23,7 @@ public interface HandoverLogMapper extends BaseMapperX<HandoverLogDO> {
     default PageResult<HandoverLogDO> selectPage(HandoverLogPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<HandoverLogDO>()
                 .eqIfPresent(HandoverLogDO::getUserId, reqVO.getUserId())
-                .betweenIfPresent(HandoverLogDO::getHandoverDate, reqVO.getHandoverDate())
+                .eqIfPresent(HandoverLogDO::getHandoverDate, reqVO.getHandoverDate())
                 .eqIfPresent(HandoverLogDO::getContent, reqVO.getContent())
                 .eqIfPresent(HandoverLogDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(HandoverLogDO::getConfirmUserId, reqVO.getConfirmUserId())

@@ -69,4 +69,9 @@ public interface CheckTaskMapper extends BaseMapperX<CheckTaskDO> {
      */
     Long selectFinishedTaskCount(@Param("reqVO") InspectTaskChartReqVO reqVO);
 
+    /**
+     * 根据ID查询（JOIN关联表）
+     */
+    CheckTaskRespVO selectByIdJoin(@Param("id") Long id);
+
 }

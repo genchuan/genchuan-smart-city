@@ -98,6 +98,15 @@ public class OilCarHandleServiceImpl implements OilCarHandleService {
     }
 
     @Override
+    public OilCarHandleRespVO getCarHandleWithStation(Long id) {
+        OilCarHandleRespVO respVO = carHandleMapper.selectByIdJoinStation(id);
+        if (respVO == null) {
+            throw exception(CAR_HANDLE_NOT_EXISTS);
+        }
+        return respVO;
+    }
+
+    @Override
     public PageResult<OilCarHandleRespVO> getCarHandlePageWithJoin(OilCarHandlePageReqVO pageReqVO) {
         Page<OilCarHandleRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
         IPage<OilCarHandleRespVO> pageResult = carHandleMapper.selectPageJoin(page, pageReqVO);

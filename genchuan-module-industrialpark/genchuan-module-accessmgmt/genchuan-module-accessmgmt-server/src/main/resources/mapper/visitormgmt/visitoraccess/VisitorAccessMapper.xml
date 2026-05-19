@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.accessmgmt.dal.mysql.visitormgmt.visitoraccess.VisitorAccessMapper">
+
+    <select id="selectAreaCountList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.visitormgmt.visitoraccess.vo.VisitorAccessChartRespVO$AreaCountItem">
+        SELECT
+            access_area AS area,
+            COUNT(*) AS count
+        FROM visitor_access
+        WHERE deleted = FALSE
+        <if test="startTime != null and startTime != ''">
+            AND access_time >= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND access_time &lt;= #{endTime}
+        </if>
+        GROUP BY access_area
+        ORDER BY count DESC
+    </select>
+
+    <select id="selectTimeTrendList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.visitormgmt.visitoraccess.vo.VisitorAccessChartRespVO$TimeTrendItem">
+        SELECT
+            DATE_FORMAT(access_time, '%Y-%m-%d') AS time,
+            COUNT(*) AS count
+        FROM visitor_access
+        WHERE deleted = FALSE
+        <if test="startTime != null and startTime != ''">
+            AND access_time >= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND access_time &lt;= #{endTime}
+        </if>
+        GROUP BY DATE_FORMAT(access_time, '%Y-%m-%d')
+        ORDER BY time
+    </select>
+
+    <select id="selectTicketStatusList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.visitormgmt.visitoraccess.vo.VisitorAccessChartRespVO$TicketStatusItem">
+        SELECT
+            ticket_status AS name,
+            COUNT(*) AS value
+        FROM visitor_access
+        WHERE deleted = FALSE
+        <if test="startTime != null and startTime != ''">
+            AND access_time >= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND access_time &lt;= #{endTime}
+        </if>
+        GROUP BY ticket_status
+        ORDER BY value DESC
+    </select>
+
+</mapper>

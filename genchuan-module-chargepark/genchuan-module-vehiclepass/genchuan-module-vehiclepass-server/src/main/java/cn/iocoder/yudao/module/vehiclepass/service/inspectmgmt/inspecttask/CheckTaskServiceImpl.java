@@ -88,6 +88,11 @@ public class CheckTaskServiceImpl implements CheckTaskService {
     }
 
     @Override
+    public CheckTaskRespVO getTaskWithJoin(Long id) {
+        return taskMapper.selectByIdJoin(id);
+    }
+
+    @Override
     public PageResult<CheckTaskDO> getTaskPage(CheckTaskPageReqVO pageReqVO) {
         return taskMapper.selectPage(pageReqVO);
     }

@@ -38,4 +38,17 @@
         WHERE deleted = 0
         GROUP BY risk_level
     </select>
+    <select id="selectTotalMental" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM mental_mgmt AS m LEFT JOIN student_info AS s ON s.id = m.student_id
+        WHERE m.deleted = 0
+        <if test="grade != null and grade != ''">
+            AND grade = #{grade}
+        </if>
+        <if test="className != null and className != ''">
+            AND class_name = #{className}
+        </if>
+        <if test="startTime != null and endTime != null">
+            AND m.create_time between #{startTime} AND #{endTime}
+        </if>
+    </select>
 </mapper>

@@ -199,7 +199,7 @@
         SUM(CASE
         WHEN process_status IS NULL
         OR process_status = ''
-        OR process_status IN ('0', '1', '2')
+        OR process_status IN ('1')
         THEN 1
         ELSE 0
         END) AS waitCount,

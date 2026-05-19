@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.accessmgmt.dal.mysql.visitormgmt.visitorappoint.VisitorAppointMapper">
+
+    <select id="selectByTicket" resultType="cn.iocoder.yudao.module.accessmgmt.dal.dataobject.visitormgmt.visitorappoint.VisitorAppointDO">
+        SELECT * FROM visitor_appoint
+        WHERE ticket = #{ticket} AND deleted = FALSE
+    </select>
+
+    <select id="selectDayTrendList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.visitormgmt.visitorappoint.vo.VisitorAppointChartRespVO$DayTrendItem">
+        SELECT
+            DATE_FORMAT(visit_time, '%Y-%m-%d') AS date,
+            COUNT(*) AS count
+        FROM visitor_appoint
+        WHERE deleted = FALSE
+        <if test="startTime != null and startTime != ''">
+            AND visit_time >= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND visit_time &lt;= #{endTime}
+        </if>
+        GROUP BY DATE_FORMAT(visit_time, '%Y-%m-%d')
+        ORDER BY date
+    </select>
+
+    <select id="selectCompanyCountList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.visitormgmt.visitorappoint.vo.VisitorAppointChartRespVO$CompanyCountItem">
+        SELECT
+            visit_company AS company,
+            COUNT(*) AS count
+        FROM visitor_appoint
+        WHERE deleted = FALSE
+        <if test="startTime != null and startTime != ''">
+            AND visit_time >= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND visit_time &lt;= #{endTime}
+        </if>
+        GROUP BY visit_company
+        ORDER BY count DESC
+    </select>
+
+</mapper>

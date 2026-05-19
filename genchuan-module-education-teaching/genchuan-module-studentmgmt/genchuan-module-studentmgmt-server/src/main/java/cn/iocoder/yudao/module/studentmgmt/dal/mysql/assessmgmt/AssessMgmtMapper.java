@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.AssessMgmtCycleTrendRespVO;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.AssessMgmtDimensionScoreRespVO;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.AssessMgmtPageReqVO;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.workhome.vo.WorkHomeScoreAnalysisRespVO;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.assessmgmt.AssessMgmtDO;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.annotations.Mapper;
@@ -61,4 +62,10 @@ public interface AssessMgmtMapper extends BaseMapperX<AssessMgmtDO> {
     List<JSONObject> selectStatusCount(String cycle, String status);
 
     AssessMgmtDO selectAvgScoreByTime(String timeScale, LocalDateTime lastStartTime, LocalDateTime lastEndTime);
+
+    Integer selectTotalAssess(LocalDateTime startTime, LocalDateTime endTime, String className, String grade);
+
+    List<WorkHomeScoreAnalysisRespVO> selectScoreAnalysis(String grade, String cycle);
+
+    List<JSONObject> selectTotalCountByDate(LocalDateTime startTime, LocalDateTime endTime, String cycle);
 }

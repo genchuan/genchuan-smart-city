@@ -76,7 +76,7 @@ public class RuleConfigServiceImpl implements RuleConfigService {
     @Override
     @LogRecord(type = RULE_CONFIG_TYPE, subType = RULE_CONFIG_ENABLE_SUB_TYPE, bizNo = "{{#id}}",
             success = RULE_CONFIG_ENABLE_SUCCESS)
-    public void enable(Long id) {
+    public void enable(Long id, Long userId) {
         RuleConfigDO ruleConfig = validateExists(id);
         if (!Objects.equals(RuleConfigStatusEnum.NOT_EFFECTIVE.getValue(), ruleConfig.getStatus())) {
             throw exception(RULE_CONFIG_NOT_EXISTS); // 状态不合法
@@ -84,6 +84,8 @@ public class RuleConfigServiceImpl implements RuleConfigService {
         ruleConfig.setStatus(RuleConfigStatusEnum.EFFECTIVE.getValue());
         ruleConfig.setAuditTime(LocalDateTime.now());
         ruleConfig.setEffectTime(LocalDateTime.now());
+        ruleConfig.setAuditorId(userId);
+        ruleConfig.setUpdater(String.valueOf(userId));
         ruleConfigMapper.updateById(ruleConfig);
         // 记录操作日志上下文
         LogRecordContext.putVariable("ruleConfigName", ruleConfig.getName());
@@ -92,12 +94,14 @@ public class RuleConfigServiceImpl implements RuleConfigService {
     @Override
     @LogRecord(type = RULE_CONFIG_TYPE, subType = RULE_CONFIG_DISABLE_SUB_TYPE, bizNo = "{{#id}}",
             success = RULE_CONFIG_DISABLE_SUCCESS)
-    public void disable(Long id) {
+    public void disable(Long id, Long userId) {
         RuleConfigDO ruleConfig = validateExists(id);
         if (!Objects.equals(RuleConfigStatusEnum.EFFECTIVE.getValue(), ruleConfig.getStatus())) {
             throw exception(RULE_CONFIG_NOT_EXISTS);
         }
         ruleConfig.setStatus(RuleConfigStatusEnum.NOT_EFFECTIVE.getValue());
+        ruleConfig.setAuditorId(userId);
+        ruleConfig.setUpdater(String.valueOf(userId));
         ruleConfigMapper.updateById(ruleConfig);
         // 记录操作日志上下文
         LogRecordContext.putVariable("ruleConfigName", ruleConfig.getName());

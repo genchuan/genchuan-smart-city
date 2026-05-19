@@ -70,6 +70,14 @@ public interface GateOpenService {
     GateOpenDO getOpen(Long id);
 
     /**
+     * 获得开闸管理（含场站名称）
+     *
+     * @param id 编号
+     * @return 开闸管理
+     */
+    GateOpenRespVO getGateOpenWithStation(Long id);
+
+    /**
      * 获得开闸管理分页
      *
      * @param pageReqVO 分页查询

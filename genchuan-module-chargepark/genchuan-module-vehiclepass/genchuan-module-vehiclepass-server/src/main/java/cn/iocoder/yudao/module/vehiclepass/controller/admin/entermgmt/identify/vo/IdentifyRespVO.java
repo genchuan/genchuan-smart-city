@@ -35,6 +35,9 @@ public class IdentifyRespVO {
     @ExcelProperty("识别状态")
     private String status;
 
+    @Schema(description = "场站ID")
+    private Long stationId;
+
     @Schema(description = "场站名称", example = "XX停车场")
     @ExcelProperty("场站名称")
     private String stationName;
@@ -43,9 +46,9 @@ public class IdentifyRespVO {
     @ExcelProperty("备注")
     private String remark;
 
-    @Schema(description = "修正记录标记", example = "false")
+    @Schema(description = "修正记录标记", example = "0")
     @ExcelProperty("修正记录标记")
-    private Boolean isCorrected;
+    private Integer isCorrected;
 
     @Schema(description = "备用字段1", example = "")
     @ExcelProperty("备用字段1")

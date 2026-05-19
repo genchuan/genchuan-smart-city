@@ -85,8 +85,7 @@ public class CheckTaskController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('check:task:query')")
     public CommonResult<CheckTaskRespVO> getTask(@RequestParam("id") Long id) {
-        CheckTaskDO task = taskService.getTask(id);
-        return success(BeanUtils.toBean(task, CheckTaskRespVO.class));
+        return success(taskService.getTaskWithJoin(id));
     }
 
     @GetMapping("/page")
@@ -155,8 +154,9 @@ public class CheckTaskController {
     @Operation(summary = "导出稽查任务 Excel")
     @PreAuthorize("@ss.hasPermission('check:task:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportTaskExcel(@Valid CheckTaskPageReqVO pageReqVO,
+    public void exportTaskExcel(CheckTaskPageReqVO pageReqVO,
                                 HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<CheckTaskRespVO> pageResult = taskService.getTaskPageWithJoin(pageReqVO);
         ExcelUtils.write(response, "稽查任务.xls", "数据", CheckTaskRespVO.class, pageResult.getList());

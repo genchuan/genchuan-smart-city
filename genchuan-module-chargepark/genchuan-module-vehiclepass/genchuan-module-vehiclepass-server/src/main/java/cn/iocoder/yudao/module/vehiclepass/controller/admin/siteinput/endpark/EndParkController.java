@@ -128,8 +128,9 @@ public class EndParkController {
     @Operation(summary = "导出结束停车 Excel")
     @PreAuthorize("@ss.hasPermission('end:park:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportParkExcel(@Valid EndParkPageReqVO pageReqVO,
+    public void exportParkExcel(EndParkPageReqVO pageReqVO,
                                 HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<EndParkDO> list = parkService.getParkPage(pageReqVO).getList();
         // 导出 Excel

@@ -64,4 +64,9 @@ public interface CarInputMapper extends BaseMapperX<CarInputDO> {
      */
     Double selectAuditPassRate(@Param("reqVO") CarInputChartReqVO reqVO);
 
+    /**
+     * 根据ID查询（JOIN关联表）
+     */
+    CarInputRespVO selectByIdJoin(@Param("id") Long id);
+
 }

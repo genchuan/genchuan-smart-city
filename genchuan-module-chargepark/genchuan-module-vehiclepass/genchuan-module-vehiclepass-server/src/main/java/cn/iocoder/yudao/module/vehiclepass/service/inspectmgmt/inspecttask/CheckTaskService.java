@@ -63,6 +63,14 @@ public interface CheckTaskService {
     CheckTaskDO getTask(Long id);
 
     /**
+     * 获得稽查任务（含关联表字段）
+     *
+     * @param id 编号
+     * @return 稽查任务（含片区名称、执行人名称）
+     */
+    CheckTaskRespVO getTaskWithJoin(Long id);
+
+    /**
      * 获得稽查任务分页
      *
      * @param pageReqVO 分页查询

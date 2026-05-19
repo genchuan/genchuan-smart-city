@@ -21,6 +21,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.ordertrade.enums.ErrorCodeConstants.*;
@@ -63,7 +65,13 @@ public class AllOrderServiceImpl implements AllOrderService {
     public PageResult<AllOrderDO> getAllOrderPage(AllOrderPageReqVO pageReqVO) {
         Page<AllOrderDO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
         var result = allOrderMapper.selectPageJoinStation(page, pageReqVO);
-        return new PageResult<>(result.getRecords(), result.getTotal());
+        List<AllOrderDO> records = result.getRecords();
+        if (!records.isEmpty()) {
+            List<Long> orderIds = records.stream().map(AllOrderDO::getId).collect(Collectors.toList());
+            Map<Long, String> invoiceStatusMap = invoiceListMapper.selectStatusMapByOrderIds(orderIds);
+            records.forEach(o -> o.setInvoiceStatus(invoiceStatusMap.get(o.getId())));
+        }
+        return new PageResult<>(records, result.getTotal());
     }
 
         @Override

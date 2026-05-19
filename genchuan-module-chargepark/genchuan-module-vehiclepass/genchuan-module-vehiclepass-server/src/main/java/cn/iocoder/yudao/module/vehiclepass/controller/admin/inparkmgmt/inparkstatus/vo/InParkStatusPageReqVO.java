@@ -16,6 +16,9 @@ public class InParkStatusPageReqVO extends PageParam {
     @Schema(description = "场站ID，关联场站表station_info", example = "14863")
     private Long stationId;
 
+    @Schema(description = "场站名称，支持模糊查询")
+    private String stationName;
+
     @Schema(description = "车位ID，关联车位表parking_space_info", example = "16153")
     private Long spaceId;
 

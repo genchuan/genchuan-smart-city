@@ -53,9 +53,8 @@
         </if>
         GROUP BY DATE_FORMAT(create_time, '%Y-%m')
     </select>
-    <select id="selectLearnCountByType" resultType="java.lang.Long">
+    <select id="selectLearnCountByType" resultType="java.math.BigDecimal">
         SELECT
-        DATE_FORMAT(create_time, '%Y-%m') AS date,
         ROUND(AVG(learn_rate),2) AS rate
         FROM moral_resource
         WHERE deleted = 0
@@ -65,11 +64,9 @@
         <if test="startTime != null">
             AND create_time BETWEEN #{startTime} AND #{endTime}
         </if>
-        GROUP BY DATE_FORMAT(create_time, '%Y-%m')
     </select>
     <select id="selectTypeCountByType" resultType="java.lang.Long">
         SELECT
-        resource_type AS type,
         COUNT(1) AS count
         FROM moral_resource
         WHERE deleted = 0

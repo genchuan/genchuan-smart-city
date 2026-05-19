@@ -1,15 +1,16 @@
 package cn.iocoder.yudao.module.studentmgmt.dal.mysql.moralresource;
 
-import java.time.LocalDateTime;
-import java.util.*;
-
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.moralresource.vo.MoralResourcePageReqVO;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.moralresource.MoralResourceDO;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.annotations.Mapper;
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.moralresource.vo.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 德育资源 Mapper
@@ -46,5 +47,5 @@ public interface MoralResourceMapper extends BaseMapperX<MoralResourceDO> {
 
     Long selectTypeCountByType(LocalDateTime startTime, LocalDateTime endTime, String resourceType);
 
-    Long selectLearnCountByType(LocalDateTime finalStartTime, LocalDateTime finalEndTime, String resourceType);
+    BigDecimal selectLearnCountByType(LocalDateTime startTime, LocalDateTime endTime, String resourceType);
 }

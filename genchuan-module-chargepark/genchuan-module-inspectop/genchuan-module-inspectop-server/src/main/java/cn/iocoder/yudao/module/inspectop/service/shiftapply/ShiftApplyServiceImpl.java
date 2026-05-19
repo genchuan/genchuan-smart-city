@@ -115,10 +115,14 @@ public class ShiftApplyServiceImpl implements ShiftApplyService {
         return shiftApply; // 返回查询到的对象
     }
 
-    // 以下方法不需要操作日志（查询方法）
     @Override
-    public ShiftApplyDO getShiftApply(Long id) {
-        return shiftApplyMapper.selectById(id);
+    public ShiftApplyRespVO getShiftApply(Long id) {
+        // 调用新的关联查询方法
+        ShiftApplyRespVO shiftApply = shiftApplyMapper.selectByIdWithJoin(id);
+        if (shiftApply == null) {
+            throw exception(SHIFT_APPLY_NOT_EXISTS);
+        }
+        return shiftApply;
     }
 
     // 在 ShiftApplyServiceImpl.java 中修改getShiftApplyPage方法

@@ -61,6 +61,14 @@ public interface OilCarHandleService {
     PageResult<OilCarHandleDO> getCarHandlePage(OilCarHandlePageReqVO pageReqVO);
 
     /**
+     * 获得油车占位处置（含关联名称）
+     *
+     * @param id 编号
+     * @return 油车占位处置
+     */
+    OilCarHandleRespVO getCarHandleWithStation(Long id);
+
+    /**
      * 获得油车占位处置分页（含关联名称）
      *
      * @param pageReqVO 分页查询

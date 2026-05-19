@@ -77,6 +77,14 @@ public interface AbnormalLeaveService {
     PageResult<AbnormalLeaveRespVO> getLeavePageWithJoin(AbnormalLeavePageReqVO pageReqVO);
 
     /**
+     * 获得异常离场（JOIN stationName）
+     *
+     * @param id 编号
+     * @return 异常离场
+     */
+    AbnormalLeaveRespVO getLeaveWithStation(Long id);
+
+    /**
      * 批量处置异常离场
      *
      * @param reqVO 批量处置请求

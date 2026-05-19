@@ -46,11 +46,11 @@ public class EnterRecordServiceImpl implements EnterRecordService {
 
     @Override
     public Long createRecord(EnterRecordSaveReqVO createReqVO) {
-        // 插入
         EnterRecordDO record = BeanUtils.toBean(createReqVO, EnterRecordDO.class);
+        if (record.getIsCorrected() == null) {
+            record.setIsCorrected(0);
+        }
         enterRecordMapper.insert(record);
-
-        // 返回
         return record.getId();
     }
 
@@ -87,6 +87,11 @@ public class EnterRecordServiceImpl implements EnterRecordService {
     @Override
     public EnterRecordDO getRecord(Long id) {
         return enterRecordMapper.selectById(id);
+    }
+
+    @Override
+    public MyEnterRecordRespVO getEnterRecordWithStation(Long id) {
+        return enterRecordMapper.selectByIdJoinStation(id);
     }
 
     @Override
@@ -131,14 +136,13 @@ public class EnterRecordServiceImpl implements EnterRecordService {
         entity.setPlateNo(req.getPlateNo());
         entity.setPlateColor(req.getPlateColor());
         entity.setSpaceNo(req.getSpaceNo());
-        // 时间戳转 LocalDateTime
-        entity.setEnterTime(LocalDateTime.ofInstant(Instant.ofEpochSecond(req.getEnterTime()), ZoneId.systemDefault()));
+        entity.setEnterTime(req.getEnterTime());
         entity.setRecordType(req.getRecordType());
         entity.setStatus(req.getStatus());
         entity.setStationId(req.getStationId());
         entity.setRemark(req.getRemark());
         entity.setProofImage(req.getProofImage());
-        entity.setIsCorrected(false);
+        entity.setIsCorrected(0);
 
         // 数据库插入（数据操作都在服务层）
         enterRecordMapper.insert(entity);
@@ -160,7 +164,7 @@ public class EnterRecordServiceImpl implements EnterRecordService {
         entity.setPlateNo(req.getPlateNo());
         entity.setPlateColor(req.getPlateColor());
         entity.setSpaceNo(req.getSpaceNo());
-        entity.setEnterTime(LocalDateTime.ofInstant(Instant.ofEpochSecond(req.getEnterTime()), ZoneId.systemDefault()));
+        entity.setEnterTime(req.getEnterTime());
         entity.setRecordType(req.getRecordType());
         entity.setStatus(req.getStatus());
         entity.setStationId(req.getStationId());

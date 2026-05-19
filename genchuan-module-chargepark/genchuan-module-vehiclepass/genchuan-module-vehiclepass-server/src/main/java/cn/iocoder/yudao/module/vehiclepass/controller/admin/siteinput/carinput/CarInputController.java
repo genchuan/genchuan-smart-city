@@ -85,8 +85,7 @@ public class CarInputController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('car:input:query')")
     public CommonResult<CarInputRespVO> getInput(@RequestParam("id") Long id) {
-        CarInputDO input = inputService.getInput(id);
-        return success(BeanUtils.toBean(input, CarInputRespVO.class));
+        return success(inputService.getInputWithJoin(id));
     }
 
     @GetMapping("/page")
@@ -100,8 +99,9 @@ public class CarInputController {
     @Operation(summary = "导出车辆录入 Excel")
     @PreAuthorize("@ss.hasPermission('car:input:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportInputExcel(@Valid CarInputPageReqVO pageReqVO,
+    public void exportInputExcel(CarInputPageReqVO pageReqVO,
                                  HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<CarInputDO> list = inputService.getInputPage(pageReqVO).getList();
         // 导出 Excel

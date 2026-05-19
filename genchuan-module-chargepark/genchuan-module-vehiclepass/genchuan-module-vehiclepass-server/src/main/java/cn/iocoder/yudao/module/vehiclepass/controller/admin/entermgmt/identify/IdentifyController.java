@@ -83,8 +83,7 @@ public class IdentifyController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('plate:identify:query')")
     public CommonResult<IdentifyRespVO> getIdentify(@RequestParam("id") Long id) {
-        IdentifyDO identify = identifyService.getIdentify(id);
-        return success(BeanUtils.toBean(identify, IdentifyRespVO.class));
+        return success(identifyService.getIdentifyWithStation(id));
     }
 
     @GetMapping("/page")
@@ -99,8 +98,9 @@ public class IdentifyController {
     @Operation(summary = "导出车牌识别 Excel")
     @PreAuthorize("@ss.hasPermission('plate:identify:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportIdentifyExcel(@Valid IdentifyPageReqVO pageReqVO,
+    public void exportIdentifyExcel(IdentifyPageReqVO pageReqVO,
                                     HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<IdentifyRespVO> pageResult = identifyService.getIdentifyPage(pageReqVO);
         ExcelUtils.write(response, "车牌识别.xls", "数据", IdentifyRespVO.class, pageResult.getList());

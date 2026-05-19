@@ -91,6 +91,15 @@ public class FakePlateControlServiceImpl implements FakePlateControlService {
     }
 
     @Override
+    public FakePlateControlRespVO getPlateControlWithStation(Long id) {
+        FakePlateControlRespVO respVO = plateControlMapper.selectByIdJoinStation(id);
+        if (respVO == null) {
+            throw exception(PLATE_CONTROL_NOT_EXISTS);
+        }
+        return respVO;
+    }
+
+    @Override
     public PageResult<FakePlateControlDO> getPlateControlPage(FakePlateControlPageReqVO pageReqVO) {
         return plateControlMapper.selectPage(pageReqVO);
     }

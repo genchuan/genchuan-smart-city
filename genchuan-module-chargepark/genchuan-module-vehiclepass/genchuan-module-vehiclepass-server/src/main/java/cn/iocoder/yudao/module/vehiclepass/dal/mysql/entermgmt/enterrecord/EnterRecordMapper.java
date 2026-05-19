@@ -34,6 +34,7 @@ public interface EnterRecordMapper extends BaseMapperX<EnterRecordDO> {
                 .eqIfPresent(EnterRecordDO::getRecordType, reqVO.getRecordType())
                 .eqIfPresent(EnterRecordDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(EnterRecordDO::getStationId, reqVO.getStationId())
+                .likeIfPresent(EnterRecordDO::getStationName, reqVO.getStationName())
                 .eqIfPresent(EnterRecordDO::getRemark, reqVO.getRemark())
                 .eqIfPresent(EnterRecordDO::getProofImage, reqVO.getProofImage())
                 .eqIfPresent(EnterRecordDO::getIsCorrected, reqVO.getIsCorrected())
@@ -67,5 +68,6 @@ public interface EnterRecordMapper extends BaseMapperX<EnterRecordDO> {
             @Param("end") LocalDateTime end,
             @Param("stationId") Long stationId);
 
+    MyEnterRecordRespVO selectByIdJoinStation(@Param("id") Long id);
 
 }

@@ -93,6 +93,11 @@ public class PassRecordServiceImpl implements PassRecordService {
     }
 
     @Override
+    public PassRecordRespVO getPassRecordWithStation(Long id) {
+        return recordMapper.selectByIdJoinStation(id);
+    }
+
+    @Override
     public PageResult<PassRecordDO> getRecordPage(PassRecordPageReqVO pageReqVO) {
         return recordMapper.selectPage(pageReqVO);
     }

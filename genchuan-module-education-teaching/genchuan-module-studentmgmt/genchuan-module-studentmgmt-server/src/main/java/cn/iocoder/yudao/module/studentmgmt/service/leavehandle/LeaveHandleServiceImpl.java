@@ -94,7 +94,7 @@ public class LeaveHandleServiceImpl implements LeaveHandleService {
     @Override
     public Boolean confirm(LeaveHandleConfirmReqVO updateReqVO) {
         // 校验存在
-        LeaveHandleDO leaveHandleDO = leaveHandleMapper.selectOne(LeaveHandleDO::getStudentId, updateReqVO.getStudentId());
+        LeaveHandleDO leaveHandleDO = leaveHandleMapper.selectOne(LeaveHandleDO::getId, updateReqVO.getId());
         if (leaveHandleDO == null) {
             throw exception(LEAVE_HANDLE_NOT_EXISTS);
         }
@@ -103,8 +103,7 @@ public class LeaveHandleServiceImpl implements LeaveHandleService {
         leaveHandleDO.setUpdateTime(LocalDateTime.now());
         leaveHandleDO.setUpdater(SecurityFrameworkUtils.getLoginUserNickname());
         // 更新
-        LeaveHandleDO updateObj = BeanUtils.toBean(updateReqVO, LeaveHandleDO.class);
-        int i = leaveHandleMapper.updateById(updateObj);
+        int i = leaveHandleMapper.updateById(leaveHandleDO);
         return i > 0;
     }
 

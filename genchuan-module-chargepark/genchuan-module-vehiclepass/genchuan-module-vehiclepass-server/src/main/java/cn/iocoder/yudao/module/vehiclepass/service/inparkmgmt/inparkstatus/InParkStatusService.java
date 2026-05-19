@@ -68,6 +68,14 @@ public interface InParkStatusService {
     PageResult<InParkStatusDO> getParkStatusPage(InParkStatusPageReqVO pageReqVO);
 
     /**
+     * 获得在停状态（含场站名称）
+     *
+     * @param id 编号
+     * @return 在停状态
+     */
+    InParkStatusRespVO getInParkStatusWithStation(Long id);
+
+    /**
      * 获得在停状态分页（含场站名称）
      *
      * @param pageReqVO 分页查询

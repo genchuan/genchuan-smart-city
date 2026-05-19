@@ -221,14 +221,16 @@ public class CommunicateMgmtServiceImpl implements CommunicateMgmtService {
 
         // 1. 卡片数据
         // TODO
-        List<JSONObject> msgTypeCountList = communicateMgmtMapper.selectMsgTypeCount(startTime, endTime);
+//        List<JSONObject> msgTypeCountList = communicateMgmtMapper.selectMsgTypeCount(startTime, endTime);
 
-        for (JSONObject item : msgTypeCountList) {
+//        for (JSONObject item : msgTypeCountList) {
 
-        }
-        vo.setMsgTypeCount(msgTypeCountList);
+//        }
+//        vo.setMsgTypeCount(msgTypeCountList);
+        vo.setMsgTypeCount(new ArrayList<>());
         vo.setClassInteractRate(communicateMgmtMapper.selectClassInteractRate(startTime, endTime));
-        vo.setReplyTimeDistribution(communicateMgmtMapper.selectReplyTimeDistribution(startTime, endTime));
+//        vo.setReplyTimeDistribution(communicateMgmtMapper.selectReplyTimeDistribution(startTime, endTime));
+        vo.setReplyTimeDistribution(new ArrayList<>());
         return vo;
     }
 

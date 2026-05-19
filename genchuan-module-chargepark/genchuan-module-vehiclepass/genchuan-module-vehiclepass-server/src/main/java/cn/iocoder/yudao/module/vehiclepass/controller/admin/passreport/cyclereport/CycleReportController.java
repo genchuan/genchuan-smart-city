@@ -61,7 +61,7 @@ public class CycleReportController {
     @Operation(summary = "导出周期报表 Excel")
     @PreAuthorize("@ss.hasPermission('vehiclepass:cycle-report:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportCycleReportExcel(@Valid CycleReportPageReqVO pageReqVO,
+    public void exportCycleReportExcel(CycleReportPageReqVO pageReqVO,
                                       HttpServletResponse response) throws IOException {
         List<CycleReportRespVO> list = cycleReportService.getCycleReportList(pageReqVO);
         ExcelUtils.write(response, "周期报表.xls", "数据", CycleReportRespVO.class, list);
