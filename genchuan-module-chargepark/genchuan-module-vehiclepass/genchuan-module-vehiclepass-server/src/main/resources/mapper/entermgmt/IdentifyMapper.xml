@@ -40,6 +40,9 @@
         <if test="query.stationId != null">
             AND p.station_id = #{query.stationId}
         </if>
+        <if test="query.stationName != null and query.stationName != ''">
+            AND s.name LIKE CONCAT('%', #{query.stationName}, '%')
+        </if>
         <if test="query.remark != null and query.remark != ''">
             AND p.remark LIKE CONCAT('%', #{query.remark}, '%')
         </if>

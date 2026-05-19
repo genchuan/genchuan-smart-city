@@ -38,6 +38,9 @@
         <if test="reqVO.stationId != null">
             AND p.station_id = #{reqVO.stationId}
         </if>
+        <if test="reqVO.stationName != null and reqVO.stationName != ''">
+            AND s.name LIKE CONCAT('%', #{reqVO.stationName}, '%')
+        </if>
         ORDER BY p.id DESC
     </select>
 
