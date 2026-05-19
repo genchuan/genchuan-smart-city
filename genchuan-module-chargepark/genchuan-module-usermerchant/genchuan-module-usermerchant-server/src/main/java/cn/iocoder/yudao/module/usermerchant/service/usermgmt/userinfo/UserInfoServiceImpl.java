@@ -257,4 +257,11 @@ public class UserInfoServiceImpl implements UserInfoService {
         return prefix + String.format("%03d", seq);
     }
 
+    @Override
+    public List<UserInfoDO> getAllUsers() {
+        return userInfoMapper.selectList(new LambdaQueryWrapper<UserInfoDO>()
+                .eq(UserInfoDO::getDeleted, 0)
+                .orderByAsc(UserInfoDO::getId)); // 按ID排序，可选
+    }
+
 }
