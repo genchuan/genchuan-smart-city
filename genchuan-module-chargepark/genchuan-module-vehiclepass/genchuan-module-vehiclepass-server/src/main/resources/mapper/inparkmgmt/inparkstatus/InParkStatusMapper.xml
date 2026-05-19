@@ -101,18 +101,17 @@
         </if>
     </select>
 
-    <!-- 查询在停量趋势（按小时统计今天） -->
+    <!-- 查询在停量趋势（按小时统计全部） -->
     <select id="selectInParkCountTrend" resultType="map">
         SELECT
-            DATE_FORMAT(p.in_time, '%H:00') AS time,
-            COUNT(*) AS count
+        DATE_FORMAT(p.in_time, '%Y-%m-%d %H:00') AS time,
+        COUNT(*) AS count
         FROM in_park_status p
         WHERE p.deleted = 0
-        AND DATE(p.in_time) = CURDATE()
         <if test="stationId != null">
             AND p.station_id = #{stationId}
         </if>
-        GROUP BY DATE_FORMAT(p.in_time, '%H:00')
+        GROUP BY DATE_FORMAT(p.in_time, '%Y-%m-%d %H:00')
         ORDER BY time
     </select>
 
