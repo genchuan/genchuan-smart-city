@@ -6,11 +6,8 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointlottery.vo.*;
-import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointLotteryDO;
-import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PrizeMgmtDO;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.PointLotteryStatusEnum;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.PointLotterySyncStatusEnum;
-import cn.iocoder.yudao.module.chargepark.marketop.service.pointactivity.prizemgmt.PrizeMgmtService;
 import cn.iocoder.yudao.module.chargepark.marketop.service.pointactivity.pointlottery.PointLotteryService;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
@@ -37,24 +34,19 @@ public class PointLotteryController {
     @Resource
     private AdminUserApi adminUserApi;
 
-    @Resource
-    private PrizeMgmtService prizeMgmtService;
-
     @GetMapping("/page")
     @Operation(summary = "获得积分抽奖分页")
     @PreAuthorize("@ss.hasPermission('marketop:point-lottery:query')")
     public CommonResult<PageResult<PointLotteryRespVO>> getPage(PointLotteryPageReqVO reqVO) {
-        // 如果startTime和endTime都为null，且lotteryTime不为空，将lotteryTime转为当天开始和结束时间
         if (reqVO.getStartTime() == null && reqVO.getEndTime() == null
                 && reqVO.getLotteryTime() != null && !reqVO.getLotteryTime().isEmpty()) {
             java.time.LocalDate date = java.time.LocalDate.parse(reqVO.getLotteryTime());
             reqVO.setStartTime(date.atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
             reqVO.setEndTime(date.plusDays(1).atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
         }
-        PageResult<PointLotteryDO> pageResult = pointLotteryService.getPage(reqVO);
-        PageResult<PointLotteryRespVO> bean = BeanUtils.toBean(pageResult, PointLotteryRespVO.class);
-        injectNames(bean.getList());
-        return CommonResult.success(bean);
+        PageResult<PointLotteryRespVO> pageResult = pointLotteryService.getPageWithJoin(reqVO);
+        injectSenderNames(pageResult.getList());
+        return CommonResult.success(pageResult);
     }
 
     @GetMapping("/get")
@@ -62,9 +54,8 @@ public class PointLotteryController {
     @Parameter(name = "id", description = "主键ID", required = true)
     @PreAuthorize("@ss.hasPermission('marketop:point-lottery:query')")
     public CommonResult<PointLotteryRespVO> get(@RequestParam("id") Long id) {
-        PointLotteryDO lottery = pointLotteryService.get(id);
-        PointLotteryRespVO respVO = BeanUtils.toBean(lottery, PointLotteryRespVO.class);
-        if (respVO != null) injectNames(Collections.singletonList(respVO));
+        PointLotteryRespVO respVO = pointLotteryService.getWithJoin(id);
+        if (respVO != null) injectSenderNames(Collections.singletonList(respVO));
         return CommonResult.success(respVO);
     }
 
@@ -81,14 +72,13 @@ public class PointLotteryController {
     @PreAuthorize("@ss.hasPermission('marketop:point-lottery:query')")
     public void export(PointLotteryPageReqVO reqVO, HttpServletResponse response) throws IOException {
         reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        PageResult<PointLotteryDO> pageResult = pointLotteryService.getPage(reqVO);
-        List<PointLotteryRespVO> list = BeanUtils.toBean(pageResult.getList(), PointLotteryRespVO.class);
-        injectNames(list);
-        list.forEach(item -> {
+        PageResult<PointLotteryRespVO> pageResult = pointLotteryService.getPageWithJoin(reqVO);
+        injectSenderNames(pageResult.getList());
+        pageResult.getList().forEach(item -> {
             item.setStatus(PointLotteryStatusEnum.labelOf(item.getStatus()));
             item.setSyncStatus(PointLotterySyncStatusEnum.labelOf(item.getSyncStatus()));
         });
-        List<PointLotteryExportExcelVO> exportList = BeanUtils.toBean(list, PointLotteryExportExcelVO.class);
+        List<PointLotteryExportExcelVO> exportList = BeanUtils.toBean(pageResult.getList(), PointLotteryExportExcelVO.class);
         ExcelUtils.write(response, "积分抽奖.xlsx", "数据", PointLotteryExportExcelVO.class, exportList);
     }
 
@@ -99,41 +89,18 @@ public class PointLotteryController {
         return CommonResult.success(pointLotteryService.getChart());
     }
 
-    private void injectNames(List<PointLotteryRespVO> list) {
+    private void injectSenderNames(List<PointLotteryRespVO> list) {
         if (list == null || list.isEmpty()) return;
-        // 收集用户ID（userId + senderId）
-        Set<Long> userIds = new HashSet<>();
-        Set<Long> prizeIds = new HashSet<>();
+        Set<Long> senderIds = new HashSet<>();
         for (var item : list) {
-            if (item.getUserId() != null) userIds.add(item.getUserId());
-            if (item.getSenderId() != null) userIds.add(item.getSenderId());
-            if (item.getPrizeId() != null) prizeIds.add(item.getPrizeId());
+            if (item.getSenderId() != null) senderIds.add(item.getSenderId());
         }
-        // 翻译用户名称
-        if (!userIds.isEmpty()) {
-            Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
+        if (!senderIds.isEmpty()) {
+            Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(senderIds);
             for (var item : list) {
-                if (item.getUserId() != null) {
-                    AdminUserRespDTO user = userMap.get(item.getUserId());
-                    if (user != null) item.setUserName(user.getNickname());
-                }
                 if (item.getSenderId() != null) {
                     AdminUserRespDTO user = userMap.get(item.getSenderId());
                     if (user != null) item.setSenderName(user.getNickname());
-                }
-            }
-        }
-        // 翻译奖品名称
-        if (!prizeIds.isEmpty()) {
-            Map<Long, String> prizeNameMap = new HashMap<>();
-            for (Long prizeId : prizeIds) {
-                PrizeMgmtDO prize = prizeMgmtService.get(prizeId);
-                if (prize != null) prizeNameMap.put(prizeId, prize.getName());
-            }
-            for (var item : list) {
-                if (item.getPrizeId() != null) {
-                    String name = prizeNameMap.get(item.getPrizeId());
-                    if (name != null) item.setPrizeName(name);
                 }
             }
         }

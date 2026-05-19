@@ -3,10 +3,13 @@ package cn.iocoder.yudao.module.chargepark.marketop.service.cardmgmt.cardorder;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.cardorder.vo.CardOrderChartRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.cardorder.vo.CardOrderPageReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.cardorder.vo.CardOrderRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.CardOrderDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.cardmgmt.CardOrderMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.CardOrderInvoiceStatusEnum;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.CardOrderPayStatusEnum;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
@@ -148,6 +151,26 @@ public class CardOrderServiceImpl implements CardOrderService {
             return new ArrayList<>();
         }
         return cardOrderMapper.selectBatchIds(ids);
+    }
+
+    @Override
+    public PageResult<CardOrderRespVO> getPageWithJoin(CardOrderPageReqVO reqVO) {
+        Page<CardOrderRespVO> page = new Page<>(reqVO.getPageNo(), reqVO.getPageSize());
+        IPage<CardOrderRespVO> pageResult = cardOrderMapper.selectPageJoin(page, reqVO);
+        return new PageResult<>(pageResult.getRecords(), pageResult.getTotal());
+    }
+
+    @Override
+    public CardOrderRespVO getWithJoin(Long id) {
+        return cardOrderMapper.selectByIdJoin(id);
+    }
+
+    @Override
+    public List<CardOrderRespVO> getListByIdsWithJoin(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return cardOrderMapper.selectListByIdsJoin(ids);
     }
 
     private CardOrderDO validateExists(Long id) {

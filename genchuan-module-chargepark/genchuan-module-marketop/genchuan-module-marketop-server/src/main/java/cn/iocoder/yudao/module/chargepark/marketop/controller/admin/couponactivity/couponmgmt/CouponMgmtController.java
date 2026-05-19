@@ -3,7 +3,6 @@ package cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactiv
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.util.json.JsonUtils;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.*;
@@ -52,10 +51,9 @@ public class CouponMgmtController {
     @Operation(summary = "获得优惠券分页")
     @PreAuthorize("@ss.hasPermission('marketop:coupon-mgmt:query')")
     public CommonResult<PageResult<CouponMgmtRespVO>> getPage(CouponMgmtPageReqVO reqVO) {
-        PageResult<CouponMgmtDO> pageResult = couponMgmtService.getPage(reqVO);
-        PageResult<CouponMgmtRespVO> bean = BeanUtils.toBean(pageResult, CouponMgmtRespVO.class);
-        injectUserNames(bean.getList());
-        return CommonResult.success(bean);
+        PageResult<CouponMgmtRespVO> pageResult = couponMgmtService.getPageWithJoin(reqVO);
+        injectUserAndStationNames(pageResult.getList());
+        return CommonResult.success(pageResult);
     }
 
     @GetMapping("/get")
@@ -63,9 +61,8 @@ public class CouponMgmtController {
     @Parameter(name = "id", description = "主键ID", required = true)
     @PreAuthorize("@ss.hasPermission('marketop:coupon-mgmt:query')")
     public CommonResult<CouponMgmtRespVO> get(@RequestParam("id") Long id) {
-        CouponMgmtDO couponMgmt = couponMgmtService.get(id);
-        CouponMgmtRespVO respVO = BeanUtils.toBean(couponMgmt, CouponMgmtRespVO.class);
-        if (respVO != null) injectUserNames(Collections.singletonList(respVO));
+        CouponMgmtRespVO respVO = couponMgmtService.getWithJoin(id);
+        if (respVO != null) injectUserAndStationNames(Collections.singletonList(respVO));
         return CommonResult.success(respVO);
     }
 
@@ -88,7 +85,6 @@ public class CouponMgmtController {
     @Operation(summary = "发放优惠券")
     @PreAuthorize("@ss.hasPermission('marketop:coupon-mgmt:send')")
     public CommonResult<Boolean> send(@Valid @RequestBody CouponMgmtSendReqVO reqVO) {
-
         couponMgmtService.send(reqVO.getId(), reqVO.getReceiverId());
         return CommonResult.success(true);
     }
@@ -144,14 +140,13 @@ public class CouponMgmtController {
     @PreAuthorize("@ss.hasPermission('marketop:coupon-mgmt:query')")
     public void export(CouponMgmtPageReqVO reqVO, HttpServletResponse response) throws IOException {
         reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        PageResult<CouponMgmtDO> pageResult = couponMgmtService.getPage(reqVO);
-        List<CouponMgmtRespVO> list = BeanUtils.toBean(pageResult.getList(), CouponMgmtRespVO.class);
-        injectUserNames(list);
-        list.forEach(item -> {
+        PageResult<CouponMgmtRespVO> pageResult = couponMgmtService.getPageWithJoin(reqVO);
+        injectUserAndStationNames(pageResult.getList());
+        pageResult.getList().forEach(item -> {
             item.setType(CouponMgmtTypeEnum.labelOf(item.getType()));
             item.setStatus(CouponMgmtStatusEnum.labelOf(item.getStatus()));
         });
-        List<CouponMgmtExportExcelVO> exportList = BeanUtils.toBean(list, CouponMgmtExportExcelVO.class);
+        List<CouponMgmtExportExcelVO> exportList = BeanUtils.toBean(pageResult.getList(), CouponMgmtExportExcelVO.class);
         ExcelUtils.write(response, "优惠券.xlsx", "数据", CouponMgmtExportExcelVO.class, exportList);
     }
 
@@ -169,7 +164,7 @@ public class CouponMgmtController {
         return CommonResult.success(couponMgmtService.getChart());
     }
 
-    private void injectUserNames(List<CouponMgmtRespVO> list) {
+    private void injectUserAndStationNames(List<CouponMgmtRespVO> list) {
         if (list == null || list.isEmpty()) return;
         Set<Long> userIds = new HashSet<>();
         Set<Long> stationIds = new HashSet<>();
@@ -181,9 +176,6 @@ public class CouponMgmtController {
             if (item.getSenderId() != null) {
                 userIds.add(item.getSenderId());
             }
-            if (item.getReceiverId() != null) {
-                userIds.add(item.getReceiverId());
-            }
             if (StrUtil.isNotBlank(item.getStationIds())) {
                 Arrays.stream(item.getStationIds().split(","))
                         .filter(StrUtil::isNotBlank).map(String::trim)
@@ -192,7 +184,6 @@ public class CouponMgmtController {
                         .forEach(stationIds::add);
             }
         }
-        // 翻译用户名称
         if (!userIds.isEmpty()) {
             Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
             for (var item : list) {
@@ -204,13 +195,8 @@ public class CouponMgmtController {
                     AdminUserRespDTO user = userMap.get(item.getSenderId());
                     if (user != null) item.setSenderName(user.getNickname());
                 }
-                if (item.getReceiverId() != null) {
-                    AdminUserRespDTO user = userMap.get(item.getReceiverId());
-                    if (user != null) item.setReceiverName(user.getNickname());
-                }
             }
         }
-        // 翻译场站名称
         if (!stationIds.isEmpty()) {
             Map<Long, StationInfoRespDTO> stationMap = stationInfoApi.getStationMap(stationIds);
             for (var item : list) {

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.PointLotteryMapper">
+
+    <select id="selectPageJoin" resultType="cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointlottery.vo.PointLotteryRespVO">
+        SELECT
+            pl.id,
+            pl.no,
+            pl.user_id AS userId,
+            u.nickname AS userName,
+            pl.prize_id AS prizeId,
+            pm.name AS prizeName,
+            pl.lottery_time AS lotteryTime,
+            pl.cost_point AS costPoint,
+            pl.status,
+            pl.send_time AS sendTime,
+            pl.sender_id AS senderId,
+            pl.check_result AS checkResult,
+            pl.sync_status AS syncStatus,
+            pl.create_time AS createTime
+        FROM point_lottery pl
+        LEFT JOIN user_info u ON pl.user_id = u.id AND u.deleted = 0
+        LEFT JOIN prize_mgmt pm ON pl.prize_id = pm.id AND pm.deleted = 0
+        WHERE pl.deleted = 0
+        <if test="reqVO.no != null and reqVO.no != ''">
+            AND pl.no LIKE CONCAT('%', #{reqVO.no}, '%')
+        </if>
+        <if test="reqVO.userId != null">
+            AND pl.user_id = #{reqVO.userId}
+        </if>
+        <if test="reqVO.prizeId != null">
+            AND pl.prize_id = #{reqVO.prizeId}
+        </if>
+        <if test="reqVO.status != null and reqVO.status != ''">
+            AND pl.status = #{reqVO.status}
+        </if>
+        <if test="reqVO.syncStatus != null and reqVO.syncStatus != ''">
+            AND pl.sync_status = #{reqVO.syncStatus}
+        </if>
+        <if test="reqVO.senderId != null">
+            AND pl.sender_id = #{reqVO.senderId}
+        </if>
+        <if test="reqVO.checkResult != null and reqVO.checkResult != ''">
+            AND pl.check_result LIKE CONCAT('%', #{reqVO.checkResult}, '%')
+        </if>
+        <if test="reqVO.sendTime != null and reqVO.sendTime.length == 2">
+            AND pl.send_time BETWEEN #{reqVO.sendTime[0]} AND #{reqVO.sendTime[1]}
+        </if>
+        <if test="reqVO.startTime != null">
+            AND pl.lottery_time &gt;= DATE(FROM_UNIXTIME(#{reqVO.startTime} / 1000))
+        </if>
+        <if test="reqVO.endTime != null">
+            AND pl.lottery_time &lt;= DATE(FROM_UNIXTIME(#{reqVO.endTime} / 1000))
+        </if>
+        ORDER BY pl.id DESC
+    </select>
+
+    <select id="selectByIdJoin" resultType="cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointlottery.vo.PointLotteryRespVO">
+        SELECT
+            pl.id,
+            pl.no,
+            pl.user_id AS userId,
+            u.nickname AS userName,
+            pl.prize_id AS prizeId,
+            pm.name AS prizeName,
+            pl.lottery_time AS lotteryTime,
+            pl.cost_point AS costPoint,
+            pl.status,
+            pl.send_time AS sendTime,
+            pl.sender_id AS senderId,
+            pl.check_result AS checkResult,
+            pl.sync_status AS syncStatus,
+            pl.create_time AS createTime
+        FROM point_lottery pl
+        LEFT JOIN user_info u ON pl.user_id = u.id AND u.deleted = 0
+        LEFT JOIN prize_mgmt pm ON pl.prize_id = pm.id AND pm.deleted = 0
+        WHERE pl.id = #{id} AND pl.deleted = 0
+    </select>
+
+</mapper>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.cardmgmt.CardOrderMapper">
+
+    <select id="selectPageJoin" resultType="cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.cardorder.vo.CardOrderRespVO">
+        SELECT
+            co.id,
+            co.no,
+            co.user_id AS userId,
+            u.nickname AS userName,
+            co.card_id AS cardId,
+            cc.name AS cardName,
+            co.amount,
+            co.pay_status AS payStatus,
+            co.pay_time AS payTime,
+            co.active_time AS activeTime,
+            co.invoice_status AS invoiceStatus,
+            co.archive_time AS archiveTime,
+            co.creator,
+            co.create_time AS createTime,
+            co.update_time AS updateTime
+        FROM card_order co
+        LEFT JOIN user_info u ON co.user_id = u.id AND u.deleted = 0
+        LEFT JOIN card_config cc ON co.card_id = cc.id AND cc.deleted = 0
+        WHERE co.deleted = 0
+        <if test="reqVO.userId != null">
+            AND co.user_id = #{reqVO.userId}
+        </if>
+        <if test="reqVO.cardId != null">
+            AND co.card_id = #{reqVO.cardId}
+        </if>
+        <if test="reqVO.no != null and reqVO.no != ''">
+            AND co.no LIKE CONCAT('%', #{reqVO.no}, '%')
+        </if>
+        <if test="reqVO.payStatus != null and reqVO.payStatus != ''">
+            AND co.pay_status = #{reqVO.payStatus}
+        </if>
+        <if test="reqVO.invoiceStatus != null and reqVO.invoiceStatus != ''">
+            AND co.invoice_status = #{reqVO.invoiceStatus}
+        </if>
+        <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+            AND co.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+        </if>
+        <if test="reqVO.startTime != null and reqVO.endTime != null">
+            AND co.create_time BETWEEN
+                DATE(FROM_UNIXTIME(#{reqVO.startTime} / 1000))
+                AND DATE(FROM_UNIXTIME(#{reqVO.endTime} / 1000))
+        </if>
+        <if test="reqVO.startTime != null and reqVO.endTime == null">
+            AND co.create_time &gt;= DATE(FROM_UNIXTIME(#{reqVO.startTime} / 1000))
+        </if>
+        <if test="reqVO.startTime == null and reqVO.endTime != null">
+            AND co.create_time &lt;= DATE(FROM_UNIXTIME(#{reqVO.endTime} / 1000))
+        </if>
+        <if test="reqVO.payStartTime != null and reqVO.payEndTime != null">
+            AND co.pay_time BETWEEN
+                DATE(FROM_UNIXTIME(#{reqVO.payStartTime} / 1000))
+                AND DATE(FROM_UNIXTIME(#{reqVO.payEndTime} / 1000))
+        </if>
+        <if test="reqVO.payStartTime != null and reqVO.payEndTime == null">
+            AND co.pay_time &gt;= DATE(FROM_UNIXTIME(#{reqVO.payStartTime} / 1000))
+        </if>
+        <if test="reqVO.payStartTime == null and reqVO.payEndTime != null">
+            AND co.pay_time &lt;= DATE(FROM_UNIXTIME(#{reqVO.payEndTime} / 1000))
+        </if>
+        <if test="reqVO.activeStartTime != null and reqVO.activeEndTime != null">
+            AND co.active_time BETWEEN
+                DATE(FROM_UNIXTIME(#{reqVO.activeStartTime} / 1000))
+                AND DATE(FROM_UNIXTIME(#{reqVO.activeEndTime} / 1000))
+        </if>
+        <if test="reqVO.activeStartTime != null and reqVO.activeEndTime == null">
+            AND co.active_time &gt;= DATE(FROM_UNIXTIME(#{reqVO.activeStartTime} / 1000))
+        </if>
+        <if test="reqVO.activeStartTime == null and reqVO.activeEndTime != null">
+            AND co.active_time &lt;= DATE(FROM_UNIXTIME(#{reqVO.activeEndTime} / 1000))
+        </if>
+        <if test="reqVO.archiveStartTime != null and reqVO.archiveEndTime != null">
+            AND co.archive_time BETWEEN
+                DATE(FROM_UNIXTIME(#{reqVO.archiveStartTime} / 1000))
+                AND DATE(FROM_UNIXTIME(#{reqVO.archiveEndTime} / 1000))
+        </if>
+        <if test="reqVO.archiveStartTime != null and reqVO.archiveEndTime == null">
+            AND co.archive_time &gt;= DATE(FROM_UNIXTIME(#{reqVO.archiveStartTime} / 1000))
+        </if>
+        <if test="reqVO.archiveStartTime == null and reqVO.archiveEndTime != null">
+            AND co.archive_time &lt;= DATE(FROM_UNIXTIME(#{reqVO.archiveEndTime} / 1000))
+        </if>
+        ORDER BY co.id DESC
+    </select>
+
+    <select id="selectByIdJoin" resultType="cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.cardorder.vo.CardOrderRespVO">
+        SELECT
+            co.id,
+            co.no,
+            co.user_id AS userId,
+            u.nickname AS userName,
+            co.card_id AS cardId,
+            cc.name AS cardName,
+            co.amount,
+            co.pay_status AS payStatus,
+            co.pay_time AS payTime,
+            co.active_time AS activeTime,
+            co.invoice_status AS invoiceStatus,
+            co.archive_time AS archiveTime,
+            co.creator,
+            co.create_time AS createTime,
+            co.update_time AS updateTime
+        FROM card_order co
+        LEFT JOIN user_info u ON co.user_id = u.id AND u.deleted = 0
+        LEFT JOIN card_config cc ON co.card_id = cc.id AND cc.deleted = 0
+        WHERE co.id = #{id} AND co.deleted = 0
+    </select>
+
+    <select id="selectListByIdsJoin" resultType="cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.cardorder.vo.CardOrderRespVO">
+        SELECT
+            co.id,
+            co.no,
+            co.user_id AS userId,
+            u.nickname AS userName,
+            co.card_id AS cardId,
+            cc.name AS cardName,
+            co.amount,
+            co.pay_status AS payStatus,
+            co.pay_time AS payTime,
+            co.active_time AS activeTime,
+            co.invoice_status AS invoiceStatus,
+            co.archive_time AS archiveTime,
+            co.creator,
+            co.create_time AS createTime,
+            co.update_time AS updateTime
+        FROM card_order co
+        LEFT JOIN user_info u ON co.user_id = u.id AND u.deleted = 0
+        LEFT JOIN card_config cc ON co.card_id = cc.id AND cc.deleted = 0
+        WHERE co.deleted = 0
+        AND co.id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        ORDER BY co.id DESC
+    </select>
+
+</mapper>

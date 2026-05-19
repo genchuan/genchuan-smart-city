@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.exchangemgmt.ExchangeOrderMapper">
+
+    <select id="selectPageJoin" resultType="cn.iocoder.yudao.module.chargepark.marketop.controller.admin.exchangemgmt.exchangeorder.vo.ExchangeOrderRespVO">
+        SELECT
+            eo.id,
+            eo.no,
+            eo.user_id AS userId,
+            u.nickname AS userName,
+            eo.category_id AS categoryId,
+            ec.name AS categoryName,
+            eo.goods_id AS goodsId,
+            eo.goods_name AS goodsName,
+            eo.cost_point AS costPoint,
+            eo.pay_status AS payStatus,
+            eo.pay_time AS payTime,
+            eo.ship_time AS shipTime,
+            eo.logistics_info AS logisticsInfo,
+            eo.archive_time AS archiveTime,
+            eo.reserve1,
+            eo.reserve2,
+            eo.creator,
+            eo.create_time AS createTime,
+            eo.update_time AS updateTime
+        FROM exchange_order eo
+        LEFT JOIN user_info u ON eo.user_id = u.id AND u.deleted = 0
+        LEFT JOIN exchange_category ec ON eo.category_id = ec.id AND ec.deleted = 0
+        WHERE eo.deleted = 0
+        <if test="reqVO.no != null and reqVO.no != ''">
+            AND eo.no LIKE CONCAT('%', #{reqVO.no}, '%')
+        </if>
+        <if test="reqVO.categoryId != null">
+            AND eo.category_id = #{reqVO.categoryId}
+        </if>
+        <if test="reqVO.goodsId != null">
+            AND eo.goods_id = #{reqVO.goodsId}
+        </if>
+        <if test="reqVO.userId != null">
+            AND eo.user_id = #{reqVO.userId}
+        </if>
+        <if test="reqVO.payStatus != null and reqVO.payStatus != ''">
+            AND eo.pay_status = #{reqVO.payStatus}
+        </if>
+        <if test="reqVO.date != null and reqVO.date != ''">
+            AND eo.create_time BETWEEN DATE(#{reqVO.date}) AND DATE(DATE_ADD(#{reqVO.date}, INTERVAL 1 DAY))
+        </if>
+        <if test="reqVO.date == null and reqVO.startTime != null and reqVO.endTime != null">
+            AND eo.create_time BETWEEN
+                DATE(FROM_UNIXTIME(#{reqVO.startTime} / 1000))
+                AND DATE(FROM_UNIXTIME(#{reqVO.endTime} / 1000))
+        </if>
+        <if test="reqVO.date == null and reqVO.startTime != null and reqVO.endTime == null">
+            AND eo.create_time &gt;= DATE(FROM_UNIXTIME(#{reqVO.startTime} / 1000))
+        </if>
+        <if test="reqVO.date == null and reqVO.startTime == null and reqVO.endTime != null">
+            AND eo.create_time &lt;= DATE(FROM_UNIXTIME(#{reqVO.endTime} / 1000))
+        </if>
+        ORDER BY eo.id DESC
+    </select>
+
+    <select id="selectByIdJoin" resultType="cn.iocoder.yudao.module.chargepark.marketop.controller.admin.exchangemgmt.exchangeorder.vo.ExchangeOrderRespVO">
+        SELECT
+            eo.id,
+            eo.no,
+            eo.user_id AS userId,
+            u.nickname AS userName,
+            eo.category_id AS categoryId,
+            ec.name AS categoryName,
+            eo.goods_id AS goodsId,
+            eo.goods_name AS goodsName,
+            eo.cost_point AS costPoint,
+            eo.pay_status AS payStatus,
+            eo.pay_time AS payTime,
+            eo.ship_time AS shipTime,
+            eo.logistics_info AS logisticsInfo,
+            eo.archive_time AS archiveTime,
+            eo.reserve1,
+            eo.reserve2,
+            eo.creator,
+            eo.create_time AS createTime,
+            eo.update_time AS updateTime
+        FROM exchange_order eo
+        LEFT JOIN user_info u ON eo.user_id = u.id AND u.deleted = 0
+        LEFT JOIN exchange_category ec ON eo.category_id = ec.id AND ec.deleted = 0
+        WHERE eo.id = #{id} AND eo.deleted = 0
+    </select>
+
+    <select id="selectListByIdsJoin" resultType="cn.iocoder.yudao.module.chargepark.marketop.controller.admin.exchangemgmt.exchangeorder.vo.ExchangeOrderRespVO">
+        SELECT
+            eo.id,
+            eo.no,
+            eo.user_id AS userId,
+            u.nickname AS userName,
+            eo.category_id AS categoryId,
+            ec.name AS categoryName,
+            eo.goods_id AS goodsId,
+            eo.goods_name AS goodsName,
+            eo.cost_point AS costPoint,
+            eo.pay_status AS payStatus,
+            eo.pay_time AS payTime,
+            eo.ship_time AS shipTime,
+            eo.logistics_info AS logisticsInfo,
+            eo.archive_time AS archiveTime,
+            eo.reserve1,
+            eo.reserve2,
+            eo.creator,
+            eo.create_time AS createTime,
+            eo.update_time AS updateTime
+        FROM exchange_order eo
+        LEFT JOIN user_info u ON eo.user_id = u.id AND u.deleted = 0
+        LEFT JOIN exchange_category ec ON eo.category_id = ec.id AND ec.deleted = 0
+        WHERE eo.deleted = 0
+        AND eo.id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        ORDER BY eo.id DESC
+    </select>
+
+</mapper>

@@ -4,7 +4,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.cardorder.vo.CardOrderPageReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.cardorder.vo.CardOrderRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.CardOrderDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -102,5 +105,11 @@ public interface CardOrderMapper extends BaseMapperX<CardOrderDO> {
             "WHERE deleted = 0 " +
             "GROUP BY pay_status")
     List<Map<String, Object>> selectPayStatusCountList();
+
+    IPage<CardOrderRespVO> selectPageJoin(Page<?> page, @Param("reqVO") CardOrderPageReqVO reqVO);
+
+    CardOrderRespVO selectByIdJoin(@Param("id") Long id);
+
+    List<CardOrderRespVO> selectListByIdsJoin(@Param("ids") List<Long> ids);
 
 }

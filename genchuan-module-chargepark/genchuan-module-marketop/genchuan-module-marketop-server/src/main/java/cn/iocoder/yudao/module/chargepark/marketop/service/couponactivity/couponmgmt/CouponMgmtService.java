@@ -5,6 +5,7 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivi
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.CouponMgmtCreateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.CouponMgmtImportExcelVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.CouponMgmtPageReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.CouponMgmtRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.CouponMgmtUpdateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.CouponMgmtDO;
 import jakarta.validation.Valid;
@@ -32,5 +33,9 @@ public interface CouponMgmtService {
     void importCouponMgmtList(List<CouponMgmtImportExcelVO> list);
 
     List<CouponMgmtDO> getSimpleList();
+
+    PageResult<CouponMgmtRespVO> getPageWithJoin(CouponMgmtPageReqVO reqVO);
+
+    CouponMgmtRespVO getWithJoin(Long id);
 
 }

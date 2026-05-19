@@ -3,4 +3,80 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.couponactivity.ReceiveRecordMapper">
 
+    <select id="selectPageJoin" resultType="cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.receiverecord.vo.ReceiveRecordRespVO">
+        SELECT
+            rr.id,
+            rr.no,
+            rr.user_id AS userId,
+            u.nickname AS userName,
+            rr.coupon_id AS couponId,
+            cm.name AS couponName,
+            rr.receive_time AS receiveTime,
+            rr.status,
+            rr.verify_time AS verifyTime,
+            rr.check_result AS checkResult,
+            rr.sync_status AS syncStatus,
+            rr.archive_time AS archiveTime,
+            rr.creator,
+            rr.create_time AS createTime,
+            rr.update_time AS updateTime
+        FROM receive_record rr
+        LEFT JOIN user_info u ON rr.user_id = u.id AND u.deleted = 0
+        LEFT JOIN coupon_mgmt cm ON rr.coupon_id = cm.id AND cm.deleted = 0
+        WHERE rr.deleted = 0
+        <if test="reqVO.userId != null">
+            AND rr.user_id = #{reqVO.userId}
+        </if>
+        <if test="reqVO.couponId != null">
+            AND rr.coupon_id = #{reqVO.couponId}
+        </if>
+        <if test="reqVO.status != null and reqVO.status != ''">
+            AND rr.status = #{reqVO.status}
+        </if>
+        <if test="reqVO.syncStatus != null and reqVO.syncStatus != ''">
+            AND rr.sync_status = #{reqVO.syncStatus}
+        </if>
+        <if test="reqVO.receiveTime != null and reqVO.receiveTime.length == 2">
+            AND rr.receive_time BETWEEN #{reqVO.receiveTime[0]} AND #{reqVO.receiveTime[1]}
+        </if>
+        <if test="reqVO.date != null and reqVO.date != ''">
+            AND rr.receive_time BETWEEN DATE(#{reqVO.date}) AND DATE(DATE_ADD(#{reqVO.date}, INTERVAL 1 DAY))
+        </if>
+        <if test="reqVO.startTime != null and reqVO.endTime != null">
+            AND rr.create_time BETWEEN
+                DATE(FROM_UNIXTIME(#{reqVO.startTime} / 1000))
+                AND DATE(FROM_UNIXTIME(#{reqVO.endTime} / 1000))
+        </if>
+        <if test="reqVO.startTime != null and reqVO.endTime == null">
+            AND rr.create_time &gt;= DATE(FROM_UNIXTIME(#{reqVO.startTime} / 1000))
+        </if>
+        <if test="reqVO.startTime == null and reqVO.endTime != null">
+            AND rr.create_time &lt;= DATE(FROM_UNIXTIME(#{reqVO.endTime} / 1000))
+        </if>
+        ORDER BY rr.id DESC
+    </select>
+
+    <select id="selectByIdJoin" resultType="cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.receiverecord.vo.ReceiveRecordRespVO">
+        SELECT
+            rr.id,
+            rr.no,
+            rr.user_id AS userId,
+            u.nickname AS userName,
+            rr.coupon_id AS couponId,
+            cm.name AS couponName,
+            rr.receive_time AS receiveTime,
+            rr.status,
+            rr.verify_time AS verifyTime,
+            rr.check_result AS checkResult,
+            rr.sync_status AS syncStatus,
+            rr.archive_time AS archiveTime,
+            rr.creator,
+            rr.create_time AS createTime,
+            rr.update_time AS updateTime
+        FROM receive_record rr
+        LEFT JOIN user_info u ON rr.user_id = u.id AND u.deleted = 0
+        LEFT JOIN coupon_mgmt cm ON rr.coupon_id = cm.id AND cm.deleted = 0
+        WHERE rr.id = #{id} AND rr.deleted = 0
+    </select>
+
 </mapper>

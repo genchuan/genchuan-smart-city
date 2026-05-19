@@ -9,11 +9,14 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivi
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.CouponMgmtCreateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.CouponMgmtImportExcelVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.CouponMgmtPageReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.CouponMgmtRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.CouponMgmtUpdateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.CouponMgmtDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.couponactivity.CouponMgmtMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.CouponMgmtStatusEnum;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.CouponMgmtTypeEnum;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.service.impl.DiffParseFunction;
 import com.mzt.logapi.starter.annotation.LogRecord;
@@ -55,12 +58,10 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
     @LogRecord(type = COUPON_MGMT_TYPE, subType = COUPON_MGMT_CREATE_SUB_TYPE, bizNo = "{{#couponMgmt.id}}",
             success = COUPON_MGMT_CREATE_SUCCESS)
     public Long create(CouponMgmtCreateReqVO reqVO) {
-        // 校验名称唯一
         validateNameUnique(null, reqVO.getName());
         CouponMgmtDO couponMgmt = BeanUtils.toBean(reqVO, CouponMgmtDO.class);
         couponMgmt.setStatus(CouponMgmtStatusEnum.NOT_RECEIVED.getValue());
         couponMgmtMapper.insert(couponMgmt);
-        // 记录操作日志上下文
         LogRecordContext.putVariable("couponMgmt", couponMgmt);
         return couponMgmt.getId();
     }
@@ -72,7 +73,6 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
         CouponMgmtDO couponMgmtDO = validateExists(reqVO.getId());
         CouponMgmtDO updateObj = BeanUtils.toBean(reqVO, CouponMgmtDO.class);
         couponMgmtMapper.updateById(updateObj);
-        // 记录操作日志上下文
         LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, BeanUtils.toBean(couponMgmtDO, CouponMgmtUpdateReqVO.class));
         LogRecordContext.putVariable("couponMgmt", updateObj);
     }
@@ -82,16 +82,12 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
             success = COUPON_MGMT_SEND_SUCCESS)
     public void send(Long id, Long userId) {
         CouponMgmtDO couponMgmt = validateExists(id);
-//        if (!"0".equals(couponMgmt.getStatus())) {
-//            throw exception(COUPON_MGMT_STATUS_ERROR);
-//        }
         couponMgmt.setStatus(CouponMgmtStatusEnum.RECEIVED.getValue());
         Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
-        couponMgmt.setSenderId(loginUserId); // 发放人为当前操作用户，由Controller层设置
+        couponMgmt.setSenderId(loginUserId);
         couponMgmt.setSendTime(LocalDateTime.now());
         couponMgmt.setReceiverId(userId);
         couponMgmtMapper.updateById(couponMgmt);
-        // 记录操作日志上下文
         LogRecordContext.putVariable("couponMgmtName", couponMgmt.getName());
     }
 
@@ -100,13 +96,9 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
             success = COUPON_MGMT_VERIFY_SUCCESS)
     public void verify(Long id) {
         CouponMgmtDO couponMgmt = validateExists(id);
-//        if (!"1".equals(couponMgmt.getStatus())) {
-//            throw exception(COUPON_MGMT_STATUS_ERROR);
-//        }
         couponMgmt.setStatus(CouponMgmtStatusEnum.USED.getValue());
         couponMgmt.setVerifyTime(LocalDateTime.now());
         couponMgmtMapper.updateById(couponMgmt);
-        // 记录操作日志上下文
         LogRecordContext.putVariable("couponMgmtName", couponMgmt.getName());
     }
 
@@ -115,9 +107,6 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
             success = COUPON_MGMT_RESEND_SUCCESS)
     public void resend(Long id, Long receiverId, Long newValidTime) {
         CouponMgmtDO couponMgmt = validateExists(id);
-//        if (!"2".equals(couponMgmt.getStatus())) {
-//            throw exception(COUPON_MGMT_STATUS_ERROR);
-//        }
         Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
         couponMgmt.setStatus(CouponMgmtStatusEnum.NOT_RECEIVED.getValue());
         couponMgmt.setSenderId(loginUserId);
@@ -125,7 +114,6 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
         couponMgmt.setReceiverId(receiverId);
         couponMgmt.setValidTime(LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(newValidTime), java.time.ZoneId.systemDefault()));
         couponMgmtMapper.updateById(couponMgmt);
-        // 记录操作日志上下文
         LogRecordContext.putVariable("couponMgmtName", couponMgmt.getName());
     }
 
@@ -135,17 +123,14 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
 
         List<CouponMgmtDO> allList = couponMgmtMapper.selectList(new LambdaQueryWrapperX<>());
 
-        // sendCount: status为1的记录数
         long sendCount = allList.stream().filter(item -> "1".equals(item.getStatus())).count();
         respVO.setSendCount((int) sendCount);
 
-        // verifyRate: status为2的数量 / 总记录数
         long verifyCount = allList.stream().filter(item -> "2".equals(item.getStatus())).count();
         BigDecimal verifyRate = allList.isEmpty() ? BigDecimal.ZERO
                 : BigDecimal.valueOf(verifyCount).divide(BigDecimal.valueOf(allList.size()), 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
         respVO.setVerifyRate(verifyRate);
 
-        // sendTrend: 每天的记录数
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         Map<String, Long> dailyCount = allList.stream()
                 .collect(Collectors.groupingBy(
@@ -162,7 +147,6 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
                 .collect(Collectors.toList());
         respVO.setSendTrend(sendTrend);
 
-        // typeDistribution: 按type分组统计数量
         Map<String, Long> typeCount = allList.stream()
                 .collect(Collectors.groupingBy(
                         item -> item.getType() != null ? item.getType() : "unknown",
@@ -180,6 +164,46 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
         return respVO;
     }
 
+    @Override
+    public List<CouponMgmtDO> getSimpleList() {
+        return couponMgmtMapper.selectList();
+    }
+
+    @Override
+    public PageResult<CouponMgmtRespVO> getPageWithJoin(CouponMgmtPageReqVO reqVO) {
+        Page<CouponMgmtRespVO> page = new Page<>(reqVO.getPageNo(), reqVO.getPageSize());
+        IPage<CouponMgmtRespVO> pageResult = couponMgmtMapper.selectPageJoin(page, reqVO);
+        return new PageResult<>(pageResult.getRecords(), pageResult.getTotal());
+    }
+
+    @Override
+    public CouponMgmtRespVO getWithJoin(Long id) {
+        return couponMgmtMapper.selectByIdJoin(id);
+    }
+
+    @Override
+    public void importCouponMgmtList(List<CouponMgmtImportExcelVO> list) {
+        if (list == null || list.isEmpty()) {
+            return;
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        for (CouponMgmtImportExcelVO excelVO : list) {
+            validateNameUnique(null, excelVO.getName());
+            String typeValue = CouponMgmtTypeEnum.valueOfLabel(excelVO.getType());
+            if (typeValue == null) {
+                throw exception(COUPON_MGMT_IMPORT_TYPE_INVALID, excelVO.getType());
+            }
+            String stationIdStr = convertStationNamesToIds(excelVO.getStationIds());
+            LocalDateTime validTime = LocalDateTime.parse(excelVO.getValidTime(), formatter);
+            CouponMgmtDO couponMgmt = BeanUtils.toBean(excelVO, CouponMgmtDO.class);
+            couponMgmt.setType(typeValue);
+            couponMgmt.setStationIds(stationIdStr);
+            couponMgmt.setValidTime(validTime);
+            couponMgmt.setStatus(CouponMgmtStatusEnum.NOT_RECEIVED.getValue());
+            couponMgmtMapper.insert(couponMgmt);
+        }
+    }
+
     private CouponMgmtDO validateExists(Long id) {
         CouponMgmtDO couponMgmt = couponMgmtMapper.selectById(id);
         if (couponMgmt == null) {
@@ -192,37 +216,6 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
         CouponMgmtDO existing = couponMgmtMapper.selectOne(CouponMgmtDO::getName, name);
         if (existing != null && !existing.getId().equals(id)) {
             throw exception(COUPON_MGMT_NAME_EXISTS);
-        }
-    }
-
-    @Override
-    public List<CouponMgmtDO> getSimpleList() {
-        return couponMgmtMapper.selectList();
-    }
-
-    @Override
-    public void importCouponMgmtList(List<CouponMgmtImportExcelVO> list) {
-        if (list == null || list.isEmpty()) {
-            return;
-        }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        for (CouponMgmtImportExcelVO excelVO : list) {
-            validateNameUnique(null, excelVO.getName());
-            // type: 中文名称 -> 枚举值
-            String typeValue = CouponMgmtTypeEnum.valueOfLabel(excelVO.getType());
-            if (typeValue == null) {
-                throw exception(COUPON_MGMT_IMPORT_TYPE_INVALID, excelVO.getType());
-            }
-            // stationIds: 中文逗号分隔的场站名称 -> 逗号分隔的ID
-            String stationIdStr = convertStationNamesToIds(excelVO.getStationIds());
-            // 解析有效期
-            LocalDateTime validTime = LocalDateTime.parse(excelVO.getValidTime(), formatter);
-            CouponMgmtDO couponMgmt = BeanUtils.toBean(excelVO, CouponMgmtDO.class);
-            couponMgmt.setType(typeValue);
-            couponMgmt.setStationIds(stationIdStr);
-            couponMgmt.setValidTime(validTime);
-            couponMgmt.setStatus(CouponMgmtStatusEnum.NOT_RECEIVED.getValue());
-            couponMgmtMapper.insert(couponMgmt);
         }
     }
 

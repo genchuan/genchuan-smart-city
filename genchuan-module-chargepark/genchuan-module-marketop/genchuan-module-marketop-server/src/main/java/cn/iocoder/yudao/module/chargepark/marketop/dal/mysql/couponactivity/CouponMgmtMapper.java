@@ -4,7 +4,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.CouponMgmtPageReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.CouponMgmtRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.CouponMgmtDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -66,5 +69,9 @@ public interface CouponMgmtMapper extends BaseMapperX<CouponMgmtDO> {
     List<Map<String, Object>> selectTypeCountList();
 
     List<Map<String, Object>> selectStationIdsByNames(@Param("names") List<String> names);
+
+    IPage<CouponMgmtRespVO> selectPageJoin(Page<?> page, @Param("reqVO") CouponMgmtPageReqVO reqVO);
+
+    CouponMgmtRespVO selectByIdJoin(@Param("id") Long id);
 
 }
