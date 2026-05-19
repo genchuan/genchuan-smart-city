@@ -42,6 +42,9 @@ public class FakePlateControlPageReqVO extends PageParam {
     @Schema(description = "处置进度")
     private String handleProgress;
 
+    @Schema(description = "处理类型：核查 / 忽略")
+    private String handleType;
+
     @Schema(description = "忽略理由", example = "不对")
     private String ignoreReason;
 

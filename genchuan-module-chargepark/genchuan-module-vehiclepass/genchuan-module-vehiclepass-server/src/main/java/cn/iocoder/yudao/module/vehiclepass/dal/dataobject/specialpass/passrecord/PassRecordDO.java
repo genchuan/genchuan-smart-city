@@ -56,6 +56,7 @@ public class PassRecordDO extends BaseDO {
     /**
      * 场站名称
      */
+    @TableField(exist = false)
     private String stationName;
     /**
      * 操作人ID，关联芋道用户表 system_user
