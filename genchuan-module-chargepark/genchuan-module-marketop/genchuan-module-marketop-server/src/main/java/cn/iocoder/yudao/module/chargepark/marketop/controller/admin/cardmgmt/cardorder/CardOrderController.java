@@ -107,7 +107,8 @@ public class CardOrderController {
         PageResult<CardOrderDO> pageResult = cardOrderService.getPage(reqVO);
         List<CardOrderRespVO> list = BeanUtils.toBean(pageResult.getList(), CardOrderRespVO.class);
         injectUserNames(list);
-        ExcelUtils.write(response, "卡种订单.xlsx", "数据", CardOrderRespVO.class, list);
+        List<CardOrderExportExcelVO> exportList = BeanUtils.toBean(list, CardOrderExportExcelVO.class);
+        ExcelUtils.write(response, "卡种订单.xlsx", "数据", CardOrderExportExcelVO.class, exportList);
     }
 
     @GetMapping("/batch-export")
@@ -117,7 +118,8 @@ public class CardOrderController {
         List<CardOrderDO> list = cardOrderService.getListByIds(ids);
         List<CardOrderRespVO> voList = BeanUtils.toBean(list, CardOrderRespVO.class);
         injectUserNames(voList);
-        ExcelUtils.write(response, "卡种订单(批量).xlsx", "数据", CardOrderRespVO.class, voList);
+        List<CardOrderExportExcelVO> exportList = BeanUtils.toBean(voList, CardOrderExportExcelVO.class);
+        ExcelUtils.write(response, "卡种订单(批量).xlsx", "数据", CardOrderExportExcelVO.class, exportList);
     }
 
     @GetMapping("/chart")

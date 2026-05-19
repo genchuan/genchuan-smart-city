@@ -99,7 +99,9 @@ public class StockControlController {
         reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<StockControlDO> pageResult = stockControlService.getPage(reqVO);
         List<StockControlRespVO> list = BeanUtils.toBean(pageResult.getList(), StockControlRespVO.class);
-        ExcelUtils.write(response, "库存管控.xlsx", "数据", StockControlRespVO.class, list);
+        injectUserNames(list);
+        List<StockControlExportExcelVO> exportList = BeanUtils.toBean(list, StockControlExportExcelVO.class);
+        ExcelUtils.write(response, "库存管控.xlsx", "数据", StockControlExportExcelVO.class, exportList);
     }
 
     @GetMapping("/chart")

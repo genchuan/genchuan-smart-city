@@ -151,7 +151,8 @@ public class CouponMgmtController {
             item.setType(CouponMgmtTypeEnum.labelOf(item.getType()));
             item.setStatus(CouponMgmtStatusEnum.labelOf(item.getStatus()));
         });
-        ExcelUtils.write(response, "优惠券.xlsx", "数据", CouponMgmtRespVO.class, list);
+        List<CouponMgmtExportExcelVO> exportList = BeanUtils.toBean(list, CouponMgmtExportExcelVO.class);
+        ExcelUtils.write(response, "优惠券.xlsx", "数据", CouponMgmtExportExcelVO.class, exportList);
     }
 
     @GetMapping("/simple-list")

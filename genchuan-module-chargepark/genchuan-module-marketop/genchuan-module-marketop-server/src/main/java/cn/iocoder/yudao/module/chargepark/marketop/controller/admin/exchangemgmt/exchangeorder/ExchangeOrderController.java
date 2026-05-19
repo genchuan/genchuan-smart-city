@@ -97,7 +97,8 @@ public class ExchangeOrderController {
         list.forEach(item -> {
             item.setPayStatus(ExchangeOrderPayStatusEnum.labelOf(item.getPayStatus()));
         });
-        ExcelUtils.write(response, "兑换订单.xlsx", "数据", ExchangeOrderRespVO.class, list);
+        List<ExchangeOrderExportExcelVO> exportList = BeanUtils.toBean(list, ExchangeOrderExportExcelVO.class);
+        ExcelUtils.write(response, "兑换订单.xlsx", "数据", ExchangeOrderExportExcelVO.class, exportList);
     }
 
     @GetMapping("/batch-export")
@@ -113,7 +114,11 @@ public class ExchangeOrderController {
 //        }
         List<ExchangeOrderRespVO> voList = BeanUtils.toBean(list, ExchangeOrderRespVO.class);
         injectUserNames(voList);
-        ExcelUtils.write(response, "兑换订单.xlsx", "数据", ExchangeOrderRespVO.class, voList);
+        voList.forEach(item -> {
+            item.setPayStatus(ExchangeOrderPayStatusEnum.labelOf(item.getPayStatus()));
+        });
+        List<ExchangeOrderExportExcelVO> exportList = BeanUtils.toBean(voList, ExchangeOrderExportExcelVO.class);
+        ExcelUtils.write(response, "兑换订单.xlsx", "数据", ExchangeOrderExportExcelVO.class, exportList);
     }
 
     @GetMapping("/chart")

@@ -88,7 +88,8 @@ public class PointLotteryController {
             item.setStatus(PointLotteryStatusEnum.labelOf(item.getStatus()));
             item.setSyncStatus(PointLotterySyncStatusEnum.labelOf(item.getSyncStatus()));
         });
-        ExcelUtils.write(response, "积分抽奖.xlsx", "数据", PointLotteryRespVO.class, list);
+        List<PointLotteryExportExcelVO> exportList = BeanUtils.toBean(list, PointLotteryExportExcelVO.class);
+        ExcelUtils.write(response, "积分抽奖.xlsx", "数据", PointLotteryExportExcelVO.class, exportList);
     }
 
     @GetMapping("/chart")

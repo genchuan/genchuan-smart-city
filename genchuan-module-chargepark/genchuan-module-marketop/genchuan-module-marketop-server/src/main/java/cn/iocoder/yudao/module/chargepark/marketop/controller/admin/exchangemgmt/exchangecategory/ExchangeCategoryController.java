@@ -101,7 +101,8 @@ public class ExchangeCategoryController {
         list.forEach(item -> {
             item.setStatus(ExchangeCategoryStatusEnum.labelOf(item.getStatus()));
         });
-        ExcelUtils.write(response, "兑换类目.xlsx", "数据", ExchangeCategoryRespVO.class, list);
+        List<ExchangeCategoryExportExcelVO> exportList = BeanUtils.toBean(list, ExchangeCategoryExportExcelVO.class);
+        ExcelUtils.write(response, "兑换类目.xlsx", "数据", ExchangeCategoryExportExcelVO.class, exportList);
     }
 
     @GetMapping("/get-import-template")

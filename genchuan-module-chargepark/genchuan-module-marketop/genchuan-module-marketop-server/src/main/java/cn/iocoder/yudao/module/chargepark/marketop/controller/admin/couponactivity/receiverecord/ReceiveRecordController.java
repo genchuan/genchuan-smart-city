@@ -90,7 +90,8 @@ public class ReceiveRecordController {
             item.setStatus(ReceiveRecordStatusEnum.labelOf(item.getStatus()));
             item.setSyncStatus(ReceiveRecordSyncStatusEnum.labelOf(item.getSyncStatus()));
         });
-        ExcelUtils.write(response, "领用记录.xlsx", "数据", ReceiveRecordRespVO.class, list);
+        List<ReceiveRecordExportExcelVO> exportList = BeanUtils.toBean(list, ReceiveRecordExportExcelVO.class);
+        ExcelUtils.write(response, "领用记录.xlsx", "数据", ReceiveRecordExportExcelVO.class, exportList);
     }
 
     @GetMapping("/chart")

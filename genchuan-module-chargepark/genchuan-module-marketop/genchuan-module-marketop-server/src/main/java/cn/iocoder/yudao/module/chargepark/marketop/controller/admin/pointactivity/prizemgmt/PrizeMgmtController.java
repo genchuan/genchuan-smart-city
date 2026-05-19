@@ -132,7 +132,8 @@ public class PrizeMgmtController {
             item.setStatus(PrizeMgmtStatusEnum.labelOf(item.getStatus()));
             item.setType(PrizeMgmtTypeEnum.labelOf(item.getType()));
         });
-        ExcelUtils.write(response, "奖品管理.xlsx", "数据", PrizeMgmtRespVO.class, list);
+        List<PrizeMgmtExportExcelVO> exportList = BeanUtils.toBean(list, PrizeMgmtExportExcelVO.class);
+        ExcelUtils.write(response, "奖品管理.xlsx", "数据", PrizeMgmtExportExcelVO.class, exportList);
     }
 
     @GetMapping("/chart")

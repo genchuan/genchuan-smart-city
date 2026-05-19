@@ -77,8 +77,10 @@ public class CycleReportController {
     @PreAuthorize("@ss.hasPermission('marketop:cycle-report:export')")
     public void export(CycleReportPageReqVO reqVO, HttpServletResponse response) throws IOException {
         List<CycleReportDO> list = cycleReportService.getList(reqVO);
-        ExcelUtils.write(response, "周期报表.xls", "报表数据", CycleReportRespVO.class,
-                BeanUtils.toBean(list, CycleReportRespVO.class));
+        List<CycleReportRespVO> voList = BeanUtils.toBean(list, CycleReportRespVO.class);
+        injectUserNames(voList);
+        List<CycleReportExportExcelVO> exportList = BeanUtils.toBean(voList, CycleReportExportExcelVO.class);
+        ExcelUtils.write(response, "周期报表.xls", "报表数据", CycleReportExportExcelVO.class, exportList);
     }
 
     @GetMapping("/batch-export")
@@ -88,7 +90,8 @@ public class CycleReportController {
         List<CycleReportDO> list = cycleReportService.getListByIds(ids);
         List<CycleReportRespVO> voList = BeanUtils.toBean(list, CycleReportRespVO.class);
         injectUserNames(voList);
-        ExcelUtils.write(response, "周期报表(批量).xlsx", "报表数据", CycleReportRespVO.class, voList);
+        List<CycleReportExportExcelVO> exportList = BeanUtils.toBean(voList, CycleReportExportExcelVO.class);
+        ExcelUtils.write(response, "周期报表(批量).xlsx", "报表数据", CycleReportExportExcelVO.class, exportList);
     }
 
     @GetMapping("/chart")
