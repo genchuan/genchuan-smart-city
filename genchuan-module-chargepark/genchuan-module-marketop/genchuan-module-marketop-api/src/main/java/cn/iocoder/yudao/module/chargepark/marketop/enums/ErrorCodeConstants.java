@@ -17,6 +17,8 @@ public interface ErrorCodeConstants {
     ErrorCode POINT_ACTIVITY_START_TIME_ORDER = new ErrorCode(1_100_005, "开始时间范围的起始时间不能晚于结束时间");
     ErrorCode POINT_ACTIVITY_END_TIME_INVALID = new ErrorCode(1_100_006, "结束时间范围最多传2个值");
     ErrorCode POINT_ACTIVITY_END_TIME_ORDER = new ErrorCode(1_100_007, "结束时间范围的起始时间不能晚于结束时间");
+    ErrorCode POINT_ACTIVITY_IMPORT_TYPE_INVALID = new ErrorCode(1_100_008, "活动类型不存在：{}");
+    ErrorCode POINT_ACTIVITY_IMPORT_STATION_NOT_FOUND = new ErrorCode(1_100_009, "场站不存在：{}");
 
     ErrorCode POINT_LOTTERY_NOT_EXISTS = new ErrorCode(1_100_011, "积分抽奖记录不存在");
     ErrorCode POINT_LOTTERY_STATUS_ERROR = new ErrorCode(1_100_012, "积分抽奖记录状态异常");
@@ -32,6 +34,8 @@ public interface ErrorCodeConstants {
     ErrorCode COUPON_MGMT_NOT_EXISTS = new ErrorCode(1_100_051, "优惠券不存在");
     ErrorCode COUPON_MGMT_NAME_EXISTS = new ErrorCode(1_100_052, "优惠券名称已存在");
     ErrorCode COUPON_MGMT_STATUS_ERROR = new ErrorCode(1_100_053, "优惠券状态异常");
+    ErrorCode COUPON_MGMT_IMPORT_TYPE_INVALID = new ErrorCode(1_100_054, "优惠券类型不存在：{}");
+    ErrorCode COUPON_MGMT_IMPORT_STATION_NOT_FOUND = new ErrorCode(1_100_055, "场站不存在：{}");
 
     ErrorCode ACTIVITY_CONFIG_NOT_EXISTS = new ErrorCode(1_100_061, "活动配置不存在");
     ErrorCode ACTIVITY_CONFIG_NAME_EXISTS = new ErrorCode(1_100_062, "活动名称已存在");

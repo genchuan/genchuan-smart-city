@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.chargepark.marketop.service.couponactivity.couponmgmt;
 
+import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
@@ -12,6 +13,7 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivi
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.CouponMgmtDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.couponactivity.CouponMgmtMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.CouponMgmtStatusEnum;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.CouponMgmtTypeEnum;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.service.impl.DiffParseFunction;
 import com.mzt.logapi.starter.annotation.LogRecord;
@@ -25,9 +27,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -205,12 +205,52 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
         if (list == null || list.isEmpty()) {
             return;
         }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         for (CouponMgmtImportExcelVO excelVO : list) {
             validateNameUnique(null, excelVO.getName());
+            // type: 中文名称 -> 枚举值
+            String typeValue = CouponMgmtTypeEnum.valueOfLabel(excelVO.getType());
+            if (typeValue == null) {
+                throw exception(COUPON_MGMT_IMPORT_TYPE_INVALID, excelVO.getType());
+            }
+            // stationIds: 中文逗号分隔的场站名称 -> 逗号分隔的ID
+            String stationIdStr = convertStationNamesToIds(excelVO.getStationIds());
+            // 解析有效期
+            LocalDateTime validTime = LocalDateTime.parse(excelVO.getValidTime(), formatter);
             CouponMgmtDO couponMgmt = BeanUtils.toBean(excelVO, CouponMgmtDO.class);
-            couponMgmt.setStatus("0");
+            couponMgmt.setType(typeValue);
+            couponMgmt.setStationIds(stationIdStr);
+            couponMgmt.setValidTime(validTime);
+            couponMgmt.setStatus(CouponMgmtStatusEnum.NOT_RECEIVED.getValue());
             couponMgmtMapper.insert(couponMgmt);
         }
+    }
+
+    private String convertStationNamesToIds(String stationNames) {
+        if (StrUtil.isBlank(stationNames)) {
+            return null;
+        }
+        List<String> names = Arrays.stream(stationNames.split(","))
+                .map(String::trim)
+                .filter(StrUtil::isNotBlank)
+                .collect(Collectors.toList());
+        if (names.isEmpty()) {
+            return null;
+        }
+        List<Map<String, Object>> stations = couponMgmtMapper.selectStationIdsByNames(names);
+        Map<String, String> nameToId = new HashMap<>();
+        for (Map<String, Object> station : stations) {
+            nameToId.put(String.valueOf(station.get("name")), String.valueOf(station.get("id")));
+        }
+        List<String> ids = new ArrayList<>();
+        for (String name : names) {
+            String id = nameToId.get(name);
+            if (id == null) {
+                throw exception(COUPON_MGMT_IMPORT_STATION_NOT_FOUND, name);
+            }
+            ids.add(id);
+        }
+        return String.join(",", ids);
     }
 
 }

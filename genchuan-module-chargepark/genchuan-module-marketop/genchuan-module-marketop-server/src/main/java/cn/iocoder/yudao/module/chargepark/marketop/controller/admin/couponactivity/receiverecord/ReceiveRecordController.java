@@ -9,6 +9,7 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivi
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.CouponMgmtDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.ReceiveRecordDO;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.ReceiveRecordStatusEnum;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.ReceiveRecordSyncStatusEnum;
 import cn.iocoder.yudao.module.chargepark.marketop.service.couponactivity.couponmgmt.CouponMgmtService;
 import cn.iocoder.yudao.module.chargepark.marketop.service.couponactivity.receiverecord.ReceiveRecordService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -87,6 +88,7 @@ public class ReceiveRecordController {
         injectUserNames(list);
         list.forEach(item -> {
             item.setStatus(ReceiveRecordStatusEnum.labelOf(item.getStatus()));
+            item.setSyncStatus(ReceiveRecordSyncStatusEnum.labelOf(item.getSyncStatus()));
         });
         ExcelUtils.write(response, "领用记录.xlsx", "数据", ReceiveRecordRespVO.class, list);
     }

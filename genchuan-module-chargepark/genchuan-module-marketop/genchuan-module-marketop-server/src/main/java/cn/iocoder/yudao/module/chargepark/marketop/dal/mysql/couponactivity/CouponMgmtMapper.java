@@ -7,6 +7,7 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivi
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.CouponMgmtDO;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.time.LocalDate;
@@ -21,6 +22,7 @@ public interface CouponMgmtMapper extends BaseMapperX<CouponMgmtDO> {
                 .likeIfPresent(CouponMgmtDO::getName, reqVO.getName())
                 .eqIfPresent(CouponMgmtDO::getType, reqVO.getType())
                 .eqIfPresent(CouponMgmtDO::getStatus, reqVO.getStatus())
+                .eqIfPresent(CouponMgmtDO::getAmount, reqVO.getAmount())
                 .betweenIfPresent(CouponMgmtDO::getCreateTime, reqVO.getCreateTime())
                 .betweenIfPresent(CouponMgmtDO::getValidTime, reqVO.getValidTime())
                 .betweenIfPresent(CouponMgmtDO::getVerifyTime, reqVO.getVerifyTime())
@@ -62,5 +64,7 @@ public interface CouponMgmtMapper extends BaseMapperX<CouponMgmtDO> {
 
     @Select("SELECT type, COUNT(*) AS count FROM coupon_mgmt GROUP BY type")
     List<Map<String, Object>> selectTypeCountList();
+
+    List<Map<String, Object>> selectStationIdsByNames(@Param("names") List<String> names);
 
 }

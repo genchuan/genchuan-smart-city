@@ -113,12 +113,12 @@ public class CouponMgmtController {
     @Operation(summary = "获得导入优惠券模板")
     public void importTemplate(HttpServletResponse response) throws IOException {
         List<CouponMgmtImportExcelVO> list = Arrays.asList(
-                CouponMgmtImportExcelVO.builder().name("新用户满减券").type("0")
+                CouponMgmtImportExcelVO.builder().name("新用户满减券").type("满减")
                         .amount(new java.math.BigDecimal("20.00")).useCondition("满100元可用")
-                        .stationIds("1,2,3").description("新用户注册发放的满减优惠券").validTime("2026-12-31 23:59:59").build(),
-                CouponMgmtImportExcelVO.builder().name("节假日折扣券").type("1")
+                        .stationIds("示例场站1,示例场站2").description("新用户注册发放的满减优惠券").validTime("2026-12-31 23:59:59").build(),
+                CouponMgmtImportExcelVO.builder().name("节假日折扣券").type("折扣")
                         .amount(new java.math.BigDecimal("15.00")).useCondition("满50元可用")
-                        .stationIds("1,2").description("节假日活动折扣券").validTime("2026-12-31 23:59:59").build()
+                        .stationIds("示例场站1").description("节假日活动折扣券").validTime("2026-12-31 23:59:59").build()
         );
         ExcelUtils.write(response, "优惠券导入模板.xls", "优惠券列表", CouponMgmtImportExcelVO.class, list);
     }
@@ -149,6 +149,7 @@ public class CouponMgmtController {
         injectUserNames(list);
         list.forEach(item -> {
             item.setType(CouponMgmtTypeEnum.labelOf(item.getType()));
+            item.setStatus(CouponMgmtStatusEnum.labelOf(item.getStatus()));
         });
         ExcelUtils.write(response, "优惠券.xlsx", "数据", CouponMgmtRespVO.class, list);
     }

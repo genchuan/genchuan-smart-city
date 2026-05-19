@@ -20,4 +20,12 @@ public enum PointActivityTypeEnum {
         }
         return value;
     }
+
+    public static String valueOfLabel(String label) {
+        if (label == null) return null;
+        for (PointActivityTypeEnum e : values()) {
+            if (e.label.equals(label)) return e.value;
+        }
+        return null;
+    }
 }
