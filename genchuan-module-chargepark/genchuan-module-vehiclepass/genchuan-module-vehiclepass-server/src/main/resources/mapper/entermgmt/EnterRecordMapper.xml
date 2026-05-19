@@ -82,7 +82,7 @@
         FROM enter_record t1
         WHERE t1.deleted = 0
         <if test="start != null and end != null">
-            AND t1.enter_time BETWEEN #{start} AND #{end}
+            AND t1.enter_time &gt;= #{start} AND t1.enter_time &lt;= #{end}
         </if>
         <if test="stationId != null">
             AND t1.station_id = #{stationId}

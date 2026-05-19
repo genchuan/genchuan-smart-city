@@ -184,15 +184,15 @@ public class EnterRecordServiceImpl implements EnterRecordService {
         LocalDateTime endTime = null;
 
         if (reqVO.getStartTime() != null && reqVO.getEndTime() != null) {
-            long startSecond = Long.parseLong(reqVO.getStartTime());
-            long endSecond = Long.parseLong(reqVO.getEndTime());
+            long startMillis = Long.parseLong(reqVO.getStartTime());
+            long endMillis = Long.parseLong(reqVO.getEndTime());
 
             startTime = LocalDateTime.ofInstant(
-                    Instant.ofEpochSecond(startSecond),
+                    Instant.ofEpochMilli(startMillis),
                     ZoneId.systemDefault()
             );
             endTime = LocalDateTime.ofInstant(
-                    Instant.ofEpochSecond(endSecond),
+                    Instant.ofEpochMilli(endMillis),
                     ZoneId.systemDefault()
             );
         }
