@@ -116,6 +116,7 @@ public class EnterRecordServiceImpl implements EnterRecordService {
         myReqVO.setPlateColor(reqVO.getPlateColor());
         myReqVO.setSpaceNo(reqVO.getSpaceNo());
         myReqVO.setEnterTime(reqVO.getEnterTime());
+        myReqVO.setEnterTimeHour(reqVO.getEnterTimeHour());
         myReqVO.setRecordType(reqVO.getRecordType());
         myReqVO.setStatus(reqVO.getStatus());
         myReqVO.setStationId(reqVO.getStationId());

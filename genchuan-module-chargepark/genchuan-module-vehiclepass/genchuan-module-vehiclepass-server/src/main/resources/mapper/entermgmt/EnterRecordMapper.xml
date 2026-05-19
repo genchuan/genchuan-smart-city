@@ -38,6 +38,9 @@
         <if test="query.enterTime != null and query.enterTime.length == 2">
             AND e.enter_time BETWEEN #{query.enterTime[0]} AND #{query.enterTime[1]}
         </if>
+        <if test="query.enterTimeHour != null and query.enterTimeHour != ''">
+            AND DATE_FORMAT(e.enter_time, '%H:00') = #{query.enterTimeHour}
+        </if>
         <if test="query.recordType != null">
             AND e.record_type = #{query.recordType}
         </if>
