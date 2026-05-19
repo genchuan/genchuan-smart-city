@@ -53,11 +53,11 @@ public class StationUserRespVO {
     private String remark;
 
     @Schema(description = "[备用字段1] 备用字段1")
-    @ExcelProperty("[备用字段1] 备用字段1")
+    @ExcelIgnore
     private String reserve1;
 
     @Schema(description = "[备用字段2] 备用字段2")
-    @ExcelProperty("[备用字段2] 备用字段2")
+    @ExcelIgnore
     private String reserve2;
 
     @Schema(description = "创建者", requiredMode = Schema.RequiredMode.REQUIRED)
