@@ -51,7 +51,7 @@ public class PointLotteryServiceImpl implements PointLotteryService {
             success = POINT_LOTTERY_CHECK_SUCCESS)
     public void check(Long id, String checkResult) {
         PointLotteryDO lottery = validateExists(id);
-        if (Objects.equals(lottery.getStatus(), PointLotteryStatusEnum.NORMAL.getValue())) {
+        if (!Objects.equals(lottery.getStatus(), PointLotteryStatusEnum.NORMAL.getValue())) {
             throw exception(POINT_LOTTERY_STATUS_ERROR);
         }
         lottery.setStatus(PointLotteryStatusEnum.CHECKED.getValue());

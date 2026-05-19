@@ -24,7 +24,7 @@ public class ExchangeCategoryExportExcelVO {
     @ExcelProperty("类目状态")
     private String status;
 
-    @ExcelProperty("审核人")
+    @ExcelProperty("审核人ID")
     private Long auditorId;
 
     @ExcelProperty("审核时间")

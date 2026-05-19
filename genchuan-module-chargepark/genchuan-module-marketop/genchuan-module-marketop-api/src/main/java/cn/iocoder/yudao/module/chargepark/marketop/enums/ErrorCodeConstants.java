@@ -59,6 +59,10 @@ public interface ErrorCodeConstants {
     // ========== 兑换管理 1-100-151 ~ 1-100-200 ==========
     ErrorCode EXCHANGE_CATEGORY_NOT_EXISTS = new ErrorCode(1_100_151, "兑换类目不存在");
     ErrorCode EXCHANGE_CATEGORY_NAME_EXISTS = new ErrorCode(1_100_152, "兑换类目名称已存在");
+    ErrorCode EXCHANGE_CATEGORY_IMPORT_SCOPE_INVALID = new ErrorCode(1_100_153, "适用范围不存在：{}");
+    ErrorCode EXCHANGE_CATEGORY_IMPORT_NAME_EMPTY = new ErrorCode(1_100_154, "类目名称不能为空");
+    ErrorCode EXCHANGE_CATEGORY_IMPORT_GOODS_COUNT_EMPTY = new ErrorCode(1_100_155, "商品数量不能为空");
+    ErrorCode EXCHANGE_CATEGORY_IMPORT_EFFECT_TIME_EMPTY = new ErrorCode(1_100_156, "生效时间不能为空");
 
     ErrorCode EXCHANGE_ORDER_NOT_EXISTS = new ErrorCode(1_100_161, "兑换订单不存在");
     ErrorCode EXCHANGE_ORDER_STATUS_ERROR = new ErrorCode(1_100_162, "兑换订单状态异常");

@@ -19,4 +19,12 @@ public enum ExchangeCategoryScopeEnum {
         }
         return value;
     }
+
+    public static String valueOfLabel(String label) {
+        if (label == null) return null;
+        for (ExchangeCategoryScopeEnum e : values()) {
+            if (e.label.equals(label)) return e.value;
+        }
+        return null;
+    }
 }

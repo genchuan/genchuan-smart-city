@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivi
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.CouponMgmtPageReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.CouponMgmtRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.CouponMgmtUpdateReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.UserSimpleRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.CouponMgmtDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.couponactivity.CouponMgmtMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.CouponMgmtStatusEnum;
@@ -179,6 +180,11 @@ public class CouponMgmtServiceImpl implements CouponMgmtService {
     @Override
     public CouponMgmtRespVO getWithJoin(Long id) {
         return couponMgmtMapper.selectByIdJoin(id);
+    }
+
+    @Override
+    public List<UserSimpleRespVO> getUserSimpleList(String name) {
+        return couponMgmtMapper.selectUserSimpleList(name);
     }
 
     @Override

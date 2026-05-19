@@ -57,6 +57,9 @@
         <if test="reqVO.date == null and reqVO.startTime == null and reqVO.endTime != null">
             AND eo.create_time &lt;= DATE(FROM_UNIXTIME(#{reqVO.endTime} / 1000))
         </if>
+        <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+            AND eo.create_time &gt;= #{reqVO.createTime[0]} AND eo.create_time &lt;= #{reqVO.createTime[1]}
+        </if>
         ORDER BY eo.id DESC
     </select>
 

@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.cardconfig.vo.*;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.CardConfigDO;
 import cn.iocoder.yudao.module.chargepark.marketop.service.cardmgmt.cardconfig.CardConfigService;
@@ -72,7 +73,8 @@ public class CardConfigController {
     @Operation(summary = "生效卡种配置")
     @PreAuthorize("@ss.hasPermission('marketop:card-config:update')")
     public CommonResult<Boolean> enable(@RequestBody CardConfigEnableReqVO reqVO) {
-        cardConfigService.enable(reqVO.getId());
+        Long userId = SecurityFrameworkUtils.getLoginUserId();
+        cardConfigService.enable(reqVO.getId(), userId);
         return CommonResult.success(true);
     }
 
@@ -80,7 +82,8 @@ public class CardConfigController {
     @Operation(summary = "停用卡种配置")
     @PreAuthorize("@ss.hasPermission('marketop:card-config:update')")
     public CommonResult<Boolean> disable(@RequestBody CardConfigDisableReqVO reqVO) {
-        cardConfigService.disable(reqVO.getId());
+        Long userId = SecurityFrameworkUtils.getLoginUserId();
+        cardConfigService.disable(reqVO.getId(), userId);
         return CommonResult.success(true);
     }
 

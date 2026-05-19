@@ -54,6 +54,11 @@ public class StockControlController {
         PageResult<StockControlDO> pageResult = stockControlService.getPage(reqVO);
         PageResult<StockControlRespVO> bean = BeanUtils.toBean(pageResult, StockControlRespVO.class);
         injectUserNames(bean.getList());
+        bean.getList().forEach(item -> {
+            if (!Objects.equals("0", item.getWarnStatus()) && !Objects.equals(item.getWarnStatus(), "1")) {
+                item.setWarnStatus("1");
+            }
+        });
         return CommonResult.success(bean);
     }
 

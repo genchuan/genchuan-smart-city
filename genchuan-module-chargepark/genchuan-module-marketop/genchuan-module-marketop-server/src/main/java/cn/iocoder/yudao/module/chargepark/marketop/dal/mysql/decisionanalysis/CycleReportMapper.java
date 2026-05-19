@@ -30,7 +30,7 @@ public interface CycleReportMapper extends BaseMapperX<CycleReportDO> {
     // ========== 基于 13 张业务表的聚合查询（时间参数为空则统计全部） ==========
 
     @Select("<script>" +
-            "SELECT COUNT(*) FROM activity_config WHERE deleted = 0 " +
+            "SELECT COUNT(*) FROM point_activity WHERE deleted = 0 " +
             "<if test='startTime != null'> AND create_time &gt;= #{startTime} </if>" +
             "<if test='endTime != null'> AND create_time &lt;= #{endTime} </if>" +
             "AND tenant_id = #{tenantId}" +
@@ -69,10 +69,18 @@ public interface CycleReportMapper extends BaseMapperX<CycleReportDO> {
                            @Param("endTime") LocalDateTime endTime,
                            @Param("tenantId") Long tenantId);
 
+//    @Select("<script>" +
+//            "SELECT COUNT(*) FROM receive_record WHERE deleted = 0 " +
+//            "<if test='startTime != null'> AND receive_time &gt;= #{startTime} </if>" +
+//            "<if test='endTime != null'> AND receive_time &lt;= #{endTime} </if>" +
+//            "AND tenant_id = #{tenantId}" +
+//            "</script>")
+//    Integer selectCouponSendCount(@Param("startTime") LocalDateTime startTime,
+//                                  @Param("endTime") LocalDateTime endTime,
+//                                  @Param("tenantId") Long tenantId);
+
     @Select("<script>" +
-            "SELECT COUNT(*) FROM receive_record WHERE deleted = 0 " +
-            "<if test='startTime != null'> AND receive_time &gt;= #{startTime} </if>" +
-            "<if test='endTime != null'> AND receive_time &lt;= #{endTime} </if>" +
+            "SELECT COUNT(*) FROM coupon_mgmt WHERE deleted = 0 " +
             "AND tenant_id = #{tenantId}" +
             "</script>")
     Integer selectCouponSendCount(@Param("startTime") LocalDateTime startTime,
@@ -91,7 +99,7 @@ public interface CycleReportMapper extends BaseMapperX<CycleReportDO> {
 
     @Select("<script>" +
             "SELECT COUNT(*) FROM card_order WHERE deleted = 0 " +
-            "AND pay_status IN ('已支付','已完成') " +
+           // "AND pay_status IN ('已支付','已完成') " +
             "<if test='startTime != null'> AND pay_time &gt;= #{startTime} </if>" +
             "<if test='endTime != null'> AND pay_time &lt;= #{endTime} </if>" +
             "AND tenant_id = #{tenantId}" +
@@ -102,7 +110,7 @@ public interface CycleReportMapper extends BaseMapperX<CycleReportDO> {
 
     @Select("<script>" +
             "SELECT IFNULL(SUM(amount), 0) FROM card_order WHERE deleted = 0 " +
-            "AND pay_status IN ('已支付','已完成') " +
+            //"AND pay_status IN ('已支付','已完成') " +
             "<if test='startTime != null'> AND pay_time &gt;= #{startTime} </if>" +
             "<if test='endTime != null'> AND pay_time &lt;= #{endTime} </if>" +
             "AND tenant_id = #{tenantId}" +
@@ -124,7 +132,7 @@ public interface CycleReportMapper extends BaseMapperX<CycleReportDO> {
     @Select("SELECT IFNULL(SUM(current_stock), 0) FROM stock_control WHERE deleted = 0 AND tenant_id = #{tenantId}")
     Integer selectTotalStock(@Param("tenantId") Long tenantId);
 
-    @Select("SELECT COUNT(*) FROM stock_control WHERE deleted = 0 AND warn_status = '预警' AND tenant_id = #{tenantId}")
+    @Select("SELECT COUNT(*) FROM stock_control WHERE deleted = 0 AND warn_status = '1' AND tenant_id = #{tenantId}")
     Integer selectWarnStockCount(@Param("tenantId") Long tenantId);
 
     // ========== 图表扩展查询 ==========

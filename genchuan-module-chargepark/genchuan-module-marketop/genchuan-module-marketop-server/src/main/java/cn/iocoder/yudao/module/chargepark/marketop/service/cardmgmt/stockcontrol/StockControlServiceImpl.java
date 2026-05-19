@@ -122,7 +122,7 @@ public class StockControlServiceImpl implements StockControlService {
 
         // 预警数量 = warnStatus 为已告警的记录数
         int warnStockCount = (int) records.stream()
-                .filter(r -> "-1".equals(r.getWarnStatus()))
+                .filter(r -> "1".equals(r.getWarnStatus()))
                 .count();
         respVO.setWarnStockCount(warnStockCount);
 

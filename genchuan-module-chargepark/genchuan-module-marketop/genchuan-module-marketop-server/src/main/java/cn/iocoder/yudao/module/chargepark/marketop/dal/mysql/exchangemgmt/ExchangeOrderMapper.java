@@ -28,6 +28,7 @@ public interface ExchangeOrderMapper extends BaseMapperX<ExchangeOrderDO> {
                 .eqIfPresent(ExchangeOrderDO::getGoodsId, reqVO.getGoodsId())
                 .eqIfPresent(ExchangeOrderDO::getUserId, reqVO.getUserId())
                 .eqIfPresent(ExchangeOrderDO::getPayStatus, reqVO.getPayStatus())
+                .betweenIfPresent(ExchangeOrderDO::getCreateTime, reqVO.getCreateTime())
                 .orderByDesc(ExchangeOrderDO::getId);
 
         // date不为空时，转为当天起止时间查询create_time

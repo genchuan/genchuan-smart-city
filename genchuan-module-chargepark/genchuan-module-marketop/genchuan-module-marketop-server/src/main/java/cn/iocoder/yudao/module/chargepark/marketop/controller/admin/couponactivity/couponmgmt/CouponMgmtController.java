@@ -157,6 +157,12 @@ public class CouponMgmtController {
         return CommonResult.success(BeanUtils.toBean(list, CouponMgmtSimpleRespVO.class));
     }
 
+    @GetMapping("/user-simple-list")
+    @Operation(summary = "获取用户精简列表")
+    public CommonResult<List<UserSimpleRespVO>> getUserSimpleList(@RequestParam(value = "name", required = false) String name) {
+        return CommonResult.success(couponMgmtService.getUserSimpleList(name));
+    }
+
     @GetMapping("/chart")
     @Operation(summary = "优惠券图表统计")
     @PreAuthorize("@ss.hasPermission('marketop:coupon-mgmt:query')")

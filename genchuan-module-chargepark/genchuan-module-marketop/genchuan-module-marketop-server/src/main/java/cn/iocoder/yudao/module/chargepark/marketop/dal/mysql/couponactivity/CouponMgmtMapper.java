@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.CouponMgmtPageReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.CouponMgmtRespVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.UserSimpleRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.CouponMgmtDO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -73,5 +74,7 @@ public interface CouponMgmtMapper extends BaseMapperX<CouponMgmtDO> {
     IPage<CouponMgmtRespVO> selectPageJoin(Page<?> page, @Param("reqVO") CouponMgmtPageReqVO reqVO);
 
     CouponMgmtRespVO selectByIdJoin(@Param("id") Long id);
+
+    List<UserSimpleRespVO> selectUserSimpleList(@Param("name") String name);
 
 }
