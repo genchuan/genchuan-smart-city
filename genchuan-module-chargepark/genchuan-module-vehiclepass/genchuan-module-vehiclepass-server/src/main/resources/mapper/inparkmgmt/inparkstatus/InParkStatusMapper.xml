@@ -32,6 +32,9 @@
         <if test="reqVO.inTime != null and reqVO.inTime.length == 2">
             AND p.in_time BETWEEN #{reqVO.inTime[0]} AND #{reqVO.inTime[1]}
         </if>
+        <if test="reqVO.overTime != null and reqVO.overTime != ''">
+            AND p.over_time = #{reqVO.overTime}
+        </if>
         <if test="reqVO.status != null and reqVO.status != ''">
             AND p.status = #{reqVO.status}
         </if>
