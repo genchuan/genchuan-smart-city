@@ -18,7 +18,7 @@ public interface UserInfoApi {
      * 查询所有用户（简要信息）
      * @return 用户列表
      */
-    @GetMapping("/api/usermerchant/user/list-simple")
+    @GetMapping("/usermerchant/userinfo/list-simple")
     CommonResult<List<UserSimpleRespDTO>> getSimpleUserList();
 
     /**
@@ -26,6 +26,6 @@ public interface UserInfoApi {
      * @param userId 用户ID
      * @return 用户信息
      */
-    @GetMapping("/api/usermerchant/user/get-detail")
+    @GetMapping("/usermerchant/userinfo/get-detail")
     CommonResult<UserInfoRespDTO> getDetailUser(@RequestParam("userId") Long userId);
 }

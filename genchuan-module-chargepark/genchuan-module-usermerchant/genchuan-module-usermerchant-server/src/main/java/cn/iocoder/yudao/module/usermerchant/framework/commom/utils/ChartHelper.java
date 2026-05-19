@@ -18,7 +18,7 @@ import java.util.Map;
  * 统计图表通用工具类
  * 支持：折线图（时间聚合）、柱状图/饼图（分组统计）、总数（条件统计）、比率
  *
- * @author your-name
+ * @author 宇佐见莲子
  */
 @Component
 public class ChartHelper {
