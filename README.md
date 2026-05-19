@@ -10,10 +10,10 @@
 前端采用 Vue 3 + Vite + Element Plus + TypeScript主流技术栈，基于组合式 API 与极速构建工具打造高效开发体验，集成 Pinia状态管理替代 Vuex、Vue Router实现路由控制。
 
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)
-## 🚀体验版更新：会员升级、限时免费会员福利创建账号即可领取，（2026年5月15日）
+## 🚀体验版更新：会员升级、限时免费会员福，创建账号即可领取！（2026年5月15日）
 > 品牌自定义、多级角色管理权限、后台支撑、数据库批量接入、硬件设备自动接入支撑等功能可联系客服。
 
-*演示版地址*：http://cloud.genchuan.cn/#/analytics
+*体验版地址*：http://cloud.genchuan.cn/#/analytics
 ![输入图片说明](images/VIP%E4%BC%9A%E5%91%98%E6%B4%BB%E5%8A%A8.png)
 
 ## 🚀 重大更新：前端 UI 上线！（2026年3月25日）
