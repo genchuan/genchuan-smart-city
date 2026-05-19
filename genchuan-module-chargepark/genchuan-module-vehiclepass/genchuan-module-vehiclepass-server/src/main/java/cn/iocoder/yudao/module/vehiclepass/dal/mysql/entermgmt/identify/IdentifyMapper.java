@@ -29,6 +29,7 @@ public interface IdentifyMapper extends BaseMapperX<IdentifyDO> {
                 .eqIfPresent(IdentifyDO::getConfidence, reqVO.getConfidence())
                 .eqIfPresent(IdentifyDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(IdentifyDO::getStationId, reqVO.getStationId())
+                .likeIfPresent(IdentifyDO::getStationName, reqVO.getStationName())
                 .likeIfPresent(IdentifyDO::getRemark, reqVO.getRemark())
                 .eqIfPresent(IdentifyDO::getIsCorrected, reqVO.getIsCorrected())
                 .orderByDesc(IdentifyDO::getId));
@@ -43,6 +44,7 @@ public interface IdentifyMapper extends BaseMapperX<IdentifyDO> {
 
     IPage<IdentifyRespVO> selectIdentifyPage(Page<IdentifyRespVO> page, @Param("query") IdentifyPageReqVO reqVO);
 
+    IdentifyRespVO selectByIdJoinStation(@Param("id") Long id);
 
     Map<String, Object> selectCardData(
             @Param("startTime") String startTime,

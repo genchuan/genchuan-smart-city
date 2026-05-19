@@ -61,6 +61,10 @@ public class ShareChargeOrderDO extends BaseDO {
     @TableField(exist = false)
     private String stationName;
 
+    /** 开票状态（关联 invoice_list.status，非数据库字段） */
+    @TableField(exist = false)
+    private String invoiceStatus;
+
     /** 支付方式，字典：share_charge_order_pay_method */
     private String payMethod;
 

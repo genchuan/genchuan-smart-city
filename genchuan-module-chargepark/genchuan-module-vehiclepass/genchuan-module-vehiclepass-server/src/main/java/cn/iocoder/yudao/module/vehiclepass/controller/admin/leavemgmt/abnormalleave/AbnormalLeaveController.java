@@ -83,8 +83,7 @@ public class AbnormalLeaveController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('abnormal:leave:query')")
     public CommonResult<AbnormalLeaveRespVO> getLeave(@RequestParam("id") Long id) {
-        AbnormalLeaveDO leave = leaveService.getLeave(id);
-        return success(BeanUtils.toBean(leave, AbnormalLeaveRespVO.class));
+        return success(leaveService.getLeaveWithStation(id));
     }
 
     @GetMapping("/page")
@@ -137,8 +136,9 @@ public class AbnormalLeaveController {
     @Operation(summary = "导出异常离场 Excel")
     @PreAuthorize("@ss.hasPermission('abnormal:leave:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportLeaveExcel(@Valid AbnormalLeavePageReqVO pageReqVO,
+    public void exportLeaveExcel(AbnormalLeavePageReqVO pageReqVO,
                                  HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<AbnormalLeaveRespVO> pageResult = leaveService.getLeavePageWithJoin(pageReqVO);
         ExcelUtils.write(response, "异常离场.xls", "数据", AbnormalLeaveRespVO.class, pageResult.getList());

@@ -9,6 +9,7 @@ import cn.iocoder.yudao.module.inspectop.controller.admin.cyclereport.vo.CycleRe
 import cn.iocoder.yudao.module.inspectop.controller.admin.cyclereport.vo.CycleReportRespVO;
 import cn.iocoder.yudao.module.inspectop.dal.dataobject.cyclereport.CycleReportDO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -111,4 +112,21 @@ public interface CycleReportMapper extends BaseMapperX<CycleReportDO> {
      * 查询折线图数据
      */
     List<CycleReportChartRespVO.LineData> selectLineData(@Param("reqVO") CycleReportChartReqVO reqVO);
+
+    // 在 CycleReportMapper.java 中添加
+    /**
+     * 增加报表导出次数（原子操作）
+     *
+     * @param id 报表主键ID
+     * @return 更新行数
+     */
+    default int incrementExportCount(Long id) {
+        if (id == null) {
+            return 0;
+        }
+        return this.update(null,
+                new LambdaUpdateWrapper<CycleReportDO>()
+                        .setSql("export_count = export_count + 1")
+                        .eq(CycleReportDO::getId, id));
+    }
 }

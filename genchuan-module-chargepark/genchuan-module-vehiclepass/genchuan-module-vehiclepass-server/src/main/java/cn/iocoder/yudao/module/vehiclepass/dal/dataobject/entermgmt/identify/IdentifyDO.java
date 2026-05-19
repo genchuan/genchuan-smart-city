@@ -53,13 +53,17 @@ public class IdentifyDO extends BaseDO {
      */
     private Long stationId;
     /**
+     * 场站名称
+     */
+    private String stationName;
+    /**
      * 备注
      */
     private String remark;
     /**
-     * 修正记录标记：0-未修正 1-已修正
+     * 修正记录标记：0-未修正 1-已修正 2-已确认
      */
-    private Boolean isCorrected;
+    private Integer isCorrected;
     /**
      * 备用字段1
      */

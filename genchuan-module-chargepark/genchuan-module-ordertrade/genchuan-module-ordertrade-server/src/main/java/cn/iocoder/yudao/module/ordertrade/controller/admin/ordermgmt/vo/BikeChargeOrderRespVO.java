@@ -77,6 +77,9 @@ public class BikeChargeOrderRespVO {
     @ExcelProperty("操作人ID")
     private Long operatorId;
 
+    @Schema(description = "开票状态（null-未申请，pending_audit-待审核，pending_invoice-待开票，invoiced-已开票，rejected-已驳回）")
+    private String invoiceStatus;
+
    /* @Schema(description = "备用字段1")
     private String reserve1;
 

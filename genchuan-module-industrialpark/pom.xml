@@ -16,6 +16,8 @@
     <modules>
         <module>genchuan-module-enterprisesvc</module>
         <module>genchuan-module-enterprisesvc/genchuan-module-enterprisesvc-api</module>
+        <module>genchuan-module-accessmgmt</module>
+        <module>genchuan-module-integratedsecurity</module>
     </modules>
 
     <description>

@@ -19,7 +19,7 @@ public class ScheduleViewRespVO {
     private Long id;
 
     @Schema(description = "巡检人员ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("巡检人员ID")
+//    @ExcelProperty("巡检人员ID")
     private Long userId;
 
     @Schema(description = "巡检人员")
@@ -39,11 +39,11 @@ public class ScheduleViewRespVO {
     private String status;
 
     @Schema(description = "备用字段1")
-    @ExcelProperty("备用字段1")
+//    @ExcelProperty("备用字段1")
     private String reserve1;
 
     @Schema(description = "备用字段2")
-    @ExcelProperty("备用字段2")
+//    @ExcelProperty("备用字段2")
     private String reserve2;
 
     @Schema(description = "创建者")

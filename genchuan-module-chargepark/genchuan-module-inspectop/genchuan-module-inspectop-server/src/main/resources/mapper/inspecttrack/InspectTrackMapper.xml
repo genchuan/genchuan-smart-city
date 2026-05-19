@@ -50,7 +50,7 @@
                 AND it.user_id = #{reqVO.userId}
             </if>
             <if test="reqVO.trackTime != null">
-                AND it.track_time = #{reqVO.trackTime}
+                AND it.track_time BETWEEN #{reqVO.trackTime[0]} AND #{reqVO.trackTime[1]}
             </if>
             <if test="reqVO.area != null and reqVO.area != ''">
                 AND it.area LIKE CONCAT('%', #{reqVO.area}, '%')

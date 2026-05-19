@@ -18,6 +18,9 @@ public class GateOpenPageReqVO extends PageParam {
     @Schema(description = "场站ID，关联场站表", example = "5128")
     private Long stationId;
 
+    @Schema(description = "场站名称，支持模糊查询")
+    private String stationName;
+
     @Schema(description = "开闸原因：紧急通行 / 故障处理 / 其他，关联字典gate_open_open_reason", example = "不对")
     private String openReason;
 

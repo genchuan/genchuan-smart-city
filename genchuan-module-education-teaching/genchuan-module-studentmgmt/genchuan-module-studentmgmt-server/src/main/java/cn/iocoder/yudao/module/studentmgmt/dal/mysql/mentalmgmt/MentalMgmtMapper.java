@@ -98,4 +98,6 @@ public interface MentalMgmtMapper extends BaseMapperX<MentalMgmtDO> {
     List<JSONObject> selectMentalStatusDistributionCount();
 
     List<JSONObject> selectRiskLevelDistributionCount();
+
+    Integer selectTotalMental(LocalDateTime startTime, LocalDateTime endTime, String className, String grade);
 }

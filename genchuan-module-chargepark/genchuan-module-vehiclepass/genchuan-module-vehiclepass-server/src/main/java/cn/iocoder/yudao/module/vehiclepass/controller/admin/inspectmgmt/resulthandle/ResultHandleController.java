@@ -85,8 +85,7 @@ public class ResultHandleController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('result:handle:query')")
     public CommonResult<ResultHandleRespVO> getHandle(@RequestParam("id") Long id) {
-        ResultHandleDO handle = handleService.getHandle(id);
-        return success(BeanUtils.toBean(handle, ResultHandleRespVO.class));
+        return success(handleService.getHandleWithJoin(id));
     }
 
     @GetMapping("/page")
@@ -139,8 +138,9 @@ public class ResultHandleController {
     @Operation(summary = "导出结果处置 Excel")
     @PreAuthorize("@ss.hasPermission('result:handle:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportHandleExcel(@Valid ResultHandlePageReqVO pageReqVO,
+    public void exportHandleExcel(ResultHandlePageReqVO pageReqVO,
                                   HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<ResultHandleDO> list = handleService.getHandlePage(pageReqVO).getList();
         // 导出 Excel

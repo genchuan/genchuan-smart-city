@@ -20,6 +20,8 @@ import org.springframework.validation.annotation.Validated;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.ordertrade.enums.ErrorCodeConstants.*;
@@ -50,7 +52,13 @@ public class OfftimeParkOrderServiceImpl implements OfftimeParkOrderService {
     @Override public PageResult<OfftimeParkOrderDO> getOfftimeParkOrderPage(OfftimeParkOrderPageReqVO v) {
         Page<OfftimeParkOrderDO> page = new Page<>(v.getPageNo(), v.getPageSize());
         var result = offtimeParkOrderMapper.selectPageJoinStation(page, v);
-        return new PageResult<>(result.getRecords(), result.getTotal());
+        List<OfftimeParkOrderDO> records = result.getRecords();
+        if (!records.isEmpty()) {
+            List<Long> orderIds = records.stream().map(OfftimeParkOrderDO::getId).collect(Collectors.toList());
+            Map<Long, String> invoiceStatusMap = invoiceListMapper.selectStatusMapByOrderIds(orderIds);
+            records.forEach(o -> o.setInvoiceStatus(invoiceStatusMap.get(o.getId())));
+        }
+        return new PageResult<>(records, result.getTotal());
     }
         @Override
     public OfftimeParkOrderChartRespVO getOfftimeParkOrderChart(OfftimeParkOrderChartReqVO v) {

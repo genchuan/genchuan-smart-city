@@ -24,7 +24,7 @@ public interface ScheduleViewMapper extends BaseMapperX<ScheduleViewDO> {
     default PageResult<ScheduleViewDO> selectPage(ScheduleViewPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<ScheduleViewDO>()
                 .eqIfPresent(ScheduleViewDO::getUserId, reqVO.getUserId())
-                .betweenIfPresent(ScheduleViewDO::getScheduleDate, reqVO.getScheduleDate())
+                .eqIfPresent(ScheduleViewDO::getScheduleDate, reqVO.getScheduleDate())
                 .eqIfPresent(ScheduleViewDO::getShiftType, reqVO.getShiftType())
                 .eqIfPresent(ScheduleViewDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(ScheduleViewDO::getReserve1, reqVO.getReserve1())
@@ -49,6 +49,7 @@ public interface ScheduleViewMapper extends BaseMapperX<ScheduleViewDO> {
 
     /**
      * 查询排班统计图表数据
+     * 如果reqVO.month为空，则统计所有数据
      *
      * @param reqVO 查询参数
      * @return 排班统计图表数据
@@ -58,6 +59,7 @@ public interface ScheduleViewMapper extends BaseMapperX<ScheduleViewDO> {
 
     /**
      * 查询排班统计卡片数据
+     * 如果reqVO.month为空，则统计所有数据
      *
      * @param reqVO 查询参数
      * @return 排班统计卡片数据

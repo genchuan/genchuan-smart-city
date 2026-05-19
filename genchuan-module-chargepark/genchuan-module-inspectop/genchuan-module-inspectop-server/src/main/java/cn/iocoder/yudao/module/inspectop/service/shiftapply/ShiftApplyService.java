@@ -49,7 +49,7 @@ public interface ShiftApplyService {
      * @param id 编号
      * @return 换班申请
      */
-    ShiftApplyDO getShiftApply(Long id);
+    ShiftApplyRespVO getShiftApply(Long id);
 
     /**
      * 获得换班申请分页

@@ -73,6 +73,14 @@ public interface PayCheckService {
     PageResult<PayCheckRespVO> getCheckPageWithJoin(PayCheckPageReqVO pageReqVO);
 
     /**
+     * 获得缴费核验（JOIN stationName）
+     *
+     * @param id 编号
+     * @return 缴费核验
+     */
+    PayCheckRespVO getCheckWithStation(Long id);
+
+    /**
      * 放行缴费核验
      *
      * @param id 编号

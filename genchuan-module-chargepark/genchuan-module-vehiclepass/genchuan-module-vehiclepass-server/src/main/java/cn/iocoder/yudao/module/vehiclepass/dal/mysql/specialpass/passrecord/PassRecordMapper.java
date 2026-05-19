@@ -29,6 +29,7 @@ public interface PassRecordMapper extends BaseMapperX<PassRecordDO> {
                 .eqIfPresent(PassRecordDO::getImageUrl, reqVO.getImageUrl())
                 .eqIfPresent(PassRecordDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(PassRecordDO::getStationId, reqVO.getStationId())
+                .likeIfPresent(PassRecordDO::getStationName, reqVO.getStationName())
                 .eqIfPresent(PassRecordDO::getOperatorId, reqVO.getOperatorId())
                 .eqIfPresent(PassRecordDO::getCheckResult, reqVO.getCheckResult())
                 .eqIfPresent(PassRecordDO::getRemark, reqVO.getRemark())
@@ -40,6 +41,8 @@ public interface PassRecordMapper extends BaseMapperX<PassRecordDO> {
     }
 
     IPage<PassRecordRespVO> selectPageJoin(Page<?> page, @Param("reqVO") PassRecordPageReqVO reqVO);
+
+    PassRecordRespVO selectByIdJoinStation(@Param("id") Long id);
 
     /**
      * 查询放行量趋势（按天统计）

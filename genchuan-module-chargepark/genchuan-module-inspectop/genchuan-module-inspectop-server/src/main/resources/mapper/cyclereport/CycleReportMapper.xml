@@ -132,7 +132,7 @@
         COUNT(*) AS stockWarnNum
         FROM asset_stock
         WHERE deleted = 0
-        AND warn_threshold > 1
+        AND warn_threshold = 3
         <if test="stationId != null">
             AND station_id = #{stationId}
         </if>
@@ -310,7 +310,7 @@
             DATE(it.dispatch_time) AS report_date,
             CASE
             WHEN COUNT(*) = 0 THEN 0
-            ELSE AVG(TIMESTAMPDIFF(HOUR, it.dispatch_time, COALESCE(it.claim_time, it.update_time)))
+            ELSE AVG(TIMESTAMPDIFF(HOUR,it.dispatch_time,GREATEST(it.dispatch_time,COALESCE(it.claim_time, it.update_time))))
             END AS avgHandleTime
             FROM inspect_task it
             LEFT JOIN inspect_plan ip ON it.plan_id = ip.id
@@ -338,18 +338,27 @@
             ORDER BY date_series.report_date
         </if>
         <if test="reqVO.statTimeStart == null or reqVO.statTimeEnd == null">
-            <!-- 当没有时间参数时，返回最近7天的数据 -->
+            <!-- 当没有时间参数时，返回最近3个月（90天）的数据 -->
             SELECT
             date_series.report_date AS date,
             COALESCE(device.updateCount, 0) AS deviceUpdateNum,
             COALESCE(task.avgHandleTime, 0) AS taskHandleTime,
             COALESCE(report.reportCount, 0) AS reportNum
             FROM (
-            SELECT CURDATE() - INTERVAL seq.seq DAY AS report_date
+            SELECT CURDATE() - INTERVAL nums.num DAY AS report_date
             FROM (
-            SELECT 0 AS seq UNION SELECT 1 UNION SELECT 2 UNION SELECT 3
-            UNION SELECT 4 UNION SELECT 5 UNION SELECT 6
-            ) seq
+            <!-- 生成0-89的数字序列（90天） -->
+            SELECT (a.N + b.N * 10) AS num
+            FROM (
+            SELECT 0 AS N UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4
+            UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9
+            ) a
+            CROSS JOIN (
+            SELECT 0 AS N UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4
+            UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8
+            ) b
+            WHERE (a.N + b.N * 10) &lt; 90
+            ) nums
             ) date_series
             LEFT JOIN (
             SELECT
@@ -360,19 +369,19 @@
             <if test="reqVO.stationId != null">
                 AND station_id = #{reqVO.stationId}
             </if>
-            AND monitor_time >= CURDATE() - INTERVAL 7 DAY
+            AND monitor_time >= CURDATE() - INTERVAL 90 DAY
             UNION ALL
             SELECT monitor_time FROM bike_charge_monitor WHERE deleted = 0
             <if test="reqVO.stationId != null">
                 AND station_id = #{reqVO.stationId}
             </if>
-            AND monitor_time >= CURDATE() - INTERVAL 7 DAY
+            AND monitor_time >= CURDATE() - INTERVAL 90 DAY
             UNION ALL
             SELECT monitor_time FROM share_charge_monitor WHERE deleted = 0
             <if test="reqVO.stationId != null">
                 AND station_id = #{reqVO.stationId}
             </if>
-            AND monitor_time >= CURDATE() - INTERVAL 7 DAY
+            AND monitor_time >= CURDATE() - INTERVAL 90 DAY
             ) all_monitor
             GROUP BY DATE(monitor_time)
             ) device ON date_series.report_date = device.report_date
@@ -381,7 +390,17 @@
             DATE(it.dispatch_time) AS report_date,
             CASE
             WHEN COUNT(*) = 0 THEN 0
-            ELSE AVG(TIMESTAMPDIFF(HOUR, it.dispatch_time, COALESCE(it.claim_time, it.update_time)))
+            ELSE AVG(
+            TIMESTAMPDIFF(
+            HOUR,
+            it.dispatch_time,
+            -- 修复：使用 GREATEST 函数，确保结束时间不早于开始时间，避免负时长
+            GREATEST(
+            it.dispatch_time,
+            COALESCE(it.claim_time, it.update_time)
+            )
+            )
+            )
             END AS avgHandleTime
             FROM inspect_task it
             LEFT JOIN inspect_plan ip ON it.plan_id = ip.id
@@ -390,7 +409,7 @@
             <if test="reqVO.stationId != null">
                 AND it.station_id = #{reqVO.stationId}
             </if>
-            AND it.dispatch_time >= CURDATE() - INTERVAL 7 DAY
+            AND it.dispatch_time >= CURDATE() - INTERVAL 90 DAY
             GROUP BY DATE(it.dispatch_time)
             ) task ON date_series.report_date = task.report_date
             LEFT JOIN (
@@ -402,11 +421,19 @@
             <if test="reqVO.stationId != null">
                 AND station_id = #{reqVO.stationId}
             </if>
-            AND create_time >= CURDATE() - INTERVAL 7 DAY
+            AND create_time >= CURDATE() - INTERVAL 90 DAY
             GROUP BY DATE(create_time)
             ) report ON date_series.report_date = report.report_date
             ORDER BY date_series.report_date
         </if>
     </select>
+
+    <update id="incrementExportCount">
+        UPDATE cycle_report
+        SET export_count = export_count + 1,
+            update_time = NOW(),
+            updater = #{updater, jdbcType=VARCHAR}
+        WHERE id = #{id, jdbcType=BIGINT}
+    </update>
 
 </mapper>

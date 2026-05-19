@@ -131,10 +131,10 @@ public class StudentInfoServiceImpl implements StudentInfoService {
 
         // 1. 卡片数据
         vo.setTotalStudentCount(studentInfoMapper.selectTotalStudentCount(grade, major, "", ""));
-        vo.setInSchoolCount(studentInfoMapper.selectTotalStudentCount(grade, major, StudentInfoStatusEnum.STUDENT_INFO_STATUS_1.getStatus(), ""));
-        vo.setSuspendCount(studentInfoMapper.selectTotalStudentCount(grade, major, StudentInfoStatusEnum.STUDENT_INFO_STATUS_2.getStatus(), ""));
-        vo.setDropOutCount(studentInfoMapper.selectTotalStudentCount(grade, major, StudentInfoStatusEnum.STUDENT_INFO_STATUS_3.getStatus(), ""));
-        vo.setTransferCount(studentInfoMapper.selectTotalStudentCount(grade, major, StudentInfoStatusEnum.STUDENT_INFO_STATUS_4.getStatus(), ""));
+        vo.setInSchoolCount(studentInfoMapper.selectTotalStudentCount(grade, major, StudentInfoStatusEnum.STUDENT_INFO_STATUS_1.getStatus(), null));
+        vo.setSuspendCount(studentInfoMapper.selectTotalStudentCount(grade, major, StudentInfoStatusEnum.STUDENT_INFO_STATUS_2.getStatus(), null));
+        vo.setDropOutCount(studentInfoMapper.selectTotalStudentCount(grade, major, StudentInfoStatusEnum.STUDENT_INFO_STATUS_3.getStatus(), null));
+        vo.setTransferCount(studentInfoMapper.selectTotalStudentCount(grade, major, StudentInfoStatusEnum.STUDENT_INFO_STATUS_4.getStatus(), null));
         vo.setNormalStudentCount(studentInfoMapper.selectTotalStudentCount(grade, major, "", StudentInfoTypeEnum.STATUS_1.getStatus()));
         vo.setSpecialStudentCount(studentInfoMapper.selectTotalStudentCount(grade, major, "",StudentInfoTypeEnum.STATUS_2.getStatus()));
         vo.setTransferStudentCount(studentInfoMapper.selectTotalStudentCount(grade, major,"" ,StudentInfoTypeEnum.STATUS_3.getStatus()));

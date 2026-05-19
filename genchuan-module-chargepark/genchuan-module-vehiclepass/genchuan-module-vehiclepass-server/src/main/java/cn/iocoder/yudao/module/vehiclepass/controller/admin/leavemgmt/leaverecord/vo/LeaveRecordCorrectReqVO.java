@@ -38,8 +38,8 @@ public class LeaveRecordCorrectReqVO {
     @Schema(description = "修正后佐证图片地址", example = "/genchuan/chargePark/vehiclePass/leaveMgmt/leaveRecord/2025/04/13/445566.jpg")
     private String proofImage;
 
-    @Schema(description = "修正日志标记，固定为1", requiredMode = Schema.RequiredMode.REQUIRED, example = "true")
+    @Schema(description = "修正日志标记，固定为1", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @NotNull(message = "修正日志标记不能为空")
-    private Boolean isCorrected;
+    private Integer isCorrected;
 
 }

@@ -21,7 +21,7 @@ public interface CommunicateMgmtMapper extends BaseMapperX<CommunicateMgmtDO> {
 
     default PageResult<CommunicateMgmtDO> selectPage(CommunicateMgmtPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<CommunicateMgmtDO>()
-                .eqIfPresent(CommunicateMgmtDO::getTitle, reqVO.getTitle())
+                .likeIfPresent(CommunicateMgmtDO::getTitle, reqVO.getTitle())
                 .eqIfPresent(CommunicateMgmtDO::getContent, reqVO.getContent())
                 .eqIfPresent(CommunicateMgmtDO::getSendUser, reqVO.getSendUser())
                 .betweenIfPresent(CommunicateMgmtDO::getSendTime, reqVO.getSendTime())

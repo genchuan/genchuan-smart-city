@@ -29,10 +29,13 @@ public class IdentifyPageReqVO extends PageParam {
     @Schema(description = "场站ID", example = "1")
     private Long stationId;
 
+    @Schema(description = "场站名称，支持模糊查询")
+    private String stationName;
+
     @Schema(description = "备注，支持模糊查询", example = "")
     private String remark;
 
-    @Schema(description = "修正记录标记（0-未修正 / 1-已修正）", example = "false")
-    private Boolean isCorrected;
+    @Schema(description = "修正记录标记（0-未修正 / 1-已修正 / 2-已确认）", example = "0")
+    private Integer isCorrected;
 
 }

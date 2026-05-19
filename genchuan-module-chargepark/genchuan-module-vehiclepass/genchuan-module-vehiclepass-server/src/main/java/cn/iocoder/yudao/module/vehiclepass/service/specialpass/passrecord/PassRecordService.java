@@ -58,6 +58,14 @@ public interface PassRecordService {
     PassRecordDO getRecord(Long id);
 
     /**
+     * 获得放行记录（含场站名称）
+     *
+     * @param id 编号
+     * @return 放行记录
+     */
+    PassRecordRespVO getPassRecordWithStation(Long id);
+
+    /**
      * 获得放行记录分页
      *
      * @param pageReqVO 分页查询
