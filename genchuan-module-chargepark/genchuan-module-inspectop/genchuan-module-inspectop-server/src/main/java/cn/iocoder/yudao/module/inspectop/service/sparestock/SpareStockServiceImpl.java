@@ -173,7 +173,6 @@ public class SpareStockServiceImpl implements SpareStockService {
             updateStockStatus(stock);
 
             // 3.5 设置更新信息
-            stock.setUpdater("system"); // 实际项目中应从用户上下文获取
             stock.setUpdateTime(now);
 
             // 更新记录

@@ -56,6 +56,14 @@ public interface EnterRecordService {
     EnterRecordDO getRecord(Long id);
 
     /**
+     * 获得入场记录（含场站名称）
+     *
+     * @param id 编号
+     * @return 入场记录
+     */
+    MyEnterRecordRespVO getEnterRecordWithStation(Long id);
+
+    /**
      * 获得入场记录分页
      *
      * @param pageReqVO 分页查询

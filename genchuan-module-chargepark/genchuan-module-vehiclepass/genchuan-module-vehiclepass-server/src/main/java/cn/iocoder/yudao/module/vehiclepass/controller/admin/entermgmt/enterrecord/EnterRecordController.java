@@ -48,9 +48,8 @@ public class EnterRecordController {
     @PutMapping("/update")
     @Operation(summary = "更新入场记录")
     @PreAuthorize("@ss.hasPermission('enter:record:update')")
-    public CommonResult<Boolean> updateRecord(@Valid @RequestBody EnterRecordSaveReqVO updateReqVO) {
-        enterRecordService.updateRecord(updateReqVO);
-        return success(true);
+    public CommonResult<Boolean> updateRecord(@Valid @RequestBody EnterRecordUpdateReqVO updateReqVO) {
+        return success(enterRecordService.updateEnterRecord(updateReqVO));
     }
 
     @DeleteMapping("/delete")
@@ -75,9 +74,9 @@ public class EnterRecordController {
     @Operation(summary = "获得入场记录")
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('enter:record:query')")
-    public CommonResult<EnterRecordRespVO> getRecord(@RequestParam("id") Long id) {
-        EnterRecordDO record = enterRecordService.getRecord(id);
-        return success(BeanUtils.toBean(record, EnterRecordRespVO.class));
+    public CommonResult<MyEnterRecordRespVO> getRecord(@RequestParam("id") Long id) {
+        MyEnterRecordRespVO record = enterRecordService.getEnterRecordWithStation(id);
+        return success(record);
     }
 
 //    @GetMapping("/page")
@@ -100,8 +99,9 @@ public class EnterRecordController {
     @Operation(summary = "导出入场记录 Excel")
     @PreAuthorize("@ss.hasPermission('enter:record:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportRecordExcel(@Valid EnterRecordPageReqVO pageReqVO,
+    public void exportRecordExcel(EnterRecordPageReqVO pageReqVO,
                                   HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<MyEnterRecordRespVO> pageResult = enterRecordService.getEnterRecordPage(pageReqVO);
         ExcelUtils.write(response, "入场记录.xls", "数据", MyEnterRecordRespVO.class, pageResult.getList());

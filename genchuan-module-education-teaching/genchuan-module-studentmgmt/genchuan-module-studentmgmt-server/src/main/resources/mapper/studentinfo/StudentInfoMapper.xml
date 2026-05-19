@@ -155,4 +155,16 @@
             AND YEAR(create_time) = #{year}
         </if>
     </select>
+    <select id="selectTotalStudent" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM student_info WHERE deleted = 0
+        <if test="grade != null">
+            AND grade = #{grade}
+        </if>
+        <if test="className != null">
+            AND class_name = #{className}
+        </if>
+        <if test="startTime != null and endTime != null">
+            AND create_time between #{startTime} AND #{endTime}
+        </if>
+    </select>
 </mapper>

@@ -25,6 +25,9 @@ public class PayCheckPageReqVO extends PageParam {
     @Schema(description = "场站ID，关联场站表", example = "30722")
     private Long stationId;
 
+    @Schema(description = "场站名称，支持模糊查询")
+    private String stationName;
+
     @Schema(description = "核验人ID，关联system_user用户表", example = "7217")
     private Long checkUserId;
 

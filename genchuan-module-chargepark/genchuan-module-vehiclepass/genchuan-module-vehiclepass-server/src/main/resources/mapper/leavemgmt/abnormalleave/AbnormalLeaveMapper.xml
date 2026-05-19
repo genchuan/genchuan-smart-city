@@ -9,6 +9,7 @@
             a.abnormal_type AS abnormalType,
             a.identify_time AS identifyTime,
             a.status AS status,
+            a.station_id AS stationId,
             s.name AS stationName,
             a.handle_type AS handleType,
             u.nickname AS handleUserName,
@@ -48,6 +49,33 @@
             AND a.remark LIKE CONCAT('%', #{reqVO.remark}, '%')
         </if>
         ORDER BY a.id DESC
+    </select>
+
+    <select id="selectByIdJoinStation" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.abnormalleave.vo.AbnormalLeaveRespVO">
+        SELECT
+            a.id AS id,
+            a.plate_no AS plateNo,
+            a.abnormal_type AS abnormalType,
+            a.identify_time AS identifyTime,
+            a.status AS status,
+            a.station_id AS stationId,
+            s.name AS stationName,
+            a.handle_type AS handleType,
+            u.nickname AS handleUserName,
+            a.handle_time AS handleTime,
+            a.handle_progress AS handleProgress,
+            a.ignore_reason AS ignoreReason,
+            a.remark AS remark,
+            a.reserve1 AS reserve1,
+            a.reserve2 AS reserve2,
+            a.creator AS creator,
+            a.updater AS updater,
+            a.create_time AS createTime,
+            a.update_time AS updateTime
+        FROM abnormal_leave a
+        LEFT JOIN station_info s ON a.station_id = s.id AND s.deleted = 0
+        LEFT JOIN user_info u ON a.handle_user_id = u.id AND u.deleted = 0
+        WHERE a.id = #{id} AND a.deleted = 0
     </select>
 
     <!-- 统计异常离场趋势 -->

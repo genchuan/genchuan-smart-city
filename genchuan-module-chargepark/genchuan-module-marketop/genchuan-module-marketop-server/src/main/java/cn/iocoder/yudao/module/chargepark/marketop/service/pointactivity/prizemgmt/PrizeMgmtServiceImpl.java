@@ -111,8 +111,8 @@ public class PrizeMgmtServiceImpl implements PrizeMgmtService {
             return item;
         }).toList();
         PrizeMgmtChartRespVO respVO = new PrizeMgmtChartRespVO();
-        respVO.setPrizeCount(0);
-        respVO.setSendCount(0);
+        respVO.setPrizeCount(prizeMgmtMapper.selectPrizeCount());
+        respVO.setSendCount(prizeMgmtMapper.selectTotalSendCount());
         respVO.setTypeList(typeList);
         return respVO;
     }

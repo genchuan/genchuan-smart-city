@@ -58,6 +58,7 @@ public class PointActivityController {
     @Operation(summary = "获得积分活动分页")
     @PreAuthorize("@ss.hasPermission('marketop:point-activity:query')")
     public CommonResult<PageResult<PointActivityRespVO>> getPage(PointActivityPageReqVO reqVO) {
+        reqVO.validateTimeRange();
         PageResult<PointActivityDO> pageResult = pointActivityService.getPage(reqVO);
         PageResult<PointActivityRespVO> bean = BeanUtils.toBean(pageResult, PointActivityRespVO.class);
         injectUserNames(bean.getList());
@@ -137,6 +138,7 @@ public class PointActivityController {
     @Operation(summary = "导出积分活动")
     @PreAuthorize("@ss.hasPermission('marketop:point-activity:query')")
     public void export(PointActivityPageReqVO reqVO, HttpServletResponse response) throws IOException {
+        reqVO.validateTimeRange();
         reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<PointActivityDO> pageResult = pointActivityService.getPage(reqVO);
         List<PointActivityExportExcelVO> list = BeanUtils.toBean(pageResult.getList(), PointActivityExportExcelVO.class);

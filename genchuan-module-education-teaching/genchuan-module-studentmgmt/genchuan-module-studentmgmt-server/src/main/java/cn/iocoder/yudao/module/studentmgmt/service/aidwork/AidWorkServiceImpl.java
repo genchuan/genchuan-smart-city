@@ -147,6 +147,7 @@ public class AidWorkServiceImpl implements AidWorkService {
         String username = SecurityFrameworkUtils.getLoginUserNickname();
         aidWorkDO.setAuditUser(username);
         aidWorkDO.setProcessStatus(reqVO.getProcessStatus());
+        aidWorkDO.setStatus(AidWorkStatusEnum.AID_WORK_STATUS_2.getStatus());
 
         int i = aidWorkMapper.updateById(aidWorkDO);
         if (i > 0) {

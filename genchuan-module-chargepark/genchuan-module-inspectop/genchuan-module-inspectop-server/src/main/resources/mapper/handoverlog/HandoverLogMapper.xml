@@ -51,8 +51,9 @@
             </if>
 
             <!-- 交接日期范围 -->
-            <if test="reqVO.handoverDate != null and reqVO.handoverDate.length == 2">
-                AND hl.handover_date BETWEEN #{reqVO.handoverDate[0]} AND #{reqVO.handoverDate[1]}
+            <if test="reqVO.handoverDate != null and reqVO.handoverDate != ''">
+                AND hl.handover_date >= #{reqVO.handoverDateBegin, jdbcType=TIMESTAMP}
+                AND hl.handover_date &lt;= #{reqVO.handoverDateEnd, jdbcType=TIMESTAMP}
             </if>
 
             <!-- 交接内容 -->
@@ -119,12 +120,16 @@
     <!-- 查询交接日志趋势统计数据 -->
     <select id="selectTrendStatistics" resultType="java.util.Map">
         SELECT
-            DATE(handover_date) AS time,
-            COUNT(*) AS logCount
+        DATE(handover_date) AS time,
+        COUNT(*) AS logCount
         FROM handover_log
         WHERE deleted = 0
-          AND handover_date >= #{startTime}
-          AND handover_date &lt;= #{endTime}
+        <if test="startTime != null">
+            AND handover_date >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND handover_date &lt;= #{endTime}
+        </if>
         GROUP BY DATE(handover_date)
         ORDER BY time
     </select>
@@ -132,12 +137,16 @@
     <!-- 查询交接日志卡片统计数据 -->
     <select id="selectCardStatistics" resultType="java.util.Map">
         SELECT
-            COUNT(*) AS totalCount,
-            SUM(CASE WHEN status = '2' THEN 1 ELSE 0 END) AS confirmedCount
+        COUNT(*) AS totalCount,
+        SUM(CASE WHEN status = '2' THEN 1 ELSE 0 END) AS confirmedCount
         FROM handover_log
         WHERE deleted = 0
-          AND handover_date >= #{startTime}
-          AND handover_date &lt;= #{endTime}
+        <if test="startTime != null">
+            AND handover_date >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND handover_date &lt;= #{endTime}
+        </if>
     </select>
 
 

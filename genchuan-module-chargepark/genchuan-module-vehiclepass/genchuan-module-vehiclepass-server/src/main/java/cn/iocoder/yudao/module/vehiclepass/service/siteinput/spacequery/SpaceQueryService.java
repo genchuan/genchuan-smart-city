@@ -57,6 +57,11 @@ public interface SpaceQueryService {
     SpaceQueryDO getQuery(Long id);
 
     /**
+     * 获得泊位查询（含关联表字段）
+     */
+    SpaceQueryRespVO getQueryWithJoin(Long id);
+
+    /**
      * 获得泊位查询分页
      *
      * @param pageReqVO 分页查询

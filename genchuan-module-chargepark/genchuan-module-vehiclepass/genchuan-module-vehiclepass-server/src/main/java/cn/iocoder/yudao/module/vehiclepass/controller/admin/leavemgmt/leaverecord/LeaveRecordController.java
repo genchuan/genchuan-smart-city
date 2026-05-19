@@ -106,8 +106,7 @@ public class LeaveRecordController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('leave:record:query')")
     public CommonResult<LeaveRecordRespVO> getRecord(@RequestParam("id") Long id) {
-        LeaveRecordDO record = leaveRecordService.getRecord(id);
-        return success(BeanUtils.toBean(record, LeaveRecordRespVO.class));
+        return success(leaveRecordService.getRecordWithStation(id));
     }
 
     @GetMapping("/page")
@@ -121,8 +120,9 @@ public class LeaveRecordController {
     @Operation(summary = "导出离场记录 Excel")
     @PreAuthorize("@ss.hasPermission('leave:record:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportRecordExcel(@Valid LeaveRecordPageReqVO pageReqVO,
+    public void exportRecordExcel(LeaveRecordPageReqVO pageReqVO,
                                   HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<LeaveRecordRespVO> pageResult = leaveRecordService.getRecordPageWithJoin(pageReqVO);
         // 导出 Excel

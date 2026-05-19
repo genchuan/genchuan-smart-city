@@ -64,4 +64,9 @@ public interface ResultHandleMapper extends BaseMapperX<ResultHandleDO> {
      */
     Double selectViolationRectifyRate(@Param("reqVO") ResultHandleChartReqVO reqVO);
 
+    /**
+     * 根据ID查询（JOIN关联表）
+     */
+    ResultHandleRespVO selectByIdJoin(@Param("id") Long id);
+
 }

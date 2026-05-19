@@ -3,7 +3,13 @@ package cn.iocoder.yudao.module.studentmgmt.service.behaviormgmt;
 import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.behaviormgmt.vo.*;
+import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.behaviormgmt.BehaviorMgmtDO;
+import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.dormcheck.DormCheckDO;
+import cn.iocoder.yudao.module.studentmgmt.dal.mysql.behaviormgmt.BehaviorMgmtMapper;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.dormcheck.DormCheckMapper;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
 import cn.iocoder.yudao.module.studentmgmt.enums.*;
@@ -13,22 +19,16 @@ import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import com.alibaba.fastjson.JSONObject;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
-import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
-import java.util.*;
-
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.behaviormgmt.vo.*;
-import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.behaviormgmt.BehaviorMgmtDO;
-import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
-import cn.iocoder.yudao.module.studentmgmt.dal.mysql.behaviormgmt.BehaviorMgmtMapper;
+import java.util.ArrayList;
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.module.studentmgmt.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.studentmgmt.enums.ErrorCodeConstants.BEHAVIOR_MGMT_NOT_EXISTS;
 import static cn.iocoder.yudao.module.studentmgmt.enums.LogRecordConstants.*;
 
 /**
@@ -119,6 +119,48 @@ public class BehaviorMgmtServiceImpl implements BehaviorMgmtService {
             behaviorMgmtDO.setAuditUser(username);
             behaviorMgmtDO.setStatus(reqVO.getStatus());
             behaviorMgmtDO.setRemark(reqVO.getRemark());
+
+            String status = reqVO.getStatus();
+            // 审核通过，则将考勤同步状态设置为已同步，并同步到学生宿舍管理中
+            if (status.equals(BehaviorStatusEnum.BEHAVIOR_MGMT_STATUS_1.getStatus())) {
+                // 获取请假开始时间到结束时间
+                LocalDateTime startTime = behaviorMgmtDO.getStartTime();
+                LocalDateTime endTime = behaviorMgmtDO.getEndTime();
+                Long studentId = behaviorMgmtDO.getStudentId();
+                // 从开始时间到结束时间，循环同步到学生宿舍考勤中
+                while (!startTime.isAfter(endTime)) {
+                    // 当天是否为周六，周日，如果是，则跳过
+                    if (startTime.getDayOfWeek().getValue() == 7 || startTime.getDayOfWeek().getValue() == 6) {
+                        startTime = startTime.plusDays(1);
+                        continue;
+                    }
+                    // 判断当天是否有考勤记录，如果有则修改考勤记录，如果没有，则插入考勤记录
+                    DormCheckDO dormCheckDO = dormCheckMapper.selectByStudentIdAndCheckTime(studentId, startTime);
+                    if (dormCheckDO != null) {
+                        dormCheckDO.setUpdateTime(LocalDateTime.now());
+                        dormCheckDO.setCheckTime(startTime);
+                        dormCheckDO.setCheckStatus(DormCheckCheckStatusEnum.DORM_CHECK_CHECK_STATUS_0.getStatus());
+                        dormCheckDO.setStatus(DormCheckStatusEnum.DORM_CHECK_STATUS_0.getStatus());
+                        dormCheckDO.setRemark("请假");
+                        dormCheckDO.setAbnormalType(DormCheckAbnormalTypeEnum.DORM_CHECK_ABNORMAL_TYPE_0.getStatus());
+                        dormCheckMapper.updateById(dormCheckDO);
+                    }
+                    dormCheckMapper.insert(new DormCheckDO().setStudentId(studentId).setCheckTime(startTime)
+                            .setCheckStatus(DormCheckCheckStatusEnum.DORM_CHECK_CHECK_STATUS_0.getStatus())
+                            .setStatus(DormCheckStatusEnum.DORM_CHECK_STATUS_0.getStatus())
+                            .setAbnormalType(DormCheckAbnormalTypeEnum.DORM_CHECK_ABNORMAL_TYPE_0.getStatus())
+                            .setRemark("请假")
+                    );
+                    startTime = startTime.plusDays(1);
+                }
+
+                // 考勤同步状态
+                behaviorMgmtDO.setAttendanceSync(BehaviorAttendanceSyncEnum.ATTENDANCE_SYNC_1.getStatus());
+            }
+            else {
+                // 考勤同步状态
+                behaviorMgmtDO.setAttendanceSync(BehaviorAttendanceSyncEnum.ATTENDANCE_SYNC_0.getStatus());
+            }
 
             int i = behaviorMgmtMapper.updateById(behaviorMgmtDO);
             LogRecordContext.putVariable("behavior", behaviorMgmtDO);

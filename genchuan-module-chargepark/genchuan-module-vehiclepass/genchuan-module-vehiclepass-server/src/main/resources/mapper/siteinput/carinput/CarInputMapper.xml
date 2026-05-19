@@ -105,4 +105,35 @@
         </if>
     </select>
 
+    <select id="selectByIdJoin" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.siteinput.carinput.vo.CarInputRespVO">
+        SELECT
+            c.id AS id,
+            c.plate_no AS plateNo,
+            c.space_id AS spaceId,
+            s.space_no AS spaceNo,
+            c.input_time AS inputTime,
+            c.status AS status,
+            c.area_id AS areaId,
+            a.name AS areaName,
+            c.input_user_id AS inputUserId,
+            u1.nickname AS inputUserName,
+            c.audit_user_id AS auditUserId,
+            u2.nickname AS auditUserName,
+            c.audit_time AS auditTime,
+            c.audit_comment AS auditComment,
+            c.remark AS remark,
+            c.reserve1 AS reserve1,
+            c.reserve2 AS reserve2,
+            c.creator AS creator,
+            c.updater AS updater,
+            c.create_time AS createTime,
+            c.update_time AS updateTime
+        FROM car_input c
+        LEFT JOIN area_info a ON c.area_id = a.id AND a.deleted = 0
+        LEFT JOIN user_info u1 ON c.input_user_id = u1.id AND u1.deleted = 0
+        LEFT JOIN user_info u2 ON c.audit_user_id = u2.id AND u2.deleted = 0
+        LEFT JOIN parking_space_info s ON c.space_id = s.id AND s.deleted = 0
+        WHERE c.id = #{id} AND c.deleted = 0
+    </select>
+
 </mapper>

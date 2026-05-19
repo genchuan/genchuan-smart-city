@@ -113,8 +113,73 @@ public class ScheduleViewController {
                                         HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<ScheduleViewRespVO> list = scheduleViewService.getScheduleViewPage(pageReqVO).getList();
+
+        // 【新增】对VO列表中的字典值进行转换（数字 -> 中文）
+        convertScheduleViewDictValues(list);
+
         // 导出 Excel
         ExcelUtils.write(response, "排班查看.xls", "数据", ScheduleViewRespVO.class, list);
+    }
+
+    /**
+     * 【新增】转换排班查看字典值为中文显示
+     * 此方法会修改传入的 voList 中每个对象的 shiftType 和 status 字段
+     * @param voList 排班查看响应VO列表
+     */
+    private void convertScheduleViewDictValues(List<ScheduleViewRespVO> voList) {
+        if (voList == null || voList.isEmpty()) {
+            return;
+        }
+        for (ScheduleViewRespVO vo : voList) {
+            // 转换班次类型
+            vo.setShiftType(convertShiftType(vo.getShiftType()));
+            // 转换排班状态
+            vo.setStatus(convertScheduleStatus(vo.getStatus()));
+        }
+    }
+
+    /**
+     * 【新增】转换排班查看班次类型字典值
+     * 根据您提供的映射：1-晚班，2-中班，3-早班
+     * @param shiftTypeCode 班次类型编码（例如 "1", "2", "3"）
+     * @return 对应的中文班次类型描述
+     */
+    private String convertShiftType(String shiftTypeCode) {
+        if (shiftTypeCode == null) {
+            return "";
+        }
+        switch (shiftTypeCode.trim()) {
+            case "1":
+                return "晚班";
+            case "2":
+                return "中班";
+            case "3":
+                return "早班";
+            default:
+                // 如果遇到未知编码，返回原编码以便排查
+                return shiftTypeCode;
+        }
+    }
+
+    /**
+     * 【新增】转换排班查看排班状态字典值
+     * 根据您提供的映射：1-正常，2-已换班
+     * @param statusCode 排班状态编码（例如 "1", "2"）
+     * @return 对应的中文排班状态描述
+     */
+    private String convertScheduleStatus(String statusCode) {
+        if (statusCode == null) {
+            return "";
+        }
+        switch (statusCode.trim()) {
+            case "1":
+                return "正常";
+            case "2":
+                return "已换班";
+            default:
+                // 如果遇到未知编码，返回原编码以便排查
+                return statusCode;
+        }
     }
 
 }

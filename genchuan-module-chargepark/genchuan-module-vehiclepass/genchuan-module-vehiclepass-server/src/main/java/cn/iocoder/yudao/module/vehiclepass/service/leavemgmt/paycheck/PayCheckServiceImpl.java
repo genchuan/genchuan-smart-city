@@ -100,6 +100,11 @@ public class PayCheckServiceImpl implements PayCheckService {
     }
 
     @Override
+    public PayCheckRespVO getCheckWithStation(Long id) {
+        return checkMapper.selectByIdJoinStation(id);
+    }
+
+    @Override
     public void releaseCheck(Long id) {
         // 校验存在
         validateCheckExists(id);

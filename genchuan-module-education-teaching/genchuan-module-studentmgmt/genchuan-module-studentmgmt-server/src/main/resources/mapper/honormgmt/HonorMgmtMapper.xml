@@ -72,4 +72,26 @@
         </if>
         GROUP BY s.class_name
     </select>
+    <select id="selectTotalHonor" resultType="java.lang.Integer">
+        SELECT COUNT(1)  FROM  `honor_mgmt` AS h  LEFT JOIN student_info AS s ON s.id = h.student_id
+        WHERE h.deleted = 0
+        <if test="grade != null and grade != ''">
+            AND grade = #{grade}
+        </if>
+        <if test="className != null and className != ''">
+            AND class_name = #{className}
+        </if>
+        <if test="startTime != null and endTime != null">
+            AND h.create_time between #{startTime} AND #{endTime}
+        </if>
+    </select>
+    <select id="selectTotalCountByDate" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT COUNT(1) AS count, DATE(h.create_time) AS date
+        FROM  `honor_mgmt` AS h
+        WHERE h.deleted = 0
+        <if test="startTime != null and endTime != null">
+            AND h.create_time between #{startTime} AND #{endTime}
+        </if>
+        GROUP BY DATE(h.create_time)
+    </select>
 </mapper>

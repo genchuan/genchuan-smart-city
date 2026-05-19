@@ -101,4 +101,6 @@ public interface StudentInfoMapper extends BaseMapperX<StudentInfoDO> {
     Integer selectTotalStudentCountByTime(LocalDateTime startTime, LocalDateTime endTime);
 
     List<StudentInfoDO> selectStudentInfoByYear(Integer year);
+
+    Integer selectTotalStudent(LocalDateTime startTime, LocalDateTime endTime, String className, String grade);
 }

@@ -103,6 +103,11 @@ public class AbnormalLeaveServiceImpl implements AbnormalLeaveService {
     }
 
     @Override
+    public AbnormalLeaveRespVO getLeaveWithStation(Long id) {
+        return leaveMapper.selectByIdJoinStation(id);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void batchHandle(AbnormalLeaveBatchHandleReqVO reqVO) {
         LocalDateTime now = LocalDateTime.now();
