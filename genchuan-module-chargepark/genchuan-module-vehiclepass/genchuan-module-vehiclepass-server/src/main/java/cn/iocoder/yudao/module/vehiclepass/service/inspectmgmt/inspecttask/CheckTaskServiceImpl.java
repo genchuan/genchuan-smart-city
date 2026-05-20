@@ -9,7 +9,9 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspectt
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.InspectTaskTransferReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.InspectTaskChartReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.InspectTaskChartRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.UserSimpleRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.inspectmgmt.inspecttask.CheckTaskDO;
+import cn.iocoder.yudao.module.vehiclepass.dal.mysql.common.UserInfoMapper;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.inspectmgmt.inspecttask.CheckTaskMapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -42,6 +44,9 @@ public class CheckTaskServiceImpl implements CheckTaskService {
 
     @Resource
     private CheckTaskMapper taskMapper;
+
+    @Resource
+    private UserInfoMapper userInfoMapper;
 
     @Override
     public Long createTask(CheckTaskSaveReqVO createReqVO) {
@@ -216,6 +221,11 @@ public class CheckTaskServiceImpl implements CheckTaskService {
         respVO.setCardData(cardData);
 
         return respVO;
+    }
+
+    @Override
+    public List<UserSimpleRespVO> getUserSimpleList() {
+        return userInfoMapper.selectUserSimpleList();
     }
 
 }
