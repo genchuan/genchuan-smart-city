@@ -12,6 +12,10 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.AiAler
 import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.add.AddAiAlertMessageReq;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.aialertmessage.AiAlertMessageDO;
 import cn.iocoder.yudao.module.kitchen.service.aialertmessage.AiAlertMessageService;
+import cn.iocoder.yudao.module.stationresource.api.parking.ParkingSpaceInfoApi;
+import cn.iocoder.yudao.module.stationresource.api.parking.dto.ParkingSpaceInfoRespDTO;
+import cn.iocoder.yudao.module.stationresource.api.station.StationInfoApi;
+import cn.iocoder.yudao.module.stationresource.api.station.dto.StationInfoRespDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,7 +38,10 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 @RequestMapping("/kitchen/ai-alert-message")
 @Validated
 public class AiAlertMessageController {
-
+    @Resource
+    private StationInfoApi stationInfoApi;      // 场站信息 RPC
+    @Resource
+    private ParkingSpaceInfoApi parkingSpaceInfoApi;  // 车位信息 RPC
     @Resource
     private AiAlertMessageService aiAlertMessageService;
 
@@ -98,6 +105,26 @@ public class AiAlertMessageController {
         // 导出 Excel
         ExcelUtils.write(response, "AI告警消息.xls", "数据", AiAlertMessageRespVO.class,
                         BeanUtils.toBean(list, AiAlertMessageRespVO.class));
+    }
+
+    // ==================== 场站资源 RPC 测试接口 ====================
+
+    @GetMapping("/test-station-rpc")
+    @Operation(summary = "测试场站资源RPC调用——获取场站详情及车位信息")
+    @Parameter(name = "stationId", description = "场站ID", required = true, example = "1")
+    public CommonResult<StationInfoRespDTO> testStationRpc(@RequestParam("stationId") Long stationId) {
+        // 调用场站信息 RPC
+        StationInfoRespDTO station = stationInfoApi.getStation(stationId).getCheckedData();
+        return success(station);
+    }
+
+    @GetMapping("/test-parking-rpc")
+    @Operation(summary = "测试车位信息RPC调用——按ID获取车位")
+    @Parameter(name = "spaceId", description = "车位ID", required = true, example = "1")
+    public CommonResult<ParkingSpaceInfoRespDTO> testParkingRpc(@RequestParam("spaceId") Long spaceId) {
+        // 调用车位信息 RPC
+        ParkingSpaceInfoRespDTO space = parkingSpaceInfoApi.getSpace(spaceId).getCheckedData();
+        return success(space);
     }
 
 }
