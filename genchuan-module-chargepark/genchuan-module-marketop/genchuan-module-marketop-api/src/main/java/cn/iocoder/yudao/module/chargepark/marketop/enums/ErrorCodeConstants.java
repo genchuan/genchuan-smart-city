@@ -55,6 +55,8 @@ public interface ErrorCodeConstants {
 
     ErrorCode STOCK_CONTROL_NOT_EXISTS = new ErrorCode(1_100_121, "库存记录不存在");
     ErrorCode STOCK_INSUFFICIENT = new ErrorCode(1_100_122, "库存不足");
+    ErrorCode STOCK_ALLOCATE_SOURCE_IN_RANGE = new ErrorCode(1_100_123, "源场站在卡种关联场站范围内，不可调配");
+    ErrorCode STOCK_ALLOCATE_TARGET_NOT_IN_RANGE = new ErrorCode(1_100_124, "目标场站不在卡种关联场站范围内");
 
     // ========== 兑换管理 1-100-151 ~ 1-100-200 ==========
     ErrorCode EXCHANGE_CATEGORY_NOT_EXISTS = new ErrorCode(1_100_151, "兑换类目不存在");

@@ -1,18 +1,25 @@
 package cn.iocoder.yudao.module.chargepark.marketop.service.cardmgmt.stockcontrol;
 
+import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.common.util.json.JsonUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.stockcontrol.vo.StockControlAllocateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.stockcontrol.vo.StockControlChartRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.stockcontrol.vo.StockControlPageReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.stockcontrol.vo.StockControlRestockReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.CardConfigDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.StockControlDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.cardmgmt.StockControlMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.StockControlStatusEnum;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.StockControlWarnStatusEnum;
+import cn.iocoder.yudao.module.chargepark.marketop.service.cardmgmt.cardconfig.CardConfigService;
+import cn.iocoder.yudao.module.stationresource.api.station.StationInfoApi;
+import cn.iocoder.yudao.module.stationresource.api.station.dto.StationInfoRespDTO;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
@@ -32,6 +39,12 @@ public class StockControlServiceImpl implements StockControlService {
     @Resource
     private StockControlMapper stockControlMapper;
 
+    @Resource
+    private CardConfigService cardConfigService;
+
+    @Resource
+    private StationInfoApi stationInfoApi;
+
     @Override
     public PageResult<StockControlDO> getPage(StockControlPageReqVO reqVO) {
         return stockControlMapper.selectPage(reqVO);
@@ -47,13 +60,13 @@ public class StockControlServiceImpl implements StockControlService {
             success = STOCK_CONTROL_RESTOCK_SUCCESS)
     public void restock(StockControlRestockReqVO reqVO) {
         StockControlDO stockControl = validateExists(reqVO.getId());
-        // 补货: 增加当前库存
         stockControl.setCurrentStock(stockControl.getCurrentStock() + reqVO.getNum());
-        // 更新库存状态
         updateStockStatus(stockControl);
         stockControl.setSyncTime(LocalDateTime.now());
         stockControlMapper.updateById(stockControl);
-        // 记录操作日志上下文
+        CardConfigDO cardConfig = cardConfigService.get(stockControl.getCardId());
+        String cardName = cardConfig != null ? cardConfig.getName() : String.valueOf(stockControl.getCardId());
+        appendReplenishLog(stockControl, "[" + cardName + "]补货" + reqVO.getNum());
         LogRecordContext.putVariable("stockControl", stockControl);
         LogRecordContext.putVariable("num", reqVO.getNum());
     }
@@ -73,32 +86,45 @@ public class StockControlServiceImpl implements StockControlService {
     @Override
     @LogRecord(type = STOCK_CONTROL_TYPE, subType = STOCK_CONTROL_ALLOCATE_SUB_TYPE, bizNo = "{{#reqVO.cardId}}",
             success = STOCK_CONTROL_ALLOCATE_SUCCESS)
+    @Transactional(rollbackFor = Exception.class)
     public void allocate(StockControlAllocateReqVO reqVO) {
-        // 查询源场站库存记录
-        StockControlDO source = stockControlMapper.selectByCardIdAndStationId(reqVO.getCardId(), reqVO.getSourceStationId());
-        if (source == null) {
-            throw exception(STOCK_CONTROL_NOT_EXISTS);
+        CardConfigDO cardConfig = cardConfigService.get(reqVO.getCardId());
+        if (cardConfig == null) {
+            throw exception(CARD_CONFIG_NOT_EXISTS);
         }
-        if (source.getCurrentStock() < reqVO.getNum()) {
+        Set<String> cardStationIds = new HashSet<>();
+        if (StrUtil.isNotBlank(cardConfig.getStationId())) {
+            cardStationIds = Arrays.stream(cardConfig.getStationId().split(","))
+                    .map(String::trim)
+                    .filter(StrUtil::isNotBlank)
+                    .collect(Collectors.toSet());
+        }
+        if (cardStationIds.contains(reqVO.getSourceStationId().trim())) {
+            throw exception(STOCK_ALLOCATE_SOURCE_IN_RANGE);
+        }
+        if (!cardStationIds.contains(reqVO.getTargetStationId().trim())) {
+            throw exception(STOCK_ALLOCATE_TARGET_NOT_IN_RANGE);
+        }
+        StockControlDO donor = stockControlMapper.selectMaxStockBySourceStationId(reqVO.getSourceStationId());
+        if (donor == null || donor.getCurrentStock() < reqVO.getNum()) {
             throw exception(STOCK_INSUFFICIENT);
         }
-        // 记录操作日志上下文
-        LogRecordContext.putVariable("stockControl", source);
-//        // 查询目标场站库存记录
-//        StockControlDO target = stockControlMapper.selectByCardIdAndStationId(reqVO.getCardId(), reqVO.getTargetStationId());
-//        if (target == null) {
-//            throw exception(STOCK_CONTROL_NOT_EXISTS);
-//        }
-//        // 源场站扣减
-//        source.setCurrentStock(source.getCurrentStock() - reqVO.getNumber());
-//        updateStockStatus(source);
-//        source.setSyncTime(LocalDateTime.now());
-//        stockControlMapper.updateById(source);
-//        // 目标场站增加
-//        target.setCurrentStock(target.getCurrentStock() + reqVO.getNumber());
-//        updateStockStatus(target);
-//        target.setSyncTime(LocalDateTime.now());
-//        stockControlMapper.updateById(target);
+        StockControlDO target = stockControlMapper.selectByCardId(reqVO.getCardId());
+        if (target == null) {
+            throw exception(STOCK_CONTROL_NOT_EXISTS);
+        }
+        donor.setCurrentStock(donor.getCurrentStock() - reqVO.getNum());
+        updateStockStatus(donor);
+        donor.setSyncTime(LocalDateTime.now());
+        stockControlMapper.updateById(donor);
+        target.setCurrentStock(target.getCurrentStock() + reqVO.getNum());
+        updateStockStatus(target);
+        target.setSyncTime(LocalDateTime.now());
+        stockControlMapper.updateById(target);
+        String logMsg = buildAllocateLogMsg(reqVO);
+        appendAllocateLog(donor, logMsg);
+        appendAllocateLog(target, logMsg);
+        LogRecordContext.putVariable("stockControl", target);
     }
 
     @Override
@@ -174,6 +200,54 @@ public class StockControlServiceImpl implements StockControlService {
         } else {
             stockControl.setStatus(StockControlStatusEnum.NORMAL.getValue());
         }
+    }
+
+    private String buildAllocateLogMsg(StockControlAllocateReqVO reqVO) {
+        String sourceName = getStationName(reqVO.getSourceStationId());
+        String targetName = getStationName(reqVO.getTargetStationId());
+        return sourceName + "调配" + reqVO.getNum() + "到场站" + targetName;
+    }
+
+    private String getStationName(String stationId) {
+        try {
+            Long id = Long.valueOf(stationId.trim());
+            StationInfoRespDTO station = stationInfoApi.getStation(id).getCheckedData();
+            return station != null ? station.getName() : stationId;
+        } catch (Exception e) {
+            return stationId;
+        }
+    }
+
+    private void appendAllocateLog(StockControlDO record, String logMsg) {
+        List<String> logs = new ArrayList<>();
+        if (StrUtil.isNotBlank(record.getReserve1())) {
+            try {
+                List<String> existing = JsonUtils.parseArray(record.getReserve1(), String.class);
+                if (existing != null) {
+                    logs = existing;
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        logs.add(logMsg);
+        record.setReserve1(JsonUtils.toJsonString(logs));
+        stockControlMapper.updateById(record);
+    }
+
+    private void appendReplenishLog(StockControlDO record, String logMsg) {
+        List<String> logs = new ArrayList<>();
+        if (StrUtil.isNotBlank(record.getReserve2())) {
+            try {
+                List<String> existing = JsonUtils.parseArray(record.getReserve2(), String.class);
+                if (existing != null) {
+                    logs = existing;
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        logs.add(logMsg);
+        record.setReserve2(JsonUtils.toJsonString(logs));
+        stockControlMapper.updateById(record);
     }
 
 }
