@@ -107,6 +107,13 @@ public class InParkStatusServiceImpl implements InParkStatusService {
 
     @Override
     public PageResult<InParkStatusRespVO> getInParkStatusPage(InParkStatusPageReqVO pageReqVO) {
+        // 兼容前端传 true/false
+        String overTime = pageReqVO.getOverTime();
+        if ("true".equals(overTime)) {
+            pageReqVO.setOverTime("是");
+        } else if ("false".equals(overTime)) {
+            pageReqVO.setOverTime("否");
+        }
         Page<InParkStatusRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
         IPage<InParkStatusRespVO> pageResult = parkStatusMapper.selectPageJoinSpaceStation(page, pageReqVO);
         return new PageResult<>(pageResult.getRecords(), pageResult.getTotal());
