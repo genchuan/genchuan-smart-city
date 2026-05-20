@@ -26,6 +26,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
+import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId;
 import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.TASK_NOT_EXISTS;
 import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.TASK_STATUS_INVALID;
 import static cn.iocoder.yudao.module.vehiclepass.constants.inspectmgmt.CheckTaskConstants.*;
@@ -145,9 +146,13 @@ public class CheckTaskServiceImpl implements CheckTaskService {
         if (!STATUS_PENDING_CLAIM.equals(task.getStatus())) {
             throw exception(TASK_STATUS_INVALID);
         }
+        // 获取当前登录用户作为执行人
+        Long loginUserId = getLoginUserId();
         CheckTaskDO updateObj = new CheckTaskDO();
         updateObj.setId(id);
+        updateObj.setExecuteUserId(loginUserId);
         updateObj.setStatus(STATUS_PROCESSING);
+        updateObj.setTaskProgress("进行中");
         taskMapper.updateById(updateObj);
     }
 
