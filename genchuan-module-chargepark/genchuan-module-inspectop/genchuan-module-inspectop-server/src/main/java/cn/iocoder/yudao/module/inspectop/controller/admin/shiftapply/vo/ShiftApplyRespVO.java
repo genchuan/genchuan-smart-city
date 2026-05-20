@@ -17,7 +17,7 @@ public class ShiftApplyRespVO {
     private Long id;
 
     @Schema(description = "申请人ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("申请人ID")
+//    @ExcelProperty("申请人ID")
     private Long applyUserId;
 
     @Schema(description = "申请人姓名")
@@ -25,7 +25,7 @@ public class ShiftApplyRespVO {
     private String applyUserName;
 
     @Schema(description = "换班对象ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("换班对象ID")
+//    @ExcelProperty("换班对象ID")
     private Long targetUserId;
 
     @Schema(description = "换班对象姓名")
@@ -45,7 +45,7 @@ public class ShiftApplyRespVO {
     private String status;
 
     @Schema(description = "审核人ID")
-    @ExcelProperty("审核人ID")
+//    @ExcelProperty("审核人ID")
     private Long auditUserId;
 
     @Schema(description = "审核时间")
@@ -56,12 +56,12 @@ public class ShiftApplyRespVO {
     @ExcelProperty("生效时间")
     private LocalDateTime effectTime;
 
-    @Schema(description = "备用字段1")
-    @ExcelProperty("备用字段1")
+    @Schema(description = "审核意见")
+    @ExcelProperty("审核意见")
     private String reserve1;
 
     @Schema(description = "备用字段2")
-    @ExcelProperty("备用字段2")
+//    @ExcelProperty("备用字段2")
     private String reserve2;
 
     @Schema(description = "创建者")

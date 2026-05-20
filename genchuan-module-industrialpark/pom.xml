@@ -1,0 +1,37 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>genchuan-module-industrialpark</artifactId>
+    <packaging>pom</packaging>
+    <parent>
+        <groupId>cn.iocoder.cloud</groupId>
+        <artifactId>yudao</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+
+
+    <name>genchuan-module-industrialpark</name>
+    <url>http://maven.apache.org</url>
+    <modules>
+        <module>genchuan-module-enterprisesvc</module>
+        <module>genchuan-module-enterprisesvc/genchuan-module-enterprisesvc-api</module>
+    </modules>
+
+    <description>
+        智慧园区模块，包含： 综合安防 智能通行 能耗管理 物业服务 企业服务 招商运营等功能。
+    </description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

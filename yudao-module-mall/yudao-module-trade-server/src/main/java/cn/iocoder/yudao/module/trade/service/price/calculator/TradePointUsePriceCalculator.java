@@ -44,8 +44,35 @@ public class TradePointUsePriceCalculator implements TradePriceCalculator {
             return;
         }
         // 0. 初始化积分
-        MemberUserRespDTO user = memberUserApi.getUser(param.getUserId()).getCheckedData();
-        result.setTotalPoint(user.getPoint()).setUsePoint(0);
+//        MemberUserRespDTO user = memberUserApi.getUser(param.getUserId()).getCheckedData();
+//        result.setTotalPoint(user.getPoint()).setUsePoint(0);
+
+        // 0. 初始化积分
+        Long userId = param.getUserId();
+        if (userId == null) {
+            log.warn("[calculate][用户ID为空，跳过积分计算]");
+            return;
+        }
+
+        // 修复：添加空值检查
+        cn.iocoder.yudao.framework.common.pojo.CommonResult<MemberUserRespDTO> userResult = memberUserApi.getUser(userId);
+        if (userResult == null || !userResult.isSuccess() || userResult.getData() == null) {
+            log.warn("[calculate][获取用户信息失败，userId={}，result={}]", userId, userResult);
+            return;
+        }
+
+        MemberUserRespDTO user = userResult.getData();
+        if (user == null) {
+            log.warn("[calculate][用户({})不存在，跳过积分计算]", userId);
+            return;
+        }
+
+        // 设置总积分
+        Integer userPoint = user.getPoint();
+        if (userPoint == null) {
+            userPoint = 0;
+        }
+        result.setTotalPoint(userPoint).setUsePoint(0);
 
         // 1.1 校验是否使用积分
         if (!BooleanUtil.isTrue(param.getPointStatus())) {

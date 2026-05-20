@@ -206,6 +206,11 @@ public class InspectTaskServiceImpl implements InspectTaskService {
 
         // 4. 更新进度
         LambdaUpdateWrapper<InspectTaskDO> updateWrapper = new LambdaUpdateWrapper<>();
+
+        if (progress == 100 ){
+            updateWrapper.set(InspectTaskDO::getStatus,"4");
+        }
+
         updateWrapper
                 .set(InspectTaskDO::getProgress, progress)
                 .eq(InspectTaskDO::getId, id);

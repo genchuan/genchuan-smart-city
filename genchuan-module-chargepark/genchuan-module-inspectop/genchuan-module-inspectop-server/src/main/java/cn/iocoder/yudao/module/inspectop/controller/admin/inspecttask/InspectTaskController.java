@@ -76,8 +76,16 @@ public class InspectTaskController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('inspectop:inspect-task:query')")
     public CommonResult<InspectTaskRespVO> getInspectTask(@RequestParam("id") Long id) {
+        // 1. 获取DO对象
         InspectTaskDO inspectTask = inspectTaskService.getInspectTask(id);
-        return success(BeanUtils.toBean(inspectTask, InspectTaskRespVO.class));
+
+        // 2. 转换为VO对象
+        InspectTaskRespVO vo = BeanUtils.toBean(inspectTask, InspectTaskRespVO.class);
+
+        // 3. 【新增】转换状态字典值为中文
+        vo.setStatus(convertTaskStatus(vo.getStatus()));
+
+        return success(vo);
     }
 
     @GetMapping("/page")
@@ -150,12 +158,56 @@ public class InspectTaskController {
     @PreAuthorize("@ss.hasPermission('inspectop:inspect-task:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportInspectTaskExcel(@Valid InspectTaskPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                       HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+
+        // 获取分页结果，直接得到VO列表
         List<InspectTaskRespVO> list = inspectTaskService.getInspectTaskPage(pageReqVO).getList();
+
+        // 【新增】对VO列表中的字典值进行转换（数字 -> 中文）
+        convertTaskDictValues(list);
+
         // 导出 Excel
-        ExcelUtils.write(response, "巡检任务.xls", "数据", InspectTaskRespVO.class,
-                        BeanUtils.toBean(list, InspectTaskRespVO.class));
+        ExcelUtils.write(response, "巡检任务.xls", "数据", InspectTaskRespVO.class, list);
     }
 
+    /**
+     * 【新增】转换任务字典值为中文显示
+     * 此方法会修改传入的 voList 中每个对象的 status 字段。
+     * @param voList 巡检任务响应VO列表
+     */
+    private void convertTaskDictValues(List<InspectTaskRespVO> voList) {
+        if (voList == null || voList.isEmpty()) {
+            return;
+        }
+        for (InspectTaskRespVO vo : voList) {
+            // 转换任务状态
+            vo.setStatus(convertTaskStatus(vo.getStatus()));
+        }
+    }
+
+    /**
+     * 【新增】转换巡检任务状态字典值
+     * 根据您提供的映射：1-待派发，2-待认领，3-处理中，4-已完成
+     * @param statusCode 状态编码（例如 "1", "2", "3", "4"）
+     * @return 对应的中文状态描述
+     */
+    private String convertTaskStatus(String statusCode) {
+        if (statusCode == null) {
+            return "";
+        }
+        switch (statusCode.trim()) {
+            case "1":
+                return "待派发";
+            case "2":
+                return "待认领";
+            case "3":
+                return "处理中";
+            case "4":
+                return "已完成";
+            default:
+                // 如果遇到未知编码，返回原编码以便排查
+                return statusCode;
+        }
+    }
 }

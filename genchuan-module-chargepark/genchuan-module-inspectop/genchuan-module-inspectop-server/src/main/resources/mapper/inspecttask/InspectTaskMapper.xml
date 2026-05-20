@@ -65,7 +65,9 @@
             <if test="reqVO.planId != null">
                 AND it.plan_id = #{reqVO.planId}
             </if>
-
+            <if test="reqVO.planTypeName != null and reqVO.planTypeName != ''">
+                AND ip.type LIKE CONCAT('%', #{reqVO.planTypeName}, '%')
+            </if>
             <!-- 人员ID -->
             <if test="reqVO.userId != null">
                 AND it.user_id = #{reqVO.userId}
@@ -81,9 +83,18 @@
                 AND it.claim_time BETWEEN #{reqVO.claimTime[0]} AND #{reqVO.claimTime[1]}
             </if>
 
-            <!-- 任务状态 -->
+            <!-- 【修改】任务状态过滤（支持状态组） -->
             <if test="reqVO.status != null and reqVO.status != ''">
-                AND it.status = #{reqVO.status}
+                <choose>
+                    <!-- 状态'3'表示过滤所有未完成状态（1,2,3） -->
+                    <when test="reqVO.status == '3'.toString()">
+                        AND it.status IN ('1', '2', '3')
+                    </when>
+                    <!-- 其他状态进行精确匹配 -->
+                    <otherwise>
+                        AND it.status = #{reqVO.status}
+                    </otherwise>
+                </choose>
             </if>
 
             <!-- 执行进度 -->
@@ -126,6 +137,11 @@
                 AND it.update_time BETWEEN #{reqVO.updateTime[0]} AND #{reqVO.updateTime[1]}
             </if>
 
+            <!-- 新增：按月份过滤条件 -->
+            <if test="reqVO.updateMonth != null and reqVO.updateMonth != ''">
+                AND DATE_FORMAT(it.update_time, '%m') = #{reqVO.updateMonth}
+            </if>
+
             <!-- 只查询未删除的记录 -->
             AND it.deleted = 0
         </where>
@@ -153,8 +169,8 @@
         DATE_FORMAT(it.create_time, '%m') AS time,
         AVG(
         CASE
-        WHEN it.status = '3' AND it.claim_time IS NOT NULL AND it.update_time IS NOT NULL
-        THEN TIMESTAMPDIFF(MINUTE, it.claim_time, it.update_time)
+        WHEN it.status = '3' AND it.claim_time IS NOT NULL AND it.create_time IS NOT NULL
+        THEN TIMESTAMPDIFF(MINUTE, it.claim_time, it.create_time)
         ELSE 0
         END
         ) AS avgHandleTime

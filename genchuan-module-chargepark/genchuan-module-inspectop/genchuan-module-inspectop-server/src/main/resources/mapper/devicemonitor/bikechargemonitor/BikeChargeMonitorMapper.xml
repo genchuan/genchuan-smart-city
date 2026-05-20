@@ -57,7 +57,7 @@
         <where>
             <!-- 设备ID -->
             <if test="reqVO.deviceId != null">
-                AND ccm.device_id LIKE CONCAT('%', #{reqVO.deviceId}, '%')
+                AND bcm.device_id LIKE CONCAT('%', #{reqVO.deviceId}, '%')
             </if>
 
             <!-- 场站ID -->

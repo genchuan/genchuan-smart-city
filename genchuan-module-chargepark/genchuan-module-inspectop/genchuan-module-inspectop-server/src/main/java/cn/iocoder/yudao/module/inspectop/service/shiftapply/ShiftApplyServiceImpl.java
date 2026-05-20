@@ -115,10 +115,14 @@ public class ShiftApplyServiceImpl implements ShiftApplyService {
         return shiftApply; // 返回查询到的对象
     }
 
-    // 以下方法不需要操作日志（查询方法）
     @Override
-    public ShiftApplyDO getShiftApply(Long id) {
-        return shiftApplyMapper.selectById(id);
+    public ShiftApplyRespVO getShiftApply(Long id) {
+        // 调用新的关联查询方法
+        ShiftApplyRespVO shiftApply = shiftApplyMapper.selectByIdWithJoin(id);
+        if (shiftApply == null) {
+            throw exception(SHIFT_APPLY_NOT_EXISTS);
+        }
+        return shiftApply;
     }
 
     // 在 ShiftApplyServiceImpl.java 中修改getShiftApplyPage方法
@@ -355,6 +359,9 @@ public class ShiftApplyServiceImpl implements ShiftApplyService {
 
         // 8. 执行更新
         int updateCount = shiftApplyMapper.updateById(updateObj);
+
+        // === 【新增】 8.5. 审核通过后，同步更新原排班记录 ===
+        updateOriginalSchedule(shiftApply);
 
         // 9. 记录操作日志
         log.info("换班申请已通过，申请ID：{}，审核人：{}，备注：{}",
