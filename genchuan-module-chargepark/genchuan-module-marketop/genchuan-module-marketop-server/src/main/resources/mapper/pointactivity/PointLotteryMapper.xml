@@ -78,4 +78,25 @@
         WHERE pl.id = #{id} AND pl.deleted = 0
     </select>
 
+    <select id="selectPageDrillJoinUserCount" resultType="cn.iocoder.yudao.module.chargepark.marketop.controller.admin.decisionanalysis.drill.vo.CycleReportDrillJoinUserCountRespVO">
+        SELECT
+            pl.user_id AS userId,
+            u.nickname AS userName,
+            pl.lottery_time AS joinTime,
+            pm.activity_id AS joinActivityId,
+            pa.name AS joinActivityName
+        FROM point_lottery pl
+        LEFT JOIN user_info u ON pl.user_id = u.id AND u.deleted = 0
+        LEFT JOIN prize_mgmt pm ON pl.prize_id = pm.id AND pm.deleted = 0
+        LEFT JOIN point_activity pa ON pm.activity_id = pa.id AND pa.deleted = 0
+        WHERE pl.deleted = 0
+        <if test="statStartTime != null">
+            AND pl.lottery_time &gt;= #{statStartTime}
+        </if>
+        <if test="statEndTime != null">
+            AND pl.lottery_time &lt;= #{statEndTime}
+        </if>
+        ORDER BY pl.id DESC
+    </select>
+
 </mapper>

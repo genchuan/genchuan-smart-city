@@ -4,6 +4,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointlottery.vo.PointLotteryPageReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.decisionanalysis.drill.vo.CycleReportDrillJoinUserCountRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointlottery.vo.PointLotteryRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointLotteryDO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -59,5 +60,9 @@ public interface PointLotteryMapper extends BaseMapperX<PointLotteryDO> {
     IPage<PointLotteryRespVO> selectPageJoin(Page<?> page, @Param("reqVO") PointLotteryPageReqVO reqVO);
 
     PointLotteryRespVO selectByIdJoin(@Param("id") Long id);
+
+    IPage<CycleReportDrillJoinUserCountRespVO> selectPageDrillJoinUserCount(Page<?> page,
+                                                                            @Param("statStartTime") LocalDateTime statStartTime,
+                                                                            @Param("statEndTime") LocalDateTime statEndTime);
 
 }

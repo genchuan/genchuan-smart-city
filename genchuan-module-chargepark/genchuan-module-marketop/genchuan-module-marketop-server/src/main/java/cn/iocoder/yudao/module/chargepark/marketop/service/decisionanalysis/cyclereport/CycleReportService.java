@@ -24,4 +24,6 @@ public interface CycleReportService {
 
     List<CycleReportDO> getListByIds(List<Long> ids);
 
+    void incrementExportCount(List<Long> ids);
+
 }

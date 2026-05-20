@@ -203,12 +203,32 @@ public class CycleReportServiceImpl implements CycleReportService {
                         .leIfPresent(CycleReportDO::getStatEndTime, reqVO.getStatEndTime())
                         .eqIfPresent(CycleReportDO::getGenerateStatus, reqVO.getGenerateStatus())
                         .eqIfPresent(CycleReportDO::getTenantId, reqVO.getTenantId())
+                        .eqIfPresent(CycleReportDO::getActivityCount, reqVO.getActivityCount())
+                        .eqIfPresent(CycleReportDO::getJoinUserCount, reqVO.getJoinUserCount())
+                        .eqIfPresent(CycleReportDO::getLotteryCount, reqVO.getLotteryCount())
+                        .eqIfPresent(CycleReportDO::getWinningRate, reqVO.getWinningRate())
+                        .eqIfPresent(CycleReportDO::getCouponSendCount, reqVO.getCouponSendCount())
+                        .eqIfPresent(CycleReportDO::getCouponVerifyRate, reqVO.getCouponVerifyRate())
+                        .eqIfPresent(CycleReportDO::getCardOrderCount, reqVO.getCardOrderCount())
+                        .eqIfPresent(CycleReportDO::getRevenue, reqVO.getRevenue())
+                        .eqIfPresent(CycleReportDO::getExchangeCount, reqVO.getExchangeCount())
+                        .eqIfPresent(CycleReportDO::getTotalStock, reqVO.getTotalStock())
+                        .eqIfPresent(CycleReportDO::getWarnStockCount, reqVO.getWarnStockCount())
+                        .likeIfPresent(CycleReportDO::getFilterRule, reqVO.getFilterRule())
                         .orderByDesc(CycleReportDO::getId));
     }
 
     @Override
     public List<CycleReportDO> getListByIds(List<Long> ids) {
         return cycleReportMapper.selectBatchIds(ids);
+    }
+
+    @Override
+    public void incrementExportCount(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+        cycleReportMapper.incrementExportCount(ids);
     }
 
     private CycleReportDO validateExists(Long id) {

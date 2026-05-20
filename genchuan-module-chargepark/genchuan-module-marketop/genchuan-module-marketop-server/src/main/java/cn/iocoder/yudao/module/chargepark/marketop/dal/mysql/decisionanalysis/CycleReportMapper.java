@@ -8,6 +8,7 @@ import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.decisionanalys
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -20,10 +21,23 @@ public interface CycleReportMapper extends BaseMapperX<CycleReportDO> {
     default PageResult<CycleReportDO> selectPage(CycleReportPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<CycleReportDO>()
                 .eqIfPresent(CycleReportDO::getReportCycle, reqVO.getReportCycle())
-                .geIfPresent(CycleReportDO::getStatStartTime, reqVO.getStatStartTime())
-                .leIfPresent(CycleReportDO::getStatEndTime, reqVO.getStatEndTime())
+                .betweenIfPresent(CycleReportDO::getStatStartTime, reqVO.getStatStartTime())
+                .betweenIfPresent(CycleReportDO::getStatEndTime, reqVO.getStatEndTime())
                 .eqIfPresent(CycleReportDO::getGenerateStatus, reqVO.getGenerateStatus())
                 .eqIfPresent(CycleReportDO::getTenantId, reqVO.getTenantId())
+                .eqIfPresent(CycleReportDO::getActivityCount, reqVO.getActivityCount())
+                .eqIfPresent(CycleReportDO::getJoinUserCount, reqVO.getJoinUserCount())
+                .eqIfPresent(CycleReportDO::getLotteryCount, reqVO.getLotteryCount())
+                .eqIfPresent(CycleReportDO::getWinningRate, reqVO.getWinningRate())
+                .eqIfPresent(CycleReportDO::getCouponSendCount, reqVO.getCouponSendCount())
+                .eqIfPresent(CycleReportDO::getCouponVerifyRate, reqVO.getCouponVerifyRate())
+                .eqIfPresent(CycleReportDO::getCardOrderCount, reqVO.getCardOrderCount())
+                .eqIfPresent(CycleReportDO::getRevenue, reqVO.getRevenue())
+                .eqIfPresent(CycleReportDO::getExchangeCount, reqVO.getExchangeCount())
+                .eqIfPresent(CycleReportDO::getTotalStock, reqVO.getTotalStock())
+                .eqIfPresent(CycleReportDO::getWarnStockCount, reqVO.getWarnStockCount())
+                .likeIfPresent(CycleReportDO::getFilterRule, reqVO.getFilterRule())
+                .betweenIfPresent(CycleReportDO::getCreateTime, reqVO.getGenerateTime())
                 .orderByDesc(CycleReportDO::getId));
     }
 
@@ -199,5 +213,13 @@ public interface CycleReportMapper extends BaseMapperX<CycleReportDO> {
 
     @Select("SELECT type, COUNT(*) AS count FROM activity_config WHERE deleted = 0 GROUP BY type")
     List<java.util.Map<String, Object>> selectActivityConfigTypeCountForPie();
+
+    @Update("<script>" +
+            "UPDATE marketop_cycle_report SET export_count = IFNULL(export_count, 0) + 1 WHERE id IN " +
+            "<foreach collection='ids' item='id' open='(' separator=',' close=')'>" +
+            "#{id}" +
+            "</foreach>" +
+            "</script>")
+    int incrementExportCount(@Param("ids") List<Long> ids);
 
 }

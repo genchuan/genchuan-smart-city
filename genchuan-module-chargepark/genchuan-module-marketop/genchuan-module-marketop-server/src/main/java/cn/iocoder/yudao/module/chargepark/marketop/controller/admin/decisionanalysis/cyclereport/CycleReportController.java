@@ -92,6 +92,7 @@ public class CycleReportController {
         injectUserNames(voList);
         List<CycleReportExportExcelVO> exportList = BeanUtils.toBean(voList, CycleReportExportExcelVO.class);
         ExcelUtils.write(response, "周期报表(批量).xlsx", "报表数据", CycleReportExportExcelVO.class, exportList);
+        cycleReportService.incrementExportCount(ids);
     }
 
     @GetMapping("/chart")
