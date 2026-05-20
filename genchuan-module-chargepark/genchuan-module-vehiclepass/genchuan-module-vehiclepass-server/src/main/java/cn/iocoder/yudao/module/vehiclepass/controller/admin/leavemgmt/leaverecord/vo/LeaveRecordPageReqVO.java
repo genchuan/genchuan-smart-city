@@ -18,6 +18,9 @@ public class LeaveRecordPageReqVO extends PageParam {
     @Schema(description = "离场时间，时间戳格式", example = "[\"1775011986\",\"1775098386\"]")
     private String[] leaveTime;
 
+    @Schema(description = "离场小时筛选，格式如 08:00、14:30")
+    private String leaveTimeHour;
+
     @Schema(description = "停车时长，单位：分钟，自动计算")
     private Integer parkDuration;
 
