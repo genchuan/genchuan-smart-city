@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.mentalmgmt;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -9,7 +10,9 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.mentalmgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.mentalmgmt.MentalMgmtDO;
+import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
 import cn.iocoder.yudao.module.studentmgmt.service.mentalmgmt.MentalMgmtService;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,7 +38,8 @@ public class MentalMgmtController {
 
     @Resource
     private MentalMgmtService mentalMgmtService;
-
+    @Resource
+    private DictDataApi dictDataApi;
     @PostMapping("/create")
     @Operation(summary = "创建心理管理")
     @PreAuthorize("@ss.hasPermission('studentmgmt:mental-mgmt:create')")
@@ -94,6 +98,42 @@ public class MentalMgmtController {
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<MentalMgmtDO> list = mentalMgmtService.getMentalMgmtPage(pageReqVO).getList();
+        CommonResult<List<DictDataRespDTO>> mentalStatusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.MENTAL_MGMT_MENTAL_STATUS.getType());
+        CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.MENTAL_MGMT_STATUS.getType());
+        CommonResult<List<DictDataRespDTO>> riskLevelDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.MENTAL_MGMT_RISK_LEVEL.getType());
+        list = list.stream().map(item -> {
+            String mentalStatus = item.getMentalStatus();
+            if (mentalStatusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : mentalStatusDictDataList.getData()) {
+                    if (dictData.getValue().equals(mentalStatus)) {
+                        mentalStatus = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setMentalStatus(mentalStatus);
+            String riskLevel = item.getRiskLevel();
+            if (riskLevelDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : riskLevelDictDataList.getData()) {
+                    if (dictData.getValue().equals(riskLevel)) {
+                        riskLevel = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setRiskLevel(riskLevel);
+            String status = item.getStatus();
+            if (statusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : statusDictDataList.getData()) {
+                    if (dictData.getValue().equals(status)) {
+                        status = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setStatus(status);
+            return item;
+        }).toList();
         // 导出 Excel
         ExcelUtils.write(response, "心理管理.xls", "数据", MentalMgmtRespVO.class,
                         BeanUtils.toBean(list, MentalMgmtRespVO.class));

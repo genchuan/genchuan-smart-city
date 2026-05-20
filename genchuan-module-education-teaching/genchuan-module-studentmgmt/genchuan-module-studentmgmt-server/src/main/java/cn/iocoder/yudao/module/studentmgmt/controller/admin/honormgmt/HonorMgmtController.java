@@ -1,38 +1,35 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.honormgmt;
 
-import cn.iocoder.yudao.framework.security.core.LoginUser;
-import com.mzt.logapi.starter.annotation.LogRecord;
-import org.springframework.web.bind.annotation.*;
-import jakarta.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.security.access.prepost.PreAuthorize;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Operation;
-
-import jakarta.validation.*;
-import jakarta.servlet.http.*;
-import java.util.*;
-import java.io.IOException;
-
+import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
-import static cn.iocoder.yudao.framework.common.pojo.CommonResult.error;
-import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
-
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-
-import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
-import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
-import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUser;
-import static cn.iocoder.yudao.module.studentmgmt.enums.LogRecordConstants.*;
-
+import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.honormgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.honormgmt.HonorMgmtDO;
+import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
 import cn.iocoder.yudao.module.studentmgmt.service.honormgmt.HonorMgmtService;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.List;
+
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.error;
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
+import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUser;
 
 @Tag(name = "学生管理后台 - 荣誉管理")
 @RestController
@@ -42,7 +39,8 @@ public class HonorMgmtController {
 
     @Resource
     private HonorMgmtService honorMgmtService;
-
+    @Resource
+    private DictDataApi dictDataApi;
     @PostMapping("/create")
     @Operation(summary = "创建荣誉管理")
     @PreAuthorize("@ss.hasPermission('studentmgmt:honor-mgmt:create')")
@@ -144,6 +142,31 @@ public class HonorMgmtController {
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<HonorMgmtDO> list = honorMgmtService.getHonorMgmtPage(pageReqVO).getList();
+        CommonResult<List<DictDataRespDTO>> honorTypeDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.HONOR_MGMT_HONOR_TYPE.getType());
+        CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.HONOR_MGMT_STATUS.getType());
+        list = list.stream().map(item -> {
+            String honorType = item.getHonorType();
+            if (honorTypeDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : honorTypeDictDataList.getData()) {
+                    if (dictData.getValue().equals(honorType)) {
+                        honorType = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setHonorType(honorType);
+            String status = item.getStatus();
+            if (statusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : statusDictDataList.getData()) {
+                    if (dictData.getValue().equals(status)) {
+                        status = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setStatus(status);
+            return item;
+        }).toList();
         // 导出 Excel
         ExcelUtils.write(response, "荣誉管理.xls", "数据", HonorMgmtRespVO.class,
                         BeanUtils.toBean(list, HonorMgmtRespVO.class));

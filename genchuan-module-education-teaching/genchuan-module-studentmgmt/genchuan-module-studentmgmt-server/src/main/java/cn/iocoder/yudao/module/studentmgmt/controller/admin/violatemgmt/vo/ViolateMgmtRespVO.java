@@ -21,11 +21,11 @@ public class ViolateMgmtRespVO {
     private Long studentId;
 
     @Schema(description = "违纪类型：仪容仪表/行为违规/其他", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("违纪类型：仪容仪表/行为违规/其他")
+    @ExcelProperty("违纪类型")
     private String violateType;
 
     @Schema(description = "处分类型：警告/记过/留校察看/开除", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("处分类型：警告/记过/留校察看/开除")
+    @ExcelProperty("处分类型")
     private String punishType;
 
     @Schema(description = "违纪时间", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -53,7 +53,7 @@ public class ViolateMgmtRespVO {
     private LocalDateTime warnTime;
 
     @Schema(description = "状态：待审批/已执行/已预警", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("状态：待审批/已执行/已预警")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "你说的对")
@@ -72,4 +72,4 @@ public class ViolateMgmtRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

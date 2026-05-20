@@ -1,33 +1,32 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.newpush;
 
-import org.springframework.web.bind.annotation.*;
-import jakarta.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.security.access.prepost.PreAuthorize;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Operation;
-
-import jakarta.validation.constraints.*;
-import jakarta.validation.*;
-import jakarta.servlet.http.*;
-import java.util.*;
-import java.io.IOException;
-
+import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
-
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-
-import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
-import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
-
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.newpush.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.newpush.NewPushDO;
+import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
 import cn.iocoder.yudao.module.studentmgmt.service.newpush.NewPushService;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.List;
+
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 @Tag(name = "管理后台 - 迎新推送")
 @RestController
@@ -37,6 +36,8 @@ public class NewPushController {
 
     @Resource
     private NewPushService newPushService;
+    @Resource
+    private DictDataApi dictDataApi;
 
     @PostMapping("/create")
     @Operation(summary = "创建迎新推送")
@@ -96,6 +97,21 @@ public class NewPushController {
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<NewPushDO> list = newPushService.getNewPushPage(pageReqVO).getList();
+        CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.NEW_PUSH_STATUS.getType());
+        list = list.stream().map(item -> {
+
+            String status = item.getStatus();
+            if (statusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : statusDictDataList.getData()) {
+                    if (dictData.getValue().equals(status)) {
+                        status = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setStatus(status);
+            return item;
+        }).toList();
         // 导出 Excel
         ExcelUtils.write(response, "迎新推送.xls", "数据", NewPushRespVO.class,
                         BeanUtils.toBean(list, NewPushRespVO.class));

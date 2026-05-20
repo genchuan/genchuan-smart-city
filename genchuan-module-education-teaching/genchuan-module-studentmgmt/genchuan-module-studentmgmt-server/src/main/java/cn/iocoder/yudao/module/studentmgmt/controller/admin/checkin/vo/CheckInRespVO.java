@@ -46,11 +46,11 @@ public class CheckInRespVO {
     private LocalDateTime accountCreateTime;
 
     @Schema(description = "账号状态：未创建/已创建", example = "2")
-    @ExcelProperty("账号状态：未创建/已创建")
+    @ExcelProperty("账号状态")
     private String accountStatus;
 
     @Schema(description = "状态：待确认/待审核/已报到", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("状态：待确认/待审核/已报到")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "你猜")

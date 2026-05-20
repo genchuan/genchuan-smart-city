@@ -50,7 +50,7 @@ public class DormCheckRespVO {
     private BigDecimal inRate;
 
     @Schema(description = "状态：正常/异常", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("状态：正常/异常")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "你猜")
@@ -69,4 +69,4 @@ public class DormCheckRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

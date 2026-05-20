@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -8,7 +9,9 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.assessmgmt.AssessMgmtDO;
+import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
 import cn.iocoder.yudao.module.studentmgmt.service.assessmgmt.AssessMgmtService;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,7 +36,8 @@ public class AssessMgmtController {
 
     @Resource
     private AssessMgmtService assessMgmtService;
-
+    @Resource
+    private DictDataApi dictDataApi;
     @PostMapping("/create")
     @Operation(summary = "创建考评管理")
     @PreAuthorize("@ss.hasPermission('studentmgmt:assess-mgmt:create')")
@@ -92,6 +96,42 @@ public class AssessMgmtController {
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<AssessMgmtDO> list = assessMgmtService.getAssessMgmtPage(pageReqVO).getList();
+        CommonResult<List<DictDataRespDTO>> assessTypeDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.ASSESS_MGMT_ASSESS_TYPE.getType());
+        CommonResult<List<DictDataRespDTO>> cycleDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.ASSESS_MGMT_CYCLE.getType());
+        CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.ASSESS_MGMT_STATUS.getType());
+        list = list.stream().map(item -> {
+            String assessType = item.getAssessType();
+            if (assessTypeDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : assessTypeDictDataList.getData()) {
+                    if (dictData.getValue().equals(assessType)) {
+                        assessType = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setAssessType(assessType);
+            String status = item.getStatus();
+            if (statusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : statusDictDataList.getData()) {
+                    if (dictData.getValue().equals(status)) {
+                        status = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setStatus(status);
+            String cycle = item.getCycle();
+            if (cycleDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : cycleDictDataList.getData()) {
+                    if (dictData.getValue().equals(cycle)) {
+                        cycle = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setCycle(cycle);
+            return item;
+        }).toList();
         // 导出 Excel
         ExcelUtils.write(response, "考评管理.xls", "数据", AssessMgmtRespVO.class,
                         BeanUtils.toBean(list, AssessMgmtRespVO.class));

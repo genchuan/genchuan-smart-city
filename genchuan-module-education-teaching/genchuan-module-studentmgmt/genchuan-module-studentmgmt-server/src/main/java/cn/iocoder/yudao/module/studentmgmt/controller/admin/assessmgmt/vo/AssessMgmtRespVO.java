@@ -22,11 +22,11 @@ public class AssessMgmtRespVO {
     private String className;
 
     @Schema(description = "考评类型：教室卫生/早操/文明班级/黑板报", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("考评类型：教室卫生/早操/文明班级/黑板报")
+    @ExcelProperty("考评类型")
     private String assessType;
 
     @Schema(description = "统计周期：周/月/学期", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("统计周期：周/月/学期")
+    @ExcelProperty("统计周期")
     private String cycle;
 
     @Schema(description = "考评得分", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -46,7 +46,7 @@ public class AssessMgmtRespVO {
     private LocalDateTime publishTime;
 
     @Schema(description = "状态：未发布/已发布", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("状态：未发布/已发布")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "你猜")

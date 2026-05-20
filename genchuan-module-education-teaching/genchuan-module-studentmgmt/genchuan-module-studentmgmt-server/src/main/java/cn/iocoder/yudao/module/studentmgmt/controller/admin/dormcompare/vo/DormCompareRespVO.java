@@ -26,7 +26,7 @@ public class DormCompareRespVO {
     private String dormNum;
 
     @Schema(description = "评比周期：周/月/学期", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("评比周期：周/月/学期")
+    @ExcelProperty("评比周期")
     private String cycle;
 
     @Schema(description = "得分", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -50,7 +50,7 @@ public class DormCompareRespVO {
     private LocalDateTime pushTime;
 
     @Schema(description = "状态：打分中/已汇总", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("状态：打分中/已汇总")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "随便")

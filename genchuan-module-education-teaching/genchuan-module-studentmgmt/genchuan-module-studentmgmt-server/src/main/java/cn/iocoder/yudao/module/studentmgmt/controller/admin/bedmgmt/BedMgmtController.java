@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.bedmgmt;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -8,7 +9,9 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.bedmgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.bedmgmt.BedMgmtDO;
+import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
 import cn.iocoder.yudao.module.studentmgmt.service.bedmgmt.BedMgmtService;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,6 +36,8 @@ public class BedMgmtController {
 
     @Resource
     private BedMgmtService bedMgmtService;
+    @Resource
+    private DictDataApi dictDataApi;
 
     @PostMapping("/create")
     @Operation(summary = "创建床位管理")
@@ -92,6 +97,21 @@ public class BedMgmtController {
                                    HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<BedMgmtDO> list = bedMgmtService.getBedMgmtPage(pageReqVO).getList();
+        CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.BED_MGMT_STATUS.getType());
+        list = list.stream().map(item -> {
+
+            String status = item.getStatus();
+            if (statusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : statusDictDataList.getData()) {
+                    if (dictData.getValue().equals(status)) {
+                        status = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setStatus(status);
+            return item;
+        }).toList();
         // 导出 Excel
         ExcelUtils.write(response, "床位管理.xls", "数据", BedMgmtRespVO.class,
                 BeanUtils.toBean(list, BedMgmtRespVO.class));

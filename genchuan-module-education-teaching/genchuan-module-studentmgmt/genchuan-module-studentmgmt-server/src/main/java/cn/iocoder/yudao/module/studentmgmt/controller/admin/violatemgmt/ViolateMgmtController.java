@@ -1,34 +1,33 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.violatemgmt;
 
-import org.springframework.web.bind.annotation.*;
-import jakarta.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.security.access.prepost.PreAuthorize;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Operation;
-
-import jakarta.validation.constraints.*;
-import jakarta.validation.*;
-import jakarta.servlet.http.*;
-import java.util.*;
-import java.io.IOException;
-
+import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
-
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-
-import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
-import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
-import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId;
-
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.violatemgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.violatemgmt.ViolateMgmtDO;
+import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
 import cn.iocoder.yudao.module.studentmgmt.service.violatemgmt.ViolateMgmtService;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.List;
+
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
+import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId;
 
 @Tag(name = "学生管理后台 - 违纪管理")
 @RestController
@@ -38,6 +37,8 @@ public class ViolateMgmtController {
 
     @Resource
     private ViolateMgmtService violateMgmtService;
+    @Resource
+    private DictDataApi dictDataApi;
 
     @PostMapping("/create")
     @Operation(summary = "创建违纪管理")
@@ -100,6 +101,42 @@ public class ViolateMgmtController {
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<ViolateMgmtDO> list = violateMgmtService.getViolateMgmtPage(pageReqVO).getList();
+        CommonResult<List<DictDataRespDTO>> typeDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.VIOLATE_MGMT_VIOLATE_TYPE.getType());
+        CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.VIOLATE_MGMT_STATUS.getType());
+        CommonResult<List<DictDataRespDTO>> punishDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.VIOLATE_MGMT_PUNISH_TYPE.getType());
+        list = list.stream().map(item -> {
+            String violateType = item.getViolateType();
+            if (typeDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : typeDictDataList.getData()) {
+                    if (dictData.getValue().equals(violateType)) {
+                        violateType = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setViolateType(violateType);
+            String status = item.getStatus();
+            if (statusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : statusDictDataList.getData()) {
+                    if (dictData.getValue().equals(status)) {
+                        status = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setStatus(status);
+            String punishType = item.getPunishType();
+            if (punishDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : punishDictDataList.getData()) {
+                    if (dictData.getValue().equals(punishType)) {
+                        punishType = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setPunishType(punishType);
+            return item;
+        }).toList();
         // 导出 Excel
         ExcelUtils.write(response, "违纪管理.xls", "数据", ViolateMgmtRespVO.class,
                         BeanUtils.toBean(list, ViolateMgmtRespVO.class));
