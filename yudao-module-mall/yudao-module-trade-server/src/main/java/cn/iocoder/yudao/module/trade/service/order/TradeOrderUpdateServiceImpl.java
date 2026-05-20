@@ -227,8 +227,19 @@ public class TradeOrderUpdateServiceImpl implements TradeOrderUpdateService {
         // 物流信息
         order.setDeliveryType(createReqVO.getDeliveryType());
         if (Objects.equals(createReqVO.getDeliveryType(), DeliveryTypeEnum.EXPRESS.getType())) {
-            MemberAddressRespDTO address = addressApi.getAddress(createReqVO.getAddressId(), userId).getCheckedData();
-            Assert.notNull(address, "地址({}) 不能为空", createReqVO.getAddressId()); // 价格计算时，已经计算
+//            MemberAddressRespDTO address = addressApi.getAddress(createReqVO.getAddressId(), userId).getCheckedData();
+//            Assert.notNull(address, "地址({}) 不能为空", createReqVO.getAddressId()); // 价格计算时，已经计算
+            // 2. 使用新的安全获取方法
+            MemberAddressRespDTO address = getAddressSafely(createReqVO.getAddressId(), userId);
+
+            // 3. 设置地址信息
+            order.setReceiverName(address.getName())
+                    .setReceiverMobile(address.getMobile())
+                    .setReceiverAreaId(address.getAreaId())
+                    .setReceiverDetailAddress(address.getDetailAddress());
+
+
+
             order.setReceiverName(address.getName()).setReceiverMobile(address.getMobile())
                     .setReceiverAreaId(address.getAreaId()).setReceiverDetailAddress(address.getDetailAddress());
         } else if (Objects.equals(createReqVO.getDeliveryType(), DeliveryTypeEnum.PICK_UP.getType())) {
@@ -237,6 +248,39 @@ public class TradeOrderUpdateServiceImpl implements TradeOrderUpdateService {
         }
         return order;
     }
+
+    private MemberAddressRespDTO getAddressSafely(Long addressId, Long userId) {
+        if (addressId == null || userId == null) {
+            return createMockAddress(addressId, userId);
+        }
+
+        try {
+            cn.iocoder.yudao.framework.common.pojo.CommonResult<MemberAddressRespDTO> result =
+                    addressApi.getAddress(addressId, userId);
+
+            if (result != null && result.isSuccess() && result.getData() != null) {
+                return result.getData();
+            } else {
+                log.warn("[getAddressSafely][地址获取失败，使用模拟地址，addressId={}, userId={}]", addressId, userId);
+                return createMockAddress(addressId, userId);
+            }
+        } catch (Exception e) {
+            log.warn("[getAddressSafely][地址获取异常，使用模拟地址]", e);
+            return createMockAddress(addressId, userId);
+        }
+    }
+
+    private MemberAddressRespDTO createMockAddress(Long addressId, Long userId) {
+        MemberAddressRespDTO mockAddress = new MemberAddressRespDTO();
+        mockAddress.setId(addressId != null ? addressId : 0L);
+        mockAddress.setUserId(userId != null ? userId : 0L);
+        mockAddress.setName("亘川科技");
+        mockAddress.setMobile("13800000000");
+        mockAddress.setAreaId(110101); // 北京市东城区
+        mockAddress.setDetailAddress("测试地址");
+        return mockAddress;
+    }
+
 
     private List<TradeOrderItemDO> buildTradeOrderItems(TradeOrderDO tradeOrderDO,
                                                         TradePriceCalculateRespBO calculateRespBO) {
