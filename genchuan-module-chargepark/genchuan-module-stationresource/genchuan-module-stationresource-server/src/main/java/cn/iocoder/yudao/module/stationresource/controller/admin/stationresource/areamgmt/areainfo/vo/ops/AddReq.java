@@ -63,14 +63,14 @@ public class AddReq {
     private String reserve2;
 
     // ==================== 新增字段：前端隐藏，后端自己处理 ====================
-    @Schema(description = "[负责人] 关联芋道用户表system_user", example = "1")
+    @Schema(description = "[负责人ID]", example = "1")
     private Long userId;
 
     @Schema(description = "[绑定时间]", hidden = true)
     @ExcelIgnore
     private LocalDateTime bindTime;
 
-    @Schema(description = "[绑定人ID] 关联芋道用户表system_user", hidden = true)
+    @Schema(description = "[绑定人ID]", hidden = true)
     @ExcelIgnore
     private Long bindUserId;
 

@@ -12,15 +12,15 @@ import cn.idev.excel.annotation.ExcelIgnore;
 @Data
 public class DebtExpandCreateReqVO {
 
-    @Schema(description = "合作场站，关联station_info.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
+    @Schema(description = "合作场站", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
     @NotNull(message = "合作场站不能为空")
     private Long stationId;
 
-    @Schema(description = "合作类型，关联字典debt_expand_type", requiredMode = Schema.RequiredMode.REQUIRED, example = "社会停车场拓场")
+    @Schema(description = "合作类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "社会停车场拓场")
     @NotBlank(message = "合作类型不能为空")
     private String type;
 
-    @Schema(description = "追缴范围，关联字典debt_expand_range", requiredMode = Schema.RequiredMode.REQUIRED, example = "本区域")
+    @Schema(description = "追缴范围", requiredMode = Schema.RequiredMode.REQUIRED, example = "本区域")
     @NotBlank(message = "追缴范围不能为空")
     private String range;
 

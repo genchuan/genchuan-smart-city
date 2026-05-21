@@ -12,7 +12,7 @@ import cn.idev.excel.annotation.ExcelIgnore;
 @Data
 public class TimePermissionCreateReqVO {
 
-    @Schema(description = "所属场站，关联station_info.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @Schema(description = "所属场站ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @NotNull(message = "所属场站不能为空")
     private Long stationId;
 
