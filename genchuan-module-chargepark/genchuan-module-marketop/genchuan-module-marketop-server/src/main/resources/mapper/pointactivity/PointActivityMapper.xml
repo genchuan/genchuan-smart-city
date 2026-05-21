@@ -7,4 +7,11 @@
         SELECT id, name FROM station_info WHERE deleted = 0
     </select>
 
+    <select id="selectStationIdsByNames" resultType="map">
+        SELECT id, name FROM station_info WHERE deleted = 0 AND name IN
+        <foreach collection="names" item="name" open="(" separator="," close=")">
+            #{name}
+        </foreach>
+    </select>
+
 </mapper>

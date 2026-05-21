@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
@@ -25,6 +26,9 @@ public class CouponMgmtPageReqVO extends PageParam {
 
     @Schema(description = "状态")
     private String status;
+
+    @Schema(description = "面额")
+    private BigDecimal amount;
 
 //    @Schema(description = "有效期开始时间")
 //    private Long validStartTime;
@@ -56,4 +60,5 @@ public class CouponMgmtPageReqVO extends PageParam {
     @Schema(description = "核销时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] verifyTime;
+
 }

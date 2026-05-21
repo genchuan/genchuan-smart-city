@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.RuleConfigMapper">
+
+    <select id="selectPageByAuditorName" resultType="cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.RuleConfigDO">
+        SELECT rc.* FROM rule_config rc
+        LEFT JOIN `ruoyi-vue-pro`.system_users su ON rc.auditor_id = su.id AND su.deleted = 0
+        <where>
+            rc.deleted = 0
+            <if test="reqVO.name != null and reqVO.name != ''">
+                AND rc.name LIKE CONCAT('%', #{reqVO.name}, '%')
+            </if>
+            <if test="reqVO.type != null and reqVO.type != ''">
+                AND rc.type = #{reqVO.type}
+            </if>
+            <if test="reqVO.status != null and reqVO.status != ''">
+                AND rc.status = #{reqVO.status}
+            </if>
+            <if test="reqVO.scene != null and reqVO.scene != ''">
+                AND rc.scene = #{reqVO.scene}
+            </if>
+            <if test="reqVO.auditorId != null">
+                AND rc.auditor_id = #{reqVO.auditorId}
+            </if>
+            <if test="reqVO.matchCount != null">
+                AND rc.match_count = #{reqVO.matchCount}
+            </if>
+            <if test="reqVO.description != null and reqVO.description != ''">
+                AND rc.description LIKE CONCAT('%', #{reqVO.description}, '%')
+            </if>
+            <if test="reqVO.giftRatio != null">
+                AND rc.gift_ratio = #{reqVO.giftRatio}
+            </if>
+            <if test="reqVO.auditStartTime != null and reqVO.auditEndTime != null">
+                AND rc.audit_time BETWEEN
+                    DATE_FORMAT(FROM_UNIXTIME(#{reqVO.auditStartTime} / 1000), '%Y-%m-%d %H:%i:%s')
+                    AND DATE_FORMAT(FROM_UNIXTIME(#{reqVO.auditEndTime} / 1000), '%Y-%m-%d %H:%i:%s')
+            </if>
+            <if test="reqVO.auditStartTime != null and reqVO.auditEndTime == null">
+                AND rc.audit_time &gt;= DATE_FORMAT(FROM_UNIXTIME(#{reqVO.auditStartTime} / 1000), '%Y-%m-%d %H:%i:%s')
+            </if>
+            <if test="reqVO.auditStartTime == null and reqVO.auditEndTime != null">
+                AND rc.audit_time &lt;= DATE_FORMAT(FROM_UNIXTIME(#{reqVO.auditEndTime} / 1000), '%Y-%m-%d %H:%i:%s')
+            </if>
+            <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+                AND rc.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+            <if test="reqVO.effectTime != null and reqVO.effectTime.length == 2">
+                AND rc.effect_time BETWEEN #{reqVO.effectTime[0]} AND #{reqVO.effectTime[1]}
+            </if>
+            <if test="reqVO.auditorName != null and reqVO.auditorName != ''">
+                AND su.nickname LIKE CONCAT('%', #{reqVO.auditorName}, '%')
+            </if>
+        </where>
+        ORDER BY rc.id DESC
+    </select>
+
+</mapper>

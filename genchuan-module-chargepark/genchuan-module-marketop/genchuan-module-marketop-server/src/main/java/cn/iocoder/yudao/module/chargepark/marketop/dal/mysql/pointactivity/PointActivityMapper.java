@@ -64,6 +64,8 @@ public interface PointActivityMapper extends BaseMapperX<PointActivityDO> {
 
     List<Map<String, Object>> selectStationSimpleList();
 
+    List<Map<String, Object>> selectStationIdsByNames(@Param("names") List<String> names);
+
     @Select("SELECT DATE(create_time) AS date, COUNT(*) AS count " +
             "FROM point_activity " +
             "WHERE deleted = 0 AND create_time >= #{startTime} " +

@@ -45,4 +45,9 @@ public class StockControlRespVO {
     @Schema(description = "更新时间")
     private LocalDateTime updateTime;
 
+    @Schema(description = "调配记录")
+    private String allocateLog;
+
+    @Schema(description = "补货记录")
+    private String replenishLog;
 }

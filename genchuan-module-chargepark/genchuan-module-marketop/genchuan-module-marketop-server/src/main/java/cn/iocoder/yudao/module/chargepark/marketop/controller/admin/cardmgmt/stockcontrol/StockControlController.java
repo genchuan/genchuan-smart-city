@@ -54,6 +54,12 @@ public class StockControlController {
         PageResult<StockControlDO> pageResult = stockControlService.getPage(reqVO);
         PageResult<StockControlRespVO> bean = BeanUtils.toBean(pageResult, StockControlRespVO.class);
         injectUserNames(bean.getList());
+        injectLogs(pageResult.getList(), bean.getList());
+        bean.getList().forEach(item -> {
+            if (!Objects.equals("0", item.getWarnStatus()) && !Objects.equals(item.getWarnStatus(), "1")) {
+                item.setWarnStatus("1");
+            }
+        });
         return CommonResult.success(bean);
     }
 
@@ -64,7 +70,13 @@ public class StockControlController {
     public CommonResult<StockControlRespVO> get(@RequestParam("id") Long id) {
         StockControlDO stockControl = stockControlService.get(id);
         StockControlRespVO respVO = BeanUtils.toBean(stockControl, StockControlRespVO.class);
-        if (respVO != null) injectUserNames(Collections.singletonList(respVO));
+        if (respVO != null) {
+            injectUserNames(Collections.singletonList(respVO));
+            if (stockControl != null) {
+                respVO.setAllocateLog(stockControl.getReserve1());
+                respVO.setReplenishLog(stockControl.getReserve2());
+            }
+        }
         return CommonResult.success(respVO);
     }
 
@@ -99,7 +111,9 @@ public class StockControlController {
         reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<StockControlDO> pageResult = stockControlService.getPage(reqVO);
         List<StockControlRespVO> list = BeanUtils.toBean(pageResult.getList(), StockControlRespVO.class);
-        ExcelUtils.write(response, "库存管控.xlsx", "数据", StockControlRespVO.class, list);
+        injectUserNames(list);
+        List<StockControlExportExcelVO> exportList = BeanUtils.toBean(list, StockControlExportExcelVO.class);
+        ExcelUtils.write(response, "库存管控.xlsx", "数据", StockControlExportExcelVO.class, exportList);
     }
 
     @GetMapping("/chart")
@@ -107,6 +121,18 @@ public class StockControlController {
     @PreAuthorize("@ss.hasPermission('marketop:stock-control:query')")
     public CommonResult<StockControlChartRespVO> getChart() {
         return CommonResult.success(stockControlService.getChart(null, null, null));
+    }
+
+    private void injectLogs(List<StockControlDO> doList, List<StockControlRespVO> voList) {
+        if (doList == null || voList == null || doList.size() != voList.size()) return;
+        for (int i = 0; i < doList.size(); i++) {
+            StockControlDO d = doList.get(i);
+            StockControlRespVO v = voList.get(i);
+            if (d != null) {
+                v.setAllocateLog(d.getReserve1());
+                v.setReplenishLog(d.getReserve2());
+            }
+        }
     }
 
     private void injectUserNames(List<StockControlRespVO> list) {

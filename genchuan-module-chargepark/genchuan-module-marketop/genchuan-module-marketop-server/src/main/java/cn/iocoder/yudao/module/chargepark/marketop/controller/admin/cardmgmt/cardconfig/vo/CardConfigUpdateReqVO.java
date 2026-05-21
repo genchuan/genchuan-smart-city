@@ -32,4 +32,7 @@ public class CardConfigUpdateReqVO {
     @Schema(description = "卡种描述")
     private String description;
 
+    @Schema(description = "场站ID，逗号分隔")
+    private String stationId;
+
 }

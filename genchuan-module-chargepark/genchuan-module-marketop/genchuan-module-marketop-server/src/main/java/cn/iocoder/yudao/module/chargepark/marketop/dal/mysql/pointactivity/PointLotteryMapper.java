@@ -4,9 +4,14 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointlottery.vo.PointLotteryPageReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.decisionanalysis.drill.vo.CycleReportDrillJoinUserCountRespVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointlottery.vo.PointLotteryRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointLotteryDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.time.LocalDateTime;
@@ -51,5 +56,13 @@ public interface PointLotteryMapper extends BaseMapperX<PointLotteryDO> {
 
     @Select("SELECT COUNT(*) FROM point_lottery WHERE prize_id = 0")
     Long selectWinCount();
+
+    IPage<PointLotteryRespVO> selectPageJoin(Page<?> page, @Param("reqVO") PointLotteryPageReqVO reqVO);
+
+    PointLotteryRespVO selectByIdJoin(@Param("id") Long id);
+
+    IPage<CycleReportDrillJoinUserCountRespVO> selectPageDrillJoinUserCount(Page<?> page,
+                                                                            @Param("statStartTime") LocalDateTime statStartTime,
+                                                                            @Param("statEndTime") LocalDateTime statEndTime);
 
 }

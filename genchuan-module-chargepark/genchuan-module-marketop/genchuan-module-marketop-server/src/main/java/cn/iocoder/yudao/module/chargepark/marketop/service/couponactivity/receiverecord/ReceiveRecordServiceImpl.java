@@ -4,9 +4,12 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.receiverecord.vo.ReceiveRecordChartRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.receiverecord.vo.ReceiveRecordPageReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.receiverecord.vo.ReceiveRecordRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.ReceiveRecordDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.couponactivity.ReceiveRecordMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.ReceiveRecordStatusEnum;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
@@ -98,6 +101,18 @@ public class ReceiveRecordServiceImpl implements ReceiveRecordService {
         respVO.setTrendList(trendList);
 
         return respVO;
+    }
+
+    @Override
+    public ReceiveRecordRespVO getWithJoin(Long id) {
+        return receiveRecordMapper.selectByIdJoin(id);
+    }
+
+    @Override
+    public PageResult<ReceiveRecordRespVO> getPageWithJoin(ReceiveRecordPageReqVO reqVO) {
+        Page<ReceiveRecordRespVO> page = new Page<>(reqVO.getPageNo(), reqVO.getPageSize());
+        IPage<ReceiveRecordRespVO> pageResult = receiveRecordMapper.selectPageJoin(page, reqVO);
+        return new PageResult<>(pageResult.getRecords(), pageResult.getTotal());
     }
 
     private ReceiveRecordDO validateExists(Long id) {

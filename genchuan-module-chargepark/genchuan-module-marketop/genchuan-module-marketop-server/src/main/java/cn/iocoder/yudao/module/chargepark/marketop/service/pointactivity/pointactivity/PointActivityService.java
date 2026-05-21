@@ -34,7 +34,7 @@ public interface PointActivityService {
      */
     void importPointActivityList(List<PointActivityImportExcelVO> list);
 
-    void activate(Long id);
+    void activate(Long id, Long auditorId);
 
     List<PointActivityDO> getSimpleList();
 
