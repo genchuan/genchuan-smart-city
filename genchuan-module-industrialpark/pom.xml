@@ -18,6 +18,7 @@
         <module>genchuan-module-enterprisesvc/genchuan-module-enterprisesvc-api</module>
         <module>genchuan-module-accessmgmt</module>
         <module>genchuan-module-integratedsecurity</module>
+        <module>genchuan-module-energymgmt</module>
     </modules>
 
     <description>

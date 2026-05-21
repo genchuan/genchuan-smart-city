@@ -25,7 +25,7 @@ public class CycleReportGetRespVO {
 
     @Schema(description = "统计时段", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("统计时段")
-    private LocalDateTime statTime;
+    private String statTime;
 
     @Schema(description = "新增用户数", requiredMode = Schema.RequiredMode.REQUIRED, example = "10836")
     @ExcelProperty("新增用户数")

@@ -17,7 +17,7 @@ import java.time.format.DateTimeParseException;
  * 时间范围解析工具类
  * 支持格式：开始~结束，自动推断粒度（年/月/日）
  *
- * @author 亘川智城
+ * @author 宇佐见莲子
  */
 @Slf4j
 public class TimeRangeParser {

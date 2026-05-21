@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.groupclient.groupinfo.vo;
 
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.FlexibleTimestampDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
@@ -29,7 +31,7 @@ public class GroupInfoPageReqVO extends PageParam {
     private String address;
 
     @Schema(description = "注册时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
     private LocalDateTime[] registerTime;
 
     @Schema(description = "集团状态：待审核/正常/禁用/已驳回", example = "2")
@@ -45,7 +47,7 @@ public class GroupInfoPageReqVO extends PageParam {
     private String auditRemark;
 
     @Schema(description = "审核时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
     private LocalDateTime[] auditTime;
 
     @Schema(description = "备注", example = "你说的对")
