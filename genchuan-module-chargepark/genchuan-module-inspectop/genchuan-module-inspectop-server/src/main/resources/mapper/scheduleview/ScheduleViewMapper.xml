@@ -104,20 +104,30 @@
 
     <!-- 查询排班统计图表数据 -->
     <select id="selectScheduleViewChartData" resultMap="ScheduleViewChartDataResultMap">
+        WITH ranked_schedule AS (
         SELECT
         sv.user_id,
         iu.name AS user_name,
         sv.schedule_date,
         sv.shift_type,
-        COUNT(*) OVER(PARTITION BY sv.user_id) AS schedule_count
+        COUNT(*) OVER(PARTITION BY sv.user_id) AS schedule_count,
+        ROW_NUMBER() OVER(PARTITION BY sv.user_id, DATE(sv.schedule_date) ORDER BY sv.shift_type) as rn
         FROM schedule_view sv
         LEFT JOIN inspect_user iu ON sv.user_id = iu.id
         WHERE sv.deleted = 0
         <if test="reqVO.month != null and reqVO.month != ''">
             AND DATE_FORMAT(sv.schedule_date, '%Y-%m') = #{reqVO.month}
         </if>
-        <!-- 删除原来的条件，不传参数时查询所有数据 -->
-        ORDER BY sv.schedule_date, sv.user_id
+        )
+        SELECT
+        user_id,
+        user_name,
+        schedule_date,
+        shift_type,
+        schedule_count
+        FROM ranked_schedule
+        WHERE rn = 1  -- 每天每个用户只取第一条记录
+        ORDER BY schedule_date, user_id
     </select>
 
     <!-- 查询排班统计卡片数据 -->

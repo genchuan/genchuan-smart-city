@@ -100,7 +100,7 @@
     <select id="selectReportCardData" resultType="cn.iocoder.yudao.module.inspectop.controller.admin.inspectreport.vo.InspectReportChartRespVO$CardData">
         WITH report_stats AS (
         SELECT
-        COUNT(CASE WHEN status != '3' THEN 1 END) AS wait_audit_count,
+        COUNT(CASE WHEN status = '1' THEN 1 END) AS wait_audit_count,
         COUNT(CASE WHEN process_user_id IS NOT NULL THEN 1 END) AS assigned_count,
         COUNT(CASE WHEN status = '3' THEN 1 END) AS completed_count
         FROM inspect_report
