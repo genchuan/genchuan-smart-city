@@ -27,7 +27,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
@@ -109,22 +112,69 @@ public class AiAlertMessageController {
 
     // ==================== 场站资源 RPC 测试接口 ====================
 
-    @GetMapping("/test-station-rpc")
-    @Operation(summary = "测试场站资源RPC调用——获取场站详情及车位信息")
-    @Parameter(name = "stationId", description = "场站ID", required = true, example = "1")
-    public CommonResult<StationInfoRespDTO> testStationRpc(@RequestParam("stationId") Long stationId) {
-        // 调用场站信息 RPC
-        StationInfoRespDTO station = stationInfoApi.getStation(stationId).getCheckedData();
-        return success(station);
+    // ---------- StationInfoApi ----------
+
+    @GetMapping("/test-station-get")
+    @Operation(summary = "RPC测试-按ID获取单个场站")
+    @Parameter(name = "id", description = "场站ID", required = true, example = "1")
+    public CommonResult<StationInfoRespDTO> testStationGet(@RequestParam("id") Long id) {
+        return success(stationInfoApi.getStation(id).getCheckedData());
     }
 
-    @GetMapping("/test-parking-rpc")
-    @Operation(summary = "测试车位信息RPC调用——按ID获取车位")
-    @Parameter(name = "spaceId", description = "车位ID", required = true, example = "1")
-    public CommonResult<ParkingSpaceInfoRespDTO> testParkingRpc(@RequestParam("spaceId") Long spaceId) {
-        // 调用车位信息 RPC
-        ParkingSpaceInfoRespDTO space = parkingSpaceInfoApi.getSpace(spaceId).getCheckedData();
-        return success(space);
+    @GetMapping("/test-station-list-all")
+    @Operation(summary = "RPC测试-获取全部场站列表")
+    public CommonResult<List<StationInfoRespDTO>> testStationListAll() {
+        return success(stationInfoApi.listStations().getCheckedData());
+    }
+
+    @GetMapping("/test-station-list-by-ids")
+    @Operation(summary = "RPC测试-按ID批量获取场站")
+    @Parameter(name = "ids", description = "场站ID列表,逗号分隔", required = true, example = "1,2,3")
+    public CommonResult<List<StationInfoRespDTO>> testStationListByIds(@RequestParam("ids") String ids) {
+        // 解析逗号分隔的ID字符串
+        List<Long> idList = Arrays.stream(ids.split(","))
+                .map(String::trim).map(Long::valueOf)
+                .collect(java.util.stream.Collectors.toList());
+        return success(stationInfoApi.getStationList(idList).getCheckedData());
+    }
+
+    @GetMapping("/test-station-map")
+    @Operation(summary = "RPC测试-批量获取场站转Map")
+    @Parameter(name = "ids", description = "场站ID列表,逗号分隔", required = true, example = "1,2,3")
+    public CommonResult<Map<Long, StationInfoRespDTO>> testStationMap(@RequestParam("ids") String ids) {
+        List<Long> idList = Arrays.stream(ids.split(","))
+                .map(String::trim).map(Long::valueOf)
+                .collect(java.util.stream.Collectors.toList());
+        return success(stationInfoApi.getStationMap(idList));
+    }
+
+    // ---------- ParkingSpaceInfoApi ----------
+
+    @GetMapping("/test-parking-get")
+    @Operation(summary = "RPC测试-按ID获取单个车位")
+    @Parameter(name = "id", description = "车位ID", required = true, example = "1")
+    public CommonResult<ParkingSpaceInfoRespDTO> testParkingGet(@RequestParam("id") Long id) {
+        return success(parkingSpaceInfoApi.getSpace(id).getCheckedData());
+    }
+
+    @GetMapping("/test-parking-list-by-ids")
+    @Operation(summary = "RPC测试-按ID批量获取车位")
+    @Parameter(name = "ids", description = "车位ID列表,逗号分隔", required = true, example = "1,2,3")
+    public CommonResult<List<ParkingSpaceInfoRespDTO>> testParkingListByIds(@RequestParam("ids") String ids) {
+        List<Long> idList = Arrays.stream(ids.split(","))
+                .map(String::trim).map(Long::valueOf)
+                .collect(java.util.stream.Collectors.toList());
+        return success(parkingSpaceInfoApi.getSpaceList(idList).getCheckedData());
+    }
+
+    @GetMapping("/test-parking-map")
+    @Operation(summary = "RPC测试-批量获取车位转Map")
+    @Parameter(name = "ids", description = "车位ID列表,逗号分隔", required = true, example = "1,2,3")
+    public CommonResult<Map<Long, ParkingSpaceInfoRespDTO>> testParkingMap(@RequestParam("ids") String ids) {
+        List<Long> idList = Arrays.stream(ids.split(","))
+                .map(String::trim).map(Long::valueOf)
+                .collect(java.util.stream.Collectors.toList());
+        return success(parkingSpaceInfoApi.getSpaceMap(idList));
     }
 
 }
