@@ -12,27 +12,17 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.AiAler
 import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.add.AddAiAlertMessageReq;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.aialertmessage.AiAlertMessageDO;
 import cn.iocoder.yudao.module.kitchen.service.aialertmessage.AiAlertMessageService;
-import cn.iocoder.yudao.module.stationresource.api.stationresource.AreaInfoApi;
-import cn.iocoder.yudao.module.stationresource.api.stationresource.ParkingSpaceInfoApi;
-import cn.iocoder.yudao.module.stationresource.api.stationresource.StationInfoApi;
-import cn.iocoder.yudao.module.stationresource.api.stationresource.dto.AreaInfoRespDTO;
-import cn.iocoder.yudao.module.stationresource.api.stationresource.dto.ParkingSpaceInfoRespDTO;
-import cn.iocoder.yudao.module.stationresource.api.stationresource.dto.StationInfoRespDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
@@ -43,12 +33,7 @@ import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 @RequestMapping("/kitchen/ai-alert-message")
 @Validated
 public class AiAlertMessageController {
-    @Resource
-    private StationInfoApi stationInfoApi;      // 场站信息 RPC
-    @Resource
-    private ParkingSpaceInfoApi parkingSpaceInfoApi;  // 车位信息 RPC
-    @Resource
-    private AreaInfoApi areaInfoApi;                  // 片区信息 RPC
+
     @Resource
     private AiAlertMessageService aiAlertMessageService;
 
@@ -112,115 +97,6 @@ public class AiAlertMessageController {
         // 导出 Excel
         ExcelUtils.write(response, "AI告警消息.xls", "数据", AiAlertMessageRespVO.class,
                         BeanUtils.toBean(list, AiAlertMessageRespVO.class));
-    }
-
-    // ==================== 场站资源 RPC 测试接口 ====================
-
-    // ---------- StationInfoApi ----------
-
-    @GetMapping("/test-station-get")
-    @Operation(summary = "RPC测试-按ID获取单个场站")
-    @Parameter(name = "id", description = "场站ID", required = true, example = "1")
-    public CommonResult<StationInfoRespDTO> testStationGet(@RequestParam("id") Long id) {
-        return success(stationInfoApi.getStation(id).getCheckedData());
-    }
-
-    @GetMapping("/test-station-list-all")
-    @Operation(summary = "RPC测试-获取全部场站列表")
-    public CommonResult<List<StationInfoRespDTO>> testStationListAll() {
-        return success(stationInfoApi.listStations().getCheckedData());
-    }
-
-    @GetMapping("/test-station-list-by-ids")
-    @Operation(summary = "RPC测试-按ID批量获取场站")
-    @Parameter(name = "ids", description = "场站ID列表,逗号分隔", required = true, example = "1,2,3")
-    public CommonResult<List<StationInfoRespDTO>> testStationListByIds(@RequestParam("ids") String ids) {
-        // 解析逗号分隔的ID字符串
-        List<Long> idList = Arrays.stream(ids.split(","))
-                .map(String::trim).map(Long::valueOf)
-                .collect(java.util.stream.Collectors.toList());
-        return success(stationInfoApi.listStationsByIds(idList).getCheckedData());
-    }
-
-    @GetMapping("/test-station-map")
-    @Operation(summary = "RPC测试-批量获取场站转Map")
-    @Parameter(name = "ids", description = "场站ID列表,逗号分隔", required = true, example = "1,2,3")
-    public CommonResult<Map<Long, StationInfoRespDTO>> testStationMap(@RequestParam("ids") String ids) {
-        List<Long> idList = Arrays.stream(ids.split(","))
-                .map(String::trim).map(Long::valueOf)
-                .collect(java.util.stream.Collectors.toList());
-        return success(stationInfoApi.getStationMap(idList));
-    }
-
-    // ---------- ParkingSpaceInfoApi ----------
-
-    @GetMapping("/test-parking-get")
-    @Operation(summary = "RPC测试-按ID获取单个车位")
-    @Parameter(name = "id", description = "车位ID", required = true, example = "1")
-    public CommonResult<ParkingSpaceInfoRespDTO> testParkingGet(@RequestParam("id") Long id) {
-        return success(parkingSpaceInfoApi.getSpace(id).getCheckedData());
-    }
-
-    @GetMapping("/test-parking-list-by-ids")
-    @Operation(summary = "RPC测试-按ID批量获取车位")
-    @Parameter(name = "ids", description = "车位ID列表,逗号分隔", required = true, example = "1,2,3")
-    public CommonResult<List<ParkingSpaceInfoRespDTO>> testParkingListByIds(@RequestParam("ids") String ids) {
-        List<Long> idList = Arrays.stream(ids.split(","))
-                .map(String::trim).map(Long::valueOf)
-                .collect(java.util.stream.Collectors.toList());
-        return success(parkingSpaceInfoApi.listSpacesByIds(idList).getCheckedData());
-    }
-
-    @GetMapping("/test-parking-list-by-station")
-    @Operation(summary = "RPC测试-按场站ID获取车位列表")
-    @Parameter(name = "stationId", description = "场站ID", required = true, example = "1")
-    public CommonResult<List<ParkingSpaceInfoRespDTO>> testParkingListByStation(@RequestParam("stationId") Long stationId) {
-        return success(parkingSpaceInfoApi.listSpacesByStationId(stationId).getCheckedData());
-    }
-
-    @GetMapping("/test-parking-map")
-    @Operation(summary = "RPC测试-批量获取车位转Map")
-    @Parameter(name = "ids", description = "车位ID列表,逗号分隔", required = true, example = "1,2,3")
-    public CommonResult<Map<Long, ParkingSpaceInfoRespDTO>> testParkingMap(@RequestParam("ids") String ids) {
-        List<Long> idList = Arrays.stream(ids.split(","))
-                .map(String::trim).map(Long::valueOf)
-                .collect(java.util.stream.Collectors.toList());
-        return success(parkingSpaceInfoApi.getSpaceMap(idList));
-    }
-
-    // ---------- AreaInfoApi ----------
-
-    @GetMapping("/test-area-get")
-    @Operation(summary = "RPC测试-按ID获取单个片区")
-    @Parameter(name = "id", description = "片区ID", required = true, example = "1")
-    public CommonResult<AreaInfoRespDTO> testAreaGet(@RequestParam("id") Long id) {
-        return success(areaInfoApi.getArea(id).getCheckedData());
-    }
-
-    @GetMapping("/test-area-list-all")
-    @Operation(summary = "RPC测试-获取全部片区列表")
-    public CommonResult<List<AreaInfoRespDTO>> testAreaListAll() {
-        return success(areaInfoApi.listAreas().getCheckedData());
-    }
-
-    @GetMapping("/test-area-list-by-ids")
-    @Operation(summary = "RPC测试-按ID批量获取片区")
-    @Parameter(name = "ids", description = "片区ID列表,逗号分隔", required = true, example = "1,2,3")
-    public CommonResult<List<AreaInfoRespDTO>> testAreaListByIds(@RequestParam("ids") String ids) {
-        List<Long> idList = Arrays.stream(ids.split(","))
-                .map(String::trim).map(Long::valueOf)
-                .collect(java.util.stream.Collectors.toList());
-        return success(areaInfoApi.listAreasByIds(idList).getCheckedData());
-    }
-
-    @GetMapping("/test-area-map")
-    @Operation(summary = "RPC测试-批量获取片区转Map")
-    @Parameter(name = "ids", description = "片区ID列表,逗号分隔", required = true, example = "1,2,3")
-    public CommonResult<Map<Long, AreaInfoRespDTO>> testAreaMap(@RequestParam("ids") String ids) {
-        List<Long> idList = Arrays.stream(ids.split(","))
-                .map(String::trim).map(Long::valueOf)
-                .collect(java.util.stream.Collectors.toList());
-        return success(areaInfoApi.getAreaMap(idList));
     }
 
 }
