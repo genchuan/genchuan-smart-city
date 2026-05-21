@@ -89,8 +89,8 @@ public class UserInfoController {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<UserInfoDO> list = userInfoService.getUserInfoPage(pageReqVO).getList();
         // 导出 Excel
-        ExcelUtils.write(response, "用户信息.xls", "数据", UserInfoPageRespVO.class,
-                        BeanUtils.toBean(list, UserInfoPageRespVO.class));
+        ExcelUtils.write(response, "用户信息.xls", "数据", UserInfoExportRespVO.class,
+                        BeanUtils.toBean(list, UserInfoExportRespVO.class));
     }
 
     @PutMapping("/disable")

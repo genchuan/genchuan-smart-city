@@ -21,6 +21,7 @@ public interface UserCreditMapper extends BaseMapperX<UserCreditDO> {
 
     default PageResult<UserCreditDO> selectPage(UserCreditPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<UserCreditDO>()
+                .inIfPresent(UserCreditDO::getUserId, reqVO.getUserIds())  // 新增
                 .eqIfPresent(UserCreditDO::getUserId, reqVO.getUserId())
                 .eqIfPresent(UserCreditDO::getCreditScore, reqVO.getCreditScore())
                 .eqIfPresent(UserCreditDO::getCreditLevel, reqVO.getCreditLevel())

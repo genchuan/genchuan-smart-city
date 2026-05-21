@@ -64,8 +64,8 @@ public class PlateAuthController {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<PlateAuthDO> list = plateAuthService.getPlateAuthPage(pageReqVO).getList();
         // 导出 Excel
-        ExcelUtils.write(response, "车牌认证.xls", "数据", PlateAuthPageRespVO.class,
-                BeanUtils.toBean(list, PlateAuthPageRespVO.class));
+        ExcelUtils.write(response, "车牌认证.xls", "数据", PlateAuthExportRespVO.class,
+                BeanUtils.toBean(list, PlateAuthExportRespVO.class));
     }
 
     @PutMapping("/approve")
