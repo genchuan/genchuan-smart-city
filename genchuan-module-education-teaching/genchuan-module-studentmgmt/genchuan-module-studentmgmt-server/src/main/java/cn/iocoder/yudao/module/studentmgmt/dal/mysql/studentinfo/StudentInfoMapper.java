@@ -7,8 +7,13 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.ChartCountVO;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.clubmgmt.vo.ClubMgmtRespVO;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.workhome.vo.WorkHomePageReqVO;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.workhome.vo.WorkHomeRespVO;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
+import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.violatemgmt.ViolateMgmtDO;
 import com.alibaba.fastjson.JSONObject;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.studentinfo.vo.*;
 import org.apache.ibatis.annotations.Param;
@@ -104,4 +109,9 @@ public interface StudentInfoMapper extends BaseMapperX<StudentInfoDO> {
     List<StudentInfoDO> selectStudentInfoByYear(Integer year);
 
     Integer selectTotalStudent(LocalDateTime startTime, LocalDateTime endTime, String className, String grade);
+
+    List<WorkHomeRespVO> selectWorkHomePage(WorkHomePageReqVO pageReqVO);
+
+    Long selectWorkHomePageTotal(WorkHomePageReqVO pageReqVO);
+
 }

@@ -45,11 +45,16 @@ public class WorkHomeServiceImpl implements WorkHomeService {
 
     @Override
     public PageResult<WorkHomeRespVO> getWorkHomePage(WorkHomePageReqVO pageReqVO) {
-//        honorMgmtMapper.getHomePage();
 
-//        return workReportMapper.selectPage(pageReqVO);
+        Long total = studentInfoMapper.selectWorkHomePageTotal(pageReqVO);
 
-        return null;
+        Integer pageNo = pageReqVO.getPageNo();
+        Integer pageSize = pageReqVO.getPageSize();
+        Integer offset = (pageNo-1) * pageSize;
+        pageReqVO.setPageNo(offset);
+
+        List<WorkHomeRespVO> list = studentInfoMapper.selectWorkHomePage(pageReqVO);
+        return new PageResult<>(list, total);
     }
 
     @Override
