@@ -87,7 +87,7 @@
     </select>
 
     <select id="selectUserSimpleList" resultType="cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.UserSimpleRespVO">
-        SELECT id, nickname AS name FROM user_info WHERE deleted = 0
+        SELECT id, nickname AS name, phone FROM user_info WHERE deleted = 0
         <if test="name != null and name != ''">
             AND nickname LIKE CONCAT('%', #{name}, '%')
         </if>
