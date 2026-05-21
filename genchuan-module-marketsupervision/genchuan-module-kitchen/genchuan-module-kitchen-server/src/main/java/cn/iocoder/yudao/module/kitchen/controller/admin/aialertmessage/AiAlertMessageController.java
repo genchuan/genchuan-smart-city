@@ -12,8 +12,10 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.AiAler
 import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.add.AddAiAlertMessageReq;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.aialertmessage.AiAlertMessageDO;
 import cn.iocoder.yudao.module.kitchen.service.aialertmessage.AiAlertMessageService;
+import cn.iocoder.yudao.module.stationresource.api.stationresource.AreaInfoApi;
 import cn.iocoder.yudao.module.stationresource.api.stationresource.ParkingSpaceInfoApi;
 import cn.iocoder.yudao.module.stationresource.api.stationresource.StationInfoApi;
+import cn.iocoder.yudao.module.stationresource.api.stationresource.dto.AreaInfoRespDTO;
 import cn.iocoder.yudao.module.stationresource.api.stationresource.dto.ParkingSpaceInfoRespDTO;
 import cn.iocoder.yudao.module.stationresource.api.stationresource.dto.StationInfoRespDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,6 +47,8 @@ public class AiAlertMessageController {
     private StationInfoApi stationInfoApi;      // 场站信息 RPC
     @Resource
     private ParkingSpaceInfoApi parkingSpaceInfoApi;  // 车位信息 RPC
+    @Resource
+    private AreaInfoApi areaInfoApi;                  // 片区信息 RPC
     @Resource
     private AiAlertMessageService aiAlertMessageService;
 
@@ -182,6 +186,41 @@ public class AiAlertMessageController {
                 .map(String::trim).map(Long::valueOf)
                 .collect(java.util.stream.Collectors.toList());
         return success(parkingSpaceInfoApi.getSpaceMap(idList));
+    }
+
+    // ---------- AreaInfoApi ----------
+
+    @GetMapping("/test-area-get")
+    @Operation(summary = "RPC测试-按ID获取单个片区")
+    @Parameter(name = "id", description = "片区ID", required = true, example = "1")
+    public CommonResult<AreaInfoRespDTO> testAreaGet(@RequestParam("id") Long id) {
+        return success(areaInfoApi.getArea(id).getCheckedData());
+    }
+
+    @GetMapping("/test-area-list-all")
+    @Operation(summary = "RPC测试-获取全部片区列表")
+    public CommonResult<List<AreaInfoRespDTO>> testAreaListAll() {
+        return success(areaInfoApi.listAreas().getCheckedData());
+    }
+
+    @GetMapping("/test-area-list-by-ids")
+    @Operation(summary = "RPC测试-按ID批量获取片区")
+    @Parameter(name = "ids", description = "片区ID列表,逗号分隔", required = true, example = "1,2,3")
+    public CommonResult<List<AreaInfoRespDTO>> testAreaListByIds(@RequestParam("ids") String ids) {
+        List<Long> idList = Arrays.stream(ids.split(","))
+                .map(String::trim).map(Long::valueOf)
+                .collect(java.util.stream.Collectors.toList());
+        return success(areaInfoApi.listAreasByIds(idList).getCheckedData());
+    }
+
+    @GetMapping("/test-area-map")
+    @Operation(summary = "RPC测试-批量获取片区转Map")
+    @Parameter(name = "ids", description = "片区ID列表,逗号分隔", required = true, example = "1,2,3")
+    public CommonResult<Map<Long, AreaInfoRespDTO>> testAreaMap(@RequestParam("ids") String ids) {
+        List<Long> idList = Arrays.stream(ids.split(","))
+                .map(String::trim).map(Long::valueOf)
+                .collect(java.util.stream.Collectors.toList());
+        return success(areaInfoApi.getAreaMap(idList));
     }
 
 }

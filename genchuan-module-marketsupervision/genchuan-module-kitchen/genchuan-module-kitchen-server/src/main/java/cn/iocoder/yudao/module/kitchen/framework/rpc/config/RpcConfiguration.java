@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.kitchen.framework.rpc.config;
 
+import cn.iocoder.yudao.module.stationresource.api.stationresource.AreaInfoApi;
 import cn.iocoder.yudao.module.stationresource.api.stationresource.ParkingSpaceInfoApi;
 import cn.iocoder.yudao.module.stationresource.api.stationresource.StationInfoApi;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -12,7 +13,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(value = "kitchenRpcConfiguration", proxyBeanMethods = false)
 @EnableFeignClients(clients = {
         StationInfoApi.class,
-        ParkingSpaceInfoApi.class
+        ParkingSpaceInfoApi.class,
+        AreaInfoApi.class
 })
 public class RpcConfiguration {
 }
