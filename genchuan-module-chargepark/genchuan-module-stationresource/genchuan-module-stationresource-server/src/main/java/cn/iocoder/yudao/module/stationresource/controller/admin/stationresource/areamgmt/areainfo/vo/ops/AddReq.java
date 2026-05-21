@@ -55,9 +55,11 @@ public class AddReq {
     private String remark;
 
     @Schema(description = "[备用字段1] 备用字段1", example = "备用信息1")
+    @ExcelIgnore
     private String reserve1;
 
     @Schema(description = "[备用字段2] 备用字段2", example = "备用信息2")
+    @ExcelIgnore
     private String reserve2;
 
     // ==================== 新增字段：前端隐藏，后端自己处理 ====================

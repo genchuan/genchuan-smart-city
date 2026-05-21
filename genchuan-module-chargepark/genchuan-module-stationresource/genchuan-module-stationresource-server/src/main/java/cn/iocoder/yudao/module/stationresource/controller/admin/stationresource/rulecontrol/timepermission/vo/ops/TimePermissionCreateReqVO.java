@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import cn.idev.excel.annotation.ExcelIgnore;
 
 
 
@@ -42,8 +43,10 @@ public class TimePermissionCreateReqVO {
     private String remark;
 
     @Schema(description = "备用字段1", example = "备用信息1")
+    @ExcelIgnore
     private String reserve1;
 
     @Schema(description = "备用字段2", example = "备用信息2")
+    @ExcelIgnore
     private String reserve2;
 }

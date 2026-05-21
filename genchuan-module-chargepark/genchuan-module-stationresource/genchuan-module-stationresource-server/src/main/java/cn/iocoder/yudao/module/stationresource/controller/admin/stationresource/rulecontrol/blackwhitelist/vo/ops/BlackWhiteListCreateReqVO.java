@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
+import cn.idev.excel.annotation.ExcelIgnore;
 
 import java.time.LocalDateTime;
 
@@ -37,8 +38,10 @@ public class BlackWhiteListCreateReqVO {
     private String remark;
 
     @Schema(description = "备用字段1", example = "备用信息1")
+    @ExcelIgnore
     private String reserve1;
 
     @Schema(description = "备用字段2", example = "备用信息2")
+    @ExcelIgnore
     private String reserve2;
 }
