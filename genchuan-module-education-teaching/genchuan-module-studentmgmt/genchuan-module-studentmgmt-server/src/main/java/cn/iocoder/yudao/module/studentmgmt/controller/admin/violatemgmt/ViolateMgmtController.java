@@ -89,8 +89,8 @@ public class ViolateMgmtController {
     @Operation(summary = "获得违纪管理分页")
     @PreAuthorize("@ss.hasPermission('studentmgmt:violate-mgmt:query')")
     public CommonResult<PageResult<ViolateMgmtPageRespVO>> getViolateMgmtPage(@Valid ViolateMgmtPageReqVO pageReqVO) {
-        PageResult<ViolateMgmtPageRespVO> pageResult = violateMgmtService.getViolateMgmtPageVo(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, ViolateMgmtPageRespVO.class));
+//        PageResult<ViolateMgmtPageRespVO> pageResult = violateMgmtService.getViolateMgmtPageVo(pageReqVO);
+        return success(violateMgmtService.getViolateMgmtJoinPageVo(pageReqVO));
     }
 
     @GetMapping("/export")

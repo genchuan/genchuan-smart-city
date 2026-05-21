@@ -109,7 +109,7 @@ public class AssessMgmtServiceImpl implements AssessMgmtService {
         for (Long id : publishReqVO.getIds()) {
             AssessMgmtDO assessMgmtDO = assessMgmtMapper.selectById(id);
             if (assessMgmtDO != null) {
-                assessMgmtDO.setStatus("1");
+                assessMgmtDO.setStatus(AssessStatusEnum.PUBLISHED.getStatus());
                 assessMgmtDO.setPublishTime(LocalDateTime.now());
                 int i = assessMgmtMapper.updateById(assessMgmtDO);
                 // 记录操作日志上下文
