@@ -29,7 +29,7 @@ public interface InParkStatusMapper extends BaseMapperX<InParkStatusDO> {
                 .eqIfPresent(InParkStatusDO::getSpaceId, reqVO.getSpaceId())
                 .eqIfPresent(InParkStatusDO::getCarNo, reqVO.getCarNo())
                 .betweenIfPresent(InParkStatusDO::getInTime, reqVO.getInTime())
-                .betweenIfPresent(InParkStatusDO::getOverTime, reqVO.getOverTime())
+                .eqIfPresent(InParkStatusDO::getOverTime, reqVO.getOverTime())
                 .eqIfPresent(InParkStatusDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(InParkStatusDO::getRemark, reqVO.getRemark())
                 .eqIfPresent(InParkStatusDO::getReserve1, reqVO.getReserve1())

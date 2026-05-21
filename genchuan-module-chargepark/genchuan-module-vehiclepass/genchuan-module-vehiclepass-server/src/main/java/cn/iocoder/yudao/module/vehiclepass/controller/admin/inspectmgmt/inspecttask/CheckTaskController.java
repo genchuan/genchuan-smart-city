@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspectt
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.InspectTaskChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.CheckTaskRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.CheckTaskSaveReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.UserSimpleRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.inspectmgmt.inspecttask.CheckTaskDO;
 import cn.iocoder.yudao.module.vehiclepass.service.inspectmgmt.inspecttask.CheckTaskService;
 import org.springframework.web.bind.annotation.*;
@@ -148,6 +149,13 @@ public class CheckTaskController {
     @PreAuthorize("@ss.hasPermission('vehiclepass:inspect-task:chart')")
     public CommonResult<InspectTaskChartRespVO> getChart(@Valid InspectTaskChartReqVO reqVO) {
         return success(taskService.getChart(reqVO));
+    }
+
+    @GetMapping("/simple-list")
+    @Operation(summary = "获得执行人精简列表")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:inspect-task:query')")
+    public CommonResult<List<UserSimpleRespVO>> getSimpleList() {
+        return success(taskService.getUserSimpleList());
     }
 
     @GetMapping("/export")

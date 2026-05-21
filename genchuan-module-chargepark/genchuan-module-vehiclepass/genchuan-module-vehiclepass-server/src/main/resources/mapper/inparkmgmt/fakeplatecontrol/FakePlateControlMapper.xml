@@ -14,6 +14,7 @@
         IFNULL(u.nickname, '') AS handleUserName,
         f.handle_time AS handleTime,
         f.handle_progress AS handleProgress,
+        f.handle_type AS handleType,
         f.ignore_reason AS ignoreReason,
         f.remark,
         f.reserve1,
@@ -43,6 +44,9 @@
         </if>
         <if test="reqVO.handleUserId != null">
             AND f.handle_user_id = #{reqVO.handleUserId}
+        </if>
+        <if test="reqVO.handleType != null and reqVO.handleType != ''">
+            AND f.handle_type = #{reqVO.handleType}
         </if>
         <if test="reqVO.remark != null and reqVO.remark != ''">
             AND f.remark LIKE CONCAT('%', #{reqVO.remark}, '%')

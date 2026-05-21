@@ -55,6 +55,7 @@ public class IdentifyDO extends BaseDO {
     /**
      * 场站名称
      */
+    @TableField(exist = false)
     private String stationName;
     /**
      * 备注

@@ -12,7 +12,7 @@ public class UnplateEnterConstants {
     public static final String STATUS_PENDING_REVIEW = "待审核";
 
     /** 状态：已通过 */
-    public static final String STATUS_APPROVED = "已通过";
+    public static final String STATUS_APPROVED = "通过";
 
     /** 状态：已入场 */
     public static final String STATUS_ENTERED = "已入场";

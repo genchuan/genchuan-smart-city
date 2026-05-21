@@ -30,8 +30,7 @@ public class InParkStatusPageReqVO extends PageParam {
     private LocalDateTime[] inTime;
 
     @Schema(description = "是否超时长：是/否，关联字典in_park_status_over_time")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
-    private String[] overTime;
+    private String overTime;
 
     @Schema(description = "状态：正常/异常，关联字典in_park_status_status", example = "1")
     private String status;

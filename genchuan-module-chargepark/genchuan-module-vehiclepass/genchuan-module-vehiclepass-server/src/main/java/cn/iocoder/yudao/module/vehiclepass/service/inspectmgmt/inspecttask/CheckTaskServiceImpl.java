@@ -9,7 +9,9 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspectt
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.InspectTaskTransferReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.InspectTaskChartReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.InspectTaskChartRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.UserSimpleRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.inspectmgmt.inspecttask.CheckTaskDO;
+import cn.iocoder.yudao.module.vehiclepass.dal.mysql.common.UserInfoMapper;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.inspectmgmt.inspecttask.CheckTaskMapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -26,6 +28,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
+import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId;
 import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.TASK_NOT_EXISTS;
 import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.TASK_STATUS_INVALID;
 import static cn.iocoder.yudao.module.vehiclepass.constants.inspectmgmt.CheckTaskConstants.*;
@@ -41,6 +44,9 @@ public class CheckTaskServiceImpl implements CheckTaskService {
 
     @Resource
     private CheckTaskMapper taskMapper;
+
+    @Resource
+    private UserInfoMapper userInfoMapper;
 
     @Override
     public Long createTask(CheckTaskSaveReqVO createReqVO) {
@@ -145,9 +151,13 @@ public class CheckTaskServiceImpl implements CheckTaskService {
         if (!STATUS_PENDING_CLAIM.equals(task.getStatus())) {
             throw exception(TASK_STATUS_INVALID);
         }
+        // 获取当前登录用户作为执行人
+        Long loginUserId = getLoginUserId();
         CheckTaskDO updateObj = new CheckTaskDO();
         updateObj.setId(id);
+        updateObj.setExecuteUserId(loginUserId);
         updateObj.setStatus(STATUS_PROCESSING);
+        updateObj.setTaskProgress("进行中");
         taskMapper.updateById(updateObj);
     }
 
@@ -211,6 +221,11 @@ public class CheckTaskServiceImpl implements CheckTaskService {
         respVO.setCardData(cardData);
 
         return respVO;
+    }
+
+    @Override
+    public List<UserSimpleRespVO> getUserSimpleList() {
+        return userInfoMapper.selectUserSimpleList();
     }
 
 }

@@ -33,6 +33,9 @@
         <if test="reqVO.leaveTime != null and reqVO.leaveTime.length == 2">
             AND l.leave_time BETWEEN FROM_UNIXTIME(#{reqVO.leaveTime[0]}) AND FROM_UNIXTIME(#{reqVO.leaveTime[1]})
         </if>
+        <if test="reqVO.leaveTimeHour != null and reqVO.leaveTimeHour != ''">
+            AND DATE_FORMAT(l.leave_time, '%H:00') = #{reqVO.leaveTimeHour}
+        </if>
         <if test="reqVO.parkDuration != null">
             AND l.park_duration = #{reqVO.parkDuration}
         </if>

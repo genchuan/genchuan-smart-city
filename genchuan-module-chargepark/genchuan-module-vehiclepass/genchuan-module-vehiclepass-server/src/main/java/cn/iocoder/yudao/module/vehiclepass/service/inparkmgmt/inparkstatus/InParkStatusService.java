@@ -10,10 +10,10 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparksta
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusSaveReqVO;
+import cn.iocoder.yudao.module.vehiclepass.constants.common.StationSimpleRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.inparkmgmt.inparkstatus.InParkStatusDO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 在停状态 Service 接口
@@ -112,4 +112,11 @@ public interface InParkStatusService {
      * @return 统计数据
      */
     InParkStatusChartRespVO getInParkStatusChart(InParkStatusChartReqVO chartReqVO);
+
+    /**
+     * 获得场站精简列表
+     *
+     * @return 场站列表
+     */
+    List<StationSimpleRespVO> getStationSimpleList();
 }

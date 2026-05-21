@@ -34,6 +34,7 @@ public class AbnormalLeaveDO extends BaseDO {
 
     private Long stationId;
 
+    @TableField(exist = false)
     private String stationName;
 
     private Long handleUserId;

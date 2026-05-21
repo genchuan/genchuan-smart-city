@@ -38,6 +38,9 @@
         <if test="query.enterTime != null and query.enterTime.length == 2">
             AND e.enter_time BETWEEN #{query.enterTime[0]} AND #{query.enterTime[1]}
         </if>
+        <if test="query.enterTimeHour != null and query.enterTimeHour != ''">
+            AND DATE_FORMAT(e.enter_time, '%H:00') = #{query.enterTimeHour}
+        </if>
         <if test="query.recordType != null">
             AND e.record_type = #{query.recordType}
         </if>
@@ -82,7 +85,7 @@
         FROM enter_record t1
         WHERE t1.deleted = 0
         <if test="start != null and end != null">
-            AND t1.enter_time BETWEEN #{start} AND #{end}
+            AND t1.enter_time &gt;= #{start} AND t1.enter_time &lt;= #{end}
         </if>
         <if test="stationId != null">
             AND t1.station_id = #{stationId}

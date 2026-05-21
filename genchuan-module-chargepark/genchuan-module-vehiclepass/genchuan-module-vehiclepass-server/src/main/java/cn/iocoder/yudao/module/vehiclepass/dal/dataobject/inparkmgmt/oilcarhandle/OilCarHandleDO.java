@@ -56,6 +56,7 @@ public class OilCarHandleDO extends BaseDO {
     /**
      * 场站名称
      */
+    @TableField(exist = false)
     private String stationName;
     /**
      * 处置人ID，关联system_user用户表

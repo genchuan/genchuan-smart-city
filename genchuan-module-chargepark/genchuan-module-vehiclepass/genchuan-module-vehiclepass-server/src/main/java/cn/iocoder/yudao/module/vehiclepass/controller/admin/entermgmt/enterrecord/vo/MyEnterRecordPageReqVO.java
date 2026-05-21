@@ -29,6 +29,9 @@ public class MyEnterRecordPageReqVO extends PageParam {
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] enterTime;
 
+    @Schema(description = "入场小时筛选，格式如 08:00、14:30")
+    private String enterTimeHour;
+
     @Schema(description = "记录类型，参见 enter_record_record_type 字典", example = "自动识别")
     private String recordType;
 

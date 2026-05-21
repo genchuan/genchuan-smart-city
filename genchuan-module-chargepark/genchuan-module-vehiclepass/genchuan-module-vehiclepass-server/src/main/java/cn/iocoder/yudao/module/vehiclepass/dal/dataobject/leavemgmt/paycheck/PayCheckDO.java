@@ -52,6 +52,7 @@ public class PayCheckDO extends BaseDO {
     /**
      * 场站名称
      */
+    @TableField(exist = false)
     private String stationName;
     /**
      * 核验人ID，关联system_user用户表

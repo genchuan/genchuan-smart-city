@@ -203,6 +203,7 @@ public class OilCarHandleServiceImpl implements OilCarHandleService {
         OilCarHandleDO updateObj = new OilCarHandleDO();
         updateObj.setId(reqVO.getId());
         updateObj.setHandleProgress(reqVO.getHandleProgress());
+        updateObj.setStatus(STATUS_CLOSED);
         carHandleMapper.updateById(updateObj);
     }
 

@@ -1,6 +1,5 @@
 package cn.iocoder.yudao.module.vehiclepass.service.inparkmgmt.inparkstatus;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusAlarmReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusChartReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusChartRespVO;
@@ -10,17 +9,17 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparksta
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusSaveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.inparkmgmt.inparkstatus.InParkStatusDO;
+import cn.iocoder.yudao.module.vehiclepass.dal.mysql.common.StationInfoMapper;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.inparkmgmt.inparkstatus.InParkStatusMapper;
+import cn.iocoder.yudao.module.vehiclepass.constants.common.StationSimpleRespVO;
 import cn.iocoder.yudao.module.vehiclepass.framework.util.MapValueUtils;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -28,7 +27,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.PARK_STATUS_NOT_EXISTS;
 
 /**
@@ -44,6 +42,9 @@ public class InParkStatusServiceImpl implements InParkStatusService {
 
     @Resource
     private InParkStatusMapper parkStatusMapper;
+
+    @Resource
+    private StationInfoMapper stationInfoMapper;
 
     @Override
     public Long createParkStatus(InParkStatusSaveReqVO createReqVO) {
@@ -106,6 +107,13 @@ public class InParkStatusServiceImpl implements InParkStatusService {
 
     @Override
     public PageResult<InParkStatusRespVO> getInParkStatusPage(InParkStatusPageReqVO pageReqVO) {
+        // 兼容前端传 true/false
+        String overTime = pageReqVO.getOverTime();
+        if ("true".equals(overTime)) {
+            pageReqVO.setOverTime("是");
+        } else if ("false".equals(overTime)) {
+            pageReqVO.setOverTime("否");
+        }
         Page<InParkStatusRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
         IPage<InParkStatusRespVO> pageResult = parkStatusMapper.selectPageJoinSpaceStation(page, pageReqVO);
         return new PageResult<>(pageResult.getRecords(), pageResult.getTotal());
@@ -155,6 +163,11 @@ public class InParkStatusServiceImpl implements InParkStatusService {
         updateObj.setId(reqVO.getId());
         updateObj.setRemark(reqVO.getAlarmContent());
         parkStatusMapper.updateById(updateObj);
+    }
+
+    @Override
+    public List<StationSimpleRespVO> getStationSimpleList() {
+        return stationInfoMapper.selectStationSimpleList();
     }
 
     @Override
