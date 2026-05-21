@@ -5,7 +5,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.comparemgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.comparemgmt.CompareMgmtDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.comparemgmt.CompareMgmtMapper;
-import cn.iocoder.yudao.module.studentmgmt.enums.DormCompareStatusEnum;
+import cn.iocoder.yudao.module.studentmgmt.enums.CompareStatusEnum;
 import com.alibaba.fastjson.JSONObject;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
@@ -42,7 +42,7 @@ public class CompareMgmtServiceImpl implements CompareMgmtService {
         // 插入
         CompareMgmtDO compareMgmt = BeanUtils.toBean(createReqVO, CompareMgmtDO.class);
         compareMgmt.setTotalScore(BigDecimal.ZERO);
-        compareMgmt.setStatus(DormCompareStatusEnum.DORM_COMPARE_STATUS_SCORING.getStatus());
+        compareMgmt.setStatus(CompareStatusEnum.SCORING.getStatus());
         compareMgmtMapper.insert(compareMgmt);
 
         // 记录操作日志上下文
@@ -113,7 +113,7 @@ public class CompareMgmtServiceImpl implements CompareMgmtService {
             compareMgmtDO.setScoreUser(reqVO.getScoreUser());
             compareMgmtDO.setTotalScore(reqVO.getTotalScore());
             // 打分完成后自动将状态修改为 “已汇总”
-            compareMgmtDO.setStatus(DormCompareStatusEnum.DORM_COMPARE_STATUS_SUMMARIZED.getStatus());
+            compareMgmtDO.setStatus(CompareStatusEnum.SUMMARIZED.getStatus());
             int i = compareMgmtMapper.updateById(compareMgmtDO);
             total += i;
             // 记录操作日志上下文

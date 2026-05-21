@@ -1,9 +1,10 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.studentinfo.vo;
 
+import cn.iocoder.yudao.framework.common.validation.IdCard;
+import cn.iocoder.yudao.framework.common.validation.Mobile;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-import java.util.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.Data;
 
 @Schema(description = "管理后台 - 学生信息新增/修改 Request VO")
 @Data
@@ -22,6 +23,7 @@ public class StudentInfoSaveReqVO {
 
     @Schema(description = "身份证号", requiredMode = Schema.RequiredMode.REQUIRED, example = "420222199901010001")
     @NotEmpty(message = "身份证号不能为空")
+    @IdCard
     private String idCard;
 
     @Schema(description = "学生照片地址")
@@ -56,9 +58,11 @@ public class StudentInfoSaveReqVO {
     private String status;
 
     @Schema(description = "联系电话")
+    @Mobile
     private String phone;
 
     @Schema(description = "家长联系电话")
+    @Mobile
     private String parentPhone;
 
     @Schema(description = "备注", example = "你猜")
