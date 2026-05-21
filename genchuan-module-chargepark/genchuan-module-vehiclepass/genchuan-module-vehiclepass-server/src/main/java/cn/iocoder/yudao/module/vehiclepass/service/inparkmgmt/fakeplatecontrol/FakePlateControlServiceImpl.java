@@ -207,6 +207,7 @@ public class FakePlateControlServiceImpl implements FakePlateControlService {
         // 更新记录
         FakePlateControlDO updateObj = new FakePlateControlDO();
         updateObj.setId(reqVO.getId());
+        updateObj.setStatus(STATUS_CLOSED);
         updateObj.setHandleProgress(reqVO.getHandleProgress());
         plateControlMapper.updateById(updateObj);
     }
