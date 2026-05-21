@@ -1,5 +1,8 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.staymgmt;
 
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
+import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -37,6 +40,8 @@ public class StayMgmtController {
 
     @Resource
     private StayMgmtService stayMgmtService;
+    @Resource
+    private DictDataApi dictDataApi;
 
     @PostMapping("/create")
     @Operation(summary = "创建留宿管理")
@@ -96,6 +101,21 @@ public class StayMgmtController {
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<StayMgmtDO> list = stayMgmtService.getStayMgmtPage(pageReqVO).getList();
+        CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.STAY_MGMT_STATUS.getType());
+        list = list.stream().map(item -> {
+
+            String status = item.getStatus();
+            if (statusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : statusDictDataList.getData()) {
+                    if (dictData.getValue().equals(status)) {
+                        status = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setStatus(status);
+            return item;
+        }).toList();
         // 导出 Excel
         ExcelUtils.write(response, "留宿管理.xls", "数据", StayMgmtRespVO.class,
                         BeanUtils.toBean(list, StayMgmtRespVO.class));

@@ -22,7 +22,7 @@ public class CompareMgmtRespVO {
     private String className;
 
     @Schema(description = "评比周期：周/月/学期", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("评比周期：周/月/学期")
+    @ExcelProperty("评比周期")
     private String cycle;
 
     @Schema(description = "总得分", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -46,7 +46,7 @@ public class CompareMgmtRespVO {
     private String scoreUser;
 
     @Schema(description = "状态：打分中/已汇总", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("状态：打分中/已汇总")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "你说的对")

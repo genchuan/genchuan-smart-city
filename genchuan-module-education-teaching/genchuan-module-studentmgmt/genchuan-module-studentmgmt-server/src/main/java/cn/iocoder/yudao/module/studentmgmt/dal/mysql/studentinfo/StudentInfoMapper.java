@@ -28,6 +28,7 @@ public interface StudentInfoMapper extends BaseMapperX<StudentInfoDO> {
                 .likeIfPresent(StudentInfoDO::getIdCard, reqVO.getIdCard())
                 .likeIfPresent(StudentInfoDO::getPhoto, reqVO.getPhoto())
                 .eqIfPresent(StudentInfoDO::getEducationLevel, reqVO.getEducationLevel())
+                .eqIfPresent(StudentInfoDO::getGrade, reqVO.getGrade())
                 .eqIfPresent(StudentInfoDO::getStudyForm, reqVO.getStudyForm())
                 .likeIfPresent(StudentInfoDO::getMajor, reqVO.getMajor())
                 .likeIfPresent(StudentInfoDO::getClassName, reqVO.getClassName())

@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.moralactivity;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -8,7 +9,9 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.moralactivity.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.moralactivity.MoralActivityDO;
+import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
 import cn.iocoder.yudao.module.studentmgmt.service.moralactivity.MoralActivityService;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,7 +36,8 @@ public class MoralActivityController {
 
     @Resource
     private MoralActivityService moralActivityService;
-
+    @Resource
+    private DictDataApi dictDataApi;
     @PostMapping("/create")
     @Operation(summary = "创建德育活动")
     @PreAuthorize("@ss.hasPermission('studentmgmt:moral-activity:create')")
@@ -92,6 +96,31 @@ public class MoralActivityController {
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<MoralActivityDO> list = moralActivityService.getMoralActivityPage(pageReqVO).getList();
+        CommonResult<List<DictDataRespDTO>> typeDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.MORAL_ACTIVITY_ACTIVITY_TYPE.getType());
+        CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.MORAL_ACTIVITY_STATUS.getType());
+        list = list.stream().map(item -> {
+            String activityType = item.getActivityType();
+            if (typeDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : typeDictDataList.getData()) {
+                    if (dictData.getValue().equals(activityType)) {
+                        activityType = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setActivityType(activityType);
+            String status = item.getStatus();
+            if (statusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : statusDictDataList.getData()) {
+                    if (dictData.getValue().equals(status)) {
+                        status = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setStatus(status);
+            return item;
+        }).toList();
         // 导出 Excel
         ExcelUtils.write(response, "德育活动.xls", "数据", MoralActivityRespVO.class,
                         BeanUtils.toBean(list, MoralActivityRespVO.class));

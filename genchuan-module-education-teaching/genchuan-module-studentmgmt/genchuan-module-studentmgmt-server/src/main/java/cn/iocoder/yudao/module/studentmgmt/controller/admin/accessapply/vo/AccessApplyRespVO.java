@@ -21,7 +21,7 @@ public class AccessApplyRespVO {
     private Long studentId;
 
     @Schema(description = "申请类型：应急出入/其他", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("申请类型：应急出入/其他")
+    @ExcelProperty("申请类型")
     private String applyType;
 
     @Schema(description = "申请原因", requiredMode = Schema.RequiredMode.REQUIRED, example = "不喜欢")
@@ -41,7 +41,7 @@ public class AccessApplyRespVO {
     private LocalDateTime auditTime;
 
     @Schema(description = "状态：待审核/已通过", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("状态：待审核/已通过")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "随便")
@@ -60,4 +60,4 @@ public class AccessApplyRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

@@ -21,11 +21,11 @@ public class MentalMgmtRespVO {
     private Long studentId;
 
     @Schema(description = "心理状态：正常/关注/高危", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("心理状态：正常/关注/高危")
+    @ExcelProperty("心理状态")
     private String mentalStatus;
 
     @Schema(description = "风险等级：低/中/高", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("风险等级：低/中/高")
+    @ExcelProperty("风险等级")
     private String riskLevel;
 
     @Schema(description = "评估时间")
@@ -45,7 +45,7 @@ public class MentalMgmtRespVO {
     private String interveneContent;
 
     @Schema(description = "状态：待评估/咨询中/已干预", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("状态：待评估/咨询中/已干预")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "随便")

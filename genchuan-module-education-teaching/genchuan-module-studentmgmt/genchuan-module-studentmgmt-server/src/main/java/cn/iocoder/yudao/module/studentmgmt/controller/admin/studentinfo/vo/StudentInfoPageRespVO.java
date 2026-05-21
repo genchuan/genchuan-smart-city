@@ -36,11 +36,11 @@ public class StudentInfoPageRespVO {
     private String photo;
 
     @Schema(description = "学历层次：中专/大专/本科/研究生", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("学历层次：中专/大专/本科/研究生")
+    @ExcelProperty("学历层次")
     private String educationLevel;
 
     @Schema(description = "学习形式：全日制/非全日制/函授", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("学习形式：全日制/非全日制/函授")
+    @ExcelProperty("学习形式")
     private String studyForm;
 
     @Schema(description = "专业", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -56,11 +56,11 @@ public class StudentInfoPageRespVO {
     private String className;
 
     @Schema(description = "学生类型：普通生/特长生/转学生", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("学生类型：普通生/特长生/转学生")
+    @ExcelProperty("学生类型")
     private String studentType;
 
     @Schema(description = "学籍状态：在籍/休学/退学/异动", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("学籍状态：在籍/休学/退学/异动")
+    @ExcelProperty("学籍状态")
     private String status;
 
     @Schema(description = "联系电话")

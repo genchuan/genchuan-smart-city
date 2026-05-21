@@ -21,7 +21,7 @@ public class BehaviorMgmtRespVO {
     private Long studentId;
 
     @Schema(description = "请假类型：事假/病假/其他", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("请假类型：事假/病假/其他")
+    @ExcelProperty("请假类型")
     private String leaveType;
 
     @Schema(description = "请假开始时间", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -37,7 +37,7 @@ public class BehaviorMgmtRespVO {
     private String leaveReason;
 
     @Schema(description = "审批级别：班主任/辅导员")
-    @ExcelProperty("审批级别：班主任/辅导员")
+    @ExcelProperty("审批级别")
     private String auditLevel;
 
     @Schema(description = "审批人")
@@ -53,7 +53,7 @@ public class BehaviorMgmtRespVO {
     private String attendanceSync;
 
     @Schema(description = "状态：待审批/已通过/已驳回", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("状态：待审批/已通过/已驳回")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "随便")
@@ -72,4 +72,4 @@ public class BehaviorMgmtRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

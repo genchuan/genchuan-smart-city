@@ -6,12 +6,12 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 /**
- * 目标管理计分方式
+ * 评比管理状态枚举
  */
 public enum CompareStatusEnum {
 
-    scoring("scoring","'打分中'"),
-    summarized("summarized","'已汇总'");
+    SCORING("scoring","'打分中'"),
+    SUMMARIZED("summarized","'已汇总'");
 
     /**
      * 状态

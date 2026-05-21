@@ -49,7 +49,7 @@ public class RegisterMgmtRespVO {
     private LocalDateTime confirmTime;
 
     @Schema(description = "状态：待审核/已录取", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("状态：待审核/已录取")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "你说的对")
@@ -68,4 +68,4 @@ public class RegisterMgmtRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

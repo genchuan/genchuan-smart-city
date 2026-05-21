@@ -256,11 +256,15 @@ public class DutyMgmtServiceImpl implements DutyMgmtService {
         for (Long id : ids) {
             DutyMgmtDO dutyMgmt = validateDutyMgmtExists(id);
 
-            // 状态不待打卡，则不能调班
+            // 状态不待打卡，则不能出车申请
             if (StringUtils.isNotBlank(dutyMgmt.getCarStatus())) {
                 if (!dutyMgmt.getCarStatus().equals(DutyCarStatusEnum.CAR_STATUS_APPROVED.getStatus())) {
                     throw exception("当前出车状态，不可申请");
                 }
+            }
+            // 状态不待打卡，则不能调班
+            if (!dutyMgmt.getStatus().equals(DutyStatusEnum.DUTY_STATUS_PENDING_CHECKIN.getStatus())) {
+                throw exception("非打卡状态，不可出车申请");
             }
 
             dutyMgmt.setCarStatus(DutyCarStatusEnum.CAR_STATUS_PENDING.getStatus());

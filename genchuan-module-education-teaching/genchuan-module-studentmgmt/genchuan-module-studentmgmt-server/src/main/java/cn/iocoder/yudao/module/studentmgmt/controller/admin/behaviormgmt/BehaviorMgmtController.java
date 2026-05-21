@@ -1,33 +1,32 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.behaviormgmt;
 
-import cn.iocoder.yudao.module.studentmgmt.controller.admin.mentalmgmt.vo.MentalMgmtChartRespVO;
-import org.springframework.web.bind.annotation.*;
-import jakarta.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.security.access.prepost.PreAuthorize;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Operation;
-
-import jakarta.validation.*;
-import jakarta.servlet.http.*;
-import java.util.*;
-import java.io.IOException;
-
+import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
-
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-
-import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
-import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
-
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.behaviormgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.behaviormgmt.BehaviorMgmtDO;
+import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
 import cn.iocoder.yudao.module.studentmgmt.service.behaviormgmt.BehaviorMgmtService;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.List;
+
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 @Tag(name = "学生管理后台 - 行为管理")
 @RestController
@@ -37,7 +36,8 @@ public class BehaviorMgmtController {
 
     @Resource
     private BehaviorMgmtService behaviorMgmtService;
-
+    @Resource
+    private DictDataApi dictDataApi;
     @PostMapping("/create")
     @Operation(summary = "创建行为管理")
     @PreAuthorize("@ss.hasPermission('studentmgmt:behavior-mgmt:create')")
@@ -96,6 +96,42 @@ public class BehaviorMgmtController {
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<BehaviorMgmtDO> list = behaviorMgmtService.getBehaviorMgmtPage(pageReqVO).getList();
+        CommonResult<List<DictDataRespDTO>> typeDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.BEHAVIOR_MGMT_LEAVE_TYPE.getType());
+        CommonResult<List<DictDataRespDTO>> auditDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.BEHAVIOR_MGMT_AUDIT_LEVEL.getType());
+        CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.BEHAVIOR_MGMT_STATUS.getType());
+        list = list.stream().map(item -> {
+            String leaveType = item.getLeaveType();
+            if (typeDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : typeDictDataList.getData()) {
+                    if (dictData.getValue().equals(leaveType)) {
+                        leaveType = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setLeaveType(leaveType);
+            String status = item.getStatus();
+            if (statusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : statusDictDataList.getData()) {
+                    if (dictData.getValue().equals(status)) {
+                        status = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setStatus(status);
+            String auditLevel = item.getAuditLevel();
+            if (auditDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : auditDictDataList.getData()) {
+                    if (dictData.getValue().equals(auditLevel)) {
+                        auditLevel = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setAuditLevel(auditLevel);
+            return item;
+        }).toList();
         // 导出 Excel
         ExcelUtils.write(response, "行为管理.xls", "数据", BehaviorMgmtRespVO.class,
                         BeanUtils.toBean(list, BehaviorMgmtRespVO.class));

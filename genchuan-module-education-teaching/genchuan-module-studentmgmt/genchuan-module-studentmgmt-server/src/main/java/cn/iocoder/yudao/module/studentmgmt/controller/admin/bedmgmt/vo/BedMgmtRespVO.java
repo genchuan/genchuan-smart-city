@@ -45,7 +45,7 @@ public class BedMgmtRespVO {
     private LocalDateTime adjustTime;
 
     @Schema(description = "状态：未分配/已分配", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("状态：未分配/已分配")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "你猜")
@@ -64,4 +64,4 @@ public class BedMgmtRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

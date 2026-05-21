@@ -30,11 +30,11 @@ public class TargetMgmtRespVO {
     private BigDecimal warnThreshold;
 
     @Schema(description = "评价人类型：教职工/家长/领导", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("评价人类型：教职工/家长/领导")
+    @ExcelProperty("评价人类型")
     private String evaluatorType;
 
     @Schema(description = "计分方式：累计赋分/接口赋分", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("计分方式：累计赋分/接口赋分")
+    @ExcelProperty("计分方式")
     private String scoreType;
 
     @Schema(description = "启用时间")
@@ -46,7 +46,7 @@ public class TargetMgmtRespVO {
     private LocalDateTime disableTime;
 
     @Schema(description = "状态：未启用/已启用", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("状态：未启用/已启用")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "你说的对")
@@ -65,4 +65,4 @@ public class TargetMgmtRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

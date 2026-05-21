@@ -46,7 +46,7 @@ public class DormAssignRespVO {
     private BigDecimal finishRate;
 
     @Schema(description = "状态：未分配/已分配", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("状态：未分配/已分配")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "你猜")
@@ -65,4 +65,4 @@ public class DormAssignRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

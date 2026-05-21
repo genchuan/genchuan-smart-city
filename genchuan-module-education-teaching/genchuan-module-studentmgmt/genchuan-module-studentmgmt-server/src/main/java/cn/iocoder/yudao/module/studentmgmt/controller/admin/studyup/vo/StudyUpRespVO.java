@@ -25,7 +25,7 @@ public class StudyUpRespVO {
     private String schoolName;
 
     @Schema(description = "院校类型：公办/民办", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("院校类型：公办/民办")
+    @ExcelProperty("院校类型")
     private String schoolType;
 
     @Schema(description = "意向专业")
@@ -45,7 +45,7 @@ public class StudyUpRespVO {
     private LocalDateTime recordTime;
 
     @Schema(description = "状态：待规划/已规划", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("状态：待规划/已规划")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "你说的对")
@@ -64,4 +64,4 @@ public class StudyUpRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

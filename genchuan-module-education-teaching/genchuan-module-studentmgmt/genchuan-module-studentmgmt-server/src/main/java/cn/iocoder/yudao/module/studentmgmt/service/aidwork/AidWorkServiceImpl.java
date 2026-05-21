@@ -182,8 +182,8 @@ public class AidWorkServiceImpl implements AidWorkService {
         }
         JSONObject passJson = aidWorkMapper.selectTotalCount(startTime, endTime, AidWorkStatusEnum.AID_WORK_STATUS_1.getStatus());
         if (null != passJson) {
-            Long count = baseApplyVo.getLong("count");
-            Double amount = baseApplyVo.getDouble("total");
+            Long count = passJson.getLong("count");
+            Double amount = passJson.getDouble("total");
             vo.setTotalPassCount(count);
             vo.setTotalGrantAmount(amount);
         }
