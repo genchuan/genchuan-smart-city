@@ -24,7 +24,7 @@ public class TimePermissionCreateReqVO {
     @NotBlank(message = "准入权限不能为空")
     private String permission;
 
-    @Schema(description = "最长停留时长，单位：分钟", example = "720")
+    @Schema(description = "最长停留时长（分钟）", example = "720")
     private Integer maxStay;
 
     @Schema(description = "工作日配置", example = "周一至周五")
