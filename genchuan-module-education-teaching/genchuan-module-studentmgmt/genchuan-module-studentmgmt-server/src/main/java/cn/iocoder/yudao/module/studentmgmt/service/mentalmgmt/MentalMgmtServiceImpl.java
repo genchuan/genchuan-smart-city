@@ -45,13 +45,15 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
     @LogRecord(type = VIOLATE_TYPE, subType = VIOLATE_CREATE_SUB_TYPE, bizNo = "{{#mental.id}}",
             success = VIOLATE_CREATE_SUCCESS)
     public Long createMentalMgmt(MentalMgmtSaveReqVO createReqVO) {
+        // 查询所有学生的姓名
+        StudentInfoDO studentInfoDO = studentInfoMapper.selectById(createReqVO.getStudentId());
+        if (null == studentInfoDO) {
+            throw exception(500, "学生信息不存在");
+        }
         // 插入
         MentalMgmtDO mentalMgmt = BeanUtils.toBean(createReqVO, MentalMgmtDO.class);
         mentalMgmtMapper.insert(mentalMgmt);
 
-
-        // 查询所有学生的姓名
-        StudentInfoDO studentInfoDO = studentInfoMapper.selectById(mentalMgmt.getStudentId());
         // 获取所有学生的姓名
         String studentName = studentInfoDO.getName();
 
@@ -65,6 +67,11 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
 
     @Override
     public void updateMentalMgmt(MentalMgmtSaveReqVO updateReqVO) {
+        // 查询所有学生的姓名
+        StudentInfoDO studentInfoDO = studentInfoMapper.selectById(updateReqVO.getStudentId());
+        if (null == studentInfoDO) {
+            throw exception(500, "学生信息不存在");
+        }
         // 校验存在
         validateMentalMgmtExists(updateReqVO.getId());
         // 更新
