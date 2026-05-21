@@ -12,10 +12,10 @@ import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.AiAler
 import cn.iocoder.yudao.module.kitchen.controller.admin.aialertmessage.vo.add.AddAiAlertMessageReq;
 import cn.iocoder.yudao.module.kitchen.dal.dataobject.aialertmessage.AiAlertMessageDO;
 import cn.iocoder.yudao.module.kitchen.service.aialertmessage.AiAlertMessageService;
-import cn.iocoder.yudao.module.stationresource.api.parking.ParkingSpaceInfoApi;
-import cn.iocoder.yudao.module.stationresource.api.parking.dto.ParkingSpaceInfoRespDTO;
-import cn.iocoder.yudao.module.stationresource.api.station.StationInfoApi;
-import cn.iocoder.yudao.module.stationresource.api.station.dto.StationInfoRespDTO;
+import cn.iocoder.yudao.module.stationresource.api.stationresource.ParkingSpaceInfoApi;
+import cn.iocoder.yudao.module.stationresource.api.stationresource.StationInfoApi;
+import cn.iocoder.yudao.module.stationresource.api.stationresource.dto.ParkingSpaceInfoRespDTO;
+import cn.iocoder.yudao.module.stationresource.api.stationresource.dto.StationInfoRespDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -135,7 +135,7 @@ public class AiAlertMessageController {
         List<Long> idList = Arrays.stream(ids.split(","))
                 .map(String::trim).map(Long::valueOf)
                 .collect(java.util.stream.Collectors.toList());
-        return success(stationInfoApi.getStationList(idList).getCheckedData());
+        return success(stationInfoApi.listStationsByIds(idList).getCheckedData());
     }
 
     @GetMapping("/test-station-map")
@@ -164,7 +164,14 @@ public class AiAlertMessageController {
         List<Long> idList = Arrays.stream(ids.split(","))
                 .map(String::trim).map(Long::valueOf)
                 .collect(java.util.stream.Collectors.toList());
-        return success(parkingSpaceInfoApi.getSpaceList(idList).getCheckedData());
+        return success(parkingSpaceInfoApi.listSpacesByIds(idList).getCheckedData());
+    }
+
+    @GetMapping("/test-parking-list-by-station")
+    @Operation(summary = "RPC测试-按场站ID获取车位列表")
+    @Parameter(name = "stationId", description = "场站ID", required = true, example = "1")
+    public CommonResult<List<ParkingSpaceInfoRespDTO>> testParkingListByStation(@RequestParam("stationId") Long stationId) {
+        return success(parkingSpaceInfoApi.listSpacesByStationId(stationId).getCheckedData());
     }
 
     @GetMapping("/test-parking-map")

@@ -6,9 +6,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * 车位信息 RPC 响应 DTO（完整版）
- *
- * <p>包含 parking_space_info 全部字段
+ * 车位信息 RPC 响应 DTO（完整版，与分页 RespVO 对齐）
  */
 @Schema(description = "RPC - 车位信息响应（完整版）")
 @Data
@@ -22,6 +20,9 @@ public class ParkingSpaceInfoRespDTO {
 
     @Schema(description = "所属场站 ID（关联 station_info）")
     private Long stationId;
+
+    @Schema(description = "所属场站名称")
+    private String stationName;
 
     @Schema(description = "所属车库")
     private String garage;
@@ -64,4 +65,18 @@ public class ParkingSpaceInfoRespDTO {
 
     @Schema(description = "备用字段2")
     private String reserve2;
+
+    // ==================== BaseDO 审计字段 ====================
+
+    @Schema(description = "创建时间")
+    private LocalDateTime createTime;
+
+    @Schema(description = "创建者")
+    private String creator;
+
+    @Schema(description = "更新者")
+    private String updater;
+
+    @Schema(description = "更新时间")
+    private LocalDateTime updateTime;
 }

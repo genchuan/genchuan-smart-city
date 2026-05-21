@@ -22,13 +22,13 @@ import java.util.stream.Collectors;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 /**
- * 场站信息 RPC 实现（完整版）
+ * 场站信息 RPC 实现 V2（完整版）
  *
- * <p>路径与旧的 api/station/StationInfoApiImpl 不冲突（/station vs /station-info），两套可并存
+ * <p>类名加 V2 后缀，避免与旧 api/station/StationInfoApiImpl 的 Spring Bean 名冲突
  */
 @RestController
 @Validated
-public class StationInfoApiImpl implements StationInfoApi {
+public class StationInfoApiImplV2 implements StationInfoApi {
 
     @Resource
     private StationInfoMapper stationInfoMapper;
@@ -109,7 +109,7 @@ public class StationInfoApiImpl implements StationInfoApi {
     /**
      * StationInfoDO + AreaInfoDO → StationInfoRespDTO
      *
-     * <p>完整映射 station_info 全部字段 + 片区坐标/名称 + 空位数计算
+     * <p>完整映射 station_info + BaseDO 全部字段 + 片区坐标/名称 + 空位数计算
      */
     private StationInfoRespDTO toDTO(StationInfoDO s, AreaInfoDO area) {
         StationInfoRespDTO dto = new StationInfoRespDTO();
@@ -121,6 +121,8 @@ public class StationInfoApiImpl implements StationInfoApi {
         dto.setAddress(s.getAddress());
         dto.setSpaceTotal(s.getSpaceTotal());
         dto.setUserId(s.getUserId());
+        // leaderName 需要跨模块查 system_user,RPC 层不填充,调用方自行注入
+        dto.setLeaderName(null);
         dto.setFeeStandard(s.getFeeStandard());
         dto.setAreaId(s.getAreaId());
         dto.setOperateType(s.getOperateType());
@@ -132,6 +134,11 @@ public class StationInfoApiImpl implements StationInfoApi {
         dto.setRemark(s.getRemark());
         dto.setReserve1(s.getReserve1());
         dto.setReserve2(s.getReserve2());
+        // BaseDO 审计字段
+        dto.setCreateTime(s.getCreateTime());
+        dto.setCreator(s.getCreator());
+        dto.setUpdater(s.getUpdater());
+        dto.setUpdateTime(s.getUpdateTime());
         // 片区跨表字段
         if (area != null) {
             dto.setAreaName(area.getName());

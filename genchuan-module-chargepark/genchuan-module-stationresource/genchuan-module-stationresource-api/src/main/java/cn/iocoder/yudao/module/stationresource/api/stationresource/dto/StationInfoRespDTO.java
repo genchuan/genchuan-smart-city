@@ -7,9 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * 场站信息 RPC 响应 DTO（完整版）
- *
- * <p>包含 station_info 全部字段 + 片区坐标 + 空位数计算值
+ * 场站信息 RPC 响应 DTO（完整版，与分页 RespVO 对齐）
  */
 @Schema(description = "RPC - 场站信息响应（完整版）")
 @Data
@@ -36,11 +34,17 @@ public class StationInfoRespDTO {
     @Schema(description = "负责人 ID（关联 system_user）")
     private Long userId;
 
+    @Schema(description = "负责人名字")
+    private String leaderName;
+
     @Schema(description = "收费标准")
     private String feeStandard;
 
     @Schema(description = "所属片区 ID（关联 area_info）")
     private Long areaId;
+
+    @Schema(description = "所属片区名字")
+    private String areaName;
 
     @Schema(description = "运营类型（如：直接管理/甲方代运营）")
     private String operateType;
@@ -69,10 +73,21 @@ public class StationInfoRespDTO {
     @Schema(description = "备用字段2")
     private String reserve2;
 
-    // ==================== 跨表补充（来自 area_info） ====================
+    // ==================== BaseDO 审计字段 ====================
 
-    @Schema(description = "片区名称")
-    private String areaName;
+    @Schema(description = "创建时间")
+    private LocalDateTime createTime;
+
+    @Schema(description = "创建者")
+    private String creator;
+
+    @Schema(description = "更新者")
+    private String updater;
+
+    @Schema(description = "更新时间")
+    private LocalDateTime updateTime;
+
+    // ==================== 跨表补充（来自 area_info） ====================
 
     @Schema(description = "经度（来自片区坐标）")
     private BigDecimal lon;
