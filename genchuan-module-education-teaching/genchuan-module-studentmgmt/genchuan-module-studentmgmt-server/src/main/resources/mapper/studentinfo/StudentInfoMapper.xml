@@ -167,4 +167,100 @@
             AND create_time between #{startTime} AND #{endTime}
         </if>
     </select>
+    <sql id="baseColumns">
+        (SELECT h.id, '荣誉' AS recordType, honor_name AS recordTitle, s.`name` AS studentName, s.class_name AS className, h.creator, h.create_time FROM `honor_mgmt` AS h LEFT JOIN student_info AS s ON s.id = h.student_id
+        WHERE h.deleted = 0
+        <if test="grade != null">
+            AND grade = #{grade}
+        </if>
+        <if test="className != null">
+            AND class_name = #{className}
+        </if>
+        <if test="startTime != null and endTime !=null ">
+            AND h.create_time between #{startTime} AND #{endTime}
+        </if>
+        )
+        UNION
+        (SELECT b.id, '行为' AS recordType, leave_reason AS recordTitle, s.`name` AS studentName, s.class_name AS className, b.creator, b.create_time FROM `behavior_mgmt` AS b LEFT JOIN student_info AS s ON s.id = b.student_id
+        WHERE b.deleted = 0
+        <if test="grade != null">
+            AND grade = #{grade}
+        </if>
+        <if test="className != null">
+            AND class_name = #{className}
+        </if>
+        <if test="startTime != null and endTime !=null ">
+            AND b.create_time BETWEEN #{startTime} AND #{endTime}
+        </if>
+        )
+        UNION
+        (SELECT v.id, '行为' AS recordType, violate_reason AS recordTitle, s.`name` AS studentName, s.class_name AS className, v.creator, v.create_time FROM `violate_mgmt` AS v LEFT JOIN student_info AS s ON s.id = v.student_id
+        WHERE v.deleted = 0
+        <if test="grade != null">
+            AND grade = #{grade}
+        </if>
+        <if test="className != null">
+            AND class_name = #{className}
+        </if>
+        <if test="startTime != null and endTime !=null ">
+            AND v.create_time BETWEEN #{startTime} AND #{endTime}
+        </if>
+        )
+        UNION
+        (SELECT a.id, '考评' AS recordType, a.class_name AS recordTitle, '' AS studentName, a.class_name AS className, a.creator, a.create_time FROM `assess_mgmt` AS a LEFT JOIN student_info AS s ON s.class_name = a.class_name
+        WHERE a.deleted = 0
+        <if test="className != null">
+            AND a.class_name = #{className}
+        </if>
+        <if test="grade != null">
+            AND s.grede = #{grade}
+        </if>
+        <if test="startTime != null and endTime !=null ">
+            AND a.create_time BETWEEN #{startTime} AND #{endTime}
+        </if>
+        )
+        UNION
+        (SELECT m.id, '心理' AS recordType, intervene_content AS recordTitle, s.`name` AS studentName, s.class_name AS className, m.creator, m.create_time FROM `mental_mgmt` AS m LEFT JOIN student_info AS s ON s.id = m.student_id
+        WHERE m.deleted = 0
+        <if test="grade != null">
+            AND grade = #{grade}
+        </if>
+        <if test="className != null">
+            AND class_name = #{className}
+        </if>
+        <if test="startTime != null and endTime !=null ">
+            AND m.create_time BETWEEN #{startTime} AND #{endTime}
+        </if>
+        )
+        UNION
+        (SELECT f.id, '资助' AS recordType, f.remark AS recordTitle, s.`name` AS studentName, s.class_name AS className, f.creator, f.create_time FROM `fund_system` AS f LEFT JOIN student_info AS s ON s.id = f.student_id
+        WHERE f.deleted = 0
+        <if test="grade != null">
+            AND grade = #{grade}
+        </if>
+        <if test="className != null">
+            AND class_name = #{className}
+        </if>
+        <if test="startTime != null and endTime !=null ">
+            AND f.create_time BETWEEN #{startTime} AND #{endTime}
+        </if>
+        )
+        ORDER BY create_time
+    </sql>
+
+    <select id="selectWorkHomePage"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.workhome.vo.WorkHomeRespVO">
+        <include refid="baseColumns">
+
+        </include>
+        LIMIT #{pageSize} OFFSET #{pageNo}
+
+    </select>
+    <select id="selectWorkHomePageTotal" resultType="java.lang.Long">
+        select count(*) from (
+        <include refid="baseColumns">
+
+        </include>
+        ) as total_count
+    </select>
 </mapper>
