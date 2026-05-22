@@ -66,7 +66,7 @@ public class MemberConfigController {
     @Operation(summary = "启用会员配置")
     @PreAuthorize("@ss.hasPermission('usermerchant:member-config:enable')")
     public CommonResult<Boolean> enableMemberConfig(@Valid @RequestBody MemberConfigStatusReqVO reqVO) {
-        memberConfigService.updateConfigStatus(reqVO.getIds(), "已启用");
+        memberConfigService.updateConfigStatus(reqVO.getIds(), 1);
         return success(true);
     }
 
@@ -74,7 +74,7 @@ public class MemberConfigController {
     @Operation(summary = "禁用会员配置")
     @PreAuthorize("@ss.hasPermission('usermerchant:member-config:disable')")
     public CommonResult<Boolean> disableMemberConfig(@Valid @RequestBody MemberConfigStatusReqVO reqVO) {
-        memberConfigService.updateConfigStatus(reqVO.getIds(), "未启用");
+        memberConfigService.updateConfigStatus(reqVO.getIds(), 0);
         return success(true);
     }
 

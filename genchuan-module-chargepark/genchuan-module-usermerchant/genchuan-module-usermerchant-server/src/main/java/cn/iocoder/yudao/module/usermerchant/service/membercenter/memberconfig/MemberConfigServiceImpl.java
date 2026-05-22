@@ -102,9 +102,9 @@ public class MemberConfigServiceImpl implements MemberConfigService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     @LogRecord(type = TYPE_MEMBER_CONFIG, subType = SUB_TYPE_UPDATE_CONFIG_STATUS,
-            bizNo = "{{{#ids}}}",
+            bizNo = "{{#ids}}",
             success = SUCCESS_UPDATE_CONFIG_STATUS)
-    public void updateConfigStatus(List<Long> ids, String status) {
+    public void updateConfigStatus(List<Long> ids, Integer status) {
         if (CollectionUtils.isEmpty(ids)) {
             return;
         }
