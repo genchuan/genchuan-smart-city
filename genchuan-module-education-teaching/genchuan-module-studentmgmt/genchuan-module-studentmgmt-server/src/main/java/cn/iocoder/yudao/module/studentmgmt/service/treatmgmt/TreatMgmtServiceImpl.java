@@ -173,7 +173,7 @@ public class TreatMgmtServiceImpl implements TreatMgmtService {
         // 完成就诊登记，记录就诊内容及登记时间，更新就诊状态
         treatMgmtDO.setStatus(TreatStatusEnum.VISITED.getStatus());
         treatMgmtDO.setFeedbackTime(reqVO.getFeedbackTime());
-        treatMgmtDO.setReserve1(reqVO.getFeedbackContent());
+        treatMgmtDO.setFeedbackContent(reqVO.getFeedbackContent());
         // 更新
         int i = treatMgmtMapper.updateById(treatMgmtDO);
         if (i > 0) {
