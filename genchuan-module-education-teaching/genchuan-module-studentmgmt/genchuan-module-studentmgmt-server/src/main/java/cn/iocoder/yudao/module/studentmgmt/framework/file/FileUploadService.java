@@ -62,7 +62,7 @@ public class FileUploadService {
         // 生成唯一文件名
         String originalFilename = file.getOriginalFilename();
         String fileExtension = getFileExtension(originalFilename);
-        String fileName = "student/" + UUID.randomUUID() + fileExtension;
+        String fileName = "student/" + UUID.randomUUID().toString().replace("-", "") + fileExtension;
 
         // 上传到MinIO
         minioClient.putObject(
