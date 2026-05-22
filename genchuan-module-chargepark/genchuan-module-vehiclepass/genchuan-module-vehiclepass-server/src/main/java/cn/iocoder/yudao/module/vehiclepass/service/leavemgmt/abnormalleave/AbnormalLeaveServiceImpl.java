@@ -166,6 +166,7 @@ public class AbnormalLeaveServiceImpl implements AbnormalLeaveService {
         AbnormalLeaveDO updateObj = new AbnormalLeaveDO();
         updateObj.setId(reqVO.getId());
         updateObj.setHandleProgress(reqVO.getHandleProgress());
+        updateObj.setStatus(STATUS_CLOSED);
         updateObj.setHandleTime(LocalDateTime.now());
         leaveMapper.updateById(updateObj);
     }
