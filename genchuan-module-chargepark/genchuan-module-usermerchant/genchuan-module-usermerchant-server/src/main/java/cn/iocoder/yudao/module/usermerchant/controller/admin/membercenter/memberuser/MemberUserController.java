@@ -99,18 +99,18 @@ public class MemberUserController {
     }
 
     @PutMapping("/disable")
-    @Operation(summary = "启用会员配置")
+    @Operation(summary = "禁用会员配置")
     @PreAuthorize("@ss.hasPermission('usermerchant:member-user:disable')")
     public CommonResult<Boolean> disableMemberUser(@Valid @RequestBody MemberUserStatusReqVO reqVO) {
-        memberUserService.updateUserStatus(reqVO.getIds(), "未启用");
+        memberUserService.updateUserStatus(reqVO.getIds(), 0);
         return success(true);
     }
 
     @PutMapping("/enable")
-    @Operation(summary = "禁用会员配置")
+    @Operation(summary = "启用会员配置")
     @PreAuthorize("@ss.hasPermission('usermerchant:member-user:enable')")
     public CommonResult<Boolean> enableMemberUser(@Valid @RequestBody MemberUserStatusReqVO reqVO) {
-        memberUserService.updateUserStatus(reqVO.getIds(), "已启用");
+        memberUserService.updateUserStatus(reqVO.getIds(), 1);
         return success(true);
     }
 
