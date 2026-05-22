@@ -27,11 +27,12 @@ public class AreaInfoRespVO {
     private String district;
 
     @Schema(description = "[负责人名称] 片区名称",  example = "张得法")
-    @ExcelProperty("负责人名称")
+    @ExcelProperty("负责人")
     private String leaderName;
 
     @Schema(description = "[负责人] 关联芋道用户表system_user", example = "18362")
-    @ExcelProperty("负责人")
+    @ExcelIgnore
+//    @ExcelProperty("负责人")
     private Long userId;
 
     @Schema(description = "[联系电话] 联系电话")
