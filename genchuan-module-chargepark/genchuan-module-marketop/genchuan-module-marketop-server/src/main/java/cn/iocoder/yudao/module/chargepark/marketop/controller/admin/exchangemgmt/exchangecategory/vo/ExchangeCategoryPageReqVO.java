@@ -18,4 +18,6 @@ public class ExchangeCategoryPageReqVO extends PageParam {
     @Schema(description = "类目状态（未生效/已生效/已禁用）")
     private String status;
 
+    @Schema(description = "适用范围")
+    private String scope;
 }

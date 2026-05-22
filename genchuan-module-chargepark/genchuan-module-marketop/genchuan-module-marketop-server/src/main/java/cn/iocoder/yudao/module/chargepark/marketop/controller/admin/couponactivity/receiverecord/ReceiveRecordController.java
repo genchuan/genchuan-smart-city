@@ -6,10 +6,8 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.receiverecord.vo.*;
-import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.CouponMgmtDO;
-import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.ReceiveRecordDO;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.ReceiveRecordStatusEnum;
-import cn.iocoder.yudao.module.chargepark.marketop.service.couponactivity.couponmgmt.CouponMgmtService;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.ReceiveRecordSyncStatusEnum;
 import cn.iocoder.yudao.module.chargepark.marketop.service.couponactivity.receiverecord.ReceiveRecordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -38,24 +36,13 @@ public class ReceiveRecordController {
     @Resource
     private AdminUserApi adminUserApi;
 
-    @Resource
-    private CouponMgmtService couponMgmtService;
-
     @GetMapping("/page")
     @Operation(summary = "获得领用记录分页")
     @PreAuthorize("@ss.hasPermission('marketop:receive-record:query')")
     public CommonResult<PageResult<ReceiveRecordRespVO>> getPage(ReceiveRecordPageReqVO reqVO) {
-//        // 如果startTime和endTime都为空，且date不为空，将date转为当天开始和结束时间
-//        if (reqVO.getStartTime() == null && reqVO.getEndTime() == null
-//                && reqVO.getDate() != null && !reqVO.getDate().isEmpty()) {
-//            java.time.LocalDate localDate = java.time.LocalDate.parse(reqVO.getDate());
-//            reqVO.setStartTime(localDate.atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
-//            reqVO.setEndTime(localDate.plusDays(1).atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
-//        }
-        PageResult<ReceiveRecordDO> pageResult = receiveRecordService.getPage(reqVO);
-        PageResult<ReceiveRecordRespVO> bean = BeanUtils.toBean(pageResult, ReceiveRecordRespVO.class);
-        injectUserNames(bean.getList());
-        return CommonResult.success(bean);
+        PageResult<ReceiveRecordRespVO> pageResult = receiveRecordService.getPageWithJoin(reqVO);
+        injectCreatorNames(pageResult.getList());
+        return CommonResult.success(pageResult);
     }
 
     @GetMapping("/get")
@@ -63,9 +50,8 @@ public class ReceiveRecordController {
     @Parameter(name = "id", description = "主键ID", required = true)
     @PreAuthorize("@ss.hasPermission('marketop:receive-record:query')")
     public CommonResult<ReceiveRecordRespVO> get(@RequestParam("id") Long id) {
-        ReceiveRecordDO receiveRecord = receiveRecordService.get(id);
-        ReceiveRecordRespVO respVO = BeanUtils.toBean(receiveRecord, ReceiveRecordRespVO.class);
-        if (respVO != null) injectUserNames(Collections.singletonList(respVO));
+        ReceiveRecordRespVO respVO = receiveRecordService.getWithJoin(id);
+        if (respVO != null) injectCreatorNames(Collections.singletonList(respVO));
         return CommonResult.success(respVO);
     }
 
@@ -82,13 +68,14 @@ public class ReceiveRecordController {
     @PreAuthorize("@ss.hasPermission('marketop:receive-record:query')")
     public void export(ReceiveRecordPageReqVO reqVO, HttpServletResponse response) throws IOException {
         reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        PageResult<ReceiveRecordDO> pageResult = receiveRecordService.getPage(reqVO);
-        List<ReceiveRecordRespVO> list = BeanUtils.toBean(pageResult.getList(), ReceiveRecordRespVO.class);
-        injectUserNames(list);
-        list.forEach(item -> {
+        PageResult<ReceiveRecordRespVO> pageResult = receiveRecordService.getPageWithJoin(reqVO);
+        injectCreatorNames(pageResult.getList());
+        pageResult.getList().forEach(item -> {
             item.setStatus(ReceiveRecordStatusEnum.labelOf(item.getStatus()));
+            item.setSyncStatus(ReceiveRecordSyncStatusEnum.labelOf(item.getSyncStatus()));
         });
-        ExcelUtils.write(response, "领用记录.xlsx", "数据", ReceiveRecordRespVO.class, list);
+        List<ReceiveRecordExportExcelVO> exportList = BeanUtils.toBean(pageResult.getList(), ReceiveRecordExportExcelVO.class);
+        ExcelUtils.write(response, "领用记录.xlsx", "数据", ReceiveRecordExportExcelVO.class, exportList);
     }
 
     @GetMapping("/chart")
@@ -98,47 +85,21 @@ public class ReceiveRecordController {
         return CommonResult.success(receiveRecordService.getChart());
     }
 
-    private void injectUserNames(List<ReceiveRecordRespVO> list) {
+    private void injectCreatorNames(List<ReceiveRecordRespVO> list) {
         if (list == null || list.isEmpty()) return;
-        Set<Long> userIds = new HashSet<>();
-        Set<Long> couponIds = new HashSet<>();
+        Set<Long> creatorIds = new HashSet<>();
         for (var item : list) {
             if (StrUtil.isNotBlank(item.getCreator())) {
                 Long id = safeParseLong(item.getCreator());
-                if (id != null) userIds.add(id);
-            }
-            if (item.getUserId() != null) {
-                userIds.add(item.getUserId());
-            }
-            if (item.getCouponId() != null) {
-                couponIds.add(item.getCouponId());
+                if (id != null) creatorIds.add(id);
             }
         }
-        // 翻译用户名称
-        if (!userIds.isEmpty()) {
-            Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
+        if (!creatorIds.isEmpty()) {
+            Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(creatorIds);
             for (var item : list) {
                 if (StrUtil.isNotBlank(item.getCreator())) {
                     AdminUserRespDTO user = userMap.get(safeParseLong(item.getCreator()));
                     if (user != null) item.setCreatorName(user.getNickname());
-                }
-                if (item.getUserId() != null) {
-                    AdminUserRespDTO user = userMap.get(item.getUserId());
-                    if (user != null) item.setUserName(user.getNickname());
-                }
-            }
-        }
-        // 翻译优惠券名称
-        if (!couponIds.isEmpty()) {
-            Map<Long, String> couponNameMap = new HashMap<>();
-            for (Long couponId : couponIds) {
-                CouponMgmtDO coupon = couponMgmtService.get(couponId);
-                if (coupon != null) couponNameMap.put(couponId, coupon.getName());
-            }
-            for (var item : list) {
-                if (item.getCouponId() != null) {
-                    String name = couponNameMap.get(item.getCouponId());
-                    if (name != null) item.setCouponName(name);
                 }
             }
         }

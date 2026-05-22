@@ -87,11 +87,11 @@ public class StationInfoRespVO {
     private String remark;
 
     @Schema(description = "[备用字段1] VARCHAR(100)")
-    @ExcelProperty("备用字段1")
+    @ExcelIgnore
     private String reserve1;
 
     @Schema(description = "[备用字段2] VARCHAR(100)")
-    @ExcelProperty("备用字段2")
+    @ExcelIgnore
     private String reserve2;
 
     @Schema(description = "[创建时间] 记录创建时间")

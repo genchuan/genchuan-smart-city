@@ -21,4 +21,12 @@ public enum CouponMgmtTypeEnum {
         }
         return value;
     }
+
+    public static String valueOfLabel(String label) {
+        if (label == null) return null;
+        for (CouponMgmtTypeEnum e : values()) {
+            if (e.label.equals(label)) return e.value;
+        }
+        return null;
+    }
 }

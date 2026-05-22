@@ -52,10 +52,9 @@ public interface ScheduleViewMapper extends BaseMapperX<ScheduleViewDO> {
      * 如果reqVO.month为空，则统计所有数据
      *
      * @param reqVO 查询参数
-     * @return 排班统计图表数据
+     * @return 排班统计图表数据列表
      */
-    @MapKey("userId")
-    Map<Long, ScheduleViewChartData> selectScheduleViewChartData(@Param("reqVO") ScheduleViewChartReqVO reqVO);
+    List<ScheduleViewChartData> selectScheduleViewChartData(@Param("reqVO") ScheduleViewChartReqVO reqVO);
 
     /**
      * 查询排班统计卡片数据

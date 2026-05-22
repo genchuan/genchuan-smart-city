@@ -64,4 +64,10 @@ public class CardConfigRespVO {
     @Schema(description = "更新时间")
     private LocalDateTime updateTime;
 
+    @Schema(description = "场站ID，逗号分隔")
+    private String stationId;
+
+    @Schema(description = "场站名称，逗号分隔")
+    private String stationName;
+
 }

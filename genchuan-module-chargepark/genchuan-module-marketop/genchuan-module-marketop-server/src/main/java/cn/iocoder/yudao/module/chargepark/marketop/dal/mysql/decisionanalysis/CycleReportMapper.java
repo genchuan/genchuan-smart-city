@@ -8,6 +8,7 @@ import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.decisionanalys
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -20,17 +21,30 @@ public interface CycleReportMapper extends BaseMapperX<CycleReportDO> {
     default PageResult<CycleReportDO> selectPage(CycleReportPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<CycleReportDO>()
                 .eqIfPresent(CycleReportDO::getReportCycle, reqVO.getReportCycle())
-                .geIfPresent(CycleReportDO::getStatStartTime, reqVO.getStatStartTime())
-                .leIfPresent(CycleReportDO::getStatEndTime, reqVO.getStatEndTime())
+                .betweenIfPresent(CycleReportDO::getStatStartTime, reqVO.getStatStartTime())
+                .betweenIfPresent(CycleReportDO::getStatEndTime, reqVO.getStatEndTime())
                 .eqIfPresent(CycleReportDO::getGenerateStatus, reqVO.getGenerateStatus())
                 .eqIfPresent(CycleReportDO::getTenantId, reqVO.getTenantId())
+                .eqIfPresent(CycleReportDO::getActivityCount, reqVO.getActivityCount())
+                .eqIfPresent(CycleReportDO::getJoinUserCount, reqVO.getJoinUserCount())
+                .eqIfPresent(CycleReportDO::getLotteryCount, reqVO.getLotteryCount())
+                .eqIfPresent(CycleReportDO::getWinningRate, reqVO.getWinningRate())
+                .eqIfPresent(CycleReportDO::getCouponSendCount, reqVO.getCouponSendCount())
+                .eqIfPresent(CycleReportDO::getCouponVerifyRate, reqVO.getCouponVerifyRate())
+                .eqIfPresent(CycleReportDO::getCardOrderCount, reqVO.getCardOrderCount())
+                .eqIfPresent(CycleReportDO::getRevenue, reqVO.getRevenue())
+                .eqIfPresent(CycleReportDO::getExchangeCount, reqVO.getExchangeCount())
+                .eqIfPresent(CycleReportDO::getTotalStock, reqVO.getTotalStock())
+                .eqIfPresent(CycleReportDO::getWarnStockCount, reqVO.getWarnStockCount())
+                .likeIfPresent(CycleReportDO::getFilterRule, reqVO.getFilterRule())
+                .betweenIfPresent(CycleReportDO::getCreateTime, reqVO.getGenerateTime())
                 .orderByDesc(CycleReportDO::getId));
     }
 
     // ========== 基于 13 张业务表的聚合查询（时间参数为空则统计全部） ==========
 
     @Select("<script>" +
-            "SELECT COUNT(*) FROM activity_config WHERE deleted = 0 " +
+            "SELECT COUNT(*) FROM point_activity WHERE deleted = 0 " +
             "<if test='startTime != null'> AND create_time &gt;= #{startTime} </if>" +
             "<if test='endTime != null'> AND create_time &lt;= #{endTime} </if>" +
             "AND tenant_id = #{tenantId}" +
@@ -69,10 +83,18 @@ public interface CycleReportMapper extends BaseMapperX<CycleReportDO> {
                            @Param("endTime") LocalDateTime endTime,
                            @Param("tenantId") Long tenantId);
 
+//    @Select("<script>" +
+//            "SELECT COUNT(*) FROM receive_record WHERE deleted = 0 " +
+//            "<if test='startTime != null'> AND receive_time &gt;= #{startTime} </if>" +
+//            "<if test='endTime != null'> AND receive_time &lt;= #{endTime} </if>" +
+//            "AND tenant_id = #{tenantId}" +
+//            "</script>")
+//    Integer selectCouponSendCount(@Param("startTime") LocalDateTime startTime,
+//                                  @Param("endTime") LocalDateTime endTime,
+//                                  @Param("tenantId") Long tenantId);
+
     @Select("<script>" +
-            "SELECT COUNT(*) FROM receive_record WHERE deleted = 0 " +
-            "<if test='startTime != null'> AND receive_time &gt;= #{startTime} </if>" +
-            "<if test='endTime != null'> AND receive_time &lt;= #{endTime} </if>" +
+            "SELECT COUNT(*) FROM coupon_mgmt WHERE deleted = 0 " +
             "AND tenant_id = #{tenantId}" +
             "</script>")
     Integer selectCouponSendCount(@Param("startTime") LocalDateTime startTime,
@@ -91,7 +113,7 @@ public interface CycleReportMapper extends BaseMapperX<CycleReportDO> {
 
     @Select("<script>" +
             "SELECT COUNT(*) FROM card_order WHERE deleted = 0 " +
-            "AND pay_status IN ('已支付','已完成') " +
+           // "AND pay_status IN ('已支付','已完成') " +
             "<if test='startTime != null'> AND pay_time &gt;= #{startTime} </if>" +
             "<if test='endTime != null'> AND pay_time &lt;= #{endTime} </if>" +
             "AND tenant_id = #{tenantId}" +
@@ -102,7 +124,7 @@ public interface CycleReportMapper extends BaseMapperX<CycleReportDO> {
 
     @Select("<script>" +
             "SELECT IFNULL(SUM(amount), 0) FROM card_order WHERE deleted = 0 " +
-            "AND pay_status IN ('已支付','已完成') " +
+            //"AND pay_status IN ('已支付','已完成') " +
             "<if test='startTime != null'> AND pay_time &gt;= #{startTime} </if>" +
             "<if test='endTime != null'> AND pay_time &lt;= #{endTime} </if>" +
             "AND tenant_id = #{tenantId}" +
@@ -124,7 +146,7 @@ public interface CycleReportMapper extends BaseMapperX<CycleReportDO> {
     @Select("SELECT IFNULL(SUM(current_stock), 0) FROM stock_control WHERE deleted = 0 AND tenant_id = #{tenantId}")
     Integer selectTotalStock(@Param("tenantId") Long tenantId);
 
-    @Select("SELECT COUNT(*) FROM stock_control WHERE deleted = 0 AND warn_status = '预警' AND tenant_id = #{tenantId}")
+    @Select("SELECT COUNT(*) FROM stock_control WHERE deleted = 0 AND warn_status = '1' AND tenant_id = #{tenantId}")
     Integer selectWarnStockCount(@Param("tenantId") Long tenantId);
 
     // ========== 图表扩展查询 ==========
@@ -191,5 +213,13 @@ public interface CycleReportMapper extends BaseMapperX<CycleReportDO> {
 
     @Select("SELECT type, COUNT(*) AS count FROM activity_config WHERE deleted = 0 GROUP BY type")
     List<java.util.Map<String, Object>> selectActivityConfigTypeCountForPie();
+
+    @Update("<script>" +
+            "UPDATE marketop_cycle_report SET export_count = IFNULL(export_count, 0) + 1 WHERE id IN " +
+            "<foreach collection='ids' item='id' open='(' separator=',' close=')'>" +
+            "#{id}" +
+            "</foreach>" +
+            "</script>")
+    int incrementExportCount(@Param("ids") List<Long> ids);
 
 }

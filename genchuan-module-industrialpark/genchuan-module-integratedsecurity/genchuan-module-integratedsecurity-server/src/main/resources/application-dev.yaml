@@ -56,7 +56,7 @@ spring:
       datasource:
         master:
           url: jdbc:mysql://127.0.0.1:3306/genchuan-module-chargepark?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
-          username: genchuan
+          username: root
           password: Gyh@181612
   # Redis 配置。Redisson 默认的配置足够使用，一般不需要进行调优
   data:
@@ -64,7 +64,6 @@ spring:
       host: 127.0.0.1
       port: 6379 # 端口
       database: 0 # 数据库索引
-#      password: 123456 # 密码，建议生产环境开启
 
 --- #################### MQ 消息队列相关配置 ####################
 

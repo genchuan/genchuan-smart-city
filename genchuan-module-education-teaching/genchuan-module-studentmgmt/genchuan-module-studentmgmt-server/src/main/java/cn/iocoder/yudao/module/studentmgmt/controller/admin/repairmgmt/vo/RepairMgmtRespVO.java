@@ -57,7 +57,7 @@ public class RepairMgmtRespVO {
     private LocalDateTime checkTime;
 
     @Schema(description = "状态：待派单/维修中/已维修", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("状态：待派单/维修中/已维修")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "验收状态：未验收/已验收", example = "2")
@@ -80,4 +80,4 @@ public class RepairMgmtRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

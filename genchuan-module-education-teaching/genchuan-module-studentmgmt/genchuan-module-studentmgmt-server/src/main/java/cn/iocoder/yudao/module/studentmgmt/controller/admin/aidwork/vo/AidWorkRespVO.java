@@ -22,7 +22,7 @@ public class AidWorkRespVO {
     private Long studentId;
 
     @Schema(description = "资助类型：奖学金/助学金/助学贷款/勤工俭学", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("资助类型：奖学金/助学金/助学贷款/勤工俭学")
+    @ExcelProperty("资助类型")
     private String aidType;
 
     @Schema(description = "申请金额")
@@ -42,11 +42,11 @@ public class AidWorkRespVO {
     private LocalDateTime auditTime;
 
     @Schema(description = "流程状态：跟进中/已完成", example = "2")
-    @ExcelProperty("流程状态：跟进中/已完成")
+    @ExcelProperty("流程状态")
     private String processStatus;
 
     @Schema(description = "状态：待审核/已通过/已完成", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("状态：待审核/已通过/已完成")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "随便")
@@ -65,4 +65,4 @@ public class AidWorkRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

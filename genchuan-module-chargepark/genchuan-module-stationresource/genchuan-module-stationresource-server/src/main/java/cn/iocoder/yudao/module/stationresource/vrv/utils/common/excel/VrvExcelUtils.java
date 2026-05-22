@@ -30,9 +30,10 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
  * Excel导入导出工具类（通用）
  * <p>统一处理 Excel 导入模板下载、列表导出、数据导入解析等功能。
  * <p>V2.1 新增：导入错误提示中文化（字段名+类型+示例），Boolean 支持"是/否"输入
+ * <p>V2.2 新增：导入模板文件名改为中文业务名+日期、表头自动去除中括号 [xxx]
  *
  * @author vrvliang
- * @version V2.1 2026-05-09 10:07
+ * @version V2.2 2026-05-21
  */
 public class VrvExcelUtils {
 
@@ -48,6 +49,8 @@ public class VrvExcelUtils {
      *                           示例行改为读取 @Schema.example（真实示例值）
      *                           支持跳过 @ExcelIgnore 标记的字段
      *                           无注解字段回退到字段名 + 类型默认值
+     *   V3 2026-05-21 —— 文件名改为中文业务名+日期（取自类@Schema，如"场站信息_导入模板_20260521.xlsx"）
+     *                   表头中文字段自动去除中括号，如 [主键ID] → 主键ID
      * </pre>
      */
     public static <T> void downloadImportTemplate(HttpServletResponse response, Class<T> clazz) throws Exception {
@@ -71,6 +74,8 @@ public class VrvExcelUtils {
                 Schema schema = field.getAnnotation(Schema.class);
                 if (schema.description() != null && !schema.description().isEmpty()) {
                     headerName = schema.description();
+                    // 去掉中括号，如 [主键ID] → 主键ID
+                    headerName = headerName.replaceAll("\\[([^\\]]+)\\]", "$1");
                 }
                 if (schema.example() != null && !schema.example().isEmpty()) {
                     example = schema.example();
@@ -99,7 +104,22 @@ public class VrvExcelUtils {
         // 4. 响应头配置
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        String fileName = URLEncoder.encode(clazz.getSimpleName() + "_导入模板.xlsx", StandardCharsets.UTF_8);
+        // 文件名：优先取类上@Schema的description作为业务中文名，如"场站信息"，否则取类名
+        String bizName = clazz.getSimpleName(); // 兜底用类名
+        Schema classSchema = clazz.getAnnotation(Schema.class);
+        if (classSchema != null && classSchema.description() != null && !classSchema.description().isEmpty()) {
+            bizName = classSchema.description()
+                    .replace("管理后台 - ", "")       // 去掉"管理后台 - "前缀
+                    .replace(" Request VO", "")        // 去掉" Request VO"后缀
+                    .replace(" 新增", "")              // 去掉" 新增"
+                    .replace(" 创建", "")              // 去掉" 创建"
+                    .replace("新增/修改", "")          // 去掉"新增/修改"
+                    .replaceAll("[\\s\\-]+$", "")      // 去掉尾部空格和横线
+                    .trim();
+        }
+        // 文件名加日期，如 场站信息_导入模板_20260521.xlsx
+        String timeStr = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String fileName = URLEncoder.encode(bizName + "_导入模板_" + timeStr + ".xlsx", StandardCharsets.UTF_8);
         response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
 
         // 5. EasyExcel 写出

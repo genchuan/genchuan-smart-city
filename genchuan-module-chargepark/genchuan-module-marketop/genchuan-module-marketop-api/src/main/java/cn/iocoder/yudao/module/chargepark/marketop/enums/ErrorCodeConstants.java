@@ -17,6 +17,8 @@ public interface ErrorCodeConstants {
     ErrorCode POINT_ACTIVITY_START_TIME_ORDER = new ErrorCode(1_100_005, "开始时间范围的起始时间不能晚于结束时间");
     ErrorCode POINT_ACTIVITY_END_TIME_INVALID = new ErrorCode(1_100_006, "结束时间范围最多传2个值");
     ErrorCode POINT_ACTIVITY_END_TIME_ORDER = new ErrorCode(1_100_007, "结束时间范围的起始时间不能晚于结束时间");
+    ErrorCode POINT_ACTIVITY_IMPORT_TYPE_INVALID = new ErrorCode(1_100_008, "活动类型不存在：{}");
+    ErrorCode POINT_ACTIVITY_IMPORT_STATION_NOT_FOUND = new ErrorCode(1_100_009, "场站不存在：{}");
 
     ErrorCode POINT_LOTTERY_NOT_EXISTS = new ErrorCode(1_100_011, "积分抽奖记录不存在");
     ErrorCode POINT_LOTTERY_STATUS_ERROR = new ErrorCode(1_100_012, "积分抽奖记录状态异常");
@@ -32,6 +34,8 @@ public interface ErrorCodeConstants {
     ErrorCode COUPON_MGMT_NOT_EXISTS = new ErrorCode(1_100_051, "优惠券不存在");
     ErrorCode COUPON_MGMT_NAME_EXISTS = new ErrorCode(1_100_052, "优惠券名称已存在");
     ErrorCode COUPON_MGMT_STATUS_ERROR = new ErrorCode(1_100_053, "优惠券状态异常");
+    ErrorCode COUPON_MGMT_IMPORT_TYPE_INVALID = new ErrorCode(1_100_054, "优惠券类型不存在：{}");
+    ErrorCode COUPON_MGMT_IMPORT_STATION_NOT_FOUND = new ErrorCode(1_100_055, "场站不存在：{}");
 
     ErrorCode ACTIVITY_CONFIG_NOT_EXISTS = new ErrorCode(1_100_061, "活动配置不存在");
     ErrorCode ACTIVITY_CONFIG_NAME_EXISTS = new ErrorCode(1_100_062, "活动名称已存在");
@@ -51,10 +55,16 @@ public interface ErrorCodeConstants {
 
     ErrorCode STOCK_CONTROL_NOT_EXISTS = new ErrorCode(1_100_121, "库存记录不存在");
     ErrorCode STOCK_INSUFFICIENT = new ErrorCode(1_100_122, "库存不足");
+    ErrorCode STOCK_ALLOCATE_SOURCE_IN_RANGE = new ErrorCode(1_100_123, "源场站在卡种关联场站范围内，不可调配");
+    ErrorCode STOCK_ALLOCATE_TARGET_NOT_IN_RANGE = new ErrorCode(1_100_124, "目标场站不在卡种关联场站范围内");
 
     // ========== 兑换管理 1-100-151 ~ 1-100-200 ==========
     ErrorCode EXCHANGE_CATEGORY_NOT_EXISTS = new ErrorCode(1_100_151, "兑换类目不存在");
     ErrorCode EXCHANGE_CATEGORY_NAME_EXISTS = new ErrorCode(1_100_152, "兑换类目名称已存在");
+    ErrorCode EXCHANGE_CATEGORY_IMPORT_SCOPE_INVALID = new ErrorCode(1_100_153, "适用范围不存在：{}");
+    ErrorCode EXCHANGE_CATEGORY_IMPORT_NAME_EMPTY = new ErrorCode(1_100_154, "类目名称不能为空");
+    ErrorCode EXCHANGE_CATEGORY_IMPORT_GOODS_COUNT_EMPTY = new ErrorCode(1_100_155, "商品数量不能为空");
+    ErrorCode EXCHANGE_CATEGORY_IMPORT_EFFECT_TIME_EMPTY = new ErrorCode(1_100_156, "生效时间不能为空");
 
     ErrorCode EXCHANGE_ORDER_NOT_EXISTS = new ErrorCode(1_100_161, "兑换订单不存在");
     ErrorCode EXCHANGE_ORDER_STATUS_ERROR = new ErrorCode(1_100_162, "兑换订单状态异常");

@@ -9,6 +9,7 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.exchangemgmt
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.exchangemgmt.exchangecategory.vo.ExchangeCategoryUpdateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.exchangemgmt.ExchangeCategoryDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.exchangemgmt.ExchangeCategoryMapper;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.ExchangeCategoryScopeEnum;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.ExchangeCategoryStatusEnum;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.service.impl.DiffParseFunction;
@@ -17,6 +18,7 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -74,7 +76,7 @@ public class ExchangeCategoryServiceImpl implements ExchangeCategoryService {
     @Override
     @LogRecord(type = EXCHANGE_CATEGORY_TYPE, subType = EXCHANGE_CATEGORY_ENABLE_SUB_TYPE, bizNo = "{{#id}}",
             success = EXCHANGE_CATEGORY_ENABLE_SUCCESS)
-    public void enable(Long id) {
+    public void enable(Long id, Long userId) {
         ExchangeCategoryDO exchangeCategory = validateExists(id);
         // 未生效→已生效，或 已禁用→已生效
 //        if (!ExchangeCategoryStatusEnum.NOT_EFFECTIVE.getValue().equals(exchangeCategory.getStatus()) &&
@@ -82,6 +84,9 @@ public class ExchangeCategoryServiceImpl implements ExchangeCategoryService {
 //            throw exception(EXCHANGE_CATEGORY_NOT_EXISTS);
 //        }
         exchangeCategory.setStatus(ExchangeCategoryStatusEnum.EFFECTIVE.getValue());
+        exchangeCategory.setAuditorId(userId);
+        exchangeCategory.setAuditTime(LocalDateTime.now());
+        exchangeCategory.setEffectTime(LocalDateTime.now());
         exchangeCategoryMapper.updateById(exchangeCategory);
         // 记录操作日志上下文
         LogRecordContext.putVariable("exchangeCategoryName", exchangeCategory.getName());
@@ -177,7 +182,21 @@ public class ExchangeCategoryServiceImpl implements ExchangeCategoryService {
             return;
         }
         for (ExchangeCategoryImportExcelVO vo : list) {
+            if (vo.getName() == null || vo.getName().trim().isEmpty()) {
+                throw exception(EXCHANGE_CATEGORY_IMPORT_NAME_EMPTY);
+            }
+            if (vo.getGoodsCount() == null) {
+                throw exception(EXCHANGE_CATEGORY_IMPORT_GOODS_COUNT_EMPTY);
+            }
+            if (vo.getEffectTime() == null) {
+                throw exception(EXCHANGE_CATEGORY_IMPORT_EFFECT_TIME_EMPTY);
+            }
+            String scopeValue = ExchangeCategoryScopeEnum.valueOfLabel(vo.getScope());
+            if (scopeValue == null) {
+                throw exception(EXCHANGE_CATEGORY_IMPORT_SCOPE_INVALID, vo.getScope());
+            }
             ExchangeCategoryDO doObj = BeanUtils.toBean(vo, ExchangeCategoryDO.class);
+            doObj.setScope(scopeValue);
             doObj.setStatus(ExchangeCategoryStatusEnum.NOT_EFFECTIVE.getValue());
             exchangeCategoryMapper.insert(doObj);
         }

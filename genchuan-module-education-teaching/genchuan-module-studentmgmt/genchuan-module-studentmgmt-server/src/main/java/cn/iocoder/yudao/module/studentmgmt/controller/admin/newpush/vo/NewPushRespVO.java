@@ -38,7 +38,7 @@ public class NewPushRespVO {
     private BigDecimal finishRate;
 
     @Schema(description = "状态：未推送/已推送", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("状态：未推送/已推送")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "随便")
@@ -57,4 +57,4 @@ public class NewPushRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

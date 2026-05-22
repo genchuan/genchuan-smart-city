@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.studentmgmt.dal.mysql.violatemgmt;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
+import cn.iocoder.yudao.module.studentmgmt.controller.admin.clubmgmt.vo.ClubMgmtRespVO;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.violatemgmt.vo.ViolateMgmtPageReqVO;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.violatemgmt.vo.ViolateMgmtPageRespVO;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
@@ -56,7 +57,7 @@ public interface ViolateMgmtMapper extends BaseMapperX<ViolateMgmtDO> {
         // 2. 构建 MPJ 联表 Wrapper
         MPJLambdaWrapper<ViolateMgmtDO> wrapper = new MPJLambdaWrapper<>();
         wrapper.selectAll(ViolateMgmtDO.class);
-        wrapper.selectAs(StudentInfoDO::getName, ViolateMgmtPageRespVO::getStudentName);
+        wrapper.selectAs(StudentInfoDO::getName, ClubMgmtRespVO::getStudentName);
         wrapper.leftJoin(StudentInfoDO.class, StudentInfoDO::getId, ViolateMgmtDO::getStudentId);
 
         if (null != reqVO.getStudentId()) {
@@ -68,29 +69,25 @@ public interface ViolateMgmtMapper extends BaseMapperX<ViolateMgmtDO> {
         if (StringUtils.isNotBlank(reqVO.getPunishType())) {
             wrapper.eq(ViolateMgmtDO::getPunishType, reqVO.getPunishType());
         }
+        if (null != reqVO.getViolateTime()) {
+            wrapper.between(ViolateMgmtDO::getViolateTime, reqVO.getViolateTime()[0], reqVO.getViolateTime()[1]);
+        }
         if (StringUtils.isNotBlank(reqVO.getViolateReason())) {
             wrapper.like(ViolateMgmtDO::getViolateReason, reqVO.getViolateReason());
         }
         if (StringUtils.isNotBlank(reqVO.getAuditUser())) {
             wrapper.like(ViolateMgmtDO::getAuditUser, reqVO.getAuditUser());
         }
-        //TODO 时间范围
-//        if (null != reqVO.getAuditTime()) {
-//            wrapper.between(ViolateMgmtDO::getAuditTime, reqVO.getAuditTime(), reqVO.getAuditTime());
-//        }
-//        if (null != reqVO.getPushTime()) {
-//            wrapper.between(ViolateMgmtDO::getPushTime, reqVO.getPushTime(), reqVO.getPushTime());
-//        }
-//        if (null != reqVO.getWarnTime()) {
-//            wrapper.between(ViolateMgmtDO::getWarnTime, reqVO.getWarnTime(), reqVO.getWarnTime());
-//        }
-
+        if (null != reqVO.getAuditTime()) {
+            wrapper.between(ViolateMgmtDO::getAuditTime, reqVO.getAuditTime()[0], reqVO.getAuditTime()[1]);
+        }
         if (StringUtils.isNotBlank(reqVO.getStatus())) {
             wrapper.eq(ViolateMgmtDO::getStatus, reqVO.getStatus());
         }
         if (StringUtils.isNotBlank(reqVO.getRemark())) {
-            wrapper.like(ViolateMgmtDO::getRemark, reqVO.getRemark());
+            wrapper.eq(ViolateMgmtDO::getRemark, reqVO.getRemark());
         }
+
         wrapper.orderByDesc(ViolateMgmtDO::getId);// ===== 主表字段 =====
 
         // 3. 执行联表分页查询

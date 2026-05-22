@@ -19,9 +19,9 @@ public interface CardConfigService {
 
     void update(@Valid CardConfigUpdateReqVO reqVO);
 
-    void enable(Long id);
+    void enable(Long id, Long userId);
 
-    void disable(Long id);
+    void disable(Long id,  Long userId);
 
     CardConfigChartRespVO getChart();
 

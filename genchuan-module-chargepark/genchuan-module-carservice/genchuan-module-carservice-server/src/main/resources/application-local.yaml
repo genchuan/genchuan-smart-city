@@ -81,7 +81,6 @@ spring:
       host: 127.0.0.1
       port: 6379 # 端口
       database: 5 # 数据库索引（避免与 system-server 的 0、vehiclecharging 的 0 冲突）
-#      password: 123456 # 密码，建议生产环境开启
 
 --- #################### MQ 消息队列相关配置 ####################
 

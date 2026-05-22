@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import cn.idev.excel.annotation.ExcelIgnore;
 
 
 
@@ -58,10 +59,12 @@ public class StationInfoCreateReqVO {
 
     @Schema(description = "备用字段1")
     @Size(max = 100, message = "备用字段1长度不能超过100个字符")
+    @ExcelIgnore
     private String reserve1;
 
     @Schema(description = "备用字段2")
     @Size(max = 100, message = "备用字段2长度不能超过100个字符")
+    @ExcelIgnore
     private String reserve2;
 
 }

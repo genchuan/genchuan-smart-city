@@ -4,11 +4,14 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.exchangemgmt.exchangeorder.vo.ExchangeOrderChartRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.exchangemgmt.exchangeorder.vo.ExchangeOrderDeliverReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.exchangemgmt.exchangeorder.vo.ExchangeOrderPageReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.exchangemgmt.exchangeorder.vo.ExchangeOrderRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.exchangemgmt.ExchangeCategoryDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.exchangemgmt.ExchangeOrderDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.exchangemgmt.ExchangeOrderMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.ExchangeOrderPayStatusEnum;
 import cn.iocoder.yudao.module.chargepark.marketop.service.exchangemgmt.exchangecategory.ExchangeCategoryService;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
@@ -151,6 +154,26 @@ public class ExchangeOrderServiceImpl implements ExchangeOrderService {
             return new ArrayList<>();
         }
         return exchangeOrderMapper.selectBatchIds(ids);
+    }
+
+    @Override
+    public PageResult<ExchangeOrderRespVO> getPageWithJoin(ExchangeOrderPageReqVO reqVO) {
+        Page<ExchangeOrderRespVO> page = new Page<>(reqVO.getPageNo(), reqVO.getPageSize());
+        IPage<ExchangeOrderRespVO> pageResult = exchangeOrderMapper.selectPageJoin(page, reqVO);
+        return new PageResult<>(pageResult.getRecords(), pageResult.getTotal());
+    }
+
+    @Override
+    public ExchangeOrderRespVO getWithJoin(Long id) {
+        return exchangeOrderMapper.selectByIdJoin(id);
+    }
+
+    @Override
+    public List<ExchangeOrderRespVO> getListByIdsWithJoin(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return exchangeOrderMapper.selectListByIdsJoin(ids);
     }
 
     private ExchangeOrderDO validateExists(Long id) {

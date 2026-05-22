@@ -5,12 +5,13 @@ import lombok.Data;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import cn.idev.excel.annotation.ExcelIgnore;
 
 @Data
 @Schema(description = "车位信息创建 Request VO")
 public class AddParkingSpaceInfoReqVO {
 
-    @Schema(description = "车位编号，唯一", requiredMode = Schema.RequiredMode.REQUIRED, example = "SPACE-001")
+    @Schema(description = "车位编号", requiredMode = Schema.RequiredMode.REQUIRED, example = "SPACE-001")
     @NotEmpty(message = "车位编号不能为空")
     private String spaceNo;
 
@@ -38,9 +39,11 @@ public class AddParkingSpaceInfoReqVO {
     private String remark;
 
     @Schema(description = "备用字段1", example = "备用信息1")
+    @ExcelIgnore
     private String reserve1;
 
     @Schema(description = "备用字段2", example = "备用信息2")
+    @ExcelIgnore
     private String reserve2;
 
 //

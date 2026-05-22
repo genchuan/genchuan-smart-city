@@ -85,8 +85,8 @@ public class MerchantInfoController {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<MerchantInfoDO> list = merchantInfoService.getMerchantInfoPage(pageReqVO).getList();
         // 导出 Excel
-        ExcelUtils.write(response, "商户信息.xls", "数据", MerchantInfoPageRespVO.class,
-                BeanUtils.toBean(list, MerchantInfoPageRespVO.class));
+        ExcelUtils.write(response, "商户信息.xls", "数据", MerchantInfoExportRespVO.class,
+                BeanUtils.toBean(list, MerchantInfoExportRespVO.class));
     }
 
     @PutMapping("/approve")

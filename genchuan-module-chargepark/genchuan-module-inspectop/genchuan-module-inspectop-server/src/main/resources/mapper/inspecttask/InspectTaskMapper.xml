@@ -83,9 +83,18 @@
                 AND it.claim_time BETWEEN #{reqVO.claimTime[0]} AND #{reqVO.claimTime[1]}
             </if>
 
-            <!-- 任务状态 -->
+            <!-- 【修改】任务状态过滤（支持状态组） -->
             <if test="reqVO.status != null and reqVO.status != ''">
-                AND it.status = #{reqVO.status}
+                <choose>
+                    <!-- 状态'3'表示过滤所有未完成状态（1,2,3） -->
+                    <when test="reqVO.status == '3'.toString()">
+                        AND it.status IN ('1', '2', '3')
+                    </when>
+                    <!-- 其他状态进行精确匹配 -->
+                    <otherwise>
+                        AND it.status = #{reqVO.status}
+                    </otherwise>
+                </choose>
             </if>
 
             <!-- 执行进度 -->

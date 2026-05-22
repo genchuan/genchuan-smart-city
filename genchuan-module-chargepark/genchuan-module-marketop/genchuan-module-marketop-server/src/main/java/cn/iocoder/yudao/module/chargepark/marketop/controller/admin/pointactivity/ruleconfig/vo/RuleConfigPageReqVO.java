@@ -33,6 +33,9 @@ public class RuleConfigPageReqVO extends PageParam {
     @Schema(description = "审核人")
     private Long auditorId;
 
+    @Schema(description = "审核人")
+    private String auditorName;
+
     @Schema(description = "审核开始时间")
     private Long auditStartTime;
 

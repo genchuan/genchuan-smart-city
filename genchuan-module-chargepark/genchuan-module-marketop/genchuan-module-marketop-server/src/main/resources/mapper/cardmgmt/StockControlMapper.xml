@@ -57,4 +57,19 @@
         LIMIT 1
     </select>
 
+    <select id="selectByCardId" resultType="cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.StockControlDO">
+        SELECT * FROM stock_control
+        WHERE deleted = 0 AND card_id = #{cardId}
+        LIMIT 1
+    </select>
+
+    <select id="selectMaxStockBySourceStationId" resultType="cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.StockControlDO">
+        SELECT sc.* FROM stock_control sc
+        INNER JOIN card_config cc ON sc.card_id = cc.id AND cc.deleted = 0
+        WHERE sc.deleted = 0
+          AND FIND_IN_SET(#{sourceStationId}, cc.station_id)
+        ORDER BY sc.current_stock DESC
+        LIMIT 1
+    </select>
+
 </mapper>

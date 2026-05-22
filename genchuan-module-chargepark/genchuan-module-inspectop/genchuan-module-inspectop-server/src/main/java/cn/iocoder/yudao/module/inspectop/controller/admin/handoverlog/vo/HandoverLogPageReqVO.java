@@ -3,14 +3,17 @@ package cn.iocoder.yudao.module.inspectop.controller.admin.handoverlog.vo;
 import lombok.*;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
+import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY;
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
 @Schema(description = "巡查巡检 - 交接日志分页 Request VO")
@@ -22,6 +25,10 @@ public class HandoverLogPageReqVO extends PageParam {
 
     @Schema(description = "交接日期，支持时间戳（毫秒）或日期时间字符串（yyyy-MM-dd HH:mm:ss）")
     private String handoverDate;
+
+    @Schema(description = "趋势时间（精确到天），格式：yyyy-MM-dd", example = "2024-01-25")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY) // 确保能正确绑定`yyyy-MM-dd`格式的字符串
+    private String trendTime; // 新增字段，用于接收图表点击传来的具体日期
 
     @Schema(description = "交接内容")
     private String content;
@@ -88,6 +95,39 @@ public class HandoverLogPageReqVO extends PageParam {
                 return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault())
                         .toLocalDate().atTime(23, 59, 59);  // 当天23:59:59
             } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * 新增方法：获取趋势时间查询的开始时间（当天 00:00:00）
+     */
+    public LocalDateTime getTrendTimeBegin() {
+        if (trendTime != null && !trendTime.trim().isEmpty()) {
+            try {
+                // 解析 yyyy-MM-dd 格式的字符串
+                LocalDate date = LocalDate.parse(trendTime, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                return date.atStartOfDay(); // 返回当天的 00:00:00
+            } catch (DateTimeParseException e) {
+                // 如果解析失败，可以返回null或记录日志
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 新增方法：获取趋势时间查询的结束时间（当天 23:59:59）
+     */
+    public LocalDateTime getTrendTimeEnd() {
+        if (trendTime != null && !trendTime.trim().isEmpty()) {
+            try {
+                LocalDate date = LocalDate.parse(trendTime, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                return date.atTime(23, 59, 59); // 返回当天的 23:59:59
+            } catch (DateTimeParseException e) {
                 return null;
             }
         }

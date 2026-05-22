@@ -360,6 +360,9 @@ public class ShiftApplyServiceImpl implements ShiftApplyService {
         // 8. 执行更新
         int updateCount = shiftApplyMapper.updateById(updateObj);
 
+        // === 【新增】 8.5. 审核通过后，同步更新原排班记录 ===
+        updateOriginalSchedule(shiftApply);
+
         // 9. 记录操作日志
         log.info("换班申请已通过，申请ID：{}，审核人：{}，备注：{}",
                 id, currentUserId, auditRemark);

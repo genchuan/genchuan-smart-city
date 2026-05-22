@@ -45,5 +45,6 @@ public class CardConfigDO extends BaseDO {
     private Integer validDays;
     private String reserve1;
     private String reserve2;
-
+    /** 场站id **/
+    private String stationId;
 }

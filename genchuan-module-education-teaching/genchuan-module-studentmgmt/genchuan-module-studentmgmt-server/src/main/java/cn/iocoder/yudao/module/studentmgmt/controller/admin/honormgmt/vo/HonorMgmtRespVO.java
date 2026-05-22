@@ -21,7 +21,7 @@ public class HonorMgmtRespVO {
     private Long studentId;
 
     @Schema(description = "荣誉类型：优秀学生/奖学金/竞赛获奖/其他", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("荣誉类型：优秀学生/奖学金/竞赛获奖/其他")
+    @ExcelProperty("荣誉类型")
     private String honorType;
 
     @Schema(description = "荣誉名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "李四")
@@ -45,7 +45,7 @@ public class HonorMgmtRespVO {
     private LocalDateTime pushTime;
 
     @Schema(description = "状态：待审核/已通过/已推送", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("状态：待审核/已通过/已推送")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "随便")
@@ -63,5 +63,8 @@ public class HonorMgmtRespVO {
     @Schema(description = "创建时间")
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
+    @Schema(description = "更新时间")
+    @ExcelProperty("更新时间")
+    private LocalDateTime updateTime;
 
-}
+}

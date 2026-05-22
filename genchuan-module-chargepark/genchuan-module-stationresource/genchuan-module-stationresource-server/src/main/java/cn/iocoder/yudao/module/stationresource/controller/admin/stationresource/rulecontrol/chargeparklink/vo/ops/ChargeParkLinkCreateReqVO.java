@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import cn.idev.excel.annotation.ExcelIgnore;
 
 @Schema(description = "管理后台 - 充停联动创建 Request VO")
 @Data
@@ -31,8 +32,10 @@ public class ChargeParkLinkCreateReqVO {
     private String remark;
 
     @Schema(description = "备用字段1", example = "备用信息1")
+    @ExcelIgnore
     private String reserve1;
 
     @Schema(description = "备用字段2", example = "备用信息2")
+    @ExcelIgnore
     private String reserve2;
 }

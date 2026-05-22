@@ -56,6 +56,12 @@
                 AND hl.handover_date &lt;= #{reqVO.handoverDateEnd, jdbcType=TIMESTAMP}
             </if>
 
+            <!-- 新增：趋势时间（精确到天） -->
+            <if test="reqVO.trendTime != null and reqVO.trendTime != ''">
+                AND hl.handover_date >= #{reqVO.trendTimeBegin, jdbcType=TIMESTAMP}
+                AND hl.handover_date &lt;= #{reqVO.trendTimeEnd, jdbcType=TIMESTAMP}
+            </if>
+
             <!-- 交接内容 -->
             <if test="reqVO.content != null and reqVO.content != ''">
                 AND hl.content LIKE CONCAT('%', #{reqVO.content}, '%')

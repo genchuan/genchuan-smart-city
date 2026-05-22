@@ -216,6 +216,8 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
         vo.setHighRiskCount(mentalMgmtMapper.selectTotalCount(MentalMentalStatusEnum.MENTAL_MGMT_MENTAL_STATUS_HIGH_RISK.getStatus(), "", ""));
         // lowRiskCount (integer): 风险等级低学生的数量。
         vo.setLowRiskCount(mentalMgmtMapper.selectTotalCount("", MentalRiskLevelEnum.MENTAL_MGMT_RISK_LEVEL_LOW.getStatus(), ""));
+        // normalCount (integer): 心理状态正常的学生数量。
+        vo.setNormalCount(mentalMgmtMapper.selectTotalCount(MentalMentalStatusEnum.MENTAL_MGMT_MENTAL_STATUS_NORMAL.getStatus(), "", ""));
         // midRiskCount (integer): 风险等级中的学生的数量。
         vo.setMidRiskCount(mentalMgmtMapper.selectTotalCount("", MentalRiskLevelEnum.MENTAL_MGMT_RISK_LEVEL_MEDIUM.getStatus(), ""));
         // highRiskLevelCount (integer): 风险等级高的学生的数量。

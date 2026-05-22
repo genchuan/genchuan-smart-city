@@ -51,4 +51,8 @@ public interface StockControlMapper extends BaseMapperX<StockControlDO> {
     StockControlDO selectByCardIdAndStationId(@Param("cardId") Long cardId,
                                                @Param("stationId") String stationId);
 
+    StockControlDO selectByCardId(@Param("cardId") Long cardId);
+
+    StockControlDO selectMaxStockBySourceStationId(@Param("sourceStationId") String sourceStationId);
+
 }

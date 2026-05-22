@@ -21,7 +21,7 @@ public class CoopEnterpriseRespVO {
     private String enterpriseName;
 
     @Schema(description = "企业类型：国企/民企/外企", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("企业类型：国企/民企/外企")
+    @ExcelProperty("企业类型")
     private String enterpriseType;
 
     @Schema(description = "负责系部", requiredMode = Schema.RequiredMode.REQUIRED, example = "22973")
@@ -45,7 +45,7 @@ public class CoopEnterpriseRespVO {
     private LocalDateTime coopEndTime;
 
     @Schema(description = "状态：合作中/已结束", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("状态：合作中/已结束")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "你说的对")
@@ -64,4 +64,4 @@ public class CoopEnterpriseRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

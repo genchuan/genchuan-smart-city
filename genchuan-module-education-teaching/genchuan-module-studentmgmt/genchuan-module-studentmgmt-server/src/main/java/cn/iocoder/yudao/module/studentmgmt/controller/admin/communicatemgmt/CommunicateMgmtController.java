@@ -1,5 +1,8 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.communicatemgmt;
 
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
+import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -37,7 +40,8 @@ public class CommunicateMgmtController {
 
     @Resource
     private CommunicateMgmtService communicateMgmtService;
-
+    @Resource
+    private DictDataApi dictDataApi;
     @PostMapping("/create")
     @Operation(summary = "创建沟通管理")
     @PreAuthorize("@ss.hasPermission('studentmgmt:communicate-mgmt:create')")
@@ -96,6 +100,21 @@ public class CommunicateMgmtController {
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<CommunicateMgmtDO> list = communicateMgmtService.getCommunicateMgmtPage(pageReqVO).getList();
+        CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.COMMUNICATE_MGMT_STATUS.getType());
+        list = list.stream().map(item -> {
+
+            String status = item.getStatus();
+            if (statusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : statusDictDataList.getData()) {
+                    if (dictData.getValue().equals(status)) {
+                        status = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setStatus(status);
+            return item;
+        }).toList();
         // 导出 Excel
         ExcelUtils.write(response, "沟通管理.xls", "数据", CommunicateMgmtRespVO.class,
                         BeanUtils.toBean(list, CommunicateMgmtRespVO.class));

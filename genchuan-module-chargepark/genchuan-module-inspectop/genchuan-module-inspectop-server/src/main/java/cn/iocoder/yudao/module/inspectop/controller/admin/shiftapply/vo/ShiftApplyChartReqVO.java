@@ -17,14 +17,14 @@ public class ShiftApplyChartReqVO {
     private LocalDateTime[] timeRange;
 
     /**
-     * 获取开始时间，如果没有提供则默认为当月第一天
+     * 获取开始时间，如果没有提供则默认改为2000年1月1日
      */
     public LocalDateTime getStartTime() {
         if (timeRange != null && timeRange.length > 0 && timeRange[0] != null) {
             return timeRange[0];
         }
-        // 默认当月第一天
-        return LocalDate.now().with(TemporalAdjusters.firstDayOfMonth()).atStartOfDay();
+        // 默认改为2000年1月1日
+        return LocalDate.of(2000, 1, 1).atStartOfDay();
     }
 
     /**

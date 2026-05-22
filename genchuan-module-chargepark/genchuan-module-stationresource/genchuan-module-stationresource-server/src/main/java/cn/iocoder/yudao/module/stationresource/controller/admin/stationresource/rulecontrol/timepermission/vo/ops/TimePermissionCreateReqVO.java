@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import cn.idev.excel.annotation.ExcelIgnore;
 
 
 
@@ -11,7 +12,7 @@ import lombok.Data;
 @Data
 public class TimePermissionCreateReqVO {
 
-    @Schema(description = "所属场站，关联station_info.id", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @Schema(description = "所属场站ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @NotNull(message = "所属场站不能为空")
     private Long stationId;
 
@@ -23,7 +24,7 @@ public class TimePermissionCreateReqVO {
     @NotBlank(message = "准入权限不能为空")
     private String permission;
 
-    @Schema(description = "最长停留时长，单位：分钟", example = "720")
+    @Schema(description = "最长停留时长（分钟）", example = "720")
     private Integer maxStay;
 
     @Schema(description = "工作日配置", example = "周一至周五")
@@ -42,8 +43,10 @@ public class TimePermissionCreateReqVO {
     private String remark;
 
     @Schema(description = "备用字段1", example = "备用信息1")
+    @ExcelIgnore
     private String reserve1;
 
     @Schema(description = "备用字段2", example = "备用信息2")
+    @ExcelIgnore
     private String reserve2;
 }

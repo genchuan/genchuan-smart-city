@@ -4,7 +4,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.receiverecord.vo.ReceiveRecordPageReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.receiverecord.vo.ReceiveRecordRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.couponactivity.ReceiveRecordDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -67,5 +70,9 @@ public interface ReceiveRecordMapper extends BaseMapperX<ReceiveRecordDO> {
             "GROUP BY DATE(receive_time) " +
             "ORDER BY DATE(receive_time) ASC")
     List<Map<String, Object>> selectCountByDay(@Param("startTime") LocalDateTime startTime);
+
+    IPage<ReceiveRecordRespVO> selectPageJoin(Page<?> page, @Param("reqVO") ReceiveRecordPageReqVO reqVO);
+
+    ReceiveRecordRespVO selectByIdJoin(@Param("id") Long id);
 
 }

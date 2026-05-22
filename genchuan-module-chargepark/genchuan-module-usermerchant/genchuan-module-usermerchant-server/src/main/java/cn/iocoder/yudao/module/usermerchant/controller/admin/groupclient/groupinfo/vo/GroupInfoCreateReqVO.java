@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.groupclient.groupinfo.vo;
 
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.FlexibleTimestampDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -33,6 +35,7 @@ public class GroupInfoCreateReqVO {
 
     @Schema(description = "注册时间", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "注册时间不能为空")
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
     private LocalDateTime registerTime;
 
     @Schema(description = "集团状态：待审核/正常/禁用/已驳回", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")

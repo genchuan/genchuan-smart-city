@@ -21,7 +21,7 @@ public class MoralActivityRespVO {
     private String activityName;
 
     @Schema(description = "活动类型：党团活动/志愿活动/其他", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("活动类型：党团活动/志愿活动/其他")
+    @ExcelProperty("活动类型")
     private String activityType;
 
     @Schema(description = "主办部门", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -53,7 +53,7 @@ public class MoralActivityRespVO {
     private LocalDateTime publishTime;
 
     @Schema(description = "状态：未发布/进行中/已结束", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("状态：未发布/进行中/已结束")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "你猜")
@@ -72,4 +72,4 @@ public class MoralActivityRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

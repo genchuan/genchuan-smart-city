@@ -21,7 +21,7 @@ public class TreatMgmtRespVO {
     private Long studentId;
 
     @Schema(description = "就诊类型：门诊/急诊/其他", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("就诊类型：门诊/急诊/其他")
+    @ExcelProperty("就诊类型")
     private String treatType;
 
     @Schema(description = "症状描述")
@@ -53,7 +53,7 @@ public class TreatMgmtRespVO {
     private LocalDateTime feedbackTime;
 
     @Schema(description = "状态：待审核/已就诊", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("状态：待审核/已就诊")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "你猜")
@@ -72,4 +72,4 @@ public class TreatMgmtRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

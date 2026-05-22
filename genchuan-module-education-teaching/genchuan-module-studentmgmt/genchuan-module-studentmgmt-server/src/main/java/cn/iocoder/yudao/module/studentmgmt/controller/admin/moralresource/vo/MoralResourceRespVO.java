@@ -22,7 +22,7 @@ public class MoralResourceRespVO {
     private String resourceName;
 
     @Schema(description = "资源类型：课程/图书/专题包", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("资源类型：课程/图书/专题包")
+    @ExcelProperty("资源类型")
     private String resourceType;
 
     @Schema(description = "资源地址", example = "https://www.iocoder.cn")
@@ -46,7 +46,7 @@ public class MoralResourceRespVO {
     private LocalDateTime offTime;
 
     @Schema(description = "状态：未上架/已上架", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("状态：未上架/已上架")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "随便")
@@ -65,4 +65,4 @@ public class MoralResourceRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

@@ -4,7 +4,7 @@
  Source Server         : 8.68
  Source Server Type    : MySQL
  Source Server Version : 80408
- Source Host           : 192.168.8.68:3306
+ Source Host           : 127.0.0.1:3306
  Source Schema         : ruoyi-vue-pro
 
  Target Server Type    : MySQL

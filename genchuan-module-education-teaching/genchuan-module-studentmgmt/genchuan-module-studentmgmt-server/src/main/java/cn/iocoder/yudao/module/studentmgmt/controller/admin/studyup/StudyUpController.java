@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.studyup;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -9,7 +10,9 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.BaseChartReqVO;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.studyup.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studyup.StudyUpDO;
+import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
 import cn.iocoder.yudao.module.studentmgmt.service.studyup.StudyUpService;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,6 +37,8 @@ public class StudyUpController {
 
     @Resource
     private StudyUpService studyUpService;
+    @Resource
+    private DictDataApi dictDataApi;
 
     @PostMapping("/create")
     @Operation(summary = "创建升学管理")
@@ -93,6 +98,31 @@ public class StudyUpController {
                                    HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<StudyUpDO> list = studyUpService.getStudyUpPage(pageReqVO).getList();
+        CommonResult<List<DictDataRespDTO>> typeDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.STUDY_UP_SCHOOL_TYPE.getType());
+        CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.STUDY_UP_STATUS.getType());
+        list = list.stream().map(item -> {
+            String schoolType = item.getSchoolType();
+            if (typeDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : typeDictDataList.getData()) {
+                    if (dictData.getValue().equals(schoolType)) {
+                        schoolType = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setSchoolType(schoolType);
+            String status = item.getStatus();
+            if (statusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : statusDictDataList.getData()) {
+                    if (dictData.getValue().equals(status)) {
+                        status = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setStatus(status);
+            return item;
+        }).toList();
         // 导出 Excel
         ExcelUtils.write(response, "升学管理.xls", "数据", StudyUpRespVO.class,
                 BeanUtils.toBean(list, StudyUpRespVO.class));

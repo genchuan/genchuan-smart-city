@@ -31,7 +31,7 @@ public class DutyMgmtRespVO {
     private LocalDateTime checkInTime;
 
     @Schema(description = "打卡状态：未打卡/已打卡", example = "1")
-    @ExcelProperty("打卡状态：未打卡/已打卡")
+    @ExcelProperty("打卡状态")
     private String checkInStatus;
 
     @Schema(description = "调班原因", example = "不香")
@@ -67,7 +67,7 @@ public class DutyMgmtRespVO {
     private LocalDateTime recordUploadTime;
 
     @Schema(description = "状态：待打卡/待调班审批/待出车审批/已完成", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("状态：待打卡/待调班审批/待出车审批/已完成")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "你猜")
