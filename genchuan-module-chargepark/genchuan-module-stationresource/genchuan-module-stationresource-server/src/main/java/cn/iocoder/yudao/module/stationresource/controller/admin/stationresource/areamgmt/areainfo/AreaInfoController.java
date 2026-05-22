@@ -11,6 +11,8 @@ import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.statistics.AreaInfoChartRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.lxscommon.vo.BatchStatusUpdateReqVO;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.areamgmt.areainfo.AreaInfoDO;
+import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.stationuser.StationUserDO;
+import cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.stationuser.StationUserMapper;
 import cn.iocoder.yudao.module.stationresource.service.stationresource.areamgmt.areainfo.AreaInfoService;
 import cn.iocoder.yudao.module.stationresource.vrv.utils.common.excel.VrvExcelUtils;
 import cn.iocoder.yudao.module.stationresource.vrv.utils.common.pdf.pdf2.PdfUtils2;
@@ -54,6 +56,9 @@ public class AreaInfoController {
 
     @Resource
     private AreaInfoService areaInfoService;
+
+    @Resource
+    private StationUserMapper stationUserMapper;
 
     @Resource
     private SpaceMonitorApi spaceMonitorApi;
@@ -109,8 +114,8 @@ public class AreaInfoController {
             HttpServletResponse response) throws IOException {
 
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<AreaInfoDO> list = areaInfoService.getAreaInfoPage(pageReqVO).getList();
-        List<AreaInfoRespVO> respList = BeanUtils.toBean(list, AreaInfoRespVO.class);
+        // Service 层已返回 RespVO（含 bindUserName），无需二次转换
+        List<AreaInfoRespVO> respList = areaInfoService.getAreaInfoPage(pageReqVO).getList();
 
         // ===================== PDF 导出 =====================
         if ("pdf".equalsIgnoreCase(format)) {
@@ -223,16 +228,18 @@ public class AreaInfoController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('stationresource:area-info:query')")
     public CommonResult<AreaInfoRespVO> getAreaInfo(@RequestParam("id") Long id) {
-        AreaInfoDO areaInfo = areaInfoService.getAreaInfo(id);
-        return success(BeanUtils.toBean(areaInfo, AreaInfoRespVO.class));
+        AreaInfoRespVO areaInfo = areaInfoService.getAreaInfo(id);
+//        AreaInfoRespVO respVO = BeanUtils.toBean(areaInfo, AreaInfoRespVO.class);
+//        fillBindUserName(respVO); // 填充绑定人名称
+        return success(areaInfo);
     }
 
     @GetMapping("/page")
     @Operation(summary = "获得片区信息分页")
     @PreAuthorize("@ss.hasPermission('stationresource:area-info:query')")
     public CommonResult<PageResult<AreaInfoRespVO>> getAreaInfoPage(@Valid AreaInfoPageReqVO pageReqVO) {
-        PageResult<AreaInfoDO> pageResult = areaInfoService.getAreaInfoPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, AreaInfoRespVO.class));
+        // Service 层已返回 RespVO（含 bindUserName），无需二次转换
+        return success(areaInfoService.getAreaInfoPage(pageReqVO));
     }
 
     @GetMapping("/export")
@@ -245,7 +252,8 @@ public class AreaInfoController {
         String inputFileName = "片区信息_";
 
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<AreaInfoDO> list = areaInfoService.getAreaInfoPage(pageReqVO).getList();
+        // Service 层已返回 RespVO（含 bindUserName），无需二次转换
+        List<AreaInfoRespVO> respList = areaInfoService.getAreaInfoPage(pageReqVO).getList();
 
         // 1、强制设置响应头，确保浏览器触发下载
         response.setContentType("application/vnd.ms-excel;charset=UTF-8");
@@ -258,8 +266,7 @@ public class AreaInfoController {
         response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
 
         // 3、调用 ExcelUtils 导出
-        ExcelUtils.write(response, "片区信息.xls", "数据", AreaInfoRespVO.class,
-                BeanUtils.toBean(list, AreaInfoRespVO.class));
+        ExcelUtils.write(response, "片区信息.xls", "数据", AreaInfoRespVO.class, respList);
     }
 
 }

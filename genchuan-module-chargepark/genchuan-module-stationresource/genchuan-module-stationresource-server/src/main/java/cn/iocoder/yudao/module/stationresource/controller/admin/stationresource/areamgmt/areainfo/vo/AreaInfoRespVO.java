@@ -51,9 +51,14 @@ public class AreaInfoRespVO {
     @ExcelProperty("绑定时间")
     private LocalDateTime bindTime;
 
-    @Schema(description = "[绑定人ID] 关联芋道用户表system_user", example = "18363")
-    @ExcelProperty("绑定人ID")
+    @Schema(description = "[绑定人ID] ", example = "18363")
+//    @ExcelProperty("绑定人ID")
+    @ExcelIgnore
     private Long bindUserId;
+
+    @Schema(description = "[绑定人] ", example = "18363")
+    @ExcelProperty("绑定人")
+    private String bindUserName;
 
     @Schema(description = "[备注] 备注", example = "你说的对")
     @ExcelProperty("备注")
