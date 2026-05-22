@@ -21,7 +21,7 @@ public class PayCheckPageReqVO extends PageParam {
     @Schema(description = "缴费状态：已缴清/欠费", example = "已缴清")
     private String status;
 
-    @Schema(description = "核验时间，时间范围", example = "[2024-01-01 00:00:00, 2024-01-02 00:00:00]")
+    @Schema(description = "核验时间，时间范围。支持 yyyy-MM-dd HH:mm:ss、yyyy-MM-ddTHH:mm:ss、10位秒级时间戳、13位毫秒时间戳；GET 请求需传两个同名 checkTime 参数", example = "2026-04-20 00:00:00,2026-04-23 23:59:59")
     private LocalDateTime[] checkTime;
 
     @Schema(description = "场站ID，关联场站表", example = "30722")
