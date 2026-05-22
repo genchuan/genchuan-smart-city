@@ -169,6 +169,9 @@ public class BikeChargeOrderServiceImpl implements BikeChargeOrderService {
         invoice.setStatus("pending_audit");
         invoice.setRemark(reqVO.getRemark());
         invoiceListMapper.insert(invoice);
+
+        order.setInvoiceStatus("invoiced");
+        bikeChargeOrderMapper.updateById(order);
     }
 
     private void validateExists(Long id) {
