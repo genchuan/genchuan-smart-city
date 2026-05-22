@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.inspectop.controller.admin.cyclereport.vo;
 
 import lombok.*;
+
+import java.time.LocalDate;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
@@ -82,6 +84,10 @@ public class CycleReportPageReqVO extends PageParam {
 
     @Schema(description = "更新者")
     private String updater;
+
+    @Schema(description = "趋势过滤日期 (格式: yyyy-MM-dd)，用于按创建日期过滤")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate trendTime;
 
     @Schema(description = "创建时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)

@@ -53,8 +53,12 @@ public class InspectTaskRespVO {
     private Integer progress;
 
     @Schema(description = "是否归档")
-    @ExcelProperty("是否归档")
+    @ExcelIgnore
     private Boolean isArchive;
+
+    @Schema(description = "是否归档")
+    @ExcelProperty("是否归档")
+    private String isArchiveText;
 
     @Schema(description = "备用字段1")
 //    @ExcelProperty("备用字段1")

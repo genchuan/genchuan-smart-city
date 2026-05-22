@@ -2,6 +2,8 @@ package cn.iocoder.yudao.module.inspectop.controller.admin.devicemonitor.sharech
 
 import cn.idev.excel.annotation.ExcelProperty;
 import lombok.*;
+
+import java.time.LocalDate;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
@@ -9,6 +11,7 @@ import java.math.BigDecimal;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
+import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY;
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
 @Schema(description = "巡查巡检 - 共享充电监测分页 Request VO")
@@ -65,6 +68,11 @@ public class ShareChargeMonitorPageReqVO extends PageParam {
     @Schema(description = "创建时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
+
+    // 【新增字段】创建日期（年月日）
+    @Schema(description = "创建日期（年月日）")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY) // 使用年月日格式接收参数
+    private LocalDate createDate;
 
     @Schema(description = "更新时间")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
