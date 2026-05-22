@@ -259,7 +259,7 @@ public class PayOrderServiceImpl implements PayOrderService {
      * @return 支付渠道的回调地址  配置地址 + "/" + channel id
      */
     private String genChannelOrderNotifyUrl(PayChannelDO channel) {
-        return payProperties.getOrderNotifyUrl() + "/" + channel.getId();
+        return payProperties.getOrderNotifyUrl();
     }
 
     @Override
