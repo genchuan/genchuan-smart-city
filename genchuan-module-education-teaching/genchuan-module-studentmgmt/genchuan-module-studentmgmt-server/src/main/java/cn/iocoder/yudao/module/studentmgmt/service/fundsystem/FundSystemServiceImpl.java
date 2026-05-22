@@ -9,6 +9,7 @@ import cn.iocoder.yudao.module.studentmgmt.controller.admin.fundsystem.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.fundsystem.FundSystemDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.fundsystem.FundSystemMapper;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
+import cn.iocoder.yudao.module.studentmgmt.enums.FundSystemFundTypeEnum;
 import cn.iocoder.yudao.module.studentmgmt.enums.FundSystemStatusEnum;
 import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import com.alibaba.fastjson.JSONObject;
@@ -192,7 +193,7 @@ public class FundSystemServiceImpl implements FundSystemService {
             // 将key转换成namegr
             typeList.forEach(item -> {
                 String dictDataLabel = "";
-                CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(FundSystemStatusEnum.DICT_TYPE);
+                CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(FundSystemFundTypeEnum.DICT_TYPE);
                 if (dictDataList.getData() != null) {
                     for (DictDataRespDTO dictData : dictDataList.getData()) {
                         if (dictData.getValue().equals(item.getString("name"))) {
