@@ -63,6 +63,14 @@ public class ClubMgmtDO extends BaseDO {
      */
     private String venueApplyStatus;
     /**
+     * 申请原因
+     */
+    private String applyReason;
+    /**
+     * 申请场馆名称
+     */
+    private String venueName;
+    /**
      * 状态：待审核/已通过/已建档
      */
     private String status;
@@ -80,4 +88,4 @@ public class ClubMgmtDO extends BaseDO {
     private String reserve2;
 
 
-}
+}
