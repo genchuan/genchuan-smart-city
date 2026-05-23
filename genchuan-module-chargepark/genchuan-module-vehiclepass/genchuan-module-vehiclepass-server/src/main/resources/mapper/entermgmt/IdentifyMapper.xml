@@ -49,6 +49,9 @@
         <if test="query.isCorrected != null">
             AND p.is_corrected = #{query.isCorrected}
         </if>
+        <if test="query.createTimeRange != null and query.createTimeRange.length == 2">
+            AND p.create_time BETWEEN #{query.createTimeRange[0]} AND #{query.createTimeRange[1]}
+        </if>
 
         ORDER BY p.id DESC
     </select>
