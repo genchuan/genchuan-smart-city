@@ -7,6 +7,7 @@ import cn.iocoder.yudao.module.ordertrade.controller.admin.invoicemgmt.vo.*;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.IdReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.invoicemgmt.InvoiceListDO;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.invoicemgmt.InvoiceListMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,7 +59,9 @@ public class InvoiceListServiceImpl implements InvoiceListService {
 
     @Override
     public PageResult<InvoiceListDO> getInvoiceListPage(InvoiceListPageReqVO pageReqVO) {
-        return invoiceListMapper.selectPageWithDetails(pageReqVO);
+        Page<InvoiceListDO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        var result = invoiceListMapper.selectPageWithDetails(page, pageReqVO);
+        return new PageResult<>(result.getRecords(), result.getTotal());
     }
 
     @Override

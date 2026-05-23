@@ -5,6 +5,8 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.invoicemgmt.vo.InvoiceListPageReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.invoicemgmt.InvoiceListDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -78,7 +80,7 @@ public interface InvoiceListMapper extends BaseMapperX<InvoiceListDO> {
             "<if test='req.createTimeEnd != null'>AND il.create_time &lt;= #{req.createTimeEnd} </if>" +
             "ORDER BY il.id DESC" +
             "</script>")
-    PageResult<InvoiceListDO> selectPageWithDetails(@Param("req") InvoiceListPageReqVO reqVO);
+    IPage<InvoiceListDO> selectPageWithDetails(Page<InvoiceListDO> page, @Param("req") InvoiceListPageReqVO reqVO);
 
     @Select("SELECT il.*, ao.order_no AS orderNo " +
             "FROM invoice_list il " +
