@@ -22,6 +22,9 @@ public class SplitRateServiceImpl implements SplitRateService {
 
     @Override
     public Long createSplitRate(SplitRateSaveReqVO createReqVO) {
+        if (createReqVO.getPartnerId() != null && splitRateMapper.existsByPartnerId(createReqVO.getPartnerId())) {
+            throw exception(SPLIT_RATE_PARTNER_ID_DUPLICATE);
+        }
         SplitRateDO obj = BeanUtils.toBean(createReqVO, SplitRateDO.class);
         if (obj.getStatus() == null) {
             obj.setStatus("pending");
@@ -44,12 +47,12 @@ public class SplitRateServiceImpl implements SplitRateService {
 
     @Override
     public SplitRateDO getSplitRate(Long id) {
-        return splitRateMapper.selectById(id);
+        return splitRateMapper.selectByIdWithPartner(id);
     }
 
     @Override
     public PageResult<SplitRateDO> getSplitRatePage(SplitRatePageReqVO pageReqVO) {
-        return splitRateMapper.selectPage(pageReqVO);
+        return splitRateMapper.selectPageWithPartner(pageReqVO);
     }
 
     @Override

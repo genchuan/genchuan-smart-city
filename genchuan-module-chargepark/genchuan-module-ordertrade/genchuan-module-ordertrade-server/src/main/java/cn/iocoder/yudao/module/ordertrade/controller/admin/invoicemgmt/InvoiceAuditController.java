@@ -92,7 +92,7 @@ public class InvoiceAuditController {
     @PostMapping("/audit-reject")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "驳回开票审核")
-    public CommonResult<Boolean> rejectInvoiceAudit(@Valid @RequestBody IdReqVO reqVO) {
+    public CommonResult<Boolean> rejectInvoiceAudit(@Valid @RequestBody InvoiceAuditRejectReqVO reqVO) {
         invoiceAuditService.rejectInvoiceAudit(reqVO);
         return success(true);
     }

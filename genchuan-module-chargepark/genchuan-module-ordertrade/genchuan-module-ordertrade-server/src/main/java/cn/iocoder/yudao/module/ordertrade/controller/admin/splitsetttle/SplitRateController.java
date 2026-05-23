@@ -6,7 +6,9 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.splitsetttle.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.splitsetttle.SplitRateDO;
+import cn.iocoder.yudao.module.ordertrade.framework.utils.UserNameInjector;
 import cn.iocoder.yudao.module.ordertrade.service.splitsetttle.SplitRateService;
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,6 +16,8 @@ import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.UPDATE;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
@@ -26,6 +30,9 @@ public class SplitRateController {
 
     @Resource
     private SplitRateService splitRateService;
+
+    @Resource
+    private AdminUserApi adminUserApi;
 
     @PostMapping("/create")
     @Operation(summary = "创建分账比例")
@@ -53,14 +60,20 @@ public class SplitRateController {
     @Parameter(name = "id", description = "主键", required = true, example = "1024")
     public CommonResult<SplitRateRespVO> getSplitRate(@RequestParam("id") Long id) {
         SplitRateDO obj = splitRateService.getSplitRate(id);
-        return success(BeanUtils.toBean(obj, SplitRateRespVO.class));
+        SplitRateRespVO respVO = BeanUtils.toBean(obj, SplitRateRespVO.class);
+        if (respVO != null) {
+            injectAuditorName(List.of(respVO));
+        }
+        return success(respVO);
     }
 
     @GetMapping("/page")
     @Operation(summary = "获得分账比例分页列表")
     public CommonResult<PageResult<SplitRateRespVO>> getSplitRatePage(@Valid SplitRatePageReqVO pageReqVO) {
         PageResult<SplitRateDO> pageResult = splitRateService.getSplitRatePage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, SplitRateRespVO.class));
+        PageResult<SplitRateRespVO> respPage = BeanUtils.toBean(pageResult, SplitRateRespVO.class);
+        injectAuditorName(respPage.getList());
+        return success(respPage);
     }
 
     @PutMapping("/enable")
@@ -85,5 +98,10 @@ public class SplitRateController {
     @Operation(summary = "获得分账比例统计图表数据")
     public CommonResult<SplitRateChartRespVO> getSplitRateChart(@Valid SplitRateChartReqVO chartReqVO) {
         return success(splitRateService.getSplitRateChart(chartReqVO));
+    }
+
+    private void injectAuditorName(List<SplitRateRespVO> list) {
+        UserNameInjector.inject(list, adminUserApi,
+                UserNameInjector.field(SplitRateRespVO::getAuditorId, SplitRateRespVO::setAuditorName));
     }
 }

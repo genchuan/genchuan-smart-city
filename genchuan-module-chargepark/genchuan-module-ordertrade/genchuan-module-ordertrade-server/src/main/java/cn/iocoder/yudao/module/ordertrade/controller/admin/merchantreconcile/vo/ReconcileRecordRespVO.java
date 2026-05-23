@@ -7,7 +7,6 @@ import cn.iocoder.yudao.module.ordertrade.framework.excel.EnumFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 对账记录 Response VO")
@@ -22,42 +21,26 @@ public class ReconcileRecordRespVO {
     @ExcelProperty("所属对账单ID")
     private Long billId;
 
-    @Schema(description = "对账单号")
-    @ExcelProperty("对账单号")
-    private String billNo;
-
-    @Schema(description = "商户ID")
-    @ExcelProperty("商户ID")
-    private Long merchantId;
-
-    @Schema(description = "订单编号")
-    @ExcelProperty("订单编号")
-    private String orderNo;
-
-    @Schema(description = "系统金额")
-    @ExcelProperty("系统金额")
-    private BigDecimal sysAmount;
-
-    @Schema(description = "商户上报金额")
-    @ExcelProperty("商户上报金额")
-    private BigDecimal merchantAmount;
-
-    @Schema(description = "差异金额")
-    @ExcelProperty("差异金额")
-    private BigDecimal diffAmount;
-
-    @Schema(description = "对账结果")
-    @ExcelProperty(value = "对账结果", converter = EnumExcelConverter.class)
+    @Schema(description = "状态：normal/abnormal")
+    @ExcelProperty(value = "状态", converter = EnumExcelConverter.class)
     @EnumFormat(ReconcileRecordStatusEnum.class)
-    private String matchResult;
+    private String status;
+
+    @Schema(description = "状态更新时间")
+    @ExcelProperty("状态更新时间")
+    private LocalDateTime statusUpdateTime;
 
     @Schema(description = "异常原因")
     @ExcelProperty("异常原因")
-    private String diffReason;
+    private String errorReason;
 
-    @Schema(description = "处理时间")
-    @ExcelProperty("处理时间")
-    private LocalDateTime handleTime;
+    @Schema(description = "核查人ID")
+    @ExcelProperty("核查人ID")
+    private Long checkerId;
+
+    @Schema(description = "核查时间")
+    @ExcelProperty("核查时间")
+    private LocalDateTime checkTime;
 
     @Schema(description = "备注")
     @ExcelProperty("备注")

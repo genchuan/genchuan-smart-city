@@ -9,7 +9,9 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.invoicemgmt.vo.*;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.IdReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.invoicemgmt.InvoiceListDO;
+import cn.iocoder.yudao.module.ordertrade.framework.utils.UserNameInjector;
 import cn.iocoder.yudao.module.ordertrade.service.invoicemgmt.InvoiceListService;
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,6 +36,9 @@ public class InvoiceListController {
 
     @Resource
     private InvoiceListService invoiceListService;
+
+    @Resource
+    private AdminUserApi adminUserApi;
 
     @PostMapping("/create")
     @Operation(summary = "创建发票")
@@ -61,14 +66,20 @@ public class InvoiceListController {
     @Parameter(name = "id", description = "主键", required = true, example = "1024")
     public CommonResult<InvoiceListRespVO> getInvoiceList(@RequestParam("id") Long id) {
         InvoiceListDO obj = invoiceListService.getInvoiceList(id);
-        return success(BeanUtils.toBean(obj, InvoiceListRespVO.class));
+        InvoiceListRespVO respVO = BeanUtils.toBean(obj, InvoiceListRespVO.class);
+        if (respVO != null) {
+            injectAuditorName(List.of(respVO));
+        }
+        return success(respVO);
     }
 
     @GetMapping("/page")
     @Operation(summary = "获得发票分页列表")
     public CommonResult<PageResult<InvoiceListRespVO>> getInvoiceListPage(@Valid InvoiceListPageReqVO pageReqVO) {
         PageResult<InvoiceListDO> pageResult = invoiceListService.getInvoiceListPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, InvoiceListRespVO.class));
+        PageResult<InvoiceListRespVO> respPage = BeanUtils.toBean(pageResult, InvoiceListRespVO.class);
+        injectAuditorName(respPage.getList());
+        return success(respPage);
     }
 
     @GetMapping("/export")
@@ -77,9 +88,10 @@ public class InvoiceListController {
     public void exportInvoiceListExcel(@Valid InvoiceListPageReqVO pageReqVO,
                                        HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<InvoiceListDO> list = invoiceListService.getInvoiceListPage(pageReqVO).getList();
-        ExcelUtils.write(response, "发票列表.xls", "数据", InvoiceListRespVO.class,
-                BeanUtils.toBean(list, InvoiceListRespVO.class));
+        List<InvoiceListDO> list = invoiceListService.getInvoiceListExport(pageReqVO);
+        List<InvoiceListRespVO> respList = BeanUtils.toBean(list, InvoiceListRespVO.class);
+        injectAuditorName(respList);
+        ExcelUtils.write(response, "发票列表.xls", "数据", InvoiceListRespVO.class, respList);
     }
 
     @PostMapping("/audit-pass")
@@ -141,5 +153,10 @@ public class InvoiceListController {
     @Operation(summary = "获得发票统计图表数据")
     public CommonResult<InvoiceListChartRespVO> getInvoiceListChart(@Valid InvoiceListChartReqVO chartReqVO) {
         return success(invoiceListService.getInvoiceListChart(chartReqVO));
+    }
+
+    private void injectAuditorName(List<InvoiceListRespVO> list) {
+        UserNameInjector.inject(list, adminUserApi,
+                UserNameInjector.field(InvoiceListRespVO::getAuditorId, InvoiceListRespVO::setAuditorName));
     }
 }

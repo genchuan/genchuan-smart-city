@@ -22,9 +22,9 @@ public class InvoiceListRespVO {
     @ExcelProperty("发票编号")
     private String invoiceNo;
 
-    @Schema(description = "关联订单ID")
+    /*@Schema(description = "关联订单ID")
     @ExcelProperty("关联订单ID")
-    private Long orderId;
+    private Long orderId;*/
 
     @Schema(description = "关联订单编号")
     @ExcelProperty("关联订单编号")
@@ -47,9 +47,9 @@ public class InvoiceListRespVO {
     @EnumFormat(InvoiceListStatusEnum.class)
     private String status;
 
-    @Schema(description = "审核人ID")
+   /* @Schema(description = "审核人ID")
     @ExcelProperty("审核人ID")
-    private Long auditorId;
+    private Long auditorId;*/
 
     @Schema(description = "审核人名称")
     @ExcelProperty("审核人名称")
@@ -76,10 +76,11 @@ public class InvoiceListRespVO {
     private String remark;
 
     @Schema(description = "备用字段1")
+    @ExcelProperty("邮箱")
     private String reserve1;
 
-    @Schema(description = "备用字段2")
-    private String reserve2;
+   /* @Schema(description = "备用字段2")
+    private String reserve2;*/
 
     @Schema(description = "创建者")
     @ExcelProperty("创建者")
@@ -90,5 +91,6 @@ public class InvoiceListRespVO {
     private LocalDateTime createTime;
 
     @Schema(description = "更新时间")
+    @ExcelProperty("更新时间")
     private LocalDateTime updateTime;
 }

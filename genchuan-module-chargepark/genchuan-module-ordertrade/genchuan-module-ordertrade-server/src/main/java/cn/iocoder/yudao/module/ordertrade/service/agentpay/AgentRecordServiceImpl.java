@@ -56,15 +56,14 @@ public class AgentRecordServiceImpl implements AgentRecordService {
 
     @Override
     public AgentRecordDO getAgentRecord(Long id) {
-        return agentRecordMapper.selectById(id);
+        return agentRecordMapper.selectByIdWithDetails(id);
     }
 
     @Override
-    public PageResult<AgentRecordRespVO> getAgentRecordPage(AgentRecordPageReqVO pageReqVO) {
-        Page<AgentRecordRespVO> mpPage = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
-        var result = agentRecordMapper.selectPageWithMerchant(mpPage, pageReqVO);
+    public PageResult<AgentRecordDO> getAgentRecordPage(AgentRecordPageReqVO pageReqVO) {
+        Page<AgentRecordDO> mpPage = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        var result = agentRecordMapper.selectPageWithDetails(mpPage, pageReqVO);
         return new PageResult<>(result.getRecords(), result.getTotal());
-
     }
 
     @Override

@@ -22,6 +22,7 @@ public interface RefundApplyMapper extends BaseMapperX<RefundApplyDO> {
 
     default PageResult<RefundApplyDO> selectPage(RefundApplyPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<RefundApplyDO>()
+                .likeIfPresent(RefundApplyDO::getApplyNo, reqVO.getApplyNo())
                 .eqIfPresent(RefundApplyDO::getOrderId, reqVO.getOrderId())
                 .eqIfPresent(RefundApplyDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(RefundApplyDO::getApplicantId, reqVO.getApplicantId())

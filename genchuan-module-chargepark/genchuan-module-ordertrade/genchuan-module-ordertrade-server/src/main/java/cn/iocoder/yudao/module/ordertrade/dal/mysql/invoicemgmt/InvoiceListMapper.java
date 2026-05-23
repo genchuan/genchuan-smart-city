@@ -24,6 +24,8 @@ public interface InvoiceListMapper extends BaseMapperX<InvoiceListDO> {
                 .likeIfPresent(InvoiceListDO::getTitle, reqVO.getTitle())
                 .eqIfPresent(InvoiceListDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(InvoiceListDO::getOrderId, reqVO.getOrderId())
+                .likeIfPresent(InvoiceListDO::getCreator, reqVO.getCreator())
+                .betweenIfPresent(InvoiceListDO::getCreateTime, reqVO.getCreateTimeStart(), reqVO.getCreateTimeEnd())
                 .orderByDesc(InvoiceListDO::getId));
     }
 
@@ -61,4 +63,42 @@ public interface InvoiceListMapper extends BaseMapperX<InvoiceListDO> {
         return selectByOrderIds(ids).stream()
                 .collect(Collectors.toMap(InvoiceListDO::getOrderId, InvoiceListDO::getStatus));
     }
+
+    @Select("<script>" +
+            "SELECT il.*, ao.order_no AS orderNo " +
+            "FROM invoice_list il " +
+            "LEFT JOIN all_order ao ON ao.id = il.order_id AND ao.deleted = 0 " +
+            "WHERE il.deleted = 0 " +
+            "<if test='req.invoiceNo != null and req.invoiceNo != \"\"'>AND il.invoice_no LIKE CONCAT('%', #{req.invoiceNo}, '%') </if>" +
+            "<if test='req.title != null and req.title != \"\"'>AND il.title LIKE CONCAT('%', #{req.title}, '%') </if>" +
+            "<if test='req.status != null and req.status != \"\"'>AND il.status = #{req.status} </if>" +
+            "<if test='req.orderId != null'>AND il.order_id = #{req.orderId} </if>" +
+            "<if test='req.creator != null and req.creator != \"\"'>AND il.creator LIKE CONCAT('%', #{req.creator}, '%') </if>" +
+            "<if test='req.createTimeStart != null'>AND il.create_time &gt;= #{req.createTimeStart} </if>" +
+            "<if test='req.createTimeEnd != null'>AND il.create_time &lt;= #{req.createTimeEnd} </if>" +
+            "ORDER BY il.id DESC" +
+            "</script>")
+    PageResult<InvoiceListDO> selectPageWithDetails(@Param("req") InvoiceListPageReqVO reqVO);
+
+    @Select("SELECT il.*, ao.order_no AS orderNo " +
+            "FROM invoice_list il " +
+            "LEFT JOIN all_order ao ON ao.id = il.order_id AND ao.deleted = 0 " +
+            "WHERE il.id = #{id} AND il.deleted = 0")
+    InvoiceListDO selectByIdWithDetails(@Param("id") Long id);
+
+    @Select("<script>" +
+            "SELECT il.*, ao.order_no AS orderNo " +
+            "FROM invoice_list il " +
+            "LEFT JOIN all_order ao ON ao.id = il.order_id AND ao.deleted = 0 " +
+            "WHERE il.deleted = 0 " +
+            "<if test='req.invoiceNo != null and req.invoiceNo != \"\"'>AND il.invoice_no LIKE CONCAT('%', #{req.invoiceNo}, '%') </if>" +
+            "<if test='req.title != null and req.title != \"\"'>AND il.title LIKE CONCAT('%', #{req.title}, '%') </if>" +
+            "<if test='req.status != null and req.status != \"\"'>AND il.status = #{req.status} </if>" +
+            "<if test='req.orderId != null'>AND il.order_id = #{req.orderId} </if>" +
+            "<if test='req.creator != null and req.creator != \"\"'>AND il.creator LIKE CONCAT('%', #{req.creator}, '%') </if>" +
+            "<if test='req.createTimeStart != null'>AND il.create_time &gt;= #{req.createTimeStart} </if>" +
+            "<if test='req.createTimeEnd != null'>AND il.create_time &lt;= #{req.createTimeEnd} </if>" +
+            "ORDER BY il.id DESC" +
+            "</script>")
+    List<InvoiceListDO> selectListWithDetails(@Param("req") InvoiceListPageReqVO reqVO);
 }

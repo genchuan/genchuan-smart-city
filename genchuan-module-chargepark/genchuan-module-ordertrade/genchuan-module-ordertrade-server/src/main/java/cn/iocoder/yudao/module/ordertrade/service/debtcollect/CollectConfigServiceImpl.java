@@ -16,6 +16,7 @@ import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.ordertrade.enums.ErrorCodeConstants.COLLECT_CONFIG_NOT_EXISTS;
+import static cn.iocoder.yudao.module.ordertrade.enums.ErrorCodeConstants.COLLECT_CONFIG_NO_DUPLICATE;
 
 /**
  * 追缴配置 Service 实现类
@@ -28,11 +29,14 @@ public class CollectConfigServiceImpl implements CollectConfigService {
     @Resource private CollectConfigMapper collectConfigMapper;
 
     @Override public Long createCollectConfig(CollectConfigSaveReqVO v) {
+        validateConfigNoUnique(v.getConfigNo(), null);
         CollectConfigDO o = BeanUtils.toBean(v, CollectConfigDO.class);
         collectConfigMapper.insert(o); return o.getId();
     }
     @Override public void updateCollectConfig(CollectConfigSaveReqVO v) {
-        validateExists(v.getId()); collectConfigMapper.updateById(BeanUtils.toBean(v, CollectConfigDO.class));
+        validateExists(v.getId());
+        validateConfigNoUnique(v.getConfigNo(), v.getId());
+        collectConfigMapper.updateById(BeanUtils.toBean(v, CollectConfigDO.class));
     }
     @Override public void deleteCollectConfig(Long id) { validateExists(id); collectConfigMapper.deleteById(id); }
     @Override public void deleteCollectConfigListByIds(List<Long> ids) { collectConfigMapper.deleteByIds(ids); }
@@ -83,5 +87,12 @@ public class CollectConfigServiceImpl implements CollectConfigService {
 
     private void validateExists(Long id) {
         if (collectConfigMapper.selectById(id) == null) throw exception(COLLECT_CONFIG_NOT_EXISTS);
+    }
+
+    private void validateConfigNoUnique(String configNo, Long excludeId) {
+        CollectConfigDO existConfig = collectConfigMapper.selectByConfigNo(configNo, excludeId);
+        if (existConfig != null) {
+            throw exception(COLLECT_CONFIG_NO_DUPLICATE);
+        }
     }
 }

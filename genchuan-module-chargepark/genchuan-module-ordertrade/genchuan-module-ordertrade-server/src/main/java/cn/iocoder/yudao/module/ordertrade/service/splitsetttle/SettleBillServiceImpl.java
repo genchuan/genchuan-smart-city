@@ -53,12 +53,12 @@ public class SettleBillServiceImpl implements SettleBillService {
 
     @Override
     public SettleBillDO getSettleBill(Long id) {
-        return settleBillMapper.selectById(id);
+        return settleBillMapper.selectByIdWithPartner(id);
     }
 
     @Override
     public PageResult<SettleBillDO> getSettleBillPage(SettleBillPageReqVO pageReqVO) {
-        return settleBillMapper.selectPage(pageReqVO);
+        return settleBillMapper.selectPageWithPartner(pageReqVO);
     }
 
     @Override

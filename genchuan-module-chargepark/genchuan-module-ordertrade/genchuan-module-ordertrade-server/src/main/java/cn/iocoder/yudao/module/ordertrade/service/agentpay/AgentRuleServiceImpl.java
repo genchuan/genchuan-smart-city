@@ -29,6 +29,7 @@ public class AgentRuleServiceImpl implements AgentRuleService {
 
     @Override
     public Long createAgentRule(AgentRuleSaveReqVO createReqVO) {
+        validateMerchantTypeUnique(createReqVO.getMerchantId(), createReqVO.getAgentType(), null);
         AgentRuleDO obj = BeanUtils.toBean(createReqVO, AgentRuleDO.class);
         if (obj.getStatus() == null || obj.getStatus().equals("")) {
             obj.setStatus("pending");
@@ -48,9 +49,17 @@ public class AgentRuleServiceImpl implements AgentRuleService {
     @Override
     public void updateAgentRule(AgentRuleSaveReqVO updateReqVO) {
         validateExists(updateReqVO.getId());
+        validateMerchantTypeUnique(updateReqVO.getMerchantId(), updateReqVO.getAgentType(), updateReqVO.getId());
         AgentRuleDO obj = BeanUtils.toBean(updateReqVO, AgentRuleDO.class);
         obj.setLastUpdateTime(LocalDateTime.now());
         agentRuleMapper.updateById(obj);
+    }
+
+    private void validateMerchantTypeUnique(Long merchantId, String agentType, Long excludeId) {
+        AgentRuleDO existRule = agentRuleMapper.selectByMerchantIdAndAgentType(merchantId, agentType, excludeId);
+        if (existRule != null) {
+            throw exception(AGENT_RULE_MERCHANT_TYPE_DUPLICATE);
+        }
     }
 
     @Override

@@ -50,12 +50,12 @@ public class SettleStatusServiceImpl implements SettleStatusService {
 
     @Override
     public SettleStatusDO getSettleStatus(Long id) {
-        return settleStatusMapper.selectById(id);
+        return settleStatusMapper.selectByIdWithBill(id);
     }
 
     @Override
     public PageResult<SettleStatusDO> getSettleStatusPage(SettleStatusPageReqVO pageReqVO) {
-        return settleStatusMapper.selectPage(pageReqVO);
+        return settleStatusMapper.selectPageWithBill(pageReqVO);
     }
 
     @Override

@@ -2,19 +2,28 @@ package cn.iocoder.yudao.module.ordertrade.controller.admin.invoicemgmt;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.invoicemgmt.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.invoicemgmt.InvoiceConfigDO;
+import cn.iocoder.yudao.module.ordertrade.framework.utils.UserNameInjector;
 import cn.iocoder.yudao.module.ordertrade.service.invoicemgmt.InvoiceConfigService;
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.util.List;
+
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.UPDATE;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
@@ -26,6 +35,9 @@ public class InvoiceConfigController {
 
     @Resource
     private InvoiceConfigService invoiceConfigService;
+
+    @Resource
+    private AdminUserApi adminUserApi;
 
     @PostMapping("/create")
     @Operation(summary = "创建发票配置")
@@ -53,14 +65,32 @@ public class InvoiceConfigController {
     @Parameter(name = "id", description = "主键", required = true, example = "1024")
     public CommonResult<InvoiceConfigRespVO> getInvoiceConfig(@RequestParam("id") Long id) {
         InvoiceConfigDO obj = invoiceConfigService.getInvoiceConfig(id);
-        return success(BeanUtils.toBean(obj, InvoiceConfigRespVO.class));
+        InvoiceConfigRespVO respVO = BeanUtils.toBean(obj, InvoiceConfigRespVO.class);
+        if (respVO != null) {
+            injectAuditorName(List.of(respVO));
+        }
+        return success(respVO);
     }
 
     @GetMapping("/page")
     @Operation(summary = "获得发票配置分页列表")
     public CommonResult<PageResult<InvoiceConfigRespVO>> getInvoiceConfigPage(@Valid InvoiceConfigPageReqVO pageReqVO) {
         PageResult<InvoiceConfigDO> pageResult = invoiceConfigService.getInvoiceConfigPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, InvoiceConfigRespVO.class));
+        PageResult<InvoiceConfigRespVO> respPage = BeanUtils.toBean(pageResult, InvoiceConfigRespVO.class);
+        injectAuditorName(respPage.getList());
+        return success(respPage);
+    }
+
+    @GetMapping("/export")
+    @Operation(summary = "导出发票配置 Excel")
+    @ApiAccessLog(operateType = EXPORT)
+    public void exportInvoiceConfigExcel(@Valid InvoiceConfigPageReqVO pageReqVO,
+                                         HttpServletResponse response) throws IOException {
+        pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        List<InvoiceConfigDO> list = invoiceConfigService.getInvoiceConfigPage(pageReqVO).getList();
+        List<InvoiceConfigRespVO> respList = BeanUtils.toBean(list, InvoiceConfigRespVO.class);
+        injectAuditorName(respList);
+        ExcelUtils.write(response, "发票配置.xls", "数据", InvoiceConfigRespVO.class, respList);
     }
 
     @PutMapping("/enable")
@@ -85,5 +115,10 @@ public class InvoiceConfigController {
     @Operation(summary = "获得发票配置统计图表数据")
     public CommonResult<InvoiceConfigChartRespVO> getInvoiceConfigChart(@Valid InvoiceConfigChartReqVO chartReqVO) {
         return success(invoiceConfigService.getInvoiceConfigChart(chartReqVO));
+    }
+
+    private void injectAuditorName(List<InvoiceConfigRespVO> list) {
+        UserNameInjector.inject(list, adminUserApi,
+                UserNameInjector.field(InvoiceConfigRespVO::getAuditorId, InvoiceConfigRespVO::setAuditorName));
     }
 }

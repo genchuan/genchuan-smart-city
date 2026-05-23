@@ -38,10 +38,10 @@ public interface ReconcileBillMapper extends BaseMapperX<ReconcileBillDO> {
     @Select("SELECT COUNT(*) FROM reconcile_bill WHERE deleted = 0 AND status = 'pending'")
     Long selectPendingCount();
 
-    @Select("SELECT COUNT(*) FROM reconcile_bill WHERE deleted = 0 AND status = 'disputed'")
+    @Select("SELECT COUNT(*) FROM reconcile_bill WHERE deleted = 0 AND status = 'abnormal'")
     Long selectDisputedCount();
 
-    @Select("SELECT COUNT(*) FROM reconcile_bill WHERE deleted = 0 AND status = 'confirmed'")
+    @Select("SELECT COUNT(*) FROM reconcile_bill WHERE deleted = 0 AND status = 'reconciled'")
     Long selectConfirmedCount();
 
     @Select("SELECT COUNT(*) FROM reconcile_bill WHERE deleted = 0")

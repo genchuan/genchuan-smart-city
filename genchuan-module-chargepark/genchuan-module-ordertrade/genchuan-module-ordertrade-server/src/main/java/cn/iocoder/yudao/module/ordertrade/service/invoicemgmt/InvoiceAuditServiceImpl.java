@@ -79,7 +79,7 @@ public class InvoiceAuditServiceImpl implements InvoiceAuditService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void rejectInvoiceAudit(IdReqVO reqVO) {
+    public void rejectInvoiceAudit(InvoiceAuditRejectReqVO reqVO) {
         InvoiceAuditDO audit = invoiceAuditMapper.selectById(reqVO.getId());
         if (audit == null) throw exception(INVOICE_AUDIT_NOT_EXISTS);
         if (!"pending".equals(audit.getStatus())) throw exception(INVOICE_AUDIT_STATUS_CANNOT_REJECT);
@@ -88,7 +88,7 @@ public class InvoiceAuditServiceImpl implements InvoiceAuditService {
         update.setStatus("rejected");
         update.setAuditorId(SecurityFrameworkUtils.getLoginUserId());
         update.setAuditTime(LocalDateTime.now());
-        update.setAuditResult(reqVO.getRemark() != null ? reqVO.getRemark() : "审核驳回");
+        update.setAuditResult(reqVO.getRejectReason());
         invoiceAuditMapper.updateById(update);
     }
 
