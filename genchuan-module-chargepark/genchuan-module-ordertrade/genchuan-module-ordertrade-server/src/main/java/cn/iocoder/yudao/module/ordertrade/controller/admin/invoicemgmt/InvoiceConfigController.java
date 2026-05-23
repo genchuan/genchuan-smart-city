@@ -8,9 +8,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.invoicemgmt.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.invoicemgmt.InvoiceConfigDO;
-import cn.iocoder.yudao.module.ordertrade.framework.utils.UserNameInjector;
 import cn.iocoder.yudao.module.ordertrade.service.invoicemgmt.InvoiceConfigService;
-import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,9 +33,6 @@ public class InvoiceConfigController {
 
     @Resource
     private InvoiceConfigService invoiceConfigService;
-
-    @Resource
-    private AdminUserApi adminUserApi;
 
     @PostMapping("/create")
     @Operation(summary = "创建发票配置")
@@ -66,9 +61,6 @@ public class InvoiceConfigController {
     public CommonResult<InvoiceConfigRespVO> getInvoiceConfig(@RequestParam("id") Long id) {
         InvoiceConfigDO obj = invoiceConfigService.getInvoiceConfig(id);
         InvoiceConfigRespVO respVO = BeanUtils.toBean(obj, InvoiceConfigRespVO.class);
-        if (respVO != null) {
-            injectAuditorName(List.of(respVO));
-        }
         return success(respVO);
     }
 
@@ -77,7 +69,6 @@ public class InvoiceConfigController {
     public CommonResult<PageResult<InvoiceConfigRespVO>> getInvoiceConfigPage(@Valid InvoiceConfigPageReqVO pageReqVO) {
         PageResult<InvoiceConfigDO> pageResult = invoiceConfigService.getInvoiceConfigPage(pageReqVO);
         PageResult<InvoiceConfigRespVO> respPage = BeanUtils.toBean(pageResult, InvoiceConfigRespVO.class);
-        injectAuditorName(respPage.getList());
         return success(respPage);
     }
 
@@ -89,7 +80,6 @@ public class InvoiceConfigController {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<InvoiceConfigDO> list = invoiceConfigService.getInvoiceConfigPage(pageReqVO).getList();
         List<InvoiceConfigRespVO> respList = BeanUtils.toBean(list, InvoiceConfigRespVO.class);
-        injectAuditorName(respList);
         ExcelUtils.write(response, "发票配置.xls", "数据", InvoiceConfigRespVO.class, respList);
     }
 
@@ -115,10 +105,5 @@ public class InvoiceConfigController {
     @Operation(summary = "获得发票配置统计图表数据")
     public CommonResult<InvoiceConfigChartRespVO> getInvoiceConfigChart(@Valid InvoiceConfigChartReqVO chartReqVO) {
         return success(invoiceConfigService.getInvoiceConfigChart(chartReqVO));
-    }
-
-    private void injectAuditorName(List<InvoiceConfigRespVO> list) {
-        UserNameInjector.inject(list, adminUserApi,
-                UserNameInjector.field(InvoiceConfigRespVO::getAuditorId, InvoiceConfigRespVO::setAuditorName));
     }
 }

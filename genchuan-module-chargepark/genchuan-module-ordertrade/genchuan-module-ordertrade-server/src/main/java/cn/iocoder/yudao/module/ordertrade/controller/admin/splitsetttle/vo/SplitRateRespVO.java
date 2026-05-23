@@ -73,4 +73,8 @@ public class SplitRateRespVO {
 
     @Schema(description = "更新时间")
     private LocalDateTime updateTime;
+
+    @Schema(description = "更新者")
+    private String updater;
+
 }

@@ -5,6 +5,8 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.splitsetttle.vo.SettleBillPageReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.splitsetttle.SettleBillDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -34,7 +36,7 @@ public interface SettleBillMapper extends BaseMapperX<SettleBillDO> {
             "<if test='req.status != null and req.status != \"\"'>AND sb.status = #{req.status} </if>" +
             "ORDER BY sb.id DESC" +
             "</script>")
-    PageResult<SettleBillDO> selectPageWithPartner(@Param("req") SettleBillPageReqVO reqVO);
+    IPage<SettleBillDO> selectPageWithPartner(Page<SettleBillDO> page, @Param("req") SettleBillPageReqVO reqVO);
 
     @Select("SELECT sb.*, mi.name AS partnerName FROM settle_bill sb " +
             "LEFT JOIN merchant_info mi ON mi.id = sb.partner_id AND mi.deleted = 0 " +

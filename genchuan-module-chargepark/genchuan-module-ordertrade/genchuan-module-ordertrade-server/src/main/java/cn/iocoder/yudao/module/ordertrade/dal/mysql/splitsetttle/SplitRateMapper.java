@@ -5,6 +5,8 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.splitsetttle.vo.SplitRatePageReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.splitsetttle.SplitRateDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -32,7 +34,7 @@ public interface SplitRateMapper extends BaseMapperX<SplitRateDO> {
             "<if test='req.status != null and req.status != \"\"'>AND sr.status = #{req.status} </if>" +
             "ORDER BY sr.id DESC" +
             "</script>")
-    PageResult<SplitRateDO> selectPageWithPartner(@Param("req") SplitRatePageReqVO reqVO);
+    IPage<SplitRateDO> selectPageWithPartner(Page<SplitRateDO> page, @Param("req") SplitRatePageReqVO reqVO);
 
     @Select("SELECT sr.*, mi.name AS partnerName FROM split_rate sr " +
             "LEFT JOIN merchant_info mi ON mi.id = sr.partner_id AND mi.deleted = 0 " +

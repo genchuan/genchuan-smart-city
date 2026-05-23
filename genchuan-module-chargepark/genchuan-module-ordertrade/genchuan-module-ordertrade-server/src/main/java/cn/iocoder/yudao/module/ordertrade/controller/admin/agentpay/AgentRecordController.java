@@ -9,9 +9,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.agentpay.vo.*;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.IdReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.agentpay.AgentRecordDO;
-import cn.iocoder.yudao.module.ordertrade.framework.utils.UserNameInjector;
 import cn.iocoder.yudao.module.ordertrade.service.agentpay.AgentRecordService;
-import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,9 +34,6 @@ public class AgentRecordController {
 
     @Resource
     private AgentRecordService agentRecordService;
-
-    @Resource
-    private AdminUserApi adminUserApi;
 
     @PostMapping("/create")
     @Operation(summary = "创建代付记录")
@@ -67,9 +62,6 @@ public class AgentRecordController {
     public CommonResult<AgentRecordRespVO> getAgentRecord(@RequestParam("id") Long id) {
         AgentRecordDO obj = agentRecordService.getAgentRecord(id);
         AgentRecordRespVO respVO = BeanUtils.toBean(obj, AgentRecordRespVO.class);
-        if (respVO != null) {
-            injectCheckerName(List.of(respVO));
-        }
         return success(respVO);
     }
 
@@ -78,7 +70,6 @@ public class AgentRecordController {
     public CommonResult<PageResult<AgentRecordRespVO>> getAgentRecordPage(@Valid AgentRecordPageReqVO pageReqVO) {
         PageResult<AgentRecordDO> pageResult = agentRecordService.getAgentRecordPage(pageReqVO);
         PageResult<AgentRecordRespVO> respPage = BeanUtils.toBean(pageResult, AgentRecordRespVO.class);
-        injectCheckerName(respPage.getList());
         return success(respPage);
     }
 
@@ -89,7 +80,6 @@ public class AgentRecordController {
                                        HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<AgentRecordRespVO> list = BeanUtils.toBean(agentRecordService.getAgentRecordPage(pageReqVO).getList(), AgentRecordRespVO.class);
-        injectCheckerName(list);
         ExcelUtils.write(response, "代付记录.xls", "数据", AgentRecordRespVO.class, list);
     }
 
@@ -105,10 +95,5 @@ public class AgentRecordController {
     @Operation(summary = "获得代付记录统计图表数据")
     public CommonResult<AgentRecordChartRespVO> getAgentRecordChart(@Valid AgentRecordChartReqVO chartReqVO) {
         return success(agentRecordService.getAgentRecordChart(chartReqVO));
-    }
-
-    private void injectCheckerName(List<AgentRecordRespVO> list) {
-        UserNameInjector.inject(list, adminUserApi,
-                UserNameInjector.field(AgentRecordRespVO::getCheckerId, AgentRecordRespVO::setCheckerName));
     }
 }

@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.splitsetttle.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.splitsetttle.SplitRateDO;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.splitsetttle.SplitRateMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,7 +53,9 @@ public class SplitRateServiceImpl implements SplitRateService {
 
     @Override
     public PageResult<SplitRateDO> getSplitRatePage(SplitRatePageReqVO pageReqVO) {
-        return splitRateMapper.selectPageWithPartner(pageReqVO);
+        Page<SplitRateDO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        var result = splitRateMapper.selectPageWithPartner(page, pageReqVO);
+        return new PageResult<>(result.getRecords(), result.getTotal());
     }
 
     @Override

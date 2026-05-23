@@ -9,9 +9,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.IdReqVO;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.splitsetttle.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.splitsetttle.SettleBillDO;
-import cn.iocoder.yudao.module.ordertrade.framework.utils.UserNameInjector;
 import cn.iocoder.yudao.module.ordertrade.service.splitsetttle.SettleBillService;
-import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,9 +34,6 @@ public class SettleBillController {
 
     @Resource
     private SettleBillService settleBillService;
-
-    @Resource
-    private AdminUserApi adminUserApi;
 
     @PostMapping("/create")
     @Operation(summary = "创建结算单据")
@@ -68,7 +63,7 @@ public class SettleBillController {
         SettleBillDO obj = settleBillService.getSettleBill(id);
         SettleBillRespVO respVO = BeanUtils.toBean(obj, SettleBillRespVO.class);
         if (respVO != null) {
-            injectAuditorName(List.of(respVO));
+            respVO.setAuditorName(respVO.getUpdater());
         }
         return success(respVO);
     }
@@ -78,7 +73,9 @@ public class SettleBillController {
     public CommonResult<PageResult<SettleBillRespVO>> getSettleBillPage(@Valid SettleBillPageReqVO pageReqVO) {
         PageResult<SettleBillDO> pageResult = settleBillService.getSettleBillPage(pageReqVO);
         PageResult<SettleBillRespVO> respPage = BeanUtils.toBean(pageResult, SettleBillRespVO.class);
-        injectAuditorName(respPage.getList());
+        for (SettleBillRespVO item : respPage.getList()) {
+            item.setAuditorName(item.getUpdater());
+        }
         return success(respPage);
     }
 
@@ -90,7 +87,6 @@ public class SettleBillController {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<SettleBillDO> list = settleBillService.getSettleBillPage(pageReqVO).getList();
         List<SettleBillRespVO> respList = BeanUtils.toBean(list, SettleBillRespVO.class);
-        injectAuditorName(respList);
         ExcelUtils.write(response, "结算单据.xls", "数据", SettleBillRespVO.class, respList);
     }
 
@@ -138,10 +134,5 @@ public class SettleBillController {
     @Operation(summary = "获得结算单据统计图表数据")
     public CommonResult<SettleBillChartRespVO> getSettleBillChart(@Valid SettleBillChartReqVO chartReqVO) {
         return success(settleBillService.getSettleBillChart(chartReqVO));
-    }
-
-    private void injectAuditorName(List<SettleBillRespVO> list) {
-        UserNameInjector.inject(list, adminUserApi,
-                UserNameInjector.field(SettleBillRespVO::getAuditorId, SettleBillRespVO::setAuditorName));
     }
 }

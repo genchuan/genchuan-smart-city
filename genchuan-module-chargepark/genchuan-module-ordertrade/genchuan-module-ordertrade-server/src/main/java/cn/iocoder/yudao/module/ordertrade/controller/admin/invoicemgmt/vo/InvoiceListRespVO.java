@@ -47,13 +47,13 @@ public class InvoiceListRespVO {
     @EnumFormat(InvoiceListStatusEnum.class)
     private String status;
 
-    @Schema(description = "审核人ID")
+   /* @Schema(description = "审核人ID")
     @ExcelProperty("审核人ID")
-    private Long auditorId;
+    private Long auditorId;*/
 
     @Schema(description = "审核人名称")
     @ExcelProperty("审核人名称")
-    private String auditorName;
+    private String updater;
 
     @Schema(description = "审核时间")
     @ExcelProperty("审核时间")

@@ -6,9 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.splitsetttle.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.splitsetttle.SplitRateDO;
-import cn.iocoder.yudao.module.ordertrade.framework.utils.UserNameInjector;
 import cn.iocoder.yudao.module.ordertrade.service.splitsetttle.SplitRateService;
-import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,9 +28,6 @@ public class SplitRateController {
 
     @Resource
     private SplitRateService splitRateService;
-
-    @Resource
-    private AdminUserApi adminUserApi;
 
     @PostMapping("/create")
     @Operation(summary = "创建分账比例")
@@ -62,7 +57,7 @@ public class SplitRateController {
         SplitRateDO obj = splitRateService.getSplitRate(id);
         SplitRateRespVO respVO = BeanUtils.toBean(obj, SplitRateRespVO.class);
         if (respVO != null) {
-            injectAuditorName(List.of(respVO));
+            respVO.setAuditorName(respVO.getUpdater());
         }
         return success(respVO);
     }
@@ -72,7 +67,9 @@ public class SplitRateController {
     public CommonResult<PageResult<SplitRateRespVO>> getSplitRatePage(@Valid SplitRatePageReqVO pageReqVO) {
         PageResult<SplitRateDO> pageResult = splitRateService.getSplitRatePage(pageReqVO);
         PageResult<SplitRateRespVO> respPage = BeanUtils.toBean(pageResult, SplitRateRespVO.class);
-        injectAuditorName(respPage.getList());
+        for (SplitRateRespVO item : respPage.getList()) {
+            item.setAuditorName(item.getUpdater());
+        }
         return success(respPage);
     }
 
@@ -98,10 +95,5 @@ public class SplitRateController {
     @Operation(summary = "获得分账比例统计图表数据")
     public CommonResult<SplitRateChartRespVO> getSplitRateChart(@Valid SplitRateChartReqVO chartReqVO) {
         return success(splitRateService.getSplitRateChart(chartReqVO));
-    }
-
-    private void injectAuditorName(List<SplitRateRespVO> list) {
-        UserNameInjector.inject(list, adminUserApi,
-                UserNameInjector.field(SplitRateRespVO::getAuditorId, SplitRateRespVO::setAuditorName));
     }
 }

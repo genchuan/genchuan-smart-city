@@ -5,6 +5,8 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.merchantreconcile.vo.ReconcileBillPageReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.merchantreconcile.ReconcileBillDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -24,6 +26,25 @@ public interface ReconcileBillMapper extends BaseMapperX<ReconcileBillDO> {
                 .eqIfPresent(ReconcileBillDO::getCycle, reqVO.getCycle())
                 .orderByDesc(ReconcileBillDO::getId));
     }
+
+    @Select("<script>" +
+            "SELECT rb.*, mi.name AS merchant_name " +
+            "FROM reconcile_bill rb " +
+            "LEFT JOIN merchant_info mi ON mi.id = rb.merchant_id AND mi.deleted = 0 " +
+            "WHERE rb.deleted = 0 " +
+            "<if test='req.billNo != null and req.billNo != \"\"'>AND rb.bill_no LIKE CONCAT('%', #{req.billNo}, '%') </if>" +
+            "<if test='req.merchantId != null'>AND rb.merchant_id = #{req.merchantId} </if>" +
+            "<if test='req.status != null and req.status != \"\"'>AND rb.status = #{req.status} </if>" +
+            "<if test='req.cycle != null and req.cycle != \"\"'>AND rb.cycle = #{req.cycle} </if>" +
+            "ORDER BY rb.id DESC" +
+            "</script>")
+    IPage<ReconcileBillDO> selectPageWithMerchant(Page<ReconcileBillDO> page, @Param("req") ReconcileBillPageReqVO reqVO);
+
+    @Select("SELECT rb.*, mi.name AS merchant_name " +
+            "FROM reconcile_bill rb " +
+            "LEFT JOIN merchant_info mi ON mi.id = rb.merchant_id AND mi.deleted = 0 " +
+            "WHERE rb.id = #{id} AND rb.deleted = 0")
+    ReconcileBillDO selectByIdWithMerchant(@Param("id") Long id);
 
     @Select("<script>" +
             "SELECT DATE_FORMAT(create_time,'%Y-%m-%d') AS date, COUNT(*) AS count " +

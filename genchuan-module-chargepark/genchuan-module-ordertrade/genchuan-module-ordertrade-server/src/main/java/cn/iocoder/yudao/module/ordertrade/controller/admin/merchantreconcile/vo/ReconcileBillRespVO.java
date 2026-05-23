@@ -26,6 +26,10 @@ public class ReconcileBillRespVO {
     @ExcelProperty("商户ID")
     private Long merchantId;
 
+    @Schema(description = "商户名称")
+    @ExcelProperty("商户名称")
+    private String merchantName;
+
     @Schema(description = "对账周期")
     @ExcelProperty("对账周期")
     private String cycle;

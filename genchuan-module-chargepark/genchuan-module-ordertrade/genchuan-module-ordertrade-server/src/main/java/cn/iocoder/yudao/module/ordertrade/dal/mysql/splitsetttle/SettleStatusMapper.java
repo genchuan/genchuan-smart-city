@@ -5,6 +5,8 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.splitsetttle.vo.SettleStatusPageReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.splitsetttle.SettleStatusDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -33,7 +35,7 @@ public interface SettleStatusMapper extends BaseMapperX<SettleStatusDO> {
             "<if test='req.createTimeEnd != null'>AND ss.create_time &lt;= #{req.createTimeEnd} </if>" +
             "ORDER BY ss.id DESC" +
             "</script>")
-    PageResult<SettleStatusDO> selectPageWithBill(@Param("req") SettleStatusPageReqVO reqVO);
+    IPage<SettleStatusDO> selectPageWithBill(Page<SettleStatusDO> page, @Param("req") SettleStatusPageReqVO reqVO);
 
     @Select("SELECT ss.*, sb.bill_no AS billNo FROM settle_status ss " +
             "LEFT JOIN settle_bill sb ON sb.id = ss.bill_id AND sb.deleted = 0 " +
