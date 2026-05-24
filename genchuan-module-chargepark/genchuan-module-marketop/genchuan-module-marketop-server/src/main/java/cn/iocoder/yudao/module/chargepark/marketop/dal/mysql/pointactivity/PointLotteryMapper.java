@@ -54,7 +54,7 @@ public interface PointLotteryMapper extends BaseMapperX<PointLotteryDO> {
     @Select("SELECT COUNT(*) FROM point_lottery")
     Long selectTotalCount();
 
-    @Select("SELECT COUNT(*) FROM point_lottery WHERE prize_id = 0")
+    @Select("SELECT COUNT(*) FROM point_lottery WHERE prize_id > 0")
     Long selectWinCount();
 
     IPage<PointLotteryRespVO> selectPageJoin(Page<?> page, @Param("reqVO") PointLotteryPageReqVO reqVO);
