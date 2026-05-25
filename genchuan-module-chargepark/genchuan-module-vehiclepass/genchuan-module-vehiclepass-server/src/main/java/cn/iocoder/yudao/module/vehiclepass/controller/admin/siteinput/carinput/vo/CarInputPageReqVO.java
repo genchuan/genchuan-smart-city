@@ -27,6 +27,9 @@ public class CarInputPageReqVO extends PageParam {
     @Schema(description = "片区ID，关联片区表", example = "15735")
     private Long areaId;
 
+    @Schema(description = "片区名称", example = "A区")
+    private String areaName;
+
     @Schema(description = "录入人ID，关联芋道用户表system_user", example = "2919")
     private Long inputUserId;
 

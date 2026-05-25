@@ -46,6 +46,9 @@
         <if test="reqVO.areaId != null">
             AND c.area_id = #{reqVO.areaId}
         </if>
+        <if test="reqVO.areaName != null and reqVO.areaName != ''">
+            AND a.name LIKE CONCAT('%', #{reqVO.areaName}, '%')
+        </if>
         <if test="reqVO.inputUserId != null">
             AND c.input_user_id = #{reqVO.inputUserId}
         </if>
