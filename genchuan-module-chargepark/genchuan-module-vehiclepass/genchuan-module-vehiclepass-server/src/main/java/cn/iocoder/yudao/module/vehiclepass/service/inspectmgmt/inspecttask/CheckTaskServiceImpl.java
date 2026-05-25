@@ -169,6 +169,7 @@ public class CheckTaskServiceImpl implements CheckTaskService {
         CheckTaskDO updateObj = new CheckTaskDO();
         updateObj.setId(reqVO.getId());
         updateObj.setTaskProgress(reqVO.getTaskProgress());
+        updateObj.setStatus(STATUS_COMPLETED);
         taskMapper.updateById(updateObj);
     }
 
