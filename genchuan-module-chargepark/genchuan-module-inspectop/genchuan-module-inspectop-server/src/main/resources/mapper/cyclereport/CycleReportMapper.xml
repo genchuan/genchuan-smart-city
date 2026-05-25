@@ -87,7 +87,7 @@
     <!-- 3. 油车占位统计 -->
     <select id="selectOilMonitorReport" resultType="java.util.Map">
         SELECT
-        COALESCE(SUM(CASE WHEN process_status IN ('1', '2', '待处理', '处理中') THEN 1 ELSE 0 END), 0) AS oilWaitHandleNum,
+        COALESCE(SUM(CASE WHEN process_status IN ('1', '待处理', '处理中') THEN 1 ELSE 0 END), 0) AS oilWaitHandleNum,
         CASE
         WHEN COUNT(*) = 0 THEN 0
         ELSE ROUND(SUM(CASE WHEN process_status IN ('0', '3', '已完成', '已关闭') THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2)

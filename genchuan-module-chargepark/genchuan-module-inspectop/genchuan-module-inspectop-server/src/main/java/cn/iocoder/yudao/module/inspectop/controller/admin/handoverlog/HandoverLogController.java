@@ -110,11 +110,51 @@ public class HandoverLogController {
     @PreAuthorize("@ss.hasPermission('inspectop:handover-log:export')")
     @ApiAccessLog(operateType = EXPORT)
     public void exportHandoverLogExcel(@Valid HandoverLogPageReqVO pageReqVO,
-              HttpServletResponse response) throws IOException {
+                                       HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<HandoverLogRespVO> list = handoverLogService.getHandoverLogPage(pageReqVO).getList();
+
+        // 【新增】转换字典值为中文显示
+        convertLogDictValues(list);
+
         // 导出 Excel
         ExcelUtils.write(response, "交接日志.xls", "数据", HandoverLogRespVO.class, list);
+    }
+
+    /**
+     * 【新增】转换交接日志字典值为中文显示
+     * 此方法会修改传入的 voList 中每个对象的字典值字段
+     * @param voList 交接日志响应VO列表
+     */
+    private void convertLogDictValues(List<HandoverLogRespVO> voList) {
+        if (voList == null || voList.isEmpty()) {
+            return;
+        }
+        for (HandoverLogRespVO vo : voList) {
+            // 转换日志状态
+            vo.setStatus(convertLogStatus(vo.getStatus()));
+        }
+    }
+
+    /**
+     * 【新增】转换日志状态字典值为中文显示
+     * 排班交接日志状态：1-待确认、2-已确认
+     * @param status 状态字典值
+     * @return 对应的中文描述
+     */
+    private String convertLogStatus(String status) {
+        if (status == null) {
+            return "";
+        }
+        // 使用switch语句处理状态转换
+        switch (status) {
+            case "1":
+                return "待确认";
+            case "2":
+                return "已确认";
+            default:
+                return status; // 如果不在已知状态中，返回原值
+        }
     }
 
 }

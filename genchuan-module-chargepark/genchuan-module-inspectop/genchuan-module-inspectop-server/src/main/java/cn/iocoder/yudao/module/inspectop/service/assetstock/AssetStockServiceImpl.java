@@ -61,13 +61,35 @@ public class AssetStockServiceImpl implements AssetStockService {
         // 1. 校验存在，并获取旧数据用于日志对比
         AssetStockDO oldAssetStock = validateAssetStockExists(updateReqVO.getId());
 
-        // 2. 更新
+        // 【新增】补货数量判断逻辑
+        // 获取新旧库存数量
+        Integer oldStock = oldAssetStock.getCurrentStock();
+        Integer newStock = updateReqVO.getCurrentStock();
+
+        // 判断是否为补货操作（新库存 > 旧库存）且补货数量超过10
+        boolean isReplenishment = newStock > oldStock;
+        boolean exceedsReplenishmentThreshold = isReplenishment && (newStock - oldStock) > 10;
+
+        // 2. 创建更新对象
         AssetStockDO updateObj = BeanUtils.toBean(updateReqVO, AssetStockDO.class);
+
+        // 【新增】如果补货数量超过10，自动将状态改为1（正常）
+        if (exceedsReplenishmentThreshold) {
+            updateObj.setStatus("1"); // 将状态设置为正常
+        }
+
+        // 3. 更新数据库
         assetStockMapper.updateById(updateObj);
 
-        // 3. 记录操作日志上下文（用于DIFF比较）
+        // 4. 记录操作日志上下文（用于DIFF比较）
         AssetStockSaveReqVO oldVO = BeanUtils.toBean(oldAssetStock, AssetStockSaveReqVO.class);
         LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, oldVO);
+
+        // 【新增】设置日志上下文变量，记录补货操作信息
+        LogRecordContext.putVariable("isReplenishment", isReplenishment);
+        LogRecordContext.putVariable("replenishmentAmount", isReplenishment ? (newStock - oldStock) : 0);
+        LogRecordContext.putVariable("exceedsThreshold", exceedsReplenishmentThreshold);
+        LogRecordContext.putVariable("autoStatusChanged", exceedsReplenishmentThreshold);
     }
 
     @Override
