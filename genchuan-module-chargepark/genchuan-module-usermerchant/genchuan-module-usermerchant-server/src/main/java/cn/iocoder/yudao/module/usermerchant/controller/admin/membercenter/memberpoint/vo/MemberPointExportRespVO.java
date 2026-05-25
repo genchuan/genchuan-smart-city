@@ -1,16 +1,16 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberpoint.vo;
 
+import cn.iocoder.yudao.module.usermerchant.framework.commom.converter.CommonDictConverter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import java.util.*;
-import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDateTime;
 import cn.idev.excel.annotation.*;
 
 @Schema(description = "管理后台 - 会员积分 Response VO")
 @Data
 @ExcelIgnoreUnannotated
-public class MemberPointRespVO {
+public class MemberPointExportRespVO {
 
     @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "4936")
     @ExcelProperty("主键ID")
@@ -20,10 +20,6 @@ public class MemberPointRespVO {
     @ExcelProperty("用户编号")
     private Long userId;
 
-    @Schema(description = "用户姓名", example = "张三")
-    @ExcelProperty("用户姓名")
-    private String nickname;
-
     @Schema(description = "变动积分", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("变动积分")
     private Integer changeAmount;
@@ -32,16 +28,16 @@ public class MemberPointRespVO {
     @ExcelProperty("变动后的总积分")
     private Integer totalPoint;
 
-    @Schema(description = "变动类型：1-获取，2-消耗", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("变动类型：1-获取，2-消耗")
+    @Schema(description = "变动类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @ExcelProperty(value = "变动类型", converter = CommonDictConverter.class)
     private Integer changeType;
 
     @Schema(description = "变动原因", example = "不香")
     @ExcelProperty("变动原因")
     private String changeReason;
 
-    @Schema(description = "记录状态：0-异常，1-正常", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("记录状态：0-异常，1-正常")
+    @Schema(description = "记录状态", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @ExcelProperty(value = "记录状态", converter = CommonDictConverter.class)
     private Integer status;
 
     @Schema(description = "核查结果")

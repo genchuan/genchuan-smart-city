@@ -9,4 +9,61 @@
         文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
      -->
 
+    <!-- 分页查询会员等级并统计用户数 -->
+    <select id="selectPageWithUserCount" resultType="cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberlevel.MemberLevelDO">
+        SELECT
+        ml.id,
+        ml.name,
+        ml.level_value,
+        ml.upgrade_condition,
+        ml.benefits,
+        ml.status,
+        ml.effective_time,
+        ml.remark,
+        ml.creator,
+        ml.create_time,
+        ml.updater,
+        ml.update_time,
+        COUNT(mu.id) AS member_count
+        FROM member_level ml
+        LEFT JOIN member_user mu ON mu.level_id = ml.id
+        <where>
+            <if test="reqVO.name != null and reqVO.name != ''">
+                AND ml.name LIKE CONCAT('%', #{reqVO.name}, '%')
+            </if>
+            <if test="reqVO.levelValue != null">
+                AND ml.level_value = #{reqVO.levelValue}
+            </if>
+            <if test="reqVO.upgradeCondition != null and reqVO.upgradeCondition != ''">
+                AND ml.upgrade_condition LIKE CONCAT('%', #{reqVO.upgradeCondition}, '%')
+            </if>
+            <if test="reqVO.benefits != null and reqVO.benefits != ''">
+                AND ml.benefits LIKE CONCAT('%', #{reqVO.benefits}, '%')
+            </if>
+            <if test="reqVO.status != null">
+                AND ml.status = #{reqVO.status}
+            </if>
+            <if test="reqVO.effectiveTime != null">
+                AND ml.effective_time = #{reqVO.effectiveTime}
+            </if>
+            <if test="reqVO.remark != null and reqVO.remark != ''">
+                AND ml.remark LIKE CONCAT('%', #{reqVO.remark}, '%')
+            </if>
+            <if test="reqVO.creator != null and reqVO.creator != ''">
+                AND ml.creator = #{reqVO.creator}
+            </if>
+            <if test="reqVO.createTime != null">
+                AND ml.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+            </if>
+            <if test="reqVO.updater != null and reqVO.updater != ''">
+                AND ml.updater = #{reqVO.updater}
+            </if>
+            <if test="reqVO.updateTime != null">
+                AND ml.update_time BETWEEN #{reqVO.updateTime[0]} AND #{reqVO.updateTime[1]}
+            </if>
+        </where>
+        GROUP BY ml.id
+        ORDER BY ml.id DESC
+    </select>
+
 </mapper>

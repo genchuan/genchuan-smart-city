@@ -14,29 +14,29 @@
         SELECT
         <choose>
             <when test="granularity == 'year'">
-                DATE_FORMAT(create_time, '%Y') as date,
+                DATE_FORMAT(exec_time, '%Y') as date,
                 COUNT(*) as count
             </when>
             <when test="granularity == 'month'">
-                DATE_FORMAT(create_time, '%Y-%m') as date,
+                DATE_FORMAT(exec_time, '%Y-%m') as date,
                 COUNT(*) as count
             </when>
             <when test="granularity == 'day'">
-                DATE_FORMAT(create_time, '%Y-%m-%d') as date,
+                DATE_FORMAT(exec_time, '%Y-%m-%d') as date,
                 COUNT(*) as count
             </when>
             <otherwise>
-                DATE(create_time) as date,
+                DATE(exec_time) as date,
                 COUNT(*) as count
             </otherwise>
         </choose>
         FROM merchant_send_coupon
         WHERE deleted = 0
         <if test="start != null">
-            AND create_time >= #{start}
+            AND exec_time >= #{start}
         </if>
         <if test="end != null">
-            AND create_time &lt;= #{end}
+            AND exec_time &lt;= #{end}
         </if>
         GROUP BY date
         ORDER BY date ASC
@@ -48,10 +48,10 @@
         FROM merchant_send_coupon
         WHERE deleted = 0
         <if test="start != null">
-            AND create_time >= #{start}
+            AND exec_time >= #{start}
         </if>
         <if test="end != null">
-            AND create_time &lt;= #{end}
+            AND exec_time &lt;= #{end}
         </if>
     </select>
 
@@ -66,10 +66,10 @@
         FROM merchant_send_coupon
         WHERE deleted = 0
         <if test="start != null">
-            AND audit_time >= #{start}
+            AND exec_time >= #{start}
         </if>
         <if test="end != null">
-            AND audit_time &lt;= #{end}
+            AND exec_time &lt;= #{end}
         </if>
     </select>
 

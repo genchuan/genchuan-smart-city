@@ -15,6 +15,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo.vo.*;
@@ -221,7 +222,15 @@ public class UserInfoServiceImpl implements UserInfoService {
         chartRespVO.setUserTypeDistribution(typeDistribution);
         //总数统计
         chartRespVO.setTotalUserCount(userInfoMapper.selectTotalUserCount(parsed.getStart(), parsed.getEnd()));
-        chartRespVO.setNewUserCount(userInfoMapper.selectNewUserCount(parsed.getStart(), parsed.getEnd()));
+        // 计算近30天的时间范围
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime thirtyDaysAgo = now.minusDays(30);
+
+        // 调用 Mapper 方法，传入开始和结束时间
+        Long newUserCount = userInfoMapper.selectNewUserCount(thirtyDaysAgo, now);
+
+        // 设置到响应 VO 中
+        chartRespVO.setNewUserCount((long) (newUserCount != null ? newUserCount.intValue() : 0));
 
         return chartRespVO;
     }

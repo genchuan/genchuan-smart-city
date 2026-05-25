@@ -36,6 +36,10 @@ public class MemberLevelRespVO {
     @ExcelProperty("状态：0-未生效，1-已生效")
     private Integer status;
 
+    @Schema(description = "该等级下的会员用户数量")
+    @ExcelProperty("该等级下的会员用户数量")
+    private Integer memberCount;
+
     @Schema(description = "生效时间")
     @ExcelProperty("生效时间")
     private LocalDateTime effectiveTime;
