@@ -57,7 +57,7 @@
             AND cm.send_time BETWEEN #{reqVO.sendTime[0]} AND #{reqVO.sendTime[1]}
         </if>
         <if test="reqVO.date != null and reqVO.date != ''">
-            AND cm.send_time BETWEEN DATE(#{reqVO.date}) AND DATE(DATE_ADD(#{reqVO.date}, INTERVAL 1 DAY))
+            AND cm.create_time BETWEEN DATE(#{reqVO.date}) AND DATE(DATE_ADD(#{reqVO.date}, INTERVAL 1 DAY))
         </if>
         ORDER BY cm.id DESC
     </select>
@@ -87,7 +87,7 @@
     </select>
 
     <select id="selectUserSimpleList" resultType="cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.UserSimpleRespVO">
-        SELECT id, nickname AS name FROM user_info WHERE deleted = 0
+        SELECT id, nickname AS name, phone FROM user_info WHERE deleted = 0
         <if test="name != null and name != ''">
             AND nickname LIKE CONCAT('%', #{name}, '%')
         </if>

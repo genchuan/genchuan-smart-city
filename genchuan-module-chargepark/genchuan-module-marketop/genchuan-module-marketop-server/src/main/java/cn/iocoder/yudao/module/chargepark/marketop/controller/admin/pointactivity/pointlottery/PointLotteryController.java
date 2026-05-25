@@ -94,6 +94,9 @@ public class PointLotteryController {
         Set<Long> senderIds = new HashSet<>();
         for (var item : list) {
             if (item.getSenderId() != null) senderIds.add(item.getSenderId());
+            if (item.getPrizeId() == null || item.getPrizeId() == 0){
+                item.setPrizeName("谢谢参与");
+            }
         }
         if (!senderIds.isEmpty()) {
             Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(senderIds);
