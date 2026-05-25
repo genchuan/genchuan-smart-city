@@ -80,6 +80,10 @@ public class InvoiceAuditController {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<InvoiceAuditDO> list = invoiceAuditService.getInvoiceAuditPage(pageReqVO).getList();
         List<InvoiceAuditRespVO> respList = BeanUtils.toBean(list, InvoiceAuditRespVO.class);
+        for (InvoiceAuditRespVO item : respList) {
+            item.setApplicantName(item.getCreator());
+            item.setAuditorName(item.getUpdater());
+        }
         ExcelUtils.write(response, "开票审核.xls", "数据", InvoiceAuditRespVO.class, respList);
     }
 
