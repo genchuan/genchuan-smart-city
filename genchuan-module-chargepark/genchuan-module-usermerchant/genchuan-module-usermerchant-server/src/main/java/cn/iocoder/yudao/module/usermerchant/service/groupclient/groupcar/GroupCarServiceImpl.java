@@ -6,7 +6,9 @@ import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.groupclient.groupinfo.vo.GroupInfoImportExcelVO;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantinfo.vo.MerchantInfoImportExcelVO;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.groupclient.groupinfo.GroupInfoDO;
+import cn.iocoder.yudao.module.usermerchant.dal.dataobject.merchantmgmt.merchantinfo.MerchantInfoDO;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.merchantmgmt.merchantrecharge.MerchantRechargeDO;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.usermgmt.usercar.UserCarDO;
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.groupclient.groupinfo.GroupInfoMapper;
@@ -50,6 +52,9 @@ public class GroupCarServiceImpl implements GroupCarService {
 
     @Resource
     private GroupCarMapper groupCarMapper;
+
+    @Resource
+    private NameQueryHelper nameQueryHelper;
 
     @Override
     @LogRecord(type = TYPE_GROUP_CAR, subType = SUB_TYPE_CREATE_GROUP_CAR,
@@ -161,73 +166,54 @@ public class GroupCarServiceImpl implements GroupCarService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     @LogRecord(type = TYPE_GROUP_CAR, subType = SUB_TYPE_IMPORT_GROUP_CAR,
-            bizNo = "{{#list.stream().map(GroupCarImportExcelVO::getId).collect(T(java.util.stream.Collectors).toList())}}",
+            bizNo = "{{#list.![name]}}",
             success = SUCCESS_IMPORT_GROUP_CAR)
     public Boolean importGroups(List<GroupCarImportExcelVO> list, Boolean updateSupport) {
         if (CollectionUtils.isEmpty(list)) {
             return true;
         }
         for (GroupCarImportExcelVO vo : list) {
-            // 1. 绑定时间为空时自动填充当前时间
-            if (vo.getBindTime() == null) {
-                vo.setBindTime(LocalDateTime.now());
+            // 使用你的工具方法根据集团名称获取集团ID
+            Long groupId = nameQueryHelper.getIdByName("group_info", "name", vo.getName(), "id");
+            if (groupId == null) {
+                throw new ServiceException(GROUP_CAR_NOT_EXISTS);
             }
-
-            // 2. 确定最终 groupId
-            Long finalGroupId = resolveGroupId(vo);
-            vo.setGroupId(finalGroupId);
-
-            // 3. 后续新增/更新逻辑（保持不变）
-            if (vo.getId() != null) {
-                GroupCarDO existDO = groupCarMapper.selectById(vo.getId());
-                if (existDO != null) {
-                    if (Boolean.TRUE.equals(updateSupport)) {
-                        GroupCarDO updateDO = BeanUtils.toBean(vo, GroupCarDO.class);
-                        updateDO.setCreator(null);
-                        updateDO.setCreateTime(null);
-                        groupCarMapper.updateById(updateDO);
-                    } else {
-                        continue;
-                    }
-                } else {
-                    GroupCarDO insertDO = BeanUtils.toBean(vo, GroupCarDO.class);
-                    insertDO.setId(null);
-                    groupCarMapper.insert(insertDO);
-                }
-            } else {
-                GroupCarDO insertDO = BeanUtils.toBean(vo, GroupCarDO.class);
-                groupCarMapper.insert(insertDO);
-            }
+            GroupCarDO insertDO = BeanUtils.toBean(vo, GroupCarDO.class);
+            insertDO.setId(null);
+            insertDO.setGroupId(groupId);
+            insertDO.setStatus("待审核");
+            insertDO.setBindTime(vo.getBindTime());
+            groupCarMapper.insert(insertDO);
         }
-        // 记录操作日志上下文
+        // 日志上下文（如果需要）
         LogRecordContext.putVariable("list", list);
         LogRecordContext.putVariable("updateSupport", updateSupport);
         return true;
     }
 
     // 辅助方法：解析 groupId
-    private Long resolveGroupId(GroupCarImportExcelVO vo) {
-        if (vo.getGroupId() != null) {
-            // 如果有提供 groupId，校验是否存在（查询 group_info 表）
-            GroupInfoDO group = groupInfoMapper.selectById(vo.getGroupId());
-            if (group == null) {
-                throw new ServiceException(GROUP_INFO_NOT_EXISTS);
-            }
-            return vo.getGroupId();
-        }
-        if (StringUtils.hasText(vo.getName())) {
-            // 通过名称查询集团ID（假设 group_info 表有 name 字段且唯一）
-            // 集团名称应该是唯一的，这里可以直接用 mapper 的方法
-            GroupInfoDO group = groupInfoMapper.selectOne(new LambdaQueryWrapper<GroupInfoDO>()
-                    .eq(GroupInfoDO::getName, vo.getName())
-                    .eq(GroupInfoDO::getDeleted, 0));
-            if (group == null) {
-                throw new ServiceException(GROUP_INFO_NOT_EXISTS);
-            }
-            return group.getId();
-        }
-        throw new ServiceException(GROUP_INFO_NOT_EXISTS);
-    }
+//    private Long resolveGroupId(GroupCarImportExcelVO vo) {
+//        if (vo.getGroupId() != null) {
+//            // 如果有提供 groupId，校验是否存在（查询 group_info 表）
+//            GroupInfoDO group = groupInfoMapper.selectById(vo.getGroupId());
+//            if (group == null) {
+//                throw new ServiceException(GROUP_INFO_NOT_EXISTS);
+//            }
+//            return vo.getGroupId();
+//        }
+//        if (StringUtils.hasText(vo.getName())) {
+//            // 通过名称查询集团ID（假设 group_info 表有 name 字段且唯一）
+//            // 集团名称应该是唯一的，这里可以直接用 mapper 的方法
+//            GroupInfoDO group = groupInfoMapper.selectOne(new LambdaQueryWrapper<GroupInfoDO>()
+//                    .eq(GroupInfoDO::getName, vo.getName())
+//                    .eq(GroupInfoDO::getDeleted, 0));
+//            if (group == null) {
+//                throw new ServiceException(GROUP_INFO_NOT_EXISTS);
+//            }
+//            return group.getId();
+//        }
+//        throw new ServiceException(GROUP_INFO_NOT_EXISTS);
+//    }
 
     @Override
     @LogRecord(type = TYPE_GROUP_CAR, subType = SUB_TYPE_AUDIT_GROUP_CAR,

@@ -84,8 +84,17 @@ public class GroupCarController {
     @Operation(summary = "下载集团车辆导入模板")
     @PreAuthorize("@ss.hasPermission('usermerchant:group-car:import')")
     public void downloadImportTemplate(HttpServletResponse response) throws IOException {
-        List<GroupCarImportExcelVO> emptyList = Collections.emptyList();
-        ExcelUtils.write(response, "集团车辆导入模板.xlsx", "集团车辆", GroupCarImportExcelVO.class, emptyList);
+        // 构造一条示例数据（必填字段均已填写）
+        GroupCarImportExcelVO example = GroupCarImportExcelVO.builder()
+                .name("示例集团")
+                .plateNo("京A12345")
+                .plateColor("蓝")
+                .carType("轿车")
+                .bindTime(LocalDateTime.now()) // 绑定时间示例为当前时间
+                .remark("示例备注")
+                .build();
+        List<GroupCarImportExcelVO> exampleList = Collections.singletonList(example);
+        ExcelUtils.write(response, "集团车辆导入模板.xlsx", "集团车辆", GroupCarImportExcelVO.class, exampleList);
     }
 
     @GetMapping("/export")

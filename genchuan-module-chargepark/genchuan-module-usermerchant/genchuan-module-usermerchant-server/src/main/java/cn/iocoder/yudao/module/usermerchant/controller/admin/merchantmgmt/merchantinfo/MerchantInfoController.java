@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantinfo;
 
+import cn.idev.excel.EasyExcel;
 import io.swagger.v3.oas.annotations.Parameters;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
@@ -11,6 +12,9 @@ import io.swagger.v3.oas.annotations.Operation;
 
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
+
+import java.net.URLEncoder;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.io.IOException;
 
@@ -72,8 +76,31 @@ public class MerchantInfoController {
     @Operation(summary = "下载商户信息导入模板")
     @PreAuthorize("@ss.hasPermission('usermerchant:merchant-info:import')")
     public void downloadImportTemplate(HttpServletResponse response) throws IOException {
-        List<MerchantInfoImportExcelVO> emptyList = Collections.emptyList();
-        ExcelUtils.write(response, "商户信息导入模板.xlsx", "商户信息", MerchantInfoImportExcelVO.class, emptyList);
+//        List<MerchantInfoImportExcelVO> emptyList = Collections.emptyList();
+//        ExcelUtils.write(response, "商户信息导入模板.xlsx", "商户信息", MerchantInfoImportExcelVO.class, emptyList);
+        // 构造一条示例数据（仅填充业务字段）
+        MerchantInfoImportExcelVO example = MerchantInfoImportExcelVO.builder()
+                .name("示例商户")
+                .contact("张三")
+                .phone("13800138000")
+                .merchantType("充电商户")
+                .address("示例地址某某路1号")
+                .registerTime(LocalDateTime.now())
+                .remark("示例备注")
+                .build();
+        List<MerchantInfoImportExcelVO> exampleList = Collections.singletonList(example);
+
+        // 使用 EasyExcel 原生方式导出，以便支持表头样式（如果 ExcelUtils 不支持样式，则需直接使用 EasyExcel）
+        // 方式一：如果 ExcelUtils.write 已封装，需确认其是否支持注解样式；若不支持，则用原生 EasyExcel。
+        // 下面给出原生 EasyExcel 写法（确保项目中已引入 easyexcel 依赖）。
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("utf-8");
+        String fileName = URLEncoder.encode("商户信息导入模板.xlsx", "UTF-8").replaceAll("\\+", "%20");
+        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName);
+
+        EasyExcel.write(response.getOutputStream(), MerchantInfoImportExcelVO.class)
+                .sheet("商户信息")
+                .doWrite(exampleList);
     }
 
     @GetMapping("/export")

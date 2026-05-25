@@ -25,29 +25,29 @@
         SELECT
         <choose>
             <when test="granularity == 'year'">
-                DATE_FORMAT(create_time, '%Y') as date,
+                DATE_FORMAT(pay_time, '%Y') as date,
                 SUM(amount) as amount
             </when>
             <when test="granularity == 'month'">
-                DATE_FORMAT(create_time, '%Y-%m') as date,
+                DATE_FORMAT(pay_time, '%Y-%m') as date,
                 SUM(amount) as amount
             </when>
             <when test="granularity == 'day'">
-                DATE_FORMAT(create_time, '%Y-%m-%d') as date,
+                DATE_FORMAT(pay_time, '%Y-%m-%d') as date,
                 SUM(amount) as amount
             </when>
             <otherwise>
-                DATE(create_time) as date,
+                DATE(pay_time) as date,
                 SUM(amount) as amount
             </otherwise>
         </choose>
         FROM merchant_recharge
         WHERE deleted = 0
         <if test="start != null">
-            AND create_time >= #{start}
+            AND pay_time >= #{start}
         </if>
         <if test="end != null">
-            AND create_time &lt;= #{end}
+            AND pay_time &lt;= #{end}
         </if>
         GROUP BY date
         ORDER BY date ASC
@@ -59,10 +59,10 @@
         FROM merchant_recharge
         WHERE deleted = 0
         <if test="start != null">
-            AND create_time >= #{start}
+            AND pay_time >= #{start}
         </if>
         <if test="end != null">
-            AND create_time &lt;= #{end}
+            AND pay_time &lt;= #{end}
         </if>
     </select>
 
@@ -77,10 +77,10 @@
         FROM merchant_recharge
         WHERE deleted = 0
         <if test="start != null">
-            AND create_time >= #{start}
+            AND pay_time >= #{start}
         </if>
         <if test="end != null">
-            AND create_time &lt;= #{end}
+            AND pay_time &lt;= #{end}
         </if>
     </select>
 

@@ -23,6 +23,7 @@ public interface CycleReportMapper extends BaseMapperX<CycleReportDO> {
                 .eqIfPresent(CycleReportDO::getReportCycle, reqVO.getReportCycle())
                 .betweenIfPresent(CycleReportDO::getStatStartTime, reqVO.getStatStartTime())
                 .betweenIfPresent(CycleReportDO::getStatEndTime, reqVO.getStatEndTime())
+                .eqIfPresent(CycleReportDO::getReportStatus, reqVO.getReportStatus())
                 .orderByDesc(CycleReportDO::getId));
     }
 

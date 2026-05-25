@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.userreport.cyclereport;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.userreport.cyclereport.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.userreport.cyclereport.CycleReportDO;
 import cn.iocoder.yudao.module.usermerchant.service.userreport.cyclereport.CycleReportService;
@@ -16,6 +17,7 @@ import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import java.util.*;
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -60,6 +62,15 @@ public class CycleReportController {
                                        HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<CycleReportDO> list = cycleReportService.getCycleReportPage(pageReqVO).getList();
+
+        // 增加导出计数
+        if (CollUtil.isNotEmpty(list)) {
+            List<Long> ids = list.stream()
+                    .map(CycleReportDO::getId)
+                    .collect(Collectors.toList());
+            cycleReportService.incrementExportCountByIds(ids);
+        }
+
         // 导出 Excel
         ExcelUtils.write(response, "周期报表存储.xls", "数据", CycleReportPageRespVO.class,
                 BeanUtils.toBean(list, CycleReportPageRespVO.class));

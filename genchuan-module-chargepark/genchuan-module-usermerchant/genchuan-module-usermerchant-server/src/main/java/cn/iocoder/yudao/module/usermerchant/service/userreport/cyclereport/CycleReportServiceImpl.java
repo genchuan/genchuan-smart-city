@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.usermerchant.service.userreport.cyclereport;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.userreport.cyclereport.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.creditmgmt.usercredit.UserCreditDO;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.groupclient.groupinfo.GroupInfoDO;
@@ -25,6 +26,7 @@ import cn.iocoder.yudao.module.usermerchant.dal.mysql.usermgmt.userinfo.UserInfo
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.userreport.cyclereport.CycleReportMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
 import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
@@ -310,6 +312,17 @@ public class CycleReportServiceImpl implements CycleReportService {
         cardData.setAvgCreditScore(avgCredit != null ? avgCredit.intValue() : 0);
 
         return cardData;
+    }
+
+    @Override
+    public void incrementExportCountByIds(List<Long> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            return;
+        }
+        LambdaUpdateWrapper<CycleReportDO> wrapper = new LambdaUpdateWrapper<>();
+        wrapper.in(CycleReportDO::getId, ids)
+                .setSql("export_count = export_count + 1");
+        cycleReportMapper.update(null, wrapper);
     }
 
 }
