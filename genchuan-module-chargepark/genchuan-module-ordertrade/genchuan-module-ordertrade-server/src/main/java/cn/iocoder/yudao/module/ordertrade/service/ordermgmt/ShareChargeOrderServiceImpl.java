@@ -173,6 +173,9 @@ public class ShareChargeOrderServiceImpl implements ShareChargeOrderService {
         invoice.setStatus("pending_audit");
         invoice.setRemark(reqVO.getRemark());
         invoiceListMapper.insert(invoice);
+
+        order.setInvoiceStatus("invoiced");
+        shareChargeOrderMapper.updateById(order);
     }
 
     private void validateExists(Long id) {

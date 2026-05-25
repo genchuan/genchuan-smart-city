@@ -131,9 +131,9 @@ public class MemberUserServiceImpl implements MemberUserService {
 
     @Override
     @LogRecord(type = TYPE_MEMBER_USER, subType = SUB_TYPE_UPDATE_MEMBER_USER_STATUS,
-            bizNo = "{{{#ids}}}",
+            bizNo = "{{#ids}}",
             success = SUCCESS_UPDATE_MEMBER_USER_STATUS)
-    public void updateUserStatus(List<Long> ids, String status) {
+    public void updateUserStatus(List<Long> ids, Integer status) {
         if (CollectionUtils.isEmpty(ids)) {
             return;
         }

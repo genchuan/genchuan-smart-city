@@ -8,6 +8,7 @@ import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.IdReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.merchantreconcile.ReconcileBillDO;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.merchantreconcile.ReconcileBillMapper;
 import cn.iocoder.yudao.module.ordertrade.enums.ReconcileBillStatusEnum;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,12 +56,14 @@ public class ReconcileBillServiceImpl implements ReconcileBillService {
 
     @Override
     public ReconcileBillDO getReconcileBill(Long id) {
-        return reconcileBillMapper.selectById(id);
+        return reconcileBillMapper.selectByIdWithMerchant(id);
     }
 
     @Override
     public PageResult<ReconcileBillDO> getReconcileBillPage(ReconcileBillPageReqVO pageReqVO) {
-        return reconcileBillMapper.selectPage(pageReqVO);
+        Page<ReconcileBillDO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        var result = reconcileBillMapper.selectPageWithMerchant(page, pageReqVO);
+        return new PageResult<>(result.getRecords(), result.getTotal());
     }
 
     @Override

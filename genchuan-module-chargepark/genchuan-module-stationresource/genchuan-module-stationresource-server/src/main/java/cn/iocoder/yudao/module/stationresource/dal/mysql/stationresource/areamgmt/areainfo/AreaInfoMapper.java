@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.AreaInfoPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.AreaInfoRespVO;
 import cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.areamgmt.areainfo.AreaInfoDO;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
@@ -41,7 +42,7 @@ public interface AreaInfoMapper extends BaseMapperX<AreaInfoDO> {
                 .orderByDesc(AreaInfoDO::getId));
     }
 
-    Page<AreaInfoDO> getPage(Page<AreaInfoDO> page, @Param("pageReqVO") AreaInfoPageReqVO pageReqVO);
+    Page<AreaInfoRespVO> getPage(Page<AreaInfoRespVO> page, @Param("pageReqVO") AreaInfoPageReqVO pageReqVO);
 
 //    PageResult<AreaInfoDO> getPage(AreaInfoPageReqVO pageReqVO);
 }

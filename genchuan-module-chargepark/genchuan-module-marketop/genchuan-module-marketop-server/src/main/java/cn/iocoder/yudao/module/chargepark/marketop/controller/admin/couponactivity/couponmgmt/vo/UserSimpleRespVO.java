@@ -13,4 +13,6 @@ public class UserSimpleRespVO {
     @Schema(description = "用户昵称")
     private String name;
 
+    @Schema(description = "手机号")
+    private String phone;
 }

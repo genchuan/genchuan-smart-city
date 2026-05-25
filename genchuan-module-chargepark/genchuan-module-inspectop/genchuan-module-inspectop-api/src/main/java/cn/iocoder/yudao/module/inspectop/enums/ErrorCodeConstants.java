@@ -60,7 +60,7 @@ public interface ErrorCodeConstants {
     ErrorCode ASSET_INFO_TYPE_NOT_NULL = new ErrorCode(503, "资产类型不能为空");
     ErrorCode ASSET_INFO_STATUS_NOT_NULL = new ErrorCode(504, "资产状态不能为空");
     ErrorCode ASSET_INFO_STATION_ID_NOT_NULL = new ErrorCode(505, "所属场站ID不能为空");
-    ErrorCode ASSET_INFO_EXISTS = new ErrorCode(506, "资产信息已存在: {0}");
+    ErrorCode ASSET_INFO_EXISTS = new ErrorCode(506, "资产信息已存在");
 
     // ========== 库存管理 ==========
     ErrorCode ASSET_STOCK_NOT_EXISTS = new ErrorCode(500, "库存管理不存在");

@@ -27,8 +27,8 @@ public interface AgentCodeMapper extends BaseMapperX<AgentCodeDO> {
             "<if test='req.merchantName != null and req.merchantName != \"\"'>AND pm.name LIKE CONCAT('%', #{req.merchantName}, '%') </if>" +
             "<if test='req.ruleName != null and req.ruleName != \"\"'>AND agr.name LIKE CONCAT('%', #{req.ruleName}, '%') </if>" +
             "<if test='req.status != null and req.status != \"\"'>AND ar.status = #{req.status} </if>" +
-            "<if test='req.startTime != null'>AND ar.create_order_time &gt;= #{req.startTime} </if>" +
-            "<if test='req.endTime != null'>AND ar.create_order_time &lt;= #{req.endTime} </if>" +
+            "<if test='req.startTime != null'>AND ar.create_time &gt;= #{req.startTime} </if>" +
+            "<if test='req.endTime != null'>AND ar.create_time &lt;= #{req.endTime} </if>" +
             "ORDER BY ar.id DESC " +
             "</script>")
     IPage<AgentCodeRespVO>  selectPageWithMerchant(Page<AgentCodeRespVO>page, @Param("req") AgentCodePageReqVO reqVO);

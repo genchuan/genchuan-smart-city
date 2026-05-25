@@ -20,6 +20,10 @@ public class MemberPointRespVO {
     @ExcelProperty("用户编号")
     private Long userId;
 
+    @Schema(description = "用户姓名", example = "张三")
+    @ExcelProperty("用户姓名")
+    private String nickname;
+
     @Schema(description = "变动积分", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("变动积分")
     private Integer changeAmount;

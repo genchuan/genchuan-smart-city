@@ -7,6 +7,7 @@ import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.IdReqVO;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.splitsetttle.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.splitsetttle.SettleStatusDO;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.splitsetttle.SettleStatusMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,12 +51,14 @@ public class SettleStatusServiceImpl implements SettleStatusService {
 
     @Override
     public SettleStatusDO getSettleStatus(Long id) {
-        return settleStatusMapper.selectById(id);
+        return settleStatusMapper.selectByIdWithBill(id);
     }
 
     @Override
     public PageResult<SettleStatusDO> getSettleStatusPage(SettleStatusPageReqVO pageReqVO) {
-        return settleStatusMapper.selectPage(pageReqVO);
+        Page<SettleStatusDO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        var result = settleStatusMapper.selectPageWithBill(page, pageReqVO);
+        return new PageResult<>(result.getRecords(), result.getTotal());
     }
 
     @Override

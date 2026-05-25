@@ -183,6 +183,8 @@ public class InspectTaskController {
         for (InspectTaskRespVO vo : voList) {
             // 转换任务状态
             vo.setStatus(convertTaskStatus(vo.getStatus()));
+
+            vo.setIsArchiveText(convertIsArchive(vo.getIsArchive()));
         }
     }
 
@@ -210,4 +212,12 @@ public class InspectTaskController {
                 return statusCode;
         }
     }
+
+    private String convertIsArchive(Boolean isArchive) {
+        if (isArchive == null) {
+            return "";
+        }
+        return isArchive ? "已归档" : "未归档";
+    }
+
 }

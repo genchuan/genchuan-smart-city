@@ -61,14 +61,16 @@ public class InvoiceListController {
     @Parameter(name = "id", description = "主键", required = true, example = "1024")
     public CommonResult<InvoiceListRespVO> getInvoiceList(@RequestParam("id") Long id) {
         InvoiceListDO obj = invoiceListService.getInvoiceList(id);
-        return success(BeanUtils.toBean(obj, InvoiceListRespVO.class));
+        InvoiceListRespVO respVO = BeanUtils.toBean(obj, InvoiceListRespVO.class);
+        return success(respVO);
     }
 
     @GetMapping("/page")
     @Operation(summary = "获得发票分页列表")
     public CommonResult<PageResult<InvoiceListRespVO>> getInvoiceListPage(@Valid InvoiceListPageReqVO pageReqVO) {
         PageResult<InvoiceListDO> pageResult = invoiceListService.getInvoiceListPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, InvoiceListRespVO.class));
+        PageResult<InvoiceListRespVO> respPage = BeanUtils.toBean(pageResult, InvoiceListRespVO.class);
+        return success(respPage);
     }
 
     @GetMapping("/export")
@@ -77,9 +79,9 @@ public class InvoiceListController {
     public void exportInvoiceListExcel(@Valid InvoiceListPageReqVO pageReqVO,
                                        HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<InvoiceListDO> list = invoiceListService.getInvoiceListPage(pageReqVO).getList();
-        ExcelUtils.write(response, "发票列表.xls", "数据", InvoiceListRespVO.class,
-                BeanUtils.toBean(list, InvoiceListRespVO.class));
+        List<InvoiceListDO> list = invoiceListService.getInvoiceListExport(pageReqVO);
+        List<InvoiceListRespVO> respList = BeanUtils.toBean(list, InvoiceListRespVO.class);
+        ExcelUtils.write(response, "发票列表.xls", "数据", InvoiceListRespVO.class, respList);
     }
 
     @PostMapping("/audit-pass")

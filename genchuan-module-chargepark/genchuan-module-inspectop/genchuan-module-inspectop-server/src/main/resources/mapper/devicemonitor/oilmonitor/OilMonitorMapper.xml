@@ -146,6 +146,11 @@
                 AND om.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
             </if>
 
+            <!-- 【新增】创建日期（精确到天） -->
+            <if test="reqVO.createDate != null">
+                AND DATE(om.create_time) = #{reqVO.createDate}
+            </if>
+
             <!-- 更新时间范围 -->
             <if test="reqVO.updateTime != null and reqVO.updateTime.length == 2">
                 AND om.update_time BETWEEN #{reqVO.updateTime[0]} AND #{reqVO.updateTime[1]}

@@ -54,4 +54,10 @@ public interface CollectConfigMapper extends BaseMapperX<CollectConfigDO> {
     @Select("SELECT collect_method AS method, COUNT(*) AS count FROM collect_config WHERE deleted = 0 GROUP BY collect_method")
     List<Map<String, Object>> selectGroupByCollectMethod();
 
+    default CollectConfigDO selectByConfigNo(String configNo, Long excludeId) {
+        return selectOne(new LambdaQueryWrapperX<CollectConfigDO>()
+                .eq(CollectConfigDO::getConfigNo, configNo)
+                .neIfPresent(CollectConfigDO::getId, excludeId));
+    }
+
 }

@@ -61,18 +61,18 @@ public class MemberLevelController {
     }
 
     @PutMapping("/enable")
-    @Operation(summary = "禁用会员等级")
+    @Operation(summary = "启用会员等级")
     @PreAuthorize("@ss.hasPermission('usermerchant:member-level:enable')")
     public CommonResult<Boolean> enableMemberLevel(@Valid @RequestBody MemberLevelStatusReqVO reqVO) {
-        memberLevelService.updateLevelStatus(reqVO.getIds(), "已启用");
+        memberLevelService.updateLevelStatus(reqVO.getIds(), 1);
         return success(true);
     }
 
     @PutMapping("/disable")
-    @Operation(summary = "启用会员等级")
+    @Operation(summary = "禁用会员等级")
     @PreAuthorize("@ss.hasPermission('usermerchant:member-level:disable')")
     public CommonResult<Boolean> disableMemberLevel(@Valid @RequestBody MemberLevelStatusReqVO reqVO) {
-        memberLevelService.updateLevelStatus(reqVO.getIds(), "未启用");
+        memberLevelService.updateLevelStatus(reqVO.getIds(), 0);
         return success(true);
     }
 

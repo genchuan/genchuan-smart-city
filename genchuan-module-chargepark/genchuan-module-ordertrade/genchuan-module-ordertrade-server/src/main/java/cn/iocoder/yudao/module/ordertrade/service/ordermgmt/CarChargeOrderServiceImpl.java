@@ -169,6 +169,9 @@ public class CarChargeOrderServiceImpl implements CarChargeOrderService {
         invoice.setStatus("pending_audit");
         invoice.setRemark(reqVO.getRemark());
         invoiceListMapper.insert(invoice);
+
+        order.setInvoiceStatus("invoiced");
+        carChargeOrderMapper.updateById(order);
     }
 
     private void validateExists(Long id) {

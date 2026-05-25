@@ -94,7 +94,7 @@ public class ParkingSpaceInfoController {
     @PostMapping("/create")
     @Operation(summary = "创建车位信息")
     @PreAuthorize("@ss.hasPermission('stationresource:parking-space-info:create')")
-    public CommonResult<Long> createParkingSpaceInfo(@RequestBody AddParkingSpaceInfoReqVO createReqVO) {
+    public CommonResult<Long> createParkingSpaceInfo(@Valid @RequestBody AddParkingSpaceInfoReqVO createReqVO) {
         Long id= parkingSpaceInfoService.addParkingSpaceInfo(createReqVO);
         return success(id);
     }

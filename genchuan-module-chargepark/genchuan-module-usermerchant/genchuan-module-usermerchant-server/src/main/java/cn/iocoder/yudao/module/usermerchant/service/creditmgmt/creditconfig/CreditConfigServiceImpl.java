@@ -13,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.creditmgmt.creditconfig.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.creditmgmt.creditconfig.CreditConfigDO;
@@ -97,18 +98,21 @@ public class CreditConfigServiceImpl implements CreditConfigService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     @LogRecord(type = TYPE_CREDIT_CONFIG, subType = SUB_TYPE_UPDATE_CREDIT_CONFIG_STATUS,
-            bizNo = "{{{#ids}}}",
+            bizNo = "{{#ids}}",
             success = SUCCESS_UPDATE_CREDIT_CONFIG_STATUS)
     public void updateConfigStatus(List<Long> ids, String status) {
         if (org.springframework.util.CollectionUtils.isEmpty(ids)) {
             return;
         }
-        // 使用 UpdateWrapper 批量更新状态
         UpdateWrapper<CreditConfigDO> updateWrapper = new UpdateWrapper<>();
         updateWrapper.in("id", ids)
                 .set("status", status);
+        if ("已生效".equals(status)) {
+            updateWrapper.set("effect_time", LocalDateTime.now());
+        } else if ("未生效".equals(status)) {
+            updateWrapper.set("effect_time", null);
+        }
         creditConfigMapper.update(null, updateWrapper);
-        // 记录操作日志上下文
         LogRecordContext.putVariable("ids", ids);
         LogRecordContext.putVariable("status", status);
     }

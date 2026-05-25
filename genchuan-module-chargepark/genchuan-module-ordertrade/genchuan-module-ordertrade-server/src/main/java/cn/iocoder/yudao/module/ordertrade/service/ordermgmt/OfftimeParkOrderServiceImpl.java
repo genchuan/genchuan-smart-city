@@ -160,6 +160,9 @@ public class OfftimeParkOrderServiceImpl implements OfftimeParkOrderService {
         invoice.setStatus("pending_audit");
         invoice.setRemark(reqVO.getRemark());
         invoiceListMapper.insert(invoice);
+
+        order.setInvoiceStatus("invoiced");
+        offtimeParkOrderMapper.updateById(order);
     }
 
     private void validateExists(Long id) {

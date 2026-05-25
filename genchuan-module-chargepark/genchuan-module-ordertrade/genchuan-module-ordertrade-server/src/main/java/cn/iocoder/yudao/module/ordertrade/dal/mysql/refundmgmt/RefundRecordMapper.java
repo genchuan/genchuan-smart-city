@@ -5,6 +5,8 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.refundmgmt.vo.RefundRecordPageReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.refundmgmt.RefundRecordDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -20,6 +22,15 @@ import java.util.Map;
  */
 @Mapper
 public interface RefundRecordMapper extends BaseMapperX<RefundRecordDO> {
+
+    IPage<RefundRecordDO> selectPageJoinApplyAndOrder(IPage<RefundRecordDO> page, @Param("req") RefundRecordPageReqVO reqVO);
+
+    @Select("SELECT r.*, a.apply_no AS apply_no, o.order_no AS order_no " +
+            "FROM refund_record r " +
+            "LEFT JOIN refund_apply a ON r.apply_id = a.id AND a.deleted = 0 " +
+            "LEFT JOIN all_order o ON r.order_id = o.id AND o.deleted = 0 " +
+            "WHERE r.id = #{id} AND r.deleted = 0")
+    RefundRecordDO selectByIdJoinApplyAndOrder(@Param("id") Long id);
 
     default PageResult<RefundRecordDO> selectPage(RefundRecordPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<RefundRecordDO>()

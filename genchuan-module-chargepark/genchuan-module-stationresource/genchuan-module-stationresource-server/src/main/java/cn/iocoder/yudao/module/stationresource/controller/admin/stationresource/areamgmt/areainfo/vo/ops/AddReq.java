@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.stationresource.controller.admin.stationresource
 import cn.idev.excel.annotation.ExcelIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -62,10 +63,11 @@ public class AddReq {
     @ExcelIgnore
     private String reserve2;
 
-    // ==================== 新增字段：前端隐藏，后端自己处理 ====================
-    @Schema(description = "[负责人ID]", example = "1")
+    @Schema(description = "[负责人ID]", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    @NotNull(message = "负责人ID不能为空")
     private Long userId;
 
+    // ==================== 后端自动赋值字段 ====================
     @Schema(description = "[绑定时间]", hidden = true)
     @ExcelIgnore
     private LocalDateTime bindTime;

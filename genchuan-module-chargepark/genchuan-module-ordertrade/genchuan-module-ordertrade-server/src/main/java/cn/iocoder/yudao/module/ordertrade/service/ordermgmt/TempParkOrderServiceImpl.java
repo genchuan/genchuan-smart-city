@@ -161,6 +161,9 @@ public class TempParkOrderServiceImpl implements TempParkOrderService {
         invoice.setStatus("pending_audit");
         invoice.setRemark(reqVO.getRemark());
         invoiceListMapper.insert(invoice);
+
+        order.setInvoiceStatus("invoiced");
+        tempParkOrderMapper.updateById(order);
     }
 
     private void validateExists(Long id) {

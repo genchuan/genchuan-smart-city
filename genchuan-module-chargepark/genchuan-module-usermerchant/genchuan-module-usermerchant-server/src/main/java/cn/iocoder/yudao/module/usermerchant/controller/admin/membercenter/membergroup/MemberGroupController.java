@@ -61,7 +61,7 @@ public class MemberGroupController {
     @Operation(summary = "启用会员分组")
     @PreAuthorize("@ss.hasPermission('usermerchant:member-group:enable')")
     public CommonResult<Boolean> enableMemberGroup(@Valid @RequestBody MemberGroupStatusReqVO reqVO) {
-        memberGroupService.updateGroupStatus(reqVO.getIds(), "已启用");
+        memberGroupService.updateGroupStatus(reqVO.getIds(), 1);
         return success(true);
     }
 
@@ -69,7 +69,7 @@ public class MemberGroupController {
     @Operation(summary = "禁用会员分组")
     @PreAuthorize("@ss.hasPermission('usermerchant:member-group:disable')")
     public CommonResult<Boolean> disableMemberGroup(@Valid @RequestBody MemberGroupStatusReqVO reqVO) {
-        memberGroupService.updateGroupStatus(reqVO.getIds(), "未启用");
+        memberGroupService.updateGroupStatus(reqVO.getIds(), 0);
         return success(true);
     }
 
