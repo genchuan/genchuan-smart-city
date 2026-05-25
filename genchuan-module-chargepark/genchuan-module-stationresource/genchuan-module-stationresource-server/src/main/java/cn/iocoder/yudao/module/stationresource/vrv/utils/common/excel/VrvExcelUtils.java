@@ -86,13 +86,13 @@ public class VrvExcelUtils {
                 }
             }
             // 非必选字段表头标注“可选”
-            Schema schema = field.getAnnotation(Schema.class);
-            if (!field.isAnnotationPresent(NotNull.class)
-                    && !field.isAnnotationPresent(NotBlank.class)
-                    && !field.isAnnotationPresent(NotEmpty.class)
-                    && (schema == null || schema.requiredMode() != Schema.RequiredMode.REQUIRED)) {
-                headerName = "（可选）" + headerName;
-            }
+//            Schema schema = field.getAnnotation(Schema.class);
+//            if (!field.isAnnotationPresent(NotNull.class)
+//                    && !field.isAnnotationPresent(NotBlank.class)
+//                    && !field.isAnnotationPresent(NotEmpty.class)
+//                    && (schema == null || schema.requiredMode() != Schema.RequiredMode.REQUIRED)) {
+//                headerName = "（可选）" + headerName;
+//            }
             headerList.add(headerName);
             exampleList.add(example);
         }
