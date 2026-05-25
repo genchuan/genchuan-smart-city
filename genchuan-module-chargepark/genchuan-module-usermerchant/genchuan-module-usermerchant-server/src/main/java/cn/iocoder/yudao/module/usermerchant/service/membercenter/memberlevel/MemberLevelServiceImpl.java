@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.usermerchant.service.membercenter.memberlevel;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
 import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
@@ -85,9 +87,18 @@ public class MemberLevelServiceImpl implements MemberLevelService {
         return memberLevelMapper.selectById(id);
     }
 
+//    @Override
+//    public PageResult<MemberLevelDO> getMemberLevelPage(MemberLevelPageReqVO pageReqVO) {
+//        return memberLevelMapper.selectPage(pageReqVO);
+//    }
+
     @Override
     public PageResult<MemberLevelDO> getMemberLevelPage(MemberLevelPageReqVO pageReqVO) {
-        return memberLevelMapper.selectPage(pageReqVO);
+        // 构建分页对象
+        Page<MemberLevelDO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        // 调用新方法，查询并填充用户数量
+        IPage<MemberLevelDO> pageResult = memberLevelMapper.selectPageWithUserCount(page, pageReqVO);
+        return new PageResult<>(pageResult.getRecords(), pageResult.getTotal());
     }
 
     @Override

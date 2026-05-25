@@ -19,6 +19,7 @@ public interface MemberPointMapper extends BaseMapperX<MemberPointDO> {
 
     default PageResult<MemberPointDO> selectPage(MemberPointPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<MemberPointDO>()
+                .inIfPresent(MemberPointDO::getUserId, reqVO.getUserIds())
                 .eqIfPresent(MemberPointDO::getUserId, reqVO.getUserId())
                 .eqIfPresent(MemberPointDO::getChangeAmount, reqVO.getChangeAmount())
                 .eqIfPresent(MemberPointDO::getTotalPoint, reqVO.getTotalPoint())

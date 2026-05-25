@@ -56,6 +56,10 @@ public class MemberLevelDO extends BaseDO {
      * 备注
      */
     private String remark;
+    /**
+     * 该等级下的会员用户数量
+     */
+    private Integer memberCount;
 
 
 }
