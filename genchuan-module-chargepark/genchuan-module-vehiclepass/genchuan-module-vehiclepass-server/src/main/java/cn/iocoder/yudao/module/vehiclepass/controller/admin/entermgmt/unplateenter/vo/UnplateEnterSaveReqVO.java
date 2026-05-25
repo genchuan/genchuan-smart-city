@@ -6,6 +6,7 @@ import java.util.*;
 import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
+import cn.iocoder.yudao.module.vehiclepass.constants.common.PhoneConstants;
 
 @Schema(description = "管理后台 - 无牌入场新增/修改 Request VO")
 @Data
@@ -23,6 +24,7 @@ public class UnplateEnterSaveReqVO {
 
     @Schema(description = "联系电话", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotEmpty(message = "联系电话不能为空")
+    @Pattern(regexp = PhoneConstants.PHONE_REGEX, message = PhoneConstants.PHONE_REGEX_MESSAGE)
     private String phone;
 
     @Schema(description = "登记时间", requiredMode = Schema.RequiredMode.REQUIRED)
