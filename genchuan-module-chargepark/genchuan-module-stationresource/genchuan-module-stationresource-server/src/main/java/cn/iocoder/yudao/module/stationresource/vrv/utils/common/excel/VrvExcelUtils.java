@@ -13,6 +13,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -31,9 +34,10 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
  * <p>统一处理 Excel 导入模板下载、列表导出、数据导入解析等功能。
  * <p>V2.1 新增：导入错误提示中文化（字段名+类型+示例），Boolean 支持"是/否"输入
  * <p>V2.2 新增：导入模板文件名改为中文业务名+日期、表头自动去除中括号 [xxx]
+ * <p>V2.3 新增：导入模板表头非必选字段自动标注“（可选）”
  *
  * @author vrvliang
- * @version V2.2 2026-05-21
+ * @version V2.3 2026-05-25
  */
 public class VrvExcelUtils {
 
@@ -80,6 +84,14 @@ public class VrvExcelUtils {
                 if (schema.example() != null && !schema.example().isEmpty()) {
                     example = schema.example();
                 }
+            }
+            // 非必选字段表头标注“可选”
+            Schema schema = field.getAnnotation(Schema.class);
+            if (!field.isAnnotationPresent(NotNull.class)
+                    && !field.isAnnotationPresent(NotBlank.class)
+                    && !field.isAnnotationPresent(NotEmpty.class)
+                    && (schema == null || schema.requiredMode() != Schema.RequiredMode.REQUIRED)) {
+                headerName = "（可选）" + headerName;
             }
             headerList.add(headerName);
             exampleList.add(example);
