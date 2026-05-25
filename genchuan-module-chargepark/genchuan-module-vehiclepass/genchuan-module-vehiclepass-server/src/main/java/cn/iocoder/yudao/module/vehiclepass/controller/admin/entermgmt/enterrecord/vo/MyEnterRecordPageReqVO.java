@@ -50,4 +50,24 @@ public class MyEnterRecordPageReqVO extends PageParam {
     @Schema(description = "修正日志标记 0-未修正 1-已修正 2-已确认", example = "0")
     private Integer isCorrected;
 
+    @Schema(description = "备用字段1")
+    private String reserve1;
+
+    @Schema(description = "备用字段2")
+    private String reserve2;
+
+    @Schema(description = "创建者")
+    private String creator;
+
+    @Schema(description = "更新者")
+    private String updater;
+
+    @Schema(description = "创建时间")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime[] createTime;
+
+    @Schema(description = "更新时间")
+    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    private LocalDateTime[] updateTime;
+
 }

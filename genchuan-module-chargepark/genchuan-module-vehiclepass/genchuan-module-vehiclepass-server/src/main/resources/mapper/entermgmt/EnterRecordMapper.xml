@@ -59,6 +59,24 @@
         <if test="query.isCorrected != null">
             AND e.is_corrected = #{query.isCorrected}
         </if>
+        <if test="query.reserve1 != null and query.reserve1 != ''">
+            AND e.reserve1 = #{query.reserve1}
+        </if>
+        <if test="query.reserve2 != null and query.reserve2 != ''">
+            AND e.reserve2 = #{query.reserve2}
+        </if>
+        <if test="query.creator != null and query.creator != ''">
+            AND e.creator = #{query.creator}
+        </if>
+        <if test="query.updater != null and query.updater != ''">
+            AND e.updater = #{query.updater}
+        </if>
+        <if test="query.createTime != null and query.createTime.length == 2">
+            AND e.create_time BETWEEN #{query.createTime[0]} AND #{query.createTime[1]}
+        </if>
+        <if test="query.updateTime != null and query.updateTime.length == 2">
+            AND e.update_time BETWEEN #{query.updateTime[0]} AND #{query.updateTime[1]}
+        </if>
 
         ORDER BY e.id DESC
     </select>
