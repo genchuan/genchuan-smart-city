@@ -123,6 +123,11 @@
                 AND sa.update_time BETWEEN #{reqVO.updateTime[0]} AND #{reqVO.updateTime[1]}
             </if>
 
+            <!-- 根据趋势时间过滤创建日期 -->
+            <if test="reqVO.trendTime != null">
+                AND DATE(sa.create_time) = DATE(#{reqVO.trendTime})
+            </if>
+
             <!-- 只查询未删除的记录 -->
             AND sa.deleted = 0
         </where>

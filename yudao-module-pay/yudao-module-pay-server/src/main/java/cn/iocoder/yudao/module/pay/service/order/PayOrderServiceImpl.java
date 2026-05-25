@@ -116,6 +116,8 @@ public class PayOrderServiceImpl implements PayOrderService {
     public Long createOrder(PayOrderCreateReqDTO reqDTO) {
         // 校验 App
         PayAppDO app = appService.validPayApp(reqDTO.getAppKey());
+        log.info("[创建支付订单] 应用ID={}, 应用密钥={}, 回调地址={}",
+                app.getId(), app.getAppKey(), app.getOrderNotifyUrl());
 
         // 查询对应的支付交易单是否已经存在。如果是，则直接返回
         PayOrderDO order = orderMapper.selectByAppIdAndMerchantOrderId(
@@ -135,6 +137,7 @@ public class PayOrderServiceImpl implements PayOrderService {
                 // 退款相关字段
                 .setRefundPrice(0);
         orderMapper.insert(order);
+        log.info("[创建支付订单] 最终设置的回调地址={}", order.getNotifyUrl());
         return order.getId();
     }
 

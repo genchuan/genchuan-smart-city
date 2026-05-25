@@ -29,6 +29,7 @@ import com.github.binarywang.wxpay.exception.WxPayException;
 import com.github.binarywang.wxpay.service.WxPayService;
 import com.github.binarywang.wxpay.service.impl.WxPayServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -74,6 +75,7 @@ public abstract class AbstractWxPayClient extends AbstractPayClient<WxPayClientC
             }
             // 特殊：强制使用微信公钥模式，避免灰度期间的问题！！！
             payConfig.setStrictlyNeedWechatPaySerial(true);
+            payConfig.setFullPublicKeyModel(true);
         }
 
         // 创建 client 客户端
@@ -86,17 +88,21 @@ public abstract class AbstractWxPayClient extends AbstractPayClient<WxPayClientC
     @Override
     protected PayOrderRespDTO doUnifiedOrder(PayOrderUnifiedReqDTO reqDTO) throws Exception {
         try {
+            log.info("[微信支付V3] 开始统一下单，订单号={}, 金额={}分", reqDTO.getOutTradeNo(), reqDTO.getPrice());
             switch (config.getApiVersion()) {
                 case API_VERSION_V2:
                     return doUnifiedOrderV2(reqDTO);
                 case API_VERSION_V3:
                     // TODO @芋艿：【可能是 wxjava 的 bug】参考 https://github.com/binarywang/WxJava/issues/1557
                     client.getConfig().setApiV3HttpClient(null);
+                    PayOrderRespDTO result = doUnifiedOrderV3(reqDTO);
+                    log.info("[微信支付V3] 统一下单完成，结果={}", result);
                     return doUnifiedOrderV3(reqDTO);
                 default:
                     throw new IllegalArgumentException(String.format("未知的 API 版本(%s)", config.getApiVersion()));
             }
         } catch (WxPayException e) {
+            log.error("[微信支付V3] 支付异常，错误码={}, 错误信息={}, 原始响应={}", e.getErrCode(), e.getErrCodeDes(), e.getXmlString());
             log.error("[doUnifiedOrder][支付({}) 发起微信支付异常", reqDTO, e);
             String errorCode = getErrorCode(e);
             String errorMessage = getErrorMessage(e);
@@ -148,6 +154,15 @@ public abstract class AbstractWxPayClient extends AbstractPayClient<WxPayClientC
      * @return 下单请求
      */
     protected WxPayUnifiedOrderV3Request buildPayUnifiedOrderRequestV3(PayOrderUnifiedReqDTO reqDTO) {
+        log.info("[微信支付V3] 构建支付请求，回调地址 notifyUrl={}", reqDTO.getNotifyUrl());
+
+        // 临时硬编码回调地址（测试用）
+//        String notifyUrl = reqDTO.getNotifyUrl();
+//        if (StringUtils.isEmpty(notifyUrl)) {
+//            notifyUrl = "https://cloud.genchuan.cn:30000/app-api/trade/order/update-paid";
+//            log.warn("[微信支付V3] 回调地址为空，使用默认地址: {}", notifyUrl);
+//        }
+
         WxPayUnifiedOrderV3Request request = new WxPayUnifiedOrderV3Request();
         request.setOutTradeNo(reqDTO.getOutTradeNo());
         request.setDescription(reqDTO.getSubject());
@@ -155,6 +170,7 @@ public abstract class AbstractWxPayClient extends AbstractPayClient<WxPayClientC
         request.setTimeExpire(formatDateV3(reqDTO.getExpireTime()));
         request.setSceneInfo(new WxPayUnifiedOrderV3Request.SceneInfo().setPayerClientIp(reqDTO.getUserIp()));
         request.setNotifyUrl(reqDTO.getNotifyUrl());
+//        request.setNotifyUrl(notifyUrl);
         return request;
     }
 
@@ -182,10 +198,23 @@ public abstract class AbstractWxPayClient extends AbstractPayClient<WxPayClientC
     }
 
     private PayOrderRespDTO doParseOrderNotifyV3(String body, Map<String, String> headers) throws WxPayException {
+        log.info("[微信支付V3回调] 开始解析回调，headers={}", headers);
+        log.info("[微信支付V3回调] 回调body长度={}", body != null ? body.length() : 0);
+
+
         // 1. 解析回调
         SignatureHeader signatureHeader = getRequestHeader(headers);
+
+        log.info("[微信支付V3回调] 签名头信息：timestamp={}, nonce={}, serial={}, signature={}",
+                signatureHeader.getTimeStamp(), signatureHeader.getNonce(),
+                signatureHeader.getSerial(), signatureHeader.getSignature());
+
         WxPayNotifyV3Result response = client.parseOrderNotifyV3Result(body, signatureHeader);
         WxPayNotifyV3Result.DecryptNotifyResult result = response.getResult();
+
+        log.info("[微信支付V3回调] 解析成功，订单号={}, 微信订单号={}, 交易状态={}",
+                result.getOutTradeNo(), result.getTransactionId(), result.getTradeState());
+
         // 2. 构建结果
         Integer status = parseStatus(result.getTradeState());
         String openid = result.getPayer() != null ? result.getPayer().getOpenid() : null;

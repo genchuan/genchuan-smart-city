@@ -44,7 +44,7 @@ public interface CycleReportMapper extends BaseMapperX<CycleReportDO> {
                 .eqIfPresent(CycleReportDO::getChainRatioData, reqVO.getChainRatioData())
                 .eqIfPresent(CycleReportDO::getCreator, reqVO.getCreator())
                 .eqIfPresent(CycleReportDO::getUpdater, reqVO.getUpdater())
-                .betweenIfPresent(CycleReportDO::getCreateTime, reqVO.getCreateTime())
+                .eqIfPresent(CycleReportDO::getCreateTime, reqVO.getTrendTime())
                 .betweenIfPresent(CycleReportDO::getUpdateTime, reqVO.getUpdateTime())
                 .orderByDesc(CycleReportDO::getId));
     }

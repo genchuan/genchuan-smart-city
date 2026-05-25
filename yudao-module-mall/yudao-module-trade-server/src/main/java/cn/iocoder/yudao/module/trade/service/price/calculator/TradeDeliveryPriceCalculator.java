@@ -53,19 +53,24 @@ public class TradeDeliveryPriceCalculator implements TradePriceCalculator {
 
     @Override
     public void calculate(TradePriceCalculateReqBO param, TradePriceCalculateRespBO result) {
-        if (param.getDeliveryType() == null) {
-            return;
-        }
-        // 校验是不是存在商品不能门店自提，或者不能快递发货的情况。就是说，配送方式不匹配哈
-        if (CollectionUtils.anyMatch(result.getItems(), item -> !item.getDeliveryTypes().contains(param.getDeliveryType()))) {
-            throw exception(PRICE_CALCULATE_DELIVERY_PRICE_TYPE_ILLEGAL);
-        }
 
-        if (DeliveryTypeEnum.PICK_UP.getType().equals(param.getDeliveryType())) {
-            calculateByPickUp(param);
-        } else if (DeliveryTypeEnum.EXPRESS.getType().equals(param.getDeliveryType())) {
-            calculateExpress(param, result);
-        }
+        // ========== 跳过运费计算的代码 ==========
+        // 注释掉原有的运费计算逻辑，直接返回
+        log.info("[calculate][跳过运费计算，userId={}]", param.getUserId());
+        return;
+//        if (param.getDeliveryType() == null) {
+//            return;
+//        }
+//        // 校验是不是存在商品不能门店自提，或者不能快递发货的情况。就是说，配送方式不匹配哈
+//        if (CollectionUtils.anyMatch(result.getItems(), item -> !item.getDeliveryTypes().contains(param.getDeliveryType()))) {
+//            throw exception(PRICE_CALCULATE_DELIVERY_PRICE_TYPE_ILLEGAL);
+//        }
+//
+//        if (DeliveryTypeEnum.PICK_UP.getType().equals(param.getDeliveryType())) {
+//            calculateByPickUp(param);
+//        } else if (DeliveryTypeEnum.EXPRESS.getType().equals(param.getDeliveryType())) {
+//            calculateExpress(param, result);
+//        }
     }
 
     private void calculateByPickUp(TradePriceCalculateReqBO param) {

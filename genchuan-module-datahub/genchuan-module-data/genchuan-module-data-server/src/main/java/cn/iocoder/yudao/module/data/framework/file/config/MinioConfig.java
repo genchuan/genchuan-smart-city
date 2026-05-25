@@ -28,7 +28,7 @@ public class MinioConfig {
         private String publicEndpoint = "http://112.47.127.21:59000";
         private String accessKey = "minioadmin";
         private String accessSecret = "minioadmin123";
-        private String bucket = "shunchang";
+        private String bucket = "genchuan";
 
         // getter和setter方法
         public String getEndpoint() { return endpoint; }
