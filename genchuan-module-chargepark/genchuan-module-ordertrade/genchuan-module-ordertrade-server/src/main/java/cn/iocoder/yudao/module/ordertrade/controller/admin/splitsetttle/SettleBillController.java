@@ -87,6 +87,9 @@ public class SettleBillController {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<SettleBillDO> list = settleBillService.getSettleBillPage(pageReqVO).getList();
         List<SettleBillRespVO> respList = BeanUtils.toBean(list, SettleBillRespVO.class);
+        for (SettleBillRespVO item : respList) {
+            item.setAuditorName(item.getUpdater());
+        }
         ExcelUtils.write(response, "结算单据.xls", "数据", SettleBillRespVO.class, respList);
     }
 
