@@ -107,7 +107,7 @@ public class DormAssignServiceImpl implements DormAssignService {
             if (bedMgmt == null) {
                 throw exception("床位不存在");
             }
-            if (bedMgmt.getStudentId() != null) {
+            if (bedMgmt.getStatus().equals(BedStatusEnum.BED_STATUS_ALLOCATED.getStatus()) && bedMgmt.getStudentId() != null) {
                 throw exception(bedId+"床位已被分配，不可分配");
             }
             bedMgmt.setStudentId(dormAssign.getStudentId());
