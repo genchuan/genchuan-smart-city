@@ -1,0 +1,36 @@
+stages:
+  - BuildAndPush
+
+variables:
+  DOCKER_REGISTRY: "192.168.8.14"
+  DOCKER_BUILDKIT: "0"
+  POD_TAG: "$CI_COMMIT_BRANCH"
+  IMAGE_NAMESPACE: "genchuan"
+
+Build:
+  stage: BuildAndPush
+  script:
+    - echo "===== 开始Maven打包 ====="
+    - mvn clean package -Dmaven.test.skip=true
+    - |
+      if [ "$CI_COMMIT_BRANCH" = "genchuan-mysql-master" ]; then
+        echo "===== 当前是 master 分支，开始构建镜像 ====="
+        declare -A MODULE_JAR_MAP=(
+          ["yudao-module-trade-server"]="yudao-module-mall/yudao-module-trade-server"
+        )
+        for module in "${!MODULE_JAR_MAP[@]}"; do
+          jarPath=${MODULE_JAR_MAP[$module]}
+          imageFullName="${DOCKER_REGISTRY}/${IMAGE_NAMESPACE}/${module}:${POD_TAG}"
+          docker build --build-arg MODULE_NAME="$module" --build-arg JAR_PATH="$jarPath" -t "${imageFullName}" .
+          docker push "${imageFullName}"
+        done
+        echo "===== master 分支：所有镜像推送完成 ====="
+      else
+        echo "===== 非 master 分支：跳过构建镜像 ====="
+      fi
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+      - stuck_or_timeout_failure
+      - unknown_failure
