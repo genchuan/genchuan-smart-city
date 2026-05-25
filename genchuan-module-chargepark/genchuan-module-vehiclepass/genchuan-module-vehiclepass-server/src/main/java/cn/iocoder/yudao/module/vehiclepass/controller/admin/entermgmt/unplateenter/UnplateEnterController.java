@@ -141,9 +141,15 @@ public class UnplateEnterController {
     @ApiAccessLog(operateType = EXPORT)
     public void exportEnterExcel(UnplateEnterPageReqVO pageReqVO,
                                  HttpServletResponse response) throws IOException {
+
+        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
+        response.setCharacterEncoding("utf-8");
         pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<UnplateEnterRespVO> pageResult = enterService.getUnplateEnterPage(pageReqVO);
+
+        response.setHeader("Content-Disposition", "attachment; filename*=");
+
         ExcelUtils.write(response, "无牌入场.xls", "数据", UnplateEnterRespVO.class, pageResult.getList());
     }
 
