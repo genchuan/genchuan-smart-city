@@ -64,4 +64,14 @@ public interface DebtIdentifyMapper extends BaseMapperX<DebtIdentifyDO> {
             "</script>")
     Long selectCountByStatus(@Param("status") String status);
 
+    @Select("<script>" +
+            "SELECT COUNT(*) FROM debt_identify WHERE deleted = 0 " +
+            "<if test='startTime != null'> AND identify_time &gt;= #{startTime} </if>" +
+            "<if test='endTime != null'>   AND identify_time &lt;= #{endTime}   </if>" +
+            "<if test='status != null'> AND status = #{status} </if>" +
+            "</script>")
+    Long selectCountByStatusAndTime(@Param("status") String status,
+                                     @Param("startTime") LocalDateTime startTime,
+                                     @Param("endTime") LocalDateTime endTime);
+
 }

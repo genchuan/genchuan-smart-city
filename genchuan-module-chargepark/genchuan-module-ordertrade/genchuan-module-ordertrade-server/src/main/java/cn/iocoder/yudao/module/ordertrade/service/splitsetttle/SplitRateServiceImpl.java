@@ -5,6 +5,7 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.splitsetttle.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.splitsetttle.SplitRateDO;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.splitsetttle.SplitRateMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,9 @@ public class SplitRateServiceImpl implements SplitRateService {
 
     @Override
     public Long createSplitRate(SplitRateSaveReqVO createReqVO) {
+        if (createReqVO.getPartnerId() != null && splitRateMapper.existsByPartnerId(createReqVO.getPartnerId())) {
+            throw exception(SPLIT_RATE_PARTNER_ID_DUPLICATE);
+        }
         SplitRateDO obj = BeanUtils.toBean(createReqVO, SplitRateDO.class);
         if (obj.getStatus() == null) {
             obj.setStatus("pending");
@@ -44,12 +48,14 @@ public class SplitRateServiceImpl implements SplitRateService {
 
     @Override
     public SplitRateDO getSplitRate(Long id) {
-        return splitRateMapper.selectById(id);
+        return splitRateMapper.selectByIdWithPartner(id);
     }
 
     @Override
     public PageResult<SplitRateDO> getSplitRatePage(SplitRatePageReqVO pageReqVO) {
-        return splitRateMapper.selectPage(pageReqVO);
+        Page<SplitRateDO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        var result = splitRateMapper.selectPageWithPartner(page, pageReqVO);
+        return new PageResult<>(result.getRecords(), result.getTotal());
     }
 
     @Override

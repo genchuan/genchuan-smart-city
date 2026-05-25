@@ -1,11 +1,14 @@
 package cn.iocoder.yudao.module.ordertrade.service.refundmgmt;
 
+import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.refundmgmt.vo.*;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.refundmgmt.RefundRecordDO;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.refundmgmt.RefundRecordMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +40,12 @@ public class RefundRecordServiceImpl implements RefundRecordService {
     }
     @Override public void deleteRefundRecord(Long id) { validateExists(id); refundRecordMapper.deleteById(id); }
     @Override public void deleteRefundRecordListByIds(List<Long> ids) { refundRecordMapper.deleteByIds(ids); }
-    @Override public RefundRecordDO getRefundRecord(Long id) { return refundRecordMapper.selectById(id); }
-    @Override public PageResult<RefundRecordDO> getRefundRecordPage(RefundRecordPageReqVO v) { return refundRecordMapper.selectPage(v); }
+    @Override public RefundRecordDO getRefundRecord(Long id) { return refundRecordMapper.selectByIdJoinApplyAndOrder(id); }
+    @Override public PageResult<RefundRecordDO> getRefundRecordPage(RefundRecordPageReqVO v) {
+        IPage<RefundRecordDO> pageResult = refundRecordMapper.selectPageJoinApplyAndOrder(
+                new Page<>(v.getPageNo(), v.getPageSize()), v);
+        return new PageResult<>(pageResult.getRecords(), pageResult.getTotal());
+    }
     @Override public RefundRecordChartRespVO getRefundRecordChart(RefundRecordChartReqVO v)  {
         RefundRecordChartRespVO resp = new RefundRecordChartRespVO();
         LocalDateTime start = v.getRefundTimeStart() != null ? v.getRefundTimeStart() : LocalDateTime.now().minusDays(30);

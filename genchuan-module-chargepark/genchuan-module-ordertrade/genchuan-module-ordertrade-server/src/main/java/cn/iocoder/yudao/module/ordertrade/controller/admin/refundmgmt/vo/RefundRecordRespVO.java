@@ -26,9 +26,17 @@ public class RefundRecordRespVO {
     @ExcelProperty("关联退款申请ID")
     private Long applyId;
 
+    @Schema(description = "退款申请编号")
+    @ExcelProperty("退款申请编号")
+    private String applyNo;
+
     @Schema(description = "关联订单ID")
     @ExcelProperty("关联订单ID")
     private Long orderId;
+
+    @Schema(description = "订单编号")
+    @ExcelProperty("订单编号")
+    private String orderNo;
 
     @Schema(description = "退款金额")
     @ExcelProperty("退款金额")

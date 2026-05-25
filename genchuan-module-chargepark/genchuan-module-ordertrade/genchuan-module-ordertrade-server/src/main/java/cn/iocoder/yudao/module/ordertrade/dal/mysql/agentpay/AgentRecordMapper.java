@@ -31,9 +31,10 @@ public interface AgentRecordMapper extends BaseMapperX<AgentRecordDO> {
     }*/
 
     @Select("<script>" +
-            "SELECT ar.*, pm.name as merchant_name " +
+            "SELECT ar.*, pm.name AS merchant_name, ao.order_no AS order_no " +
             "FROM agent_record ar " +
             "LEFT JOIN merchant_info pm ON pm.id = ar.merchant_id AND pm.deleted = 0 " +
+            "LEFT JOIN all_order ao ON ao.id = ar.order_id AND ao.deleted = 0 " +
             "WHERE ar.deleted = 0 " +
             "<if test='req.orderId != null'>AND ar.order_id = #{req.orderId} </if>" +
             "<if test='req.merchantId != null'>AND ar.merchant_id = #{req.merchantId} </if>" +
@@ -43,7 +44,14 @@ public interface AgentRecordMapper extends BaseMapperX<AgentRecordDO> {
             "<if test='req.endTime != null'>AND ar.create_time &lt;= #{req.endTime} </if>" +
             "ORDER BY ar.id DESC" +
             "</script>")
-    IPage<AgentRecordRespVO> selectPageWithMerchant(Page<AgentRecordRespVO> page, @Param("req") AgentRecordPageReqVO reqVO);
+    IPage<AgentRecordDO> selectPageWithDetails(Page<AgentRecordDO> page, @Param("req") AgentRecordPageReqVO reqVO);
+
+    @Select("SELECT ar.*, pm.name AS merchant_name, ao.order_no AS order_no " +
+            "FROM agent_record ar " +
+            "LEFT JOIN merchant_info pm ON pm.id = ar.merchant_id AND pm.deleted = 0 " +
+            "LEFT JOIN all_order ao ON ao.id = ar.order_id AND ao.deleted = 0 " +
+            "WHERE ar.id = #{id} AND ar.deleted = 0")
+    AgentRecordDO selectByIdWithDetails(@Param("id") Long id);
 
 
     @Select("<script>" +

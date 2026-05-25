@@ -39,6 +39,10 @@ public class InvoiceConfigRespVO {
     @ExcelProperty("审核人ID")
     private Long auditorId;
 
+    @Schema(description = "审核人姓名")
+    @ExcelProperty("审核人姓名")
+    private String auditorName;
+
     @Schema(description = "审核时间")
     @ExcelProperty("审核时间")
     private LocalDateTime auditTime;
@@ -47,11 +51,11 @@ public class InvoiceConfigRespVO {
     @ExcelProperty("备注")
     private String remark;
 
-    @Schema(description = "备用字段1")
+  /*   @Schema(description = "备用字段1")
     private String reserve1;
 
     @Schema(description = "备用字段2")
-    private String reserve2;
+    private String reserve2; */
 
     @Schema(description = "创建者")
     @ExcelProperty("创建者")

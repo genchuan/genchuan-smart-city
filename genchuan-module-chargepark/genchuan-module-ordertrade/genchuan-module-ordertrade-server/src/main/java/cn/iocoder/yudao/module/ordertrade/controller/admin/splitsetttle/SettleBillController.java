@@ -61,14 +61,22 @@ public class SettleBillController {
     @Parameter(name = "id", description = "主键", required = true, example = "1024")
     public CommonResult<SettleBillRespVO> getSettleBill(@RequestParam("id") Long id) {
         SettleBillDO obj = settleBillService.getSettleBill(id);
-        return success(BeanUtils.toBean(obj, SettleBillRespVO.class));
+        SettleBillRespVO respVO = BeanUtils.toBean(obj, SettleBillRespVO.class);
+        if (respVO != null) {
+            respVO.setAuditorName(respVO.getUpdater());
+        }
+        return success(respVO);
     }
 
     @GetMapping("/page")
     @Operation(summary = "获得结算单据分页列表")
     public CommonResult<PageResult<SettleBillRespVO>> getSettleBillPage(@Valid SettleBillPageReqVO pageReqVO) {
         PageResult<SettleBillDO> pageResult = settleBillService.getSettleBillPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, SettleBillRespVO.class));
+        PageResult<SettleBillRespVO> respPage = BeanUtils.toBean(pageResult, SettleBillRespVO.class);
+        for (SettleBillRespVO item : respPage.getList()) {
+            item.setAuditorName(item.getUpdater());
+        }
+        return success(respPage);
     }
 
     @GetMapping("/export")
@@ -78,8 +86,8 @@ public class SettleBillController {
                                       HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<SettleBillDO> list = settleBillService.getSettleBillPage(pageReqVO).getList();
-        ExcelUtils.write(response, "结算单据.xls", "数据", SettleBillRespVO.class,
-                BeanUtils.toBean(list, SettleBillRespVO.class));
+        List<SettleBillRespVO> respList = BeanUtils.toBean(list, SettleBillRespVO.class);
+        ExcelUtils.write(response, "结算单据.xls", "数据", SettleBillRespVO.class, respList);
     }
 
     @PostMapping("/audit-pass")

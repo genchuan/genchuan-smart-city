@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.ordertrade.dal.dataobject.merchantreconcile;
 
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -26,6 +27,9 @@ public class ReconcileBillDO extends BaseDO {
 
     /** 商户ID */
     private Long merchantId;
+
+    @TableField(exist = false)
+    private String merchantName;
 
     /** 对账周期，如 2026-03、2026-W14 */
     private String cycle;

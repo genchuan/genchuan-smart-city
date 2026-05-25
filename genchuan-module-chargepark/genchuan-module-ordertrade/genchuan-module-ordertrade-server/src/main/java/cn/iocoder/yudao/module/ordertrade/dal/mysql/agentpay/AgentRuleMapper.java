@@ -2,10 +2,10 @@ package cn.iocoder.yudao.module.ordertrade.dal.mysql.agentpay;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
+import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.agentpay.vo.AgentRulePageReqVO;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.agentpay.vo.AgentRuleRespVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.agentpay.AgentRuleDO;
-import cn.iocoder.yudao.module.ordertrade.dal.dataobject.refundmgmt.AmountCheckDO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
@@ -18,6 +18,13 @@ import java.util.Map;
 
 @Mapper
 public interface AgentRuleMapper extends BaseMapperX<AgentRuleDO> {
+
+    default AgentRuleDO selectByMerchantIdAndAgentType(Long merchantId, String agentType, Long excludeId) {
+        return selectOne(new LambdaQueryWrapperX<AgentRuleDO>()
+                .eq(AgentRuleDO::getMerchantId, merchantId)
+                .eq(AgentRuleDO::getAgentType, agentType)
+                .neIfPresent(AgentRuleDO::getId, excludeId));
+    }
 
     @Select("<script>" +
             "SELECT ar.*, pm.name as merchant_name " +

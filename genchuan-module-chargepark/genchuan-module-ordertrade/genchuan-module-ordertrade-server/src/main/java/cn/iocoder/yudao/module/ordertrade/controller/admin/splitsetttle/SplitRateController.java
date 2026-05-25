@@ -15,6 +15,8 @@ import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.UPDATE;
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
@@ -53,14 +55,22 @@ public class SplitRateController {
     @Parameter(name = "id", description = "主键", required = true, example = "1024")
     public CommonResult<SplitRateRespVO> getSplitRate(@RequestParam("id") Long id) {
         SplitRateDO obj = splitRateService.getSplitRate(id);
-        return success(BeanUtils.toBean(obj, SplitRateRespVO.class));
+        SplitRateRespVO respVO = BeanUtils.toBean(obj, SplitRateRespVO.class);
+        if (respVO != null) {
+            respVO.setAuditorName(respVO.getUpdater());
+        }
+        return success(respVO);
     }
 
     @GetMapping("/page")
     @Operation(summary = "获得分账比例分页列表")
     public CommonResult<PageResult<SplitRateRespVO>> getSplitRatePage(@Valid SplitRatePageReqVO pageReqVO) {
         PageResult<SplitRateDO> pageResult = splitRateService.getSplitRatePage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, SplitRateRespVO.class));
+        PageResult<SplitRateRespVO> respPage = BeanUtils.toBean(pageResult, SplitRateRespVO.class);
+        for (SplitRateRespVO item : respPage.getList()) {
+            item.setAuditorName(item.getUpdater());
+        }
+        return success(respPage);
     }
 
     @PutMapping("/enable")

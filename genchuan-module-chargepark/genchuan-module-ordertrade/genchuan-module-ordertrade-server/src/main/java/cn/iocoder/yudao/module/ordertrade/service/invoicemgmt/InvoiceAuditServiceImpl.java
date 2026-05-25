@@ -7,6 +7,7 @@ import cn.iocoder.yudao.module.ordertrade.controller.admin.invoicemgmt.vo.*;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.IdReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.invoicemgmt.InvoiceAuditDO;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.invoicemgmt.InvoiceAuditMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,7 +60,9 @@ public class InvoiceAuditServiceImpl implements InvoiceAuditService {
 
     @Override
     public PageResult<InvoiceAuditDO> getInvoiceAuditPage(InvoiceAuditPageReqVO pageReqVO) {
-        return invoiceAuditMapper.selectPage(pageReqVO);
+        Page<InvoiceAuditDO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        var result = invoiceAuditMapper.selectPageWithApplicant(page, pageReqVO);
+        return new PageResult<>(result.getRecords(), result.getTotal());
     }
 
     @Override
@@ -79,7 +82,7 @@ public class InvoiceAuditServiceImpl implements InvoiceAuditService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void rejectInvoiceAudit(IdReqVO reqVO) {
+    public void rejectInvoiceAudit(InvoiceAuditRejectReqVO reqVO) {
         InvoiceAuditDO audit = invoiceAuditMapper.selectById(reqVO.getId());
         if (audit == null) throw exception(INVOICE_AUDIT_NOT_EXISTS);
         if (!"pending".equals(audit.getStatus())) throw exception(INVOICE_AUDIT_STATUS_CANNOT_REJECT);
@@ -88,7 +91,8 @@ public class InvoiceAuditServiceImpl implements InvoiceAuditService {
         update.setStatus("rejected");
         update.setAuditorId(SecurityFrameworkUtils.getLoginUserId());
         update.setAuditTime(LocalDateTime.now());
-        update.setAuditResult(reqVO.getRemark() != null ? reqVO.getRemark() : "审核驳回");
+        update.setAuditResult(reqVO.getRejectReason());
+        update.setUpdater(SecurityFrameworkUtils.getLoginUserNickname());
         invoiceAuditMapper.updateById(update);
     }
 
