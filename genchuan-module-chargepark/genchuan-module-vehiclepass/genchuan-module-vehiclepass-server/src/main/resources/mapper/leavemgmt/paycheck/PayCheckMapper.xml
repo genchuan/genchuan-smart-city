@@ -34,7 +34,7 @@
             AND p.status = #{reqVO.status}
         </if>
         <if test="reqVO.checkTime != null and reqVO.checkTime.length == 2">
-            AND p.check_time BETWEEN FROM_UNIXTIME(#{reqVO.checkTime[0]}) AND FROM_UNIXTIME(#{reqVO.checkTime[1]})
+            AND p.check_time BETWEEN #{reqVO.checkTime[0]} AND #{reqVO.checkTime[1]}
         </if>
         <if test="reqVO.stationId != null">
             AND p.station_id = #{reqVO.stationId}

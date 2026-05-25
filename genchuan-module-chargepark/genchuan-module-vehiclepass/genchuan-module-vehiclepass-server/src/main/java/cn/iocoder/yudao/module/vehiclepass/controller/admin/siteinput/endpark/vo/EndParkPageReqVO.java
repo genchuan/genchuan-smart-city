@@ -19,12 +19,8 @@ public class EndParkPageReqVO extends PageParam {
     @Schema(description = "车位ID，关联车位表", example = "9244")
     private Long spaceId;
 
-    @Schema(description = "结束时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    @Schema(description = "结束时间，时间范围", example = "[2026-04-09 00:00:00, 2026-04-09 23:59:59]")
     private LocalDateTime[] endTime;
-
-    @Schema(description = "结束时间，时间戳格式")
-    private Long[] endTimeNew;
 
     @Schema(description = "缴费状态：待支付/已支付/已取消，关联字典end_park_status", example = "2")
     private String status;
