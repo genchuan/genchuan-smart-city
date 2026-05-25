@@ -33,7 +33,7 @@
             AND p.pass_reason = #{reqVO.passReason}
         </if>
         <if test="reqVO.passTime != null and reqVO.passTime.length == 2">
-            AND p.pass_time BETWEEN FROM_UNIXTIME(#{reqVO.passTime[0]}) AND FROM_UNIXTIME(#{reqVO.passTime[1]})
+            AND p.pass_time BETWEEN #{reqVO.passTime[0]} AND #{reqVO.passTime[1]}
         </if>
         <if test="reqVO.status != null and reqVO.status != ''">
             AND p.status = #{reqVO.status}

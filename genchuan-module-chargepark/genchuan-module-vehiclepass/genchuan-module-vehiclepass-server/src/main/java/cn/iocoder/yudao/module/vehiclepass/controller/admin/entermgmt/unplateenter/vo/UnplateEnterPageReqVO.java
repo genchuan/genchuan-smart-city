@@ -4,10 +4,8 @@ import lombok.*;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
-
-import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Schema(description = "管理后台 - 无牌入场分页 Request VO")
 @Data
@@ -22,8 +20,8 @@ public class UnplateEnterPageReqVO extends PageParam {
     @Schema(description = "联系电话")
     private String phone;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "登记时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] registerTime;
 
     @Schema(description = "审核状态：待审核/已通过/已驳回，关联字典unplate_enter_status", example = "2")
@@ -38,8 +36,8 @@ public class UnplateEnterPageReqVO extends PageParam {
     @Schema(description = "审核人ID，关联system_user用户表", example = "23198")
     private Long auditUserId;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "审核时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] auditTime;
 
     @Schema(description = "审核意见")
@@ -60,12 +58,12 @@ public class UnplateEnterPageReqVO extends PageParam {
     @Schema(description = "更新者")
     private String updater;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "创建时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "更新时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] updateTime;
 
 }

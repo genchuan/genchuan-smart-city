@@ -4,10 +4,8 @@ import lombok.*;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
-
-import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Schema(description = "管理后台 - 在停状态分页 Request VO")
 @Data
@@ -25,8 +23,8 @@ public class InParkStatusPageReqVO extends PageParam {
     @Schema(description = "车牌号码")
     private String carNo;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "入场时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] inTime;
 
     @Schema(description = "是否超时长：是/否，关联字典in_park_status_over_time")
@@ -50,12 +48,12 @@ public class InParkStatusPageReqVO extends PageParam {
     @Schema(description = "更新者")
     private String updater;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "创建时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "更新时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] updateTime;
 
 }

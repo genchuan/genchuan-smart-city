@@ -26,8 +26,8 @@
         <if test="reqVO.spaceNo != null and reqVO.spaceNo != ''">
             AND q.space_no LIKE CONCAT('%', #{reqVO.spaceNo}, '%')
         </if>
-        <if test="reqVO.queryTimeNew != null and reqVO.queryTimeNew.length == 2">
-            AND q.query_time BETWEEN FROM_UNIXTIME(#{reqVO.queryTimeNew[0]}) AND FROM_UNIXTIME(#{reqVO.queryTimeNew[1]})
+        <if test="reqVO.queryTime != null and reqVO.queryTime.length == 2">
+            AND q.query_time BETWEEN #{reqVO.queryTime[0]} AND #{reqVO.queryTime[1]}
         </if>
         <if test="reqVO.queryUserId != null">
             AND q.query_user_id = #{reqVO.queryUserId}

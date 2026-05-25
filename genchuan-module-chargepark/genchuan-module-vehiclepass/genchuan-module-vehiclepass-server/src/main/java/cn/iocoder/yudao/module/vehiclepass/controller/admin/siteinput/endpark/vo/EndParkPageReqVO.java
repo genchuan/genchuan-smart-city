@@ -4,10 +4,8 @@ import lombok.*;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
-
-import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Schema(description = "管理后台 - 结束停车分页 Request VO")
 @Data
@@ -19,6 +17,7 @@ public class EndParkPageReqVO extends PageParam {
     @Schema(description = "车位ID，关联车位表", example = "9244")
     private Long spaceId;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "结束时间，时间范围", example = "[2026-04-09 00:00:00, 2026-04-09 23:59:59]")
     private LocalDateTime[] endTime;
 
@@ -49,12 +48,12 @@ public class EndParkPageReqVO extends PageParam {
     @Schema(description = "更新者，更新人账号/姓名")
     private String updater;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "创建时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "更新时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] updateTime;
 
 }

@@ -40,7 +40,7 @@
             AND g.apply_user_id = #{reqVO.applyUserId}
         </if>
         <if test="reqVO.applyTime != null and reqVO.applyTime.length == 2">
-            AND g.apply_time BETWEEN FROM_UNIXTIME(#{reqVO.applyTime[0]}) AND FROM_UNIXTIME(#{reqVO.applyTime[1]})
+            AND g.apply_time BETWEEN #{reqVO.applyTime[0]} AND #{reqVO.applyTime[1]}
         </if>
         <if test="reqVO.status != null and reqVO.status != ''">
             AND g.status = #{reqVO.status}

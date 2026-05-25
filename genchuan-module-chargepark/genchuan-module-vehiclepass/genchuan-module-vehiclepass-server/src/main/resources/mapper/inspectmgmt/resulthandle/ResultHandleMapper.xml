@@ -46,8 +46,8 @@
         <if test="reqVO.handleUserId != null">
             AND r.handle_user_id = #{reqVO.handleUserId}
         </if>
-        <if test="reqVO.handleTimeNew != null and reqVO.handleTimeNew.length == 2">
-            AND r.handle_time BETWEEN FROM_UNIXTIME(#{reqVO.handleTimeNew[0]}) AND FROM_UNIXTIME(#{reqVO.handleTimeNew[1]})
+        <if test="reqVO.handleTime != null and reqVO.handleTime.length == 2">
+            AND r.handle_time BETWEEN #{reqVO.handleTime[0]} AND #{reqVO.handleTime[1]}
         </if>
         <if test="reqVO.rectifyStatus != null and reqVO.rectifyStatus != ''">
             AND r.rectify_status = #{reqVO.rectifyStatus}

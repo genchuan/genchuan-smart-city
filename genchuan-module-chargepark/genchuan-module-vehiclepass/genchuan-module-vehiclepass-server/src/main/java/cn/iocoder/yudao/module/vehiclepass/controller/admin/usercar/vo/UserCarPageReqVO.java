@@ -3,10 +3,8 @@ package cn.iocoder.yudao.module.vehiclepass.controller.admin.usercar.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import java.time.LocalDateTime;
-import org.springframework.format.annotation.DateTimeFormat;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
-
-import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Schema(description = "管理后台 - 用户车辆分页 Request VO")
 @Data
@@ -27,12 +25,12 @@ public class UserCarPageReqVO extends PageParam {
     @Schema(description = "绑定状态：待审核/已绑定/已解绑", example = "已绑定")
     private String status;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "绑定时间范围")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] bindTime;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "创建时间范围")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] createTime;
 
 }

@@ -4,6 +4,8 @@ import lombok.*;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import java.time.LocalDateTime;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Schema(description = "管理后台 - 离场记录分页 Request VO")
 @Data
@@ -12,11 +14,13 @@ public class LeaveRecordPageReqVO extends PageParam {
     @Schema(description = "车牌")
     private String plateNo;
 
-    @Schema(description = "入场时间，时间戳格式", example = "[\"1774998000\",\"1775011986\"]")
-    private String[] enterTime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Schema(description = "入场时间，时间范围", example = "2026-04-09 00:00:00,2026-04-09 23:59:59")
+    private LocalDateTime[] enterTime;
 
-    @Schema(description = "离场时间，时间戳格式", example = "[\"1775011986\",\"1775098386\"]")
-    private String[] leaveTime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Schema(description = "离场时间，时间范围", example = "2026-04-10 00:00:00,2026-04-10 23:59:59")
+    private LocalDateTime[] leaveTime;
 
     @Schema(description = "离场小时筛选，格式如 08:00、14:30")
     private String leaveTimeHour;

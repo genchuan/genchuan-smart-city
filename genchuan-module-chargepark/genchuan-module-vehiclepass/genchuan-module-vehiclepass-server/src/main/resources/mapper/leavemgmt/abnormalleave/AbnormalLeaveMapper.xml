@@ -34,7 +34,7 @@
             AND a.abnormal_type = #{reqVO.abnormalType}
         </if>
         <if test="reqVO.identifyTime != null and reqVO.identifyTime.length == 2">
-            AND a.identify_time BETWEEN FROM_UNIXTIME(#{reqVO.identifyTime[0]}) AND FROM_UNIXTIME(#{reqVO.identifyTime[1]})
+            AND a.identify_time BETWEEN #{reqVO.identifyTime[0]} AND #{reqVO.identifyTime[1]}
         </if>
         <if test="reqVO.status != null and reqVO.status != ''">
             AND a.status = #{reqVO.status}

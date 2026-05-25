@@ -4,6 +4,8 @@ import lombok.*;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import java.time.LocalDateTime;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Schema(description = "管理后台 - 放行记录分页 Request VO")
 @Data
@@ -15,8 +17,9 @@ public class PassRecordPageReqVO extends PageParam {
     @Schema(description = "放行原因：人工开闸 / 特殊车辆 / 其他", example = "人工开闸")
     private String passReason;
 
-    @Schema(description = "放行时间，时间戳格式", example = "[\"1775011986\",\"1775098386\"]")
-    private String[] passTime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Schema(description = "放行时间，时间范围", example = "2026-04-20 00:00:00,2026-04-23 23:59:59")
+    private LocalDateTime[] passTime;
 
     @Schema(description = "状态：正常记录 / 异常记录", example = "正常记录")
     private String status;

@@ -28,10 +28,10 @@
             AND l.plate_no LIKE CONCAT('%', #{reqVO.plateNo}, '%')
         </if>
         <if test="reqVO.enterTime != null and reqVO.enterTime.length == 2">
-            AND l.enter_time BETWEEN FROM_UNIXTIME(#{reqVO.enterTime[0]}) AND FROM_UNIXTIME(#{reqVO.enterTime[1]})
+            AND l.enter_time BETWEEN #{reqVO.enterTime[0]} AND #{reqVO.enterTime[1]}
         </if>
         <if test="reqVO.leaveTime != null and reqVO.leaveTime.length == 2">
-            AND l.leave_time BETWEEN FROM_UNIXTIME(#{reqVO.leaveTime[0]}) AND FROM_UNIXTIME(#{reqVO.leaveTime[1]})
+            AND l.leave_time BETWEEN #{reqVO.leaveTime[0]} AND #{reqVO.leaveTime[1]}
         </if>
         <if test="reqVO.leaveTimeHour != null and reqVO.leaveTimeHour != ''">
             AND DATE_FORMAT(l.leave_time, '%H:00') = #{reqVO.leaveTimeHour}

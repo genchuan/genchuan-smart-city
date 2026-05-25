@@ -37,8 +37,8 @@
         <if test="reqVO.spaceId != null">
             AND c.space_id = #{reqVO.spaceId}
         </if>
-        <if test="reqVO.inputTimeNew != null and reqVO.inputTimeNew.length == 2">
-            AND c.input_time BETWEEN FROM_UNIXTIME(#{reqVO.inputTimeNew[0]}) AND FROM_UNIXTIME(#{reqVO.inputTimeNew[1]})
+        <if test="reqVO.inputTime != null and reqVO.inputTime.length == 2">
+            AND c.input_time BETWEEN #{reqVO.inputTime[0]} AND #{reqVO.inputTime[1]}
         </if>
         <if test="reqVO.status != null and reqVO.status != ''">
             AND c.status = #{reqVO.status}
