@@ -6,6 +6,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.AreaInfoPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.AreaInfoRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.AreaInfoSaveReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.ops.AddReq;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.ops.AreaInfoUpdateReqVO;
@@ -97,9 +98,11 @@ public class AreaInfoServiceImpl implements AreaInfoService {
 //                .orderByDesc(AreaInfoDO::getId)
 //        );
 
-        AreaInfoPageReqVO areaInfoPageReqVO =new AreaInfoPageReqVO();
-        areaInfoPageReqVO.setPageSize(9999);
-        List<AreaInfoDO> areaList = getAreaInfoPage(areaInfoPageReqVO).getList();
+        // 直接查全部片区（不走分页接口，避免 RespVO 转换开销）
+        List<AreaInfoDO> areaList = areaInfoMapper.selectList(new LambdaQueryWrapper<AreaInfoDO>()
+                .eq(AreaInfoDO::getDeleted, false)
+                .orderByDesc(AreaInfoDO::getId)
+        );
 
         //如果为空
         if (CollUtil.isEmpty(areaList)) {
@@ -199,7 +202,7 @@ public class AreaInfoServiceImpl implements AreaInfoService {
      * @return 片区详情DO
      */
     @Override
-    public AreaInfoDO getAreaInfo(Long id) {
+    public AreaInfoRespVO getAreaInfo(Long id) {
         // 构造分页查询条件，只查当前ID，限制1条
         AreaInfoPageReqVO req = new AreaInfoPageReqVO();
         req.setId(id);
@@ -211,9 +214,10 @@ public class AreaInfoServiceImpl implements AreaInfoService {
     }
 
     @Override
-    public PageResult<AreaInfoDO> getAreaInfoPage(AreaInfoPageReqVO pageReqVO) {
-        Page<AreaInfoDO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
-        Page<AreaInfoDO> resultPage = areaInfoMapper.getPage(page, pageReqVO);
+    public PageResult<AreaInfoRespVO> getAreaInfoPage(AreaInfoPageReqVO pageReqVO) {
+        // Mapper 直接返回 RespVO（SQL 已 JOIN station_user 查出 bindUserName）
+        Page<AreaInfoRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        Page<AreaInfoRespVO> resultPage = areaInfoMapper.getPage(page, pageReqVO);
         return new PageResult<>(resultPage.getRecords(), resultPage.getTotal());
     }
 
@@ -225,9 +229,10 @@ public class AreaInfoServiceImpl implements AreaInfoService {
         areaInfo.setStatus("未生效");
 
         // ==================== 新增：后端自动赋值 ====================
-        // 1. 设置负责人 userId（和 leaderId 保持一致，你也可以改成当前登录人）
-        Long userId = getLoginUserId();
-        areaInfo.setUserId(userId);
+        // 1. 负责人ID优先取前端传入值，未传则用当前登录用户
+        if (areaInfo.getUserId() == null) {
+            areaInfo.setUserId(getLoginUserId());
+        }
         // 2. 设置绑定时间（当前时间）
         areaInfo.setBindTime(LocalDateTime.now());
         // 3. 设置绑定人ID（当前登录用户ID，标准芋道写法）

@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.stationresource.service.stationresource.areamgmt
 import java.util.*;
 
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.AreaInfoPageReqVO;
+import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.AreaInfoRespVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.AreaInfoSaveReqVO;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.ops.AddReq;
 import cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.ops.AreaInfoUpdateReqVO;
@@ -56,7 +57,7 @@ public interface AreaInfoService {
      * @param id 编号
      * @return 片区信息
      */
-    AreaInfoDO getAreaInfo(Long id);
+    AreaInfoRespVO getAreaInfo(Long id);
 
     /**
      * 获得片区信息分页
@@ -64,7 +65,7 @@ public interface AreaInfoService {
      * @param pageReqVO 分页查询
      * @return 片区信息分页
      */
-    PageResult<AreaInfoDO> getAreaInfoPage(AreaInfoPageReqVO pageReqVO);
+    PageResult<AreaInfoRespVO> getAreaInfoPage(AreaInfoPageReqVO pageReqVO);
 
     Long addAreaInfo(AddReq createReqVO);
 

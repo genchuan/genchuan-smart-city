@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.iocoder.yudao.module.stationresource.dal.mysql.stationresource.areamgmt.areainfo.AreaInfoMapper">
-    <select id="getPage" resultType="cn.iocoder.yudao.module.stationresource.dal.dataobject.stationresource.areamgmt.areainfo.AreaInfoDO">
+    <select id="getPage" resultType="cn.iocoder.yudao.module.stationresource.controller.admin.stationresource.areamgmt.areainfo.vo.AreaInfoRespVO">
         SELECT
         a.*,
         su.nickname AS leaderName,
+        bu.nickname AS bindUserName,
         COUNT(s.id) AS stationCount  <!-- 这里：实时统计场站数 -->
         FROM area_info a
         LEFT JOIN station_user su ON a.user_id = su.id AND su.deleted = 0
+        LEFT JOIN station_user bu ON a.bind_user_id = bu.id AND bu.deleted = 0  <!-- 绑定人名称 -->
         LEFT JOIN station_info s ON a.id = s.area_id AND s.deleted = 0  <!-- 关联场站 -->
         WHERE a.deleted = 0
 
