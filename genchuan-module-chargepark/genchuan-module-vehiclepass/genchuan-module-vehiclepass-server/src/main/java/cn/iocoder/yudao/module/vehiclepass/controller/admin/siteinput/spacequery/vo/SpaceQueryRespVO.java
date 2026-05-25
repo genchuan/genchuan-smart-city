@@ -13,7 +13,7 @@ import cn.idev.excel.annotation.*;
 public class SpaceQueryRespVO {
 
     @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "21604")
-    @ExcelProperty("主键ID")
+    @ExcelProperty("编号")
     private Long id;
 
     @Schema(description = "泊位编号", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -25,7 +25,7 @@ public class SpaceQueryRespVO {
     private LocalDateTime queryTime;
 
     @Schema(description = "查询人ID，关联芋道用户表system_user", requiredMode = Schema.RequiredMode.REQUIRED, example = "17114")
-    @ExcelProperty("查询人ID，关联芋道用户表system_user")
+    @ExcelProperty("查询人ID")
     private Long queryUserId;
 
     @Schema(description = "查询人名称")
@@ -33,7 +33,7 @@ public class SpaceQueryRespVO {
     private String queryUserName;
 
     @Schema(description = "片区ID，关联片区表", requiredMode = Schema.RequiredMode.REQUIRED, example = "10828")
-    @ExcelProperty("片区ID，关联片区表")
+    @ExcelProperty("片区ID")
     private Long areaId;
 
     @Schema(description = "片区名称")
@@ -41,7 +41,7 @@ public class SpaceQueryRespVO {
     private String areaName;
 
     @Schema(description = "泊位状态：空闲/占用，关联字典space_query_space_status", example = "1")
-    @ExcelProperty("泊位状态：空闲/占用，关联字典space_query_space_status")
+    @ExcelProperty("泊位状态")
     private String spaceStatus;
 
     @Schema(description = "备注", example = "你猜")
@@ -57,11 +57,11 @@ public class SpaceQueryRespVO {
     private String reserve2;
 
     @Schema(description = "创建者，创建人账号/姓名")
-    @ExcelProperty("创建者，创建人账号/姓名")
+    @ExcelProperty("创建者")
     private String creator;
 
     @Schema(description = "更新者，更新人账号/姓名")
-    @ExcelProperty("更新者，更新人账号/姓名")
+    @ExcelProperty("更新者")
     private String updater;
 
     @Schema(description = "创建时间", requiredMode = Schema.RequiredMode.REQUIRED)
