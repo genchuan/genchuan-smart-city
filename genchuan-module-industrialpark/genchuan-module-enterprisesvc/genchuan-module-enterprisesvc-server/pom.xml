@@ -31,6 +31,11 @@
         <!-- 依赖服务 -->
         <dependency>
             <groupId>cn.iocoder.cloud</groupId>
+            <artifactId>genchuan-module-enterprisesvc-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.cloud</groupId>
             <artifactId>yudao-module-system-api</artifactId>
             <version>${revision}</version>
         </dependency>
@@ -144,6 +149,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>8.5.12</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

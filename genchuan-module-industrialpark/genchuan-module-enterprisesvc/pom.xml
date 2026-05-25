@@ -4,6 +4,7 @@
     <artifactId>genchuan-module-enterprisesvc</artifactId>
     <packaging>pom</packaging>
     <modules>
+        <module>genchuan-module-enterprisesvc-api</module>
         <module>genchuan-module-enterprisesvc-server</module>
     </modules>
     <parent>

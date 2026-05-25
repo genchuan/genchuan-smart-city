@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.enterprisesvc.dal.mysql.enterprisefile.EnterpriseFileMapper">
+
+    <!-- 统计图表基础数据 -->
+    <select id="selectChartStats" resultType="map">
+        SELECT
+        COUNT(*) AS totalCount,
+        SUM(CASE WHEN file_status = '已通过' THEN 1 ELSE 0 END) AS inParkCount,
+        SUM(CASE WHEN file_status != '已通过' THEN 1 ELSE 0 END) AS outParkCount,
+        ROUND(SUM(CASE WHEN file_status = '已通过' THEN 1 ELSE 0 END) * 1.0 / COUNT(*), 2) AS checkPassRate
+        FROM enterprise_file
+    </select>
+
+    <!-- 统计企业类型占比 -->
+    <select id="selectTypeRatio" resultType="cn.iocoder.yudao.module.enterprisesvc.controller.admin.enterprisefile.vo.EnterpriseFileChartRespVO$ChartItemVO">
+        SELECT
+            enterprise_type AS name,
+            COUNT(*) AS value
+        FROM enterprise_file
+        GROUP BY enterprise_type
+        ORDER BY value DESC
+    </select>
+
+    <!-- 统计企业规模占比 -->
+    <select id="selectScaleRatio" resultType="cn.iocoder.yudao.module.enterprisesvc.controller.admin.enterprisefile.vo.EnterpriseFileChartRespVO$ChartItemVO">
+        SELECT
+            enterprise_scale AS name,
+            COUNT(*) AS value
+        FROM enterprise_file
+        GROUP BY enterprise_scale
+        ORDER BY value DESC
+    </select>
+
+</mapper>
