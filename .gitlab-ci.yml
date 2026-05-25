@@ -1,23 +1,37 @@
 stages:
-  - BuildAndDeploy
+  - BuildAndPush
+
 variables:
+  DOCKER_REGISTRY: "192.168.8.14"
+  DOCKER_BUILDKIT: "0"
   POD_TAG: "$CI_COMMIT_BRANCH"
-  DEPLOY_DIR: "/data/java/service"
+  IMAGE_NAMESPACE: "genchuan"
 
 Build:
-  stage: BuildAndDeploy
-  tags:
-    - genchuan-cloud-runner
+  stage: BuildAndPush
   script:
     - echo "===== 开始Maven打包 ====="
     - mvn clean package -Dmaven.test.skip=true
-    - echo "===== 创建产物目录 ====="
     - |
-      declare -A MODULE_JAR_MAP=(
+      if [ "$CI_COMMIT_BRANCH" = "genchuan-mysql-master" ]; then
+        echo "===== 当前是 master 分支，开始构建镜像 ====="
+        declare -A MODULE_JAR_MAP=(
           ["yudao-gateway"]="yudao-gateway"
-          ["yudao-module-system-server"]="yudao-module-system/yudao-module-system-server"
+          ["yudao-module-ai-server"]="yudao-module-ai/yudao-module-ai-server"
+          ["yudao-module-bpm-server"]="yudao-module-bpm/yudao-module-bpm-server"
+          ["yudao-module-crm-server"]="yudao-module-crm/yudao-module-crm-server"
+          ["yudao-module-erp-server"]="yudao-module-erp/yudao-module-erp-server"
           ["yudao-module-infra-server"]="yudao-module-infra/yudao-module-infra-server"
+          ["yudao-module-iot-server"]="yudao-module-iot/yudao-module-iot-server"
+          ["yudao-module-product-server"]="yudao-module-mall/yudao-module-product-server"
+          ["yudao-module-promotion-server"]="yudao-module-mall/yudao-module-promotion-server"
+          ["yudao-module-statistics-server"]="yudao-module-mall/yudao-module-statistics-server"
+          ["yudao-module-trade-server"]="yudao-module-mall/yudao-module-trade-server"
+          ["yudao-module-member-server"]="yudao-module-member/yudao-module-member-server"
+          ["yudao-module-mp-server"]="yudao-module-mp/yudao-module-mp-server"
           ["yudao-module-pay-server"]="yudao-module-pay/yudao-module-pay-server"
+          ["yudao-module-report-server"]="yudao-module-report/yudao-module-report-server"
+          ["yudao-module-system-server"]="yudao-module-system/yudao-module-system-server"
           ["genchuan-module-studentmgmt-server"]="genchuan-module-education-teaching/genchuan-module-studentmgmt/genchuan-module-studentmgmt-server"
           ["genchuan-module-envirhealth-server"]="genchuan-module-urban/genchuan-module-envirhealth/genchuan-module-envirhealth-server"
           ["genchuan-module-facility-server"]="genchuan-module-urban/genchuan-module-facility/genchuan-module-facility-server"
@@ -36,30 +50,16 @@ Build:
           ["genchuan-module-marketop-server"]="genchuan-module-chargepark/genchuan-module-marketop/genchuan-module-marketop-server"
           ["genchuan-module-carservice-server"]="genchuan-module-chargepark/genchuan-module-carservice/genchuan-module-carservice-server"
           ["genchuan-module-vehiclepass-server"]="genchuan-module-chargepark/genchuan-module-vehiclepass/genchuan-module-vehiclepass-server"
-      
-      )
-
-      # ===================== 核心优化逻辑 =====================
-      if [ "$CI_COMMIT_BRANCH" = "master" ]; then
-        echo "===== 当前为master分支，全量构建所有服务 ====="
+        )
         for module in "${!MODULE_JAR_MAP[@]}"; do
           jarPath=${MODULE_JAR_MAP[$module]}
-          echo -e "\n===== 构建服务：$module ====="
-          cp -vf ${jarPath}/target/${module}.jar ${DEPLOY_DIR}/ 2>/dev/null
-          sh /data/java/service/start.sh ${DEPLOY_DIR} ${module}
+          imageFullName="${DOCKER_REGISTRY}/${IMAGE_NAMESPACE}/${module}:${POD_TAG}"
+          docker build --build-arg MODULE_NAME="$module" --build-arg JAR_PATH="$jarPath" -t "${imageFullName}" .
+          docker push "${imageFullName}"
         done
+        echo "===== master 分支：所有镜像推送完成 ====="
       else
-        echo "===== 当前为服务分支：$CI_COMMIT_BRANCH，仅构建当前服务 ====="
-        module=$CI_COMMIT_BRANCH
-        if [ -n "${MODULE_JAR_MAP[$module]-}" ]; then
-          jarPath=${MODULE_JAR_MAP[$module]}
-          echo -e "\n===== 构建服务：$module ====="
-          cp -vf ${jarPath}/target/${module}.jar ${DEPLOY_DIR}/ 2>/dev/null
-          sh /data/java/service/start.sh ${DEPLOY_DIR} ${module}
-        else
-          echo "错误：分支名 $module 未匹配到任何服务，请检查分支名！"
-          exit 1
-        fi
+        echo "===== 非 master 分支：跳过构建镜像 ====="
       fi
   retry:
     max: 2

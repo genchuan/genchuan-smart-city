@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
+import org.springframework.http.HttpMethod;
 
 /**
  * Pay 模块的 Security 配置
@@ -31,6 +32,11 @@ public class SecurityConfiguration {
                 registry.requestMatchers("/druid/**").permitAll();
                 // RPC 服务的安全配置
                 registry.requestMatchers(ApiConstants.PREFIX + "/**").permitAll();
+                                // ========== 新增：支付回调接口放行 ==========
+                // 支付渠道回调接口（第三方支付平台调用）
+                registry.requestMatchers(HttpMethod.POST, "/pay/notify/order/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/pay/notify/refund/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/pay/notify/transfer/**").permitAll();
             }
 
         };

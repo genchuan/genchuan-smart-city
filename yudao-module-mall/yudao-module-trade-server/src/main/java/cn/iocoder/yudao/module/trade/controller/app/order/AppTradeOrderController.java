@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.trade.controller.app.order;
 
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
+import cn.iocoder.yudao.framework.tenant.core.aop.TenantIgnore;
 import cn.iocoder.yudao.module.pay.api.notify.dto.PayOrderNotifyReqDTO;
 import cn.iocoder.yudao.module.trade.controller.app.order.vo.*;
 import cn.iocoder.yudao.module.trade.controller.app.order.vo.item.AppTradeOrderItemCommentCreateReqVO;
@@ -81,6 +82,7 @@ public class AppTradeOrderController {
     @PostMapping("/update-paid")
     @Operation(summary = "更新订单为已支付") // 由 pay-module 支付服务，进行回调，可见 PayNotifyJob
     @PermitAll
+    @TenantIgnore
     public CommonResult<Boolean> updateOrderPaid(@RequestBody PayOrderNotifyReqDTO notifyReqDTO) {
 
         log.info("[支付回调] 收到支付回调通知，商户订单号={}, 支付订单号={}, 完整数据={}",
