@@ -94,7 +94,7 @@ public class MemberLevelServiceImpl implements MemberLevelService {
     @LogRecord(type = TYPE_MEMBER_LEVEL, subType = SUB_TYPE_UPDATE_LEVEL_STATUS,
             bizNo = "{{{#ids}}}",
             success = SUCCESS_UPDATE_LEVEL_STATUS)
-    public void updateLevelStatus(List<Long> ids, String status) {
+    public void updateLevelStatus(List<Long> ids, Integer status) {
         if (CollectionUtils.isEmpty(ids)) {
             return;
         }

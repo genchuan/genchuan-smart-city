@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberconfig.vo;
 
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.FlexibleTimestampDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import java.util.*;
@@ -30,6 +32,7 @@ public class MemberConfigSaveReqVO {
     private Integer status;
 
     @Schema(description = "生效时间")
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
     private LocalDateTime effectiveTime;
 
 }
