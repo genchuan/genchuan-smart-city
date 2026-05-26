@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.stationresource.vrv.utils.common.excel;
 import cn.hutool.core.bean.BeanUtil;
 import cn.idev.excel.EasyExcel;
 import cn.idev.excel.annotation.ExcelIgnore;
+import cn.idev.excel.write.builder.ExcelWriterBuilder;
 import cn.idev.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import cn.iocoder.yudao.framework.common.exception.ErrorCode;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
@@ -34,10 +35,11 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
  * <p>统一处理 Excel 导入模板下载、列表导出、数据导入解析等功能。
  * <p>V2.1 新增：导入错误提示中文化（字段名+类型+示例），Boolean 支持"是/否"输入
  * <p>V2.2 新增：导入模板文件名改为中文业务名+日期、表头自动去除中括号 [xxx]
- * <p>V2.3 新增：导入模板表头非必选字段自动标注“（可选）”
+ * <p>V2.3 新增：导入模板表头非必选字段自动标注"（可选）"
+ * <p>V2.4 新增：支持 @ExcelDropdown 注解，为有限定值的字段自动生成下拉选择框
  *
  * @author vrvliang
- * @version V2.3 2026-05-25
+ * @version V2.4 2026-05-26
  */
 public class VrvExcelUtils {
 
@@ -62,6 +64,9 @@ public class VrvExcelUtils {
         List<Field> validFields = new ArrayList<>();
         List<String> headerList = new ArrayList<>();
         List<String> exampleList = new ArrayList<>();
+        // 下拉框配置：列索引 → 选项数组（用于 @ExcelDropdown 注解）
+        Map<Integer, String[]> dropdownMap = new LinkedHashMap<>();
+        int colIndex = 0; // 列索引（跳过 @ExcelIgnore 后重新计数）
 
         for (Field field : clazz.getDeclaredFields()) {
             // 跳过 @ExcelIgnore 标记的字段
@@ -85,16 +90,23 @@ public class VrvExcelUtils {
                     example = schema.example();
                 }
             }
-            // 非必选字段表头标注“可选”
-//            Schema schema = field.getAnnotation(Schema.class);
-//            if (!field.isAnnotationPresent(NotNull.class)
-//                    && !field.isAnnotationPresent(NotBlank.class)
-//                    && !field.isAnnotationPresent(NotEmpty.class)
-//                    && (schema == null || schema.requiredMode() != Schema.RequiredMode.REQUIRED)) {
-//                headerName = "（可选）" + headerName;
-//            }
+            // 非必选字段表头标注"可选"
+            Schema schema = field.getAnnotation(Schema.class);
+            if (!field.isAnnotationPresent(NotNull.class)
+                    && !field.isAnnotationPresent(NotBlank.class)
+                    && !field.isAnnotationPresent(NotEmpty.class)
+                    && (schema == null || schema.requiredMode() != Schema.RequiredMode.REQUIRED)) {
+                headerName = "（可选）" + headerName;
+            }
             headerList.add(headerName);
             exampleList.add(example);
+
+            // 收集 @ExcelDropdown 注解的下拉配置
+            if (field.isAnnotationPresent(ExcelDropdown.class)) {
+                ExcelDropdown dropdown = field.getAnnotation(ExcelDropdown.class);
+                dropdownMap.put(colIndex, dropdown.options());
+            }
+            colIndex++;
         }
 
         // 2. 构造 EasyExcel 要求的表头格式
@@ -134,12 +146,15 @@ public class VrvExcelUtils {
         String fileName = URLEncoder.encode(bizName + "_导入模板_" + timeStr + ".xlsx", StandardCharsets.UTF_8);
         response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
 
-        // 5. EasyExcel 写出
-        EasyExcel.write(response.getOutputStream())
+        // 5. EasyExcel 写出（含下拉框处理器）
+        ExcelWriterBuilder easyExcel = EasyExcel.write(response.getOutputStream())
                 .head(head)
-                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
-                .sheet("导入模板")
-                .doWrite(data);
+                .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy());
+        // 如果有 @ExcelDropdown 标记的字段，注册下拉框写入处理器
+        if (!dropdownMap.isEmpty()) {
+            easyExcel.registerWriteHandler(new ExcelDropdownWriteHandler(dropdownMap));
+        }
+        easyExcel.sheet("导入模板").doWrite(data);
     }
 
     /**
