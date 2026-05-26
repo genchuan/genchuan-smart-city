@@ -18,11 +18,11 @@ public class CycleReportPageReqVO extends PageParam {
 
     @Schema(description = "统计开始时间")
     @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
-    private LocalDateTime[] statStartTime;
+    private LocalDateTime statStartTime;
 
     @Schema(description = "统计结束时间")
     @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
-    private LocalDateTime[] statEndTime;
+    private LocalDateTime statEndTime;
 
     @Schema(description = "报表生成状态（待生成/已生成/生成失败）", example = "1")
     private String reportStatus;

@@ -66,4 +66,12 @@
         ORDER BY ml.id DESC
     </select>
 
+    <select id="selectByIdWithCount" resultType="cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberlevel.MemberLevelDO">
+        SELECT
+            ml.*,
+            (SELECT COUNT(*) FROM member_user WHERE level_id = ml.id AND deleted = 0) AS member_count
+        FROM member_level ml
+        WHERE ml.id = #{id} AND ml.deleted = 0
+    </select>
+
 </mapper>

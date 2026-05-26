@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.groupclient.groupinfo;
 
+import cn.iocoder.yudao.module.usermerchant.controller.admin.groupclient.groupcar.vo.GroupCarImportExcelVO;
 import io.swagger.v3.oas.annotations.Parameters;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
@@ -72,7 +73,15 @@ public class GroupInfoController {
     @Operation(summary = "下载集团信息导入模板")
     @PreAuthorize("@ss.hasPermission('usermerchant:group-info:import')")
     public void downloadImportTemplate(HttpServletResponse response) throws IOException {
-        List<GroupInfoImportExcelVO> emptyList = Collections.emptyList();
+        GroupInfoImportExcelVO example = GroupInfoImportExcelVO.builder()
+                .name("示例集团")
+                .contact("示例联系人")
+                .phone("12345678901")
+                .groupType("企业单位")
+                .address("福建省泉州市丰泽区xx街道xx社区")
+                .remark("text")
+                .build();
+        List<GroupInfoImportExcelVO> emptyList = Collections.singletonList(example);
         ExcelUtils.write(response, "集团信息导入模板.xlsx", "集团信息", GroupInfoImportExcelVO.class, emptyList);
     }
 

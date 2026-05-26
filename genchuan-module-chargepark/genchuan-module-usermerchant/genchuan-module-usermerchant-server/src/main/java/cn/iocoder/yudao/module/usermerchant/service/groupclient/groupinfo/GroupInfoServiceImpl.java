@@ -123,30 +123,14 @@ public class GroupInfoServiceImpl implements GroupInfoService {
             return true;
         }
         for (GroupInfoImportExcelVO vo : list) {
-            if (vo.getId() != null) {
-                GroupInfoDO existDO = groupInfoMapper.selectById(vo.getId());
-                if (existDO != null) {
-                    if (Boolean.TRUE.equals(updateSupport)) {
-                        // 更新：复制属性，但保护创建信息
-                        GroupInfoDO updateDO = BeanUtils.toBean(vo, GroupInfoDO.class);
-                        updateDO.setCreator(null);
-                        updateDO.setCreateTime(null);
-                        groupInfoMapper.updateById(updateDO);
-                    } else {
-                        // updateSupport = false，跳过该条记录
-                        continue;
-                    }
-                } else {
-                    // ID 不存在，按新增处理（忽略用户提供的 ID，由数据库自增）
-                    GroupInfoDO insertDO = BeanUtils.toBean(vo, GroupInfoDO.class);
-                    insertDO.setId(null);
-                    groupInfoMapper.insert(insertDO);
-                }
-            } else {
-                // 无 ID，直接新增
-                GroupInfoDO insertDO = BeanUtils.toBean(vo, GroupInfoDO.class);
-                groupInfoMapper.insert(insertDO);
-            }
+            GroupInfoDO insertDO = BeanUtils.toBean(vo, GroupInfoDO.class);
+            insertDO.setId(null);   // 确保 ID 由数据库自增生成
+            insertDO.setRegisterTime(LocalDateTime.now());
+            insertDO.setStatus("待审核");
+            insertDO.setCreateTime(LocalDateTime.now());
+            insertDO.setUpdateTime(LocalDateTime.now());
+
+            groupInfoMapper.insert(insertDO);
         }
         // 记录操作日志上下文
         LogRecordContext.putVariable("list", list);

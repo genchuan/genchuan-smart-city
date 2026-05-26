@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membertag.vo;
 
 import cn.idev.excel.annotation.ExcelProperty;
+import cn.idev.excel.annotation.write.style.HeadFontStyle;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,28 +18,21 @@ import java.time.LocalDateTime;
 @Accessors(chain=false)// 设置 chain = false，避免用户导入有问题
 public class MemberTagImportExcelVO {
 
-    @ExcelProperty("编号")
-    private Long id;
+    private static final short RED_COLOR = 10;
 
+    @Schema(description = "标签名称")
     @ExcelProperty("标签名称")
+    @HeadFontStyle(color = RED_COLOR)
     private String name;
 
+    @Schema(description = "标签描述")
     @ExcelProperty("标签描述")
+    @HeadFontStyle(color = RED_COLOR)
     private String description;
 
+    @Schema(description = "状态：0-禁用，1-正常")
     @ExcelProperty("状态：0-禁用，1-正常")
+    @HeadFontStyle(color = RED_COLOR)
     private Integer status;
-
-    @ExcelProperty("创建者")
-    private String creator;
-
-    @ExcelProperty("创建时间")
-    private LocalDateTime createTime;
-
-    @ExcelProperty("更新者")
-    private String updater;
-
-    @ExcelProperty("更新时间")
-    private LocalDateTime updateTime;
 
 }

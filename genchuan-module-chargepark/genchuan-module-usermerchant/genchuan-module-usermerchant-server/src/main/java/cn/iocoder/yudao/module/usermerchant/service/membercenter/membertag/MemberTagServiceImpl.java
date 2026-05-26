@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.usermerchant.service.membercenter.membertag;
 
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
@@ -98,30 +99,12 @@ public class MemberTagServiceImpl implements MemberTagService {
             return true;
         }
         for (MemberTagImportExcelVO vo : list) {
-            if (vo.getId() != null) {
-                MemberTagDO existDO = memberTagMapper.selectById(vo.getId());
-                if (existDO != null) {
-                    if (Boolean.TRUE.equals(updateSupport)) {
-                        // 更新：复制属性，但保护创建信息
-                        MemberTagDO updateDO = BeanUtils.toBean(vo, MemberTagDO.class);
-                        updateDO.setCreator(null);
-                        updateDO.setCreateTime(null);
-                        memberTagMapper.updateById(updateDO);
-                    } else {
-                        // updateSupport = false，跳过该条记录
-                        continue;
-                    }
-                } else {
-                    // ID 不存在，按新增处理（忽略用户提供的 ID，由数据库自增）
-                    MemberTagDO insertDO = BeanUtils.toBean(vo, MemberTagDO.class);
-                    insertDO.setId(null);
-                    memberTagMapper.insert(insertDO);
-                }
-            } else {
-                // 无 ID，直接新增
-                MemberTagDO insertDO = BeanUtils.toBean(vo, MemberTagDO.class);
-                memberTagMapper.insert(insertDO);
-            }
+            // 直接新增，忽略用户传入的 ID，由数据库自增生成
+            MemberTagDO insertDO = BeanUtils.toBean(vo, MemberTagDO.class);
+            insertDO.setId(null);   // 确保 ID 不传入，使用数据库自增
+            insertDO.setCreator(SecurityFrameworkUtils.getLoginUserNickname());
+            insertDO.setUpdater(SecurityFrameworkUtils.getLoginUserNickname());
+            memberTagMapper.insert(insertDO);
         }
         // 记录操作日志上下文
         LogRecordContext.putVariable("list", list);

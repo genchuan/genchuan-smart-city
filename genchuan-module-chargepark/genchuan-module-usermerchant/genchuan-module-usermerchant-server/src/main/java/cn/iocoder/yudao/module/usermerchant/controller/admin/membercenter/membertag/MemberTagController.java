@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membertag;
 
+import cn.iocoder.yudao.module.usermerchant.controller.admin.groupclient.groupcar.vo.GroupCarImportExcelVO;
 import io.swagger.v3.oas.annotations.Parameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -79,8 +80,13 @@ public class MemberTagController {
     @Operation(summary = "下载会员标签导入模板")
     @PreAuthorize("@ss.hasPermission('usermerchant:member-tag:import')")
     public void downloadImportTemplate(HttpServletResponse response) throws IOException {
-        List<MemberTagImportExcelVO> emptyList = Collections.emptyList();
-        ExcelUtils.write(response, "会员标签导入模板.xlsx", "会员标签", MemberTagImportExcelVO.class, emptyList);
+        MemberTagImportExcelVO example = MemberTagImportExcelVO.builder()
+                .name("示例标签")
+                .description("示例描述")
+                .status(1)
+                .build();
+        List<MemberTagImportExcelVO> exampleList = Collections.singletonList(example);
+        ExcelUtils.write(response, "会员标签导入模板.xlsx", "会员标签", MemberTagImportExcelVO.class, exampleList);
     }
 
     @GetMapping("/export")

@@ -44,4 +44,10 @@ public interface MemberLevelMapper extends BaseMapperX<MemberLevelDO> {
      */
     IPage<MemberLevelDO> selectPageWithUserCount(IPage<?> page, @Param("reqVO") MemberLevelPageReqVO reqVO);
 
+    /**
+     * 根据 ID 查询会员等级，并统计该等级下的用户数量
+     * @param id 等级ID
+     * @return 会员等级对象（包含 memberCount）
+     */
+    MemberLevelDO selectByIdWithCount(Long id);
 }

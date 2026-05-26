@@ -304,12 +304,15 @@ public class CycleReportServiceImpl implements CycleReportService {
         cardData.setNewMemberCount(newMemberCount.intValue());
 
         // 平均信用分
-        QueryWrapper<UserCreditDO> creditWrapper = new QueryWrapper<>();
-        creditWrapper.select("COALESCE(AVG(credit_score), 0)")
-                .between("create_time", start, end)
-                .eq("deleted", 0);
-        BigDecimal avgCredit = (BigDecimal) userCreditMapper.selectObjs(creditWrapper).get(0);
-        cardData.setAvgCreditScore(avgCredit != null ? avgCredit.intValue() : 0);
+//        QueryWrapper<UserCreditDO> creditWrapper = new QueryWrapper<>();
+//        creditWrapper.select("COALESCE(AVG(credit_score), 0)")
+//                .between("create_time", start, end)
+//                .eq("deleted", 0);
+//        BigDecimal avgCredit = (BigDecimal) userCreditMapper.selectObjs(creditWrapper).get(0);
+//        cardData.setAvgCreditScore(avgCredit != null ? avgCredit.intValue() : 0);
+
+        Integer avgScore = userCreditMapper.selectAvgCreditScore(start, end);
+        cardData.setAvgCreditScore(avgScore != null ? avgScore : 0);
 
         return cardData;
     }
