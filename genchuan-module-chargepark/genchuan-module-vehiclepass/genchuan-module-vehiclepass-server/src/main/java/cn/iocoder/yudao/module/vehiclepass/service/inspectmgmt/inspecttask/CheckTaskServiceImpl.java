@@ -195,12 +195,12 @@ public class CheckTaskServiceImpl implements CheckTaskService {
         if (task == null) {
             throw exception(TASK_NOT_EXISTS);
         }
-        if (!STATUS_PROCESSING.equals(task.getStatus())) {
+        if (!STATUS_COMPLETED.equals(task.getStatus())) {
             throw exception(TASK_STATUS_INVALID);
         }
         CheckTaskDO updateObj = new CheckTaskDO();
         updateObj.setId(id);
-        updateObj.setStatus(STATUS_COMPLETED);
+        updateObj.setStatus(STATUS_ARCHIVED);
         updateObj.setFinishTime(LocalDateTime.now());
         taskMapper.updateById(updateObj);
     }

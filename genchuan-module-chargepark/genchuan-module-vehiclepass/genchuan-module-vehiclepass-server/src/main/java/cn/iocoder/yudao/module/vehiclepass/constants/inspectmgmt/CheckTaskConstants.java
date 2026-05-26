@@ -16,6 +16,8 @@ public class CheckTaskConstants {
 
     /** 状态：已完成 */
     public static final String STATUS_COMPLETED = "已完成";
+    /** 状态：已归档 */
+    public static final String STATUS_ARCHIVED = "已归档";
 
     private CheckTaskConstants() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
