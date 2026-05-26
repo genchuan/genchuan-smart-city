@@ -45,6 +45,9 @@
         <if test="reqVO.checkUserId != null">
             AND p.check_user_id = #{reqVO.checkUserId}
         </if>
+        <if test="reqVO.checkUserName != null and reqVO.checkUserName != ''">
+            AND u.nickname LIKE CONCAT('%', #{reqVO.checkUserName}, '%')
+        </if>
         <if test="reqVO.checkResult != null and reqVO.checkResult != ''">
             AND p.check_result LIKE CONCAT('%', #{reqVO.checkResult}, '%')
         </if>
