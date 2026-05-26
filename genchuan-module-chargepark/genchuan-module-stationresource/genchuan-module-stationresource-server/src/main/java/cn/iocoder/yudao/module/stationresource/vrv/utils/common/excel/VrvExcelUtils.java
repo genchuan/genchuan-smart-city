@@ -44,27 +44,37 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 public class VrvExcelUtils {
 
     /**
-     * 下载 Excel 导入模板（通用，适配 importExcelAndReturnEntity 解析）
+     * 下载导入模板（无动态下拉，向后兼容）
+     */
+    public static <T> void downloadImportTemplate(HttpServletResponse response, Class<T> clazz) throws Exception {
+        downloadImportTemplate(response, clazz, null);
+    }
+
+    /**
+     * 下载 Excel 导入模板（支持动态下拉数据）
      * <p>自动从实体类读取字段信息生成模板，跳过 @ExcelIgnore 字段，
      * 表头和示例值优先取 @Schema 注解的中文描述和示例值。
+     * <p>下拉选项优先级：fieldDropdownMap 传参 > @ExcelDropdown 注解
+     *
+     * @param response          HttpServletResponse
+     * @param clazz             模板实体类
+     * @param fieldDropdownMap  动态下拉数据，key=字段名，value=下拉选项列表（可为 null）
      *
      * <pre>
      * 版本历史：
-     *   V1 2026-04-08  —— 初始版本：英文字段名作表头，"请输入XXX" 作示例行
-     *   V2 2026-05-09 10:07 —— 表头改为读取 @Schema.description（中文名）
-     *                           示例行改为读取 @Schema.example（真实示例值）
-     *                           支持跳过 @ExcelIgnore 标记的字段
-     *                           无注解字段回退到字段名 + 类型默认值
-     *   V3 2026-05-21 —— 文件名改为中文业务名+日期（取自类@Schema，如"场站信息_导入模板_20260521.xlsx"）
-     *                   表头中文字段自动去除中括号，如 [主键ID] → 主键ID
+     *   V1 2026-04-08  —— 初始版本：英文字段名作表头
+     *   V2 2026-05-09 —— 表头改为 @Schema.description，示例值改为 @Schema.example
+     *   V3 2026-05-21 —— 文件名中文业务名+日期，表头去中括号
+     *   V4 2026-05-26 —— 支持 @ExcelDropdown、fieldDropdownMap 两种下拉方式
      * </pre>
      */
-    public static <T> void downloadImportTemplate(HttpServletResponse response, Class<T> clazz) throws Exception {
+    public static <T> void downloadImportTemplate(HttpServletResponse response, Class<T> clazz,
+                                                   Map<String, List<String>> fieldDropdownMap) throws Exception {
         // 1. 收集字段信息：跳过@ExcelIgnore字段，从@Schema提取中文名和示例值
         List<Field> validFields = new ArrayList<>();
         List<String> headerList = new ArrayList<>();
         List<String> exampleList = new ArrayList<>();
-        // 下拉框配置：列索引 → 选项数组（用于 @ExcelDropdown 注解）
+        // 下拉框配置：列索引 → 选项数组
         Map<Integer, String[]> dropdownMap = new LinkedHashMap<>();
         int colIndex = 0; // 列索引（跳过 @ExcelIgnore 后重新计数）
 
@@ -83,7 +93,6 @@ public class VrvExcelUtils {
                 Schema schema = field.getAnnotation(Schema.class);
                 if (schema.description() != null && !schema.description().isEmpty()) {
                     headerName = schema.description();
-                    // 去掉中括号，如 [主键ID] → 主键ID
                     headerName = headerName.replaceAll("\\[([^\\]]+)\\]", "$1");
                 }
                 if (schema.example() != null && !schema.example().isEmpty()) {
@@ -101,15 +110,22 @@ public class VrvExcelUtils {
             headerList.add(headerName);
             exampleList.add(example);
 
-            // 收集 @ExcelDropdown 注解的下拉配置
-            if (field.isAnnotationPresent(ExcelDropdown.class)) {
+            // 收集下拉配置：传参 > @ExcelDropdown
+            if (fieldDropdownMap != null && fieldDropdownMap.containsKey(field.getName())) {
+                // 优先级最高：Controller 直接传入的数据（如数据库查的复审人名单）
+                List<String> opts = fieldDropdownMap.get(field.getName());
+                if (opts != null && !opts.isEmpty()) {
+                    dropdownMap.put(colIndex, opts.toArray(new String[0]));
+                }
+            } else if (field.isAnnotationPresent(ExcelDropdown.class)) {
+                // 硬编码下拉选项
                 ExcelDropdown dropdown = field.getAnnotation(ExcelDropdown.class);
                 dropdownMap.put(colIndex, dropdown.options());
             }
             colIndex++;
         }
 
-        // 2. 构造 EasyExcel 要求的表头格式
+        // 2. 构造 EasyExcel 表头格式
         List<List<String>> head = new ArrayList<>();
         for (String header : headerList) {
             List<String> columnHead = new ArrayList<>();
@@ -119,29 +135,24 @@ public class VrvExcelUtils {
 
         // 3. 构造示例数据行
         List<List<String>> data = new ArrayList<>();
-        List<String> exampleRow = new ArrayList<>();
-        for (String example : exampleList) {
-            exampleRow.add(example);
-        }
+        List<String> exampleRow = new ArrayList<>(exampleList);
         data.add(exampleRow);
 
         // 4. 响应头配置
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        // 文件名：优先取类上@Schema的description作为业务中文名，如"场站信息"，否则取类名
-        String bizName = clazz.getSimpleName(); // 兜底用类名
+        String bizName = clazz.getSimpleName();
         Schema classSchema = clazz.getAnnotation(Schema.class);
         if (classSchema != null && classSchema.description() != null && !classSchema.description().isEmpty()) {
             bizName = classSchema.description()
-                    .replace("管理后台 - ", "")       // 去掉"管理后台 - "前缀
-                    .replace(" Request VO", "")        // 去掉" Request VO"后缀
-                    .replace(" 新增", "")              // 去掉" 新增"
-                    .replace(" 创建", "")              // 去掉" 创建"
-                    .replace("新增/修改", "")          // 去掉"新增/修改"
-                    .replaceAll("[\\s\\-]+$", "")      // 去掉尾部空格和横线
+                    .replace("管理后台 - ", "")
+                    .replace(" Request VO", "")
+                    .replace(" 新增", "")
+                    .replace(" 创建", "")
+                    .replace("新增/修改", "")
+                    .replaceAll("[\\s\\-]+$", "")
                     .trim();
         }
-        // 文件名加日期，如 场站信息_导入模板_20260521.xlsx
         String timeStr = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String fileName = URLEncoder.encode(bizName + "_导入模板_" + timeStr + ".xlsx", StandardCharsets.UTF_8);
         response.setHeader("Content-Disposition", "attachment; filename*=" + fileName);
@@ -150,7 +161,6 @@ public class VrvExcelUtils {
         ExcelWriterBuilder easyExcel = EasyExcel.write(response.getOutputStream())
                 .head(head)
                 .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy());
-        // 如果有 @ExcelDropdown 标记的字段，注册下拉框写入处理器
         if (!dropdownMap.isEmpty()) {
             easyExcel.registerWriteHandler(new ExcelDropdownWriteHandler(dropdownMap));
         }
