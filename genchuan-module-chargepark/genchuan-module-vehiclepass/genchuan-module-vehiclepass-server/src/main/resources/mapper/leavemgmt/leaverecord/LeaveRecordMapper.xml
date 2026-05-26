@@ -57,6 +57,12 @@
         <if test="reqVO.isCorrected != null">
             AND l.is_corrected = #{reqVO.isCorrected}
         </if>
+        <if test="reqVO.creator != null and reqVO.creator != ''">
+            AND l.creator LIKE CONCAT('%', #{reqVO.creator}, '%')
+        </if>
+        <if test="reqVO.updater != null and reqVO.updater != ''">
+            AND l.updater LIKE CONCAT('%', #{reqVO.updater}, '%')
+        </if>
         ORDER BY l.id DESC
     </select>
 
