@@ -28,6 +28,6 @@ public interface PermissionApi extends PermissionCommonApi {
     // 设置用户角色接口
     @PostMapping(PREFIX + "/assign-user-role-by-mobile")
     @Operation(summary = "根据手机号设置用户角色")
-    CommonResult<Boolean> assignUserRoleByMobile(@RequestParam("mobile") String mobile,
+    CommonResult<Boolean> assignUserRoleByUserId(@RequestParam("id") Long userId,
                                                  @RequestParam("roleIds") Set<Long> roleIds);
 }

@@ -49,15 +49,10 @@ public class PermissionApiImpl implements PermissionApi {
 
     // 新增：设置用户角色实现
     @Override
-    public CommonResult<Boolean> assignUserRoleByMobile(String mobile, Set<Long> roleIds) {
-        // 1. 根据手机号查询用户
-        AdminUserDO user = userService.getUserByMobile(mobile);
-        if (user == null) {
-            return CommonResult.error(404, "用户不存在");
-        }
+    public CommonResult<Boolean> assignUserRoleByUserId(Long userId, Set<Long> roleIds) {
 
         // 2. 调用原有的assignUserRole方法设置角色
-        permissionService.assignUserRole(user.getId(), roleIds);
+        permissionService.assignUserRole(userId, roleIds);
         return success(true);
     }
 
