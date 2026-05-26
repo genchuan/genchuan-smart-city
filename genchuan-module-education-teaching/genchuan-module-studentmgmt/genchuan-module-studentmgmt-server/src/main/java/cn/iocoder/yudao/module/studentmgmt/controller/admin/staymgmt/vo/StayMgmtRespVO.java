@@ -47,7 +47,7 @@ public class StayMgmtRespVO {
     private LocalDateTime auditTime;
 
     @Schema(description = "状态：待确认/待审核/已通过", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("状态：待确认/待审核/已通过")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "你说的对")

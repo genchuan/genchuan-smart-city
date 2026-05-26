@@ -21,12 +21,14 @@ public interface ExchangeCategoryService {
 
     void update(@Valid ExchangeCategoryUpdateReqVO reqVO);
 
-    void enable(Long id);
+    void enable(Long id, Long userId);
 
     void disable(Long id);
 
     ExchangeCategoryChartRespVO getChart();
 
     void importData(List<ExchangeCategoryImportExcelVO> list);
+
+    List<ExchangeCategoryDO> getSimpleList();
 
 }

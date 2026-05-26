@@ -103,23 +103,31 @@ public class AbnormalLeaveServiceImpl implements AbnormalLeaveService {
     }
 
     @Override
+    public AbnormalLeaveRespVO getLeaveWithStation(Long id) {
+        return leaveMapper.selectByIdJoinStation(id);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void batchHandle(AbnormalLeaveBatchHandleReqVO reqVO) {
-        // 批量更新处置状态
+        LocalDateTime now = LocalDateTime.now();
+        String handleType = reqVO.getHandleType();
+        List<AbnormalLeaveDO> updateList = new ArrayList<>();
         for (Long id : reqVO.getIds()) {
             AbnormalLeaveDO updateObj = new AbnormalLeaveDO();
             updateObj.setId(id);
-            if (HANDLE_TYPE_CHECK.equals(reqVO.getHandleType())) {
+            if (HANDLE_TYPE_CHECK.equals(handleType)) {
                 updateObj.setStatus(STATUS_PROCESSING);
                 updateObj.setHandleProgress(HANDLE_PROGRESS_CHECKED);
                 updateObj.setHandleType(HANDLE_TYPE_CHECK);
-            } else if (HANDLE_TYPE_IGNORE.equals(reqVO.getHandleType())) {
+            } else if (HANDLE_TYPE_IGNORE.equals(handleType)) {
                 updateObj.setStatus(STATUS_CLOSED);
                 updateObj.setHandleType(HANDLE_TYPE_IGNORE);
             }
-            updateObj.setHandleTime(LocalDateTime.now());
-            leaveMapper.updateById(updateObj);
+            updateObj.setHandleTime(now);
+            updateList.add(updateObj);
         }
+        leaveMapper.updateBatch(updateList);
     }
 
     @Override
@@ -158,6 +166,7 @@ public class AbnormalLeaveServiceImpl implements AbnormalLeaveService {
         AbnormalLeaveDO updateObj = new AbnormalLeaveDO();
         updateObj.setId(reqVO.getId());
         updateObj.setHandleProgress(reqVO.getHandleProgress());
+        updateObj.setStatus(STATUS_CLOSED);
         updateObj.setHandleTime(LocalDateTime.now());
         leaveMapper.updateById(updateObj);
     }

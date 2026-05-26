@@ -66,4 +66,6 @@ public interface DormCheckService {
     DormCheckChartRespVO chart(@Valid DormCheckChartReqVO reqVO);
 
     DormCheckChartCountRespVO checkCount(@Valid DormCheckChartCountReqVO reqVO);
+
+    PageResult<DormCheckRespVO> getDormCheckJoinPage(@Valid DormCheckPageReqVO pageReqVO);
 }

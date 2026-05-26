@@ -7,7 +7,10 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.honormgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.honormgmt.HonorMgmtDO;
+import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.honormgmt.HonorMgmtMapper;
+import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
+import cn.iocoder.yudao.module.studentmgmt.enums.HonorStatusEnum;
 import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
 import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import com.mzt.logapi.context.LogRecordContext;
@@ -38,10 +41,18 @@ public class HonorMgmtServiceImpl implements HonorMgmtService {
     @Resource
     private DictDataApi dictDataApi;
 
+    @Resource
+    private StudentInfoMapper studentInfoMapper;
+
     @Override
     @LogRecord(type = STUDENT_HONOR_TYPE, subType = STUDENT_HONOR_CREATE_SUB_TYPE, bizNo = "{{#honorMgmt.id}}",
             success = STUDENT_HONOR_CREATE_SUCCESS)
     public Long createHonorMgmt(HonorMgmtSaveReqVO createReqVO) {
+        Long studentId = createReqVO.getStudentId();
+        StudentInfoDO studentInfoDO = studentInfoMapper.selectById(studentId);
+        if (null == studentInfoDO) {
+            throw exception(500, "学生信息不存在");
+        }
         // 插入
         HonorMgmtDO honorMgmt = BeanUtils.toBean(createReqVO, HonorMgmtDO.class);
         honorMgmtMapper.insert(honorMgmt);
@@ -59,6 +70,12 @@ public class HonorMgmtServiceImpl implements HonorMgmtService {
     public void updateHonorMgmt(HonorMgmtSaveReqVO updateReqVO) {
         // 校验存在
         HonorMgmtDO honorMgmtDO = validateHonorMgmtExists(updateReqVO.getId());
+        // 判断学号是否存在该学生
+        Long studentId = updateReqVO.getStudentId();
+        if ( null == (studentInfoMapper.selectById(studentId))) {
+            throw exception(500, "原学生信息不存在");
+        }
+
         // 更新
         HonorMgmtDO updateObj = BeanUtils.toBean(updateReqVO, HonorMgmtDO.class);
         honorMgmtMapper.updateById(updateObj);
@@ -122,7 +139,7 @@ public class HonorMgmtServiceImpl implements HonorMgmtService {
     public boolean pushHonorMgmt(HonorMgmtPushReqVO reqVO) {
         HonorMgmtDO honorMgmtDO = honorMgmtMapper.selectById(reqVO.getId());
         honorMgmtDO.setPushTime(LocalDateTime.now());
-        honorMgmtDO.setStatus("已推送");
+        honorMgmtDO.setStatus(HonorStatusEnum.HONOR_MGMT_STATUS_2.getStatus());
         int i = honorMgmtMapper.updateById(honorMgmtDO);
         // 记录操作日志上下文
         LogRecordContext.putVariable("honor", honorMgmtDO);

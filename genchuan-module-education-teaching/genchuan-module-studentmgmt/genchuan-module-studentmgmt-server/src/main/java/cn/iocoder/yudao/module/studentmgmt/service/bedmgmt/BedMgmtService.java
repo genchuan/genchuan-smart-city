@@ -67,4 +67,6 @@ public interface BedMgmtService {
     BedMgmtBedDistributionRespVO bedDistribution();
 
     BedMgmtBedIndexRespVO bedIndex();
+
+    PageResult<BedMgmtRespVO> getBedMgmtJoinPage(@Valid BedMgmtPageReqVO pageReqVO);
 }

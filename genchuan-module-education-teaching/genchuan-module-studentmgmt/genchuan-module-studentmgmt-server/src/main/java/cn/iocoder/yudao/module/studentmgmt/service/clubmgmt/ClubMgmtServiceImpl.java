@@ -279,8 +279,8 @@ public class ClubMgmtServiceImpl implements ClubMgmtService {
         // 更新状态为已建档，填充建档时间
         clubMgmtDO.setVenueApplyStatus(ClubVenueApplyStatusEnum.VENUE_APPLY_STATUS_1.getStatus());
         clubMgmtDO.setApplyTime(reqVO.getApplyTime());
-        clubMgmtDO.setRemark(reqVO.getApplyReason());
-        clubMgmtDO.setReserve1(reqVO.getVenueName());
+        clubMgmtDO.setApplyReason(reqVO.getApplyReason());
+        clubMgmtDO.setVenueName(reqVO.getVenueName());
 
         int i = clubMgmtMapper.updateById(clubMgmtDO);
 
@@ -293,6 +293,11 @@ public class ClubMgmtServiceImpl implements ClubMgmtService {
         }
         return false;
 
+    }
+
+    @Override
+    public PageResult<ClubMgmtRespVO> getClubMgmtJoinPage(ClubMgmtPageReqVO pageReqVO) {
+        return clubMgmtMapper.selectJoinPage(pageReqVO);
     }
 
 }

@@ -21,6 +21,10 @@ public class SettleStatusRespVO {
     @ExcelProperty("关联结算单据ID")
     private Long billId;
 
+    @Schema(description = "结算单据编号")
+    @ExcelProperty("结算单据编号")
+    private String billNo;
+
     @Schema(description = "状态")
     @ExcelProperty(value = "状态", converter = EnumExcelConverter.class)
     @EnumFormat(SettleStatusStatusEnum.class)

@@ -5,8 +5,11 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.ruleconfig.vo.RuleConfigPageReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.RuleConfigDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -14,14 +17,24 @@ import java.util.List;
 @Mapper
 public interface RuleConfigMapper extends BaseMapperX<RuleConfigDO> {
 
+    IPage<RuleConfigDO> selectPageByAuditorName(IPage<RuleConfigDO> page, @Param("reqVO") RuleConfigPageReqVO reqVO);
+
     default PageResult<RuleConfigDO> selectPage(RuleConfigPageReqVO reqVO) {
+        if (StringUtils.isNotBlank(reqVO.getAuditorName())) {
+            com.baomidou.mybatisplus.extension.plugins.pagination.Page<RuleConfigDO> mpPage =
+                    new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(reqVO.getPageNo(), reqVO.getPageSize());
+            IPage<RuleConfigDO> result = selectPageByAuditorName(mpPage, reqVO);
+            return new PageResult<>(result.getRecords(), result.getTotal());
+        }
         LambdaQueryWrapperX<RuleConfigDO> wrapper = new LambdaQueryWrapperX<RuleConfigDO>()
                 .likeIfPresent(RuleConfigDO::getName, reqVO.getName())
                 .eqIfPresent(RuleConfigDO::getType, reqVO.getType())
                 .eqIfPresent(RuleConfigDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(RuleConfigDO::getScene, reqVO.getScene())
                 .eqIfPresent(RuleConfigDO::getAuditorId, reqVO.getAuditorId())
+                .eqIfPresent(RuleConfigDO::getMatchCount, reqVO.getMatchCount())
                 .likeIfPresent(RuleConfigDO::getDescription, reqVO.getDescription())
+                .eqIfPresent(RuleConfigDO::getGiftRatio, reqVO.getGiftRatio())
                 .orderByDesc(RuleConfigDO::getId);
         if (reqVO.getAuditStartTime() != null && reqVO.getAuditEndTime() != null) {
             wrapper.between(RuleConfigDO::getAuditTime,

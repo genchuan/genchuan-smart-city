@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 商户对账单 Response VO")
@@ -31,34 +30,34 @@ public class ReconcileBillRespVO {
     @ExcelProperty("商户名称")
     private String merchantName;
 
-    @Schema(description = "对账日期")
-    @ExcelProperty("对账日期")
-    private LocalDate billDate;
+    @Schema(description = "对账周期")
+    @ExcelProperty("对账周期")
+    private String cycle;
 
-    @Schema(description = "系统订单总金额")
-    @ExcelProperty("系统订单总金额")
-    private BigDecimal sysAmount;
+    @Schema(description = "平台金额")
+    @ExcelProperty("平台金额")
+    private BigDecimal platformAmount;
 
-    @Schema(description = "商户上报总金额")
-    @ExcelProperty("商户上报总金额")
+    @Schema(description = "商户金额")
+    @ExcelProperty("商户金额")
     private BigDecimal merchantAmount;
-
-    @Schema(description = "差异金额")
-    @ExcelProperty("差异金额")
-    private BigDecimal diffAmount;
 
     @Schema(description = "对账状态")
     @ExcelProperty(value = "对账状态", converter = EnumExcelConverter.class)
     @EnumFormat(ReconcileBillStatusEnum.class)
     private String status;
 
+    @Schema(description = "对账人ID")
+    @ExcelProperty("对账人ID")
+    private Long reconcilerId;
+
+    @Schema(description = "对账时间")
+    @ExcelProperty("对账时间")
+    private LocalDateTime reconcileTime;
+
     @Schema(description = "确认时间")
     @ExcelProperty("确认时间")
     private LocalDateTime confirmTime;
-
-    @Schema(description = "操作人ID")
-    @ExcelProperty("操作人ID")
-    private Long operatorId;
 
     @Schema(description = "备注")
     @ExcelProperty("备注")

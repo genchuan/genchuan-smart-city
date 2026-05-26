@@ -24,6 +24,9 @@ public class PassRecordPageReqVO extends PageParam {
     @Schema(description = "场站ID，关联场站表", example = "10614")
     private Long stationId;
 
+    @Schema(description = "场站名称，支持模糊查询")
+    private String stationName;
+
     @Schema(description = "操作人ID，关联芋道用户表 system_user", example = "48")
     private Long operatorId;
 

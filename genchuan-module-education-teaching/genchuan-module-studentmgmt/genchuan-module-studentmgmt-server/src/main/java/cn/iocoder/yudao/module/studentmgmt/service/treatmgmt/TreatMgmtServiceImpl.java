@@ -126,6 +126,7 @@ public class TreatMgmtServiceImpl implements TreatMgmtService {
             //获取当前用户
             String username = SecurityFrameworkUtils.getLoginUserNickname();
             treatMgmtDO.setAuditUser(username);
+            treatMgmtDO.setAuditTime(LocalDateTime.now());
             // 更新
             int i = treatMgmtMapper.updateById(treatMgmtDO);
             total += i;
@@ -142,10 +143,10 @@ public class TreatMgmtServiceImpl implements TreatMgmtService {
         for (Long id : reqVO.getIds()) {
             // 校验存在
             TreatMgmtDO treatMgmtDO = validateTreatMgmtExists(id);
-            String status = treatMgmtDO.getStatus();
-            if (!status.equals(TreatStatusEnum.PENDING.getStatus())) {
-                throw exception("不是待审核状态，不可就诊");
-            }
+//            String status = treatMgmtDO.getStatus();
+//            if (!status.equals(TreatStatusEnum.PENDING.getStatus())) {
+//                throw exception("不是待审核状态，不可就诊");
+//            }
             // 完成就诊登记，记录就诊内容及登记时间，更新就诊状态
             treatMgmtDO.setStatus(TreatStatusEnum.VISITED.getStatus());
             treatMgmtDO.setRegisterTime(reqVO.getRegisterTime());
@@ -172,7 +173,7 @@ public class TreatMgmtServiceImpl implements TreatMgmtService {
         // 完成就诊登记，记录就诊内容及登记时间，更新就诊状态
         treatMgmtDO.setStatus(TreatStatusEnum.VISITED.getStatus());
         treatMgmtDO.setFeedbackTime(reqVO.getFeedbackTime());
-        treatMgmtDO.setReserve1(reqVO.getFeedbackContent());
+        treatMgmtDO.setFeedbackContent(reqVO.getFeedbackContent());
         // 更新
         int i = treatMgmtMapper.updateById(treatMgmtDO);
         if (i > 0) {

@@ -176,12 +176,91 @@ public enum StudentMgmtDictTypeEnum {
 
     // 验收状态（未验收 / 已验收，关联芋道字典表：repair_mgmt_check_status）
     REPAIR_MGMT_CHECK_STATUS("repair_mgmt_check_status", "报修管理验收状态"),
+    REPAIR_MGMT_REPAIR_TYPE("repair_mgmt_repair_type", "报修类型"),
+    REPAIR_MGMT_STATUS("repair_mgmt_status", "报修状态"),
 
     // 状态（待确认 / 待审核 / 已通过，关联芋道字典表：stay_mgmt_status）
     STAY_MGMT_STATUS("stay_mgmt_status", "留宿管理状态"),
 
     // 企业类型（国企 / 民企 / 外企），关联芋道字典表：coop_enterprise_enterprise_type
     COOP_ENTERPRISE_ENTERPRISE_TYPE("coop_enterprise_enterprise_type", "合作企业类型"),
+    // 状态（合作中 / 已结束），关联芋道字典表：coop_enterprise_status
+    COOP_ENTERPRISE_STATUS("coop_enterprise_status", "合作企业状态"),
+
+    // ==================== 报到管理：check_in ====================
+    // 账号状态 (未创建 / 已创建)，关联芋道字典表：check_in_account_status
+    CHECK_IN_ACCOUNT_STATUS("check_in_account_status", "账号状态"),
+    //    申请类型（应急出入 / 其他，关联芋道字典表：access_apply_apply_type）
+    CHECK_IN_STATUS("check_in_status", "报到状态"),
+
+    // ==================== 沟通管理 ====================
+    // 状态（未发布 / 已发布），关联芋道字典表：communicate_mgmt_status
+    COMMUNICATE_MGMT_STATUS("communicate_mgmt_status", "沟通管理状态"),
+
+    // ==================== 分班管理〖class-assign〗（分班管理表：class_assign）  ====================
+    // 状态（未分班 / 已分班），关联芋道字典表：class_assign_status
+    CLASS_ASSIGN_STATUS("class_assign_status", "分班状态"),
+    // ==================== 评比管理 ====================
+    // 评比周期（周 / 月 / 学期），关联芋道字典表：compare_mgmt_cycle
+    COMPARE_MGMT_CYCLE("compare_mgmt_cycle", "评比周期"),
+    // 状态（打分中 / 已汇总），关联芋道字典表：compare_mgmt_status
+    COMPARE_MGMT_STATUS("compare_mgmt_status", "评比状态"),
+    // ==================== 值班管理 ====================
+    // 打卡状态（未打卡 / 已打卡），关联芋道字典表：duty_mgmt_check_in_status
+    DUTY_MGMT_CHECK_IN_STATUS("duty_mgmt_check_in_status", "值班打卡状态"),
+    // 调班状态（无 / 待审批 / 已通过 / 已驳回），关联芋道字典表：duty_mgmt_transfer_status
+    DUTY_MGMT_TRANSFER_STATUS("duty_mgmt_transfer_status", "值班调班状态"),
+    // 出车状态（无 / 待审批 / 已通过），关联芋道字典表：duty_mgmt_car_status
+    DUTY_MGMT_CAR_STATUS("duty_mgmt_car_status", "值班出车状态"),
+    // 状态（待打卡 / 待调班审批 / 待出车审批 / 已完成），关联芋道字典表：duty_mgmt_status
+    DUTY_MGMT_STATUS("duty_mgmt_status", "值班管理状态"),
+    // ==================== 离校办理 ====================
+    // 状态（待确认 / 待办理 / 已离校），关联芋道字典表：leave_handle_status
+    LEAVE_HANDLE_STATUS("leave_handle_status", "离校办理状态"),
+    // 退宿状态（未退宿 / 已退宿），关联芋道字典表：leave_handle_checkout_status
+    LEAVE_HANDLE_CHECKOUT_STATUS("leave_handle_checkout_status", "离校退宿状态"),
+
+    // ==================== 德育活动 ====================
+    // 活动类型（党团活动 / 志愿活动 / 其他），关联芋道字典表：moral_activity_activity_type
+    MORAL_ACTIVITY_ACTIVITY_TYPE("moral_activity_activity_type", "德育活动类型"),
+    // 状态（未发布 / 进行中 / 已结束），关联芋道字典表：moral_activity_status
+    MORAL_ACTIVITY_STATUS("moral_activity_status", "德育活动状态"),
+
+    // ==================== 迎新推送管理 ====================
+    // 推送状态 (未推送 / 已推送)，关联芋道字典表：new_push_status
+    NEW_PUSH_STATUS("new_push_status", "推送状态"),
+
+    // ==================== 家长回复管理 ====================
+    // 推送状态 (未推送 / 已推送)，关联芋道字典表：new_push_status
+    PARENT_REPLY_READ_STATUS("parent_reply_read_status", "阅读状态"),
+    PARENT_REPLY_STATUS("parent_reply_status", "回复状态"),
+
+    // ==================== 宣传管理 ====================
+    // 执行状态 (未执行 / 已执行)，关联芋道字典表：promote_mgmt_status。
+    PROMOTE_MGMT_STATUS("promote_mgmt_status", "阅读状态"),
+    // ==================== 报名管理 ====================
+    // 状态（待审核 / 已录取）register_mgmt_status
+    REGISTER_MGMT_STATUS("register_mgmt_status", "阅读状态"),
+    // ==================== 升学管理 ====================
+    // 院校类型（公办 / 民办），关联芋道字典表：study_up_school_type
+    STUDY_UP_SCHOOL_TYPE("study_up_school_type", "院校类型"),
+    //  状态（待规划 / 已规划），关联芋道字典表：study_up_status
+    STUDY_UP_STATUS("study_up_status", "升学状态"),
+
+    // ==================== 目标管理 ====================
+    // 状态（未启用 / 已启用），关联芋道字典表：target_mgmt_status
+    TARGET_MGMT_STATUS("target_mgmt_status", "目标管理状态"),
+    // 评价人类型（教职工 / 家长 / 领导），关联芋道字典表：target_mgmt_evaluator_type
+    TARGET_MGMT_EVALUATOR_TYPE("target_mgmt_evaluator_type", "目标管理评价人类型"),
+    // 计分方式（累计赋分 / 接口赋分），关联芋道字典表：target_mgmt_score_type
+    TARGET_MGMT_SCORE_TYPE("target_mgmt_score_type", "目标管理计分方式"),
+
+    // ==================== 就诊管理 ====================
+    // 状态（待审核 / 已就诊），关联芋道字典表：treat_mgmt_status
+    TREAT_MGMT_STATUS("treat_mgmt_status", "就诊管理状态"),
+    // 就诊类型（门诊 / 急诊 / 其他），关联芋道字典表：treat_mgmt_treat_type
+    TREAT_MGMT_TREAT_TYPE("treat_mgmt_treat_type", "就诊类型"),
+
     ;
     // ==================== 枚举属性 ====================
     /**

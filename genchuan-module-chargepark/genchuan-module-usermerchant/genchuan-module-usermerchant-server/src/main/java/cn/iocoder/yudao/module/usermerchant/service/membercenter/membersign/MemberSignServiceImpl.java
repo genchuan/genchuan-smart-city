@@ -2,6 +2,9 @@ package cn.iocoder.yudao.module.usermerchant.service.membercenter.membersign;
 
 import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
+import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;

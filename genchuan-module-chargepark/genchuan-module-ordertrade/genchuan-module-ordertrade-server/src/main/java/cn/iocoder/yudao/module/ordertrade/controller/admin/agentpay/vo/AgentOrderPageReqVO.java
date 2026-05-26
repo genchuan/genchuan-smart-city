@@ -18,6 +18,9 @@ public class AgentOrderPageReqVO extends PageParam {
     @Schema(description = "商户ID")
     private Long merchantId;
 
+    @Schema(description = "商户名称，模糊查询")
+    private String merchantName;
+
     @Schema(description = "车牌，模糊查询")
     private String carNo;
 

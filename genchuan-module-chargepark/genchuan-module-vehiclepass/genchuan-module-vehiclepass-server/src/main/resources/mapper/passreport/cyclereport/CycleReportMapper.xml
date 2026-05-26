@@ -16,6 +16,9 @@
             <if test="reqVO.stationId != null">
                 AND r.station_id = #{reqVO.stationId}
             </if>
+            <if test="reqVO.stationName != null and reqVO.stationName != ''">
+                AND s.name LIKE CONCAT('%', #{reqVO.stationName}, '%')
+            </if>
             <if test="reqVO.reportStatus != null and reqVO.reportStatus != ''">
                 AND r.report_status = #{reqVO.reportStatus}
             </if>
@@ -155,12 +158,20 @@
             SELECT station_id, COUNT(*) AS parkingCount
             FROM in_park_status
             WHERE deleted = 0 AND status = '正常'
+            AND tenant_id = #{tenantId}
+            <if test="statTime != null">
+                AND in_time &lt;= #{statTime}
+            </if>
             GROUP BY station_id
         ) ips ON s.id = ips.station_id
         LEFT JOIN (
             SELECT station_id, COUNT(*) AS passCount
             FROM enter_record
             WHERE deleted = 0
+            AND tenant_id = #{tenantId}
+            <if test="statTime != null">
+                AND enter_time &lt;= #{statTime}
+            </if>
             GROUP BY station_id
         ) er ON s.id = er.station_id
         WHERE s.deleted = 0
@@ -182,24 +193,40 @@
             SELECT station_id, COUNT(*) AS enterCount
             FROM enter_record
             WHERE deleted = 0
+            AND tenant_id = #{tenantId}
+            <if test="statTime != null">
+                AND enter_time &lt;= #{statTime}
+            </if>
             GROUP BY station_id
         ) er ON s.id = er.station_id
         LEFT JOIN (
             SELECT station_id, COUNT(*) AS leaveCount
             FROM leave_record
             WHERE deleted = 0
+            AND tenant_id = #{tenantId}
+            <if test="statTime != null">
+                AND leave_time &lt;= #{statTime}
+            </if>
             GROUP BY station_id
         ) lr ON s.id = lr.station_id
         LEFT JOIN (
             SELECT station_id, COUNT(*) AS abnormalCount
             FROM abnormal_leave
             WHERE deleted = 0
+            AND tenant_id = #{tenantId}
+            <if test="statTime != null">
+                AND identify_time &lt;= #{statTime}
+            </if>
             GROUP BY station_id
         ) al ON s.id = al.station_id
         LEFT JOIN (
             SELECT station_id, COUNT(*) AS etcCount
             FROM pass_record
             WHERE deleted = 0 AND pass_reason = 'ETC'
+            AND tenant_id = #{tenantId}
+            <if test="statTime != null">
+                AND pass_time &lt;= #{statTime}
+            </if>
             GROUP BY station_id
         ) pr ON s.id = pr.station_id
         WHERE s.deleted = 0

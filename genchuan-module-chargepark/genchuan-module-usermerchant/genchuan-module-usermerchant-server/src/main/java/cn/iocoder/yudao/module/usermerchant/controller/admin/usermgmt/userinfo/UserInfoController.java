@@ -1,5 +1,9 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.usermgmt.userinfo;
 
+import cn.iocoder.yudao.module.usermerchant.api.usermgmt.userinfo.dto.UserInfoRespDTO;
+import cn.iocoder.yudao.module.usermerchant.api.usermgmt.userinfo.dto.UserSimpleRespDTO;
+import com.mzt.logapi.starter.annotation.LogRecord;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -11,6 +15,7 @@ import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import java.util.*;
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 import cn.iocoder.yudao.framework.common.pojo.*;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
@@ -38,6 +43,7 @@ public class UserInfoController {
     @GetMapping("/page")
     @Operation(summary = "获得用户信息分页")
     @PreAuthorize("@ss.hasPermission('usermerchant:user-info:query')")
+    @ApiAccessLog(operateType = GET)
     public CommonResult<PageResult<UserInfoPageRespVO>> getUserInfoPage(@Valid UserInfoPageReqVO pageReqVO) {
         PageResult<UserInfoDO> pageResult = userInfoService.getUserInfoPage(pageReqVO);
         return success(BeanUtils.toBean(pageResult, UserInfoPageRespVO.class));
@@ -46,6 +52,7 @@ public class UserInfoController {
     @PostMapping("/create")
     @Operation(summary = "新增用户信息")
     @PreAuthorize("@ss.hasPermission('usermerchant:user-info:create')")
+    @ApiAccessLog(operateType = CREATE)
     public CommonResult<Boolean> createUserInfo(@Valid @RequestBody UserInfoCreateReqVO createReqVO) {
         return success(userInfoService.createUserInfo(createReqVO));
     }
@@ -67,6 +74,7 @@ public class UserInfoController {
     @GetMapping("/template")
     @Operation(summary = "下载用户信息导入模板")
     @PreAuthorize("@ss.hasPermission('usermerchant:user-info:import')")
+    @ApiAccessLog(operateType = OTHER)
     public void downloadImportTemplate(HttpServletResponse response) throws IOException {
         List<UserInfoImportExcelVO> emptyList = Collections.emptyList();
         ExcelUtils.write(response, "用户信息导入模板.xlsx", "用户信息", UserInfoImportExcelVO.class, emptyList);
@@ -81,13 +89,14 @@ public class UserInfoController {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<UserInfoDO> list = userInfoService.getUserInfoPage(pageReqVO).getList();
         // 导出 Excel
-        ExcelUtils.write(response, "用户信息.xls", "数据", UserInfoPageRespVO.class,
-                        BeanUtils.toBean(list, UserInfoPageRespVO.class));
+        ExcelUtils.write(response, "用户信息.xls", "数据", UserInfoExportRespVO.class,
+                        BeanUtils.toBean(list, UserInfoExportRespVO.class));
     }
 
     @PutMapping("/disable")
     @Operation(summary = "禁用用户")
     @PreAuthorize("@ss.hasPermission('usermerchant:user-info:disable')")
+    @ApiAccessLog(operateType = UPDATE)
     public CommonResult<Boolean> disableUserInfo(@Valid @RequestBody UserInfoDisableReqVO reqVO) {
         userInfoService.updateUserStatus(reqVO.getIds(), "禁用");
         return success(true);
@@ -96,6 +105,7 @@ public class UserInfoController {
     @PutMapping("/enable")
     @Operation(summary = "启用用户")
     @PreAuthorize("@ss.hasPermission('usermerchant:user-info:enable')")
+    @ApiAccessLog(operateType = UPDATE)
     public CommonResult<Boolean> enableUserInfo(@Valid @RequestBody UserInfoEnableReqVO reqVO) {
         userInfoService.updateUserStatus(reqVO.getIds(), "正常");
         return success(true);
@@ -105,6 +115,7 @@ public class UserInfoController {
     @Operation(summary = "获得用户信息")
     @Parameter(name = "id", description = "编号", required = true, example = "1")
     @PreAuthorize("@ss.hasPermission('usermerchant:user-info:query')")
+    @ApiAccessLog(operateType = GET)
     public CommonResult<UserInfoPageRespVO> getUserInfo(@RequestParam("id") Long id) {
         UserInfoDO userInfo = userInfoService.getUserInfo(id);
         return success(BeanUtils.toBean(userInfo, UserInfoPageRespVO.class));
@@ -113,6 +124,7 @@ public class UserInfoController {
     @PutMapping("/update")
     @Operation(summary = "更新用户信息")
     @PreAuthorize("@ss.hasPermission('usermerchant:user-info:update')")
+    @ApiAccessLog(operateType = UPDATE)
     public CommonResult<Boolean> updateUserInfo(@Valid @RequestBody UserInfoUpdateReqVO updateReqVO) {
         userInfoService.updateUserInfo(updateReqVO);
         return success(true);
@@ -121,8 +133,33 @@ public class UserInfoController {
     @GetMapping("/chart")
     @Operation(summary = "用户信息统计")
     @PreAuthorize("@ss.hasPermission('usermerchant:user-info:query')")
+    @ApiAccessLog(operateType = OTHER)
     public CommonResult<UserInfoChartRespVO> getUserInfoChart(@Valid UserInfoChartReqVO chartReqVO) {
         return success(userInfoService.getUserInfoChart(chartReqVO));
+    }
+
+    @GetMapping("/list-simple")
+    @Operation(summary = "[RPC]获取所有用户简要列表")
+    public CommonResult<List<UserSimpleRespDTO>> getSimpleUserList() {
+        // 注意：这里需要查询所有未删除的用户，需要扩展 Service 方法或直接使用 Mapper
+        List<UserInfoDO> userList = userInfoService.getAllUsers(); // 需要新增方法
+        List<UserSimpleRespDTO> result = userList.stream()
+                .map(user -> new UserSimpleRespDTO()
+                        .setId(user.getId())
+                        .setNickname(user.getNickname()))
+                .collect(Collectors.toList());
+        return success(result);
+    }
+
+    @GetMapping("/get-detail")
+    @Operation(summary = "[RPC]获取单个用户完整信息")
+    public CommonResult<UserInfoRespDTO> getDetailUser(@RequestParam("userId") Long userId) {
+        UserInfoDO user = userInfoService.getUserInfo(userId);
+        if (user == null) {
+            return CommonResult.error(404, "用户不存在");
+        }
+        UserInfoRespDTO resp = BeanUtils.toBean(user, UserInfoRespDTO.class);
+        return success(resp);
     }
 
 }

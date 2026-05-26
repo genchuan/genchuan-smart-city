@@ -61,14 +61,16 @@ public class AgentRecordController {
     @Parameter(name = "id", description = "主键", required = true, example = "1024")
     public CommonResult<AgentRecordRespVO> getAgentRecord(@RequestParam("id") Long id) {
         AgentRecordDO obj = agentRecordService.getAgentRecord(id);
-        return success(BeanUtils.toBean(obj, AgentRecordRespVO.class));
+        AgentRecordRespVO respVO = BeanUtils.toBean(obj, AgentRecordRespVO.class);
+        return success(respVO);
     }
 
     @GetMapping("/page")
     @Operation(summary = "获得代付记录分页列表")
     public CommonResult<PageResult<AgentRecordRespVO>> getAgentRecordPage(@Valid AgentRecordPageReqVO pageReqVO) {
         PageResult<AgentRecordDO> pageResult = agentRecordService.getAgentRecordPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, AgentRecordRespVO.class));
+        PageResult<AgentRecordRespVO> respPage = BeanUtils.toBean(pageResult, AgentRecordRespVO.class);
+        return success(respPage);
     }
 
     @GetMapping("/export")
@@ -77,9 +79,8 @@ public class AgentRecordController {
     public void exportAgentRecordExcel(@Valid AgentRecordPageReqVO pageReqVO,
                                        HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<AgentRecordDO> list = agentRecordService.getAgentRecordPage(pageReqVO).getList();
-        ExcelUtils.write(response, "代付记录.xls", "数据", AgentRecordRespVO.class,
-                BeanUtils.toBean(list, AgentRecordRespVO.class));
+        List<AgentRecordRespVO> list = BeanUtils.toBean(agentRecordService.getAgentRecordPage(pageReqVO).getList(), AgentRecordRespVO.class);
+        ExcelUtils.write(response, "代付记录.xls", "数据", AgentRecordRespVO.class, list);
     }
 
     @PostMapping("/check")

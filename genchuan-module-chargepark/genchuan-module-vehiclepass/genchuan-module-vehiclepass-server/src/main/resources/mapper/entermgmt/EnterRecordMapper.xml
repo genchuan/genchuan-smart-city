@@ -11,6 +11,7 @@
         e.enter_time AS enterTime,
         e.record_type AS recordType,
         e.status AS status,
+        e.station_id AS stationId,
         s.name AS stationName,
         e.remark,
         e.proof_image AS proofImage,
@@ -37,6 +38,9 @@
         <if test="query.enterTime != null and query.enterTime.length == 2">
             AND e.enter_time BETWEEN #{query.enterTime[0]} AND #{query.enterTime[1]}
         </if>
+        <if test="query.enterTimeHour != null and query.enterTimeHour != ''">
+            AND DATE_FORMAT(e.enter_time, '%H:00') = #{query.enterTimeHour}
+        </if>
         <if test="query.recordType != null">
             AND e.record_type = #{query.recordType}
         </if>
@@ -45,6 +49,9 @@
         </if>
         <if test="query.stationId != null">
             AND e.station_id = #{query.stationId}
+        </if>
+        <if test="query.stationName != null and query.stationName != ''">
+            AND s.name LIKE CONCAT('%', #{query.stationName}, '%')
         </if>
         <if test="query.remark != null and query.remark != ''">
             AND e.remark LIKE CONCAT('%', #{query.remark}, '%')
@@ -78,13 +85,37 @@
         FROM enter_record t1
         WHERE t1.deleted = 0
         <if test="start != null and end != null">
-            AND t1.enter_time BETWEEN #{start} AND #{end}
+            AND t1.enter_time &gt;= #{start} AND t1.enter_time &lt;= #{end}
         </if>
         <if test="stationId != null">
             AND t1.station_id = #{stationId}
         </if>
         GROUP BY DATE_FORMAT(t1.enter_time, '%H:00')
         ORDER BY hour
+    </select>
+
+    <select id="selectByIdJoinStation" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.enterrecord.vo.MyEnterRecordRespVO">
+        SELECT
+            e.id,
+            e.plate_no AS plateNo,
+            e.plate_color AS plateColor,
+            e.space_no AS spaceNo,
+            e.enter_time AS enterTime,
+            e.record_type AS recordType,
+            e.status AS status,
+            s.name AS stationName,
+            e.remark,
+            e.proof_image AS proofImage,
+            e.is_corrected AS isCorrected,
+            e.reserve1,
+            e.reserve2,
+            e.creator,
+            e.updater,
+            e.create_time AS createTime,
+            e.update_time AS updateTime
+        FROM enter_record e
+        LEFT JOIN station_info s ON e.station_id = s.id
+        WHERE e.id = #{id} AND e.deleted = 0
     </select>
 
     <select id="selectTodayEnterCount" resultType="java.lang.Integer">

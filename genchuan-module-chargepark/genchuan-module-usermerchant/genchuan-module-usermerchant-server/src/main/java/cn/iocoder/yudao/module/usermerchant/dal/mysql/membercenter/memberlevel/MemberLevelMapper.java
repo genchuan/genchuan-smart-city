@@ -6,8 +6,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberlevel.MemberLevelDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Mapper;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberlevel.vo.*;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 会员等级 Mapper
@@ -32,5 +34,14 @@ public interface MemberLevelMapper extends BaseMapperX<MemberLevelDO> {
                 .betweenIfPresent(MemberLevelDO::getUpdateTime, reqVO.getUpdateTime())
                 .orderByDesc(MemberLevelDO::getId));
     }
+
+    /**
+     * 分页查询会员等级，并统计每个等级下的用户数量
+     *
+     * @param page   分页对象
+     * @param reqVO  查询条件
+     * @return 分页结果（MemberLevelDO 中已填充 memberCount）
+     */
+    IPage<MemberLevelDO> selectPageWithUserCount(IPage<?> page, @Param("reqVO") MemberLevelPageReqVO reqVO);
 
 }

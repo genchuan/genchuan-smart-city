@@ -71,6 +71,6 @@ public interface MemberConfigService {
      * @param ids ids
      * @param status 状态
      */
-    void updateConfigStatus(List<Long> ids, String status);
+    void updateConfigStatus(List<Long> ids, Integer status);
 
 }

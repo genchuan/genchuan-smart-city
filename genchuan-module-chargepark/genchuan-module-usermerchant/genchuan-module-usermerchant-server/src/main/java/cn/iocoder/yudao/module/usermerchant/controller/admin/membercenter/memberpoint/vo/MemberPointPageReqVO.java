@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberpoint.vo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.*;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,6 +16,14 @@ public class MemberPointPageReqVO extends PageParam {
 
     @Schema(description = "用户编号", example = "9042")
     private Long userId;
+
+    @Schema(description = "用户昵称（模糊搜索）")
+    @TableField(exist = false)
+    private String nickname;
+
+    @Schema(description = "用户编号组")
+    @TableField(exist = false)
+    private List<Long> userIds;
 
     @Schema(description = "变动积分")
     private Integer changeAmount;

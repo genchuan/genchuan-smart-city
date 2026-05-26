@@ -97,8 +97,8 @@ public class GroupCarController {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<GroupCarDO> list = groupCarService.getGroupCarPage(pageReqVO).getList();
         // 导出 Excel
-        ExcelUtils.write(response, "集团车辆.xls", "数据", GroupCarPageRespVO.class,
-                BeanUtils.toBean(list, GroupCarPageRespVO.class));
+        ExcelUtils.write(response, "集团车辆.xls", "数据", GroupCarExportRespVO.class,
+                BeanUtils.toBean(list, GroupCarExportRespVO.class));
     }
 
     @PutMapping("/approve")

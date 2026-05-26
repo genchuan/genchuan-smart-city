@@ -14,7 +14,8 @@ public interface ExchangeCategoryMapper extends BaseMapperX<ExchangeCategoryDO> 
         return selectPage(reqVO, new LambdaQueryWrapperX<ExchangeCategoryDO>()
                 .likeIfPresent(ExchangeCategoryDO::getName, reqVO.getName())
                 .eqIfPresent(ExchangeCategoryDO::getStatus, reqVO.getStatus())
-                .orderByDesc(ExchangeCategoryDO::getId));
+                .eqIfPresent(ExchangeCategoryDO::getScope, reqVO.getScope())
+                .orderByAsc(ExchangeCategoryDO::getSort));
     }
 
 }

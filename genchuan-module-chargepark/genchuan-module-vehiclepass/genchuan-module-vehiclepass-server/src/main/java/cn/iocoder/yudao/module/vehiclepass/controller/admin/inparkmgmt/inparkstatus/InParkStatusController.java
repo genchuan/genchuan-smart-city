@@ -8,7 +8,7 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparksta
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusPageReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusSaveReqVO;
-import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.inparkmgmt.inparkstatus.InParkStatusDO;
+import cn.iocoder.yudao.module.vehiclepass.constants.common.StationSimpleRespVO;
 import cn.iocoder.yudao.module.vehiclepass.service.inparkmgmt.inparkstatus.InParkStatusService;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
@@ -18,7 +18,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Operation;
 
-import jakarta.validation.constraints.*;
 import jakarta.validation.*;
 import jakarta.servlet.http.*;
 import java.util.*;
@@ -27,7 +26,7 @@ import java.io.IOException;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
-import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+
 import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
@@ -83,8 +82,7 @@ public class InParkStatusController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('in:park-status:query')")
     public CommonResult<InParkStatusRespVO> getParkStatus(@RequestParam("id") Long id) {
-        InParkStatusDO parkStatus = parkStatusService.getParkStatus(id);
-        return success(BeanUtils.toBean(parkStatus, InParkStatusRespVO.class));
+        return success(parkStatusService.getInParkStatusWithStation(id));
     }
 
     @GetMapping("/page")
@@ -124,12 +122,20 @@ public class InParkStatusController {
         return success(parkStatusService.getInParkStatusChart(reqVO));
     }
 
+    @GetMapping("/simple-list")
+    @Operation(summary = "获得场站精简列表")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:in-park-status:query')")
+    public CommonResult<List<StationSimpleRespVO>> getStationSimpleList() {
+        return success(parkStatusService.getStationSimpleList());
+    }
+
     @GetMapping("/export")
     @Operation(summary = "导出在停状态 Excel")
     @PreAuthorize("@ss.hasPermission('in:park-status:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportParkStatusExcel(@Valid InParkStatusPageReqVO pageReqVO,
+    public void exportParkStatusExcel(InParkStatusPageReqVO pageReqVO,
                                       HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<InParkStatusRespVO> pageResult = parkStatusService.getInParkStatusPage(pageReqVO);
         ExcelUtils.write(response, "在停状态.xls", "数据", InParkStatusRespVO.class, pageResult.getList());

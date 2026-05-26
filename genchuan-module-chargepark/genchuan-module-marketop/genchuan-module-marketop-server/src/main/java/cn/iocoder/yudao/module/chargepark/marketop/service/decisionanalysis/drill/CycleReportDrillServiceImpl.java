@@ -13,6 +13,8 @@ import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.exchangemgmt.E
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointActivityDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointLotteryDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PrizeMgmtDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.cardmgmt.CardConfigMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.cardmgmt.CardOrderMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.cardmgmt.StockControlMapper;
@@ -89,10 +91,10 @@ public class CycleReportDrillServiceImpl implements CycleReportDrillService {
         CycleReportDO report = validateReportExists(reqVO.getReportId());
         LambdaQueryWrapperX<PointActivityDO> wrapper = new LambdaQueryWrapperX<>();
         if (report.getStatStartTime() != null) {
-            wrapper.geIfPresent(PointActivityDO::getEndTime, report.getStatStartTime());
+            wrapper.geIfPresent(PointActivityDO::getCreateTime, report.getStatStartTime());
         }
         if (report.getStatEndTime() != null) {
-            wrapper.leIfPresent(PointActivityDO::getStartTime, report.getStatEndTime());
+            wrapper.leIfPresent(PointActivityDO::getCreateTime, report.getStatEndTime());
         }
         wrapper.orderByDesc(PointActivityDO::getId);
         PageResult<PointActivityDO> pageResult = pointActivityMapper.selectPage(reqVO, wrapper);
@@ -105,54 +107,10 @@ public class CycleReportDrillServiceImpl implements CycleReportDrillService {
     @Override
     public PageResult<CycleReportDrillJoinUserCountRespVO> drillJoinUserCount(CycleReportDrillBaseReqVO reqVO) {
         CycleReportDO report = validateReportExists(reqVO.getReportId());
-        LambdaQueryWrapperX<PointLotteryDO> wrapper = new LambdaQueryWrapperX<>();
-        if (report.getStatStartTime() != null) {
-            wrapper.geIfPresent(PointLotteryDO::getLotteryTime, report.getStatStartTime());
-        }
-        if (report.getStatEndTime() != null) {
-            wrapper.leIfPresent(PointLotteryDO::getLotteryTime, report.getStatEndTime());
-        }
-        wrapper.orderByDesc(PointLotteryDO::getId);
-        PageResult<PointLotteryDO> pageResult = pointLotteryMapper.selectPage(reqVO, wrapper);
-
-        // 批量获取用户信息
-        Set<Long> userIds = new HashSet<>();
-        Set<Long> prizeIds = new HashSet<>();
-        for (PointLotteryDO r : pageResult.getList()) {
-            if (r.getUserId() != null) userIds.add(r.getUserId());
-            if (r.getPrizeId() != null) prizeIds.add(r.getPrizeId());
-        }
-        Map<Long, AdminUserRespDTO> userMap = userIds.isEmpty() ? Map.of() : adminUserApi.getUserMap(userIds);
-
-        // 通过prizeId查prize_mgmt获取activityId，再查point_activity获取活动名称
-        Map<Long, Long> prizeActivityMap = new HashMap<>();
-        for (Long prizeId : prizeIds) {
-            PrizeMgmtDO prize = prizeMgmtMapper.selectById(prizeId);
-            if (prize != null && prize.getActivityId() != null) prizeActivityMap.put(prizeId, prize.getActivityId());
-        }
-        Set<Long> activityIds = new HashSet<>(prizeActivityMap.values());
-        Map<Long, PointActivityDO> activityMap = new HashMap<>();
-        for (Long actId : activityIds) {
-            PointActivityDO act = pointActivityMapper.selectById(actId);
-            if (act != null) activityMap.put(actId, act);
-        }
-
-        List<CycleReportDrillJoinUserCountRespVO> list = new ArrayList<>();
-        for (PointLotteryDO r : pageResult.getList()) {
-            CycleReportDrillJoinUserCountRespVO resp = new CycleReportDrillJoinUserCountRespVO();
-            resp.setUserId(r.getUserId());
-            AdminUserRespDTO user = userMap.get(r.getUserId());
-            if (user != null) resp.setUserName(user.getNickname());
-            resp.setJoinTime(r.getLotteryTime());
-            Long actId = r.getPrizeId() != null ? prizeActivityMap.get(r.getPrizeId()) : null;
-            if (actId != null) {
-                resp.setJoinActivityId(actId);
-                PointActivityDO act = activityMap.get(actId);
-                if (act != null) resp.setJoinActivityName(act.getName());
-            }
-            list.add(resp);
-        }
-        return new PageResult<>(list, pageResult.getTotal());
+        Page<CycleReportDrillJoinUserCountRespVO> page = new Page<>(reqVO.getPageNo(), reqVO.getPageSize());
+        IPage<CycleReportDrillJoinUserCountRespVO> pageResult = pointLotteryMapper.selectPageDrillJoinUserCount(
+                page, report.getStatStartTime(), report.getStatEndTime());
+        return new PageResult<>(pageResult.getRecords(), pageResult.getTotal());
     }
 
     @Override

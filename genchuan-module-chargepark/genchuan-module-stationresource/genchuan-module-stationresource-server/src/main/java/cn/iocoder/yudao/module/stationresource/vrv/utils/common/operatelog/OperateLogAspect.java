@@ -52,14 +52,13 @@ public class OperateLogAspect {
         // action: subType + 成功/失败
         String[] action = new String[1];
 
+        long t0 = System.currentTimeMillis();
         try {
             Object returnValue = joinPoint.proceed();
+            long t1 = System.currentTimeMillis();
             action[0] = subType + "成功";
-            return returnValue;
-        } catch (Throwable e) {
-            action[0] = subType + "失败";
-            throw e;
-        } finally {
+            log.info("[OperateLogAspect][{}.{}] 业务执行耗时: {}ms",
+                    clazz.getSimpleName(), method.getName(), t1 - t0);
             try {
                 OperateLogCreateReqDTO reqDTO = new OperateLogCreateReqDTO();
                 reqDTO.setTraceId(TracerUtils.getTraceId());
@@ -83,11 +82,22 @@ public class OperateLogAspect {
                     reqDTO.setUserAgent("");
                 }
 
+                long t2 = System.currentTimeMillis();
                 operateLogApi.createOperateLogAsync(reqDTO);
+                long t3 = System.currentTimeMillis();
+                log.info("[OperateLogAspect][{}.{}] Feign发送日志耗时: {}ms",
+                        clazz.getSimpleName(), method.getName(), t3 - t2);
             } catch (Exception e) {
                 log.error("[OperateLogAspect][{}.{}] 记录操作日志失败",
                         clazz.getSimpleName(), method.getName(), e);
             }
+            return returnValue;
+        } catch (Throwable e) {
+            long t1 = System.currentTimeMillis();
+            log.info("[OperateLogAspect][{}.{}] 业务执行耗时(失败): {}ms",
+                    clazz.getSimpleName(), method.getName(), t1 - t0);
+            action[0] = subType + "失败";
+            throw e;
         }
     }
 

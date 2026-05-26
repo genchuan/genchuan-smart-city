@@ -1,33 +1,32 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.clubmgmt;
 
-import org.springframework.web.bind.annotation.*;
-import jakarta.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.security.access.prepost.PreAuthorize;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Operation;
-
-import jakarta.validation.constraints.*;
-import jakarta.validation.*;
-import jakarta.servlet.http.*;
-import java.util.*;
-import java.io.IOException;
-
+import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
-
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-
-import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
-import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
-
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.clubmgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.clubmgmt.ClubMgmtDO;
+import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
 import cn.iocoder.yudao.module.studentmgmt.service.clubmgmt.ClubMgmtService;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.List;
+
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 @Tag(name = "管理后台 - 社团管理")
 @RestController
@@ -37,7 +36,8 @@ public class ClubMgmtController {
 
     @Resource
     private ClubMgmtService clubMgmtService;
-
+    @Resource
+    private DictDataApi dictDataApi;
     @PostMapping("/create")
     @Operation(summary = "创建社团管理")
     @PreAuthorize("@ss.hasPermission('studentmgmt:club-mgmt:create')")
@@ -84,8 +84,8 @@ public class ClubMgmtController {
     @Operation(summary = "获得社团管理分页")
     @PreAuthorize("@ss.hasPermission('studentmgmt:club-mgmt:query')")
     public CommonResult<PageResult<ClubMgmtRespVO>> getClubMgmtPage(@Valid ClubMgmtPageReqVO pageReqVO) {
-        PageResult<ClubMgmtDO> pageResult = clubMgmtService.getClubMgmtPage(pageReqVO);
-        return success(BeanUtils.toBean(pageResult, ClubMgmtRespVO.class));
+//        PageResult<ClubMgmtDO> pageResult = clubMgmtService.getClubMgmtPage(pageReqVO);
+        return success(clubMgmtService.getClubMgmtJoinPage(pageReqVO));
     }
 
     @GetMapping("/export-excel")
@@ -96,6 +96,42 @@ public class ClubMgmtController {
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<ClubMgmtDO> list = clubMgmtService.getClubMgmtPage(pageReqVO).getList();
+        CommonResult<List<DictDataRespDTO>> typeDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.CLUB_MGMT_CLUB_TYPE.getType());
+        CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.CLUB_MGMT_STATUS.getType());
+        CommonResult<List<DictDataRespDTO>> venueApplyStatusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.CLUB_MGMT_VENUE_APPLY_STATUS.getType());
+        list = list.stream().map(item -> {
+            String clubType = item.getClubType();
+            if (typeDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : typeDictDataList.getData()) {
+                    if (dictData.getValue().equals(clubType)) {
+                        clubType = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setClubType(clubType);
+            String status = item.getStatus();
+            if (statusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : statusDictDataList.getData()) {
+                    if (dictData.getValue().equals(status)) {
+                        status = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setStatus(status);
+            String venueApplyStatus = item.getVenueApplyStatus();
+            if (venueApplyStatusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : venueApplyStatusDictDataList.getData()) {
+                    if (dictData.getValue().equals(venueApplyStatus)) {
+                        venueApplyStatus = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setVenueApplyStatus(venueApplyStatus);
+            return item;
+        }).toList();
         // 导出 Excel
         ExcelUtils.write(response, "社团管理.xls", "数据", ClubMgmtRespVO.class,
                         BeanUtils.toBean(list, ClubMgmtRespVO.class));
@@ -109,7 +145,7 @@ public class ClubMgmtController {
         return success(isSuccess);
     }
     @PutMapping("/archive")
-    @Operation(summary = "审核社团")
+    @Operation(summary = "建档")
     @PreAuthorize("@ss.hasPermission('studentmgmt:club-mgmt:archive')")
     public CommonResult<Boolean> archive(@Valid @RequestBody ClubMgmtArchiveReqVO reqVO) {
         boolean isSuccess = clubMgmtService.archive(reqVO);

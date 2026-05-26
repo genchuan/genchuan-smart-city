@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.ordertrade.dal.dataobject.invoicemgmt;
 
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -25,6 +26,9 @@ public class InvoiceListDO extends BaseDO {
 
     private Long orderId;
 
+    @TableField(exist = false)
+    private String orderNo;
+
     private String title;
 
     private String taxNo;
@@ -36,6 +40,9 @@ public class InvoiceListDO extends BaseDO {
     private String status;
 
     private Long auditorId;
+
+    @TableField(exist = false)
+    private String auditorName;
 
     private LocalDateTime auditTime;
 

@@ -1,5 +1,8 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.checkin;
 
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
+import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
@@ -37,7 +40,8 @@ public class CheckInController {
 
     @Resource
     private CheckInService checkInService;
-
+    @Resource
+    private DictDataApi dictDataApi;
     @PostMapping("/create")
     @Operation(summary = "创建报到管理")
     @PreAuthorize("@ss.hasPermission('studentmgmt:check-in:create')")
@@ -96,6 +100,31 @@ public class CheckInController {
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<CheckInDO> list = checkInService.getCheckInPage(pageReqVO).getList();
+        CommonResult<List<DictDataRespDTO>> accountDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.CHECK_IN_ACCOUNT_STATUS.getType());
+        CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.CHECK_IN_ACCOUNT_STATUS.getType());
+        list = list.stream().map(item -> {
+            String accountStatus = item.getAccountStatus();
+            if (accountDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : accountDictDataList.getData()) {
+                    if (dictData.getValue().equals(accountStatus)) {
+                        accountStatus = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setAccountStatus(accountStatus);
+            String status = item.getStatus();
+            if (statusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : statusDictDataList.getData()) {
+                    if (dictData.getValue().equals(status)) {
+                        status = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setStatus(status);
+            return item;
+        }).toList();
         // 导出 Excel
         ExcelUtils.write(response, "报到管理.xls", "数据", CheckInRespVO.class,
                         BeanUtils.toBean(list, CheckInRespVO.class));

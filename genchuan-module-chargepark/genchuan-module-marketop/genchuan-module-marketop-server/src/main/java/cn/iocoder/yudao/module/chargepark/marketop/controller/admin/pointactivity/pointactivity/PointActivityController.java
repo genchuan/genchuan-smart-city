@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityExportExcelVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityPageReqVO;
@@ -16,6 +17,7 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivit
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivitySimpleRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointActivityDO;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.PointActivityStatusEnum;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.PointActivityTypeEnum;
 import cn.iocoder.yudao.module.chargepark.marketop.service.pointactivity.pointactivity.PointActivityService;
 import cn.iocoder.yudao.module.stationresource.api.station.StationInfoApi;
 import cn.iocoder.yudao.module.stationresource.api.station.dto.StationInfoRespDTO;
@@ -58,6 +60,7 @@ public class PointActivityController {
     @Operation(summary = "获得积分活动分页")
     @PreAuthorize("@ss.hasPermission('marketop:point-activity:query')")
     public CommonResult<PageResult<PointActivityRespVO>> getPage(PointActivityPageReqVO reqVO) {
+        reqVO.validateTimeRange();
         PageResult<PointActivityDO> pageResult = pointActivityService.getPage(reqVO);
         PageResult<PointActivityRespVO> bean = BeanUtils.toBean(pageResult, PointActivityRespVO.class);
         injectUserNames(bean.getList());
@@ -94,7 +97,8 @@ public class PointActivityController {
     @Operation(summary = "生效积分活动")
     @PreAuthorize("@ss.hasPermission('marketop:point-activity:activate')")
     public CommonResult<Boolean> activate(@RequestParam("id") Long id) {
-        pointActivityService.activate(id);
+        Long userId = SecurityFrameworkUtils.getLoginUserId();
+        pointActivityService.activate(id,userId);
         return CommonResult.success(true);
     }
 
@@ -118,8 +122,8 @@ public class PointActivityController {
     @Operation(summary = "获得导入积分活动模板")
     public void importTemplate(HttpServletResponse response) throws IOException {
         List<PointActivityImportExcelVO> list = Arrays.asList(
-                PointActivityImportExcelVO.builder().name("新用户注册赠分").type("1").startTime("2024-01-01 00:00:00").endTime("2024-12-31 23:59:59").rule("注册即送100积分").description("新年活动").stationIds("1,2").build(),
-                PointActivityImportExcelVO.builder().name("消费返积分").type("2").startTime("2024-01-01 00:00:00").endTime("2024-06-30 23:59:59").rule("消费1元返1积分").description("消费返积分活动").stationIds("1").build()
+                PointActivityImportExcelVO.builder().name("新用户注册赠分").type(PointActivityTypeEnum.CONSUME.getLabel()).startTime("2024-01-01 00:00:00").endTime("2024-12-31 23:59:59").rule("注册即送100积分").description("新年活动").stationIds("泉州万达旗舰充电站,仓山万达地下停车场").build(),
+                PointActivityImportExcelVO.builder().name("消费返积分").type(PointActivityTypeEnum.INVITE.getLabel()).startTime("2024-01-01 00:00:00").endTime("2024-06-30 23:59:59").rule("消费1元返1积分").description("消费返积分活动").stationIds("泉州万达旗舰充电站").build()
         );
         ExcelUtils.write(response, "积分活动导入模板.xls", "积分活动列表", PointActivityImportExcelVO.class, list);
     }
@@ -137,6 +141,7 @@ public class PointActivityController {
     @Operation(summary = "导出积分活动")
     @PreAuthorize("@ss.hasPermission('marketop:point-activity:query')")
     public void export(PointActivityPageReqVO reqVO, HttpServletResponse response) throws IOException {
+        reqVO.validateTimeRange();
         reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<PointActivityDO> pageResult = pointActivityService.getPage(reqVO);
         List<PointActivityExportExcelVO> list = BeanUtils.toBean(pageResult.getList(), PointActivityExportExcelVO.class);

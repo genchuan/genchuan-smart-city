@@ -7,6 +7,7 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.decisionanalysis.cyclereport.vo.*;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.decisionanalysis.CycleReportDO;
 import cn.iocoder.yudao.module.chargepark.marketop.service.decisionanalysis.cyclereport.CycleReportService;
+import com.alibaba.nacos.client.naming.utils.CollectionUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -77,8 +78,10 @@ public class CycleReportController {
     @PreAuthorize("@ss.hasPermission('marketop:cycle-report:export')")
     public void export(CycleReportPageReqVO reqVO, HttpServletResponse response) throws IOException {
         List<CycleReportDO> list = cycleReportService.getList(reqVO);
-        ExcelUtils.write(response, "周期报表.xls", "报表数据", CycleReportRespVO.class,
-                BeanUtils.toBean(list, CycleReportRespVO.class));
+        List<CycleReportRespVO> voList = BeanUtils.toBean(list, CycleReportRespVO.class);
+        injectUserNames(voList);
+        List<CycleReportExportExcelVO> exportList = BeanUtils.toBean(voList, CycleReportExportExcelVO.class);
+        ExcelUtils.write(response, "周期报表.xls", "报表数据", CycleReportExportExcelVO.class, exportList);
     }
 
     @GetMapping("/batch-export")
@@ -88,7 +91,9 @@ public class CycleReportController {
         List<CycleReportDO> list = cycleReportService.getListByIds(ids);
         List<CycleReportRespVO> voList = BeanUtils.toBean(list, CycleReportRespVO.class);
         injectUserNames(voList);
-        ExcelUtils.write(response, "周期报表(批量).xlsx", "报表数据", CycleReportRespVO.class, voList);
+        List<CycleReportExportExcelVO> exportList = BeanUtils.toBean(voList, CycleReportExportExcelVO.class);
+        ExcelUtils.write(response, "周期报表(批量).xlsx", "报表数据", CycleReportExportExcelVO.class, exportList);
+        cycleReportService.incrementExportCount(ids);
     }
 
     @GetMapping("/chart")

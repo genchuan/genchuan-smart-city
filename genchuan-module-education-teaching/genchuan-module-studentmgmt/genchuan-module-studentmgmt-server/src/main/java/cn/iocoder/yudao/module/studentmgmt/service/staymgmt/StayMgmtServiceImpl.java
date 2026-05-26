@@ -243,8 +243,14 @@ public class StayMgmtServiceImpl implements StayMgmtService {
         for (JSONObject jsonObject : classStatisticsList) {
             String className = jsonObject.getString("className");
             Integer totalCount = studentInfoMapper.selectCountByClassName(className);
+            if (totalCount == null) {
+                totalCount = 0;
+            }
             // 计算占比
             Integer stayCount = jsonObject.getInteger("count");
+            if (stayCount == null) {
+                stayCount = 0;
+            }
             BigDecimal percentage = BigDecimal.valueOf(stayCount).multiply(BigDecimal.valueOf(100))
                     .divide(BigDecimal.valueOf(totalCount), 2, RoundingMode.HALF_UP);
             jsonObject.put("percentage", percentage);

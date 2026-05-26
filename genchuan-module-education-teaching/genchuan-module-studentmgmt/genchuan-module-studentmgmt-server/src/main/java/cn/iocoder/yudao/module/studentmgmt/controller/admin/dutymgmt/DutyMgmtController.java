@@ -1,36 +1,32 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.dutymgmt;
 
-import org.springframework.web.bind.annotation.*;
-import jakarta.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.security.access.prepost.PreAuthorize;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Operation;
-
-import jakarta.validation.constraints.*;
-import jakarta.validation.*;
-import jakarta.servlet.http.*;
-
-import java.util.*;
-import java.io.IOException;
-
+import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
+import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
-
-import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
-
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
-
-import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
-
-import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
-
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.dutymgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.dutymgmt.DutyMgmtDO;
+import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
 import cn.iocoder.yudao.module.studentmgmt.service.dutymgmt.DutyMgmtService;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.List;
+
+import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.EXPORT;
+import static cn.iocoder.yudao.framework.common.pojo.CommonResult.success;
 
 @Tag(name = "学生管理后台 - 值班管理")
 @RestController
@@ -40,7 +36,8 @@ public class DutyMgmtController {
 
     @Resource
     private DutyMgmtService dutyMgmtService;
-
+    @Resource
+    private DictDataApi dictDataApi;
     @PostMapping("/create")
     @Operation(summary = "创建值班管理")
     @PreAuthorize("@ss.hasPermission('studentmgmt:duty-mgmt:create')")
@@ -99,6 +96,55 @@ public class DutyMgmtController {
                                     HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<DutyMgmtDO> list = dutyMgmtService.getDutyMgmtPage(pageReqVO).getList();
+        CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.DUTY_MGMT_STATUS.getType());
+        CommonResult<List<DictDataRespDTO>> carStatusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.DUTY_MGMT_CAR_STATUS.getType());
+        CommonResult<List<DictDataRespDTO>> transferStatusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.DUTY_MGMT_TRANSFER_STATUS.getType());
+        CommonResult<List<DictDataRespDTO>> checkInStatusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.DUTY_MGMT_CHECK_IN_STATUS.getType());
+        list = list.stream().map(item -> {
+
+            String status = item.getStatus();
+            if (statusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : statusDictDataList.getData()) {
+                    if (dictData.getValue().equals(status)) {
+                        status = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setStatus(status);
+
+            String carStatus = item.getCarStatus();
+            if (carStatusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : carStatusDictDataList.getData()) {
+                    if (dictData.getValue().equals(carStatus)) {
+                        carStatus = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setCarStatus(carStatus);
+            String transferStatus = item.getTransferStatus();
+            if (transferStatusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : transferStatusDictDataList.getData()) {
+                    if (dictData.getValue().equals(transferStatus)) {
+                        transferStatus = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setTransferStatus(transferStatus);
+            String checkInStatus = item.getCheckInStatus();
+            if (checkInStatusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : checkInStatusDictDataList.getData()) {
+                    if (dictData.getValue().equals(checkInStatus)) {
+                        checkInStatus = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setCheckInStatus(checkInStatus);
+            return item;
+        }).toList();
         // 导出 Excel
         ExcelUtils.write(response, "值班管理.xls", "数据", DutyMgmtRespVO.class,
                 BeanUtils.toBean(list, DutyMgmtRespVO.class));

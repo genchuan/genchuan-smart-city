@@ -25,10 +25,11 @@ public interface InParkStatusMapper extends BaseMapperX<InParkStatusDO> {
     default PageResult<InParkStatusDO> selectPage(InParkStatusPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<InParkStatusDO>()
                 .eqIfPresent(InParkStatusDO::getStationId, reqVO.getStationId())
+                .likeIfPresent(InParkStatusDO::getStationName, reqVO.getStationName())
                 .eqIfPresent(InParkStatusDO::getSpaceId, reqVO.getSpaceId())
                 .eqIfPresent(InParkStatusDO::getCarNo, reqVO.getCarNo())
                 .betweenIfPresent(InParkStatusDO::getInTime, reqVO.getInTime())
-                .betweenIfPresent(InParkStatusDO::getOverTime, reqVO.getOverTime())
+                .eqIfPresent(InParkStatusDO::getOverTime, reqVO.getOverTime())
                 .eqIfPresent(InParkStatusDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(InParkStatusDO::getRemark, reqVO.getRemark())
                 .eqIfPresent(InParkStatusDO::getReserve1, reqVO.getReserve1())
@@ -39,6 +40,8 @@ public interface InParkStatusMapper extends BaseMapperX<InParkStatusDO> {
                 .betweenIfPresent(InParkStatusDO::getUpdateTime, reqVO.getUpdateTime())
                 .orderByDesc(InParkStatusDO::getId));
     }
+
+    InParkStatusRespVO selectByIdJoinStation(@Param("id") Long id);
 
     IPage<InParkStatusRespVO> selectPageJoinSpaceStation(Page<?> page, @Param("reqVO") InParkStatusPageReqVO reqVO);
 

@@ -54,6 +54,11 @@ public class UnplateEnterDO extends BaseDO {
      */
     private Long stationId;
     /**
+     * 场站名称
+     */
+    @TableField(exist = false)
+    private String stationName;
+    /**
      * 审核人ID，关联system_user用户表
      */
     private Long auditUserId;

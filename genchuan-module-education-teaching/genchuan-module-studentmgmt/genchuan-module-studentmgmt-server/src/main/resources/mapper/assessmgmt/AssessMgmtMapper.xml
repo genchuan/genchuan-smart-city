@@ -57,10 +57,10 @@
             resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.assessmgmt.vo.AssessMgmtDimensionScoreRespVO">
         SELECT
         class_name,
-        ROUND(AVG(CASE WHEN assess_type = 'class_clean' THEN score ELSE NULL END),2) AS classCleanScore,
-        ROUND(AVG(CASE WHEN assess_type = 'morning_exercise' THEN score ELSE NULL END),2) AS morningExerciseScore,
-        ROUND(AVG(CASE WHEN assess_type = 'civilized_class' THEN score ELSE NULL END),2) AS civilClassScore,
-        ROUND(AVG(CASE WHEN assess_type = 'blackboard' THEN score ELSE NULL END),2) AS blackboardScore,
+        ROUND(AVG(CASE WHEN assess_type = 'class_clean' THEN score ELSE 0 END),2) AS classCleanScore,
+        ROUND(AVG(CASE WHEN assess_type = 'morning_exercise' THEN score ELSE 0 END),2) AS morningExerciseScore,
+        ROUND(AVG(CASE WHEN assess_type = 'civilized_class' THEN score ELSE 0 END),2) AS civilClassScore,
+        ROUND(AVG(CASE WHEN assess_type = 'blackboard' THEN score ELSE 0 END),2) AS blackboardScore,
         ROUND(SUM(score),2) AS totalScore
         FROM assess_mgmt
         WHERE deleted = 0
@@ -126,6 +126,74 @@
             AND cycle = #{cycle}
         </if>
         GROUP BY status
+    </select>
+    <select id="selectAvgScoreByTime"
+            resultType="cn.iocoder.yudao.module.studentmgmt.dal.dataobject.assessmgmt.AssessMgmtDO">
+        SELECT
+        cycle,
+        ROUND(AVG(score),2) AS score
+        FROM assess_mgmt
+        WHERE deleted = 0
+        <if test="cycle != null and cycle != ''">
+            AND cycle = #{cycle}
+        </if>
+        <if test="startTime != null">
+            AND create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND create_time &lt;= #{endTime}
+        </if>
+        GROUP BY cycle
+    </select>
+    <select id="selectTotalAssess" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM assess_mgmt AS a
+        WHERE deleted = 0
+        <if test="className != null and className != ''">
+            AND class_name = #{className}
+        </if>
+        <if test="startTime != null and endTime != null">
+            AND a.create_time between #{startTime} AND #{endTime}
+        </if>
+    </select>
+    <select id="selectScoreAnalysis"
+            resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.workhome.vo.WorkHomeScoreAnalysisRespVO">
+        SELECT
+        class_name,
+        ROUND(AVG(CASE WHEN assess_type = 'class_clean' THEN score ELSE 0 END),2) AS healthScore,
+        ROUND(AVG(CASE WHEN assess_type = 'morning_exercise' THEN score ELSE 0 END),2) AS exerciseScore,
+        ROUND(AVG(CASE WHEN assess_type = 'civilized_class' THEN score ELSE 0 END),2) AS civilizedScore,
+        ROUND(AVG(CASE WHEN assess_type = 'blackboard' THEN score ELSE 0 END),2) AS blackboardScore,
+        ROUND(SUM(score),2) AS totalScore
+        FROM assess_mgmt
+        WHERE deleted = 0
+        <if test="cycle != null and cycle != ''">
+            AND cycle = #{cycle}
+        </if>
+        <if test="grade != null and grade != ''">
+            AND grade = #{grade}
+        </if>
+
+        GROUP BY class_name
+        ORDER BY totalScore DESC
+
+    </select>
+    <select id="selectTotalCountByDate" resultType="com.alibaba.fastjson.JSONObject">
+        SELECT
+        DATE_FORMAT(create_time, '%Y-%m-%d') AS date,
+        COUNT(1) AS count
+        FROM assess_mgmt
+        WHERE deleted = 0
+        <if test="startTime != null">
+            AND create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND create_time &lt;= #{endTime}
+        </if>
+        <if test="cycle != null and cycle != ''">
+            AND cycle = #{cycle}
+        </if>
+        GROUP BY DATE_FORMAT(create_time, '%Y-%m-%d')
+
     </select>
 
 </mapper>

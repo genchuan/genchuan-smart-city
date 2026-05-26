@@ -194,8 +194,7 @@ public class DutyMgmtServiceImpl implements DutyMgmtService {
                 }
             }
 
-            String loginUserNickname = SecurityFrameworkUtils.getLoginUserNickname();
-            dutyMgmt.setTransferUser(loginUserNickname);
+            dutyMgmt.setTransferUser(reqVo.getTransferUser());
             dutyMgmt.setTransferReason(reqVo.getTransferReason());
             dutyMgmt.setTransferStatus(DutyTransferStatusEnum.TRANSFER_STATUS_PENDING_PENDING.getStatus());
             dutyMgmt.setStatus(DutyStatusEnum.DUTY_STATUS_PENDING_TRANSFER.getStatus());
@@ -229,7 +228,7 @@ public class DutyMgmtServiceImpl implements DutyMgmtService {
             throw exception("当前不是待审批状态，不可审批");
         }
 
-        dutyMgmt.setTransferStatus(DutyTransferStatusEnum.TRANSFER_STATUS_PENDING_APPROVED.getStatus());
+        dutyMgmt.setTransferStatus(reqVo.getAuditResult());
         dutyMgmt.setStatus(DutyStatusEnum.DUTY_STATUS_PENDING_CHECKIN.getStatus());
         dutyMgmt.setRemark(reqVo.getRemark());
 
@@ -257,11 +256,15 @@ public class DutyMgmtServiceImpl implements DutyMgmtService {
         for (Long id : ids) {
             DutyMgmtDO dutyMgmt = validateDutyMgmtExists(id);
 
-            // 状态不待打卡，则不能调班
+            // 状态不待打卡，则不能出车申请
             if (StringUtils.isNotBlank(dutyMgmt.getCarStatus())) {
                 if (!dutyMgmt.getCarStatus().equals(DutyCarStatusEnum.CAR_STATUS_APPROVED.getStatus())) {
                     throw exception("当前出车状态，不可申请");
                 }
+            }
+            // 状态不待打卡，则不能调班
+            if (!dutyMgmt.getStatus().equals(DutyStatusEnum.DUTY_STATUS_PENDING_CHECKIN.getStatus())) {
+                throw exception("非打卡状态，不可出车申请");
             }
 
             dutyMgmt.setCarStatus(DutyCarStatusEnum.CAR_STATUS_PENDING.getStatus());
@@ -300,8 +303,9 @@ public class DutyMgmtServiceImpl implements DutyMgmtService {
             throw exception("不是待审批，不可审批");
         }
 
-        dutyMgmt.setCarStatus(DutyCarStatusEnum.CAR_STATUS_PENDING.getStatus());
+        dutyMgmt.setCarStatus(reqVo.getAuditResult());
         dutyMgmt.setRemark(reqVo.getRemark());
+        // 状态设置为待打卡
         dutyMgmt.setStatus(DutyStatusEnum.DUTY_STATUS_PENDING_CHECKIN.getStatus());
 
         int insert = dutyMgmtMapper.updateById(dutyMgmt);

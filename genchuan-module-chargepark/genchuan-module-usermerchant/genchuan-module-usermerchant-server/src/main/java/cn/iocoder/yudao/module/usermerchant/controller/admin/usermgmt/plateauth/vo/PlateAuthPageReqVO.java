@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 车牌认证分页 Request VO")
@@ -26,7 +28,7 @@ public class PlateAuthPageReqVO extends PageParam {
     private String plateNo;
 
     @Schema(description = "认证申请时间")
-    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime[] applyTime;
 
     @Schema(description = "认证状态：待审核/已认证/已驳回，关联芋道字典表 plate_auth_status", example = "待审核")
@@ -40,7 +42,7 @@ public class PlateAuthPageReqVO extends PageParam {
     private String auditorName;
 
     @Schema(description = "审核时间")
-    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime[] auditTime;
 
     @Schema(description = "审核备注")

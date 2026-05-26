@@ -73,5 +73,5 @@ public interface MemberUserService {
      * @param ids ids
      * @param status 状态
      */
-    void updateUserStatus(List<Long> ids, String status);
+    void updateUserStatus(List<Long> ids, Integer status);
 }

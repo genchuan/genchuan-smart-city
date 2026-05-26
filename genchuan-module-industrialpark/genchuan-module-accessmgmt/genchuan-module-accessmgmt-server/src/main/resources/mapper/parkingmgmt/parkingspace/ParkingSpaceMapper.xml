@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.accessmgmt.dal.mysql.parkingmgmt.parkingspace.ParkingSpaceMapper">
+
+    <select id="selectParkMapList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.parkingmgmt.parkingspace.vo.ParkingSpaceChartRespVO$ParkMapItem">
+        SELECT
+            reserve1 AS lon,
+            reserve2 AS lat,
+            park_name AS parkName,
+            COUNT(*) AS spaceCount
+        FROM parking_space
+        WHERE deleted = FALSE
+        <if test="parkName != null and parkName != ''">
+            AND park_name LIKE CONCAT('%', #{parkName}, '%')
+        </if>
+        GROUP BY park_name, reserve1, reserve2
+        ORDER BY spaceCount DESC
+    </select>
+
+    <select id="selectSpaceMapList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.parkingmgmt.parkingspace.vo.ParkingSpaceChartRespVO$SpaceMapItem">
+        SELECT
+            reserve1 AS lon,
+            reserve2 AS lat,
+            space_code AS spaceCode
+        FROM parking_space
+        WHERE deleted = FALSE
+        <if test="parkName != null and parkName != ''">
+            AND park_name LIKE CONCAT('%', #{parkName}, '%')
+        </if>
+    </select>
+
+    <select id="selectChartStats"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.parkingmgmt.parkingspace.vo.ParkingSpaceChartRespVO">
+        SELECT
+            COUNT(*) AS totalSpace,
+            SUM(CASE WHEN space_status = '空闲' THEN 1 ELSE 0 END) AS freeSpace,
+            SUM(CASE WHEN space_status = '占用' THEN 1 ELSE 0 END) AS occupySpace,
+            SUM(CASE WHEN space_status = '预约中' THEN 1 ELSE 0 END) AS reserveSpace
+        FROM parking_space
+        WHERE deleted = FALSE
+        <if test="parkName != null and parkName != ''">
+            AND park_name LIKE CONCAT('%', #{parkName}, '%')
+        </if>
+    </select>
+
+    <select id="selectUseRateList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.parkingmgmt.parkingspace.vo.ParkingSpaceChartRespVO$UseRateItem">
+        SELECT
+            DATE_FORMAT(create_time, '%H:00') AS name,
+            COUNT(*) AS value
+        FROM parking_space
+        WHERE deleted = FALSE
+        <if test="parkName != null and parkName != ''">
+            AND park_name LIKE CONCAT('%', #{parkName}, '%')
+        </if>
+        GROUP BY DATE_FORMAT(create_time, '%H:00')
+        ORDER BY name
+    </select>
+
+    <select id="selectTypeRateList"
+            resultType="cn.iocoder.yudao.module.accessmgmt.controller.admin.parkingmgmt.parkingspace.vo.ParkingSpaceChartRespVO$TypeRateItem">
+        SELECT
+            space_type AS name,
+            COUNT(*) AS value
+        FROM parking_space
+        WHERE deleted = FALSE
+        <if test="parkName != null and parkName != ''">
+            AND park_name LIKE CONCAT('%', #{parkName}, '%')
+        </if>
+        GROUP BY space_type
+        ORDER BY value DESC
+    </select>
+
+</mapper>

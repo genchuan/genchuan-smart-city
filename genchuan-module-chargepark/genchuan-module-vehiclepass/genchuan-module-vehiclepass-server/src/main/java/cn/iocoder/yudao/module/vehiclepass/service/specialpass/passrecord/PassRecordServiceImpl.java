@@ -43,6 +43,10 @@ import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.RECOR
 public class PassRecordServiceImpl implements PassRecordService {
 
     private static final int PARALLEL_THRESHOLD = 100;
+    private static final String STATUS_NORMAL_PASS = "normalPass";
+    private static final String STATUS_NORMAL_RECORD = "正常记录";
+    private static final String STATUS_ABNORMAL_PASS = "abnormalPass";
+    private static final String STATUS_ABNORMAL_RECORD = "异常记录";
 
     @Resource
     private PassRecordMapper recordMapper;
@@ -93,15 +97,33 @@ public class PassRecordServiceImpl implements PassRecordService {
     }
 
     @Override
+    public PassRecordRespVO getPassRecordWithStation(Long id) {
+        return recordMapper.selectByIdJoinStation(id);
+    }
+
+    @Override
     public PageResult<PassRecordDO> getRecordPage(PassRecordPageReqVO pageReqVO) {
         return recordMapper.selectPage(pageReqVO);
     }
 
     @Override
     public PageResult<PassRecordRespVO> getRecordPageWithJoin(PassRecordPageReqVO pageReqVO) {
+        pageReqVO.setStatus(convertPassRecordStatus(pageReqVO.getStatus()));
         Page<PassRecordRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
         IPage<PassRecordRespVO> pageResult = recordMapper.selectPageJoin(page, pageReqVO);
-        return new PageResult<>(pageResult.getRecords(), pageResult.getTotal());
+        List<PassRecordRespVO> records = pageResult.getRecords();
+        records.forEach(record -> record.setStatus(convertPassRecordStatus(record.getStatus())));
+        return new PageResult<>(records, pageResult.getTotal());
+    }
+
+    private String convertPassRecordStatus(String status) {
+        if (STATUS_NORMAL_PASS.equals(status)) {
+            return STATUS_NORMAL_RECORD;
+        }
+        if (STATUS_ABNORMAL_PASS.equals(status)) {
+            return STATUS_ABNORMAL_RECORD;
+        }
+        return status;
     }
 
     @Override

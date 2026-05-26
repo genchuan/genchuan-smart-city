@@ -47,14 +47,14 @@ public class UnplateEnterController {
     @Resource
     private UnplateEnterService enterService;
 
-    @PostMapping("/create")
+    @PostMapping("/vehiclepass-unplate-enter-create")
     @Operation(summary = "创建无牌入场")
     @PreAuthorize("@ss.hasPermission('unplate:enter:create')")
     public CommonResult<Long> createEnter(@Valid @RequestBody UnplateEnterSaveReqVO createReqVO) {
         return success(enterService.createEnter(createReqVO));
     }
 
-    @PostMapping("/vehiclepass-unplate-enter-create")
+    @PostMapping("/create")
     @Operation(summary = "创建无牌入场车辆")
     @PreAuthorize("@ss.hasPermission('vehiclepass:unplate-enter:create')")
     public CommonResult<Boolean> createEnterVehiclePass(@Valid @RequestBody UnplateEnterCreateReqVO createReqVO) {
@@ -93,8 +93,8 @@ public class UnplateEnterController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('unplate:enter:query')")
     public CommonResult<UnplateEnterRespVO> getEnter(@RequestParam("id") Long id) {
-        UnplateEnterDO enter = enterService.getEnter(id);
-        return success(BeanUtils.toBean(enter, UnplateEnterRespVO.class));
+        UnplateEnterRespVO enter = enterService.getUnplateEnterWithStation(id);
+        return success(enter);
     }
 
     @GetMapping("/page")
@@ -139,8 +139,9 @@ public class UnplateEnterController {
     @Operation(summary = "导出无牌入场 Excel")
     @PreAuthorize("@ss.hasPermission('unplate:enter:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportEnterExcel(@Valid UnplateEnterPageReqVO pageReqVO,
+    public void exportEnterExcel(UnplateEnterPageReqVO pageReqVO,
                                  HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<UnplateEnterRespVO> pageResult = enterService.getUnplateEnterPage(pageReqVO);
         ExcelUtils.write(response, "无牌入场.xls", "数据", UnplateEnterRespVO.class, pageResult.getList());

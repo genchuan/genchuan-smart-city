@@ -65,4 +65,11 @@ public interface UserInfoService {
      * @return 统计信息
      */
     UserInfoChartRespVO getUserInfoChart(@Valid UserInfoChartReqVO chartReqVO);
+
+    /**
+     * 获得所有用户信息
+     *
+     * @return 用户信息Id，nickname
+     */
+    List<UserInfoDO> getAllUsers();
 }

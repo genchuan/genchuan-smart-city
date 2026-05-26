@@ -41,7 +41,7 @@ public class PromoteMgmtRespVO {
     private LocalDateTime executeTime;
 
     @Schema(description = "状态：未执行/已执行", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("状态：未执行/已执行")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "你猜")
@@ -60,4 +60,4 @@ public class PromoteMgmtRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

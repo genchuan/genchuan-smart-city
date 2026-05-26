@@ -2,8 +2,6 @@ package cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkst
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import java.util.*;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import cn.idev.excel.annotation.*;
 
@@ -15,6 +13,9 @@ public class InParkStatusRespVO {
     @Schema(description = "主键ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "13178")
     @ExcelProperty("主键ID")
     private Long id;
+
+    @Schema(description = "场站ID")
+    private Long stationId;
 
     @Schema(description = "场站名称")
     @ExcelProperty("场站名称")

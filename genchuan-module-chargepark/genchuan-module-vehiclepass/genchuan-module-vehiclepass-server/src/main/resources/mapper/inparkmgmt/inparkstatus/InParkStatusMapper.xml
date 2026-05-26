@@ -5,6 +5,7 @@
     <select id="selectPageJoinSpaceStation" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusRespVO">
         SELECT
             p.id,
+            p.station_id AS stationId,
             s.name AS stationName,
             ps.location AS spaceName,
             p.car_no AS carNo,
@@ -31,13 +32,42 @@
         <if test="reqVO.inTime != null and reqVO.inTime.length == 2">
             AND p.in_time BETWEEN #{reqVO.inTime[0]} AND #{reqVO.inTime[1]}
         </if>
+        <if test="reqVO.overTime != null and reqVO.overTime != ''">
+            AND p.over_time = #{reqVO.overTime}
+        </if>
         <if test="reqVO.status != null and reqVO.status != ''">
             AND p.status = #{reqVO.status}
         </if>
         <if test="reqVO.stationId != null">
             AND p.station_id = #{reqVO.stationId}
         </if>
+        <if test="reqVO.stationName != null and reqVO.stationName != ''">
+            AND s.name LIKE CONCAT('%', #{reqVO.stationName}, '%')
+        </if>
         ORDER BY p.id DESC
+    </select>
+
+    <select id="selectByIdJoinStation" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.inparkmgmt.inparkstatus.vo.InParkStatusRespVO">
+        SELECT
+            p.id,
+            p.station_id AS stationId,
+            s.name AS stationName,
+            ps.location AS spaceName,
+            p.car_no AS carNo,
+            p.in_time AS inTime,
+            p.over_time AS overTime,
+            p.status,
+            p.remark,
+            p.reserve1,
+            p.reserve2,
+            p.creator,
+            p.updater,
+            p.create_time AS createTime,
+            p.update_time AS updateTime
+        FROM in_park_status p
+        LEFT JOIN station_info s ON p.station_id = s.id
+        LEFT JOIN parking_space_info ps ON p.space_id = ps.id AND ps.deleted = 0
+        WHERE p.id = #{id} AND p.deleted = 0
     </select>
 
     <select id="selectLocationById" resultType="map">
@@ -71,18 +101,17 @@
         </if>
     </select>
 
-    <!-- 查询在停量趋势（按小时统计今天） -->
+    <!-- 查询在停量趋势（按小时统计全部） -->
     <select id="selectInParkCountTrend" resultType="map">
         SELECT
-            DATE_FORMAT(p.in_time, '%H:00') AS time,
-            COUNT(*) AS count
+        DATE_FORMAT(p.in_time, '%Y-%m-%d %H:00') AS time,
+        COUNT(*) AS count
         FROM in_park_status p
         WHERE p.deleted = 0
-        AND DATE(p.in_time) = CURDATE()
         <if test="stationId != null">
             AND p.station_id = #{stationId}
         </if>
-        GROUP BY DATE_FORMAT(p.in_time, '%H:00')
+        GROUP BY DATE_FORMAT(p.in_time, '%Y-%m-%d %H:00')
         ORDER BY time
     </select>
 

@@ -5,6 +5,7 @@
     <select id="selectPageJoin" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenRespVO">
         SELECT
             g.id,
+            g.station_id AS stationId,
             s.name AS stationName,
             g.open_reason AS openReason,
             u.nickname AS applyUserName,
@@ -29,6 +30,9 @@
         <if test="reqVO.stationId != null">
             AND g.station_id = #{reqVO.stationId}
         </if>
+        <if test="reqVO.stationName != null and reqVO.stationName != ''">
+            AND s.name LIKE CONCAT('%', #{reqVO.stationName}, '%')
+        </if>
         <if test="reqVO.openReason != null and reqVO.openReason != ''">
             AND g.open_reason = #{reqVO.openReason}
         </if>
@@ -48,6 +52,33 @@
             AND g.remark LIKE CONCAT('%', #{reqVO.remark}, '%')
         </if>
         ORDER BY g.id DESC
+    </select>
+
+    <select id="selectByIdJoinStation" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.specialpass.gateopen.vo.GateOpenRespVO">
+        SELECT
+            g.id,
+            g.station_id AS stationId,
+            s.name AS stationName,
+            g.open_reason AS openReason,
+            u.nickname AS applyUserName,
+            g.apply_time AS applyTime,
+            g.status,
+            au.nickname AS auditUserName,
+            g.audit_time AS auditTime,
+            g.execute_time AS executeTime,
+            g.reject_reason AS rejectReason,
+            g.remark,
+            g.reserve1,
+            g.reserve2,
+            g.creator,
+            g.updater,
+            g.create_time AS createTime,
+            g.update_time AS updateTime
+        FROM gate_open g
+        LEFT JOIN station_info s ON g.station_id = s.id AND s.deleted = 0
+        LEFT JOIN user_info u ON g.apply_user_id = u.id AND u.deleted = 0
+        LEFT JOIN user_info au ON g.audit_user_id = au.id AND au.deleted = 0
+        WHERE g.id = #{id} AND g.deleted = 0
     </select>
 
     <!-- 查询开闸申请趋势（按天统计） -->

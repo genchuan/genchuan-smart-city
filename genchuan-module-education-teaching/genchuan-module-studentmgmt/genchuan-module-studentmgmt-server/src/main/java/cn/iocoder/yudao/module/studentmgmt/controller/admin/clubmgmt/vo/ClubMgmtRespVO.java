@@ -21,8 +21,12 @@ public class ClubMgmtRespVO {
     private String clubName;
 
     @Schema(description = "社团类型：文体/学术/志愿/其他", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("社团类型：文体/学术/志愿/其他")
+    @ExcelProperty("社团类型")
     private String clubType;
+
+    @Schema(description = "学生姓名", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("学生姓名")
+    private String studentName;
 
     @Schema(description = "学生 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "15619")
     @ExcelProperty("学生 ID")
@@ -45,11 +49,17 @@ public class ClubMgmtRespVO {
     private LocalDateTime archiveTime;
 
     @Schema(description = "场馆申请状态：无/待申请/已通过", example = "2")
-    @ExcelProperty("场馆申请状态：无/待申请/已通过")
+    @ExcelProperty("场馆申请状态")
     private String venueApplyStatus;
 
+    @Schema(description = "场馆名称")
+    private String venueName;
+
+    @Schema(description = "申请理由")
+    private String applyReason;
+
     @Schema(description = "状态：待审核/已通过/已建档", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("状态：待审核/已通过/已建档")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "随便")
@@ -68,4 +78,4 @@ public class ClubMgmtRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

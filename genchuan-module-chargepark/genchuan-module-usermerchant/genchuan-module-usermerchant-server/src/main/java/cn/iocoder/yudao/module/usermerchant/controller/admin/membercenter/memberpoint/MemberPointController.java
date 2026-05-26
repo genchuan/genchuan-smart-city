@@ -70,8 +70,8 @@ public class MemberPointController {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<MemberPointDO> list = memberPointService.getMemberPointPage(pageReqVO).getList();
         // 导出 Excel
-        ExcelUtils.write(response, "会员积分.xls", "数据", MemberPointRespVO.class,
-                BeanUtils.toBean(list, MemberPointRespVO.class));
+        ExcelUtils.write(response, "会员积分.xls", "数据", MemberPointExportRespVO.class,
+                BeanUtils.toBean(list, MemberPointExportRespVO.class));
     }
 
     @PutMapping("/check")

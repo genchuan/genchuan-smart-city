@@ -35,6 +35,11 @@ public class GateOpenDO extends BaseDO {
      */
     private Long stationId;
     /**
+     * 场站名称
+     */
+    @TableField(exist = false)
+    private String stationName;
+    /**
      * 开闸原因：紧急通行 / 故障处理 / 其他，关联字典gate_open_open_reason
      */
     private String openReason;

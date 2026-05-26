@@ -1,5 +1,6 @@
 package cn.iocoder.yudao.module.chargepark.marketop.service.pointactivity.pointactivity;
 
+import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointactivity.vo.PointActivityChartRespVO;
@@ -11,6 +12,7 @@ import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.PointActivityMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.PointLotteryMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.PointActivityStatusEnum;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.PointActivityTypeEnum;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.service.impl.DiffParseFunction;
 import com.mzt.logapi.starter.annotation.LogRecord;
@@ -23,11 +25,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.chargepark.marketop.enums.ErrorCodeConstants.*;
@@ -173,30 +172,61 @@ public class PointActivityServiceImpl implements PointActivityService {
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         for (PointActivityImportExcelVO excelVO : list) {
-            // 校验名称唯一
             validateNameUnique(null, excelVO.getName());
+            // type: 中文名称 -> 枚举值
+            String typeValue = PointActivityTypeEnum.valueOfLabel(excelVO.getType());
+            if (typeValue == null) {
+                throw exception(POINT_ACTIVITY_IMPORT_TYPE_INVALID, excelVO.getType());
+            }
+            // stationIds: 中文逗号分隔的场站名称 -> 逗号分隔的ID
+            String stationIdStr = convertStationNamesToIds(excelVO.getStationIds());
             // 解析时间
             LocalDateTime startTime = LocalDateTime.parse(excelVO.getStartTime(), formatter);
             LocalDateTime endTime = LocalDateTime.parse(excelVO.getEndTime(), formatter);
-            // 校验时间合法性
             if (startTime.isAfter(endTime)) {
                 throw new IllegalArgumentException("活动[" + excelVO.getName() + "]的开始时间不能晚于结束时间");
             }
-            // 转换并保存
             PointActivityDO pointActivity = PointActivityDO.builder()
                     .name(excelVO.getName())
-                    .type(excelVO.getType())
+                    .type(typeValue)
                     .startTime(startTime)
                     .endTime(endTime)
                     .rule(excelVO.getRule())
                     .description(excelVO.getDescription())
-                    .stationIds(excelVO.getStationIds())
-                    .status("1") // 待生效
+                    .stationIds(stationIdStr)
+                    .status(PointActivityStatusEnum.PENDING.getValue())
                     .joinCount(0)
                     .remainPoint(0)
                     .build();
             pointActivityMapper.insert(pointActivity);
         }
+    }
+
+    private String convertStationNamesToIds(String stationNames) {
+        if (StrUtil.isBlank(stationNames)) {
+            return null;
+        }
+        List<String> names = Arrays.stream(stationNames.split(","))
+                .map(String::trim)
+                .filter(StrUtil::isNotBlank)
+                .collect(Collectors.toList());
+        if (names.isEmpty()) {
+            return null;
+        }
+        List<Map<String, Object>> stations = pointActivityMapper.selectStationIdsByNames(names);
+        Map<String, String> nameToId = new HashMap<>();
+        for (Map<String, Object> station : stations) {
+            nameToId.put(String.valueOf(station.get("name")), String.valueOf(station.get("id")));
+        }
+        List<String> ids = new ArrayList<>();
+        for (String name : names) {
+            String id = nameToId.get(name);
+            if (id == null) {
+                throw exception(POINT_ACTIVITY_IMPORT_STATION_NOT_FOUND, name);
+            }
+            ids.add(id);
+        }
+        return String.join(",", ids);
     }
 
     private PointActivityDO validateExists(Long id) {
@@ -227,14 +257,14 @@ public class PointActivityServiceImpl implements PointActivityService {
     @Override
     @LogRecord(type = POINT_ACTIVITY_TYPE, subType = POINT_ACTIVITY_ACTIVATE_SUB_TYPE, bizNo = "{{#id}}",
             success = POINT_ACTIVITY_ACTIVATE_SUCCESS)
-    public void activate(Long id) {
+    public void activate(Long id, Long auditorId) {
         PointActivityDO pointActivity = validateExists(id);
 //        if (Objects.equals(PointActivityStatusEnum.PENDING.getValue(), pointActivity.getStatus())) { // 待生效
 //            throw exception(POINT_ACTIVITY_STATUS_ERROR);
 //        }
         pointActivity.setStatus(PointActivityStatusEnum.IN_PROGRESS.getValue()); // 进行中
         pointActivity.setAuditTime(LocalDateTime.now());
-        // auditorId 由 Controller 层通过 SecurityFrameworkUtils 获取后设置
+        pointActivity.setAuditorId(auditorId);
         pointActivityMapper.updateById(pointActivity);
         // 记录操作日志上下文
         LogRecordContext.putVariable("pointActivityName", pointActivity.getName());

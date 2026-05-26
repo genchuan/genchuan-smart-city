@@ -15,6 +15,33 @@
         @author genchuan
     -->
 
+    <!-- 分页查询（LEFT JOIN refund_apply 和 all_order 获取编号） -->
+    <select id="selectPageJoinApplyAndOrder" resultType="cn.iocoder.yudao.module.ordertrade.dal.dataobject.refundmgmt.RefundRecordDO">
+        SELECT r.*,
+               a.apply_no AS apply_no,
+               o.order_no AS order_no
+        FROM refund_record r
+        LEFT JOIN refund_apply a ON r.apply_id = a.id AND a.deleted = 0
+        LEFT JOIN all_order o ON r.order_id = o.id AND o.deleted = 0
+        WHERE r.deleted = 0
+        <if test="req.applyId != null">
+            AND r.apply_id = #{req.applyId}
+        </if>
+        <if test="req.orderId != null">
+            AND r.order_id = #{req.orderId}
+        </if>
+        <if test="req.status != null and req.status != ''">
+            AND r.status = #{req.status}
+        </if>
+        <if test="req.refundTimeStart != null">
+            AND r.refund_time &gt;= #{req.refundTimeStart}
+        </if>
+        <if test="req.refundTimeEnd != null">
+            AND r.refund_time &lt;= #{req.refundTimeEnd}
+        </if>
+        ORDER BY r.id DESC
+    </select>
+
     <!-- 趋势统计（折线图）：按日期分组统计数量
     <select id="selectTrend" resultType="java.util.Map">
         SELECT DATE_FORMAT(create_time, '%Y-%m-%d') AS `date`, COUNT(*) AS `count`

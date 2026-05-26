@@ -76,6 +76,14 @@ public interface LeaveRecordService {
     PageResult<LeaveRecordRespVO> getRecordPageWithJoin(LeaveRecordPageReqVO pageReqVO);
 
     /**
+     * 获得离场记录（JOIN stationName）
+     *
+     * @param id 编号
+     * @return 离场记录
+     */
+    LeaveRecordRespVO getRecordWithStation(Long id);
+
+    /**
      * 补录离场记录
      *
      * @param reqVO 创建信息

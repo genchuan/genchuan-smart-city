@@ -33,6 +33,11 @@ public class MemberPointDO extends BaseDO {
      */
     private Long userId;
     /**
+     * 用户名称
+     */
+    @TableField(exist = false)
+    private String nickname;
+    /**
      * 变动积分
      */
     private Integer changeAmount;

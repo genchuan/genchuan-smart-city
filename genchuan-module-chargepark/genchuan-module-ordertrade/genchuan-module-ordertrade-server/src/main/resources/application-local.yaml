@@ -59,13 +59,13 @@ spring:
       datasource:
         master:
           url: jdbc:mysql://183.252.11.179:3306/genchuan-module-chargepark?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
-          username: genchuan
-          password: Gyh@181612
+          username: root
+          password: 123456
         slave:
           lazy: true
           url: jdbc:mysql://183.252.11.179:3306/genchuan-module-chargepark?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true&rewriteBatchedStatements=true
-          username: genchuan
-          password: Gyh@181612
+          username: root
+          password: 123456
 
   data:
     redis:

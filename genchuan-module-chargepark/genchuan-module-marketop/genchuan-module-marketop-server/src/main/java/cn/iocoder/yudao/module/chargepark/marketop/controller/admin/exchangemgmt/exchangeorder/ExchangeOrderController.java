@@ -6,9 +6,7 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.exchangemgmt.exchangeorder.vo.*;
-import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.exchangemgmt.ExchangeCategoryDO;
-import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.exchangemgmt.ExchangeOrderDO;
-import cn.iocoder.yudao.module.chargepark.marketop.service.exchangemgmt.exchangecategory.ExchangeCategoryService;
+import cn.iocoder.yudao.module.chargepark.marketop.enums.ExchangeOrderPayStatusEnum;
 import cn.iocoder.yudao.module.chargepark.marketop.service.exchangemgmt.exchangeorder.ExchangeOrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,17 +35,13 @@ public class ExchangeOrderController {
     @Resource
     private AdminUserApi adminUserApi;
 
-    @Resource
-    private ExchangeCategoryService exchangeCategoryService;
-
     @GetMapping("/page")
     @Operation(summary = "获得兑换订单分页")
     @PreAuthorize("@ss.hasPermission('marketop:exchange-order:query')")
     public CommonResult<PageResult<ExchangeOrderRespVO>> getPage(ExchangeOrderPageReqVO reqVO) {
-        PageResult<ExchangeOrderDO> pageResult = exchangeOrderService.getPage(reqVO);
-        PageResult<ExchangeOrderRespVO> bean = BeanUtils.toBean(pageResult, ExchangeOrderRespVO.class);
-        injectUserNames(bean.getList());
-        return CommonResult.success(bean);
+        PageResult<ExchangeOrderRespVO> pageResult = exchangeOrderService.getPageWithJoin(reqVO);
+        injectCreatorNames(pageResult.getList());
+        return CommonResult.success(pageResult);
     }
 
     @GetMapping("/get")
@@ -55,9 +49,8 @@ public class ExchangeOrderController {
     @Parameter(name = "id", description = "主键ID", required = true)
     @PreAuthorize("@ss.hasPermission('marketop:exchange-order:query')")
     public CommonResult<ExchangeOrderRespVO> get(@RequestParam("id") Long id) {
-        ExchangeOrderDO exchangeOrder = exchangeOrderService.get(id);
-        ExchangeOrderRespVO respVO = BeanUtils.toBean(exchangeOrder, ExchangeOrderRespVO.class);
-        if (respVO != null) injectUserNames(Collections.singletonList(respVO));
+        ExchangeOrderRespVO respVO = exchangeOrderService.getWithJoin(id);
+        if (respVO != null) injectCreatorNames(Collections.singletonList(respVO));
         return CommonResult.success(respVO);
     }
 
@@ -90,25 +83,29 @@ public class ExchangeOrderController {
     @PreAuthorize("@ss.hasPermission('marketop:exchange-order:query')")
     public void export(ExchangeOrderPageReqVO reqVO, HttpServletResponse response) throws IOException {
         reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        PageResult<ExchangeOrderDO> pageResult = exchangeOrderService.getPage(reqVO);
-        List<ExchangeOrderRespVO> list = BeanUtils.toBean(pageResult.getList(), ExchangeOrderRespVO.class);
-        ExcelUtils.write(response, "兑换订单.xlsx", "数据", ExchangeOrderRespVO.class, list);
+        PageResult<ExchangeOrderRespVO> pageResult = exchangeOrderService.getPageWithJoin(reqVO);
+        injectCreatorNames(pageResult.getList());
+        pageResult.getList().forEach(item -> {
+            item.setPayStatus(ExchangeOrderPayStatusEnum.labelOf(item.getPayStatus()));
+        });
+        List<ExchangeOrderExportExcelVO> exportList = BeanUtils.toBean(pageResult.getList(), ExchangeOrderExportExcelVO.class);
+        ExcelUtils.write(response, "兑换订单.xlsx", "数据", ExchangeOrderExportExcelVO.class, exportList);
     }
 
     @GetMapping("/batch-export")
     @Operation(summary = "批量导出兑换订单")
     @PreAuthorize("@ss.hasPermission('marketop:exchange-order:query')")
     public void batchExport(@RequestParam(value = "ids", required = false) List<Long> ids, HttpServletResponse response) throws IOException {
-        List<ExchangeOrderDO> list = new ArrayList<>();
+        List<ExchangeOrderRespVO> voList = new ArrayList<>();
         if (ids != null && !ids.isEmpty()) {
-            list = exchangeOrderService.getListByIds(ids);}
-//        } else {
-//            reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-//            list = exchangeOrderService.getPage(reqVO).getList();
-//        }
-        List<ExchangeOrderRespVO> voList = BeanUtils.toBean(list, ExchangeOrderRespVO.class);
-        injectUserNames(voList);
-        ExcelUtils.write(response, "兑换订单.xlsx", "数据", ExchangeOrderRespVO.class, voList);
+            voList = exchangeOrderService.getListByIdsWithJoin(ids);
+        }
+        injectCreatorNames(voList);
+        voList.forEach(item -> {
+            item.setPayStatus(ExchangeOrderPayStatusEnum.labelOf(item.getPayStatus()));
+        });
+        List<ExchangeOrderExportExcelVO> exportList = BeanUtils.toBean(voList, ExchangeOrderExportExcelVO.class);
+        ExcelUtils.write(response, "兑换订单.xlsx", "数据", ExchangeOrderExportExcelVO.class, exportList);
     }
 
     @GetMapping("/chart")
@@ -118,48 +115,21 @@ public class ExchangeOrderController {
         return CommonResult.success(exchangeOrderService.getChart());
     }
 
-    private void injectUserNames(List<ExchangeOrderRespVO> list) {
+    private void injectCreatorNames(List<ExchangeOrderRespVO> list) {
         if (list == null || list.isEmpty()) return;
-        // 收集用户ID（creator + userId）
-        Set<Long> userIds = new HashSet<>();
-        Set<Long> categoryIds = new HashSet<>();
+        Set<Long> creatorIds = new HashSet<>();
         for (var item : list) {
             if (StrUtil.isNotBlank(item.getCreator())) {
                 Long id = safeParseLong(item.getCreator());
-                if (id != null) userIds.add(id);
-            }
-            if (item.getUserId() != null) {
-                userIds.add(item.getUserId());
-            }
-            if (item.getCategoryId() != null) {
-                categoryIds.add(item.getCategoryId());
+                if (id != null) creatorIds.add(id);
             }
         }
-        // 翻译用户名称（creatorName + userName）
-        if (!userIds.isEmpty()) {
-            Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
+        if (!creatorIds.isEmpty()) {
+            Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(creatorIds);
             for (var item : list) {
                 if (StrUtil.isNotBlank(item.getCreator())) {
                     AdminUserRespDTO user = userMap.get(safeParseLong(item.getCreator()));
                     if (user != null) item.setCreatorName(user.getNickname());
-                }
-                if (item.getUserId() != null) {
-                    AdminUserRespDTO user = userMap.get(item.getUserId());
-                    if (user != null) item.setUserName(user.getNickname());
-                }
-            }
-        }
-        // 翻译类目名称（categoryName）
-        if (!categoryIds.isEmpty()) {
-            Map<Long, String> categoryNameMap = new HashMap<>();
-            for (Long categoryId : categoryIds) {
-                ExchangeCategoryDO category = exchangeCategoryService.get(categoryId);
-                if (category != null) categoryNameMap.put(categoryId, category.getName());
-            }
-            for (var item : list) {
-                if (item.getCategoryId() != null) {
-                    String name = categoryNameMap.get(item.getCategoryId());
-                    if (name != null) item.setCategoryName(name);
                 }
             }
         }

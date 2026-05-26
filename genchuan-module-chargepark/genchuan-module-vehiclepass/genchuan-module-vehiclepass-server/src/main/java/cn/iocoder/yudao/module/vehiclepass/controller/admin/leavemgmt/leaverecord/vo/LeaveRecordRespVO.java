@@ -36,6 +36,9 @@ public class LeaveRecordRespVO {
     @ExcelProperty("记录状态：正常记录/异常记录，关联字典：leave_record_status")
     private String status;
 
+    @Schema(description = "场站ID")
+    private Long stationId;
+
     @Schema(description = "场站名称")
     @ExcelProperty("场站名称")
     private String stationName;
@@ -48,9 +51,9 @@ public class LeaveRecordRespVO {
     @ExcelProperty("佐证图片地址")
     private String proofImage;
 
-    @Schema(description = "修正日志标记：0-未修正 1-已修正", requiredMode = Schema.RequiredMode.REQUIRED)
-    @ExcelProperty("修正日志标记：0-未修正 1-已修正")
-    private Boolean isCorrected;
+    @Schema(description = "修正日志标记：0-未修正 1-已修正 2-已确认", requiredMode = Schema.RequiredMode.REQUIRED)
+    @ExcelProperty("修正日志标记：0-未修正 1-已修正 2-已确认")
+    private Integer isCorrected;
 
     @Schema(description = "备用字段1")
     @ExcelProperty("备用字段1")

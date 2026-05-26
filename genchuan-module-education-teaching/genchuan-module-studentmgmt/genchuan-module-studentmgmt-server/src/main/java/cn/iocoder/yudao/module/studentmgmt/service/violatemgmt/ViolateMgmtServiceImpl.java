@@ -47,12 +47,15 @@ public class ViolateMgmtServiceImpl implements ViolateMgmtService {
     @Override
     @LogRecord(type = VIOLATE_TYPE, subType = VIOLATE_CREATE_SUB_TYPE, bizNo = "{{#violate.id}}", success = VIOLATE_CREATE_SUCCESS)
     public Long createViolateMgmt(ViolateMgmtSaveReqVO createReqVO) {
+        // 查询学生的姓名
+        StudentInfoDO studentInfoDO = studentInfoMapper.selectById(createReqVO.getStudentId());
+        if (null == studentInfoDO) {
+            throw exception(500, "学生信息不存在");
+        }
         // 插入
         ViolateMgmtDO violateMgmt = BeanUtils.toBean(createReqVO, ViolateMgmtDO.class);
         int i = violateMgmtMapper.insert(violateMgmt);
 
-        // 查询所有学生的姓名
-        StudentInfoDO studentInfoDO = studentInfoMapper.selectById(violateMgmt.getStudentId());
         // 获取所有学生的姓名
         String studentName = studentInfoDO.getName();
 
@@ -67,6 +70,11 @@ public class ViolateMgmtServiceImpl implements ViolateMgmtService {
     @Override
     @LogRecord(type = VIOLATE_TYPE, subType = VIOLATE_UPDATE_SUB_TYPE, bizNo = "{{#updateReqVO.id}}", success = VIOLATE_UPDATE_SUCCESS)
     public void updateViolateMgmt(ViolateMgmtSaveReqVO updateReqVO) {
+        // 查询学生的姓名
+        StudentInfoDO studentInfoDO = studentInfoMapper.selectById(updateReqVO.getStudentId());
+        if (null == studentInfoDO) {
+            throw exception(500, "学生信息不存在");
+        }
         // 校验存在
         ViolateMgmtDO violateMgmtDO = validateViolateMgmtExists(updateReqVO.getId());
         // 更新
@@ -108,6 +116,10 @@ public class ViolateMgmtServiceImpl implements ViolateMgmtService {
     @Override
     public PageResult<ViolateMgmtDO> getViolateMgmtPage(ViolateMgmtPageReqVO pageReqVO) {
         return violateMgmtMapper.selectPage(pageReqVO);
+    }
+    @Override
+    public PageResult<ViolateMgmtPageRespVO> getViolateMgmtJoinPageVo(ViolateMgmtPageReqVO pageReqVO) {
+        return violateMgmtMapper.selectJoinPage(pageReqVO);
     }
 
     @Override
@@ -199,9 +211,9 @@ public class ViolateMgmtServiceImpl implements ViolateMgmtService {
         LocalDateTime endTime = reqVO.getEndTime();
 
         // 1. 卡片数据
-        vo.setTotalCount(violateMgmtMapper.selectTotalCount(startTime, endTime, "", ""));
-        vo.setPendingCount(violateMgmtMapper.selectTotalCount(startTime, endTime, ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_PENDING.getStatus(), ""));
-        vo.setWarnCount(violateMgmtMapper.selectTotalCount(startTime, endTime, ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_WARN.getStatus(), ""));
+        vo.setTotalCount(violateMgmtMapper.selectTotalCount(startTime, endTime, null, null));
+        vo.setPendingCount(violateMgmtMapper.selectTotalCount(startTime, endTime, ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_PENDING.getStatus(), null));
+        vo.setWarnCount(violateMgmtMapper.selectTotalCount(startTime, endTime, ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_WARN.getStatus(), null));
         Long highRiskStudentCount = violateMgmtMapper.selectHighRiskStudentCount(startTime, endTime);
         if (highRiskStudentCount != null) {
             vo.setHighRiskStudentCount(highRiskStudentCount);
@@ -277,4 +289,6 @@ public class ViolateMgmtServiceImpl implements ViolateMgmtService {
         vo.setTypeCountList(typeCountList);*/
         return null;
     }
+
+
 }

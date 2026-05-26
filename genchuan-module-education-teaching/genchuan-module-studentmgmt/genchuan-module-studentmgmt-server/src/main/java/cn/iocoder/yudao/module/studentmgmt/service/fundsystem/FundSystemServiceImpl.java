@@ -9,6 +9,7 @@ import cn.iocoder.yudao.module.studentmgmt.controller.admin.fundsystem.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.fundsystem.FundSystemDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.fundsystem.FundSystemMapper;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
+import cn.iocoder.yudao.module.studentmgmt.enums.FundSystemFundTypeEnum;
 import cn.iocoder.yudao.module.studentmgmt.enums.FundSystemStatusEnum;
 import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import com.alibaba.fastjson.JSONObject;
@@ -141,7 +142,7 @@ public class FundSystemServiceImpl implements FundSystemService {
 //        fundTypeDistribution (array): 资助类型分布统计，包含类型名称、对应数量。
 //        gradeApplyTrend (array): 各年级申请趋势，包含年级名称、对应申请人数。
 
-        vo.setTotalApplyCount(fundSystemMapper.selectTotalCount(startTime, endTime, ""));
+        vo.setTotalApplyCount(fundSystemMapper.selectTotalCount(startTime, endTime, null));
         vo.setPendingAuditCount(fundSystemMapper.selectTotalCount(startTime, endTime, FundSystemStatusEnum.FUND_SYSTEM_STATUS_0.getStatus()));
         vo.setApprovedCount(fundSystemMapper.selectTotalCount(startTime, endTime, FundSystemStatusEnum.FUND_SYSTEM_STATUS_1.getStatus()));
 
@@ -175,7 +176,7 @@ public class FundSystemServiceImpl implements FundSystemService {
         LocalDateTime[] timeRange = reqVO.getTimeRange();
         LocalDateTime startTime = null;
         LocalDateTime endTime = null;
-        if (null == timeRange) {
+        if (null != timeRange) {
             startTime = timeRange[0];
             endTime = timeRange[1];
         }
@@ -192,7 +193,7 @@ public class FundSystemServiceImpl implements FundSystemService {
             // 将key转换成namegr
             typeList.forEach(item -> {
                 String dictDataLabel = "";
-                CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(FundSystemStatusEnum.DICT_TYPE);
+                CommonResult<List<DictDataRespDTO>> dictDataList = dictDataApi.getDictDataList(FundSystemFundTypeEnum.DICT_TYPE);
                 if (dictDataList.getData() != null) {
                     for (DictDataRespDTO dictData : dictDataList.getData()) {
                         if (dictData.getValue().equals(item.getString("name"))) {

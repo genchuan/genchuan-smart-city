@@ -22,7 +22,7 @@ public class FundSystemRespVO {
     private Long studentId;
 
     @Schema(description = "资助类型：助学金/勤工俭学/其他", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("资助类型：助学金/勤工俭学/其他")
+    @ExcelProperty("资助类型")
     private String fundType;
 
     @Schema(description = "申请金额")
@@ -42,7 +42,7 @@ public class FundSystemRespVO {
     private LocalDateTime auditTime;
 
     @Schema(description = "状态：待审核/已汇总", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("状态：待审核/已汇总")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "你说的对")
@@ -61,4 +61,4 @@ public class FundSystemRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

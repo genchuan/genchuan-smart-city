@@ -6,10 +6,10 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.cardorder.vo.*;
-import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.CardConfigDO;
-import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.CardOrderDO;
-import cn.iocoder.yudao.module.chargepark.marketop.service.cardmgmt.cardconfig.CardConfigService;
 import cn.iocoder.yudao.module.chargepark.marketop.service.cardmgmt.cardorder.CardOrderService;
+import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
+import cn.hutool.core.util.StrUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,10 +17,6 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
-import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
-import cn.hutool.core.util.StrUtil;
 
 import java.io.IOException;
 import java.util.*;
@@ -36,24 +32,19 @@ public class CardOrderController {
     @Resource
     private AdminUserApi adminUserApi;
 
-    @Resource
-    private CardConfigService cardConfigService;
-
     @GetMapping("/page")
     @Operation(summary = "获得卡种订单分页")
     @PreAuthorize("@ss.hasPermission('marketop:card-order:query')")
     public CommonResult<PageResult<CardOrderRespVO>> getPage(CardOrderPageReqVO reqVO) {
-        // 如果startTime和endTime都为空，且date不为空，将date转为当天开始和结束时间
         if (reqVO.getStartTime() == null && reqVO.getEndTime() == null
                 && reqVO.getDate() != null && !reqVO.getDate().isEmpty()) {
             java.time.LocalDate localDate = java.time.LocalDate.parse(reqVO.getDate());
             reqVO.setStartTime(localDate.atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
             reqVO.setEndTime(localDate.plusDays(1).atStartOfDay().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli());
         }
-        PageResult<CardOrderDO> pageResult = cardOrderService.getPage(reqVO);
-        PageResult<CardOrderRespVO> bean = BeanUtils.toBean(pageResult, CardOrderRespVO.class);
-        injectUserNames(bean.getList());
-        return CommonResult.success(bean);
+        PageResult<CardOrderRespVO> pageResult = cardOrderService.getPageWithJoin(reqVO);
+        injectCreatorNames(pageResult.getList());
+        return CommonResult.success(pageResult);
     }
 
     @GetMapping("/get")
@@ -61,9 +52,10 @@ public class CardOrderController {
     @Parameter(name = "id", description = "主键ID", required = true)
     @PreAuthorize("@ss.hasPermission('marketop:card-order:query')")
     public CommonResult<CardOrderRespVO> get(@RequestParam("id") Long id) {
-        CardOrderDO cardOrder = cardOrderService.get(id);
-        CardOrderRespVO respVO = BeanUtils.toBean(cardOrder, CardOrderRespVO.class);
-        if (respVO != null) injectUserNames(Collections.singletonList(respVO));
+        CardOrderRespVO respVO = cardOrderService.getWithJoin(id);
+        if (respVO != null) {
+            injectCreatorNames(Collections.singletonList(respVO));
+        }
         return CommonResult.success(respVO);
     }
 
@@ -104,19 +96,20 @@ public class CardOrderController {
     @PreAuthorize("@ss.hasPermission('marketop:card-order:query')")
     public void export(CardOrderPageReqVO reqVO, HttpServletResponse response) throws IOException {
         reqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        PageResult<CardOrderDO> pageResult = cardOrderService.getPage(reqVO);
-        List<CardOrderRespVO> list = BeanUtils.toBean(pageResult.getList(), CardOrderRespVO.class);
-        ExcelUtils.write(response, "卡种订单.xlsx", "数据", CardOrderRespVO.class, list);
+        PageResult<CardOrderRespVO> pageResult = cardOrderService.getPageWithJoin(reqVO);
+        injectCreatorNames(pageResult.getList());
+        List<CardOrderExportExcelVO> exportList = BeanUtils.toBean(pageResult.getList(), CardOrderExportExcelVO.class);
+        ExcelUtils.write(response, "卡种订单.xlsx", "数据", CardOrderExportExcelVO.class, exportList);
     }
 
     @GetMapping("/batch-export")
     @Operation(summary = "批量导出卡种订单")
     @PreAuthorize("@ss.hasPermission('marketop:card-order:query')")
     public void batchExport(@RequestParam("ids") List<Long> ids, HttpServletResponse response) throws IOException {
-        List<CardOrderDO> list = cardOrderService.getListByIds(ids);
-        List<CardOrderRespVO> voList = BeanUtils.toBean(list, CardOrderRespVO.class);
-        injectUserNames(voList);
-        ExcelUtils.write(response, "卡种订单(批量).xlsx", "数据", CardOrderRespVO.class, voList);
+        List<CardOrderRespVO> list = cardOrderService.getListByIdsWithJoin(ids);
+        injectCreatorNames(list);
+        List<CardOrderExportExcelVO> exportList = BeanUtils.toBean(list, CardOrderExportExcelVO.class);
+        ExcelUtils.write(response, "卡种订单(批量).xlsx", "数据", CardOrderExportExcelVO.class, exportList);
     }
 
     @GetMapping("/chart")
@@ -126,40 +119,21 @@ public class CardOrderController {
         return CommonResult.success(cardOrderService.getChart());
     }
 
-    private void injectUserNames(List<CardOrderRespVO> list) {
+    private void injectCreatorNames(List<CardOrderRespVO> list) {
         if (list == null || list.isEmpty()) return;
-        Set<Long> userIds = new HashSet<>();
-        Set<Long> cardIds = new HashSet<>();
+        Set<Long> creatorIds = new HashSet<>();
         for (var item : list) {
             if (StrUtil.isNotBlank(item.getCreator())) {
                 Long id = safeParseLong(item.getCreator());
-                if (id != null) userIds.add(id);
-            }
-            if (item.getCardId() != null) {
-                cardIds.add(item.getCardId());
+                if (id != null) creatorIds.add(id);
             }
         }
-        // 翻译创建者名称
-        if (!userIds.isEmpty()) {
-            Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(userIds);
+        if (!creatorIds.isEmpty()) {
+            Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(creatorIds);
             for (var item : list) {
                 if (StrUtil.isNotBlank(item.getCreator())) {
                     AdminUserRespDTO user = userMap.get(safeParseLong(item.getCreator()));
                     if (user != null) item.setCreatorName(user.getNickname());
-                }
-            }
-        }
-        // 翻译卡种名称
-        if (!cardIds.isEmpty()) {
-            Map<Long, String> cardNameMap = new HashMap<>();
-            for (Long cardId : cardIds) {
-                CardConfigDO card = cardConfigService.get(cardId);
-                if (card != null) cardNameMap.put(cardId, card.getName());
-            }
-            for (var item : list) {
-                if (item.getCardId() != null) {
-                    String name = cardNameMap.get(item.getCardId());
-                    if (name != null) item.setCardName(name);
                 }
             }
         }

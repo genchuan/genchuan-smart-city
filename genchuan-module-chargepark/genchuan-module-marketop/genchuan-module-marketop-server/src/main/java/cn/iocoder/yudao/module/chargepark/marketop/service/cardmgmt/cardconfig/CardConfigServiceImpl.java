@@ -88,9 +88,10 @@ public class CardConfigServiceImpl implements CardConfigService {
     @Override
     @LogRecord(type = CARD_CONFIG_TYPE, subType = CARD_CONFIG_ENABLE_SUB_TYPE, bizNo = "{{#id}}",
             success = CARD_CONFIG_ENABLE_SUCCESS)
-    public void enable(Long id) {
+    public void enable(Long id,  Long userId) {
         CardConfigDO cardConfig = validateExists(id);
         cardConfig.setStatus(CardConfigStatusEnum.EFFECTIVE.getValue());
+        cardConfig.setAuditorId(userId);
         cardConfig.setAuditTime(LocalDateTime.now());
         cardConfig.setEffectTime(LocalDateTime.now());
         cardConfigMapper.updateById(cardConfig);
@@ -101,12 +102,19 @@ public class CardConfigServiceImpl implements CardConfigService {
     @Override
     @LogRecord(type = CARD_CONFIG_TYPE, subType = CARD_CONFIG_DISABLE_SUB_TYPE, bizNo = "{{#id}}",
             success = CARD_CONFIG_DISABLE_SUCCESS)
-    public void disable(Long id) {
+    public void disable(Long id,   Long userId) {
         CardConfigDO cardConfig = validateExists(id);
         cardConfig.setStatus(CardConfigStatusEnum.NOT_EFFECTIVE.getValue());
+        cardConfig.setAuditorId(userId);
+        cardConfig.setAuditTime(LocalDateTime.now());
         cardConfigMapper.updateById(cardConfig);
         // 记录操作日志上下文
         LogRecordContext.putVariable("cardConfigName", cardConfig.getName());
+    }
+
+    @Override
+    public List<CardConfigDO> getSimpleList() {
+        return cardConfigMapper.selectList();
     }
 
     @Override

@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.ordertrade.dal.dataobject.merchantreconcile;
 
 import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
 import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -27,7 +28,8 @@ public class ReconcileRecordDO extends BaseDO {
     private String status;
 
     /** 状态更新时间（业务字段） */
-    private LocalDateTime updateTime;
+    @TableField("update_time")
+    private LocalDateTime statusUpdateTime;
 
     /** 异常原因 */
     private String errorReason;

@@ -19,6 +19,8 @@ import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.ordertrade.enums.ErrorCodeConstants.*;
@@ -49,7 +51,13 @@ public class BikeChargeOrderServiceImpl implements BikeChargeOrderService {
     @Override public PageResult<BikeChargeOrderDO> getBikeChargeOrderPage(BikeChargeOrderPageReqVO v) {
         Page<BikeChargeOrderDO> page = new Page<>(v.getPageNo(), v.getPageSize());
         var result = bikeChargeOrderMapper.selectPageJoinStation(page, v);
-        return new PageResult<>(result.getRecords(), result.getTotal());
+        List<BikeChargeOrderDO> records = result.getRecords();
+        if (!records.isEmpty()) {
+            List<Long> orderIds = records.stream().map(BikeChargeOrderDO::getId).collect(Collectors.toList());
+            Map<Long, String> invoiceStatusMap = invoiceListMapper.selectStatusMapByOrderIds(orderIds);
+            records.forEach(o -> o.setInvoiceStatus(invoiceStatusMap.get(o.getId())));
+        }
+        return new PageResult<>(records, result.getTotal());
     }
         @Override
     public BikeChargeOrderChartRespVO getBikeChargeOrderChart(BikeChargeOrderChartReqVO v) {
@@ -161,6 +169,9 @@ public class BikeChargeOrderServiceImpl implements BikeChargeOrderService {
         invoice.setStatus("pending_audit");
         invoice.setRemark(reqVO.getRemark());
         invoiceListMapper.insert(invoice);
+
+        order.setInvoiceStatus("invoiced");
+        bikeChargeOrderMapper.updateById(order);
     }
 
     private void validateExists(Long id) {

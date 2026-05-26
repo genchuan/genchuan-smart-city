@@ -84,9 +84,9 @@ public class GroupInfoController {
                                      HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<GroupInfoDO> list = groupInfoService.getGroupInfoPage(pageReqVO).getList();
-        // 导出 Excel
-        ExcelUtils.write(response, "集团信息.xls", "数据", GroupInfoPageRespVO.class,
-                BeanUtils.toBean(list, GroupInfoPageRespVO.class));
+        // 导出 Exce
+        ExcelUtils.write(response, "集团信息.xls", "数据", GroupInfoExportRespVO.class,
+                BeanUtils.toBean(list, GroupInfoExportRespVO.class));
     }
 
     @PutMapping("/approve")

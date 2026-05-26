@@ -11,6 +11,7 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspectt
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.InspectTaskChartRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.CheckTaskRespVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.CheckTaskSaveReqVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.UserSimpleRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.inspectmgmt.inspecttask.CheckTaskDO;
 import cn.iocoder.yudao.module.vehiclepass.service.inspectmgmt.inspecttask.CheckTaskService;
 import org.springframework.web.bind.annotation.*;
@@ -85,8 +86,7 @@ public class CheckTaskController {
     @Parameter(name = "id", description = "编号", required = true, example = "1024")
     @PreAuthorize("@ss.hasPermission('check:task:query')")
     public CommonResult<CheckTaskRespVO> getTask(@RequestParam("id") Long id) {
-        CheckTaskDO task = taskService.getTask(id);
-        return success(BeanUtils.toBean(task, CheckTaskRespVO.class));
+        return success(taskService.getTaskWithJoin(id));
     }
 
     @GetMapping("/page")
@@ -151,12 +151,20 @@ public class CheckTaskController {
         return success(taskService.getChart(reqVO));
     }
 
+    @GetMapping("/simple-list")
+    @Operation(summary = "获得执行人精简列表")
+    @PreAuthorize("@ss.hasPermission('vehiclepass:inspect-task:query')")
+    public CommonResult<List<UserSimpleRespVO>> getSimpleList() {
+        return success(taskService.getUserSimpleList());
+    }
+
     @GetMapping("/export")
     @Operation(summary = "导出稽查任务 Excel")
     @PreAuthorize("@ss.hasPermission('check:task:export')")
     @ApiAccessLog(operateType = EXPORT)
-    public void exportTaskExcel(@Valid CheckTaskPageReqVO pageReqVO,
+    public void exportTaskExcel(CheckTaskPageReqVO pageReqVO,
                                 HttpServletResponse response) throws IOException {
+        pageReqVO.setPageNo(1);
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         PageResult<CheckTaskRespVO> pageResult = taskService.getTaskPageWithJoin(pageReqVO);
         ExcelUtils.write(response, "稽查任务.xls", "数据", CheckTaskRespVO.class, pageResult.getList());

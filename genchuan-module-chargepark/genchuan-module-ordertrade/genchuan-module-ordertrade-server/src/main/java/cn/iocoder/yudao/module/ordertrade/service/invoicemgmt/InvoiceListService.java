@@ -19,6 +19,8 @@ public interface InvoiceListService {
 
     PageResult<InvoiceListDO> getInvoiceListPage(InvoiceListPageReqVO pageReqVO);
 
+    List<InvoiceListDO> getInvoiceListExport(InvoiceListPageReqVO pageReqVO);
+
     void approveInvoiceList(IdReqVO reqVO);
 
     void rejectInvoiceList(IdReqVO reqVO);

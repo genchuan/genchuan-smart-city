@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.studentmgmt.controller.admin.comparemgmt;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
+import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -8,7 +9,9 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 import cn.iocoder.yudao.module.studentmgmt.controller.admin.comparemgmt.vo.*;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.comparemgmt.CompareMgmtDO;
+import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
 import cn.iocoder.yudao.module.studentmgmt.service.comparemgmt.CompareMgmtService;
+import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,7 +36,8 @@ public class CompareMgmtController {
 
     @Resource
     private CompareMgmtService compareMgmtService;
-
+    @Resource
+    private DictDataApi dictDataApi;
     @PostMapping("/create")
     @Operation(summary = "创建评比管理")
     @PreAuthorize("@ss.hasPermission('studentmgmt:compare-mgmt:create')")
@@ -92,6 +96,31 @@ public class CompareMgmtController {
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<CompareMgmtDO> list = compareMgmtService.getCompareMgmtPage(pageReqVO).getList();
+        CommonResult<List<DictDataRespDTO>> cycleDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.COMPARE_MGMT_CYCLE.getType());
+        CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.COMPARE_MGMT_STATUS.getType());
+        list = list.stream().map(item -> {
+            String applyType = item.getCycle();
+            if (cycleDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : cycleDictDataList.getData()) {
+                    if (dictData.getValue().equals(applyType)) {
+                        applyType = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setCycle(applyType);
+            String status = item.getStatus();
+            if (statusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : statusDictDataList.getData()) {
+                    if (dictData.getValue().equals(status)) {
+                        status = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setStatus(status);
+            return item;
+        }).toList();
         // 导出 Excel
         ExcelUtils.write(response, "评比管理.xls", "数据", CompareMgmtRespVO.class,
                         BeanUtils.toBean(list, CompareMgmtRespVO.class));

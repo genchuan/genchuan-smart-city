@@ -1,6 +1,16 @@
 package cn.iocoder.yudao.module.usermerchant.service.membercenter.memberpoint;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
+import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberuser.MemberUserDO;
+import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.memberuser.MemberUserMapper;
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.NameQueryHelper;
+import cn.iocoder.yudao.module.usermerchant.service.membercenter.memberuser.MemberUserService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
+import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -9,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
+
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberpoint.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberpoint.MemberPointDO;
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.memberpoint.MemberPointMapper;
@@ -29,6 +41,9 @@ public class MemberPointServiceImpl implements MemberPointService {
 
     @Resource
     private MemberPointMapper memberPointMapper;
+
+    @Resource
+    private MemberUserMapper memberUserMapper;
 
     @Override
     public Long createMemberPoint(MemberPointSaveReqVO createReqVO) {
@@ -77,11 +92,48 @@ public class MemberPointServiceImpl implements MemberPointService {
 
     @Override
     public PageResult<MemberPointDO> getMemberPointPage(MemberPointPageReqVO pageReqVO) {
-        return memberPointMapper.selectPage(pageReqVO);
+//        return memberPointMapper.selectPage(pageReqVO);
+        // 处理昵称模糊查询（如果有）
+        if (StrUtil.isNotBlank(pageReqVO.getNickname())) {
+            // 如果同时传了精确 userId，则以 userId 为准，忽略昵称
+            if (pageReqVO.getUserId() == null) {
+                // 查询匹配的用户ID列表
+                LambdaQueryWrapper<MemberUserDO> wrapper = new LambdaQueryWrapper<>();
+                wrapper.select(MemberUserDO::getId)
+                        .like(MemberUserDO::getNickname, pageReqVO.getNickname())
+                        .eq(MemberUserDO::getDeleted, 0);
+                List<MemberUserDO> users = memberUserMapper.selectList(wrapper);
+                List<Long> userIds = users.stream().map(MemberUserDO::getId).collect(Collectors.toList());
+                if (userIds.isEmpty()) {
+                    // 没有匹配的用户，直接返回空分页
+                    return new PageResult<>(Collections.emptyList(), 0L);
+                }
+                pageReqVO.setUserIds(userIds);
+            } // 如果已有精确userId，则忽略昵称（不清空userIds，也不设置）
+        }
+
+        // 执行分页查询（Mapper 会使用 userIds IN 条件）
+        PageResult<MemberPointDO> pageResult = memberPointMapper.selectPage(pageReqVO);
+        if (CollUtil.isEmpty(pageResult.getList())) {
+            return pageResult;
+        }
+
+        // 填充用户昵称（用于列表展示）
+        NameQueryHelper.fillNamesByIds(
+                pageResult.getList(),
+                MemberPointDO::getUserId,
+                MemberPointDO::setNickname,
+                "member_user", "id", "nickname"
+        );
+
+        return pageResult;
     }
 
     @Override
     @Transactional
+    @LogRecord(type = TYPE_MEMBER_POINT, subType = SUB_TYPE_CHECK_MEMBER_POINT,
+            bizNo = "{{#reqVO.id}}",
+            success = SUCCESS_CHECK_MEMBER_POINT)
     public void checkPointRecord(MemberPointCheckReqVO reqVO) {
         // 1. 查询积分记录
         MemberPointDO record = memberPointMapper.selectById(reqVO.getId());
@@ -98,7 +150,8 @@ public class MemberPointServiceImpl implements MemberPointService {
         record.setCheckTime(LocalDateTime.now());
         record.setCheckBy(SecurityFrameworkUtils.getLoginUserNickname()); // 芋道框架获取当前用户
         memberPointMapper.updateById(record);
-        // 4. 可选：记录操作日志
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("reqVO", reqVO);
     }
 
 }

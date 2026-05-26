@@ -5,6 +5,8 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.invoicemgmt.vo.InvoiceAuditPageReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.invoicemgmt.InvoiceAuditDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -16,13 +18,18 @@ import java.util.Map;
 @Mapper
 public interface InvoiceAuditMapper extends BaseMapperX<InvoiceAuditDO> {
 
-    default PageResult<InvoiceAuditDO> selectPage(InvoiceAuditPageReqVO reqVO) {
-        return selectPage(reqVO, new LambdaQueryWrapperX<InvoiceAuditDO>()
-                .eqIfPresent(InvoiceAuditDO::getApplyId, reqVO.getApplyId())
-                .eqIfPresent(InvoiceAuditDO::getApplicantId, reqVO.getApplicantId())
-                .eqIfPresent(InvoiceAuditDO::getStatus, reqVO.getStatus())
-                .orderByDesc(InvoiceAuditDO::getId));
-    }
+    @Select("<script>" +
+            "SELECT ia.* " +
+            "FROM invoice_audit ia " +
+            "WHERE ia.deleted = 0 " +
+            "<if test='req.applicantId != null'>AND ia.applicant_id = #{req.applicantId} </if>" +
+            "<if test='req.creator != null and req.creator != \"\"'>AND ia.creator LIKE CONCAT('%', #{req.creator}, '%') </if>" +
+            "<if test='req.status != null and req.status != \"\"'>AND ia.status = #{req.status} </if>" +
+            "<if test='req.applyTimeStart != null'>AND ia.apply_time &gt;= #{req.applyTimeStart} </if>" +
+            "<if test='req.applyTimeEnd != null'>AND ia.apply_time &lt;= #{req.applyTimeEnd} </if>" +
+            "ORDER BY ia.id DESC" +
+            "</script>")
+    IPage<InvoiceAuditDO> selectPageWithApplicant(Page<InvoiceAuditDO> page, @Param("req") InvoiceAuditPageReqVO reqVO);
 
     @Select("<script>" +
             "SELECT DATE_FORMAT(create_time,'%Y-%m-%d') AS date, COUNT(*) AS count " +

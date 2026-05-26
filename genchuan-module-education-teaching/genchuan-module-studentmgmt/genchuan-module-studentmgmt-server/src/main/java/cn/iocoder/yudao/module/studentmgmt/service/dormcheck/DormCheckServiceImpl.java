@@ -327,5 +327,10 @@ public class DormCheckServiceImpl implements DormCheckService {
         return vo;
     }
 
+    @Override
+    public PageResult<DormCheckRespVO> getDormCheckJoinPage(DormCheckPageReqVO pageReqVO) {
+        return dormCheckMapper.selectJoinPage(pageReqVO);
+    }
+
 
 }

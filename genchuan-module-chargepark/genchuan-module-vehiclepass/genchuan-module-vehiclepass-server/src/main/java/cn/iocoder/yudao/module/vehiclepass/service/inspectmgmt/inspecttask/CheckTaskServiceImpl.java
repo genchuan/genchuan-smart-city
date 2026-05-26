@@ -9,7 +9,9 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspectt
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.InspectTaskTransferReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.InspectTaskChartReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.InspectTaskChartRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.UserSimpleRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.inspectmgmt.inspecttask.CheckTaskDO;
+import cn.iocoder.yudao.module.vehiclepass.dal.mysql.common.UserInfoMapper;
 import cn.iocoder.yudao.module.vehiclepass.dal.mysql.inspectmgmt.inspecttask.CheckTaskMapper;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
@@ -26,7 +28,9 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
+import static cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils.getLoginUserId;
 import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.TASK_NOT_EXISTS;
+import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.TASK_STATUS_INVALID;
 import static cn.iocoder.yudao.module.vehiclepass.constants.inspectmgmt.CheckTaskConstants.*;
 
 /**
@@ -40,6 +44,9 @@ public class CheckTaskServiceImpl implements CheckTaskService {
 
     @Resource
     private CheckTaskMapper taskMapper;
+
+    @Resource
+    private UserInfoMapper userInfoMapper;
 
     @Override
     public Long createTask(CheckTaskSaveReqVO createReqVO) {
@@ -87,6 +94,11 @@ public class CheckTaskServiceImpl implements CheckTaskService {
     }
 
     @Override
+    public CheckTaskRespVO getTaskWithJoin(Long id) {
+        return taskMapper.selectByIdJoin(id);
+    }
+
+    @Override
     public PageResult<CheckTaskDO> getTaskPage(CheckTaskPageReqVO pageReqVO) {
         return taskMapper.selectPage(pageReqVO);
     }
@@ -104,15 +116,17 @@ public class CheckTaskServiceImpl implements CheckTaskService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void batchDispatch(InspectTaskBatchDispatchReqVO reqVO) {
-        // 批量更新派发状态
+        LocalDateTime now = LocalDateTime.now();
+        List<CheckTaskDO> updateList = new ArrayList<>();
         for (Long id : reqVO.getIds()) {
             CheckTaskDO updateObj = new CheckTaskDO();
             updateObj.setId(id);
             updateObj.setExecuteUserId(reqVO.getExecuteUserId());
             updateObj.setStatus(STATUS_PENDING_CLAIM);
-            updateObj.setDispatchTime(LocalDateTime.now());
-            taskMapper.updateById(updateObj);
+            updateObj.setDispatchTime(now);
+            updateList.add(updateObj);
         }
+        taskMapper.updateBatch(updateList);
     }
 
     @Override
@@ -130,12 +144,20 @@ public class CheckTaskServiceImpl implements CheckTaskService {
 
     @Override
     public void claim(Long id) {
-        // 校验存在
-        validateTaskExists(id);
-        // 更新认领状态
+        CheckTaskDO task = taskMapper.selectById(id);
+        if (task == null) {
+            throw exception(TASK_NOT_EXISTS);
+        }
+        if (!STATUS_PENDING_CLAIM.equals(task.getStatus())) {
+            throw exception(TASK_STATUS_INVALID);
+        }
+        // 获取当前登录用户作为执行人
+        Long loginUserId = getLoginUserId();
         CheckTaskDO updateObj = new CheckTaskDO();
         updateObj.setId(id);
+        updateObj.setExecuteUserId(loginUserId);
         updateObj.setStatus(STATUS_PROCESSING);
+        updateObj.setTaskProgress("进行中");
         taskMapper.updateById(updateObj);
     }
 
@@ -152,9 +174,13 @@ public class CheckTaskServiceImpl implements CheckTaskService {
 
     @Override
     public void transfer(InspectTaskTransferReqVO reqVO) {
-        // 校验存在
-        validateTaskExists(reqVO.getId());
-        // 更新转派信息
+        CheckTaskDO task = taskMapper.selectById(reqVO.getId());
+        if (task == null) {
+            throw exception(TASK_NOT_EXISTS);
+        }
+        if (!STATUS_PROCESSING.equals(task.getStatus())) {
+            throw exception(TASK_STATUS_INVALID);
+        }
         CheckTaskDO updateObj = new CheckTaskDO();
         updateObj.setId(reqVO.getId());
         updateObj.setExecuteUserId(reqVO.getTargetUserId());
@@ -164,9 +190,13 @@ public class CheckTaskServiceImpl implements CheckTaskService {
 
     @Override
     public void archive(Long id) {
-        // 校验存在
-        validateTaskExists(id);
-        // 更新归档状态
+        CheckTaskDO task = taskMapper.selectById(id);
+        if (task == null) {
+            throw exception(TASK_NOT_EXISTS);
+        }
+        if (!STATUS_PROCESSING.equals(task.getStatus())) {
+            throw exception(TASK_STATUS_INVALID);
+        }
         CheckTaskDO updateObj = new CheckTaskDO();
         updateObj.setId(id);
         updateObj.setStatus(STATUS_COMPLETED);
@@ -191,6 +221,11 @@ public class CheckTaskServiceImpl implements CheckTaskService {
         respVO.setCardData(cardData);
 
         return respVO;
+    }
+
+    @Override
+    public List<UserSimpleRespVO> getUserSimpleList() {
+        return userInfoMapper.selectUserSimpleList();
     }
 
 }

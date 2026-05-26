@@ -98,6 +98,15 @@ public class OilCarHandleServiceImpl implements OilCarHandleService {
     }
 
     @Override
+    public OilCarHandleRespVO getCarHandleWithStation(Long id) {
+        OilCarHandleRespVO respVO = carHandleMapper.selectByIdJoinStation(id);
+        if (respVO == null) {
+            throw exception(CAR_HANDLE_NOT_EXISTS);
+        }
+        return respVO;
+    }
+
+    @Override
     public PageResult<OilCarHandleRespVO> getCarHandlePageWithJoin(OilCarHandlePageReqVO pageReqVO) {
         Page<OilCarHandleRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
         IPage<OilCarHandleRespVO> pageResult = carHandleMapper.selectPageJoin(page, pageReqVO);
@@ -112,18 +121,20 @@ public class OilCarHandleServiceImpl implements OilCarHandleService {
             throw exception(USER_NOT_LOGIN);
         }
 
-        for (Long id : reqVO.getIds()) {
-            OilCarHandleDO carHandle = carHandleMapper.selectById(id);
-            if (carHandle == null) {
-                continue;
-            }
+        List<OilCarHandleDO> existList = carHandleMapper.selectBatchIds(reqVO.getIds());
+        if (existList.isEmpty()) {
+            return;
+        }
 
+        LocalDateTime now = LocalDateTime.now();
+        String handleType = reqVO.getHandleType();
+        List<OilCarHandleDO> updateList = new ArrayList<>();
+        for (OilCarHandleDO carHandle : existList) {
             OilCarHandleDO updateObj = new OilCarHandleDO();
-            updateObj.setId(id);
+            updateObj.setId(carHandle.getId());
             updateObj.setHandleUserId(currentUserId);
-            updateObj.setHandleTime(LocalDateTime.now());
+            updateObj.setHandleTime(now);
 
-            String handleType = reqVO.getHandleType();
             if (HANDLE_TYPE_DISPOSE.equals(handleType)) {
                 updateObj.setStatus(STATUS_PROCESSING);
                 updateObj.setHandleMethod(HANDLE_METHOD_DISPOSED);
@@ -133,9 +144,9 @@ public class OilCarHandleServiceImpl implements OilCarHandleService {
                 updateObj.setIgnoreReason(IGNORE_REASON_BATCH);
                 updateObj.setHandleType(HANDLE_TYPE_IGNORE);
             }
-
-            carHandleMapper.updateById(updateObj);
+            updateList.add(updateObj);
         }
+        carHandleMapper.updateBatch(updateList);
     }
 
     @Override
@@ -192,6 +203,7 @@ public class OilCarHandleServiceImpl implements OilCarHandleService {
         OilCarHandleDO updateObj = new OilCarHandleDO();
         updateObj.setId(reqVO.getId());
         updateObj.setHandleProgress(reqVO.getHandleProgress());
+        updateObj.setStatus(STATUS_CLOSED);
         carHandleMapper.updateById(updateObj);
     }
 

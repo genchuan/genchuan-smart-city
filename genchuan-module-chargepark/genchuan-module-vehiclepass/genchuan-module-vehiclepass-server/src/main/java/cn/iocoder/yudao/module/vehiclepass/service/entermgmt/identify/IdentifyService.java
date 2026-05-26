@@ -87,4 +87,12 @@ public interface IdentifyService {
      */
     Boolean confirmIdentify(PlateIdentifyConfirmReqVO reqVO);
 
+    /**
+     * 获得车牌识别（含场站名称）
+     *
+     * @param id 编号
+     * @return 车牌识别详情
+     */
+    IdentifyRespVO getIdentifyWithStation(Long id);
+
 }

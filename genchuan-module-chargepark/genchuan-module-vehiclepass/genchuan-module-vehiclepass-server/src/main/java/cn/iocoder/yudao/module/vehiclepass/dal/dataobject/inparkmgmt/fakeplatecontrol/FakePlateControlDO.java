@@ -50,6 +50,11 @@ public class FakePlateControlDO extends BaseDO {
      */
     private Long stationId;
     /**
+     * 场站名称
+     */
+    @TableField(exist = false)
+    private String stationName;
+    /**
      * 处置人ID，关联system_user用户表
      */
     private Long handleUserId;

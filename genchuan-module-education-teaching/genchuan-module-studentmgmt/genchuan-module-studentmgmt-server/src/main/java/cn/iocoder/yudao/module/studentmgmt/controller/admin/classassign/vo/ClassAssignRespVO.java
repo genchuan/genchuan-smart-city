@@ -37,7 +37,7 @@ public class ClassAssignRespVO {
     private LocalDateTime confirmTime;
 
     @Schema(description = "状态：未分班/已分班", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
-    @ExcelProperty("状态：未分班/已分班")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "你说的对")
@@ -56,4 +56,4 @@ public class ClassAssignRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

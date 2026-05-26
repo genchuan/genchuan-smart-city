@@ -16,8 +16,11 @@ public class CycleReportRespVO {
     @Schema(description = "报表周期")
     private String reportCycle;
 
-    @Schema(description = "统计时段")
-    private String statTime;
+    @Schema(description = "统计开始时段")
+    private LocalDateTime statStartTime;
+
+    @Schema(description = "统计结束时段")
+    private LocalDateTime statEndTime;
 
     @Schema(description = "活动数")
     private Integer activityCount;

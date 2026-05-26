@@ -4,12 +4,16 @@ import cn.hutool.core.util.StrUtil;
 import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
+import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.creditmgmt.creditconfig.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.creditmgmt.creditconfig.CreditConfigDO;
@@ -35,16 +39,23 @@ public class CreditConfigServiceImpl implements CreditConfigService {
     private CreditConfigMapper creditConfigMapper;
 
     @Override
+    @LogRecord(type = TYPE_CREDIT_CONFIG, subType = SUB_TYPE_CREATE_CREDIT_CONFIG,
+            bizNo = "{{#creditConfig.id}}",
+            success = SUCCESS_CREATE_CREDIT_CONFIG)
     public Long createCreditConfig(CreditConfigSaveReqVO createReqVO) {
         // 插入
         CreditConfigDO creditConfig = BeanUtils.toBean(createReqVO, CreditConfigDO.class);
         creditConfigMapper.insert(creditConfig);
-
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("creditConfig", creditConfig);
         // 返回
         return creditConfig.getId();
     }
 
     @Override
+    @LogRecord(type = TYPE_CREDIT_CONFIG, subType = SUB_TYPE_UPDATE_CREDIT_CONFIG,
+            bizNo = "{{#updateReqVO.id}}",
+            success = SUCCESS_UPDATE_CREDIT_CONFIG)
     public void updateCreditConfig(CreditConfigSaveReqVO updateReqVO) {
         // 校验存在
         validateCreditConfigExists(updateReqVO.getId());
@@ -86,19 +97,31 @@ public class CreditConfigServiceImpl implements CreditConfigService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = TYPE_CREDIT_CONFIG, subType = SUB_TYPE_UPDATE_CREDIT_CONFIG_STATUS,
+            bizNo = "{{#ids}}",
+            success = SUCCESS_UPDATE_CREDIT_CONFIG_STATUS)
     public void updateConfigStatus(List<Long> ids, String status) {
         if (org.springframework.util.CollectionUtils.isEmpty(ids)) {
             return;
         }
-        // 使用 UpdateWrapper 批量更新状态
         UpdateWrapper<CreditConfigDO> updateWrapper = new UpdateWrapper<>();
         updateWrapper.in("id", ids)
                 .set("status", status);
+        if ("已生效".equals(status)) {
+            updateWrapper.set("effect_time", LocalDateTime.now());
+        } else if ("未生效".equals(status)) {
+            updateWrapper.set("effect_time", null);
+        }
         creditConfigMapper.update(null, updateWrapper);
+        LogRecordContext.putVariable("ids", ids);
+        LogRecordContext.putVariable("status", status);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = TYPE_CREDIT_CONFIG, subType = SUB_TYPE_SAVE_CREDIT_CONFIG,
+            bizNo = "{{#saveReqVO.id}}",
+            success = SUCCESS_SAVE_CREDIT_CONFIG)
     public void saveConfig(CreditConfigSaveReqVO saveReqVO) {
         CreditConfigDO config = BeanUtils.toBean(saveReqVO, CreditConfigDO.class);
         if (saveReqVO.getId() == null) {
@@ -108,6 +131,8 @@ public class CreditConfigServiceImpl implements CreditConfigService {
             // 更新：调用 update 逻辑，先校验存在
             validateMemberConfigExists(saveReqVO.getId());
             creditConfigMapper.updateById(config);
+            // 记录操作日志上下文
+            LogRecordContext.putVariable("saveReqVO", saveReqVO);
         }
     }
 

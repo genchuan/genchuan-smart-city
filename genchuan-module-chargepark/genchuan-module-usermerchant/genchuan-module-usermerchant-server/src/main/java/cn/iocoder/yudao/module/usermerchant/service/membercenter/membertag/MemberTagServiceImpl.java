@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.usermerchant.service.membercenter.membertag;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.util.CollectionUtils;
@@ -16,6 +18,7 @@ import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.membertag.Mem
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
 
 /**
  * 会员标签 Service 实现类
@@ -30,16 +33,23 @@ public class MemberTagServiceImpl implements MemberTagService {
     private MemberTagMapper memberTagMapper;
 
     @Override
+    @LogRecord(type = TYPE_MEMBER_TAG, subType = SUB_TYPE_CREATE_MEMBER_TAG,
+            bizNo = "{{#memberTag.id}}",
+            success = SUCCESS_CREATE_MEMBER_TAG)
     public Long createMemberTag(MemberTagSaveReqVO createReqVO) {
         // 插入
         MemberTagDO memberTag = BeanUtils.toBean(createReqVO, MemberTagDO.class);
         memberTagMapper.insert(memberTag);
-
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("memberTag", memberTag);
         // 返回
         return memberTag.getId();
     }
 
     @Override
+    @LogRecord(type = TYPE_MEMBER_TAG, subType = SUB_TYPE_UPDATE_MEMBER_TAG,
+            bizNo = "{{#updateReqVO.id}}",
+            success = SUCCESS_UPDATE_MEMBER_TAG)
     public void updateMemberTag(MemberTagSaveReqVO updateReqVO) {
         // 校验存在
         validateMemberTagExists(updateReqVO.getId());
@@ -80,6 +90,9 @@ public class MemberTagServiceImpl implements MemberTagService {
     }
 
     @Override
+    @LogRecord(type = TYPE_MEMBER_TAG, subType = SUB_TYPE_IMPORT_MEMBER_TAG,
+            bizNo = "{{#list.stream().map(MemberTagImportExcelVO::getId).collect(T(java.util.stream.Collectors).toList())}}",
+            success = SUCCESS_IMPORT_MEMBER_TAG)
     public Boolean importUsers(List<MemberTagImportExcelVO> list, Boolean updateSupport) {
         if (CollectionUtils.isEmpty(list)) {
             return true;
@@ -110,10 +123,16 @@ public class MemberTagServiceImpl implements MemberTagService {
                 memberTagMapper.insert(insertDO);
             }
         }
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("list", list);
+        LogRecordContext.putVariable("updateSupport", updateSupport);
         return true;
     }
 
     @Override
+    @LogRecord(type = TYPE_MEMBER_TAG, subType = SUB_TYPE_UPDATE_TAG_STATUS,
+            bizNo = "{{{#ids}}}",
+            success = SUCCESS_UPDATE_TAG_STATUS)
     public void updateTagStatus(List<Long> ids, String status) {
         if (CollectionUtils.isEmpty(ids)) {
             return;
@@ -123,6 +142,9 @@ public class MemberTagServiceImpl implements MemberTagService {
         updateWrapper.in("id", ids)
                 .set("status", status);
         memberTagMapper.update(null, updateWrapper);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("ids", ids);
+        LogRecordContext.putVariable("status", status);
     }
 
 }

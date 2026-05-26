@@ -24,6 +24,9 @@ public class AbnormalLeavePageReqVO extends PageParam {
     @Schema(description = "场站ID")
     private Long stationId;
 
+    @Schema(description = "场站名称，支持模糊查询")
+    private String stationName;
+
     @Schema(description = "处置人ID")
     private Long handleUserId;
 

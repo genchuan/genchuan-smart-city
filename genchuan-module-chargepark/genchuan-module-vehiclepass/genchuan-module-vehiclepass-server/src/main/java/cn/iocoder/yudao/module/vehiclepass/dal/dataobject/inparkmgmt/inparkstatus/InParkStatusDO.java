@@ -33,6 +33,11 @@ public class InParkStatusDO extends BaseDO {
      */
     private Long stationId;
     /**
+     * 场站名称
+     */
+    @TableField(exist = false)
+    private String stationName;
+    /**
      * 车位ID，关联车位表parking_space_info
      */
     private Long spaceId;

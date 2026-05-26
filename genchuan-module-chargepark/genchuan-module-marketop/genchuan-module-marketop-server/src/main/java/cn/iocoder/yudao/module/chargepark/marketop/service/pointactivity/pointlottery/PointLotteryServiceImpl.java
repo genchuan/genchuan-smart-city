@@ -3,9 +3,12 @@ package cn.iocoder.yudao.module.chargepark.marketop.service.pointactivity.pointl
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointlottery.vo.PointLotteryChartRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointlottery.vo.PointLotteryPageReqVO;
+import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.pointactivity.pointlottery.vo.PointLotteryRespVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.pointactivity.PointLotteryDO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.pointactivity.PointLotteryMapper;
 import cn.iocoder.yudao.module.chargepark.marketop.enums.PointLotteryStatusEnum;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
 import jakarta.annotation.Resource;
@@ -48,7 +51,7 @@ public class PointLotteryServiceImpl implements PointLotteryService {
             success = POINT_LOTTERY_CHECK_SUCCESS)
     public void check(Long id, String checkResult) {
         PointLotteryDO lottery = validateExists(id);
-        if (Objects.equals(lottery.getStatus(), PointLotteryStatusEnum.NORMAL.getValue())) {
+        if (!Objects.equals(lottery.getStatus(), PointLotteryStatusEnum.NORMAL.getValue())) {
             throw exception(POINT_LOTTERY_STATUS_ERROR);
         }
         lottery.setStatus(PointLotteryStatusEnum.CHECKED.getValue());
@@ -95,6 +98,18 @@ public class PointLotteryServiceImpl implements PointLotteryService {
         respVO.setWinRate(winRate);
         respVO.setTrendList(trendList);
         return respVO;
+    }
+
+    @Override
+    public PageResult<PointLotteryRespVO> getPageWithJoin(PointLotteryPageReqVO reqVO) {
+        Page<PointLotteryRespVO> page = new Page<>(reqVO.getPageNo(), reqVO.getPageSize());
+        IPage<PointLotteryRespVO> pageResult = pointLotteryMapper.selectPageJoin(page, reqVO);
+        return new PageResult<>(pageResult.getRecords(), pageResult.getTotal());
+    }
+
+    @Override
+    public PointLotteryRespVO getWithJoin(Long id) {
+        return pointLotteryMapper.selectByIdJoin(id);
     }
 
     private PointLotteryDO validateExists(Long id) {

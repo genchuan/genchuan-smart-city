@@ -1,6 +1,9 @@
 package cn.iocoder.yudao.module.usermerchant.service.membercenter.membergroup;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
+import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.util.CollectionUtils;
@@ -31,16 +34,23 @@ public class MemberGroupServiceImpl implements MemberGroupService {
     private MemberGroupMapper memberGroupMapper;
 
     @Override
+    @LogRecord(type = TYPE_MEMBER_GROUP, subType = SUB_TYPE_CREATE_MEMBER_GROUP,
+            bizNo = "{{#memberGroup.id}}",
+            success = SUCCESS_CREATE_MEMBER_GROUP)
     public Long createMemberGroup(MemberGroupSaveReqVO createReqVO) {
         // 插入
         MemberGroupDO memberGroup = BeanUtils.toBean(createReqVO, MemberGroupDO.class);
         memberGroupMapper.insert(memberGroup);
-
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("memberGroup", memberGroup);
         // 返回
         return memberGroup.getId();
     }
 
     @Override
+    @LogRecord(type = TYPE_MEMBER_GROUP, subType = SUB_TYPE_UPDATE_MEMBER_GROUP,
+            bizNo = "{{#updateReqVO.id}}",
+            success = SUCCESS_UPDATE_MEMBER_GROUP)
     public void updateMemberGroup(MemberGroupSaveReqVO updateReqVO) {
         // 校验存在
         validateMemberGroupExists(updateReqVO.getId());
@@ -90,8 +100,11 @@ public class MemberGroupServiceImpl implements MemberGroupService {
     }
 
     @Override
+    @LogRecord(type = TYPE_MEMBER_GROUP, subType = SUB_TYPE_UPDATE_GROUPS_STATUS,
+            bizNo = "{{#ids}}",
+            success = SUCCESS_UPDATE_GROUPS_STATUS)
     @Transactional(rollbackFor = Exception.class)
-    public void updateGroupStatus(List<Long> ids, String status) {
+    public void updateGroupStatus(List<Long> ids, Integer status) {
         if (CollectionUtils.isEmpty(ids)) {
             return;
         }
@@ -100,6 +113,9 @@ public class MemberGroupServiceImpl implements MemberGroupService {
         updateWrapper.in("id", ids)
                 .set("status", status);
         memberGroupMapper.update(null, updateWrapper);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("ids", ids);
+        LogRecordContext.putVariable("status", status);
     }
 
 }

@@ -21,7 +21,7 @@ public interface InvoiceAuditService {
 
     void approveInvoiceAudit(IdReqVO reqVO);
 
-    void rejectInvoiceAudit(IdReqVO reqVO);
+    void rejectInvoiceAudit(InvoiceAuditRejectReqVO reqVO);
 
     void confirmInvoiceAudit(IdReqVO reqVO);
 

@@ -7,10 +7,16 @@ import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 import cn.iocoder.yudao.module.usermerchant.controller.admin.creditmgmt.usercredit.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.creditmgmt.usercredit.UserCreditDO;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.usermgmt.plateauth.PlateAuthDO;
+import cn.iocoder.yudao.module.usermerchant.dal.dataobject.usermgmt.userinfo.UserInfoDO;
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.creditmgmt.usercredit.UserCreditMapper;
+import cn.iocoder.yudao.module.usermerchant.dal.mysql.usermgmt.userinfo.UserInfoMapper;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.NameQueryHelper;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import cn.iocoder.yudao.module.usermerchant.service.creditmgmt.usercredit.UserCreditService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
+import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
 import com.alibaba.nacos.client.naming.utils.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import jakarta.annotation.Resource;
@@ -20,6 +26,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.USER_CREDIT_NOT_EXISTS;
@@ -36,6 +43,9 @@ public class UserCreditServiceImpl implements UserCreditService {
 
     @Resource
     private UserCreditMapper userCreditMapper;
+
+    @Resource
+    private UserInfoMapper userInfoMapper;
 
     @Override
     public Long createUserCredit(UserCreditSaveReqVO createReqVO) {
@@ -82,49 +92,36 @@ public class UserCreditServiceImpl implements UserCreditService {
         return userCreditMapper.selectById(id);
     }
 
-    @Override
-    public PageResult<UserCreditDO> getUserCreditPage(UserCreditPageReqVO pageReqVO) {
-        // 如果前端传了nickname，则转换为userId并设置到查询条件
-        if (StrUtil.isNotBlank(pageReqVO.getNickname())) {
-            Long userId = userCreditMapper.getIdByNickname(pageReqVO.getNickname());
-            if (userId == null) {
-                return new PageResult<>(Collections.emptyList(), 0L);
-            }
-            pageReqVO.setUserId(userId);
-        }
-        PageResult<UserCreditDO> pageResult = userCreditMapper.selectPage(pageReqVO);
-        if (CollUtil.isEmpty(pageResult.getList())) {
-            return pageResult;
-        }
-
-        NameQueryHelper.fillNamesByIds(
-                pageResult.getList(),
-                UserCreditDO::getUserId,
-                UserCreditDO::setNickname,
-                "user_info", "id", "nickname"
-        );
-
-//        NameQueryHelper.fillNamesByIds(
-//                pageResult.getList(),
-//                UserCreditDO::getCreator,
-//                UserCreditDO::setCreateName,
-//                "user_info", "id", "nickname"
-//        );
+//    @Override
+//    public PageResult<UserCreditDO> getUserCreditPage(UserCreditPageReqVO pageReqVO) {
+//        // 如果前端传了nickname，则转换为userId并设置到查询条件
+//        if (StrUtil.isNotBlank(pageReqVO.getNickname())) {
+//            Long userId = userCreditMapper.getIdByNickname(pageReqVO.getNickname());
+//            if (userId == null) {
+//                return new PageResult<>(Collections.emptyList(), 0L);
+//            }
+//            pageReqVO.setUserId(userId);
+//        }
+//        PageResult<UserCreditDO> pageResult = userCreditMapper.selectPage(pageReqVO);
+//        if (CollUtil.isEmpty(pageResult.getList())) {
+//            return pageResult;
+//        }
 //
 //        NameQueryHelper.fillNamesByIds(
 //                pageResult.getList(),
-//                UserCreditDO::getUpdater,
-//                UserCreditDO::setUpdateName,
+//                UserCreditDO::getUserId,
+//                UserCreditDO::setNickname,
 //                "user_info", "id", "nickname"
 //        );
-
-//        return userCreditMapper.selectPage(pageReqVO);
-
-        return pageResult;
-    }
+//
+//        return pageResult;
+//    }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @LogRecord(type = TYPE_USER_CREDIT, subType = SUB_TYPE_REMIND_USER_CREDIT,
+            bizNo = "{{{#ids}}}",
+            success = SUCCESS_REMIND_USER_CREDIT)
     public void remindUserCredit(List<Long> ids) {
         if (CollectionUtils.isEmpty(ids)) {
             return;
@@ -132,6 +129,8 @@ public class UserCreditServiceImpl implements UserCreditService {
         // 业务说明：仅做提醒操作，例如发送站内信、短信等。目前需求未明确具体内容，直接返回成功。
         // TODO 根据实际业务补充提醒逻辑（如调用消息服务、记录提醒日志等）
         log.info("用户信用提醒，信用ID列表：{}", ids);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("ids", ids);
     }
 
     @Override
@@ -165,6 +164,44 @@ public class UserCreditServiceImpl implements UserCreditService {
         chartRespVO.setLowCreditUserCount(lowCount != null ? lowCount : 0);
 
         return chartRespVO;
+    }
+
+    @Override
+    public PageResult<UserCreditDO> getUserCreditPage(UserCreditPageReqVO pageReqVO) {
+        // 处理昵称模糊查询（如果有）
+        if (StrUtil.isNotBlank(pageReqVO.getNickname())) {
+            // 如果同时传了精确 userId，则以 userId 为准，忽略昵称（或取交集？这里按 userId 优先）
+            if (pageReqVO.getUserId() == null) {
+                // 查询匹配的用户ID列表
+                LambdaQueryWrapper<UserInfoDO> wrapper = new LambdaQueryWrapper<>();
+                wrapper.select(UserInfoDO::getId)
+                        .like(UserInfoDO::getNickname, pageReqVO.getNickname())
+                        .eq(UserInfoDO::getDeleted, 0);
+                List<UserInfoDO> users = userInfoMapper.selectList(wrapper);
+                List<Long> userIds = users.stream().map(UserInfoDO::getId).collect(Collectors.toList());
+                if (userIds.isEmpty()) {
+                    // 没有匹配的用户，直接返回空分页
+                    return new PageResult<>(Collections.emptyList(), 0L);
+                }
+                pageReqVO.setUserIds(userIds);
+            } // 如果已有精确userId，则忽略昵称（不清空userIds，也不设置）
+        }
+
+        // 执行分页查询（现在 Mapper 会使用 userIds IN 条件）
+        PageResult<UserCreditDO> pageResult = userCreditMapper.selectPage(pageReqVO);
+        if (CollUtil.isEmpty(pageResult.getList())) {
+            return pageResult;
+        }
+
+        // 填充用户昵称（用于列表展示）
+        NameQueryHelper.fillNamesByIds(
+                pageResult.getList(),
+                UserCreditDO::getUserId,
+                UserCreditDO::setNickname,
+                "user_info", "id", "nickname"
+        );
+
+        return pageResult;
     }
 
 }

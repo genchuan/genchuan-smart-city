@@ -7,6 +7,7 @@ import cn.iocoder.yudao.module.ordertrade.controller.admin.invoicemgmt.vo.*;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.IdReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.invoicemgmt.InvoiceListDO;
 import cn.iocoder.yudao.module.ordertrade.dal.mysql.invoicemgmt.InvoiceListMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,12 +54,19 @@ public class InvoiceListServiceImpl implements InvoiceListService {
 
     @Override
     public InvoiceListDO getInvoiceList(Long id) {
-        return invoiceListMapper.selectById(id);
+        return invoiceListMapper.selectByIdWithDetails(id);
     }
 
     @Override
     public PageResult<InvoiceListDO> getInvoiceListPage(InvoiceListPageReqVO pageReqVO) {
-        return invoiceListMapper.selectPage(pageReqVO);
+        Page<InvoiceListDO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        var result = invoiceListMapper.selectPageWithDetails(page, pageReqVO);
+        return new PageResult<>(result.getRecords(), result.getTotal());
+    }
+
+    @Override
+    public List<InvoiceListDO> getInvoiceListExport(InvoiceListPageReqVO pageReqVO) {
+        return invoiceListMapper.selectListWithDetails(pageReqVO);
     }
 
     @Override
@@ -80,7 +88,7 @@ public class InvoiceListServiceImpl implements InvoiceListService {
     public void rejectInvoiceList(IdReqVO reqVO) {
         InvoiceListDO invoice = invoiceListMapper.selectById(reqVO.getId());
         if (invoice == null) throw exception(INVOICE_LIST_NOT_EXISTS);
-        if (!"pending_audit".equals(invoice.getStatus())) throw exception(INVOICE_LIST_STATUS_CANNOT_REJECT);
+        if (!"pending".equals(invoice.getStatus())) throw exception(INVOICE_LIST_STATUS_CANNOT_REJECT);
         InvoiceListDO update = new InvoiceListDO();
         update.setId(reqVO.getId());
         update.setStatus("rejected");
@@ -117,6 +125,10 @@ public class InvoiceListServiceImpl implements InvoiceListService {
     public String downloadInvoiceList(Long id) {
         InvoiceListDO invoice = invoiceListMapper.selectById(id);
         if (invoice == null) throw exception(INVOICE_LIST_NOT_EXISTS);
+        if (!"invoiced".equals(invoice.getStatus())) throw exception(INVOICE_LIST_STATUS_NOT_INVOICED);
+        if (invoice.getDownloadUrl() == null || invoice.getDownloadUrl().isEmpty()) {
+            throw exception(INVOICE_LIST_DOWNLOAD_URL_NOT_EXISTS);
+        }
         return invoice.getDownloadUrl();
     }
 

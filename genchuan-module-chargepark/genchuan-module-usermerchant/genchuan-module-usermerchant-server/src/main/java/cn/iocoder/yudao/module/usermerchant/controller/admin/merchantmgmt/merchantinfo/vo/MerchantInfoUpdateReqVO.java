@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantinfo.vo;
 
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.FlexibleTimestampDeserializer;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import jakarta.validation.constraints.*;
@@ -40,6 +42,7 @@ public class MerchantInfoUpdateReqVO {
 
     @Schema(description = "注册时间")
     @NotNull(message = "注册时间不能为空")
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
     private LocalDateTime registerTime;
 
     @Schema(description = "商户状态：待审核/正常/禁用/已驳回", example = "1")
@@ -57,6 +60,7 @@ public class MerchantInfoUpdateReqVO {
     private String auditResult;
 
     @Schema(description = "审核时间")
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
     private LocalDateTime auditTime;
 
     @Schema(description = "备注", example = "你说的对")

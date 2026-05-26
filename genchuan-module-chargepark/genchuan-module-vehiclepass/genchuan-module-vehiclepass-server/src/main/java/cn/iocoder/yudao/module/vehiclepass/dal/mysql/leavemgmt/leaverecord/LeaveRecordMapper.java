@@ -27,6 +27,7 @@ public interface LeaveRecordMapper extends BaseMapperX<LeaveRecordDO> {
                 .eqIfPresent(LeaveRecordDO::getParkDuration, reqVO.getParkDuration())
                 .eqIfPresent(LeaveRecordDO::getStatus, reqVO.getStatus())
                 .eqIfPresent(LeaveRecordDO::getStationId, reqVO.getStationId())
+                .likeIfPresent(LeaveRecordDO::getStationName, reqVO.getStationName())
                 .eqIfPresent(LeaveRecordDO::getRemark, reqVO.getRemark())
                 .eqIfPresent(LeaveRecordDO::getProofImage, reqVO.getProofImage())
                 .eqIfPresent(LeaveRecordDO::getIsCorrected, reqVO.getIsCorrected())
@@ -39,6 +40,8 @@ public interface LeaveRecordMapper extends BaseMapperX<LeaveRecordDO> {
 
     IPage<LeaveRecordRespVO> selectPageJoin(Page<?> page, @Param("reqVO") LeaveRecordPageReqVO reqVO);
 
+    LeaveRecordRespVO selectByIdJoinStation(@Param("id") Long id);
+
     /**
      * 查询离场量趋势（按天统计）
      */
@@ -50,8 +53,13 @@ public interface LeaveRecordMapper extends BaseMapperX<LeaveRecordDO> {
     List<Map<String, Object>> selectHourLeaveCount(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("stationId") Long stationId);
 
     /**
-     * 查询今日离场量和离场峰值
+     * 查询今日离场量
      */
-    Map<String, Object> selectLeaveStats(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("stationId") Long stationId);
+    Long selectTodayLeaveCount(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("stationId") Long stationId);
+
+    /**
+     * 查询今日离场峰值（某小时最大离场量）
+     */
+    Long selectTodayLeavePeak(@Param("startTime") String startTime, @Param("endTime") String endTime, @Param("stationId") Long stationId);
 
 }

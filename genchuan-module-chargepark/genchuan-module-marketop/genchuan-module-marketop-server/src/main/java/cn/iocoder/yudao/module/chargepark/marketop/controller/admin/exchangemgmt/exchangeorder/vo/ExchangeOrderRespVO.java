@@ -27,6 +27,9 @@ public class ExchangeOrderRespVO {
     @Schema(description = "类目名称")
     private String categoryName;
 
+    @Schema(description = "商品ID")
+    private Long goodsId;
+
     @Schema(description = "商品名称")
     private String goodsName;
 

@@ -52,6 +52,7 @@ public interface ErrorCodeConstants {
 
     // ========== 追缴配置 ==========
     ErrorCode COLLECT_CONFIG_NOT_EXISTS          = new ErrorCode(1_030_012_000, "追缴配置不存在");
+    ErrorCode COLLECT_CONFIG_NO_DUPLICATE        = new ErrorCode(1_030_012_001, "配置编号已存在，请使用其他编号");
 
     // ========== 退款申请 ==========
     ErrorCode REFUND_APPLY_NOT_EXISTS            = new ErrorCode(1_030_013_000, "退款申请不存在");
@@ -75,6 +76,8 @@ public interface ErrorCodeConstants {
     ErrorCode INVOICE_LIST_STATUS_CANNOT_APPROVE = new ErrorCode(1_030_017_001, "发票不是待审核状态，无法审核通过");
     ErrorCode INVOICE_LIST_STATUS_CANNOT_REJECT  = new ErrorCode(1_030_017_002, "发票不是待审核状态，无法驳回");
     ErrorCode INVOICE_LIST_STATUS_CANNOT_INVOICE = new ErrorCode(1_030_017_003, "发票不是待开票状态，无法开票");
+    ErrorCode INVOICE_LIST_STATUS_NOT_INVOICED   = new ErrorCode(1_030_017_005, "发票不是已开票状态，无法下载");
+    ErrorCode INVOICE_LIST_DOWNLOAD_URL_NOT_EXISTS = new ErrorCode(1_030_017_006, "发票下载链接不存在");
 
     // ========== 发票配置 ==========
     ErrorCode INVOICE_CONFIG_NOT_EXISTS          = new ErrorCode(1_030_018_000, "发票配置不存在");
@@ -120,6 +123,7 @@ public interface ErrorCodeConstants {
     ErrorCode SPLIT_RATE_NOT_EXISTS              = new ErrorCode(1_030_026_000, "分账比例配置不存在");
     ErrorCode SPLIT_RATE_STATUS_CANNOT_ENABLE    = new ErrorCode(1_030_026_001, "分账比例配置已生效，无法重复生效");
     ErrorCode SPLIT_RATE_STATUS_CANNOT_DISABLE   = new ErrorCode(1_030_026_002, "分账比例配置已生效状态才能禁用");
+    ErrorCode SPLIT_RATE_PARTNER_ID_DUPLICATE    = new ErrorCode(1_030_026_003, "该合作方已存在分账比例配置");
 
     // ========== 结算状态 ==========
     ErrorCode SETTLE_STATUS_NOT_EXISTS           = new ErrorCode(1_030_027_000, "结算状态记录不存在");
@@ -136,6 +140,7 @@ public interface ErrorCodeConstants {
     ErrorCode AGENT_RULE_NOT_EXISTS              = new ErrorCode(1_030_030_000, "代付规则不存在");
     ErrorCode AGENT_RULE_STATUS_CANNOT_ENABLE    = new ErrorCode(1_030_030_001, "代付规则当前状态不可生效");
     ErrorCode AGENT_RULE_STATUS_CANNOT_DISABLE   = new ErrorCode(1_030_030_002, "代付规则未处于已生效状态，无法禁用");
+    ErrorCode AGENT_RULE_MERCHANT_TYPE_DUPLICATE = new ErrorCode(1_030_030_003, "该商户同类型的代付规则已存在");
 
     // ========== 代付码 ==========
     ErrorCode AGENT_CODE_NOT_EXISTS              = new ErrorCode(1_030_031_000, "代付码不存在");

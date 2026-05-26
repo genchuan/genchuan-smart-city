@@ -46,7 +46,7 @@ public class LeaveHandleRespVO {
     private LocalDateTime checkoutTime;
 
     @Schema(description = "退宿状态：未退宿/已退宿", example = "1")
-    @ExcelProperty("退宿状态：未退宿/已退宿")
+    @ExcelProperty("退宿状态")
     private String checkoutStatus;
 
     @Schema(description = "办理完成率")
@@ -54,7 +54,7 @@ public class LeaveHandleRespVO {
     private BigDecimal finishRate;
 
     @Schema(description = "状态：待确认/待办理/已离校", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("状态：待确认/待办理/已离校")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "你说的对")
@@ -73,4 +73,4 @@ public class LeaveHandleRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

@@ -57,11 +57,12 @@ public class DebtIdentifyServiceImpl implements DebtIdentifyService {
         resp.setStationData(debtIdentifyMapper.selectGroupByStatus(start, end));
         DebtIdentifyChartRespVO.CardData card = new DebtIdentifyChartRespVO.CardData();
         card.setWaitIdentifyCount(debtIdentifyMapper.selectCountByStatus("pending").intValue());
-        Long total = debtIdentifyMapper.selectTodayCount(todayStart, now);
-        Long identified = debtIdentifyMapper.selectCountByStatus("identified");
-        if (total != null && total > 0) {
-            card.setIdentifySuccessRate(new BigDecimal(identified).multiply(BigDecimal.valueOf(100))
-                    .divide(new BigDecimal(total), 1, java.math.RoundingMode.HALF_UP));
+        Long identified = debtIdentifyMapper.selectCountByStatusAndTime("identified", start, end);
+        Long marked = debtIdentifyMapper.selectCountByStatusAndTime("marked", start, end);
+        Long totalProcessed = (identified != null ? identified : 0L) + (marked != null ? marked : 0L);
+        if (totalProcessed > 0) {
+            card.setIdentifySuccessRate(new BigDecimal(identified != null ? identified : 0L).multiply(BigDecimal.valueOf(100))
+                    .divide(new BigDecimal(totalProcessed), 1, java.math.RoundingMode.HALF_UP));
         } else { card.setIdentifySuccessRate(BigDecimal.ZERO); }
         resp.setCardData(card);
         return resp;

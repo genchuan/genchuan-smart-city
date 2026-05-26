@@ -32,6 +32,9 @@ public class AbnormalLeaveRespVO {
     @ExcelProperty("处置状态")
     private String status;
 
+    @Schema(description = "场站ID")
+    private Long stationId;
+
     @Schema(description = "场站名称")
     @ExcelProperty("场站名称")
     private String stationName;

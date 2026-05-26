@@ -13,8 +13,9 @@ public class DutyMgmtShiftApplyReqVO {
     @Schema(description = "调班原因", requiredMode = Schema.RequiredMode.REQUIRED)
     private String transferReason;
 
-    @Schema(description = "备注", example = "你猜")
-    private String remark;
+    @Schema(description = "调班替代人", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String transferUser;
+
 
 
 }

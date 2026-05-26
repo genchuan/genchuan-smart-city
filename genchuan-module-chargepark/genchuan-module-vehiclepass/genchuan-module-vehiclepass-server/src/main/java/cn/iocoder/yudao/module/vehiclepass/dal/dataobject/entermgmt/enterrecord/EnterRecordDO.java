@@ -57,6 +57,11 @@ public class EnterRecordDO extends BaseDO {
      */
     private Long stationId;
     /**
+     * 场站名称
+     */
+    @TableField(exist = false)
+    private String stationName;
+    /**
      * 备注
      */
     private String remark;
@@ -65,9 +70,9 @@ public class EnterRecordDO extends BaseDO {
      */
     private String proofImage;
     /**
-     * 修正日志标记：0-未修正 1-已修正
+     * 修正日志标记：0-未修正 1-已修正 2-已确认
      */
-    private Boolean isCorrected;
+    private Integer isCorrected;
     /**
      * 备用字段1
      */

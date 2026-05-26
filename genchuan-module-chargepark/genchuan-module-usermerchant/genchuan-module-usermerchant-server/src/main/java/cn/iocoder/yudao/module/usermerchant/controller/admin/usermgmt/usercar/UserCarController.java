@@ -85,8 +85,8 @@ public class UserCarController {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<UserCarDO> list = userCarService.getUserCarPage(pageReqVO).getList();
         // 导出 Excel
-        ExcelUtils.write(response, "用户车辆.xls", "数据", UserCarPageRespVO.class,
-                        BeanUtils.toBean(list, UserCarPageRespVO.class));
+        ExcelUtils.write(response, "用户车辆.xls", "数据", UserCarExportRespVO.class,
+                        BeanUtils.toBean(list, UserCarExportRespVO.class));
     }
 
     @PutMapping("/approve")

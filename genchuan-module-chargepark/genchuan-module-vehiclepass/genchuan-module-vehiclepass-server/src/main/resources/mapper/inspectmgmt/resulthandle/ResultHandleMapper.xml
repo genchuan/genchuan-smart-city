@@ -108,4 +108,32 @@
         </if>
     </select>
 
+    <select id="selectByIdJoin" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.resulthandle.vo.ResultHandleRespVO">
+        SELECT
+            r.id AS id,
+            r.task_id AS taskId,
+            r.violation_type AS violationType,
+            r.handle_method AS handleMethod,
+            r.handle_type AS handleType,
+            r.status AS status,
+            r.area_id AS areaId,
+            a.name AS areaName,
+            r.handle_user_id AS handleUserId,
+            u.nickname AS handleUserName,
+            r.handle_time AS handleTime,
+            r.rectify_status AS rectifyStatus,
+            r.reject_reason AS rejectReason,
+            r.remark AS remark,
+            r.reserve1 AS reserve1,
+            r.reserve2 AS reserve2,
+            r.creator AS creator,
+            r.updater AS updater,
+            r.create_time AS createTime,
+            r.update_time AS updateTime
+        FROM result_handle r
+        LEFT JOIN area_info a ON r.area_id = a.id AND a.deleted = 0
+        LEFT JOIN user_info u ON r.handle_user_id = u.id AND u.deleted = 0
+        WHERE r.id = #{id} AND r.deleted = 0
+    </select>
+
 </mapper>

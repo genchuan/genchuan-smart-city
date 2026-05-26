@@ -26,6 +26,9 @@ public class EnterRecordPageReqVO extends PageParam {
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] enterTime;
 
+    @Schema(description = "入场小时筛选，格式如 08:00、14:30")
+    private String enterTimeHour;
+
     @Schema(description = "记录类型：自动识别/人工补录，关联字典enter_record_record_type", example = "2")
     private String recordType;
 
@@ -35,14 +38,17 @@ public class EnterRecordPageReqVO extends PageParam {
     @Schema(description = "场站ID，关联场站表", example = "20633")
     private Long stationId;
 
+    @Schema(description = "场站名称，支持模糊查询")
+    private String stationName;
+
     @Schema(description = "备注", example = "你猜")
     private String remark;
 
     @Schema(description = "佐证图片地址")
     private String proofImage;
 
-    @Schema(description = "修正日志标记：0-未修正 1-已修正")
-    private Boolean isCorrected;
+    @Schema(description = "修正日志标记：0-未修正 1-已修正 2-已确认")
+    private Integer isCorrected;
 
     @Schema(description = "备用字段1")
     private String reserve1;

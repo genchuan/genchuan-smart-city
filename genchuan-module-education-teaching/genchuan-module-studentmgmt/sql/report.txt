@@ -1,0 +1,250 @@
+决策分析系统数据库表
+●复用芋道原生数据库表
+（1）字典类型表：system_dict_type
+（2）字典数据表：system_dict_data
+（3）部门表：system_dept
+（4）操作日志表 V2：system_operate_log
+（5）菜单权限表：system_menu
+（6）角色信息表：system_role
+（7）用户角色关联表：system_user_role
+（8）角色菜单关联表：system_role_menu
+（9）用户表：system_user
+（10）租户表：system_tenant
+（11）定时任务表：system_job
+一、教育教学〖education-teaching〗
+（一）学生管理服务〖student-mgmt〗（学生管理服务微服务模块：studentmgmt；学生管理服务数据库名：student_mgmt）
+9. 决策分析〖decision-analysis〗
+№(1) 学工报表〖work-report〗（学工报表表：work_report）
+id（主键，BIGINT，自增，必填，主键 ID）
+report_cycle（报表周期：日报 / 周报 / 月报 / 季报 / 半年报 / 年报 / 自定义报表，VARCHAR (20)，必填，关联芋道 “字典表：work_report_report_cycle，字段：label”）
+stat_start_time（统计开始时间，DATETIME，必填）
+stat_end_time（统计结束时间，DATETIME，必填）
+student_total（学生总数，INT，必填）
+student_regular_num（在籍人数，INT，必填）
+warn_student_num（异常预警人数，INT，必填）
+new_honor_num（新增荣誉数，INT，必填）
+new_violate_num（新增违纪数，INT，必填）
+new_assess_num（新增考评数，INT，必填）
+duty_rate（值班到岗率，DECIMAL (5,2)，必填）
+fund_cover_rate（资助覆盖率，DECIMAL (5,2)，必填）
+generate_status（生成状态：待生成 / 已生成 / 已归档，VARCHAR (20)，必填，关联芋道 “字典表：work_report_generate_status，字段：label”）
+generate_time（报表生成时间，DATETIME，必填）
+operator_id（操作人 ID，BIGINT，关联芋道 “用户表：system_user，字段：id”，必填）
+export_count（报表导出次数，INT，默认 0）
+student_total_yoy（学生总数指标同比增长率，DECIMAL (5,2)）
+student_total_qoq（学生总数指标环比增长率，DECIMAL (5,2)）
+student_regular_num_yoy（在籍人数指标同比增长率，DECIMAL (5,2)）
+student_regular_num_qoq（在籍人数指标环比增长率，DECIMAL (5,2)）
+warn_student_num_yoy（异常预警人数指标同比增长率，DECIMAL (5,2)）
+warn_student_num_qoq（异常预警人数指标环比增长率，DECIMAL (5,2)）
+reserve1（备用字段 1，VARCHAR (100)）
+reserve2（备用字段 2，VARCHAR (100)）
+creator（创建者，VARCHAR (64)，默认 ''，创建人账号 / 姓名）
+updater（更新者，VARCHAR (64)，默认 ''，更新人账号 / 姓名）
+deleted（删除标识，BIT (1)，默认 0，0 - 未删除 1 - 已删除）
+tenant_id（租户 ID，BIGINT，默认 1，关联芋道 “租户表：system_tenant，字段：id”，必填）
+create_time（创建时间，DATETIME，默认当前时间，必填）
+update_time（更新时间，DATETIME，默认当前时间 + 更新自动刷新，必填）
+
+
+№(2) 德育报表〖moral-report〗（德育报表表：moral_report）
+id（主键，BIGINT，自增，必填，主键 ID）
+report_cycle（报表周期：日报 / 周报 / 月报 / 季报 / 半年报 / 年报 / 自定义报表，VARCHAR (20)，必填，关联芋道 “字典表：moral_report_report_cycle，字段：label”）
+stat_start_time（统计开始时间，DATETIME，必填）
+stat_end_time（统计结束时间，DATETIME，必填）
+target_total（指标总数，INT，必填）
+target_enable_num（启用指标数，INT，必填）
+target_warn_num（预警指标数，INT，必填）
+activity_join_num（活动参与人数，INT，必填）
+resource_learn_rate（资源学习完成率，DECIMAL (5,2)，必填）
+generate_status（生成状态：待生成 / 已生成 / 已归档，VARCHAR (20)，必填，关联芋道 “字典表：moral_report_generate_status，字段：label”）
+generate_time（报表生成时间，DATETIME，必填）
+operator_id（操作人 ID，BIGINT，关联芋道 “用户表：system_user，字段：id”，必填）
+export_count（报表导出次数，INT，默认 0）
+target_total_yoy（指标总数指标同比增长率，DECIMAL (5,2)）
+target_total_qoq（指标总数指标环比增长率，DECIMAL (5,2)）
+target_enable_num_yoy（启用指标数指标同比增长率，DECIMAL (5,2)）
+target_enable_num_qoq（启用指标数指标环比增长率，DECIMAL (5,2)）
+target_warn_num_yoy（预警指标数指标同比增长率，DECIMAL (5,2)）
+target_warn_num_qoq（预警指标数指标环比增长率，DECIMAL (5,2)）
+reserve1（备用字段 1，VARCHAR (100)）
+reserve2（备用字段 2，VARCHAR (100)）
+creator（创建者，VARCHAR (64)，默认 ''，创建人账号 / 姓名）
+updater（更新者，VARCHAR (64)，默认 ''，更新人账号 / 姓名）
+deleted（删除标识，BIT (1)，默认 0，0 - 未删除 1 - 已删除）
+tenant_id（租户 ID，BIGINT，默认 1，关联芋道 “租户表：system_tenant，字段：id”，必填）
+create_time（创建时间，DATETIME，默认当前时间，必填）
+update_time（更新时间，DATETIME，默认当前时间 + 更新自动刷新，必填）
+
+
+№(3) 宿舍报表〖dorm-report〗（宿舍报表表：dorm_report）
+id（主键，BIGINT，自增，必填，主键 ID）
+report_cycle（报表周期：日报 / 周报 / 月报 / 季报 / 半年报 / 年报 / 自定义报表，VARCHAR (20)，必填，关联芋道 “字典表：dorm_report_report_cycle，字段：label”）
+stat_start_time（统计开始时间，DATETIME，必填）
+stat_end_time（统计结束时间，DATETIME，必填）
+bed_total（总床位数，INT，必填）
+bed_used_num（已用床位数，INT，必填）
+bed_free_num（空余床位数，INT，必填）
+repair_finish_rate（报修完成率，DECIMAL (5,2)，必填）
+in_dorm_rate（在寝率，DECIMAL (5,2)，必填）
+stay_num（留宿人数，INT，必填）
+generate_status（生成状态：待生成 / 已生成 / 已归档，VARCHAR (20)，必填，关联芋道 “字典表：dorm_report_generate_status，字段：label”）
+generate_time（报表生成时间，DATETIME，必填）
+operator_id（操作人 ID，BIGINT，关联芋道 “用户表：system_user，字段：id”，必填）
+export_count（报表导出次数，INT，默认 0）
+bed_total_yoy（总床位数指标同比增长率，DECIMAL (5,2)）
+bed_total_qoq（总床位数指标环比增长率，DECIMAL (5,2)）
+bed_used_num_yoy（已用床位数指标同比增长率，DECIMAL (5,2)）
+bed_used_num_qoq（已用床位数指标环比增长率，DECIMAL (5,2)）
+stay_num_yoy（留宿人数指标同比增长率，DECIMAL (5,2)）
+stay_num_qoq（留宿人数指标环比增长率，DECIMAL (5,2)）
+reserve1（备用字段 1，VARCHAR (100)）
+reserve2（备用字段 2，VARCHAR (100)）
+creator（创建者，VARCHAR (64)，默认 ''，创建人账号 / 姓名）
+updater（更新者，VARCHAR (64)，默认 ''，更新人账号 / 姓名）
+deleted（删除标识，BIT (1)，默认 0，0 - 未删除 1 - 已删除）
+tenant_id（租户 ID，BIGINT，默认 1，关联芋道 “租户表：system_tenant，字段：id”，必填）
+create_time（创建时间，DATETIME，默认当前时间，必填）
+update_time（更新时间，DATETIME，默认当前时间 + 更新自动刷新，必填）
+
+
+№(4) 就医报表〖medical-report〗（就医报表表：medical_report）
+id（主键，BIGINT，自增，必填，主键 ID）
+report_cycle（报表周期：日报 / 周报 / 月报 / 季报 / 半年报 / 年报 / 自定义报表，VARCHAR (20)，必填，关联芋道 “字典表：medical_report_report_cycle，字段：label”）
+stat_start_time（统计开始时间，DATETIME，必填）
+stat_end_time（统计结束时间，DATETIME，必填）
+treat_total（就诊总人数，INT，必填）
+apply_num（预约数，INT，必填）
+treat_finish_rate（就诊完成率，DECIMAL (5,2)，必填）
+flow_efficiency（流程节点效率，DECIMAL (5,2)，必填）
+generate_status（生成状态：待生成 / 已生成 / 已归档，VARCHAR (20)，必填，关联芋道 “字典表：medical_report_generate_status，字段：label”）
+generate_time（报表生成时间，DATETIME，必填）
+operator_id（操作人 ID，BIGINT，关联芋道 “用户表：system_user，字段：id”，必填）
+export_count（报表导出次数，INT，默认 0）
+treat_total_yoy（就诊总人数指标同比增长率，DECIMAL (5,2)）
+treat_total_qoq（就诊总人数指标环比增长率，DECIMAL (5,2)）
+apply_num_yoy（预约数指标同比增长率，DECIMAL (5,2)）
+apply_num_qoq（预约数指标环比增长率，DECIMAL (5,2)）
+reserve1（备用字段 1，VARCHAR (100)）
+reserve2（备用字段 2，VARCHAR (100)）
+creator（创建者，VARCHAR (64)，默认 ''，创建人账号 / 姓名）
+updater（更新者，VARCHAR (64)，默认 ''，更新人账号 / 姓名）
+deleted（删除标识，BIT (1)，默认 0，0 - 未删除 1 - 已删除）
+tenant_id（租户 ID，BIGINT，默认 1，关联芋道 “租户表：system_tenant，字段：id”，必填）
+create_time（创建时间，DATETIME，默认当前时间，必填）
+update_time（更新时间，DATETIME，默认当前时间 + 更新自动刷新，必填）
+
+
+№(5) 家校报表〖home-report〗（家校报表表：home_report）
+id（主键，BIGINT，自增，必填，主键 ID）
+report_cycle（报表周期：日报 / 周报 / 月报 / 季报 / 半年报 / 年报 / 自定义报表，VARCHAR (20)，必填，关联芋道 “字典表：home_report_report_cycle，字段：label”）
+stat_start_time（统计开始时间，DATETIME，必填）
+stat_end_time（统计结束时间，DATETIME，必填）
+msg_push_num（推送消息数，INT，必填）
+msg_read_num（已读消息数，INT，必填）
+parent_feedback_num（家长反馈数，INT，必填）
+interact_rate（互动率，DECIMAL (5,2)，必填）
+sync_finish_rate（同步完成率，DECIMAL (5,2)，必填）
+generate_status（生成状态：待生成 / 已生成 / 已归档，VARCHAR (20)，必填，关联芋道 “字典表：home_report_generate_status，字段：label”）
+generate_time（报表生成时间，DATETIME，必填）
+operator_id（操作人 ID，BIGINT，关联芋道 “用户表：system_user，字段：id”，必填）
+export_count（报表导出次数，INT，默认 0）
+msg_push_num_yoy（推送消息数指标同比增长率，DECIMAL (5,2)）
+msg_push_num_qoq（推送消息数指标环比增长率，DECIMAL (5,2)）
+msg_read_num_yoy（已读消息数指标同比增长率，DECIMAL (5,2)）
+msg_read_num_qoq（已读消息数指标环比增长率，DECIMAL (5,2)）
+parent_feedback_num_yoy（家长反馈数指标同比增长率，DECIMAL (5,2)）
+parent_feedback_num_qoq（家长反馈数指标环比增长率，DECIMAL (5,2)）
+reserve1（备用字段 1，VARCHAR (100)）
+reserve2（备用字段 2，VARCHAR (100)）
+creator（创建者，VARCHAR (64)，默认 ''，创建人账号 / 姓名）
+updater（更新者，VARCHAR (64)，默认 ''，更新人账号 / 姓名）
+deleted（删除标识，BIT (1)，默认 0，0 - 未删除 1 - 已删除）
+tenant_id（租户 ID，BIGINT，默认 1，关联芋道 “租户表：system_tenant，字段：id”，必填）
+create_time（创建时间，DATETIME，默认当前时间，必填）
+update_time（更新时间，DATETIME，默认当前时间 + 更新自动刷新，必填）
+
+
+№(6) 招生报表〖enroll-report〗（招生报表表：enroll_report）
+id（主键，BIGINT，自增，必填，主键 ID）
+report_cycle（报表周期：日报 / 周报 / 月报 / 季报 / 半年报 / 年报 / 自定义报表，VARCHAR (20)，必填，关联芋道 “字典表：enroll_report_report_cycle，字段：label”）
+stat_start_time（统计开始时间，DATETIME，必填）
+stat_end_time（统计结束时间，DATETIME，必填）
+source_total（生源总数，INT，必填）
+apply_num（报名数，INT，必填）
+admit_num（录取数，INT，必填）
+checkin_num（报到数，INT，必填）
+class_assign_rate（分班完成率，DECIMAL (5,2)，必填）
+dorm_assign_rate（分配完成率，DECIMAL (5,2)，必填）
+generate_status（生成状态：待生成 / 已生成 / 已归档，VARCHAR (20)，必填，关联芋道 “字典表：enroll_report_generate_status，字段：label”）
+generate_time（报表生成时间，DATETIME，必填）
+operator_id（操作人 ID，BIGINT，关联芋道 “用户表：system_user，字段：id”，必填）
+export_count（报表导出次数，INT，默认 0）
+source_total_yoy（生源总数指标同比增长率，DECIMAL (5,2)）
+source_total_qoq（生源总数指标环比增长率，DECIMAL (5,2)）
+apply_num_yoy（报名数指标同比增长率，DECIMAL (5,2)）
+apply_num_qoq（报名数指标环比增长率，DECIMAL (5,2)）
+admit_num_yoy（录取数指标同比增长率，DECIMAL (5,2)）
+admit_num_qoq（录取数指标环比增长率，DECIMAL (5,2)）
+checkin_num_yoy（报到数指标同比增长率，DECIMAL (5,2)）
+checkin_num_qoq（报到数指标环比增长率，DECIMAL (5,2)）
+reserve1（备用字段 1，VARCHAR (100)）
+reserve2（备用字段 2，VARCHAR (100)）
+creator（创建者，VARCHAR (64)，默认 ''，创建人账号 / 姓名）
+updater（更新者，VARCHAR (64)，默认 ''，更新人账号 / 姓名）
+deleted（删除标识，BIT (1)，默认 0，0 - 未删除 1 - 已删除）
+tenant_id（租户 ID，BIGINT，默认 1，关联芋道 “租户表：system_tenant，字段：id”，必填）
+create_time（创建时间，DATETIME，默认当前时间，必填）
+update_time（更新时间，DATETIME，默认当前时间 + 更新自动刷新，必填）
+
+
+№(7) 就业报表〖employ-report〗（就业报表表：employ_report）
+id（主键，BIGINT，自增，必填，主键 ID）
+report_cycle（报表周期：日报 / 周报 / 月报 / 季报 / 半年报 / 年报 / 自定义报表，VARCHAR (20)，必填，关联芋道 “字典表：employ_report_report_cycle，字段：label”）
+stat_start_time（统计开始时间，DATETIME，必填）
+stat_end_time（统计结束时间，DATETIME，必填）
+coop_enterprise_num（合作企业数，INT，必填）
+employ_rate（就业率，DECIMAL (5,2)，必填）
+study_up_num（升学人数，INT，必填）
+job_match_rate（岗位匹配率，DECIMAL (5,2)，必填）
+generate_status（生成状态：待生成 / 已生成 / 已归档，VARCHAR (20)，必填，关联芋道 “字典表：employ_report_generate_status，字段：label”）
+generate_time（报表生成时间，DATETIME，必填）
+operator_id（操作人 ID，BIGINT，关联芋道 “用户表：system_user，字段：id”，必填）
+export_count（报表导出次数，INT，默认 0）
+coop_enterprise_num_yoy（合作企业数指标同比增长率，DECIMAL (5,2)）
+coop_enterprise_num_qoq（合作企业数指标环比增长率，DECIMAL (5,2)）
+study_up_num_yoy（升学人数指标同比增长率，DECIMAL (5,2)）
+study_up_num_qoq（升学人数指标环比增长率，DECIMAL (5,2)）
+reserve1（备用字段 1，VARCHAR (100)）
+reserve2（备用字段 2，VARCHAR (100)）
+creator（创建者，VARCHAR (64)，默认 ''，创建人账号 / 姓名）
+updater（更新者，VARCHAR (64)，默认 ''，更新人账号 / 姓名）
+deleted（删除标识，BIT (1)，默认 0，0 - 未删除 1 - 已删除）
+tenant_id（租户 ID，BIGINT，默认 1，关联芋道 “租户表：system_tenant，字段：id”，必填）
+create_time（创建时间，DATETIME，默认当前时间，必填）
+update_time（更新时间，DATETIME，默认当前时间 + 更新自动刷新，必填）
+
+
+№(8) 离校报表〖leave-report〗（离校报表表：leave_report）
+id（主键，BIGINT，自增，必填，主键 ID）
+report_cycle（报表周期：日报 / 周报 / 月报 / 季报 / 半年报 / 年报 / 自定义报表，VARCHAR (20)，必填，关联芋道 “字典表：leave_report_report_cycle，字段：label”）
+stat_start_time（统计开始时间，DATETIME，必填）
+stat_end_time（统计结束时间，DATETIME，必填）
+leave_total（离校总人数，INT，必填）
+handle_finish_rate（办理完成率，DECIMAL (5,2)，必填）
+checkout_finish_rate（退宿完成率，DECIMAL (5,2)，必填）
+parent_confirm_rate（家长确认率，DECIMAL (5,2)，必填）
+generate_status（生成状态：待生成 / 已生成 / 已归档，VARCHAR (20)，必填，关联芋道 “字典表：leave_report_generate_status，字段：label”）
+generate_time（报表生成时间，DATETIME，必填）
+operator_id（操作人 ID，BIGINT，关联芋道 “用户表：system_user，字段：id”，必填）
+export_count（报表导出次数，INT，默认 0）
+leave_total_yoy（离校总人数指标同比增长率，DECIMAL (5,2)）
+leave_total_qoq（离校总人数指标环比增长率，DECIMAL (5,2)）
+reserve1（备用字段 1，VARCHAR (100)）
+reserve2（备用字段 2，VARCHAR (100)）
+creator（创建者，VARCHAR (64)，默认 ''，创建人账号 / 姓名）
+updater（更新者，VARCHAR (64)，默认 ''，更新人账号 / 姓名）
+deleted（删除标识，BIT (1)，默认 0，0 - 未删除 1 - 已删除）
+tenant_id（租户 ID，BIGINT，默认 1，关联芋道 “租户表：system_tenant，字段：id”，必填）
+create_time（创建时间，DATETIME，默认当前时间，必填）
+update_time（更新时间，DATETIME，默认当前时间 + 更新自动刷新，必填）

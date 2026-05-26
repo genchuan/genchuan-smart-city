@@ -7,6 +7,7 @@ import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.car
 import cn.iocoder.yudao.module.chargepark.marketop.controller.admin.cardmgmt.cardconfig.vo.CardConfigUpdateReqVO;
 import cn.iocoder.yudao.module.chargepark.marketop.dal.dataobject.cardmgmt.CardConfigDO;
 import jakarta.validation.Valid;
+import java.util.List;
 
 public interface CardConfigService {
 
@@ -18,10 +19,12 @@ public interface CardConfigService {
 
     void update(@Valid CardConfigUpdateReqVO reqVO);
 
-    void enable(Long id);
+    void enable(Long id, Long userId);
 
-    void disable(Long id);
+    void disable(Long id,  Long userId);
 
     CardConfigChartRespVO getChart();
+
+    List<CardConfigDO> getSimpleList();
 
 }

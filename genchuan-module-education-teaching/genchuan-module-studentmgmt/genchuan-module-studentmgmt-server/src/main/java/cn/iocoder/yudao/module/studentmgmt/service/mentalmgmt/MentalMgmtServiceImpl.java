@@ -45,13 +45,15 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
     @LogRecord(type = VIOLATE_TYPE, subType = VIOLATE_CREATE_SUB_TYPE, bizNo = "{{#mental.id}}",
             success = VIOLATE_CREATE_SUCCESS)
     public Long createMentalMgmt(MentalMgmtSaveReqVO createReqVO) {
+        // 查询所有学生的姓名
+        StudentInfoDO studentInfoDO = studentInfoMapper.selectById(createReqVO.getStudentId());
+        if (null == studentInfoDO) {
+            throw exception(500, "学生信息不存在");
+        }
         // 插入
         MentalMgmtDO mentalMgmt = BeanUtils.toBean(createReqVO, MentalMgmtDO.class);
         mentalMgmtMapper.insert(mentalMgmt);
 
-
-        // 查询所有学生的姓名
-        StudentInfoDO studentInfoDO = studentInfoMapper.selectById(mentalMgmt.getStudentId());
         // 获取所有学生的姓名
         String studentName = studentInfoDO.getName();
 
@@ -65,6 +67,11 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
 
     @Override
     public void updateMentalMgmt(MentalMgmtSaveReqVO updateReqVO) {
+        // 查询所有学生的姓名
+        StudentInfoDO studentInfoDO = studentInfoMapper.selectById(updateReqVO.getStudentId());
+        if (null == studentInfoDO) {
+            throw exception(500, "学生信息不存在");
+        }
         // 校验存在
         validateMentalMgmtExists(updateReqVO.getId());
         // 更新
@@ -216,6 +223,8 @@ public class MentalMgmtServiceImpl implements MentalMgmtService {
         vo.setHighRiskCount(mentalMgmtMapper.selectTotalCount(MentalMentalStatusEnum.MENTAL_MGMT_MENTAL_STATUS_HIGH_RISK.getStatus(), "", ""));
         // lowRiskCount (integer): 风险等级低学生的数量。
         vo.setLowRiskCount(mentalMgmtMapper.selectTotalCount("", MentalRiskLevelEnum.MENTAL_MGMT_RISK_LEVEL_LOW.getStatus(), ""));
+        // normalCount (integer): 心理状态正常的学生数量。
+        vo.setNormalCount(mentalMgmtMapper.selectTotalCount(MentalMentalStatusEnum.MENTAL_MGMT_MENTAL_STATUS_NORMAL.getStatus(), "", ""));
         // midRiskCount (integer): 风险等级中的学生的数量。
         vo.setMidRiskCount(mentalMgmtMapper.selectTotalCount("", MentalRiskLevelEnum.MENTAL_MGMT_RISK_LEVEL_MEDIUM.getStatus(), ""));
         // highRiskLevelCount (integer): 风险等级高的学生的数量。

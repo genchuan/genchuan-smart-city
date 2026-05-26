@@ -4,7 +4,12 @@ import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.agentpay.vo.AgentRecordPageReqVO;
+import cn.iocoder.yudao.module.ordertrade.controller.admin.agentpay.vo.AgentRecordRespVO;
+import cn.iocoder.yudao.module.ordertrade.controller.admin.agentpay.vo.AgentRulePageReqVO;
+import cn.iocoder.yudao.module.ordertrade.controller.admin.agentpay.vo.AgentRuleRespVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.agentpay.AgentRecordDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -16,14 +21,38 @@ import java.util.Map;
 @Mapper
 public interface AgentRecordMapper extends BaseMapperX<AgentRecordDO> {
 
-    default PageResult<AgentRecordDO> selectPage(AgentRecordPageReqVO reqVO) {
+   /* default PageResult<AgentRecordDO> selectPage(AgentRecordPageReqVO reqVO) {
         return selectPage(reqVO, new LambdaQueryWrapperX<AgentRecordDO>()
                 .likeIfPresent(AgentRecordDO::getRecordNo, reqVO.getRecordNo())
                 .eqIfPresent(AgentRecordDO::getMerchantId, reqVO.getMerchantId())
                 .eqIfPresent(AgentRecordDO::getOrderId, reqVO.getOrderId())
                 .eqIfPresent(AgentRecordDO::getStatus, reqVO.getStatus())
                 .orderByDesc(AgentRecordDO::getId));
-    }
+    }*/
+
+    @Select("<script>" +
+            "SELECT ar.*, pm.name AS merchant_name, ao.order_no AS order_no " +
+            "FROM agent_record ar " +
+            "LEFT JOIN merchant_info pm ON pm.id = ar.merchant_id AND pm.deleted = 0 " +
+            "LEFT JOIN all_order ao ON ao.id = ar.order_id AND ao.deleted = 0 " +
+            "WHERE ar.deleted = 0 " +
+            "<if test='req.orderId != null'>AND ar.order_id = #{req.orderId} </if>" +
+            "<if test='req.merchantId != null'>AND ar.merchant_id = #{req.merchantId} </if>" +
+            "<if test='req.merchantName != null and req.merchantName != \"\"'>AND pm.name LIKE CONCAT('%', #{req.merchantName}, '%') </if>" +
+            "<if test='req.status != null and req.status != \"\"'>AND ar.status = #{req.status} </if>" +
+            "<if test='req.startTime != null'>AND ar.create_time &gt;= #{req.startTime} </if>" +
+            "<if test='req.endTime != null'>AND ar.create_time &lt;= #{req.endTime} </if>" +
+            "ORDER BY ar.id DESC" +
+            "</script>")
+    IPage<AgentRecordDO> selectPageWithDetails(Page<AgentRecordDO> page, @Param("req") AgentRecordPageReqVO reqVO);
+
+    @Select("SELECT ar.*, pm.name AS merchant_name, ao.order_no AS order_no " +
+            "FROM agent_record ar " +
+            "LEFT JOIN merchant_info pm ON pm.id = ar.merchant_id AND pm.deleted = 0 " +
+            "LEFT JOIN all_order ao ON ao.id = ar.order_id AND ao.deleted = 0 " +
+            "WHERE ar.id = #{id} AND ar.deleted = 0")
+    AgentRecordDO selectByIdWithDetails(@Param("id") Long id);
+
 
     @Select("<script>" +
             "SELECT DATE_FORMAT(create_time,'%Y-%m-%d') AS date, COUNT(*) AS count " +

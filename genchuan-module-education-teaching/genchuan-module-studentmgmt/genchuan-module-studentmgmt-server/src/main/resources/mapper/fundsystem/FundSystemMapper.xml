@@ -77,4 +77,17 @@
         GROUP BY s.grade
         ORDER BY s.grade
     </select>
+    <select id="selectTotalFund" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM fund_system AS f LEFT JOIN student_info AS s ON f.student_id = s.id
+        WHERE f.deleted = 0
+        <if test="grade != null and grade != ''">
+            AND grade = #{grade}
+        </if>
+        <if test="className != null and className != ''">
+            AND class_name = #{className}
+        </if>
+        <if test="startTime != null">
+            AND apply_time >= #{startTime} and apply_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+    </select>
 </mapper>

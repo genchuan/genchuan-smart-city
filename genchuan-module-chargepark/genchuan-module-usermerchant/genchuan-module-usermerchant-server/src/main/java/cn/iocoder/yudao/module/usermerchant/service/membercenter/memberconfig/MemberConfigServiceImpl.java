@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.usermerchant.service.membercenter.memberconfig;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.util.CollectionUtils;
@@ -17,6 +19,7 @@ import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.memberconfig.
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
 
 /**
  * 会员配置 Service 实现类
@@ -31,11 +34,15 @@ public class MemberConfigServiceImpl implements MemberConfigService {
     private MemberConfigMapper memberConfigMapper;
 
     @Override
+    @LogRecord(type = TYPE_MEMBER_CONFIG, subType = SUB_TYPE_CREATE_MEMBER_CONFIG,
+            bizNo = "{{#memberConfig.id}}",
+            success = SUCCESS_CREATE_MEMBER_CONFIG)
     public Long createMemberConfig(MemberConfigSaveReqVO createReqVO) {
         // 插入
         MemberConfigDO memberConfig = BeanUtils.toBean(createReqVO, MemberConfigDO.class);
         memberConfigMapper.insert(memberConfig);
-
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("memberConfig", memberConfig);
         // 返回
         return memberConfig.getId();
     }
@@ -50,6 +57,9 @@ public class MemberConfigServiceImpl implements MemberConfigService {
     }
 
     @Override
+    @LogRecord(type = TYPE_MEMBER_CONFIG, subType = SUB_TYPE_UPDATE_MEMBER_CONFIG,
+            bizNo = "{{#updateReqVO.id}}",
+            success = SUCCESS_UPDATE_MEMBER_CONFIG)
     public void deleteMemberConfig(Long id) {
         // 校验存在
         validateMemberConfigExists(id);
@@ -91,7 +101,10 @@ public class MemberConfigServiceImpl implements MemberConfigService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateConfigStatus(List<Long> ids, String status) {
+    @LogRecord(type = TYPE_MEMBER_CONFIG, subType = SUB_TYPE_UPDATE_CONFIG_STATUS,
+            bizNo = "{{{#ids}}}",
+            success = SUCCESS_UPDATE_CONFIG_STATUS)
+    public void updateConfigStatus(List<Long> ids, Integer status) {
         if (CollectionUtils.isEmpty(ids)) {
             return;
         }
@@ -100,6 +113,9 @@ public class MemberConfigServiceImpl implements MemberConfigService {
         updateWrapper.in("id", ids)
                 .set("status", status);
         memberConfigMapper.update(null, updateWrapper);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("ids", ids);
+        LogRecordContext.putVariable("status", status);
     }
 
 }

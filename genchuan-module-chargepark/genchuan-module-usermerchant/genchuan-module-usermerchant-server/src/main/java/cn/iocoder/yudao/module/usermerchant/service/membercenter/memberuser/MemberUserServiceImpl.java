@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.usermerchant.service.membercenter.memberuser;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.mzt.logapi.context.LogRecordContext;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.util.CollectionUtils;
@@ -16,6 +18,7 @@ import cn.iocoder.yudao.module.usermerchant.dal.mysql.membercenter.memberuser.Me
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.*;
+import static cn.iocoder.yudao.module.usermerchant.enums.LogRecordConstants.*;
 
 /**
  * 会员用户 Service 实现类
@@ -30,16 +33,23 @@ public class MemberUserServiceImpl implements MemberUserService {
     private MemberUserMapper memberUserMapper;
 
     @Override
+    @LogRecord(type = TYPE_MEMBER_USER, subType = SUB_TYPE_CREATE_MEMBER_USER,
+            bizNo = "{{#memberUser.id}}",
+            success = SUCCESS_CREATE_MEMBER_USER)
     public Long createMemberUser(MemberUserSaveReqVO createReqVO) {
         // 插入
         MemberUserDO memberUser = BeanUtils.toBean(createReqVO, MemberUserDO.class);
         memberUserMapper.insert(memberUser);
-
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("memberUser", memberUser);
         // 返回
         return memberUser.getId();
     }
 
     @Override
+    @LogRecord(type = TYPE_MEMBER_USER, subType = SUB_TYPE_UPDATE_MEMBER_USER,
+            bizNo = "{{#updateReqVO.id}}",
+            success = SUCCESS_UPDATE_MEMBER_USER)
     public void updateMemberUser(MemberUserSaveReqVO updateReqVO) {
         // 校验存在
         validateMemberUserExists(updateReqVO.getId());
@@ -80,6 +90,9 @@ public class MemberUserServiceImpl implements MemberUserService {
     }
 
     @Override
+    @LogRecord(type = TYPE_MEMBER_USER, subType = SUB_TYPE_IMPORT_MEMBER_USER,
+            bizNo = "{{#list.stream().map(MemberUserImportExcelVO::getId).collect(T(java.util.stream.Collectors).toList())}}",
+            success = SUCCESS_IMPORT_MEMBER_USER)
     public Boolean importUsers(List<MemberUserImportExcelVO> list, Boolean updateSupport) {
         if (CollectionUtils.isEmpty(list)) {
             return true;
@@ -110,11 +123,17 @@ public class MemberUserServiceImpl implements MemberUserService {
                 memberUserMapper.insert(insertDO);
             }
         }
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("list", list);
+        LogRecordContext.putVariable("updateSupport", updateSupport);
         return true;
     }
 
     @Override
-    public void updateUserStatus(List<Long> ids, String status) {
+    @LogRecord(type = TYPE_MEMBER_USER, subType = SUB_TYPE_UPDATE_MEMBER_USER_STATUS,
+            bizNo = "{{#ids}}",
+            success = SUCCESS_UPDATE_MEMBER_USER_STATUS)
+    public void updateUserStatus(List<Long> ids, Integer status) {
         if (CollectionUtils.isEmpty(ids)) {
             return;
         }
@@ -123,6 +142,9 @@ public class MemberUserServiceImpl implements MemberUserService {
         updateWrapper.in("id", ids)
                 .set("status", status);
         memberUserMapper.update(null, updateWrapper);
+        // 记录操作日志上下文
+        LogRecordContext.putVariable("ids", ids);
+        LogRecordContext.putVariable("status", status);
     }
 
 }

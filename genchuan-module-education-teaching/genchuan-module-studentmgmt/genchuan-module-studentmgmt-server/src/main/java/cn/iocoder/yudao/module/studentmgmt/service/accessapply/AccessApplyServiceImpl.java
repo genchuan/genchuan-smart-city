@@ -109,7 +109,7 @@ public class AccessApplyServiceImpl implements AccessApplyService {
             String username = SecurityFrameworkUtils.getLoginUserNickname();
             accessApplyDO.setAuditUser(username);
             //自动填充审核人、审核时间，更新申请状态为 “已通过”
-            accessApplyDO.setApplyTime(LocalDateTime.now());
+            accessApplyDO.setAuditTime(LocalDateTime.now());
             accessApplyDO.setStatus(AccessApplyStatusEnum.APPROVE.getStatus());
 
             // 更新

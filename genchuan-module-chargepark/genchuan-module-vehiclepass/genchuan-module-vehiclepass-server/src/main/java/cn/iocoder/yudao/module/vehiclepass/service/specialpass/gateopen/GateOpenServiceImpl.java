@@ -116,6 +116,11 @@ public class GateOpenServiceImpl implements GateOpenService {
     }
 
     @Override
+    public GateOpenRespVO getGateOpenWithStation(Long id) {
+        return openMapper.selectByIdJoinStation(id);
+    }
+
+    @Override
     public PageResult<GateOpenDO> getOpenPage(GateOpenPageReqVO pageReqVO) {
         return openMapper.selectPage(pageReqVO);
     }
@@ -132,6 +137,9 @@ public class GateOpenServiceImpl implements GateOpenService {
         GateOpenDO open = openMapper.selectById(reqVO.getId());
         if (open == null) {
             throw exception(OPEN_NOT_EXISTS);
+        }
+        if (!STATUS_PENDING_APPROVAL.equals(open.getStatus())) {
+            throw exception(GATE_OPEN_STATUS_INVALID);
         }
 
         Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
@@ -152,6 +160,9 @@ public class GateOpenServiceImpl implements GateOpenService {
         GateOpenDO open = openMapper.selectById(reqVO.getId());
         if (open == null) {
             throw exception(OPEN_NOT_EXISTS);
+        }
+        if (!STATUS_PENDING_APPROVAL.equals(open.getStatus())) {
+            throw exception(GATE_OPEN_STATUS_INVALID);
         }
 
         Long currentUserId = SecurityFrameworkUtils.getLoginUserId();
@@ -174,6 +185,9 @@ public class GateOpenServiceImpl implements GateOpenService {
         if (open == null) {
             throw exception(OPEN_NOT_EXISTS);
         }
+        if (!STATUS_APPROVED.equals(open.getStatus())) {
+            throw exception(GATE_OPEN_STATUS_INVALID);
+        }
         GateOpenDO updateObj = new GateOpenDO();
         updateObj.setId(reqVO.getId());
         updateObj.setStatus(STATUS_EXECUTED);
@@ -186,6 +200,9 @@ public class GateOpenServiceImpl implements GateOpenService {
         GateOpenDO open = openMapper.selectById(reqVO.getId());
         if (open == null) {
             throw exception(OPEN_NOT_EXISTS);
+        }
+        if (!STATUS_REJECTED.equals(open.getStatus())) {
+            throw exception(GATE_OPEN_STATUS_INVALID);
         }
 
         Long currentUserId = SecurityFrameworkUtils.getLoginUserId();

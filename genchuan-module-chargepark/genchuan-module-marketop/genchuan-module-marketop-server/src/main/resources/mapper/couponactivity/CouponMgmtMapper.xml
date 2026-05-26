@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.iocoder.yudao.module.chargepark.marketop.dal.mysql.couponactivity.CouponMgmtMapper">
+
+    <select id="selectStationIdsByNames" resultType="map">
+        SELECT id, name FROM station_info WHERE deleted = 0 AND name IN
+        <foreach collection="names" item="name" open="(" separator="," close=")">
+            #{name}
+        </foreach>
+    </select>
+
+    <select id="selectPageJoin" resultType="cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.CouponMgmtRespVO">
+        SELECT
+            cm.id,
+            cm.name,
+            cm.type,
+            cm.amount,
+            cm.use_condition AS useCondition,
+            cm.status,
+            cm.sender_id AS senderId,
+            cm.send_time AS sendTime,
+            cm.receiver_id AS receiverId,
+            u.nickname AS receiverName,
+            cm.verify_time AS verifyTime,
+            cm.valid_time AS validTime,
+            cm.description,
+            cm.station_ids AS stationIds,
+            cm.creator,
+            cm.create_time AS createTime,
+            cm.update_time AS updateTime
+        FROM coupon_mgmt cm
+        LEFT JOIN user_info u ON cm.receiver_id = u.id AND u.deleted = 0
+        WHERE cm.deleted = 0
+        <if test="reqVO.name != null and reqVO.name != ''">
+            AND cm.name LIKE CONCAT('%', #{reqVO.name}, '%')
+        </if>
+        <if test="reqVO.type != null and reqVO.type != ''">
+            AND cm.type = #{reqVO.type}
+        </if>
+        <if test="reqVO.status != null and reqVO.status != ''">
+            AND cm.status = #{reqVO.status}
+        </if>
+        <if test="reqVO.amount != null">
+            AND cm.amount = #{reqVO.amount}
+        </if>
+        <if test="reqVO.createTime != null and reqVO.createTime.length == 2">
+            AND cm.create_time BETWEEN #{reqVO.createTime[0]} AND #{reqVO.createTime[1]}
+        </if>
+        <if test="reqVO.validTime != null and reqVO.validTime.length == 2">
+            AND cm.valid_time BETWEEN #{reqVO.validTime[0]} AND #{reqVO.validTime[1]}
+        </if>
+        <if test="reqVO.verifyTime != null and reqVO.verifyTime.length == 2">
+            AND cm.verify_time BETWEEN #{reqVO.verifyTime[0]} AND #{reqVO.verifyTime[1]}
+        </if>
+        <if test="reqVO.sendTime != null and reqVO.sendTime.length == 2">
+            AND cm.send_time BETWEEN #{reqVO.sendTime[0]} AND #{reqVO.sendTime[1]}
+        </if>
+        <if test="reqVO.date != null and reqVO.date != ''">
+            AND cm.create_time BETWEEN DATE(#{reqVO.date}) AND DATE(DATE_ADD(#{reqVO.date}, INTERVAL 1 DAY))
+        </if>
+        ORDER BY cm.id DESC
+    </select>
+
+    <select id="selectByIdJoin" resultType="cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.CouponMgmtRespVO">
+        SELECT
+            cm.id,
+            cm.name,
+            cm.type,
+            cm.amount,
+            cm.use_condition AS useCondition,
+            cm.status,
+            cm.sender_id AS senderId,
+            cm.send_time AS sendTime,
+            cm.receiver_id AS receiverId,
+            u.nickname AS receiverName,
+            cm.verify_time AS verifyTime,
+            cm.valid_time AS validTime,
+            cm.description,
+            cm.station_ids AS stationIds,
+            cm.creator,
+            cm.create_time AS createTime,
+            cm.update_time AS updateTime
+        FROM coupon_mgmt cm
+        LEFT JOIN user_info u ON cm.receiver_id = u.id AND u.deleted = 0
+        WHERE cm.id = #{id} AND cm.deleted = 0
+    </select>
+
+    <select id="selectUserSimpleList" resultType="cn.iocoder.yudao.module.chargepark.marketop.controller.admin.couponactivity.couponmgmt.vo.UserSimpleRespVO">
+        SELECT id, nickname AS name, phone FROM user_info WHERE deleted = 0
+        <if test="name != null and name != ''">
+            AND nickname LIKE CONCAT('%', #{name}, '%')
+        </if>
+        ORDER BY id DESC
+    </select>
+
+</mapper>

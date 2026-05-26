@@ -64,7 +64,7 @@ public interface MemberLevelService {
      * @param ids ids
      * @param status 状态
      */
-    void updateLevelStatus(List<Long> ids, String status);
+    void updateLevelStatus(List<Long> ids, Integer status);
 
     /**
      * 保存会员等级

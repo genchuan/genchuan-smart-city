@@ -46,7 +46,7 @@ public class CommunicateMgmtRespVO {
     private BigDecimal interactRate;
 
     @Schema(description = "状态：未发布/已发布", requiredMode = Schema.RequiredMode.REQUIRED, example = "2")
-    @ExcelProperty("状态：未发布/已发布")
+    @ExcelProperty("状态")
     private String status;
 
     @Schema(description = "备注", example = "随便")
@@ -65,4 +65,4 @@ public class CommunicateMgmtRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
-}
+}

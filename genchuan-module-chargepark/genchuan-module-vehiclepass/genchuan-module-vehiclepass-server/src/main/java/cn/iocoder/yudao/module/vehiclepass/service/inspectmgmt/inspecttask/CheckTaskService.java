@@ -13,6 +13,7 @@ import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspectt
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.InspectTaskArchiveReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.InspectTaskChartReqVO;
 import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.InspectTaskChartRespVO;
+import cn.iocoder.yudao.module.vehiclepass.controller.admin.inspectmgmt.inspecttask.vo.UserSimpleRespVO;
 import cn.iocoder.yudao.module.vehiclepass.dal.dataobject.inspectmgmt.inspecttask.CheckTaskDO;
 import jakarta.validation.*;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
@@ -61,6 +62,14 @@ public interface CheckTaskService {
      * @return 稽查任务
      */
     CheckTaskDO getTask(Long id);
+
+    /**
+     * 获得稽查任务（含关联表字段）
+     *
+     * @param id 编号
+     * @return 稽查任务（含片区名称、执行人名称）
+     */
+    CheckTaskRespVO getTaskWithJoin(Long id);
 
     /**
      * 获得稽查任务分页
@@ -127,5 +136,12 @@ public interface CheckTaskService {
      * @return 统计结果
      */
     InspectTaskChartRespVO getChart(InspectTaskChartReqVO reqVO);
+
+    /**
+     * 获得执行人精简列表
+     *
+     * @return 执行人列表
+     */
+    List<UserSimpleRespVO> getUserSimpleList();
 
 }

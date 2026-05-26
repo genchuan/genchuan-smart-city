@@ -40,14 +40,43 @@
         <if test="query.stationId != null">
             AND p.station_id = #{query.stationId}
         </if>
+        <if test="query.stationName != null and query.stationName != ''">
+            AND s.name LIKE CONCAT('%', #{query.stationName}, '%')
+        </if>
         <if test="query.remark != null and query.remark != ''">
             AND p.remark LIKE CONCAT('%', #{query.remark}, '%')
         </if>
         <if test="query.isCorrected != null">
             AND p.is_corrected = #{query.isCorrected}
         </if>
+        <if test="query.createTimeRange != null and query.createTimeRange.length == 2">
+            AND p.create_time BETWEEN #{query.createTimeRange[0]} AND #{query.createTimeRange[1]}
+        </if>
 
         ORDER BY p.id DESC
+    </select>
+
+    <select id="selectByIdJoinStation" resultType="cn.iocoder.yudao.module.vehiclepass.controller.admin.entermgmt.identify.vo.IdentifyRespVO">
+        SELECT
+            p.id,
+            p.plate_no AS plateNo,
+            p.plate_color AS plateColor,
+            p.confidence,
+            p.image_url AS imageUrl,
+            p.status,
+            s.name AS stationName,
+            p.station_id AS stationId,
+            p.remark,
+            p.is_corrected AS isCorrected,
+            p.reserve1,
+            p.reserve2,
+            p.creator,
+            p.updater,
+            p.create_time AS createTime,
+            p.update_time AS updateTime
+        FROM plate_identify p
+        LEFT JOIN station_info s ON p.station_id = s.id
+        WHERE p.id = #{id} AND p.deleted = 0
     </select>
 
     <!--

@@ -139,6 +139,11 @@ public class BedMgmtServiceImpl implements BedMgmtService {
         LocalDateTime adjustTime = reqVO.getAdjustTime();
 
         BedMgmtDO bedMgmt = bedMgmtMapper.selectById(oldBedId);
+        // 将旧床位设置为未分配
+        bedMgmt.setStudentId(null);
+        bedMgmt.setAdjustTime(adjustTime);
+        bedMgmt.setStatus(BedStatusEnum.BED_STATUS_UNALLOCATED.getStatus());
+        bedMgmtMapper.updateById(bedMgmt);
         // 判断原床位是否为该学生
 //        if (!studentId.equals(bedMgmt.getStudentId())) {
 //            throw exception(500, "原床位不是该学生的");
@@ -154,16 +159,20 @@ public class BedMgmtServiceImpl implements BedMgmtService {
         if (bedMgmtByStudentId != null) {
             // 该床位是否为oldBedId，如果不是，则表示还存在其它的旧床位
             if (!oldBedId.equals(bedMgmtByStudentId.getId())) {
-                throw exception(500, "学生已分配其他床位");
+//                throw exception(500, "学生已分配其他床位");
+                // 将该学生的旧床位设置为未分配
+                bedMgmtByStudentId.setStudentId(null);
+                bedMgmtByStudentId.setAdjustTime(adjustTime);
+                bedMgmtMapper.updateById(bedMgmtByStudentId);
             }
         }
         // 设置新床位为学生
         if (adjustTime == null) {
             adjustTime = LocalDateTime.now();
         }
-        bedMgmt.setStudentId(studentId);
+        newBedMgmt.setStudentId(studentId);
         newBedMgmt.setAdjustTime(adjustTime);
-        bedMgmt.setStatus(BedStatusEnum.BED_STATUS_ALLOCATED.getStatus());
+        newBedMgmt.setStatus(BedStatusEnum.BED_STATUS_ALLOCATED.getStatus());
         int update = bedMgmtMapper.updateById(newBedMgmt);
         if (update > 0) {
             // 记录操作日志上下文
@@ -292,5 +301,10 @@ public class BedMgmtServiceImpl implements BedMgmtService {
         }
         vo.setTrendList(trendList);
         return vo;
+    }
+
+    @Override
+    public PageResult<BedMgmtRespVO> getBedMgmtJoinPage(BedMgmtPageReqVO pageReqVO) {
+        return bedMgmtMapper.selectJoinPage(pageReqVO);
     }
 }

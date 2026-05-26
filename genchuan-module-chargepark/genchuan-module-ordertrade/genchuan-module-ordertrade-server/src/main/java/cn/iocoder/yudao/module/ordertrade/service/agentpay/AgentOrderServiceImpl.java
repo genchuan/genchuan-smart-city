@@ -2,6 +2,8 @@ package cn.iocoder.yudao.module.ordertrade.service.agentpay;
 
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.agentpay.vo.*;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.ordermgmt.vo.IdReqVO;
@@ -51,12 +53,14 @@ public class AgentOrderServiceImpl implements AgentOrderService {
 
     @Override
     public AgentOrderDO getAgentOrder(Long id) {
-        return agentOrderMapper.selectById(id);
+        return agentOrderMapper.selectByIdWithMerchant(id);
     }
 
     @Override
     public PageResult<AgentOrderDO> getAgentOrderPage(AgentOrderPageReqVO pageReqVO) {
-        return agentOrderMapper.selectPage(pageReqVO);
+        Page<AgentOrderDO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
+        IPage<AgentOrderDO> result = agentOrderMapper.selectPageWithMerchant(page, pageReqVO);
+        return new PageResult<>(result.getRecords(), result.getTotal());
     }
 
     @Override

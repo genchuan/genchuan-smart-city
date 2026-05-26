@@ -7,6 +7,7 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
@@ -52,5 +53,9 @@ public class UserCreditPageReqVO extends PageParam {
     @Schema(description = "更新时间（系统字段）")
     @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
     private LocalDateTime[] updateTime;
+
+    @TableField(exist = false)
+    @Schema(description = "用户ID列表（内部使用）")
+    private List<Long> userIds;
 
 }
