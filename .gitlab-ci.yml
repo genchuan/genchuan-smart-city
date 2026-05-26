@@ -19,6 +19,7 @@ Build:
            ["yudao-module-system-server"]="yudao-module-system/yudao-module-system-server"
            ["yudao-module-pay-server"]="yudao-module-pay/yudao-module-pay-server"
            ["yudao-module-trade-server"]="yudao-module-mall/yudao-module-trade/yudao-module-trade-server"
+           ["genchuan-module-inspectop-server"]="genchuan-module-chargepark/genchuan-module-inspectop/genchuan-module-inspectop-server"
         )
         for module in "${!MODULE_JAR_MAP[@]}"; do
           jarPath=${MODULE_JAR_MAP[$module]}
