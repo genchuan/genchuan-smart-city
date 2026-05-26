@@ -109,6 +109,14 @@ public class AmountCheckController {
 
     // ==================== ② 业务操作接口 ====================
 
+    @PostMapping("/check")
+    @ApiAccessLog(operateType = UPDATE)
+    @Operation(summary = "金额核算")
+    public CommonResult<Boolean> checkAmountCheck(@Valid @RequestBody IdReqVO reqVO) {
+        amountCheckService.checkAmountCheck(reqVO);
+        return success(true);
+    }
+
     @PostMapping("/calculate")
     @ApiAccessLog(operateType = UPDATE)  // ← 加这一行
     @Operation(summary = "批量核算")

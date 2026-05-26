@@ -97,7 +97,7 @@ public class ReconcileBillServiceImpl implements ReconcileBillService {
     public void confirmReconcileBill(Long id) {
         ReconcileBillDO bill = reconcileBillMapper.selectById(id);
         if (bill == null) throw exception(RECONCILE_BILL_NOT_EXISTS);
-        if (!"pending".equals(bill.getStatus()) && !"reconciling".equals(bill.getStatus()))
+        if (!ReconcileBillStatusEnum.RECONCILED.getValue().equals(bill.getStatus()))
             throw exception(RECONCILE_BILL_STATUS_CANNOT_CONFIRM);
         ReconcileBillDO update = new ReconcileBillDO();
         update.setId(id);
@@ -114,7 +114,7 @@ public class ReconcileBillServiceImpl implements ReconcileBillService {
         if (bill == null) throw exception(RECONCILE_BILL_NOT_EXISTS);
         ReconcileBillDO update = new ReconcileBillDO();
         update.setId(reqVO.getId());
-        //update.setStatus("fixed");
+        update.setStatus("fixed");
         update.setReserve1(reqVO.getFixReason());
         update.setReconcilerId(SecurityFrameworkUtils.getLoginUserId());
         reconcileBillMapper.updateById(update);

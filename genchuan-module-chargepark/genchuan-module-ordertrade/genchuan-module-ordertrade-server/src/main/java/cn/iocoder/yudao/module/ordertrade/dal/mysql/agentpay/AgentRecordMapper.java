@@ -31,7 +31,7 @@ public interface AgentRecordMapper extends BaseMapperX<AgentRecordDO> {
     }*/
 
     @Select("<script>" +
-            "SELECT ar.*, pm.name AS merchant_name, ao.order_no AS order_no " +
+            "SELECT ar.*, pm.name AS merchantName, ao.order_no AS orderNo " +
             "FROM agent_record ar " +
             "LEFT JOIN merchant_info pm ON pm.id = ar.merchant_id AND pm.deleted = 0 " +
             "LEFT JOIN all_order ao ON ao.id = ar.order_id AND ao.deleted = 0 " +
@@ -46,7 +46,7 @@ public interface AgentRecordMapper extends BaseMapperX<AgentRecordDO> {
             "</script>")
     IPage<AgentRecordDO> selectPageWithDetails(Page<AgentRecordDO> page, @Param("req") AgentRecordPageReqVO reqVO);
 
-    @Select("SELECT ar.*, pm.name AS merchant_name, ao.order_no AS order_no " +
+    @Select("SELECT ar.*, pm.name AS merchantName, ao.order_no AS orderNo " +
             "FROM agent_record ar " +
             "LEFT JOIN merchant_info pm ON pm.id = ar.merchant_id AND pm.deleted = 0 " +
             "LEFT JOIN all_order ao ON ao.id = ar.order_id AND ao.deleted = 0 " +

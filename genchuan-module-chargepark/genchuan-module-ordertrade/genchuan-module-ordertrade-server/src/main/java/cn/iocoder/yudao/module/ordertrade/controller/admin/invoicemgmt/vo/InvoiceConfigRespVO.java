@@ -39,10 +39,6 @@ public class InvoiceConfigRespVO {
     @ExcelProperty("审核人ID")
     private Long auditorId;
 
-    @Schema(description = "审核人姓名")
-    @ExcelProperty("审核人姓名")
-    private String auditorName;
-
     @Schema(description = "审核时间")
     @ExcelProperty("审核时间")
     private LocalDateTime auditTime;
@@ -65,6 +61,11 @@ public class InvoiceConfigRespVO {
     @ExcelProperty("创建时间")
     private LocalDateTime createTime;
 
+    @Schema(description = "审核人姓名")
+    @ExcelProperty("审核人姓名")
+    private String updater;
+
     @Schema(description = "更新时间")
+    @ExcelProperty("更新时间")
     private LocalDateTime updateTime;
 }

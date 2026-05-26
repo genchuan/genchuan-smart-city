@@ -90,7 +90,7 @@ public class AmountCheckServiceImpl implements AmountCheckService {
         }
     }
 
-    /** 核算（PUT /check）：单条核算 */
+    /** 核算（POST /check）：单条核算，校验订单费用、优惠抵扣的准确性，生成核算结果 */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void checkAmountCheck(IdReqVO reqVO) {
@@ -99,9 +99,25 @@ public class AmountCheckServiceImpl implements AmountCheckService {
         AmountCheckDO update = new AmountCheckDO();
         update.setId(reqVO.getId());
         update.setStatus("checked");
-        update.setCheckResult("pass");
-        if (reqVO.getRemark() != null) update.setCheckDetail(reqVO.getRemark());
         update.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
+        if (check.getOrderId() != null) {
+            AllOrderDO order = allOrderMapper.selectById(check.getOrderId());
+            if (order != null && order.getAmount() != null) {
+                boolean match = check.getApplyAmount() != null &&
+                               check.getApplyAmount().compareTo(order.getAmount()) == 0;
+                update.setCheckResult(match ? "pass" : "fail");
+                update.setCheckDetail(match
+                    ? "核算通过，金额一致：" + order.getAmount()
+                    : "核算差异：申请=" + check.getApplyAmount() + "，实际=" + order.getAmount());
+            }
+        }
+        if (update.getCheckResult() == null) {
+            update.setCheckResult("pass");
+            update.setCheckDetail("核算完成");
+        }
+        if (reqVO.getRemark() != null) {
+            update.setCheckDetail(update.getCheckDetail() + "，备注：" + reqVO.getRemark());
+        }
         amountCheckMapper.updateById(update);
     }
 

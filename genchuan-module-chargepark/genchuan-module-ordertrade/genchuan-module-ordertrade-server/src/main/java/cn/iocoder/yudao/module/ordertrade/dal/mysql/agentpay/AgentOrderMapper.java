@@ -20,7 +20,7 @@ import java.util.Map;
 public interface AgentOrderMapper extends BaseMapperX<AgentOrderDO> {
 
     @Select("<script>" +
-            "SELECT ao.*, mi.name AS merchant_name " +
+            "SELECT ao.*, mi.name AS merchantName " +
             "FROM agent_order ao " +
             "LEFT JOIN merchant_info mi ON mi.id = ao.merchant_id AND mi.deleted = 0 " +
             "WHERE ao.deleted = 0 " +
@@ -34,7 +34,7 @@ public interface AgentOrderMapper extends BaseMapperX<AgentOrderDO> {
             "</script>")
     IPage<AgentOrderDO> selectPageWithMerchant(Page<AgentOrderDO> page, @Param("req") AgentOrderPageReqVO reqVO);
 
-    @Select("SELECT ao.*, mi.name AS merchant_name " +
+    @Select("SELECT ao.*, mi.name AS merchantName " +
             "FROM agent_order ao " +
             "LEFT JOIN merchant_info mi ON mi.id = ao.merchant_id AND mi.deleted = 0 " +
             "WHERE ao.id = #{id} AND ao.deleted = 0")
