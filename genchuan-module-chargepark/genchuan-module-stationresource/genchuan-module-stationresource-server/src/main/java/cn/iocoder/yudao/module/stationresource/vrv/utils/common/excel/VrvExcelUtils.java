@@ -33,18 +33,24 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 /**
  * Excel导入导出工具类（通用）
  * <p>统一处理 Excel 导入模板下载、列表导出、数据导入解析等功能。
- * <p>V2.1 新增：导入错误提示中文化（字段名+类型+示例），Boolean 支持"是/否"输入
- * <p>V2.2 新增：导入模板文件名改为中文业务名+日期、表头自动去除中括号 [xxx]
- * <p>V2.3 新增：导入模板表头非必选字段自动标注"（可选）"
- * <p>V2.4 新增：支持 @ExcelDropdown 注解，为有限定值的字段自动生成下拉选择框
+ * <p>V2.1 2026-05-09 10:07 新增：导入错误提示中文化（字段名+类型+示例），Boolean 支持"是/否"输入
+ * <p>V2.2 2026-05-09 15:00 新增：导入模板文件名改为中文业务名+日期、表头自动去除中括号 [xxx]
+ * <p>V2.3 2026-05-25 14:00 新增：导入模板表头非必选字段自动标注"（可选）"
+ * <p>V2.4 2026-05-26 15:00 新增：支持 @ExcelDropdown 注解，为有限定值的字段自动生成下拉选择框
+ * <p>V2.5 2026-05-26 17:00 新增：支持 fieldDropdownMap 参数传入动态下拉数据，优先级高于注解
  *
  * @author vrvliang
- * @version V2.4 2026-05-26
+ * @version V2.5 2026-05-26 17:00
  */
 public class VrvExcelUtils {
 
     /**
      * 下载导入模板（无动态下拉，向后兼容）
+     *
+     * <pre>
+     * 版本历史：
+     *   V5 2026-05-26 17:00 —— 委托三参数方法，保持向后兼容
+     * </pre>
      */
     public static <T> void downloadImportTemplate(HttpServletResponse response, Class<T> clazz) throws Exception {
         downloadImportTemplate(response, clazz, null);
@@ -62,10 +68,11 @@ public class VrvExcelUtils {
      *
      * <pre>
      * 版本历史：
-     *   V1 2026-04-08  —— 初始版本：英文字段名作表头
-     *   V2 2026-05-09 —— 表头改为 @Schema.description，示例值改为 @Schema.example
-     *   V3 2026-05-21 —— 文件名中文业务名+日期，表头去中括号
-     *   V4 2026-05-26 —— 支持 @ExcelDropdown、fieldDropdownMap 两种下拉方式
+     *   V1 2026-04-08 10:00 —— 初始版本：英文字段名作表头，"请输入XXX"作示例行
+     *   V2 2026-05-09 10:07 —— 表头改为 @Schema.description（中文名），示例值改为 @Schema.example，跳过 @ExcelIgnore
+     *   V3 2026-05-21 16:00 —— 文件名改为中文业务名+日期（如"场站信息_导入模板_20260521.xlsx"），表头自动去除中括号
+     *   V4 2026-05-26 15:00 —— 支持 @ExcelDropdown 注解，为有限定值字段自动生成下拉选择框
+     *   V5 2026-05-26 17:00 —— 支持 fieldDropdownMap 参数传入动态下拉数据，优先级高于注解
      * </pre>
      */
     public static <T> void downloadImportTemplate(HttpServletResponse response, Class<T> clazz,

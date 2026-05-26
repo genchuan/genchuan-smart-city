@@ -15,7 +15,7 @@ import java.lang.annotation.*;
  * </pre>
  *
  * @author vrvliang
- * @version V1 2026-05-26
+ * @version V1 2026-05-26 15:00
  */
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)

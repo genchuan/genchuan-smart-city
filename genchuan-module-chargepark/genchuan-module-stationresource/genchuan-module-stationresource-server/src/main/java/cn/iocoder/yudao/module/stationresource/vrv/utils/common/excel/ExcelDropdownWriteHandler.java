@@ -23,9 +23,9 @@ import java.util.Map;
  * </pre>
  *
  * @author vrvliang
- * @version V1 2026-05-26
+ * @version V1 2026-05-26 15:00
  */
-public class ExcelDropdownWriteHandler implements SheetWriteHandler {//作用：Excel 工作表创建完后，自动执行 “加下拉框” 逻辑
+public class ExcelDropdownWriteHandler implements SheetWriteHandler {
 
     /**
      * 下拉框生效的起始行（第1行=表头，第2行起=数据行，0-indexed 即 row 1 起效）
@@ -35,7 +35,7 @@ public class ExcelDropdownWriteHandler implements SheetWriteHandler {//作用：
      * 下拉框生效的结束行（默认覆盖前2000行）
      */
     private static final int LAST_ROW = 2000;
-    /**x
+    /**
      * 隐藏的字典sheet名称
      */
     private static final String DICT_SHEET_NAME = "下拉选项";
