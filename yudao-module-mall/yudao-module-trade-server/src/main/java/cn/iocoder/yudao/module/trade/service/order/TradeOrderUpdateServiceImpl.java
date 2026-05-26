@@ -14,6 +14,7 @@ import cn.iocoder.yudao.framework.common.enums.UserTypeEnum;
 import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.common.util.json.JsonUtils;
 import cn.iocoder.yudao.framework.common.util.number.MoneyUtils;
+import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.member.api.address.MemberAddressApi;
 import cn.iocoder.yudao.module.member.api.address.dto.MemberAddressRespDTO;
 import cn.iocoder.yudao.module.member.api.user.MemberUserApi;
@@ -369,35 +370,44 @@ public class TradeOrderUpdateServiceImpl implements TradeOrderUpdateService {
 
         // ====== 新增：步骤6 - 支付成功后，为当前用户设置固定角色 169 ======
         try {
-            // 6.1 根据订单ID查询完整的订单信息，获取用户ID
-            TradeOrderDO orderForUser = tradeOrderMapper.selectById(id); // 可直接用参数`id`，或者使用已查询到的`order`对象（如果其用户信息完整）
-            if (orderForUser == null) {
-                log.error("[updateOrderPaid][订单({})在设置角色时查询失败]", id);
-                return; // 订单不存在，不继续处理角色设置
-            }
-            Long userId = orderForUser.getUserId();
+        // 5. 根据用户Id设置用户角色为169
+        Set<Long> roleIds = new HashSet<>();
+        roleIds.add(169L);
+        Long userId = SecurityFrameworkUtils.getLoginUserId();
+        log.info("======下单的用户ID======：",userId);
 
-            // 6.2 根据用户ID查询会员的手机号
-            // 注意：此处需要调用【会员模块】的Feign API来获取会员详情。假设存在 MemberUserApi 和 getUserById 方法。
-            // 由于提供的文档中无此接口，这里基于风格生成一个示例调用。
-            // 你需要根据实际项目中的会员服务Feign客户端进行替换。
-            CommonResult<MemberUserRespDTO> userResult = memberUserApi.getUser(userId);
-            if (userResult == null || !userResult.isSuccess() || userResult.getData() == null) {
-                log.warn("[updateOrderPaid][用户({})的手机号查询失败，无法设置角色]", userId);
-                return;
-            }
-            String mobile = userResult.getData().getMobile();
-            if (StrUtil.isEmpty(mobile)) {
-                log.warn("[updateOrderPaid][用户({})的手机号为空，无法设置角色]", userId);
-                return;
-            }
+        CommonResult<Boolean> assignResult = permissionApi.assignUserRoleByUserId(userId, roleIds);
 
-            // 6.3 调用权限服务的Feign客户端，通过手机号设置固定角色 169
-            Set<Long> roleIds = Collections.singleton(169L);
-            CommonResult<Boolean> assignResult = permissionApi.assignUserRoleByMobile(mobile, roleIds);
+
+//            // 6.1 根据订单ID查询完整的订单信息，获取用户ID
+//            TradeOrderDO orderForUser = tradeOrderMapper.selectById(id); // 可直接用参数`id`，或者使用已查询到的`order`对象（如果其用户信息完整）
+//            if (orderForUser == null) {
+//                log.error("[updateOrderPaid][订单({})在设置角色时查询失败]", id);
+//                return; // 订单不存在，不继续处理角色设置
+//            }
+//            Long userId = orderForUser.getUserId();
+//
+//            // 6.2 根据用户ID查询会员的手机号
+//            // 注意：此处需要调用【会员模块】的Feign API来获取会员详情。假设存在 MemberUserApi 和 getUserById 方法。
+//            // 由于提供的文档中无此接口，这里基于风格生成一个示例调用。
+//            // 你需要根据实际项目中的会员服务Feign客户端进行替换。
+//            CommonResult<MemberUserRespDTO> userResult = memberUserApi.getUser(userId);
+//            if (userResult == null || !userResult.isSuccess() || userResult.getData() == null) {
+//                log.warn("[updateOrderPaid][用户({})的手机号查询失败，无法设置角色]", userId);
+//                return;
+//            }
+//            String mobile = userResult.getData().getMobile();
+//            if (StrUtil.isEmpty(mobile)) {
+//                log.warn("[updateOrderPaid][用户({})的手机号为空，无法设置角色]", userId);
+//                return;
+//            }
+//
+//            // 6.3 调用权限服务的Feign客户端，通过手机号设置固定角色 169
+//            Set<Long> roleIds = Collections.singleton(169L);
+//            CommonResult<Boolean> assignResult = permissionApi.assignUserRoleByUserId(userId, roleIds);
 
             if (assignResult != null && assignResult.isSuccess()) {
-                log.info("[updateOrderPaid][订单({})支付成功，已为用户({}, mobile:{})设置角色{}]", id, userId, mobile, roleIds);
+                log.info("[updateOrderPaid][订单({})支付成功，已为用户({}, mobile:{})设置角色{}]", id, userId, roleIds);
             } else {
                 // Feign调用失败或业务失败，记录错误日志，但不应该回滚支付成功的主事务
                 log.error("[updateOrderPaid][订单({})支付成功，但为用户({})设置角色失败。错误信息: {}]",
