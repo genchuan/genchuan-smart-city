@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.time.LocalDateTime;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
@@ -31,7 +30,6 @@ import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionU
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
 import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
 import static cn.iocoder.yudao.module.vehiclepass.enums.ErrorCodeConstants.*;
-import static cn.iocoder.yudao.module.vehiclepass.constants.common.TimeConstants.*;
 
 
 /**
@@ -114,14 +112,8 @@ public class LeaveRecordServiceImpl implements LeaveRecordService {
     public Long createRecordSupplement(LeaveRecordCreateReqVO reqVO) {
         LeaveRecordDO record = new LeaveRecordDO();
         record.setPlateNo(reqVO.getPlateNo());
-        try {
-            long enterTimestamp = Long.parseLong(reqVO.getEnterTime());
-            long leaveTimestamp = Long.parseLong(reqVO.getLeaveTime());
-            record.setEnterTime(LocalDateTime.ofEpochSecond(enterTimestamp, 0, java.time.ZoneOffset.ofHours(DEFAULT_TIMEZONE_OFFSET_HOURS)));
-            record.setLeaveTime(LocalDateTime.ofEpochSecond(leaveTimestamp, 0, java.time.ZoneOffset.ofHours(DEFAULT_TIMEZONE_OFFSET_HOURS)));
-        } catch (NumberFormatException e) {
-            throw exception(TIMESTAMP_PARSE_ERROR);
-        }
+        record.setEnterTime(reqVO.getEnterTime());
+        record.setLeaveTime(reqVO.getLeaveTime());
         // 计算停车时长（分钟）
         long duration = java.time.Duration.between(record.getEnterTime(), record.getLeaveTime()).toMinutes();
         record.setParkDuration((int) duration);
@@ -143,14 +135,8 @@ public class LeaveRecordServiceImpl implements LeaveRecordService {
         LeaveRecordDO updateObj = new LeaveRecordDO();
         updateObj.setId(reqVO.getId());
         updateObj.setPlateNo(reqVO.getPlateNo());
-        try {
-            long enterTimestamp = Long.parseLong(reqVO.getEnterTime());
-            long leaveTimestamp = Long.parseLong(reqVO.getLeaveTime());
-            updateObj.setEnterTime(LocalDateTime.ofEpochSecond(enterTimestamp, 0, java.time.ZoneOffset.ofHours(DEFAULT_TIMEZONE_OFFSET_HOURS)));
-            updateObj.setLeaveTime(LocalDateTime.ofEpochSecond(leaveTimestamp, 0, java.time.ZoneOffset.ofHours(DEFAULT_TIMEZONE_OFFSET_HOURS)));
-        } catch (NumberFormatException e) {
-            throw exception(TIMESTAMP_PARSE_ERROR);
-        }
+        updateObj.setEnterTime(reqVO.getEnterTime());
+        updateObj.setLeaveTime(reqVO.getLeaveTime());
         long duration = java.time.Duration.between(updateObj.getEnterTime(), updateObj.getLeaveTime()).toMinutes();
         updateObj.setParkDuration((int) duration);
         updateObj.setStatus(reqVO.getStatus());
@@ -169,14 +155,8 @@ public class LeaveRecordServiceImpl implements LeaveRecordService {
         LeaveRecordDO updateObj = new LeaveRecordDO();
         updateObj.setId(reqVO.getId());
         updateObj.setPlateNo(reqVO.getPlateNo());
-        try {
-            long enterTimestamp = Long.parseLong(reqVO.getEnterTime());
-            long leaveTimestamp = Long.parseLong(reqVO.getLeaveTime());
-            updateObj.setEnterTime(LocalDateTime.ofEpochSecond(enterTimestamp, 0, java.time.ZoneOffset.ofHours(DEFAULT_TIMEZONE_OFFSET_HOURS)));
-            updateObj.setLeaveTime(LocalDateTime.ofEpochSecond(leaveTimestamp, 0, java.time.ZoneOffset.ofHours(DEFAULT_TIMEZONE_OFFSET_HOURS)));
-        } catch (NumberFormatException e) {
-            throw exception(TIMESTAMP_PARSE_ERROR);
-        }
+        updateObj.setEnterTime(reqVO.getEnterTime());
+        updateObj.setLeaveTime(reqVO.getLeaveTime());
         long duration = java.time.Duration.between(updateObj.getEnterTime(), updateObj.getLeaveTime()).toMinutes();
         updateObj.setParkDuration((int) duration);
         updateObj.setStatus(reqVO.getStatus());

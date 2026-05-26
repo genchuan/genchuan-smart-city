@@ -3,6 +3,7 @@ package cn.iocoder.yudao.module.vehiclepass.controller.admin.leavemgmt.leavereco
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import jakarta.validation.constraints.*;
+import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 离场记录编辑 Request VO")
 @Data
@@ -17,12 +18,12 @@ public class LeaveRecordUpdateReqVO {
     private String plateNo;
 
     @Schema(description = "入场时间，时间戳格式", requiredMode = Schema.RequiredMode.REQUIRED, example = "1774998000")
-    @NotBlank(message = "入场时间不能为空")
-    private String enterTime;
+    @NotNull(message = "入场时间不能为空")
+    private LocalDateTime enterTime;
 
     @Schema(description = "离场时间，时间戳格式", requiredMode = Schema.RequiredMode.REQUIRED, example = "1775011986")
-    @NotBlank(message = "离场时间不能为空")
-    private String leaveTime;
+    @NotNull(message = "离场时间不能为空")
+    private LocalDateTime leaveTime;
 
     @Schema(description = "记录状态：正常记录/异常记录", requiredMode = Schema.RequiredMode.REQUIRED, example = "正常记录")
     @NotBlank(message = "记录状态不能为空")
