@@ -33,6 +33,9 @@ public class FakePlateControlPageReqVO extends PageParam {
     @Schema(description = "处置人ID，关联system_user用户表", example = "16042")
     private Long handleUserId;
 
+    @Schema(description = "处置人名称，支持模糊查询")
+    private String checkUserName;
+
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "处置时间，时间范围")
     private LocalDateTime[] handleTime;

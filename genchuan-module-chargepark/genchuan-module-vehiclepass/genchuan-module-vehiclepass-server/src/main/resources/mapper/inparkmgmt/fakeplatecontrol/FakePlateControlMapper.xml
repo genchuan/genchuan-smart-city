@@ -45,6 +45,9 @@
         <if test="reqVO.handleUserId != null">
             AND f.handle_user_id = #{reqVO.handleUserId}
         </if>
+        <if test="reqVO.checkUserName != null and reqVO.checkUserName != ''">
+            AND u.nickname LIKE CONCAT('%', #{reqVO.checkUserName}, '%')
+        </if>
         <if test="reqVO.handleType != null and reqVO.handleType != ''">
             AND f.handle_type = #{reqVO.handleType}
         </if>
