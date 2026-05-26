@@ -12,7 +12,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -81,7 +80,7 @@ public class VrvExcelUtils {
     private static <T> void downloadImportTemplateWithOptions(HttpServletResponse response, Class<T> clazz,
                                                                Map<String, List<DropdownOption>> fieldDropdownMap) throws Exception {
         // 1. 收集字段信息：跳过@ExcelIgnore字段，从@Schema提取中文名和示例值
-        List<Field> validFields = new ArrayList<>();
+//        List<Field> validFields = new ArrayList<>();
         List<String> headerList = new ArrayList<>();
         List<String> exampleList = new ArrayList<>();
         // 下拉框配置：列索引 → 选项数组
@@ -94,7 +93,7 @@ public class VrvExcelUtils {
                 continue;
             }
 
-            validFields.add(field);
+//            validFields.add(field);
 
             // 表头中文名：优先取 @Schema.description，无则取字段名
             String headerName = field.getName();
