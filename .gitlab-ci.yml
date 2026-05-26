@@ -16,7 +16,8 @@ Build:
       if [ "$CI_COMMIT_BRANCH" = "genchuan-mysql-master" ]; then
         echo "===== 当前是 master 分支，开始构建镜像 ====="
         declare -A MODULE_JAR_MAP=(
-          ["yudao-module-trade-server"]="yudao-module-mall/yudao-module-trade-server"
+           ["yudao-module-system-server"]="yudao-module-system/yudao-module-system-server"
+           ["yudao-module-pay-server"]="yudao-module-pay/yudao-module-pay-server"
         )
         for module in "${!MODULE_JAR_MAP[@]}"; do
           jarPath=${MODULE_JAR_MAP[$module]}
