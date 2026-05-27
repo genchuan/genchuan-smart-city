@@ -252,7 +252,7 @@ public class CycleReportServiceImpl implements CycleReportService {
                 : pieDataList.stream())
             .map(row -> {
                 CycleReportChartRespVO.PieData pd = new CycleReportChartRespVO.PieData();
-                pd.setType((String) row.get("type"));
+                pd.setType(convertAbnormalType((String) row.get("type")));
                 pd.setCount(row.get("count") != null ? ((Number) row.get("count")).intValue() : 0);
                 return pd;
             })
@@ -260,5 +260,18 @@ public class CycleReportServiceImpl implements CycleReportService {
         resp.setPieData(pieData);
 
         return resp;
+    }
+
+    private static String convertAbnormalType(String type) {
+        if (type == null) {
+            return "";
+        }
+        return switch (type) {
+            case "ESCAPE" -> "逃费离场";
+            case "GATE_ERROR" -> "道闸故障离场";
+            case "NO_PLATE" -> "无牌车离场";
+            case "OTHER" -> "其他";
+            default -> type;
+        };
     }
 }
