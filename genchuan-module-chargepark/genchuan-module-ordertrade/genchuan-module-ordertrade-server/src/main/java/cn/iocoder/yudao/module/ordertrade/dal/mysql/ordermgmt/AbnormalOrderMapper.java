@@ -24,7 +24,7 @@ public interface AbnormalOrderMapper extends BaseMapperX<AbnormalOrderDO> {
 
     IPage<AbnormalOrderDO> selectPageJoinStation(IPage<AbnormalOrderDO> page, @Param("req") AbnormalOrderPageReqVO reqVO);
 
-    @Select("SELECT o.*, s.name AS station_name FROM abnormal_order o LEFT JOIN station_info s ON o.station_id = s.id AND s.deleted = 0 WHERE o.id = #{id} AND o.deleted = 0")
+    @Select("SELECT o.*, s.name AS stationName FROM abnormal_order o LEFT JOIN station_info s ON o.station_id = s.id AND s.deleted = 0 WHERE o.id = #{id} AND o.deleted = 0")
     AbnormalOrderDO selectByIdJoinStation(@Param("id") Long id);
 
     default PageResult<AbnormalOrderDO> selectPage(AbnormalOrderPageReqVO reqVO) {

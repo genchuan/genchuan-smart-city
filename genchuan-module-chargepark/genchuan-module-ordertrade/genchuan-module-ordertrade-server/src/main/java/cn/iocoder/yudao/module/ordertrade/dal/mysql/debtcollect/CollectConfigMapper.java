@@ -24,6 +24,8 @@ public interface CollectConfigMapper extends BaseMapperX<CollectConfigDO> {
         return selectPage(reqVO, new LambdaQueryWrapperX<CollectConfigDO>()
                 .eqIfPresent(CollectConfigDO::getCollectMethod, reqVO.getCollectMethod())
                 .eqIfPresent(CollectConfigDO::getStatus, reqVO.getStatus())
+                .geIfPresent(CollectConfigDO::getCreateTime, reqVO.getCreateTimeStart())
+                .leIfPresent(CollectConfigDO::getCreateTime, reqVO.getCreateTimeEnd())
                 .orderByDesc(CollectConfigDO::getId));
     }
 

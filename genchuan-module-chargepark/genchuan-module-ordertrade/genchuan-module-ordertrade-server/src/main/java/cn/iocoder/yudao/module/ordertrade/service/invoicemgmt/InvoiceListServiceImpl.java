@@ -107,6 +107,7 @@ public class InvoiceListServiceImpl implements InvoiceListService {
         update.setId(reqVO.getId());
         update.setStatus("invoiced");
         update.setInvoiceTime(LocalDateTime.now());
+        update.setDownloadUrl("/api/invoice/download/" + invoice.getInvoiceNo());
         invoiceListMapper.updateById(update);
     }
 

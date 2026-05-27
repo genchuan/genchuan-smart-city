@@ -33,7 +33,7 @@ public class InvoiceAuditServiceImpl implements InvoiceAuditService {
     public Long createInvoiceAudit(InvoiceAuditSaveReqVO createReqVO) {
         InvoiceAuditDO obj = BeanUtils.toBean(createReqVO, InvoiceAuditDO.class);
         if (obj.getStatus() == null) {
-            obj.setStatus("pending");
+            obj.setStatus(InvoiceAuditStatusEnum.PENDING.getValue());
         }
         if (obj.getApplyTime() == null) {
             obj.setApplyTime(LocalDateTime.now());
@@ -113,7 +113,7 @@ public class InvoiceAuditServiceImpl implements InvoiceAuditService {
         if (audit == null) throw exception(INVOICE_AUDIT_NOT_EXISTS);
         InvoiceAuditDO update = new InvoiceAuditDO();
         update.setId(reqVO.getId());
-        update.setStatus("pending");
+        update.setStatus(InvoiceAuditStatusEnum.PENDING.getValue());
         update.setApplyTime(LocalDateTime.now());
         invoiceAuditMapper.updateById(update);
     }
@@ -123,10 +123,10 @@ public class InvoiceAuditServiceImpl implements InvoiceAuditService {
     public void batchAuditInvoiceAudit(List<Long> ids) {
         ids.forEach(id -> {
             InvoiceAuditDO audit = invoiceAuditMapper.selectById(id);
-            if (audit != null && "pending".equals(audit.getStatus())) {
+            if (audit != null && InvoiceAuditStatusEnum.PENDING.getValue().equals(audit.getStatus())) {
                 InvoiceAuditDO update = new InvoiceAuditDO();
                 update.setId(id);
-                update.setStatus("approved");
+                update.setStatus(InvoiceAuditStatusEnum.APPROVED.getValue());
                 update.setAuditorId(SecurityFrameworkUtils.getLoginUserId());
                 update.setUpdater(SecurityFrameworkUtils.getLoginUserNickname());
                 update.setAuditTime(LocalDateTime.now());

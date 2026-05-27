@@ -18,7 +18,7 @@
     <!-- 分页查询（LEFT JOIN station_info 获取场站名称） -->
     <select id="selectPageJoinStation" resultType="cn.iocoder.yudao.module.ordertrade.dal.dataobject.ordermgmt.CarChargeOrderDO">
         SELECT o.*,
-               s.name AS station_name
+               s.name AS stationName
         FROM car_charge_order o
         LEFT JOIN station_info s ON o.station_id = s.id AND s.deleted = 0
         WHERE o.deleted = 0

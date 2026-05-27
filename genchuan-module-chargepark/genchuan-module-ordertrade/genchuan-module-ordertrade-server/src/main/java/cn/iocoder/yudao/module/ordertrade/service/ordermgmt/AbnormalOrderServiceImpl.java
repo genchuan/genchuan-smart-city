@@ -31,6 +31,9 @@ public class AbnormalOrderServiceImpl implements AbnormalOrderService {
 
     @Override public Long createAbnormalOrder(AbnormalOrderSaveReqVO v) {
         AbnormalOrderDO o = BeanUtils.toBean(v, AbnormalOrderDO.class);
+        if (o.getStatus() == null) {
+            o.setStatus("unhandled");
+        }
         abnormalOrderMapper.insert(o); return o.getId();
     }
     @Override public void updateAbnormalOrder(AbnormalOrderSaveReqVO v) {

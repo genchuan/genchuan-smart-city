@@ -114,7 +114,7 @@ public class ReconcileBillServiceImpl implements ReconcileBillService {
         if (bill == null) throw exception(RECONCILE_BILL_NOT_EXISTS);
         ReconcileBillDO update = new ReconcileBillDO();
         update.setId(reqVO.getId());
-        update.setStatus("fixed");
+        update.setStatus(ReconcileBillStatusEnum.RECONCILED.getValue());
         update.setReserve1(reqVO.getFixReason());
         update.setReconcilerId(SecurityFrameworkUtils.getLoginUserId());
         reconcileBillMapper.updateById(update);
