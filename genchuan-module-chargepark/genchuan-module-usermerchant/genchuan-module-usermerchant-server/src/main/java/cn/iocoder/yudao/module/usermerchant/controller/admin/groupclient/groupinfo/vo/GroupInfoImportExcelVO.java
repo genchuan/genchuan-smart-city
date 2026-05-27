@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.usermerchant.controller.admin.groupclient.groupi
 
 import cn.idev.excel.annotation.ExcelProperty;
 import cn.idev.excel.annotation.write.style.HeadFontStyle;
+import cn.iocoder.yudao.module.usermerchant.framework.annotation.ImportRequired;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,21 +21,25 @@ public class GroupInfoImportExcelVO {
 
     @Schema(description = "集团名称，唯一")
     @ExcelProperty("集团名称，唯一")
+    @ImportRequired
     @HeadFontStyle(color = RED_COLOR)
     private String name;
 
     @Schema(description = "联系人" )
     @ExcelProperty("联系人")
+    @ImportRequired
     @HeadFontStyle(color = RED_COLOR)
     private String contact;
 
     @Schema(description = "联系手机号" )
     @ExcelProperty("联系手机号")
+    @ImportRequired
     @HeadFontStyle(color = RED_COLOR)
     private String phone;
 
     @Schema(description = "集团类型：企业单位/事业单位/政府机构/其他" )
     @ExcelProperty("集团类型：企业单位/事业单位/政府机构/其他")
+    @ImportRequired
     @HeadFontStyle(color = RED_COLOR)
     private String groupType;
 

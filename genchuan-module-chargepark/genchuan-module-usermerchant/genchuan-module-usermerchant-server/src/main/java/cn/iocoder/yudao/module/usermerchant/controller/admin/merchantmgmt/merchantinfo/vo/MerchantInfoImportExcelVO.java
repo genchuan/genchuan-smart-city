@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merch
 
 import cn.idev.excel.annotation.ExcelProperty;
 import cn.idev.excel.annotation.write.style.HeadFontStyle;
+import cn.iocoder.yudao.module.usermerchant.framework.annotation.ImportRequired;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.FlexibleTimestampDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,21 +28,25 @@ public class MerchantInfoImportExcelVO {
 
     @Schema(description = "商户名称", requiredMode = Schema.RequiredMode.REQUIRED, example = "赵六")
     @ExcelProperty("商户名称")
+    @ImportRequired
     @HeadFontStyle(color = RED_COLOR)
     private String name;
 
     @Schema(description = "联系人", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("联系人")
+    @ImportRequired
     @HeadFontStyle(color = RED_COLOR)
     private String contact;
 
     @Schema(description = "联系手机号", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("联系手机号")
+    @ImportRequired
     @HeadFontStyle(color = RED_COLOR)
     private String phone;
 
     @Schema(description = "商户类型", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @ExcelProperty("商户类型")
+    @ImportRequired
     @HeadFontStyle(color = RED_COLOR)
     private String merchantType;
 
@@ -52,6 +57,7 @@ public class MerchantInfoImportExcelVO {
     @Schema(description = "注册时间", requiredMode = Schema.RequiredMode.REQUIRED)
     @ExcelProperty("注册时间")
     @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
+    @ImportRequired
     @HeadFontStyle(color = RED_COLOR)
     private LocalDateTime registerTime;
 

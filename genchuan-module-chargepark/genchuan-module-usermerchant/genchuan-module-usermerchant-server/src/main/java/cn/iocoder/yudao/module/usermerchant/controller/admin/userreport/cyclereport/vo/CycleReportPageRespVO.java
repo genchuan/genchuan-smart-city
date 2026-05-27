@@ -89,4 +89,8 @@ public class CycleReportPageRespVO {
     @ExcelProperty("更新时间")
     private LocalDateTime updateTime;
 
+    @Schema(description = "导出次数")
+    @ExcelProperty("导出次数")
+    private Integer exportCount;
+
 }

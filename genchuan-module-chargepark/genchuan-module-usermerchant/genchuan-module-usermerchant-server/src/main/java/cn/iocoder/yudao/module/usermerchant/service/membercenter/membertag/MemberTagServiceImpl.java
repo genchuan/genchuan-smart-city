@@ -1,6 +1,8 @@
 package cn.iocoder.yudao.module.usermerchant.service.membercenter.membertag;
 
+import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.ImportValidator;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
@@ -96,9 +98,11 @@ public class MemberTagServiceImpl implements MemberTagService {
             success = SUCCESS_IMPORT_MEMBER_TAG)
     public Boolean importUsers(List<MemberTagImportExcelVO> list, Boolean updateSupport) {
         if (CollectionUtils.isEmpty(list)) {
-            return true;
+            throw new ServiceException(EMPTY_LIST);
         }
+        int rowNum = 2;
         for (MemberTagImportExcelVO vo : list) {
+            ImportValidator.validateRequiredFields(vo, rowNum);
             // 直接新增，忽略用户传入的 ID，由数据库自增生成
             MemberTagDO insertDO = BeanUtils.toBean(vo, MemberTagDO.class);
             insertDO.setId(null);   // 确保 ID 不传入，使用数据库自增
@@ -116,7 +120,7 @@ public class MemberTagServiceImpl implements MemberTagService {
     @LogRecord(type = TYPE_MEMBER_TAG, subType = SUB_TYPE_UPDATE_TAG_STATUS,
             bizNo = "{{{#ids}}}",
             success = SUCCESS_UPDATE_TAG_STATUS)
-    public void updateTagStatus(List<Long> ids, String status) {
+    public void updateTagStatus(List<Long> ids, Integer status) {
         if (CollectionUtils.isEmpty(ids)) {
             return;
         }

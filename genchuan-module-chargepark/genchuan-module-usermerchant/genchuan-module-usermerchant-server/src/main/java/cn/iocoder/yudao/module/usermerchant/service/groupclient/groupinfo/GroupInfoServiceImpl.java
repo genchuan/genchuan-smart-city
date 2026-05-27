@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
 import cn.iocoder.yudao.module.system.api.user.dto.AdminUserRespDTO;
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.ImportValidator;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.mzt.logapi.context.LogRecordContext;
@@ -122,7 +123,9 @@ public class GroupInfoServiceImpl implements GroupInfoService {
         if (CollectionUtils.isEmpty(list)) {
             return true;
         }
+        int rowNum = 2;
         for (GroupInfoImportExcelVO vo : list) {
+            ImportValidator.validateRequiredFields(vo, rowNum);
             GroupInfoDO insertDO = BeanUtils.toBean(vo, GroupInfoDO.class);
             insertDO.setId(null);   // 确保 ID 由数据库自增生成
             insertDO.setRegisterTime(LocalDateTime.now());

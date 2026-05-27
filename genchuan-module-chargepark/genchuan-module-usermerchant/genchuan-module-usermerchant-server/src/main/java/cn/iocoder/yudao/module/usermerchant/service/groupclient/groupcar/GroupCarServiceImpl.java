@@ -12,6 +12,7 @@ import cn.iocoder.yudao.module.usermerchant.dal.dataobject.merchantmgmt.merchant
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.merchantmgmt.merchantrecharge.MerchantRechargeDO;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.usermgmt.usercar.UserCarDO;
 import cn.iocoder.yudao.module.usermerchant.dal.mysql.groupclient.groupinfo.GroupInfoMapper;
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.ImportValidator;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.NameQueryHelper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -172,7 +173,9 @@ public class GroupCarServiceImpl implements GroupCarService {
         if (CollectionUtils.isEmpty(list)) {
             return true;
         }
+        int rowNum = 2;
         for (GroupCarImportExcelVO vo : list) {
+            ImportValidator.validateRequiredFields(vo, rowNum);
             // 使用你的工具方法根据集团名称获取集团ID
             Long groupId = nameQueryHelper.getIdByName("group_info", "name", vo.getName(), "id");
             if (groupId == null) {

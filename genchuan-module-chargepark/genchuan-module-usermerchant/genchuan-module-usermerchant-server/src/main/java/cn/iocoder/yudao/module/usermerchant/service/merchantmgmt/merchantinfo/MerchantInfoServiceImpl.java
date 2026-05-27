@@ -6,6 +6,7 @@ import cn.iocoder.yudao.framework.common.exception.ServiceException;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.framework.security.core.util.SecurityFrameworkUtils;
 import cn.iocoder.yudao.module.system.api.user.AdminUserApi;
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.ImportValidator;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.NameQueryHelper;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -144,7 +145,9 @@ public class MerchantInfoServiceImpl implements MerchantInfoService {
         if (CollectionUtils.isEmpty(list)) {
             return true;
         }
+        int rowNum = 2;
         for (MerchantInfoImportExcelVO vo : list) {
+            ImportValidator.validateRequiredFields(vo, rowNum);
             // 直接新增，忽略用户传入的 ID，由数据库自增生成
             MerchantInfoDO insertDO = BeanUtils.toBean(vo, MerchantInfoDO.class);
             insertDO.setId(null);   // 确保 ID 不传入，使用数据库自增

@@ -73,5 +73,5 @@ public interface MemberTagService {
      * @param ids ids
      * @param status 状态
      */
-    void updateTagStatus(List<Long> ids, String status);
+    void updateTagStatus(List<Long> ids, Integer status);
 }

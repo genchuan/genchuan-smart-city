@@ -1,7 +1,11 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberuser;
 
+import cn.idev.excel.util.StringUtils;
+import cn.iocoder.yudao.framework.common.exception.ServiceException;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.groupclient.groupinfo.vo.GroupInfoImportExcelVO;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.ChartHelper;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.TimeRangeParser;
+import com.alibaba.nacos.client.naming.utils.CollectionUtils;
 import io.swagger.v3.oas.annotations.Parameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +34,8 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
+import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.EMPTY_LIST;
+import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.ILLEGAL_FORMAT;
 
 import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberuser.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.membercenter.memberuser.MemberUserDO;
@@ -74,6 +80,10 @@ public class MemberUserController {
     public CommonResult<Boolean> importExcel(@RequestParam("file") MultipartFile file,
                                              @RequestParam(value = "updateSupport", required = false, defaultValue = "false") Boolean updateSupport) throws Exception {
         List<MemberUserImportExcelVO> list = ExcelUtils.read(file, MemberUserImportExcelVO.class);
+        // 校验是否为空
+        if (CollectionUtils.isEmpty(list)) {
+            throw new ServiceException(EMPTY_LIST);
+        }
         return success(memberUserService.importUsers(list, updateSupport));
     }
 

@@ -2,6 +2,7 @@ package cn.iocoder.yudao.module.usermerchant.controller.admin.groupclient.groupc
 
 import cn.idev.excel.annotation.ExcelProperty;
 import cn.idev.excel.annotation.write.style.HeadFontStyle;
+import cn.iocoder.yudao.module.usermerchant.framework.annotation.ImportRequired;
 import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.FlexibleTimestampDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,27 +25,32 @@ public class GroupCarImportExcelVO {
 
     @Schema(description = "集团名称")
     @ExcelProperty("集团名称")
+    @ImportRequired
     @HeadFontStyle(color = RED_COLOR)
     private String name;
 
     @Schema(description = "车牌号码")
     @ExcelProperty("车牌号码")
+    @ImportRequired
     @HeadFontStyle(color = RED_COLOR)
     private String plateNo;
 
     @Schema(description = "车牌颜色")
     @ExcelProperty("车牌颜色")
+    @ImportRequired
     @HeadFontStyle(color = RED_COLOR)
     private String plateColor;
 
     @Schema(description = "车辆类型")
     @ExcelProperty("车辆类型")
+    @ImportRequired
     @HeadFontStyle(color = RED_COLOR)
     private String carType;
 
     @Schema(description = "绑定时间")
     @ExcelProperty("绑定时间")
     @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
+    @ImportRequired
     @HeadFontStyle(color = RED_COLOR)
     private LocalDateTime bindTime;
 

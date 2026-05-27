@@ -1,6 +1,10 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantinfo;
 
 import cn.idev.excel.EasyExcel;
+import cn.idev.excel.util.StringUtils;
+import cn.iocoder.yudao.framework.common.exception.ServiceException;
+import cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.membertag.vo.MemberTagImportExcelVO;
+import com.alibaba.nacos.client.naming.utils.CollectionUtils;
 import io.swagger.v3.oas.annotations.Parameters;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
@@ -28,6 +32,8 @@ import cn.iocoder.yudao.framework.excel.core.util.ExcelUtils;
 
 import cn.iocoder.yudao.framework.apilog.core.annotation.ApiAccessLog;
 import static cn.iocoder.yudao.framework.apilog.core.enums.OperateTypeEnum.*;
+import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.EMPTY_LIST;
+import static cn.iocoder.yudao.module.usermerchant.enums.ErrorCodeConstants.ILLEGAL_FORMAT;
 
 import cn.iocoder.yudao.module.usermerchant.controller.admin.merchantmgmt.merchantinfo.vo.*;
 import cn.iocoder.yudao.module.usermerchant.dal.dataobject.merchantmgmt.merchantinfo.MerchantInfoDO;
@@ -69,6 +75,16 @@ public class MerchantInfoController {
     public CommonResult<Boolean> importExcel(@RequestParam("file") MultipartFile file,
                                              @RequestParam(value = "updateSupport", required = false, defaultValue = "false") Boolean updateSupport) throws Exception {
         List<MerchantInfoImportExcelVO> list = ExcelUtils.read(file, MerchantInfoImportExcelVO.class);
+        // 校验是否为空
+        if (CollectionUtils.isEmpty(list)) {
+            throw new ServiceException(EMPTY_LIST);
+        }
+
+        // 校验第一条有效数据（第2行）是否有必填字段值（防止列头完全不匹配）
+        MerchantInfoImportExcelVO firstRow = list.get(0);
+        if (StringUtils.isBlank(firstRow.getName())) {
+            throw new ServiceException(ILLEGAL_FORMAT);
+        }
         return success(merchantInfoService.importInfos(list, updateSupport));
     }
 
