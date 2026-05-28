@@ -7,7 +7,6 @@ import jakarta.validation.*;
 import cn.iocoder.yudao.module.smartcampus.controller.admin.archive.vo.*;
 import cn.iocoder.yudao.module.smartcampus.dal.dataobject.archive.ArchiveDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 
 /**
  * 学生学籍档案 Service 接口
