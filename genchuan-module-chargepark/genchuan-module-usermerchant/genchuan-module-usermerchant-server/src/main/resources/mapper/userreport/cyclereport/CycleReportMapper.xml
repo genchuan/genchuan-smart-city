@@ -168,13 +168,13 @@
     <select id="selectMemberLevelDistribution" resultType="java.util.HashMap">
         SELECT ml.name AS name, COUNT(*) AS value
         FROM member_user mu
-                 LEFT JOIN member_level ml ON mu.level_id = ml.id AND ml.deleted = 0
+        LEFT JOIN member_level ml ON mu.level_id = ml.id AND ml.deleted = 0
         WHERE mu.deleted = 0
         <if test="start != null">
-            AND create_time >= #{start}
+            AND mu.create_time >= #{start}
         </if>
         <if test="end != null">
-            AND create_time &lt;= #{end}
+            AND mu.create_time &lt;= #{end}
         </if>
         GROUP BY ml.name
     </select>
