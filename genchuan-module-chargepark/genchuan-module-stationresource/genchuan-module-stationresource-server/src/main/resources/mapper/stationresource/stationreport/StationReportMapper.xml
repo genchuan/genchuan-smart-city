@@ -299,15 +299,7 @@
         CONVERT(status USING utf8mb4) COLLATE utf8mb4_general_ci AS status,
         create_time AS createTime
         FROM time_permission WHERE deleted = 0 AND status = '已生效'
-<!--        <if test="startTime != null">-->
-<!--            AND create_time &gt;= #{startTime}-->
-<!--        </if>-->
-<!--        <if test="endTime != null">-->
-<!--            AND create_time &lt;= #{endTime}-->
-<!--        </if>-->
-
         UNION ALL
-
         SELECT
         id,
         station_id AS stationId,
@@ -316,15 +308,7 @@
         CONVERT(status USING utf8mb4) COLLATE utf8mb4_general_ci AS status,
         create_time AS createTime
         FROM fee_rule WHERE deleted = 0 AND status = '已生效'
-<!--        <if test="startTime != null">-->
-<!--            AND create_time &gt;= #{startTime}-->
-<!--        </if>-->
-<!--        <if test="endTime != null">-->
-<!--            AND create_time &lt;= #{endTime}-->
-<!--        </if>-->
-
         UNION ALL
-
         SELECT
         id,
         station_id AS stationId,
@@ -333,12 +317,6 @@
         CONVERT(status USING utf8mb4) COLLATE utf8mb4_general_ci AS status,
         create_time AS createTime
         FROM charge_park_link WHERE deleted = 0 AND status = '已生效'
-<!--        <if test="startTime != null">-->
-<!--            AND create_time &gt;= #{startTime}-->
-<!--        </if>-->
-<!--        <if test="endTime != null">-->
-<!--            AND create_time &lt;= #{endTime}-->
-<!--        </if>-->
         ) t
         ORDER BY createTime DESC
     </select>
