@@ -489,23 +489,25 @@ public class StationReportServiceImpl implements StationReportService {
 
     @Override
     public DrillDownRespVO drillDown(DrillDownReqVO reqVO) {
+        // 未传时间时，根据报表周期自动计算时间范围（所有指标通用）
+        if (reqVO.getReportStartTime() == null && reqVO.getReportEndTime() == null) {
+            resolveReportTime(reqVO);
+        }
         LocalDateTime start = reqVO.getReportStartTime();
         LocalDateTime end = reqVO.getReportEndTime();
 
         List<Map<String, Object>> list = switch (reqVO.getMetric()) {
-            case "totalAreaCount"      -> stationReportMapper.drillDownAreaList(start, end);
-            case "coverStationCount"   -> stationReportMapper.drillDownCoverStationList(start, end);
-            case "totalStationCount"   -> stationReportMapper.drillDownStationList(start, end);
-            case "normalOperateCount"  -> stationReportMapper.drillDownNormalStationList(start, end);
-            case "totalSpaceCount"     -> stationReportMapper.drillDownSpaceList(start, end);
-            case "availableSpaceCount" -> stationReportMapper.drillDownAvailableSpaceList(start, end);
-            case "effectiveRuleCount"  -> stationReportMapper.drillDownEffectiveRuleList(start, end);
-            case "orderCount", "revenue" -> {
-                resolveReportTime(reqVO);
-                yield stationReportMapper.drillDownOrderList(reqVO.getReportStartTime(), reqVO.getReportEndTime());
-            }
-            case "recoveryRate"        -> stationReportMapper.drillDownDebtExpandList(start, end);
-            case "depositOrderCount"   -> stationReportMapper.drillDownDepositPlanList(start, end);
+            case "总片区数"     -> stationReportMapper.drillDownAreaList(start, end);
+            case "覆盖场站数"   -> stationReportMapper.drillDownCoverStationList(start, end);
+            case "总场站数"     -> stationReportMapper.drillDownStationList(start, end);
+            case "正常运营数"   -> stationReportMapper.drillDownNormalStationList(start, end);
+            case "总车位数"     -> stationReportMapper.drillDownSpaceList(start, end);
+            case "可用车位数"   -> stationReportMapper.drillDownAvailableSpaceList(start, end);
+            case "生效规则数"   -> stationReportMapper.drillDownEffectiveRuleList(start, end);
+            case "订单量", "营收"
+                 -> stationReportMapper.drillDownOrderList(start, end);
+            case "追缴完成率"   -> stationReportMapper.drillDownDebtExpandList(start, end);
+            case "押金订单量"   -> stationReportMapper.drillDownDepositPlanList(start, end);
             default -> throw new IllegalArgumentException("不支持的卡片指标：" + reqVO.getMetric());
         };
         return buildResp(reqVO, list);
@@ -558,21 +560,9 @@ public class StationReportServiceImpl implements StationReportService {
         return respVO;
     }
 
+    /** metric 值已是中文，直接返回 */
     private String metricName(String metric) {
-        switch (metric) {
-            case "totalAreaCount":      return "总片区数";
-            case "coverStationCount":   return "覆盖场站数";
-            case "totalStationCount":   return "总站场数";
-            case "normalOperateCount":  return "正常运营数";
-            case "totalSpaceCount":     return "总车位数";
-            case "availableSpaceCount": return "可用车位数";
-            case "effectiveRuleCount":  return "生效规则数";
-            case "orderCount":          return "订单量";
-            case "revenue":             return "营收";
-            case "recoveryRate":        return "追缴完成率";
-            case "depositOrderCount":   return "押金订单量";
-            default:                    return metric;
-        }
+        return metric;
     }
 
     /**

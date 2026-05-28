@@ -183,12 +183,12 @@
                status, phone, remark
         FROM area_info
         WHERE deleted = 0
-        <if test="startTime != null">
-            AND create_time &gt;= #{startTime}
-        </if>
-        <if test="endTime != null">
-            AND create_time &lt;= #{endTime}
-        </if>
+<!--        <if test="startTime != null">-->
+<!--            AND create_time &gt;= #{startTime}-->
+<!--        </if>-->
+<!--        <if test="endTime != null">-->
+<!--            AND create_time &lt;= #{endTime}-->
+<!--        </if>-->
         ORDER BY id DESC
     </select>
 
@@ -206,12 +206,12 @@
         FROM station_info s
         LEFT JOIN area_info a ON s.area_id = a.id AND a.deleted = 0
         WHERE s.deleted = 0
-        <if test="startTime != null">
-            AND s.create_time &gt;= #{startTime}
-        </if>
-        <if test="endTime != null">
-            AND s.create_time &lt;= #{endTime}
-        </if>
+<!--        <if test="startTime != null">-->
+<!--            AND s.create_time &gt;= #{startTime}-->
+<!--        </if>-->
+<!--        <if test="endTime != null">-->
+<!--            AND s.create_time &lt;= #{endTime}-->
+<!--        </if>-->
         ORDER BY s.id DESC
     </select>
 
@@ -223,12 +223,12 @@
         FROM station_info s
         LEFT JOIN area_info a ON s.area_id = a.id AND a.deleted = 0
         WHERE s.deleted = 0 AND s.area_id IS NOT NULL
-        <if test="startTime != null">
-            AND s.create_time &gt;= #{startTime}
-        </if>
-        <if test="endTime != null">
-            AND s.create_time &lt;= #{endTime}
-        </if>
+<!--        <if test="startTime != null">-->
+<!--            AND s.create_time &gt;= #{startTime}-->
+<!--        </if>-->
+<!--        <if test="endTime != null">-->
+<!--            AND s.create_time &lt;= #{endTime}-->
+<!--        </if>-->
         ORDER BY s.id DESC
     </select>
 
@@ -240,12 +240,12 @@
         FROM station_info s
         LEFT JOIN area_info a ON s.area_id = a.id AND a.deleted = 0
         WHERE s.deleted = 0 AND s.status = '已生效'
-        <if test="startTime != null">
-            AND s.create_time &gt;= #{startTime}
-        </if>
-        <if test="endTime != null">
-            AND s.create_time &lt;= #{endTime}
-        </if>
+<!--        <if test="startTime != null">-->
+<!--            AND s.create_time &gt;= #{startTime}-->
+<!--        </if>-->
+<!--        <if test="endTime != null">-->
+<!--            AND s.create_time &lt;= #{endTime}-->
+<!--        </if>-->
         ORDER BY s.id DESC
     </select>
 
@@ -256,12 +256,12 @@
         FROM parking_space_info p
         LEFT JOIN station_info s ON p.station_id = s.id AND s.deleted = 0
         WHERE p.deleted = 0
-        <if test="startTime != null">
-            AND p.create_time &gt;= #{startTime}
-        </if>
-        <if test="endTime != null">
-            AND p.create_time &lt;= #{endTime}
-        </if>
+<!--        <if test="startTime != null">-->
+<!--            AND p.create_time &gt;= #{startTime}-->
+<!--        </if>-->
+<!--        <if test="endTime != null">-->
+<!--            AND p.create_time &lt;= #{endTime}-->
+<!--        </if>-->
         ORDER BY p.id DESC
     </select>
 
@@ -272,12 +272,12 @@
         FROM parking_space_info p
         LEFT JOIN station_info s ON p.station_id = s.id AND s.deleted = 0
         WHERE p.deleted = 0 AND p.real_status = '空闲'
-        <if test="startTime != null">
-            AND p.create_time &gt;= #{startTime}
-        </if>
-        <if test="endTime != null">
-            AND p.create_time &lt;= #{endTime}
-        </if>
+<!--        <if test="startTime != null">-->
+<!--            AND p.create_time &gt;= #{startTime}-->
+<!--        </if>-->
+<!--        <if test="endTime != null">-->
+<!--            AND p.create_time &lt;= #{endTime}-->
+<!--        </if>-->
         ORDER BY p.id DESC
     </select>
 
@@ -292,12 +292,12 @@
         CONVERT(status USING utf8mb4) COLLATE utf8mb4_general_ci AS status,
         create_time AS createTime
         FROM time_permission WHERE deleted = 0 AND status = '已生效'
-        <if test="startTime != null">
-            AND create_time &gt;= #{startTime}
-        </if>
-        <if test="endTime != null">
-            AND create_time &lt;= #{endTime}
-        </if>
+<!--        <if test="startTime != null">-->
+<!--            AND create_time &gt;= #{startTime}-->
+<!--        </if>-->
+<!--        <if test="endTime != null">-->
+<!--            AND create_time &lt;= #{endTime}-->
+<!--        </if>-->
 
         UNION ALL
 
@@ -309,12 +309,12 @@
         CONVERT(status USING utf8mb4) COLLATE utf8mb4_general_ci AS status,
         create_time AS createTime
         FROM fee_rule WHERE deleted = 0 AND status = '已生效'
-        <if test="startTime != null">
-            AND create_time &gt;= #{startTime}
-        </if>
-        <if test="endTime != null">
-            AND create_time &lt;= #{endTime}
-        </if>
+<!--        <if test="startTime != null">-->
+<!--            AND create_time &gt;= #{startTime}-->
+<!--        </if>-->
+<!--        <if test="endTime != null">-->
+<!--            AND create_time &lt;= #{endTime}-->
+<!--        </if>-->
 
         UNION ALL
 
@@ -326,12 +326,12 @@
         CONVERT(status USING utf8mb4) COLLATE utf8mb4_general_ci AS status,
         create_time AS createTime
         FROM charge_park_link WHERE deleted = 0 AND status = '已生效'
-        <if test="startTime != null">
-            AND create_time &gt;= #{startTime}
-        </if>
-        <if test="endTime != null">
-            AND create_time &lt;= #{endTime}
-        </if>
+<!--        <if test="startTime != null">-->
+<!--            AND create_time &gt;= #{startTime}-->
+<!--        </if>-->
+<!--        <if test="endTime != null">-->
+<!--            AND create_time &lt;= #{endTime}-->
+<!--        </if>-->
         ) t
         ORDER BY createTime DESC
     </select>
@@ -363,12 +363,12 @@
         FROM debt_expand d
         LEFT JOIN station_info s ON d.station_id = s.id AND s.deleted = 0
         WHERE d.deleted = 0
-        <if test="startTime != null">
-            AND d.create_time &gt;= #{startTime}
-        </if>
-        <if test="endTime != null">
-            AND d.create_time &lt;= #{endTime}
-        </if>
+<!--        <if test="startTime != null">-->
+<!--            AND d.create_time &gt;= #{startTime}-->
+<!--        </if>-->
+<!--        <if test="endTime != null">-->
+<!--            AND d.create_time &lt;= #{endTime}-->
+<!--        </if>-->
         ORDER BY d.id DESC
     </select>
 
