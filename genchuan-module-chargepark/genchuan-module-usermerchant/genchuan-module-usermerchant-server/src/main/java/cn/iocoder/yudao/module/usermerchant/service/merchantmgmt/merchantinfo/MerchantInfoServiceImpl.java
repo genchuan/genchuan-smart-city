@@ -257,7 +257,7 @@ public class MerchantInfoServiceImpl implements MerchantInfoService {
 
         // 总数统计
         chartRespVO.setTotalMerchantCount(merchantInfoMapper.selectTotalMerchantCount(start, end));
-        chartRespVO.setNewMerchantCount(merchantInfoMapper.selectNewMerchantCount(start, end));
+        chartRespVO.setNewMerchantCount(merchantInfoMapper.selectNewMerchantCount(LocalDateTime.now().minusDays(30), LocalDateTime.now()));
 
         return chartRespVO;
     }

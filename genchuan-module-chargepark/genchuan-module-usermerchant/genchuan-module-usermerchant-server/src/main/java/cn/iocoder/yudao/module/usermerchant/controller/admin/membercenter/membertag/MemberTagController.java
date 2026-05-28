@@ -107,18 +107,18 @@ public class MemberTagController {
     }
 
     @PutMapping("/disable")
-    @Operation(summary = "启用会员标签")
+    @Operation(summary = "禁用会员标签")
     @PreAuthorize("@ss.hasPermission('usermerchant:member-tag:disable')")
     public CommonResult<Boolean> disableMemberTag(@Valid @RequestBody MemberTagStatusReqVO reqVO) {
-        memberTagService.updateTagStatus(reqVO.getIds(), 1);
+        memberTagService.updateTagStatus(reqVO.getIds(), 0);
         return success(true);
     }
 
     @PutMapping("/enable")
-    @Operation(summary = "禁用会员标签")
+    @Operation(summary = "启用会员标签")
     @PreAuthorize("@ss.hasPermission('usermerchant:member-tag:enable')")
     public CommonResult<Boolean> enableMemberTag(@Valid @RequestBody MemberTagStatusReqVO reqVO) {
-        memberTagService.updateTagStatus(reqVO.getIds(), 0);
+        memberTagService.updateTagStatus(reqVO.getIds(), 1);
         return success(true);
     }
 
