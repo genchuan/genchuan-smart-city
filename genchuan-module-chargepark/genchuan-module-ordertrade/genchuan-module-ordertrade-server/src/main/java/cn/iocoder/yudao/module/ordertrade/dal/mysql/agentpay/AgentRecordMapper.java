@@ -36,7 +36,7 @@ public interface AgentRecordMapper extends BaseMapperX<AgentRecordDO> {
             "LEFT JOIN merchant_info pm ON pm.id = ar.merchant_id AND pm.deleted = 0 " +
             "LEFT JOIN all_order ao ON ao.id = ar.order_id AND ao.deleted = 0 " +
             "WHERE ar.deleted = 0 " +
-            "<if test='req.orderId != null'>AND ar.order_id = #{req.orderId} </if>" +
+            "<if test='req.orderNo != null and req.orderNo != \"\"'>AND ao.order_no LIKE CONCAT('%', #{req.orderNo}, '%') </if>" +
             "<if test='req.merchantId != null'>AND ar.merchant_id = #{req.merchantId} </if>" +
             "<if test='req.merchantName != null and req.merchantName != \"\"'>AND pm.name LIKE CONCAT('%', #{req.merchantName}, '%') </if>" +
             "<if test='req.status != null and req.status != \"\"'>AND ar.status = #{req.status} </if>" +
@@ -64,13 +64,27 @@ public interface AgentRecordMapper extends BaseMapperX<AgentRecordDO> {
     List<Map<String, Object>> selectTrend(@Param("startTime") LocalDateTime startTime,
                                           @Param("endTime") LocalDateTime endTime);
 
-    @Select("SELECT COUNT(*) FROM agent_record WHERE deleted = 0 AND create_time BETWEEN #{startTime} AND #{endTime}")
+    @Select("<script>" +
+            "SELECT COUNT(*) FROM agent_record WHERE deleted = 0 " +
+            "<if test='startTime != null'> AND create_time &gt;= #{startTime} </if>" +
+            "<if test='endTime != null'>   AND create_time &lt;= #{endTime}   </if>" +
+            "</script>")
     Long selectTodayCount(@Param("startTime") LocalDateTime startTime,
                           @Param("endTime") LocalDateTime endTime);
 
-    @Select("SELECT COUNT(*) FROM agent_record WHERE deleted = 0 AND status = 'normal'")
-    Long selectNormalCount();
+    @Select("<script>" +
+            "SELECT COUNT(*) FROM agent_record WHERE deleted = 0 AND status = 'normal' " +
+            "<if test='startTime != null'> AND create_time &gt;= #{startTime} </if>" +
+            "<if test='endTime != null'>   AND create_time &lt;= #{endTime}   </if>" +
+            "</script>")
+    Long selectNormalCount(@Param("startTime") LocalDateTime startTime,
+                           @Param("endTime") LocalDateTime endTime);
 
-    @Select("SELECT COUNT(*) FROM agent_record WHERE deleted = 0")
-    Long selectTotalCount();
+    @Select("<script>" +
+            "SELECT COUNT(*) FROM agent_record WHERE deleted = 0 " +
+            "<if test='startTime != null'> AND create_time &gt;= #{startTime} </if>" +
+            "<if test='endTime != null'>   AND create_time &lt;= #{endTime}   </if>" +
+            "</script>")
+    Long selectTotalCount(@Param("startTime") LocalDateTime startTime,
+                          @Param("endTime") LocalDateTime endTime);
 }

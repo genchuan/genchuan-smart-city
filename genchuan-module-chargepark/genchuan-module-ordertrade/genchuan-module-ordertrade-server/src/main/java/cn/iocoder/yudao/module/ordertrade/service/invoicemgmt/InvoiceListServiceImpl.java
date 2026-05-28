@@ -88,7 +88,7 @@ public class InvoiceListServiceImpl implements InvoiceListService {
     public void rejectInvoiceList(IdReqVO reqVO) {
         InvoiceListDO invoice = invoiceListMapper.selectById(reqVO.getId());
         if (invoice == null) throw exception(INVOICE_LIST_NOT_EXISTS);
-        if (!"pending".equals(invoice.getStatus())) throw exception(INVOICE_LIST_STATUS_CANNOT_REJECT);
+        if (!"pending_audit".equals(invoice.getStatus())) throw exception(INVOICE_LIST_STATUS_CANNOT_REJECT);
         InvoiceListDO update = new InvoiceListDO();
         update.setId(reqVO.getId());
         update.setStatus("rejected");
@@ -138,6 +138,7 @@ public class InvoiceListServiceImpl implements InvoiceListService {
     public void reapplyInvoiceList(IdReqVO reqVO) {
         InvoiceListDO invoice = invoiceListMapper.selectById(reqVO.getId());
         if (invoice == null) throw exception(INVOICE_LIST_NOT_EXISTS);
+        if (!"rejected".equals(invoice.getStatus())) throw exception(INVOICE_LIST_STATUS_CANNOT_REAPPLY);
         InvoiceListDO update = new InvoiceListDO();
         update.setId(reqVO.getId());
         update.setStatus("pending_audit");

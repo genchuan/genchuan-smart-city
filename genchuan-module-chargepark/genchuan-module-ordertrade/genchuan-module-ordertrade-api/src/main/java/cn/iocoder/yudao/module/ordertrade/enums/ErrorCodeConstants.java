@@ -78,6 +78,7 @@ public interface ErrorCodeConstants {
     ErrorCode INVOICE_LIST_STATUS_CANNOT_INVOICE = new ErrorCode(1_030_017_003, "发票不是待开票状态，无法开票");
     ErrorCode INVOICE_LIST_STATUS_NOT_INVOICED   = new ErrorCode(1_030_017_005, "发票不是已开票状态，无法下载");
     ErrorCode INVOICE_LIST_DOWNLOAD_URL_NOT_EXISTS = new ErrorCode(1_030_017_006, "发票下载链接不存在");
+    ErrorCode INVOICE_LIST_STATUS_CANNOT_REAPPLY   = new ErrorCode(1_030_017_007, "发票不是已驳回状态，无法重新申请");
 
     // ========== 发票配置 ==========
     ErrorCode INVOICE_CONFIG_NOT_EXISTS          = new ErrorCode(1_030_018_000, "发票配置不存在");

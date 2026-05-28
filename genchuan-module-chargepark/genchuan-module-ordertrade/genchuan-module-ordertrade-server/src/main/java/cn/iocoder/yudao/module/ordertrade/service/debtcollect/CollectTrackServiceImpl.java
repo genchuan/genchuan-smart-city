@@ -43,14 +43,12 @@ public class CollectTrackServiceImpl implements CollectTrackService {
         CollectTrackChartRespVO resp = new CollectTrackChartRespVO();
         LocalDateTime start = v.getStartTime() != null ? v.getStartTime() : LocalDateTime.now().minusDays(30);
         LocalDateTime end   = v.getEndTime()   != null ? v.getEndTime()   : LocalDateTime.now();
-        LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
-        LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(collectTrackMapper.selectTrend(start, end));
-        resp.setMethodData(collectTrackMapper.selectGroupByCollectMethod());
+        resp.setMethodData(collectTrackMapper.selectGroupByCollectMethod(start, end));
         CollectTrackChartRespVO.CardData card = new CollectTrackChartRespVO.CardData();
-        card.setWaitCollectCount(collectTrackMapper.selectCountByStatus("pending").intValue());
-        Long all       = collectTrackMapper.selectCountByStatus(null);
-        Long completed = collectTrackMapper.selectCountByStatus("completed");
+        card.setWaitCollectCount(collectTrackMapper.selectCountByStatus("pending", start, end).intValue());
+        Long all       = collectTrackMapper.selectCountByStatus(null, start, end);
+        Long completed = collectTrackMapper.selectCountByStatus("completed", start, end);
         if (all != null && all > 0) {
             card.setCollectCompleteRate(new BigDecimal(completed).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(all), 1, java.math.RoundingMode.HALF_UP));
@@ -91,12 +89,12 @@ public class CollectTrackServiceImpl implements CollectTrackService {
     /** 转派（PUT /transfer）：更换执行人/片区 */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void transferCollectTrack(IdReqVO reqVO) {
+    public void transferCollectTrack(CollectTrackTransferReqVO reqVO) {
         CollectTrackDO track = collectTrackMapper.selectById(reqVO.getId());
         if (track == null) throw exception(COLLECT_TRACK_NOT_EXISTS);
         CollectTrackDO update = new CollectTrackDO();
         update.setId(reqVO.getId());
-        update.setTransferUserId(SecurityFrameworkUtils.getLoginUserId());
+        update.setTransferUserId(reqVO.getTransferUserId());
         update.setOperatorId(SecurityFrameworkUtils.getLoginUserId());
         if (reqVO.getRemark() != null) update.setCollectProgress("转派：" + reqVO.getRemark());
         collectTrackMapper.updateById(update);

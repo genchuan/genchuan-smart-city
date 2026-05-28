@@ -37,11 +37,11 @@ public class AgentRuleServiceImpl implements AgentRuleService {
         if (obj.getUseCount() == null) {
             obj.setUseCount(0);
         }
-        System.out.println(getLoginUserNickname());
-        System.out.println(getLoginUserId());
-        //4.绑定时间、绑定人
-        obj.setCreator(getLoginUserNickname());
+        String loginUserNickname = getLoginUserNickname();
+        obj.setCreator(loginUserNickname != null ? loginUserNickname : "");
+        obj.setUpdater(obj.getCreator());
         obj.setCreateTime(LocalDateTime.now());
+        obj.setUpdateTime(LocalDateTime.now());
         agentRuleMapper.insert(obj);
         return obj.getId();
     }

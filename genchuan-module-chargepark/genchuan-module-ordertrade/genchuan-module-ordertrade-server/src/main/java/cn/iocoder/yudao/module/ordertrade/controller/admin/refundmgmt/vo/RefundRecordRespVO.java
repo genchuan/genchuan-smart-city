@@ -59,17 +59,18 @@ public class RefundRecordRespVO {
     @ExcelProperty("操作人ID")
     private Long operatorId;
 
-    @Schema(description = "备用字段1")
+    /*@Schema(description = "备用字段1")
     private String reserve1;
 
     @Schema(description = "备用字段2")
-    private String reserve2;
+    private String reserve2;*/
 
     @Schema(description = "创建者")
     @ExcelProperty("创建者")
     private String creator;
 
     @Schema(description = "更新者")
+    @ExcelProperty("更新者")
     private String updater;
 
     @Schema(description = "创建时间")
@@ -77,5 +78,6 @@ public class RefundRecordRespVO {
     private LocalDateTime createTime;
 
     @Schema(description = "更新时间")
+    @ExcelProperty("更新时间")
     private LocalDateTime updateTime;
 }

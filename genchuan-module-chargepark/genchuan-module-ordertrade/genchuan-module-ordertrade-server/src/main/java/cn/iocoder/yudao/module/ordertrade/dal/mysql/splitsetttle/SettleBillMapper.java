@@ -53,12 +53,27 @@ public interface SettleBillMapper extends BaseMapperX<SettleBillDO> {
     List<Map<String, Object>> selectTrend(@Param("startTime") LocalDateTime startTime,
                                           @Param("endTime") LocalDateTime endTime);
 
-    @Select("SELECT IFNULL(SUM(split_amount), 0) FROM settle_bill WHERE deleted = 0 AND status = 'settled'")
-    BigDecimal selectTotalSettleAmount();
+    @Select("<script>" +
+            "SELECT IFNULL(SUM(split_amount), 0) FROM settle_bill WHERE deleted = 0 AND status = 'settled' " +
+            "<if test='startTime != null'> AND create_time &gt;= #{startTime} </if>" +
+            "<if test='endTime != null'>   AND create_time &lt;= #{endTime}   </if>" +
+            "</script>")
+    BigDecimal selectTotalSettleAmount(@Param("startTime") LocalDateTime startTime,
+                                       @Param("endTime") LocalDateTime endTime);
 
-    @Select("SELECT COUNT(*) FROM settle_bill WHERE deleted = 0 AND status = 'settled'")
-    Long selectSettledCount();
+    @Select("<script>" +
+            "SELECT COUNT(*) FROM settle_bill WHERE deleted = 0 AND status = 'settled' " +
+            "<if test='startTime != null'> AND create_time &gt;= #{startTime} </if>" +
+            "<if test='endTime != null'>   AND create_time &lt;= #{endTime}   </if>" +
+            "</script>")
+    Long selectSettledCount(@Param("startTime") LocalDateTime startTime,
+                            @Param("endTime") LocalDateTime endTime);
 
-    @Select("SELECT COUNT(*) FROM settle_bill WHERE deleted = 0")
-    Long selectTotalCount();
+    @Select("<script>" +
+            "SELECT COUNT(*) FROM settle_bill WHERE deleted = 0 " +
+            "<if test='startTime != null'> AND create_time &gt;= #{startTime} </if>" +
+            "<if test='endTime != null'>   AND create_time &lt;= #{endTime}   </if>" +
+            "</script>")
+    Long selectTotalCount(@Param("startTime") LocalDateTime startTime,
+                          @Param("endTime") LocalDateTime endTime);
 }

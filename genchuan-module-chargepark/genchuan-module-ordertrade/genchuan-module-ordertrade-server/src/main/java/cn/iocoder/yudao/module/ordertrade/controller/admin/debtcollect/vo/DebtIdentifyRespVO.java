@@ -53,9 +53,9 @@ public class DebtIdentifyRespVO {
     @Schema(description = "备用字段2")
     private String reserve2;*/
 
-    @Schema(description = "创建者")
+ /*   @Schema(description = "创建者")
     @ExcelProperty("创建者")
-    private String creator;
+    private String creator;*/
 
 /*    @Schema(description = "更新者")
     private String updater;*/
@@ -67,4 +67,8 @@ public class DebtIdentifyRespVO {
  /*   @Schema(description = "更新时间")
     @ExcelProperty("更新时间")
     private LocalDateTime updateTime;*/
+
+    @Schema(description = "更新者")
+    @ExcelProperty("识别人")
+    private String updater;
 }

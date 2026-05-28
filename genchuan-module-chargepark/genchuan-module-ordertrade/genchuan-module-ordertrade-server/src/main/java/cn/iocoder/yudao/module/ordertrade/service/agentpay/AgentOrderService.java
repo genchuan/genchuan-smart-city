@@ -23,7 +23,7 @@ public interface AgentOrderService {
 
     void payAgentOrder(IdReqVO reqVO);
 
-    void invoiceAgentOrder(IdReqVO reqVO);
+    void invoiceAgentOrder(AgentOrderInvoiceReqVO reqVO);
 
     void cancelAgentOrder(IdReqVO reqVO);
 

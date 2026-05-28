@@ -34,9 +34,9 @@ public interface CollectTrackService {
 
     void updateProgressCollectTrack(IdReqVO reqVO);
 
-    /** Transfer - 单条操作（IdReqVO） */
+    /** Transfer - 单条操作（CollectTrackTransferReqVO） */
 
-    void transferCollectTrack(IdReqVO reqVO);
+    void transferCollectTrack(CollectTrackTransferReqVO reqVO);
 
     /** Archive - 单条操作（IdReqVO） */
 

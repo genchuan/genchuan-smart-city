@@ -1,6 +1,7 @@
 package cn.iocoder.yudao.module.ordertrade.controller.admin.debtcollect.vo;
 
 import cn.idev.excel.annotation.ExcelProperty;
+import cn.iocoder.yudao.module.ordertrade.enums.CollectConfigStatusEnum;
 import cn.iocoder.yudao.module.ordertrade.enums.CollectMethodEnum;
 import cn.iocoder.yudao.module.ordertrade.framework.excel.EnumExcelConverter;
 import cn.iocoder.yudao.module.ordertrade.framework.excel.EnumFormat;
@@ -24,14 +25,15 @@ public class CollectConfigRespVO {
     @ExcelProperty(value = "追缴方式", converter = EnumExcelConverter.class)
     @EnumFormat(CollectMethodEnum.class)
     private String collectMethod;
-    @Schema(description = "推送模板ID")
+    /*@Schema(description = "推送模板ID")
     @ExcelProperty("推送模板ID")
-    private Long templateId;
+    private Long templateId;*/
     @Schema(description = "推送频次（小时）")
     @ExcelProperty("推送频次（小时）")
     private Integer pushFrequency;
     @Schema(description = "状态")
-    @ExcelProperty("状态")
+    @ExcelProperty(value = "状态", converter = EnumExcelConverter.class)
+    @EnumFormat(CollectConfigStatusEnum.class)
     private String status;
     @Schema(description = "配置说明")
     @ExcelProperty("配置说明")
@@ -40,17 +42,18 @@ public class CollectConfigRespVO {
     @ExcelProperty("操作人ID")
     private Long operatorId;
 
-    @Schema(description = "备用字段1")
+    /*@Schema(description = "备用字段1")
     private String reserve1;
 
     @Schema(description = "备用字段2")
-    private String reserve2;
+    private String reserve2;*/
 
     @Schema(description = "创建者")
     @ExcelProperty("创建者")
     private String creator;
 
     @Schema(description = "更新者")
+    @ExcelProperty("更新者")
     private String updater;
 
     @Schema(description = "创建时间")
@@ -58,5 +61,6 @@ public class CollectConfigRespVO {
     private LocalDateTime createTime;
 
     @Schema(description = "更新时间")
+    @ExcelProperty("更新时间")
     private LocalDateTime updateTime;
 }

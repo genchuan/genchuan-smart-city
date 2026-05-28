@@ -101,7 +101,7 @@ public class ReconcileBillServiceImpl implements ReconcileBillService {
             throw exception(RECONCILE_BILL_STATUS_CANNOT_CONFIRM);
         ReconcileBillDO update = new ReconcileBillDO();
         update.setId(id);
-        update.setStatus("confirmed");
+        update.setStatus(ReconcileBillStatusEnum.CONFIRMED.getValue());
         update.setConfirmTime(LocalDateTime.now());
         update.setReconcilerId(SecurityFrameworkUtils.getLoginUserId());
         reconcileBillMapper.updateById(update);

@@ -155,7 +155,7 @@ public class OfftimeParkOrderServiceImpl implements OfftimeParkOrderService {
         invoice.setOrderId(reqVO.getId());
         invoice.setTitle(reqVO.getInvoiceTitle());
         invoice.setTaxNo(reqVO.getInvoiceTaxNo());
-        invoice.setReserve1(reqVO.getInvoiceEmail());
+        invoice.setEmail(reqVO.getInvoiceEmail());
         invoice.setAmount(order.getAmount());
         invoice.setStatus("pending_audit");
         invoice.setRemark(reqVO.getRemark());

@@ -51,14 +51,12 @@ public class RefundApplyServiceImpl implements RefundApplyService {
         RefundApplyChartRespVO resp = new RefundApplyChartRespVO();
         LocalDateTime start = v.getApplyTimeStart() != null ? v.getApplyTimeStart() : LocalDateTime.now().minusDays(30);
         LocalDateTime end   = v.getApplyTimeEnd()   != null ? v.getApplyTimeEnd()   : LocalDateTime.now();
-        LocalDateTime todayStart = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
-        LocalDateTime now = LocalDateTime.now();
         resp.setTrendData(refundApplyMapper.selectTrend(start, end));
         resp.setTypeData(refundApplyMapper.selectGroupByStatus(start, end));
         RefundApplyChartRespVO.CardData card = new RefundApplyChartRespVO.CardData();
-        card.setWaitAuditCount(refundApplyMapper.selectCountByStatus("pending_audit").intValue());
-        Long all      = refundApplyMapper.selectCountByStatus(null);
-        Long approved = refundApplyMapper.selectCountByStatus("completed");
+        card.setWaitAuditCount(refundApplyMapper.selectCountByStatus("pending_audit", start, end).intValue());
+        Long all      = refundApplyMapper.selectCountByStatus(null, start, end);
+        Long approved = refundApplyMapper.selectCountByStatus("completed", start, end);
         if (all != null && all > 0) {
             card.setAuditPassRate(new BigDecimal(approved).multiply(BigDecimal.valueOf(100))
                     .divide(new BigDecimal(all), 1, java.math.RoundingMode.HALF_UP));

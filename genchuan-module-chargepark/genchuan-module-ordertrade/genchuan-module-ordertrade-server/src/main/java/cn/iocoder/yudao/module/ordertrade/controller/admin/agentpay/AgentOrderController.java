@@ -103,7 +103,7 @@ public class AgentOrderController {
     @PostMapping("/invoice")
     @ApiAccessLog(operateType = UPDATE)
     @Operation(summary = "开票")
-    public CommonResult<Boolean> invoiceAgentOrder(@Valid @RequestBody IdReqVO reqVO) {
+    public CommonResult<Boolean> invoiceAgentOrder(@Valid @RequestBody AgentOrderInvoiceReqVO reqVO) {
         agentOrderService.invoiceAgentOrder(reqVO);
         return success(true);
     }
