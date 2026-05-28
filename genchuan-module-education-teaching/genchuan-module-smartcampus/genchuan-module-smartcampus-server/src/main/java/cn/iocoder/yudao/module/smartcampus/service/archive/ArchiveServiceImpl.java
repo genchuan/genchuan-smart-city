@@ -1,34 +1,25 @@
 package cn.iocoder.yudao.module.smartcampus.service.archive;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.iocoder.yudao.framework.common.biz.system.dict.dto.DictDataRespDTO;
-import cn.iocoder.yudao.framework.common.pojo.CommonResult;
 import cn.iocoder.yudao.framework.security.core.LoginUser;
 import cn.iocoder.yudao.module.smartcampus.enums.ArchiveProcessStatusEnum;
 import cn.iocoder.yudao.module.smartcampus.enums.ArchiveStatusEnum;
-import cn.iocoder.yudao.module.smartcampus.enums.SmartCampusDictTypeEnum;
 import com.mzt.logapi.context.LogRecordContext;
 import com.mzt.logapi.starter.annotation.LogRecord;
-import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import cn.iocoder.yudao.module.smartcampus.controller.admin.archive.vo.*;
 import cn.iocoder.yudao.module.smartcampus.dal.dataobject.archive.ArchiveDO;
 import cn.iocoder.yudao.framework.common.pojo.PageResult;
-import cn.iocoder.yudao.framework.common.pojo.PageParam;
 import cn.iocoder.yudao.framework.common.util.object.BeanUtils;
 
 import cn.iocoder.yudao.module.smartcampus.dal.mysql.archive.ArchiveMapper;
 
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.convertList;
-import static cn.iocoder.yudao.framework.common.util.collection.CollectionUtils.diffList;
-import static cn.iocoder.yudao.framework.dict.core.DictFrameworkUtils.dictDataApi;
 import static cn.iocoder.yudao.module.smartcampus.enums.ErrorCodeConstants.*;
 import static cn.iocoder.yudao.module.smartcampus.enums.LogRecordConstants.*;
 
