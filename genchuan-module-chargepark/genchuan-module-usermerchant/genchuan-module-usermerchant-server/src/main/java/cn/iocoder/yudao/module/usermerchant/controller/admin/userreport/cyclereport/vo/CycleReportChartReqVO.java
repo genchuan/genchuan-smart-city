@@ -13,16 +13,13 @@ import java.time.LocalDateTime;
 public class CycleReportChartReqVO {
 
     @Schema(description = "报表周期（日报/周报/月报/季报/半年报/年报/自定义报表）", required = true, example = "月报")
-    @NotBlank(message = "报表周期不能为空")
     private String reportCycle;
 
     @Schema(description = "统计开始时间", required = true)
-    @NotNull(message = "统计开始时间不能为空")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime statStartTime;
 
     @Schema(description = "统计结束时间", required = true)
-    @NotNull(message = "统计结束时间不能为空")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime statEndTime;
 

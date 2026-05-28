@@ -70,7 +70,7 @@
     <select id="selectRechargeSuccessRate" resultType="java.math.BigDecimal">
         SELECT ROUND(
         IFNULL(
-        SUM(CASE WHEN status = '已支付' THEN 1 ELSE 0 END) /
+        SUM(CASE WHEN status = '已生效' THEN 1 ELSE 0 END) /
         NULLIF(COUNT(*), 0)
         , 0), 2
         ) AS successRate
