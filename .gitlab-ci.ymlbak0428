@@ -36,6 +36,7 @@ Build:
           ["genchuan-module-inspectop-server"]="genchuan-module-chargepark/genchuan-module-inspectop/genchuan-module-inspectop-server"
           ["genchuan-module-stationresource-server"]="genchuan-module-chargepark/genchuan-module-stationresource/genchuan-module-stationresource-server"
           ["genchuan-module-usermerchant-server"]="genchuan-module-chargepark/genchuan-module-usermerchant/genchuan-module-usermerchant-server"
+          ["genchuan-module-smartcampus-server"]="genchuan-module-smartcampus/genchuan-module-smartcampus-server"
         )
         for module in "${!MODULE_JAR_MAP[@]}"; do
           jarPath=${MODULE_JAR_MAP[$module]}
