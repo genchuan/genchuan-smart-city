@@ -92,6 +92,12 @@ public class LeaveHandleServiceImpl implements LeaveHandleService {
     }
 
     @Override
+    public PageResult<LeaveHandleRespVO> getLeaveHandleJoinPage(LeaveHandlePageReqVO pageReqVO) {
+        return leaveHandleMapper.selectJoinPage(pageReqVO);
+    }
+
+
+    @Override
     public Boolean confirm(LeaveHandleConfirmReqVO updateReqVO) {
         // 校验存在
         LeaveHandleDO leaveHandleDO = leaveHandleMapper.selectOne(LeaveHandleDO::getId, updateReqVO.getId());
@@ -118,6 +124,9 @@ public class LeaveHandleServiceImpl implements LeaveHandleService {
         leaveHandleDO.setStatus(LeaveHandleStatusEnum.LEFT.getStatus());
         leaveHandleDO.setUpdateTime(LocalDateTime.now());
         leaveHandleDO.setUpdater(SecurityFrameworkUtils.getLoginUserNickname());
+        leaveHandleDO.setHandleTime(reqVO.getHandleTime());
+        leaveHandleDO.setHandleUser(reqVO.getHandleUser());
+        leaveHandleDO.setCheckoutTime(reqVO.getCheckoutTime());
         //TODO 自动计算办理完成率
         leaveHandleDO.setFinishRate(new BigDecimal("100"));
         // 更新

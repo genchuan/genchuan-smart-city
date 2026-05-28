@@ -99,6 +99,7 @@ public class BehaviorMgmtController {
         CommonResult<List<DictDataRespDTO>> typeDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.BEHAVIOR_MGMT_LEAVE_TYPE.getType());
         CommonResult<List<DictDataRespDTO>> auditDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.BEHAVIOR_MGMT_AUDIT_LEVEL.getType());
         CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.BEHAVIOR_MGMT_STATUS.getType());
+        CommonResult<List<DictDataRespDTO>> syncStatusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.BEHAVIOR_MGMT_ATTENDANCE_SYNC.getType());
         list = list.stream().map(item -> {
             String leaveType = item.getLeaveType();
             if (typeDictDataList.getData() != null) {
@@ -130,6 +131,16 @@ public class BehaviorMgmtController {
                 }
             }
             item.setAuditLevel(auditLevel);
+            String attendanceSync = item.getAttendanceSync();
+            if (syncStatusDictDataList.getData() != null) {
+                for (DictDataRespDTO dictData : syncStatusDictDataList.getData()) {
+                    if (dictData.getValue().equals(attendanceSync)) {
+                        attendanceSync = dictData.getLabel();
+                        break;
+                    }
+                }
+            }
+            item.setAttendanceSync(attendanceSync);
             return item;
         }).toList();
         // 导出 Excel

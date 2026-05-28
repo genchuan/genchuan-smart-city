@@ -95,7 +95,8 @@ public class ClubMgmtController {
     public void exportClubMgmtExcel(@Valid ClubMgmtPageReqVO pageReqVO,
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<ClubMgmtDO> list = clubMgmtService.getClubMgmtPage(pageReqVO).getList();
+//        List<ClubMgmtDO> list = clubMgmtService.getClubMgmtPage(pageReqVO).getList();
+        List<ClubMgmtRespVO> list = clubMgmtService.getClubMgmtJoinPage(pageReqVO).getList();
         CommonResult<List<DictDataRespDTO>> typeDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.CLUB_MGMT_CLUB_TYPE.getType());
         CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.CLUB_MGMT_STATUS.getType());
         CommonResult<List<DictDataRespDTO>> venueApplyStatusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.CLUB_MGMT_VENUE_APPLY_STATUS.getType());

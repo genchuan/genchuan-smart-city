@@ -43,7 +43,7 @@ public class DutyMgmtRespVO {
     private String transferUser;
 
     @Schema(description = "调班状态：无/待审批/已通过/已驳回", example = "1")
-    @ExcelProperty("调班状态：无/待审批/已通过/已驳回")
+    @ExcelProperty("调班状态")
     private String transferStatus;
 
     @Schema(description = "出车事由", example = "不对")
@@ -55,7 +55,7 @@ public class DutyMgmtRespVO {
     private String carDestination;
 
     @Schema(description = "出车状态：无/待审批/已通过", example = "2")
-    @ExcelProperty("出车状态：无/待审批/已通过")
+    @ExcelProperty("出车状态")
     private String carStatus;
 
     @Schema(description = "值班记录")

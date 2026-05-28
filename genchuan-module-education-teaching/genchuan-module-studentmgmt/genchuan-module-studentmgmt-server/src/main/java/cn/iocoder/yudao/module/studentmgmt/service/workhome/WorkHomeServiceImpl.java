@@ -10,7 +10,6 @@ import cn.iocoder.yudao.module.studentmgmt.dal.mysql.mentalmgmt.MentalMgmtMapper
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.violatemgmt.ViolateMgmtMapper;
 import cn.iocoder.yudao.module.studentmgmt.enums.ViolaateStatusEnum;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -72,7 +71,7 @@ public class WorkHomeServiceImpl implements WorkHomeService {
         vo.setTotalFund(fundSystemMapper.selectTotalFund(startTime, endTime, className, grade));
         vo.setUnhandledViolate(violateMgmtMapper.selectUnhandledViolate(startTime, endTime, className, grade, ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_PENDING.getStatus()));
         // TODO : 待处理预警数
-        vo.setUnhandledWarn(violateMgmtMapper.selectUnhandledViolate(startTime, endTime, className, grade, ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_WARN.getStatus()));
+        vo.setUnhandledWarn(violateMgmtMapper.selectUnhandledViolate(startTime, endTime, className, grade, ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_WARNED.getStatus()));
         return vo;
     }
 

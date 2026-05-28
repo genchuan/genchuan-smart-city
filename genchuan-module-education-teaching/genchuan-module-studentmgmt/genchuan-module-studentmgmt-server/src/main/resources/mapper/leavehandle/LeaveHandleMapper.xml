@@ -35,6 +35,7 @@
         <if test="startTime != null">
             AND create_time BETWEEN #{startTime} AND #{endTime}
         </if>
+        ORDER BY create_time ASC
     </select>
     <select id="selectDailyLeaveCount"
             resultType="cn.iocoder.yudao.module.studentmgmt.controller.admin.basevo.ChartTrendVO">

@@ -100,7 +100,7 @@ public class DormAssignController {
               HttpServletResponse response) throws IOException {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<DormAssignDO> list = dormAssignService.getDormAssignPage(pageReqVO).getList();
-        CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.DORM_COMPARE_STATUS.getType());
+        CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.DORM_ASSIGN_STATUS.getType());
         list = list.stream().map(item -> {
             String status = item.getStatus();
             if (statusDictDataList.getData() != null) {

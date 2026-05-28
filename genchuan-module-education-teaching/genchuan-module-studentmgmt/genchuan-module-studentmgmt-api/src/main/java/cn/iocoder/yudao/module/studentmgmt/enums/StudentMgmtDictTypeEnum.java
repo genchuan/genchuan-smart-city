@@ -159,6 +159,9 @@ public enum StudentMgmtDictTypeEnum {
     // 评比周期（周 / 月 / 学期），关联芋道字典表：dorm_compare_cycle
     DORM_COMPARE_CYCLE("dorm_compare_cycle", "宿舍评比周期"),
 
+    // ==================== 宿舍分配表：dorm_assign ====================
+    DORM_ASSIGN_STATUS("dorm_assign_status", "宿舍分配状态"),
+
     // ==================== 宿舍考勤表：dorm_check ====================
     //状态（正常 / 异常），关联芋道字典表：dorm_check_status。
     DORM_CHECK_STATUS("dorm_check_status", "宿舍考勤状态"),
@@ -232,12 +235,12 @@ public enum StudentMgmtDictTypeEnum {
 
     // ==================== 家长回复管理 ====================
     // 推送状态 (未推送 / 已推送)，关联芋道字典表：new_push_status
-    PARENT_REPLY_READ_STATUS("parent_reply_read_status", "阅读状态"),
+    PARENT_REPLY_READ_STATUS("parent_reply_read_status", "推送状态"),
     PARENT_REPLY_STATUS("parent_reply_status", "回复状态"),
 
     // ==================== 宣传管理 ====================
     // 执行状态 (未执行 / 已执行)，关联芋道字典表：promote_mgmt_status。
-    PROMOTE_MGMT_STATUS("promote_mgmt_status", "阅读状态"),
+    PROMOTE_MGMT_STATUS("promote_mgmt_status", "执行状态"),
     // ==================== 报名管理 ====================
     // 状态（待审核 / 已录取）register_mgmt_status
     REGISTER_MGMT_STATUS("register_mgmt_status", "阅读状态"),

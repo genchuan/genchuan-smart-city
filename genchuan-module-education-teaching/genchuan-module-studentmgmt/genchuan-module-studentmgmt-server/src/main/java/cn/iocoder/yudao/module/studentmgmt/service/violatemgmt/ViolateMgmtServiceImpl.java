@@ -127,7 +127,7 @@ public class ViolateMgmtServiceImpl implements ViolateMgmtService {
     public boolean auditViolateMgmtListByIds(List<Long> ids, Long userId) {
         List<ViolateMgmtDO> violateMgmtDOS = violateMgmtMapper.selectByIds(ids);
 
-        String status = ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_APPROVE.getStatus();
+        String status = ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_APPROVED.getStatus();
         Integer i = violateMgmtMapper.auditViolateMgmtListByIds(ids, status, userId);
 
         if (i > 0 && i == ids.size()) {
@@ -184,7 +184,7 @@ public class ViolateMgmtServiceImpl implements ViolateMgmtService {
         ViolateMgmtDO violateMgmtDO = violateMgmtMapper.selectById(id);
         if (violateMgmtDO != null) {
             violateMgmtDO.setWarnTime(LocalDateTime.now());
-            violateMgmtDO.setStatus(ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_WARN.getStatus());
+            violateMgmtDO.setStatus(ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_WARNED.getStatus());
             int i = violateMgmtMapper.updateById(violateMgmtDO);
 
             if (i > 0) {
@@ -213,7 +213,7 @@ public class ViolateMgmtServiceImpl implements ViolateMgmtService {
         // 1. 卡片数据
         vo.setTotalCount(violateMgmtMapper.selectTotalCount(startTime, endTime, null, null));
         vo.setPendingCount(violateMgmtMapper.selectTotalCount(startTime, endTime, ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_PENDING.getStatus(), null));
-        vo.setWarnCount(violateMgmtMapper.selectTotalCount(startTime, endTime, ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_WARN.getStatus(), null));
+        vo.setWarnCount(violateMgmtMapper.selectTotalCount(startTime, endTime, ViolaateStatusEnum.VIOLATE_MGMT_VIOLATE_STATUS_WARNED.getStatus(), null));
         Long highRiskStudentCount = violateMgmtMapper.selectHighRiskStudentCount(startTime, endTime);
         if (highRiskStudentCount != null) {
             vo.setHighRiskStudentCount(highRiskStudentCount);

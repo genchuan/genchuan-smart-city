@@ -101,7 +101,7 @@ public class CheckInController {
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
         List<CheckInDO> list = checkInService.getCheckInPage(pageReqVO).getList();
         CommonResult<List<DictDataRespDTO>> accountDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.CHECK_IN_ACCOUNT_STATUS.getType());
-        CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.CHECK_IN_ACCOUNT_STATUS.getType());
+        CommonResult<List<DictDataRespDTO>> statusDictDataList = dictDataApi.getDictDataList(StudentMgmtDictTypeEnum.CHECK_IN_STATUS.getType());
         list = list.stream().map(item -> {
             String accountStatus = item.getAccountStatus();
             if (accountDictDataList.getData() != null) {

@@ -10,11 +10,11 @@ import lombok.Getter;
  */
 public enum AidWorkStatusEnum {
 
-    // 状态（待审核 / 已通过 / 已完成），关联芋道字典表：violate_mgmt_status
+    // 状态（待审核 / 已通过 / 已完成），关联芋道字典表：aid_work_status
     AID_WORK_STATUS_0("0", "待审核"),
     AID_WORK_STATUS_1("1", "已通过"),
     AID_WORK_STATUS_2("2", "已完成");
-    public static final String DICT_TYPE = "violate_mgmt_status";
+    public static final String DICT_TYPE = "aid_work_status";
     /**
      * 状态
      * <p>
