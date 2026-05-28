@@ -4,7 +4,7 @@ package cn.iocoder.yudao.module.smartcampus.enums;
  * 智慧校园管理 操作日志枚举
  * 目的：统一管理，也减少 Service 里各种“复杂”字符串
  *
- * @author HUIHUI
+ * @author 亘川智城
  */
 public interface LogRecordConstants {
 
