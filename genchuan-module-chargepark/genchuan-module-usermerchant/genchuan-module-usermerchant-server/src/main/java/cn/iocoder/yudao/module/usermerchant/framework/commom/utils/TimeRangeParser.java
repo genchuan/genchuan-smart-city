@@ -15,7 +15,7 @@ import java.time.temporal.TemporalAdjusters;
  * 时间范围解析工具类
  * 支持：
  * - 绝对时间范围："2025-04-01~2025-04-30"、"2025-04~2025-04"、"2025~2025"
- * - 相对时间范围："last7days"、"last30days"、"lastMonth"、"lastYear"、"thisMonth"、"thisYear"
+ * - 相对时间范围："today", "yesterday", "thisWeek", "lastWeek", "thisMonth", "lastMonth", "thisYear", "lastYear", "last{N}days"（如 "last7days"）
  *
  * @author 宇佐见莲子
  */

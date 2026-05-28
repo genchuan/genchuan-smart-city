@@ -25,6 +25,8 @@ public class AgentOrderDO extends BaseDO {
 
     private Long merchantId;
 
+    private String merchantName;
+
     private String carNo;
 
     private BigDecimal amount;

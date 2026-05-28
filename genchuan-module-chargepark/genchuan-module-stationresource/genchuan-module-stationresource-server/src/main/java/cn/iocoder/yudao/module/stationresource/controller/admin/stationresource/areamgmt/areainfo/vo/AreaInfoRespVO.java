@@ -27,11 +27,12 @@ public class AreaInfoRespVO {
     private String district;
 
     @Schema(description = "[负责人名称] 片区名称",  example = "张得法")
-    @ExcelProperty("负责人名称")
+    @ExcelProperty("负责人")
     private String leaderName;
 
     @Schema(description = "[负责人] 关联芋道用户表system_user", example = "18362")
-    @ExcelProperty("负责人")
+    @ExcelIgnore
+//    @ExcelProperty("负责人")
     private Long userId;
 
     @Schema(description = "[联系电话] 联系电话")
@@ -50,9 +51,14 @@ public class AreaInfoRespVO {
     @ExcelProperty("绑定时间")
     private LocalDateTime bindTime;
 
-    @Schema(description = "[绑定人ID] 关联芋道用户表system_user", example = "18363")
-    @ExcelProperty("绑定人ID")
+    @Schema(description = "[绑定人ID] ", example = "18363")
+//    @ExcelProperty("绑定人ID")
+    @ExcelIgnore
     private Long bindUserId;
+
+    @Schema(description = "[绑定人] ", example = "18363")
+    @ExcelProperty("绑定人")
+    private String bindUserName;
 
     @Schema(description = "[备注] 备注", example = "你说的对")
     @ExcelProperty("备注")

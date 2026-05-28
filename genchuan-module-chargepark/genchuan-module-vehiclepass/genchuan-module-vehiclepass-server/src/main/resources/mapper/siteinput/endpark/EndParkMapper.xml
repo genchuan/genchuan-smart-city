@@ -33,8 +33,8 @@
         <if test="reqVO.spaceId != null">
             AND p.space_id = #{reqVO.spaceId}
         </if>
-        <if test="reqVO.endTimeNew != null and reqVO.endTimeNew.length == 2">
-            AND p.end_time BETWEEN FROM_UNIXTIME(#{reqVO.endTimeNew[0]}) AND FROM_UNIXTIME(#{reqVO.endTimeNew[1]})
+        <if test="reqVO.endTime != null and reqVO.endTime.length == 2">
+            AND p.end_time BETWEEN #{reqVO.endTime[0]} AND #{reqVO.endTime[1]}
         </if>
         <if test="reqVO.status != null and reqVO.status != ''">
             AND p.status = #{reqVO.status}

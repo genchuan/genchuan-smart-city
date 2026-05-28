@@ -5,6 +5,8 @@ import cn.iocoder.yudao.framework.mybatis.core.mapper.BaseMapperX;
 import cn.iocoder.yudao.framework.mybatis.core.query.LambdaQueryWrapperX;
 import cn.iocoder.yudao.module.ordertrade.controller.admin.agentpay.vo.AgentOrderPageReqVO;
 import cn.iocoder.yudao.module.ordertrade.dal.dataobject.agentpay.AgentOrderDO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -17,15 +19,26 @@ import java.util.Map;
 @Mapper
 public interface AgentOrderMapper extends BaseMapperX<AgentOrderDO> {
 
-    default PageResult<AgentOrderDO> selectPage(AgentOrderPageReqVO reqVO) {
-        return selectPage(reqVO, new LambdaQueryWrapperX<AgentOrderDO>()
-                .likeIfPresent(AgentOrderDO::getOrderNo, reqVO.getOrderNo())
-                .eqIfPresent(AgentOrderDO::getMerchantId, reqVO.getMerchantId())
-                .likeIfPresent(AgentOrderDO::getCarNo, reqVO.getCarNo())
-                .eqIfPresent(AgentOrderDO::getStatus, reqVO.getStatus())
-                .eqIfPresent(AgentOrderDO::getPayType, reqVO.getPayType())
-                .orderByDesc(AgentOrderDO::getId));
-    }
+    @Select("<script>" +
+            "SELECT ao.*, mi.name AS merchant_name " +
+            "FROM agent_order ao " +
+            "LEFT JOIN merchant_info mi ON mi.id = ao.merchant_id AND mi.deleted = 0 " +
+            "WHERE ao.deleted = 0 " +
+            "<if test='req.orderNo != null and req.orderNo != \"\"'>AND ao.order_no LIKE CONCAT('%', #{req.orderNo}, '%') </if>" +
+            "<if test='req.merchantId != null'>AND ao.merchant_id = #{req.merchantId} </if>" +
+            "<if test='req.merchantName != null and req.merchantName != \"\"'>AND mi.name LIKE CONCAT('%', #{req.merchantName}, '%') </if>" +
+            "<if test='req.carNo != null and req.carNo != \"\"'>AND ao.car_no LIKE CONCAT('%', #{req.carNo}, '%') </if>" +
+            "<if test='req.status != null and req.status != \"\"'>AND ao.status = #{req.status} </if>" +
+            "<if test='req.payType != null and req.payType != \"\"'>AND ao.pay_type = #{req.payType} </if>" +
+            "ORDER BY ao.id DESC" +
+            "</script>")
+    IPage<AgentOrderDO> selectPageWithMerchant(Page<AgentOrderDO> page, @Param("req") AgentOrderPageReqVO reqVO);
+
+    @Select("SELECT ao.*, mi.name AS merchant_name " +
+            "FROM agent_order ao " +
+            "LEFT JOIN merchant_info mi ON mi.id = ao.merchant_id AND mi.deleted = 0 " +
+            "WHERE ao.id = #{id} AND ao.deleted = 0")
+    AgentOrderDO selectByIdWithMerchant(@Param("id") Long id);
 
     @Select("<script>" +
             "SELECT DATE_FORMAT(create_time,'%Y-%m-%d') AS date, COUNT(*) AS count " +

@@ -101,10 +101,10 @@ public class MemberGroupServiceImpl implements MemberGroupService {
 
     @Override
     @LogRecord(type = TYPE_MEMBER_GROUP, subType = SUB_TYPE_UPDATE_GROUPS_STATUS,
-            bizNo = "{{{#ids}}}",
+            bizNo = "{{#ids}}",
             success = SUCCESS_UPDATE_GROUPS_STATUS)
     @Transactional(rollbackFor = Exception.class)
-    public void updateGroupStatus(List<Long> ids, String status) {
+    public void updateGroupStatus(List<Long> ids, Integer status) {
         if (CollectionUtils.isEmpty(ids)) {
             return;
         }

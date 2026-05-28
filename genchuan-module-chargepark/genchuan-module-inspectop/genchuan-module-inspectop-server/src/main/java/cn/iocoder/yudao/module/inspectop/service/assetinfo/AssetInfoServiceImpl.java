@@ -178,25 +178,38 @@ public class AssetInfoServiceImpl implements AssetInfoService {
             int successCount = 0;
             List<ImportRespVO.ImportFailure> failures = new ArrayList<>();
 
-            // 2. 遍历处理每一行数据
+// 2. 遍历处理每一行数据
             for (int i = 0; i < importList.size(); i++) {
                 AssetInfoImportReqVO importReqVO = importList.get(i);
                 int rowIndex = i + 2; // Excel行号（从1开始，标题行占1行）
+                String currentAssetName = importReqVO.getName(); // 获取当前行资产名，用于错误信息
 
                 try {
-                    // 2.1 校验必填字段
+                    // 【增强点1】: 在基础校验前，可记录当前处理的数据标识
+                    if (StrUtil.isBlank(currentAssetName)) {
+                        // 如果连资产名都没有，错误信息需特殊处理
+                        throw new RuntimeException("第" + rowIndex + "行：资产名称为空，无法唯一标识该条数据。");
+                    }
+
+                    // 2.1 校验必填字段 (增强错误信息)
                     if (StrUtil.isBlank(importReqVO.getName())) {
-                        throw exception(ASSET_INFO_NAME_NOT_NULL);
+                        throw exception(ASSET_INFO_NAME_NOT_NULL); // 可优化消息模板，加入行号
                     }
                     if (StrUtil.isBlank(importReqVO.getType())) {
-                        throw exception(ASSET_INFO_TYPE_NOT_NULL);
+                        // 【建议】在异常常量定义中支持占位符，例如：“第{0}行，资产类型不能为空”
+                        // 此处为示例，我们先拼接字符串。更优解是定义带占位符的异常消息模板。
+                        throw new RuntimeException("第" + rowIndex + "行：资产类型不能为空。");
                     }
                     if (StrUtil.isBlank(importReqVO.getStatus())) {
-                        throw exception(ASSET_INFO_STATUS_NOT_NULL);
+                        throw new RuntimeException("第" + rowIndex + "行：资产状态不能为空。");
                     }
-//                    if (importReqVO.getStationId() == null) {
-//                        throw exception(ASSET_INFO_STATION_ID_NOT_NULL);
-//                    }
+
+                    // 【增强点2】: 校验状态值是否合法（1-正常，2-禁用，3-报废）
+                    String status = importReqVO.getStatus();
+                    if (!("1".equals(status) || "2".equals(status) || "3".equals(status)
+                            || "正常".equals(status) || "禁用".equals(status) || "报废".equals(status))) {
+                        throw new RuntimeException("第" + rowIndex + "行：资产状态值‘" + status + "’非法，应为: 1/正常, 2/禁用, 3/报废。");
+                    }
 
                     // 2.2 根据唯一标识（资产名称）查找是否已存在
                     AssetInfoDO existAsset = assetInfoMapper.selectOne(
@@ -211,7 +224,10 @@ public class AssetInfoServiceImpl implements AssetInfoService {
                             updateObj.setId(existAsset.getId()); // 保留原有ID
                             assetInfoMapper.updateById(updateObj);
                         } else {
+                            // 【增强点3】: 明确告知哪条数据已存在
+                            // 假设 ASSET_INFO_EXISTS 的消息模板定义为：“资产信息‘{0}’已存在”
                             throw exception(ASSET_INFO_EXISTS, importReqVO.getName());
+                            // 如果消息模板不支持，则可：throw new RuntimeException(“第“ + rowIndex + “行：资产信息【“ + importReqVO.getName() + “】已存在，不允许重复导入。”);
                         }
                     } else {
                         // 新增记录
@@ -224,7 +240,12 @@ public class AssetInfoServiceImpl implements AssetInfoService {
                     // 2.3 记录本行导入失败的信息
                     ImportRespVO.ImportFailure failure = new ImportRespVO.ImportFailure();
                     failure.setRowIndex(rowIndex);
-                    failure.setMessage(e.getMessage());
+                    // 【核心增强】: 构建更详细的错误信息
+                    String detailMessage = String.format("第%d行处理失败 - 资产名称‘%s’ - 原因: %s",
+                            rowIndex,
+                            StrUtil.isBlank(currentAssetName) ? "（空）" : currentAssetName,
+                            e.getMessage());
+                    failure.setMessage(detailMessage);
                     failures.add(failure);
                 }
             }

@@ -18,11 +18,16 @@ public class FlexibleTimestampDeserializer extends JsonDeserializer<LocalDateTim
         JsonToken token = p.getCurrentToken();
         if (token == JsonToken.VALUE_STRING) {
             String str = p.getText().trim();
-            // 尝试解析 yyyy-MM-dd HH:mm:ss 格式
+            // 先尝试解析 ISO 格式 (yyyy-MM-dd'T'HH:mm:ss)
             try {
-                return LocalDateTime.parse(str, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            } catch (DateTimeParseException e) {
-                throw new JsonParseException(p, "无法解析日期时间字符串: " + str);
+                return LocalDateTime.parse(str); // 默认使用 ISO_LOCAL_DATE_TIME
+            } catch (DateTimeParseException e1) {
+                // 再尝试解析 yyyy-MM-dd HH:mm:ss 格式
+                try {
+                    return LocalDateTime.parse(str, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                } catch (DateTimeParseException e2) {
+                    throw new JsonParseException(p, "无法解析日期时间字符串: " + str);
+                }
             }
         } else if (token == JsonToken.VALUE_NUMBER_INT) {
             long timestamp = p.getLongValue();

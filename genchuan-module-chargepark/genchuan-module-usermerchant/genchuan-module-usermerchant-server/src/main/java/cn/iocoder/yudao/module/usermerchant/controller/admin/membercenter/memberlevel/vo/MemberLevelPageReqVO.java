@@ -1,5 +1,7 @@
 package cn.iocoder.yudao.module.usermerchant.controller.admin.membercenter.memberlevel.vo;
 
+import cn.iocoder.yudao.module.usermerchant.framework.commom.utils.FlexibleTimestampDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,7 +31,7 @@ public class MemberLevelPageReqVO extends PageParam {
     private Integer status;
 
     @Schema(description = "生效时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
     private LocalDateTime[] effectiveTime;
 
     @Schema(description = "备注", example = "随便")
@@ -39,14 +41,14 @@ public class MemberLevelPageReqVO extends PageParam {
     private String creator;
 
     @Schema(description = "创建时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
     private LocalDateTime[] createTime;
 
     @Schema(description = "更新者")
     private String updater;
 
     @Schema(description = "更新时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    @JsonDeserialize(using = FlexibleTimestampDeserializer.class)
     private LocalDateTime[] updateTime;
 
 }

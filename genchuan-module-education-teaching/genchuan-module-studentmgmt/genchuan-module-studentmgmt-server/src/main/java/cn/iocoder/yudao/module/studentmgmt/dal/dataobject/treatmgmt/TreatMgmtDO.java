@@ -68,6 +68,10 @@ public class TreatMgmtDO extends BaseDO {
      */
     private LocalDateTime feedbackTime;
     /**
+     * 家长反馈内容
+     */
+    private String feedbackContent;
+    /**
      * 状态：待审核/已就诊
      */
     private String status;
@@ -85,4 +89,4 @@ public class TreatMgmtDO extends BaseDO {
     private String reserve2;
 
 
-}
+}

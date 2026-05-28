@@ -21,13 +21,13 @@ public class ReconcileBillChartRespVO {
     @Schema(description = "卡片指标")
     public static class CardData {
 
-        @Schema(description = "待确认对账单数量")
+        @Schema(description = "待对账对账单数量")
         private Long pendingCount;
 
-        @Schema(description = "有异议对账单数量")
+        @Schema(description = "异常对账单数量")
         private Long disputedCount;
 
-        @Schema(description = "已确认对账单数量")
+        @Schema(description = "已对账对账单数量")
         private Long confirmedCount;
 
         @Schema(description = "对账通过率(%)")

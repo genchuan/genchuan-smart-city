@@ -10,6 +10,7 @@ import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.honormgmt.HonorMgmtDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.dataobject.studentinfo.StudentInfoDO;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.honormgmt.HonorMgmtMapper;
 import cn.iocoder.yudao.module.studentmgmt.dal.mysql.studentinfo.StudentInfoMapper;
+import cn.iocoder.yudao.module.studentmgmt.enums.HonorStatusEnum;
 import cn.iocoder.yudao.module.studentmgmt.enums.StudentMgmtDictTypeEnum;
 import cn.iocoder.yudao.module.system.api.dict.DictDataApi;
 import com.mzt.logapi.context.LogRecordContext;
@@ -138,7 +139,7 @@ public class HonorMgmtServiceImpl implements HonorMgmtService {
     public boolean pushHonorMgmt(HonorMgmtPushReqVO reqVO) {
         HonorMgmtDO honorMgmtDO = honorMgmtMapper.selectById(reqVO.getId());
         honorMgmtDO.setPushTime(LocalDateTime.now());
-        honorMgmtDO.setStatus("已推送");
+        honorMgmtDO.setStatus(HonorStatusEnum.HONOR_MGMT_STATUS_2.getStatus());
         int i = honorMgmtMapper.updateById(honorMgmtDO);
         // 记录操作日志上下文
         LogRecordContext.putVariable("honor", honorMgmtDO);

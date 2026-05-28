@@ -66,6 +66,16 @@ public class CycleReportServiceImpl implements CycleReportService {
             queryWrapper.le(CycleReportDO::getStatTimeStart, pageReqVO.getStatTimeEnd());
         }
 
+        // 【新增代码】根据趋势时间 trendTime 过滤创建时间 createTime
+        if (pageReqVO.getTrendTime() != null) {
+            // 将前端传来的 LocalDate (如 2024-01-24) 转换为当天的开始和结束时刻
+            LocalDateTime dayStart = pageReqVO.getTrendTime().atStartOfDay(); // 2024-01-24 00:00:00
+            LocalDateTime dayEnd = pageReqVO.getTrendTime().atTime(23, 59, 59); // 2024-01-24 23:59:59
+
+            // 添加 BETWEEN 条件，查询 create_time 在这一天范围内的记录
+            queryWrapper.between(CycleReportDO::getCreateTime, dayStart, dayEnd);
+        }
+
         // 添加其他条件
         queryWrapper.eq(pageReqVO.getNormalDeviceNum() != null, CycleReportDO::getNormalDeviceNum, pageReqVO.getNormalDeviceNum())
                 .eq(pageReqVO.getAbnormalDeviceNum() != null, CycleReportDO::getAbnormalDeviceNum, pageReqVO.getAbnormalDeviceNum())

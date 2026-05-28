@@ -230,7 +230,15 @@ public class GroupInfoServiceImpl implements GroupInfoService {
         chartRespVO.setGroupGrowthTrend(growthTrend);
         //总数统计
         chartRespVO.setTotalGroupCount(groupInfoMapper.selectTotalGroupCount(parsed.getStart(), parsed.getEnd()));
-        chartRespVO.setNewGroupCount(groupInfoMapper.selectNewGroupCount(parsed.getStart(), parsed.getEnd()));
+        // 计算近30天的时间范围
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime thirtyDaysAgo = now.minusDays(30);
+
+        // 调用 Mapper 方法，传入开始和结束时间
+        Long newGroupCount = groupInfoMapper.selectNewGroupCount(thirtyDaysAgo, now);
+
+        // 设置到响应 VO 中
+        chartRespVO.setNewGroupCount((long) (newGroupCount != null ? newGroupCount.intValue() : 0));
 
         return chartRespVO;
     }

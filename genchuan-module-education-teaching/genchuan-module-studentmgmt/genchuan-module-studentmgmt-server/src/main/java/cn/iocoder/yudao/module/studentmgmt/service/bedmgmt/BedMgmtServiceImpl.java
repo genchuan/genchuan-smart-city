@@ -159,7 +159,11 @@ public class BedMgmtServiceImpl implements BedMgmtService {
         if (bedMgmtByStudentId != null) {
             // 该床位是否为oldBedId，如果不是，则表示还存在其它的旧床位
             if (!oldBedId.equals(bedMgmtByStudentId.getId())) {
-                throw exception(500, "学生已分配其他床位");
+//                throw exception(500, "学生已分配其他床位");
+                // 将该学生的旧床位设置为未分配
+                bedMgmtByStudentId.setStudentId(null);
+                bedMgmtByStudentId.setAdjustTime(adjustTime);
+                bedMgmtMapper.updateById(bedMgmtByStudentId);
             }
         }
         // 设置新床位为学生

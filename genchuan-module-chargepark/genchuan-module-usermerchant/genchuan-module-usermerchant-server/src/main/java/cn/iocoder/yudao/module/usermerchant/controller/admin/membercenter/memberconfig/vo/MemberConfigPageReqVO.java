@@ -22,7 +22,7 @@ public class MemberConfigPageReqVO extends PageParam {
     @Schema(description = "备注", example = "你猜")
     private String remark;
 
-    @Schema(description = "状态：0-未生效，1-已生效", example = "2")
+    @Schema(description = "状态：0-未生效，1-已生效", example = "已生效")
     private Integer status;
 
     @Schema(description = "生效时间")

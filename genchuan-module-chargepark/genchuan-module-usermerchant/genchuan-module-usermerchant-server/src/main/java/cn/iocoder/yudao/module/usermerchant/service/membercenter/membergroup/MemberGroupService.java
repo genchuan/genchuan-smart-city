@@ -72,5 +72,5 @@ public interface MemberGroupService {
      * @param ids ids
      * @param status 状态
      */
-    void updateGroupStatus(List<Long> ids, String status);
+    void updateGroupStatus(List<Long> ids, Integer status);
 }

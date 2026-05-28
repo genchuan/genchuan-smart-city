@@ -4,10 +4,7 @@ import lombok.*;
 import java.util.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import cn.iocoder.yudao.framework.common.pojo.PageParam;
-import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
-
-import static cn.iocoder.yudao.framework.common.util.date.DateUtils.FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND;
 
 @Schema(description = "管理后台 - 套牌管控分页 Request VO")
 @Data
@@ -16,8 +13,7 @@ public class FakePlateControlPageReqVO extends PageParam {
     @Schema(description = "车牌")
     private String plateNo;
 
-    @Schema(description = "识别时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    @Schema(description = "识别时间，时间范围。支持 yyyy-MM-dd HH:mm:ss、yyyy-MM-ddTHH:mm:ss、10位秒级时间戳、13位毫秒时间戳；GET 请求需传两个同名 identifyTime 参数", example = "2026-04-22 00:00:00,2026-04-22 23:59:59")
     private LocalDateTime[] identifyTime;
 
     @Schema(description = "匹配场景：同牌多停 / 车牌车型不匹配，关联字典fake_plate_control_match_scene")
@@ -35,8 +31,7 @@ public class FakePlateControlPageReqVO extends PageParam {
     @Schema(description = "处置人ID，关联system_user用户表", example = "16042")
     private Long handleUserId;
 
-    @Schema(description = "处置时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    @Schema(description = "处置时间，时间范围。支持 yyyy-MM-dd HH:mm:ss、yyyy-MM-ddTHH:mm:ss、10位秒级时间戳、13位毫秒时间戳；GET 请求需传两个同名 handleTime 参数")
     private LocalDateTime[] handleTime;
 
     @Schema(description = "处置进度")
@@ -63,12 +58,10 @@ public class FakePlateControlPageReqVO extends PageParam {
     @Schema(description = "更新者")
     private String updater;
 
-    @Schema(description = "创建时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    @Schema(description = "创建时间，时间范围。支持 yyyy-MM-dd HH:mm:ss、yyyy-MM-ddTHH:mm:ss、10位秒级时间戳、13位毫秒时间戳；GET 请求需传两个同名 createTime 参数")
     private LocalDateTime[] createTime;
 
-    @Schema(description = "更新时间")
-    @DateTimeFormat(pattern = FORMAT_YEAR_MONTH_DAY_HOUR_MINUTE_SECOND)
+    @Schema(description = "更新时间，时间范围。支持 yyyy-MM-dd HH:mm:ss、yyyy-MM-ddTHH:mm:ss、10位秒级时间戳、13位毫秒时间戳；GET 请求需传两个同名 updateTime 参数")
     private LocalDateTime[] updateTime;
 
 }

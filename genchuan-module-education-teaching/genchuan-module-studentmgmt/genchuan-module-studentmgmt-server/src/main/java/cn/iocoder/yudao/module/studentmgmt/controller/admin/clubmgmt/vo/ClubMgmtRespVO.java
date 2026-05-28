@@ -52,6 +52,12 @@ public class ClubMgmtRespVO {
     @ExcelProperty("场馆申请状态")
     private String venueApplyStatus;
 
+    @Schema(description = "场馆名称")
+    private String venueName;
+
+    @Schema(description = "申请理由")
+    private String applyReason;
+
     @Schema(description = "状态：待审核/已通过/已建档", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @ExcelProperty("状态")
     private String status;
