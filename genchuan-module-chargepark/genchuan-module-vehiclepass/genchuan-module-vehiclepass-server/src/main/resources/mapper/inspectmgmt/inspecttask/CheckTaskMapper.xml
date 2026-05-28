@@ -43,6 +43,9 @@
         <if test="reqVO.executeUserId != null">
             AND t.execute_user_id = #{reqVO.executeUserId}
         </if>
+        <if test="reqVO.executeUserName != null and reqVO.executeUserName != ''">
+            AND u.nickname LIKE CONCAT('%', #{reqVO.executeUserName}, '%')
+        </if>
         <if test="reqVO.finishTime != null and reqVO.finishTime.length == 2">
             AND t.finish_time BETWEEN #{reqVO.finishTime[0]} AND #{reqVO.finishTime[1]}
         </if>

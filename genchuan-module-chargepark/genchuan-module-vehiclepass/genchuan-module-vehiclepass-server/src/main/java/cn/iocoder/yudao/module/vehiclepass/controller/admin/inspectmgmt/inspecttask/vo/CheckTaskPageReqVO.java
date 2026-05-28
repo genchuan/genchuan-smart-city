@@ -31,6 +31,9 @@ public class CheckTaskPageReqVO extends PageParam {
     @Schema(description = "执行人ID")
     private Long executeUserId;
 
+    @Schema(description = "执行人名称，支持模糊查询")
+    private String executeUserName;
+
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "完成时间")
     private LocalDateTime[] finishTime;
