@@ -97,8 +97,15 @@
             COUNT(id) AS orderCount,
             IFNULL(SUM(amount), 0) AS revenue
         FROM all_order
-        WHERE deleted = 0
-          AND create_order_time BETWEEN #{reportStartTime} AND #{reportEndTime}
+        <where>
+            deleted = 0
+            <if test="reportStartTime != null">
+                AND create_order_time >= #{reportStartTime}
+            </if>
+            <if test="reportEndTime != null">
+                AND create_order_time &lt;= #{reportEndTime}
+            </if>
+        </where>
     </select>
 
     <!-- 6. debt_expand 追缴完成率 -->
