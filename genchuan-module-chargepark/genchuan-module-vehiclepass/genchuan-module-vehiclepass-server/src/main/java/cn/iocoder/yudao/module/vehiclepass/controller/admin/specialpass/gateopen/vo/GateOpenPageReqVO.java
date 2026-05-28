@@ -35,6 +35,9 @@ public class GateOpenPageReqVO extends PageParam {
     @Schema(description = "审批人ID，关联system_user用户表", example = "30477")
     private Long auditUserId;
 
+    @Schema(description = "审批人名称，支持模糊查询")
+    private String auditUserName;
+
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Schema(description = "审批时间")
     private LocalDateTime[] auditTime;

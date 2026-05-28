@@ -48,6 +48,9 @@
         <if test="reqVO.auditUserId != null">
             AND g.audit_user_id = #{reqVO.auditUserId}
         </if>
+        <if test="reqVO.auditUserName != null and reqVO.auditUserName != ''">
+            AND au.nickname LIKE CONCAT('%', #{reqVO.auditUserName}, '%')
+        </if>
         <if test="reqVO.remark != null and reqVO.remark != ''">
             AND g.remark LIKE CONCAT('%', #{reqVO.remark}, '%')
         </if>
