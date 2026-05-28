@@ -127,7 +127,7 @@ public class StockControlServiceImpl implements StockControlService {
         }
 
         String logMsg = buildAllocateLogMsg(reqVO);
-        appendAllocateLog(donor, logMsg);
+//        appendAllocateLog(donor, logMsg);
         appendAllocateLog(target, logMsg);
         LogRecordContext.putVariable("stockControl", target);
     }
