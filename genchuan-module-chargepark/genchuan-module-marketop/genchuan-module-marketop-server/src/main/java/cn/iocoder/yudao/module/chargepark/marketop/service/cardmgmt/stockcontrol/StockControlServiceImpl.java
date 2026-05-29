@@ -99,30 +99,35 @@ public class StockControlServiceImpl implements StockControlService {
                     .filter(StrUtil::isNotBlank)
                     .collect(Collectors.toSet());
         }
-        if (cardStationIds.contains(reqVO.getSourceStationId().trim())) {
-            throw exception(STOCK_ALLOCATE_SOURCE_IN_RANGE);
-        }
-        if (!cardStationIds.contains(reqVO.getTargetStationId().trim())) {
-            throw exception(STOCK_ALLOCATE_TARGET_NOT_IN_RANGE);
-        }
+//        if (cardStationIds.contains(reqVO.getSourceStationId().trim())) {
+//            throw exception(STOCK_ALLOCATE_SOURCE_IN_RANGE);
+//        }
+//        if (!cardStationIds.contains(reqVO.getTargetStationId().trim())) {
+//            throw exception(STOCK_ALLOCATE_TARGET_NOT_IN_RANGE);
+//        }
         StockControlDO donor = stockControlMapper.selectMaxStockBySourceStationId(reqVO.getSourceStationId());
-        if (donor == null || donor.getCurrentStock() < reqVO.getNum()) {
-            throw exception(STOCK_INSUFFICIENT);
-        }
+//        if (donor == null || donor.getCurrentStock() < reqVO.getNum()) {
+//            throw exception(STOCK_INSUFFICIENT);
+//        }
         StockControlDO target = stockControlMapper.selectByCardId(reqVO.getCardId());
-        if (target == null) {
-            throw exception(STOCK_CONTROL_NOT_EXISTS);
+//        if (target == null) {
+//            throw exception(STOCK_CONTROL_NOT_EXISTS);
+//        }
+        if (donor != null) {
+            donor.setCurrentStock(donor.getCurrentStock() - reqVO.getNum());
+            updateStockStatus(donor);
+            donor.setSyncTime(LocalDateTime.now());
+            stockControlMapper.updateById(donor);
         }
-        donor.setCurrentStock(donor.getCurrentStock() - reqVO.getNum());
-        updateStockStatus(donor);
-        donor.setSyncTime(LocalDateTime.now());
-        stockControlMapper.updateById(donor);
-        target.setCurrentStock(target.getCurrentStock() + reqVO.getNum());
-        updateStockStatus(target);
-        target.setSyncTime(LocalDateTime.now());
-        stockControlMapper.updateById(target);
+        if (target != null) {
+            target.setCurrentStock(target.getCurrentStock() + reqVO.getNum());
+            updateStockStatus(target);
+            target.setSyncTime(LocalDateTime.now());
+            stockControlMapper.updateById(target);
+        }
+
         String logMsg = buildAllocateLogMsg(reqVO);
-        appendAllocateLog(donor, logMsg);
+//        appendAllocateLog(donor, logMsg);
         appendAllocateLog(target, logMsg);
         LogRecordContext.putVariable("stockControl", target);
     }
@@ -148,7 +153,7 @@ public class StockControlServiceImpl implements StockControlService {
 
         // 预警数量 = warnStatus 为已告警的记录数
         int warnStockCount = (int) records.stream()
-                .filter(r -> "1".equals(r.getWarnStatus()))
+                .filter(r -> "2".equals(r.getStatus()))
                 .count();
         respVO.setWarnStockCount(warnStockCount);
 
@@ -220,7 +225,7 @@ public class StockControlServiceImpl implements StockControlService {
 
     private void appendAllocateLog(StockControlDO record, String logMsg) {
         List<String> logs = new ArrayList<>();
-        if (StrUtil.isNotBlank(record.getReserve1())) {
+        if (record != null && StrUtil.isNotBlank(record.getReserve1())) {
             try {
                 List<String> existing = JsonUtils.parseArray(record.getReserve1(), String.class);
                 if (existing != null) {
@@ -228,10 +233,10 @@ public class StockControlServiceImpl implements StockControlService {
                 }
             } catch (Exception ignored) {
             }
+            logs.add(logMsg);
+            record.setReserve1(JsonUtils.toJsonString(logs));
+            stockControlMapper.updateById(record);
         }
-        logs.add(logMsg);
-        record.setReserve1(JsonUtils.toJsonString(logs));
-        stockControlMapper.updateById(record);
     }
 
     private void appendReplenishLog(StockControlDO record, String logMsg) {
